@@ -162,9 +162,14 @@ Due cose contano più delle altre:
 
 Il codice e le schede del gioco dei Segnali sono dell'autore e sono pubblicati
 con licenza [MIT](LICENSE): usali, anche in una scuola nautica, anche per
-farci qualcosa di commerciale. I dati in `site/dati/` e le figure in
-`site/figure/` **non hanno licenza** perché non sono dell'autore: sono un atto
-dello Stato italiano.
+farci qualcosa di commerciale.
+
+La licenza **non copre** i quesiti, gli esercizi di carteggio e le figure in
+`site/dati/` e `site/figure/`: sono l'Allegato A al DD 131/2022 del Ministero
+delle Infrastrutture e dei Trasporti, un atto ufficiale dello Stato italiano,
+escluso dal diritto d'autore (art. 5 L. 633/1941), su cui l'autore non concede
+e non può concedere alcun diritto. Il file `LICENSE` contiene il solo testo
+MIT, senza questa nota, perché GitHub riconosca la licenza dal file.
 
 ## Origine
 

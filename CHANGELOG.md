@@ -9,6 +9,18 @@ utente e una data d'esame. Restano perché spiegano **perché** certe scelte
 sembrano strane — e sono state riviste solo per togliere i dati delle macchine
 dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
+## [0.19.1] — 2026-09-04
+
+### Corretto
+
+- **`LICENSE` è il solo testo MIT.** La 0.19.0 aveva in coda una nota che
+  escludeva i dati del decreto dalla licenza, e GitHub classificava il file
+  come «Other»: il segnale più forte che il progetto è aperto — la licenza
+  riconosciuta nella radice — non funzionava. La nota sta ora nel README, nella
+  sezione Licenza, dove dice la stessa cosa. Nessuna modifica al sito: il bump
+  serve solo a tenere `VERSION`, la cache e `meta.json` allineati, come il test
+  pretende.
+
 ## [0.19.0] — 2026-09-04
 
 Da servizio personale a sito statico pubblico: **Open Patente Nautica**. Nessun
