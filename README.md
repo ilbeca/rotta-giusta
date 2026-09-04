@@ -131,7 +131,7 @@ CHANGELOG.md          la storia, compresa quella del progetto da cui è estratto
 ## Sviluppo
 
 ```bash
-python3 -m http.server 8787 --directory site     # il sito in locale
+python3 strumenti/serve.py                        # il sito in locale, come lo serve Pages
 node --test tests/test_engine.mjs                 # il motore
 python3 tests/test_dati.py                        # i dati, le invarianti, e controlla.py
 ```

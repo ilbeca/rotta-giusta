@@ -10,7 +10,7 @@ import {
   estrai, estraiNuoviPrima, simulazione, simulazioneVela, screening, esito,
   fondi, isoLocale, stimaImpegno, mirata, consigli, oscurato, RIPIEGO_MS,
   serieGruppi, tendenza, TENDENZA_MIN_GIORNI, TENDENZA_MIN_RISPOSTE,
-  SEGNALI, SEGNALI_MODI, poolSegnali, domandeSegnali,
+  SEGNALI, SEGNALI_MODI, poolSegnali, domandeSegnali, lunghezzaPartita,
   giroTecniche, tappeto,
   epoca, ordinaRighe, ripiega, sessioni, fondiArchivio, PAUSA_SESSIONE_MS,
 } from '../site/engine.js';
@@ -1052,9 +1052,14 @@ test('il GUSCIO di sw.js e quello di index.html sono la stessa lista', async () 
   // Ogni voce del guscio deve esistere davvero in site/: un percorso sbagliato
   // qui fa dire all'autodiagnosi «guscio incompleto» per sempre, oppure — se
   // `c.add` fallisce in silenzio — «pronto per l'offline» con un buco dentro.
+  // I percorsi sono quelli **serviti**, non i nomi dei file: Cloudflare Pages
+  // serve privacy.html all'indirizzo /privacy e risponde 308 a /privacy.html.
+  // Una risposta rediretta in cache non si puo' servire a una navigazione, e
+  // nella 0.19.1 i due link del pie' di pagina erano morti anche online.
   for (const u of sw) {
+    assert.ok(!u.endsWith('.html'), `${u}: Pages risponde 308 al percorso con l'estensione`);
     const f = u === '/' ? 'index.html' : u.slice(1);
-    await fs.access(new URL(f, dir));
+    await fs.access(new URL(/\.[a-z]+$/.test(f) ? f : f + '.html', dir));
   }
 });
 
@@ -1176,6 +1181,26 @@ test('segnali: tre opzioni, una sola esatta, mai due rese uguali in campo', () =
         assert.notEqual(altro.firma || altro.id, firma,
           `${d.id}: distrattore con la stessa resa (${altro.id})`);
       }
+    }
+  }
+});
+
+test('segnali: la partita e lunga quanto la schermata promette', () => {
+  // Il difetto che questo test fissa: la schermata scriveva «In archivio 8
+  // segnali; ogni partita ne pesca 10» e divideva il punteggio migliore per un
+  // 10 fisso. I pool sono 27 / 9 / 9 / 8, quindi su tre modalita su quattro il
+  // 10/10 non era raggiungibile e nessuno diceva perche. Ora il numero
+  // promesso e la partita che si apre escono dalla **stessa** funzione.
+  for (const m of SEGNALI_MODI) {
+    const attesa = lunghezzaPartita(m);
+    assert.equal(attesa, Math.min(10, poolSegnali(m).length), `${m}: lunghezza non derivata dal pool`);
+    assert.ok(attesa >= 8, `${m}: pool troppo magro per una partita`);
+    for (const seme of [1, 7, 42, 1234, 99999]) {
+      assert.equal(domandeSegnali(m, attesa, seme).length, attesa,
+        `${m}: la partita non ha le domande promesse (seme ${seme})`);
+      // e chiedendone 10 non ne escono comunque piu di quelle che ci sono
+      assert.equal(domandeSegnali(m, 10, seme).length, attesa,
+        `${m}: chiedendone 10 la partita non coincide con la lunghezza dichiarata`);
     }
   }
 });

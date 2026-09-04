@@ -9,6 +9,173 @@ utente e una data d'esame. Restano perché spiegano **perché** certe scelte
 sembrano strane — e sono state riviste solo per togliere i dati delle macchine
 dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
+## [0.19.2] — 2026-09-04
+
+Sessione di verifica del sito **pubblicato**, guidato nel browser su HTTPS e non
+dedotto dal codice. Il difetto peggiore era muto e stava in una riga verde: i
+due link legali del piè di pagina erano morti per chiunque avesse aperto il
+sito una seconda volta.
+
+### Corretto
+
+- **`/privacy.html` e `/avvertenza.html` erano link morti, anche online.**
+  Cloudflare Pages serve `privacy.html` all'indirizzo `/privacy` e risponde
+  **308** al percorso con l'estensione (misurato: `/index.html` → `/`,
+  `/privacy.html` → `/privacy`, `/avvertenza.html` → `/avvertenza`; i tre
+  percorsi senza estensione rispondono 200). Il guscio metteva in cache i
+  percorsi con l'estensione, quindi `cache.add` seguiva il redirect e salvava
+  una **risposta rediretta** sotto la chiave sbagliata — verificato aprendo la
+  cache del sito vero: `/privacy.html` → `redirected: true`, url finale
+  `/privacy`.
+
+  Una risposta rediretta **non si può servire a una navigazione**: il redirect
+  mode di una navigazione è `manual` e `respondWith` la rifiuta. E siccome
+  `sw.js` è cache-first, il difetto non aspettava nemmeno l'offline. Riprodotto
+  sul sito pubblicato con il service worker installato: navigare a
+  `/privacy.html` dà `net::ERR_FAILED` e una pagina di errore del browser,
+  **con la rete accesa**. Dalla 0.19.0 quei due link stavano nel piè di pagina
+  di *ogni* schermata, e si rompevano alla seconda visita di chiunque.
+
+  Guscio e `href` usano ora gli indirizzi che Pages serve davvero, `/privacy` e
+  `/avvertenza`, in tutte e tre le pagine. Due test lo tengono fermo: il guscio
+  non può contenere un percorso che finisce in `.html`, e nessuna delle tre
+  pagine può avere un `href` interno con l'estensione. Rimessa la forma vecchia,
+  falliscono tutti e due — provato.
+
+- **L'autodiagnosi offline diceva «guscio e banca in cache», in verde, mentre
+  due delle nove voci erano inservibili.** Controllava che la *chiave* ci
+  fosse, non che la *risposta* si potesse dare: è la forma esatta del guasto
+  che questo progetto insegue, in un semaforo verde. Ora ogni voce del guscio
+  si apre e si guarda, e una risposta rediretta compare in rosso — «in cache ma
+  non servibile: … risponde con un redirect» — e toglie il «pronto per
+  l'offline». Riparare un difetto muto senza rendere visibile la sua categoria
+  vuol dire pagarlo due volte.
+
+- **La scheda offline scriveva «figure 103/102».** `/figure/index.json` sta
+  nella stessa cartella, finisce nella stessa cache e veniva contato come una
+  figura: il numero contato dalla cache e quello promesso da `meta.json`
+  arrivavano da due fonti diverse. I disegni sono 102 e ora sono contati come
+  tali. Misurato dopo lo scaricamento sul sito vero: 112 voci in cache, di cui
+  103 sotto `/figure/` — 102 PNG più l'indice.
+
+- **Il gioco dei Segnali prometteva 10 domande e ne serviva 9, 9 e 8.**
+  I pool sono **27 / 9 / 9 / 8** (misurato sul motore, 200 semi per modalità:
+  la lunghezza della partita è sempre 10 / 9 / 9 / 8). `domandeSegnali` non
+  poteva fare altro — pesca `min(n, pool)` — ma la schermata scriveva la frase
+  che si contraddice da sola, «In archivio **8** segnali; ogni partita ne pesca
+  **10**», e divideva il punteggio migliore per un 10 fisso: su *diurni*,
+  *nebbia* e *manovra* il 10/10 non era raggiungibile e niente diceva perché.
+  Riprodotto giocando: «Segnali diurni **2 / 9** · migliore 2/**10**».
+
+  Il numero promesso e la partita che si apre escono ora dalla stessa funzione,
+  `E.lunghezzaPartita(modo)`, che sta nel motore perché è lì che si testa. Il
+  test nuovo pretende che sia `min(10, pool)` e che una partita abbia
+  esattamente quelle domande su cinque semi diversi; con la lunghezza riportata
+  a 10 fisso fallisce.
+
+### Aggiunto
+
+- **`strumenti/serve.py`**, che serve il sito in locale **come lo serve Pages**:
+  `/privacy` → `privacy.html`, 308 sui percorsi con l'estensione, `sw.js` con
+  `Cache-Control: no-cache`. Senza di lui `python3 -m http.server` risponderebbe
+  404 alle due voci nuove del guscio e l'app direbbe «guscio incompleto» per due
+  file che ci sono — cioè la differenza fra locale e produzione tornerebbe
+  invisibile, che è come il difetto qui sopra è arrivato fino alla 0.19.1.
+  Verificato: gli stessi codici del sito vero, uno per uno. `CLAUDE.md` e il
+  README indicano ora questo comando.
+
+### Verificato sul sito pubblicato
+
+Guidando `https://open-patente-nautica.pages.dev` nel browser, non un server
+locale. Ogni numero qui sotto è misurato.
+
+- **Versione e cache**: `sw.js` servito con `cache-control: no-cache`; service
+  worker `activated` su HTTPS; unica cache `opn-0.19.1`; la schermata Info
+  scrive «su questo dispositivo v0.19.1 · cache offline opn-0.19.1».
+- **Tutto dalla cache**: a pagina ricaricata, navigazione e tutte e cinque le
+  risorse hanno `transferSize 0` e `workerStart > 0` — **0 byte dalla rete**.
+- **I flussi**, con la riga in IndexedDB controllata dopo ogni passo: batteria
+  da *Oggi* 10 quesiti → 10 righe, un solo `sim_uid`; simulazione base 20
+  domande, «max 4 errori», conto alla rovescia da 29:58, nessuna correzione in
+  corsa, 20 righe più la riga prova 7/20; vela 5 domande in 15:00; **completa**
+  che dopo un base non superato offre «Prosegui comunque con la vela» e chiude
+  con due righe prova distinte; prova di carteggio, consegna a due tocchi
+  («Consegna» → «Sicuro? Consegna definitivamente»), quattro esercizi di quattro
+  argomenti diversi, correzione che mette la risposta ministeriale accanto alla
+  tua e **non giudica lei** (`delta: null`), 3/4 → superata; giro delle tecniche
+  7 esercizi per 12 tecniche, ognuno dichiara quali porta lui, **zero righe
+  prova**; tappeto 5.1.3-2/-3/-4/-5, nessun già fatto, e il pulsante scende a
+  120 mai fatti; drill tecniche 8 righe `_t:'t'`; una partita per ognuna delle
+  quattro modalità dei Segnali con **archivio invariato, 101 → 101 righe**.
+- **Scarica / azzera / ricarica**: export 18.471 byte, reimport «95 righe nuove
+  · 0 già presenti · 0 scartate», e al secondo passaggio con una riga rotta
+  aggiunta «1 righe nuove · 95 già presenti · 1 scartate».
+- **La data d'esame**: senza data, semafori `attesa` e nessuna quota, dichiarato
+  in schermata; con una data futura, «2 min al giorno fino al 27 novembre» e
+  traguardo quattro giorni prima; con una data passata, «traguardo del 28 luglio
+  passato».
+- **Geometria a 375 px**: barra a **sette voci**, larghezza 375, altezza 63,
+  overflow 0. Sbordamento orizzontale **0 px** su *Oggi*, *Carteggio*, *Allena*,
+  *Segnali*, *Info*; **69 px** in *Diagnosi* e **20 px** in *Tecniche*, in
+  entrambi i casi la `table.tbl` — il difetto noto delle tabelle, non
+  peggiorato. Il riquadro dei difetti dichiarati si apre e si chiude (71 → 763
+  px) e i suoi numeri tornano con la banca: 37 oscurati, 4 note dopo la
+  risposta, 119 quesiti con figura, 102 figure distinte.
+- **Console pulita**: nessun messaggio, di nessun livello, su nessuna
+  schermata — audio dei Segnali compreso.
+
+### Difetti trovati e **non** corretti qui
+
+Sono misurati e riproducibili; non entrano in questa versione perché la loro
+riparazione va pensata, non improvvisata, e perché nessuna delle due si lascia
+fissare da un test delle suite attuali.
+
+- **«Scarica i tuoi progressi» può scrivere un file incompleto, in silenzio.**
+  `esporta()` scrive `S.archivio`, lo specchio in memoria, non l'archivio.
+  Con **due schede** dello stesso sito aperte, le righe scritte dall'altra
+  scheda non ci sono: misurato, **95 righe nel file contro 101 in IndexedDB**,
+  e il pulsante dice «95 righe nel file» — vero per il file, falso per
+  l'archivio. Stessa radice per la conferma di azzeramento, che ha promesso
+  «Cancella **95** righe» e ne ha cancellate 101. È la sola via di salvataggio
+  che l'app offre, quindi conta più di quanto sembri.
+- **La revisione di una prova d'esame scrive il tempo concesso al posto di
+  quello impiegato.** La riga `_t:'s'` salva `R.sim.minuti * 60000`, e la
+  testata della revisione la stampa: la stessa simulazione legge «**2 minuti**»
+  nell'elenco delle sessioni (che usa la durata vera, derivata) e «**30
+  minuti**» nella sua revisione. Il ramo dell'allenamento, accanto, fa già la
+  cosa giusta e lo dice in un commento. Il carteggio non ne soffre: lì `ms` è il
+  tempo vero.
+
+### Nota sulla misura
+
+- L'offline **non è stato provato staccando la rete**: il pannello del browser
+  non ha un interruttore per farlo e spegnere la rete della macchina avrebbe
+  chiuso la sessione. Al suo posto c'è la misura più forte che si poteva fare
+  da dentro: **zero byte trasferiti** a pagina ricaricata, tutte le risorse
+  marcate come servite dal service worker, e l'inventario della cache voce per
+  voce. È una verifica più debole di un aeroplano, e si dichiara.
+- **Il ciclo di aggiornamento è stato riprodotto in locale, non su Pages**:
+  richiederebbe che 0.19.2 fosse già pubblicato, e il push si chiede. Messo in
+  scena un rilascio 0.19.3 sul server locale, con un dispositivo che aveva
+  `opn-0.19.2` installato, la misura è quella dichiarata da sempre e mai
+  verificata così: alla **prima** ricarica la pagina gira ancora sulla
+  **v0.19.2** mentre la cache installata è già `opn-0.19.3` — e la schermata
+  Info se ne accorge da sola, «*— diverse: ricarica due volte questa pagina per
+  prendere la nuova*»; alla **seconda** legge `v0.19.3 · cache opn-0.19.3`.
+  Resta da rifare sul sito vero dopo il push, su un dispositivo che ha
+  `opn-0.19.1`.
+- Il pannello del browser era chiuso, e a pagina nascosta Chrome strozza i
+  timer a circa uno al secondo (misurato: dieci `setTimeout` da 50 ms in
+  **9.766 ms**). I flussi sono stati guidati con la pagina resa udibile da un
+  tono a volume minimo, che toglie la strozzatura (**512 ms** per gli stessi
+  dieci timer); le misure geometriche sono state prese subito dopo uno
+  screenshot, che forza il disegno, perché a pannello nascosto il viewport è
+  0×0 e ogni misura sarebbe stata finta.
+
+### Test
+
+- 102 test sul motore (erano 101) e 105 verifiche sui dati (erano 93).
+
 ## [0.19.1] — 2026-09-04
 
 ### Corretto

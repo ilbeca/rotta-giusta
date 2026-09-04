@@ -21,7 +21,7 @@ node --test tests/test_engine.mjs                 # il motore, e le tre versioni
 python3 tests/test_dati.py                        # dati, invarianti, e il guardiano
 python3 strumenti/controlla.py                    # il guardiano da solo
 python3 fonte/verifica.py                         # i testi del carteggio contro il PDF (serve pypdf)
-python3 -m http.server 8787 --directory site      # il sito in locale
+python3 strumenti/serve.py                        # il sito in locale, come lo serve Pages
 ```
 
 Tutto gira sull'Air con node e python di sistema. Non c'è nessun servizio da
@@ -71,6 +71,13 @@ riavviare, nessuna macchina remota, nessun database.
   Sono due funzioni perché sono due mestieri.
 - **Il guscio offline è scritto in due posti** — `GUSCIO` in `sw.js` e in
   `index.html` — e devono restare identici. C'è un test.
+- **Gli indirizzi sono quelli che serve Pages, non i nomi dei file**:
+  `/privacy` e `/avvertenza`, mai `/privacy.html`. Pages risponde **308** al
+  percorso con l'estensione, e una risposta rediretta messa in cache **non si
+  può servire a una navigazione**: la pagina muore con `ERR_FAILED`, anche
+  online, perché il service worker legge prima la cache. Vale per il guscio e
+  per ogni `href` interno; due test lo tengono fermo, e
+  `strumenti/serve.py` riproduce in locale gli stessi 308.
 - **Una versione, in tre posti, tenuta insieme da un test**: `VERSION`, `CACHE`
   in `site/sw.js`, `versione` in `site/dati/meta.json`. Non c'è un server che
   la sostituisca al volo. Dopo un rilascio serve **una ricarica in più** sul

@@ -1288,6 +1288,24 @@ export function poolSegnali(modo) {
  * I distrattori vengono dallo stesso pool, mai con la stessa `firma` del
  * segnale mostrato (due rese identiche = due risposte giuste) e mai doppi.
  */
+/**
+ * Quante domande ha davvero una partita di questa modalita'.
+ *
+ * `domandeSegnali` ne pesca `min(n, pool)` — non puo' fare altro — ma la
+ * schermata scriveva 10 comunque: «In archivio **8** segnali; ogni partita ne
+ * pesca **10**», e il punteggio migliore era diviso per un 10 fisso, quindi su
+ * *diurni*, *nebbia* e *manovra* il 10/10 non era raggiungibile e nessuno
+ * diceva perche'. I pool oggi sono 27 / 9 / 9 / 8: tre modalita' su quattro
+ * promettevano una domanda in piu' di quelle che servivano.
+ *
+ * Sta qui e non nella pagina perche' il numero promesso e la partita che si
+ * apre devono venire dalla **stessa** funzione — e' la regola di casa — e
+ * perche' qui si testa.
+ */
+export function lunghezzaPartita(modo, n = 10) {
+  return Math.min(n, poolSegnali(modo).length);
+}
+
 export function domandeSegnali(modo, n = 10, seme = 1) {
   const pool = poolSegnali(modo);
   const scelte = rimescola(pool, seme).slice(0, Math.min(n, pool.length));

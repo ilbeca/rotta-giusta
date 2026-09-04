@@ -773,14 +773,14 @@ nav button.on{color:var(--acc)}
         su <a href="https://github.com/ilbeca/open-patente-nautica">GitHub</a>, dove si segnalano
         errori e si propongono correzioni. I quesiti e gli esercizi sono l'Allegato A al
         DD 131/2022, un atto dello Stato. Materiale di studio <b>non ufficiale</b>: fa fede il
-        decreto, non questo sito. <a href="/avvertenza.html">Avvertenza</a> ·
-        <a href="/privacy.html">Privacy</a></p>
+        decreto, non questo sito. <a href="/avvertenza">Avvertenza</a> ·
+        <a href="/privacy">Privacy</a></p>
     </div>
   </section>
 
   <footer class="foot">Open Patente Nautica <span id="foot-ver"></span> ·
     <a href="https://github.com/ilbeca/open-patente-nautica">codice sorgente</a> ·
-    <a href="/avvertenza.html">avvertenza</a> · <a href="/privacy.html">privacy</a></footer>
+    <a href="/avvertenza">avvertenza</a> · <a href="/privacy">privacy</a></footer>
 </main>
 
 <!-- ====================== RUNNER ====================== -->
@@ -1248,9 +1248,14 @@ function aggiornaBadge() {
 // Il guscio minimo per aprire l'app e fare una batteria. Stessa lista di sw.js:
 // qui serve per controllare che ci sia davvero, li' per metterla. C'e' un test
 // che le confronta.
+//
+// `/privacy` e `/avvertenza` **senza `.html`**: e' l'indirizzo vero su
+// Cloudflare Pages, che al percorso con l'estensione risponde 308. Il perche'
+// per esteso sta in sw.js, accanto alla stessa lista; un test pretende che i
+// link di questa pagina non tornino alla forma con l'estensione.
 const GUSCIO = ['/', '/engine.js', '/manifest.json',
                 '/dati/meta.json', '/dati/quiz.json', '/dati/tecniche.json',
-                '/dati/carteggio.json', '/privacy.html', '/avvertenza.html'];
+                '/dati/carteggio.json', '/privacy', '/avvertenza'];
 
 /** Il nome della cache lo scrive sw.js e lo tiene allineato a VERSION un test:
  *  qui lo si legge dalle cache esistenti, non lo si indovina. */
@@ -1293,7 +1298,25 @@ async function verificaOffline() {
     const c = await caches.open(nome);
     const dentro = new Set((await c.keys()).map((r) => new URL(r.url).pathname));
     const mancanti = GUSCIO.filter((p) => !dentro.has(p));
-    const figure = [...dentro].filter((p) => p.startsWith('/figure/')).length;
+    // **Esserci non basta: bisogna che si possa servire.** Una risposta
+    // *rediretta* in cache non si puo' dare a una navigazione — il redirect
+    // mode di una navigazione e' 'manual' e `respondWith` la rifiuta — quindi
+    // la pagina muore con ERR_FAILED pur essendo in cache. E' successo davvero
+    // nella 0.19.1 con `/privacy.html` e `/avvertenza.html`, che su Cloudflare
+    // Pages rispondono 308: la chiave c'era, questa scheda scriveva «guscio e
+    // banca in cache» in verde, e i due link del pie' di pagina erano morti.
+    // Guardare solo le chiavi era l'errore; qui si guarda la risposta.
+    const rediretti = [];
+    for (const p of GUSCIO) {
+      if (!dentro.has(p)) continue;
+      const res = await c.match(p);
+      if (res && res.redirected) rediretti.push(p);
+    }
+    // I disegni, non l'indice: `/figure/index.json` sta nella stessa cartella e
+    // finisce nella stessa cache, ma non e' una figura. Contandolo la scheda
+    // scriveva «figure 103/102» — il numero contato e quello promesso da
+    // meta.json presi da due fonti diverse, che e' il difetto di casa.
+    const figure = [...dentro].filter((p) => p.startsWith('/figure/') && p !== '/figure/index.json').length;
     const attese = (S.meta && S.meta.figure) || 0;
 
     const v = (t) => `<b style="color:var(--ok)">${t}</b>`;
@@ -1301,11 +1324,13 @@ async function verificaOffline() {
     const w = (t) => `<b style="color:var(--warn)">${t}</b>`;
     const righe = [
       attivo ? v('service worker attivo') : x('service worker non attivo'),
-      mancanti.length ? x(`guscio incompleto (manca ${mancanti.join(', ')})`) : v('guscio e banca in cache'),
+      mancanti.length ? x(`guscio incompleto (manca ${mancanti.join(', ')})`)
+        : rediretti.length ? x(`in cache ma non servibile: ${rediretti.join(', ')} risponde con un redirect`)
+        : v('guscio e banca in cache'),
       attese && figure >= attese ? v(`figure ${figure}/${attese}`)
         : (figure ? w(`figure ${figure}/${attese || '?'}`) : w('figure non scaricate')),
     ];
-    const pronto = attivo && !mancanti.length && attese && figure >= attese;
+    const pronto = attivo && !mancanti.length && !rediretti.length && attese && figure >= attese;
     DIAG.off = !pronto; aggiornaBadge();
 
     el.innerHTML =
@@ -1427,7 +1452,7 @@ function dipingiDifetti() {
     </ul>
     <p class="note" style="margin-top:8px">Tutto il resto — id, motivazioni, e come rifare la
       verifica contro il PDF del decreto — e' nel <a href="https://github.com/ilbeca/open-patente-nautica#readme">README</a>
-      e in <a href="/avvertenza.html">Avvertenza</a>.</p>`;
+      e in <a href="/avvertenza">Avvertenza</a>.</p>`;
 }
 
 /* ===================== LE SPIEGAZIONI ==================================
@@ -3373,21 +3398,21 @@ function dipingiSeg() {
     `<button data-sv="${k}" class="${k === segModo ? 'on' : ''}"><b>${m.nome}</b><span>${m.sub}</span></button>`).join('');
   const pool = E.poolSegnali(segModo);
   document.getElementById('s-nota').innerHTML =
-    SEGMODI[segModo].spiega + ` In archivio <b>${pool.length}</b> segnali; ogni partita ne pesca 10, sempre in un ordine diverso.`;
+    SEGMODI[segModo].spiega + ` In archivio <b>${pool.length}</b> segnali; ogni partita ne pesca ${E.lunghezzaPartita(segModo)}, sempre in un ordine diverso.`;
   document.getElementById('s-start').textContent = `Inizia — ${SEGMODI[segModo].nome.toLowerCase()}`;
   const righe = Object.entries(SEGMODI).map(([k, m]) => {
     const p = segPunti[k];
     return `<div style="display:flex;gap:10px;padding:7px 0;border-bottom:1px solid #1b2536;font-size:13.5px">
       <span style="flex:1">${m.nome}</span>
       <span style="color:var(--dim);font-variant-numeric:tabular-nums">${p
-        ? `migliore <b style="color:var(--fg)">${p.migliore}/10</b> · ${p.giocate} partit${p.giocate === 1 ? 'a' : 'e'}`
+        ? `migliore <b style="color:var(--fg)">${p.migliore}/${E.lunghezzaPartita(k)}</b> · ${p.giocate} partit${p.giocate === 1 ? 'a' : 'e'}`
         : 'mai giocato'}</span></div>`;
   }).join('');
   document.getElementById('s-punti').innerHTML = righe;
 }
 
 function apriSeg() {
-  SEGR = { dom: E.domandeSegnali(segModo, 10, Date.now() % 2147483647),
+  SEGR = { dom: E.domandeSegnali(segModo, E.lunghezzaPartita(segModo), Date.now() % 2147483647),
            i: 0, giuste: 0, errori: [], risposto: false, fine: false };
   document.getElementById('segrun').classList.add('on');
   document.getElementById('sr-fine').classList.remove('on');
@@ -3467,7 +3492,7 @@ function fineSeg() {
   f.innerHTML = `
     <div class="esito">
       <div class="big">${R.giuste}<small style="font-size:22px;color:var(--dim)"> / ${R.dom.length}</small></div>
-      <div class="lab">${SEGMODI[segModo].nome} · migliore ${p.migliore}/10 · ${p.giocate} partit${p.giocate === 1 ? 'a' : 'e'}</div>
+      <div class="lab">${SEGMODI[segModo].nome} · migliore ${p.migliore}/${R.dom.length} · ${p.giocate} partit${p.giocate === 1 ? 'a' : 'e'}</div>
     </div>
     ${errori ? '<h2>Da rivedere</h2>' + errori : '<p class="note" style="text-align:center">Tutti riconosciuti. Cambia modalità, o rigioca per la velocità.</p>'}
     <div class="row" style="margin-top:18px">

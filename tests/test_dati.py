@@ -350,9 +350,27 @@ def test_sw():
     check('sw.js: GUSCIO presente', g_sw is not None)
     check('index.html: GUSCIO presente', g_ix is not None)
     check('GUSCIO: la stessa lista in sw.js e index.html', g_sw == g_ix, (g_sw, g_ix))
+    # Il guscio elenca gli indirizzi **come li serve Cloudflare Pages**, non i
+    # nomi dei file: `/` e' index.html e `/privacy` e' privacy.html. Pages
+    # risponde 308 al percorso con l'estensione, e una risposta rediretta messa
+    # in cache non si puo' servire a una navigazione (`respondWith` la rifiuta
+    # quando il redirect mode e' 'manual'): la pagina muore con ERR_FAILED,
+    # anche online, perche' il service worker legge prima la cache.
     for p in g_sw or []:
         f = SITE / ('index.html' if p == '/' else p.lstrip('/'))
+        if not f.is_file() and not f.suffix:
+            f = f.with_suffix('.html')
         check('GUSCIO: %s esiste in site/' % p, f.is_file(), str(f.relative_to(RADICE)))
+    # E il guscio non deve tornare alla forma con l'estensione: sarebbe di nuovo
+    # una voce rediretta in cache, cioe' il difetto della 0.19.1.
+    for p in g_sw or []:
+        check('GUSCIO: %s non ha .html (Pages ci risponde 308)' % p, not p.endswith('.html'), p)
+    # Gli stessi indirizzi nei link, in tutte e tre le pagine: un href con
+    # l'estensione e' un link che muore appena il service worker e' installato.
+    for nome in ('index.html', 'privacy.html', 'avvertenza.html'):
+        testo = (SITE / nome).read_text(encoding='utf-8')
+        cattivi = re.findall(r'href="(/[A-Za-z0-9._-]+\.html)"', testo)
+        check('%s: nessun link interno con .html' % nome, not cattivi, cattivi)
 
 
 def main():

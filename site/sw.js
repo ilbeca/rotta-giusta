@@ -17,7 +17,7 @@
 // Ogni rilascio ha quindi la sua cache, e la vecchia viene cancellata
 // all'activate.
 
-const CACHE = 'opn-0.19.1';
+const CACHE = 'opn-0.19.2';
 
 // Il minimo per aprire l'app e fare una batteria. Le 103 figure no: sono 1,1 MB
 // e scaricarle di soppiatto su una rete a consumo e' scortese. C'e' il pulsante
@@ -37,8 +37,17 @@ const GUSCIO = [
   // potersi fare anche senza rete, altrimenti l'unica cosa che l'app non sa
   // fare offline e' proprio la prova eliminatoria.
   '/dati/carteggio.json',
-  '/privacy.html',
-  '/avvertenza.html',
+  // **Senza `.html`, ed e' una correzione, non uno stile.** Cloudflare Pages
+  // serve `privacy.html` all'indirizzo `/privacy` e risponde **308** a
+  // `/privacy.html`. Mettere in cache il percorso con l'estensione ci mette
+  // dentro una *risposta rediretta*, e una risposta rediretta non si puo'
+  // servire a una navigazione: il redirect mode di una navigazione e'
+  // 'manual', `respondWith` la rifiuta, e la pagina muore con ERR_FAILED —
+  // **anche online**, perche' qui si legge prima la cache. Dalla 0.19.1 i due
+  // link del pie' di pagina erano morti per chiunque avesse gia' installato il
+  // service worker, e l'autodiagnosi diceva «guscio e banca in cache».
+  '/privacy',
+  '/avvertenza',
 ];
 
 self.addEventListener('install', (e) => {
