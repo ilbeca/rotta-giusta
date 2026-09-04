@@ -1,0 +1,85 @@
+// Service worker — la palestra deve partire anche senza rete.
+//
+// La strategia e' semplice perche' lo puo' essere: **la banca d'esame e'
+// immutabile**. E' la copia dell'Allegato A al DD 131/2022 e non cambia da un
+// giorno all'altro. Quindi cache-first senza invalidazione, che e' esattamente
+// la parte che di solito fa perdere mezza giornata in una PWA.
+//
+// Quello che invece cambia — le risposte — non passa mai di qui: vive
+// nell'archivio della pagina (IndexedDB), nel dispositivo di chi studia, e non
+// viaggia da nessuna parte. Non c'e' un server.
+//
+// Il nome della cache segue VERSION, e lo tiene allineato **un test**, non un
+// build step: il file committato e' quello pubblicato. Nel progetto originario
+// il segnaposto lo sostituiva il server; qui non c'e', e una cache dimenticata
+// congelerebbe l'app sulla prima versione vista da ogni dispositivo. Il test
+// in tests/test_engine.mjs fallisce se questo nome e VERSION divergono.
+// Ogni rilascio ha quindi la sua cache, e la vecchia viene cancellata
+// all'activate.
+
+const CACHE = 'opn-0.19.0';
+
+// Il minimo per aprire l'app e fare una batteria. Le 103 figure no: sono 1,1 MB
+// e scaricarle di soppiatto su una rete a consumo e' scortese. C'e' il pulsante
+// "Scarica tutto per l'offline" nella schermata Info, che le aggiunge a questa
+// stessa cache — esplicito, e da fare prima di partire.
+//
+// Stessa lista di `GUSCIO` in index.html, che controlla che ci sia davvero:
+// c'e' un test che le confronta.
+const GUSCIO = [
+  '/',
+  '/engine.js',
+  '/manifest.json',
+  '/dati/meta.json',
+  '/dati/quiz.json',
+  '/dati/tecniche.json',
+  // Gli esercizi di carteggio con la risposta ufficiale: la prova d'esame deve
+  // potersi fare anche senza rete, altrimenti l'unica cosa che l'app non sa
+  // fare offline e' proprio la prova eliminatoria.
+  '/dati/carteggio.json',
+  '/privacy.html',
+  '/avvertenza.html',
+];
+
+self.addEventListener('install', (e) => {
+  e.waitUntil(
+    caches.open(CACHE)
+      // addAll fallisce in blocco se un solo file non risponde: qui li aggiungo
+      // uno per uno, cosi' un file mancante non impedisce l'installazione — e
+      // l'autodiagnosi nella schermata Info dice quale manca.
+      .then((c) => Promise.all(GUSCIO.map((u) => c.add(u).catch(() => null))))
+      .then(() => self.skipWaiting())
+  );
+});
+
+self.addEventListener('activate', (e) => {
+  e.waitUntil(
+    caches.keys()
+      .then((k) => Promise.all(k.filter((x) => x !== CACHE).map((x) => caches.delete(x))))
+      .then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener('fetch', (e) => {
+  const { request } = e;
+  if (request.method !== 'GET') return;
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
+
+  // Tutto: prima la cache, e in rete solo se manca. La banca e le figure che
+  // arrivano dalla rete si mettono via, cosi' la seconda volta ci sono.
+  e.respondWith(
+    caches.match(request).then((hit) => {
+      if (hit) return hit;
+      return fetch(request)
+        .then((res) => {
+          if (res.ok && (url.pathname.startsWith('/figure/') || url.pathname.startsWith('/dati/'))) {
+            const copia = res.clone();
+            caches.open(CACHE).then((c) => c.put(request, copia));
+          }
+          return res;
+        })
+        .catch(() => hit || Response.error());
+    })
+  );
+});

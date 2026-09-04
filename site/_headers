@@ -1,0 +1,7 @@
+# Cloudflare Pages: intestazioni per percorso.
+#
+# Il service worker non deve restare in cache HTTP: e' lui che decide quale
+# versione dell'app gira, e una copia vecchia servita dal browser rimanderebbe
+# ogni aggiornamento di un giorno. Il resto lo governa sw.js, cache-first.
+/sw.js
+  Cache-Control: no-cache

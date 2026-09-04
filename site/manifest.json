@@ -1,0 +1,12 @@
+{
+  "name": "Open Patente Nautica",
+  "short_name": "Patente",
+  "description": "Quiz e carteggio per la patente nautica senza limiti dalla costa",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "lang": "it",
+  "background_color": "#0d1420",
+  "theme_color": "#0d1420",
+  "icons": []
+}

@@ -1,0 +1,11 @@
+# Materiali di lavoro di partenza: il piano, il prompt, i file intermedi della
+# riclassificazione. Non fanno parte del sito e non si pubblicano. Le parti che
+# servono a rifare il lavoro sono gia' nel repo: fonte/, strumenti/, tests/.
+_materiali/
+
+__pycache__/
+*.pyc
+.DS_Store
+
+# Un archivio di risposte scaricato dall'app per provarla: e' personale.
+*progressi*.json

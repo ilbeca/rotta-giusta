@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d1420">
+<meta name="description" content="Privacy di Open Patente Nautica: nessun account, nessun cookie, nessun analytics. Le tue risposte restano nel tuo browser.">
+<title>Privacy · Open Patente Nautica</title>
+<style>
+:root{
+  --bg:#0d1420; --bg2:#141d2c; --line:#26344a;
+  --fg:#e8eef7; --dim:#8ea1bd; --faint:#5d708c; --acc:#4aa3ff;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--fg);
+  font:16px/1.55 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
+}
+main{max-width:720px;margin:0 auto;padding:22px 18px 48px}
+a{color:var(--acc)}
+.back{display:inline-block;font-size:14px;color:var(--dim);text-decoration:none;margin-bottom:24px}
+.back:hover{color:var(--fg)}
+h1{font-size:26px;margin:0 0 4px;letter-spacing:-.3px}
+.date{color:var(--dim);font-size:13px;margin:0 0 26px}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.09em;color:var(--dim);margin:28px 0 8px;font-weight:600}
+p{margin:0 0 12px}
+ul{margin:0 0 12px;padding-left:20px}
+li{margin:6px 0}
+code{font:14px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--bg2);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+.foot{margin:40px 0 0;padding-top:14px;border-top:1px solid var(--line);font-size:12px;color:var(--faint);text-align:center;line-height:1.7}
+.foot a{color:var(--dim)}
+</style>
+</head>
+<body>
+<main>
+<a class="back" href="/">← torna alla palestra</a>
+
+<h1>Privacy</h1>
+<p class="date">Aggiornata il 4 settembre 2026</p>
+
+<p>In breve: questo sito non sa chi sei. Niente account, niente cookie, niente analytics, niente form da compilare. Quello che studi resta nel tuo browser.</p>
+
+<h2>Cosa resta nel tuo browser</h2>
+<p>Le risposte che dai ai quiz e agli esercizi di carteggio, i risultati delle simulazioni e le impostazioni (per esempio la data dell'esame) vengono salvati nel tuo browser: le risposte in <code>IndexedDB</code>, le impostazioni in <code>localStorage</code>. Non vengono trasmessi a nessuno, nemmeno a chi ha scritto il sito: non esiste un server che li riceva.</p>
+<p>Su questi dati comandi tu:</p>
+<ul>
+  <li>dalla schermata <b>Info</b> dell'app puoi scaricarli in un file, ricaricarli da un file salvato in precedenza, o cancellarli;</li>
+  <li>se cancelli i dati del sito dal browser, sparisce tutto e si riparte da zero.</li>
+</ul>
+
+<h2>Uso offline</h2>
+<p>Il sito usa un service worker, che tiene in cache i file del sito (pagine, script, quesiti, carte) per farlo funzionare anche senza rete. È archiviazione tecnica, necessaria a far girare l'app: non traccia niente e non manda niente fuori.</p>
+
+<h2>L'hosting</h2>
+<p>Il sito è pubblicato su Cloudflare Pages. Come ogni hoster, Cloudflare registra nei propri log gli indirizzi IP e i dati tecnici delle richieste (orario, pagina richiesta, browser) per motivi di sicurezza. Lo fa come titolare autonomo, secondo la sua informativa. L'autore di questo sito non usa quei log per riconoscerti.</p>
+
+<h2>Cosa non c'è</h2>
+<p>Nessun dato personale viene trattato dall'autore del sito. Di conseguenza non c'è un registro dei trattamenti da tenere, né una base giuridica da individuare, né dati da cancellare su richiesta: non ce ne sono.</p>
+
+<h2>Contatto</h2>
+<p>Per domande su questa pagina si apre una segnalazione nelle <a href="https://github.com/ilbeca/open-patente-nautica/issues">issue del repo su GitHub</a>. È un canale pubblico: non scriverci dati personali.</p>
+
+<footer class="foot">
+  Open Patente Nautica · <a href="https://github.com/ilbeca/open-patente-nautica">codice sorgente</a> · <a href="/privacy.html">privacy</a> · <a href="/avvertenza.html">avvertenza</a>
+</footer>
+</main>
+</body>
+</html>

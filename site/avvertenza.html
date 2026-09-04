@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d1420">
+<meta name="description" content="Avvertenza di Open Patente Nautica: materiale di studio non ufficiale, da dove vengono i quesiti, i difetti dichiarati e cosa non è nel decreto.">
+<title>Avvertenza · Open Patente Nautica</title>
+<style>
+:root{
+  --bg:#0d1420; --bg2:#141d2c; --line:#26344a;
+  --fg:#e8eef7; --dim:#8ea1bd; --faint:#5d708c; --acc:#4aa3ff;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--fg);
+  font:16px/1.55 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
+}
+main{max-width:720px;margin:0 auto;padding:22px 18px 48px}
+a{color:var(--acc)}
+.back{display:inline-block;font-size:14px;color:var(--dim);text-decoration:none;margin-bottom:24px}
+.back:hover{color:var(--fg)}
+h1{font-size:26px;margin:0 0 4px;letter-spacing:-.3px}
+.date{color:var(--dim);font-size:13px;margin:0 0 26px}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.09em;color:var(--dim);margin:28px 0 8px;font-weight:600}
+p{margin:0 0 12px}
+ul{margin:0 0 12px;padding-left:20px}
+li{margin:6px 0}
+code{font:14px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--bg2);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+.foot{margin:40px 0 0;padding-top:14px;border-top:1px solid var(--line);font-size:12px;color:var(--faint);text-align:center;line-height:1.7}
+.foot a{color:var(--dim)}
+</style>
+</head>
+<body>
+<main>
+<a class="back" href="/">← torna alla palestra</a>
+
+<h1>Avvertenza</h1>
+<p class="date">Aggiornata il 4 settembre 2026</p>
+
+<p>Questo è materiale di studio <b>non ufficiale</b>. L'ha scritto un candidato che ha superato l'esame per la patente nautica senza limiti dalla costa e lo pubblica per restituire qualcosa a chi viene dopo. Non c'è nessuna affiliazione con il Ministero delle Infrastrutture e dei Trasporti, con le Capitanerie di porto, né con scuole nautiche.</p>
+
+<h2>Da dove vengono i quesiti</h2>
+<p>I quesiti e gli esercizi di carteggio sono quelli dell'Allegato A al Decreto Direttoriale n. 131 del 31 maggio 2022, l'elenco unico nazionale dei quesiti. È un atto ufficiale dello Stato, escluso dal diritto d'autore (art. 5 della legge 633/1941): per questo il sito non applica nessuna licenza ai dati. La licenza MIT copre il codice, non i quesiti.</p>
+
+<h2>La banca è del 2022, la norma è andata avanti</h2>
+<p>Il DM 133/2024, in vigore dal 21 ottobre 2024, ha riscritto le dotazioni di sicurezza. La circolare MIT n. 30432 del 15 novembre 2024 ha <b>oscurato 37 quesiti</b>, che all'esame non escono. L'app lo dichiara quesito per quesito.</p>
+<p><b>Nessuna risposta è stata cambiata</b>: all'esame vale la risposta del decreto, e questa palestra ti prepara a quell'esame.</p>
+
+<h2>I difetti dichiarati</h2>
+<ul>
+  <li>I 37 quesiti oscurati: esclusi dalla simulazione d'esame, presenti nelle batterie di allenamento e segnalati come tali.</li>
+  <li>11 quesiti che divergono dal DM 133/2024: la risposta resta quella del decreto, con una nota dopo la risposta che spiega cosa è cambiato.</li>
+  <li>Il quesito <code>base-405</code>, sui flap: la risposta ministeriale sembra invertita. Resta com'è, con una nota.</li>
+  <li>Dieci figure riabbinate a mano: l'estrazione automatica dal PDF le aveva scambiate, e sono state guardate una per una prima di riassegnarle.</li>
+  <li>Il quesito <code>base-59</code> è senza figura: nel PDF il disegno è uscito come doppione di un'altra figura.</li>
+  <li>Due quesiti (<code>base-226</code> e <code>base-1418</code>) hanno la risposta esatta ricostruita, perché nell'estrazione era rotta.</li>
+</ul>
+
+<h2>Cosa non è nel decreto</h2>
+<ul>
+  <li>La composizione delle 20 domande per tema che governa la simulazione d'esame (4 Navigazione, 4 Manovra, 3 Sicurezza, 3 Normativa, 2 COLREG, 2 Meteorologia, 1 Teoria dello scafo, 1 Motori) <b>non è nel decreto</b>: viene da tre scuole nautiche, indipendenti e concordi tra loro. Confermala con la tua.</li>
+  <li>Che l'esame di carteggio peschi un esercizio per ciascuno dei quattro argomenti è un'assunzione dichiarata, non letta nel decreto.</li>
+  <li>Le 12 «tecniche» di carteggio non sono ministeriali: sono una classificazione derivata dai testi degli esercizi, e servono all'allenamento «che tecnica serve?». L'argomento di ciascun esercizio, invece, è nel decreto.</li>
+  <li>Il gioco dei Segnali (fanali, segnali diurni e sonori COLREG) è materiale scritto a mano dall'autore, fuori dalla banca: non sono quesiti ministeriali e possono contenere errori.</li>
+</ul>
+
+<h2>Il carteggio non viene corretto</h2>
+<p>L'app non corregge automaticamente gli esercizi di carteggio: mostra la risposta ministeriale accanto alla tua, e sei tu a giudicare se ci sei arrivato.</p>
+
+<h2>Fa fede il decreto</h2>
+<p>In caso di dubbio fa fede il decreto, non questo sito. La verifica dei testi contro il PDF ufficiale si può rifare con gli script nel repo.</p>
+
+<h2>Segnalare un errore</h2>
+<p>Gli errori si segnalano sul <a href="https://github.com/ilbeca/open-patente-nautica/issues">repo GitHub</a>.</p>
+
+<footer class="foot">
+  Open Patente Nautica · <a href="https://github.com/ilbeca/open-patente-nautica">codice sorgente</a> · <a href="/privacy.html">privacy</a> · <a href="/avvertenza.html">avvertenza</a>
+</footer>
+</main>
+</body>
+</html>

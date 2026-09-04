@@ -1,0 +1,372 @@
+{
+ "stats": {
+  "quiz_base": 1472,
+  "quiz_vela": 250,
+  "carteggio_sl": 135,
+  "carteggio_e12": 50,
+  "quiz_con_figura": 119,
+  "quiz_figura_mancante": 1,
+  "temi": 8,
+  "voci": 44,
+  "tecniche": 12
+ },
+ "temi": [
+  {
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "n": 322,
+   "voci": [
+    {
+     "voce": "Bussole magnetiche",
+     "n": 38
+    },
+    {
+     "voce": "Carte nautiche e proiezione di Mercatore",
+     "n": 56
+    },
+    {
+     "voce": "Coordinate geografiche",
+     "n": 45
+    },
+    {
+     "voce": "Elementi di navigazione costiera",
+     "n": 49
+    },
+    {
+     "voce": "Elementi di navigazione stimata: tempo, spazio e velocità",
+     "n": 72
+    },
+    {
+     "voce": "Navigazione elettronica",
+     "n": 13
+    },
+    {
+     "voce": "Orientamento e rosa dei venti",
+     "n": 11
+    },
+    {
+     "voce": "Prora e rotta, scarroccio e deriva per effetto del vento e della corrente",
+     "n": 30
+    },
+    {
+     "voce": "Pubblicazioni",
+     "n": 8
+    }
+   ],
+   "esame": 4
+  },
+  {
+   "tema": "COLREG E SEGNALAMENTO MARITTIMO",
+   "n": 247,
+   "voci": [
+    {
+     "voce": "Fanali e segnali diurni",
+     "n": 67
+    },
+    {
+     "voce": "I principali fanali luminosi e il sistema IALA",
+     "n": 120
+    },
+    {
+     "voce": "Prevenire gli abbordi in mare",
+     "n": 60
+    }
+   ],
+   "esame": 2
+  },
+  {
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "n": 215,
+   "voci": [
+    {
+     "voce": "Centro Internazionale Radio Medico (CIRM).",
+     "n": 1
+    },
+    {
+     "voce": "Comunicazioni radiotelefoniche e relative procedure: assistenza e soccorso",
+     "n": 1
+    },
+    {
+     "voce": "Corretto uso degli apparati radio di bordo e chiamate di soccorso",
+     "n": 29
+    },
+    {
+     "voce": "Dotazioni di sicurezza e mezzi di salvataggio",
+     "n": 48
+    },
+    {
+     "voce": "Precauzioni da adottare in caso di navigazione con tempo cattivo",
+     "n": 25
+    },
+    {
+     "voce": "Prevenzione degli incendi e uso degli estintori",
+     "n": 31
+    },
+    {
+     "voce": "Provvedimenti da adottare in caso di sinistro marittimo (incendio, collisione, falla, incaglio, uomo a mare)",
+     "n": 36
+    },
+    {
+     "voce": "Rischi derivanti dalla conduzione dell'unità sotto l'influenza di alcol o in stato di alterazione psico-fisica per l'uso di sostanze stupefacenti o psicotrope",
+     "n": 12
+    },
+    {
+     "voce": "Sinistro e abbandono dell'unità",
+     "n": 13
+    },
+    {
+     "voce": "Tipi di visite, loro periodicità e certificazioni",
+     "n": 19
+    }
+   ],
+   "esame": 3
+  },
+  {
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "n": 184,
+   "voci": [
+    {
+     "voce": "(voce non indicata nel decreto)",
+     "n": 1
+    },
+    {
+     "voce": "Attività commerciale",
+     "n": 8
+    },
+    {
+     "voce": "Comandante, conduttore, utilizzatore",
+     "n": 7
+    },
+    {
+     "voce": "Documenti",
+     "n": 11
+    },
+    {
+     "voce": "Leggi e regolamenti",
+     "n": 98
+    },
+    {
+     "voce": "Norme ambientali",
+     "n": 16
+    },
+    {
+     "voce": "Pesca",
+     "n": 17
+    },
+    {
+     "voce": "Sci nautico",
+     "n": 26
+    }
+   ],
+   "esame": 3
+  },
+  {
+   "tema": "MANOVRA E CONDOTTA",
+   "n": 155,
+   "voci": [
+    {
+     "voce": "Ancoraggio",
+     "n": 53
+    },
+    {
+     "voce": "Navigazione in prossimità della costa",
+     "n": 32
+    },
+    {
+     "voce": "Ormeggio e disormeggio",
+     "n": 49
+    },
+    {
+     "voce": "Precauzioni all'ingresso e all'uscita dei porti",
+     "n": 21
+    }
+   ],
+   "esame": 4
+  },
+  {
+   "tema": "TEORIA DELLO SCAFO",
+   "n": 125,
+   "voci": [
+    {
+     "voce": "Effetti evolutivi dell'elica e del timone. Elementi di stabilità dell'unità.",
+     "n": 50
+    },
+    {
+     "voce": "Nomenclatura delle parti principali dello scafo",
+     "n": 75
+    }
+   ],
+   "esame": 1
+  },
+  {
+   "tema": "METEOROLOGIA",
+   "n": 120,
+   "voci": [
+    {
+     "voce": "Bollettini meteorologici e previsioni locali",
+     "n": 53
+    },
+    {
+     "voce": "Elementi di meteorologia e strumenti",
+     "n": 46
+    },
+    {
+     "voce": "Venti",
+     "n": 21
+    }
+   ],
+   "esame": 2
+  },
+  {
+   "tema": "MOTORI",
+   "n": 104,
+   "voci": [
+    {
+     "voce": "Calcolo dell'autonomia",
+     "n": 14
+    },
+    {
+     "voce": "Calcolo dell'autonomia in relazione alla potenza del motore ed alla quantità residua di carburante",
+     "n": 13
+    },
+    {
+     "voce": "Elementi di funzionamento dei sistemi di propulsione a motore",
+     "n": 48
+    },
+    {
+     "voce": "Irregolarità e piccole avarie che possono prevedere un intervento non specialistico",
+     "n": 19
+    },
+    {
+     "voce": "Irregolarità, piccole avarie e modo di rimediarvi",
+     "n": 10
+    }
+   ],
+   "esame": 1
+  }
+ ],
+ "voci_vela": [
+  {
+   "voce": "TEORIA DELLA VELA",
+   "n": 99
+  },
+  {
+   "voce": "ATTREZZATURA DELLE UNITA' A VELA",
+   "n": 86
+  },
+  {
+   "voce": "MANOVRE DELLE UNITA' A VELA",
+   "n": 65
+  }
+ ],
+ "tecniche": [
+  {
+   "tecnica": "Aggiornamento della declinazione",
+   "n": 6
+  },
+  {
+   "tecnica": "Conversione bussola-vero",
+   "n": 32
+  },
+  {
+   "tecnica": "PN da coordinate GPS",
+   "n": 63
+  },
+  {
+   "tecnica": "PN per allineamento e distanza",
+   "n": 2
+  },
+  {
+   "tecnica": "PN per due rilevamenti simultanei",
+   "n": 24
+  },
+  {
+   "tecnica": "PN per rilevamenti polari successivi",
+   "n": 21
+  },
+  {
+   "tecnica": "PN per rilevamenti successivi su mire diverse",
+   "n": 10
+  },
+  {
+   "tecnica": "PN per rilevamenti successivi sulla stessa mira",
+   "n": 9
+  },
+  {
+   "tecnica": "PN per rilevamento e distanza",
+   "n": 30
+  },
+  {
+   "tecnica": "Punto al traverso",
+   "n": 31
+  },
+  {
+   "tecnica": "Punto noto da toponimo cartografico",
+   "n": 4
+  },
+  {
+   "tecnica": "Rilevamento polare singolo",
+   "n": 9
+  }
+ ],
+ "argomenti_carteggio": [
+  {
+   "carta": "42/D",
+   "argomento": "correnti",
+   "n": 13
+  },
+  {
+   "carta": "42/D",
+   "argomento": "navigazione costiera",
+   "n": 10
+  },
+  {
+   "carta": "42/D",
+   "argomento": "scarroccio",
+   "n": 4
+  },
+  {
+   "carta": "5/D",
+   "argomento": "correnti",
+   "n": 39
+  },
+  {
+   "carta": "5/D",
+   "argomento": "navigazione costiera",
+   "n": 26
+  },
+  {
+   "carta": "5/D",
+   "argomento": "carburante",
+   "n": 23
+  },
+  {
+   "carta": "5/D",
+   "argomento": "scarroccio",
+   "n": 20
+  }
+ ],
+ "pesi_esame": {
+  "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA": 4,
+  "MANOVRA E CONDOTTA": 4,
+  "SICUREZZA DELLA NAVIGAZIONE": 3,
+  "NORMATIVA DIPORTISTICA E AMBIENTALE": 3,
+  "COLREG E SEGNALAMENTO MARITTIMO": 2,
+  "METEOROLOGIA": 2,
+  "TEORIA DELLO SCAFO": 1,
+  "MOTORI": 1
+ },
+ "prove": {
+  "base": {
+   "n": 20,
+   "minuti": 30,
+   "errori_max": 4
+  },
+  "vela": {
+   "n": 5,
+   "minuti": 15,
+   "errori_max": 1
+  }
+ },
+ "versione": "0.19.0",
+ "figure": 102
+}

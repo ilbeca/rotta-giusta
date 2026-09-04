@@ -1,0 +1,6 @@
+# Dove guardare, per il controllo condiviso della documentazione
+# (Standards/tools/check_docs_current.py, di un altro repo dell'autore):
+# nessun servizio, nessun database — si controllano solo le versioni scritte
+# nelle skill e la copertura del CHANGELOG.
+skills:    [.claude/skills/*/SKILL.md, CLAUDE.md, README.md]
+changelog: CHANGELOG.md

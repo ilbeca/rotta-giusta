@@ -1,0 +1,1210 @@
+{
+ "nota": "Classificazione indipendente dei 135 esercizi di carteggio SL. Derivata dai testi con estrai.py + classifica.py, alla cieca rispetto alle etichette didattiche della trascrizione di partenza, che sono state aperte solo per il confronto finale. 21 esercizi con rilevamenti successivi sono stati letti a mano per distinguere stessa mira / mire diverse: la tabella e i motivi stanno in classifica.py.",
+ "assi": {
+  "metodo": "come si costruisce il punto nave — e la tecnica di carteggio vera e propria",
+  "incognita": "che cosa chiede l'esercizio, con l'elemento perturbatore"
+ },
+ "consigliato_per_il_giro": "metodo",
+ "tecniche_metodo": [
+  "Aggiornamento della declinazione",
+  "Conversione bussola-vero",
+  "PN da coordinate GPS",
+  "PN per allineamento e distanza",
+  "PN per due rilevamenti simultanei",
+  "PN per rilevamenti polari successivi",
+  "PN per rilevamenti successivi su mire diverse",
+  "PN per rilevamenti successivi sulla stessa mira",
+  "PN per rilevamento e distanza",
+  "Punto al traverso",
+  "Punto noto da toponimo cartografico",
+  "Rilevamento polare singolo"
+ ],
+ "esercizi": {
+  "5.1.1-1": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per rilevamento e distanza"
+   ],
+   "incognita": [
+    "Corrente - determinarla dal punto osservato"
+   ]
+  },
+  "5.1.1-2": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per rilevamento e distanza"
+   ],
+   "incognita": [
+    "Corrente - determinarla dal punto osservato"
+   ]
+  },
+  "5.1.1-3": {
+   "metodo": [
+    "PN per allineamento e distanza"
+   ],
+   "incognita": [
+    "Corrente - velocita propulsiva necessaria"
+   ]
+  },
+  "5.1.1-4": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per due rilevamenti simultanei"
+   ],
+   "incognita": [
+    "Corrente - determinarla dal punto osservato"
+   ]
+  },
+  "5.1.1-5": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per due rilevamenti simultanei",
+    "Punto al traverso"
+   ],
+   "incognita": [
+    "Corrente - determinarla dal punto osservato"
+   ]
+  },
+  "5.1.1-6": {
+   "metodo": [
+    "PN da coordinate GPS"
+   ],
+   "incognita": [
+    "Corrente - ora di arrivo"
+   ]
+  },
+  "5.1.2-1": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "Punto al traverso"
+   ],
+   "incognita": [
+    "Moto libero - autonomia e carburante"
+   ]
+  },
+  "5.1.2-2": {
+   "metodo": [
+    "PN per rilevamenti polari successivi",
+    "Conversione bussola-vero"
+   ],
+   "incognita": [
+    "Moto libero - autonomia e carburante"
+   ]
+  },
+  "5.1.2-3": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per rilevamenti polari successivi",
+    "Punto al traverso"
+   ],
+   "incognita": [
+    "Moto libero - autonomia e carburante"
+   ]
+  },
+  "5.1.2-4": {
+   "metodo": [
+    "PN per rilevamenti polari successivi",
+    "Conversione bussola-vero"
+   ],
+   "incognita": [
+    "Moto libero - autonomia e carburante"
+   ]
+  },
+  "5.1.2-5": {
+   "metodo": [
+    "PN per rilevamenti polari successivi"
+   ],
+   "incognita": [
+    "Moto libero - autonomia e carburante"
+   ]
+  },
+  "5.1.3-1": {
+   "metodo": [
+    "PN per rilevamenti successivi sulla stessa mira",
+    "Conversione bussola-vero"
+   ],
+   "incognita": [
+    "Moto libero - punto raggiunto"
+   ]
+  },
+  "5.1.3-2": {
+   "metodo": [
+    "PN per rilevamenti successivi sulla stessa mira",
+    "Conversione bussola-vero"
+   ],
+   "incognita": [
+    "Moto libero - punto raggiunto"
+   ]
+  },
+  "5.1.3-3": {
+   "metodo": [
+    "PN per rilevamenti successivi sulla stessa mira",
+    "Conversione bussola-vero"
+   ],
+   "incognita": [
+    "Moto libero - punto raggiunto"
+   ]
+  },
+  "5.1.3-4": {
+   "metodo": [
+    "PN per rilevamenti successivi sulla stessa mira",
+    "Conversione bussola-vero"
+   ],
+   "incognita": [
+    "Moto libero - punto raggiunto"
+   ]
+  },
+  "5.1.3-5": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per rilevamenti successivi sulla stessa mira",
+    "Conversione bussola-vero"
+   ],
+   "incognita": [
+    "Moto libero - punto raggiunto"
+   ]
+  },
+  "5.1.3-6": {
+   "metodo": [
+    "PN da coordinate GPS"
+   ],
+   "incognita": [
+    "Moto libero - punto di intercettazione"
+   ]
+  },
+  "5.1.4-1": {
+   "metodo": [
+    "Punto al traverso"
+   ],
+   "incognita": [
+    "Scarroccio - ora di arrivo"
+   ]
+  },
+  "5.1.4-2": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "Punto al traverso"
+   ],
+   "incognita": [
+    "Scarroccio - ora di arrivo"
+   ]
+  },
+  "5.1.4-3": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "Punto al traverso"
+   ],
+   "incognita": [
+    "Scarroccio - punto raggiunto"
+   ]
+  },
+  "5.1.4-4": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "Punto al traverso"
+   ],
+   "incognita": [
+    "Scarroccio - punto raggiunto"
+   ]
+  },
+  "5.1.4-5": {
+   "metodo": [
+    "Punto al traverso"
+   ],
+   "incognita": [
+    "Scarroccio - ora di arrivo"
+   ]
+  },
+  "5.2.1-1": {
+   "metodo": [
+    "Punto noto da toponimo cartografico",
+    "Conversione bussola-vero"
+   ],
+   "incognita": [
+    "Corrente - punto raggiunto"
+   ]
+  },
+  "5.2.1-2": {
+   "metodo": [
+    "PN da coordinate GPS"
+   ],
+   "incognita": [
+    "Corrente - ora di arrivo"
+   ]
+  },
+  "5.2.1-3": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "Conversione bussola-vero"
+   ],
+   "incognita": [
+    "Corrente - determinarla dal punto osservato"
+   ]
+  },
+  "5.2.1-4": {
+   "metodo": [
+    "Punto al traverso"
+   ],
+   "incognita": [
+    "Corrente - determinarla dal punto osservato"
+   ]
+  },
+  "5.2.1-5": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per due rilevamenti simultanei"
+   ],
+   "incognita": [
+    "Corrente - determinarla dal punto osservato"
+   ]
+  },
+  "5.2.2-1": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per rilevamenti polari successivi",
+    "Punto al traverso",
+    "Conversione bussola-vero"
+   ],
+   "incognita": [
+    "Moto libero - autonomia e carburante"
+   ]
+  },
+  "5.2.2-2": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "Rilevamento polare singolo",
+    "Punto al traverso"
+   ],
+   "incognita": [
+    "Moto libero - autonomia e carburante"
+   ]
+  },
+  "5.2.2-3": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per rilevamenti polari successivi",
+    "Punto al traverso"
+   ],
+   "incognita": [
+    "Moto libero - autonomia e carburante"
+   ]
+  },
+  "5.2.2-4": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per rilevamenti polari successivi"
+   ],
+   "incognita": [
+    "Moto libero - autonomia e carburante"
+   ]
+  },
+  "5.2.2-5": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per rilevamenti polari successivi",
+    "Punto al traverso",
+    "Conversione bussola-vero"
+   ],
+   "incognita": [
+    "Moto libero - autonomia e carburante"
+   ]
+  },
+  "5.2.3-1": {
+   "metodo": [
+    "PN per rilevamenti successivi su mire diverse",
+    "Conversione bussola-vero"
+   ],
+   "incognita": [
+    "Moto libero - punto raggiunto"
+   ]
+  },
+  "5.2.3-2": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per due rilevamenti simultanei",
+    "Conversione bussola-vero"
+   ],
+   "incognita": [
+    "Moto libero - punto raggiunto"
+   ]
+  },
+  "5.2.3-3": {
+   "metodo": [
+    "PN per rilevamenti successivi su mire diverse",
+    "Conversione bussola-vero"
+   ],
+   "incognita": [
+    "Moto libero - punto raggiunto"
+   ]
+  },
+  "5.2.3-4": {
+   "metodo": [
+    "PN per rilevamenti successivi su mire diverse",
+    "Conversione bussola-vero",
+    "Aggiornamento della declinazione"
+   ],
+   "incognita": [
+    "Moto libero - punto raggiunto"
+   ]
+  },
+  "5.2.3-5": {
+   "metodo": [
+    "PN per rilevamenti successivi su mire diverse"
+   ],
+   "incognita": [
+    "Moto libero - punto raggiunto"
+   ]
+  },
+  "5.2.4-1": {
+   "metodo": [
+    "PN per rilevamenti polari successivi"
+   ],
+   "incognita": [
+    "Scarroccio - punto raggiunto"
+   ]
+  },
+  "5.2.4-2": {
+   "metodo": [
+    "Punto al traverso"
+   ],
+   "incognita": [
+    "Scarroccio - punto raggiunto"
+   ]
+  },
+  "5.2.4-3": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "Punto al traverso"
+   ],
+   "incognita": [
+    "Scarroccio - punto raggiunto"
+   ]
+  },
+  "5.2.4-4": {
+   "metodo": [
+    "PN per rilevamento e distanza"
+   ],
+   "incognita": [
+    "Scarroccio - punto raggiunto"
+   ]
+  },
+  "5.2.4-5": {
+   "metodo": [
+    "PN da coordinate GPS"
+   ],
+   "incognita": [
+    "Scarroccio - prua da tenere"
+   ]
+  },
+  "5.3.1-1": {
+   "metodo": [
+    "PN per due rilevamenti simultanei"
+   ],
+   "incognita": [
+    "Corrente - determinarla dal punto osservato"
+   ]
+  },
+  "5.3.1-10": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per rilevamento e distanza"
+   ],
+   "incognita": [
+    "Corrente - prua da tenere"
+   ]
+  },
+  "5.3.1-2": {
+   "metodo": [
+    "PN per rilevamento e distanza"
+   ],
+   "incognita": [
+    "Corrente - determinarla dal punto osservato"
+   ]
+  },
+  "5.3.1-3": {
+   "metodo": [
+    "PN per rilevamento e distanza"
+   ],
+   "incognita": [
+    "Corrente - determinarla dal punto osservato"
+   ]
+  },
+  "5.3.1-4": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per rilevamento e distanza"
+   ],
+   "incognita": [
+    "Corrente - determinarla dal punto osservato"
+   ]
+  },
+  "5.3.1-5": {
+   "metodo": [
+    "PN da coordinate GPS"
+   ],
+   "incognita": [
+    "Corrente - determinarla dal punto osservato"
+   ]
+  },
+  "5.3.1-6": {
+   "metodo": [
+    "PN da coordinate GPS"
+   ],
+   "incognita": [
+    "Corrente - determinarla dal punto osservato"
+   ]
+  },
+  "5.3.1-7": {
+   "metodo": [
+    "PN da coordinate GPS"
+   ],
+   "incognita": [
+    "Corrente - rotta e velocita effettive"
+   ]
+  },
+  "5.3.1-8": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per due rilevamenti simultanei"
+   ],
+   "incognita": [
+    "Corrente - determinarla dal punto osservato"
+   ]
+  },
+  "5.3.1-9": {
+   "metodo": [
+    "Punto noto da toponimo cartografico"
+   ],
+   "incognita": [
+    "Corrente - rotta e velocita effettive"
+   ]
+  },
+  "5.3.2-1": {
+   "metodo": [
+    "PN per rilevamento e distanza"
+   ],
+   "incognita": [
+    "Moto libero - autonomia e carburante"
+   ]
+  },
+  "5.3.2-2": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per rilevamenti polari successivi"
+   ],
+   "incognita": [
+    "Moto libero - autonomia e carburante"
+   ]
+  },
+  "5.3.2-3": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per rilevamenti polari successivi"
+   ],
+   "incognita": [
+    "Moto libero - autonomia e carburante"
+   ]
+  },
+  "5.3.2-4": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per rilevamenti polari successivi"
+   ],
+   "incognita": [
+    "Moto libero - autonomia e carburante"
+   ]
+  },
+  "5.3.2-5": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per rilevamenti polari successivi"
+   ],
+   "incognita": [
+    "Moto libero - autonomia e carburante"
+   ]
+  },
+  "5.3.2-6": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per rilevamenti polari successivi"
+   ],
+   "incognita": [
+    "Moto libero - autonomia e carburante"
+   ]
+  },
+  "5.3.2-7": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per rilevamento e distanza"
+   ],
+   "incognita": [
+    "Moto libero - autonomia e carburante"
+   ]
+  },
+  "5.3.3-1": {
+   "metodo": [
+    "PN per rilevamenti successivi su mire diverse",
+    "Conversione bussola-vero"
+   ],
+   "incognita": [
+    "Moto libero - punto raggiunto"
+   ]
+  },
+  "5.3.3-2": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "Punto al traverso",
+    "Conversione bussola-vero",
+    "Aggiornamento della declinazione"
+   ],
+   "incognita": [
+    "Moto libero - prua da tenere"
+   ]
+  },
+  "5.3.3-3": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "Punto al traverso",
+    "Conversione bussola-vero",
+    "Aggiornamento della declinazione"
+   ],
+   "incognita": [
+    "Moto libero - prua da tenere"
+   ]
+  },
+  "5.3.3-4": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per rilevamenti polari successivi"
+   ],
+   "incognita": [
+    "Moto libero - punto raggiunto"
+   ]
+  },
+  "5.3.3-5": {
+   "metodo": [
+    "PN per rilevamenti successivi su mire diverse"
+   ],
+   "incognita": [
+    "Moto libero - punto raggiunto"
+   ]
+  },
+  "5.3.3-6": {
+   "metodo": [
+    "PN per rilevamenti polari successivi",
+    "Conversione bussola-vero"
+   ],
+   "incognita": [
+    "Moto libero - punto raggiunto"
+   ]
+  },
+  "5.3.3-7": {
+   "metodo": [
+    "PN per rilevamenti successivi su mire diverse",
+    "Conversione bussola-vero",
+    "Aggiornamento della declinazione"
+   ],
+   "incognita": [
+    "Moto libero - punto raggiunto"
+   ]
+  },
+  "5.3.4-1": {
+   "metodo": [
+    "Rilevamento polare singolo",
+    "PN per rilevamento e distanza"
+   ],
+   "incognita": [
+    "Scarroccio - rotta e velocita effettive"
+   ]
+  },
+  "5.3.4-2": {
+   "metodo": [
+    "PN per rilevamenti polari successivi"
+   ],
+   "incognita": [
+    "Scarroccio - punto raggiunto"
+   ]
+  },
+  "5.3.4-3": {
+   "metodo": [
+    "Rilevamento polare singolo",
+    "PN per rilevamento e distanza"
+   ],
+   "incognita": [
+    "Scarroccio - punto raggiunto"
+   ]
+  },
+  "5.3.4-4": {
+   "metodo": [
+    "Punto al traverso"
+   ],
+   "incognita": [
+    "Scarroccio - punto raggiunto"
+   ]
+  },
+  "5.3.4-5": {
+   "metodo": [
+    "Punto al traverso"
+   ],
+   "incognita": [
+    "Scarroccio - ora di arrivo"
+   ]
+  },
+  "5.4.1-1": {
+   "metodo": [
+    "PN per due rilevamenti simultanei"
+   ],
+   "incognita": [
+    "Corrente - prua da tenere"
+   ]
+  },
+  "5.4.1-10": {
+   "metodo": [
+    "Rilevamento polare singolo",
+    "PN per due rilevamenti simultanei",
+    "PN per rilevamento e distanza"
+   ],
+   "incognita": [
+    "Corrente - determinarla dal punto osservato"
+   ]
+  },
+  "5.4.1-11": {
+   "metodo": [
+    "PN da coordinate GPS"
+   ],
+   "incognita": [
+    "Corrente - prua da tenere"
+   ]
+  },
+  "5.4.1-12": {
+   "metodo": [
+    "PN da coordinate GPS"
+   ],
+   "incognita": [
+    "Corrente - prua da tenere"
+   ]
+  },
+  "5.4.1-13": {
+   "metodo": [
+    "PN per allineamento e distanza"
+   ],
+   "incognita": [
+    "Corrente - prua da tenere"
+   ]
+  },
+  "5.4.1-14": {
+   "metodo": [
+    "PN per rilevamento e distanza"
+   ],
+   "incognita": [
+    "Corrente - prua da tenere"
+   ]
+  },
+  "5.4.1-15": {
+   "metodo": [
+    "PN per rilevamento e distanza"
+   ],
+   "incognita": [
+    "Corrente - determinarla dal punto osservato"
+   ]
+  },
+  "5.4.1-16": {
+   "metodo": [
+    "PN da coordinate GPS"
+   ],
+   "incognita": [
+    "Corrente - determinarla dal punto osservato"
+   ]
+  },
+  "5.4.1-17": {
+   "metodo": [
+    "PN da coordinate GPS"
+   ],
+   "incognita": [
+    "Corrente - ora di arrivo"
+   ]
+  },
+  "5.4.1-18": {
+   "metodo": [
+    "PN per rilevamento e distanza"
+   ],
+   "incognita": [
+    "Corrente - rotta e velocita effettive"
+   ]
+  },
+  "5.4.1-2": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per rilevamento e distanza"
+   ],
+   "incognita": [
+    "Corrente - ora di arrivo"
+   ]
+  },
+  "5.4.1-3": {
+   "metodo": [
+    "PN da coordinate GPS"
+   ],
+   "incognita": [
+    "Corrente - determinarla dal punto osservato"
+   ]
+  },
+  "5.4.1-4": {
+   "metodo": [
+    "PN per due rilevamenti simultanei",
+    "Conversione bussola-vero",
+    "Aggiornamento della declinazione"
+   ],
+   "incognita": [
+    "Moto libero - rotta e velocita effettive"
+   ]
+  },
+  "5.4.1-5": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per due rilevamenti simultanei"
+   ],
+   "incognita": [
+    "Corrente - determinarla dal punto osservato"
+   ]
+  },
+  "5.4.1-6": {
+   "metodo": [
+    "PN da coordinate GPS"
+   ],
+   "incognita": [
+    "Corrente - ora di arrivo"
+   ]
+  },
+  "5.4.1-7": {
+   "metodo": [
+    "PN per due rilevamenti simultanei",
+    "PN per rilevamento e distanza"
+   ],
+   "incognita": [
+    "Corrente - ora di arrivo"
+   ]
+  },
+  "5.4.1-8": {
+   "metodo": [
+    "PN per due rilevamenti simultanei",
+    "PN per rilevamento e distanza"
+   ],
+   "incognita": [
+    "Corrente - rotta e velocita effettive"
+   ]
+  },
+  "5.4.1-9": {
+   "metodo": [
+    "Punto noto da toponimo cartografico"
+   ],
+   "incognita": [
+    "Corrente - velocita propulsiva necessaria"
+   ]
+  },
+  "5.4.2-1": {
+   "metodo": [
+    "PN per rilevamento e distanza",
+    "Punto al traverso"
+   ],
+   "incognita": [
+    "Moto libero - autonomia e carburante"
+   ]
+  },
+  "5.4.2-2": {
+   "metodo": [
+    "Rilevamento polare singolo",
+    "Punto al traverso"
+   ],
+   "incognita": [
+    "Moto libero - autonomia e carburante"
+   ]
+  },
+  "5.4.2-3": {
+   "metodo": [
+    "PN per rilevamenti polari successivi"
+   ],
+   "incognita": [
+    "Moto libero - autonomia e carburante"
+   ]
+  },
+  "5.4.2-4": {
+   "metodo": [
+    "PN per rilevamenti polari successivi"
+   ],
+   "incognita": [
+    "Moto libero - autonomia e carburante"
+   ]
+  },
+  "5.4.2-5": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per rilevamenti polari successivi",
+    "Conversione bussola-vero"
+   ],
+   "incognita": [
+    "Moto libero - autonomia e carburante"
+   ]
+  },
+  "5.4.2-6": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per rilevamenti polari successivi",
+    "Conversione bussola-vero"
+   ],
+   "incognita": [
+    "Moto libero - autonomia e carburante"
+   ]
+  },
+  "5.4.3-1": {
+   "metodo": [
+    "PN per rilevamenti successivi sulla stessa mira"
+   ],
+   "incognita": [
+    "Moto libero - punto raggiunto"
+   ]
+  },
+  "5.4.3-2": {
+   "metodo": [
+    "PN per due rilevamenti simultanei",
+    "Conversione bussola-vero"
+   ],
+   "incognita": [
+    "Moto libero - punto raggiunto"
+   ]
+  },
+  "5.4.3-3": {
+   "metodo": [
+    "PN per rilevamenti successivi su mire diverse",
+    "Conversione bussola-vero",
+    "Aggiornamento della declinazione"
+   ],
+   "incognita": [
+    "Moto libero - punto raggiunto"
+   ]
+  },
+  "5.4.3-4": {
+   "metodo": [
+    "PN per rilevamenti successivi su mire diverse"
+   ],
+   "incognita": [
+    "Moto libero - punto raggiunto"
+   ]
+  },
+  "5.4.3-5": {
+   "metodo": [
+    "PN per rilevamenti successivi sulla stessa mira",
+    "Conversione bussola-vero"
+   ],
+   "incognita": [
+    "Moto libero - punto raggiunto"
+   ]
+  },
+  "5.4.3-6": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per rilevamento e distanza"
+   ],
+   "incognita": [
+    "Moto libero - punto di intercettazione"
+   ]
+  },
+  "5.4.3-7": {
+   "metodo": [
+    "PN da coordinate GPS"
+   ],
+   "incognita": [
+    "Moto libero - punto di intercettazione"
+   ]
+  },
+  "5.4.3-8": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per rilevamento e distanza"
+   ],
+   "incognita": [
+    "Moto libero - punto di intercettazione"
+   ]
+  },
+  "5.4.4-1": {
+   "metodo": [
+    "Rilevamento polare singolo",
+    "PN per rilevamento e distanza"
+   ],
+   "incognita": [
+    "Scarroccio - rotta e velocita effettive"
+   ]
+  },
+  "5.4.4-2": {
+   "metodo": [
+    "Punto al traverso"
+   ],
+   "incognita": [
+    "Scarroccio - rotta e velocita effettive"
+   ]
+  },
+  "5.4.4-3": {
+   "metodo": [
+    "PN da coordinate GPS"
+   ],
+   "incognita": [
+    "Scarroccio - velocita propulsiva necessaria"
+   ]
+  },
+  "5.4.4-4": {
+   "metodo": [
+    "Rilevamento polare singolo"
+   ],
+   "incognita": [
+    "Scarroccio - punto raggiunto"
+   ]
+  },
+  "5.4.4-5": {
+   "metodo": [
+    "PN per rilevamento e distanza",
+    "Punto al traverso"
+   ],
+   "incognita": [
+    "Scarroccio - punto raggiunto"
+   ]
+  },
+  "5.5.1-1": {
+   "metodo": [
+    "PN per due rilevamenti simultanei",
+    "Punto al traverso"
+   ],
+   "incognita": [
+    "Corrente - prua da tenere"
+   ]
+  },
+  "5.5.1-2": {
+   "metodo": [
+    "Punto noto da toponimo cartografico"
+   ],
+   "incognita": [
+    "Corrente - prua da tenere"
+   ]
+  },
+  "5.5.1-3": {
+   "metodo": [
+    "PN per due rilevamenti simultanei",
+    "PN per rilevamento e distanza",
+    "Punto al traverso"
+   ],
+   "incognita": [
+    "Corrente - determinarla dal punto osservato"
+   ]
+  },
+  "5.5.3-1": {
+   "metodo": [
+    "PN per rilevamenti successivi sulla stessa mira",
+    "Conversione bussola-vero"
+   ],
+   "incognita": [
+    "Moto libero - punto raggiunto"
+   ]
+  },
+  "5.5.3-2": {
+   "metodo": [
+    "PN da coordinate GPS"
+   ],
+   "incognita": [
+    "Moto libero - punto di intercettazione"
+   ]
+  },
+  "5.5.4-1": {
+   "metodo": [
+    "PN da coordinate GPS"
+   ],
+   "incognita": [
+    "Scarroccio - prua da tenere"
+   ]
+  },
+  "5.6.1-1": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per due rilevamenti simultanei",
+    "Punto al traverso"
+   ],
+   "incognita": [
+    "Corrente - prua da tenere"
+   ]
+  },
+  "5.6.1-2": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per rilevamento e distanza"
+   ],
+   "incognita": [
+    "Corrente - determinarla dal punto osservato"
+   ]
+  },
+  "5.6.3-1": {
+   "metodo": [
+    "PN per due rilevamenti simultanei",
+    "Punto al traverso",
+    "Conversione bussola-vero"
+   ],
+   "incognita": [
+    "Moto libero - ora di arrivo"
+   ]
+  },
+  "5.6.3-2": {
+   "metodo": [
+    "PN per rilevamenti successivi sulla stessa mira",
+    "Conversione bussola-vero"
+   ],
+   "incognita": [
+    "Moto libero - punto raggiunto"
+   ]
+  },
+  "5.6.3-3": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per due rilevamenti simultanei",
+    "Punto al traverso"
+   ],
+   "incognita": [
+    "Moto libero - punto di intercettazione"
+   ]
+  },
+  "5.6.4-1": {
+   "metodo": [
+    "PN per rilevamento e distanza"
+   ],
+   "incognita": [
+    "Scarroccio - punto raggiunto"
+   ]
+  },
+  "5.7.1-1": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per rilevamento e distanza"
+   ],
+   "incognita": [
+    "Corrente - determinarla dal punto osservato"
+   ]
+  },
+  "5.7.1-2": {
+   "metodo": [
+    "PN da coordinate GPS"
+   ],
+   "incognita": [
+    "Corrente - rotta e velocita effettive"
+   ]
+  },
+  "5.7.3-1": {
+   "metodo": [
+    "PN per due rilevamenti simultanei",
+    "Conversione bussola-vero"
+   ],
+   "incognita": [
+    "Moto libero - punto raggiunto"
+   ]
+  },
+  "5.7.3-2": {
+   "metodo": [
+    "PN da coordinate GPS"
+   ],
+   "incognita": [
+    "Moto libero - punto di intercettazione"
+   ]
+  },
+  "5.7.4-1": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "Rilevamento polare singolo"
+   ],
+   "incognita": [
+    "Scarroccio - ora di arrivo"
+   ]
+  },
+  "5.8.1-1": {
+   "metodo": [
+    "PN per due rilevamenti simultanei",
+    "PN per rilevamento e distanza",
+    "Punto al traverso"
+   ],
+   "incognita": [
+    "Corrente - velocita propulsiva necessaria"
+   ]
+  },
+  "5.8.1-2": {
+   "metodo": [
+    "PN per due rilevamenti simultanei",
+    "Punto al traverso",
+    "Conversione bussola-vero"
+   ],
+   "incognita": [
+    "Corrente - rotta e velocita effettive"
+   ]
+  },
+  "5.8.1-3": {
+   "metodo": [
+    "PN per due rilevamenti simultanei"
+   ],
+   "incognita": [
+    "Corrente - determinarla dal punto osservato"
+   ]
+  },
+  "5.8.1-4": {
+   "metodo": [
+    "PN per rilevamento e distanza"
+   ],
+   "incognita": [
+    "Corrente - prua da tenere"
+   ]
+  },
+  "5.8.1-5": {
+   "metodo": [
+    "PN per due rilevamenti simultanei"
+   ],
+   "incognita": [
+    "Corrente - determinarla dal punto osservato"
+   ]
+  },
+  "5.8.1-6": {
+   "metodo": [
+    "PN per due rilevamenti simultanei",
+    "Punto al traverso"
+   ],
+   "incognita": [
+    "Corrente - prua da tenere"
+   ]
+  },
+  "5.8.3-1": {
+   "metodo": [
+    "PN per rilevamenti successivi su mire diverse",
+    "Conversione bussola-vero"
+   ],
+   "incognita": [
+    "Moto libero - punto raggiunto"
+   ]
+  },
+  "5.8.3-2": {
+   "metodo": [
+    "PN da coordinate GPS"
+   ],
+   "incognita": [
+    "Moto libero - punto di intercettazione"
+   ]
+  },
+  "5.8.3-3": {
+   "metodo": [
+    "PN da coordinate GPS",
+    "PN per rilevamento e distanza"
+   ],
+   "incognita": [
+    "Moto libero - punto di intercettazione"
+   ]
+  },
+  "5.8.4-1": {
+   "metodo": [
+    "Rilevamento polare singolo"
+   ],
+   "incognita": [
+    "Scarroccio - ora di arrivo"
+   ]
+  }
+ }
+}
