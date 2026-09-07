@@ -1,4 +1,4 @@
-# Open Patente Nautica
+# Rotta Giusta
 
 **Quiz e carteggio per la patente nautica senza limiti dalla costa.**
 

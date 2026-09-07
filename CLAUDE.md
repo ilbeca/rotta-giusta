@@ -1,4 +1,4 @@
-# Open Patente Nautica — CLAUDE.md
+# Rotta Giusta — CLAUDE.md
 
 Sito statico open source: quiz e carteggio per la patente nautica senza limiti
 dalla costa. È l'estratto di un progetto personale con cui l'autore ha superato

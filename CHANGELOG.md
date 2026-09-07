@@ -9,6 +9,88 @@ utente e una data d'esame. Restano perché spiegano **perché** certe scelte
 sembrano strane — e sono state riviste solo per togliere i dati delle macchine
 dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
+## [0.20.0] — 2026-09-07
+
+Il progetto cambia nome: **Open Patente Nautica** diventa **Rotta Giusta**.
+Solo il nome — nessuna riga di logica toccata, nessun dato spostato.
+
+### Cambiato
+
+- **Il nome, in 10 file.** Titolo della pagina, `h1`, piè di pagina, scheda
+  Info, `manifest.json`, le due pagine legali, README e CLAUDE.md. Il
+  `<title>` non è più il nome nudo ma *«Rotta Giusta — quiz e carteggio per la
+  patente nautica»*: «Rotta Giusta» non ha volume di ricerca, «patente
+  nautica» sì, e il nome vecchio quelle parole se le portava dentro.
+
+  **Perché adesso.** Un nome descrittivo cresce male: se un domani arrivano
+  corsi, carte o una community, «Open Patente Nautica» diventa stretto. E il
+  momento è questo perché il costo è al minimo, misurato: nessun link in
+  ingresso, nessuna indicizzazione, nessuna `og:image`, e la sola versione
+  pubblicata è di tre giorni fa.
+
+- **Il prefisso della cache passa da `opn-` a `rg-`.** Vive in quattro punti
+  di `index.html` — che lo cercano con `startsWith` per dire quale versione
+  gira davvero su questo dispositivo — più il `CACHE` di `sw.js`. Cambiarne
+  tre su quattro farebbe mentire la scheda Info in silenzio, quindi si toccano
+  insieme e c'è un test che lo pretende.
+
+  Nessuna cache orfana: l'`activate` cancella tutte le chiavi diverse da
+  quella corrente, non solo quelle con il vecchio prefisso. Resta la solita
+  ricarica in più già documentata.
+
+### Non cambiato, ed è la parte che conta
+
+- **Il nome del database IndexedDB resta `open-patente-nautica`.** È
+  l'identità dell'archivio nel browser di chi studia: rinominarlo aprirebbe un
+  database nuovo e vuoto, l'app scriverebbe «risposte 0» e ogni risposta data
+  finora sparirebbe **senza un errore**. È il guasto muto di casa, servito
+  dal rinomino. Il commento accanto alla costante lo spiega, e il test lo
+  dichiara come unica eccezione ammessa invece di fingere che non esista.
+
+  Il conteggio a mano fatto in sede di piano diceva «34 occorrenze in 10
+  file» e non distingueva questa da un'etichetta qualunque. Sono le occorrenze
+  che un `grep` conta e che solo la lettura separa.
+
+- **I link a GitHub restano al vecchio indirizzo.** Il repo non è ancora stato
+  rinominato: GitHub tiene il redirect dal nome vecchio, non dal nuovo, quindi
+  aggiornarli adesso li romperebbe. Si aggiornano nella versione in cui il
+  rename avviene davvero.
+
+### Corretto per traverso
+
+- **Il marcatore nel file dei progressi** diventa `app: 'rotta-giusta'` e il
+  file scaricato si chiama `rotta-giusta-progressi-AAAA-MM-GG.json`. I file
+  esportati prima continuano a caricarsi: `importa()` non legge mai quel
+  campo — verificato leggendo la funzione, non dedotto.
+
+### Test
+
+- **144 verifiche sui dati** (erano 105), 102 sul motore invariate. Due
+  controlli nuovi, ed esistono perché un rinomino lascia residui invisibili:
+
+  1. **nessun file pubblicato contiene più il nome vecchio né il prefisso
+     `opn-`**, con la sola eccezione dichiarata del nome del database;
+  2. **il prefisso della cache è uno solo**, uguale in `sw.js` e in tutti gli
+     `startsWith` di `index.html`.
+
+  Provati al contrario: rimessa la forma vecchia in **un solo** punto su
+  quattro, falliscono tre verifiche su tre attese. La prima stesura del
+  secondo controllo pescava anche `'v-'`, il prefisso degli id delle
+  schermate, ed è stata ristretta a `startsWith` e alle righe che parlano di
+  cache.
+
+- La skill del progetto è ora `.claude/skills/rotta-giusta/`, e continua a
+  dichiarare il nome vecchio fra i suoi inneschi: chi la cerca fra sei mesi
+  potrebbe conoscere solo quello.
+
+### Da fare fuori dal repo
+
+Il rename di `ilbeca/open-patente-nautica` su GitHub (che lascia un redirect),
+e il progetto Cloudflare Pages — attenzione, lì **non** c'è redirect: cambiare
+il nome del progetto spegne `open-patente-nautica.pages.dev`. La via pulita è
+il dominio `rottagiusta.it`, verificato libero al registro `.it` il 6 settembre
+2026.
+
 ## [0.19.2] — 2026-09-04
 
 Sessione di verifica del sito **pubblicato**, guidato nel browser su HTTPS e non

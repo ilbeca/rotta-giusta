@@ -343,7 +343,7 @@ def test_sw():
     index = (SITE / 'index.html').read_text(encoding='utf-8')
     # Il nome della cache segue VERSION e nessun build step lo sostituisce:
     # nel file committato c'e' il numero, e deve essere quello di VERSION.
-    check("sw.js: const CACHE = 'opn-' + VERSION", ("const CACHE = 'opn-" + VERSION + "'") in sw,
+    check("sw.js: const CACHE = 'rg-' + VERSION", ("const CACHE = 'rg-" + VERSION + "'") in sw,
           re.search(r"const CACHE = .*", sw).group(0) if re.search(r"const CACHE = .*", sw) else 'assente')
     g_sw = guscio(sw)
     g_ix = guscio(index)
@@ -373,9 +373,64 @@ def test_sw():
         check('%s: nessun link interno con .html' % nome, not cattivi, cattivi)
 
 
+# --- il rinomino: nessun residuo del nome vecchio ----------------------------
+#
+# Un rinomino lascia residui invisibili, e questo ne aveva due che il conteggio
+# a mano non aveva distinto: il nome del database IndexedDB e il marcatore nel
+# file esportato. Il primo NON si tocca — rinominarlo aprirebbe un archivio
+# vuoto e ogni risposta data sparirebbe senza un errore — quindi il controllo
+# lo dichiara come eccezione invece di fingere che non esista.
+
+NOME_VECCHIO = 'Open Patente Nautica'
+PREFISSO_VECCHIO = 'opn-'
+# L'unica occorrenza ammessa del vecchio identificativo: il nome del database.
+ECCEZIONI = ("NOME: 'open-patente-nautica'",)
+
+
+def test_rinomino():
+    for f in sorted(SITE.rglob('*')):
+        if not f.is_file() or f.suffix not in ('.html', '.js', '.json'):
+            continue
+        testo = f.read_text(encoding='utf-8')
+        rel = str(f.relative_to(RADICE))
+        check('%s: nessun "%s"' % (rel, NOME_VECCHIO), NOME_VECCHIO not in testo)
+        check('%s: nessun prefisso di cache "%s"' % (rel, PREFISSO_VECCHIO),
+              PREFISSO_VECCHIO not in testo)
+        residuo = [r for r in testo.split('\n')
+                   if 'open-patente-nautica' in r
+                   and not any(e in r for e in ECCEZIONI)
+                   and 'github.com/ilbeca/open-patente-nautica' not in r]
+        check('%s: nessun identificativo vecchio fuori dalle eccezioni' % rel,
+              not residuo, residuo[:3])
+
+
+# --- il prefisso della cache e' uno solo -------------------------------------
+#
+# Il nome della cache vive in sw.js, ma index.html lo cerca con startsWith per
+# dire quale versione gira davvero su questo dispositivo. Sono quattro punti in
+# due file: cambiarne tre su quattro fa mentire la scheda Info in silenzio.
+
+def test_prefisso_cache():
+    sw = (SITE / 'sw.js').read_text(encoding='utf-8')
+    index = (SITE / 'index.html').read_text(encoding='utf-8')
+    m = re.search(r"const CACHE = '([a-z]+-)", sw)
+    check('sw.js: il prefisso della cache si legge', m is not None)
+    if not m:
+        return
+    prefisso = m.group(1)
+    trovati = set(re.findall(r"startsWith\('([a-z]+-)'\)", index))
+    for riga in index.split('\n'):
+        if 'cache' in riga.lower():
+            trovati |= set(re.findall(r"'([a-z]+-)'\s*\+", riga))
+    trovati = sorted(trovati)
+    check('index.html: usa il prefisso della cache', bool(trovati), trovati)
+    check('index.html: un prefisso solo, uguale a quello di sw.js (%s)' % prefisso,
+          trovati == [prefisso], trovati)
+
+
 def main():
     for t in (test_controlla, test_quiz, test_meta, test_figure, test_invarianti,
-              test_carteggio, test_sw):
+              test_carteggio, test_sw, test_rinomino, test_prefisso_cache):
         t()
     if falliti:
         print('%d verifiche passate, %d FALLITE:' % (ok, len(falliti)))

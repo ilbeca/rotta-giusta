@@ -1326,7 +1326,7 @@ test('la versione e una sola: VERSION, la cache del service worker e meta.json',
   const sw = await fs.readFile(new URL('site/sw.js', radice), 'utf8');
   const m = sw.match(/const CACHE = '([^']+)'/);
   assert.ok(m, 'CACHE non trovata in sw.js');
-  assert.equal(m[1], 'opn-' + versione, 'il nome della cache non segue VERSION');
+  assert.equal(m[1], 'rg-' + versione, 'il nome della cache non segue VERSION');
   assert.ok(!sw.includes('__VERSIONE__'), 'in sw.js e rimasto il segnaposto del server');
   const meta = JSON.parse(await fs.readFile(new URL('site/dati/meta.json', radice), 'utf8'));
   assert.equal(meta.versione, versione, 'meta.json dichiara un altra versione');

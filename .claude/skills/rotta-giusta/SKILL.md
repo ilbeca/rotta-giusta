@@ -1,14 +1,14 @@
 ---
-name: open-patente-nautica
+name: rotta-giusta
 description: >
-  Coordinate di Open Patente Nautica, il sito statico open source con quiz e
+  Coordinate di Rotta Giusta, il sito statico open source con quiz e
   carteggio per la patente nautica senza limiti dalla costa. Dove guardare e le
-  trappole. MUST trigger on: open patente nautica, open-patente-nautica, sito
+  trappole. MUST trigger on: rotta giusta, rotta-giusta, open patente nautica (nome fino alla 0.19.2), sito
   statico patente, Cloudflare Pages patente, pubblicare la palestra. NON per il
   progetto personale di preparazione (patente), che e' un altro repo.
 ---
 
-# Open Patente Nautica
+# Rotta Giusta
 
 Sito statico con i 1.722 quesiti e i 135 esercizi di carteggio dell'Allegato A
 al DD 131/2022, il motore di selezione del progetto personale da cui e' estratto,

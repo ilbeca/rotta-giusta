@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="/manifest.json">
 <meta name="description" content="Quiz e carteggio per la patente nautica senza limiti dalla costa. Banca d'esame ministeriale (DD 131/2022), simulazioni, diagnosi. Tutto nel tuo browser, nessun account.">
-<title>Open Patente Nautica</title>
+<title>Rotta Giusta — quiz e carteggio per la patente nautica</title>
 <style>
 :root{
   --bg:#0d1420; --bg2:#141d2c; --bg3:#1c2839; --line:#26344a;
@@ -491,7 +491,7 @@ nav button.on{color:var(--acc)}
 
   <!-- ====================== OGGI ====================== -->
   <section class="view on" id="v-oggi">
-    <h1>Open Patente Nautica</h1>
+    <h1>Rotta Giusta</h1>
     <p class="sub" id="countdown">…</p>
 
     <!-- La data d'esame la scrive chi studia: da lei dipendono la quota
@@ -769,7 +769,7 @@ nav button.on{color:var(--acc)}
 
     <h2>Il sito</h2>
     <div class="card">
-      <p class="note">Open Patente Nautica e' software libero: il codice e' pubblicato con licenza MIT
+      <p class="note">Rotta Giusta e' software libero: il codice e' pubblicato con licenza MIT
         su <a href="https://github.com/ilbeca/open-patente-nautica">GitHub</a>, dove si segnalano
         errori e si propongono correzioni. I quesiti e gli esercizi sono l'Allegato A al
         DD 131/2022, un atto dello Stato. Materiale di studio <b>non ufficiale</b>: fa fede il
@@ -778,7 +778,7 @@ nav button.on{color:var(--acc)}
     </div>
   </section>
 
-  <footer class="foot">Open Patente Nautica <span id="foot-ver"></span> ·
+  <footer class="foot">Rotta Giusta <span id="foot-ver"></span> ·
     <a href="https://github.com/ilbeca/open-patente-nautica">codice sorgente</a> ·
     <a href="/avvertenza">avvertenza</a> · <a href="/privacy">privacy</a></footer>
 </main>
@@ -973,6 +973,11 @@ function segnala(t, err) {
 // ingoia l'errore sarebbe peggio di nessun ripiego.
 
 const ARCH = {
+  // Il nome del database NON segue il nome del sito, ed e' deliberato: e'
+  // l'identita' dell'archivio nel browser di chi studia. Rinominarlo aprirebbe
+  // un database nuovo e vuoto, e ogni risposta data finora sparirebbe senza un
+  // errore — il guasto muto di casa, servito al rinomino. Il nome qui sotto
+  // e' quindi rimasto quello della 0.19.2, ed e' l'unico posto in cui resta.
   NOME: 'open-patente-nautica', STORE: 'righe',
   db: null,
   modo: null,             // 'indexeddb' | 'localstorage'
@@ -1129,13 +1134,13 @@ async function avvia() {
 /** Il file dei progressi: l'archivio intero piu' i punteggi del gioco. */
 function esporta() {
   const dati = {
-    app: 'open-patente-nautica', versione: (S.meta && S.meta.versione) || '?',
+    app: 'rotta-giusta', versione: (S.meta && S.meta.versione) || '?',
     esportato: E.isoLocale(), righe: S.archivio, segPunti: LS.get('segPunti', {}),
   };
   const blob = new Blob([JSON.stringify(dati)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `open-patente-nautica-progressi-${today()}.json`;
+  a.download = `rotta-giusta-progressi-${today()}.json`;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 10000);
   segnala(`${S.archivio.length} righe nel file`);
@@ -1261,8 +1266,8 @@ const GUSCIO = ['/', '/engine.js', '/manifest.json',
  *  qui lo si legge dalle cache esistenti, non lo si indovina. */
 async function nomeCache() {
   const k = await caches.keys();
-  return k.find((n) => n.startsWith('opn-'))
-      || ('opn-' + ((S.meta && S.meta.versione) || '0'));
+  return k.find((n) => n.startsWith('rg-'))
+      || ('rg-' + ((S.meta && S.meta.versione) || '0'));
 }
 
 /**
@@ -2818,10 +2823,10 @@ async function dipingiInfo() {
   const vEl = document.getElementById('i-ver');
   const dev = (S.meta && S.meta.versione) || '?';
   let cache = null;
-  try { if ('caches' in window) cache = (await caches.keys()).find((n) => n.startsWith('opn-')) || null; } catch {}
+  try { if ('caches' in window) cache = (await caches.keys()).find((n) => n.startsWith('rg-')) || null; } catch {}
   vEl.innerHTML = `su questo dispositivo <b>v${esc(dev)}</b>` +
     (cache ? ` · cache offline <b>${esc(cache)}</b>` : ' · nessuna cache offline') +
-    (cache && cache !== 'opn-' + dev
+    (cache && cache !== 'rg-' + dev
       ? ` — <b style="color:var(--warn)">diverse: ricarica due volte questa pagina per prendere la nuova</b>` : '') +
     '<br>Dopo un aggiornamento del sito la prima ricarica serve ancora la copia in cache; la seconda prende la nuova.';
 }
