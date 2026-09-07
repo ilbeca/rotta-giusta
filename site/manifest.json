@@ -2,7 +2,7 @@
   "name": "Rotta Giusta",
   "short_name": "Rotta Giusta",
   "description": "Quiz e carteggio per la patente nautica senza limiti dalla costa",
-  "start_url": "/",
+  "start_url": "/app",
   "scope": "/",
   "display": "standalone",
   "lang": "it",

@@ -9,6 +9,93 @@ utente e una data d'esame. Restano perché spiegano **perché** certe scelte
 sembrano strane — e sono state riviste solo per togliere i dati delle macchine
 dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
+## [0.22.0] — 2026-09-07
+
+La vetrina. `/` diventa la pagina di presentazione, la palestra trasloca su
+`/app`.
+
+### Aggiunto
+
+- **La pagina vetrina**, su `/`: chi arriva da una ricerca o da un link
+  condiviso non atterra piu' dentro una palestra con tre zeri e un interruttore
+  filtro in cima, ma su una pagina che dice che cos'e' il sito, per chi e', e
+  perche' e' gratis.
+
+  **E' HTML statico, 29 KB, senza un passo di build e senza dipendenze.** Le
+  icone sono SVG in linea, il carattere arriva da Google Fonts, il marchio sono
+  i tracciati che stanno gia' nel repo. `CLAUDE.md` resta vero e Cloudflare
+  Pages continua a pubblicare `site/` senza comando di build.
+
+- **I numeri della vetrina si contano dalla banca**, non si scrivono a mano: le
+  dieci tessere degli argomenti, i quesiti di ciascuno, le domande d'esame che
+  porta, e i totali arrivano da `dati/meta.json` al caricamento — la stessa
+  fonte della palestra. Se quella lettura fallisce la pagina scrive *«La banca
+  non risponde: gli argomenti si contano da li', e senza non li invento»*
+  invece di mostrare cifre finte. Quel ramo e' stato visto funzionare: la prima
+  stesura leggeva `t.nome` mentre la chiave e' `t.tema`, e la pagina ha detto di
+  non sapere invece di disegnare tessere vuote.
+
+  Cosi' compaiono anche le tre cose che una lista scritta a mano aveva perso:
+  **Teoria dello scafo** (125), **Motori** (104) e soprattutto **il carteggio**
+  (135 esercizi), che e' la prova eliminatoria e non era nominata da nessuna
+  parte.
+
+### Cambiato
+
+- **La palestra sta su `/app`.** La radice serve a chi non ti conosce ancora, e
+  chi non ti conosce arriva sempre su `/`.
+
+  **La trappola non e' spostare il file, e' `start_url`.** Se la palestra si
+  sposta e `start_url` resta `/`, chi ha l'icona sulla schermata Home la tocca e
+  si ritrova sulla pagina di presentazione invece che sui suoi quiz — senza
+  nessun errore che lo dica. `start_url` diventa `/app` nello stesso commit, e
+  c'e' un test che lo pretende.
+
+- **La vetrina resta FUORI dal guscio offline, ed e' deliberato.** `sw.js` e'
+  cache-first: una pagina di presentazione messa in cache resterebbe congelata
+  alla versione del giorno in cui ce l'hai messa. E' la stessa trappola che ha
+  morso due volte durante questa sessione. Verificato: con il service worker
+  attivo e che controlla `/`, la radice mostra la vetrina presa dalla rete, e
+  `/` non compare fra le 16 voci in cache.
+
+- Le due pagine legali tornano a `/app`, non alla vetrina.
+
+### Nella vetrina non c'e', e sono scelte
+
+- **Nessun pulsante «Accedi»**: non esistono account, le risposte restano in
+  IndexedDB nel browser di chi studia. Un pulsante che promette il contrario e'
+  una bugia in prima pagina.
+- **Nessun «tutti i diritti riservati»**: il codice e' MIT e i quesiti sono un
+  atto dello Stato su cui nessuno puo' concedere diritti. Il pie' di pagina lo
+  scrive per esteso, con il link all'**avvertenza**, che il sito e' tenuto a
+  mostrare.
+- C'e' invece una sezione **«Che cosa non torna, e lo diciamo»**: i 37 oscurati,
+  gli 11 che divergono dal DM 133/2024, le dieci figure riabbinate. E' la cosa
+  che nessun altro sito di quiz fa, ed e' l'unico argomento che i concorrenti
+  non possono copiare.
+
+### Test
+
+- **191 verifiche sui dati** (erano 174), 102 sul motore. Il controllo nuovo
+  tiene fermi gli indirizzi: `start_url` e' la palestra e non la vetrina, lo
+  `scope` copre tutto il sito, il guscio contiene `/app` e **non** contiene `/`,
+  la vetrina rimanda alla palestra, e le pagine legali tornano a `/app`. I test
+  del guscio e del prefisso della cache guardano ora `app.html`.
+
+### Verificato in Chrome
+
+Su `/`: dieci tessere con i numeri della banca, il pulsante che porta a `/app`,
+sbordamento orizzontale **0**. Su `/app`: service worker `activated`, scope `/`,
+cache `rg-0.22.0` con 16 voci fra cui `/app`, e `/` **non** in cache.
+`start_url` letto dal manifest servito: `/app`.
+
+### Rimane aperto
+
+La vetrina e' chiara e la palestra e' scura. E' la divisione consueta fra pagina
+di presentazione e applicazione, ma e' una scelta da confermare. E chi aveva `/`
+fra i segnalibri come «la palestra» ci trova adesso la vetrina: e' un clic, non
+un dato perso, ma succede.
+
 ## [0.21.0] — 2026-09-07
 
 Il sito prende una faccia, e la palestra parla i colori del marchio.

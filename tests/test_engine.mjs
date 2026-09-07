@@ -1029,7 +1029,7 @@ test('coda con stati [nuovo]: la modalita solo-mai-fatte non ripesca niente', ()
 
 /* --- 0.5.0: il guscio offline, e la prova di carteggio ------------------- */
 
-test('il GUSCIO di sw.js e quello di index.html sono la stessa lista', async () => {
+test('il GUSCIO di sw.js e quello di app.html sono la stessa lista', async () => {
   // Sono due copie della stessa cosa, in due file diversi: una le mette in
   // cache, l'altra controlla che ci siano. Se divergono, l'autodiagnosi dice
   // "guscio incompleto" per un file che nessuno ha mai messo in cache, oppure —
@@ -1046,8 +1046,9 @@ test('il GUSCIO di sw.js e quello di index.html sono la stessa lista', async () 
     return [...m[1].matchAll(/'(\/[^']*)'/g)].map((x) => x[1]);
   };
   const sw = estrai(await fs.readFile(new URL('sw.js', dir), 'utf8'));
-  const pagina = estrai(await fs.readFile(new URL('index.html', dir), 'utf8'));
-  assert.deepEqual(sw, pagina, 'il guscio di sw.js e quello di index.html sono diversi');
+  // Dalla 0.22.0 la palestra e' app.html: index.html e' la vetrina.
+  const pagina = estrai(await fs.readFile(new URL('app.html', dir), 'utf8'));
+  assert.deepEqual(sw, pagina, 'il guscio di sw.js e quello di app.html sono diversi');
   assert.ok(sw.includes('/dati/carteggio.json'), 'la prova di carteggio deve funzionare offline');
   // Ogni voce del guscio deve esistere davvero in site/: un percorso sbagliato
   // qui fa dire all'autodiagnosi «guscio incompleto» per sempre, oppure — se

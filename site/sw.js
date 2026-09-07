@@ -17,7 +17,7 @@
 // Ogni rilascio ha quindi la sua cache, e la vecchia viene cancellata
 // all'activate.
 
-const CACHE = 'rg-0.21.0';
+const CACHE = 'rg-0.22.0';
 
 // Il minimo per aprire l'app e fare una batteria. Le 103 figure no: sono 1,1 MB
 // e scaricarle di soppiatto su una rete a consumo e' scortese. C'e' il pulsante
@@ -27,7 +27,10 @@ const CACHE = 'rg-0.21.0';
 // Stessa lista di `GUSCIO` in index.html, che controlla che ci sia davvero:
 // c'e' un test che le confronta.
 const GUSCIO = [
-  '/',
+  // La palestra sta su /app. La radice e' la vetrina e resta FUORI dal guscio:
+  // sw.js e' cache-first, e una pagina di presentazione messa in cache
+  // resterebbe congelata alla versione del giorno in cui ce l'hai messa.
+  '/app',
   '/engine.js',
   '/manifest.json',
   '/dati/meta.json',

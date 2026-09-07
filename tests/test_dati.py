@@ -340,7 +340,9 @@ def guscio(testo):
 
 def test_sw():
     sw = (SITE / 'sw.js').read_text(encoding='utf-8')
-    index = (SITE / 'index.html').read_text(encoding='utf-8')
+    # Dalla 0.22.0 la palestra sta su /app: index.html e' la vetrina, che nel
+    # guscio non c'e' apposta.
+    index = (SITE / 'app.html').read_text(encoding='utf-8')
     # Il nome della cache segue VERSION e nessun build step lo sostituisce:
     # nel file committato c'e' il numero, e deve essere quello di VERSION.
     check("sw.js: const CACHE = 'rg-' + VERSION", ("const CACHE = 'rg-" + VERSION + "'") in sw,
@@ -348,8 +350,8 @@ def test_sw():
     g_sw = guscio(sw)
     g_ix = guscio(index)
     check('sw.js: GUSCIO presente', g_sw is not None)
-    check('index.html: GUSCIO presente', g_ix is not None)
-    check('GUSCIO: la stessa lista in sw.js e index.html', g_sw == g_ix, (g_sw, g_ix))
+    check('app.html: GUSCIO presente', g_ix is not None)
+    check('GUSCIO: la stessa lista in sw.js e app.html', g_sw == g_ix, '%s vs %s' % (g_sw, g_ix))
     # Il guscio elenca gli indirizzi **come li serve Cloudflare Pages**, non i
     # nomi dei file: `/` e' index.html e `/privacy` e' privacy.html. Pages
     # risponde 308 al percorso con l'estensione, e una risposta rediretta messa
@@ -367,7 +369,7 @@ def test_sw():
         check('GUSCIO: %s non ha .html (Pages ci risponde 308)' % p, not p.endswith('.html'), p)
     # Gli stessi indirizzi nei link, in tutte e tre le pagine: un href con
     # l'estensione e' un link che muore appena il service worker e' installato.
-    for nome in ('index.html', 'privacy.html', 'avvertenza.html'):
+    for nome in ('index.html', 'app.html', 'privacy.html', 'avvertenza.html'):
         testo = (SITE / nome).read_text(encoding='utf-8')
         cattivi = re.findall(r'href="(/[A-Za-z0-9._-]+\.html)"', testo)
         check('%s: nessun link interno con .html' % nome, not cattivi, cattivi)
@@ -406,13 +408,13 @@ def test_rinomino():
 
 # --- il prefisso della cache e' uno solo -------------------------------------
 #
-# Il nome della cache vive in sw.js, ma index.html lo cerca con startsWith per
+# Il nome della cache vive in sw.js, ma app.html lo cerca con startsWith per
 # dire quale versione gira davvero su questo dispositivo. Sono quattro punti in
 # due file: cambiarne tre su quattro fa mentire la scheda Info in silenzio.
 
 def test_prefisso_cache():
     sw = (SITE / 'sw.js').read_text(encoding='utf-8')
-    index = (SITE / 'index.html').read_text(encoding='utf-8')
+    index = (SITE / 'app.html').read_text(encoding='utf-8')
     m = re.search(r"const CACHE = '([a-z]+-)", sw)
     check('sw.js: il prefisso della cache si legge', m is not None)
     if not m:
@@ -423,8 +425,8 @@ def test_prefisso_cache():
         if 'cache' in riga.lower():
             trovati |= set(re.findall(r"'([a-z]+-)'\s*\+", riga))
     trovati = sorted(trovati)
-    check('index.html: usa il prefisso della cache', bool(trovati), trovati)
-    check('index.html: un prefisso solo, uguale a quello di sw.js (%s)' % prefisso,
+    check('app.html: usa il prefisso della cache', bool(trovati), trovati)
+    check('app.html: un prefisso solo, uguale a quello di sw.js (%s)' % prefisso,
           trovati == [prefisso], trovati)
 
 
@@ -450,18 +452,47 @@ def test_manifest_icone():
     # E la pagina deve dichiarare la favicon e l'apple-touch-icon: iOS il
     # manifest non lo legge, quindi senza quel link l'icona sulla Home e' uno
     # screenshot della pagina.
-    index = (SITE / 'index.html').read_text(encoding='utf-8')
-    for rel in ('icon', 'apple-touch-icon'):
-        check('index.html: <link rel="%s">' % rel, ('rel="%s"' % rel) in index)
-    for meta in ('og:title', 'og:description', 'og:image'):
-        check('index.html: <meta property="%s">' % meta, ('property="%s"' % meta) in index)
+    for pagina in ('index.html', 'app.html'):
+        testo = (SITE / pagina).read_text(encoding='utf-8')
+        for rel in ('icon', 'apple-touch-icon'):
+            check('%s: <link rel="%s">' % (pagina, rel), ('rel="%s"' % rel) in testo)
+        for meta in ('og:title', 'og:description', 'og:image'):
+            check('%s: <meta property="%s">' % (pagina, meta), ('property="%s"' % meta) in testo)
     for f in ('og-card.png', 'favicon.svg', 'apple-touch-icon.png'):
         check('site/%s esiste' % f, (SITE / f).is_file())
 
 
+# --- la vetrina sta su /, la palestra su /app --------------------------------
+#
+# La trappola non e' spostare il file: e' `start_url`. Se la palestra si sposta
+# e start_url resta '/', chi ha l'icona sulla schermata Home la tocca e si
+# ritrova sulla pagina di presentazione invece che sui suoi quiz — e non c'e'
+# nessun errore che lo dica.
+
+def test_indirizzi():
+    man = json.loads((SITE / 'manifest.json').read_text(encoding='utf-8'))
+    sw = (SITE / 'sw.js').read_text(encoding='utf-8')
+    g = guscio(sw) or []
+    palestra = man.get('start_url')
+    check('manifest: start_url e la palestra, non la vetrina', palestra == '/app', palestra)
+    check('manifest: scope copre tutto il sito', man.get('scope') == '/', man.get('scope'))
+    check('guscio: contiene la palestra', palestra in g, g)
+    # La vetrina fuori dal guscio, e non e' un dimenticanza: sw.js e'
+    # cache-first, e una pagina di presentazione in cache resterebbe congelata.
+    check('guscio: la vetrina NON e in cache', '/' not in g, g)
+    check('site/app.html esiste', (SITE / 'app.html').is_file())
+    # E la vetrina deve portare alla palestra, altrimenti e un vicolo cieco.
+    vetrina = (SITE / 'index.html').read_text(encoding='utf-8')
+    check('la vetrina rimanda a %s' % palestra, ('href="%s"' % palestra) in vetrina)
+    # Le pagine legali tornano alla palestra, non alla vetrina.
+    for f in ('privacy.html', 'avvertenza.html'):
+        testo = (SITE / f).read_text(encoding='utf-8')
+        check('%s: torna alla palestra' % f, 'href="/app"' in testo)
+
+
 def main():
     for t in (test_controlla, test_quiz, test_meta, test_figure, test_invarianti,
-              test_carteggio, test_sw, test_rinomino, test_prefisso_cache, test_manifest_icone):
+              test_carteggio, test_sw, test_rinomino, test_prefisso_cache, test_manifest_icone, test_indirizzi):
         t()
     if falliti:
         print('%d verifiche passate, %d FALLITE:' % (ok, len(falliti)))
