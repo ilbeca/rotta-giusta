@@ -9,3 +9,8 @@ __pycache__/
 
 # Un archivio di risposte scaricato dall'app per provarla: e' personale.
 *progressi*.json
+
+# I worktree che l'app desktop di Claude Code crea per ogni sessione. Stanno
+# dentro il repo per default, e un `git add -A` dal checkout principale li
+# committerebbe interi. I worktree di Codex stanno fuori ($CODEX_HOME).
+.claude/worktrees/

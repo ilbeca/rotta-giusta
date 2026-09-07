@@ -9,6 +9,16 @@ utente e una data d'esame. Restano perché spiegano **perché** certe scelte
 sembrano strane — e sono state riviste solo per togliere i dati delle macchine
 dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
+## [Unreleased]
+
+### Modificato
+
+- **`.claude/worktrees/` è ignorata.** È dove l'app desktop di Claude Code crea
+  un worktree per ogni sessione, dentro il repo; senza questa riga un
+  `git add -A` dal checkout principale committerebbe l'intero albero di
+  un'altra sessione. Primo passo della decisione su come lavorano due agenti
+  sullo stesso repo (relazione del 07/09/2026).
+
 ## [0.22.1] — 2026-09-07
 
 ### Corretto
