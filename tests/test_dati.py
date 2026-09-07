@@ -484,6 +484,16 @@ def test_indirizzi():
     # E la vetrina deve portare alla palestra, altrimenti e un vicolo cieco.
     vetrina = (SITE / 'index.html').read_text(encoding='utf-8')
     check('la vetrina rimanda a %s' % palestra, ('href="%s"' % palestra) in vetrina)
+    # Due indirizzi, due titoli. Con lo stesso titolo sono due schede
+    # indistinguibili, e per un motore di ricerca due pagine che competono per
+    # la stessa query invece di dividersi il lavoro.
+    import re as _re
+    titolo = lambda f: (_re.search(r'<title>(.*?)</title>',
+                        (SITE / f).read_text(encoding='utf-8'), _re.S) or [None, ''])[1].strip()
+    tv, tp = titolo('index.html'), titolo('app.html')
+    check('vetrina e palestra hanno titoli diversi', tv != tp and tv and tp, '%r / %r' % (tv, tp))
+    check('il titolo della vetrina nomina la patente nautica',
+          'patente nautica' in tv.lower(), tv)
     # Le pagine legali tornano alla palestra, non alla vetrina.
     for f in ('privacy.html', 'avvertenza.html'):
         testo = (SITE / f).read_text(encoding='utf-8')

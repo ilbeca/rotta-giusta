@@ -9,6 +9,29 @@ utente e una data d'esame. Restano perché spiegano **perché** certe scelte
 sembrano strane — e sono state riviste solo per togliere i dati delle macchine
 dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
+## [0.22.1] — 2026-09-07
+
+### Corretto
+
+- **La vetrina e la palestra avevano lo stesso `<title>`**, identico carattere
+  per carattere. Fino alla 0.21.0 non si sovrapponevano perche' erano la stessa
+  pagina; spostando la palestra su `/app` sono diventate due, e il titolo e'
+  rimasto quello. Costa due cose concrete: due schede aperte sono
+  indistinguibili, e per un motore di ricerca sono due pagine che competono per
+  la stessa query invece di dividersi il lavoro — proprio quando il titolo
+  descrittivo era stato scelto apposta per farsi trovare (0.20.0).
+
+  La vetrina tiene *«Rotta Giusta — quiz e carteggio per la patente nautica»*,
+  che e' la pagina che deve comparire nelle ricerche; la palestra diventa
+  *«La palestra · Rotta Giusta»*, che e' quello che serve leggere in una scheda
+  fra le altre.
+
+### Test
+
+- **193 verifiche sui dati** (erano 191): i due titoli devono essere diversi e
+  non vuoti, e quello della vetrina deve nominare la patente nautica. Rimessi
+  uguali, il primo fallisce.
+
 ## [0.22.0] — 2026-09-07
 
 La vetrina. `/` diventa la pagina di presentazione, la palestra trasloca su
