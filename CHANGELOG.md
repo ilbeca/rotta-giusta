@@ -9,6 +9,89 @@ utente e una data d'esame. Restano perché spiegano **perché** certe scelte
 sembrano strane — e sono state riviste solo per togliere i dati delle macchine
 dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
+## [0.21.0] — 2026-09-07
+
+Il sito prende una faccia, e la palestra parla i colori del marchio.
+
+### Aggiunto
+
+- **Il marchio, in vettoriale.** `marchio.svg` (positiva), `marchio-negativo.svg`,
+  `icona.svg` (tessera con angoli al 22%), `icona-maskable.svg` e `favicon.svg`.
+  I tracciati sono quelli del file consegnato dal disegnatore, **verbatim**:
+  cambiati solo i colori dei due fanali — il verde e' il fanale di dritta,
+  quindi visto di prua sta a **sinistra** di chi guarda, come nelle figure del
+  decreto e nel gioco dei Segnali — e il `viewBox`, che aveva 24 unita' di
+  margine sopra e 12 sotto e faceva pendere il segno in basso.
+
+  Due varianti mancavano e sono state derivate. La **negativa**, perche' il file
+  originale e' navy su trasparente: su fondo scuro la nave spariva e restavano
+  due pallini e una freccia. E la **ridotta**: il `favicon.svg` consegnato non
+  era una versione ridotta ma lo stesso disegno rimpicciolito (349,3 contro
+  352,3 unita' di larghezza, cambiava solo il raggio dei fanali), e rasterizzato
+  davvero a 16 px le sei fasce della sovrastruttura diventano una macchia. La
+  ridotta tiene **solo lo scafo** — un tracciato dell'originale, il settimo.
+
+- **Sette PNG e la og-card**, generati dagli SVG e verificati uno per uno (firma
+  PNG e dimensioni reali): 16, 32, 180 per iOS, 192, 512, la maskable al 78%, e
+  `og-card.png` 1200x630. La og-card e' disegnata su canvas e non in SVG, per un
+  motivo misurato: un `@font-face` in `data:` dentro un SVG caricato come
+  immagine **non viene applicato** — la prima prova e' uscita in serif.
+
+- **Il marchio compare anche dentro l'app**, accanto al titolo della schermata
+  *Oggi*, e in nessun'altra: e' il titolo del sito, non una decorazione da
+  ripetere in ogni schermata. Misura `1,55em`, quindi segue il titolo da solo
+  quando sopra i 900 px l'`h1` passa da 19 a 26 px — misurato: 29 px sul
+  telefono e 40 px sul desktop, con l'altezza del titolo che li segue e zero
+  sbordamento orizzontale.
+
+- **`manifest.json` dichiara le icone.** Fino a ieri `icons` era `[]`: la PWA si
+  installava senza faccia e niente lo diceva. Ora tre voci, di cui una
+  `maskable`, e `theme_color` e `background_color` passano al navy del marchio
+  perche' l'icona sta *sopra* quel colore nella schermata di avvio.
+
+### Cambiato
+
+- **La tavolozza della palestra e' quella del marchio.** 45 sostituzioni, e
+  nessun colore inventato: le sei tinte della tavola piu' le superfici derivate
+  **sul segmento fra i due navy** (`#0B1F33` e `#123E63`) e i testi sul segmento
+  fra la carta e il blu profondo. I fondi tinti — risposta esatta, sbagliata,
+  attesa — non sono mescolati col fondo ma sono la loro tinta portata a
+  luminosita' 0,12, perche' mescolando col navy il verde diventava teal e il
+  rosso viola.
+
+  Misurato, non deciso a occhio: `--fg` 15,15:1 sul fondo, `--dim` 6,80:1,
+  `--acc` 6,15:1, `--ok` 7,33:1, il verde sul suo fondo 5,42:1. Due valori sono
+  stati alzati perche' non passavano: `--faint` (4,21:1, ed e' usato a 11,5 px,
+  quindi vale la soglia piena) e il fondo della risposta sbagliata, che teneva
+  `--ko` a 4,33:1.
+
+- **Non toccati, ed e' una scelta: i colori che sono contenuto.** Il cielo
+  notturno dei Segnali (`#05070d`), i quattro colori dei fanali del decreto
+  (`SEGCOL`), la carta e l'inchiostro dei segnali diurni. Non fanno parte
+  dell'interfaccia: imitano le figure del decreto, e cambiarli vorrebbe dire
+  insegnare un colore diverso da quello che si vede all'esame.
+
+- **`--warn` resta `#F5B942`, ed e' l'unico colore fuori dalla tavolozza.** Il
+  marchio non ha un ambra, e il semaforo di *Oggi* ha tre stati: senza il terzo
+  colore il ritardo si direbbe con la stessa tinta di qualcos'altro. Si dichiara
+  invece di inventare una settima tinta di marca.
+
+- **Il guscio offline porta anche le icone**: 1272 KB contro
+  1206 KB, cioe' 66 KB in piu' perche' l'app
+  installata abbia la sua faccia anche senza rete. La og-card no: la guarda un
+  crawler, non chi studia.
+
+- **I link a GitHub passano a `ilbeca/rotta-giusta`**, ora che il rename del
+  repository c'e' davvero e il vecchio indirizzo risponde 301.
+
+### Test
+
+- **174 verifiche sui dati** (erano 144), 102 sul motore invariate. Il controllo
+  nuovo pretende che il manifest dichiari delle icone, che ogni `src` esista su
+  disco, che almeno una sia `maskable`, e che la pagina dichiari favicon,
+  apple-touch-icon e i tre meta Open Graph. Provato al contrario: rimesso
+  `icons: []`, ne falliscono due.
+
 ## [0.20.0] — 2026-09-07
 
 Il progetto cambia nome: **Open Patente Nautica** diventa **Rotta Giusta**.

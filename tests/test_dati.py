@@ -428,9 +428,40 @@ def test_prefisso_cache():
           trovati == [prefisso], trovati)
 
 
+# --- il manifest dichiara delle icone, ed esistono ---------------------------
+#
+# Fino alla 0.20.0 `icons` era una lista vuota: la PWA si installava senza
+# faccia, e niente lo diceva. Un manifest che elenca un file che non c'e'
+# fallisce nello stesso modo silenzioso, quindi si controllano tutti e due.
+
+def test_manifest_icone():
+    man = json.loads((SITE / 'manifest.json').read_text(encoding='utf-8'))
+    icone = man.get('icons') or []
+    check('manifest: dichiara delle icone', bool(icone), icone)
+    for i in icone:
+        f = SITE / i['src'].lstrip('/')
+        check('manifest: %s esiste' % i['src'], f.is_file())
+        check('manifest: %s ha sizes e type' % i['src'], bool(i.get('sizes')) and bool(i.get('type')), i)
+    # Android ritaglia le icone con forme diverse: senza una maskable il segno
+    # viene tagliato dal ritaglio di sistema invece che dal disegno.
+    check('manifest: almeno una icona maskable',
+          any('maskable' in (i.get('purpose') or '') for i in icone),
+          [i.get('purpose') for i in icone])
+    # E la pagina deve dichiarare la favicon e l'apple-touch-icon: iOS il
+    # manifest non lo legge, quindi senza quel link l'icona sulla Home e' uno
+    # screenshot della pagina.
+    index = (SITE / 'index.html').read_text(encoding='utf-8')
+    for rel in ('icon', 'apple-touch-icon'):
+        check('index.html: <link rel="%s">' % rel, ('rel="%s"' % rel) in index)
+    for meta in ('og:title', 'og:description', 'og:image'):
+        check('index.html: <meta property="%s">' % meta, ('property="%s"' % meta) in index)
+    for f in ('og-card.png', 'favicon.svg', 'apple-touch-icon.png'):
+        check('site/%s esiste' % f, (SITE / f).is_file())
+
+
 def main():
     for t in (test_controlla, test_quiz, test_meta, test_figure, test_invarianti,
-              test_carteggio, test_sw, test_rinomino, test_prefisso_cache):
+              test_carteggio, test_sw, test_rinomino, test_prefisso_cache, test_manifest_icone):
         t()
     if falliti:
         print('%d verifiche passate, %d FALLITE:' % (ok, len(falliti)))

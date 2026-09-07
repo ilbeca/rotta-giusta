@@ -17,7 +17,7 @@
 // Ogni rilascio ha quindi la sua cache, e la vecchia viene cancellata
 // all'activate.
 
-const CACHE = 'rg-0.20.0';
+const CACHE = 'rg-0.21.0';
 
 // Il minimo per aprire l'app e fare una batteria. Le 103 figure no: sono 1,1 MB
 // e scaricarle di soppiatto su una rete a consumo e' scortese. C'e' il pulsante
@@ -48,6 +48,15 @@ const GUSCIO = [
   // service worker, e l'autodiagnosi diceva «guscio e banca in cache».
   '/privacy',
   '/avvertenza',
+  // Le icone: l'app installata ha la sua faccia anche offline. La og-card
+  // no, la guarda un crawler. Stessa lista di index.html, e c'e' un test.
+  '/favicon.svg',
+  '/favicon-32.png',
+  '/favicon-16.png',
+  '/apple-touch-icon.png',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/icon-maskable-512.png',
 ];
 
 self.addEventListener('install', (e) => {

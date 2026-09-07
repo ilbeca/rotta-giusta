@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" role="img" aria-labelledby="rg-t">
+  <title id="rg-t">Rotta Giusta</title>
+  <!-- Negativa: forme bianche. Da usare sul navy della sezione Open Source e del footer. -->
+  <g transform="translate(-434.65 -31.0)">
+    <g fill="#FFFFFF">
+      <path d="M626 49 605 88Q626 81 647 88Z"/>
+      <path d="M545 132C578 87 674 79 710 133Q628 81 545 132Z"/>
+      <path d="M542 143Q577 121 626 117L617 144Q566 160 522 189Z"/>
+      <path d="M626 117Q674 120 709 143L727 186Q681 159 632 144Z"/>
+      <path d="M477 233Q539 181 617 156V169Q539 195 485 246Z"/>
+      <path d="M632 156Q711 180 768 226L754 235Q699 193 632 169Z"/>
+      <path d="M490 254Q548 207 617 180L624 342 632 180Q695 201 746 240Q733 248 742 261L625 351Z"/>
+    </g>
+    <!-- verde a SINISTRA di chi guarda: e' il fanale di dritta -->
+    <circle cx="477" cy="174" r="17" fill="#22C55E"/>
+    <circle cx="768" cy="174" r="17" fill="#EF4444"/>
+    <path fill="#3BA7DB" d="M499 282 621 380 775 251 760 244 807 227Q810 226 809 230L792 275 784 259 620 413Z"/>
+  </g>
+</svg>

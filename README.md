@@ -146,7 +146,7 @@ Le regole di lavoro sono in [`CLAUDE.md`](CLAUDE.md); vale anche per gli umani.
 
 ## Come si contribuisce
 
-Le segnalazioni vanno nelle [issue](https://github.com/ilbeca/open-patente-nautica/issues).
+Le segnalazioni vanno nelle [issue](https://github.com/ilbeca/rotta-giusta/issues).
 Due cose contano più delle altre:
 
 - **Una risposta della banca non si cambia per convinzione.** Se un quesito

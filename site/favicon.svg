@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" role="img" aria-labelledby="rg-t">
+  <title id="rg-t">Rotta Giusta</title>
+  <!-- Ridotta per 32 e 16 px: solo lo scafo, i fanali piu grandi e la rotta. Le sei fasce sottili spariscono. -->
+  <rect width="400" height="400" rx="90" fill="#0B1F33"/>
+  <g transform="translate(-434.65 -31.0)">
+    <g fill="#FFFFFF">
+      <path d="M490 254Q548 207 617 180L624 342 632 180Q695 201 746 240Q733 248 742 261L625 351Z"/>
+    </g>
+    <!-- verde a SINISTRA di chi guarda: e' il fanale di dritta -->
+    <circle cx="477" cy="174" r="26" fill="#22C55E"/>
+    <circle cx="768" cy="174" r="26" fill="#EF4444"/>
+    <path fill="#3BA7DB" d="M499 282 621 380 775 251 760 244 807 227Q810 226 809 230L792 275 784 259 620 413Z"/>
+  </g>
+</svg>

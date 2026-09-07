@@ -3,17 +3,30 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0d1420">
+<meta name="theme-color" content="#0B1F33">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="/manifest.json">
+<!-- L'SVG e' la versione ridotta del marchio: a 16 e 32 px le sei fasce della
+     sovrastruttura impastano, quindi la ridotta tiene solo lo scafo. I due PNG
+     per chi non legge SVG; l'apple-touch-icon perche' iOS il manifest non lo legge. -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="it_IT">
+<meta property="og:title" content="Rotta Giusta — quiz e carteggio per la patente nautica">
+<meta property="og:description" content="1.722 quesiti e 135 esercizi di carteggio dall'elenco unico nazionale. Gratis, senza account, open source.">
+<meta property="og:image" content="/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="description" content="Quiz e carteggio per la patente nautica senza limiti dalla costa. Banca d'esame ministeriale (DD 131/2022), simulazioni, diagnosi. Tutto nel tuo browser, nessun account.">
 <title>Rotta Giusta — quiz e carteggio per la patente nautica</title>
 <style>
 :root{
-  --bg:#0d1420; --bg2:#141d2c; --bg3:#1c2839; --line:#26344a;
-  --fg:#e8eef7; --dim:#8ea1bd; --faint:#5d708c;
-  --ok:#3ecf8e; --ko:#ff6b6b; --warn:#f5b942; --acc:#4aa3ff;
+  --bg:#0B1F33; --bg2:#0E2B45; --bg3:#103556; --line:#123C61;
+  --fg:#F2F4F7; --dim:#94A8B9; --faint:#7790A6;
+  --ok:#22C55E; --ko:#EF4444; --warn:#F5B942; --acc:#3BA7DB;
   --r:14px; --tap:58px;
   --safe-b:env(safe-area-inset-bottom,0px);
 }
@@ -47,6 +60,10 @@ details.card li{margin:4px 0}
 .esame input{width:auto;min-width:160px;color-scheme:dark}
 main{padding:14px 14px calc(78px + var(--safe-b));max-width:900px;margin:0 auto}
 h1{font-size:19px;margin:2px 0 2px;letter-spacing:-.2px}
+/* Il titolo di Oggi porta il marchio: 1,55em, cosi' cresce con l'h1
+   invece di restare fisso quando sopra i 900px il titolo passa a 26px. */
+h1.titolo{display:flex;align-items:center;gap:.46em}
+h1.titolo .mk{width:1.55em;height:1.55em;flex:0 0 auto;display:block}
 h2{font-size:13px;text-transform:uppercase;letter-spacing:.09em;color:var(--dim);margin:22px 0 10px;font-weight:600}
 .sub{color:var(--dim);font-size:13px;margin:0 0 16px}
 .view{display:none}.view.on{display:block}
@@ -58,7 +75,7 @@ h2{font-size:13px;text-transform:uppercase;letter-spacing:.09em;color:var(--dim)
 .tile .lab{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--dim)}
 .tile .val{font-size:26px;font-weight:650;letter-spacing:-.5px;margin-top:3px;font-variant-numeric:tabular-nums}
 .tile .val small{font-size:14px;color:var(--dim);font-weight:500}
-.bar{height:6px;background:#0a111c;border-radius:99px;overflow:hidden;margin-top:9px}
+.bar{height:6px;background:#040B13;border-radius:99px;overflow:hidden;margin-top:9px}
 .bar>i{display:block;height:100%;background:var(--acc);border-radius:99px;transition:width .4s}
 .bar.verde>i{background:var(--ok)}.bar.giallo>i{background:var(--warn)}.bar.rosso>i{background:var(--ko)}
 .bar.attesa>i{background:var(--faint)}
@@ -69,7 +86,7 @@ h2{font-size:13px;text-transform:uppercase;letter-spacing:.09em;color:var(--dim)
 .bar.stack>i{border-radius:0;transition:width .4s}
 .bar.stack>i.cop{background:var(--ok)}
 .bar.stack>i.rip{background:var(--warn)}
-.bar.stack>i.mai{background:#33415a}
+.bar.stack>i.mai{background:#475666}
 .dot{width:8px;height:8px;border-radius:99px;display:inline-block;margin-right:6px;vertical-align:1px}
 .dot.verde{background:var(--ok)}.dot.giallo{background:var(--warn)}.dot.rosso{background:var(--ko)}.dot.attesa{background:var(--faint)}
 
@@ -78,7 +95,7 @@ h2{font-size:13px;text-transform:uppercase;letter-spacing:.09em;color:var(--dim)
       background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);
       padding:11px 13px;margin:0 0 14px;
       -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
-.prep.on{border-color:var(--acc);background:#12233a}
+.prep.on{border-color:var(--acc);background:#0D3649}
 .prep .t{flex:1;min-width:0}
 .prep .t b{display:block;font-size:15px;font-weight:600}
 .prep .t span{display:block;font-size:12px;color:var(--dim);margin-top:1px}
@@ -89,7 +106,7 @@ h2{font-size:13px;text-transform:uppercase;letter-spacing:.09em;color:var(--dim)
 .sw .k::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;
               border-radius:99px;background:var(--faint);transition:transform .15s,background .15s}
 .sw input:checked + .k{background:var(--acc);border-color:var(--acc)}
-.sw input:checked + .k::after{transform:translateX(20px);background:#06101c}
+.sw input:checked + .k::after{transform:translateX(20px);background:#0B1F33}
 
 /* --- azioni ------------------------------------------------------------- */
 .go{display:flex;align-items:center;gap:12px;width:100%;min-height:var(--tap);
@@ -103,12 +120,12 @@ h2{font-size:13px;text-transform:uppercase;letter-spacing:.09em;color:var(--dim)
 .go[disabled]{opacity:.45}
 .btn{display:block;width:100%;min-height:52px;border-radius:12px;background:var(--bg3);
      border:1px solid var(--line);font-weight:600;padding:12px}
-.btn.primary{background:var(--acc);border-color:var(--acc);color:#06101c}
+.btn.primary{background:var(--acc);border-color:var(--acc);color:#0B1F33}
 .btn:active{filter:brightness(1.15)}
 .row{display:flex;gap:8px;flex-wrap:wrap}
 .chip{padding:9px 13px;border-radius:99px;background:var(--bg3);border:1px solid var(--line);
       font-size:14px;min-height:40px}
-.chip.on{background:var(--acc);border-color:var(--acc);color:#06101c;font-weight:600}
+.chip.on{background:var(--acc);border-color:var(--acc);color:#0B1F33;font-weight:600}
 select,input{background:var(--bg3);border:1px solid var(--line);color:var(--fg);
              border-radius:10px;padding:11px;font:inherit;width:100%;min-height:46px}
 
@@ -118,7 +135,7 @@ select,input{background:var(--bg3);border:1px solid var(--line);color:var(--fg);
 #quizrun.on{display:flex}
 .qhead{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--dim);flex:0 0 auto}
 .qhead .pill{background:var(--bg3);border:1px solid var(--line);border-radius:99px;padding:3px 10px;font-size:12px}
-.qhead .pill.rich{background:#3a2a12;border-color:#6b4a17;color:var(--warn)}
+.qhead .pill.rich{background:#3A2803;border-color:#744F06;color:var(--warn)}
 .qhead .x{margin-left:auto;font-size:22px;line-height:1;padding:4px 8px;color:var(--dim)}
 .qbody{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 0 8px}
 .qtext{font-size:19px;line-height:1.38;font-weight:500;letter-spacing:-.2px}
@@ -133,7 +150,7 @@ select,input{background:var(--bg3);border:1px solid var(--line);color:var(--fg);
 /* La nota su un quesito contestato: ambra, sotto il verdetto, e mai durante la
    domanda. Il selettore e' generico ma il testo lo mette solo `nota()`. */
 .nb{flex:1 0 100%;margin:8px 0 0;font-size:12.5px;line-height:1.45;color:var(--warn);
-    background:#2a220f;border:1px solid #4a3c15;border-radius:10px;padding:9px 11px;text-align:left}
+    background:#3A2803;border:1px solid #744F06;border-radius:10px;padding:9px 11px;text-align:left}
 .qans{flex:0 0 auto;display:grid;gap:10px}
 .ans{display:flex;gap:11px;align-items:flex-start;min-height:var(--tap);width:100%;
      background:var(--bg2);border:1.5px solid var(--line);border-radius:12px;padding:14px;text-align:left;
@@ -141,9 +158,9 @@ select,input{background:var(--bg3);border:1px solid var(--line);color:var(--fg);
 .ans .k{flex:0 0 24px;height:24px;border-radius:6px;background:var(--bg3);color:var(--dim);
         font-size:12px;font-weight:700;display:grid;place-items:center;margin-top:1px}
 .ans:active{background:var(--bg3)}
-.ans.ok{background:#123326;border-color:var(--ok)}
-.ans.ok .k{background:var(--ok);color:#06101c}
-.ans.ko{background:#3a1a1e;border-color:var(--ko)}
+.ans.ok{background:#093419;border-color:var(--ok)}
+.ans.ok .k{background:var(--ok);color:#0B1F33}
+.ans.ko{background:#380505;border-color:var(--ko)}
 .ans.ko .k{background:var(--ko);color:#fff}
 .ans.mute{opacity:.5}
 .qfoot{flex:0 0 auto;margin-top:10px}
@@ -156,7 +173,7 @@ select,input{background:var(--bg3);border:1px solid var(--line);color:var(--fg);
 .verdict b.ok{color:var(--ok)}.verdict b.ko{color:var(--ko)}
 .tags{display:flex;gap:6px;margin-left:auto}
 .tags button{font-size:12px;padding:5px 10px;border-radius:8px;background:var(--bg3);border:1px solid var(--line)}
-.tags button.on{background:var(--warn);color:#1a1204;border-color:var(--warn);font-weight:700}
+.tags button.on{background:var(--warn);color:#0B1F33;border-color:var(--warn);font-weight:700}
 
 /* --- selettore di modalità e spunte -------------------------------------- */
 .modi{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
@@ -164,23 +181,23 @@ select,input{background:var(--bg3);border:1px solid var(--line);color:var(--fg);
              text-align:left;min-height:64px}
 .modi button b{display:block;font-size:14.5px;font-weight:600}
 .modi button span{display:block;font-size:11.5px;color:var(--faint);margin-top:2px;line-height:1.3}
-.modi button.on{background:#12283f;border-color:var(--acc)}
+.modi button.on{background:#0D3649;border-color:var(--acc)}
 .modi button.on b{color:var(--acc)}
 .modo-box{display:none}.modo-box.on{display:block}
 .checks{display:grid;gap:7px}
 .check{display:flex;align-items:center;gap:11px;width:100%;min-height:48px;padding:8px 4px;text-align:left}
 .check .bx{flex:0 0 22px;height:22px;border-radius:6px;border:1.8px solid var(--line);background:var(--bg3);
            display:grid;place-items:center;font-size:13px;color:transparent}
-.check.on .bx{background:var(--acc);border-color:var(--acc);color:#06101c}
+.check.on .bx{background:var(--acc);border-color:var(--acc);color:#0B1F33}
 .check .nm{flex:1;min-width:0;font-size:14px;line-height:1.25}
 .check .nm small{display:block;color:var(--faint);font-size:11.5px}
 .check .w{font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums}
 .check[disabled]{opacity:.38}
 .hint{font-size:11.5px;color:var(--faint);text-transform:none;letter-spacing:0;font-weight:400}
 .pill.auto{opacity:.45;font-weight:600}
-.pill.auto.on{opacity:1;background:#123326;border-color:var(--ok);color:var(--ok)}
-.pill.crono{background:#3a2a12;border-color:#6b4a17;color:var(--warn);font-variant-numeric:tabular-nums}
-.pill.crono.rosso{background:#3a1a1e;border-color:var(--ko);color:var(--ko)}
+.pill.auto.on{opacity:1;background:#093419;border-color:var(--ok);color:var(--ok)}
+.pill.crono{background:#3A2803;border-color:#744F06;color:var(--warn);font-variant-numeric:tabular-nums}
+.pill.crono.rosso{background:#380505;border-color:var(--ko);color:var(--ko)}
 
 /* --- riepilogo di fine prova ---------------------------------------------- */
 .fine{display:none;position:absolute;inset:0;background:var(--bg);z-index:5;overflow-y:auto;
@@ -191,12 +208,12 @@ select,input{background:var(--bg3);border:1px solid var(--line);color:var(--fg);
 .fine .esito .lab{font-size:13px;color:var(--dim);margin-top:6px}
 .fine .esito .verdetto{display:inline-block;margin-top:14px;padding:7px 16px;border-radius:99px;
                        font-weight:650;font-size:14px}
-.fine .esito .verdetto.ok{background:#123326;color:var(--ok)}
-.fine .esito .verdetto.ko{background:#3a1a1e;color:var(--ko)}
+.fine .esito .verdetto.ok{background:#093419;color:var(--ok)}
+.fine .esito .verdetto.ko{background:#380505;color:var(--ko)}
 /* Un allenamento riaperto non e' ne' superato ne' bocciato: la pillola dice la
    modalita' e la percentuale, e l'ambra e' il suo colore intermedio. */
-.fine .esito .verdetto.warn{background:#3a3118;color:var(--warn)}
-.err{padding:12px 0;border-bottom:1px solid #1b2536}
+.fine .esito .verdetto.warn{background:#3A2803;color:var(--warn)}
+.err{padding:12px 0;border-bottom:1px solid #27394B}
 .err .q{font-size:14.5px;line-height:1.35}
 /* Le due risposte devono essere confrontabili a colpo d'occhio: stessa
    dimensione, stesso allineamento, distinte dall'etichetta e dal suo colore —
@@ -216,14 +233,14 @@ select,input{background:var(--bg3);border:1px solid var(--line);color:var(--fg);
 .tbl th{text-align:right;font-weight:600;color:var(--dim);font-size:11px;text-transform:uppercase;
         letter-spacing:.05em;padding:0 0 7px;border-bottom:1px solid var(--line)}
 .tbl th:first-child{text-align:left}
-.tbl td{padding:9px 0 9px 10px;border-bottom:1px solid #1b2536;text-align:right;font-variant-numeric:tabular-nums}
+.tbl td{padding:9px 0 9px 10px;border-bottom:1px solid #27394B;text-align:right;font-variant-numeric:tabular-nums}
 .tbl th{padding-left:10px}
 .tbl td:first-child,.tbl th:first-child{text-align:left;padding-left:0;padding-right:10px}
 .tbl .nome{font-weight:550}
 .tbl .sub2{display:block;color:var(--faint);font-size:11.5px;font-weight:400}
 .pct{font-weight:650}
 .pct.hi{color:var(--ok)}.pct.mid{color:var(--warn)}.pct.lo{color:var(--ko)}
-.mini{height:4px;background:#0a111c;border-radius:99px;overflow:hidden;width:56px;margin-left:auto}
+.mini{height:4px;background:#040B13;border-radius:99px;overflow:hidden;width:56px;margin-left:auto}
 .mini>i{display:block;height:100%;background:var(--acc)}
 /* Le barrette dell'andamento: un giorno = una barra, altezza = % di esatte di
    quel giorno. Rispondono a una domanda sola: qui sto migliorando? */
@@ -233,8 +250,8 @@ select,input{background:var(--bg3);border:1px solid var(--line);color:var(--fg);
 .spark i.hi{background:var(--ok)}.spark i.mid{background:var(--warn)}.spark i.lo{background:var(--ko)}
 .tnd{font-weight:700;margin-left:5px}
 .tnd.su{color:var(--ok)}.tnd.giu{color:var(--ko)}.tnd.stabile{color:var(--dim)}
-.weak{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #1b2536}
-.weak .n{width:26px;height:26px;border-radius:8px;background:#3a1a1e;color:var(--ko);
+.weak{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #27394B}
+.weak .n{width:26px;height:26px;border-radius:8px;background:#380505;color:var(--ko);
          font-weight:700;font-size:13px;display:grid;place-items:center;flex:0 0 auto}
 .weak .t{flex:1;min-width:0}
 .weak .t b{display:block;font-size:14.5px;font-weight:600}
@@ -260,7 +277,7 @@ select,input{background:var(--bg3);border:1px solid var(--line);color:var(--fg);
 .cnav{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
 .cnav button{width:38px;height:38px;border-radius:10px;background:var(--bg2);
              border:1.5px solid var(--line);font-weight:650;font-variant-numeric:tabular-nums}
-.cnav button.on{border-color:var(--acc);color:var(--acc);background:#12233a}
+.cnav button.on{border-color:var(--acc);color:var(--acc);background:#0D3649}
 /* Il pallino verde dice "qui ho gia' scritto qualcosa", non "e' giusto":
    durante la prova nessuno sa ancora se e' giusto, nemmeno l'app. */
 .cnav button.fatto::after{content:"";display:block;width:5px;height:5px;border-radius:99px;
@@ -278,7 +295,7 @@ select,input{background:var(--bg3);border:1px solid var(--line);color:var(--fg);
 .cfoot{flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr;gap:8px;
        max-width:860px;width:100%;margin:0 auto}
 .cfoot .primary{grid-column:1 / -1}
-.cfoot .primary.conferma{background:var(--warn);border-color:var(--warn);color:#2a1c00}
+.cfoot .primary.conferma{background:var(--warn);border-color:var(--warn);color:#0B1F33}
 .btn[disabled]{opacity:.38}
 
 /* La correzione: la tua risposta accanto a quella ufficiale, e decidi tu. */
@@ -294,10 +311,10 @@ select,input{background:var(--bg3);border:1px solid var(--line);color:var(--fg);
 .corr .segna{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .corr .segna button{min-height:46px;border-radius:10px;background:var(--bg3);
                     border:1.5px solid var(--line);font-weight:600}
-.corr .segna button.si.on{background:#123326;border-color:var(--ok);color:var(--ok)}
-.corr .segna button.no.on{background:#3a1a1e;border-color:var(--ko);color:#ffc9c9}
-.corr.presa{border-color:#1f5a3f}
-.corr.persa{border-color:#5a2a2f}
+.corr .segna button.si.on{background:#093419;border-color:var(--ok);color:var(--ok)}
+.corr .segna button.no.on{background:#380505;border-color:var(--ko);color:#F1C3C5}
+.corr.presa{border-color:#126832}
+.corr.persa{border-color:#7A0A0A}
 
 @media(min-width:760px){
   .corr .due{grid-template-columns:1fr 1fr}
@@ -353,7 +370,7 @@ nav button.on{color:var(--acc)}
       font-size:11px;padding:4px 9px;border-radius:99px;background:var(--bg3);border:1px solid var(--line);
       color:var(--dim);opacity:0;transition:opacity .3s;pointer-events:none}
 .sync.show{opacity:1}
-.sync.err{background:#3a1a1e;border-color:var(--ko);color:#ffc9c9}
+.sync.err{background:#380505;border-color:var(--ko);color:#F1C3C5}
 .note{font-size:12.5px;color:var(--faint);line-height:1.5}
 .big{font-size:44px;font-weight:700;letter-spacing:-1.5px;font-variant-numeric:tabular-nums}
 
@@ -491,7 +508,24 @@ nav button.on{color:var(--acc)}
 
   <!-- ====================== OGGI ====================== -->
   <section class="view on" id="v-oggi">
-    <h1>Rotta Giusta</h1>
+    <!-- Il marchio sta qui e in nessun'altra schermata: e' il titolo del sito,
+         non una decorazione da ripetere. Misura 1,55em, quindi segue l'h1 da
+         solo quando sopra i 900px passa da 19 a 26px. -->
+    <h1 class="titolo"><svg class="mk" viewBox="0 0 400 400" aria-hidden="true">
+      <g transform="translate(-434.65 -31)">
+        <g fill="var(--fg)">
+        <path d="M626 49 605 88Q626 81 647 88Z"/>
+        <path d="M545 132C578 87 674 79 710 133Q628 81 545 132Z"/>
+        <path d="M542 143Q577 121 626 117L617 144Q566 160 522 189Z"/>
+        <path d="M626 117Q674 120 709 143L727 186Q681 159 632 144Z"/>
+        <path d="M477 233Q539 181 617 156V169Q539 195 485 246Z"/>
+        <path d="M632 156Q711 180 768 226L754 235Q699 193 632 169Z"/>
+        <path d="M490 254Q548 207 617 180L624 342 632 180Q695 201 746 240Q733 248 742 261L625 351Z"/>
+        </g>
+        <circle cx="477" cy="174" r="17" fill="var(--ok)"/>
+        <circle cx="768" cy="174" r="17" fill="var(--ko)"/>
+        <path d="M499 282 621 380 775 251 760 244 807 227Q810 226 809 230L792 275 784 259 620 413Z" fill="var(--acc)"/>
+      </g></svg>Rotta Giusta</h1>
     <p class="sub" id="countdown">…</p>
 
     <!-- La data d'esame la scrive chi studia: da lei dipendono la quota
@@ -770,7 +804,7 @@ nav button.on{color:var(--acc)}
     <h2>Il sito</h2>
     <div class="card">
       <p class="note">Rotta Giusta e' software libero: il codice e' pubblicato con licenza MIT
-        su <a href="https://github.com/ilbeca/open-patente-nautica">GitHub</a>, dove si segnalano
+        su <a href="https://github.com/ilbeca/rotta-giusta">GitHub</a>, dove si segnalano
         errori e si propongono correzioni. I quesiti e gli esercizi sono l'Allegato A al
         DD 131/2022, un atto dello Stato. Materiale di studio <b>non ufficiale</b>: fa fede il
         decreto, non questo sito. <a href="/avvertenza">Avvertenza</a> ·
@@ -779,7 +813,7 @@ nav button.on{color:var(--acc)}
   </section>
 
   <footer class="foot">Rotta Giusta <span id="foot-ver"></span> ·
-    <a href="https://github.com/ilbeca/open-patente-nautica">codice sorgente</a> ·
+    <a href="https://github.com/ilbeca/rotta-giusta">codice sorgente</a> ·
     <a href="/avvertenza">avvertenza</a> · <a href="/privacy">privacy</a></footer>
 </main>
 
@@ -1260,7 +1294,11 @@ function aggiornaBadge() {
 // link di questa pagina non tornino alla forma con l'estensione.
 const GUSCIO = ['/', '/engine.js', '/manifest.json',
                 '/dati/meta.json', '/dati/quiz.json', '/dati/tecniche.json',
-                '/dati/carteggio.json', '/privacy', '/avvertenza'];
+                '/dati/carteggio.json', '/privacy', '/avvertenza',
+                // Le icone, cosi' l'app installata ha la sua faccia anche
+                // offline. La og-card no: la guarda un crawler, non chi studia.
+                '/favicon.svg', '/favicon-32.png', '/favicon-16.png', '/apple-touch-icon.png',
+                '/icon-192.png', '/icon-512.png', '/icon-maskable-512.png'];
 
 /** Il nome della cache lo scrive sw.js e lo tiene allineato a VERSION un test:
  *  qui lo si legge dalle cache esistenti, non lo si indovina. */
@@ -1456,7 +1494,7 @@ function dipingiDifetti() {
         (correnti, carburante, navigazione costiera, scarroccio) invece e' ministeriale.</li>
     </ul>
     <p class="note" style="margin-top:8px">Tutto il resto — id, motivazioni, e come rifare la
-      verifica contro il PDF del decreto — e' nel <a href="https://github.com/ilbeca/open-patente-nautica#readme">README</a>
+      verifica contro il PDF del decreto — e' nel <a href="https://github.com/ilbeca/rotta-giusta#readme">README</a>
       e in <a href="/avvertenza">Avvertenza</a>.</p>`;
 }
 
@@ -2603,7 +2641,7 @@ function rigaProva(p, etichetta) {
   const q = p.passed ? 'ok' : 'ko';
   const min = p.ms ? Math.round(p.ms / 60000) : null;
   const ora = String(p.ts).slice(11, 16);
-  return `<button class="weak riv" style="border:0;border-bottom:1px solid #1b2536;padding:9px 0" data-rivedi="${esc(p.uid)}">
+  return `<button class="weak riv" style="border:0;border-bottom:1px solid #27394B;padding:9px 0" data-rivedi="${esc(p.uid)}">
     <div class="n" style="color:var(--${q})">${p.score}<small style="color:var(--dim)">/${p.total}</small></div>
     <div class="t"><b style="color:var(--${q})">${etichetta ? etichetta + ' · ' : ''}${p.passed ? 'Superata' : 'Non superata'}</b>
       <span>${giornoIt(String(p.ts).slice(0, 10))}${ora ? ` · ${ora}` : ''}${min != null ? ` · ${min} minuti` : ''}</span></div>
@@ -2644,7 +2682,7 @@ function rigaSessione(s) {
   // regola della 0.11.0 per il giro delle tecniche e il tappeto.
   const esito = prova ? `<b style="color:var(--${col})">${prova.passed ? 'Superata' : 'Non superata'}</b> · ` : '';
   const marchio = s.fonte === 'risposte' ? ' · <i>confine ricostruito</i>' : '';
-  return `<button class="weak riv" style="border:0;border-bottom:1px solid #1b2536;padding:9px 0" data-rivedi="${esc(s.id)}">
+  return `<button class="weak riv" style="border:0;border-bottom:1px solid #27394B;padding:9px 0" data-rivedi="${esc(s.id)}">
     <div class="n" style="color:var(--${col})">${s.esatte}<small style="color:var(--dim)">/${s.n}</small></div>
     <div class="t"><b>${esc(nome)}</b>
       <span>${esito}${giornoIt(String(s.fine).slice(0, 10))} · ${String(s.inizio).slice(11, 16)}${
@@ -3243,7 +3281,7 @@ function correggiTec() {
   E.applica(S.tprog, e.id, ok, ms, today());
   [...document.querySelectorAll('[data-tec]')].forEach(b => {
     const t = b.dataset.tec;
-    if (atteso.has(t)) { b.style.background = 'var(--ok)'; b.style.color = '#06101c'; b.style.borderColor = 'var(--ok)'; }
+    if (atteso.has(t)) { b.style.background = 'var(--ok)'; b.style.color = '#0B1F33'; b.style.borderColor = 'var(--ok)'; }
     else if (R.sel.has(t)) { b.style.background = 'var(--ko)'; b.style.color = '#fff'; b.style.borderColor = 'var(--ko)'; }
     else b.style.opacity = .4;
   });
@@ -3407,7 +3445,7 @@ function dipingiSeg() {
   document.getElementById('s-start').textContent = `Inizia — ${SEGMODI[segModo].nome.toLowerCase()}`;
   const righe = Object.entries(SEGMODI).map(([k, m]) => {
     const p = segPunti[k];
-    return `<div style="display:flex;gap:10px;padding:7px 0;border-bottom:1px solid #1b2536;font-size:13.5px">
+    return `<div style="display:flex;gap:10px;padding:7px 0;border-bottom:1px solid #27394B;font-size:13.5px">
       <span style="flex:1">${m.nome}</span>
       <span style="color:var(--dim);font-variant-numeric:tabular-nums">${p
         ? `migliore <b style="color:var(--fg)">${p.migliore}/${E.lunghezzaPartita(k)}</b> · ${p.giocate} partit${p.giocate === 1 ? 'a' : 'e'}`
