@@ -19,6 +19,25 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   un'altra sessione. Primo passo della decisione su come lavorano due agenti
   sullo stesso repo (relazione del 07/09/2026).
 
+### Aggiunto
+
+- **Cinque documenti di lavoro in `docs/`**, scritti fra il 7 e il 9 settembre da
+  Claude Code e ChatGPT insieme: `percorso-ux.md` (metodo e fasi della
+  progettazione), `specifiche-ux.md` (l'esperienza da realizzare, con requisiti e
+  criteri di verifica), `riscontro-ux.md` (la revisione delle specifiche contro il
+  codice pubblicato), `motore.md` (che cosa il motore sa fare già e che cosa no) e
+  `ricerca-programma-esame.md` (che cosa dicono le fonti sul programma d'esame e
+  sulle prove). Entrano così come sono, prima di ogni modifica a `site/`: erano
+  circa duemila righe fuori da ogni commit, nel checkout dove lavorano due agenti.
+
+### Corretto
+
+- **La composizione della scheda d'esame è ministeriale**, non una deduzione di
+  tre scuole nautiche: è l'Allegato C al DM 323/2021. Il `README.md` diceva il
+  contrario perché nel repo c'era un solo decreto, quello dei quesiti, e la
+  composizione sta nell'altro. Resta non ministeriale la ripartizione dentro un
+  tema. Le evidenze sono in `docs/ricerca-programma-esame.md`.
+
 ## [0.22.1] — 2026-09-07
 
 ### Corretto

@@ -42,10 +42,30 @@ Quello che rende questo sito diverso dagli altri non sono i quiz. È che
   ne marca una sola, anche se sembra sbagliata, la risposta resta quella.
 - **La composizione delle 20 domande per tema** — 4 Navigazione, 4 Manovra,
   3 Sicurezza, 3 Normativa, 2 COLREG, 2 Meteorologia, 1 Teoria dello scafo,
-  1 Motori — governa la simulazione e tutte le priorità dell'app, e **non è nel
-  decreto**: viene da tre scuole nautiche indipendenti e concordi fra loro. Va
-  confermata con la propria. Lo stesso vale per l'assunzione che la prova di
-  carteggio peschi un esercizio per ciascuno dei quattro argomenti.
+  1 Motori — governa la simulazione e tutte le priorità dell'app, ed **è
+  ministeriale**: è l'**Allegato C al DM 10 agosto 2021, n. 323** (GU Serie
+  generale n. 232 del 28 settembre 2021, p. 39), «Distribuzione dei quesiti
+  secondo i temi previsti dal programma di esame». Gli otto numeri coincidono
+  uno per uno con quelli usati qui.
+
+  Fino al 9 settembre 2026 questo README dichiarava il contrario — «non è nel
+  decreto, viene da tre scuole nautiche» — e la ragione dell'errore vale più
+  della correzione: nel repo c'era **un solo** decreto, l'elenco dei quesiti
+  (DD 131/2022), e lì dentro la composizione della scheda infatti non c'è. Sta
+  nell'altro decreto, quello che stabilisce le prove, che nessuno aveva cercato.
+  Le tre scuole nautiche non avevano dedotto niente: stavano citando l'Allegato C.
+  Le evidenze sono in [`docs/ricerca-programma-esame.md`](docs/ricerca-programma-esame.md).
+
+  **Quello che resta non ministeriale è la ripartizione dentro un tema.**
+  L'Allegato C dice quanti quesiti per tema e nient'altro: come si distribuiscano
+  fra le 44 voci non è scritto in nessun atto. Ogni priorità per voce — la resa
+  della diagnosi, il costo in domande d'esame, i consigli, la Mirata — è una
+  costruzione di questo sito.
+- **La prova di carteggio pesca «un esercizio per ciascuno dei quattro
+  argomenti»: è un'assunzione, non una regola.** L'art. 6 comma 6 del DM 323/2021
+  dice soltanto «quattro quesiti indipendenti», e non nomina gli argomenti. Nella
+  banca la carta 42/D non ha **nessun** esercizio di carburante, quindi la regola
+  non potrebbe reggersi su una carta sola. Va confermata con la propria scuola.
 - **Le 12 «tecniche» di carteggio non sono ministeriali**: sono una
   classificazione derivata dai testi degli esercizi, alla cieca, per l'allenamento
   «che tecnica serve?». L'*argomento* di ogni esercizio (correnti, carburante,
