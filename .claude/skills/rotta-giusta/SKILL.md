@@ -13,7 +13,7 @@ description: >
 Sito statico con i 1.722 quesiti e i 135 esercizi di carteggio dell'Allegato A
 al DD 131/2022, il motore di selezione del progetto personale da cui e' estratto,
 e le risposte che restano nel browser di chi studia. Repo `~/Software/open-patente-nautica`
-sull'Air, remoto `ilbeca/open-patente-nautica` (pubblico), pubblicato da
+sull'Air, remoto `ilbeca/rotta-giusta` (pubblico), pubblicato da
 Cloudflare Pages a ogni push su `main`, cartella `site/`. Nessun server, nessun
 database, nessun build step.
 
@@ -21,7 +21,8 @@ database, nessun build step.
 
 | domanda | comando |
 |---|---|
-| vincoli, comandi, difetti aperti | `CLAUDE.md` — il primo da leggere |
+| vincoli, comandi, difetti aperti | `AGENTS.md` — il primo da leggere |
+| chi tocca cosa, e chi lo fa rispettare | `territori.yaml`, letto da `.githooks/pre-commit` |
 | che versione c'e' nel repo | `cat VERSION`, o `git describe --tags` |
 | cosa e' uscito e **perche'** | `CHANGELOG.md` |
 | perche' esiste, da dove vengono i dati, cosa e' stato corretto | `README.md` |
@@ -29,7 +30,7 @@ database, nessun build step.
 | che cosa passa | `node --test tests/test_engine.mjs` e `python3 tests/test_dati.py` |
 | i dati sono ancora quelli del decreto? | `python3 fonte/verifica.py` |
 | e' rientrato qualcosa che non deve uscire di casa? | `python3 strumenti/controlla.py` |
-| il sito in locale | `python3 -m http.server 8787 --directory site` |
+| il sito in locale | `python3 strumenti/serve.py` — riproduce i 308 di Pages |
 
 ## Le trappole
 
@@ -46,6 +47,13 @@ database, nessun build step.
    `site/dati/`, e `strumenti/controlla.py` fallisce se rientra materiale che
    non e' del decreto o un identificatore delle macchine dell'autore.
 5. **Niente push senza chiedere.** Un push pubblica.
+6. **Su questo repo lavorano due agenti, e il confine lo fa rispettare git.**
+   ChatGPT sta nel worktree `~/Software/rotta-giusta-ui` sul ramo `ui/main` e
+   tiene l'interfaccia; Claude sta nel checkout principale su `main` e tiene
+   motore, dati, test e documenti. `territori.yaml` dice chi tocca cosa e il
+   `pre-commit` rifiuta un commit fuori territorio. Mai `--no-verify`, mai
+   `git add -A`: si mette in stage per nome. Il perche' e' in `AGENTS.md`,
+   sezione «Chi tocca cosa».
 
 ## Git
 

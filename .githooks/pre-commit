@@ -1,0 +1,7 @@
+#!/bin/sh
+SCRIPT="$(git rev-parse --show-toplevel)/../Standards/tools/check_territories.py"
+[ -f "$SCRIPT" ] || {
+    echo "Standards non e' accanto a questo repo: territori non controllati" >&2
+    exit 0
+}
+exec python3 "$SCRIPT" "$@"

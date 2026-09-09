@@ -54,6 +54,51 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   cadono solo le tre superate, e delle sette righe di qui che non sopravvivono
   tutte e sette sono riscritture più recenti, non perdite.
 
+- **Il recinto per due agenti: `AGENTS.md` sorgente, `territori.yaml`, e un
+  `pre-commit` che lo fa rispettare.** ChatGPT sta per rivedere l’interfaccia. Il
+  07/09/2026, su `patente-gioco`, questa stessa coppia nella stessa cartella si
+  era rotta in cinque modi — fra gli altri un `git add -A` che ha annullato in
+  silenzio il revert dell’altro — e nessuno dei cinque aveva prodotto un errore.
+  L’ADR-004 di `Standards` ne conclude che una regola che un agente deve
+  ricordare si sostituisce con un controllo che git esegue. Questo è
+  l’adozione di quel controllo qui: il hook c’era già in `Standards`, questa
+  sessione non lo scrive, lo aggancia.
+
+  **Un file di regole solo.** `AGENTS.md` diventa la sorgente e `CLAUDE.md` la
+  riga `@AGENTS.md`. Erano due copie non tracciate e **già divergenti**:
+  `AGENTS.md` si intitolava ancora «Open Patente Nautica», e in `.agents/skills/`
+  c’erano due cartelle vere, una col nome vecchio. Ora la skill sta in un posto
+  solo e `.agents/skills/rotta-giusta` è un symlink relativo, che vale anche nel
+  worktree. `docs-check.yaml` dichiara il blocco `rules` che lo verifica:
+  l’asserzione «regole» passa da *saltata* a **eseguita**.
+
+  **`territori.yaml` dice chi tocca cosa**, e il `pre-commit` rifiuta un commit
+  fuori territorio nominando il file. Il motore è di `main` anche dove abita in
+  `site/` — `engine.js`, `dati/`, `figure/` — l’interfaccia è del ramo `ui/*`,
+  `CHANGELOG.md` e `sw.js` sono condivisi. `VERSION` sta fra le regole: da `ui/*`
+  non si rilascia, perché i tag sono condivisi fra i worktree e due rami che
+  chiudessero entrambi con un bump si scontrerebbero per forza.
+
+  **Due cose trovate misurando, non deducendo.** La prima è un guasto muto nel
+  formato: scritte come liste su più righe, le voci di `territori.yaml` vengono
+  **troncate alla prima riga** dal ripiego senza PyYAML, senza dirlo — e con quel
+  parse `site/engine.js` finiva in `interfaccia`, cioè il recinto avrebbe detto a
+  ChatGPT che il motore era suo. Ogni lista sta ora su una riga sola, e i due
+  parser danno lo stesso risultato. La seconda: `site/figure/` non era in nessun
+  territorio del motore e sarebbe finita all’interfaccia. Sono le 102 figure del
+  decreto, protette da un test come `site/dati/`; il marchio e le icone restano
+  invece dell’interfaccia, perché quelli sì sono asset grafici.
+
+  Provato al contrario quattro volte, e ogni volta con il file e il ramo
+  nominati: su `main` un file dell’interfaccia e una riga tolta dal changelog
+  sono stati rifiutati; dal worktree `ui/main` è stato rifiutato `site/engine.js`
+  e lasciato passare `site/index.html`. I due alberi sono rimasti puliti. Anche
+  il controllo che chi fa la merge lancia sul diff del ramo è stato provato su un
+  diff finto: pesca `engine.js` e `VERSION`, lascia passare `app.html`.
+
+  `site/` non è stato toccato, e non c’è bump: non cambia niente che l’utente
+  riceva.
+
 ### Corretto
 
 - **La composizione della scheda d'esame è ministeriale**, non una deduzione di

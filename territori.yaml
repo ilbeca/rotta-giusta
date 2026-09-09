@@ -1,0 +1,18 @@
+# territori.yaml — chi tocca cosa, letto dal pre-commit di Standards (ADR-004).
+# Linkato da AGENTS.md, sezione «Chi tocca cosa», che spiega il perche'.
+#
+# L'ordine conta: un file appartiene al PRIMO territorio che lo combacia, quindi
+# le eccezioni dentro `site/` stanno prima del suo `**`. I `condivisi` vincono su
+# tutto: `site/sw.js` resta di tutti anche se combacerebbe `site/**`.
+#
+# Ogni lista sta su UNA riga: il ripiego senza PyYAML (minimal_yaml) non legge le
+# liste spezzate su piu' righe, le tronca alla prima e non lo dice. Verificato il
+# 09/09/2026: cosi' spezzato, `site/engine.js` finiva in `interfaccia`.
+territori:
+  motore:      [site/engine.js, site/dati/**, site/figure/**, fonte/**, strumenti/**, tests/**, docs/adr/**, docs/motore.md]
+  regole:      [AGENTS.md, CLAUDE.md, territori.yaml, docs-check.yaml, .githooks/**, .claude/**, .agents/**, .gitignore, README.md, LICENSE, VERSION]
+  interfaccia: [docs/*-ux.md, site/**]
+condivisi:     [CHANGELOG.md, site/sw.js]
+rami:
+  "main":  [motore, regole]
+  "ui/*":  [interfaccia]

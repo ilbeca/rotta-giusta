@@ -2,5 +2,13 @@
 # (Standards/tools/check_docs_current.py, di un altro repo dell'autore):
 # nessun servizio, nessun database — si controllano solo le versioni scritte
 # nelle skill e la copertura del CHANGELOG.
-skills:    [.claude/skills/*/SKILL.md, CLAUDE.md, README.md]
+skills:    [.claude/skills/*/SKILL.md, AGENTS.md, README.md]
 changelog: CHANGELOG.md
+
+# Un file contiene, gli altri puntano (ADR-004, D1): AGENTS.md e' la sorgente,
+# CLAUDE.md e' la riga `@AGENTS.md`, e `.agents/skills/` sono symlink e non copie.
+rules:
+  source:       AGENTS.md
+  pointers:     [CLAUDE.md]
+  skills_dir:   .claude/skills
+  skills_links: [.agents/skills]
