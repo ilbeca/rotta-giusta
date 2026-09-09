@@ -93,10 +93,6 @@ Cinque cose che la tabella non dice.
   un ramo sconosciuto puo' toccare solo i condivisi e i neutri. Non e' teoria:
   il 09/09/2026 due worktree cosi' esistevano gia' in `~/.codex/worktrees/`,
   staccati, con dentro 480 KB di lavoro che non era in nessun commit.
-- **Ogni lista di `territori.yaml` sta su una riga sola.** Il ripiego senza
-  PyYAML tronca le liste spezzate su piu' righe e non lo dice: misurato, con la
-  lista spezzata `site/engine.js` finiva in `interfaccia`, cioe' il recinto
-  diceva a ChatGPT che il motore era suo.
 
 ### I punti di contatto
 
@@ -140,21 +136,16 @@ Il lavoro di ChatGPT arriva su `main` con una **merge** fatta da Claude o
 dall'autore; nessun agente fa «hand off» nel checkout principale.
 
 **La merge non passa dal `pre-commit`**, ed e' deliberato: e' il punto in cui un
-umano guarda. Chi fa la merge lancia prima il controllo sul diff del ramo —
-`check_territories.py` da riga di comando guarda solo cio' che e' in stage, ma
-la sua funzione accetta un elenco di file e un ramo:
+umano guarda. Chi fa la merge lancia prima il controllo sul diff del ramo:
 
 ```sh
-python3 -c "
-import sys, subprocess, pathlib
-sys.path.insert(0, '../Standards/tools')
-from check_territories import load_config, check_territories
-f = subprocess.run(['git','diff','--name-only','main...ui/main'],
-                   capture_output=True, text=True).stdout.split()
-p = check_territories(f, 'ui/main', load_config(pathlib.Path('.')))
-print('\n'.join(p) if p else 'territori: niente fuori posto')
-"
+python3 ../Standards/tools/check_territories.py --range main...ui/main
 ```
+
+I percorsi vengono da `git diff --name-only main...ui/main` e le righe cancellate
+dal changelog si contano sull'intervallo; lo stage non si legge. Il ramo con cui si
+leggono i territori e' il lato destro dell'intervallo. Esce 1 se c'e' una
+violazione, e nomina i file.
 
 Poi si guarda il `CHANGELOG.md`, che e' il posto dove il conflitto arriva.
 

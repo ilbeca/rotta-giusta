@@ -155,6 +155,12 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   gia' visti, cioe' doppioni → 5; e la forma anteriore alla 0.16.0, la lista dei
   soli mai visti → 6. Il test di compatibilita' con la pagina li ha presi tutti
   e cinque.
+- **Il controllo prima della merge e' un comando**, `check_territories.py --range
+  main...ui/main`, al posto della chiamata di libreria scritta in `AGENTS.md`; e il
+  vincolo «ogni lista di `territori.yaml` su una riga» sparisce, perche' il
+  ripiego di Standards ora legge le liste spezzate e rifiuta quelle aperte
+  (Standards `91d90c9`).
+
 
 ## [0.22.1] — 2026-09-07
 
