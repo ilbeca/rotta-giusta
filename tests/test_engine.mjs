@@ -11,9 +11,13 @@ import {
   fondi, isoLocale, stimaImpegno, mirata, consigli, oscurato, RIPIEGO_MS,
   serieGruppi, tendenza, TENDENZA_MIN_GIORNI, TENDENZA_MIN_RISPOSTE,
   SEGNALI, SEGNALI_MODI, poolSegnali, domandeSegnali, lunghezzaPartita,
-  giroTecniche, tappeto,
+  giroTecniche, tappeto, daAllenare,
   epoca, ordinaRighe, ripiega, sessioni, fondiArchivio, PAUSA_SESSIONE_MS,
 } from '../site/engine.js';
+// Il namespace serve al solo test di compatibilita' con la pagina: la copia in
+// `app.html` chiama `E.coda()` ed `E.classifica()`, e va eseguita com'e'.
+import * as E from '../site/engine.js';
+import { readFileSync } from 'node:fs';
 
 const OGGI = '2026-08-08';
 
@@ -1457,4 +1461,148 @@ test('traccia: senza una scadenza niente quota e semaforo in attesa, invece di N
   const c = traccia(items, prog, '2026-08-08', 'base', '2026-08-10', '2026-08-01');
   assert.equal(c.giorni, 3); assert.equal(c.quota, 3);
   assert.ok(['verde', 'giallo', 'rosso'].includes(c.semaforo));
+});
+
+// --- daAllenare: il numero promesso e la lista che si apre ----------------------
+//
+// Sette test per una funzione di sei righe, e la ragione e' che questa e' la
+// funzione dove il difetto di casa e' tornato **tre volte**: 0.13.3 su «Allena
+// questa voce», 0.16.0 sul pulsante di *Oggi* e sulla modalita' Per argomento.
+// Tutte e tre le volte il sintomo era lo stesso — un numero in schermata e una
+// lista che non venivano dalla stessa fonte — e tutte e tre le volte non c'era
+// un test, perche' la funzione viveva nella pagina.
+
+// Dodici quesiti in due temi e due voci, cinque dei quali con figura, piu' un
+// item vela per verificare che il filtro `kind` valga davvero.
+function bancaAllenare() {
+  const conFigura = new Set([3, 4, 9, 10, 12]);
+  const out = Array.from({ length: 12 }, (_, j) => {
+    const i = j + 1;
+    return {
+      id: `base-${i}`, k: 'base',
+      t: i <= 6 ? 'TEMA A' : 'TEMA B',
+      v: (i - 1) % 6 < 3 ? 'voce 1' : 'voce 2',
+      d: `domanda ${i}`, r: ['a', 'b', 'c'], x: 0,
+      ...(conFigura.has(i) ? { f: 'figura-001.png' } : {}),
+    };
+  });
+  out.push({ id: 'vela-1', k: 'vela', t: 'VELA', v: 'voce 1', d: 'v', r: ['a', 'b', 'c'], x: 0 });
+  return out;
+}
+
+// aperte 2, 9 · riprese 3, 10 · coperte 1, 4, 7, 11 · mai visti 5, 6, 8, 12
+function progAllenare() {
+  const p = {};
+  for (const i of [2, 9]) applica(p, `base-${i}`, false, 9000, '2026-08-01');
+  for (const i of [3, 10]) {
+    applica(p, `base-${i}`, false, 9000, '2026-08-01');
+    applica(p, `base-${i}`, true, 9000, '2026-08-02');
+  }
+  for (const i of [1, 4, 7, 11]) applica(p, `base-${i}`, true, 9000, '2026-08-03');
+  return p;
+}
+
+const ids = (l) => l.map((x) => x.id);
+
+test('daAllenare: quattro gruppi in ordine — aperte, mai visti, riprese, il resto', () => {
+  const r = daAllenare(bancaAllenare(), progAllenare(), OGGI, 'base');
+  assert.deepEqual(ids(r.lista), [
+    'base-2', 'base-9',                                  // errore ancora aperto
+    'base-5', 'base-6', 'base-8', 'base-12',             // mai visti
+    'base-3', 'base-10',                                 // sbagliate e gia' riprese
+    'base-1', 'base-4', 'base-7', 'base-11',             // il resto: ripasso
+  ]);
+});
+
+test('daAllenare: daFare sono le aperte piu i mai visti, non tutta la lista', () => {
+  const items = bancaAllenare(), prog = progAllenare();
+  const r = daAllenare(items, prog, OGGI, 'base');
+  assert.equal(r.daFare, 6, '2 aperte + 4 mai visti');
+  assert.equal(r.lista.length, 12, 'in lista c e tutta la banca: una batteria non resta a corto');
+  // E' la stessa definizione di `rimanenti` in traccia(): se le due divergono,
+  // il pulsante torna a promettere un numero e ad aprirne un altro.
+  const t = traccia(items, prog, OGGI, 'base', '2026-09-03', '2026-08-01');
+  assert.equal(r.daFare, t.rimanenti);
+});
+
+test('daAllenare: una sbagliata ripresa resta in lista, ma dietro ai mai visti', () => {
+  const r = daAllenare(bancaAllenare(), progAllenare(), OGGI, 'base');
+  const pos = (id) => ids(r.lista).indexOf(id);
+  assert.ok(pos('base-3') > -1, 'ripresa: sbagliarla una volta non scade (regola della 0.5.1)');
+  assert.ok(pos('base-2') < pos('base-5'), 'aperta prima di un mai visto');
+  assert.ok(pos('base-5') < pos('base-3'), 'mai visto prima di una ripresa');
+  assert.ok(pos('base-3') < pos('base-1'), 'ripresa prima di chi non ha mai sbagliato');
+  assert.equal(classifica(progAllenare()['base-3']), 'coperto');
+  assert.equal(classifica(progAllenare()['base-2']), 'da_ripassare');
+});
+
+test('daAllenare: i filtri valgono per tutti e quattro i gruppi', () => {
+  const items = bancaAllenare(), prog = progAllenare();
+  const a = daAllenare(items, prog, OGGI, 'base', { temi: ['TEMA A'] });
+  assert.deepEqual(ids(a.lista), ['base-2', 'base-5', 'base-6', 'base-3', 'base-1', 'base-4']);
+  assert.equal(a.daFare, 3);
+
+  const v = daAllenare(items, prog, OGGI, 'base', { voce: 'voce 1' });
+  assert.deepEqual(ids(v.lista), ['base-2', 'base-9', 'base-8', 'base-3', 'base-1', 'base-7']);
+  assert.equal(v.daFare, 3);
+
+  // soloFigura: il filtro che l'anteprima usa per dire quanti ne passano. Se
+  // valesse su un gruppo solo, il conteggio e la lista tornerebbero a divergere.
+  const f = daAllenare(items, prog, OGGI, 'base', { soloFigura: true });
+  assert.deepEqual(ids(f.lista), ['base-9', 'base-12', 'base-3', 'base-10', 'base-4']);
+  assert.equal(f.daFare, 2);
+  assert.ok(f.lista.every((x) => x.f), 'nessuno senza figura');
+
+  // kind: l'item vela non deve comparire fra i base, ne' viceversa.
+  assert.ok(!ids(daAllenare(items, prog, OGGI, 'base').lista).includes('vela-1'));
+  const vela = daAllenare(items, prog, OGGI, 'vela');
+  assert.deepEqual(ids(vela.lista), ['vela-1']);
+  assert.equal(vela.daFare, 1);
+});
+
+test('daAllenare: a banca interamente coperta apre comunque qualcosa, e lo dice', () => {
+  // E' il difetto della 0.16.0, riprodotto: il 2 settembre i mai visti sono
+  // arrivati a zero e il pulsante di *Oggi*, che apriva una coda di soli
+  // `nuovo`, prometteva 76 quesiti e ne apriva zero.
+  const items = bancaAllenare(), prog = {};
+  for (const it of items) applica(prog, it.id, true, 9000, '2026-08-03');
+  const r = daAllenare(items, prog, OGGI, 'base');
+  assert.equal(r.daFare, 0, 'niente di arretrato, ed e vero');
+  assert.equal(r.lista.length, 12, 'ma la lista non e vuota: e tutto ripasso');
+
+  // E il caso rovesciato: banca coperta e due errori ancora aperti.
+  applica(prog, 'base-4', false, 9000, '2026-08-05');
+  applica(prog, 'base-8', false, 9000, '2026-08-06');
+  const r2 = daAllenare(items, prog, OGGI, 'base');
+  assert.equal(r2.daFare, 2);
+  assert.deepEqual(ids(r2.lista).slice(0, 2), ['base-4', 'base-8']);
+});
+
+test('daAllenare: nessun elemento compare due volte, in nessun filtro', () => {
+  const items = bancaAllenare(), prog = progAllenare();
+  for (const extra of [{}, { temi: ['TEMA A'] }, { voce: 'voce 1' }, { soloFigura: true },
+                       { temi: ['TEMA A', 'TEMA B'] }]) {
+    const l = ids(daAllenare(items, prog, OGGI, 'base', extra).lista);
+    assert.equal(new Set(l).size, l.length, `doppioni con ${JSON.stringify(extra)}`);
+  }
+});
+
+test('daAllenare: il motore fa esattamente quello che oggi fa la pagina', (t) => {
+  // La copia in `app.html` esiste dalla 0.16.0. Finche' c'e', questo test la
+  // esegue davvero — estratta dal file, non trascritta — e pretende che dia la
+  // stessa lista. Quando l'interfaccia passera' a `E.daAllenare()` la copia
+  // sparira' e il test si mettera' da parte da solo: e' un controllo che si
+  // ritira quando ha finito il suo lavoro, non una regola da ricordare.
+  const src = readFileSync(new URL('../site/app.html', import.meta.url), 'utf8');
+  const m = src.match(/^function daAllenare\(kind, extra = \{\}\) \{[\s\S]*?^\}/m);
+  if (!m) return t.skip('app.html non ha piu una sua daAllenare(): ora chiama il motore');
+
+  const items = bancaAllenare(), prog = progAllenare();
+  const S = { banca: items, prog, date: { oggi: OGGI } };
+  const pagina = new Function('E', 'S', 'today', `${m[0]}\nreturn daAllenare;`)(E, S, () => OGGI);
+  for (const extra of [{}, { temi: ['TEMA A'] }, { voce: 'voce 1' }, { soloFigura: true }]) {
+    const a = pagina('base', extra), b = daAllenare(items, prog, OGGI, 'base', extra);
+    assert.deepEqual(ids(a.lista), ids(b.lista), `lista diversa con ${JSON.stringify(extra)}`);
+    assert.equal(a.daFare, b.daFare, `daFare diverso con ${JSON.stringify(extra)}`);
+  }
 });

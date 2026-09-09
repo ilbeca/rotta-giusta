@@ -1,6 +1,6 @@
 # Rotta Giusta — il motore, e come sta insieme il resto
 
-**Data:** 8 settembre 2026. **Prodotto di riferimento:** v0.22.1.
+**Data:** 8 settembre 2026, aggiornato il 9. **Prodotto di riferimento:** v0.22.1.
 
 **A che cosa serve.** A capire che cosa il sito **sa fare già** e che cosa **non
 sa**, senza leggere 64 KB di `site/engine.js`. È nato per il lavoro sulla UX,
@@ -123,6 +123,7 @@ deve usare i tre, non la percentuale sola.
 | `mirata()` | sessione consigliata: richiami, esplorazione pesata sulla resa d’esame, conferme | sì |
 | `giroTecniche()` | copertura greedy delle 12 tecniche di carteggio | sì (a parità preferisce i mai fatti) |
 | `tappeto()` | i prossimi n esercizi mai fatti, nell’ordine del foglio | sì |
+| `daAllenare()` | che cosa mi manca sotto una restrizione qualunque: la lista **e** l’arretrato, dalla stessa fonte | sì |
 
 **Due funzioni di estrazione e non una** perché sono due mestieri: una prova che
 ti serve solo quesiti mai visti misura quanto è vergine il foglio, non il voto
@@ -132,6 +133,17 @@ L’ordine di «solo sbagliate» ha tre chiavi — errore ancora aperto, poi il 
 trascurato, poi l’errore più fresco — e la seconda è quella che fa avanzare la
 lista **senza segnaposto**: quello che hai appena fatto scende in fondo da solo
 (0.16.0). Stessa idea in `tappeto()`: la ripresa è gratis perché è derivata.
+
+`daAllenare(items, progress, oggi, kind, extra)` non è una selezione nuova: sono
+tre chiamate a `coda()` composte in quattro gruppi — **aperte → mai visti → già
+riprese → il resto** — e restituisce due cose che non vanno confuse. `lista` è
+tutto, in ordine di priorità, perché una batteria non deve restare a corto di
+domande; `daFare` sono i soli primi due gruppi, cioè `rimanenti` di `traccia()`.
+`extra` sono le opzioni di `coda()` (`temi`, `voci`, `voce`, `soloFigura`) e
+valgono su tutte e tre le chiamate: è così che il numero promesso e la lista che
+si apre non possono divergere nemmeno sotto un filtro. Chi disegna scrive
+`daFare` come «da fare» e la differenza come ripasso; scriverli uguali sarebbe la
+bugia opposta a quella riparata nella 0.16.0.
 
 Tutte le selezioni con seme sono **deterministiche**: stesso storico e stesso
 giorno, stessa lista. `semeGiorno()` è il seme delle selezioni riproducibili.
@@ -186,8 +198,11 @@ che *insegna* invece di interrogare.
 ## 8. Le garanzie che l’interfaccia non deve rompere
 
 1. **Il numero promesso e la lista che si apre vengono dalla stessa fonte.** È
-   il difetto tornato tre volte; `daAllenare()` (`app.html:1970`) esiste per
-   questo.
+   il difetto tornato tre volte; `daAllenare()` esiste per questo. Dal 9
+   settembre 2026 sta **nel motore**, con i suoi sette test, dopo essere vissuta
+   in `app.html` dalla 0.16.0: era l’ultima selezione fuori da `engine.js`.
+   L’interfaccia la chiama come `E.daAllenare(banca, prog, oggi, kind, extra)` e
+   non ne tiene una copia.
 2. **Nessuna seconda copia dello storico.** Lo specchio si ricalcola, non si
    salva.
 3. **La simulazione ignora lo storico e gli oscurati**, e resta distinguibile

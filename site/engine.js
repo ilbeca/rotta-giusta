@@ -184,6 +184,51 @@ export function coda(items, progress, oggi, opt = {}) {
   return n > 0 ? out.slice(0, n) : out;
 }
 
+// --- che cosa mi manca, per qualunque restrizione ------------------------------
+//
+// La lista che apre una batteria, una passata per argomento o «Allena questa
+// voce», e insieme il numero che il pulsante promette. Tre chiamate a `coda()`
+// composte in quattro gruppi — nessuna selezione nuova, e il taglio fra aperte
+// e riprese lo fa `classifica()`:
+//
+//   aperte -> mai visti -> gia' riprese -> il resto
+//
+// I primi due gruppi sono **esattamente** `rimanenti` di `traccia()`
+// (`totale - coperti` = da ripassare + mai visti), ed e' il punto: fino alla
+// 0.15.0 il pulsante di *Oggi* dichiarava `rimanenti` e poi apriva una `coda()`
+// con gli stati di default, che esclude i `chiuso`. Con la banca interamente
+// coperta i mai visti sono zero, quindi il pulsante prometteva 76 quesiti e ne
+// apriva **zero**, con scritto «Niente da fare con questa selezione»: due
+// definizioni diverse di «quel che resta» dentro lo stesso pulsante. E' la
+// stessa forma del difetto riparato nella 0.13.3 per «Allena questa voce»,
+// rimasta accesa fino al giorno in cui i mai visti sono finiti.
+//
+// Sta in `app.html` dalla 0.16.0, ed e' l'ultima selezione rimasta fuori dal
+// motore. Qui non cambia di una riga: cambia il posto, che e' quello in cui si
+// testa — e la regola «la selezione sta in un solo file» torna vera.
+
+/**
+ * Restituisce **due** cose, ed e' voluto: `lista` e' tutto, in ordine di
+ * priorita', perche' una batteria non deve finire a corto di domande; `daFare`
+ * sono solo i primi due gruppi, cioe' il lavoro davvero arretrato. Scriverli
+ * uguali sarebbe la bugia opposta a quella riparata qui: dire «1.472 da fare»
+ * quando le domande arretrate sono 76 e il resto e' ripasso.
+ *
+ * `extra` sono le opzioni di `coda()` — `temi`, `voci`, `voce`, `tema`,
+ * `soloFigura` — e valgono per tutte e tre le chiamate: il numero promesso e la
+ * lista che si apre non possono divergere nemmeno sotto un filtro.
+ */
+export function daAllenare(items, progress, oggi, kind, extra = {}) {
+  const q = (o) => coda(items, progress, oggi, { kind, n: 0, ...extra, ...o });
+  const sbagliate = q({ soloSbagliate: true });
+  const aperte = sbagliate.filter((x) => classifica(progress[x.id]) === 'da_ripassare');
+  const riprese = sbagliate.filter((x) => classifica(progress[x.id]) !== 'da_ripassare');
+  const nuovi = q({ stati: ['nuovo'] });
+  const visti = new Set([...sbagliate, ...nuovi].map((x) => x.id));
+  const resto = q({ includiChiusi: true }).filter((x) => !visti.has(x.id));
+  return { lista: [...aperte, ...nuovi, ...riprese, ...resto], daFare: aperte.length + nuovi.length };
+}
+
 /** Un generatore pseudocasuale con seme (LCG): stessa sequenza, stesso seme. */
 function creaRnd(seme) {
   let s = seme >>> 0;

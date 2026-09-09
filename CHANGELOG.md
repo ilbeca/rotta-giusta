@@ -107,6 +107,55 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   composizione sta nell'altro. Resta non ministeriale la ripartizione dentro un
   tema. Le evidenze sono in `docs/ricerca-programma-esame.md`.
 
+### Spostato
+
+- **`daAllenare()` passa da `site/app.html` a `site/engine.js`**, con i suoi
+  test. Era l'ultima selezione rimasta fuori dal motore, e `AGENTS.md` la
+  nominava per nome: va spostata *prima* che la schermata venga rifatta. Il
+  rifacimento comincia adesso, quindi il momento e' questo.
+
+  **Perche' conta piu' di un trasloco.** E' la funzione dove il difetto di casa
+  e' tornato **tre volte** — 0.13.3 su «Allena questa voce», 0.16.0 sul pulsante
+  di *Oggi* e sulla modalita' Per argomento — sempre con lo stesso sintomo: un
+  numero in schermata e una lista che non venivano dalla stessa fonte. E tutte e
+  tre le volte non c'era un test, perche' la funzione viveva nella pagina, dove
+  `node --test` non arriva. Ora ci arriva.
+
+  **Il comportamento non cambia di una riga, e non e' una dichiarazione:** uno
+  dei sette test nuovi **estrae la copia della pagina da `app.html`**, la esegue
+  davvero e pretende la stessa lista e lo stesso `daFare` su quattro filtri.
+  Finche' le due copie convivono, e' il controllo che le tiene uguali; quando
+  l'interfaccia passera' a `E.daAllenare()` e la copia sparira', il test si
+  mettera' da parte da solo invece di diventare rosso. Un controllo che si
+  ritira quando ha finito, al posto di una regola da ricordare.
+
+  **La pagina non e' stata toccata, ed e' il recinto a volerlo:** `site/app.html`
+  e' dell'interfaccia, cioe' del ramo `ui/*`, e questo commit e' su `main`. Il
+  ricablaggio delle tre chiamate — il pulsante di *Oggi*, la modalita' Per
+  argomento e «Allena questa voce» — lo fa chi rifa' la schermata, in un solo
+  file e senza una seconda penna sopra.
+
+  La firma segue quella del resto del motore, che non ha ne' DOM ne' stato
+  globale: `daAllenare(items, progress, oggi, kind, extra = {})`, e restituisce
+  `{ lista, daFare }` come prima.
+
+### Test
+
+- **109 test sul motore** (erano 102), 193 verifiche sui dati invariate. I sette
+  nuovi: l'ordine dei quattro gruppi, `daFare` uguale a `rimanenti` di
+  `traccia()`, la ripresa che resta in lista ma dietro ai mai visti, i filtri
+  `kind`/`temi`/`voce`/`soloFigura` che valgono su **tutti e quattro** i gruppi,
+  la banca interamente coperta che apre comunque ripasso con `daFare` a zero (il
+  caso della 0.16.0, riprodotto), l'assenza di doppioni, e la compatibilita' con
+  la pagina.
+
+  **Provati al contrario cinque volte**, rompendo il motore apposta: riprese
+  prima dei mai visti → 4 rossi; `daFare` gonfiato con le riprese → 3; il filtro
+  `extra` non passato a tutte e tre le chiamate → 2; il resto senza il taglio dei
+  gia' visti, cioe' doppioni → 5; e la forma anteriore alla 0.16.0, la lista dei
+  soli mai visti → 6. Il test di compatibilita' con la pagina li ha presi tutti
+  e cinque.
+
 ## [0.22.1] — 2026-09-07
 
 ### Corretto
