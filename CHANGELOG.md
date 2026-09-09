@@ -99,6 +99,71 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   `site/` non è stato toccato, e non c’è bump: non cambia niente che l’utente
   riceva.
 
+- **Un documento solo, `docs/specifica.md`, e ogni requisito porta il suo
+  controllo.** La conoscenza del prodotto stava in cinque documenti che si
+  citavano a vicenda, e nessuno dei cinque diceva *dove sta ogni cosa*. Il costo
+  si è visto lo stesso giorno: durante il ridisegno della navigazione la
+  schermata «Che tecnica serve?» ha perso il suo unico ingresso — la vista nel
+  file, la logica al suo posto, e **nessun elemento della pagina che la aprisse**
+  — e `E.peggiori()` è rimasta senza chiamanti. Nessuna delle due ha fatto
+  fallire un test, perché non esisteva un elenco di che cosa deve esistere.
+
+  **La forma conta quanto il contenuto.** Il 9 settembre `specifiche-ux.md`
+  esisteva in tre versioni divergenti — 526, 530 e 620 righe — e nessuna
+  conteneva le altre. Quindi: un documento, **una penna sola**, su `main`, nel
+  territorio `motore`. Il `CHANGELOG.md` è condiviso perché è additivo; una
+  specifica si riscrive, e due mani che riscrivono producono quelle tre versioni.
+  ChatGPT progetta sul ramo e propone da lì; le proposte accolte le riporta qui
+  chi fa la merge.
+
+  **Tre etichette e nessuna quarta** — Vincolo, Deciso (con la data), Aperto (con
+  chi decide). Manca «proposta», ed è deliberato: la versione precedente aveva
+  398 righe di cui quattro decisioni, cioè un documento in cui ogni frase è
+  falsificabile solo dopo una prova che nessuno ha in calendario.
+
+  Assorbe `docs/motore.md` (che resta un puntatore, con le due ancore più citate
+  vive) e i tre documenti UX, che restano sul disco come materiale storico.
+
+- **`tests/test_specifica.py`: la specifica non può mentire sulla propria
+  copertura.** Legge il §9, estrae i 41 requisiti e fallisce se uno nomina un
+  test che non esiste, se ripete un identificatore, o se dichiara «scoperto»
+  senza il motivo. 170 verifiche. È l'ADR-004 applicato ai documenti — *una
+  regola che qualcuno deve ricordare si sostituisce con un controllo che git
+  esegue* — e serve contro il difetto fondativo di questo progetto: il semaforo
+  verde a copertura zero, che in un documento prende la forma di una garanzia
+  dichiarata e mai verificata. **34 requisiti su 41 hanno un controllo
+  eseguibile; 7 dichiarano di essere scoperti, con il perché.**
+
+- **`tests/test_interfaccia.py`: 76 verifiche su che cosa esiste e come ci si
+  arriva.** Il censimento delle sette schermate; **ogni vista ha almeno una
+  porta**; ogni voce della barra porta a una vista dichiarata e ha un'etichetta
+  di testo, non la sola icona; le sei modalità dei quiz ci sono tutte; i due
+  selettori globali esistono; e **nessuna funzione esportata dal motore resta
+  senza chiamanti**, salvo eccezioni dichiarate col motivo.
+
+  Provato al contrario, quattro volte: spostando l'unico `data-v="tec"` la vista
+  orfana viene nominata; togliendo «Solo sbagliate» dall'elenco `MODI` il
+  controllo la reclama; un requisito che nomina un test inesistente e uno
+  «scoperto» senza motivo fanno fallire il meta-test.
+
+  **Due orfani veri trovati misurando**, e sono dichiarati invece di essere
+  nascosti: `fondi()`, che serviva alla sincronia col server tolta nella 0.19.0 e
+  che nessuno chiama più; e `daAllenare()`, entrata nel motore il 9 settembre
+  mentre `app.html` su `main` ha ancora la sua copia locale — cioè, per qualche
+  giorno, **due implementazioni della stessa selezione**, che è proprio ciò che
+  `AGENTS.md` vieta. La seconda eccezione sparisce con la merge del ramo
+  dell'interfaccia, che chiama già `E.daAllenare()`.
+
+  Il controllo sugli orfani ha richiesto una misura e non una deduzione: la
+  prima stesura dava cinque falsi allarmi, perché `componiProva()` passa
+  `E.estrai` **come valore** invece di chiamarla, e perché `semaforo()` e
+  `oscurato()` sono chiamate dentro il motore e non dalla pagina.
+
+  **Che cosa i controlli non fanno, ed è voluto:** non fissano la composizione
+  della barra. Quante voci abbia e come si chiamino è una questione aperta che
+  decide l'autore; un test che ne fissasse l'elenco prenderebbe quella decisione
+  al posto suo.
+
 ### Corretto
 
 - **La composizione della scheda d'esame è ministeriale**, non una deduzione di

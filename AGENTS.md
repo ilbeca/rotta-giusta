@@ -8,6 +8,11 @@ valgono più. Quelli qui sotto sì, e sono il metodo che ha fatto passare l'esam
 
 ## Da leggere prima di lavorare
 
+@docs/specifica.md — **il documento unico di progetto**: che cos'è il sito, per
+chi, com'è fatto sotto, dove vive ogni funzionalità, e per ogni garanzia il
+controllo che la tiene ferma. È la casella SPECIFICA del ciclo, e ha una penna
+sola: Claude, su `main`. Ha assorbito `docs/motore.md` e i documenti UX.
+
 @README.md — da dove vengono i dati, che cosa è stato corretto e perché.
 @CHANGELOG.md — le voci da 0.4.2 in poi spiegano *perché* certe scelte sembrano
 strane. Leggile prima di «semplificare» qualcosa. Dalla 0.19.0 è la storia di
@@ -19,6 +24,8 @@ questo sito.
 ```bash
 node --test tests/test_engine.mjs                 # il motore, e le tre versioni allineate
 python3 tests/test_dati.py                        # dati, invarianti, e il guardiano
+python3 tests/test_interfaccia.py                 # le viste, le porte, le modalità
+python3 tests/test_specifica.py                   # ogni requisito ha il suo controllo
 python3 strumenti/controlla.py                    # il guardiano da solo
 python3 fonte/verifica.py                         # i testi del carteggio contro il PDF (serve pypdf)
 python3 strumenti/serve.py                        # il sito in locale, come lo serve Pages
