@@ -30,6 +30,30 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   sulle prove). Entrano così come sono, prima di ogni modifica a `site/`: erano
   circa duemila righe fuori da ogni commit, nel checkout dove lavorano due agenti.
 
+- **Il prototipo visivo del 9 settembre, e la specifica riconciliata.** Entra
+  `docs/prototipi/rotta-2026-09-09/`: quattro viste navigabili a 375 e 1280 px,
+  due illustrazioni originali, sei catture di verifica e un `PASSAGGIO.md` che
+  dichiara che cos’è — bozza autonoma, non integrata e non pubblicata. Sono
+  480 KB in 14 file; `site/` non è stato toccato.
+
+  **Perché conta più del suo contenuto.** Stava in un worktree che l’app Codex
+  aveva creato per conto suo in `~/.codex/worktrees/`, fuori dal repo, con `HEAD`
+  staccato su `082f556` — un commit anteriore a quello che ha portato i documenti
+  in `docs/`. Non era in nessun ramo e in nessun commit: un `git worktree prune`,
+  o l’app che ripulisce, e sparivano 480 KB senza un errore.
+
+  **E `specifiche-ux.md` esisteva in tre versioni divergenti** — 526 righe qui,
+  530 in un worktree, 620 nell’altro — e **nessuna conteneva le altre**. Le 620,
+  che sono le più recenti, riportavano indietro la correzione sui pesi d’esame
+  della voce qui sotto: il testo superato «non verificati direttamente nel
+  decreto» era ancora al suo posto. Prendere il file più nuovo com’era avrebbe
+  annullato in silenzio la correzione del giorno prima — un guasto muto servito
+  da un file che sembra soltanto aggiornato. Quello che entra è la fusione: base
+  620, con rimessi dentro i due blocchi che si sarebbero persi, la correzione e
+  la sua voce di registro, per 641 righe. Verificato riga per riga: dalle 620
+  cadono solo le tre superate, e delle sette righe di qui che non sopravvivono
+  tutte e sette sono riscritture più recenti, non perdite.
+
 ### Corretto
 
 - **La composizione della scheda d'esame è ministeriale**, non una deduzione di

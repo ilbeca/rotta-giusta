@@ -1,6 +1,6 @@
 # Rotta Giusta — specifiche UX
 
-**Stato:** bozza consolidata per accoglienza e organizzazione, aggiornata l’8 settembre 2026.
+**Stato:** bozza consolidata per accoglienza e organizzazione, aggiornata il 9 settembre 2026; prime proposte visive da confrontare.
 **Prodotto di riferimento:** v0.22.1.
 **Scopo:** raccogliere l’esperienza da realizzare, con motivazioni, requisiti,
 flussi e criteri di verifica. È l’output progettuale della sessione.
@@ -18,6 +18,10 @@ La bozza non è pronta per l’implementazione e non autorizza modifiche all’a
 - Nessuna registrazione dello studio esterno (Q-07 chiusa).
 - Programma ministeriale come riferimento futuro, dopo verifica delle fonti.
 - Identità nautica coerente con i riferimenti visivi forniti.
+- Riscontro sulle prime bozze del 9 settembre: direzione estetica confermata;
+  il risalto attuale del Carteggio è adeguato per ora.
+- Segnali deve essere evidenziato come attività extra originale del progetto;
+  questa identità può accogliere in futuro altri esercizi interattivi.
 
 Le proposte operative e di navigazione sotto non sono approvate da questo riepilogo.
 
@@ -163,6 +167,12 @@ dirsi ufficiale, una vista per voce no.**
 Evidenze, riferimenti puntuali e questioni ancora aperte in
 [ricerca-programma-esame.md](ricerca-programma-esame.md). Il riscontro, §6, e il
 motore, §9, contengono su questo punto la formulazione superata.
+
+**Accolto nel confronto del 9 settembre:** non mostrare valori numerici dei pesi
+d’esame nelle schermate iniziali. La motivazione dei consigli resta leggibile
+a parole e coerente con il motore, senza trasformare una stima in una certezza
+ministeriale. Eventuali valori in Progressi devono portare vicino al numero
+provenienza e natura derivata; la formulazione verbale non elimina questo limite.
 
 **Da verificare:** titoli e indicatori non confondono banca e programma;
 ogni attività della mappa esiste e ogni conteggio proviene dai dati caricati.
@@ -371,14 +381,15 @@ proposta complessiva; nomi, ordine e disposizione sono da verificare nelle bozze
 | Destinazione | Compito principale | Contenuti |
 |---|---|---|
 | **Rotta** | Orientarmi e decidere cosa fare adesso | Attività consigliata, mappa, riepilogo essenziale |
-| **Quiz** | Allenarmi direttamente sui quesiti | Argomenti, ripasso, modalità di allenamento, Segnali extra banca |
+| **Quiz** | Allenarmi direttamente sui quesiti | Argomenti, ripasso, modalità di allenamento; accesso ai Segnali da COLREG in una delle varianti da confrontare |
 | **Carteggio** | Preparare questa parte in un ambiente dedicato | Esercizi, riconoscimento delle tecniche, prova di carteggio |
 | **Progressi** | Comprendere il lavoro svolto e le difficoltà | Copertura, risultati, storico e collegamenti al ripasso |
 
 La destinazione generica «Allenati» viene precisata in «Quiz», perché Carteggio
 ha un ambiente autonomo: entrambi sono allenamento, senza una gerarchia di valore.
 
-**Proposta preferita dopo R-03, da confermare:** quattro destinazioni, Rotta / Quiz /
+**Proposta confermata per la prova nelle bozze il 9 settembre, non struttura decisa:**
+quattro destinazioni, Rotta / Quiz /
 Carteggio / Progressi; simulazioni evidenti nei rispettivi ambienti. La precedente
 alternativa con Esame autonomo resta aperta solo se gli assegniamo un compito
 ricorrente ulteriore rispetto all’avvio delle prove. Due accessi alla stessa
@@ -398,8 +409,31 @@ bozze. Su desktop usare gli stessi nomi e raggruppamenti, con disposizione adatt
 | Carteggio | Carteggio, accesso autonomo |
 | Tecniche | Carteggio → Riconosci la tecnica |
 | Diagnosi | Progressi |
-| Segnali | Quiz → Segnali, chiaramente extra banca; punteggi distinti dall’archivio quiz |
+| Segnali | Due varianti da confrontare: ingresso dalla mappa della Rotta oppure da Quiz → argomento COLREG; sempre dichiarato extra banca, con punteggi distinti dall’archivio quiz |
 | Info | Info e impostazioni, accesso persistente nell’intestazione |
+
+**Segnali — proposta da confrontare nelle bozze:** nessuna delle due collocazioni
+è scelta a tavolino. Nella variante dalla mappa, l’accesso resta disponibile
+anche per chi torna, non soltanto nell’accoglienza. Nella variante COLREG,
+presentarlo come attività visiva extra banca senza equiparare il punteggio del
+gioco alla copertura dei quesiti. Confrontare la reperibilità per il primo uso
+e per l’allenamento successivo.
+
+**Riscontro condiviso sulle bozze, 9 settembre:** il gioco dei Segnali va
+evidenziato come un extra originale di Rotta Giusta. L’autore immagina la
+possibilità di sviluppare altre attività dello stesso tipo, citando come
+esempio un simulatore di suoni di avvisi nautici. È una direzione di prodotto,
+non l’approvazione di un nome, di una collocazione definitiva o di una nuova
+funzionalità da implementare.
+
+**Proposta successiva:** dare agli extra un riquadro riconoscibile sulla Rotta,
+disponibile anche al ritorno, con titolo provvisorio «Allenamenti extra» e
+accesso ai Segnali. Conservare il collegamento contestuale da COLREG come
+possibilità complementare. Il riquadro mostrerebbe solo attività disponibili,
+senza tessere inattive per sviluppi futuri; non implica una quinta destinazione
+di navigazione. Nome, composizione e accessi restano da confrontare nelle bozze.
+L’eventuale allenamento sonoro richiederà una propria progettazione e verifica
+dei contenuti: non è parte della consegna attuale.
 
 **Proposta di responsabilità:** Rotta serve a scegliere l’azione successiva;
 Progressi spiega copertura e risultati, con collegamenti contestuali all’esercizio.
@@ -426,7 +460,10 @@ comprensibili anche senza interpretare la metafora nautica.
 identità nautica, palette blu, superfici chiare, immagini e icone curate.
 Testi e dettagli delle immagini non costituiscono requisiti funzionali.
 
-Palestra prevalentemente chiara e tema scuro opzionale restano proposte.
+La direzione prevalentemente chiara delle prime bozze è stata confermata
+dall’autore il 9 settembre. Il tema scuro opzionale resta una proposta;
+l’approvazione estetica non equivale a validazione di usabilità o accessibilità,
+né approva automaticamente ogni dettaglio tipografico e funzionale.
 Il riferimento preciso delle tre isolette non è stato ancora ritrovato.
 
 Progettare testi lunghi e figure utilizzabili, accesso da tastiera, compatibilità
@@ -446,9 +483,9 @@ grafica deve introdurre dipendenze o riscritture architetturali implicite.
 | Q-03 | Direzione condivisa: partire da programma e studio con scuola/manuale, lasciando accesso immediato ai quiz; dettagliare il flusso | Prima attività e ruolo di scuola/manuale |
 | Q-04 | Decidere quali informazioni iniziali chiedere e perché | Durata e utilità dell’accoglienza |
 | Q-05 | Definire priorità, spiegazione e dimensione delle sessioni consigliate | Comportamento da confrontare col motore esistente |
-| Q-06 | Carteggio autonomo condiviso; preferenza proposta per quattro destinazioni, da confermare rispetto a cinque | Bozze della mappa e sezioni |
+| Q-06 | Carteggio autonomo e risalto attuale condivisi; quattro destinazioni ancora proposte; identità extra dei Segnali condivisa, nome e collocazione dell’area da definire | Bozze della mappa e sezioni |
 | Q-07 — chiusa | Non tracciare lo studio esterno: privilegiare la semplicità | Nessuna lista da compilare; progressi riferiti alle attività nel sito |
-| Q-08 | Confrontare tema chiaro/scuro e trattamento delle immagini | Direzione grafica della palestra |
+| Q-08 | Direzione estetica chiara delle prime bozze confermata; dettagli e tema scuro opzionale restano aperti | Consolidamento grafico e verifiche di accessibilità |
 
 Q-03 ha ricevuto una risposta l’8 settembre: la direzione è condivisa, mentre
 sequenza delle schermate e testi restano da progettare. Le informazioni sommarie
@@ -484,6 +521,12 @@ Non risolvere il primo ingresso spegnendo il pallino.
 
 ## 9. Verifica e maturità della specifica
 
+**Ipotesi per la fase 6, non decisione sul testo:** provare il titolo «Dove hai
+incontrato difficoltà» con persone il cui archivio contiene poche attività.
+Chiedere che cosa comunica sulla loro preparazione, senza suggerire la risposta.
+Non cambiare misure, soglie o dati per questa prova; il nuovo titolo non è ancora
+considerato una soluzione verificata.
+
 Le prove useranno compiti concreti, senza suggerire il percorso: iniziare,
 trovare un argomento, scegliere un consiglio, comprendere un risultato e
 riprendere. Registrare completamento autonomo, incomprensioni e aiuti necessari.
@@ -495,15 +538,80 @@ completi; le questioni residue dovranno avere un rinvio esplicito. Le prove con
 utenti, le revisioni e gli eventuali limiti saranno documentati, senza dichiarare
 validazioni che non sono state svolte.
 
+### Prime bozze di Oggi/Rotta — 9 settembre 2026
+
+**Stato aggiornato dopo il riscontro dell’autore:** direzione estetica e risalto
+attuale del Carteggio condivisi; identità extra dei Segnali condivisa. Le altre
+soluzioni e i dettagli restano proposte, senza validazione con utenti esterni.
+
+- [Tavole di confronto](prototipi/rotta-2026-09-09/confronto.html): archivio
+  vuoto e prime attività, entrambi senza data, a 375 px e desktop a 1280 px.
+- [Prototipo autonomo](prototipi/rotta-2026-09-09/index.html): selettori dei
+  due stati, delle varianti Segnali e di un errore di salvataggio dimostrativo.
+- [Passaggio di consegne e verifiche](prototipi/rotta-2026-09-09/PASSAGGIO.md):
+  inventario, provenienza dei dati, immagini osservate e limiti della prova.
+
+**Proposte messe alla prova negli artefatti:**
+
+1. Superfici chiare, illustrazioni nautiche originali e un riquadro navy per
+   l’attività consigliata. Tipografia locale Avenir Next con fallback di
+   sistema: scelta esplorativa, non sostituzione approvata di Manrope.
+2. Un primo avvio dei quiz base direttamente dalla Rotta, con numero di quesiti
+   e spiegazione del consiglio. Carteggio affiancato su desktop e subito dopo
+   su telefono, sempre raggiungibile anche dalla navigazione proposta.
+   L’autore considera adeguato per ora il risalto dato al Carteggio; ciò non
+   stabilisce una priorità didattica dei quiz. La durata di 25 quesiti riprende il comportamento esistente;
+   non è stata verificata come dimensione adatta a chi comincia.
+3. Scelta libera sotto l’attività consigliata; riepilogo iniziale senza tre
+   zeri e, con storico parziale, poche osservazioni sulle risposte. Nessuna
+   diagnosi complessiva, quota giornaliera o percentuale di preparazione.
+4. Segnali A: accesso diretto nella mappa delle attività, presente anche al
+   ritorno. Segnali B: accesso dentro COLREG, con richiamo all’attività visiva
+   nell’ingresso dell’argomento. La seconda variante privilegia il contesto
+   aggiungendo un passaggio e dando un richiamo dedicato a COLREG sulla Rotta;
+   anche questo privilegio dell’argomento va valutato. Nessuna delle due è
+   stata scelta.
+5. Conservazione locale spiegata in fondo alla Rotta, approfondimento in Info;
+   in caso di errore, avviso esplicito prima delle attività e indicatore su
+   Info. Il pannello è un’anteprima: non dimostra salvataggio o recupero reali.
+
+I dati sono dimostrativi, calcolati dal motore esistente: lo stato parziale usa
+una piccola sequenza simulata di risposte, non dati personali. Numeri e lista
+del consiglio provengono dallo stesso snapshot. I pannelli successivi servono
+solo a confrontare reperibilità e passaggi, non costituiscono nuove specifiche
+complete per Quiz, Carteggio, Progressi o Info.
+
+Questo lavoro esplora composizione e navigazione trasversali per richiesta
+dell’autore; non cambia l’ordine di attuazione proposto nel §8 e non autorizza
+l’integrazione del prototipo nell’app. Non è ancora stata svolta la fase 6.
+
+**Riscontro ricevuto:** direzione estetica approvata («assolutamente sì»);
+nessun aumento del risalto del Carteggio per ora; richiesta di evidenziare
+Segnali come extra originale, con possibilità di altre attività future.
+La proposta conseguente di un riquadro per gli extra è descritta nella sezione
+Segnali. Restano aperti la sua forma, la navigazione definitiva, il tema scuro
+opzionale e la dimensione della prima attività. Le tavole conservano le due
+varianti precedenti come materiale di confronto, non come decisione finale.
+
 ### Registro delle revisioni
 
-- **9 settembre 2026 — pesi d’esame:** corretta in UX-02 l’attribuzione della
-  distribuzione delle 20 domande per tema, che risulta ministeriale (Allegato C
-  al DM 323/2021) e non derivata da fonti secondarie. Mantenuta e resa esplicita
-  la cautela sulla ripartizione per voce, che nessun atto stabilisce. Nessun’altra
-  parte della specifica è stata toccata; Q-02 resta aperta per le parti diverse
-  dai pesi. Nessuna modifica ad app, motore o dati.
+- **9 settembre 2026 — riscontro dell’autore sulle bozze:** confermate la
+  direzione estetica e l’adeguatezza attuale del risalto del Carteggio; condivisa
+  l’identità extra e originale dei Segnali. Registrati come proposta il riquadro
+  «Allenamenti extra» e come idea futura l’allenamento sonoro, senza approvarne
+  collocazione, nome o implementazione. Nessuna modifica al prototipo o all’app.
 
+- **9 settembre 2026 — prime bozze visive:** aggiunti i riferimenti alle quattro
+  viste e al confronto Segnali, con le scelte esplicitamente in stato di
+  proposta. Annotati controlli visivi e funzionali del solo prototipo nel
+  passaggio di consegne. Nessuna nuova approvazione di prodotto, modifica
+  all’app, al motore, ai dati o alle versioni; nessuna pubblicazione.
+
+- **9 settembre 2026 — esito del confronto:** registrati soltanto i quattro
+  punti richiesti: navigazione a quattro come proposta per le bozze; due
+  varianti per Segnali; esclusione accolta dei pesi numerici all’ingresso;
+  titolo della diagnosi come ipotesi da provare in fase 6. Nessuna bozza o
+  modifica all’app realizzata in questo aggiornamento.
 - **8 settembre 2026 — confronto con la revisione di Claude:** controllati i
   riferimenti nel codice e passati 102 test del motore. Precisati selezione
   derivata e stato temporaneo, limiti della diagnosi, riuso del motore e mappa
@@ -511,6 +619,13 @@ validazioni che non sono state svolte.
   operativa nell’accoglienza, traguardo locale senza data e attuazione graduale.
   Queste alternative restano proposte; nessuna nuova decisione dell’autore
   è implicita. Nessuna modifica a sito, dati o documenti di revisione/motore.
+
+- **9 settembre 2026 — pesi d’esame:** corretta in UX-02 l’attribuzione della
+  distribuzione delle 20 domande per tema, che risulta ministeriale (Allegato C
+  al DM 323/2021) e non derivata da fonti secondarie. Mantenuta e resa esplicita
+  la cautela sulla ripartizione per voce, che nessun atto stabilisce. Nessun’altra
+  parte della specifica è stata toccata; Q-02 resta aperta per le parti diverse
+  dai pesi. Nessuna modifica ad app, motore o dati.
 
 - **8 settembre 2026 — organizzazione:** consolidati flussi e collocazione delle
   funzioni; registrata la decisione di Carteggio autonomo e centrale nella
