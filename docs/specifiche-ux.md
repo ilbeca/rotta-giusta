@@ -1,6 +1,6 @@
 # Rotta Giusta — specifiche UX
 
-**Stato:** bozza consolidata per accoglienza e organizzazione, aggiornata il 9 settembre 2026; prime proposte visive da confrontare.
+**Stato:** decisioni consolidate e autorizzate per l’integrazione dell’interfaccia il 9 settembre 2026; verifiche con utenti e dispositivi reali ancora da svolgere.
 **Prodotto di riferimento:** v0.22.1.
 **Scopo:** raccogliere l’esperienza da realizzare, con motivazioni, requisiti,
 flussi e criteri di verifica. È l’output progettuale della sessione.
@@ -8,7 +8,8 @@ flussi e criteri di verifica. È l’output progettuale della sessione.
 Il [percorso UX](percorso-ux.md) descrive metodo, fasi e attività.
 Questo documento è la fonte delle decisioni di prodotto: aggiornarle qui,
 senza mantenerne una seconda copia nel percorso.
-La bozza non è pronta per l’implementazione e non autorizza modifiche all’app.
+Le decisioni chiuse qui guidano l’implementazione; ciò che resta aperto non va
+trasformato in comportamento senza un nuovo confronto con l’autore.
 
 ## Decisioni condivise — riepilogo
 
@@ -22,8 +23,13 @@ La bozza non è pronta per l’implementazione e non autorizza modifiche all’a
   il risalto attuale del Carteggio è adeguato per ora.
 - Segnali deve essere evidenziato come attività extra originale del progetto;
   questa identità può accogliere in futuro altri esercizi interattivi.
-
-Le proposte operative e di navigazione sotto non sono approvate da questo riepilogo.
+- Gli extra sono attività che non entrano in copertura, diagnosi e archivio delle
+  risposte: vivono in un riquadro «Allenamenti extra» sulla Rotta, fuori dalla mappa.
+- Navigazione principale: Rotta / Quiz / Carteggio / Progressi; Info resta
+  nell’intestazione con il pallino ambra visibile da ogni destinazione.
+- Prima attività: 10 quesiti, annunciati come circa 2–3 minuti; dal ritorno 25.
+- Tema chiaro per questo giro; il tema scuro resta un’opzione futura. I colori
+  dell’interfaccia sono token, quelli didattici restano contenuto invariato.
 
 ## 1. Stato delle informazioni
 
@@ -41,15 +47,16 @@ riportati sotto sono controlli da eseguire, non risultati già ottenuti.
 Il confronto dell’8 settembre usa [riscontro-ux.md](riscontro-ux.md) e
 [motore.md](motore.md). Questi documenti contengono analisi e inventario tecnico;
 qui restano requisiti e scelte. Le affermazioni sul codice sono state controllate
-sui sorgenti, non assunte dai documenti. I 102 test esistenti del motore passano;
+sui sorgenti, non assunte dai documenti. I 109 test esistenti del motore passano;
 questo non costituisce una verifica di usabilità o dei flussi completi dell’app.
 
 Precisazioni necessarie per leggere i riferimenti: `S.run` conserva già in
 memoria lista, indice ed esiti; manca il ripristino persistente della lista dopo
 chiusura. `peggiori()` richiede cinque quesiti distinti visti, non cinque
 ripetizioni. `classifica()` distingue mai visto / coperto / da ripassare;
-la storia degli errori usa altre misure. `daAllenare()` è nella pagina, non
-nel motore: la sua integrazione non è dimostrata dai soli test di `engine.js`.
+la storia degli errori usa altre misure. `daAllenare()` è ora nel motore ed è
+coperta dai test; la pagina deve consumarne direttamente lista e `daFare`, senza
+conservarne una seconda implementazione.
 
 ## 2. Problema e pubblico
 
@@ -297,8 +304,9 @@ promesso. Con lista ancora attiva si usa lo stato in memoria esistente.
 **Proposta dopo R-05:** senza data, evidenziare un traguardo locale: completare
 la selezione avviata, poi leggere il riepilogo e scegliere se fermarsi o continuare.
 Non chiamarlo «quota giornaliera raggiunta» né «per oggi hai studiato abbastanza».
-La quantità predefinita per la prima attività resta Q-05; non serve un budget
-persistente. La copertura dell’area è un secondo segnale, non un voto.
+La prima attività è di 10 quesiti, annunciati come circa 2–3 minuti usando
+`stimaImpegno()`; dal ritorno la selezione consigliata è di 25. Non serve un
+budget persistente. La copertura dell’area è un secondo segnale, non un voto.
 Con data presente restano disponibili quota e ritmo rispetto alla scadenza.
 La data è già facoltativa nel prodotto: questa proposta migliora lo stato senza
 data, non introduce la possibilità di ometterla.
@@ -344,15 +352,15 @@ non devono essere confusi fra loro o con correzioni automatiche.
 
 ### F-05 — Simulazione e risultato
 
-Proposta preferita dopo R-03: ingresso dentro Quiz o Carteggio, con un’azione
+Decisione: ingresso dentro Quiz o Carteggio, con un’azione
 «Simula la prova» riconoscibile e distinta dall’allenamento. Prima di iniziare,
 chiarire quale prova si sta simulando, condizioni, tempi e modalità di valutazione.
 Un indice delle prove non deve promettere un esame completo concatenato se tale
 comportamento non esiste. Durante una simulazione, conservare le regole proprie
 che la distinguono dall’allenamento. Alla fine: esito, revisione e attività successiva.
 
-Se si mantiene l’alternativa con Esame autonomo, gli accessi convergono sulla
-stessa prova. La scelta fra quattro e cinque destinazioni resta dell’autore.
+Non esiste una quinta destinazione «Esame»: le simulazioni restano azioni dei
+rispettivi ambienti.
 
 ### F-06 — Progressi e gestione dei dati
 
@@ -373,31 +381,24 @@ reale di banca, guscio e figure. Una figura indisponibile deve essere dichiarata
 
 ## 6. Architettura delle sezioni e direzione visiva
 
-### Navigazione proposta
+### Navigazione decisa
 
-La scelta di Carteggio autonomo è condivisa. La seguente struttura consolida la
-proposta complessiva; nomi, ordine e disposizione sono da verificare nelle bozze.
+La scelta di Carteggio autonomo e le quattro destinazioni sono confermate.
+Nomi e ordine sono gli stessi su telefono e desktop.
 
 | Destinazione | Compito principale | Contenuti |
 |---|---|---|
 | **Rotta** | Orientarmi e decidere cosa fare adesso | Attività consigliata, mappa, riepilogo essenziale |
-| **Quiz** | Allenarmi direttamente sui quesiti | Argomenti, ripasso, modalità di allenamento; accesso ai Segnali da COLREG in una delle varianti da confrontare |
+| **Quiz** | Allenarmi direttamente sui quesiti | Argomenti, ripasso, modalità di allenamento; scorciatoia contestuale ai Segnali da COLREG |
 | **Carteggio** | Preparare questa parte in un ambiente dedicato | Esercizi, riconoscimento delle tecniche, prova di carteggio |
 | **Progressi** | Comprendere il lavoro svolto e le difficoltà | Copertura, risultati, storico e collegamenti al ripasso |
 
 La destinazione generica «Allenati» viene precisata in «Quiz», perché Carteggio
 ha un ambiente autonomo: entrambi sono allenamento, senza una gerarchia di valore.
 
-**Proposta confermata per la prova nelle bozze il 9 settembre, non struttura decisa:**
-quattro destinazioni, Rotta / Quiz /
-Carteggio / Progressi; simulazioni evidenti nei rispettivi ambienti. La precedente
-alternativa con Esame autonomo resta aperta solo se gli assegniamo un compito
-ricorrente ulteriore rispetto all’avvio delle prove. Due accessi alla stessa
-attività non sono di per sé un difetto, ma non giustificano da soli una quinta voce.
-
-Quattro destinazioni sono una proposta da provare a 375 px. Non ridurre il testo
-per far entrare la navigazione: verificare etichette, spazi e aree di tocco nelle
-bozze. Su desktop usare gli stessi nomi e raggruppamenti, con disposizione adatta.
+Le quattro destinazioni vanno misurate a 375 px: sbordamento orizzontale zero,
+aree di tocco di almeno 44 px, parole intere e pallino ambra di Info visibile
+in tutte e quattro. Su desktop restano gli stessi nomi e raggruppamenti.
 
 ### Collocazione delle funzioni esistenti
 
@@ -409,31 +410,20 @@ bozze. Su desktop usare gli stessi nomi e raggruppamenti, con disposizione adatt
 | Carteggio | Carteggio, accesso autonomo |
 | Tecniche | Carteggio → Riconosci la tecnica |
 | Diagnosi | Progressi |
-| Segnali | Due varianti da confrontare: ingresso dalla mappa della Rotta oppure da Quiz → argomento COLREG; sempre dichiarato extra banca, con punteggi distinti dall’archivio quiz |
+| Segnali | Allenamenti extra sulla Rotta; scorciatoia da Quiz → COLREG verso la stessa schermata e lo stesso ritorno |
 | Info | Info e impostazioni, accesso persistente nell’intestazione |
 
-**Segnali — proposta da confrontare nelle bozze:** nessuna delle due collocazioni
-è scelta a tavolino. Nella variante dalla mappa, l’accesso resta disponibile
-anche per chi torna, non soltanto nell’accoglienza. Nella variante COLREG,
-presentarlo come attività visiva extra banca senza equiparare il punteggio del
-gioco alla copertura dei quesiti. Confrontare la reperibilità per il primo uso
-e per l’allenamento successivo.
+**Segnali — decisione del 9 settembre:** l’accesso principale è nel riquadro
+autonomo «Allenamenti extra» sulla Rotta, sotto attività consigliata e mappa e
+presente anche al ritorno. Il criterio di appartenenza è funzionale: un extra
+non contribuisce a copertura, diagnosi o archivio delle risposte. La riga
+«Scritti da noi, non sono quesiti d’esame: non contano nella copertura» resta
+visibile dentro il riquadro, che mostra soltanto attività disponibili.
 
-**Riscontro condiviso sulle bozze, 9 settembre:** il gioco dei Segnali va
-evidenziato come un extra originale di Rotta Giusta. L’autore immagina la
-possibilità di sviluppare altre attività dello stesso tipo, citando come
-esempio un simulatore di suoni di avvisi nautici. È una direzione di prodotto,
-non l’approvazione di un nome, di una collocazione definitiva o di una nuova
-funzionalità da implementare.
-
-**Proposta successiva:** dare agli extra un riquadro riconoscibile sulla Rotta,
-disponibile anche al ritorno, con titolo provvisorio «Allenamenti extra» e
-accesso ai Segnali. Conservare il collegamento contestuale da COLREG come
-possibilità complementare. Il riquadro mostrerebbe solo attività disponibili,
-senza tessere inattive per sviluppi futuri; non implica una quinta destinazione
-di navigazione. Nome, composizione e accessi restano da confrontare nelle bozze.
-L’eventuale allenamento sonoro richiederà una propria progettazione e verifica
-dei contenuti: non è parte della consegna attuale.
+Segnali non entra nella mappa. Da Quiz → COLREG resta una scorciatoia contestuale
+che apre la medesima schermata: una destinazione, più porte. «Riconosci la
+tecnica» resta invece nel Carteggio, perché le sue righe entrano nell’archivio.
+Un eventuale nuovo simulatore sonoro richiederà progettazione e verifica proprie.
 
 **Proposta di responsabilità:** Rotta serve a scegliere l’azione successiva;
 Progressi spiega copertura e risultati, con collegamenti contestuali all’esercizio.
@@ -461,7 +451,9 @@ identità nautica, palette blu, superfici chiare, immagini e icone curate.
 Testi e dettagli delle immagini non costituiscono requisiti funzionali.
 
 La direzione prevalentemente chiara delle prime bozze è stata confermata
-dall’autore il 9 settembre. Il tema scuro opzionale resta una proposta;
+dall’autore il 9 settembre ed è il tema di questa integrazione. Il tema scuro
+resta un’opzione futura: i colori dell’interfaccia vivono in token, senza
+esadecimali sparsi fuori dalla tavolozza;
 l’approvazione estetica non equivale a validazione di usabilità o accessibilità,
 né approva automaticamente ogni dettaglio tipografico e funzionale.
 Il riferimento preciso delle tre isolette non è stato ancora ritrovato.
@@ -482,32 +474,29 @@ grafica deve introdurre dipendenze o riscritture architetturali implicite.
 | Q-02 | Acquisire programma ufficiale strutturato e verificare regole; nell’attesa proposta di mappa della banca | Nessuna pretesa di copertura del programma completo |
 | Q-03 | Direzione condivisa: partire da programma e studio con scuola/manuale, lasciando accesso immediato ai quiz; dettagliare il flusso | Prima attività e ruolo di scuola/manuale |
 | Q-04 | Decidere quali informazioni iniziali chiedere e perché | Durata e utilità dell’accoglienza |
-| Q-05 | Definire priorità, spiegazione e dimensione delle sessioni consigliate | Comportamento da confrontare col motore esistente |
-| Q-06 | Carteggio autonomo e risalto attuale condivisi; quattro destinazioni ancora proposte; identità extra dei Segnali condivisa, nome e collocazione dell’area da definire | Bozze della mappa e sezioni |
+| Q-05 — chiusa | Prima attività di 10 quesiti (circa 2–3 minuti), poi 25; motivi e quantità dal motore | Verificare sempre numero promesso e lista aperta |
+| Q-06 — chiusa | Rotta / Quiz / Carteggio / Progressi; extra autonomi sulla Rotta; Segnali con scorciatoia da COLREG | Attuare una destinazione con più porte, non due gerarchie |
 | Q-07 — chiusa | Non tracciare lo studio esterno: privilegiare la semplicità | Nessuna lista da compilare; progressi riferiti alle attività nel sito |
-| Q-08 | Direzione estetica chiara delle prime bozze confermata; dettagli e tema scuro opzionale restano aperti | Consolidamento grafico e verifiche di accessibilità |
+| Q-08 — chiusa per questo giro | Tema chiaro confermato; scuro futuro; colori UI in token e colori didattici invariati | Misurare contrasto e resa responsive del tema chiaro |
 
 Q-03 ha ricevuto una risposta l’8 settembre: la direzione è condivisa, mentre
 sequenza delle schermate e testi restano da progettare. Le informazioni sommarie
 sul progetto sono state richieste; la loro articolazione in UX-01 è una proposta.
 
-## 8. Ordine di attuazione proposto
+## 8. Ordine di attuazione
 
-**Stato: proposta, non autorizzazione a implementare.**
+**Stato: autorizzato dall’autore il 9 settembre 2026.**
 
-1. **Intervento isolato: Oggi con archivio vuoto e senza data.** Preparare una
-   bozza con sintesi operativa, prima attività finita e accesso evidente a
-   Carteggio. Riutilizzare avvii e selezioni esistenti; mantenere navigazione,
-   tema, archivio e dati. Non introdurre mappa ministeriale o stato giornaliero.
-   Correggere nella futura attuazione anche il `null` delle Tecniche, verificato
-   nel template, perché fa parte della medesima esperienza iniziale.
-2. Dopo confronto della bozza, implementare quel solo stato e provarlo con utenti
-   nuovi, verificando anche il ritorno dopo le prime risposte e archivi importati.
-3. Rendere visibili consiglio e progressi negli stati con storico, usando le
-   misure esistenti e chiarendo le responsabilità Rotta/Progressi.
-4. Applicare la navigazione confermata e organizzare Carteggio, preservando i runner.
-5. Estendere identità visiva e mappa delle attività. Il programma ufficiale
-   completo segue la verifica e la preparazione del contenuto, non la precede.
+1. Spostare `daAllenare()` nel motore con i test, poi eliminare la copia della
+   pagina e ricablare ogni chiamante sull’export unico.
+2. Integrare Rotta con archivio vuoto e al ritorno, riutilizzando Mirata,
+   `stimaImpegno()`, archivio e runner esistenti.
+3. Applicare navigazione, organizzazione di Carteggio e riquadro degli extra,
+   senza introdurre una mappa ministeriale o un nuovo stato giornaliero.
+4. Estendere il tema chiaro alle viste esistenti e conservare invariati i
+   colori didattici e il comportamento delle attività.
+5. Verificare nel browser, poi svolgere prove su dispositivi reali e con utenti.
+   Il programma ufficiale completo segue la preparazione del contenuto.
 
 Criteri per il primo intervento: accessi funzionanti ai quiz e a Carteggio;
 nessun `null`, falsa quota o diagnosi positiva senza dati; quantità annunciata
@@ -540,9 +529,10 @@ validazioni che non sono state svolte.
 
 ### Prime bozze di Oggi/Rotta — 9 settembre 2026
 
-**Stato aggiornato dopo il riscontro dell’autore:** direzione estetica e risalto
-attuale del Carteggio condivisi; identità extra dei Segnali condivisa. Le altre
-soluzioni e i dettagli restano proposte, senza validazione con utenti esterni.
+**Stato aggiornato dopo le decisioni dell’autore:** le tavole restano memoria
+del confronto; tema chiaro, risalto del Carteggio, navigazione, dimensione della
+prima attività e collocazione degli extra sono approvati per l’integrazione.
+Resta assente una validazione con utenti esterni.
 
 - [Tavole di confronto](prototipi/rotta-2026-09-09/confronto.html): archivio
   vuoto e prime attività, entrambi senza data, a 375 px e desktop a 1280 px.
@@ -560,17 +550,14 @@ soluzioni e i dettagli restano proposte, senza validazione con utenti esterni.
    e spiegazione del consiglio. Carteggio affiancato su desktop e subito dopo
    su telefono, sempre raggiungibile anche dalla navigazione proposta.
    L’autore considera adeguato per ora il risalto dato al Carteggio; ciò non
-   stabilisce una priorità didattica dei quiz. La durata di 25 quesiti riprende il comportamento esistente;
-   non è stata verificata come dimensione adatta a chi comincia.
+   stabilisce una priorità didattica dei quiz. La prima attività è stata fissata
+   a 10 quesiti (circa 2–3 minuti); dal ritorno resta la Mirata da 25.
 3. Scelta libera sotto l’attività consigliata; riepilogo iniziale senza tre
    zeri e, con storico parziale, poche osservazioni sulle risposte. Nessuna
    diagnosi complessiva, quota giornaliera o percentuale di preparazione.
-4. Segnali A: accesso diretto nella mappa delle attività, presente anche al
-   ritorno. Segnali B: accesso dentro COLREG, con richiamo all’attività visiva
-   nell’ingresso dell’argomento. La seconda variante privilegia il contesto
-   aggiungendo un passaggio e dando un richiamo dedicato a COLREG sulla Rotta;
-   anche questo privilegio dell’argomento va valutato. Nessuna delle due è
-   stata scelta.
+4. Il confronto A/B è chiuso: Segnali vive nel riquadro autonomo «Allenamenti
+   extra» sulla Rotta, fuori dalla mappa e presente anche al ritorno. COLREG
+   offre una scorciatoia alla medesima schermata.
 5. Conservazione locale spiegata in fondo alla Rotta, approfondimento in Info;
    in caso di errore, avviso esplicito prima delle attività e indicatore su
    Info. Il pannello è un’anteprima: non dimostra salvataggio o recupero reali.
@@ -581,19 +568,24 @@ del consiglio provengono dallo stesso snapshot. I pannelli successivi servono
 solo a confrontare reperibilità e passaggi, non costituiscono nuove specifiche
 complete per Quiz, Carteggio, Progressi o Info.
 
-Questo lavoro esplora composizione e navigazione trasversali per richiesta
-dell’autore; non cambia l’ordine di attuazione proposto nel §8 e non autorizza
-l’integrazione del prototipo nell’app. Non è ancora stata svolta la fase 6.
+Questo lavoro ha esplorato composizione e navigazione trasversali; le risposte
+dell’autore del 9 settembre autorizzano ora l’integrazione descritta nel §8.
+Non è ancora stata svolta la fase 6 con utenti.
 
 **Riscontro ricevuto:** direzione estetica approvata («assolutamente sì»);
 nessun aumento del risalto del Carteggio per ora; richiesta di evidenziare
 Segnali come extra originale, con possibilità di altre attività future.
-La proposta conseguente di un riquadro per gli extra è descritta nella sezione
-Segnali. Restano aperti la sua forma, la navigazione definitiva, il tema scuro
-opzionale e la dimensione della prima attività. Le tavole conservano le due
-varianti precedenti come materiale di confronto, non come decisione finale.
+Le decisioni conseguenti sono registrate nella sezione Segnali e nel riepilogo.
+Le tavole conservano le due varianti precedenti come materiale di confronto,
+non come fotografia dell’interfaccia finale.
 
 ### Registro delle revisioni
+
+- **9 settembre 2026 — decisioni finali e autorizzazione:** chiusi navigazione,
+  criterio/nome/posizione degli extra, collocazione dei Segnali, dimensione della
+  prima attività e tema di questo giro. Registrato `daAllenare()` come contratto
+  del motore. Autorizzata l’integrazione nella UI; restano aperte prove con
+  utenti, dispositivi reali e accessibilità completa.
 
 - **9 settembre 2026 — riscontro dell’autore sulle bozze:** confermate la
   direzione estetica e l’adeguatezza attuale del risalto del Carteggio; condivisa

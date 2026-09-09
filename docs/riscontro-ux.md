@@ -234,17 +234,15 @@ complicazioni del modello.
 
 ## 5. Che cosa esiste già nel motore, ed è re-presentazione
 
-**[codice]** Quanto segue è in `site/engine.js` — logica pura, sotto
-`node --test` — **tranne l’ultima riga**, che sta nella pagina: la suite non
-esercita `app.html`, lo legge solo come testo per confrontare il `GUSCIO`.
-Distinzione dovuta a Codex, e non è un dettaglio: «esiste» e «è garantito da un
-test» non sono la stessa cosa.
+**[codice]** Quanto segue è in `site/engine.js`, logica pura sotto
+`node --test`. Dal 9 settembre anche `daAllenare()` è nel motore: la pagina ne
+consuma l’export e non mantiene più una seconda selezione.
 
 | Proposta delle specifiche | Che cosa esiste già |
 |---|---|
 | UX-03, sessione consigliata con motivazione | `mirata()` (`engine.js:784`): deterministica a parità di storico e giorno, tre blocchi con budget (richiami, esplorazione, consolidamento), **il motivo dichiarato per ogni quesito** |
 | UX-04, «che cosa faccio adesso» per voce | `consigli()` (`engine.js:516`): voci in ordine di domande d’esame in ballo, con il perché («mai aperta», «ci sbagli», «quasi tutta da vedere») e i minuti stimati sul tempo misurato |
-| UX-05, conteggio promesso = attività aperta | `daAllenare()` (`app.html:1970`, **non sotto test**): **tre** chiamate a `coda()` divise in quattro gruppi — aperte, mai visti, riprese, il resto — e restituisce lista **e** arretrato dalla stessa fonte. È la riparazione della 0.16.0, la cui voce di CHANGELOG dice «quattro chiamate» ed è imprecisa |
+| UX-05, conteggio promesso = attività aperta | `daAllenare()` (`engine.js`): **tre** chiamate a `coda()` divise in quattro gruppi — aperte, mai visti, riprese, il resto — e restituisce lista **e** arretrato dalla stessa fonte. I test ne fissano ordine, filtri e compatibilità con la precedente funzione della pagina |
 | F-02, storico riapribile | `sessioni()` (`engine.js:1010`), con la fonte del confine dichiarata quando è ricostruita |
 | UX-04, difficoltà distinta dallo storico | `diagnosi()` calcola `aperti` accanto a `sbagliati`, per tema e per voce (0.16.0) |
 
@@ -347,10 +345,15 @@ Sono osservazioni, non spiegazioni.
 
 ## 10. Registro
 
+- **9 settembre 2026 — aggiornamento dopo il trasferimento nel motore.**
+  `daAllenare()` è ora esportata da `engine.js`, coperta dai test e consumata
+  direttamente dall’interfaccia; rimossi i riferimenti alla vecchia copia in
+  `app.html`. La sostanza dell’analisi resta invariata.
+
 - **9 settembre 2026 — correzioni dopo il confronto con Codex.** Tre
   affermazioni marcate **[codice]** erano sbagliate, e le ha trovate leggendo il
-  codice: `daAllenare()` fa **tre** chiamate a `coda()` in quattro gruppi (e non
-  è coperto dai test del motore, che non esercitano `app.html`); la soglia di
+  codice: la precedente `daAllenare()` della pagina faceva **tre** chiamate a
+  `coda()` in quattro gruppi; la soglia di
   `peggiori()` conta **5 quesiti distinti visti**, non 5 risposte; e una lista
   prospettica in memoria esiste già in `apri()`. Ritirati nella formulazione
   **R-01** — la frase di F-02 che citavo come prova è un presidio contro il

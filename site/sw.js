@@ -24,7 +24,7 @@ const CACHE = 'rg-0.22.1';
 // "Scarica tutto per l'offline" nella schermata Info, che le aggiunge a questa
 // stessa cache — esplicito, e da fare prima di partire.
 //
-// Stessa lista di `GUSCIO` in index.html, che controlla che ci sia davvero:
+// Stessa lista di `GUSCIO` in app.html, che controlla che ci sia davvero:
 // c'e' un test che le confronta.
 const GUSCIO = [
   // La palestra sta su /app. La radice e' la vetrina e resta FUORI dal guscio:
@@ -60,6 +60,9 @@ const GUSCIO = [
   '/icon-192.png',
   '/icon-512.png',
   '/icon-maskable-512.png',
+  '/marchio.svg',
+  '/paesaggio.svg',
+  '/carteggio-ui.svg',
 ];
 
 self.addEventListener('install', (e) => {
