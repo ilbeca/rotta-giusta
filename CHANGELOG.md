@@ -226,6 +226,37 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   ripiego di Standards ora legge le liste spezzate e rifiuta quelle aperte
   (Standards `91d90c9`).
 
+### Interfaccia
+
+- **La palestra adotta la Rotta chiara approvata nel prototipo.** La prima
+  schermata orienta senza chiedere una data d'esame, affianca Quiz e Carteggio,
+  mostra un riepilogo prudente dei soli dati osservati e tiene la data
+  facoltativa in fondo. La prima proposta apre 10 quesiti e usa
+  `stimaImpegno()` per annunciare circa 2-3 minuti; dopo la prima risposta la
+  Mirata torna a 25. Numero, lista e motivi sono lo stesso oggetto del motore.
+
+  La navigazione e' Rotta / Quiz / Carteggio / Progressi, con Info persistente
+  nell'intestazione e pallino ambra ancora visibile. Carteggio conserva prova,
+  allenamenti su carta e «Che tecnica serve?» nel proprio ambiente. I Segnali
+  vivono nel riquadro autonomo «Allenamenti extra», fuori dalla mappa e con il
+  criterio «non contano nella copertura» dichiarato; la scorciatoia da COLREG
+  apre la stessa schermata, non una seconda gerarchia.
+
+- **La pagina consuma `E.daAllenare()` e la copia locale non esiste piu'.** Le
+  chiamate per conteggi, anteprime, filtri e voci usano tutte l'export del
+  motore. Il test temporaneo di compatibilita' si ritira come previsto: 109 test,
+  108 passati e un solo skip dichiarato. Passano anche 199 verifiche sui dati e
+  il guardiano su 47 file di testo.
+
+- **Collaudo reale nel browser locale.** Rotta verificata a 375 e 1280 px;
+  sbordamento orizzontale zero in tutte e quattro le destinazioni a 375 px. Le quattro aree della barra
+  misurano 94 x 69 px e Info 63 x 44 px, con etichette intere e pallino visibile.
+  Il tema chiaro misura 15,36:1 sul testo principale, 5,60:1 sulla navigazione e
+  almeno 11,27:1 nei testi del riquadro navy. Il collaudo ha trovato e corretto
+  due guasti prima del commit: header e barra coprivano il runner del quiz, e la
+  tabella di Progressi allargava la pagina a 437 px. Ora i runner stanno sopra
+  il guscio e la tabella scorre dentro la propria scheda (pagina a 375 px).
+
 
 ## [0.22.1] — 2026-09-07
 

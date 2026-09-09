@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 300" role="img" aria-labelledby="title">
+<title id="title">Una barca a vela segue una rotta verso un faro</title>
+<defs><linearGradient id="sea" x2="0" y2="1"><stop stop-color="#b6e3ef"/><stop offset="1" stop-color="#e4f2f4"/></linearGradient><linearGradient id="island" x2="0" y2="1"><stop stop-color="#537f87"/><stop offset="1" stop-color="#123e63"/></linearGradient></defs>
+<g fill="none" stroke="#c7dfe5" stroke-width="1"><circle cx="343" cy="154" r="134"/><circle cx="343" cy="154" r="123"/><path d="M343 7V290M195 154H494"/><path d="m244 55 196 196m0-196L244 251"/></g>
+<g fill="#648594" font-family="sans-serif" font-size="10" letter-spacing="2"><text x="339" y="14">N</text><text x="493" y="158">E</text></g>
+<path d="M21 196Q94 161 162 183T309 181 466 166 606 200L612 257Q495 298 364 277T81 273Z" fill="url(#sea)"/>
+<g fill="none" stroke="#78b9cf" opacity=".52"><path d="M58 221q57-20 105-4t113-5 124-5 171 4M91 246q63-20 139-2t168-5 151 4"/><path d="m32 211 42-4m258 53 51 4m73-44 40-3m32 35 43-2"/></g>
+<path d="m393 184 28-24 18-36 29 13 19 28 44 9 34 21-87 13Z" fill="#d2dcca"/>
+<path d="m409 180 16-15 10-25 22 7 18 28 47 6 24 13-83 5Z" fill="url(#island)"/>
+<path d="m450 147 5-58h18l7 60-16 6Z" fill="#fffdf4"/><path d="M454 115h21l2 13h-24Z" fill="#123e63"/>
+<path d="M452 87h23v6h-23z" fill="#0b1f33"/><path d="m449 80 15-12 14 12Z" fill="#123e63"/><path d="M456 81h16v8h-16z" fill="#3ba7db"/><path d="M459 81v8m9-8v8" stroke="#0b1f33" stroke-width="2"/>
+<path d="m471 83 93-21-5 52Z" fill="#fff" opacity=".55"/>
+<path d="M144 193q24-30 54-56t63 6q30 15 66 47l-39 15-83-1Z" fill="#e0e4d4"/>
+<path d="m171 188 32-35 23-6 30 18 44 30-66 7Z" fill="#7e9f9a"/>
+<g transform="translate(306 153)"><path d="M0 74h77l-12 12H19Z" fill="#0b1f33"/><path d="M45-13V78" stroke="#123e63" stroke-width="2"/><path d="M40-6 3 67h37Z" fill="#fffdf6"/><path d="M49 2 74 65H49Z" fill="#3ba7db"/><path d="m7 90 63 0" stroke="#fff" stroke-width="3"/><path d="M39 7 17 61" stroke="#e0e8e4"/></g>
+<path d="M143 247C153 223 232 216 260 229S300 263 369 253 402 222 414 211" stroke="#123e63" fill="none" stroke-width="1.7" stroke-dasharray="4 7"/>
+<circle cx="143" cy="247" r="5" fill="#123e63" stroke="white" stroke-width="2"/><circle cx="414" cy="211" r="4" fill="white" stroke="#123e63" stroke-width="2"/>
+<g fill="none" stroke="#123e63" stroke-width="1.4"><path d="M308 61q6-5 12 0 6-5 12 0M359 43q5-4 10 0 5-4 10 0"/></g>
+</svg>
