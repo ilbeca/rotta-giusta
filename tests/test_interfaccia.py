@@ -73,9 +73,14 @@ ORFANI_DICHIARATI = {
     'fondi': "fusione di due specchi: serviva alla sincronia col server, tolta "
              "nella 0.19.0. Resta esportata e testata perche' descrive la "
              "semantica della fusione, ma nessuno la chiama.",
-    'daAllenare': "entrata nel motore il 9 settembre 2026; la pagina su main ha "
-                  "ancora la sua copia locale. L'eccezione sparisce con la merge "
-                  "del ramo dell'interfaccia, che chiama gia' E.daAllenare().",
+    'peggiori': "«Le tue voci più deboli» e' sparita dalla Rotta nel ridisegno "
+                "del 9 settembre 2026: la pagina usa ora solo consigli() per "
+                "«Cosa studiare adesso» in Progressi. E' Q-DUE in "
+                "docs/specifica.md, §10 — due classifiche concorrenti, decide "
+                "l'autore se tenerne una sola o dichiarare la differenza — non "
+                "ancora deciso. Resta esportata e testata: toglierla dal motore "
+                "prima della decisione perderebbe la costruzione se la Rotta la "
+                "richiamasse.",
 }
 
 

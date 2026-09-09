@@ -257,6 +257,30 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   tabella di Progressi allargava la pagina a 437 px. Ora i runner stanno sopra
   il guscio e la tabella scorre dentro la propria scheda (pagina a 375 px).
 
+### Merge
+
+- **Il ramo `ui/main` entra in `main`.** Controllo territori sul diff del ramo
+  pulito (`check_territories.py --range main...ui/main`), nessun conflitto:
+  108 test sul motore su 109 passati con lo skip previsto, 199 verifiche sui
+  dati, 170 sulla specifica. Verificato anche nel browser locale, a 375 e
+  a 800 px: zero sbordamento orizzontale in Rotta, Carteggio e Progressi, e
+  la tabella *Per tema/voce* scorre dentro la propria scheda come dichiarato.
+
+  **Un rosso emerso dopo la fusione, non prima.** `E.peggiori()` — «Le tue
+  voci più deboli» — è sparita dalla Rotta nel ridisegno: la pagina ora
+  chiama solo `E.consigli()` per «Cosa studiare adesso» in Progressi.
+  `test_interfaccia.py` l'ha presa da sola, come deve: nessuno dei due rami,
+  guardato da solo, l'avrebbe vista, perché `docs/specifica.md` (scritto su
+  `main` prima della fusione) e la nuova Rotta (scritta su `ui/main` nello
+  stesso periodo) l'avevano già anticipata da parti opposte — il documento la
+  nomina come Q-DUE, la pagina la rende vera. È la ragione per cui `AGENTS.md`
+  vuole la fusione fatta a mano invece che con un rebase automatico: un umano
+  guarda, e qui c'era una decisione (Q-DUE, §10) non ancora presa a cui la
+  suite doveva restare attaccata. `peggiori()` entra in `ORFANI_DICHIARATI`
+  col motivo, resta esportata e testata — toglierla dal motore adesso
+  perderebbe la costruzione se la Rotta la richiamasse — e la decisione se
+  tenerne una sola classifica o dichiarare la differenza resta all'autore.
+
 
 ## [0.22.1] — 2026-09-07
 
