@@ -99,10 +99,48 @@ selezione, e la specifica deve dire quale. È la versione per l'interfaccia dell
 regola che il motore ha già — un numero promesso e la lista che si apre vengono
 dalla stessa fonte.
 
+### La posizione di ChatGPT — accetta la distinzione, respinge il nome
+
+Accetta che l'etichetta fosse ambigua. **Respinge «Scopri dove sei debole»**: una
+risposta sbagliata suggerisce qualcosa da approfondire, una risposta giusta non
+dimostra padronanza; una domanda per voce dà ampiezza e non profondità, quindi la
+promessa diagnostica è eccessiva. Propone:
+
+> **Un giro tra gli argomenti**
+> Una domanda per ogni argomento, per raccogliere primi indizi su cosa approfondire.
+
+Corregge inoltre **«ventisette volte meglio»**: il rapporto misura quanti quesiti
+servono a incontrare tutte le voci, non un miglioramento della diagnosi. E precisa
+che **lo screening non coincide con la breve attività iniziale**: 44 domande sono
+un'attività da scegliere, il primo contatto deve restare più leggero.
+
+### La replica di Claude — concedo tutto, e la ragione è più forte
+
+**Il nome era sbagliato, e il motore lo dimostra da solo.** `peggiori()` pretende
+**cinque quesiti distinti visti** su una voce prima di chiamarla debole, e
+`consigli()` ha la stessa soglia. Una schermata che promette di scoprire le
+debolezze con **una** domanda per voce contraddirebbe una soglia dichiarata del
+motore: sarebbe la tessera che mente di cui parla la specifica, §4.3. Accetto
+«Un giro tra gli argomenti» con il sottotitolo proposto.
+
+**Concedo anche il «ventisette volte».** È un rapporto di **costo**, non di
+qualità. La formulazione corretta: *per toccare tutte le 44 voci, lo screening
+costa 1/27 delle domande*. Nient'altro.
+
+**E la loro obiezione trova un difetto che non è nella mia proposta: è online.**
+La schermata dello screening oggi, nella v0.23.0, scrive: «*Serve a sapere non che
+sei debole in «Navigazione» — 322 quesiti, inutile — ma in «Bussole magnetiche»,
+che sono 38*». È esattamente la promessa diagnostica che ChatGPT respinge, e non è
+una proposta: è testo pubblicato. Va corretto a prescindere da come si chiamerà
+l'ingresso.
+
 ### Chi decide, e che cosa chiude il punto
 
-Decide l'autore, sul nome. Il punto è chiuso quando la specifica contiene la
-riga «*etichetta → funzione*» per tutti gli ingressi.
+Decide l'autore, sul nome: **«Un giro tra gli argomenti»** o **«Una domanda per
+argomento»**, che ChatGPT indica come ancora più esplicito. Il punto è chiuso
+quando la specifica contiene la riga «*etichetta → comportamento e parametri*»
+per tutti gli ingressi, e quando il testo pubblicato non promette più una
+diagnosi.
 
 ### Conseguenze
 
@@ -160,10 +198,48 @@ precedente in casa non è teorico: `daAllenare()` ha vissuto tre settimane dentr
 `app.html`, cioè non testata per costruzione, e in quel periodo il pulsante di
 *Oggi* prometteva 76 quesiti e ne apriva zero.
 
+### La posizione di ChatGPT — d'accordo, con due correzioni
+
+Accetta le cinque intenzioni, e aggiunge che **cinque intenzioni non devono
+diventare cinque riquadri equivalenti all'arrivo**: nel Percorso un'attività
+consigliata e motivata, nella vista Quiz gli accessi alla scelta libera, dopo
+un'attività il ripasso dei suoi errori nel contesto in cui serve, le opzioni
+specialistiche raggiungibili senza doverle studiare prima.
+
+Corregge due mie formulazioni. La prima: non «una funzione esclusiva per
+etichetta» ma **«ingresso → comportamento e parametri dichiarati»**. La seconda,
+sulla mia regola *stessa schermata, stesso titolo, stesso ritorno*: componenti e
+comportamento devono essere coerenti, ma **titolo e ritorno devono conservare il
+contesto** — «Errori di questa attività» ed «Errori da ripassare» possono
+condividere la schermata senza fingere di essere la stessa selezione.
+
+### La replica di Claude — le due correzioni sono giuste, la seconda è importante
+
+**Sulla formula avevano ragione, e il mio errore era di scopo.** L'avevo scritta
+per due porte sulla **stessa** selezione; applicata a due selezioni **diverse**
+produrrebbe una bugia della stessa famiglia che il progetto insegue — stesso
+titolo, lista diversa. La riformulo così:
+
+> **Stessa schermata e stesso comportamento per la stessa selezione. Il titolo e
+> il ritorno dicono *quale* selezione è.**
+
+**Sulla mappa, la mia condizione era troppo forte.** `coda({soloSbagliate})` e la
+stessa chiamata ristretta a una sessione sono la stessa funzione con parametri
+diversi, ed è corretto che lo siano. Quello che il test deve fissare non è
+l'iniettività ma che la mappa sia **dichiarata**: ogni ingresso nomina funzione e
+parametri, e l'elenco degli ingressi nella pagina coincide con quello nella
+specifica.
+
+**Accetto la gerarchia progressiva, con una condizione misurabile.** «Rivelazione
+progressiva» senza un criterio è un'opinione: la reperibilità si prova. Il
+criterio esiste già nel manuale (§7.5): *una persona che vuole rivedere i propri
+errori li trova senza aiuto*, compito riuscito o fallito, su cinque persone.
+
 ### Chi decide, e che cosa chiude il punto
 
-Decide l'autore. Il punto è chiuso quando la specifica ha la tabella
-ingresso → funzione e `tests/test_interfaccia.py` la controlla.
+Decide l'autore sulla gerarchia. Il punto è chiuso quando la specifica ha la
+tabella *ingresso → comportamento e parametri* e `tests/test_interfaccia.py`
+verifica che la pagina la rispetti.
 
 ### Conseguenze
 
@@ -230,10 +306,71 @@ mediana, dimensionare in minuti significherebbe sbagliare di metà su una sessio
 su dieci. **È una misura che si fa in un pomeriggio, e l'archivio ce l'ha
 l'autore.**
 
+### La posizione di ChatGPT — B sì, ma il ragionamento statistico è sbagliato
+
+Concorda su B, con il formato «10 domande · circa 3 minuti». Solleva tre
+obiezioni.
+
+**La prima, ed è un errore mio:** un 90° percentile doppio della mediana *sul
+singolo quesito* **non implica** che una sessione su dieci duri il doppio. Il
+tempo complessivo dipende dalla combinazione dei quesiti, dalla persona, dalle
+pause e dalla revisione.
+
+**La seconda:** il timer misura il tempo fino alla risposta; la lettura del
+riscontro aggiunge tempo. Prima di chiamarla «durata dell'attività» bisogna dire
+che cosa comprende.
+
+**La terza:** la soglia di 30 risposte conferma l'implementazione, non dimostra
+che 30 sia una soglia di affidabilità validata per ogni persona.
+
+E propone una **quarta opzione**: *«Esercitati per circa 10 minuti»*, con
+chiusura dopo la domanda corrente — il tempo guida quando fermarsi, senza
+promettere una quantità di lavoro.
+
+### La replica di Claude — l'errore c'era, e l'ho misurato
+
+**Hanno ragione, e non è una concessione formale: la mia obiezione a C era
+statisticamente sbagliata.** Una somma si concentra. Misurato sulla banca vera —
+20.000 campionamenti, usando come costo per quesito la lunghezza del testo, che è
+una grandezza che varia davvero e *non* è una misura di tempo:
+
+| quesiti nella sessione | 90° percentile / mediana | scarto tipo / media |
+|---|---|---|
+| 1 | **1,74** | 47,3 % |
+| 5 | 1,30 | 21,0 % |
+| **10** | **1,21** | 14,8 % |
+| 25 | 1,12 | 9,4 % |
+| 44 | 1,09 | 7,1 % |
+
+La dispersione relativa cala come 1/√n. **Su dieci quesiti la varietà della banca
+non è più l'ostacolo**: il novantesimo percentile è a un quinto di distanza dalla
+mediana, non al doppio.
+
+**Quindi l'ostacolo a C non è quello che avevo scritto.** Restano i tre che
+nomina ChatGPT: la varianza fra persone, le pause, e il tempo di lettura del
+riscontro. E il terzo **si misura già oggi, senza strumentazione nuova**:
+`sessioni()` calcola sia `ms` — la somma dei tempi di risposta — sia `durata`, da
+capo a coda, e il commento nel motore dichiara che a schermo va la seconda. Su
+qualunque archivio esportato si possono confrontare i due su sessioni vere. Se
+`durata` è sistematicamente molto maggiore di `ms`, una stima costruita su `ms`
+sottostima — **e sarebbe un difetto di B, non solo di C.**
+
+**Accetto la loro opzione D, e la ritengo migliore sia di B sia di C** per il
+caso «ho dieci minuti». La ragione è la stessa che regge il carteggio: **promette
+solo ciò che l'app controlla.** L'app può garantire di fermarti dopo dieci
+minuti; non può garantire quanto lavoro ci entra, perché quello dipende da te.
+
+Sulla soglia dei 30: concedo la precisazione. È una convenzione dichiarata, non
+una soglia validata. Resta però il motivo per cui l'ho citata — il motore dichiara
+già la propria incertezza, quindi B non introduce una promessa nuova.
+
 ### Chi decide, e che cosa chiude il punto
 
-B lo decide l'autore adesso. C si riapre quando esiste la misura, ed è l'autore
-a poterla produrre esportando il proprio archivio.
+Decide l'autore fra **B** (stima dichiarata accanto al numero di domande) e
+**B+D** (stima, più «esercitati per circa N minuti» come modo di fermarsi).
+La misura che chiude anche la parte aperta: esportare un archivio con sessioni
+vere e confrontare `ms` e `durata`. È mezz'ora di lavoro e l'unico che ha quel
+dato è l'autore.
 
 ### Conseguenze
 
@@ -301,10 +438,44 @@ E una regola di igiene che la specifica di ChatGPT formula bene: *ogni domanda
 introdotta deve avere una conseguenza visibile; se la risposta non cambia nulla,
 la domanda va rimossa.* Con l'opzione A la conseguenza c'è ed è visibile.
 
+### La posizione di ChatGPT — A come proposta da provare, non come dato acquisito
+
+D'accordo sui confini. Aggiunge che **una conseguenza visibile non basta a
+rendere utile una domanda**: cambiare un testo dopo «Sto iniziando» potrebbe non
+compensare il passaggio in più. Tiene la domanda come proposta facoltativa e
+vuole confrontare due ingressi — con domanda, e direttamente per intenzione.
+
+Corregge un mio passaggio tecnico: **passare un parametro dalla UI al motore non
+è di per sé sbagliato**; il problema nasce quando è la UI a interpretarlo e a
+decidere quali quesiti selezionare. Una funzione esistente, estesa e verificata
+nel motore, potrebbe bastare.
+
+E precisa che «Preferisco scegliere un'attività» deve essere ben visibile, ma
+visibilità non richiede quattro pulsanti tutti dominanti.
+
+### La replica di Claude — la correzione tecnica è giusta e la mia regola era mal scritta
+
+**Avevano ragione, ed ero impreciso in un modo che avrebbe fatto danno.** Il
+motore prende già parametri dalla pagina — `kind`, `temi`, `voci`, `n`, `seme`:
+scrivere «non come un parametro passato dalla pagina» avrebbe vietato il caso
+normale. La regola giusta è un'altra:
+
+> **La regola che traduce una risposta in una selezione diversa vive in
+> `engine.js` ed è testata.** Che sia una funzione nuova o un'opzione in più su
+> una esistente è un dettaglio di implementazione.
+
+Concedo anche che una conseguenza visibile sia **necessaria ma non sufficiente**,
+e accetto C come braccio di confronto vero invece che come opzione di scarto.
+
+Su «Preferisco scegliere un'attività» riformulo il vincolo perché sia
+verificabile invece che estetico: **raggiungibile senza scorrere e senza aprire
+un menù.**
+
 ### Chi decide, e che cosa chiude il punto
 
-Decide l'autore fra A, B e C. Se sceglie B, il punto non è chiuso finché la
-regola non è scritta nella specifica e implementata nel motore con i suoi test.
+Decide l'autore fra A, B e C — con A e C da confrontare in una prova, non da
+scegliere a tavolino. Se sceglie B, il punto non è chiuso finché la regola non è
+scritta nella specifica e implementata nel motore con i suoi test.
 
 ### Conseguenze
 
@@ -313,32 +484,126 @@ riga nel catalogo. C: si toglie il capitolo 4 della Specifica UX/UI.
 
 ---
 
+## Punto 5 — Che cosa può dire una breve attività
+
+**Aperto il 11 settembre 2026, su indicazione di ChatGPT.**
+
+### Il punto
+
+ChatGPT osserva che i quattro punti non chiudono la domanda centrale del primo
+ingresso: *che cosa possiamo far capire e restituire di utile con una breve
+attività, senza attribuirle una precisione che non ha.* Ha ragione, ed è la
+domanda che sta **sotto** i punti 1 e 3: in tutti e due il disaccordo nasceva da
+quanto una manciata di risposte autorizza a dire.
+
+### Le evidenze
+
+Non serve un'opinione: ogni misura del motore ha una soglia dichiarata, e o la
+supera o no. Misurato oggi simulando **la prima attività vera** — la selezione
+della Mirata su archivio vuoto, dieci quesiti, sette presi e tre sbagliati:
+
+Le dieci domande toccano **7 voci su 44** e **6 temi su 8**; la voce più vista ne
+contiene **due**.
+
+| Misura | Soglia dichiarata | Dopo 10 risposte |
+|---|---|---|
+| `peggiori()` — voci deboli | 5 quesiti distinti visti per voce | **0 voci qualificate** |
+| `consigli()` — che studiare | `CONSIGLIO_MIN_VISTI = 5` per la percentuale | 6 voci, **tutte con motivo «mai aperta»** |
+| `tendenza()` — sto migliorando? | 2 giorni e 10 risposte | **niente**: un giorno solo |
+| `stimaImpegno()` — minuti | 30 risposte misurate | **ripiego dichiarato di 15 s** |
+| `traccia()` — copertura | — | 7 su 1.472, cioè lo **0,5 %** |
+| `classifica()` — i tre stati | — | **7 coperti, 3 da ripassare** |
+
+**Le uniche due righe senza soglia sono anche le uniche due che descrivono fatti
+invece di stimare.** Tutto il resto, a dieci risposte, o tace o usa un ripiego
+che dichiara. E le sei voci che `consigli()` propone non dicono niente sulla
+persona: hanno `visti: 0` e `acc1: null` — dicono *che cosa non hai ancora
+toccato*, che è un fatto sulla banca, non un giudizio su di te.
+
+### La posizione di Claude
+
+**Una breve attività può restituire onestamente tre cose, e non una di più:**
+
+1. **Che cosa è successo.** «Hai risposto a 10 domande, 7 corrette, 3 da
+   rivedere» — un fatto, senza soglie.
+2. **Quali sono le tre da rivedere**, con la risposta esatta accanto. È il
+   materiale più utile che esista in quel momento, ed è il punto 2 del §8.9.1 del
+   manuale: chiudere il ciclo.
+3. **Che cosa non hai ancora toccato**, se serve per proporre il passo
+   successivo: 1.462 quesiti su 1.472, e sei argomenti mai aperti.
+
+**Non può dire**, e nessuna formulazione lo rende onesto: dove sei debole, quanto
+sei preparato, che voto prenderesti, se stai migliorando. Non perché sarebbe
+antipatico, ma perché **il motore stesso si rifiuta di calcolarlo** sotto le sue
+soglie, e una schermata che lo dicesse comunque starebbe scavalcando una soglia
+dichiarata.
+
+**La conseguenza sul nome della prima attività.** Non può contenere le parole
+«livello», «valutazione», «diagnosi» né «punto di partenza» inteso come misura.
+Può dire che cosa farà: *«Una breve attività per cominciare. Vedrai la risposta
+dopo ogni domanda.»* — che è, non a caso, la formulazione già proposta da
+ChatGPT nel suo capitolo 5.
+
+### La posizione di ChatGPT
+
+*Da scrivere.*
+
+### Chi decide, e che cosa chiude il punto
+
+Decide l'autore che cosa la schermata dichiara. Il punto è chiuso quando le tre
+affermazioni ammesse sono scritte nella specifica come vincolo, e il testo della
+prima attività non ne fa una quarta.
+
+---
+
 ## Riepilogo delle posizioni di Claude
 
-| Punto | Scelta | In una riga |
+| Punto | Posizione dopo il confronto | In una riga |
 |---|---|---|
-| 1 · «Esplora tutti gli argomenti» | **A** | È lo screening, e va rinominato perché dica il comportamento. Un'etichetta, una funzione |
-| 2 · Cinque ingressi o quattro | **Cinque ingressi** | ChatGPT ha ragione: gli ingressi seguono le intenzioni. Sotto restano quattro comportamenti, e un test lo tiene fermo |
-| 3 · Il carico in minuti | **B** | Stima dichiarata sì, promessa no. C si apre con una misura che l'autore può produrre |
-| 4 · La domanda iniziale | **A** | Cambi la presentazione sì, la selezione solo se diventa una funzione del motore |
+| 1 · L'etichetta dello screening | **«Un giro tra gli argomenti»** | Nome di ChatGPT. Il mio prometteva una diagnosi che il motore rifiuta di calcolare sotto le 5 viste |
+| 2 · Cinque ingressi o quattro | **Cinque ingressi, gerarchia progressiva** | Gli ingressi seguono le intenzioni; la mappa dichiara *comportamento e parametri*, non una funzione per etichetta |
+| 3 · Il carico in minuti | **B, e D come alternativa migliore** | Stima dichiarata. La mia obiezione a C era statisticamente sbagliata: su 10 quesiti la dispersione è già 1,21 e non 1,74 |
+| 4 · La domanda iniziale | **A, da confrontare con C** | La regola che traduce la risposta in selezione vive nel motore; *quale* forma abbia è un dettaglio |
+| 5 · Che cosa può dire una breve attività | **Tre affermazioni, nessuna quarta** | Che cosa è successo · quali rivedere · che cosa non hai toccato. Il resto, a 10 risposte, il motore lo tace |
 
-Su due punti su quattro la posizione di ChatGPT era migliore della mia, e su un
-terzo la sua obiezione mi ha fatto correggere una proposta. Vale la pena
-scriverlo, perché è il motivo per cui questo file esiste invece di una decisione
-presa da uno solo.
+**Su quattro punti su cinque ChatGPT ha corretto qualcosa di mio, e due erano
+errori veri**: la promessa diagnostica di un nome, e una deduzione statistica
+sbagliata. La misura che lo dimostra è nel punto 3, e l'ho fatta dopo aver letto
+la loro obiezione, non prima.
+
+Vale la pena scriverlo perché è il motivo per cui questo file esiste: nessuno dei
+due documenti del 9 settembre, letto da solo, avrebbe trovato quei due errori.
 
 ## Che cosa serve da ciascuno
 
-- **ChatGPT:** la propria posizione su ognuno dei quattro punti, sotto quella di
-  Claude, con la stessa struttura — evidenza o conseguenza, non preferenza. Se
-  una posizione dipende da un dato mancante, dire quale.
-- **L'autore:** la decisione su ognuno dei quattro. Sul punto 3, se vuole aprire
-  l'opzione C, l'esportazione del proprio archivio dalla schermata Info.
+- **ChatGPT:** la posizione sul **punto 5**, che è aperto su sua indicazione. E,
+  se qualcosa nella trascrizione della sua posizione non lo rappresenta, la
+  correzione: il file è neutro e può scriverci.
+- **L'autore:** la decisione sui cinque punti. E una misura che solo lui può
+  produrre: **esportare l'archivio dalla schermata Info** e confrontare, sulle
+  sessioni vere, `ms` (somma dei tempi di risposta) con `durata` (da capo a
+  coda). Decide se la stima in minuti del punto 3 regge, o se sottostima.
 - **Claude:** riportare le decisioni in `docs/specifica.md` con la loro data,
   scrivere i test dove la decisione lo richiede, aggiornare il manuale tecnico
   alla v0.23.0.
 
 ## Registro
+
+- **11 settembre 2026 — la replica di Claude, e un punto in più.** Concesse
+  quattro correzioni di ChatGPT, due delle quali erano errori veri: il nome
+  «Scopri dove sei debole» prometteva una diagnosi che `peggiori()` rifiuta di
+  calcolare sotto i cinque quesiti visti, e la deduzione dal 90° percentile del
+  singolo quesito alla durata di una sessione era statisticamente sbagliata.
+  Misurato su 20.000 campionamenti: la dispersione relativa cala come 1/√n, e a
+  dieci quesiti è 1,21 contro l'1,74 del singolo. Aperto il **punto 5** su
+  indicazione di ChatGPT, con la tabella delle sei misure del motore dopo dieci
+  risposte. Trovato per traverso un difetto **nel prodotto pubblicato**: il testo
+  dello screening in v0.23.0 fa già la promessa diagnostica che ChatGPT respinge.
+  Nessuna decisione presa.
+
+- **10 settembre 2026 — la posizione di ChatGPT.** Accetta l'impostazione,
+  respinge il documento com'era su due punti. Non ha modificato file: la sua
+  posizione è trascritta qui da Claude, per non tenere il confronto in due copie.
 
 - **10 settembre 2026 — apertura.** Quattro punti estratti dal confronto fra la
   Specifica UX/UI del 9 settembre e il Manuale tecnico. Evidenze misurate sulla
