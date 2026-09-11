@@ -9,6 +9,14 @@ utente e una data d'esame. Restano perché spiegano **perché** certe scelte
 sembrano strane — e sono state riviste solo per togliere i dati delle macchine
 dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
+## [Unreleased]
+
+### Modificato
+
+- **La cartella si chiama `~/Software/rotta-giusta`** (era `open-patente-nautica`, il
+  nome fino alla 0.19.2): la skill di progetto lo dice, e il worktree `rotta-giusta-ui`
+  è stato riparato. In `AGENTS.md`: `TERRITORI_OK` è dell'autore, non degli agenti.
+
 ## [0.23.0] — 2026-09-09
 
 ### Modificato

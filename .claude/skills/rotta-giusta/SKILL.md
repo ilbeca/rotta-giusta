@@ -12,7 +12,7 @@ description: >
 
 Sito statico con i 1.722 quesiti e i 135 esercizi di carteggio dell'Allegato A
 al DD 131/2022, il motore di selezione del progetto personale da cui e' estratto,
-e le risposte che restano nel browser di chi studia. Repo `~/Software/open-patente-nautica`
+e le risposte che restano nel browser di chi studia. Repo `~/Software/rotta-giusta`
 sull'Air, remoto `ilbeca/rotta-giusta` (pubblico), pubblicato da
 Cloudflare Pages a ogni push su `main`, cartella `site/`. Nessun server, nessun
 database, nessun build step.

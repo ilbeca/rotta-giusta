@@ -138,6 +138,8 @@ cio' che si e' modificato apposta per quel commit, e prima di committare si
 guardano `git status` e `git diff --cached`. Il hook protegge quello che entra
 nel commit; lo stage per nome riduce il rischio prima che ci entri. Se il hook
 rifiuta, nomina il file e scrive il rimedio: il commit e' sbagliato, non il hook.
+`TERRITORI_OK=1`, la via d'uscita che il hook stampa quando rifiuta un commit, è
+dell'autore: un agente che la usa sta aggirando il recinto, e non lo fa.
 
 Il lavoro di ChatGPT arriva su `main` con una **merge** fatta da Claude o
 dall'autore; nessun agente fa «hand off» nel checkout principale.
