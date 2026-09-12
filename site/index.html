@@ -27,7 +27,7 @@
 :root{
   --navy:#0B1F33; --blu-ink:#123E63; --blu:#3BA7DB;
   --dritta:#22C55E; --sinistra:#EF4444; --carta:#F2F4F7;
-  --ink-soft:#475569; --ink-mute:#64748B; --bordo:#DCE6EE;
+  --ink-soft:#475569; --ink-mute:#475569; --bordo:#DCE6EE;
   --r:12px;
 }
 *{box-sizing:border-box}
@@ -56,9 +56,7 @@ header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);
 .logo>span{display:block}
 .logo .nome{display:block;font-size:19px;font-weight:800;letter-spacing:.05em;color:var(--navy);line-height:1}
 .logo .nome span{font-weight:400;color:var(--blu-ink);opacity:.75}
-/* Il payoff: 10px, non 8, e in blu-ink. A 8px in #3BA7DB era il testo
-   piu' piccolo e meno leggibile della pagina. */
-.logo .payoff{display:block;font-size:10px;font-weight:600;letter-spacing:.24em;color:var(--blu-ink);margin-top:5px}
+.logo .payoff{display:block;font-size:11px;font-weight:600;letter-spacing:.24em;color:var(--blu-ink);margin-top:5px}
 nav.principale{display:none;gap:30px;font-size:14px;font-weight:600}
 nav.principale a{color:var(--ink-soft);text-decoration:none;padding:6px 0;border-bottom:2px solid transparent}
 nav.principale a:hover{color:var(--blu-ink)}
@@ -142,7 +140,7 @@ section{padding:72px 0}
 .navy .griglia{display:grid;gap:40px}
 @media(min-width:900px){.navy .griglia{grid-template-columns:1fr 1fr;gap:64px}}
 .spunte{border-left:1px solid rgba(255,255,255,.2);padding-left:28px;display:grid;gap:18px;align-content:center}
-.spunta{display:flex;align-items:center;gap:14px;color:#DCE6EE;font-size:15px}
+.spunta{display:flex;align-items:center;gap:14px;color:#fff;font-size:15px}
 .spunta svg{color:var(--blu);flex:0 0 auto}
 .onde{position:absolute;left:0;right:0;bottom:0;opacity:.16;pointer-events:none}
 
@@ -151,6 +149,8 @@ footer{background:#fff;padding:44px 0 34px}
 .piede-alto{display:flex;flex-wrap:wrap;gap:26px;align-items:center;justify-content:space-between;
             padding-bottom:26px;border-bottom:1px solid var(--bordo)}
 .piede-nav{display:flex;flex-wrap:wrap;gap:8px 26px;font-size:14px}
+.piede-nav a,.piede-basso a{display:inline-flex;align-items:center;justify-content:center;
+                            min-width:44px;min-height:44px}
 .piede-nav a{color:var(--ink-mute);text-decoration:none}
 .piede-nav a:hover{color:var(--blu-ink)}
 .piede-basso{display:flex;flex-wrap:wrap;gap:12px 26px;justify-content:space-between;
@@ -210,7 +210,6 @@ footer{background:#fff;padding:44px 0 34px}
 <section class="hero" style="padding:0">
   <div class="wrap griglia">
     <div>
-      <p class="occhiello">La piattaforma open source</p>
       <h1>La rotta giusta<br>per la tua <span class="acc">Patente Nautica</span></h1>
       <p class="sub">Quiz, simulazioni e carteggio per la patente nautica senza limiti dalla costa.
         Gratis, senza account, tutto nel tuo browser.</p>

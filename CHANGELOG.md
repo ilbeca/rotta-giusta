@@ -76,6 +76,17 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 - 126 verifiche sull'interfaccia (erano 74), 210 sulla specifica (erano 204),
   121 sul motore e 199 sui dati invariate.
 
+### Corretto
+
+- **La vetrina supera le soglie minime di accessibilità senza cambiare la sua
+  tavolozza.** Il payoff del marchio passa da 10 a **11 px** e la sua eccezione
+  dichiarata sparisce; l'occhiello generico sopra l'H1 non c'è più. Il testo
+  attenuato usa il grigio già presente `#475569`: **6,88:1** su carta, invece di
+  `#64748B` a **4,32:1**. Le quattro righe nella sezione navy sono bianche:
+  **16,69:1** su `#0B1F33`. A 375 px, tutti i link del piè di pagina — compresi
+  MIT e Avvertenza — misurano almeno **44×44 px**; nessuno sbordamento orizzontale
+  a 375 e 1280 px.
+
 
 ## [0.24.0] — 2026-09-12
 

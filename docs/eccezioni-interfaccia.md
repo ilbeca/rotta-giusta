@@ -29,7 +29,6 @@ telefono. I difetti qui sotto vengono dall'audit del 12 settembre 2026.
 | app.html | 9 | `.recommend-card .eyebrow` | Come sopra, nella proposta. Area 1 |
 | app.html | 10 | `.cart-route-card small` | Sottotitolo della tessera Carteggio. Area 1 |
 | app.html | 10 | `.progress-stat span` | Etichette del riepilogo. Area 1 |
-| index.html | 10 | `.logo .payoff` | Il payoff nella vetrina, che non è in nessuna delle sei aree: la corregge la sessione dedicata, in parallelo |
 
 ## Testi alternativi generici
 
