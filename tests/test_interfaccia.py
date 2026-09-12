@@ -69,28 +69,6 @@ MODI = ['mirata', 'argomento', 'sbagliate', 'sim', 'screening', 'batteria']
 
 # Export del motore che la pagina non chiama, e non e' un difetto. Ogni riga ha
 # il motivo e, dove serve, la condizione alla quale sparisce.
-ORFANI_DICHIARATI = {
-    'ritmo': "misura il tempo per domanda all'orologio (12 settembre 2026). Il "
-             "motore la espone e la testa; a consumarla sara' l'interfaccia del "
-             "ridisegno, che e' del ramo ui/*. L'eccezione sparisce quando la "
-             "pagina la passa a stimaImpegno() come msPerDomanda.",
-    'erroriSessione': "riapre come esercizio gli errori di una sessione sola "
-                      "(12 settembre 2026): e' il pezzo di motore che serve a "
-                      "chiudere il ciclo di un'attivita', R-FLU-02. La chiamera' "
-                      "il riepilogo, che e' interfaccia; l'eccezione sparisce "
-                      "con quella schermata.",
-    'fondi': "fusione di due specchi: serviva alla sincronia col server, tolta "
-             "nella 0.19.0. Resta esportata e testata perche' descrive la "
-             "semantica della fusione, ma nessuno la chiama.",
-    'peggiori': "«Le tue voci più deboli» e' sparita dalla Rotta nel ridisegno "
-                "del 9 settembre 2026: la pagina usa ora solo consigli() per "
-                "«Cosa studiare adesso» in Progressi. E' Q-DUE in "
-                "docs/specifica.md, §10 — due classifiche concorrenti, decide "
-                "l'autore se tenerne una sola o dichiarare la differenza — non "
-                "ancora deciso. Resta esportata e testata: toglierla dal motore "
-                "prima della decisione perderebbe la costruzione se la Rotta la "
-                "richiamasse.",
-}
 
 
 # ── Che cosa la pagina consuma dal motore ─────────────────────────────────────
@@ -107,20 +85,6 @@ ORFANI_DICHIARATI = {
 # Togliere una chiamata e' legittimo: si toglie anche di qui, e il commit dice
 # perche'. Quello che non e' legittimo e' che sparisca in silenzio.
 #
-# L'elenco comprende anche cio' che la pagina consuma **senza chiamarlo**:
-# `E.SEGNALI` e' una costante, ed `E.estrai` ed `E.estraiNuoviPrima` viaggiano
-# come valore dentro `componiProva()`. Cercare `E.nome(` con la parentesi ne
-# perderebbe tre su trentatre' — misurato scrivendo questo controllo.
-CHIAMATE_AL_MOTORE = {
-    'SEGNALI', 'addGiorni', 'applica', 'classifica', 'coda', 'consigli', 'daAllenare',
-    'diagnosi', 'domandeSegnali', 'esito', 'estrai', 'estraiNuoviPrima',
-    'fondiArchivio', 'giorniTra',
-    'giroTecniche', 'isoLocale', 'lunghezzaPartita', 'mirata', 'ordinaRighe',
-    'poolSegnali', 'rimescola', 'ripiega', 'sbagliato', 'screening',
-    'serieGruppi', 'sessioni', 'simulazione', 'simulazioneVela', 'stato',
-    'stimaImpegno', 'tappeto', 'tendenza', 'traccia',
-}
-
 # ── Le eccezioni dichiarate stanno FUORI da qui ───────────────────────────────
 #
 # I controlli sono in questo file, che e' territorio `motore`; le eccezioni
@@ -143,9 +107,15 @@ def tabella(titolo, colonne):
     if not m:
         return None
     out = []
-    for r in re.findall(r'^\|(.+)\|\s*$', m.group(1), re.M):
+    # Le prime due righe di una tabella markdown sono intestazione e separatore:
+    # si saltano per posizione, non per contenuto. Riconoscerle dal nome della
+    # prima colonna vuol dire che una tabella nuova, con un'intestazione diversa,
+    # si porta dentro la propria intestazione come se fosse un dato.
+    for n, r in enumerate(re.findall(r'^\|(.+)\|\s*$', m.group(1), re.M)):
+        if n < 2:
+            continue
         celle = [c.strip().strip('`') for c in r.split('|')]
-        if len(celle) != colonne or celle[0] in ('file', '---') or set(celle[0]) == {'-'}:
+        if len(celle) != colonne:
             continue
         out.append(tuple(celle))
     return out
@@ -250,46 +220,114 @@ def test_selettori():
 
 # --- 6. il motore non ha funzioni orfane (R-NAV-02) --------------------------------
 
+def orfani_dichiarati():
+    """{funzione: motivo}, dal file neutro."""
+    righe = tabella('Funzioni del motore che nessuno chiama', 2)
+    return None if righe is None else {f: m for f, m in righe}
+
+
+def chiamate_protette():
+    """I nomi che la pagina deve continuare a consumare, dal file neutro."""
+    righe = tabella('Chiamate al motore protette', 1)
+    return None if righe is None else {f for (f,) in righe}
+
+
 def test_motore_senza_orfani():
     motore = leggi('engine.js')
     pagina = senza_commenti(leggi('app.html'))
     corpo = senza_commenti(motore)
+    orfani = orfani_dichiarati()
+    check('l\'elenco degli orfani si legge', orfani is not None,
+          'manca la tabella «Funzioni del motore che nessuno chiama» in '
+          'docs/eccezioni-interfaccia.md')
+    orfani = orfani or {}
     esportate = re.findall(r'^export function ([a-zA-Z]+)', motore, flags=re.M)
     check('il motore esporta qualcosa', len(esportate) > 10)
+    consumate = set()
     for f in esportate:
         # Chiamata dalla pagina — anche solo nominata, perche' `componiProva()`
         # passa `E.estrai` come valore invece di chiamarla.
         dalla_pagina = re.search(r'\bE\.%s\b' % f, pagina) is not None
+        if dalla_pagina:
+            consumate.add(f)
         # Oppure usata dentro il motore stesso: `semaforo()` la chiama
         # `traccia()`, `oscurato()` la chiama `simulazione()`.
         usi = len(re.findall(r'(?<![\w.])%s\s*\(' % f, corpo))
         interna = usi > 1
         check('«%s» ha un chiamante' % f,
-              dalla_pagina or interna or f in ORFANI_DICHIARATI,
+              dalla_pagina or interna or f in orfani,
               'esportata, testata, e nessuno la chiama. Se e\' voluto, '
-              'dichiarala in ORFANI_DICHIARATI col motivo.')
-    # Un\'eccezione che non serve piu' e' un\'eccezione che nasconde il prossimo
-    # caso: si toglie appena il suo motivo decade.
-    for f in ORFANI_DICHIARATI:
+              'dichiarala fra le «Funzioni del motore che nessuno chiama» in '
+              'docs/eccezioni-interfaccia.md, col motivo e con l\'area che la '
+              'consumera\'.')
+    # Una dichiarazione che non serve piu' nasconde il caso dopo. Due modi di
+    # non servire piu', e il secondo mancava: la funzione non c'e' piu', oppure
+    # **la pagina ha cominciato a chiamarla**. Il secondo si poteva controllare
+    # solo da quando le eccezioni stanno in territorio neutro: prima l'unico
+    # modo di spegnere il rosso sarebbe stato toccare tests/, precluso a ui/*.
+    for f in orfani:
         check('l\'eccezione «%s» riguarda una funzione che esiste' % f,
               f in esportate,
               'dichiarata orfana ma non esportata: la riga va tolta')
+        check('«%s» e\' ancora senza chiamanti' % f, f not in consumate,
+              'la pagina la chiama: togli la riga dagli orfani e aggiungi il '
+              'nome alle «Chiamate al motore protette», nello stesso commit')
 
 
 # --- 7. la pagina non smette di consumare il motore in silenzio ---------------
 
 def test_chiamate_al_motore_preservate():
     app = senza_commenti(leggi('app.html'))
+    protette = chiamate_protette()
+    check('l\'elenco delle chiamate protette si legge', protette is not None,
+          'manca la tabella «Chiamate al motore protette» in '
+          'docs/eccezioni-interfaccia.md')
+    protette = protette or set()
     trovate = set(re.findall(r'\bE\.([a-zA-Z]+)\b', app))
-    for f in sorted(CHIAMATE_AL_MOTORE):
+    for f in sorted(protette):
         check('la pagina chiama ancora «%s»' % f, f in trovate,
-              'la chiamata e\' sparita. Se e\' voluto, toglila anche da '
-              'CHIAMATE_AL_MOTORE e di\' nel commit perche\': quello che non va '
-              'bene e\' che sparisca in silenzio.')
-    nuove = trovate - CHIAMATE_AL_MOTORE
+              'la chiamata e\' sparita. Se e\' voluto, togli la riga da '
+              'docs/eccezioni-interfaccia.md e di\' nel commit perche\': quello '
+              'che non va bene e\' che sparisca in silenzio.')
+    nuove = trovate - protette
     check('le chiamate nuove sono dichiarate', not nuove,
           'la pagina chiama ora anche: ' + ', '.join(sorted(nuove))
-          + ' — aggiungile a CHIAMATE_AL_MOTORE, cosi\' da domani sono protette')
+          + ' — aggiungi una riga per ognuna alle «Chiamate al motore protette» '
+            'in docs/eccezioni-interfaccia.md, cosi\' da domani sono protette')
+
+
+# --- 7b. una lettura non ripiega su un dato plausibile ------------------------
+
+def test_letture_che_non_mascherano():
+    """Un ripiego silenzioso trasforma un errore in un dato credibile.
+
+    `LS.get(k, d)` ha `catch { return d }`: usato per leggere l'archivio, un
+    file illeggibile diventa una lista vuota, e la schermata del primo avvio
+    compare a chi ha mesi di risposte. E' il guasto muto in forma pura, quindi
+    non basta ripararlo dove sta: si nomina la forma.
+    """
+    righe = tabella('Letture che possono mascherare un guasto', 3)
+    check('l\'elenco delle letture cieche si legge', righe is not None,
+          'manca la tabella «Letture che possono mascherare un guasto» in '
+          'docs/eccezioni-interfaccia.md')
+    dichiarate = {(f, e) for f, e, _ in (righe or [])}
+    cieche = []
+    for nome in ('app.html', 'index.html'):
+        for espr in re.findall(r"LS\.get\(\s*'archivio'\s*,[^)]*\)",
+                               senza_commenti(leggi(nome))):
+            cieche.append((nome, ' '.join(espr.split())))
+    for f, e in cieche:
+        check('la lettura dell\'archivio in %s non ripiega in silenzio' % f,
+              (f, e) in dichiarate,
+              'questa lettura non distingue «assente» da «errore»: chi la usa '
+              'non puo\' sapere se l\'archivio e\' vuoto o illeggibile. Se non '
+              'la correggi adesso, dichiarala col perche\' e con l\'area.')
+    presenti = set(cieche)
+    for k in dichiarate:
+        check('la dichiarazione per «%s» riguarda una lettura che esiste' % (k[1],),
+              k in presenti,
+              'la lettura e\' stata corretta: togli la riga, altrimenti nasconde '
+              'la prossima')
 
 
 # --- 8. i testi si possono leggere (R-A11Y) -----------------------------------
@@ -353,6 +391,7 @@ def main():
     for t in (test_viste_dichiarate, test_ogni_vista_ha_una_porta,
               test_voci_barra, test_modalita_quiz, test_selettori,
               test_motore_senza_orfani, test_chiamate_al_motore_preservate,
+              test_letture_che_non_mascherano,
               test_testi_leggibili, test_alt_di_contenuto):
         t()
     if falliti:

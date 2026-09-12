@@ -61,6 +61,58 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   Su richiesta esplicita dell'autore, ispirata a una frase vista sul sito di
   Apple.
 
+- **Le due liste che restavano nei test escono anche loro, e il controllo sugli
+  orfani diventa simmetrico.** Il 12 settembre le eccezioni sui font sono state
+  spostate in `docs/eccezioni-interfaccia.md`, che è neutro, con la ragione
+  scritta accanto: *a togliere un'eccezione è chi corregge il difetto, e chi
+  corregge l'interfaccia lavora su `ui/*`, dove `tests/` gli è precluso.*
+  `ORFANI_DICHIARATI` e `CHIAMATE_AL_MOTORE` sono rimaste dentro `tests/` — cioè
+  la lezione è stata applicata a un controllo su tre, e il commento che diceva
+  «le eccezioni dichiarate stanno FUORI da qui» aveva le due liste tre righe
+  sopra di sé.
+
+  **Il costo si è visto tre giorni dopo, e non era teorico.** La sessione che
+  realizza l'area 1 si è fermata senza toccare niente: il progetto le impone di
+  chiamare `E.ritmo()`, e `nuove = trovate - CHIAMATE_AL_MOTORE` rende **rossa
+  qualunque chiamata nuova** finché il nome non entra in un file che da `ui/*`
+  non si scrive. Un controllo nato per impedire che una chiamata sparisca in
+  silenzio impediva di aggiungerne una — cioè bloccava esattamente il lavoro che
+  il ridisegno deve fare, e per tutte e sei le aree, non solo per la prima.
+
+  Ora vivono nel file neutro. E siccome l'interfaccia può togliersi la riga da
+  sola, il controllo sugli orfani può finalmente chiedere **anche il verso
+  opposto**: una funzione dichiarata orfana che la pagina ha cominciato a
+  chiamare è una dichiarazione che mente, e diventa rossa. Prima quel controllo
+  non esisteva — non per dimenticanza, ma perché l'unico modo di spegnerlo
+  sarebbe stato toccare `tests/`.
+
+- **`test_letture_che_non_mascherano`: un ripiego non trasforma un errore in un
+  dato plausibile.** `LS.get(k, d)` ha `catch { return d }`, e `ARCH.carica()`
+  lo usa per leggere l'archivio quando IndexedDB non si apre: **un archivio
+  illeggibile — JSON rotto, `localStorage` che lancia — è indistinguibile da un
+  archivio vuoto.** Chi ha mesi di risposte vedrebbe la schermata del primo
+  avvio, e nessun errore da nessuna parte. È il guasto muto nella sua forma più
+  pura, ed è stato trovato leggendo il codice, non riproducendolo.
+
+  Il difetto è di `app.html`, che è dell'interfaccia: entra quindi come riga
+  dichiarata nel file neutro, con l'area che lo chiude, e la suite resta verde
+  finché non lo si corregge. Il controllo è statico e non pretende di dimostrare
+  che i tre esiti siano distinti: pretende che **la forma che li confonde** non
+  ci sia. R-STA-08.
+
+  **Provati al contrario quattro volte**, e ognuno nomina il colpevole: la pagina
+  che chiama `E.ritmo()` mentre è ancora dichiarato orfano → 2 rossi, che sono
+  esattamente i due che hanno fermato la sessione; una riga tolta dalle chiamate
+  protette → 1; il ripiego corretto con la dichiarazione rimasta → 1; una lettura
+  cieca non dichiarata → 2.
+
+  **E un controllo scritto e mai eseguito, preso dall'aritmetica.** La prima
+  stesura di `test_letture_che_non_mascherano` non era registrata in `main()`:
+  la suite diceva 134 verifiche passate e quel controllo ne contribuiva **zero**.
+  Il conto atteso era 128 + 4 + 2 + 3, e i tre mancavano. È lo strumento che
+  rassicura, di nuovo, dentro la riparazione di un altro strumento che rassicura;
+  il conto dei numeri attesi è ciò che l'ha preso.
+
 ### Deciso
 
 - **Che cosa può dire una breve attività: tre affermazioni, e nessuna quarta.**
@@ -75,6 +127,8 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 - 126 verifiche sull'interfaccia (erano 74), 210 sulla specifica (erano 204),
   121 sul motore e 199 sui dati invariate.
+- Dopo il trasloco delle due liste: **137** sull'interfaccia e **214** sulla
+  specifica.
 
 
 ## [0.24.0] — 2026-09-12
