@@ -9,6 +9,58 @@ utente e una data d'esame. Restano perché spiegano **perché** certe scelte
 sembrano strane — e sono state riviste solo per togliere i dati delle macchine
 dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
+## [Unreleased]
+
+### Aggiunto
+
+- **Tre controlli che tengono fermo quello che c'è già**, nati dalla richiesta di
+  ChatGPT di «registrare per ogni area i comportamenti esistenti da preservare».
+  La richiesta è giusta e la forma no: una lista dentro un prompt è una regola da
+  ricordare, e questo progetto le sostituisce con controlli che git esegue.
+
+  **`test_chiamate_al_motore_preservate`** è il gemello del controllo sugli
+  orfani, dall'altro lato: quello prende una funzione esportata che nessuno
+  chiama, questo prende **una funzione che la pagina chiamava e non chiama più**.
+  È il caso `peggiori()`, che nella merge della nuova Rotta è uscita dal prodotto
+  senza che nessuno lo decidesse e che il controllo esistente ha trovato **dopo**
+  la fusione. Sono 33 nomi, e trovarli ha richiesto una misura: cercare `E.nome(`
+  con la parentesi ne perde tre, perché `E.SEGNALI` è una costante ed `E.estrai`
+  ed `E.estraiNuoviPrima` viaggiano **come valore** dentro `componiProva()`.
+
+  **`test_testi_leggibili`** rifiuta un `font-size` sotto gli 11 px. Otto regole
+  oggi lo violano e sono dichiarate una per una con l'area che le corregge; la
+  peggiore è `.brand-tag`, il payoff sotto il marchio, a **8 px e a 6 px sotto i
+  650 px** — cioè sul telefono, che è il contesto d'uso primario dichiarato.
+
+  **`test_alt_di_contenuto`** rifiuta un `alt` generico. Ce n'è uno solo, ed è
+  quello che conta: `alt="figura"` sull'unica riga che inserisce le 102 figure
+  del decreto. Per chi usa un lettore di schermo **119 quesiti restano senza il
+  proprio contenuto**. `alt=""` resta corretto per le tre immagini decorative.
+
+  I difetti provengono da un audit di accessibilità del 12 settembre 2026; i due
+  più gravi sono stati riverificati sul codice prima di dichiararli.
+
+  **Provati al contrario quattro volte**, e ognuno nomina il colpevole: una
+  chiamata al motore che sparisce, un `font-size` a 9 px non dichiarato, un `alt`
+  generico nuovo, e una dichiarazione che resta dopo che il difetto è stato
+  corretto — perché un'eccezione che non serve più nasconde la prossima.
+
+### Deciso
+
+- **Che cosa può dire una breve attività: tre affermazioni, e nessuna quarta.**
+  Era il punto 5 di `decisioni-aperte.md`, aperto su indicazione di ChatGPT, che
+  ha chiesto di chiuderlo prima di toccare il codice. Può dire che cosa è
+  successo, quali risposte rivedere, e che cosa non hai ancora toccato. **Non**
+  può dire dove sei debole né quanto sei preparato — non per delicatezza, ma
+  perché il motore si rifiuta di calcolarlo sotto le proprie soglie: dopo dieci
+  risposte `peggiori()` qualifica **zero** voci e `tendenza()` tace.
+
+### Test
+
+- 126 verifiche sull'interfaccia (erano 74), 210 sulla specifica (erano 204),
+  121 sul motore e 199 sui dati invariate.
+
+
 ## [0.24.0] — 2026-09-12
 
 ### Aggiunto

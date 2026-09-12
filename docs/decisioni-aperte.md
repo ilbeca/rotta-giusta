@@ -634,13 +634,34 @@ ChatGPT nel suo capitolo 5.
 
 ### La posizione di ChatGPT
 
-*Da scrivere.*
+Ha chiesto di chiudere questo punto **prima** di toccare il codice, insieme alla
+lettura dei documenti aggiornati, e di registrare per ogni area i comportamenti
+esistenti da preservare. Sulla sostanza non ha obiettato alle tre affermazioni.
 
-### Chi decide, e che cosa chiude il punto
+### Deciso — 12 settembre 2026
 
-Decide l'autore che cosa la schermata dichiara. Il punto è chiuso quando le tre
-affermazioni ammesse sono scritte nella specifica come vincolo, e il testo della
-prima attività non ne fa una quarta.
+**Tre affermazioni ammesse, e nessuna quarta.** Una breve attività può dire:
+
+1. **Che cosa è successo.** «Hai risposto a 10 domande, 7 corrette, 3 da
+   rivedere.» Un fatto, senza soglie.
+2. **Quali sono quelle da rivedere**, con la risposta esatta accanto.
+3. **Che cosa non hai ancora toccato**, se serve a proporre il passo successivo.
+
+**Non può dire** — e nessuna formulazione lo rende onesto — dove sei debole,
+quanto sei preparato, che voto prenderesti, se stai migliorando. Non per
+delicatezza: perché **il motore stesso si rifiuta di calcolarlo** sotto le sue
+soglie, e una schermata che lo dicesse comunque starebbe scavalcando una soglia
+dichiarata.
+
+**Conseguenza sul nome e sui testi.** La prima attività non contiene «livello»,
+«valutazione», «diagnosi», né «punto di partenza» inteso come misura. Può dire
+che cosa farà, che è la formulazione già proposta da ChatGPT nel suo capitolo 5.
+
+La richiesta di registrare i comportamenti da preservare è stata accolta **in
+una forma più forte di una lista**: tre controlli in `tests/test_interfaccia.py`
+(§9.8 della specifica). Una lista in un prompt è una regola da ricordare; un
+test è un controllo che git esegue, ed è lo stesso meccanismo che ha preso
+`peggiori()`.
 
 ---
 
@@ -652,7 +673,7 @@ prima attività non ne fa una quarta.
 | 2 · Cinque ingressi o quattro | **Cinque ingressi, gerarchia progressiva** | Gli ingressi seguono le intenzioni; la mappa dichiara *comportamento e parametri*, non una funzione per etichetta |
 | 3 · Il carico in minuti | **D: nessun tempo prima di conoscerti** | Sotto le 30 risposte l'app non sa niente di chi ha davanti. Il numero misurato resta fuori dal codice: è di una persona sola |
 | 4 · La domanda iniziale | **A, da confrontare con C** | La regola che traduce la risposta in selezione vive nel motore; *quale* forma abbia è un dettaglio |
-| 5 · Che cosa può dire una breve attività | **Tre affermazioni, nessuna quarta** | Che cosa è successo · quali rivedere · che cosa non hai toccato. Il resto, a 10 risposte, il motore lo tace |
+| 5 · Che cosa può dire una breve attività | **Deciso: tre affermazioni, nessuna quarta** | Che cosa è successo · quali rivedere · che cosa non hai toccato. Il resto, a 10 risposte, il motore lo tace |
 
 **Su quattro punti su cinque ChatGPT ha corretto qualcosa di mio, e due erano
 errori veri**: la promessa diagnostica di un nome, e una deduzione statistica

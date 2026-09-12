@@ -93,6 +93,75 @@ ORFANI_DICHIARATI = {
 }
 
 
+# ── Che cosa la pagina consuma dal motore ─────────────────────────────────────
+#
+# Il gemello del controllo sugli orfani, dall'altro lato. Quello prende una
+# funzione esportata che nessuno chiama; questo prende una funzione **che la
+# pagina chiamava e non chiama piu'**.
+#
+# Esiste per un caso vero: nella merge della nuova Rotta — 468 righe in
+# `app.html` — `E.peggiori()` e' uscita dal prodotto senza che nessuno lo
+# decidesse, e l'ha trovata il controllo sugli orfani **dopo** la fusione.
+# Questo la prenderebbe prima, e nominandola.
+#
+# Togliere una chiamata e' legittimo: si toglie anche di qui, e il commit dice
+# perche'. Quello che non e' legittimo e' che sparisca in silenzio.
+#
+# L'elenco comprende anche cio' che la pagina consuma **senza chiamarlo**:
+# `E.SEGNALI` e' una costante, ed `E.estrai` ed `E.estraiNuoviPrima` viaggiano
+# come valore dentro `componiProva()`. Cercare `E.nome(` con la parentesi ne
+# perderebbe tre su trentatre' — misurato scrivendo questo controllo.
+CHIAMATE_AL_MOTORE = {
+    'SEGNALI', 'addGiorni', 'applica', 'classifica', 'coda', 'consigli', 'daAllenare',
+    'diagnosi', 'domandeSegnali', 'esito', 'estrai', 'estraiNuoviPrima',
+    'fondiArchivio', 'giorniTra',
+    'giroTecniche', 'isoLocale', 'lunghezzaPartita', 'mirata', 'ordinaRighe',
+    'poolSegnali', 'rimescola', 'ripiega', 'sbagliato', 'screening',
+    'serieGruppi', 'sessioni', 'simulazione', 'simulazioneVela', 'stato',
+    'stimaImpegno', 'tappeto', 'tendenza', 'traccia',
+}
+
+# ── I testi si devono poter leggere ───────────────────────────────────────────
+#
+# Sotto gli 11 px un testo non e' piccolo, e' illeggibile per una parte delle
+# persone — e il contesto d'uso dichiarato di questo prodotto e' il telefono.
+# Le violazioni di oggi sono dichiarate una per una con l'area che le corregge:
+# una dichiarazione che resta quando il difetto e' sparito viene segnalata,
+# come per gli orfani.
+FONT_MINIMO = 11
+SOTTO_SOGLIA_DICHIARATI = {
+    ('app.html', 8, '.brand-tag'):
+        "il payoff sotto il marchio. Lo corregge l'area 1, che rifa' l'header.",
+    ('app.html', 6, '.brand-tag'):
+        "lo stesso payoff sotto i 650 px, cioe' **sul telefono**, che e' il "
+        "contesto d'uso primario dichiarato. Area 1.",
+    ('app.html', 10, '.eyebrow'):
+        "l'etichetta sopra il titolo. E' anche il pattern «hero SaaS» "
+        "segnalato dall'audit del 12 settembre 2026. Aree 1 e 2.",
+    ('app.html', 9, '.rotta-intro .eyebrow'): "come sopra, nella Rotta. Area 1.",
+    ('app.html', 9, '.recommend-card .eyebrow'): "come sopra, nella proposta. Area 1.",
+    ('app.html', 10, '.cart-route-card small'): "sottotitolo della tessera Carteggio. Area 1.",
+    ('app.html', 10, '.progress-stat span'): "etichette del riepilogo. Area 1.",
+    ('index.html', 10, '.logo .payoff'):
+        "il payoff nella vetrina. La vetrina non e' in nessuna delle sei aree "
+        "di A: la corregge la sessione dedicata, in parallelo.",
+}
+
+# ── Un'immagine che porta contenuto deve dire che cosa mostra ─────────────────
+#
+# `alt=""` e' corretto per un'immagine decorativa affiancata da un testo
+# equivalente. Un alt **generico** e' peggio di nessuno: dichiara che c'e'
+# un'immagine e non dice quale, quindi per chi usa un lettore di schermo il
+# quesito resta senza il suo contenuto.
+ALT_GENERICI = {'figura', 'immagine', 'image', 'foto', 'grafico', 'icona', 'logo'}
+ALT_GENERICI_DICHIARATI = {
+    ('app.html', 'figura'):
+        "l'unica riga che inserisce le 102 figure del decreto, su 119 quesiti: "
+        "per un lettore di schermo quei quesiti sono senza contenuto. Il testo "
+        "alternativo va preso dal quesito, non inventato. Area 3, il runner.",
+}
+
+
 def senza_commenti(testo):
     """Toglie i commenti, per non scambiare una citazione per un uso.
 
@@ -218,10 +287,75 @@ def test_motore_senza_orfani():
               'dichiarata orfana ma non esportata: la riga va tolta')
 
 
+# --- 7. la pagina non smette di consumare il motore in silenzio ---------------
+
+def test_chiamate_al_motore_preservate():
+    app = senza_commenti(leggi('app.html'))
+    trovate = set(re.findall(r'\bE\.([a-zA-Z]+)\b', app))
+    for f in sorted(CHIAMATE_AL_MOTORE):
+        check('la pagina chiama ancora «%s»' % f, f in trovate,
+              'la chiamata e\' sparita. Se e\' voluto, toglila anche da '
+              'CHIAMATE_AL_MOTORE e di\' nel commit perche\': quello che non va '
+              'bene e\' che sparisca in silenzio.')
+    nuove = trovate - CHIAMATE_AL_MOTORE
+    check('le chiamate nuove sono dichiarate', not nuove,
+          'la pagina chiama ora anche: ' + ', '.join(sorted(nuove))
+          + ' — aggiungile a CHIAMATE_AL_MOTORE, cosi\' da domani sono protette')
+
+
+# --- 8. i testi si possono leggere (R-A11Y) -----------------------------------
+
+def piccoli(nome):
+    """Ogni regola CSS con un font-size sotto la soglia, col suo selettore."""
+    t = leggi(nome)
+    fuori = []
+    for m in re.finditer(r'([^{};\n]*)\{[^{}]*font-size:\s*(\d+)px', t):
+        px = int(m.group(2))
+        if px < FONT_MINIMO:
+            sel = m.group(1).strip().split('}')[-1].strip()
+            fuori.append((nome, px, sel))
+    return fuori
+
+
+def test_testi_leggibili():
+    trovati = piccoli('app.html') + piccoli('index.html')
+    for f, px, sel in trovati:
+        check('«%s» in %s non e\' sotto i %d px' % (sel, f, FONT_MINIMO),
+              (f, px, sel) in SOTTO_SOGLIA_DICHIARATI,
+              '%d px: sotto la soglia un testo non e\' piccolo, e\' illeggibile '
+              'per una parte delle persone. Se e\' voluto, dichiaralo col '
+              'perche\' e con l\'area che lo corregge.' % px)
+    for k in SOTTO_SOGLIA_DICHIARATI:
+        check('la dichiarazione per «%s» riguarda una regola che esiste' % (k[2],),
+              k in trovati,
+              'il difetto e\' stato corretto: togli la riga da '
+              'SOTTO_SOGLIA_DICHIARATI, altrimenti nasconde il prossimo')
+
+
+# --- 9. un'immagine di contenuto dice che cosa mostra -------------------------
+
+def test_alt_di_contenuto():
+    trovati = []
+    for nome in ('app.html', 'index.html'):
+        for a in re.findall(r'alt="([^"]*)"', leggi(nome)):
+            if a.strip().lower() in ALT_GENERICI:
+                trovati.append((nome, a.strip().lower()))
+    for f, a in trovati:
+        check('l\'alt «%s» in %s dice che cosa mostra' % (a, f),
+              (f, a) in ALT_GENERICI_DICHIARATI,
+              'un alt generico e\' peggio di nessuno: dichiara che c\'e\' '
+              'un\'immagine e non dice quale. `alt=""` va bene per una '
+              'decorativa; un\'immagine che porta contenuto deve descriverlo.')
+    for k in ALT_GENERICI_DICHIARATI:
+        check('la dichiarazione per l\'alt «%s» riguarda un caso che esiste' % (k[1],),
+              k in trovati, 'corretto: togli la riga da ALT_GENERICI_DICHIARATI')
+
+
 def main():
     for t in (test_viste_dichiarate, test_ogni_vista_ha_una_porta,
               test_voci_barra, test_modalita_quiz, test_selettori,
-              test_motore_senza_orfani):
+              test_motore_senza_orfani, test_chiamate_al_motore_preservate,
+              test_testi_leggibili, test_alt_di_contenuto):
         t()
     if falliti:
         print('%d verifiche FALLITE su %d:\n' % (len(falliti), fatti))

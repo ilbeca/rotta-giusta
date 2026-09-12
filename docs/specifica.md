@@ -811,6 +811,20 @@ del progetto di preparazione. Il §4 di `prossima-versione.md` li motiva.
 | R-FLU-03 | Il conteggio annunciato e la lista che si apre coincidono anche per gli errori di sessione | `test_engine.mjs::erroriSessione: il conteggio promesso e la lista coincidono` |
 | R-FLU-04 | Un confine di sessione ricostruito si dichiara invece di passare per registrato | `test_engine.mjs::erroriSessione: un confine ricostruito si dichiara` |
 
+### 9.8 Che cosa non deve sparire, e che cosa si deve leggere
+
+Nati dall'audit del 12 settembre 2026 e dalla richiesta di ChatGPT di registrare,
+per ogni area, i comportamenti esistenti da preservare. Sono controlli e non
+liste, perché una lista in un prompt è una regola da ricordare.
+
+| ID | Requisito | Controllo |
+|---|---|---|
+| R-PRES-01 | Una funzione del motore che la pagina consuma non smette di essere consumata in silenzio | `test_interfaccia.py::test_chiamate_al_motore_preservate` |
+| R-A11Y-01 | Nessun testo sotto gli 11 px, salvo eccezioni dichiarate con l'area che le corregge | `test_interfaccia.py::test_testi_leggibili` |
+| R-A11Y-02 | Un'immagine che porta contenuto dichiara che cosa mostra; `alt=""` resta per le decorative | `test_interfaccia.py::test_alt_di_contenuto` |
+| R-A11Y-03 | Contrasto ≥ 4,5:1 sul testo normale e aree di tocco ≥ 44 px | scoperto — serve il rendering, e si verifica guardando a 375 e 1280 px |
+| R-UX-06 | Una breve attività dichiara che cosa è successo, quali rivedere e che cosa non hai toccato: nessuna quarta affermazione | scoperto — è un testo di schermata, si fissa quando il testo è definitivo |
+
 ### 9.7 Le decisioni di prodotto
 
 | ID | Requisito | Controllo |
