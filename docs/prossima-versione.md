@@ -269,6 +269,35 @@ qui. Tre cose che questo documento aggiunge e che la riguardano:
 3. **Ogni ingresso dichiara comportamento e parametri** (§6), e il controllo
    esercita la selezione effettiva, non la presenza del nome.
 
+### 5.1 Le sei fette di A, e perché non un pezzo solo
+
+La Specifica UX/UI è coerente e va letta intera, ma **non si consegna intera**.
+`site/app.html` è un file solo da 200 KB, e l'unità di conflitto è il file: una
+modifica da ventisei capitoli arriva alla merge come una cosa che si accetta,
+non come una cosa che si guarda.
+
+**Il precedente è in casa e ha un nome.** Nella merge della nuova Rotta — 468
+righe in `app.html` — `E.peggiori()` è uscita dal prodotto senza che nessuno lo
+decidesse. L'ha trovata un test, *dopo* la fusione; nessuno dei due rami,
+guardato da solo, l'avrebbe vista.
+
+| # | Fetta | Capitoli della Specifica UX/UI | Perché lì |
+|---|---|---|---|
+| **1** | **Il ciclo che si chiude** — riepilogo, revisione, «riprova questi N» | 10 | Il difetto peggiore; autoconsistente (tocca il runner, non la navigazione); il motore è pronto |
+| 2 | **Quiz: cinque intenzioni con gerarchia** — nomi, screening rinominato, filtri locali | 8, 9, 11 | È dove vivono le decisioni dei punti 1 e 2 di `decisioni-aperte.md` |
+| 3 | **Il Percorso** — primo ingresso, accoglienza, prima attività, ritorno | 3, 4, 5, 6, 7 | La fetta più grossa: qui sta anche il posto per la domanda sull'ambito |
+| 4 | **Carteggio** — materiali e giudizio all'ingresso, confronto, autovalutazione | 12, 13, 14, 15 | Ambiente autonomo, si può fare in parallelo concettuale |
+| 5 | **Progressi** — copertura, difficoltà ed esiti separati | 16 | Dipende da 1 e 3 per i collegamenti |
+| 6 | **Rifinitura trasversale** — linguaggio, componenti, responsive, accessibilità, stati | 17-22 | Si consolida su schermate che esistono |
+
+**Una fetta = un prompt = un commit = una merge.** Ogni fetta chiude con le
+quattro suite verdi, una voce di CHANGELOG e un collaudo guardato a 375 e
+1280 px. Il rilascio resta un commit a sé, dopo la merge, su `main`.
+
+**L'ordine non è inciso.** La Specifica UX/UI propone di partire dal Percorso; la
+proposta qui è partire dal ciclo, perché è autoconsistente e il motore lo aspetta
+già. Decide l'autore: è priorità, non correttezza.
+
 ---
 
 ## 6. I contratti che il motore espone — lavoro di Claude
