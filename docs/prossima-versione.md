@@ -222,20 +222,37 @@ serve **smettere di annunciare un tempo prima della soglia**.
 velocità di **una persona sola**: trasformarlo in una costante sarebbe la misura
 su un campione di uno travestita da valore predefinito.
 
-### 4.3 Il difetto del motore, da correggere — lavoro di Claude
+### 4.3 Il difetto del motore — corretto il 12 settembre 2026
 
-`stimaImpegno()` usa la **media grezza** dei tempi per quesito. Sull'unico
-archivio misurabile, **31 risposte su 2.100** oltre i due minuti — una lasciata
-aperta 17,9 minuti — spostano quella media da 14,9 a **20,2 secondi**: il 36 %.
+**La diagnosi iniziale era sbagliata, e la misura lo ha mostrato.** Avevo scritto
+che `stimaImpegno()` andasse resa **robusta**, perché 31 risposte su 2.100 oltre
+i due minuti spostano la media da 14,9 a 20,2 secondi. Tagliare quei valori però
+**peggiora** la stima invece di migliorarla:
 
-Chi supera le 30 risposte riceve quindi una stima costruita su una statistica
-**non robusta**, e per giunta sul cronometro (`ms`, tempo fino alla risposta)
-invece che sull'orologio. Il divario fra i due, misurato su 19 sessioni, è del
-**14 %**.
+| | secondi per domanda | scarto dal vero |
+|---|---|---|
+| media grezza dei tempi di risposta | 20,2 | **14 %** |
+| la stessa, tagliata a due minuti | 16,5 | 30 % |
+| durata reale, all'orologio | 23,5 | — |
 
-**R-TEMPO-05.** `stimaImpegno()` usa una statistica robusta e dichiara quale
-tempo misura. La correzione vale per chiunque, non solo per l'autore, e ha il suo
-test.
+I due errori del cronometro si compensano in parte: le pause finiscono *dentro*
+`ms`, e la lettura del riscontro resta *fuori*. Correggerne uno solo allontana
+dal vero. **La cura non era la robustezza: era misurare l'orologio.**
+
+**Che cosa è stato fatto.** Due contratti nuovi nel motore, con dodici test:
+
+- **`ritmo(righe)`** misura l'intervallo fra due risposte consecutive —
+  `durata / (n − 1)`, perché `durata` copre `n − 1` intervalli e dividere per `n`
+  farebbe dipendere il ritmo dalla lunghezza della sessione — e ne prende la
+  **mediana fra sessioni**. Robusta per costruzione, **senza nessuna soglia da
+  tarare**: un pomeriggio in cui ti sei alzato dal tavolo non la sposta.
+- **`stimaImpegno()` dichiara la fonte**: `orologio` quando c'è un ritmo
+  misurato, `cronometro` quando c'è solo la media dei tempi di risposta,
+  `ripiego` quando non c'è misura. Sono **tempi diversi**, non versioni più o
+  meno precise dello stesso tempo, e la schermata deve poter dire quale legge.
+
+**R-TEMPO-05** *(fatto)*. Il motore misura l'orologio e dichiara quale tempo sta
+riportando.
 
 ---
 

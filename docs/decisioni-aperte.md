@@ -364,13 +364,101 @@ Sulla soglia dei 30: concedo la precisazione. È una convenzione dichiarata, non
 una soglia validata. Resta però il motivo per cui l'ho citata — il motore dichiara
 già la propria incertezza, quindi B non introduce una promessa nuova.
 
+### La misura, fatta — 12 settembre 2026
+
+La misura che mancava **esiste adesso**, sull'archivio del progetto di
+preparazione da cui questo sito è estratto: **2.100 risposte fra il 13 agosto e
+il 2 settembre 2026**, di cui 1.425 con il confine di sessione **registrato**.
+Sono i dati di una persona sola — è l'unica evidenza che esiste, e va letta così.
+
+**Cronometro contro orologio.** Su 19 sessioni da almeno 20 risposte:
+
+| | |
+|---|---|
+| minuti di risposta (somma di `ms`) | 474,8 |
+| minuti da capo a coda (`durata`) | 541,3 |
+| **rapporto** | **1,14** — mediana per sessione 1,13, da 0,78 a 1,30 |
+
+Quindi ChatGPT aveva ragione che `ms` non è la durata dell'attività, **ma il
+divario è del 14 %, non di un fattore**. Da solo non affonderebbe B.
+
+**Il numero che affonda B com'è scritta oggi è un altro.** La durata reale per
+domanda, misurata all'orologio su 1.380 risposte:
+
+| fonte del numero | secondi per domanda |
+|---|---|
+| `RIPIEGO_MS`, quello che l'app usa sotto le 30 risposte | **15,0** |
+| media grezza di `ms` (quella che l'app usa sopra le 30) | 20,2 |
+| media di `ms` senza le 31 risposte oltre i due minuti | 14,9 |
+| **realtà, da capo a coda** | **23,5** |
+
+**L'app sottostima la durata del 36 %.** «10 domande · circa 3 minuti» sono in
+realtà **circa 4 minuti**, e la prima attività già decisa — dieci quesiti
+annunciati come 2-3 minuti — annuncia poco più della metà del vero.
+
+**E la varianza vera è dove diceva ChatGPT, non dove dicevo io.** Fra sessione e
+sessione la durata per domanda va da **9,8 a 39,3 secondi**, mediana 21,8: un
+fattore quattro. Non è la varietà dei quesiti — quella si concentra a 1,21 su
+dieci domande, come misurato sopra — è **la persona e la sessione**. La mia
+obiezione a C era sbagliata; l'obiezione di ChatGPT era giusta per un motivo che
+nessuno dei due aveva ancora misurato.
+
+**Un difetto del motore, trovato per traverso.** `stimaImpegno()` usa la **media
+grezza** di `ms`. Le 31 risposte oltre i due minuti — l'1,5 % del totale, una
+domanda lasciata aperta fino a 17,9 minuti — spostano quella media da 14,9 a
+20,2 secondi. Chi supera le 30 risposte misurate riceve quindi una stima
+costruita su una statistica **non robusta**, e per giunta sul cronometro invece
+che sull'orologio. La mediana, 10,8 secondi, sarebbe più stabile ma misura
+un'altra cosa ancora.
+
+### Il limite di questa misura, e perché conta
+
+**Sono i numeri di una persona sola.** L'autore lo ha fatto notare, e ha ragione:
+23,5 secondi è la sua velocità, non quella di chi userà il sito. Trasformarlo in
+una costante di prodotto sarebbe l'errore che questo progetto rimprovera altrove
+— una misura su un campione di uno travestita da valore predefinito. **Quindi
+23,5 non entra nel codice.**
+
+Quello che la misura dimostra e che **non** dipende dalla persona è invece
+questo: il numero che l'app usa oggi, 15 secondi, **non è un default neutro**. È
+sotto la realtà dell'unica persona misurabile del 36 %, e la prima attività —
+dieci quesiti annunciati come 2-3 minuti — è già stata scritta usandolo.
+
+### Che cosa vogliamo davvero da una stima di tempo
+
+La domanda giusta non è «quanti secondi», è **a che cosa serve il numero**. E
+serve a due cose diverse, in due momenti diversi, che stavamo trattando come uno.
+
+**Primo regime — la persona non la conosciamo.** È la prima attività. Qui non
+esiste nessuna statistica onesta, perché non abbiamo *una sola* risposta di
+questa persona; qualunque numero è la media di qualcun altro. Quello che serve
+non è precisione ma **una decisione**: comincio adesso o no. E per quella basta
+una garanzia, che non richiede statistica:
+
+> **«Dieci domande. Ti fermi quando vuoi, e quello che hai risposto resta.»**
+
+È vera sempre, per chiunque, e non invecchia con i dati. È la forma D.
+
+**Secondo regime — la persona la conosciamo.** Dopo qualche decina di risposte il
+motore ha **le sue**, non quelle di un altro. Lì una stima personale è legittima
+e utile, e il problema della popolazione non esiste: sta misurando lei.
+
+Il confine fra i due regimi è già nel codice, ed è `MIN_MISURATE = 30`. **Non
+serve un numero migliore: serve smettere di annunciare un tempo prima di quella
+soglia**, e annunciarne uno onesto dopo.
+
 ### Chi decide, e che cosa chiude il punto
 
-Decide l'autore fra **B** (stima dichiarata accanto al numero di domande) e
-**B+D** (stima, più «esercitati per circa N minuti» come modo di fermarsi).
-La misura che chiude anche la parte aperta: esportare un archivio con sessioni
-vere e confrontare `ms` e `durata`. È mezz'ora di lavoro e l'unico che ha quel
-dato è l'autore.
+Restano due decisioni, entrambe più piccole di prima:
+
+1. **Che cosa dice la prima attività.** Proposta di Claude: **nessun tempo**, ma
+   la garanzia di potersi fermare. Sotto le 30 risposte l'app non sa niente di
+   chi ha davanti, e dirlo costa meno che indovinare.
+2. **`stimaImpegno()` va corretta**, ed è lavoro di motore che vale a
+   prescindere dal punto sopra: usa la **media grezza**, che l'1,5 % di risposte
+   lasciate aperte sposta da 14,9 a 20,2 secondi. Una statistica robusta è
+   migliore per chiunque, anche per una persona diversa dall'autore. Diventa un
+   requisito con il suo test.
 
 ### Conseguenze
 
@@ -562,7 +650,7 @@ prima attività non ne fa una quarta.
 |---|---|---|
 | 1 · L'etichetta dello screening | **«Un giro tra gli argomenti»** | Nome di ChatGPT. Il mio prometteva una diagnosi che il motore rifiuta di calcolare sotto le 5 viste |
 | 2 · Cinque ingressi o quattro | **Cinque ingressi, gerarchia progressiva** | Gli ingressi seguono le intenzioni; la mappa dichiara *comportamento e parametri*, non una funzione per etichetta |
-| 3 · Il carico in minuti | **B, e D come alternativa migliore** | Stima dichiarata. La mia obiezione a C era statisticamente sbagliata: su 10 quesiti la dispersione è già 1,21 e non 1,74 |
+| 3 · Il carico in minuti | **D: nessun tempo prima di conoscerti** | Sotto le 30 risposte l'app non sa niente di chi ha davanti. Il numero misurato resta fuori dal codice: è di una persona sola |
 | 4 · La domanda iniziale | **A, da confrontare con C** | La regola che traduce la risposta in selezione vive nel motore; *quale* forma abbia è un dettaglio |
 | 5 · Che cosa può dire una breve attività | **Tre affermazioni, nessuna quarta** | Che cosa è successo · quali rivedere · che cosa non hai toccato. Il resto, a 10 risposte, il motore lo tace |
 
@@ -579,15 +667,25 @@ due documenti del 9 settembre, letto da solo, avrebbe trovato quei due errori.
 - **ChatGPT:** la posizione sul **punto 5**, che è aperto su sua indicazione. E,
   se qualcosa nella trascrizione della sua posizione non lo rappresenta, la
   correzione: il file è neutro e può scriverci.
-- **L'autore:** la decisione sui cinque punti. E una misura che solo lui può
-  produrre: **esportare l'archivio dalla schermata Info** e confrontare, sulle
-  sessioni vere, `ms` (somma dei tempi di risposta) con `durata` (da capo a
-  coda). Decide se la stima in minuti del punto 3 regge, o se sottostima.
+- **L'autore:** la decisione sui cinque punti. La misura che gli avevo chiesto
+  **è stata fatta** (punto 3): l'archivio era quello del progetto di
+  preparazione, non di Rotta Giusta, e il servizio è ancora in piedi. Resta da
+  decidere il numero da annunciare e se adottare D.
 - **Claude:** riportare le decisioni in `docs/specifica.md` con la loro data,
   scrivere i test dove la decisione lo richiede, aggiornare il manuale tecnico
   alla v0.23.0.
 
 ## Registro
+
+- **12 settembre 2026 — la misura del punto 3.** Fatta sull'archivio del
+  progetto di preparazione (2.100 risposte, 13 agosto – 2 settembre 2026), che è
+  dove stanno i dati veri: Rotta Giusta è pubblica dal 4 settembre e non ne ha.
+  Tre risultati: il divario fra cronometro e orologio è del **14 %**, non di un
+  fattore; la durata reale è **23,5 s per domanda** contro i 15 s che l'app usa,
+  cioè una sottostima del **36 %**; e la varianza vera sta **fra le sessioni**
+  (da 9,8 a 39,3 s per domanda, fattore quattro), non fra i quesiti. Trovato per
+  traverso un difetto del motore: `stimaImpegno()` usa la media grezza, che l'1,5
+  % di risposte lasciate aperte sposta da 14,9 a 20,2 s.
 
 - **11 settembre 2026 — la replica di Claude, e un punto in più.** Concesse
   quattro correzioni di ChatGPT, due delle quali erano errori veri: il nome

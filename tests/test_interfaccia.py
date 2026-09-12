@@ -70,6 +70,15 @@ MODI = ['mirata', 'argomento', 'sbagliate', 'sim', 'screening', 'batteria']
 # Export del motore che la pagina non chiama, e non e' un difetto. Ogni riga ha
 # il motivo e, dove serve, la condizione alla quale sparisce.
 ORFANI_DICHIARATI = {
+    'ritmo': "misura il tempo per domanda all'orologio (12 settembre 2026). Il "
+             "motore la espone e la testa; a consumarla sara' l'interfaccia del "
+             "ridisegno, che e' del ramo ui/*. L'eccezione sparisce quando la "
+             "pagina la passa a stimaImpegno() come msPerDomanda.",
+    'erroriSessione': "riapre come esercizio gli errori di una sessione sola "
+                      "(12 settembre 2026): e' il pezzo di motore che serve a "
+                      "chiudere il ciclo di un'attivita', R-FLU-02. La chiamera' "
+                      "il riepilogo, che e' interfaccia; l'eccezione sparisce "
+                      "con quella schermata.",
     'fondi': "fusione di due specchi: serviva alla sincronia col server, tolta "
              "nella 0.19.0. Resta esportata e testata perche' descrive la "
              "semantica della fusione, ma nessuno la chiama.",

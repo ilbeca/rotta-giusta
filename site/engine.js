@@ -695,16 +695,42 @@ export function semaforo(copertura, oggi, inizio, scadenzaPiano) {
 export const RIPIEGO_MS = 15000;   // 15 s a risposta, finche' la misura non e' affidabile
 export const MIN_MISURATE = 30;
 
-export function stimaImpegno(progress, rimanenti, giorni) {
+export function stimaImpegno(progress, rimanenti, giorni, opt = {}) {
   let somma = 0, misurate = 0;
   for (const p of Object.values(progress || {})) {
     if (p && p.avg && p.n) { somma += p.avg * p.n; misurate += p.n; }
   }
-  const affidabile = misurate >= MIN_MISURATE;
-  const mediaMs = affidabile ? Math.round(somma / misurate) : RIPIEGO_MS;
+  // Tre fonti, in ordine di preferenza, e la schermata deve poter dire quale
+  // sta leggendo: sono tempi diversi, non versioni piu' o meno precise dello
+  // stesso tempo.
+  //
+  //   'orologio'   l'intervallo fra due risposte, misurato da `ritmo()`. E' la
+  //                durata che una persona percepisce, perche' contiene anche la
+  //                lettura del riscontro.
+  //   'cronometro' la media dei tempi di risposta: si ferma quando rispondi, e
+  //                quindi non contiene la lettura del riscontro.
+  //   'ripiego'    RIPIEGO_MS, quando non c'e' abbastanza misura. Dichiarato.
+  //
+  // **Perche' il cronometro non viene «reso robusto».** Verrebbe la tentazione
+  // di tagliare i tempi assurdi — una domanda lasciata aperta diciotto minuti
+  // non e' tempo di risposta. Misurato sull'unico archivio disponibile (2.100
+  // risposte, settembre 2026) quel taglio **peggiora** la stima invece di
+  // migliorarla: la media grezza e' 20,2 s, tagliata a due minuti 16,5 s, e la
+  // durata vera all'orologio 23,5 s. I due errori del cronometro — le pause
+  // dentro `ms`, e la lettura del riscontro fuori da `ms` — si compensano in
+  // parte, e correggerne uno solo allontana dal vero. La cura giusta non e' la
+  // robustezza: e' misurare l'orologio, che e' quello che `ritmo()` fa.
+  const misurato = Number.isFinite(opt.msPerDomanda) && opt.msPerDomanda > 0
+    ? Math.round(opt.msPerDomanda) : null;
+  const daCronometro = misurate >= MIN_MISURATE;
+  const fonte = misurato != null ? 'orologio' : daCronometro ? 'cronometro' : 'ripiego';
+  const mediaMs = misurato != null ? misurato
+    : daCronometro ? Math.round(somma / misurate) : RIPIEGO_MS;
   const minutiTotali = Math.round(rimanenti * mediaMs / 60000);
   return {
-    rimanenti, mediaMs, misurate, affidabile, minutiTotali,
+    rimanenti, mediaMs, misurate, fonte,
+    affidabile: fonte !== 'ripiego',
+    minutiTotali,
     minutiAlGiorno: Math.ceil(minutiTotali / Math.max(1, giorni)),
   };
 }
@@ -1087,6 +1113,81 @@ export function sessioni(righe, opt = {}) {
   out.sort((x, y) => ((epoca(y.fine) ?? 0) - (epoca(x.fine) ?? 0))
                   || ((epoca(y.inizio) ?? 0) - (epoca(x.inizio) ?? 0)));
   return Number.isFinite(limite) ? out.slice(0, limite) : out;
+}
+
+/**
+ * Il **ritmo**: quanti millisecondi passano fra una risposta e la successiva,
+ * misurato sulle sessioni concluse. E' il tempo per domanda **all'orologio**,
+ * cioe' quello che una persona percepisce: comprende la lettura del riscontro,
+ * che `ms` non contiene.
+ *
+ * **Perche' `durata / (n - 1)` e non `durata / n`.** `durata` va dalla prima
+ * risposta all'ultima, quindi copre `n - 1` intervalli e non `n`. Dividendo per
+ * `n` una sessione di cinque risposte uscirebbe sottostimata del 20%, e una da
+ * cento dell'1%: il ritmo dipenderebbe dalla lunghezza della sessione invece
+ * che dalla persona.
+ *
+ * **Perche' la mediana fra sessioni.** Un pomeriggio in cui ti sei alzato dal
+ * tavolo produce una sessione lentissima; la mediana non la segue. E' robusta
+ * per costruzione, senza nessuna soglia da tarare su un archivio particolare —
+ * che sarebbe una misura su un campione di uno travestita da costante. La
+ * pausa massima *dentro* una sessione e' gia' limitata a `PAUSA_SESSIONE_MS`,
+ * perche' oltre quella il motore taglia.
+ *
+ * Restituisce `msPerDomanda: null` quando non c'e' niente da misurare: non si
+ * inventa un numero.
+ */
+export function ritmo(righe, opt = {}) {
+  const { minRisposte = MIN_MISURATE } = opt;
+  const passi = [];
+  let risposte = 0;
+  for (const s of sessioni(righe)) {
+    risposte += s.n;
+    if (s.n >= 2 && s.durata > 0) passi.push(s.durata / (s.n - 1));
+  }
+  passi.sort((a, b) => a - b);
+  const m = passi.length;
+  const mediana = !m ? null
+    : m % 2 ? passi[(m - 1) / 2] : (passi[m / 2 - 1] + passi[m / 2]) / 2;
+  return {
+    msPerDomanda: mediana == null ? null : Math.round(mediana),
+    sessioni: m,
+    risposte,
+    affidabile: m > 0 && risposte >= minRisposte,
+    fonte: 'orologio',
+  };
+}
+
+/**
+ * Gli errori di **una** sessione, pronti da riaprire come esercizio.
+ *
+ * Serve a chiudere il ciclo di un'attivita': dopo un riepilogo con tre errori,
+ * «rifai questi tre» deve aprire esattamente quei tre. Oggi l'unica strada e'
+ * la modalita' «solo sbagliate», che li mescola con gli errori di sempre — e il
+ * lavoro appena fatto non ha un seguito che gli appartenga.
+ *
+ * `id` e' l'identificatore di sessione restituito da `sessioni()`: il `sim_uid`
+ * quando il confine e' **registrato**, un id ricostruito quando non lo e'. La
+ * `fonte` viaggia nel risultato perche' affidabile e registrato non sono la
+ * stessa cosa, e su un archivio importato da altrove la differenza va detta
+ * invece che nascosta.
+ *
+ * Un quesito non puo' comparire due volte: una sessione si chiude quando un
+ * quesito ricompare, quindi il caso non esiste per costruzione. Il controllo
+ * c'e' lo stesso, perche' costa una riga e regge anche su righe malformate.
+ */
+export function erroriSessione(righe, items, id, opt = {}) {
+  const s = sessioni(righe, opt).find((x) => String(x.id) === String(id));
+  if (!s) return { lista: [], quanti: 0, fonte: null, trovata: false };
+  const per = new Map((items || []).map((it) => [it.id, it]));
+  const visti = new Set(), lista = [];
+  for (const r of s.righe) {
+    if (r.correct || visti.has(r.item_id)) continue;
+    visti.add(r.item_id);
+    const it = per.get(r.item_id);
+    if (it) lista.push(it);
+  }
+  return { lista, quanti: lista.length, fonte: s.fonte, trovata: true };
 }
 
 /**

@@ -13,6 +13,7 @@ import {
   SEGNALI, SEGNALI_MODI, poolSegnali, domandeSegnali, lunghezzaPartita,
   giroTecniche, tappeto, daAllenare,
   epoca, ordinaRighe, ripiega, sessioni, fondiArchivio, PAUSA_SESSIONE_MS,
+  ritmo, erroriSessione,
 } from '../site/engine.js';
 // Il namespace serve al solo test di compatibilita' con la pagina: la copia in
 // `app.html` chiama `E.coda()` ed `E.classifica()`, e va eseguita com'e'.
@@ -1605,4 +1606,154 @@ test('daAllenare: il motore fa esattamente quello che oggi fa la pagina', (t) =>
     assert.deepEqual(ids(a.lista), ids(b.lista), `lista diversa con ${JSON.stringify(extra)}`);
     assert.equal(a.daFare, b.daFare, `daFare diverso con ${JSON.stringify(extra)}`);
   }
+});
+
+// --- Il ritmo misurato, e la stima che ne discende ---------------------------
+//
+// Perche' esistono. `stimaImpegno()` stimava i minuti dalla media grezza dei
+// tempi di risposta, e quella media ha due difetti misurati sull'unico archivio
+// disponibile (2.100 risposte, settembre 2026): **31 risposte su 2.100** oltre i
+// due minuti — una lasciata aperta 17,9 minuti — spostano la media da 14,9 a
+// 20,2 secondi, il 36%; e il tempo di risposta non e' la durata dell'attivita',
+// perche' non contiene la lettura del riscontro (il divario misurato e' del 14%).
+//
+// `ritmo()` misura invece l'intervallo fra due risposte consecutive, che e' il
+// tempo per domanda **all'orologio**, e ne prende la **mediana fra sessioni**:
+// robusta per costruzione, senza nessuna soglia da tarare.
+
+/** n risposte a passo costante di `sec` secondi, dentro una sessione sola. */
+function sessioneFinta(uid, n, sec, da = '2026-09-10T10:00:00+02:00') {
+  const t0 = new Date(da).getTime();
+  return Array.from({ length: n }, (_, i) => ({
+    _t: 'q', uid: `${uid}-${i}`, item_id: `base-${uid}-${i}`, kind: 'base',
+    mode: 'batteria', sim_uid: uid, correct: 1, ms: 12000,
+    ts: new Date(t0 + i * sec * 1000).toISOString(),
+  }));
+}
+
+test('ritmo: e\' l\'intervallo fra due risposte, non il tempo di risposta', () => {
+  // Passo di 30 s all'orologio, ma solo 12 s di cronometro: il ritmo e' 30.
+  const r = ritmo(sessioneFinta('a', 40, 30));
+  assert.equal(Math.round(r.msPerDomanda / 1000), 30);
+  assert.equal(r.fonte, 'orologio');
+  assert.ok(r.affidabile);
+});
+
+test('ritmo: una sessione corta non e\' sottostimata (divide per n-1)', () => {
+  // Cinque risposte a 20 s: la durata da capo a coda e' 80 s, non 100.
+  // Dividendo per n il ritmo uscirebbe 16 s invece dei 20 veri.
+  const r = ritmo([...sessioneFinta('a', 5, 20),
+                   ...sessioneFinta('b', 5, 20, '2026-09-10T12:00:00+02:00'),
+                   ...sessioneFinta('c', 40, 20, '2026-09-10T14:00:00+02:00')]);
+  assert.equal(Math.round(r.msPerDomanda / 1000), 20);
+});
+
+test('ritmo: una sessione in cui ti sei alzato dal tavolo non sposta la mediana', () => {
+  const normali = [
+    ...sessioneFinta('a', 15, 20),
+    ...sessioneFinta('b', 15, 20, '2026-09-10T12:00:00+02:00'),
+    ...sessioneFinta('c', 15, 20, '2026-09-10T14:00:00+02:00'),
+  ];
+  const conPausa = sessioneFinta('d', 15, 20, '2026-09-10T16:00:00+02:00');
+  // L'ultima risposta arriva dieci minuti dopo: dentro la soglia di sessione.
+  conPausa[14].ts = new Date(new Date(conPausa[13].ts).getTime() + 600000).toISOString();
+  const senza = ritmo(normali), con = ritmo([...normali, ...conPausa]);
+  assert.equal(Math.round(senza.msPerDomanda / 1000), 20);
+  assert.equal(Math.round(con.msPerDomanda / 1000), 20,
+    'la mediana fra sessioni non deve seguire la sessione anomala');
+});
+
+test('ritmo: sotto la soglia di risposte non si dichiara affidabile', () => {
+  const r = ritmo(sessioneFinta('a', 10, 20));
+  assert.ok(!r.affidabile, '10 risposte non bastano');
+  assert.equal(r.risposte, 10);
+  const vuoto = ritmo([]);
+  assert.ok(!vuoto.affidabile);
+  assert.equal(vuoto.msPerDomanda, null, 'senza dati non si inventa un numero');
+});
+
+test('stimaImpegno: con il ritmo misurato usa l\'orologio e lo dichiara', () => {
+  const prog = {}; for (let i = 0; i < 40; i++) prog['q' + i] = { n: 1, avg: 12000 };
+  const cronometro = stimaImpegno(prog, 100, 10);
+  assert.equal(cronometro.fonte, 'cronometro');
+  const orologio = stimaImpegno(prog, 100, 10, { msPerDomanda: 30000 });
+  assert.equal(orologio.fonte, 'orologio');
+  assert.ok(orologio.minutiTotali > cronometro.minutiTotali,
+    'l\'orologio include la lettura del riscontro, quindi stima di piu\'');
+});
+
+test('stimaImpegno: l\'orologio ha la precedenza sul cronometro, e il cronometro sul ripiego', () => {
+  const prog = {}; for (let i = 0; i < 40; i++) prog['q' + i] = { n: 1, avg: 12000 };
+  assert.equal(stimaImpegno(prog, 100, 10, { msPerDomanda: 30000 }).fonte, 'orologio');
+  assert.equal(stimaImpegno(prog, 100, 10).fonte, 'cronometro');
+  assert.equal(stimaImpegno({}, 100, 10, {}).fonte, 'ripiego');
+  // Un ritmo non affidabile non scavalca il cronometro: si passa solo se c'e'
+  // una misura, non se c'e' un campo.
+  assert.equal(stimaImpegno(prog, 100, 10, { msPerDomanda: null }).fonte, 'cronometro');
+});
+
+test('stimaImpegno: senza dati dichiara il ripiego, come prima', () => {
+  const s = stimaImpegno({}, 100, 10);
+  assert.equal(s.fonte, 'ripiego');
+  assert.equal(s.mediaMs, RIPIEGO_MS);
+  assert.ok(!s.affidabile);
+});
+
+// --- Gli errori di una sessione sola ----------------------------------------
+//
+// Serve a chiudere il ciclo di un'attivita': dopo un riepilogo con tre errori,
+// «rifai questi tre» deve aprire esattamente quei tre, non mescolarli con gli
+// errori di sempre. Le righe portano gia' il legame (`sim_uid`); quando non ce
+// l'hanno il confine e' ricostruito, e la funzione **lo dichiara** invece di
+// far finta che sia lo stesso.
+
+test('erroriSessione: apre esattamente gli errori di quella lista', () => {
+  const righe = sessioneFinta('a', 6, 20);
+  righe[1].correct = 0; righe[4].correct = 0;
+  const altra = sessioneFinta('b', 5, 20, '2026-09-10T12:00:00+02:00');
+  altra.forEach((r) => { r.correct = 0; });
+  const items = [...righe, ...altra].map((r) => ({ id: r.item_id, k: 'base' }));
+  const e = erroriSessione([...righe, ...altra], items, 'a');
+  assert.deepEqual(e.lista.map((x) => x.id), [righe[1].item_id, righe[4].item_id]);
+  assert.equal(e.fonte, 'sim_uid', 'il confine qui e\' registrato');
+});
+
+test('erroriSessione: il conteggio promesso e la lista coincidono', () => {
+  const righe = sessioneFinta('a', 20, 20);
+  [2, 7, 11].forEach((i) => { righe[i].correct = 0; });
+  const items = righe.map((r) => ({ id: r.item_id, k: 'base' }));
+  const e = erroriSessione(righe, items, 'a');
+  assert.equal(e.quanti, 3);
+  assert.equal(e.lista.length, e.quanti);
+});
+
+test('erroriSessione: un confine ricostruito si dichiara', () => {
+  const righe = sessioneFinta('a', 6, 20).map((r) => ({ ...r, sim_uid: null }));
+  righe[1].correct = 0;
+  const items = righe.map((r) => ({ id: r.item_id, k: 'base' }));
+  const s = sessioni(righe);
+  const e = erroriSessione(righe, items, s[0].id);
+  assert.equal(e.fonte, 'risposte', 'senza sim_uid la fonte non puo\' dirsi registrata');
+  assert.equal(e.lista.length, 1);
+});
+
+test('erroriSessione: una sessione senza errori non apre niente, e lo dice', () => {
+  const righe = sessioneFinta('a', 10, 20);
+  const items = righe.map((r) => ({ id: r.item_id, k: 'base' }));
+  const e = erroriSessione(righe, items, 'a');
+  assert.equal(e.quanti, 0);
+  assert.deepEqual(e.lista, []);
+});
+
+test('erroriSessione: un quesito che ricompare apre una sessione nuova, e resta fuori', () => {
+  // Nessuna selezione ripete un quesito dentro la stessa lista: un doppione e'
+  // per forza una lista nuova, ed e' una delle quattro regole di `sessioni()`.
+  const righe = sessioneFinta('a', 4, 20);
+  righe[1].correct = 0;
+  righe.push({ ...righe[1], uid: 'a-ripetuta', correct: 0,
+               ts: new Date(new Date(righe[3].ts).getTime() + 20000).toISOString() });
+  const items = righe.map((r) => ({ id: r.item_id, k: 'base' }));
+  assert.equal(sessioni(righe).length, 2, 'il doppione taglia la sessione');
+  const e = erroriSessione(righe, items, 'a');
+  assert.equal(e.lista.length, 1, 'la prima lista porta il suo errore, non quello della seconda');
 });

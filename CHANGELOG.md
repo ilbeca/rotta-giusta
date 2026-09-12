@@ -30,6 +30,69 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   nome fino alla 0.19.2): la skill di progetto lo dice, e il worktree `rotta-giusta-ui`
   è stato riparato. In `AGENTS.md`: `TERRITORI_OK` è dell'autore, non degli agenti.
 
+### Aggiunto — il motore per il ridisegno
+
+- **`ritmo()`: il tempo per domanda si misura all'orologio, non al cronometro.**
+  `stimaImpegno()` stimava i minuti dalla media di `ms`, che si ferma quando
+  rispondi e quindi **non contiene la lettura del riscontro**. Misurato
+  sull'archivio del progetto di preparazione — 2.100 risposte fra il 13 agosto e
+  il 2 settembre 2026, 19 sessioni con il confine registrato — il divario fra i
+  due tempi è del **14 %**, e la durata reale è **23,5 secondi per domanda**
+  contro i 15 del ripiego: una sottostima del **36 %**.
+
+  **La prima diagnosi era sbagliata, e la misura l'ha smentita.** Sembrava un
+  problema di robustezza: 31 risposte su 2.100 oltre i due minuti — una lasciata
+  aperta 17,9 minuti — spostano la media da 14,9 a 20,2 secondi. Ma tagliarle
+  **peggiora** la stima: grezza 20,2 (scarto del 14 % dal vero), tagliata a due
+  minuti 16,5 (scarto del 30 %). I due errori del cronometro si compensano in
+  parte, perché le pause stanno *dentro* `ms` e la lettura del riscontro sta
+  *fuori*: correggerne uno solo allontana dal vero.
+
+  `ritmo()` misura quindi l'intervallo fra due risposte consecutive —
+  `durata / (n − 1)`, perché `durata` copre `n − 1` intervalli e dividere per `n`
+  farebbe dipendere il ritmo dalla lunghezza della sessione — e ne prende la
+  **mediana fra sessioni**. Robusta per costruzione e **senza nessuna soglia da
+  tarare**: una soglia scelta su questo archivio sarebbe una misura su un
+  campione di uno travestita da costante. La pausa dentro una sessione è già
+  limitata a venti minuti, oltre i quali il motore taglia.
+
+  **`stimaImpegno()` dichiara la fonte** — `orologio`, `cronometro` o `ripiego` —
+  perché sono tempi diversi, non versioni più o meno precise dello stesso tempo.
+  Firma compatibile: il quarto argomento è facoltativo.
+
+- **`erroriSessione()`: gli errori di una sessione sola, pronti da riaprire.**
+  È il pezzo di motore che chiude il ciclo di un'attività, il difetto di flusso
+  più grave emerso dal confronto a tre del 10-12 settembre: oggi, dopo un
+  riepilogo con tre errori, l'unica strada è «solo sbagliate», che li mescola con
+  gli errori di sempre — e il lavoro appena fatto non ha un seguito che gli
+  appartenga.
+
+  Restituisce lista, conteggio e **la fonte del confine**: `sim_uid` quando è
+  registrato, `risposte` quando è ricostruito. Affidabile e registrato non sono
+  la stessa cosa, e su un archivio importato da altrove la differenza si dice.
+
+### Test — il motore per il ridisegno
+
+- **121 test sul motore** (erano 109), 74 verifiche sull'interfaccia (erano 70),
+  204 sulla specifica (erano 170), 199 sui dati invariate.
+
+  **Provati al contrario quattro volte**, rompendo il motore apposta:
+  `durata / n` al posto di `durata / (n − 1)` → 3 rossi; la media al posto della
+  mediana fra sessioni → 1; `erroriSessione()` che ignora il confine → 1;
+  `stimaImpegno()` che ignora il ritmo misurato → 2.
+
+  **E il contatore dei rossi è stato controllato prima di credergli**: la prima
+  stesura cercava `^not ok` nell'uscita di `node --test`, che quel formato non
+  produce, e riportava «zero rossi» su tutte e quattro le rotture. È lo strumento
+  che rassicura, in miniatura, dentro la verifica di un difetto.
+
+- **`ritmo()` ed `erroriSessione()` entrano in `ORFANI_DICHIARATI`** con il
+  motivo e la condizione alla quale l'eccezione sparisce: le consuma
+  l'interfaccia del ridisegno, che è del ramo `ui/*`. Il controllo le ha prese da
+  solo, ed è il verso giusto — una funzione esportata e mai chiamata è una
+  conversazione da fare, non un residuo da lasciare.
+
+
 ## [0.23.0] — 2026-09-09
 
 ### Modificato

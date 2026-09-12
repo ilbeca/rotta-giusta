@@ -792,7 +792,26 @@ stare nella barra.
 | R-STA-06 | L'autodiagnosi offline apre ogni voce del guscio, non ne controlla la chiave | scoperto — richiede un service worker attivo su HTTPS |
 | R-STA-07 | Una figura indisponibile si dichiara con il perché | `test_dati.py::test_figure` |
 
-### 9.6 Le decisioni di prodotto
+### 9.6 Il tempo, e il ciclo che si chiude
+
+Nati dal confronto a tre del 10-12 settembre 2026 e dalla misura sull'archivio
+del progetto di preparazione. Il §4 di `prossima-versione.md` li motiva.
+
+| ID | Requisito | Controllo |
+|---|---|---|
+| R-TEMPO-01 | Sotto `MIN_MISURATE` risposte nessuna schermata annuncia una durata: al suo posto una garanzia vera | scoperto — è un testo di schermata, si fissa quando il testo è definitivo |
+| R-TEMPO-02 | Una durata annunciata viene da `stimaImpegno()` e si dichiara stima, mai scritta a mano | scoperto — la suite non esercita il DOM di `app.html` |
+| R-TEMPO-03 | Nessun selettore «quanto tempo hai?» dimensiona una sessione | scoperto — misurato che fra sessioni la durata per domanda varia di un fattore quattro |
+| R-TEMPO-04 | È ammesso l'inverso — «esercitati per circa N minuti» con chiusura dopo la domanda corrente | scoperto — non esiste ancora nel prodotto, e il controllo sarà sul runner, che la suite non esercita |
+| R-TEMPO-05 | Il ritmo si misura all'orologio, non al cronometro, ed è robusto senza soglie da tarare | `test_engine.mjs::ritmo: una sessione in cui ti sei alzato dal tavolo` |
+| R-TEMPO-06 | Il ritmo non dipende dalla lunghezza della sessione | `test_engine.mjs::ritmo: una sessione corta non e` |
+| R-TEMPO-07 | `stimaImpegno()` dichiara quale dei tre tempi sta riportando | `test_engine.mjs::stimaImpegno: con il ritmo misurato usa l` |
+| R-FLU-01 | Ogni attività si chiude con un passo che propone azioni derivate da quello che è appena successo | scoperto — è interfaccia, e arriva con il ridisegno |
+| R-FLU-02 | Gli errori di una sessione si riaprono come esercizio, senza mescolarli con quelli di sempre | `test_engine.mjs::erroriSessione: apre esattamente gli errori di quella lista` |
+| R-FLU-03 | Il conteggio annunciato e la lista che si apre coincidono anche per gli errori di sessione | `test_engine.mjs::erroriSessione: il conteggio promesso e la lista coincidono` |
+| R-FLU-04 | Un confine di sessione ricostruito si dichiara invece di passare per registrato | `test_engine.mjs::erroriSessione: un confine ricostruito si dichiara` |
+
+### 9.7 Le decisioni di prodotto
 
 | ID | Requisito | Controllo |
 |---|---|---|
