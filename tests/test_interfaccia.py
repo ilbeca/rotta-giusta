@@ -121,45 +121,34 @@ CHIAMATE_AL_MOTORE = {
     'stimaImpegno', 'tappeto', 'tendenza', 'traccia',
 }
 
-# ── I testi si devono poter leggere ───────────────────────────────────────────
+# ── Le eccezioni dichiarate stanno FUORI da qui ───────────────────────────────
 #
-# Sotto gli 11 px un testo non e' piccolo, e' illeggibile per una parte delle
-# persone — e il contesto d'uso dichiarato di questo prodotto e' il telefono.
-# Le violazioni di oggi sono dichiarate una per una con l'area che le corregge:
-# una dichiarazione che resta quando il difetto e' sparito viene segnalata,
-# come per gli orfani.
+# I controlli sono in questo file, che e' territorio `motore`; le eccezioni
+# stanno in `docs/eccezioni-interfaccia.md`, che e' neutro. Non e' pignoleria:
+# a togliere un'eccezione e' chi corregge il difetto, e chi corregge
+# l'interfaccia lavora su `ui/*`, dove `tests/` gli e' precluso. Tenendole qui,
+# una correzione lascerebbe la suite rossa e nessuno potrebbe chiuderla.
 FONT_MINIMO = 11
-SOTTO_SOGLIA_DICHIARATI = {
-    ('app.html', 8, '.brand-tag'):
-        "il payoff sotto il marchio. Lo corregge l'area 1, che rifa' l'header.",
-    ('app.html', 6, '.brand-tag'):
-        "lo stesso payoff sotto i 650 px, cioe' **sul telefono**, che e' il "
-        "contesto d'uso primario dichiarato. Area 1.",
-    ('app.html', 10, '.eyebrow'):
-        "l'etichetta sopra il titolo. E' anche il pattern «hero SaaS» "
-        "segnalato dall'audit del 12 settembre 2026. Aree 1 e 2.",
-    ('app.html', 9, '.rotta-intro .eyebrow'): "come sopra, nella Rotta. Area 1.",
-    ('app.html', 9, '.recommend-card .eyebrow'): "come sopra, nella proposta. Area 1.",
-    ('app.html', 10, '.cart-route-card small'): "sottotitolo della tessera Carteggio. Area 1.",
-    ('app.html', 10, '.progress-stat span'): "etichette del riepilogo. Area 1.",
-    ('index.html', 10, '.logo .payoff'):
-        "il payoff nella vetrina. La vetrina non e' in nessuna delle sei aree "
-        "di A: la corregge la sessione dedicata, in parallelo.",
-}
-
-# ── Un'immagine che porta contenuto deve dire che cosa mostra ─────────────────
-#
-# `alt=""` e' corretto per un'immagine decorativa affiancata da un testo
-# equivalente. Un alt **generico** e' peggio di nessuno: dichiara che c'e'
-# un'immagine e non dice quale, quindi per chi usa un lettore di schermo il
-# quesito resta senza il suo contenuto.
 ALT_GENERICI = {'figura', 'immagine', 'image', 'foto', 'grafico', 'icona', 'logo'}
-ALT_GENERICI_DICHIARATI = {
-    ('app.html', 'figura'):
-        "l'unica riga che inserisce le 102 figure del decreto, su 119 quesiti: "
-        "per un lettore di schermo quei quesiti sono senza contenuto. Il testo "
-        "alternativo va preso dal quesito, non inventato. Area 3, il runner.",
-}
+ECCEZIONI = RADICE / 'docs' / 'eccezioni-interfaccia.md'
+
+
+def tabella(titolo, colonne):
+    """Le righe di una tabella markdown sotto un titolo, come tuple."""
+    if not ECCEZIONI.exists():
+        return None
+    testo = ECCEZIONI.read_text(encoding='utf-8')
+    m = re.search(r'^##\s+' + re.escape(titolo) + r'\s*$(.*?)(?=^## |\Z)',
+                  testo, re.M | re.S)
+    if not m:
+        return None
+    out = []
+    for r in re.findall(r'^\|(.+)\|\s*$', m.group(1), re.M):
+        celle = [c.strip().strip('`') for c in r.split('|')]
+        if len(celle) != colonne or celle[0] in ('file', '---') or set(celle[0]) == {'-'}:
+            continue
+        out.append(tuple(celle))
+    return out
 
 
 def senza_commenti(testo):
@@ -318,23 +307,31 @@ def piccoli(nome):
 
 
 def test_testi_leggibili():
+    righe = tabella('Testi sotto gli 11 px', 4)
+    check('il file delle eccezioni si legge', righe is not None,
+          'manca docs/eccezioni-interfaccia.md, o la sua tabella')
+    dichiarati = {(f, px, sel) for f, px, sel, _ in (righe or [])}
     trovati = piccoli('app.html') + piccoli('index.html')
     for f, px, sel in trovati:
         check('«%s» in %s non e\' sotto i %d px' % (sel, f, FONT_MINIMO),
-              (f, px, sel) in SOTTO_SOGLIA_DICHIARATI,
+              (f, str(px), sel) in dichiarati,
               '%d px: sotto la soglia un testo non e\' piccolo, e\' illeggibile '
               'per una parte delle persone. Se e\' voluto, dichiaralo col '
               'perche\' e con l\'area che lo corregge.' % px)
-    for k in SOTTO_SOGLIA_DICHIARATI:
+    presenti = {(f, str(px), sel) for f, px, sel in trovati}
+    for k in dichiarati:
         check('la dichiarazione per «%s» riguarda una regola che esiste' % (k[2],),
-              k in trovati,
+              k in presenti,
               'il difetto e\' stato corretto: togli la riga da '
-              'SOTTO_SOGLIA_DICHIARATI, altrimenti nasconde il prossimo')
+              'docs/eccezioni-interfaccia.md, altrimenti nasconde il prossimo')
 
 
 # --- 9. un'immagine di contenuto dice che cosa mostra -------------------------
 
 def test_alt_di_contenuto():
+    righe = tabella('Testi alternativi generici', 3)
+    check('la tabella degli alt si legge', righe is not None)
+    dichiarati = {(f, a) for f, a, _ in (righe or [])}
     trovati = []
     for nome in ('app.html', 'index.html'):
         for a in re.findall(r'alt="([^"]*)"', leggi(nome)):
@@ -342,13 +339,14 @@ def test_alt_di_contenuto():
                 trovati.append((nome, a.strip().lower()))
     for f, a in trovati:
         check('l\'alt «%s» in %s dice che cosa mostra' % (a, f),
-              (f, a) in ALT_GENERICI_DICHIARATI,
+              (f, a) in dichiarati,
               'un alt generico e\' peggio di nessuno: dichiara che c\'e\' '
               'un\'immagine e non dice quale. `alt=""` va bene per una '
               'decorativa; un\'immagine che porta contenuto deve descriverlo.')
-    for k in ALT_GENERICI_DICHIARATI:
+    for k in dichiarati:
         check('la dichiarazione per l\'alt «%s» riguarda un caso che esiste' % (k[1],),
-              k in trovati, 'corretto: togli la riga da ALT_GENERICI_DICHIARATI')
+              k in trovati,
+              'corretto: togli la riga da docs/eccezioni-interfaccia.md')
 
 
 def main():

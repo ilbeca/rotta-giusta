@@ -40,6 +40,15 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   I difetti provengono da un audit di accessibilità del 12 settembre 2026; i due
   più gravi sono stati riverificati sul codice prima di dichiararli.
 
+  **Le eccezioni stanno fuori dai test, in `docs/eccezioni-interfaccia.md`**, che
+  è neutro. Non è pignoleria: a togliere un'eccezione è chi corregge il difetto,
+  e chi corregge l'interfaccia lavora su `ui/*`, dove `tests/` è precluso.
+  Tenendole dentro la suite, una correzione avrebbe lasciato il rosso a chi non
+  poteva spegnerlo — il controllo si sarebbe trasformato in un ostacolo invece
+  che in una conversazione. Provato nelle tre direzioni: riga tolta senza
+  correggere → rosso che nomina il difetto; difetto corretto con la riga rimasta
+  → rosso che nomina l'eccezione obsoleta; corretti entrambi → verde.
+
   **Provati al contrario quattro volte**, e ognuno nomina il colpevole: una
   chiamata al motore che sparisce, un `font-size` a 9 px non dichiarato, un `alt`
   generico nuovo, e una dichiarazione che resta dopo che il difetto è stato

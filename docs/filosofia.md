@@ -15,6 +15,21 @@ silenziosa che questo progetto ha già pagato una volta (vedi `specifica.md`,
 
 ---
 
+## Il nostro impegno
+
+**Creare una palestra onesta e sicura per chi si prepara a questo esame.**
+
+Onesta, perché dice sempre la verità su come sta andando la tua preparazione
+— anche quando la verità è scomoda: "questo quesito non torna", "non
+sappiamo che cosa hai studiato fuori da qui", "su questo argomento non hai
+ancora visto abbastanza per dirti qualcosa". Sicura, perché quello che scrivi
+resta tuo: nel tuo browser, senza account, senza un server a cui potrebbe
+arrivare o da cui potrebbe uscire.
+
+Non è uno slogan scritto una volta e poi lasciato lì. È la stessa promessa
+che il resto di questo documento verifica riga per riga — e per questo, se un
+giorno smettesse di essere vera, sarebbe questa la prima riga da correggere.
+
 ## Da dove veniamo
 
 Questo sito nasce da un bisogno vero: l'autore doveva prendere la patente
