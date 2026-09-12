@@ -294,9 +294,32 @@ guardato da solo, l'avrebbe vista.
 quattro suite verdi, una voce di CHANGELOG e un collaudo guardato a 375 e
 1280 px. Il rilascio resta un commit a sé, dopo la merge, su `main`.
 
-**L'ordine non è inciso.** La Specifica UX/UI propone di partire dal Percorso; la
-proposta qui è partire dal ciclo, perché è autoconsistente e il motore lo aspetta
-già. Decide l'autore: è priorità, non correttezza.
+**L'ordine è stato deciso da ChatGPT il 12 settembre**, e differisce dalla
+proposta iniziale: Percorso per primo, ciclo al terzo. La ragione è buona — le
+uscite del ciclo hanno bisogno di una destinazione che esista già.
+
+### 5.2 Come si esegue una fetta
+
+Tre cartelle, e non è pignoleria: **due thread scriventi sulla stessa cartella
+collidono anche su file diversi**, perché l'unità di conflitto è l'indice di git.
+
+| Cartella | Ramo | Chi ci scrive |
+|---|---|---|
+| `~/Software/rotta-giusta` | `main` | Claude e l'autore |
+| `~/Software/rotta-giusta-ui` | `ui/main` | ChatGPT — le sei aree, `site/app.html` |
+| `~/Software/rotta-giusta-vetrina` | `ui/vetrina` | ChatGPT — solo `site/index.html` |
+
+Il terzo esiste dal 12 settembre 2026 perché le correzioni della vetrina non
+rientrano in nessuna delle sei aree e possono correre in parallelo: toccano un
+file che nessun'altra sessione tocca.
+
+Il giro: **ChatGPT chiude con un commit** e test verdi → **Claude fa la merge su
+`main`**, preceduta dal controllo dei territori sul diff del ramo → si guarda il
+CHANGELOG, che è dove il conflitto arriva → **il rilascio è un commit a sé**, e
+il push si chiede.
+
+**Non si rilascia a ogni area.** Si rilascia quando `site/` è cambiato e ha senso
+che la gente lo veda: due aree piccole possono stare in un rilascio solo.
 
 ---
 
