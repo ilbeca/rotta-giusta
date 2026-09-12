@@ -41,11 +41,84 @@ un'immagine e non dice quale.
 |---|---|---|
 | app.html | `figura` | L'unica riga che inserisce le 102 figure del decreto, su 119 quesiti: per un lettore di schermo quei quesiti restano senza contenuto. Il testo alternativo va preso dal quesito, non inventato. Area 3, il runner |
 
-## Funzioni del motore che la pagina non consuma
+## Funzioni del motore che nessuno chiama
 
-Il gemello del controllo sugli orfani. Una funzione che la pagina consumava e non
-consuma più va tolta **anche da questo elenco**, nello stesso commit che la
-toglie dalla pagina, e il commit dice perché. Quello che non va bene è che
+Una funzione esportata e testata che nessuno chiama è codice che sembra vivo. A
+volte è voluto — sta lì in attesa dell'area che la consumerà — e allora si
+dichiara qui, **con l'area che la chiuderà**.
+
+Quando la pagina comincia a chiamarla: togli la riga da qui e aggiungi il nome
+alla tabella sotto, nello stesso commit. Il controllo lo pretende in tutti e due
+i versi, perché una funzione dichiarata orfana *mentre* la pagina la usa è una
+dichiarazione che mente.
+
+| funzione | perché è ancora qui |
+|---|---|
+| `ritmo` | Misura il tempo per domanda all'orologio (12 settembre 2026). Il motore la espone e la testa; la consuma l'interfaccia del ridisegno. La riga sparisce quando la pagina la passa a `stimaImpegno()` come `msPerDomanda` — **area 1** |
+| `erroriSessione` | Riapre come esercizio gli errori di una sessione sola (12 settembre 2026): è il pezzo di motore che chiude il ciclo di un'attività, R-FLU-02. La chiamerà il riepilogo — **area 3** |
+| `fondi` | Fusione di due specchi: serviva alla sincronia col server, tolta nella 0.19.0. Resta esportata e testata perché descrive la semantica della fusione, ma nessuno la chiama. Non ha un'area: è storia |
+| `peggiori` | «Le tue voci più deboli» è sparita dalla Rotta nel ridisegno del 9 settembre 2026. È Q-DUE in `docs/specifica.md` §10 — due classifiche concorrenti, e decide l'autore — non ancora deciso. Toglierla dal motore prima della decisione perderebbe la costruzione se la Rotta la richiamasse |
+
+## Chiamate al motore protette
+
+Le funzioni che `app.html` consuma **oggi**. Il controllo pretende che ognuna
+resti consumata: è il gemello del controllo sugli orfani visto dall'altro lato —
+quello prende una funzione che nessuno chiama, questo prende una funzione che la
+pagina chiamava e non chiama più. Nasce dal caso `peggiori()`, uscita dal
+prodotto nella merge del 9 settembre 2026 senza che nessuno l'avesse deciso.
+
+**Aggiungi una riga** quando la pagina comincia a chiamare qualcosa di nuovo: da
+quel momento è protetta. **Togli una riga** solo insieme alla chiamata, e scrivi
+nel commit perché: quello che non va bene non è che una chiamata sparisca, è che
 sparisca in silenzio.
 
-*Nessuna, al momento: la pagina consuma tutte e trentatré.*
+L'elenco comprende anche ciò che la pagina consuma **senza chiamarlo**:
+`SEGNALI` è una costante, ed `estrai` ed `estraiNuoviPrima` viaggiano come valore
+dentro `componiProva()`. Cercare `E.nome(` con la parentesi ne perderebbe tre su
+trentatré — misurato scrivendo il controllo.
+
+| funzione |
+|---|
+| `SEGNALI` |
+| `addGiorni` |
+| `applica` |
+| `classifica` |
+| `coda` |
+| `consigli` |
+| `daAllenare` |
+| `diagnosi` |
+| `domandeSegnali` |
+| `esito` |
+| `estrai` |
+| `estraiNuoviPrima` |
+| `fondiArchivio` |
+| `giorniTra` |
+| `giroTecniche` |
+| `isoLocale` |
+| `lunghezzaPartita` |
+| `mirata` |
+| `ordinaRighe` |
+| `poolSegnali` |
+| `rimescola` |
+| `ripiega` |
+| `sbagliato` |
+| `screening` |
+| `serieGruppi` |
+| `sessioni` |
+| `simulazione` |
+| `simulazioneVela` |
+| `stato` |
+| `stimaImpegno` |
+| `tappeto` |
+| `tendenza` |
+| `traccia` |
+
+## Letture che possono mascherare un guasto
+
+Una lettura che ripiega su un valore di comodo quando fallisce trasforma un
+errore in un dato plausibile: è la forma esatta del guasto muto. Qui stanno
+quelle che esistono ancora, con l'area che le chiude.
+
+| file | espressione | perché è ancora qui |
+|---|---|---|
+| app.html | `LS.get('archivio', [])` | Il ripiego di `ARCH.carica()` quando IndexedDB non si apre. `LS.get` ha `catch { return d }`, quindi un archivio illeggibile — JSON rotto, `localStorage` che lancia — **è indistinguibile da un archivio vuoto**, e la Rotta mostrerebbe l'orientamento del primo avvio a chi ha mesi di risposte. Trovato leggendo il codice il 12 settembre 2026. Lo chiude l'**area 1**, che ha bisogno di distinguere «assente», «letto» ed «errore» per i suoi stati |
