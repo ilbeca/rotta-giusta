@@ -22,13 +22,6 @@ telefono. I difetti qui sotto vengono dall'audit del 12 settembre 2026.
 
 | file | px | selettore | perché è ancora qui |
 |---|---|---|---|
-| app.html | 8 | `.brand-tag` | Il payoff sotto il marchio. Lo corregge l'area 1, che rifà l'header |
-| app.html | 6 | `.brand-tag` | Lo stesso payoff sotto i 650 px, cioè **sul telefono**. Area 1 |
-| app.html | 10 | `.eyebrow` | L'etichetta sopra il titolo; è anche il pattern «hero SaaS» segnalato dall'audit. Aree 1 e 2 |
-| app.html | 9 | `.rotta-intro .eyebrow` | Come sopra, nella Rotta. Area 1 |
-| app.html | 9 | `.recommend-card .eyebrow` | Come sopra, nella proposta. Area 1 |
-| app.html | 10 | `.cart-route-card small` | Sottotitolo della tessera Carteggio. Area 1 |
-| app.html | 10 | `.progress-stat span` | Etichette del riepilogo. Area 1 |
 | index.html | 10 | `.logo .payoff` | Il payoff nella vetrina, che non è in nessuna delle sei aree: la corregge la sessione dedicata, in parallelo |
 
 ## Testi alternativi generici
@@ -54,7 +47,6 @@ dichiarazione che mente.
 
 | funzione | perché è ancora qui |
 |---|---|
-| `ritmo` | Misura il tempo per domanda all'orologio (12 settembre 2026). Il motore la espone e la testa; la consuma l'interfaccia del ridisegno. La riga sparisce quando la pagina la passa a `stimaImpegno()` come `msPerDomanda` — **area 1** |
 | `erroriSessione` | Riapre come esercizio gli errori di una sessione sola (12 settembre 2026): è il pezzo di motore che chiude il ciclo di un'attività, R-FLU-02. La chiamerà il riepilogo — **area 3** |
 | `fondi` | Fusione di due specchi: serviva alla sincronia col server, tolta nella 0.19.0. Resta esportata e testata perché descrive la semantica della fusione, ma nessuno la chiama. Non ha un'area: è storia |
 | `peggiori` | «Le tue voci più deboli» è sparita dalla Rotta nel ridisegno del 9 settembre 2026. È Q-DUE in `docs/specifica.md` §10 — due classifiche concorrenti, e decide l'autore — non ancora deciso. Toglierla dal motore prima della decisione perderebbe la costruzione se la Rotta la richiamasse |
@@ -100,6 +92,7 @@ trentatré — misurato scrivendo il controllo.
 | `ordinaRighe` |
 | `poolSegnali` |
 | `rimescola` |
+| `ritmo` |
 | `ripiega` |
 | `sbagliato` |
 | `screening` |
@@ -121,4 +114,3 @@ quelle che esistono ancora, con l'area che le chiude.
 
 | file | espressione | perché è ancora qui |
 |---|---|---|
-| app.html | `LS.get('archivio', [])` | Il ripiego di `ARCH.carica()` quando IndexedDB non si apre. `LS.get` ha `catch { return d }`, quindi un archivio illeggibile — JSON rotto, `localStorage` che lancia — **è indistinguibile da un archivio vuoto**, e la Rotta mostrerebbe l'orientamento del primo avvio a chi ha mesi di risposte. Trovato leggendo il codice il 12 settembre 2026. Lo chiude l'**area 1**, che ha bisogno di distinguere «assente», «letto» ed «errore» per i suoi stati |
