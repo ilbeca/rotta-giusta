@@ -11,6 +11,19 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+### Aggiunto
+
+- **`docs/filosofia.md`**: il perché sotto le scelte, distinto da
+  `docs/specifica.md` che dice che cosa esiste e come si verifica. Non è una
+  specifica tecnica e non ha requisiti né controlli: è la sintesi di valori
+  già stabiliti altrove nel progetto (l'onestà sui difetti, l'autorità del
+  decreto sopra la nostra convinzione, niente inganno né gamification, i dati
+  che restano nel browser per architettura e non per promessa, verificare
+  invece di dedurre, l'apertura del codice) — scritta per servire da sorgente
+  sia a `specifica.md` sia ai testi dell'interfaccia, invece di lasciare che
+  ognuno reinventi il tono da solo. Stessa penna e stesso territorio di
+  `specifica.md`: aggiunto a `territori.yaml` sotto `motore`.
+
 ### Modificato
 
 - **La cartella si chiama `~/Software/rotta-giusta`** (era `open-patente-nautica`, il
