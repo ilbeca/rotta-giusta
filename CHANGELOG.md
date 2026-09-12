@@ -54,6 +54,13 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   generico nuovo, e una dichiarazione che resta dopo che il difetto è stato
   corretto — perché un'eccezione che non serve più nasconde la prossima.
 
+- **«Il nostro impegno», in apertura di `docs/filosofia.md`.** Una riga sola —
+  *creare una palestra onesta e sicura per chi si prepara a questo esame* — che
+  raccoglie in una promessa quello che il resto del documento già diceva per
+  esteso: la verità anche quando è scomoda, i dati che restano nel browser.
+  Su richiesta esplicita dell'autore, ispirata a una frase vista sul sito di
+  Apple.
+
 ### Deciso
 
 - **Che cosa può dire una breve attività: tre affermazioni, e nessuna quarta.**
