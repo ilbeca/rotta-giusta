@@ -27,7 +27,7 @@
 :root{
   --navy:#0B1F33; --blu-ink:#123E63; --blu:#3BA7DB;
   --dritta:#22C55E; --sinistra:#EF4444; --carta:#F2F4F7;
-  --ink-soft:#475569; --ink-mute:#475569; --bordo:#DCE6EE;
+  --ink-soft:#475569; --bordo:#DCE6EE;
   --r:12px;
 }
 *{box-sizing:border-box}
@@ -46,7 +46,7 @@ h2{font-size:clamp(26px,3.4vw,38px);font-weight:800;line-height:1.15}
 h3{font-size:17px;font-weight:700}
 p{margin:0}
 .sub{color:var(--ink-soft);font-size:clamp(16px,1.4vw,18px);line-height:1.6}
-.mute{color:var(--ink-mute);font-size:14px}
+.mute{color:var(--ink-soft);font-size:14px}
 
 /* --- testata ------------------------------------------------------------- */
 header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);
@@ -93,7 +93,7 @@ nav.principale a[aria-current]{color:var(--navy);border-bottom-color:var(--blu)}
 .pregio{display:flex;gap:12px}
 .pregio svg{flex:0 0 auto;color:var(--blu-ink)}
 .pregio b{display:block;font-size:14px}
-.pregio span{display:block;font-size:13px;color:var(--ink-mute);margin-top:3px}
+.pregio span{display:block;font-size:13px;color:var(--ink-soft);margin-top:3px}
 
 /* --- sezioni ------------------------------------------------------------- */
 section{padding:72px 0}
@@ -108,7 +108,7 @@ section{padding:72px 0}
               background:#EAF4FA;color:var(--blu-ink);display:grid;place-items:center;margin-bottom:18px}
 .passo .n{position:absolute;right:-6px;bottom:-6px;width:26px;height:26px;border-radius:99px;
           background:var(--blu-ink);color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center}
-.passo p{margin-top:8px;font-size:14px;color:var(--ink-mute);line-height:1.6}
+.passo p{margin-top:8px;font-size:14px;color:var(--ink-soft);line-height:1.6}
 
 /* --- tessere argomenti --------------------------------------------------- */
 .tessere{display:grid;gap:14px}
@@ -121,7 +121,7 @@ section{padding:72px 0}
 .tessera .ico{flex:0 0 auto;color:var(--blu-ink)}
 .tessera .t{flex:1;min-width:0}
 .tessera .t b{display:block;font-size:15px;line-height:1.3}
-.tessera .t span{display:block;font-size:13px;color:var(--ink-mute);margin-top:4px}
+.tessera .t span{display:block;font-size:13px;color:var(--ink-soft);margin-top:4px}
 .tessera .fr{flex:0 0 auto;color:#94A3B8;transition:transform .12s}
 .tessera:hover .fr{transform:translateX(3px);color:var(--blu-ink)}
 
@@ -149,13 +149,12 @@ footer{background:#fff;padding:44px 0 34px}
 .piede-alto{display:flex;flex-wrap:wrap;gap:26px;align-items:center;justify-content:space-between;
             padding-bottom:26px;border-bottom:1px solid var(--bordo)}
 .piede-nav{display:flex;flex-wrap:wrap;gap:8px 26px;font-size:14px}
-.piede-nav a,.piede-basso a{display:inline-flex;align-items:center;justify-content:center;
-                            min-width:44px;min-height:44px}
-.piede-nav a{color:var(--ink-mute);text-decoration:none}
+.piede-nav a{display:inline-flex;align-items:center;justify-content:center;
+             min-width:44px;min-height:44px;color:var(--ink-soft);text-decoration:none}
 .piede-nav a:hover{color:var(--blu-ink)}
 .piede-basso{display:flex;flex-wrap:wrap;gap:12px 26px;justify-content:space-between;
-             padding-top:22px;font-size:13px;color:var(--ink-mute)}
-.piede-basso a{color:var(--ink-mute)}
+             padding-top:22px;font-size:13px;color:var(--ink-soft)}
+.piede-basso a{color:var(--ink-soft)}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto} *,*::before,*::after{transition-duration:.01ms!important}
 }

@@ -87,6 +87,11 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   MIT e Avvertenza — misurano almeno **44×44 px**; nessuno sbordamento orizzontale
   a 375 e 1280 px.
 
+- **Errata alla misura dei target nel piè di pagina.** I **44×44 px** valgono
+  per i sei link della navigazione; MIT e Avvertenza restano inline nelle frasi,
+  come consente SC 2.5.8. `--ink-mute` collassa in `--ink-soft`: due nomi per lo
+  stesso colore non distinguevano più niente.
+
 
 ## [0.24.0] — 2026-09-12
 
