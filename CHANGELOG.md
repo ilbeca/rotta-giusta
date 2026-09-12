@@ -77,6 +77,25 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   121 sul motore e 199 sui dati invariate.
 
 
+### Progettato — area 1
+
+- **Percorso e primo ingresso**, definiti in `docs/area-1-progetto.md` per la
+  successiva implementazione: ingresso diretto senza domanda sulla preparazione,
+  prima attività fino a 10 quiz base e ritorno fino a 25, testi completi e
+  riepilogo limitato ai fatti della lista. La scelta evita di trasformare poche
+  risposte in una diagnosi e lascia disponibili scelta libera e Carteggio.
+  Durata solo dal ritmo affidabile e da `stimaImpegno()`, data facoltativa,
+  stati di archivio e salvataggio distinti, correzione progettata di sette
+  eccezioni tipografiche. Previsto il punto d'inserimento dell'ambito futuro,
+  senza mostrarlo. Nessuna implementazione in `site/` in questa sessione.
+
+- **Verificata la base allineata a `main`**: 121 casi motore (120 superati,
+  1 skip previsto), 199 verifiche dati, 128 interfaccia e 210 specifica.
+  Casi sintetici sul motore confermano la distinzione fra mai visti e rimanenti,
+  la soglia 29/30 del ritmo e la Mirata vuota con banca tutta corretta: il
+  progetto gestisce questi casi senza conteggi o selezioni sostitutive.
+  Il collaudo della nuova interfaccia e le prove con persone restano da svolgere.
+
 ## [0.24.0] — 2026-09-12
 
 ### Aggiunto
