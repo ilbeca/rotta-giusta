@@ -9,7 +9,7 @@ utente e una data d'esame. Restano perché spiegano **perché** certe scelte
 sembrano strane — e sono state riviste solo per togliere i dati delle macchine
 dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
-## [Unreleased]
+## [0.24.0] — 2026-09-12
 
 ### Aggiunto
 

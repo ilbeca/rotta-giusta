@@ -17,7 +17,7 @@
 // Ogni rilascio ha quindi la sua cache, e la vecchia viene cancellata
 // all'activate.
 
-const CACHE = 'rg-0.23.0';
+const CACHE = 'rg-0.24.0';
 
 // Il minimo per aprire l'app e fare una batteria. Le 103 figure no: sono 1,1 MB
 // e scaricarle di soppiatto su una rete a consumo e' scortese. C'e' il pulsante
