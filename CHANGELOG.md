@@ -102,6 +102,30 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   per banca tolto. Tutte e tre le volte **tutti e quattro** i test nuovi
   diventano rossi.
 
+### Progettato — il recupero con una frase
+
+- **`docs/recupero-progetto.md`: le quattro scelte che l'ADR-002 aveva lasciato
+  aperte**, più il testo della schermata che viene prima della frase. Niente
+  codice: l'interfaccia è in ridisegno. Frase BIP-39 italiana da 128 bit;
+  HKDF-SHA256 nativo e **niente derivazione lenta**, perché la frase è generata e
+  non scelta — e la condizione è scritta, perché è quella che qualcuno
+  toglierebbe; il blocco è **il file di export, identico**, quindi il ripristino
+  passa da `importa()` e non da una porta nuova; un endpoint su un'origine sua
+  che **rifiuta la scrittura cieca** (`428` senza precondizione, `412` su un
+  blocco non visto), cioè il telefono nuovo e vuoto che copre mesi di risposte
+  non può succedere.
+
+  **Tre misure l'hanno orientato.** statichost.eu serve solo file statici, per
+  sua documentazione: l'endpoint deve stare altrove. `sw.js` ignora già le
+  richieste verso altre origini (riga 91), quindi un'origine separata tiene il
+  backup fuori dal gestore cache-first senza una riga nuova. E una preparazione
+  completa — 2.100 risposte, righe sintetiche nella forma vera — pesa **47 KB**
+  compressa, 22,7 byte a risposta: il tetto proposto di 2 MiB ne tiene circa
+  90.000.
+
+  **Sette file dichiarano oggi che un server non esiste**, e sono elencati: fra
+  questi `docs/filosofia.md`, che fonda un argomento intero su quella frase.
+
 
 ## [0.25.0] — 2026-09-25
 
