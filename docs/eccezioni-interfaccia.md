@@ -22,7 +22,8 @@ telefono. I difetti qui sotto vengono dall'audit del 12 settembre 2026.
 
 | file | px | selettore | perché è ancora qui |
 |---|---|---|---|
-| index.html | 10 | `.logo .payoff` | Il payoff nella vetrina, che non è in nessuna delle sei aree: la corregge la sessione dedicata, in parallelo |
+
+*Nessuno, al momento: le sette eccezioni di `app.html` le ha chiuse l'area 1, quella di `index.html` la vetrina (12 settembre 2026).*
 
 ## Testi alternativi generici
 

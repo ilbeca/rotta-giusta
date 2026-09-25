@@ -130,6 +130,22 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 - Dopo il trasloco delle due liste: **137** sull'interfaccia e **214** sulla
   specifica.
 
+### Corretto
+
+- **La vetrina supera le soglie minime di accessibilità senza cambiare la sua
+  tavolozza.** Il payoff del marchio passa da 10 a **11 px** e la sua eccezione
+  dichiarata sparisce; l'occhiello generico sopra l'H1 non c'è più. Il testo
+  attenuato usa il grigio già presente `#475569`: **6,88:1** su carta, invece di
+  `#64748B` a **4,32:1**. Le quattro righe nella sezione navy sono bianche:
+  **16,69:1** su `#0B1F33`. A 375 px, tutti i link del piè di pagina — compresi
+  MIT e Avvertenza — misurano almeno **44×44 px**; nessuno sbordamento orizzontale
+  a 375 e 1280 px.
+
+- **Errata alla misura dei target nel piè di pagina.** I **44×44 px** valgono
+  per i sei link della navigazione; MIT e Avvertenza restano inline nelle frasi,
+  come consente SC 2.5.8. `--ink-mute` collassa in `--ink-soft`: due nomi per lo
+  stesso colore non distinguevano più niente.
+
 
 ### Progettato — area 1
 

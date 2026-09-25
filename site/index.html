@@ -27,7 +27,7 @@
 :root{
   --navy:#0B1F33; --blu-ink:#123E63; --blu:#3BA7DB;
   --dritta:#22C55E; --sinistra:#EF4444; --carta:#F2F4F7;
-  --ink-soft:#475569; --ink-mute:#64748B; --bordo:#DCE6EE;
+  --ink-soft:#475569; --bordo:#DCE6EE;
   --r:12px;
 }
 *{box-sizing:border-box}
@@ -46,7 +46,7 @@ h2{font-size:clamp(26px,3.4vw,38px);font-weight:800;line-height:1.15}
 h3{font-size:17px;font-weight:700}
 p{margin:0}
 .sub{color:var(--ink-soft);font-size:clamp(16px,1.4vw,18px);line-height:1.6}
-.mute{color:var(--ink-mute);font-size:14px}
+.mute{color:var(--ink-soft);font-size:14px}
 
 /* --- testata ------------------------------------------------------------- */
 header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);
@@ -56,9 +56,7 @@ header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);
 .logo>span{display:block}
 .logo .nome{display:block;font-size:19px;font-weight:800;letter-spacing:.05em;color:var(--navy);line-height:1}
 .logo .nome span{font-weight:400;color:var(--blu-ink);opacity:.75}
-/* Il payoff: 10px, non 8, e in blu-ink. A 8px in #3BA7DB era il testo
-   piu' piccolo e meno leggibile della pagina. */
-.logo .payoff{display:block;font-size:10px;font-weight:600;letter-spacing:.24em;color:var(--blu-ink);margin-top:5px}
+.logo .payoff{display:block;font-size:11px;font-weight:600;letter-spacing:.24em;color:var(--blu-ink);margin-top:5px}
 nav.principale{display:none;gap:30px;font-size:14px;font-weight:600}
 nav.principale a{color:var(--ink-soft);text-decoration:none;padding:6px 0;border-bottom:2px solid transparent}
 nav.principale a:hover{color:var(--blu-ink)}
@@ -95,7 +93,7 @@ nav.principale a[aria-current]{color:var(--navy);border-bottom-color:var(--blu)}
 .pregio{display:flex;gap:12px}
 .pregio svg{flex:0 0 auto;color:var(--blu-ink)}
 .pregio b{display:block;font-size:14px}
-.pregio span{display:block;font-size:13px;color:var(--ink-mute);margin-top:3px}
+.pregio span{display:block;font-size:13px;color:var(--ink-soft);margin-top:3px}
 
 /* --- sezioni ------------------------------------------------------------- */
 section{padding:72px 0}
@@ -110,7 +108,7 @@ section{padding:72px 0}
               background:#EAF4FA;color:var(--blu-ink);display:grid;place-items:center;margin-bottom:18px}
 .passo .n{position:absolute;right:-6px;bottom:-6px;width:26px;height:26px;border-radius:99px;
           background:var(--blu-ink);color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center}
-.passo p{margin-top:8px;font-size:14px;color:var(--ink-mute);line-height:1.6}
+.passo p{margin-top:8px;font-size:14px;color:var(--ink-soft);line-height:1.6}
 
 /* --- tessere argomenti --------------------------------------------------- */
 .tessere{display:grid;gap:14px}
@@ -123,7 +121,7 @@ section{padding:72px 0}
 .tessera .ico{flex:0 0 auto;color:var(--blu-ink)}
 .tessera .t{flex:1;min-width:0}
 .tessera .t b{display:block;font-size:15px;line-height:1.3}
-.tessera .t span{display:block;font-size:13px;color:var(--ink-mute);margin-top:4px}
+.tessera .t span{display:block;font-size:13px;color:var(--ink-soft);margin-top:4px}
 .tessera .fr{flex:0 0 auto;color:#94A3B8;transition:transform .12s}
 .tessera:hover .fr{transform:translateX(3px);color:var(--blu-ink)}
 
@@ -142,7 +140,7 @@ section{padding:72px 0}
 .navy .griglia{display:grid;gap:40px}
 @media(min-width:900px){.navy .griglia{grid-template-columns:1fr 1fr;gap:64px}}
 .spunte{border-left:1px solid rgba(255,255,255,.2);padding-left:28px;display:grid;gap:18px;align-content:center}
-.spunta{display:flex;align-items:center;gap:14px;color:#DCE6EE;font-size:15px}
+.spunta{display:flex;align-items:center;gap:14px;color:#fff;font-size:15px}
 .spunta svg{color:var(--blu);flex:0 0 auto}
 .onde{position:absolute;left:0;right:0;bottom:0;opacity:.16;pointer-events:none}
 
@@ -151,11 +149,12 @@ footer{background:#fff;padding:44px 0 34px}
 .piede-alto{display:flex;flex-wrap:wrap;gap:26px;align-items:center;justify-content:space-between;
             padding-bottom:26px;border-bottom:1px solid var(--bordo)}
 .piede-nav{display:flex;flex-wrap:wrap;gap:8px 26px;font-size:14px}
-.piede-nav a{color:var(--ink-mute);text-decoration:none}
+.piede-nav a{display:inline-flex;align-items:center;justify-content:center;
+             min-width:44px;min-height:44px;color:var(--ink-soft);text-decoration:none}
 .piede-nav a:hover{color:var(--blu-ink)}
 .piede-basso{display:flex;flex-wrap:wrap;gap:12px 26px;justify-content:space-between;
-             padding-top:22px;font-size:13px;color:var(--ink-mute)}
-.piede-basso a{color:var(--ink-mute)}
+             padding-top:22px;font-size:13px;color:var(--ink-soft)}
+.piede-basso a{color:var(--ink-soft)}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto} *,*::before,*::after{transition-duration:.01ms!important}
 }
@@ -210,7 +209,6 @@ footer{background:#fff;padding:44px 0 34px}
 <section class="hero" style="padding:0">
   <div class="wrap griglia">
     <div>
-      <p class="occhiello">La piattaforma open source</p>
       <h1>La rotta giusta<br>per la tua <span class="acc">Patente Nautica</span></h1>
       <p class="sub">Quiz, simulazioni e carteggio per la patente nautica senza limiti dalla costa.
         Gratis, senza account, tutto nel tuo browser.</p>
