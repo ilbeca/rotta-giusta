@@ -121,19 +121,96 @@ per davvero, ed è anche l'unica parte scritta interamente dall'autore.
 
 ## 2. Che cos'è, e che cosa non è
 
-**Vincolo.** Queste sono le cose che nessuna bozza può spostare senza un ADR.
+Il 25 settembre 2026 l'**ADR-003** ha cambiato questa sezione più di qualunque
+altra: **account obbligatorio, e le risposte sul server in chiaro**, leggibili
+dal titolare. Quattro dei sette Vincoli che stavano qui cadono. Sotto: che cosa
+resta, che cosa cade, e che cosa si perde — detto per esteso, perché è il posto
+in cui una decisione del genere si è tentati di scriverla a mezza voce.
+
+**La decisione non è ancora il prodotto.** La versione pubblicata non ha
+account: finché non arrivano, i Vincoli caduti descrivono ancora correttamente
+ciò che gira, e i testi di `site/` che li dichiarano dicono il vero. Si
+cambiano **nella stessa versione** in cui entrano gli account — non prima e non
+dopo. Un'informativa che descrive un server che non c'è è falsa quanto una che
+tace quello che c'è.
+
+### 2.1 Che cosa resta — Vincolo
+
+Queste nessuna bozza le sposta senza un ADR, e l'ADR-003 non le tocca.
 
 | Non c'è | Perché |
 |---|---|
-| **Nessun account, nessuna registrazione** | Le risposte restano nel browser di chi studia e non arrivano a nessuno. Un pulsante «Accedi» sarebbe una bugia in prima pagina. |
-| **Nessun backend** | Sito statico su statichost.eu (Svezia), all'indirizzo `rottagiusta.it`. I quattro JSON in `site/dati/` sono la banca; non c'è un server che sostituisca un numero al volo. |
-| **Nessun build step, nessun bundler, nessuna dipendenza** | `index.html` e `app.html` importano solo `/engine.js`. Quello che è nel repo è quello che gira. |
-| **Nessuna sincronizzazione** | L'archivio delle risposte è **una copia sola**. L'unica via di salvataggio è il file da scaricare. |
-| **Nessun cookie, nessun analytics, nessun form** | Non c'è niente da tracciare perché non si tratta nessun dato. |
-| **Nessuna correzione automatica del carteggio** | §7.5. |
-| **Nessuna seconda contabilità dello storico** | §3.3. |
+| **Nessuna seconda contabilità dello storico** | §3.3. Con un server conta **di più**, non di meno: le righe viaggiano, lo specchio **mai**, in nessuna direzione, e si ricalcola sempre in locale con `ripiega()`. R-ARCH-01 resta il controllo. |
+| **Nessuna correzione automatica del carteggio** | §4.5. |
+| **Nessun build step, nessun bundler, nessuna dipendenza nella pagina** | `index.html` e `app.html` importano solo `/engine.js`. Quello che è nel repo è quello che gira. Che esista un server non autorizza un bundler nella pagina. |
+| **Nessuna modifica alla banca per convinzione** | §3.1. È l'Allegato A al DD 131/2022: si annota e si cita la fonte. |
+| **Nessun analytics** | L'ADR-003 chiede statistiche, e si fanno **leggendo le righe delle risposte** che il server già conserva. Non autorizzano script di terzi, né il tracciamento della navigazione. |
 
-E una cosa che c'è e va detta: **il sito dichiara i propri difetti**, quesito per
+### 2.2 Che cosa cade — Deciso il 25 settembre 2026 (ADR-003)
+
+| Era un Vincolo | Che cosa diventa |
+|---|---|
+| **Nessun account, nessuna registrazione** | Account con email e password, **obbligatorio**, con verifica dell'indirizzo. Si studia da registrati. Chi ha già un file esportato lo carica, e diventa il contenuto del suo account. |
+| **Nessun backend** | Un server con un database che conserva le righe **in chiaro**, e che il titolare legge per il supporto e per le statistiche. La banca e le pagine restano statiche su statichost.eu. |
+| **Nessuna sincronizzazione** | Le righe si sincronizzano, come **unione per `uid`**. Non è la sincronia che nella 0.4.2 ha cancellato giorni di studio: lì si fondeva lo specchio, cioè stato derivato, e qualcuno doveva vincere; qui si uniscono righe append-only, e nessuno è in conflitto (`fondiArchivio()`, R-STA-03). |
+| **Nessun cookie, nessun form** | Un cookie di sessione, tecnico, quindi senza banner di consenso. Un modulo di registrazione e di accesso. |
+
+In più, e non era scritto da nessuna parte perché non serviva: **i dati si
+conservano fino a due anni di inattività**, poi, dopo un avviso, si cancellano.
+
+### 2.3 Che cosa si perde
+
+Non sono effetti collaterali: sono il prezzo, e si paga tutto.
+
+1. **Una garanzia che non dipendeva da nessuno.** «Le risposte non arrivano a
+   nessuno» era vero per costruzione: non esisteva un posto dove mandarle, e
+   nessun aggiornamento sbagliato poteva cambiarlo. Da adesso arrivano a un
+   server per scelta, e a tenerle al sicuro restano obblighi e promesse — che si
+   possono rompere, anche per errore.
+2. **L'anonimato.** Il sito sa chi sei, perché ha la tua email, e sa che cosa
+   hai risposto; il titolare lo può leggere. Sono dati personali (non dell'art.
+   9: niente salute, niente opinioni). Un server violato esporrebbe email e
+   storico insieme.
+3. **Il primo quesito senza chiedere niente.** Prima di rispondere servono rete,
+   un modulo e un'email di verifica. È un **imbuto**, e sta sulla schermata che
+   secondo il §7.1 decide se una persona resta. Il primo ingresso dell'area 1,
+   già rilasciato, è stato progettato per un prodotto senza account.
+4. **L'offline alla prima visita.** Resta dopo l'accesso, non prima. Era una
+   delle poche cose di questo prodotto misurate invece che dichiarate: zero byte
+   trasferiti a pagina ricaricata.
+5. **Il non avere niente da custodire.** Un fornitore in più che vede i dati, e
+   con lui un accordo da firmare; un registro dei trattamenti; un'informativa con
+   una base giuridica; una violazione da notificare entro 72 ore, cioè log per
+   accorgersene; una cancellazione che deve cancellare davvero; un server da
+   tenere acceso. Prima non c'era niente di tutto questo perché non c'era niente
+   da proteggere.
+
+**Che cosa si compra con questo prezzo:** chi cambia telefono o svuota il
+browser non perde più tutto — il difetto più grave che il prodotto aveva verso
+chi lo usa — e chi scrive per un problema si può aiutare guardando i suoi dati.
+
+### 2.4 Che cosa resta aperto
+
+**Aperto — decide l'autore.** La variante registrata e non scelta dall'ADR-003:
+account obbligatorio per **salvare**, libero per **provare**. Soddisfa le stesse
+tre aspettative e toglierebbe le perdite 3 e 4; l'ADR la dichiara reversibile.
+È Q-ACCESSO, §10.
+
+### 2.5 Che cosa di questo documento descrive ancora il prodotto senza account
+
+Queste parti sono **vere per la versione pubblicata** e diventano false con gli
+account. Non si riscrivono qui perché dipendono da scelte che l'ADR-003 dichiara
+di non prendere — tabelle, sessione, API, statistiche aggregate — e che spettano
+al progetto di realizzazione:
+
+- §3, a cominciare dal titolo, e §3.2 «l'unica copia»;
+- §4.6, «non sa niente degli altri utenti» e «non sa se sei alla prima visita»;
+- §7.1, il caso limite «un archivio vuoto non prova che sia la prima visita»;
+- §7.8, scarica / ricarica come unica via di salvataggio;
+- Appendice A, «nessun dark pattern possibile: non c'è account, non c'è un
+  imbuto».
+
+E una cosa che c'è e resta: **il sito dichiara i propri difetti**, quesito per
 quesito. È l'unica cosa che nessun concorrente può copiare, ed è il motivo per
 cui i 37 oscurati, gli 11 divergenti dal DM 133/2024 e le dieci figure riabbinate
 stanno in prima pagina invece che in una nota.
@@ -869,6 +946,7 @@ Ogni riga dice **chi decide**. Una questione senza un decidente non si chiude ma
 | Q-CART4 | «Un esercizio per ciascuno dei quattro argomenti» è un'assunzione | serve la scuola nautica | La composizione della prova resta non confermata, e la 42/D non ha esercizi di carburante |
 | Q-PROVE | Verifiche con dispositivi reali e con persone | l'autore fornisce dispositivi e persone | Nessuna prova su hardware Apple vero, e nessuna prova con persone diverse dall'autore |
 | Q-DUE | Due classifiche di «cosa fare adesso»: dichiararne la differenza o tenerne una | l'autore | La sovrapposizione resta, e sul ramo `ui/main` una delle due è già sparita senza decisione |
+| Q-ACCESSO | Account obbligatorio per usare il sito, come dice l'ADR-003, o solo per salvare i progressi | l'autore | Il primo ingresso diventa un modulo e un'email di verifica prima del primo quesito, e l'offline sparisce dalla prima visita (§2.3) |
 
 **Chiuse, e non si riaprono senza un motivo nuovo:**
 
@@ -1028,3 +1106,13 @@ successo, ed è il motivo per cui questo file esiste.
   Il documento assorbe `motore.md` e i tre documenti UX; i requisiti del §9 sono
   41, di cui **34 con un controllo eseguibile** e 7 dichiarati scoperti
   con il loro motivo.
+
+- **25 settembre 2026 — il §2 dopo l'ADR-003.** Account obbligatorio e righe sul
+  server in chiaro: dei sette Vincoli ne cadono quattro (account, backend,
+  sincronizzazione, cookie e form), e il §2 li separa in che cosa resta, che
+  cosa cade e che cosa si perde. Entrano «Nessuna modifica alla banca» fra i
+  Vincoli, perché l'ADR la nomina fra quelli da difendere e qui mancava, e
+  Q-ACCESSO nel §10. Le sezioni che descrivono ancora il prodotto senza account
+  sono elencate nel §2.5 e non riscritte: dipendono dal progetto di
+  realizzazione. Corretto per traverso un rimando: la correzione del carteggio
+  sta nel §4.5, non nel §7.5.

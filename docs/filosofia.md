@@ -1,6 +1,7 @@
 # Rotta Giusta — filosofia e valori
 
-**Data:** 12 settembre 2026.
+**Data:** 12 settembre 2026. **Riscritto il 25 settembre 2026**, dopo
+l'ADR-003: account obbligatorio, risposte sul server in chiaro.
 **Che cos'è:** non è una specifica e non prescrive un'interfaccia. È il perché
 sotto le scelte — in che cosa crediamo, e da dove viene ogni convinzione.
 Serve come sorgente a due destinazioni diverse: a `docs/specifica.md`, quando
@@ -13,6 +14,12 @@ due filosofie leggermente diverse, ed è esattamente il tipo di divergenza
 silenziosa che questo progetto ha già pagato una volta (vedi `specifica.md`,
 §0).
 
+> **Questo documento descrive il sito deciso, non ancora quello pubblicato.**
+> Gli account dell'ADR-003 non esistono ancora: finché non arrivano, il sito
+> che gira non ha registrazione e tiene tutto nel browser, e le pagine di
+> `site/` che lo dicono sono vere. Qui si scrive in che cosa crediamo **dopo**
+> quella decisione, perché i valori non si aggiornano il giorno del rilascio.
+
 ---
 
 ## Il nostro impegno
@@ -22,9 +29,14 @@ silenziosa che questo progetto ha già pagato una volta (vedi `specifica.md`,
 Onesta, perché dice sempre la verità su come sta andando la tua preparazione
 — anche quando la verità è scomoda: "questo quesito non torna", "non
 sappiamo che cosa hai studiato fuori da qui", "su questo argomento non hai
-ancora visto abbastanza per dirti qualcosa". Sicura, perché quello che scrivi
-resta tuo: nel tuo browser, senza account, senza un server a cui potrebbe
-arrivare o da cui potrebbe uscire.
+ancora visto abbastanza per dirti qualcosa". E perché dice la verità anche su
+di sé: che cosa conserviamo di te, dove, e chi lo legge.
+
+Sicura, perché i tuoi progressi non si perdono più quando cambi telefono, e
+perché quello che conserviamo lo custodiamo come si deve e lo cancelliamo
+quando non serve più. **Non vuol dire più** quello che voleva dire fino al 25
+settembre 2026 — che le tue risposte non potevano arrivare a nessuno. Adesso
+arrivano a noi, e le leggiamo. Il perché, e che cosa costa, è più sotto.
 
 Non è uno slogan scritto una volta e poi lasciato lì. È la stessa promessa
 che il resto di questo documento verifica riga per riga — e per questo, se un
@@ -89,10 +101,11 @@ perché è nostra e il software la esegue con sicurezza.
 
 ### Non ti inganniamo mai
 
-Nessun account, nessuna registrazione, nessuna newsletter, nessun cookie di
-tracciamento. Non perché la legge lo imponga — non trattiamo dati personali,
-quindi in gran parte non ci si applicherebbe nemmeno — ma perché non c'è
-niente da vendere e nessuno a cui vendere l'attenzione di chi studia.
+Per studiare ci si registra, con un'email e una password. L'email serve ad
+accedere, a riprendere la password e a ricevere l'avviso prima che un account
+inattivo venga cancellato. Nessuna newsletter, nessun cookie di tracciamento:
+c'è un solo cookie, quello che ti tiene dentro dopo l'accesso. Non c'è niente
+da vendere e nessuno a cui vendere l'attenzione di chi studia.
 
 Non c'è **gamification**: nessuna streak da non rompere, nessun badge, nessuna
 notifica che chiede di tornare. È una scelta esplicita contro la pratica
@@ -100,24 +113,59 @@ dominante nelle app di studio, che punta a trattenere. Chi prepara un esame in
 poche settimane non ha bisogno di essere trattenuto: ha bisogno di sapere dove
 è scoperto e di andarsene quando ha finito.
 
-Non c'è nessun **dark pattern** possibile, perché non c'è un imbuto in cui far
-cadere qualcuno: non c'è un piano gratuito pensato per essere frustrante, non
-c'è un pulsante di conferma reso più piccolo di quello che promette qualcosa.
+Fino al 25 settembre 2026 qui c'era scritto che nessun **dark pattern** era
+possibile, perché non c'era un imbuto in cui far cadere qualcuno. **Non è più
+vero.** Una registrazione obbligatoria prima del primo quesito **è un imbuto**,
+e chi arriva lo incontra prima di aver visto che cosa gli offriamo. Non lo
+chiamiamo in un altro modo.
+
+Quello che resta è una scelta, non più una conseguenza dell'architettura: un
+imbuto che c'è non si usa contro chi ci passa. Il costo si dice prima, non
+dopo; non c'è un piano gratuito pensato per essere frustrante, né un pulsante
+di conferma reso più piccolo di quello che promette qualcosa; i tuoi dati si
+scaricano e si cancellano da dove si vedono, non da un modulo sepolto. Prima
+nessuno poteva rompere questa promessa. Adesso potremmo, ed è il motivo per
+cui la scriviamo.
+
 Un'eccezione unica, e dichiarata: il gioco dei Segnali è l'unica parte del
 sito pensata per essere divertente prima che utile, ed è anche l'unica scritta
 interamente dall'autore, non da un motore di selezione.
 
-### I tuoi dati restano tuoi, per come è costruito il sito
+### I tuoi dati li teniamo noi, e lo diciamo
 
-Le risposte che dai restano nel browser in cui studi. Non è una promessa scritta
-in una informativa: è che non esiste un server a cui potrebbero arrivare. Il
-sito è statico, senza backend, senza database — l'unica copia dello storico è
-quella sul tuo dispositivo, e l'unico modo di portarla altrove è scaricarla tu
-stesso in un file.
+Le risposte che dai stanno sul nostro server, legate al tuo account, **in
+chiaro**. Le leggiamo per due ragioni, e solo per quelle: per aiutare chi ci
+scrive quando qualcosa non torna, e per le statistiche. Stanno in Europa,
+presso un fornitore con cui c'è un accordo scritto. Puoi scaricarle quando
+vuoi, nello stesso file di sempre, e puoi farle cancellare; dopo due anni in
+cui non entri, ti avvisiamo e le cancelliamo noi.
 
-Questo è più forte di una promessa di privacy, ed è deliberato: una promessa si
-può rompere con un aggiornamento silenzioso; un'architettura che non ha dove
-mandare il dato non si rompe per errore.
+Fino al 25 settembre 2026 questa sezione diceva il contrario, e diceva che era
+più forte di una promessa: le risposte restavano nel browser perché **non
+esisteva un server a cui potessero arrivare**, e un'architettura che non ha
+dove mandare il dato non si rompe per errore. Era vero, e l'abbiamo lasciato
+andare.
+
+Il perché è che quella garanzia costava a chi studia la cosa peggiore che il
+sito gli facesse: l'archivio era una copia sola, e chi cambiava telefono o
+svuotava il browser perdeva tutto. Avevamo cercato una via di mezzo — una
+copia cifrata che nemmeno noi potessimo leggere — e l'abbiamo scartata quando
+abbiamo capito che i dati ci servono leggibili: una copia che nessuno può
+leggere non si legge nemmeno per aiutare chi ci chiede perché i suoi numeri
+non tornano.
+
+Quello che adesso tiene al sicuro i tuoi dati sono le regole che ci siamo dati
+e gli obblighi di legge, non l'impossibilità. **È più debole**, e non fingiamo
+che non lo sia: una promessa si può rompere, anche per errore, e un server si
+può violare. Se succede, lo diciamo — la legge ci dà 72 ore, e per accorgersene
+servono i registri che per questo teniamo.
+
+Una cosa della vecchia architettura resta, ed è quella che rende sicura la
+nuova: le risposte sono righe che non si modificano mai, e fondere la copia del
+server con quella del tuo browser è un'unione, non una gara fra due versioni.
+Nessuna delle due può cancellare l'altra. È il motivo per cui questa
+sincronizzazione non può rifare il danno di quella che, nel progetto da cui il
+sito viene, ha perso giorni di studio.
 
 ### Accompagniamo la preparazione, non la sostituiamo
 
@@ -168,11 +216,35 @@ neghiamo alcun diritto, perché semplicemente non sono nostri da concedere.
 
 Non siamo un prodotto che deve crescere per giustificare un investimento: non
 c'è un investimento da giustificare. Non siamo un servizio che vive di
-pubblicità o di dati rivenduti: non ne abbiamo di dati da rivendere, e non
-abbiamo intenzione di crearne il bisogno. Non promettiamo un risultato che non
-possiamo misurare — "supera l'esame con noi" non lo diciamo, perché non
-sappiamo che cosa studi fuori da questo sito, e fingere di saperlo sarebbe
-esattamente il tipo di rassicurazione vuota che rifiutiamo altrove.
+pubblicità o di dati rivenduti. Fino al 25 settembre 2026 potevamo dire che di
+dati da rivendere non ne avevamo; adesso li abbiamo, e la differenza è che non
+rivenderli è una scelta nostra, non un fatto dell'architettura.
+
+Non promettiamo un risultato che non possiamo misurare — "supera l'esame con
+noi" non lo diciamo, perché non sappiamo che cosa studi fuori da questo sito, e
+fingere di saperlo sarebbe esattamente il tipo di rassicurazione vuota che
+rifiutiamo altrove.
+
+## Che cosa abbiamo perso
+
+Detto in un posto solo, perché sparso nelle sezioni sopra si leggerebbe meno.
+Con l'account obbligatorio e le risposte sul server abbiamo rinunciato a:
+
+- **la garanzia che non dipendeva da nessuno** — «le tue risposte non arrivano
+  a nessuno», vera per costruzione. Adesso arrivano a noi;
+- **l'anonimato** — il sito sa chi sei e che cosa hai risposto, e noi lo
+  possiamo leggere;
+- **il primo quesito senza chiedere niente** — prima di cominciare servono un
+  modulo e un'email di verifica: un imbuto, sulla schermata che decide se una
+  persona resta;
+- **l'offline alla prima visita** — resta dopo l'accesso, non prima;
+- **il non avere niente da custodire** — un fornitore in più, un registro dei
+  trattamenti, un'informativa vera, una violazione possibile da notificare.
+
+In cambio: **chi studia non perde più il proprio lavoro** cambiando telefono, e
+chi ci scrive per un problema possiamo aiutarlo davvero. Lo abbiamo ritenuto un
+cambio giusto. Resta aperta una variante che toglierebbe due di queste perdite
+— registrarsi solo per **salvare**, e provare senza — e la decide l'autore.
 
 ## A che cosa serve questo documento
 
@@ -186,6 +258,18 @@ cambia, deve cambiare in una direzione e non nell'altra.
 ---
 
 ## Registro
+
+- **25 settembre 2026 — riscritto dopo l'ADR-003.** Account obbligatorio e
+  risposte sul server in chiaro, leggibili dal titolare: quattro affermazioni
+  di questo documento diventavano false — «senza account, senza un server»
+  nell'impegno, «non trattiamo dati personali», «nessun dark pattern
+  possibile», e l'intera sezione sui dati che restano nel browser per
+  architettura. Sono state riscritte dicendo che cosa erano, che cosa sono ora
+  e perché, invece di essere sostituite in silenzio; e c'è una sezione nuova,
+  «Che cosa abbiamo perso». Un impegno è nuovo e non viene dall'ADR: che i dati
+  si scaricano e si cancellano «da dove si vedono». Discende dall'ADR (export
+  esistente, cancellazione che cancella davvero), ma la forma è una promessa di
+  questo documento.
 
 - **12 settembre 2026 — prima stesura.** Scritto su richiesta esplicita, per
   dare all'interfaccia una fonte di filosofia distinta dalla specifica

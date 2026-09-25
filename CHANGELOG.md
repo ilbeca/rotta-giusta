@@ -57,6 +57,43 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   installata sul vecchio indirizzo prenda questa versione; il redirect (D2) non
   prima del 16 ottobre 2026. Il come è in `docs/migrazione-hosting.md`.
 
+### Riscritto — i valori e il §2 dopo l'ADR-003
+
+- **`docs/filosofia.md` e il §2 di `docs/specifica.md` dicono che cosa si è
+  perso.** L'ADR-003 li rendeva falsi in quattro punti — «senza account, senza
+  un server», «non trattiamo dati personali», «nessun dark pattern possibile,
+  perché non c'è un imbuto», e l'argomento intero dei dati che restano nel
+  browser per architettura e non per promessa. Non sono stati sostituiti: ogni
+  punto dice che cosa era vero, che cosa lo è adesso e perché. Il documento dei
+  valori è il posto in cui una decisione così si è tentati di scriverla a mezza
+  voce, ed è il motivo per cui l'ADR chiedeva di riscriverlo «non con un giro di
+  parole».
+
+  **Le perdite, in chiaro, in tutti e due i documenti:** la garanzia che non
+  dipendeva da nessuno, l'anonimato, il primo quesito senza chiedere niente —
+  una registrazione obbligatoria **è** un imbuto —, l'offline alla prima visita,
+  e il non avere niente da custodire. In cambio chi cambia telefono non perde
+  più tutto.
+
+  **Il §2 ha ora cinque parti:** che cosa resta (Vincolo), che cosa cade
+  (Deciso, con la data), che cosa si perde, che cosa resta aperto, e quali
+  sezioni della specifica descrivono ancora il prodotto senza account. Queste
+  ultime — §3, §4.6, §7.1, §7.8, Appendice A — sono **elencate e non riscritte**,
+  perché dipendono da scelte che l'ADR dichiara di non prendere. Fra i Vincoli
+  entra la banca immutabile, che l'ADR nomina fra quelli da difendere e che il
+  §2 non aveva; «nessun analytics» resta, perché l'ADR non lo tocca e le
+  statistiche che chiede si fanno leggendo le righe delle risposte. Nel §10
+  entra **Q-ACCESSO** — obbligatorio per usare o solo per salvare — con
+  l'autore come decidente.
+
+  **Tutti e due i documenti descrivono il prodotto deciso, e lo dichiarano in
+  testa:** il sito pubblicato non ha ancora account, e i testi di `site/` che lo
+  dicono oggi sono veri. L'elenco di quelli da cambiare — informativa, vetrina,
+  palestra, con riga, testo attuale e che cosa diventa falso — è in
+  `docs/prossime-sessioni.md` per chi lavora su `ui/*`, con la regola: **nella
+  stessa versione in cui entrano gli account, non prima.** `site/` non è stato
+  toccato.
+
 ## [0.27.0] — 2026-09-25
 
 ### Verificato — la v0.26.2 sul dominio vero
