@@ -11,6 +11,9 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+
+## [0.25.0] — 2026-09-25
+
 ### Aggiunto
 
 - **Tre controlli che tengono fermo quello che c'è già**, nati dalla richiesta di
