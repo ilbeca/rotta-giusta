@@ -11,6 +11,8 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+## [0.26.1] — 2026-09-25
+
 ### Migrazione dell'hosting — la fase B misurata
 
 - **Sul dominio vero il service worker regge, e la regola delle due ricariche è
