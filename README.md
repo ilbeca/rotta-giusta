@@ -107,7 +107,8 @@ gira nella suite, `strumenti/controlla.py`, fallisce se rientrano.
 ## Come funziona
 
 - **Sito statico.** Nessun backend, nessun database, nessun form, nessun cookie,
-  nessun analytics. L'hosting è Cloudflare Pages; i quattro file JSON in
+  nessun analytics. L'hosting è [statichost.eu](https://www.statichost.eu/),
+  in Svezia, all'indirizzo `rottagiusta.it`; i quattro file JSON in
   `site/dati/` sono la banca.
 - **Le risposte restano nel browser**, in IndexedDB, una riga per risposta. Da
   quelle righe l'app deriva tutto: la copertura, la diagnosi, le sessioni.
@@ -134,7 +135,7 @@ interamente scritta dall'autore, extra banca.
 ## Struttura del repo
 
 ```
-site/                 quello che Cloudflare Pages pubblica, e niente altro
+site/                 quello che statichost.eu pubblica, e niente altro
   index.html          la palestra, una pagina sola
   engine.js           motore di selezione e statistiche (logica pura, testata)
   sw.js               service worker; il nome della cache segue VERSION

@@ -4,7 +4,7 @@ description: >
   Coordinate di Rotta Giusta, il sito statico open source con quiz e
   carteggio per la patente nautica senza limiti dalla costa. Dove guardare e le
   trappole. MUST trigger on: rotta giusta, rotta-giusta, open patente nautica (nome fino alla 0.19.2), sito
-  statico patente, Cloudflare Pages patente, pubblicare la palestra. NON per il
+  statico patente, statichost patente, rottagiusta.it, Cloudflare Pages patente (hoster fino alla 0.26), pubblicare la palestra. NON per il
   progetto personale di preparazione (patente), che e' un altro repo.
 ---
 
@@ -14,7 +14,8 @@ Sito statico con i 1.722 quesiti e i 135 esercizi di carteggio dell'Allegato A
 al DD 131/2022, il motore di selezione del progetto personale da cui e' estratto,
 e le risposte che restano nel browser di chi studia. Repo `~/Software/rotta-giusta`
 sull'Air, remoto `ilbeca/rotta-giusta` (pubblico), pubblicato da
-Cloudflare Pages a ogni push su `main`, cartella `site/`. Nessun server, nessun
+statichost.eu su `rottagiusta.it`, cartella `site/`, con «Build now» dopo il push
+(nessun webhook: il push da solo non pubblica). Nessun server, nessun
 database, nessun build step.
 
 ## Dove sono le informazioni
@@ -30,7 +31,7 @@ database, nessun build step.
 | che cosa passa | `node --test tests/test_engine.mjs` e `python3 tests/test_dati.py` |
 | i dati sono ancora quelli del decreto? | `python3 fonte/verifica.py` |
 | e' rientrato qualcosa che non deve uscire di casa? | `python3 strumenti/controlla.py` |
-| il sito in locale | `python3 strumenti/serve.py` — riproduce i 308 di Pages |
+| il sito in locale | `python3 strumenti/serve.py` — riproduce statichost.eu, misurato |
 
 ## Le trappole
 
@@ -46,7 +47,8 @@ database, nessun build step.
    pubblico, non si copia da `data/seed/`: i dati arrivano solo da
    `site/dati/`, e `strumenti/controlla.py` fallisce se rientra materiale che
    non e' del decreto o un identificatore delle macchine dell'autore.
-5. **Niente push senza chiedere.** Un push pubblica.
+5. **Niente push senza chiedere.** E dopo il push di un rilascio, «Build now» su
+   statichost.eu: senza, `rottagiusta.it` resta alla versione di prima.
 6. **Su questo repo lavorano due agenti, e il confine lo fa rispettare git.**
    ChatGPT sta nel worktree `~/Software/rotta-giusta-ui` sul ramo `ui/main` e
    tiene l'interfaccia; Claude sta nel checkout principale su `main` e tiene

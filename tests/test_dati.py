@@ -352,12 +352,16 @@ def test_sw():
     check('sw.js: GUSCIO presente', g_sw is not None)
     check('app.html: GUSCIO presente', g_ix is not None)
     check('GUSCIO: la stessa lista in sw.js e app.html', g_sw == g_ix, '%s vs %s' % (g_sw, g_ix))
-    # Il guscio elenca gli indirizzi **come li serve Cloudflare Pages**, non i
-    # nomi dei file: `/` e' index.html e `/privacy` e' privacy.html. Pages
-    # risponde 308 al percorso con l'estensione, e una risposta rediretta messa
-    # in cache non si puo' servire a una navigazione (`respondWith` la rifiuta
-    # quando il redirect mode e' 'manual'): la pagina muore con ERR_FAILED,
-    # anche online, perche' il service worker legge prima la cache.
+    # Il guscio elenca gli **indirizzi puliti**, non i nomi dei file: `/` e'
+    # index.html e `/privacy` e' privacy.html. La regola e' nata da un host che
+    # rispondeva 308 al percorso con l'estensione (Cloudflare Pages, fino alla
+    # 0.26): una risposta rediretta messa in cache non si puo' servire a una
+    # navigazione (`respondWith` la rifiuta quando il redirect mode e'
+    # 'manual'), e la pagina moriva con ERR_FAILED anche online. statichost.eu
+    # serve entrambe le forme con 200, quindi oggi quel guasto non puo'
+    # succedere — ed e' proprio per questo che la regola resta: e' lei che rende
+    # il sito indifferente all'host, e un test che la tiene ferma costa meno di
+    # riscoprirla al prossimo trasloco.
     for p in g_sw or []:
         f = SITE / ('index.html' if p == '/' else p.lstrip('/'))
         if not f.is_file() and not f.suffix:
@@ -366,7 +370,7 @@ def test_sw():
     # E il guscio non deve tornare alla forma con l'estensione: sarebbe di nuovo
     # una voce rediretta in cache, cioe' il difetto della 0.19.1.
     for p in g_sw or []:
-        check('GUSCIO: %s non ha .html (Pages ci risponde 308)' % p, not p.endswith('.html'), p)
+        check('GUSCIO: %s non ha .html (indirizzo pulito, qualunque sia l\'host)' % p, not p.endswith('.html'), p)
     # Gli stessi indirizzi nei link, in tutte e tre le pagine: un href con
     # l'estensione e' un link che muore appena il service worker e' installato.
     for nome in ('index.html', 'app.html', 'privacy.html', 'avvertenza.html'):
@@ -500,9 +504,62 @@ def test_indirizzi():
         check('%s: torna alla palestra' % f, 'href="/app"' in testo)
 
 
+def test_serve():
+    # `strumenti/serve.py` deve rispondere come l'host di produzione, altrimenti
+    # la differenza fra locale e produzione torna invisibile — com'e' arrivato il
+    # difetto della 0.19.1. La tabella e' quella **misurata** su rottagiusta.it
+    # (statichost.eu) il 25 settembre 2026, non quella che ci si aspetta: niente
+    # redirect in nessuna direzione, il file con l'estensione servito anche lui,
+    # una cartella e' 404 in testo semplice, e `_headers` vale per sw.js.
+    import http.client
+    import threading
+    import serve
+    s = serve.server(0, silenzioso=True)
+    t = threading.Thread(target=s.serve_forever, daemon=True)
+    t.start()
+    porta = s.server_address[1]
+
+    def chiedi(p):
+        c = http.client.HTTPConnection('127.0.0.1', porta, timeout=5)
+        c.request('GET', p)
+        r = c.getresponse()
+        corpo = r.read()
+        c.close()
+        return r.status, dict((k.lower(), v) for k, v in r.getheaders()), corpo
+
+    try:
+        attesi = [('/', 200), ('/index', 200), ('/index.html', 200), ('/app', 200),
+                  ('/app.html', 200), ('/privacy', 200), ('/privacy.html', 200),
+                  ('/avvertenza', 200), ('/avvertenza.html', 200), ('/sw.js', 200),
+                  ('/dati/meta.json', 200), ('/app/', 404), ('/non-esiste', 404),
+                  ('/figure/', 404), ('/figure', 404), ('/dati/', 404)]
+        for p, codice in attesi:
+            st, h, _ = chiedi(p)
+            check('serve.py: %s -> %d, come statichost.eu' % (p, codice), st == codice,
+                  '%d%s' % (st, (' -> ' + h['location']) if 'location' in h else ''))
+        st, h, corpo = chiedi('/non-esiste')
+        check('serve.py: il 404 e\' testo semplice, «404 Not Found»',
+              corpo == b'404 Not Found' and h.get('content-type', '').startswith('text/plain'),
+              '%r %s' % (corpo[:40], h.get('content-type')))
+        check('serve.py: /sw.js no-cache, da site/_headers',
+              chiedi('/sw.js')[1].get('cache-control') == 'no-cache', chiedi('/sw.js')[1].get('cache-control'))
+        check('serve.py: il resto public, max-age=0, must-revalidate',
+              chiedi('/app')[1].get('cache-control') == 'public, max-age=0, must-revalidate',
+              chiedi('/app')[1].get('cache-control'))
+        check('serve.py: /index.html e /index servono la vetrina, non la palestra',
+              chiedi('/index.html')[2] == (SITE / 'index.html').read_bytes())
+    finally:
+        s.shutdown()
+        s.server_close()
+    doc = serve.__doc__ or ''
+    check('serve.py: il docstring nomina l\'host che riproduce', 'statichost.eu' in doc)
+    check('serve.py: il docstring non dichiara piu\' Cloudflare', 'Cloudflare' not in doc)
+
+
 def main():
     for t in (test_controlla, test_quiz, test_meta, test_figure, test_invarianti,
-              test_carteggio, test_sw, test_rinomino, test_prefisso_cache, test_manifest_icone, test_indirizzi):
+              test_carteggio, test_sw, test_rinomino, test_prefisso_cache, test_manifest_icone, test_indirizzi,
+              test_serve):
         t()
     if falliti:
         print('%d verifiche passate, %d FALLITE:' % (ok, len(falliti)))

@@ -34,6 +34,43 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   stesso browser, due ricariche: se Info scrive ancora «figure 102/102» senza un
   secondo scaricamento, la correzione è verificata dove conta.
 
+### Migrazione dell'hosting — fase C, la parte di `main`
+
+- **`strumenti/serve.py` riproduce statichost.eu, e un test pretende che lo
+  faccia.** Riproduceva i 308 di Pages, che sul nuovo host non esistono: in
+  locale `/privacy.html` rimandava a `/privacy`, in produzione risponde 200.
+  Simulare un redirect che la produzione non fa è la divergenza locale/produzione
+  girata al contrario — lo stesso difetto che ha lasciato arrivare la 0.19.1.
+  Le regole sono quelle **misurate** su `rottagiusta.it`: nessun redirect in
+  nessuna direzione, il file con l'estensione servito anche lui, una cartella è
+  404 (dove `http.server` elencava i file), il 404 è testo semplice, e il
+  `Cache-Control` viene da `site/_headers` invece di essere scritto nel codice.
+
+  **`test_serve` è stato scritto prima**, e sul `serve.py` vecchio dava **12
+  rossi**, uno per differenza vera: i quattro 308, l'elenco di `/figure/` servito
+  come pagina, il 404 in HTML, l'header mancante, il docstring. Dopo: 221
+  verifiche sui dati (erano 199). R-ARCH-12 nella specifica. Guardato anche nel
+  browser: app servita da `serve.py`, service worker attivo, 19 voci poi 122 con
+  le figure, nessuna rediretta, «Pronto per l'offline» — gli stessi numeri
+  misurati sul dominio.
+
+- **La regola degli indirizzi puliti sopravvive al suo motivo, e ora lo dice.**
+  Era spiegata dal 308 di Pages in cinque posti — `AGENTS.md`, la specifica,
+  `sw.js`, i due test. statichost.eu serve entrambe le forme, quindi il guasto
+  della 0.19.2 lì non può succedere; la regola resta perché è lei che rende il
+  sito indifferente all'host. Scritto così, fra sei mesi nessuno la «semplifica»
+  pensando che il motivo sia sparito.
+
+- **«Un push pubblica il sito» non è più vero**, e stava in `AGENTS.md`, nella
+  specifica e nella skill. Su `rottagiusta.it` pubblica «Build now»: il repo non
+  ha un webhook. La chiusura di un rilascio ha ora il passo in più, con il
+  `curl` che dice se è arrivato.
+
+- `README.md`, `AGENTS.md`, la specifica e la skill nominano statichost.eu come
+  host. Cloudflare resta solo dove è storia, al passato. `site/privacy.html` e i
+  commenti di `app.html` e `_headers` sono dell'interfaccia: arrivano da
+  `ui/main`.
+
 ## [0.26.1] — 2026-09-25
 
 ### Migrazione dell'hosting — la fase B misurata

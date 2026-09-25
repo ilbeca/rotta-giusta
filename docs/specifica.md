@@ -126,7 +126,7 @@ per davvero, ed è anche l'unica parte scritta interamente dall'autore.
 | Non c'è | Perché |
 |---|---|
 | **Nessun account, nessuna registrazione** | Le risposte restano nel browser di chi studia e non arrivano a nessuno. Un pulsante «Accedi» sarebbe una bugia in prima pagina. |
-| **Nessun backend** | Sito statico su Cloudflare Pages. I quattro JSON in `site/dati/` sono la banca; non c'è un server che sostituisca un numero al volo. |
+| **Nessun backend** | Sito statico su statichost.eu (Svezia), all'indirizzo `rottagiusta.it`. I quattro JSON in `site/dati/` sono la banca; non c'è un server che sostituisca un numero al volo. |
 | **Nessun build step, nessun bundler, nessuna dipendenza** | `index.html` e `app.html` importano solo `/engine.js`. Quello che è nel repo è quello che gira. |
 | **Nessuna sincronizzazione** | L'archivio delle risposte è **una copia sola**. L'unica via di salvataggio è il file da scaricare. |
 | **Nessun cookie, nessun analytics, nessun form** | Non c'è niente da tracciare perché non si tratta nessun dato. |
@@ -250,11 +250,15 @@ costate:
 
 - **Il guscio è scritto in due posti** — `GUSCIO` in `sw.js` e in `app.html` — e
   devono restare identici. C'è un test.
-- **Gli indirizzi sono quelli che serve Pages, non i nomi dei file**: `/privacy`,
-  mai `/privacy.html`. Pages risponde **308** al percorso con l'estensione, e una
-  risposta rediretta in cache **non si può servire a una navigazione**: la pagina
-  muore con `ERR_FAILED` anche online. Due test lo tengono fermo, e
-  `strumenti/serve.py` riproduce in locale gli stessi 308.
+- **Gli indirizzi sono quelli puliti, non i nomi dei file**: `/privacy`, mai
+  `/privacy.html`. La regola è nata sull'host precedente, Cloudflare Pages, che
+  rispondeva **308** al percorso con l'estensione: una risposta rediretta in
+  cache **non si può servire a una navigazione**, e la pagina moriva con
+  `ERR_FAILED` anche online (0.19.2). statichost.eu serve entrambe le forme con
+  200, quindi oggi quel guasto non può succedere — e la regola **resta** per
+  questo: è lei che rende il sito indifferente all'host. Due test la tengono
+  ferma, e `strumenti/serve.py` riproduce in locale l'host di **oggi**, misurato,
+  non quello di ieri.
 
 Le figure si scaricano con un pulsante, apposta: sono 102 file. **E si scaricano
 una volta sola**: a ogni rilascio l'`activate` le copia dalla cache vecchia a
@@ -752,6 +756,7 @@ colonna: «scoperto, perché …» è una risposta accettabile, «—» no.
 | R-ARCH-09 | I due `<title>` sono diversi, e quello della vetrina nomina la patente | `test_dati.py::test_indirizzi` |
 | R-ARCH-10 | Le figure scaricate per l'offline sopravvivono a un rilascio, nella cache nuova e senza un secondo download | `test_engine.mjs::sw.js: le figure scaricate sopravvivono a un rilascio` |
 | R-ARCH-11 | Da un rilascio all'altro passano solo le figure: la banca e le pagine vengono dalla rete | `test_engine.mjs::sw.js: da un rilascio all` |
+| R-ARCH-12 | `strumenti/serve.py` risponde come l'host di produzione misurato: codici, assenza di redirect, 404, `Cache-Control` da `_headers` | `test_dati.py::test_serve` |
 
 ### 9.3 La selezione
 
@@ -913,7 +918,8 @@ python3 strumenti/serve.py           # il sito in locale, come lo serve Pages
 **Chiusura di sessione.** Su `ui/*`: test verdi, voce di CHANGELOG in fondo a
 `[Unreleased]`, un commit col trailer, **la versione non si tocca**. Su `main`:
 test verdi, un commit; il rilascio è un commit a sé dopo la merge. Niente push
-senza chiedere: un push pubblica il sito.
+senza chiedere; e su `rottagiusta.it` il push non basta: il sito si pubblica con
+«Build now» su statichost.eu, che non ha un webhook sul repo.
 
 ---
 

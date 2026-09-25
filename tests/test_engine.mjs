@@ -1138,12 +1138,14 @@ test('il GUSCIO di sw.js e quello di app.html sono la stessa lista', async () =>
   // Ogni voce del guscio deve esistere davvero in site/: un percorso sbagliato
   // qui fa dire all'autodiagnosi «guscio incompleto» per sempre, oppure — se
   // `c.add` fallisce in silenzio — «pronto per l'offline» con un buco dentro.
-  // I percorsi sono quelli **serviti**, non i nomi dei file: Cloudflare Pages
-  // serve privacy.html all'indirizzo /privacy e risponde 308 a /privacy.html.
-  // Una risposta rediretta in cache non si puo' servire a una navigazione, e
-  // nella 0.19.1 i due link del pie' di pagina erano morti anche online.
+  // I percorsi sono gli **indirizzi puliti**, non i nomi dei file: /privacy, non
+  // /privacy.html. L'host fino alla 0.26 rispondeva 308 al percorso con
+  // l'estensione, una risposta rediretta in cache non si puo' servire a una
+  // navigazione, e nella 0.19.1 i due link del pie' di pagina erano morti anche
+  // online. L'host di oggi serve entrambe le forme: la regola resta perche' e'
+  // lei a rendere il sito indifferente all'host.
   for (const u of sw) {
-    assert.ok(!u.endsWith('.html'), `${u}: Pages risponde 308 al percorso con l'estensione`);
+    assert.ok(!u.endsWith('.html'), `${u}: nel guscio vanno gli indirizzi puliti, senza .html`);
     const f = u === '/' ? 'index.html' : u.slice(1);
     await fs.access(new URL(/\.[a-z]+$/.test(f) ? f : f + '.html', dir));
   }

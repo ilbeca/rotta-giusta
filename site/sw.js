@@ -42,15 +42,18 @@ const GUSCIO = [
   // potersi fare anche senza rete, altrimenti l'unica cosa che l'app non sa
   // fare offline e' proprio la prova eliminatoria.
   '/dati/carteggio.json',
-  // **Senza `.html`, ed e' una correzione, non uno stile.** Cloudflare Pages
-  // serve `privacy.html` all'indirizzo `/privacy` e risponde **308** a
-  // `/privacy.html`. Mettere in cache il percorso con l'estensione ci mette
+  // **Senza `.html`, ed e' una correzione, non uno stile.** L'host fino alla
+  // 0.26 serviva `privacy.html` all'indirizzo `/privacy` e rispondeva **308** a
+  // `/privacy.html`. Mettere in cache il percorso con l'estensione ci metteva
   // dentro una *risposta rediretta*, e una risposta rediretta non si puo'
   // servire a una navigazione: il redirect mode di una navigazione e'
   // 'manual', `respondWith` la rifiuta, e la pagina muore con ERR_FAILED —
   // **anche online**, perche' qui si legge prima la cache. Dalla 0.19.1 i due
   // link del pie' di pagina erano morti per chiunque avesse gia' installato il
   // service worker, e l'autodiagnosi diceva «guscio e banca in cache».
+  // statichost.eu serve entrambe le forme con 200, quindi oggi non potrebbe
+  // succedere: gli indirizzi puliti restano perche' rendono il sito
+  // indifferente all'host.
   '/privacy',
   '/avvertenza',
   // Le icone: l'app installata ha la sua faccia anche offline. La og-card

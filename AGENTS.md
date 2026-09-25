@@ -39,8 +39,8 @@ riavviare, nessuna macchina remota, nessun database.
 
 ## Architettura
 
-- `site/` è **l'unica cosa pubblicata**: Cloudflare Pages, nessun comando di
-  build, cartella di output `site`. Tutto il resto del repo è sorgente, verifica
+- `site/` è **l'unica cosa pubblicata**: statichost.eu, su `rottagiusta.it`,
+  nessun comando di build, cartella di output `site`. Tutto il resto del repo è sorgente, verifica
   e documentazione.
 - **La logica di selezione sta solo in `site/engine.js`.** Logica pura, senza
   DOM né rete, che gira identica nella pagina e sotto `node --test`. Nessuna
@@ -183,13 +183,16 @@ Poi si guarda il `CHANGELOG.md`, che e' il posto dove il conflitto arriva.
   Sono due funzioni perché sono due mestieri.
 - **Il guscio offline è scritto in due posti** — `GUSCIO` in `sw.js` e in
   `index.html` — e devono restare identici. C'è un test.
-- **Gli indirizzi sono quelli che serve Pages, non i nomi dei file**:
-  `/privacy` e `/avvertenza`, mai `/privacy.html`. Pages risponde **308** al
-  percorso con l'estensione, e una risposta rediretta messa in cache **non si
-  può servire a una navigazione**: la pagina muore con `ERR_FAILED`, anche
-  online, perché il service worker legge prima la cache. Vale per il guscio e
-  per ogni `href` interno; due test lo tengono fermo, e
-  `strumenti/serve.py` riproduce in locale gli stessi 308.
+- **Gli indirizzi sono quelli puliti, non i nomi dei file**: `/privacy` e
+  `/avvertenza`, mai `/privacy.html`. La regola è nata sull'host precedente, che
+  rispondeva **308** al percorso con l'estensione: una risposta rediretta messa
+  in cache **non si può servire a una navigazione**, e la pagina moriva con
+  `ERR_FAILED` anche online, perché il service worker legge prima la cache.
+  statichost.eu serve entrambe le forme con 200, e la regola resta proprio per
+  questo: è lei che rende il sito indifferente all'host. Vale per il guscio e
+  per ogni `href` interno; due test la tengono ferma. `strumenti/serve.py`
+  riproduce in locale l'host di **oggi**, misurato — e un test pretende che lo
+  faccia.
 - **Una versione, in tre posti, tenuta insieme da un test**: `VERSION`, `CACHE`
   in `site/sw.js`, `versione` in `site/dati/meta.json`. Non c'è un server che
   la sostituisca al volo. Dopo un rilascio serve **una ricarica in più** sul
@@ -204,7 +207,12 @@ Poi si guarda il `CHANGELOG.md`, che e' il posto dove il conflitto arriva.
   CHANGELOG che spiega **il perché**, non solo il cosa, con i numeri di ciò che
   è stato verificato. *Una sessione = una versione* vale su `main`: sul ramo
   dell'interfaccia il numero non si tocca, vedi «Chiusura di ogni sessione».
-- **Niente push senza chiedere.** Un push pubblica il sito.
+- **Niente push senza chiedere.** Il repo è pubblico, e finché il vecchio
+  indirizzo `.pages.dev` è acceso un push pubblica il sito anche lì.
+  **Su `rottagiusta.it` il push non pubblica niente da solo**: statichost.eu
+  costruisce solo con «Build now» (o una `POST` al suo indirizzo di deploy), e
+  sul repo non c'è un webhook. Un rilascio dimenticato lì lascia le due
+  produzioni su versioni diverse senza che niente lo dica.
 
 ## Chiusura di ogni sessione
 
@@ -218,7 +226,8 @@ commit con il trailer. **Il numero non si tocca**, e non si tagga.
 **Su `main`** — test verdi → un commit. Il **rilascio** e' un commit a se', dopo
 la merge, e lo fa chi la merge la fa: bump di `VERSION`, di `CACHE` in `sw.js` e
 di `versione` in `meta.json` → voce di CHANGELOG con lo stesso numero → tag
-annotato `vX.Y.Z` → chiedere prima del push.
+annotato `vX.Y.Z` → chiedere prima del push → dopo il push, «Build now» su
+statichost.eu, e `curl https://rottagiusta.it/sw.js` per vedere il `CACHE` nuovo.
 
 ## Il rischio caratteristico: il guasto muto
 
