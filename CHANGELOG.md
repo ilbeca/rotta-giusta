@@ -11,6 +11,8 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+## [0.26.2] — 2026-09-25
+
 ### Verificato — la v0.26.1 sul dominio vero
 
 - **La v0.26.1 è su `rottagiusta.it`**, con «Build now» su statichost.eu dopo il
