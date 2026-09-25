@@ -333,6 +333,7 @@ giorno, stessa lista.
 | `stimaImpegno()` | ore e minuti al giorno | sotto `MIN_MISURATE = 30` usa `RIPIEGO_MS = 15000` **e lo dichiara** |
 | `tendenza()` | la freccia ↑ → ↓ | almeno **2 giorni** e **10 risposte** |
 | `lunghezzaPartita()` | quante domande ha una partita dei Segnali | `min(10, pool)` |
+| `lunghezzaScreening()` | quante domande apre uno screening a *n* per voce | somma dei `min(n, quesiti della voce)`: **non** `n × 44` |
 
 **Ogni soglia esiste perché un numero calcolato sotto quella soglia è rumore con
 l'aria di essere una misura.** Chi disegna non può abbassarle per far comparire
@@ -758,6 +759,7 @@ colonna: «scoperto, perché …» è una risposta accettabile, «—» no.
 | R-SEL-08 | La partita dei Segnali è lunga quanto la schermata promette | `test_engine.mjs::segnali: la partita e lunga quanto la schermata promette` |
 | R-SEL-09 | La banca vela si restringe per voce, non per tema | `test_engine.mjs::la banca vela si restringe per voce` |
 | R-SEL-10 | La prova di carteggio: uno per argomento, soglia 3 su 4 | `test_engine.mjs::la soglia della prova di carteggio e 3 su 4` |
+| R-SEL-11 | Lo screening apre esattamente le domande che promette, e il numero lo da' il motore contando la banca | `test_engine.mjs::lunghezzaScreening: il numero promesso e la lista che si apre coincidono` |
 
 ### 9.4 La navigazione e la reperibilità
 

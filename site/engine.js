@@ -366,6 +366,38 @@ export function screening(items, progress, oggi, perVoce = 1, kind = 'base', sem
   return rimescola(out, seme);
 }
 
+/**
+ * Quante domande apre davvero uno screening a `perVoce` per voce.
+ *
+ * **Non e' `perVoce × 44`**: tre voci del decreto hanno un solo quesito in
+ * banca, e da quelle non se ne pescano sei. Il conto e' la somma dei minimi —
+ * a 2 per voce sono 85 e non 88, a 3 sono 126 e non 132, a 6 sono 249 e non
+ * 264, misurato sulla banca pubblicata.
+ *
+ * Sta qui, e non nella pagina, per la ragione della 0.19.2, dove il gioco dei
+ * Segnali prometteva 10 domande e ne serviva 8: **il numero promesso e la
+ * lista che si apre vengono dalla stessa fonte**. Questa legge `items`, cioe'
+ * la banca, che e' esattamente cio' che conta `screening()`. La copia che
+ * viveva in `app.html` leggeva invece i conteggi dichiarati in `meta.json`, e
+ * nessun test li confrontava con la banca voce per voce: coincidevano, e non
+ * c'era niente che lo pretendesse.
+ *
+ * Non dipende da storico, giorno o seme, e non e' una svista: lo screening
+ * prende `perVoce` quesiti da ogni voce che ne ha, e quanti ne apra non cambia
+ * con quello che hai gia' fatto.
+ */
+export function lunghezzaScreening(items, perVoce = 1, kind = 'base') {
+  const per = new Map();
+  for (const it of items) {
+    if (it.k !== kind) continue;
+    per.set(it.v, (per.get(it.v) || 0) + 1);
+  }
+  let n = 0;
+  for (const quanti of per.values()) n += Math.min(perVoce, quanti);
+  return n;
+}
+
+
 /** Esito di una prova: superata o no, secondo le soglie del decreto. */
 export function esito(risposte, erroriMax) {
   const errori = risposte.filter((r) => !r).length;

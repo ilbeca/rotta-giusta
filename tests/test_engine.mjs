@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import {
   addGiorni, giorniTra, stato, sbagliato, classifica, coda, diagnosi, peggiori,
   traccia, semaforo, applica, rimescola, semeGiorno,
-  estrai, estraiNuoviPrima, simulazione, simulazioneVela, screening, esito,
+  estrai, estraiNuoviPrima, simulazione, simulazioneVela, screening, lunghezzaScreening, esito,
   fondi, isoLocale, stimaImpegno, mirata, consigli, oscurato, RIPIEGO_MS,
   serieGruppi, tendenza, TENDENZA_MIN_GIORNI, TENDENZA_MIN_RISPOSTE,
   SEGNALI, SEGNALI_MODI, poolSegnali, domandeSegnali, lunghezzaPartita,
@@ -47,6 +47,11 @@ function bancaVera() {
     for (let j = 0; j < n; j++)
       out.push({ id: `base-${++i}`, k: 'base', t: tema, v: `${tema} v${j % 5}`, d: 'd', r: ['a', 'b', 'c'], x: 0 });
   return out;
+}
+
+/** La banca davvero pubblicata: e' l'unica in cui il minimo per voce morde. */
+function bancaPubblicata() {
+  return JSON.parse(readFileSync(new URL('../site/dati/quiz.json', import.meta.url), 'utf8'));
 }
 
 function banca(n = 30, tema = 'NAVIGAZIONE', voce = 'Coordinate') {
@@ -538,6 +543,81 @@ test('lo screening a due per voce raddoppia senza ripetere quesiti', () => {
   const s = screening(items, {}, OGGI, 2, 'base', 4);
   assert.equal(s.length, new Set(items.map((x) => x.v)).size * 2);
   assert.equal(new Set(s.map((q) => q.id)).size, s.length, 'nessun doppione');
+});
+
+
+// --- quante domande apre lo screening ---------------------------------------------
+//
+// Perche' questo blocco esiste. Il numero sul pulsante veniva da `totScreening`
+// in `app.html`, che lo calcolava dai conteggi dichiarati in `meta.json`; la
+// lista la costruisce `screening()`, che conta la banca. Due conti della stessa
+// cosa, in due file, da due fonti diverse — la firma del difetto tornato tre
+// volte qui dentro, l'ultima nella 0.19.2 con i Segnali che promettevano 10
+// domande e ne servivano 8.
+//
+// E i test che c'erano non potevano prenderlo: `bancaVera()` da' cinque voci per
+// tema da almeno venti quesiti l'una, quindi il minimo non morde mai e
+// `perVoce × voci` e' giusto per caso. Sulla banca pubblicata morde: tre voci
+// del decreto hanno **un quesito solo**. Per questo questi test leggono la banca
+// vera invece di quella finta.
+
+test('lunghezzaScreening: il numero promesso e la lista che si apre coincidono', () => {
+  const items = bancaPubblicata();
+  for (const kind of ['base', 'vela'])
+    for (const perVoce of [1, 2, 3, 6])
+      for (const seme of [1, 7, 42]) {
+        const aperte = screening(items, {}, OGGI, perVoce, kind, seme).length;
+        assert.equal(lunghezzaScreening(items, perVoce, kind), aperte,
+          `${kind} a ${perVoce} per voce (seme ${seme}): promesse != aperte`);
+      }
+});
+
+test('lunghezzaScreening: sulla banca vera il minimo morde, e perVoce x voci sarebbe falso', () => {
+  const items = bancaPubblicata();
+  const voci = new Set(items.filter((q) => q.k === 'base').map((q) => q.v)).size;
+  assert.equal(voci, 44, 'le voci del decreto sono 44');
+  assert.equal(lunghezzaScreening(items, 1, 'base'), 44, 'a 1 per voce i due conti coincidono');
+  for (const [perVoce, atteso] of [[2, 85], [3, 126], [6, 249]]) {
+    assert.equal(lunghezzaScreening(items, perVoce, 'base'), atteso,
+      `a ${perVoce} per voce lo screening apre ${atteso} domande`);
+    assert.ok(atteso < perVoce * voci,
+      `a ${perVoce} per voce, ${perVoce * voci} sarebbe una promessa gonfiata di ${perVoce * voci - atteso}`);
+  }
+});
+
+test('lunghezzaScreening: una voce con un quesito solo non ne presta sei', () => {
+  const items = [
+    ...Array.from({ length: 10 }, (_, i) => ({ id: `base-a${i}`, k: 'base', t: 'T', v: 'larga' })),
+    { id: 'base-b', k: 'base', t: 'T', v: 'stretta' },
+    { id: 'vela-1', k: 'vela', t: 'VELA', v: 'sua' },
+  ];
+  assert.equal(lunghezzaScreening(items, 6, 'base'), 7, 'sei dalla larga, uno solo dalla stretta');
+  assert.equal(lunghezzaScreening(items, 6, 'base'), screening(items, {}, OGGI, 6, 'base', 3).length);
+  assert.equal(lunghezzaScreening(items, 6, 'vela'), 1, 'la vela non entra nel conto della base');
+});
+
+test('lunghezzaScreening: il motore fa quello che oggi fa la pagina', (t) => {
+  // Come per `daAllenare()`: finche' la copia vive in `app.html`, la eseguiamo
+  // davvero — estratta dal file, non trascritta — e pretendiamo lo stesso
+  // numero. Quando l'interfaccia passera' a `E.lunghezzaScreening()` la copia
+  // sparira' e questo test si mettera' da parte da solo.
+  //
+  // Finche' c'e', pero', fa anche un secondo lavoro che nessun altro test fa:
+  // la pagina conta da `meta.json` e il motore dalla banca, quindi questo
+  // confronto **pretende che i conteggi per voce di meta e della banca
+  // coincidano**. `test_meta` verifica solo i totali.
+  const src = readFileSync(new URL('../site/app.html', import.meta.url), 'utf8');
+  const m = src.match(/^function totScreening\(k\) \{[\s\S]*?^\}/m);
+  if (!m) return t.skip('app.html non ha piu una sua totScreening(): ora chiama il motore');
+
+  const items = bancaPubblicata();
+  const meta = JSON.parse(readFileSync(new URL('../site/dati/meta.json', import.meta.url), 'utf8'));
+  for (const kind of ['base', 'vela']) {
+    const pagina = new Function('S', `${m[0]}\nreturn totScreening;`)({ filtro: { kind }, meta });
+    for (const perVoce of [1, 2, 3, 6])
+      assert.equal(pagina(perVoce), lunghezzaScreening(items, perVoce, kind),
+        `${kind} a ${perVoce} per voce: la pagina e il motore danno numeri diversi`);
+  }
 });
 
 // --- filtro su piu argomenti --------------------------------------------------------

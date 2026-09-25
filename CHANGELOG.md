@@ -11,6 +11,77 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+### Spostato
+
+- **`lunghezzaScreening()` entra nel motore: quante domande apre lo screening lo
+  dice chi costruisce la lista.** Il numero sul pulsante veniva da `totScreening`
+  in `app.html`, che lo calcolava dai conteggi dichiarati in `meta.json`; la
+  lista la costruisce `screening()`, che conta la banca. **Due conti della stessa
+  cosa, in due file, da due fonti diverse** — la firma del difetto tornato tre
+  volte qui dentro (0.13.3, 0.16.0, e la 0.19.2 con i Segnali che promettevano
+  10 domande e ne servivano 8).
+
+  **Il numero non è cosmetico**, ed è misurato sulla banca pubblicata: tre voci
+  del decreto hanno **un quesito solo**, quindi il minimo morde. A 2 per voce lo
+  screening apre **85** domande e non 88, a 3 ne apre **126** e non 132, a 6 ne
+  apre **249** e non 264. Il commento sopra `totScreening` la ragione la diceva
+  già; era il posto a essere sbagliato.
+
+  **Due cose trovate misurando, e sono il motivo per cui nessuno se n'era
+  accorto.** La prima: `test_meta` verifica i totali — 1.472, 250, 44 voci — ma
+  **non confronta i conteggi voce per voce** fra `meta.json` e la banca. I due
+  numeri coincidono su tutte e 47 le voci, verificato oggi, ma non c'era niente
+  che lo pretendesse: coincidevano e basta. La seconda: i test che c'erano non
+  potevano prendere il difetto, perché `bancaVera()` costruisce cinque voci per
+  tema da almeno venti quesiti l'una — lì il minimo non morde mai e
+  `perVoce × voci` è giusto per caso. I test nuovi leggono la **banca vera**.
+
+  Il test di compatibilità con la pagina, finché la copia esiste, fa anche il
+  lavoro che mancava: confronta il conto da `meta.json` con quello dalla banca,
+  quindi **pretende che i due coincidano voce per voce**. Quando l'interfaccia
+  passerà a `E.lunghezzaScreening()` la copia sparirà e il test si metterà da
+  parte da solo, come già fatto per `daAllenare()`.
+
+  **La pagina non è stata toccata, ed è il recinto a volerlo:** `site/app.html` è
+  dell'interfaccia, questo commit è su `main`. Il ricablaggio lo fa chi rifà la
+  schermata dei quiz — **area 2**, dove lo screening viene rinominato — e fino ad
+  allora la funzione è dichiarata in `docs/eccezioni-interfaccia.md`.
+
+### Deciso
+
+- **ADR-002: il recupero dei progressi si fa con una frase, non con un account.**
+  L'archivio è una copia sola e chi cambia telefono perde tutto: è il difetto più
+  grave del prodotto verso chi lo usa, ed è una conseguenza scelta
+  dell'architettura. La riparazione adottata è la **frase di recupero con
+  archivio cifrato nel browser**: il server conserva un identificatore e un
+  blocco di byte che **non può decifrare**.
+
+  Scartato l'account con email e password, che otterrebbe la stessa cosa ma
+  lascerebbe addosso indirizzi email di persone reali, l'archivio in chiaro, un
+  fornitore di posta in più e un flusso di reset che fallisce in silenzio quando
+  le email vanno in spam.
+
+  **Non introduce una seconda contabilità**, ed è l'obiezione che conta: il
+  blocco cifrato non è una fonte di verità, è una fotografia. Il motore non lo
+  legge mai, non si fonde da solo, e rimetterlo dentro passa da
+  `fondiArchivio()`, la porta che esiste già e che dichiara quante righe prende,
+  quante aveva e quante scarta. Non è sincronia: è il file di export parcheggiato
+  da qualche parte. Cade il solo Vincolo «nessun backend», nella forma più
+  stretta: un endpoint che accetta e restituisce byte opachi.
+
+  Conseguenza da non dimenticare: `site/privacy.html` oggi dichiara che «non
+  esiste un server che li riceva», e quel giorno diventerebbe **falsa**.
+
+### Test
+
+- **125 test sul motore** (erano 121) e **121 verifiche sull'interfaccia**; 199
+  sui dati e 218 sulla specifica invariate nel numero, più R-SEL-11.
+
+  **Provati al contrario tre volte**, rompendo il motore apposta: il conto
+  ingenuo `perVoce × numero di voci`, il massimo al posto del minimo, e il filtro
+  per banca tolto. Tutte e tre le volte **tutti e quattro** i test nuovi
+  diventano rossi.
+
 
 ## [0.25.0] — 2026-09-25
 
