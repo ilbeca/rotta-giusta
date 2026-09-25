@@ -35,6 +35,10 @@
   --safe-b:env(safe-area-inset-bottom,0px);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+/* `hidden` nel foglio del browser perde contro qualunque `display` d'autore:
+   senza questa riga `.route-alert[hidden]` restava un avviso rosso e vuoto in
+   cima a ogni riepilogo. Una regola sola invece di una per classe. */
+[hidden]{display:none!important}
 html,body{height:100%}
 body{
   margin:0;background:var(--bg);color:var(--fg);

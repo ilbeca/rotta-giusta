@@ -197,6 +197,22 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   con nuova selezione da 25, data futura e rimossa, revisione e ripristino del
   focus, pannello richiudibile con Esc e assenza di errori in console.
 
+### Corretto — alla merge dell'area 1
+
+- **Ogni riepilogo si apriva con un avviso d'errore rosso e vuoto.** Il
+  riquadro `.route-alert` che segnala un salvataggio fallito nasce con
+  l'attributo `hidden`, ma `.route-alert{display:flex}` lo scavalca: nel foglio
+  del browser `[hidden]` perde contro qualunque `display` d'autore. Non l'avevano
+  preso né il collaudo dell'area 1 né le suite; l'ha preso guardare il riepilogo
+  a 375 px durante la merge. Misurato: nel riepilogo c'era **un** elemento
+  `hidden` con `display:flex`.
+
+  La stessa trappola era già stata tappata tre volte, una classe per volta
+  (`#sp-pop[hidden]`, `.header-statuses span[hidden]`,
+  `.runner-warning[hidden]`). Ora c'è una sola regola,
+  `[hidden]{display:none!important}`, che chiude la categoria invece del caso.
+  Scritta da Claude su `ui/main`, con ChatGPT fermo, come prevede `AGENTS.md`.
+
 ## [0.24.0] — 2026-09-12
 
 ### Aggiunto
