@@ -11,6 +11,8 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+## [0.26.0] — 2026-09-25
+
 ### Spostato
 
 - **`lunghezzaScreening()` entra nel motore: quante domande apre lo screening lo
