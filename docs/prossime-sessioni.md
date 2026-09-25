@@ -148,6 +148,58 @@ ricablaggio di E.lunghezzaScreening() al posto di totScreening() in
 app.html — vedi docs/eccezioni-interfaccia.md.
 ```
 
+## 3-bis · Il codice: due metà con vincoli opposti
+
+Dopo il progetto (punto 2) il codice **non è un lavoro solo**, e le due metà si
+possono fare in momenti diversi.
+
+**Il server può partire subito.** API, database, ciclo di vita dell'account,
+verifica dell'email, cancellazione a due anni: **non tocca `site/`**, quindi non
+collide con il ridisegno. È la metà che si può costruire e collaudare mentre
+l'interfaccia è in mano a qualcun altro.
+
+**Il client aspetta.** Registrazione, accesso, conversione del file esportato,
+stato della sessione vivono in `site/app.html` e `site/index.html` — cioè nelle
+stesse schermate che il ridisegno sta rifacendo. Costruirle prima significa
+rifarle. O entra dentro una fetta del ridisegno, o viene dopo.
+
+### Tre cose da sistemare **prima** della prima riga di codice server
+
+1. **Il territorio non esiste.** `territori.yaml` conosce `motore`, `regole`,
+   `interfaccia` e i condivisi. Un server non è nessuno dei quattro: va aggiunto,
+   con il ramo che lo rivendica, altrimenti il recinto a due agenti ha un buco
+   proprio dove stanno i dati delle persone.
+
+2. **Serve una quinta suite.** Oggi sono `node --test` sul motore e tre suite
+   Python su dati, interfaccia e specifica. Il server ha bisogno della sua, e
+   vale la regola di casa: **prima il test che fallisce**.
+
+3. **Il backup del database, con il ripristino provato.** È la lezione della
+   0.4.6, pagata su un archivio di una persona sola: *un backup mai ripristinato
+   non è un backup, è un file*. Allora fu risolta con un `--prova` che faceva il
+   giro intero — scrive, salva, cancella, ripristina, confronta — su un'istanza
+   sacrificabile. Dal primo giorno in cui il server tiene i dati di **altri**,
+   quella prova vale più di prima, non meno.
+
+### I prompt
+
+**Server** — Claude, dopo il punto 2 e con Scaleway aperto:
+
+```
+Leggi il progetto di realizzazione degli account. Prima di scrivere
+codice: aggiungi il territorio del server a territori.yaml, crea la sua
+suite, e il backup con il ripristino provato. Poi il server, un pezzo
+per volta, ogni pezzo col suo test che prima fallisce.
+```
+
+**Client** — dentro una fetta del ridisegno, non prima:
+
+```
+Le schermate di registrazione, accesso e conversione del file esportato,
+dentro la fetta corrente del ridisegno. Il server c'è gia' ed e' testato:
+qui si consuma, non si riprogetta.
+```
+
 ## 4 · Fuori dalle sessioni — l'autore
 
 - Aprire l'account **Scaleway** (blocca il punto 2).
