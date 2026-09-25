@@ -1,5 +1,35 @@
 # Il recupero con una frase — progetto di realizzazione
 
+> ## ⚠ SUPERATO DA ADR-003 — 25 settembre 2026
+>
+> Questo documento progetta la realizzazione dell'**ADR-002**, che lo stesso
+> giorno è stato **sostituito dall'ADR-003**: account con email e password,
+> obbligatorio, e righe sul server **in chiaro**. La frase di recupero e la
+> cifratura lato client non fanno più parte del prodotto.
+>
+> **Non è stato cancellato, e non è tutto morto.** Le parti che dipendono dalla
+> frase sono superate; altre valgono identiche con qualunque modello di accesso,
+> e rifarle sarebbe lavoro buttato:
+>
+> | Sezione | Stato sotto l'ADR-003 |
+> |---|---|
+> | §1 Tre regole | **Vale**, come principi |
+> | §2 La frase · §3 La derivazione | **Superate** |
+> | §4 Il formato del blocco | Superata la cifratura; **vale** l'idea che il contenuto sia il file di export |
+> | §5 L'endpoint — origine propria, verbi, CORS | **Vale quasi per intero**, ed è misurata |
+> | §6 Le schermate | Superato il testo; **vale** la regola: il costo si dice prima, non dopo |
+> | §8 Dove vive il codice | **Vale** |
+> | §9 Che cosa diventa falso, e dove | **Vale**, ed è l'elenco che serve comunque |
+> | §10 Che cosa non è misurato | **Vale** |
+>
+> **Perché è successo, e vale più della correzione.** L'ADR-002 poggiava su
+> un'assunzione implicita — che al titolare non servisse leggere i dati — e
+> questo progetto è partito prima che l'assunzione fosse verificata. Quando lo è
+> stata, è caduta. Il costo sono 496 righe scritte su una base che non reggeva:
+> una sessione di progetto, non di codice, ed è il motivo per cui il progetto
+> viene prima del codice.
+
+
 **Aperto il 25 settembre 2026.** Documento di lavoro, non specifica.
 **Parte da:** `docs/adr/ADR-002-recupero-con-una-frase-non-con-un-account.md`, che
 ha deciso l'architettura e ha lasciato aperte quattro scelte di realizzazione:
