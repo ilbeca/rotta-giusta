@@ -126,6 +126,36 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   **Sette file dichiarano oggi che un server non esiste**, e sono elencati: fra
   questi `docs/filosofia.md`, che fonda un argomento intero su quella frase.
 
+### Migrazione dell'hosting — il dominio punta a statichost.eu
+
+- **`rottagiusta.it` è servito da statichost.eu**, con Cloudflare Pages ancora
+  vivo accanto: è la rete di sicurezza della fase A, e la fase D (lo spegnimento)
+  resta ultima e separata. Record IONOS: `A 95.217.26.94`,
+  `AAAA 2a01:4f9:c01f:8002::`, `CNAME www`; la posta non è stata toccata, e lo si
+  è verificato su due resolver pubblici. Due certificati Let's Encrypt, emessi da
+  soli pochi minuti dopo il cambio.
+
+  **Perché A/AAAA e non l'ALIAS che statichost.eu chiede:** IONOS non lo offre sul
+  dominio nudo. Gli indirizzi sono quelli della loro documentazione, non quelli a
+  cui risolveva il loro nome quel giorno — erano diversi, ed entrambi servivano
+  il sito. Il prezzo è scritto nel documento: se spostano il server, i due record
+  si aggiornano a mano.
+
+  **La passata con `curl` sul dominio vero ripete quella del sito di prova**, riga
+  per riga: zero salti su ogni percorso, file identici byte per byte a quelli
+  pubblicati, `sw.js` in `no-cache`. Tre cose trovate facendola, tutte in
+  `docs/migrazione-hosting.md`: `www` risponde **302** mentre il pannello dice
+  301; statichost.eu manda HSTS con `includeSubDomains` sul dominio dell'autore;
+  e la colonna Pages della tabella di riferimento aveva **due caselle scritte e
+  non misurate** — su Pages un indirizzo inesistente risponde 200 con la
+  vetrina, non 404, perché `site/` non ha un `404.html`. Una tabella di confronto
+  con metà colonna dedotta è lo strumento che rassicura in forma di documento.
+
+  **Non misurato, e dichiarato:** l'IPv6, perché il Mac da cui si è misurato non
+  ne ha. E la prima ora dopo il cambio non si misura dal Mac senza forzare
+  l'indirizzo: la cache DNS di sistema tiene il parcheggio per il TTL intero, e
+  chi non lo sa conclude che il certificato non c'è.
+
 
 ## [0.25.0] — 2026-09-25
 
