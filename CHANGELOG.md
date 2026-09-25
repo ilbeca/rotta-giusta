@@ -47,6 +47,26 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   schermata dei quiz — **area 2**, dove lo screening viene rinominato — e fino ad
   allora la funzione è dichiarata in `docs/eccezioni-interfaccia.md`.
 
+### Aggiunto
+
+- **`docs/migrazione-hosting.md`: la proposta di attività per portare
+  `rottagiusta.it` su statichost.eu**, scritta perché la faccia una sessione
+  dedicata. Dentro ci sono le misure del 25 settembre sul sito di prova con il
+  contenuto reale caricato, e la correzione che le misure hanno imposto: **non
+  serve nessun `_redirects`**. statichost.eu fa gli indirizzi puliti da sé *e*
+  serve anche il file con l'estensione — il test che discrimina è `/index`, che
+  non sta in nessuna regola e risponde 200.
+
+  Il 10 settembre era stato concluso il contrario, e l'errore è istruttivo: la
+  misura era stata fatta sul sito **di statichost**, strutturato a cartelle, e da
+  `/index.html` → 200 si era dedotto «niente indirizzi puliti». Una deduzione da
+  un'osservazione, che è esattamente ciò che questo progetto vieta.
+
+  Conseguenza: la migrazione costa **zero righe** di codice nuovo. Restano da
+  riallineare i punti che dichiarano Cloudflare e diventerebbero falsi — undici
+  fuori dal CHANGELOG, in **tre territori diversi**, e quello che pesa di più è
+  `site/privacy.html`, che nomina Cloudflare come titolare autonomo dei log.
+
 ### Deciso
 
 - **ADR-002: il recupero dei progressi si fa con una frase, non con un account.**
