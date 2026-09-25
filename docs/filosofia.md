@@ -1,7 +1,8 @@
 # Rotta Giusta — filosofia e valori
 
 **Data:** 12 settembre 2026. **Riscritto il 25 settembre 2026**, dopo
-l'ADR-003: account obbligatorio, risposte sul server in chiaro.
+l'ADR-003 e l'ADR-004: senza account si prova e non resta niente; con l'account
+si salva, e le risposte stanno sul server in chiaro.
 **Che cos'è:** non è una specifica e non prescrive un'interfaccia. È il perché
 sotto le scelte — in che cosa crediamo, e da dove viene ogni convinzione.
 Serve come sorgente a due destinazioni diverse: a `docs/specifica.md`, quando
@@ -15,7 +16,7 @@ silenziosa che questo progetto ha già pagato una volta (vedi `specifica.md`,
 §0).
 
 > **Questo documento descrive il sito deciso, non ancora quello pubblicato.**
-> Gli account dell'ADR-003 non esistono ancora: finché non arrivano, il sito
+> Gli account degli ADR-003 e 004 non esistono ancora: finché non arrivano, il sito
 > che gira non ha registrazione e tiene tutto nel browser, e le pagine di
 > `site/` che lo dicono sono vere. Qui si scrive in che cosa crediamo **dopo**
 > quella decisione, perché i valori non si aggiornano il giorno del rilascio.
@@ -32,11 +33,12 @@ sappiamo che cosa hai studiato fuori da qui", "su questo argomento non hai
 ancora visto abbastanza per dirti qualcosa". E perché dice la verità anche su
 di sé: che cosa conserviamo di te, dove, e chi lo legge.
 
-Sicura, perché i tuoi progressi non si perdono più quando cambi telefono, e
-perché quello che conserviamo lo custodiamo come si deve e lo cancelliamo
-quando non serve più. **Non vuol dire più** quello che voleva dire fino al 25
-settembre 2026 — che le tue risposte non potevano arrivare a nessuno. Adesso
-arrivano a noi, e le leggiamo. Il perché, e che cosa costa, è più sotto.
+Sicura, perché se ti registri i tuoi progressi non si perdono più quando cambi
+telefono, e perché quello che conserviamo lo custodiamo come si deve e lo
+cancelliamo quando non serve più. **Non vuol dire più** quello che voleva dire
+fino al 25 settembre 2026 — che le tue risposte non potevano arrivare a
+nessuno. Se ti registri arrivano a noi, e le leggiamo. Il perché, e che cosa
+costa, è più sotto.
 
 Non è uno slogan scritto una volta e poi lasciato lì. È la stessa promessa
 che il resto di questo documento verifica riga per riga — e per questo, se un
@@ -101,10 +103,13 @@ perché è nostra e il software la esegue con sicurezza.
 
 ### Non ti inganniamo mai
 
-Per studiare ci si registra, con un'email e una password. L'email serve ad
-accedere, a riprendere la password e a ricevere l'avviso prima che un account
-inattivo venga cancellato. Nessuna newsletter, nessun cookie di tracciamento:
-c'è un solo cookie, quello che ti tiene dentro dopo l'accesso. Non c'è niente
+Per provare non ti chiediamo niente: apri il sito e fai tutte le prove che
+vuoi. Per tenere i progressi ti registri, con un'email e una password: senza
+account non conserviamo niente, nemmeno nel tuo browser. L'email
+serve ad accedere, a riprendere la password e a ricevere l'avviso prima che un
+account inattivo venga cancellato. Nessuna newsletter, nessun cookie di
+tracciamento: c'è un solo cookie, quello che ti tiene dentro dopo l'accesso, e
+chi non si registra non ha nemmeno quello. Non c'è niente
 da vendere e nessuno a cui vendere l'attenzione di chi studia.
 
 Non c'è **gamification**: nessuna streak da non rompere, nessun badge, nessuna
@@ -115,17 +120,29 @@ poche settimane non ha bisogno di essere trattenuto: ha bisogno di sapere dove
 
 Fino al 25 settembre 2026 qui c'era scritto che nessun **dark pattern** era
 possibile, perché non c'era un imbuto in cui far cadere qualcuno. **Non è più
-vero.** Una registrazione obbligatoria prima del primo quesito **è un imbuto**,
-e chi arriva lo incontra prima di aver visto che cosa gli offriamo. Non lo
-chiamiamo in un altro modo.
+vero.** Per non perdere i progressi bisogna registrarsi, e questo **è un
+imbuto**. Non lo chiamiamo in un altro modo.
+
+Abbiamo deciso dove metterlo: non davanti al primo quesito, ma alla fine di
+un'attività, quando hai qualcosa da perdere. Chi arriva vede prima che cosa gli
+offriamo, e decide dopo. Per poche ore la decisione è stata l'altra —
+registrazione obbligatoria per entrare — e l'abbiamo cambiata perché il suo
+costo cadeva proprio su chi comincia da zero, nel momento in cui decide se
+restare.
 
 Quello che resta è una scelta, non più una conseguenza dell'architettura: un
-imbuto che c'è non si usa contro chi ci passa. Il costo si dice prima, non
-dopo; non c'è un piano gratuito pensato per essere frustrante, né un pulsante
-di conferma reso più piccolo di quello che promette qualcosa; i tuoi dati si
-scaricano e si cancellano da dove si vedono, non da un modulo sepolto. Prima
-nessuno poteva rompere questa promessa. Adesso potremmo, ed è il motivo per
-cui la scriviamo.
+imbuto che c'è non si usa contro chi ci passa. Senza account ti diciamo, prima
+di cominciare e alla fine, che non resta niente: una perdita che scegli tu è
+una scelta, una che scopri dopo è un inganno. Ti raccomandiamo di registrarti
+mostrandoti che cosa ci guadagni, e i vantaggi che mostriamo sono quelli che
+esistono; te lo diciamo quando serve, non a ogni pagina. Le prove restano tutte
+tue anche senza account. I Progressi no, e non per spingerti: sono misure su
+quello che hai fatto nel tempo, e senza salvare non c'è niente da misurare. Non
+faremo mai il contrario — tenere le tue risposte e nasconderti che cosa dicono
+finché non ti registri. Il costo si dice prima, non dopo; non c'è un pulsante di conferma reso più piccolo di quello che promette
+qualcosa; i tuoi dati si scaricano e si cancellano da dove si vedono, non da un
+modulo sepolto. Prima nessuno poteva rompere queste promesse. Adesso potremmo,
+ed è il motivo per cui le scriviamo.
 
 Un'eccezione unica, e dichiarata: il gioco dei Segnali è l'unica parte del
 sito pensata per essere divertente prima che utile, ed è anche l'unica scritta
@@ -133,8 +150,9 @@ interamente dall'autore, non da un motore di selezione.
 
 ### I tuoi dati li teniamo noi, e lo diciamo
 
-Le risposte che dai stanno sul nostro server, legate al tuo account, **in
-chiaro**. Le leggiamo per due ragioni, e solo per quelle: per aiutare chi ci
+Finché provi senza account, non conserviamo niente: le risposte valgono finché
+la pagina è aperta, e non arrivano a nessuno. Da quando ti registri, stanno sul nostro
+server, legate al tuo account, **in chiaro**. Le leggiamo per due ragioni, e solo per quelle: per aiutare chi ci
 scrive quando qualcosa non torna, e per le statistiche. Stanno in Europa,
 presso un fornitore con cui c'è un accordo scritto. Puoi scaricarle quando
 vuoi, nello stesso file di sempre, e puoi farle cancellare; dopo due anni in
@@ -146,8 +164,8 @@ esisteva un server a cui potessero arrivare**, e un'architettura che non ha
 dove mandare il dato non si rompe per errore. Era vero, e l'abbiamo lasciato
 andare.
 
-Il perché è che quella garanzia costava a chi studia la cosa peggiore che il
-sito gli facesse: l'archivio era una copia sola, e chi cambiava telefono o
+Per chi si registra l'abbiamo lasciato andare perché quella garanzia costava a
+chi studia la cosa peggiore che il sito gli facesse: l'archivio era una copia sola, e chi cambiava telefono o
 svuotava il browser perdeva tutto. Avevamo cercato una via di mezzo — una
 copia cifrata che nemmeno noi potessimo leggere — e l'abbiamo scartata quando
 abbiamo capito che i dati ci servono leggibili: una copia che nessuno può
@@ -228,23 +246,25 @@ rifiutiamo altrove.
 ## Che cosa abbiamo perso
 
 Detto in un posto solo, perché sparso nelle sezioni sopra si leggerebbe meno.
-Con l'account obbligatorio e le risposte sul server abbiamo rinunciato a:
+Con le risposte di chi si registra sul nostro server abbiamo rinunciato a:
 
 - **la garanzia che non dipendeva da nessuno** — «le tue risposte non arrivano
-  a nessuno», vera per costruzione. Adesso arrivano a noi;
-- **l'anonimato** — il sito sa chi sei e che cosa hai risposto, e noi lo
-  possiamo leggere;
-- **il primo quesito senza chiedere niente** — prima di cominciare servono un
-  modulo e un'email di verifica: un imbuto, sulla schermata che decide se una
-  persona resta;
-- **l'offline alla prima visita** — resta dopo l'accesso, non prima;
+  a nessuno», vera per costruzione. Per chi si registra, adesso arrivano a noi;
+- **l'anonimato** — di chi si registra il sito sa chi è e che cosa ha risposto,
+  e noi lo possiamo leggere;
 - **il non avere niente da custodire** — un fornitore in più, un registro dei
-  trattamenti, un'informativa vera, una violazione possibile da notificare.
+  trattamenti, un'informativa vera, una violazione possibile da notificare;
+- **l'assenza di un imbuto** — per salvare bisogna registrarsi;
+- **a chi non si registra, quello che davamo a tutti** — un archivio nel
+  browser, i Progressi, la ripresa dal giorno prima, senza chiedere niente.
 
-In cambio: **chi studia non perde più il proprio lavoro** cambiando telefono, e
-chi ci scrive per un problema possiamo aiutarlo davvero. Lo abbiamo ritenuto un
-cambio giusto. Resta aperta una variante che toglierebbe due di queste perdite
-— registrarsi solo per **salvare**, e provare senza — e la decide l'autore.
+Non abbiamo rinunciato, perché si prova senza account, al primo quesito senza
+chiedere niente e all'offline dalla prima visita.
+
+In cambio: **chi si registra non perde più il proprio lavoro** cambiando
+telefono, e chi ci scrive per un problema possiamo aiutarlo davvero. Chi non si
+registra non perde niente in silenzio: sa dall'inizio che non resta niente, e
+di lui non resta niente da nessuna parte. Lo abbiamo ritenuto un cambio giusto.
 
 ## A che cosa serve questo documento
 
@@ -258,6 +278,14 @@ cambia, deve cambiare in una direzione e non nell'altra.
 ---
 
 ## Registro
+
+- **25 settembre 2026 — dopo l'ADR-004.** L'account serve per salvare, non per
+  usare: senza account si fanno tutte le prove e non resta niente, e i
+  Progressi sono dei registrati. Il paragrafo sull'imbuto dice dove lo abbiamo
+  messo, perché la decisione di poche ore prima è cambiata, e porta le
+  condizioni dell'ADR come promesse — compresa quella di non tenere le risposte
+  per poi nasconderne le misure. «Che cosa abbiamo perso» perde il primo quesito
+  e l'offline alla prima visita, e guadagna la perdita di chi non si registra.
 
 - **25 settembre 2026 — riscritto dopo l'ADR-003.** Account obbligatorio e
   risposte sul server in chiaro, leggibili dal titolare: quattro affermazioni

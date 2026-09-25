@@ -94,6 +94,46 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   stessa versione in cui entrano gli account, non prima.** `site/` non è stato
   toccato.
 
+### Deciso — ADR-004: senza account si prova, con l'account si salva
+
+- **L'account non è più obbligatorio per usare il sito: lo è per salvare.**
+  Sostituisce la sola parola «obbligatorio» dell'ADR-003, dello stesso giorno;
+  il resto dell'ADR-003 vale. L'ADR-003 aveva registrato questa variante con i
+  suoi costi per esteso e aveva scritto che soddisfaceva tutte e tre le
+  aspettative della decisione, ma **non perché non l'aveva scelta**. Chiesto,
+  un motivo per volere la registrazione dalla prima risposta non c'era.
+
+  **Com'è, con la precisazione dell'autore:** senza account si fanno tutte le
+  prove, ognuna con il suo riepilogo, e **non resta niente** — nemmeno nel
+  browser. Con l'account si salva, si vedono i Progressi e le metriche, e si
+  passa da un onboarding con la data d'esame, che resta facoltativa.
+  Registrarsi alla fine di un'attività la porta nell'account dalla porta
+  dell'import, `fondiArchivio()`: unione per `uid`.
+
+  **Perché i Progressi ai soli registrati non è un ricatto:** sono misure su uno
+  storico, e senza salvataggio lo storico non c'è. Il ricatto è l'alternativa
+  scartata — salvare nel browser e nascondere le misure finché non ci si
+  registra —, e la filosofia ora promette di non farlo.
+
+  **Quattro condizioni fanno parte della decisione**, e sono R-ACC-02…05 nel
+  nuovo §9.9 della specifica, scoperti con il motivo perché gli account non
+  esistono ancora: senza account si dice che non resta niente; la registrazione
+  si raccomanda alla fine di un'attività con i vantaggi che esistono, non a ogni
+  schermata; senza account non si toglie niente apposta; **un archivio che
+  esiste già nel browser il giorno del rilascio non sparisce in silenzio**.
+  L'ultima è quella che il guasto muto avrebbe preso per prima.
+
+  **Che cosa si perde, dichiarato in specifica e filosofia:** chi non si
+  registra non ha più quello che il sito fino a oggi dava a tutti — l'archivio
+  nel browser, i Progressi, la ripresa dal giorno prima. Tornano invece il
+  primo quesito senza chiedere niente e l'offline alla prima visita.
+
+  Q-ACCESSO è chiusa. Entra **Q-ONBOARD**: che cosa chiede l'onboarding oltre
+  alla data, e se il sito consiglia un piano di studio strutturato — con i
+  limiti di quello che il motore sa, scritti accanto. L'elenco dei testi di
+  `site/` in `docs/prossime-sessioni.md` legge ora ogni frase nei due stati:
+  quasi tutte quelle sul «tuo browser» diventano false in entrambi.
+
 ## [0.27.0] — 2026-09-25
 
 ### Verificato — la v0.26.2 sul dominio vero

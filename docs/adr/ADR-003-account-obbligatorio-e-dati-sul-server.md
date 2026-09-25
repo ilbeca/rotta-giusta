@@ -4,6 +4,13 @@
 
 **Accepted** — 25 settembre 2026. **Sostituisce ADR-002**, dello stesso giorno.
 
+**Sostituito in parte da ADR-004**, lo stesso giorno: l'account non è più
+obbligatorio per **usare** il sito, ma per **salvare**. Senza account si fanno
+tutte le attività, e non resta niente; con l'account si salva e si vedono i
+progressi. Tutto il resto di questo ADR vale com'è. Il titolo e il
+paragrafo «Obbligatorio» qui sotto restano come sono stati scritti, perché sono
+il testo che l'ADR-004 ha dovuto correggere.
+
 ## Date
 
 2026-09-25

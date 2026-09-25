@@ -122,8 +122,11 @@ per davvero, ed è anche l'unica parte scritta interamente dall'autore.
 ## 2. Che cos'è, e che cosa non è
 
 Il 25 settembre 2026 l'**ADR-003** ha cambiato questa sezione più di qualunque
-altra: **account obbligatorio, e le risposte sul server in chiaro**, leggibili
-dal titolare. Quattro dei sette Vincoli che stavano qui cadono. Sotto: che cosa
+altra: **account, e le risposte sul server in chiaro**, leggibili dal titolare.
+Lo stesso giorno l'**ADR-004** (`docs/adr/`, non quello di `Standards`) ha
+precisato per che cosa serve l'account: **per salvare**, non per usare. Senza
+account si fanno tutte le attività, e non resta niente. Quattro dei sette Vincoli che stavano
+qui cadono. Sotto: che cosa
 resta, che cosa cade, e che cosa si perde — detto per esteso, perché è il posto
 in cui una decisione del genere si è tentati di scriverla a mezza voce.
 
@@ -136,7 +139,8 @@ tace quello che c'è.
 
 ### 2.1 Che cosa resta — Vincolo
 
-Queste nessuna bozza le sposta senza un ADR, e l'ADR-003 non le tocca.
+Queste nessuna bozza le sposta senza un ADR, e né l'ADR-003 né l'ADR-004 le
+toccano.
 
 | Non c'è | Perché |
 |---|---|
@@ -146,55 +150,85 @@ Queste nessuna bozza le sposta senza un ADR, e l'ADR-003 non le tocca.
 | **Nessuna modifica alla banca per convinzione** | §3.1. È l'Allegato A al DD 131/2022: si annota e si cita la fonte. |
 | **Nessun analytics** | L'ADR-003 chiede statistiche, e si fanno **leggendo le righe delle risposte** che il server già conserva. Non autorizzano script di terzi, né il tracciamento della navigazione. |
 
-### 2.2 Che cosa cade — Deciso il 25 settembre 2026 (ADR-003)
+### 2.2 Che cosa cade — Deciso il 25 settembre 2026 (ADR-003 e ADR-004)
 
 | Era un Vincolo | Che cosa diventa |
 |---|---|
-| **Nessun account, nessuna registrazione** | Account con email e password, **obbligatorio**, con verifica dell'indirizzo. Si studia da registrati. Chi ha già un file esportato lo carica, e diventa il contenuto del suo account. |
+| **Nessun account, nessuna registrazione** | Account con email e password, con verifica dell'indirizzo, **per salvare** (ADR-004). Senza account si fanno tutte le attività, ma le risposte vivono solo finché la pagina è aperta: nessun archivio, né nel browser né sul server, e quindi nessun Progresso. Registrandosi alla fine di un'attività, le sue risposte salgono sull'account; chi ha un file esportato lo carica. |
 | **Nessun backend** | Un server con un database che conserva le righe **in chiaro**, e che il titolare legge per il supporto e per le statistiche. La banca e le pagine restano statiche su statichost.eu. |
 | **Nessuna sincronizzazione** | Le righe si sincronizzano, come **unione per `uid`**. Non è la sincronia che nella 0.4.2 ha cancellato giorni di studio: lì si fondeva lo specchio, cioè stato derivato, e qualcuno doveva vincere; qui si uniscono righe append-only, e nessuno è in conflitto (`fondiArchivio()`, R-STA-03). |
-| **Nessun cookie, nessun form** | Un cookie di sessione, tecnico, quindi senza banner di consenso. Un modulo di registrazione e di accesso. |
+| **Nessun cookie, nessun form** | Per chi ha fatto l'accesso, un cookie di sessione, tecnico, quindi senza banner di consenso. Un modulo di registrazione e di accesso. Chi prova senza account non ha né l'uno né l'altro. |
 
 In più, e non era scritto da nessuna parte perché non serviva: **i dati si
 conservano fino a due anni di inattività**, poi, dopo un avviso, si cancellano.
 
 ### 2.3 Che cosa si perde
 
-Non sono effetti collaterali: sono il prezzo, e si paga tutto.
+Non sono effetti collaterali: sono il prezzo, e si paga tutto. Le prime tre
+perdite toccano chi si registra, la quarta chi non lo fa.
 
 1. **Una garanzia che non dipendeva da nessuno.** «Le risposte non arrivano a
    nessuno» era vero per costruzione: non esisteva un posto dove mandarle, e
-   nessun aggiornamento sbagliato poteva cambiarlo. Da adesso arrivano a un
-   server per scelta, e a tenerle al sicuro restano obblighi e promesse — che si
-   possono rompere, anche per errore.
-2. **L'anonimato.** Il sito sa chi sei, perché ha la tua email, e sa che cosa
-   hai risposto; il titolare lo può leggere. Sono dati personali (non dell'art.
-   9: niente salute, niente opinioni). Un server violato esporrebbe email e
-   storico insieme.
-3. **Il primo quesito senza chiedere niente.** Prima di rispondere servono rete,
-   un modulo e un'email di verifica. È un **imbuto**, e sta sulla schermata che
-   secondo il §7.1 decide se una persona resta. Il primo ingresso dell'area 1,
-   già rilasciato, è stato progettato per un prodotto senza account.
-4. **L'offline alla prima visita.** Resta dopo l'accesso, non prima. Era una
-   delle poche cose di questo prodotto misurate invece che dichiarate: zero byte
-   trasferiti a pagina ricaricata.
-5. **Il non avere niente da custodire.** Un fornitore in più che vede i dati, e
+   nessun aggiornamento sbagliato poteva cambiarlo. Da adesso, per chi si
+   registra, arrivano a un server per scelta, e a tenerle al sicuro restano
+   obblighi e promesse — che si possono rompere, anche per errore.
+2. **L'anonimato.** A chi si registra il sito sa chi è, perché ha la sua email,
+   e sa che cosa ha risposto; il titolare lo può leggere. Sono dati personali
+   (non dell'art. 9: niente salute, niente opinioni). Un server violato
+   esporrebbe email e storico insieme.
+3. **Il non avere niente da custodire.** Un fornitore in più che vede i dati, e
    con lui un accordo da firmare; un registro dei trattamenti; un'informativa con
    una base giuridica; una violazione da notificare entro 72 ore, cioè log per
    accorgersene; una cancellazione che deve cancellare davvero; un server da
    tenere acceso. Prima non c'era niente di tutto questo perché non c'era niente
    da proteggere.
+4. **Per chi non si registra, quello che il sito dava a tutti.** Fino a oggi
+   chiunque aveva un archivio nel browser, i Progressi, la ripresa dal giorno
+   prima, senza chiedere niente. Senza account, da quando arrivano gli account,
+   non resta niente oltre la pagina aperta. È la perdita che l'autore ha scelto
+   apposta, perché il salvataggio è ciò che l'account offre (ADR-004).
 
-**Che cosa si compra con questo prezzo:** chi cambia telefono o svuota il
-browser non perde più tutto — il difetto più grave che il prodotto aveva verso
-chi lo usa — e chi scrive per un problema si può aiutare guardando i suoi dati.
+**E un imbuto, più piccolo di quello dell'ADR-003 ma vero:** per salvare bisogna
+registrarsi. L'ADR-004 lo sposta dal primo quesito alla fine della prima
+attività; non lo toglie.
 
-### 2.4 Che cosa resta aperto
+**Che cosa si compra con questo prezzo:** chi si registra non perde più tutto
+cambiando telefono o svuotando il browser — il difetto più grave che il prodotto
+aveva verso chi lo usa — e chi scrive per un problema si può aiutare guardando i
+suoi dati. E di chi non si registra non resta niente, da nessuna parte.
 
-**Aperto — decide l'autore.** La variante registrata e non scelta dall'ADR-003:
-account obbligatorio per **salvare**, libero per **provare**. Soddisfa le stesse
-tre aspettative e toglierebbe le perdite 3 e 4; l'ADR la dichiara reversibile.
-È Q-ACCESSO, §10.
+### 2.4 Come si entra — Deciso il 25 settembre 2026 (ADR-004)
+
+Chi arriva fa il primo quesito **senza account**, con l'offline che funziona
+dalla prima visita. L'ADR-003 aveva scelto la registrazione obbligatoria per
+usare il sito; l'ADR-004 la sostituisce, perché nessuna delle tre aspettative
+dell'ADR-003 la richiedeva e il suo costo cadeva sul primo ingresso (§7.1).
+
+Senza account i Progressi non ci sono, e **non è un ricatto**: sono misure su
+uno storico, e senza salvataggio lo storico non esiste. Il ricatto sarebbe stato
+salvare le risposte nel browser e nasconderne le misure; è l'alternativa
+scartata dall'ADR-004.
+
+Quattro condizioni fanno parte della decisione, e sono R-ACC-02…05 nel §9.9:
+
+1. **Senza account si dice che non resta niente**, prima di cominciare e alla
+   fine di ogni attività.
+2. **La registrazione si raccomanda con i vantaggi veri, quando c'è qualcosa da
+   perdere** — la fine di un'attività — e non a ogni schermata. Nessuna metrica
+   si promette sotto le soglie del §4.3.
+3. **Senza account non si toglie niente apposta**: tutte le attività, con
+   riepilogo e revisione della sessione. Ai registrati restano solo le viste che
+   vivono di uno storico.
+4. **Un archivio che esiste già non sparisce in silenzio**: chi ha le risposte
+   nel browser il giorno del rilascio le porta nell'account o le scarica.
+
+**Deciso il 25 settembre 2026, dall'autore:** chi si registra passa da un
+**onboarding**, che raccoglie fra l'altro la data d'esame. La data vi resta
+**facoltativa**: lo è per il §7.1 e per R-STA-01 — chi comincia da zero spesso
+non ce l'ha, e senza data il motore non inventa quota né semaforo — e un
+onboarding non la rende obbligatoria senza una decisione che lo dica. Che
+cos'altro chieda, e se il sito consigli un piano di studio strutturato, è
+Q-ONBOARD nel §10.
 
 ### 2.5 Che cosa di questo documento descrive ancora il prodotto senza account
 
@@ -203,12 +237,18 @@ account. Non si riscrivono qui perché dipendono da scelte che l'ADR-003 dichiar
 di non prendere — tabelle, sessione, API, statistiche aggregate — e che spettano
 al progetto di realizzazione:
 
-- §3, a cominciare dal titolo, e §3.2 «l'unica copia»;
-- §4.6, «non sa niente degli altri utenti» e «non sa se sei alla prima visita»;
-- §7.1, il caso limite «un archivio vuoto non prova che sia la prima visita»;
+- §3, a cominciare dal titolo, e §3.2 «l'unica copia» — senza account, di
+  copie non ce n'è nessuna;
+- §4.6, «non sa niente degli altri utenti» e «non sa se sei alla prima visita»
+  — per chi ha fatto l'accesso;
+- §7.1, gli stati della Rotta e il caso limite «un archivio vuoto non prova che
+  sia la prima visita» — senza account l'archivio è sempre vuoto;
+- §7.4, Progressi, che diventa dei soli registrati;
 - §7.8, scarica / ricarica come unica via di salvataggio;
+- §5.3 e §5.4, che elencano attività e controlli senza dire in quale dei due
+  stati;
 - Appendice A, «nessun dark pattern possibile: non c'è account, non c'è un
-  imbuto».
+  imbuto» — c'è, per salvare.
 
 E una cosa che c'è e resta: **il sito dichiara i propri difetti**, quesito per
 quesito. È l'unica cosa che nessun concorrente può copiare, ed è il motivo per
@@ -929,6 +969,20 @@ liste, perché una lista in un prompt è una regola da ricordare.
 | R-UX-04 | Gli extra non compaiono dentro la mappa della copertura | scoperto — dipende dalla struttura della Rotta, ancora aperta (§10) |
 | R-UX-05 | Il carico di un'attività si annuncia in minuti, non solo in domande | scoperto — decisione aperta (§10) |
 
+### 9.9 L'accesso
+
+Nati dall'ADR-004. Gli account non esistono ancora: i requisiti che dipendono
+dalla pagina sono scoperti finché non c'è una pagina da guardare, e lo dicono.
+
+| ID | Requisito | Controllo |
+|---|---|---|
+| R-ACC-01 | Si arriva al primo quesito senza registrarsi, anche alla prima visita | scoperto — gli account non esistono ancora; il controllo andrà sul primo ingresso |
+| R-ACC-02 | Senza account nessuna risposta resta dopo la chiusura della pagina, e la pagina lo dice prima di cominciare e alla fine di ogni attività | scoperto — è interfaccia che non c'è ancora, e la suite non esercita il DOM di `app.html` |
+| R-ACC-03 | La registrazione si raccomanda alla fine di un'attività con i vantaggi che esistono, e non a ogni schermata | scoperto — è un comportamento del flusso, si fissa quando il flusso esiste |
+| R-ACC-04 | Senza account si fanno tutte le attività con riepilogo e revisione; ai registrati restano solo le viste che vivono di uno storico | scoperto — richiede l'elenco delle viste per stato, che nascerà con il progetto degli account |
+| R-ACC-05 | Un archivio locale che esiste il giorno del rilascio non sparisce in silenzio: si porta nell'account o si scarica | scoperto — il passaggio non esiste ancora, e va provato su un browser con un archivio vero |
+| R-ACC-06 | Le righe della pagina aperta e quelle dell'account si uniscono per `uid`, senza doppioni e senza vincitore | `test_engine.mjs::fondiArchivio: per uid, senza doppioni` |
+
 ---
 
 ## 10. Che cosa non è deciso
@@ -945,8 +999,8 @@ Ogni riga dice **chi decide**. Una questione senza un decidente non si chiude ma
 | Q-AMBITO | Se `carteggio_e12.json` esce dal cassetto | l'autore | 50 esercizi pubblicati e non usati; cambia il pubblico più di ogni scelta di navigazione |
 | Q-CART4 | «Un esercizio per ciascuno dei quattro argomenti» è un'assunzione | serve la scuola nautica | La composizione della prova resta non confermata, e la 42/D non ha esercizi di carburante |
 | Q-PROVE | Verifiche con dispositivi reali e con persone | l'autore fornisce dispositivi e persone | Nessuna prova su hardware Apple vero, e nessuna prova con persone diverse dall'autore |
+| Q-ONBOARD | Che cosa chiede l'onboarding di chi si registra, oltre alla data d'esame; e se il sito consiglia un piano di studio strutturato | l'autore | Un piano deve reggersi su quello che il motore sa: niente programma d'esame (Q-PROG), niente studio fatto altrove (chiusa l'8 settembre), niente «quanto tempo hai?» (R-TEMPO-03), e senza data niente quota. I pezzi ci sono già — `traccia()`, `consigli()`, `stimaImpegno()` —, e il piano di 17 sessioni del progetto originario è stato tolto nella 0.19.0 con il resto del servizio personale |
 | Q-DUE | Due classifiche di «cosa fare adesso»: dichiararne la differenza o tenerne una | l'autore | La sovrapposizione resta, e sul ramo `ui/main` una delle due è già sparita senza decisione |
-| Q-ACCESSO | Account obbligatorio per usare il sito, come dice l'ADR-003, o solo per salvare i progressi | l'autore | Il primo ingresso diventa un modulo e un'email di verifica prima del primo quesito, e l'offline sparisce dalla prima visita (§2.3) |
 
 **Chiuse, e non si riaprono senza un motivo nuovo:**
 
@@ -957,6 +1011,10 @@ Ogni riga dice **chi decide**. Una questione senza un decidente non si chiude ma
 - **La composizione delle 20 domande è ministeriale** (9 settembre 2026):
   Allegato C al DM 323/2021. Resta non ministeriale la ripartizione *dentro* un
   tema.
+- **Q-ACCESSO: l'account serve per salvare, non per usare** (25 settembre 2026,
+  ADR-004). Senza account si fanno tutte le attività e non resta niente; con
+  l'account si salva e si vedono i Progressi. Chiusa con quattro condizioni,
+  §2.4.
 
 ---
 
@@ -1116,3 +1174,14 @@ successo, ed è il motivo per cui questo file esiste.
   sono elencate nel §2.5 e non riscritte: dipendono dal progetto di
   realizzazione. Corretto per traverso un rimando: la correzione del carteggio
   sta nel §4.5, non nel §7.5.
+- **25 settembre 2026 — Q-ACCESSO chiusa dall'ADR-004.** L'account serve per
+  salvare, non per usare: senza account si fanno tutte le attività e non resta
+  niente, e i Progressi sono dei registrati. Il §2 perde due perdite
+  dell'ADR-003 (il primo quesito senza chiedere niente, l'offline alla prima
+  visita) e ne guadagna una, dichiarata: chi non si registra non ha più
+  l'archivio nel browser che fino a oggi aveva chiunque. Il §2.4 porta le
+  quattro condizioni della decisione; nuovo §9.9 con sei requisiti, cinque
+  scoperti con il motivo e uno coperto dal test che esiste già. Entrano anche
+  l'onboarding di chi si registra, deciso dall'autore, con la data che resta
+  facoltativa, e Q-ONBOARD nel §10 per il suo contenuto e per un piano di
+  studio strutturato.
