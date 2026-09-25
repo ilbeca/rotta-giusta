@@ -1597,10 +1597,12 @@ function dipingiStatoRotta() {
 // qui serve per controllare che ci sia davvero, li' per metterla. C'e' un test
 // che le confronta.
 //
-// `/privacy` e `/avvertenza` **senza `.html`**: e' l'indirizzo vero su
-// Cloudflare Pages, che al percorso con l'estensione risponde 308. Il perche'
-// per esteso sta in sw.js, accanto alla stessa lista; un test pretende che i
-// link di questa pagina non tornino alla forma con l'estensione.
+// `/privacy` e `/avvertenza` **senza `.html`**: l'host fino alla 0.26
+// rispondeva 308 al percorso con l'estensione, e statichost.eu serve entrambe
+// le forme — gli indirizzi puliti restano perche' rendono il sito indifferente
+// all'host. Il perche' per esteso sta in sw.js, accanto alla stessa lista; un
+// test pretende che i link di questa pagina non tornino alla forma con
+// l'estensione.
 // La palestra sta su /app: la radice e' la vetrina, che non entra nel guscio
 // perche' e' la pagina per chi arriva con la rete, non da tenere in barca.
 const GUSCIO = ['/app', '/engine.js', '/manifest.json',
@@ -1657,8 +1659,8 @@ async function verificaOffline() {
     // *rediretta* in cache non si puo' dare a una navigazione — il redirect
     // mode di una navigazione e' 'manual' e `respondWith` la rifiuta — quindi
     // la pagina muore con ERR_FAILED pur essendo in cache. E' successo davvero
-    // nella 0.19.1 con `/privacy.html` e `/avvertenza.html`, che su Cloudflare
-    // Pages rispondono 308: la chiave c'era, questa scheda scriveva «guscio e
+    // nella 0.19.1 con `/privacy.html` e `/avvertenza.html`, a cui l'host di
+    // allora rispondeva 308: la chiave c'era, questa scheda scriveva «guscio e
     // banca in cache» in verde, e i due link del pie' di pagina erano morti.
     // Guardare solo le chiavi era l'errore; qui si guarda la risposta.
     const rediretti = [];
