@@ -11,6 +11,21 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+### Verificato — la v0.26.2 sul dominio vero
+
+- **Le figure offline sopravvivono a un rilascio, misurato dove conta.** La
+  v0.26.1 lasciava questa misura preparata e non fatta. In un browser su
+  `rottagiusta.it` con la v0.26.1 e `rg-0.26.1` a 122 voci, 102 figure: pubblicata
+  la v0.26.2 (push, «Build now»), alla prima ricarica la cache è già
+  `rg-0.26.2` con **122 voci e 102 figure, senza un secondo scaricamento**, e Info
+  scrive «diverse: ricarica due volte»; alla seconda la pagina è v0.26.2, «Pronto
+  per l'offline … figure 102/102», zero byte dalla rete, zero voci rediritte.
+
+- **La privacy nuova arriva a chi ha il guscio installato.** Il `/privacy` in
+  cache dopo le due ricariche è quello del 25 settembre, nomina statichost.eu e
+  non nomina Cloudflare. Servita dal dominio: 200, zero salti, anche su
+  `/privacy.html`.
+
 ## [0.26.2] — 2026-09-25
 
 ### Verificato — la v0.26.1 sul dominio vero
