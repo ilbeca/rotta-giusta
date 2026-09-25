@@ -11,6 +11,21 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+### Verificato — la v0.27.0 sui due indirizzi
+
+- **Su `open-patente-nautica.pages.dev`, l'unico «fuori casa» vero:** la vetrina
+  mostra la striscia, e i due «Inizia subito» e tutte e dieci le tessere portano
+  a `https://rottagiusta.it/app`; la palestra, v0.27.0, mette l'avviso del
+  trasloco come primo stato, con «Scarica i progressi» collegato all'esportazione
+  e il link alla palestra nuova. **Su `rottagiusta.it`:** v0.27.0, cache
+  `rg-0.27.0`, nessun avviso. Le tessere riscritte si sono potute provare solo
+  qui: in locale, sul nome di prova, il browser bloccava le richieste della
+  pagina e la vetrina diceva, correttamente, che la banca non risponde.
+
+- **Da qui la finestra.** Pages resta acceso perché chi ha la palestra
+  installata sul vecchio indirizzo prenda questa versione; il redirect (D2) non
+  prima del 16 ottobre 2026. Il come è in `docs/migrazione-hosting.md`.
+
 ## [0.27.0] — 2026-09-25
 
 ### Verificato — la v0.26.2 sul dominio vero

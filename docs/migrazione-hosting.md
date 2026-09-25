@@ -409,6 +409,13 @@ eliminazione.**
 Il pannello di Cloudflare chiede l'accesso: D2 e D3 li fa l'autore, o Claude
 dopo che l'autore ha fatto l'accesso nel browser.
 
+**D1 fatta, e misurata sui due indirizzi.** v0.27.0 pubblicata alle 19:12 UTC
+del 25 settembre, su entrambi gli host. Su `open-patente-nautica.pages.dev` la
+vetrina mostra la striscia e manda i due «Inizia subito» e le dieci tessere a
+`https://rottagiusta.it/app`; la palestra mette l'avviso come primo stato, con
+«Scarica i progressi» e il link. Su `rottagiusta.it` nessun avviso. **Da qui la
+finestra: D2 non prima del 16 ottobre 2026.**
+
 ---
 
 ## 5. Criteri di accettazione
