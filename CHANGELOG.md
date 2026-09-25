@@ -33,6 +33,65 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   accende — ma costa un nuovo scaricamento a chi studia senza rete. Aperto come
   attività separata.
 
+### Corretto — le figure offline sopravvivono a un rilascio
+
+- **Le 102 figure scaricate per l'offline non si perdono più a ogni rilascio.**
+  Misurato sul dominio vero durante la fase B: `rg-0.25.0` con 122 voci e
+  «figure 102/102», poi la v0.26.0 e due ricariche, e l'unica cache era
+  `rg-0.26.0` con 19 voci e «figure non scaricate». L'`activate` di `sw.js`
+  cancellava ogni cache diversa da quella corrente, e le figure ci stavano
+  dentro. Non era muto — pallino ambra, riga Offline — ma non era dichiarato da
+  nessuna parte, e chi studia in barca lo scopriva senza rete.
+
+  Ora l'`activate` **copia le figure dalla cache vecchia a quella nuova** prima
+  di cancellarla. Solo le figure: sono l'Allegato A e non cambiano, mentre banca
+  e pagine si riprendono dalla rete all'install, perché quelle cambiano. Una
+  copia fallita non lascia in piedi la cache vecchia: le figure che mancano le
+  conta l'autodiagnosi, in ambra.
+
+  **Perché non una cache a parte, non versionata**, che era l'idea di partenza:
+  i punti che leggono la cache — la versione in Info, l'autodiagnosi,
+  `scaricaTutto()` — la cercano con `startsWith('rg-')` e **prendono la prima**.
+  Una seconda cache col prefisso li avrebbe confusi in silenzio, a seconda
+  dell'ordine di creazione; una senza prefisso avrebbe rotto R-ARCH-08.
+  Portandole avanti la cache resta una, e `site/app.html` non si tocca: il lavoro
+  sta tutto in `sw.js`, che è condiviso, e non serve fermare nessuno su `ui/*`.
+
+  **Verificato nel browser, sul ciclo vero**, con una copia di `site/` servita da
+  `serve.py`: il `sw.js` pubblicato (v0.26.0), le figure scaricate col pulsante,
+  un rilascio finto 0.26.1 **col `sw.js` vecchio** — difetto riprodotto, 19 voci
+  e «figure non scaricate» — poi di nuovo le figure, e un rilascio 0.27.0 col
+  `sw.js` corretto. Alla prima ricarica la pagina è ancora v0.26.1 con la cache
+  già `rg-0.27.0` a **122 voci**; alla seconda Info scrive «v0.27.0 · cache
+  offline rg-0.27.0» e «Pronto per l'offline … figure 102/102», zero risposte
+  redirette, `figura-007.png` di 2.056 byte come nel repo, e una figura aperta
+  con `transferSize 0` servita dal service worker. Un secondo rilascio,
+  0.27.0 → 0.27.1, fra due `sw.js` corretti: ancora 122 voci e 102/102. Console
+  vuota.
+
+  **Vale dal primo rilascio che contiene questo `sw.js`**: la copia la fa il
+  service worker nuovo, quindi chi passa dalla 0.26.0 alla successiva tiene le
+  figure; chi le ha perse passando alla 0.26.0 le riscarica una volta.
+
+### Test — le figure offline
+
+- **Tre test nuovi eseguono `sw.js` com'è pubblicato**, sotto `node:vm` contro
+  una Cache Storage finta, con install e activate come dopo un rilascio: le 102
+  figure (lette dall'indice vero) passano alla cache nuova e la cache resta una;
+  passano solo le figure, non `quiz.json` né un file della banca fuori dal
+  guscio; e senza figure scaricate il rilascio non ne inventa. **128 test sul
+  motore** (erano 125), 226 verifiche sulla specifica (erano 218) con R-ARCH-10
+  e R-ARCH-11; 199 sui dati e 121 sull'interfaccia invariate.
+
+  Scritti prima della correzione, e rossi per la ragione misurata sul dominio:
+  «le figure in cache sono 0, non 102». **Provati al contrario tre volte:**
+  la copia tolta → 2 rossi; il filtro sulle figure tolto → 1; filtro e controllo
+  dei doppioni tolti insieme → 1. E una volta il test ha mancato un guasto, ed è
+  il motivo della sua forma attuale: la prima stesura non si accorgeva che
+  togliere il filtro portava avanti tutto, perché le voci del guscio sono già
+  nella cache nuova e la copia le salta comunque. Ora c'è anche un file della
+  banca **fuori** dal guscio, che l'install non riscarica.
+
 ## [0.26.0] — 2026-09-25
 
 ### Spostato

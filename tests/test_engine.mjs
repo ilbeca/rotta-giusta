@@ -1837,3 +1837,134 @@ test('erroriSessione: un quesito che ricompare apre una sessione nuova, e resta 
   const e = erroriSessione(righe, items, 'a');
   assert.equal(e.lista.length, 1, 'la prima lista porta il suo errore, non quello della seconda');
 });
+
+
+/* --- le figure scaricate sopravvivono a un rilascio ----------------------- */
+
+// Misurato il 25 settembre 2026 su rottagiusta.it: con la v0.25.0 e «Scarica
+// tutto per l'offline» premuto, la cache `rg-0.25.0` aveva 122 voci, 102 delle
+// quali figure. Dopo il rilascio v0.26.0 e due ricariche l'unica cache era
+// `rg-0.26.0`, con le 19 voci del guscio e **zero** figure: l'`activate`
+// cancellava la cache vecchia, e le figure ci stavano dentro. A ogni rilascio
+// chi studia in barca doveva riscaricarle.
+//
+// Qui `sw.js` si esegue davvero, com'e' pubblicato, contro una Cache Storage
+// finta: install e activate, come fa il browser dopo un rilascio.
+
+const ORIGINE = 'https://rottagiusta.it';
+
+function cacheStorageFinta() {
+  const cache = new Map();                               // nome -> Map(url -> corpo)
+  const assoluto = (r) => new URL(typeof r === 'string' ? r : r.url, ORIGINE).href;
+  const apri = (nome) => {
+    if (!cache.has(nome)) cache.set(nome, new Map());
+    const voci = cache.get(nome);
+    return {
+      async add(u) { const res = await fetchFinta(u); voci.set(assoluto(u), await res.text()); },
+      async addAll(l) { for (const u of l) await this.add(u); },
+      async put(r, res) { voci.set(assoluto(r), await res.text()); },
+      async match(r) { const k = assoluto(r); return voci.has(k) ? new Response(voci.get(k)) : undefined; },
+      async keys() { return [...voci.keys()].map((url) => ({ url })); },
+    };
+  };
+  return {
+    cache,
+    api: {
+      async open(nome) { return apri(nome); },
+      async keys() { return [...cache.keys()]; },
+      async delete(nome) { return cache.delete(nome); },
+      async has(nome) { return cache.has(nome); },
+      async match(r) {
+        for (const nome of cache.keys()) { const hit = await apri(nome).match(r); if (hit) return hit; }
+        return undefined;
+      },
+    },
+  };
+}
+
+// La rete: ogni file risponde con un corpo che dice da dove viene, cosi' si
+// distingue la copia rimasta in cache da quella scaricata adesso.
+async function fetchFinta(u) {
+  return new Response('rete:' + new URL(typeof u === 'string' ? u : u.url, ORIGINE).pathname);
+}
+
+async function eseguiServiceWorker(cs) {
+  const { readFile } = await import('node:fs/promises');
+  const vm = await import('node:vm');
+  const codice = await readFile(new URL('../site/sw.js', import.meta.url), 'utf8');
+  const gestori = {};
+  const self = {
+    addEventListener: (tipo, f) => { gestori[tipo] = f; },
+    skipWaiting: async () => {},
+    clients: { claim: async () => {} },
+    location: { origin: ORIGINE },
+  };
+  vm.runInNewContext(codice, { self, caches: cs.api, fetch: fetchFinta, URL, Response, Promise });
+  const evento = async (tipo) => {
+    const attese = [];
+    gestori[tipo]({ waitUntil: (p) => attese.push(p) });
+    await Promise.all(attese);
+  };
+  await evento('install');
+  await evento('activate');
+  return codice.match(/const CACHE = '([^']+)'/)[1];
+}
+
+const FIGURE_VERE = Object.values(JSON.parse(readFileSync(new URL('../site/figure/index.json', import.meta.url), 'utf8')));
+
+function rilascioPrecedente(cs) {
+  // Il dispositivo come l'abbiamo trovato: la versione vecchia installata, le
+  // figure scaricate col pulsante, e una banca che nel frattempo e' cambiata.
+  const vecchia = new Map();
+  vecchia.set(ORIGINE + '/app', 'vecchia:/app');
+  vecchia.set(ORIGINE + '/dati/quiz.json', 'vecchia:/dati/quiz.json');
+  // Fuori dal guscio, messo in cache dal fetch alla prima richiesta: l'install
+  // non lo riscarica, quindi e' qui che si vede se la copia porta avanti solo
+  // le figure o tutto quello che trova.
+  vecchia.set(ORIGINE + '/dati/carteggio_e12.json', 'vecchia:/dati/carteggio_e12.json');
+  vecchia.set(ORIGINE + '/figure/index.json', 'vecchia:/figure/index.json');
+  for (const f of FIGURE_VERE) vecchia.set(ORIGINE + '/figure/' + f, 'vecchia:/figure/' + f);
+  cs.cache.set('rg-0.0.1', vecchia);
+}
+
+test('sw.js: le figure scaricate sopravvivono a un rilascio', async () => {
+  assert.equal(FIGURE_VERE.length, 102, 'la banca pubblicata ha 102 disegni');
+  const cs = cacheStorageFinta();
+  rilascioPrecedente(cs);
+  const CACHE = await eseguiServiceWorker(cs);
+
+  // Una cache sola, quella nuova: e' quella che Info e l'autodiagnosi cercano
+  // con `startsWith('rg-')`, e una seconda cache col prefisso le confonderebbe.
+  assert.deepEqual([...cs.cache.keys()], [CACHE], 'dopo l\'activate resta una cache sola, quella nuova');
+  const voci = cs.cache.get(CACHE);
+  const figure = [...voci.keys()].filter((k) => k.startsWith(ORIGINE + '/figure/') && !k.endsWith('/index.json'));
+  assert.equal(figure.length, 102, `dopo il rilascio le figure in cache sono ${figure.length}, non 102`);
+  assert.ok(voci.has(ORIGINE + '/figure/index.json'), 'anche l\'indice delle figure resta');
+});
+
+test('sw.js: da un rilascio all\'altro passano solo le figure, non la banca', async () => {
+  // Le figure sono l'Allegato A e non cambiano; la banca si': note, correzioni,
+  // quesiti oscurati. Portare avanti la copia vecchia di quiz.json servirebbe a
+  // chi aggiorna la banca di ieri con l'aria di quella di oggi.
+  const cs = cacheStorageFinta();
+  rilascioPrecedente(cs);
+  const CACHE = await eseguiServiceWorker(cs);
+  const voci = cs.cache.get(CACHE);
+  assert.equal(voci.get(ORIGINE + '/dati/quiz.json'), 'rete:/dati/quiz.json', 'la banca viene dalla rete, non dal rilascio vecchio');
+  assert.equal(voci.get(ORIGINE + '/app'), 'rete:/app', 'la pagina viene dalla rete, non dal rilascio vecchio');
+  assert.ok(!voci.has(ORIGINE + '/dati/carteggio_e12.json'),
+    'un file della banca fuori dal guscio non passa: alla prossima richiesta si riprende dalla rete');
+  assert.equal(voci.get(ORIGINE + '/figure/figura-001.png'), 'vecchia:/figure/figura-001.png',
+    'la figura e\' quella gia\' scaricata: nessun download in piu\'');
+});
+
+test('sw.js: senza figure scaricate, il rilascio non ne inventa', async () => {
+  // L'autodiagnosi conta le figure in cache: se l'activate le mettesse da se',
+  // il pulsante «Scarica tutto» diventerebbe una promessa gia' mantenuta da
+  // nessuno. Le 102 figure non si scaricano di soppiatto su una rete a consumo.
+  const cs = cacheStorageFinta();
+  cs.cache.set('rg-0.0.1', new Map([[ORIGINE + '/app', 'vecchia:/app']]));
+  const CACHE = await eseguiServiceWorker(cs);
+  const figure = [...cs.cache.get(CACHE).keys()].filter((k) => k.includes('/figure/'));
+  assert.deepEqual(figure, []);
+});

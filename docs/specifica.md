@@ -256,7 +256,13 @@ costate:
   muore con `ERR_FAILED` anche online. Due test lo tengono fermo, e
   `strumenti/serve.py` riproduce in locale gli stessi 308.
 
-Le figure si scaricano con un pulsante, apposta: sono 102 file.
+Le figure si scaricano con un pulsante, apposta: sono 102 file. **E si scaricano
+una volta sola**: a ogni rilascio l'`activate` le copia dalla cache vecchia a
+quella nuova prima di cancellarla. Solo le figure, che sono l'Allegato A e non
+cambiano; la banca e le pagine si riprendono dalla rete all'install. La cache
+resta una sola, perché la pagina la cerca con `startsWith('rg-')` e prende la
+prima che trova. Fino alla 0.26.0 le figure si perdevano a ogni rilascio
+(R-ARCH-10, R-ARCH-11).
 
 ### 3.6 La versione, in tre posti
 
@@ -744,6 +750,8 @@ colonna: «scoperto, perché …» è una risposta accettabile, «—» no.
 | R-ARCH-07 | Il nome del database IndexedDB non cambia col nome del progetto | `test_dati.py::test_rinomino` |
 | R-ARCH-08 | Il prefisso della cache è uno solo, in tutti i punti che lo cercano | `test_dati.py::test_prefisso_cache` |
 | R-ARCH-09 | I due `<title>` sono diversi, e quello della vetrina nomina la patente | `test_dati.py::test_indirizzi` |
+| R-ARCH-10 | Le figure scaricate per l'offline sopravvivono a un rilascio, nella cache nuova e senza un secondo download | `test_engine.mjs::sw.js: le figure scaricate sopravvivono a un rilascio` |
+| R-ARCH-11 | Da un rilascio all'altro passano solo le figure: la banca e le pagine vengono dalla rete | `test_engine.mjs::sw.js: da un rilascio all` |
 
 ### 9.3 La selezione
 

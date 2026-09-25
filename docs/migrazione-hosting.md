@@ -271,6 +271,12 @@ nuovo host**, e la schermata Info si accorge da sola del passaggio intermedio.
   su Pages (non misurato là, letto nel codice). È un difetto del prodotto,
   aperto come attività separata, non di questa migrazione.
 
+  *Chiuso il 25 settembre 2026, su `main`:* l'`activate` porta le figure nella
+  cache nuova prima di cancellare la vecchia. Provato in locale sul ciclo vero —
+  figure scaricate, rilascio, due ricariche — con «figure 102/102» dopo. Vale dal
+  primo rilascio che contiene il `sw.js` corretto: chi passa dalla 0.26.0 alla
+  successiva le tiene.
+
 **Non misurato, e resta al §3:** il comportamento di chi arriva dal vecchio
 indirizzo, e il service worker di `.pages.dev` su un dispositivo che ce l'ha già.
 Il browser usato qui non aveva mai visto `.pages.dev`, quindi non poteva dirlo.
