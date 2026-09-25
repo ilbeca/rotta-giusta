@@ -1554,11 +1554,31 @@ function aggiornaBadge() {
   dipingiStatoRotta();
 }
 
+// Il sito si e' spostato su rottagiusta.it il 25 settembre 2026. L'archivio
+// delle risposte e' legato all'indirizzo, quindi chi apre la palestra su quello
+// vecchio ha i progressi li' e non li vede sul nuovo. E' misurato che il
+// redirect finale congela chi ha la palestra installata su questa copia, con il
+// service worker che non si aggiorna piu': l'avviso deve esserci **prima**, in
+// questa versione, perche' e' quella che resta. docs/migrazione-hosting.md.
+const CASA = 'rottagiusta.it';
+
+/** Vero quando la palestra gira su un indirizzo che non e' il suo: il vecchio
+ *  .pages.dev, o il dominio gestito di statichost. In locale no. */
+function fuoriCasa() {
+  const h = location.hostname;
+  return h !== CASA && h !== 'localhost' && h !== '127.0.0.1';
+}
+
 /** Gli stati incerti o falliti precedono le attività e restano visibili. */
 function dipingiStatoRotta() {
   const box = document.getElementById('rotta-alerts');
   const alert = (testo, azioni = '', errore = false) => `<div class="route-alert${errore ? ' error' : ''}" role="alert"><svg class="ico" aria-hidden="true"><use href="#i-info"/></svg><div>${testo}</div>${azioni}</div>`;
   const righe = [];
+  // Il trasloco viene prima di tutto: e' l'unico stato che fa perdere qualcosa
+  // se lo si ignora, e lo si scopre solo quando e' troppo tardi.
+  if (fuoriCasa()) righe.push(alert(
+    '<strong>Rotta Giusta ora è su ' + CASA + '.</strong><span>Questo indirizzo sta per essere chiuso. I tuoi progressi restano in questo browser, legati a questo indirizzo, e non si spostano da soli: scaricali in un file, apri la palestra nuova e ricaricali dalla schermata Info.</span>',
+    '<button class="text-btn" data-route-export>Scarica i progressi</button><a class="text-btn" href="' + 'https://' + CASA + '/app' + '">Vai a ' + CASA + '</a>'));
   if (ARCH.errore) righe.push(alert(
     '<strong>Le ultime risposte potrebbero non essere salvate.</strong><span>Scarica i progressi prima di chiudere la pagina e controlla l\'archivio.</span>',
     '<button class="text-btn" data-route-export>Scarica i progressi</button><button class="text-btn" data-info-section="importa">Controlla l\'archivio</button>', true));
