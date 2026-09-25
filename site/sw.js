@@ -18,7 +18,7 @@
 // all'activate — **tranne le figure, che passano da una all'altra** (vedi
 // `portaAvantiLeFigure`, sotto).
 
-const CACHE = 'rg-0.26.2';
+const CACHE = 'rg-0.27.0';
 
 // Il minimo per aprire l'app e fare una batteria. Le 102 figure no: sono 1,1 MB
 // e scaricarle di soppiatto su una rete a consumo e' scortese. C'e' il pulsante

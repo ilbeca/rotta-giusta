@@ -11,6 +11,8 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+## [0.27.0] — 2026-09-25
+
 ### Verificato — la v0.26.2 sul dominio vero
 
 - **Le figure offline sopravvivono a un rilascio, misurato dove conta.** La
