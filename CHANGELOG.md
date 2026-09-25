@@ -11,6 +11,28 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+### Migrazione dell'hosting — la fase B misurata
+
+- **Sul dominio vero il service worker regge, e la regola delle due ricariche è
+  misurata invece che dichiarata.** Prima visita su `rottagiusta.it` in un
+  browser che non l'aveva mai visto: 19 voci in cache uguali al `GUSCIO`, 122 con
+  le figure, **nessuna rediretta**; a pagina ricaricata **zero byte** dalla rete.
+  Poi il rilascio v0.26.0 usato come versione da prendere: alla prima ricarica la
+  pagina è ancora v0.25.0 con la cache già `rg-0.26.0`, e Info lo scrive da sola;
+  alla seconda è v0.26.0. Sei criteri di accettazione su otto: restano i due
+  della fase C, che tocca il repo.
+
+- **Un push non arriva a statichost.eu.** Nessun webhook sul repo: la build parte
+  solo con «Build now». Finché Pages e statichost.eu convivono, le due produzioni
+  possono servire versioni diverse senza che niente lo dica — il rilascio ha un
+  passo in più, e va deciso alla fase D se automatizzarlo.
+
+- **Trovato misurando, e fuori da questa migrazione:** le 102 figure scaricate
+  per l'offline **si perdono a ogni rilascio**, perché l'`activate` di `sw.js`
+  cancella la cache versionata che le contiene. Non è muto — il pallino ambra si
+  accende — ma costa un nuovo scaricamento a chi studia senza rete. Aperto come
+  attività separata.
+
 ## [0.26.0] — 2026-09-25
 
 ### Spostato

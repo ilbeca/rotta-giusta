@@ -91,10 +91,10 @@ Onestà obbligatoria: queste cose sono **assunte**, non verificate.
 
 1. ~~**Il certificato sul dominio vero.**~~ Misurato alla fase A (§4): due
    certificati Let's Encrypt, uno per nome, emessi da soli in pochi minuti.
-2. **Il service worker installato davvero sul nuovo host.** Finora si sono
-   misurati i codici HTTP con `curl`. La proprietà che conta è un'altra, e si
-   legge solo nel browser: `redirected` su ogni voce della cache.
-3. **Il ciclo di aggiornamento** sul nuovo host: la regola delle due ricariche.
+2. ~~**Il service worker installato davvero sul nuovo host.**~~ Misurato alla
+   fase B (§4): 122 voci in cache, nessuna rediretta.
+3. ~~**Il ciclo di aggiornamento** sul nuovo host.~~ Misurato alla fase B, con il
+   rilascio v0.26.0: la regola delle due ricariche regge.
 4. **Il comportamento di chi arriva dal vecchio indirizzo** dopo il passaggio.
 5. **Il service worker già installato dal vecchio dominio.** È su un'origine
    diversa, quindi in teoria non c'entra — ma è teoria, non misura.
@@ -220,6 +220,61 @@ browser: serve una richiesta esplicita, che nessuno ha fatto.
 Pages no (lì risponde 200 ma con la vetrina, vedi la correzione alla §2).
 Contiene solo la regola di `sw.js`, che è già nel repo pubblico.
 
+#### Fatta il 25 settembre 2026 — il service worker, e il ciclo delle due ricariche
+
+Nel browser integrato dell'app, che non aveva mai visto `rottagiusta.it`: una
+prima visita vera. Tutte le letture sono `caches`, `navigator.serviceWorker` e
+`performance` nella pagina, più il testo della schermata Info.
+
+**Prima visita, v0.25.0.** Service worker `activated`, scope `/`, pagina
+controllata. Una sola cache, `rg-0.25.0`, con **19 voci che coincidono con il
+`GUSCIO` di `sw.js`**, tutte 200, tipo `basic`, **nessuna con
+`redirected: true`**. Dopo «Scarica tutto per l'offline»: **122 voci** (19 + 102
+figure + `figure/index.json`), tutte 200, zero rediritte, e Info scrive «Pronto
+per l'offline … figure 102/102». Console vuota.
+
+**A pagina ricaricata: zero byte dalla rete.** `transferSize` 0 sulla
+navigazione e su tutte e sette le risorse dello stesso sito, ognuna con
+`workerStart > 0`.
+
+**Il ciclo, con un rilascio vero.** Pubblicata la v0.26.0 (push, poi «Build now»
+su statichost.eu — vedi sotto), verificato con `curl` che il nuovo host servisse
+`CACHE = 'rg-0.26.0'` e `versione: 0.26.0`. Poi, nello stesso browser:
+
+| | Pagina | Cache installata | Info scrive |
+|---|---|---|---|
+| prima della pubblicazione | v0.25.0 | `rg-0.25.0` | «v0.25.0 · cache offline rg-0.25.0» |
+| **prima ricarica** | **v0.25.0** | **`rg-0.26.0`** (la vecchia già cancellata) | «… **— diverse: ricarica due volte** questa pagina per prendere la nuova» |
+| **seconda ricarica** | **v0.26.0** | `rg-0.26.0` | «v0.26.0 · cache offline rg-0.26.0» |
+
+Alla seconda ricarica: `lunghezzaScreening` è nel motore servito, zero byte dalla
+rete, 19 voci e nessuna rediretta. **La regola delle due ricariche è misurata sul
+nuovo host**, e la schermata Info si accorge da sola del passaggio intermedio.
+
+**Due cose trovate facendolo:**
+
+- **Un push non arriva a statichost.eu.** Dopo il push di `main` e del tag non
+  è partita nessuna build: il sito costruisce da `github.com/ilbeca/rotta-giusta`,
+  ramo `main`, ma solo quando qualcuno preme «Build now» o manda una `POST` al
+  loro indirizzo di deploy, e sul repo non c'è nessun webhook (`gh api
+  repos/ilbeca/rotta-giusta/hooks` → 0). Oggi quindi un
+  rilascio va su Pages da solo e su `rottagiusta.it` **solo se qualcuno se ne
+  ricorda** — cioè le due produzioni possono servire versioni diverse senza che
+  niente lo dica. Finché convivono, il rilascio ha un passo in più. Alla fase D
+  va deciso se aggiungere il webhook (con il token, che il pannello permette di
+  pretendere) o tenere il passo manuale e scriverlo nella procedura.
+- **Le figure scaricate per l'offline si perdono a ogni rilascio.** Le 102
+  figure stavano in `rg-0.25.0`, e l'`activate` del nuovo service worker cancella
+  ogni cache che non si chiama come la corrente: dopo la seconda ricarica Info
+  dice «figure non scaricate». Non è muto — il pallino ambra si accende — e non
+  dipende dall'hosting: lo decide l'`activate` di `sw.js`, che è lo stesso file
+  su Pages (non misurato là, letto nel codice). È un difetto del prodotto,
+  aperto come attività separata, non di questa migrazione.
+
+**Non misurato, e resta al §3:** il comportamento di chi arriva dal vecchio
+indirizzo, e il service worker di `.pages.dev` su un dispositivo che ce l'ha già.
+Il browser usato qui non aveva mai visto `.pages.dev`, quindi non poteva dirlo.
+
 ### Fase C — il repo (due rami, e non è un dettaglio)
 
 **Su `main`** — Claude:
@@ -267,12 +322,12 @@ quella che fra sei mesi qualcuno «semplifica».
 
 Tutti misurati, nessuno dedotto.
 
-- [ ] `https://rottagiusta.it` risponde 200 con certificato valido
-- [ ] `/app`, `/privacy`, `/avvertenza` → 200, **zero salti**
-- [ ] `/sw.js` → `cache-control: no-cache`
-- [ ] Service worker `activated`; **nessuna voce in cache con `redirected: true`**
-- [ ] A pagina ricaricata: **zero byte trasferiti**
-- [ ] Le quattro suite verdi
+- [x] `https://rottagiusta.it` risponde 200 con certificato valido
+- [x] `/app`, `/privacy`, `/avvertenza` → 200, **zero salti**
+- [x] `/sw.js` → `cache-control: no-cache`
+- [x] Service worker `activated`; **nessuna voce in cache con `redirected: true`**
+- [x] A pagina ricaricata: **zero byte trasferiti**
+- [x] Le quattro suite verdi (al rilascio v0.26.0: 125/199/121/218)
 - [ ] Nessun file del repo dichiara più Cloudflare, tranne il CHANGELOG
 - [ ] `strumenti/serve.py` riproduce il **nuovo** host, e lo dice nel docstring
 
@@ -308,3 +363,9 @@ statici da un server a un altro.
 - **25 settembre 2026 — prima stesura.** Dopo la misura sul sito di prova, che
   ha corretto la conclusione del 10 settembre: `_redirects` non serve, la
   migrazione costa zero righe di codice invece di tre file.
+- **25 settembre 2026, sera — fasi A e B fatte.** Il dominio punta a
+  statichost.eu (A/AAAA, perché IONOS non ha ALIAS), certificati emessi da soli.
+  Passata `curl`, service worker e ciclo delle due ricariche misurati sul dominio
+  vero, con il rilascio v0.26.0 usato come versione da prendere. Sei criteri su
+  otto soddisfatti: restano i due della fase C. Corrette due caselle della §2
+  che erano state scritte e non misurate.
