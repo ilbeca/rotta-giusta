@@ -2,7 +2,19 @@
 
 ## Status
 
-**Accepted** — 25 settembre 2026.
+**Superseded da ADR-003** — 25 settembre 2026, lo stesso giorno.
+
+Resta qui per intero, e non per archivio: l'analisi del rischio che contiene —
+che cosa si detiene, che cosa espone una violazione, perche' la sincronia in
+questo progetto e' pericolosa — vale ancora, ed e' il materiale su cui l'ADR-003
+ha dovuto rispondere. Una decisione superata si dichiara: cancellarla farebbe
+sparire anche il ragionamento che ha portato alla successiva.
+
+**Perche' e' caduta.** Chiedeva una cosa sola, implicita e mai verificata: che
+al titolare del sito **non servisse leggere i dati**. Verificata, la risposta e'
+stata no — servono per il supporto e per le statistiche. E un archivio che il
+server non puo' decifrare non si puo' leggere per definizione: non e' una
+limitazione da aggirare, e' la proprieta' stessa.
 
 ## Date
 

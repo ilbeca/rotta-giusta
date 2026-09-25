@@ -284,6 +284,34 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ### Deciso
 
+- **ADR-003: account obbligatorio, con i dati sul server. Sostituisce l'ADR-002
+  dello stesso giorno.** L'ADR-002 poggiava su un'assunzione implicita e mai
+  verificata: che al titolare **non servisse leggere i dati**. Verificata, la
+  risposta e' stata no — servono per il supporto e per le statistiche — e un
+  archivio cifrato lato client non si puo' leggere per definizione. Non e' un
+  limite da aggirare: e' la proprieta' stessa. Quindi cade per intero.
+
+  Deciso: email e password, **obbligatorio**, con verifica dell'indirizzo; righe
+  sul server in chiaro; import del file esistente come conversione in account;
+  cancellazione dopo **due anni di inattivita', con avviso**.
+
+  **Perche' qui la sincronia non e' il disastro della 0.4.2**, ed e' la domanda
+  che la decisione doveva superare: li' si fondeva **lo specchio**, cioe' stato
+  derivato, e qualcuno doveva vincere. Le righe no: sono append-only e hanno un
+  `uid`, quindi fondere due archivi e' un'**unione di insiemi** — nessun
+  conflitto, nessun vincitore. Lo specchio non viaggia mai e si ricalcola sempre
+  in locale, quindi R-ARCH-01 resta intatta. Non e' merito di questo ADR: e'
+  merito del modello dei dati scelto nella 0.3.0 per un altro motivo.
+
+  Cadono quattro Vincoli su sette del §2: niente account, niente backend, niente
+  sincronizzazione, niente cookie. Restano la contabilita' unica dello storico,
+  il carteggio che non si corregge da solo, niente build step, la banca
+  immutabile.
+
+  **L'ADR-002 resta sul disco per intero**, marcato superato e con scritto
+  perche' e' caduto: la sua analisi del rischio e' il materiale su cui l'ADR-003
+  ha dovuto rispondere, e cancellarla farebbe sparire il ragionamento.
+
 - **ADR-002: il recupero dei progressi si fa con una frase, non con un account.**
   L'archivio è una copia sola e chi cambia telefono perde tutto: è il difetto più
   grave del prodotto verso chi lo usa, ed è una conseguenza scelta
