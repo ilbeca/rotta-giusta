@@ -313,6 +313,8 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   fuori dal CHANGELOG, in **tre territori diversi**, e quello che pesa di più è
   `site/privacy.html`, che nomina Cloudflare come titolare autonomo dei log.
 
+### Deciso
+
 - **ADR-002: il recupero dei progressi si fa con una frase, non con un account.**
   L'archivio è una copia sola e chi cambia telefono perde tutto: è il difetto più
   grave del prodotto verso chi lo usa, ed è una conseguenza scelta
