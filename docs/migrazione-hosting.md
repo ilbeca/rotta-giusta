@@ -30,12 +30,24 @@ Misurato il **25 settembre 2026** su un sito di prova vero,
 | `/index.html` | **200** | 308 → `/` |
 | `/app` | **200** | 200 |
 | `/app.html` | **200** | **308** → `/app` |
-| `/app/` | 404 | — |
+| `/app/` | 404 | **308** → `/app` |
 | `/privacy`, `/avvertenza` | **200** | 200 |
 | `/privacy.html` | **200** | **308** → `/privacy` |
-| inesistente | 404 | 404 |
+| inesistente | 404 (`404 Not Found`, testo) | **200, con la vetrina** |
 
-**Salti di redirect: zero, su ogni percorso.** Verificato con `num_redirects`.
+**Salti di redirect su statichost.eu: zero, su ogni percorso.** Verificato con
+`num_redirects`.
+
+> **Correzione a verbale, 25 settembre sera.** Le ultime due righe della colonna
+> Pages dicevano «—» e «404»: non erano state misurate, erano state scritte. La
+> misura dice 308 e **200**. `site/` non ha un `404.html`, e senza quel file Pages
+> tratta il sito come un'applicazione a pagina singola: qualunque percorso che non
+> esiste riceve `index.html` con codice 200 — `/a/b/c`, `/non-esiste`, perfino
+> `/_headers`. Su statichost.eu lo stesso indirizzo risponde 404. È un
+> cambiamento di comportamento reale: un link sbagliato oggi atterra sulla
+> vetrina, domani su un «404 Not Found» in testo semplice. Più onesto, meno
+> gentile; un `404.html` con un rimando alla palestra è una decisione
+> dell'interfaccia, non di questa migrazione.
 
 ### Le tre conclusioni che ne discendono
 
@@ -77,9 +89,8 @@ sito continua a essere servito.
 
 Onestà obbligatoria: queste cose sono **assunte**, non verificate.
 
-1. **Il certificato sul dominio vero.** Su `rotta-giusta.statichost.page` si è
-   emesso da solo. Su `rottagiusta.it`, con un CNAME da un registrar terzo, non
-   è stato provato.
+1. ~~**Il certificato sul dominio vero.**~~ Misurato alla fase A (§4): due
+   certificati Let's Encrypt, uno per nome, emessi da soli in pochi minuti.
 2. **Il service worker installato davvero sul nuovo host.** Finora si sono
    misurati i codici HTTP con `curl`. La proprietà che conta è un'altra, e si
    legge solo nel browser: `redirected` su ogni voce della cache.
@@ -103,6 +114,65 @@ Onestà obbligatoria: queste cose sono **assunte**, non verificate.
 **Non toccare ancora Cloudflare Pages.** I due indirizzi devono convivere: è la
 rete di sicurezza, e non costa niente.
 
+#### Fatta il 25 settembre 2026 — che cosa c'è adesso
+
+Eseguita da Claude nel browser dell'autore, con la sua conferma prima di ogni
+modifica. Il registrar è InterNetX, il DNS è di IONOS (`ui-dns.*`).
+
+**statichost.eu**, sito `rotta-giusta`: `rottagiusta.it` è **Primary**,
+`www.rottagiusta.it` è in redirect, `rotta-giusta.statichost.page` resta
+**Managed** e continua a rispondere 200 (non rimanda al primario).
+
+**IONOS**, zona `rottagiusta.it`:
+
+| Record | Prima | Dopo |
+|---|---|---|
+| `A @` | `217.160.0.41` (parcheggio IONOS, «Default Site») | `95.217.26.94` |
+| `AAAA @` | `2001:8d8:100f:f000::200` (parcheggio) | `2a01:4f9:c01f:8002::` |
+| `TXT _dep_ws_mutex` | c'era (del parcheggio) | disattivato da IONOS insieme ai due sopra |
+| `CNAME www` | non c'era | `rotta-giusta.statichost.page` |
+| MX, SPF, DMARC, DKIM, autodiscover | — | **invariati**, verificati su 1.1.1.1 e 9.9.9.9 |
+
+**Perché A/AAAA e non ALIAS.** statichost.eu chiede ALIAS/ANAME per il dominio
+nudo; IONOS non li offre. Il ripiego documentato sono A e AAAA verso il loro
+«main server».
+
+**Quali indirizzi, e perché questi.** La documentazione di statichost.eu indica
+`95.217.26.94` / `2a01:4f9:c01f:8002::`; il nome dietro il loro CNAME,
+`sites.statichost.eu`, risolveva invece a `46.225.58.80` /
+`2a01:4f8:1c19:d92e::1`. Entrambi gli IPv4 servono il sito (misurato con
+`--resolve`, 200 tutti e due). Scelti quelli della documentazione: sono il
+contratto pubblicato per chi non ha ALIAS, quelli risolti possono cambiare senza
+che nessuno lo dica. **Il prezzo è da sapere:** se statichost.eu sposta il main
+server, questi due record vanno aggiornati a mano.
+
+**Certificati.** Let's Encrypt (YE2), `notBefore` 17:03 UTC del 25 settembre —
+che **non** è l'ora di emissione: Let's Encrypt retrodata l'inizio di validità di
+un'ora, quindi sono stati emessi verso le 18:03, pochi minuti dopo il cambio dei
+record. Scadenza 24 dicembre 2026, rinnovo a carico della piattaforma. Due certificati
+distinti: `CN=rottagiusta.it` e `CN=www.rottagiusta.it`. Verificati con
+`openssl s_client` e con `curl` **senza** `-k`.
+
+**Tre cose trovate facendolo, non previste:**
+
+- **`www` risponde 302, non 301.** Il pannello scrive «Redirect 301»; la misura
+  dice `HTTP/2 302`, `location: https://rottagiusta.it/app`. Un 302 è
+  temporaneo: browser e motori di ricerca non lo tengono come definitivo. Non
+  rompe niente, ma il pannello dice una cosa e il server ne fa un'altra — da
+  segnalare a statichost.eu.
+- **IONOS, aggiungendo un AAAA sul dominio nudo, ne crea uno anche per `www`**
+  se non glielo si impedisce («Non aggiungere record DNS per www»). Quel record
+  avrebbe fatto a pugni con il CNAME di `www`. Escluso.
+- **La cache DNS di macOS tiene il vecchio indirizzo per il TTL intero** (un'ora).
+  Subito dopo la modifica, 1.1.1.1 e 9.9.9.9 davano già i record nuovi, mentre
+  `curl` sul Mac andava ancora al parcheggio e falliva il TLS. Chi misura nella
+  prima ora deve forzare l'indirizzo (`--resolve`) o svuotare la cache, altrimenti
+  misura il parcheggio e conclude che il certificato non c'è.
+
+**Non verificato:** l'**IPv6**. Il Mac da cui si è misurato non ha connettività
+IPv6 (`curl -6` verso qualunque host fallisce), quindi il record AAAA è quello
+della documentazione e basta. Va misurato da una rete che ce l'ha.
+
 ### Fase B — la misura (Claude, `main`)
 
 4. La stessa passata della sezione 2, ma su `https://rottagiusta.it`: codici,
@@ -111,6 +181,44 @@ rete di sicurezza, e non costa niente.
    **nessuna con `redirected: true`**.
 6. Il ciclo di aggiornamento: una versione nuova, e la regola delle due
    ricariche verificata invece che dichiarata.
+
+#### Fatta il 25 settembre 2026 — la passata con `curl`
+
+Su `https://rottagiusta.it`, indirizzo forzato a `95.217.26.94` con `--resolve`
+perché la cache DNS del Mac puntava ancora al parcheggio.
+
+| Percorso | Codice | Salti |
+|---|---|---|
+| `/`, `/index`, `/index.html` | 200 (28.808 B) | 0 |
+| `/app`, `/app.html` | 200 (248.999 B) | 0 |
+| `/privacy`, `/privacy.html`, `/avvertenza`, `/avvertenza.html` | 200 | 0 |
+| `/app/`, inesistente | 404 | 0 |
+| `sw.js`, `engine.js`, `manifest.json`, i quattro `dati/*.json`, `figure/index.json`, una figura, `marchio.svg` | 200 | 0 |
+
+Stessa tabella del sito di prova (§2), su tutte le righe. HTTP/2 ovunque.
+
+**Il contenuto è quello pubblicato, byte per byte.** SHA-256 dei file serviti
+contro il repo: `index.html`, `app.html`, `sw.js`, `manifest.json`, `privacy`,
+`avvertenza`, tre JSON e `_headers` coincidono con `main`; `engine.js` coincide
+con `origin/main` (v0.25.0) e non con `main`, che ha un commit non ancora
+pubblicato. Cioè il sito è la v0.25.0 e niente altro.
+
+**Header.** `/sw.js` → `cache-control: no-cache`; `/app`, `/`, `engine.js`, i
+JSON e le figure → `public, max-age=0, must-revalidate`. Gzip su testo e JSON,
+`server: statichost.eu`, `x-content-type-options: nosniff`.
+
+**Una cosa che su Pages non c'era:** statichost.eu manda
+`strict-transport-security: max-age=31536000; includeSubDomains; preload` anche
+sul dominio personalizzato. Per un anno, un browser che ha visto quell'header
+userà HTTPS per **ogni** sottodominio di `rottagiusta.it`. Oggi non morde — i
+sottodomini che esistono sono della posta IONOS e di `www` — ma è una decisione
+presa dalla piattaforma sul dominio dell'autore, e va saputa prima di creare un
+sottodominio solo HTTP. `preload` da solo non iscrive il dominio alla lista dei
+browser: serve una richiesta esplicita, che nessuno ha fatto.
+
+**E una cosa da sapere, innocua:** `/_headers` è servito come file pubblico. Su
+Pages no (lì risponde 200 ma con la vetrina, vedi la correzione alla §2).
+Contiene solo la regola di `sw.js`, che è già nel repo pubblico.
 
 ### Fase C — il repo (due rami, e non è un dettaglio)
 
