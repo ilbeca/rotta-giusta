@@ -11,6 +11,29 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+### Verificato — la v0.26.1 sul dominio vero
+
+- **La v0.26.1 è su `rottagiusta.it`**, con «Build now» su statichost.eu dopo il
+  push: `curl` legge `CACHE = 'rg-0.26.1'` e `versione: 0.26.1`. Nel browser della
+  fase B, alla prima ricarica la pagina è ancora v0.26.0 con la cache già
+  `rg-0.26.1`; alla seconda è v0.26.1, e il service worker attivo è quello che
+  porta avanti le figure.
+
+- **Il passaggio 0.26.0 → 0.26.1 non dimostra la correzione, e lo si dichiara.**
+  Alla prima ricarica `rg-0.26.1` aveva 19 voci e **zero figure**. Non è la copia
+  che fallisce: con ogni probabilità `rg-0.26.0` di figure non ne aveva, perché le
+  aveva già perse al rilascio 0.26.0 — è la misura da cui è nata la correzione —
+  e nessuno le aveva riscaricate. Ma è una deduzione: la cache vecchia era già
+  cancellata e non si può più guardare. Sul dominio, quindi, la correzione resta
+  **non misurata**; la tengono ferma i tre test e il ciclo in locale con lo
+  stesso `sw.js`.
+
+- **La misura vera è preparata.** Sul dominio, sotto la 0.26.1, «Scarica tutto per
+  l'offline»: `rg-0.26.1` con **122 voci, 102 figure, nessuna rediretta**, e Info
+  scrive «Pronto per l'offline … figure 102/102». Al prossimo rilascio, in quello
+  stesso browser, due ricariche: se Info scrive ancora «figure 102/102» senza un
+  secondo scaricamento, la correzione è verificata dove conta.
+
 ## [0.26.1] — 2026-09-25
 
 ### Migrazione dell'hosting — la fase B misurata
