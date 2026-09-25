@@ -314,6 +314,46 @@ sul nuovo host la sua *ragione* sparisce: non c'è più un 308 da evitare. Il te
 resta, il commento va riscritto. Una regola che sopravvive al proprio motivo è
 quella che fra sei mesi qualcuno «semplifica».
 
+#### Fatta il 25 settembre 2026
+
+**Su `main`** (`d302467`): `serve.py` riscritto sulle regole misurate su
+`rottagiusta.it` — nessun redirect, file con l'estensione servito, cartelle a
+404 in testo semplice, `Cache-Control` letto da `site/_headers`. Il test
+`test_dati.py::test_serve` è stato scritto **prima**: sul `serve.py` vecchio
+dava 12 rossi, uno per differenza vera; ora è R-ARCH-12. Guardato anche nel
+browser: la palestra servita da `serve.py` installa il guscio (19 voci, poi 122
+con le figure, nessuna rediretta, «Pronto per l'offline») come sul dominio.
+`AGENTS.md`, specifica, `README.md`, skill, `sw.js` e i due test nominano
+statichost.eu o spiegano la regola degli indirizzi puliti con il suo motivo di
+oggi. R-ARCH-05 è stato trattato come chiesto sopra: il test resta, il motivo è
+riscritto in cinque posti.
+
+**Trovato facendolo:** «un push pubblica il sito» stava scritto in `AGENTS.md`,
+nella specifica e nella skill, e su `rottagiusta.it` non è vero (niente webhook,
+serve «Build now»). Riscritto nei tre posti, e la chiusura di un rilascio ha il
+passo in più.
+
+**Su `ui/main`** (`5527246`, fusa in `c024369` con il controllo dei territori
+pulito): la privacy nomina statichost.eu e riporta ciò che la **sua** informativa
+dichiara — IP usato solo per consegnare le pagine, non conservato, nessun terzo,
+trattamento nell'UE, statistiche anonime. Solo statichost.eu, per decisione
+dell'autore, anche se `.pages.dev` resta acceso fino alla fase D: **in quella
+finestra la privacy letta sul vecchio indirizzo non descrive l'host che la sta
+servendo**, ed è una ragione per non allungare la fase D.
+
+**Aperto, e non è una questione tecnica:** l'informativa di statichost.eu dice
+che per i siti ospitati **non è responsabile del trattamento** — rimanda
+all'informativa del sito — e offre un accordo sul trattamento dei dati (DPA) da
+firmare. Con Cloudflare la privacy poteva dire «titolare autonomo»; ora il
+paragrafo «Cosa non c'è» («nessun dato personale viene trattato dall'autore»,
+«né una base giuridica da individuare») è rimasto com'era, e va riletto da chi
+può dare un parere giuridico, insieme alla scelta se firmare il DPA. Non l'ha
+riscritto Claude: è un giudizio, non una misura.
+
+**Per arrivare in produzione serve un rilascio.** `privacy.html` sta nel guscio
+offline, che è cache-first: senza un `CACHE` nuovo, chi ha già installato la
+palestra continuerebbe a leggere la versione con Cloudflare.
+
 ### Fase D — la dismissione (autore, per ultima)
 
 7. Solo dopo che `rottagiusta.it` è verificato: far puntare il vecchio indirizzo
@@ -334,8 +374,11 @@ Tutti misurati, nessuno dedotto.
 - [x] Service worker `activated`; **nessuna voce in cache con `redirected: true`**
 - [x] A pagina ricaricata: **zero byte trasferiti**
 - [x] Le quattro suite verdi (al rilascio v0.26.0: 125/199/121/218)
-- [ ] Nessun file del repo dichiara più Cloudflare, tranne il CHANGELOG
-- [ ] `strumenti/serve.py` riproduce il **nuovo** host, e lo dice nel docstring
+- [x] Nessun file del repo dichiara più Cloudflare, tranne il CHANGELOG — dove
+  resta è storia, al passato, o il nome come parola di ricerca nella skill.
+  Controllato con `git grep -iE 'cloudflare|\bPages\b'`; in `site/` zero
+- [x] `strumenti/serve.py` riproduce il **nuovo** host, e lo dice nel docstring —
+  e `test_serve` lo pretende
 
 ---
 
@@ -375,3 +418,7 @@ statici da un server a un altro.
   vero, con il rilascio v0.26.0 usato come versione da prendere. Sei criteri su
   otto soddisfatti: restano i due della fase C. Corrette due caselle della §2
   che erano state scritte e non misurate.
+- **25 settembre 2026, notte — fase C fatta**, su `main` e su `ui/main`. Otto
+  criteri su otto. Restano la fase D, che è dell'autore, un rilascio perché la
+  privacy nuova arrivi a chi ha il guscio installato, e il paragrafo giuridico
+  della privacy da far rileggere.

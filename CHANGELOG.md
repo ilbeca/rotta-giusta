@@ -71,6 +71,19 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   commenti di `app.html` e `_headers` sono dell'interfaccia: arrivano da
   `ui/main`.
 
+- **La privacy nomina statichost.eu** (da `ui/main`, scritta da Claude con
+  ChatGPT fermo). Diceva che Cloudflare tiene i log degli IP come titolare
+  autonomo; ora riporta quello che dichiara l'informativa di statichost.eu — IP
+  usato solo per consegnare le pagine, non conservato, nessun terzo, UE — con il
+  link. Guardata nel browser: zero sbordamento, link con il loro stile.
+
+  **Resta aperto, ed è scritto nel documento di migrazione:** statichost.eu dice
+  di non essere responsabile del trattamento per i siti che ospita e offre un
+  DPA da firmare. Il paragrafo «Cosa non c'è», che afferma che l'autore non
+  tratta dati personali, è rimasto com'era: è un giudizio giuridico, da far
+  rileggere a chi può darlo, non una misura. E finché `.pages.dev` è acceso la
+  privacy letta lì descrive un host che non è quello che la serve.
+
 ## [0.26.1] — 2026-09-25
 
 ### Migrazione dell'hosting — la fase B misurata
