@@ -26,6 +26,29 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   non nomina Cloudflare. Servita dal dominio: 200, zero salti, anche su
   `/privacy.html`.
 
+### Aggiunto — la fase D comincia con un avviso
+
+- **Aperte su un indirizzo che non è `rottagiusta.it`, palestra e vetrina lo
+  dicono.** La palestra mette in cima al Percorso l'avviso del trasloco, con
+  «Scarica i progressi» e il link alla palestra nuova; la vetrina mostra una
+  striscia e manda «Inizia subito» e le tessere a `rottagiusta.it/app`. In
+  locale non scatta. R-STA-09, `test_trasloco`, scritto prima: 13 verifiche,
+  rosse finché l'interfaccia non c'era.
+
+  **Perché prima del redirect, e non al suo posto.** Misurato su un server di
+  prova: con un 301 su tutto, chi ha la palestra installata continua ad aprirla
+  dalla cache e il service worker non si aggiorna più — *«The script resource is
+  behind a redirect, which is disallowed»*, solo in console. Resterebbe per
+  sempre sull'indirizzo vecchio, con i progressi lì, senza saperlo. È il guasto
+  muto nella sua forma più pulita, e sarebbe arrivato da un gesto che sembra
+  innocuo. La versione che resta congelata è quella che c'è in quel momento:
+  quindi l'avviso esce adesso, Pages resta acceso qualche settimana, e il
+  redirect viene dopo. Il piano è in `docs/migrazione-hosting.md`.
+
+  Guardato nel browser: in casa niente avviso e dieci tessere su `/app`; fuori
+  casa la striscia e i link riscritti; l'avviso della palestra a 375 px, primo
+  degli stati, link di 44 px, nessuno sbordamento.
+
 ## [0.26.2] — 2026-09-25
 
 ### Verificato — la v0.26.1 sul dominio vero

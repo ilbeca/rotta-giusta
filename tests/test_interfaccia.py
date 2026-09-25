@@ -387,12 +387,58 @@ def test_alt_di_contenuto():
               'corretto: togli la riga da docs/eccezioni-interfaccia.md')
 
 
+def test_trasloco():
+    # R-STA-09. Il 25 settembre 2026 il sito si e' spostato da
+    # open-patente-nautica.pages.dev a rottagiusta.it. L'archivio delle risposte
+    # e' legato all'origine, quindi non segue da solo; e misurato: un redirect
+    # sul vecchio indirizzo congela chi ha la palestra installata su una copia
+    # in cache, con il service worker che non si aggiorna piu' («The script
+    # resource is behind a redirect, which is disallowed»), **senza un avviso**.
+    # Quindi, prima del redirect, la versione che resta congelata deve gia'
+    # contenere l'avviso: la palestra, fuori casa, dice dove andare e offre di
+    # scaricare i progressi; la vetrina manda alla palestra nuova, cosi' chi
+    # arriva adesso non comincia a salvare risposte sull'indirizzo vecchio.
+    app = leggi('app.html')
+    vetrina = leggi('index.html')
+    casa_app = re.search(r"const CASA = '([^']+)'", app)
+    casa_vet = re.search(r"const CASA = '([^']+)'", vetrina)
+    check('trasloco: app.html dichiara CASA', casa_app is not None)
+    check('trasloco: index.html dichiara CASA', casa_vet is not None)
+    if casa_app and casa_vet:
+        check('trasloco: la stessa CASA nelle due pagine, ed e\' rottagiusta.it',
+              casa_app.group(1) == casa_vet.group(1) == 'rottagiusta.it',
+              '%s vs %s' % (casa_app.group(1), casa_vet.group(1)))
+    f = re.search(r'function fuoriCasa\(\)\s*\{(.*?)\n\}', app, re.S)
+    check('trasloco: app.html ha fuoriCasa()', f is not None)
+    if f:
+        corpo = f.group(1)
+        check('trasloco: fuoriCasa() guarda location.hostname e CASA',
+              'location.hostname' in corpo and 'CASA' in corpo)
+        check('trasloco: fuoriCasa() non scatta in locale',
+              'localhost' in corpo and '127.0.0.1' in corpo)
+    d = re.search(r'function dipingiStatoRotta\(\)\s*\{(.*?)\n\}', app, re.S)
+    check('trasloco: dipingiStatoRotta() esiste', d is not None)
+    if d:
+        corpo = d.group(1)
+        i = corpo.find('fuoriCasa()')
+        check('trasloco: il Percorso chiama fuoriCasa()', i >= 0)
+        blocco = corpo[i:i + 900] if i >= 0 else ''
+        check('trasloco: l\'avviso offre di scaricare i progressi', 'data-route-export' in blocco, blocco[:120])
+        check('trasloco: l\'avviso porta alla palestra su CASA', "'https://' + CASA + '/app'" in blocco
+              or '`https://${CASA}/app`' in blocco, blocco[:120])
+        prima = corpo.find('righe.push')
+        check('trasloco: l\'avviso e\' il primo degli stati del Percorso', i >= 0 and (prima < 0 or i < prima))
+    check('trasloco: la vetrina guarda location.hostname', 'location.hostname' in vetrina)
+    check('trasloco: la vetrina riscrive i link /app verso CASA fuori casa',
+          'a[href="/app"]' in vetrina and ('`https://${CASA}/app`' in vetrina or "'https://' + CASA + '/app'" in vetrina))
+
+
 def main():
     for t in (test_viste_dichiarate, test_ogni_vista_ha_una_porta,
               test_voci_barra, test_modalita_quiz, test_selettori,
               test_motore_senza_orfani, test_chiamate_al_motore_preservate,
               test_letture_che_non_mascherano,
-              test_testi_leggibili, test_alt_di_contenuto):
+              test_testi_leggibili, test_alt_di_contenuto, test_trasloco):
         t()
     if falliti:
         print('%d verifiche FALLITE su %d:\n' % (len(falliti), fatti))

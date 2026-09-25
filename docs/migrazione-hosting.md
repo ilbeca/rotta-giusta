@@ -362,6 +362,53 @@ palestra continuerebbe a leggere la versione con Cloudflare.
    0.20.0 avverte che rinominarlo spegne il vecchio `.pages.dev` **senza
    redirect**. Chi ha il sito fra i segnalibri lo perde.
 
+#### Cominciata il 25 settembre 2026 — e perché in due tempi
+
+**Il punto 8 è misurato:** il progetto non è stato rinominato,
+`open-patente-nautica.pages.dev` risponde 200 e serve la stessa versione di
+`rottagiusta.it`; `rotta-giusta.pages.dev` non esiste.
+
+**Il redirect semplice è un guasto muto, e lo è per chi conta di più.** Provato
+su un server di prova che serve il sito e poi, a comando, risponde 301 verso
+`rottagiusta.it` su ogni percorso — cioè quello che farebbe Pages dismesso. Con
+la palestra già installata, dopo il redirect: la pagina **si apre lo stesso**,
+servita dalla cache, v0.26.2, come se niente fosse; e l'aggiornamento del
+service worker fallisce con *«The script resource is behind a redirect, which is
+disallowed»*, scritto solo nella console. Chi ha la palestra installata
+resterebbe per sempre su quella copia, sull'indirizzo vecchio, con i progressi
+lì, **senza un avviso**. Spegnere il progetto invece di rediregerlo dà lo stesso
+risultato, più i link morti. Nessun dato si perde — la copia congelata funziona
+— ma nessuno saprebbe che deve spostarsi.
+
+**Quindi, deciso dall'autore: due tempi, con avviso, poi redirect, poi
+eliminazione.**
+
+1. **D1 — l'avviso (v0.27.0).** Aperte su un indirizzo che non è
+   `rottagiusta.it`, la palestra mette in cima al Percorso «Rotta Giusta ora è su
+   rottagiusta.it», con «Scarica i progressi» e il link alla palestra nuova; la
+   vetrina mostra una striscia e manda «Inizia subito» e le tessere a
+   `rottagiusta.it/app`, così chi arriva adesso non comincia a salvare risposte
+   sull'indirizzo vecchio. In locale non scatta. R-STA-09,
+   `test_interfaccia.py::test_trasloco`. Pubblicata su entrambi gli host: su
+   `rottagiusta.it` non si vede, su `.pages.dev` sì.
+2. **La finestra.** Pages resta acceso qualche settimana, perché i dispositivi
+   che hanno la palestra installata aprano il sito almeno due volte e prendano la
+   v0.27.0. Proposta: **non prima del 16 ottobre 2026**. Non esiste un modo di
+   sapere quanti siano: il sito non ha analytics, per scelta.
+3. **D2 — il redirect.** Il progetto Pages passa a un ramo suo, per esempio
+   `pages/addio`, il cui `site/` contiene solo un `_redirects` con
+   `/* https://rottagiusta.it/:splat 301`. Su un ramo a parte e non su `main`,
+   perché `main` lo costruisce anche statichost.eu, e se statichost.eu leggesse
+   `_redirects` (non misurato) il sito rimanderebbe a sé stesso. Chi ha la
+   palestra installata resta congelato **sulla v0.27.0, con l'avviso dentro**; chi
+   arriva senza, finisce su `rottagiusta.it`.
+4. **D3 — l'eliminazione.** Qualche mese dopo il redirect: il progetto Pages si
+   elimina, e la filiera è tutta europea. Da quel giorno i link vecchi non
+   rispondono più.
+
+Il pannello di Cloudflare chiede l'accesso: D2 e D3 li fa l'autore, o Claude
+dopo che l'autore ha fatto l'accesso nel browser.
+
 ---
 
 ## 5. Criteri di accettazione

@@ -807,6 +807,7 @@ stare nella barra.
 | R-STA-06 | L'autodiagnosi offline apre ogni voce del guscio, non ne controlla la chiave | scoperto — richiede un service worker attivo su HTTPS |
 | R-STA-07 | Una figura indisponibile si dichiara con il perché | `test_dati.py::test_figure` |
 | R-STA-08 | Una lettura che fallisce non ripiega su un dato plausibile: le letture cieche ancora presenti sono dichiarate, con l'area che le chiude | `test_interfaccia.py::test_letture_che_non_mascherano` |
+| R-STA-09 | Aperte su un indirizzo che non è `rottagiusta.it`, la palestra lo dichiara per prima cosa e offre di scaricare i progressi, e la vetrina manda alla palestra sul nuovo indirizzo | `test_interfaccia.py::test_trasloco` |
 
 ### 9.6 Il tempo, e il ciclo che si chiude
 
