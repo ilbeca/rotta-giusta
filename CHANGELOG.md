@@ -147,6 +147,56 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   stesso colore non distinguevano più niente.
 
 
+### Progettato — area 1
+
+- **Percorso e primo ingresso**, definiti in `docs/area-1-progetto.md` per la
+  successiva implementazione: ingresso diretto senza domanda sulla preparazione,
+  prima attività fino a 10 quiz base e ritorno fino a 25, testi completi e
+  riepilogo limitato ai fatti della lista. La scelta evita di trasformare poche
+  risposte in una diagnosi e lascia disponibili scelta libera e Carteggio.
+  Durata solo dal ritmo affidabile e da `stimaImpegno()`, data facoltativa,
+  stati di archivio e salvataggio distinti, correzione progettata di sette
+  eccezioni tipografiche. Previsto il punto d'inserimento dell'ambito futuro,
+  senza mostrarlo. Nessuna implementazione in `site/` in questa sessione.
+
+- **Verificata la base allineata a `main`**: 121 casi motore (120 superati,
+  1 skip previsto), 199 verifiche dati, 128 interfaccia e 210 specifica.
+  Casi sintetici sul motore confermano la distinzione fra mai visti e rimanenti,
+  la soglia 29/30 del ritmo e la Mirata vuota con banca tutta corretta: il
+  progetto gestisce questi casi senza conteggi o selezioni sostitutive.
+  Il collaudo della nuova interfaccia e le prove con persone restano da svolgere.
+
+### Realizzato — area 1
+
+- **Il Percorso ora orienta e apre davvero la prima attività senza trasformarla
+  in una diagnosi.** Con archivio ordinario vuoto propone la stessa lista
+  `mirata()` che annuncia, fino a 10 quiz base; dopo la prima risposta ne prepara
+  una nuova fino a 25. La pagina separa Quiz, Carteggio, scelta libera, Segnali,
+  data facoltativa e conservazione dei progressi, così Carteggio e importazione
+  restano accessibili senza un quiz preliminare. Il primo runner conserva la
+  risposta ufficiale sullo schermo e il suo riepilogo descrive soltanto le
+  risposte appena date, gli errori consultabili e le domande non affrontate.
+
+- **Archivio e tempo non producono più rassicurazioni inventate.** Il ripiego di
+  lettura distingue chiave assente, archivio letto ed errore; banca, Carteggio,
+  salvataggio e offline hanno stati e azioni espliciti, visibili anche nel
+  runner e nella revisione. La durata compare solo quando `ritmo()` ha almeno
+  30 risposte base misurate e `stimaImpegno()` conferma la fonte `orologio`.
+  `ritmo` esce quindi dagli orfani dichiarati ed entra fra le chiamate protette;
+  le sette eccezioni tipografiche dell'app e la lettura cieca vengono rimosse
+  soltanto insieme alle rispettive correzioni.
+
+- **Collaudo:** 121 casi motore (120 superati e 1 skip previsto), 199 verifiche
+  dati, 120 interfaccia e 214 specifica, tutti verdi. Le verifiche interfaccia
+  erano 137: 17 controlli spariscono perché sette eccezioni tipografiche e la
+  lettura cieca erano controllate nei due versi, mentre `ritmo` passa da due
+  controlli da orfano a uno da chiamata protetta. Guardati Percorso, prima
+  attività, riepilogo, Quiz e Carteggio a 375 e 1280 px: zero sbordamento,
+  bersagli visibili almeno 44 × 44 px, testo minimo 11 px e contrasto minimo
+  misurato 5,16:1. Verificati inoltre stop a zero e dopo una risposta, ritorno
+  con nuova selezione da 25, data futura e rimossa, revisione e ripristino del
+  focus, pannello richiudibile con Esc e assenza di errori in console.
+
 ## [0.24.0] — 2026-09-12
 
 ### Aggiunto
