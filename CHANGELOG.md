@@ -134,6 +134,42 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   `site/` in `docs/prossime-sessioni.md` legge ora ogni frase nei due stati:
   quasi tutte quelle sul «tuo browser» diventano false in entrambi.
 
+### Progettato — gli account
+
+- **`docs/account-progetto.md`: il *come* che l'ADR-003 e l'ADR-004 lasciavano
+  aperto.** Tabelle, Argon2id, cookie di sessione, forma dell'API, verifica
+  dell'email, sincronia delle righe, conversione di un file, il passaggio di chi
+  ha già un archivio nel browser, onboarding, cancellazione a due anni. Niente
+  codice, e senza l'account Scaleway: quello che dipende da lì è «da misurare».
+  Le sezioni 5, 8, 9 e 10 di `recupero-progetto.md` non sono state rifatte.
+
+  **Tre scelte con il loro perché.** Il server in Node, perché importa
+  `engine.js` e rifiuta le stesse righe del browser con la stessa funzione —
+  una seconda copia delle regole è la riga con `ts: "boh"` della 0.4.6, che
+  spegneva la palestra su ogni dispositivo. Il cursore della sincronia è un
+  numero assegnato dal server, **non `ts`**: una risposta data offline il 3 e
+  inviata il 10 ha un `ts` più vecchio dell'ultimo scaricato, e un cursore su
+  `ts` la salterebbe per sempre. E una *generazione* per account, perché con
+  l'unione per `uid` un telefono rimasto offline rimanderebbe le righe appena
+  azzerate: una cancellazione che non cancella, senza un errore.
+
+  **Cinque misure.** `rottagiusta.it` manda HSTS con `includeSubDomains`, quindi
+  `api.` è in HTTPS dal primo giorno. Il dominio ha già una posta IONOS con **un
+  SPF solo**: un secondo record per Scaleway li invaliderebbe entrambi e
+  romperebbe la posta dell'autore, quindi il sito spedisce da `posta.`.
+  Argon2id con i parametri OWASP (19 MiB, t=2) in 27 ms sul Mac, e
+  `crypto.argon2` c'è in Node 25.3 senza avvisi; `node:sqlite` invece stampa
+  ancora `ExperimentalWarning`, ed è dichiarato. 100 account da 2.100 risposte
+  in SQLite: 69,6 MiB, 347 byte a riga.
+
+  **E due difetti vivi, trovati misurando.** Le righe dei tag N/L/C nascono
+  senza `ts` (`app.html:4319`), e `fondiArchivio()` le scarta tutte: una
+  risposta con il suo tag dà `nuove: 1, scartate: 1`. E ritaggare **cancella**
+  la riga vecchia: è l'unico punto in cui l'archivio non è append-only, e il
+  primo che l'unione per `uid` avrebbe tradito. Sono di `app.html`, quindi di
+  `ui/*`, e stanno in `docs/prossime-sessioni.md` come lavoro da fare prima del
+  client degli account.
+
 ## [0.27.0] — 2026-09-25
 
 ### Verificato — la v0.26.2 sul dominio vero

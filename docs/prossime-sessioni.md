@@ -117,23 +117,23 @@ e 113 («Niente account, niente registrazione … non arrivano mai a nessuno»),
 `.claude/skills/rotta-giusta/SKILL.md` righe 15 e 18 («Nessun server»). Sono del
 territorio `regole`.
 
-## 2 · Il progetto di realizzazione degli account
+## 2 · Il progetto di realizzazione degli account — fatto
 
-L'ADR-003 e l'ADR-004 dicono *che cosa* e *perché*, e dichiarano di non decidere
-il *come*. L'ADR-004 elenca tre domande lasciate apposta a questo progetto.
+È `docs/account-progetto.md`. Restano due cose, e nessuna è una sessione di
+progetto:
 
-**Claude, su `main`. Richiede l'account Scaleway** (calcolo, database, posta).
+- **le decisioni dell'autore** del suo §20 — la macchina, la lunghezza della
+  password, quanto vive un account non confermato, le preferenze senza account,
+  gli IP nel registro;
+- **le misure su Scaleway** del suo §19, che arrivano con l'account.
 
-```
-Leggi docs/adr/ADR-003, docs/adr/ADR-004 e docs/recupero-progetto.md — superato, ma le
-sezioni 5 (l'endpoint e la sua origine propria, misurata), 8, 9 e 10
-valgono ancora e non vanno rifatte. Scrivi il progetto di realizzazione
-degli account: tabelle, hashing, sessione, forma dell'API, verifica
-dell'email, conversione di un file esportato, le risposte della pagina
-aperta che salgono alla registrazione, il passaggio di chi ha già un
-archivio nel browser, i dati dell'onboarding, cancellazione a due anni.
-Niente codice: l'interfaccia è in ridisegno.
-```
+E ne nascono due lavori piccoli, che vengono **prima** del client degli account:
+
+- **`validaRiga()` nel motore** (§4.1) — Claude, su `main`. Non aspetta Scaleway
+  né il ridisegno, e va passata su un export vero prima di fissarne le regole.
+- **I due difetti dei tag N/L/C** (§4.2) — ChatGPT, su `ui/*`: le righe di tag
+  nascono senza `ts` e ogni import le scarta; ritaggare cancella una riga, unico
+  punto non append-only dell'archivio.
 
 ## 3 · Il ridisegno, la fetta successiva
 
@@ -202,7 +202,9 @@ qui si consuma, non si riprogetta.
 
 ## 4 · Fuori dalle sessioni — l'autore
 
-- Aprire l'account **Scaleway** (blocca il punto 2).
+- Aprire l'account **Scaleway**: blocca il server (punto 3-bis) e le misure
+  del §19 di `docs/account-progetto.md`.
+- Le decisioni del §20 di `docs/account-progetto.md`.
 - Q-ONBOARD (specifica §10): che cosa chiede l'onboarding oltre alla data, e se
   il sito consiglia un piano di studio strutturato.
 
@@ -222,3 +224,7 @@ qui si consuma, non si riprogetta.
   prova e non resta niente; con l'account si salva e si vedono i Progressi. La
   fetta del ridisegno non aspetta la registrazione, e l'elenco per `ui/*` legge
   ogni testo nei due stati. Entra Q-ONBOARD fra le decisioni dell'autore.
+- **25 settembre 2026 — il punto 2 è fatto**, senza Scaleway: il progetto è
+  `docs/account-progetto.md`, con quello che dipende da Scaleway marcato «da
+  misurare». Ha trovato due difetti vivi nelle righe dei tag, che entrano qui
+  come lavoro per `ui/*`.
