@@ -385,38 +385,64 @@ Il `_t:'s'` non si ricrea aprendo la revisione. Nella revisione storica il
 totale della prova viene da `_t:'s'`; se manca, non ricostruire una lista
 prospettica dai conteggi dell'archivio.
 
-**Contratto richiesto a `main`, da confermare prima del codice UI (§10.1):**
-un'opzione esplicita `confine: 'attivita'` per `sessioni()` e
-`erroriSessione()`, oppure un contratto equivalente documentato da chi tiene
-il motore. Non è già supportata: oggi un'opzione sconosciuta viene ignorata.
-Il requisito è che tutte le righe di una stessa attività registrata, anche
-oltre una pausa di 20 minuti, restino disponibili insieme. Forma proposta:
+**Contratto consegnato da `main` (P-30, 26 settembre 2026).** La forma
+proposta qui è stata adottata, con quattro precisazioni che la proposta
+lasciava a `main`. Il riferimento è il commento di `sessioni()` ed
+`erroriSessione()` in `site/engine.js`, e §4.4 della specifica.
 
 ```js
 // Fonte: archivio leggibile o righe in memoria della pagina/attività.
-// Chiamate autorizzate soltanto dopo consegna del contratto su main.
 const opzioni = { confine: 'attivita' };
 const sessione = E.sessioni(fonte, opzioni).find(s => s.id === id);
-const riprova = E.erroriSessione(fonte, banca, id, opzioni);
-// riprova = { lista, quanti, fonte, trovata }, come il risultato esistente.
+const riprova = E.erroriSessione(fonte, banca, id);   // confine sempre 'attivita'
+// riprova = { lista, quanti, fonte, trovata, ambigua, motivi, mancanti }
 // Snapshot in memoria: id, revisione dei dati, riprova.
 // Etichetta N = riprova.quanti; Inizia => apri(riprova.lista, 'sbagliate', ...).
 ```
 
+- **`sessioni(righe, { confine })`** accetta `'pausa'`, il predefinito, e
+  `'attivita'`; qualunque altro valore **lancia**, invece di essere ignorato.
+  Con `'attivita'` tutte le righe di un `sim_uid` stanno in un gruppo, oltre
+  la pausa e anche intrecciate con un'altra attività (due schede), e ogni id
+  compare una volta sola. Le righe senza legame si ricostruiscono come nel
+  predefinito — stessi gruppi, stessi id, `fonte: 'risposte'` —: non si
+  uniscono in pagina né nel motore.
+- **Il predefinito non cambia.** `ritmo()` lo usa, e un controllo pretende che
+  un'attività ripresa dopo 21 minuti non ne gonfi la misura.
+- **`erroriSessione()` usa sempre il confine dell'attività**, e un
+  `opt.confine` diverso lancia: gli errori di mezza attività non sono mai la
+  risposta giusta. Non serve passargli l'opzione.
+- **Un id ambiguo si dichiara.** Un gruppo che raccoglie un quesito ripetuto,
+  due modalità o due banche porta `ambigua: true` e `motivi` (fra
+  `'quesito ripetuto'`, `'modalità diverse'`, `'banca diversa'`), sia in
+  `sessioni()` sia in `erroriSessione()`. Qui `erroriSessione()` restituisce
+  `lista: []` e **`quanti: null`**: non «nessun errore», che sarebbe falso,
+  ma «non si sa». La UI blocca la riprova col testo del §8.
+- **I quesiti mancanti si nominano.** `mancanti` sono gli `item_id` sbagliati
+  che la banca passata non ha: gli errori dell'attività sono
+  `quanti + mancanti.length`, senza che la pagina li riconti.
+
 Per una sessione senza legame registrato, usare il confine ricostruito dal
-motore e dichiararlo. Non unire quei gruppi in pagina. Il nuovo contratto deve
-preservare l'ordine delle righe, gli errori per tentativo e i comportamenti
-di default usati da ritmo e dalle altre viste. Un identificativo riusato con
-quesiti duplicati o modalità/banca incoerenti non si presenta come attività
-integra: il motore deve renderlo distinguibile e la UI blocca la riprova
-ambigua. La forma di questa segnalazione va scritta da `main` insieme al
-contratto; non si risolve silenziosamente prendendo il primo gruppo.
+motore e dichiararlo. Il nuovo contratto preserva l'ordine delle righe e gli
+errori per tentativo.
+
+**Che cosa oggi la pagina fa ancora col confine per pausa** (letto nel codice
+di `app.html` a `31aa19b`, non guidato nel browser): l'elenco delle sessioni
+in Progressi, la revisione di una sessione o di una prova (`sessioniTutte()`)
+e «l'ultima attività» del Percorso (`E.sessioni(S.archivio, { limite: 1 })`).
+Un'attività ripresa dopo una pausa vi compare **in due righe con lo stesso
+id**, e tutte e due aprono la metà più recente; la revisione di una
+simulazione con una pausa oltre 20 minuti ne mostra una parte. Sono chiamanti
+di interfaccia: passano a `confine: 'attivita'` con la realizzazione di
+quest'area, insieme al riepilogo.
 
 Quando `trovata` è false: sessione indisponibile, non «nessun errore».
 Quando `quanti !== lista.length`: avvio bloccato e guasto visibile (§8).
-Quando il dettaglio contiene E errori ma `quanti < E` per quesiti assenti
-dalla banca: dettaglio conservato e riprova bloccata; nessun «Riprova questi
-E» che ne apra meno. Zero risposte della simulazione ha dettaglio vuoto noto,
+Quando `mancanti` non è vuoto, cioè il dettaglio contiene E errori ma
+`quanti < E` per quesiti assenti dalla banca: dettaglio conservato e riprova
+bloccata; nessun «Riprova questi E» che ne apra meno. Quando `ambigua` è
+true: dettaglio disponibile, riprova bloccata col testo «contratto ambiguo»
+del §8. Zero risposte della simulazione ha dettaglio vuoto noto,
 non si tratta come sessione persa.
 
 ### 7.2 Chiamanti e comportamenti da preservare
@@ -503,6 +529,9 @@ scritture. Nessun audio nuovo o lampeggio di esito. Zoom al 200 % e viewport
 ### 10.1 Contatto con chi tiene motore, test e specifica
 
 **Dipendenza prima della realizzazione su `ui/main`: il confine dell'attività.**
+**Chiusa da P-30 su `main` il 26 settembre 2026:** il caso qui sotto è un
+test, e il contratto consegnato sta nel §7.1. Restano aperte le altre
+dipendenze di questa sezione.
 Riprodotto in P-14 sulla base `80e9120`: tre righe `_t:'q'`, tutte con
 `sim_uid: 'attivita'`, `mode:'argomento'`, `kind:'base'`, quesiti distinti;
 orari `10:00:00`, `10:01:00`, `10:22:01` del 26 settembre 2026, offset

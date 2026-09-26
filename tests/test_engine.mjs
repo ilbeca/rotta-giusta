@@ -1927,8 +1927,150 @@ test('erroriSessione: un quesito che ricompare apre una sessione nuova, e resta 
                ts: new Date(new Date(righe[3].ts).getTime() + 20000).toISOString() });
   const items = righe.map((r) => ({ id: r.item_id, k: 'base' }));
   assert.equal(sessioni(righe).length, 2, 'il doppione taglia la sessione');
+  // Dal 26 settembre 2026 (P-30) erroriSessione() legge il confine
+  // dell'attivita': lo stesso `sim_uid` con un doppione non e' una lista che il
+  // runner possa scrivere, quindi l'id e' ambiguo e non si riapre niente. Prima
+  // restituiva la prima meta' e basta. L'errore della seconda lista resta fuori
+  // lo stesso.
   const e = erroriSessione(righe, items, 'a');
-  assert.equal(e.lista.length, 1, 'la prima lista porta il suo errore, non quello della seconda');
+  assert.equal(e.ambigua, true);
+  assert.deepEqual(e.motivi, ['quesito ripetuto']);
+  assert.deepEqual(e.lista, []);
+  // Senza legame, dove la regola del doppione fa il lavoro vero, la prima lista
+  // porta il suo errore e non quello della seconda, come prima.
+  const libere = righe.map((r) => ({ ...r, sim_uid: null }));
+  const [seconda, prima] = sessioni(libere, { confine: 'attivita' });
+  assert.equal(prima.n, 4); assert.equal(seconda.n, 1);
+  const ep = erroriSessione(libere, items, prima.id);
+  assert.equal(ep.lista.length, 1, 'la prima lista porta il suo errore, non quello della seconda');
+  assert.equal(ep.fonte, 'risposte');
+});
+
+// --- Il confine dell'attivita' (P-30) ----------------------------------------
+//
+// Trovato dal progetto dell'area 3 (docs/area-3-progetto.md §10.1) e
+// riprodotto dalla regia: tre risposte con lo stesso `sim_uid`, la terza dopo
+// 21 minuti, due sbagliate. Il confine per pausa le spezzava in due gruppi con
+// lo **stesso id**, ed `erroriSessione()` restituiva un errore su due
+// dichiarando `fonte: 'sim_uid'` — il confine registrato, proprio mentre lo
+// tagliava. I cinque test qui sopra passavano perche' nessuno esercitava una
+// pausa: il conteggio restava coerente con la lista sbagliata.
+
+/** Il caso esatto del §10.1: 10:00:00, 10:01:00, 10:22:01, sbagliata/giusta/sbagliata. */
+function attivitaConPausa(simUid = 'attivita') {
+  return [['10:00:00', 0], ['10:01:00', 1], ['10:22:01', 0]].map(([ora, ok], i) => ({
+    _t: 'q', uid: `${simUid}-${i}`, item_id: `base-${simUid}-${i}`, kind: 'base',
+    mode: 'argomento', sim_uid: simUid, correct: ok, ms: 9000,
+    ts: `2026-09-26T${ora}+02:00`,
+  }));
+}
+const bancaDi = (righe) => righe.map((r) => ({ id: r.item_id, k: r.kind }));
+
+test('erroriSessione: un attivita registrata resta intera oltre la pausa', () => {
+  const righe = attivitaConPausa();
+  const e = erroriSessione(righe, bancaDi(righe), 'attivita');
+  assert.equal(e.quanti, 2, 'due errori nell\'attivita, non uno');
+  assert.deepEqual(e.lista.map((x) => x.id), [righe[0].item_id, righe[2].item_id],
+    'nell\'ordine in cui sono usciti');
+  assert.equal(e.fonte, 'sim_uid');
+  assert.equal(e.ambigua, false);
+  const ss = sessioni(righe, { confine: 'attivita' });
+  assert.equal(ss.length, 1, 'una attivita, un gruppo');
+  assert.equal(ss[0].id, 'attivita');
+  assert.equal(ss[0].n, 3); assert.equal(ss[0].esatte, 1);
+  assert.equal(ss[0].durata, 22 * 60000 + 1000, 'da capo a coda, pausa compresa');
+  assert.deepEqual(ss[0].righe.map((r) => r.uid), righe.map((r) => r.uid));
+});
+
+test('sessioni: il confine per pausa resta quello di prima, e ritmo lo usa', () => {
+  // Il raggruppamento predefinito non cambia: ritmo() misura il passo fra due
+  // risposte, e una pausa di 21 minuti dentro una sessione lo falserebbe.
+  const righe = attivitaConPausa();
+  const ss = sessioni(righe);
+  assert.equal(ss.length, 2, 'senza opzione la pausa taglia ancora');
+  assert.deepEqual(ss.map((s) => s.n), [1, 2], 'la piu recente per prima');
+  assert.equal(ritmo(righe).msPerDomanda, 60000,
+    'il ritmo e\' il minuto fra le prime due, non la pausa divisa per due');
+  assert.equal(ritmo(righe).sessioni, 1);
+});
+
+test('sessioni: con confine attivita ogni id e unico e le attivita non si mescolano', () => {
+  // Due attivita' intrecciate nel tempo (due schede aperte), poi una riprova
+  // degli errori della prima con un'identita' nuova, come fa il runner.
+  const a = attivitaConPausa('a');
+  const b = [0, 1, 2].map((i) => ({
+    _t: 'q', uid: `b-${i}`, item_id: `base-b-${i}`, kind: 'base', mode: 'mirata',
+    sim_uid: 'b', correct: 0, ms: 9000, ts: `2026-09-26T10:0${i}:30+02:00`,
+  }));
+  const riprova = [a[0], a[2]].map((r, i) => ({
+    ...r, uid: `rp-${i}`, sim_uid: 'riprova', mode: 'sbagliate', correct: 1,
+    ts: `2026-09-26T10:3${i}:00+02:00`,
+  }));
+  const righe = [...a, ...b, ...riprova];
+  const banca = [...bancaDi(a), ...bancaDi(b)];
+  const ss = sessioni(righe, { confine: 'attivita' });
+  const ids = ss.map((s) => s.id);
+  assert.equal(new Set(ids).size, ids.length, 'nessun id compare due volte: ' + ids);
+  assert.deepEqual([...ids].sort(), ['a', 'b', 'riprova']);
+  for (const s of ss) assert.ok(s.righe.every((r) => r.sim_uid === s.id), s.id + ' porta solo le sue righe');
+  assert.deepEqual(erroriSessione(righe, banca, 'a').lista.map((x) => x.id), [a[0].item_id, a[2].item_id],
+    'la riprova, tutta giusta, non tocca gli errori dell\'attivita di partenza');
+  assert.equal(erroriSessione(righe, banca, 'b').quanti, 3);
+  assert.equal(erroriSessione(righe, banca, 'riprova').quanti, 0);
+  assert.ok(sessioni(righe).length > ss.length, 'col confine per pausa gli intrecci spezzano ancora');
+});
+
+test('sessioni: un confine ricostruito e lo stesso nei due regimi, e si dichiara', () => {
+  const righe = attivitaConPausa().map((r) => ({ ...r, sim_uid: null }));
+  const pausa = sessioni(righe), att = sessioni(righe, { confine: 'attivita' });
+  assert.deepEqual(att.map((s) => [s.id, s.n, s.fonte]), pausa.map((s) => [s.id, s.n, s.fonte]),
+    'senza legame registrato non c\'e\' niente da ricucire: si ricostruisce come prima');
+  assert.ok(att.every((s) => s.fonte === 'risposte'));
+  const e = erroriSessione(righe, bancaDi(righe), att[1].id);
+  assert.equal(e.fonte, 'risposte', 'dichiarato, non spacciato per registrato');
+  assert.equal(e.quanti, 1, 'il gruppo ricostruito prima della pausa ha il suo errore');
+});
+
+test('sessioni: un id riusato con un quesito ripetuto o un altra modalita e ambiguo', () => {
+  // Un `sim_uid` nasce a ogni avvio e nessuna selezione ripete un quesito: un
+  // id che raccoglie un doppione, due modalita' o due banche non e' un'attivita'
+  // integra — viene da un archivio fuso male o da un uid riusato. Non si
+  // risolve prendendo il primo gruppo: si dice.
+  const doppione = attivitaConPausa();
+  doppione.push({ ...doppione[0], uid: 'dup', ts: '2026-09-26T10:23:00+02:00' });
+  const altraModalita = attivitaConPausa();
+  altraModalita[2] = { ...altraModalita[2], mode: 'mirata' };
+  const altraBanca = attivitaConPausa();
+  altraBanca[1] = { ...altraBanca[1], kind: 'vela' };
+  for (const [righe, motivo] of [[doppione, 'quesito ripetuto'],
+    [altraModalita, 'modalità diverse'], [altraBanca, 'banca diversa']]) {
+    const [s] = sessioni(righe, { confine: 'attivita' });
+    assert.equal(s.ambigua, true, motivo);
+    assert.deepEqual(s.motivi, [motivo]);
+    const e = erroriSessione(righe, bancaDi(righe), 'attivita');
+    assert.equal(e.trovata, true);
+    assert.equal(e.ambigua, true, motivo);
+    assert.deepEqual(e.lista, [], 'nessuna lista da aprire per un\'attivita che non si puo verificare');
+    assert.equal(e.quanti, null, 'non «zero errori»: non si sa');
+  }
+  assert.equal(sessioni(attivitaConPausa(), { confine: 'attivita' })[0].ambigua, false);
+});
+
+test('erroriSessione: un errore su un quesito che la banca non ha si nomina', () => {
+  const righe = attivitaConPausa();
+  const banca = bancaDi(righe).filter((it) => it.id !== righe[2].item_id);
+  const e = erroriSessione(righe, banca, 'attivita');
+  assert.equal(e.quanti, 1);
+  assert.deepEqual(e.mancanti, [righe[2].item_id],
+    'due errori, uno solo riapribile: la differenza si dice invece di sparire');
+});
+
+test('sessioni: un confine sconosciuto e un errore, non un ripiego', () => {
+  const righe = attivitaConPausa();
+  // Un'opzione ignorata e' il guasto muto: «attività» con l'accento
+  // tornerebbe in silenzio al confine per pausa.
+  assert.throws(() => sessioni(righe, { confine: 'attività' }), /confine/);
+  assert.throws(() => erroriSessione(righe, bancaDi(righe), 'attivita', { confine: 'pausa' }), /confine/);
 });
 
 

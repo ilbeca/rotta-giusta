@@ -1109,9 +1109,32 @@ export const PAUSA_SESSIONE_MS = 20 * 60000;
  * una seconda ricerca; `prova` e' la riga di prova sostenuta (`_t: 's'`) con
  * lo stesso uid, che solo le simulazioni hanno. Due tempi: `ms` e' la somma
  * dei tempi di risposta, `durata` e' da capo a coda — a schermo va la seconda.
+ *
+ * **Due confini, e si sceglie per nome** (`opt.confine`):
+ *
+ *   - `'pausa'`, il predefinito: le quattro regole qui sopra valgono anche per
+ *     le righe con il legame. E' quello che usa `ritmo()`, che misura il passo
+ *     fra due risposte e che una pausa di mezz'ora dentro un gruppo falserebbe.
+ *     Il prezzo: un'attivita' ripresa dopo una pausa esce in **due gruppi con
+ *     lo stesso id**.
+ *   - `'attivita'`: le righe con lo stesso `sim_uid` stanno insieme, oltre la
+ *     pausa e anche intrecciate con un'altra attivita' (due schede aperte), e
+ *     ogni id compare una volta sola. E' il confine di un riepilogo, di una
+ *     revisione e di «riprova questi errori» (docs/area-3-progetto.md §7.1).
+ *     Le righe senza legame si ricostruiscono **esattamente come col primo**:
+ *     non c'e' niente di registrato da ricucire. Un'attivita' che raccoglie un
+ *     quesito ripetuto, due modalita' o due banche non e' integra — un uid nasce
+ *     a ogni avvio e nessuna selezione ripete un quesito —, quindi porta
+ *     `ambigua: true` e i `motivi`, invece di passare per buona.
+ *
+ * Un confine che non e' uno dei due e' un errore: un'opzione ignorata
+ * tornerebbe in silenzio al confine per pausa.
  */
 export function sessioni(righe, opt = {}) {
-  const { limite = Infinity } = opt;
+  const { limite = Infinity, confine = 'pausa' } = opt;
+  if (confine !== 'pausa' && confine !== 'attivita') {
+    throw new Error(`sessioni: confine sconosciuto «${confine}» (pausa | attivita)`);
+  }
   const prove = new Map();
   for (const r of righe || []) if (r && r._t === 's') prove.set(String(r.uid), r);
   const gruppi = [];
@@ -1136,7 +1159,7 @@ export function sessioni(righe, opt = {}) {
     g.fine = r.ts; g.n++; g.esatte += r.correct ? 1 : 0; g.ms += +r.ms || 0;
     g.righe.push(r);
   }
-  const out = gruppi.map(({ _visti, _ultimo, ...s }) => {
+  const out = (confine === 'attivita' ? cuciAttivita(gruppi) : gruppi).map(({ _visti, _ultimo, ...s }) => {
     const a = epoca(s.inizio), b = epoca(s.fine);
     s.durata = a != null && b != null && b >= a ? b - a : s.ms;
     s.prova = prove.get(String(s.sim_uid || '')) || null;
@@ -1145,6 +1168,35 @@ export function sessioni(righe, opt = {}) {
   out.sort((x, y) => ((epoca(y.fine) ?? 0) - (epoca(x.fine) ?? 0))
                   || ((epoca(y.inizio) ?? 0) - (epoca(x.inizio) ?? 0)));
   return Number.isFinite(limite) ? out.slice(0, limite) : out;
+}
+
+/**
+ * Il confine dell'attivita': i gruppi per pausa con lo stesso `sim_uid`
+ * diventano uno, con le righe in ordine cronologico. Si parte dai gruppi e non
+ * dalle righe apposta: cosi' quelli ricostruiti restano identici, id compreso,
+ * e i due confini differiscono soltanto dove c'e' un legame registrato.
+ */
+function cuciAttivita(gruppi) {
+  const per = new Map(), out = [];
+  for (const g of gruppi) {
+    if (!g.sim_uid) { out.push({ ...g, ambigua: false, motivi: [] }); continue; }
+    const a = per.get(g.sim_uid);
+    if (!a) { const c = { ...g, righe: [...g.righe] }; per.set(g.sim_uid, c); out.push(c); continue; }
+    a.righe.push(...g.righe);
+    a.n += g.n; a.esatte += g.esatte; a.ms += g.ms;
+  }
+  // Le righe restano in ordine senza riordinarle: i gruppi nascono in ordine
+  // cronologico e ognuno e' un tratto contiguo del tempo.
+  for (const a of per.values()) {
+    a.inizio = a.righe[0].ts; a.fine = a.righe[a.righe.length - 1].ts;
+    const ids = new Set(a.righe.map((r) => r.item_id));
+    a.motivi = [];
+    if (ids.size < a.righe.length) a.motivi.push('quesito ripetuto');
+    if (new Set(a.righe.map((r) => r.mode)).size > 1) a.motivi.push('modalità diverse');
+    if (new Set(a.righe.map((r) => r.kind)).size > 1) a.motivi.push('banca diversa');
+    a.ambigua = a.motivi.length > 0;
+  }
+  return out;
 }
 
 /**
@@ -1204,22 +1256,48 @@ export function ritmo(righe, opt = {}) {
  * stessa cosa, e su un archivio importato da altrove la differenza va detta
  * invece che nascosta.
  *
- * Un quesito non puo' comparire due volte: una sessione si chiude quando un
- * quesito ricompare, quindi il caso non esiste per costruzione. Il controllo
- * c'e' lo stesso, perche' costa una riga e regge anche su righe malformate.
+ * **Il confine e' sempre quello dell'attivita'** (`sessioni(…, { confine:
+ * 'attivita' })`), e non si sceglie: fino al 26 settembre 2026 era quello per
+ * pausa, e un'attivita' ripresa dopo 21 minuti usciva in due gruppi con lo
+ * stesso id — la funzione prendeva il primo e restituiva un errore su due,
+ * dichiarando `fonte: 'sim_uid'` proprio mentre tagliava il confine registrato
+ * (P-30, docs/area-3-progetto.md §10.1). Gli errori di mezza attivita' non sono
+ * mai la risposta giusta, quindi `opt.confine` diverso da `'attivita'` e' un
+ * errore invece di un ripiego.
+ *
+ * Il risultato, oltre a `lista`, `quanti`, `fonte` e `trovata`:
+ *   - `ambigua` e `motivi`: l'id raccoglie un quesito ripetuto, due modalita' o
+ *     due banche. Allora `lista` e' vuota e `quanti` e' `null` — non «nessun
+ *     errore», che sarebbe falso, ma «non si sa»: non si riapre una lista che
+ *     non si puo' verificare;
+ *   - `mancanti`: gli `item_id` sbagliati che la banca passata non ha. Sono
+ *     errori veri che non si possono riaprire, e la differenza fra gli errori
+ *     dell'attivita' e `quanti` si dice invece di sparire.
+ *
+ * Dentro un'attivita' integra un quesito non compare due volte; il controllo
+ * sui doppioni resta lo stesso, perche' costa una riga.
  */
 export function erroriSessione(righe, items, id, opt = {}) {
-  const s = sessioni(righe, opt).find((x) => String(x.id) === String(id));
-  if (!s) return { lista: [], quanti: 0, fonte: null, trovata: false };
+  const { confine = 'attivita' } = opt;
+  if (confine !== 'attivita') {
+    throw new Error(`erroriSessione: il confine e' quello dell'attivita', non «${confine}»`);
+  }
+  const vuoto = { lista: [], quanti: 0, fonte: null, trovata: false, ambigua: false, motivi: [], mancanti: [] };
+  const s = sessioni(righe, { confine }).find((x) => String(x.id) === String(id));
+  if (!s) return vuoto;
+  if (s.ambigua) {
+    return { ...vuoto, quanti: null, fonte: s.fonte, trovata: true, ambigua: true, motivi: s.motivi };
+  }
   const per = new Map((items || []).map((it) => [it.id, it]));
-  const visti = new Set(), lista = [];
+  const visti = new Set(), lista = [], mancanti = [];
   for (const r of s.righe) {
     if (r.correct || visti.has(r.item_id)) continue;
     visti.add(r.item_id);
     const it = per.get(r.item_id);
-    if (it) lista.push(it);
+    if (it) lista.push(it); else mancanti.push(r.item_id);
   }
-  return { lista, quanti: lista.length, fonte: s.fonte, trovata: true };
+  return { lista, quanti: lista.length, fonte: s.fonte, trovata: true,
+           ambigua: false, motivi: [], mancanti };
 }
 
 // Una riga dell'archivio pesa ~200 byte; la piu' grande misurata sull'archivio

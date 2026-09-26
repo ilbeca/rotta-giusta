@@ -486,6 +486,20 @@ registrato (`sim_uid`); per le righe senza legame si ricostruisce, e la sessione
 si chiude quando cambia `sim_uid`, cambia modalità o banca, passano più di 20
 minuti, oppure **ricompare un quesito già uscito**.
 
+**Due confini, scelti per nome** (dal 26 settembre 2026, P-30). Quello **per
+pausa** è il predefinito e applica le quattro regole anche alle righe con il
+legame: lo usa `ritmo()`, perché misura il passo fra due risposte e una pausa
+dentro un gruppo lo falserebbe. Il suo prezzo è che un'attività ripresa dopo
+20 minuti esce in due gruppi **con lo stesso id**. Quello **dell'attività**
+(`confine: 'attivita'`) tiene insieme tutte le righe di un `sim_uid`, oltre la
+pausa e anche intrecciate con un'altra attività, e ogni id compare una volta;
+le righe senza legame si ricostruiscono come nell'altro, e lo dichiarano. È il
+confine di un riepilogo, di una revisione e di `erroriSessione()`, che non ne
+accetta un altro. Un `sim_uid` che raccoglie un quesito ripetuto, due modalità
+o due banche non è una lista che il runner possa scrivere: si dichiara
+`ambigua` con i suoi motivi, e non riapre niente. Un confine sconosciuto è un
+errore, non un ripiego.
+
 **Non esiste, in nessun punto del prodotto, una sessione prospettica**: un
 obiettivo dichiarato in anticipo, con una dimensione e uno stato di avanzamento
 da riprendere. Derivare invece di registrare è ciò che ha fatto comparire 15
@@ -966,10 +980,16 @@ del progetto di preparazione. Il §4 di `prossima-versione.md` li motiva.
 | R-TEMPO-05 | Il ritmo si misura all'orologio, non al cronometro, ed è robusto senza soglie da tarare | `test_engine.mjs::ritmo: una sessione in cui ti sei alzato dal tavolo` |
 | R-TEMPO-06 | Il ritmo non dipende dalla lunghezza della sessione | `test_engine.mjs::ritmo: una sessione corta non e` |
 | R-TEMPO-07 | `stimaImpegno()` dichiara quale dei tre tempi sta riportando | `test_engine.mjs::stimaImpegno: con il ritmo misurato usa l` |
+| R-TEMPO-08 | Il ritmo si misura sul confine per pausa, e un'attività ripresa dopo una pausa non lo gonfia | `test_engine.mjs::sessioni: il confine per pausa resta quello di prima, e ritmo lo usa` |
 | R-FLU-01 | Ogni attività si chiude con un passo che propone azioni derivate da quello che è appena successo | scoperto — è interfaccia, e arriva con il ridisegno |
 | R-FLU-02 | Gli errori di una sessione si riaprono come esercizio, senza mescolarli con quelli di sempre | `test_engine.mjs::erroriSessione: apre esattamente gli errori di quella lista` |
 | R-FLU-03 | Il conteggio annunciato e la lista che si apre coincidono anche per gli errori di sessione | `test_engine.mjs::erroriSessione: il conteggio promesso e la lista coincidono` |
 | R-FLU-04 | Un confine di sessione ricostruito si dichiara invece di passare per registrato | `test_engine.mjs::erroriSessione: un confine ricostruito si dichiara` |
+| R-FLU-05 | Un'attività registrata si riapre intera anche oltre una pausa: gli errori sono tutti i suoi, e la `fonte` registrata non copre un confine tagliato | `test_engine.mjs::erroriSessione: un attivita registrata resta intera oltre la pausa` |
+| R-FLU-06 | Con il confine dell'attività ogni id compare una volta sola e le attività non si mescolano, nemmeno intrecciate nel tempo o con una riprova | `test_engine.mjs::sessioni: con confine attivita ogni id e unico e le attivita non si mescolano` |
+| R-FLU-07 | Un id che raccoglie un quesito ripetuto, due modalità o due banche si dichiara ambiguo con il motivo, e non apre una lista né promette «zero errori» | `test_engine.mjs::sessioni: un id riusato con un quesito ripetuto o un altra modalita e ambiguo` |
+| R-FLU-08 | Un errore su un quesito che la banca caricata non ha si nomina, invece di sparire dal conteggio | `test_engine.mjs::erroriSessione: un errore su un quesito che la banca non ha si nomina` |
+| R-FLU-09 | Un confine sessione sconosciuto è un errore, non un ritorno silenzioso al predefinito | `test_engine.mjs::sessioni: un confine sconosciuto e un errore, non un ripiego` |
 
 ### 9.8 Che cosa non deve sparire, e che cosa si deve leggere
 
@@ -1338,3 +1358,9 @@ successo, ed è il motivo per cui questo file esiste.
   Segnali, R-ACC-36 i due anni, R-ACC-37 gli allarmi al titolare, R-ACC-38 il
   conto delle 300 mail. Ognuno è stato provato al contrario: ventisei
   rotture, tutte rosse nel loro test.
+- **26 settembre 2026 — il confine dell'attività (P-30).** Il progetto
+  dell'area 3 aveva trovato, e la regia riprodotto, un'attività registrata
+  ripresa dopo 21 minuti che `erroriSessione()` riapriva a metà dichiarando
+  il confine registrato. §4.4 porta ora i due confini; entrano R-FLU-05…09 e
+  R-TEMPO-08, tutti coperti. Ogni controllo è stato provato al contrario:
+  quindici rotture del motore, tutte rosse nel loro test.

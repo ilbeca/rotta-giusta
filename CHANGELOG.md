@@ -44,6 +44,69 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   contro il manifesto SHA-256 ufficiale. Riferimenti locali, guardiano e
   controllo della documentazione verdi; nessuna versione modificata.
 
+### Corretto — P-30: un'attività si riapre intera, anche dopo una pausa
+
+- **`erroriSessione()` riapriva metà di un'attività, dichiarando il confine
+  registrato.** Il caso del §10.1 di `docs/area-3-progetto.md`: tre risposte
+  con lo stesso `sim_uid`, la terza 21 minuti dopo, due sbagliate.
+  `sessioni()` le spezzava per pausa in due gruppi **con lo stesso id**,
+  `erroriSessione()` prendeva il primo e restituiva **un errore su due** con
+  `fonte: 'sim_uid'`. I cinque test di prima passavano: nessuno esercitava una
+  pausa, e il conteggio restava coerente con la lista sbagliata. Succede anche
+  in una simulazione base, che dura più della pausa.
+
+- **Due confini, scelti per nome.** `sessioni(righe, { confine })`:
+  `'pausa'`, il predefinito, invariato; `'attivita'`, che tiene insieme tutte
+  le righe di un `sim_uid` oltre la pausa e anche intrecciate con un'altra
+  attività, con ogni id una volta sola. Le righe senza legame si ricostruiscono
+  identiche nei due, id compreso, perché la cucitura parte dai gruppi e tocca
+  solo quelli registrati. `erroriSessione()` usa sempre il secondo. Un confine
+  sconosciuto **lancia**: prima un'opzione ignorata tornava al predefinito in
+  silenzio, e «attività» con l'accento l'avrebbe fatto.
+
+- **Un id ambiguo si dice, invece di prendere il primo gruppo.** Un `sim_uid`
+  con un quesito ripetuto, due modalità o due banche non è una lista che il
+  runner possa scrivere — un uid nasce a ogni avvio, `mode` e `kind` sono
+  uniformi, nessuna selezione ripete un quesito —, quindi porta `ambigua` e
+  `motivi`, ed `erroriSessione()` risponde `lista: []` e `quanti: null`: non
+  «zero errori», che sarebbe falso. E gli errori su quesiti che la banca non
+  ha, che prima sparivano dal conteggio, ora sono in `mancanti`.
+
+- **I chiamanti, uno per uno.** `ritmo()` resta sul confine per pausa, e un
+  test nuovo lo pretende: sullo stesso caso misura 60 s, il minuto fra le prime
+  due, e non la pausa divisa per due. `erroriSessione()` cambia, e non ha
+  chiamanti in pagina. In `app.html` l'elenco delle sessioni, la revisione e
+  l'ultima attività del Percorso restano sul predefinito: letto nel codice,
+  un'attività con una pausa vi compare in **due righe con lo stesso id** che
+  aprono entrambe la metà più recente. Sono interfaccia, e il §7.1 del
+  progetto dell'area 3, riscritto sul contratto consegnato, li assegna alla
+  sua realizzazione.
+
+- **Il test del quesito ripetuto resta**, con la sua asserzione sul confine
+  per pausa invariata. Quella su `erroriSessione()` cambia, perché il suo caso
+  — stesso `sim_uid` con un doppione — è ora un id ambiguo; l'intento di prima,
+  l'errore della seconda lista che non entra nella prima, si verifica dove la
+  regola del doppione lavora davvero, sulle righe senza legame.
+
+- **Prima il test che fallisce:** sette test nuovi, cinque rossi per la
+  ragione misurata — `quanti` 1 invece di 2 —, due verdi da subito perché
+  tengono fermo il comportamento di prima (il ritmo, il confine ricostruito).
+  **Provati al contrario su quindici rotture**, una per volta, tutte rosse nel
+  loro test: fra le altre nessuna cucitura, `ritmo()` sul confine
+  dell'attività, `erroriSessione()` sul confine per pausa, l'ambiguità mai
+  segnalata o segnalata come zero errori, ciascuno dei tre motivi non
+  guardato, il confine sconosciuto ignorato, i mancanti taciuti, i gruppi
+  ricostruiti cuciti anche loro. Una riga è stata tolta perché nessuna rottura
+  la vedeva: il riordino delle righe cucite, che nascono già in ordine.
+  Specifica: §4.4 con i due confini, R-FLU-05…09 e R-TEMPO-08, tutti coperti.
+
+  Suite: motore **148/150** con i due skip di sempre (erano 141/143); dati
+  242; interfaccia 295; specifica **394** (erano 370); server 58/58 con Node
+  25.3 e con la **24.21.0 LTS**, pacchetto verificato con `SHASUMS256.txt`
+  scaricato da nodejs.org. Guardiano e controllo della documentazione verdi.
+  `site/app.html` e `docs/prossime-sessioni.md` non sono stati toccati.
+
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag
