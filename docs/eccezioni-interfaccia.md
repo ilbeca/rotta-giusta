@@ -49,7 +49,6 @@ dichiarazione che mente.
 | funzione | perché è ancora qui |
 |---|---|
 | `erroriSessione` | Riapre come esercizio gli errori di una sessione sola (12 settembre 2026): è il pezzo di motore che chiude il ciclo di un'attività, R-FLU-02. La chiamerà il riepilogo — **area 3** |
-| `lunghezzaScreening` | Quante domande apre uno screening a *n* per voce, contate **dalla banca** (25 settembre 2026): oggi la pagina se lo calcola per conto suo in `totScreening`, dai conteggi dichiarati in `meta.json`. R-SEL-11. La chiamera' la schermata dei quiz — **area 2**, dove lo screening viene rinominato |
 | `fondi` | Fusione di due specchi: serviva alla sincronia col server, tolta nella 0.19.0. Resta esportata e testata perché descrive la semantica della fusione, ma nessuno la chiama. Non ha un'area: è storia |
 | `peggiori` | «Le tue voci più deboli» è sparita dalla Rotta nel ridisegno del 9 settembre 2026. È Q-DUE in `docs/specifica.md` §10 — due classifiche concorrenti, e decide l'autore — non ancora deciso. Toglierla dal motore prima della decisione perderebbe la costruzione se la Rotta la richiamasse |
 | `nuovaCoda` | La contabilità della coda verso il server degli account (26 settembre 2026, P-10): quali righe inviare, che cosa togliere dopo una risposta, il `409` della generazione, l'epoca del database che cambia. R-ACC-13, 15 e 24. La chiamerà il client degli account in `app.html` — **il progetto P-13, poi la sua realizzazione su `ui/*`** |
@@ -96,6 +95,7 @@ trentatré — misurato scrivendo il controllo.
 | `giroTecniche` |
 | `isoLocale` |
 | `lunghezzaPartita` |
+| `lunghezzaScreening` |
 | `mirata` |
 | `ordinaRighe` |
 | `poolSegnali` |
