@@ -11,6 +11,16 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+## [0.28.0] — 2026-09-26
+
+Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag
+N/L/C che non si perdono più a un nuovo tag né a un import. Nel repo, e non
+nella pagina, arrivano gli account: le decisioni (ADR-003, ADR-004), il
+progetto, e un server testato che la pagina **non chiama ancora** — quindi per
+chi studia non cambia niente di quello che resta nel suo browser, e i testi che
+lo dicono restano veri. Il rilascio esce adesso anche perché il server si avvia
+soltanto da un tag pubblicato (`docs/account-progetto.md` §2.7).
+
 ### Deciso
 
 - **ADR-003: account obbligatorio, con i dati sul server. Sostituisce l'ADR-002
