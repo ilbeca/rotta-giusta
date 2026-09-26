@@ -1,9 +1,10 @@
 # Prossime sessioni — la coda, con i prompt
 
-**Aggiornato il 26 settembre 2026.** Territorio neutro.
+**Aggiornato il 26 settembre 2026.** Territorio neutro. **Penna: la sessione di regia** (sotto, «Come si usa»).
 
 > **Questo file invecchia.** È una coda, non una verità: quando un lavoro è
-> fatto, la riga si toglie. Se una riga contraddice un documento di progetto,
+> fatto, il suo prompt si chiude con l'esito e resta, la riga della coda si
+> toglie. Se una riga contraddice un documento di progetto,
 > **ha ragione il documento**. I prompt qui sotto sono corti apposta: **puntano,
 > non ripetono.** Un prompt che riassume un piano diverge dal piano appena il
 > piano cambia — è il difetto che qui dentro è costato tre versioni divergenti
@@ -26,7 +27,7 @@ quelle di prodotto nel §10 della specifica, quelle degli account nel §20 di
 
 | Documento | Che cos'è | Penna | Stato |
 |---|---|---|---|
-| **`docs/prossime-sessioni.md`** | la coda, con i prompt | chiunque, su `main` di norma | vivo |
+| **`docs/prossime-sessioni.md`** | la coda, con i prompt | **la sessione di regia**, su `main` | vivo |
 | `docs/specifica.md` | che cosa è il prodotto, i requisiti col loro controllo, le domande aperte (§10) | Claude, su `main` | vivo |
 | `docs/filosofia.md` | il perché, e il tono dei testi | Claude, su `main` | vivo |
 | `docs/adr/` | le decisioni, una per file | Claude, su `main` | ADR-002 superato, 001/003/004 validi |
@@ -42,23 +43,88 @@ quelle di prodotto nel §10 della specifica, quelle degli account nel §20 di
 
 ---
 
+## Come si usa: la regia
+
+Dal 26 settembre 2026 la versione con gli account si conduce così, perché è la
+modifica più grande del progetto e nessuna informazione deve vivere solo in una
+chat.
+
+1. **Una sessione di regia**, Claude su `main`, è **l'unica penna di questo
+   file**. Le altre sessioni lo leggono e non lo toccano. È una regola, non un
+   controllo: il file è neutro e il `pre-commit` non sa quale sessione scrive.
+   Per questo la regia, a ogni resoconto, guarda
+   `git log --oneline -- docs/prossime-sessioni.md`: un commit che non è suo è
+   un'altra penna, e si dice.
+2. **Ogni prompt ha un numero, `P-NN`, e sta nel §6.** L'autore lo copia da
+   qui, mai dalla chat della regia: così quello che una sessione ha ricevuto è
+   quello che è scritto.
+3. **Niente vive solo in un resoconto.** Ogni sessione, prima di chiudere,
+   scrive nel repo tutto quello che vale oltre la chat — nel CHANGELOG, nel
+   documento del suo lavoro, nel §10 della specifica se è una domanda per
+   l'autore. Il resoconto **punta** a quei posti, non li sostituisce.
+4. **Il resoconto ha una forma sola**, quella qui sotto. L'autore lo incolla
+   nella regia; la regia lo confronta con il repo — i commit esistono, le suite
+   danno quei numeri —, chiude il prompt con il suo esito, aggiorna la coda,
+   scrive i prompt che il risultato ha sbloccato, e fa un commit.
+5. **Le merge dei rami `ui/*` le fa la regia**, con il controllo dei territori
+   sul diff del ramo prima (`AGENTS.md`), e poi allinea `ui/main` e
+   `ui/vetrina` a `main` perché ChatGPT parta sempre dalla base giusta.
+6. **Una sessione di Claude può partire da un pulsante** che la regia propone
+   nella sua chat. Il pulsante non ripete il prompt: dice soltanto di copiarlo
+   dal §6, così resta uno solo. La sessione che parte così lavora **in un
+   worktree suo**, su un ramo che il recinto non rivendica: può toccare solo i
+   file neutri e i condivisi, e il suo commit arriva su `main` con la merge
+   della regia. Un prompt che tocca `motore` o `regole` — `tests/`,
+   `territori.yaml`, `site/engine.js` — non parte da un pulsante: si apre a
+   mano, nel checkout principale su `main`. Il §6 dice quale è quale. ChatGPT
+   non ha pulsanti: si apre la sua app.
+
+### Il resoconto
+
+Ogni prompt finisce con «Chiudi con il resoconto di docs/prossime-sessioni.md»,
+e la sessione risponde con questo blocco, compilato, e con niente altro dopo:
+
+```
+RESOCONTO P-NN
+Ramo e commit: <ramo> — <hash> <titolo>, uno per riga
+Suite: motore <passati>/<totale> · dati <n> · interfaccia <n> · specifica <n>
+       (e server, quando esiste)
+Fatto: <che cosa, in poche righe>
+Non fatto, e perché: <o «niente»>
+Trovato: <difetti, sorprese, misure> — e dove sta scritto nel repo
+Per l'autore: <decisioni che servono> — e dove sta scritto nel repo
+Per la coda: <che cosa cambia nei passi successivi>
+Fuori dal repo: <pannelli, macchine, account toccati; o «niente»>
+```
+
+Una riga «Trovato» o «Per l'autore» **senza un posto nel repo** è
+un'informazione che vive solo in chat, e la regia la rimanda indietro.
+
+---
+
 ## La coda, in ordine
 
-| # | Lavoro | Chi | Dove | Aspetta | Qui |
+| # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 1 | Allineare ChatGPT e chiudere il difetto dei tag | ChatGPT | `ui/main` | niente | §3.0 |
-| 2 | Le misure su Scaleway, poi i tre prerequisiti del server | Claude | `main` | niente: l'account c'è | §3-bis |
-| 3 | Il server degli account, un pezzo per volta | Claude | `main` | 2 | §3-bis |
-| 4 | Area 2, Quiz: prima il progetto, poi la realizzazione | ChatGPT | `ui/main` | 1, per la penna su `app.html` | §3.1 |
-| 5 | Aree 3–6 del ridisegno | ChatGPT | `ui/main` | la precedente | §3.1 |
-| 6 | Il client degli account, dentro una fetta del ridisegno | ChatGPT | `ui/main` | 3 | §3-bis |
-| 7 | La messa in esercizio del server su Scaleway | Claude e l'autore | `main`, pannelli | 3 | §5 |
-| 8 | **La versione con gli account** — il traguardo | tutti | `main` | 6, 7, e gli adempimenti del §4 | §5 |
+| 1 | Allineare ChatGPT e chiudere il difetto dei tag | ChatGPT | `ui/main` | niente | P-01 |
+| 2 | Le misure su Scaleway, e come si aggiorna e si torna indietro | Claude | `main` | niente: l'account c'è | P-02 |
+| 3 | I tre prerequisiti del server | Claude | `main` | 2 | P-03 |
+| 4 | Il server degli account, un pezzo per volta | Claude | `main` | 3 | da scrivere dopo P-03 |
+| 5 | Area 2, Quiz: prima il progetto, poi la realizzazione | ChatGPT | `ui/main` | 1, per la penna su `app.html` | P-04, P-05 |
+| 6 | Aree 3–6 del ridisegno | ChatGPT | `ui/main` | la precedente | da scrivere |
+| 7 | Il client degli account, dentro una fetta del ridisegno | ChatGPT | `ui/main` | 4 | da scrivere |
+| 8 | La messa in esercizio del server su Scaleway | Claude e l'autore | `main`, pannelli | 4 | da scrivere |
+| 9 | **La versione con gli account** — il traguardo | tutti | `main` | 7, 8, e gli adempimenti del §4 | da scrivere |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**: Claude sul server (non tocca `site/`),
-ChatGPT sull'interfaccia. Si incontrano al punto 6, e il punto 8 è il giorno in
-cui gli account arrivano a chi studia.
+ChatGPT sull'interfaccia. **Si possono lanciare insieme adesso P-01 e P-02**:
+stanno su due cartelle diverse. Si incontrano al punto 7, e il punto 9 è il
+giorno in cui gli account arrivano a chi studia.
+
+I prompt «da scrivere» li scrive la regia quando si chiude quello da cui
+dipendono, non prima: un prompt scritto in anticipo punta a uno stato che nel
+frattempo è cambiato.
 
 ## Lo stato al 26 settembre 2026
 
@@ -173,7 +239,7 @@ cui chi studia decide se fidarsi:
   `docs/account-progetto.md` §13.3). Con l'account restano nel dispositivo e si
   cancellano all'uscita.
 
-Il *come* lo decide il progetto di realizzazione, punto 2.
+Il *come* lo decide il progetto di realizzazione, §2.
 
 **Fuori da `site/`, su `main`, nella stessa versione:** `README.md` righe 9–10
 e 113 («Niente account, niente registrazione … non arrivano mai a nessuno»), e
@@ -204,22 +270,7 @@ un commit ciascuno, e fra l'uno e l'altro c'è la merge su `main`.
 ### 3.0 Prima di tutto: allinearsi, e il difetto dei tag
 
 ChatGPT non è stato informato di niente di quello che è successo dal 25
-settembre. Il ramo è allineato; il prompt dice che cosa leggere.
-
-```
-Il ramo ui/main è stato allineato a main. Da allora sono cambiate
-decisioni di fondo: leggi, in quest'ordine, docs/adr/ADR-003-…,
-docs/adr/ADR-004-…, docs/filosofia.md, e docs/prossime-sessioni.md
-per intero — l'ordine dei lavori e i prompt stanno solo lì.
-
-I tre docs/*-ux.md, docs/recupero-progetto.md e docs/motore.md sono
-storici: non si aggiornano e non si spostano. La mappa di che cosa è
-vivo è in testa a prossime-sessioni.md.
-
-Il lavoro di questa sessione è il punto 1 della coda: il difetto dei
-tag N/L/C, docs/account-progetto.md §4.2. Test verdi, voce in fondo a
-[Unreleased], un commit con il trailer, versione non toccata.
-```
+settembre. Il ramo è allineato; il prompt è **P-01** nel §6.
 
 ### 3.1 Il ridisegno: le aree
 
@@ -242,27 +293,11 @@ promette di ricordare qualcosa: senza account non si salva, e i Progressi sono
 dei registrati. Come per l'area 1, **prima il progetto, poi la realizzazione**,
 in due sessioni.
 
-**Progetto dell'area 2:**
-
-```
-Progetta l'area 2 di docs/prossima-versione.md §5.1, Quiz, in
-docs/area-2-progetto.md, sul modello di docs/area-1-progetto.md. Solo
-il documento e la voce di CHANGELOG: niente site/. Comprende il
-ricablaggio di E.lunghezzaScreening() al posto di totScreening() —
-vedi docs/eccezioni-interfaccia.md.
-```
-
-**Realizzazione dell'area 2**, dopo la merge del progetto:
-
-```
-Realizza docs/area-2-progetto.md in site/app.html. Quattro suite
-verdi, collaudo guardato a 375 e 1280 px, voce in fondo a
-[Unreleased], un commit con il trailer, versione non toccata.
-```
+I due prompt sono **P-04** (progetto) e **P-05** (realizzazione), nel §6.
 
 ## 3-bis · Il codice: due metà con vincoli opposti
 
-Dopo il progetto (punto 2) il codice **non è un lavoro solo**, e le due metà si
+Dopo il progetto (§2) il codice **non è un lavoro solo**, e le due metà si
 possono fare in momenti diversi.
 
 **Il server può partire subito.** API, database, ciclo di vita dell'account,
@@ -295,24 +330,10 @@ rifarle. O entra dentro una fetta del ridisegno, o viene dopo.
 
 ### I prompt
 
-**Server** — Claude, su `main`. L'account Scaleway c'è dal 26 settembre:
-
-```
-Leggi docs/account-progetto.md. Prima di scrivere codice: le misure
-su Scaleway del suo §19, e se smentiscono una scelta lo si dice prima
-di proseguire. Poi i tre prerequisiti di docs/prossime-sessioni.md
-§3-bis: il territorio del server in territori.yaml, la sua suite, il
-backup con il ripristino provato. Poi il server, un pezzo per volta,
-ogni pezzo col suo test che prima fallisce.
-```
-
-**Client** — dentro una fetta del ridisegno, non prima:
-
-```
-Le schermate di registrazione, accesso e conversione del file esportato,
-dentro la fetta corrente del ridisegno. Il server c'è gia' ed e' testato:
-qui si consuma, non si riprogetta.
-```
+Il server comincia con **P-02** e **P-03**, nel §6; i pezzi successivi li
+scrive la regia quando P-03 è chiuso. Il client entra dentro una fetta del
+ridisegno, con un prompt che si scrive quando il server c'è ed è testato: lì si
+consuma, non si riprogetta.
 
 ## 4 · Fuori dalle sessioni — l'autore
 
@@ -325,13 +346,13 @@ qui si consuma, non si riprogetta.
 - Le altre questioni aperte stanno dove si decidono: specifica §10,
   `account-progetto.md` §20, `prossima-versione.md` §9.
 - **Gli adempimenti degli account**, che nessuna sessione fa al posto tuo e che
-  bloccano il punto 8: l'accordo con Scaleway come responsabile, il registro dei
+  bloccano il punto 9: l'accordo con Scaleway come responsabile, il registro dei
   trattamenti, un contatto del titolare che non sia un canale pubblico, e il
   modo in cui ti accorgi di una violazione e la notifichi entro 72 ore. L'elenco
   è la tabella «Il GDPR, per intero» dell'ADR-003; il testo dell'informativa è
   lavoro di `ui/*` (§1).
 - **I record DNS su IONOS** per `api.` e `posta.rottagiusta.it`, quando la
-  sessione del server li avrà misurati (`account-progetto.md` §9.4 e §19). Il
+  sessione P-02 li avrà letti su Scaleway (`account-progetto.md` §9.4 e §19). Il
   record SPF dell'apice non si tocca: regge la tua posta.
 
 ## 5 · Il traguardo: la versione con gli account
@@ -350,13 +371,133 @@ stessa versione in cui entrano gli account, non prima né dopo — vale per tutt
 Poi il rilascio, come ogni altro: merge, numero, tag, push chiesto, «Build now».
 **Con una differenza**: il server non si pubblica con «Build now», e oggi **non
 è scritto da nessuna parte come si aggiorna e come si torna indietro** sulla
-macchina Scaleway. È una domanda della sessione del server, da chiudere prima
-del punto 7, non il giorno del rilascio.
+macchina Scaleway. La chiude P-02, prima di ogni riga di server, non il giorno
+del rilascio.
 
 E due verifiche che solo il giorno vero può fare: un archivio esistente nel
 browser che passa nell'account senza perdere una riga (R-ACC-05, il guasto muto
 più probabile di tutta la versione), e il cookie fra `rottagiusta.it` e `api.`
 su un Safari vero (§19, Q-PROVE).
+
+## 6 · I prompt
+
+Ognuno si copia **da qui**, per intero, blocco compreso. «Stato» e «Esito» li
+scrive la regia. Le regole comuni — territori, trailer di ChatGPT, niente
+`git add -A`, niente push — stanno in `AGENTS.md`, che ogni sessione legge da
+sé: i prompt non le ripetono.
+
+### P-01 — ChatGPT: allinearsi, e il difetto dei tag
+
+**Stato:** pronto. **Dove:** app di ChatGPT, progetto `~/Software/rotta-giusta-ui`,
+ramo `ui/main`, modalità Local. **Aspetta:** niente.
+
+```
+Sessione P-01. Il ramo ui/main è stato allineato a main, e da allora
+sono cambiate decisioni di fondo: leggi, in quest'ordine,
+docs/adr/ADR-003-…, docs/adr/ADR-004-…, docs/filosofia.md e
+docs/prossime-sessioni.md per intero — l'ordine dei lavori e i prompt
+stanno solo lì. I tre docs/*-ux.md, docs/recupero-progetto.md e
+docs/motore.md sono storici: non si aggiornano e non si spostano.
+
+Il lavoro: il difetto dei tag N/L/C che resta,
+docs/account-progetto.md §4.2 — le righe di tag nascono con ts,
+ritaggare aggiunge una riga e non cancella, chi legge prende l'ultima
+per tentativo; e l'import mostra i motivi degli scarti, che
+fondiArchivio() restituisce ora in `motivi`.
+
+Non toccare docs/prossime-sessioni.md. Quattro suite verdi, voce in
+fondo a [Unreleased], un commit con il trailer, versione non toccata.
+Chiudi con il resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-02 — Claude: le misure su Scaleway, e come si aggiorna il server
+
+**Stato:** pronto. **Dove:** Claude Code, su `rotta-giusta` — dal pulsante
+della regia, in un worktree suo (vedi «Come si usa», punto 6). **Aspetta:**
+niente. Si può lanciare insieme a P-01.
+
+```
+Sessione P-02. Leggi docs/account-progetto.md, e in
+docs/prossime-sessioni.md «Come si usa» e il §5.
+
+Due cose, e nessuna riga di codice del server:
+1. Le misure su Scaleway del §19 di account-progetto.md, sulla forma
+   decisa nel §2.2. Ogni risorsa che costa si crea solo con il sì
+   dell'autore, e i record DNS non si toccano: si leggono, e li mette
+   l'autore. Se una misura smentisce una scelta del documento,
+   fermati e dillo prima di proseguire.
+2. Come si aggiorna il server e come si torna indietro: oggi non è
+   scritto da nessuna parte. Scrivilo in account-progetto.md, con
+   quello che hai misurato.
+
+I segreti restano sulla macchina, mai nel repo. Non toccare
+docs/prossime-sessioni.md. Suite verdi, voce in fondo a [Unreleased],
+un commit. Chiudi con il resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-03 — Claude: i tre prerequisiti del server
+
+**Stato:** in attesa di P-02. **Dove:** Claude Code, `~/Software/rotta-giusta`,
+ramo **`main`** — non da un pulsante: tocca `territori.yaml` e `tests/`, che il
+`pre-commit` accetta solo da `main`.
+
+```
+Sessione P-03, su main. Leggi docs/account-progetto.md §2.5 e §16, il
+§3-bis di docs/prossime-sessioni.md, e l'esito di P-02 nel suo §6.
+
+I tre prerequisiti, prima del server vero: server/** nel territorio
+di territori.yaml indicato dal §16.2; la suite tests/test_server.mjs,
+che avvia nello stesso processo un server che per ora risponde solo
+alla salute, e che AGENTS.md elenca fra i comandi; il backup con il
+ripristino provato, dentro la stessa suite. controlla.py passa anche
+su server/ e fallisce su una chiave di Scaleway scritta in un file.
+
+Prima il test che fallisce. Non toccare docs/prossime-sessioni.md.
+Suite verdi, voce in fondo a [Unreleased], un commit. Chiudi con il
+resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-04 — ChatGPT: il progetto dell'area 2, Quiz
+
+**Stato:** in attesa di P-01 e della sua merge. **Dove:** app di ChatGPT,
+progetto `~/Software/rotta-giusta-ui`, ramo `ui/main`.
+
+```
+Sessione P-04. Progetta l'area 2 di docs/prossima-versione.md §5.1,
+Quiz, in docs/area-2-progetto.md, sul modello di
+docs/area-1-progetto.md. Solo il documento e la voce di CHANGELOG:
+niente site/. Comprende il ricablaggio di E.lunghezzaScreening() al
+posto di totScreening() — vedi docs/eccezioni-interfaccia.md. Prima
+di disegnare una schermata che promette di ricordare qualcosa, rileggi
+l'ADR-004: senza account non si salva.
+
+Non toccare docs/prossime-sessioni.md. Un commit con il trailer,
+versione non toccata. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-05 — ChatGPT: la realizzazione dell'area 2
+
+**Stato:** in attesa di P-04 e della sua merge. **Dove:** come P-04.
+
+```
+Sessione P-05. Realizza docs/area-2-progetto.md in site/app.html.
+
+Non toccare docs/prossime-sessioni.md. Quattro suite verdi, collaudo
+guardato a 375 e 1280 px, voce in fondo a [Unreleased], un commit con
+il trailer, versione non toccata. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
 
 ---
 
@@ -399,3 +540,13 @@ su un Safari vero (§19, Q-PROVE).
   7 e 8 e nel nuovo §5, con la domanda che nessun documento ancora chiude: come
   si aggiorna il server e come si torna indietro. Il prompt di ChatGPT dice
   quali documenti sono storici.
+- **26 settembre 2026 — la regia.** Da qui la versione con gli account si
+  conduce da una sessione di regia, unica penna di questo file: i prompt hanno
+  un numero e stanno solo nel nuovo §6, ogni sessione chiude con un resoconto in
+  forma fissa, e niente vale solo in chat — quello che conta si scrive nel repo
+  prima del resoconto, che lo punta. I prompt che erano sparsi nei §3 e §3-bis
+  sono diventati P-01…P-05; P-02 è nuovo, e chiude la domanda su come si
+  aggiorna il server prima di ogni riga di codice. La coda passa da otto a nove
+  punti: le misure e i prerequisiti sono due sessioni, non una. Le sessioni di
+  Claude che toccano solo file neutri possono partire da un pulsante, in un
+  worktree loro.

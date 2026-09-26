@@ -228,6 +228,17 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   all'indirizzo di qualcun altro. R-ACC-11, scoperto finché il server non c'è; i
   requisiti proposti in `docs/account-progetto.md` scalano di uno, da R-ACC-12.
 
+### Riordinato — la versione con gli account si conduce da una regia
+
+- **Una sessione di regia è l'unica penna di `docs/prossime-sessioni.md`**, i
+  prompt hanno un numero (`P-01`…) e stanno solo nel suo §6, e ogni sessione
+  chiude con un resoconto in forma fissa che l'autore riporta alla regia. La
+  regola che conta è un'altra: **niente vale solo in chat.** Quello che una
+  sessione trova o chiede si scrive nel repo prima del resoconto, e il
+  resoconto lo punta; una riga che non ha un posto nel repo torna indietro.
+  È la modifica più grande del progetto, e le sessioni che la fanno sono tante:
+  ognuna che chiude lasciando qualcosa solo in una chat è un'informazione persa.
+
 ### Riordinato — un posto solo per l'ordine dei lavori
 
 - **`docs/prossime-sessioni.md` è l'unico file con l'ordine dei lavori e con i
