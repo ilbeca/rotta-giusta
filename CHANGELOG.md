@@ -560,6 +560,28 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   **183** (erano 135), specifica **274** (erano 270), server 23/23.
   `site/` non è stato toccato.
 
+### Realizzato — P-05, le cinque intenzioni dei Quiz
+
+- **Quiz distingue consiglio, argomenti, errori, simulazione e giro**, perché
+  scegliere un'attività non richieda di conoscere sei algoritmi. Batteria
+  confluisce in tutti gli argomenti; le righe storiche rimangono leggibili.
+  Filtri e bozze sono locali all'attività e in memoria. Anteprima e avvio
+  aprono lo stesso snapshot; fonte o giorno cambiati richiedono un nuovo click.
+  Il giro usa `lunghezzaScreening` dalla banca, senza contabilità in pagina.
+  Base e vela si preparano prima dell'avvio, con due timer ed esiti separati.
+  Restano visibili i guasti di archivio e offline; ritorni e focus conservano
+  l'origine Percorso/Progressi. Nessuna modifica al motore o ai suoi test.
+
+- **Verificato:** motore 130/132 (2 skip previsti delle copie UI rimosse),
+  dati 236, interfaccia 277, specifica 274; server 23/23 su Node 25 e 24 LTS.
+  Altri 35 controlli in memoria su snapshot, vuoti, guasti e tempi. Collaudo
+  guardato a 375 e 1280 px, senza overflow; target almeno 44 px e contrasto
+  minimo misurato 5,16:1. Provate nel browser entrambe le fasi e i ritorni.
+  [Evidenze e limiti](docs/area-2-collaudo-ux.md): reflow equivalente al 200%,
+  prova con persone ancora all'autore, e caso dell'orologio senza timestamp
+  riprodotto per la regia. Versione invariata, nessun tag o push.
+
+
 ## [0.27.0] — 2026-09-25
 
 ### Verificato — la v0.26.2 sul dominio vero

@@ -613,6 +613,40 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
   h1{font-size:28px}.view:not(.rotta-view)>h1{margin-top:0}
 }
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+/* Area 2: gerarchia delle intenzioni, configurazioni locali, pannello nativo. */
+#v-quiz [hidden]{display:none!important}
+#v-quiz{max-width:900px;margin-inline:auto}
+#v-quiz p{max-width:70ch;font-size:16px;line-height:1.6}
+#v-quiz .note{font-size:14px;color:var(--text-soft)}
+#v-quiz h2{font-size:24px;letter-spacing:-.4px;text-transform:none;line-height:1.3}
+#f-modo{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.quiz-porta{padding:20px;border:1px solid var(--text-soft);border-radius:16px;background:var(--surface)}
+.quiz-porta h2{margin:0}.quiz-porta p{margin:10px 0 18px}
+.quiz-consiglio{grid-column:1/-1;background:var(--sky-soft);border-color:var(--blue)}
+#f-modo .quiz-porta:nth-child(2){grid-column:1/-1}
+#quiz-alerts:not(:empty){margin-bottom:16px}
+#quiz-altri{margin-top:20px}#quiz-giro-porta{margin-top:12px}
+#v-quiz summary{min-height:44px;padding:10px 0;font-size:16px;cursor:pointer;color:var(--navy)}
+#quiz-conf{margin-top:20px}#quiz-title{margin-top:20px}
+#v-quiz fieldset{border:0;padding:0;margin:22px 0;min-width:0}
+#v-quiz legend{font-weight:600;font-size:16px;margin-bottom:10px}
+.quiz-radio,.quiz-check{display:flex;align-items:center;gap:10px;min-height:44px;padding:10px 12px;border:1px solid var(--text-soft);border-radius:10px;font-size:16px;line-height:1.5;cursor:pointer;background:var(--surface);color:var(--text)}
+.quiz-radio:has(:checked),.quiz-check:has(:checked){border-color:var(--blue);background:var(--sky-soft)}
+.quiz-radio input,.quiz-check input{padding:0;min-height:20px;margin:0;width:20px;height:20px;flex-shrink:0;accent-color:var(--blue)}
+#quiz-attivi{margin-top:16px}#quiz-attivi .btn{white-space:normal;text-align:left}
+#quiz-panel{width:min(680px,calc(100% - 32px));max-height:85vh;overflow:auto;padding:24px;border:1px solid var(--text-soft);border-radius:18px;background:var(--surface);color:var(--text)}
+#quiz-panel::backdrop{background:rgba(18,62,99,.4)}
+#quiz-panel h2{font-size:24px;line-height:1.3;margin:0 0 16px}
+#quiz-panel .quiz-check{margin:10px 0}#quiz-panel .note{font-size:14px;color:var(--text-soft)}
+#quiz-panel .row{margin-top:20px}#quiz-panel p{font-size:16px;line-height:1.6}
+#quiz-panel input:disabled{opacity:.6}#quiz-panel .quiz-check:has(:disabled){cursor:default}
+#v-quiz .btn,#v-quiz .text-btn,#quiz-panel .btn{min-height:44px;min-width:44px;font-size:16px;white-space:normal}
+#quiz-return{display:block;margin-top:20px}
+.quiz-run-context{padding:12px 18px;background:var(--surface);font-size:16px;color:var(--navy)}
+.quiz-run-context span{display:block;font-size:14px}
+@media(max-width:600px){#f-modo{grid-template-columns:1fr}.quiz-porta{padding:18px}#quiz-panel{padding:18px}#quiz-alerts .route-alert>div{flex:1 1 calc(100% - 40px);min-width:0}}
+
 </style>
 </head>
 <body>
@@ -736,128 +770,41 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
   <!-- ====================== ALLENAMENTO ====================== -->
   <section class="view" id="v-quiz">
     <h1>Quiz</h1>
-    <p class="sub" id="modo-sub">…</p>
-
-    <div class="prep" id="prep">
-      <label class="sw"><input type="checkbox" id="prep-on"><span class="k"></span></label>
-      <div class="t"><b>Solo domande mai fatte</b><span id="prep-sub">…</span></div>
+    <p class="sub">Scegli come esercitarti con i quiz base o vela. Puoi cambiare attività quando vuoi.</p>
+    <div id="quiz-alerts" class="route-alerts" aria-live="polite"></div>
+    <div id="quiz-menu">
+      <div id="f-modo"></div>
+      <details id="quiz-altri"><summary>Altri modi di esercitarti</summary><div id="quiz-giro-porta"></div></details>
     </div>
-
-    <div class="modi" id="f-modo"></div>
-
-    <!-- per argomento -->
-    <div class="modo-box" id="box-argomento">
-      <h2>Argomenti <span class="hint" id="sel-count"></span></h2>
-      <div class="card">
-        <div class="checks" id="f-temi"></div>
-        <div class="row" style="margin-top:10px">
-          <button class="chip" data-tutti="1">Tutti</button>
-          <button class="chip" data-tutti="0">Nessuno</button>
-        </div>
+    <section id="quiz-conf" hidden aria-labelledby="quiz-title">
+      <button class="text-btn" data-quiz-menu>Cambia attività</button>
+      <h2 id="quiz-title" tabindex="-1"></h2>
+      <p id="modo-sub"></p>
+      <div id="quiz-bank"></div>
+      <div id="quiz-personalizza" hidden>
+        <p id="quiz-gruppi"></p>
+        <div class="row"><button class="btn" data-quiz-panel="argomenti">Scegli gli argomenti</button><button class="btn" data-quiz-panel="filtri" id="quiz-filtri-porta">Filtri</button></div>
+        <div class="row" id="quiz-attivi"></div>
+        <p class="note" id="quiz-ordine"></p>
+        <fieldset><legend>Quante</legend><div class="row" id="f-n"></div></fieldset>
       </div>
-      <div id="box-voci">
-        <h2>Restringi a una voce <span class="hint">spunte: vuoto = tutte</span></h2>
-        <div class="card">
-          <div class="checks" id="f-voci"></div>
-        </div>
-      </div>
-      <!-- Le figure all'esame compaiono come figure: allenarle a parte e'
-           l'unico modo di vederle tutte prima dell'esame. -->
-      <div class="card" style="margin-top:14px">
-        <button class="check" id="f-figura" data-solofig="1">
-          <span class="bx">&#10003;</span>
-          <span class="nm">Solo quesiti con figura<small id="f-figura-n"></small></span>
-        </button>
-      </div>
+      <div id="quiz-opzioni"></div>
       <aside class="colreg-extra" id="colreg-extra" hidden>
-        <span class="direction-icon"><svg class="ico" aria-hidden="true"><use href="#i-signals"/></svg></span>
-        <div><b>Allenamento visivo su fanali e segnali</b><p>È un extra scritto da noi: non conta nella copertura dei quiz.</p></div>
-        <button class="btn" data-v="seg">Apri Segnali</button>
+        <div><b>Allenamento visivo su fanali e segnali</b><p>È un extra scritto da noi: non conta nella copertura dei quiz.</p></div><button class="btn" data-v="seg">Apri Segnali</button>
       </aside>
-    </div>
-
-    <!-- simulazione -->
-    <div class="modo-box" id="box-sim">
-      <div class="card">
-        <p class="note">Le domande sono estratte con la composizione del ministero,
-          che <b>non è proporzionale alla banca</b>. Niente correzione durante la prova:
-          l'esito arriva alla fine, come all'esame.</p>
-        <table class="tbl" id="t-composizione" style="margin-top:12px"></table>
-      </div>
-      <h2>Quale prova</h2>
-      <div class="grid" style="gap:10px">
-        <button class="go" data-sim="base"><div class="t"><b>Quiz base</b>
-          <span>20 domande in 30 minuti · max 4 errori</span></div><div class="n">20</div></button>
-        <button class="go" data-sim="vela"><div class="t"><b>Quiz vela</b>
-          <span>5 vero/falso in 15 minuti · max 1 errore</span></div><div class="n">5</div></button>
-        <button class="go" data-sim="completa"><div class="t"><b>Completa</b>
-          <span>base e poi vela, di seguito, come all'esame</span></div><div class="n">25</div></button>
-      </div>
-    </div>
-
-    <!-- screening -->
-    <div class="modo-box" id="box-screening">
-      <div class="card">
-        <p class="note" id="screen-note">Un quesito da <b>ognuna</b> delle voci del programma.
-          Serve a sapere non che sei debole in «Navigazione» — 322 quesiti, inutile — ma in
-          «Bussole magnetiche», che sono 38 e si ripassano in mezz'ora.</p>
-      </div>
-      <h2>Profondità</h2>
-      <div class="row" id="f-pervoce"></div>
-    </div>
-
-    <!-- batteria -->
-    <div class="modo-box" id="box-sbagliate">
-      <div class="card">
-        <p class="note">I quesiti che hai sbagliato almeno una volta, dal più recente al più
-          vecchio. <b>Nessuno te li ripropone da solo</b>: fino alla 0.5.0 tornavano a galla a
-          D+1, D+3 e D+7 e finivano in testa a ogni batteria — ora li rifai quando decidi tu.
-          Restano in elenco anche dopo che li hai ripresi: sbagliarlo una volta è
-          un'informazione che non scade.</p>
-      </div>
-      <h2>Argomenti <span class="hint">vuoto = tutti</span></h2>
-      <div class="card">
-        <div class="checks" id="f-temi-sb"></div>
-      </div>
-    </div>
-
-    <div class="modo-box" id="box-batteria">
-      <div class="card">
-        <p class="note">Tutta la banca nell'ordine della coda: prima i mai visti, nell'ordine
-          del decreto, poi quelli che hai già fatto. È la modalità da usare per macinare copertura.</p>
-      </div>
-    </div>
-
-    <!-- mirata -->
-    <div class="modo-box" id="box-mirata">
-      <div class="card">
-        <p class="note">25 quesiti in tre blocchi, misurati in <b>punti d'esame recuperati per
-          minuto</b>: <b>richiami</b> — gli sbagliati non ancora ripresi, al massimo 5 per
-          batteria, automatici ma distribuiti così non si ammucchiano; <b>esplorazione</b> —
-          mai visti, pescati voce per voce con probabilità proporzionale alla resa d'esame del
-          tema e corretta per la debolezza; <b>conferme</b> — le voci rivelatesi deboli,
-          riproposte man mano che l'esame si avvicina. Ogni quesito dice perché è lì, nella
-          pillola in alto. Stesso giorno e stesso storico, stessa lista.</p>
-        <p class="note" style="margin-top:8px"><b>Ignora il selettore «solo domande mai
-          fatte»</b>: i richiami entrano comunque, altrimenti sparirebbero senza che nessuno
-          lo annunci.</p>
-      </div>
-    </div>
-
-    <!-- comuni -->
-    <div class="modo-box" id="box-comune">
-      <h2>Banca</h2>
-      <div class="row" id="f-kind"></div>
-      <div id="box-quante">
-        <h2>Quante</h2>
-        <div class="row" id="f-n"></div>
-      </div>
-    </div>
-
-    <div style="margin-top:20px">
+      <p id="prev" aria-live="polite" aria-atomic="true"></p>
+      <div class="row" id="quiz-vuoto"></div>
+      <p id="quiz-durata" class="note"></p>
+      <p id="quiz-storage" class="note"></p>
+      <p id="quiz-offline" class="note"></p>
       <button class="btn primary" id="start">Inizia</button>
-      <p class="note" style="margin-top:10px" id="prev"></p>
-    </div>
+      <button class="text-btn" id="quiz-return" hidden></button>
+    </section>
+    <dialog id="quiz-panel" aria-labelledby="quiz-panel-title">
+      <h2 id="quiz-panel-title" tabindex="-1"></h2>
+      <div id="quiz-panel-body"></div>
+      <div class="row"><button class="btn primary" data-quiz-apply>Applica</button><button class="btn" data-quiz-cancel>Annulla</button></div>
+    </dialog>
 
   </section>
 
@@ -1037,6 +984,7 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
     <button class="pill auto" id="r-auto" title="Se la risposta è giusta passa da solo alla prossima">auto</button>
     <button class="x" id="r-close" aria-label="Chiudi">&times;</button>
   </div>
+  <div class="quiz-run-context"><b id="r-title"></b><span id="r-bank"></span></div>
   <div class="runner-warning" data-save-warning role="alert" hidden></div>
   <div class="qbody">
     <!-- Il numero sta DENTRO il blocco della domanda, non come figlio di
@@ -1161,25 +1109,11 @@ const S = {
   // all'esame avendo visto almeno una volta tutta la banca.
   prep: LS.get('prep', false),
   date: { oggi: null, esame: null, chiusura_quiz: null, inizio_quiz: null },
-  filtro: LS.get('filtro', { modo: 'argomento', kind: 'base', temi: [], voci: [], soloFigura: false, stati: [], n: 20, perVoce: 1 }),
+  filtro: { modo: 'argomento', kind: 'base', temi: [], voci: [], soloNuovi: false, soloFigura: false, n: 20, perVoce: 1, prova: 'base' },
   auto: LS.get('auto', true),
   rotta: null,                         // selezione mostrata e poi avviata, mai persistita
   run: null,
 };
-
-// Il filtro salvato da una versione vecchia potrebbe avere `tema` singolo e non
-// conoscere le modalita': lo si porta avanti invece di far ripartire da zero.
-(function migraFiltro() {
-  const f = S.filtro;
-  if (!f.modo) f.modo = 'argomento';
-  if (!Array.isArray(f.temi)) f.temi = f.tema ? [f.tema] : [];
-  if (f.perVoce == null) f.perVoce = 1;
-  delete f.tema;
-  if (!Array.isArray(f.voci)) f.voci = f.voce ? [f.voce] : [];
-  delete f.voce;
-  if (typeof f.soloFigura !== 'boolean') f.soloFigura = false;
-  LS.set('filtro', f);
-})();
 
 // Il giorno di studio e la data delle risposte escono dalla stessa funzione:
 // e' l'unico modo per essere sicuri che non possano divergere.
@@ -1401,7 +1335,7 @@ async function avvia() {
   S.bancaErrore = null;
   S.cartStato = 'caricamento';
   ARCH.lettura = 'in_corso';
-  dipingi();
+  dipingi(); costruisciFiltri();
   try {
     const [meta, banca] = await Promise.all([jget_cache('/dati/meta.json'), jget_cache('/dati/quiz.json')]);
     S.meta = meta; S.banca = banca;
@@ -1409,7 +1343,7 @@ async function avvia() {
     S.caricamento = false;
     S.bancaErrore = (e && e.message) || String(e);
     S.avvioInCorso = false;
-    dipingi();
+    dipingi(); costruisciFiltri();
     return;
   }
   jget_cache('/dati/tecniche.json').then(t => { S.tec = t; dipingiTec(); dipingi(); })
@@ -1613,6 +1547,7 @@ function dipingiStatoRotta() {
     '<strong>Gli esercizi di carteggio non sono disponibili in questa apertura.</strong>',
     '<button class="text-btn" data-v="cart">Apri Carteggio</button>'));
   if (box) box.innerHTML = righe.join('');
+  document.getElementById('quiz-alerts').innerHTML = righe.join('');
 
   const warning = ARCH.errore
     ? '<div><strong>Le ultime risposte potrebbero non essere salvate.</strong><span>Scarica i progressi prima di chiudere la pagina e controlla l\'archivio.</span></div><button class="text-btn" data-route-export>Scarica i progressi</button><button class="text-btn" data-info-section="importa">Controlla l\'archivio</button>'
@@ -1722,7 +1657,7 @@ async function verificaOffline() {
         : (figure ? w(`figure ${figure}/${attese || '?'}`) : w('figure non scaricate')),
     ];
     const pronto = attivo && !mancanti.length && !rediretti.length && attese && figure >= attese;
-    DIAG.off = !pronto; aggiornaBadge();
+    DIAG.off = !pronto; DIAG.figureMancanti = figure < attese; aggiornaBadge();
 
     el.innerHTML =
       (pronto
@@ -2191,328 +2126,253 @@ function azione(go, nome, t, fatti) {
 /* ===================== FILTRI =========================================== */
 
 const MODI = [
-  ['mirata', 'Mirata', "dove rende di più: richiami, voci deboli e peso d'esame"],
-  ['argomento', 'Per argomento', 'scegli tu i temi, anche più di uno'],
-  ['sbagliate', 'Solo sbagliate', 'i quesiti che hai preso male, dal più recente'],
-  ['sim', "Simulazione d'esame", 'composizione, tempi e soglie del ministero'],
-  ['screening', 'Screening completo', 'un quesito per ogni voce del programma'],
-  ['batteria', 'Batteria', "tutta la banca, i mai visti per primi"],
+  ['mirata', 'Allenamento consigliato', 'Una selezione di quiz base a partire dalle risposte disponibili qui. Ogni domanda dice perché è stata proposta.'],
+  ['argomento', 'Scegli un argomento', 'Scegli i quiz base o vela e gli argomenti che vuoi esercitare.'],
+  ['sbagliate', 'Ripassa gli errori', 'Rivedi i quesiti sbagliati nelle risposte disponibili qui.'],
+  ['sim', 'Simula la prova', 'Esercitati con composizione, timer e soglia della prova scelta.'],
+  ['screening', 'Un giro tra gli argomenti', 'Incontra tutte le voci della banca scelta, con pochi quesiti per ciascuna.'],
 ];
-
 const SUB = {
-  mirata: "Punti d'esame recuperati per minuto: richiami col tetto, esplorazione pesata sulla resa, conferme sulle voci deboli. Ogni quesito dice perché è lì.",
-  argomento: 'Spunta gli argomenti che vuoi allenare. Dentro ciascuno escono prima i mai visti, nell\'ordine del decreto.',
-  sbagliate: 'I quesiti che hai sbagliato almeno una volta, dal più recente. Nessuno te li ripropone da solo: li rifai quando decidi tu.',
-  sim: "Le tre prove con la composizione, i tempi e le soglie veri. Pesca a caso dalla banca, come il ministero: non sa che cosa hai studiato.",
-  screening: 'Una passata larga e sottile su tutte le voci, per scoprire dove sei debole senza macinare la banca intera.',
-  batteria: "Macinare copertura: prima i mai visti, tu decidi solo quante.",
+  mirata: 'Quiz base selezionati dalle risposte disponibili qui e dalla distribuzione dei quesiti per tema. La selezione non conosce lo studio che hai fatto altrove.',
+  argomento: 'Puoi scegliere uno o più argomenti, oppure allenarti su tutti. Vedrai la risposta ufficiale dopo ogni domanda.',
+  sbagliate: 'Rivedi i quesiti sbagliati almeno una volta nelle risposte disponibili qui. Restano disponibili anche dopo una risposta corretta; quelli ancora da ripassare vengono prima.',
+  sim: 'Le domande sono estratte con le regole della prova scelta, senza tener conto delle tue risposte precedenti. La correzione arriva alla fine. Il risultato riguarda questa simulazione: non garantisce l’esito dell’esame.',
+  screening: 'Con una domanda per ogni voce incontri tutti gli argomenti della banca scelta. Un errore può suggerire che cosa approfondire; una risposta corretta non dimostra padronanza dell’argomento.',
 };
+function argomenti(conf) {
+  return conf.kind === 'vela' ? { voci: conf.voci } : { temi: conf.temi, voci: conf.voci };
+}
 
+/**
+ * La configurazione di un'intenzione diventa una chiamata al motore.
+ *
+ * fonte: { items, prog, oggi, pesi, prove, esame }
+ * conf, per intenzione:
+ *   mirata     {}
+ *   argomento  { kind, temi, voci, soloNuovi, soloFigura, n }
+ *   sbagliate  { kind, temi, voci, n }
+ *   screening  { kind, perVoce, seme }
+ *   sim        { prova: 'base' | 'vela', seme }
+ */
+function selezioneQuiz(intenzione, conf, fonte) {
+  const { items, prog, oggi } = fonte;
+  const taglia = (l) => (conf.n > 0 ? l.slice(0, conf.n) : l);
+  if (intenzione === 'mirata') {
+    const r = E.mirata(items, prog, oggi, { n: 25, kind: 'base', pesi: fonte.pesi, esame: fonte.esame });
+    return { lista: r.map((x) => x.it), perche: Object.fromEntries(r.map((x) => [x.it.id, x.perche])) };
+  }
+  if (intenzione === 'argomento') {
+    const g = { ...argomenti(conf), soloFigura: conf.soloFigura };
+    if (conf.soloNuovi) {
+      const l = E.coda(items, prog, oggi, { kind: conf.kind, ...g, stati: ['nuovo'], n: 0 });
+      return { lista: taglia(l), totale: l.length };
+    }
+    const r = E.daAllenare(items, prog, oggi, conf.kind, g);
+    return { lista: taglia(r.lista), totale: r.lista.length, daFare: r.daFare };
+  }
+  if (intenzione === 'sbagliate') {
+    const l = E.coda(items, prog, oggi, { kind: conf.kind, ...argomenti(conf), soloSbagliate: true, n: 0 });
+    return { lista: taglia(l), totale: l.length };
+  }
+  if (intenzione === 'screening') {
+    const previsto = E.lunghezzaScreening(items, conf.perVoce, conf.kind);
+    return { lista: E.screening(items, prog, oggi, conf.perVoce, conf.kind, conf.seme), previsto };
+  }
+  if (intenzione === 'sim') {
+    const lista = conf.prova === 'vela'
+      ? E.simulazioneVela(items, prog, oggi, fonte.prove.vela.n, conf.seme)
+      : E.simulazione(items, prog, oggi, fonte.pesi, conf.seme);
+    return { lista };
+  }
+  throw new Error('intenzione sconosciuta: ' + intenzione);
+}
+
+// Configurazioni e liste future vivono soltanto nella pagina aperta.
+const QUIZ = { modo: null, conf: {}, snapshot: null, origine: null, porta: null, bozza: null, pannello: null };
+function defaultQuiz(modo) {
+  return { modo, kind: 'base', temi: [], voci: [], soloNuovi: false, soloFigura: false, n: 20, perVoce: 1, prova: 'base' };
+}
+function fonteQuiz() {
+  return { items: S.banca, prog: S.prog, oggi: today(), pesi: S.meta?.pesi_esame, prove: S.meta?.prove, esame: S.date.esame };
+}
+function firmaQuiz() {
+  return JSON.stringify([S.banca, S.prog, today(), S.date.esame, S.meta?.prove, S.meta?.pesi_esame, ARCH.lettura, QUIZ.modo, S.filtro]);
+}
+function apriConfigurazioneQuiz(modo, porta = null, origine = null, conf = null) {
+  if (modo === 'batteria') { modo = 'argomento'; conf = { ...defaultQuiz(modo), n: 0 }; }
+  if (!MODI.some(([k]) => k === modo)) modo = 'argomento';
+  QUIZ.modo = modo; QUIZ.porta = porta; QUIZ.origine = origine;
+  S.filtro = conf || QUIZ.conf[modo] || defaultQuiz(modo);
+  QUIZ.conf[modo] = S.filtro;
+  if (modo === 'screening') document.getElementById('quiz-altri').open = true;
+  costruisciFiltri(); mostraVista('quiz');
+  document.getElementById('quiz-title').focus();
+}
+function menuQuiz() {
+  const porta = QUIZ.porta, modo = QUIZ.modo;
+  QUIZ.modo = null; QUIZ.snapshot = null; QUIZ.origine = null;
+  costruisciFiltri();
+  const controllo = porta?.isConnected && porta.closest('#quiz-menu') ? porta : document.querySelector(`[data-modo="${modo || 'mirata'}"]`);
+  controllo?.focus();
+}
+function radioQuiz(nome, valore, scelto, testo) {
+  return `<label class="quiz-radio"><input type="radio" name="${nome}" value="${valore}" ${String(scelto) === String(valore) ? 'checked' : ''}>${testo}</label>`;
+}
 function costruisciFiltri() {
+  const porta = ([k, t, d]) => `<article class="quiz-porta ${k === 'mirata' ? 'quiz-consiglio' : ''}"><h2>${t}</h2><p>${d}</p><button class="btn ${k === 'mirata' ? 'primary' : ''}" data-modo="${k}">${k === 'mirata' ? 'Apri l’allenamento consigliato' : t}</button></article>`;
+  // Non ricreare il controllo d'origine mentre la configurazione è aperta.
+  if (!document.getElementById('f-modo').children.length) {
+    document.getElementById('f-modo').innerHTML = MODI.slice(0, 4).map(porta).join('');
+    document.getElementById('quiz-giro-porta').innerHTML = porta(MODI[4]);
+  }
+  document.getElementById('quiz-menu').hidden = !!QUIZ.modo;
+  document.getElementById('quiz-conf').hidden = !QUIZ.modo;
+  if (!QUIZ.modo) return;
+  const f = S.filtro, m = QUIZ.modo;
+  const bancaPronta = !S.caricamento && !S.bancaErrore && S.banca.length > 0;
+  document.getElementById('quiz-title').textContent = MODI.find(([k]) => k === m)[1];
+  document.getElementById('modo-sub').textContent = m === 'screening' && f.perVoce > 1
+    ? `Fino a ${f.perVoce} domande per ogni voce della banca scelta. Un errore può suggerire che cosa approfondire; una risposta corretta non dimostra padronanza dell’argomento.` : SUB[m];
+  document.getElementById('quiz-bank').innerHTML = bancaPronta && ['argomento','sbagliate','screening'].includes(m)
+    ? `<fieldset><legend>Banca</legend><div class="row">${['base','vela'].map(k => radioQuiz('quiz-kind', k, f.kind, `Quiz ${k} · ${S.banca.filter(it => it.k === k).length}`)).join('')}</div></fieldset>` : '';
+  const personalizza = m === 'argomento' || m === 'sbagliate';
+  document.getElementById('quiz-personalizza').hidden = !personalizza || !bancaPronta;
+  document.getElementById('quiz-filtri-porta').hidden = m !== 'argomento';
+  if (personalizza) {
+    document.getElementById('quiz-gruppi').textContent = riepilogoArgomenti(f);
+    document.getElementById('quiz-ordine').textContent = m === 'argomento' ? 'Prima gli errori ancora da ripassare e i quesiti mai incontrati, poi gli altri quesiti di ripasso.' : '';
+    document.getElementById('f-n').innerHTML = [20,50,100,0].map(n => radioQuiz('quiz-n',n,f.n,n || 'Tutte')).join('');
+    dipingiFiltriAttivi();
+  }
+  let opzioni = '';
+  if (m === 'mirata') opzioni = '<details><summary>Come vengono scelte le domande?</summary><p>La selezione può includere domande da ripassare, domande mai incontrate qui e conferme. Il motivo di ciascuna compare durante l’attività.</p></details>';
+  if (m === 'screening' && bancaPronta) opzioni = `<p>Il giro comprende tutte le voci. In ciascuna propone prima quesiti mai incontrati qui, se ce ne sono; può includere quesiti già fatti.</p><fieldset><legend>Quesiti per voce</legend>${radioQuiz('quiz-pv',1,f.perVoce,`1 per voce · ${E.lunghezzaScreening(S.banca,1,f.kind)} domande`)}<details ${f.perVoce > 1 ? 'open' : ''}><summary>Più quesiti per voce</summary>${[2,4,6].map(n => radioQuiz('quiz-pv',n,f.perVoce,`${n} per voce · ${E.lunghezzaScreening(S.banca,n,f.kind)} domande`)).join('')}<p>Da una voce con pochi quesiti prenderemo solo quelli disponibili.</p></details></fieldset>`;
+  if (m === 'sim') {
+    opzioni = `<fieldset><legend>Quale prova</legend><div class="row">${[['base','Quiz base'],['vela','Quiz vela'],['entrambe','Base e vela']].map(([k,t]) => radioQuiz('quiz-prova',k,f.prova,t)).join('')}</div></fieldset>`;
+    if (bancaPronta && proveQuizValide()) {
+      for (const k of f.prova === 'entrambe' ? ['base','vela'] : [f.prova]) {
+        const p = S.meta.prove[k]; opzioni += `<p><b>Quiz ${k}</b>: ${p.n} domande · ${p.minuti} minuti · massimo ${p.errori_max} ${p.errori_max === 1 ? 'errore' : 'errori'}</p>`;
+      }
+      if (f.prova === 'entrambe') opzioni += '<p>Prima i quiz base, poi i quiz vela. Due prove, con timer ed esito separati. Il carteggio non è incluso.</p>';
+      opzioni += '<details><summary>Come è composta la prova</summary><p>La ripartizione ministeriale dei quiz base è per tema.</p><table class="tbl"><thead><tr><th>Tema</th><th>Domande</th></tr></thead><tbody>' + Object.entries(S.meta.pesi_esame).map(([t,n]) => `<tr><td>${esc(t)}</td><td>${n}</td></tr>`).join('') + '</tbody></table></details>';
+    }
+    opzioni += '<p>La prova si avvia quando premi Inizia la prova. Se esci o ricarichi, non riprendi il timer e la lista da dove eri.</p>';
+  }
+  document.getElementById('quiz-opzioni').innerHTML = opzioni;
+  document.getElementById('colreg-extra').hidden = !(m === 'argomento' && f.kind === 'base' && (f.temi.some(t => /COLREG/i.test(t)) || S.banca.some(it => f.voci.includes(it.v) && /COLREG/i.test(it.t))));
+  const ritorno = document.getElementById('quiz-return'); ritorno.hidden = !QUIZ.origine;
+  ritorno.textContent = QUIZ.origine?.vista === 'diag' ? 'Torna ai Progressi' : 'Torna al Percorso';
+  anteprima();
+}
+function riepilogoArgomenti(f) {
+  if (f.voci.length) return (f.n === 0 && f.voci.length === 1 && QUIZ.origine ? 'Tutti i quesiti di questa voce: ' : '') + f.voci.map(v => v || 'Voce senza nome nel decreto').join(' · ');
+  if (!f.temi.length) return 'Tutti gli argomenti';
+  return f.temi.length === 1 ? `Tutte le voci di ${f.temi[0]}` : `${f.temi.join(' · ')}. Valgono tutte le voci dei temi selezionati`;
+}
+function dipingiFiltriAttivi() {
   const f = S.filtro;
-  document.getElementById('f-modo').innerHTML = MODI.map(([k, t, s]) =>
-    `<button class="${f.modo === k ? 'on' : ''}" data-modo="${k}"><b>${t}</b><span>${s}</span></button>`).join('');
-  document.getElementById('modo-sub').textContent = SUB[f.modo];
-  for (const [k] of MODI) {
-    const box = { mirata: 'box-mirata', argomento: 'box-argomento', sbagliate: 'box-sbagliate',
-                  sim: 'box-sim', screening: 'box-screening', batteria: 'box-batteria' }[k];
-    document.getElementById(box).classList.toggle('on', f.modo === k);
-  }
-  // La simulazione decide da sé banca e lunghezza; Mirata pure (25 quesiti base,
-  // i budget sono suoi): mostrare quei controlli sarebbe una bugia.
-  document.getElementById('box-comune').classList.toggle('on', f.modo !== 'sim' && f.modo !== 'mirata');
-  // Nello screening la lunghezza la decide "quante per voce": due controlli che
-  // dicono la stessa cosa in modo diverso confondono e basta.
-  document.getElementById('box-quante').style.display = f.modo === 'screening' ? 'none' : '';
-  document.getElementById('start').style.display = f.modo === 'sim' ? 'none' : '';
-
-  document.getElementById('f-kind').innerHTML =
-    [['base', 'Base · 1.472'], ['vela', 'Vela · 250']].map(([k, l]) =>
-      `<button class="chip ${f.kind === k ? 'on' : ''}" data-k="${k}">${l}</button>`).join('');
-  document.getElementById('f-n').innerHTML =
-    [20, 50, 100, 0].map(n => `<button class="chip ${f.n === n ? 'on' : ''}" data-n="${n}">${n || 'Tutte'}</button>`).join('');
-  document.getElementById('f-pervoce').innerHTML = [1, 2, 4, 6].map(n =>
-    `<button class="chip ${f.perVoce === n ? 'on' : ''}" data-pv="${n}">${n} per voce · ${totScreening(n)} domande</button>`
-  ).join('');
-  composizione(); temiChecks(); temiSbagliate(); vociChecks(); figuraCheck(); anteprima();
-  const colreg = document.getElementById('colreg-extra');
-  if (colreg) colreg.hidden = !(f.modo === 'argomento' && f.kind === 'base'
-    && f.temi.some((tema) => /COLREG/i.test(tema)));
+  const chip = (tipo, x, label) => `<button class="btn" data-quiz-remove="${tipo}" data-valore="${esc(x)}" aria-label="Rimuovi filtro ${esc(label)}">${esc(label)} ×</button>`;
+  document.getElementById('quiz-attivi').innerHTML = f.temi.map(x => chip('temi',x,x)).join('') + f.voci.map(x => chip('voci',x,x || 'Voce senza nome nel decreto')).join('')
+    + (QUIZ.modo === 'argomento' && f.soloNuovi ? chip('soloNuovi','','Solo domande mai fatte') : '')
+    + (QUIZ.modo === 'argomento' && f.soloFigura ? chip('soloFigura','','Solo quesiti con figura') : '')
+    + ((f.temi.length || f.voci.length || (QUIZ.modo === 'argomento' && (f.soloNuovi || f.soloFigura))) ? '<button class="text-btn" data-quiz-clear>Rimuovi tutti i filtri</button>' : '');
 }
-
-/**
- * Quante domande fa davvero uno screening a `k` per voce.
- *
- * Non è `k × 44`: tre voci del decreto hanno un solo quesito in banca
- * (il Centro Radio Medico, le comunicazioni di soccorso, la voce senza nome),
- * e da quelle non si pescano sei domande. Il conto è la somma dei minimi, e va
- * mostrato quello: un numero tondo ma falso fa perdere fiducia nel resto.
- */
-function totScreening(k) {
-  const voci = S.filtro.kind === 'vela'
-    ? S.meta.voci_vela.map(v => v.n)
-    : S.meta.temi.flatMap(t => t.voci.map(v => v.n));
-  return voci.reduce((s, n) => s + Math.min(k, n), 0);
+function apriPannelloQuiz(tipo, porta) {
+  QUIZ.bozza = structuredClone(S.filtro); QUIZ.pannello = { tipo, porta };
+  dipingiPannelloQuiz(); document.getElementById('quiz-panel').showModal(); document.getElementById('quiz-panel-title').focus();
 }
-
-/** La tabella della composizione ministeriale: è il dato che cambia le priorità. */
-function composizione() {
-  const righe = S.meta.temi.filter(t => t.esame);
-  document.getElementById('t-composizione').innerHTML =
-    `<thead><tr><th>Tema</th><th>Esame</th><th>In banca</th><th>Resa</th></tr></thead><tbody>` +
-    righe.map(t => {
-      const resa = t.esame / t.n;
-      const cls = resa > 0.02 ? 'hi' : resa > 0.012 ? 'mid' : 'lo';
-      return `<tr><td><span class="nome">${esc(t.tema)}</span></td>
-        <td><b>${t.esame}</b></td><td>${t.n}</td>
-        <td class="pct ${cls}">${(resa * 1000).toFixed(1)}‰</td></tr>`;
-    }).join('') + '</tbody>';
-}
-
-/**
- * Le spunte degli argomenti, con sotto ciascuno come stai andando.
- *
- * Il dato serve proprio qui: è il momento in cui scegli che cosa allenare, e
- * senza sapere dove sei debole sceglieresti a sensazione. Finché una voce ha
- * meno di cinque risposte si dice "pochi dati" invece di una percentuale: una
- * percentuale su tre risposte è un numero che mente con l'aria di essere preciso.
- */
-/** Gli argomenti nella modalita' "solo sbagliate", con quanti ne hai sbagliati. */
-function temiSbagliate() {
-  const f = S.filtro, el = document.getElementById('f-temi-sb');
-  if (!el) return;
-  const conta = new Map(), aperte = new Map();
-  for (const it of S.banca) {
-    if (it.k !== f.kind) continue;
-    const chiave = f.kind === 'vela' ? it.v : it.t;
-    const p = S.prog[it.id];
-    if (!E.sbagliato(p)) continue;
-    conta.set(chiave, (conta.get(chiave) || 0) + 1);
-    // Quante hanno ancora l'errore in piedi: e' il numero che si muove quando
-    // ripassi. Il totale da solo non cala mai e non dava nessun segnale.
-    if (E.classifica(p) === 'da_ripassare') aperte.set(chiave, (aperte.get(chiave) || 0) + 1);
-  }
-  const fonte = f.kind === 'vela' ? S.meta.voci_vela.map(v => v.voce) : S.meta.temi.map(t => t.tema);
-  const conErrori = fonte.filter(nome => conta.get(nome));
-  if (!conErrori.length) {
-    el.innerHTML = `<p class="note">Non hai ancora sbagliato niente in questa banca.</p>`;
-    return;
-  }
-  el.innerHTML = conErrori.map(nome => `<button class="check ${f.temi.includes(nome) ? 'on' : ''}" data-tema="${esc(nome)}">
-    <span class="bx">&#10003;</span>
-    <span class="nm">${esc(nome)}<small class="pct">${aperte.get(nome) || 0} apert${(aperte.get(nome) || 0) === 1 ? 'a' : 'e'} su ${conta.get(nome)}</small></span></button>`).join('');
-}
-
-function temiChecks() {
-  const f = S.filtro, el = document.getElementById('f-temi');
-  const d = E.diagnosi(S.banca, S.prog, S.date.oggi || today(), f.kind,
-                       f.kind === 'base' ? S.meta.pesi_esame : null);
-  const per = new Map(d.temi.map(t => [t.nome, t]));
-  const fonte = f.kind === 'vela'
-    ? S.meta.voci_vela.map(v => [v.voce, v.n, null])
-    : S.meta.temi.map(t => [t.tema, t.n, t.esame]);
-
-  el.innerHTML = fonte.map(([nome, quanti, esame]) => {
-    const s = per.get(nome) || { visti: 0, sbagliati: 0, aperti: 0, acc1: null };
-    const stato = !s.visti ? 'mai visto'
-      : s.visti < 5 ? `${s.visti} viste · pochi dati`
-      : `${pct(s.acc1)} esatte${s.aperti ? ` · ${s.aperti} aperte` : ''}`;
-    const cls = !s.visti || s.visti < 5 ? '' : classe(s.acc1);
-    return `<button class="check ${f.temi.includes(nome) ? 'on' : ''}" data-tema="${esc(nome)}">
-      <span class="bx">&#10003;</span>
-      <span class="nm">${esc(nome)}<small class="pct ${cls}">${stato} · ${quanti} in banca</small></span>
-      ${esame != null ? `<span class="w">${esame}/20</span>` : ''}</button>`;
-  }).join('');
-
-  const n = f.temi.length;
-  document.getElementById('sel-count').textContent =
-    n ? `· ${n} selezionat${n === 1 ? 'o' : 'i'}` : '· nessuno: valgono tutti';
-}
-
-/**
- * Le voci come spunte, non piu' come tendina: si combinano (due voci affini si
- * allenano insieme) e si vede sempre che cosa e' selezionato — in una <select>
- * la scelta corrente spariva dietro il valore chiuso.
- */
-function vociChecks() {
-  const box = document.getElementById('box-voci');
-  const el = document.getElementById('f-voci');
-  const f = S.filtro;
-  let src = [];
-  if (f.kind === 'vela') src = S.meta.voci_vela.map(v => [v.voce, v.n]);
-  else if (f.temi.length === 1) {
-    const t = S.meta.temi.find(t => t.tema === f.temi[0]);
-    src = t ? t.voci.map(v => [v.voce, v.n]) : [];
-  }
-  box.style.display = src.length ? '' : 'none';
-  el.innerHTML = src.map(([v, n]) => `<button class="check ${f.voci.includes(v) ? 'on' : ''}" data-vocef="${esc(v)}">
-    <span class="bx">&#10003;</span>
-    <span class="nm">${esc(v)}</span>
-    <span class="w">${n}</span></button>`).join('');
-}
-
-/**
- * L'interruttore «solo quesiti con figura», col conteggio di quanti ne passano
- * il filtro corrente: un filtro che puo' produrre zero deve dirlo prima che tu
- * prema Inizia, non dopo.
- */
-function figuraCheck() {
-  const f = S.filtro, el = document.getElementById('f-figura');
-  if (!el) return;
-  // Una banca senza nemmeno un quesito con figura spegne l'interruttore: un
-  // filtro attivabile che produce sempre zero e' una trappola, non un'opzione.
-  // (Oggi non capita: la vela ne ha 2, i paranchi. La guardia protegge il caso.)
-  const inBanca = S.banca.some((it) => it.k === f.kind && it.f);
-  el.disabled = !inBanca;
-  el.classList.toggle('on', f.soloFigura && inBanca);
-  if (!inBanca) {
-    document.getElementById('f-figura-n').textContent = 'questa banca non ha quesiti con figura';
-    return;
-  }
-  const n = S.prep
-    ? E.coda(S.banca, S.prog, S.date.oggi || today(),
-        { kind: f.kind, ...gruppiEffettivi(f), stati: ['nuovo'], soloFigura: true, n: 0 }).length
-    : E.daAllenare(S.banca, S.prog, S.date.oggi || today(), f.kind,
-        { ...gruppiEffettivi(f), soloFigura: true }).lista.length;
-  document.getElementById('f-figura-n').textContent =
-    n ? `${n} nel filtro corrente${S.prep ? ' · solo mai fatte' : ''}`
-      : 'nessuno nel filtro corrente';
-}
-
-/**
- * La lista per «Allena questa voce» — il pulsante sotto le voci deboli di
- * *Oggi* e sotto i consigli della Diagnosi.
- *
- * Prima era una `coda()` sola con gli stati di default, che esclude i `chiuso`:
- * bastava aver risposto una volta a ogni quesito della voce perche' la lista
- * uscisse **vuota** e il pulsante non facesse niente, in silenzio. Misurato
- * sull'archivio vero: «Leggi e regolamenti» 98 quesiti su 98 gia' risposti,
- * «Elementi di navigazione stimata» 72 su 72 — due delle cinque voci deboli in
- * elenco erano pulsanti morti. Ed e' il caso rovesciato: una voce che hai
- * coperto **e continui a sbagliare** e' esattamente quella da riprendere.
- *
- * Ora la lista e' la voce intera, in un ordine che ha senso per allenarla.
- * Dalla 0.16.0 quell'ordine e' condiviso con il pulsante della Rotta e con la
- * modalita' Per argomento. Ora la sorgente unica e' `E.daAllenare()` nel
- * motore, dove il contratto e' verificato direttamente dai test.
- *
- * Ignora **di proposito** il selettore «solo domande mai fatte»: qui si allena
- * tutta la voce, ed e' la stessa ragione per cui si spegne il filtro figure —
- * un filtro globale che svuota la lista senza dirlo e' il guasto di casa.
- */
-function vociDaAllenare(kind, voce) {
-  return E.daAllenare(S.banca, S.prog, S.date.oggi || today(), kind, { voce }).lista;
-}
-
-/**
- * Tema e voce da passare al motore, secondo la banca.
- *
- * Gli item vela hanno tutti `t: 'VELA'`: le spunte di «Argomenti» per la vela
- * sono in realta' VOCI. Passarle come `temi` filtra su `it.t`, non trova mai
- * niente, e la coda si svuota con scritto sotto «sono tutti chiusi» — falso.
- * Al motore vanno come `voci`, unite a quelle del riquadro voce: per la vela
- * le due liste mostrano le stesse tre voci, e l'unione e' l'unica semantica
- * sensata quando compaiono in tutte e due.
- */
-function gruppiEffettivi(f) {
-  if (f.kind !== 'vela') return { temi: f.temi, voci: f.voci };
-  return { temi: null, voci: [...new Set([...(f.temi || []), ...(f.voci || [])])] };
-}
-
-/** Costruisce la lista di domande della modalità corrente. */
-function selezione(seme) {
-  const f = S.filtro, oggi = S.date.oggi || today();
-  // Mirata ignora sia il seme della pagina sia il selettore "solo mai fatte", e
-  // tutti e due di proposito. Il seme: dev'essere deterministica — stesso
-  // storico e stesso giorno, stessa lista — quindi il seme lo deriva dal giorno
-  // il motore. Il selettore: filtrerebbe via i richiami in silenzio, che e' la
-  // forma esatta del guasto che perseguita questo progetto; lo si dichiara in
-  // schermata invece di subirlo.
-  if (f.modo === 'mirata') {
-    const r = E.mirata(S.banca, S.prog, oggi, { n: 25, pesi: S.meta.pesi_esame, esame: S.date.esame });
-    S.mirataPerche = Object.fromEntries(r.map((x) => [x.it.id, x.perche]));
-    return r.map((x) => x.it);
-  }
-  // Simulazione e screening non passano di qui: la simulazione deve pescare come
-  // l'esame vero — anche quesiti gia' visti — e lo screening deve toccare tutte
-  // le voci, comprese quelle dove non e' rimasto niente di nuovo. Restringerle
-  // ai mai visti le trasformerebbe in qualcos'altro.
-  if (f.modo === 'screening') return E.screening(S.banca, S.prog, oggi, f.perVoce, f.kind, seme || 1);
-  // "Solo sbagliate" ignora il selettore "solo mai fatte": sono l'opposto l'una
-  // dell'altra, e chiedere di ripassare gli errori vince su qualunque filtro
-  // che li escluderebbe tutti.
-  // Nelle «solo sbagliate» il riquadro voce non c'e': si mappano le sole
-  // spunte degli argomenti, che per la vela sono voci (vedi gruppiEffettivi).
-  if (f.modo === 'sbagliate') return E.coda(S.banca, S.prog, oggi,
-    { kind: f.kind, ...(f.kind === 'vela' ? { voci: f.temi } : { temi: f.temi }), soloSbagliate: true, n: f.n });
-  // Argomento e batteria: la stessa lista del pulsante di *Oggi*, ristretta.
-  // Con «solo mai fatte» acceso resta la coda dei soli `nuovo`, che e' quello
-  // che quel selettore chiede — e se e' vuota lo dice l'anteprima, che qui c'e'.
-  const g = f.modo === 'argomento'
-    ? { ...gruppiEffettivi(f), soloFigura: f.soloFigura } : {};
-  if (S.prep) return E.coda(S.banca, S.prog, oggi, { kind: f.kind, ...g, stati: ['nuovo'], n: f.n });
-  const { lista } = E.daAllenare(S.banca, S.prog, oggi, f.kind, g);
-  return f.n > 0 ? lista.slice(0, f.n) : lista;
-}
-
-function anteprima() {
-  const f = S.filtro, el = document.getElementById('prev'), b = document.getElementById('start');
-  if (f.modo === 'sim') { el.textContent = ''; return; }
-  const c = selezione(1);
-  if (f.modo === 'mirata') {
-    const v = Object.values(S.mirataPerche || {});
-    const nR = v.filter((p) => p.startsWith('richiamo')).length;
-    const nC = v.filter((p) => p.includes('conferma')).length;
-    const nE = v.length - nR - nC;
-    el.textContent = `${c.length} quesiti: ${nR} richiam${nR === 1 ? 'o' : 'i'} · ${nE} mai vist${nE === 1 ? 'o' : 'i'} pesati sulla resa · ${nC} conferm${nC === 1 ? 'a' : 'e'}.`
-      + (S.prep ? ' Il selettore «solo mai fatte» qui non vale: i richiami entrano comunque.' : '');
-    b.disabled = !c.length;
-    return;
-  }
-  if (f.modo === 'screening') {
-    el.textContent = `${c.length} domande, una per ogni voce${f.perVoce > 1 ? ' × ' + f.perVoce : ''}. Circa ${Math.round(c.length * 0.35)} minuti.`
-      + (S.prep ? ' Lo screening ignora «solo mai fatte»: serve a coprire tutte le voci.' : '');
-  } else if (f.modo === 'sbagliate') {
-    const tot = E.coda(S.banca, S.prog, S.date.oggi || today(),
-      { kind: f.kind, ...(f.kind === 'vela' ? { voci: f.temi } : { temi: f.temi }), soloSbagliate: true, n: 0 }).length;
-    // Fino alla 0.15.0 diceva solo «175 sbagliate in tutto», e quel numero non
-    // cala mai: ripassarle non produceva **nessun** segnale in schermata. I due
-    // numeri esistevano gia' — `classifica()` li separa dalla 0.6.0 — mancava
-    // solo di scriverli.
-    const aperte = E.coda(S.banca, S.prog, S.date.oggi || today(),
-      { kind: f.kind, ...(f.kind === 'vela' ? { voci: f.temi } : { temi: f.temi }), soloSbagliate: true, n: 0 })
-      .filter((x) => E.classifica(S.prog[x.id]) === 'da_ripassare').length;
-    el.textContent = tot
-      ? `${tot} sbagliat${tot === 1 ? 'a' : 'e'} in tutto: ${aperte} ancora apert${aperte === 1 ? 'a' : 'e'}, `
-        + `${tot - aperte} già ripres${tot - aperte === 1 ? 'a' : 'e'}. Ne prendo ${c.length}, le più trascurate per prime.`
-      : 'Non hai ancora sbagliato niente qui dentro.';
+function dipingiPannelloQuiz() {
+  const f = QUIZ.bozza, tipo = QUIZ.pannello.tipo;
+  document.getElementById('quiz-panel-title').textContent = tipo === 'filtri' ? 'Filtri' : 'Scegli gli argomenti';
+  const spunta = (tipo, valore, testo, checked, disabled = false) => `<label class="quiz-check"><input type="checkbox" data-quiz-check="${tipo}" value="${esc(valore)}" ${checked ? 'checked' : ''} ${disabled ? 'disabled' : ''}>${esc(testo)}</label>`;
+  let html;
+  if (tipo === 'filtri') {
+    const figure = S.banca.some(it => it.k === f.kind && it.f);
+    if (!figure) f.soloFigura = false;
+    const r = selezioneQuiz('argomento', {...f, n:0, soloFigura:true}, fonteQuiz());
+    html = spunta('soloNuovi','','Solo domande mai fatte',f.soloNuovi) + '<p class="note">Include soltanto quesiti a cui non hai ancora risposto qui.</p>'
+      + spunta('soloFigura','','Solo quesiti con figura',f.soloFigura,!figure) + `<p class="note">${figure ? `${r.totale} nel filtro corrente` : 'Questa banca non ha quesiti con figura.'}</p>`;
   } else {
-    const conFig = f.modo === 'argomento' && f.soloFigura;
-    const g = f.modo === 'argomento' ? gruppiEffettivi(f)
-      : (f.kind === 'vela' ? { voci: f.temi } : { temi: f.temi });
-    // Il conteggio deve venire dalla **stessa** funzione che costruisce la
-    // lista, altrimenti torna il difetto che questa versione ripara: un numero
-    // promesso e una lista vuota.
-    const r = S.prep
-      ? (() => { const l = E.coda(S.banca, S.prog, S.date.oggi || today(),
-                   { kind: f.kind, ...g, soloFigura: conFig, stati: ['nuovo'], n: 0 });
-                 return { lista: l, daFare: l.length }; })()
-      : E.daAllenare(S.banca, S.prog, S.date.oggi || today(), f.kind,
-          { ...g, soloFigura: conFig });
-    const tot = r.lista.length;
-    // «Da fare» sono le sbagliate ancora aperte piu' i mai visti. Il resto e'
-    // ripasso: entra in lista perche' una batteria non deve restare a corto di
-    // domande, ma chiamarlo «da fare» sarebbe un numero gonfiato.
-    el.textContent = (!tot
-        ? (conFig ? 'Nessun quesito con figura da fare in questo filtro.'
-          : S.prep ? 'Nessun quesito mai visto con questo filtro: qui hai già risposto a tutto.'
-                   : 'Nessun quesito da fare con questo filtro: sono tutti chiusi.')
-      : r.daFare
-        ? `${r.daFare} da fare nel filtro${r.daFare < tot ? `, poi si ripassa` : ''}; ne prendo ${c.length}.`
-        : `Niente di arretrato in questo filtro: ne prendo ${c.length} di ripasso, dai più trascurati.`)
-      + (S.prep && tot ? ' Solo mai fatte.' : '') + (conFig && tot ? ' Solo con figura.' : '');
+    const items = S.banca.filter(it => it.k === f.kind);
+    const src = [...new Set(items.map(it => f.kind === 'vela' ? it.v : it.t))];
+    const tipo = f.kind === 'vela' ? 'voci' : 'temi';
+    html = '<p>Nessuna spunta significa Tutti gli argomenti.</p>' + src.map(x => spunta(tipo,x,x || 'Voce senza nome nel decreto',f[tipo].includes(x))).join('');
+    if (f.kind === 'base' && f.temi.length === 1) html += '<h3>Voci</h3>' + [...new Set(items.filter(it => it.t === f.temi[0]).map(it => it.v))].map(x => spunta('voci',x,x || 'Voce senza nome nel decreto',f.voci.includes(x))).join('');
+    html += '<div class="row"><button class="btn" data-quiz-all>Seleziona tutti</button><button class="btn" data-quiz-zero>Azzera la selezione</button></div><p class="note">Azzera la selezione: torna a tutti gli argomenti.</p>';
   }
-  b.disabled = !c.length;
+  document.getElementById('quiz-panel-body').innerHTML = html;
+}
+function chiudiPannelloQuiz(applica) {
+  const porta = QUIZ.pannello?.porta;
+  if (applica) { S.filtro = QUIZ.bozza; QUIZ.conf[QUIZ.modo] = S.filtro; costruisciFiltri(); }
+  QUIZ.bozza = null; QUIZ.pannello = null; document.getElementById('quiz-panel').close(); porta?.focus();
+}
+function proveQuizValide() {
+  return ['base','vela'].every(k => {
+    const p = S.meta?.prove?.[k]; return p && Number.isInteger(p.n) && p.n > 0 && Number.isFinite(p.minuti) && p.minuti > 0 && Number.isInteger(p.errori_max) && p.errori_max >= 0 && p.errori_max < p.n;
+  }) && S.meta?.pesi_esame && Object.values(S.meta.pesi_esame).every(n => Number.isInteger(n) && n >= 0)
+    && Object.values(S.meta.pesi_esame).reduce((a,b) => a+b,0) === S.meta.prove.base.n;
+}
+function anteprima() {
+  if (!QUIZ.modo) return;
+  const m = QUIZ.modo, f = S.filtro, el = document.getElementById('prev'), b = document.getElementById('start');
+  const vide = document.getElementById('quiz-vuoto'); vide.innerHTML = '';
+  document.getElementById('quiz-durata').textContent = '';
+  b.textContent = {mirata:'Inizia l’allenamento',argomento:'Inizia i quiz',sbagliate:'Inizia il ripasso',screening:'Inizia il giro',sim:'Inizia la prova'}[m];
+  b.disabled = true; QUIZ.snapshot = null;
+  document.getElementById('quiz-storage').innerHTML = ARCH.errore
+    ? 'Le ultime risposte potrebbero non essere salvate. Apri Info e scarica i progressi adesso. <button class="text-btn" data-info-section="importa">Apri Info</button>'
+    : ARCH.lettura === 'errore' ? 'Non riusciamo a leggere le risposte. Apri Info per controllare l’archivio. <button class="text-btn" data-info-section="importa">Apri Info</button>'
+    : ARCH.nota ? 'Stiamo usando un archivio alternativo: potresti non vedere tutte le risposte precedenti.' : 'Puoi fermarti quando vuoi. Le risposte date restano in questo browser; la lista corrente non si riprende dopo una ricarica.';
+  document.getElementById('quiz-offline').textContent = (!navigator.onLine ? 'Sei offline. Puoi usare i quiz disponibili su questo dispositivo. ' : '') + (DIAG.figureMancanti ? 'Alcune figure potrebbero non essere disponibili offline. Apri Info per controllarle.' : '');
+  if (S.caricamento) { el.textContent = 'Caricamento dei quiz…'; return; }
+  if (S.bancaErrore || !S.banca.length) { el.textContent = 'Non riusciamo a caricare i quiz. Controlla la connessione e riprova.'; vide.innerHTML = '<button class="btn" data-retry-load>Riprova</button>'; return; }
+  if (ARCH.lettura === 'errore' && m !== 'sim') { el.textContent = 'Non riusciamo a leggere le risposte. Apri Info per controllare l’archivio.'; return; }
+  if (m === 'sim' && !proveQuizValide()) { el.textContent = 'Non possiamo verificare le condizioni della prova. Riprova a caricare i dati.'; vide.innerHTML = '<button class="btn" data-retry-load>Riprova</button>'; return; }
+  const seme = Date.now() % 100000, fonte = fonteQuiz();
+  const fasi = m === 'sim' ? (f.prova === 'entrambe' ? ['base','vela'] : [f.prova]).map(k => ({nome:k, ...selezioneQuiz('sim',{prova:k,seme},fonte), condizioni:{...fonte.prove[k]}})) : [];
+  const r = m === 'sim' ? {lista:fasi[0].lista} : selezioneQuiz(m, {...f,seme}, fonte);
+  if (m === 'screening' && r.previsto !== r.lista.length) { el.textContent = 'La selezione è cambiata. Riapri il giro per aggiornare le domande.'; return; }
+  if (m === 'sim' && fasi.some(p => p.lista.length !== p.condizioni.n)) { el.textContent = 'Non possiamo verificare le condizioni della prova. Riprova a caricare i dati.'; return; }
+  QUIZ.snapshot = {...r, fasi, firma:firmaQuiz(), items:S.banca, seme};
+  const n = r.lista.length, restringe = f.temi.length || f.voci.length;
+  if (m === 'mirata') el.textContent = n ? `${n} quiz base` : 'Non ci sono quesiti in questa selezione. Puoi scegliere un argomento o simulare una prova.';
+  if (m === 'argomento') el.textContent = n ? `${r.totale} quesiti ${f.soloNuovi ? 'mai incontrati' : 'disponibili'} con questa selezione. Ne aprirai ${n}.` + (!f.soloNuovi ? (r.daFare > 0 ? ` ${r.daFare} mai incontrati o da ripassare; gli altri sono disponibili per il ripasso.` : ' Qui restano quesiti di ripasso.') : '') : f.soloNuovi ? 'Nessun quesito mai incontrato con questi filtri. Puoi togliere Solo domande mai fatte per ripassare.' : 'Nessun quesito con questi filtri. Modifica i filtri o rimuovili.';
+  if (m === 'sbagliate') el.textContent = n ? `${r.totale} quesiti sbagliati almeno una volta con questa selezione. Ne aprirai ${n}.` : restringe ? 'Non ci sono quesiti sbagliati con questi filtri. Puoi cambiare argomenti o rimuovere i filtri.' : 'Non ci sono quesiti sbagliati nelle risposte disponibili qui. Puoi scegliere un argomento o simulare una prova.';
+  if (m === 'screening') el.textContent = `Quiz ${f.kind}: ${n} domande. Il giro comprende tutte le voci della banca.`;
+  if (m === 'sim') el.textContent = fasi.map(p => `Quiz ${p.nome}: ${p.lista.length} domande`).join(' · ');
+  if (!n) vide.innerHTML = m === 'argomento' || (m === 'sbagliate' && restringe) ? '<button class="btn" data-quiz-panel="argomenti">Modifica i filtri</button><button class="btn" data-quiz-clear>Rimuovi tutti i filtri</button>' : '<button class="btn" data-modo="argomento">Scegli un argomento</button><button class="btn" data-modo="sim">Simula la prova</button>';
+  if (n && m !== 'sim') {
+    const kind = m === 'mirata' ? 'base' : f.kind;
+    // Un tempo di risposta non è un intervallo all'orologio: escludiamo
+    // righe senza timestamp leggibile prima di chiedere il ritmo al motore.
+    const ritmo = E.ritmo(S.archivio.filter(r => r._t === 'q' && r.kind === kind
+      && typeof r.ts === 'string' && Number.isFinite(Date.parse(r.ts))));
+    const stima = E.stimaImpegno(S.prog,n,1,ritmo.affidabile ? {msPerDomanda:ritmo.msPerDomanda} : {});
+    if (stima.fonte === 'orologio') document.getElementById('quiz-durata').textContent = stima.minutiTotali === 0 ? 'Durata stimata: meno di un minuto' : `Durata stimata: circa ${stima.minutiTotali} ${stima.minutiTotali === 1 ? 'minuto' : 'minuti'}`;
+  }
+  b.disabled = !n;
+}
+function avviaQuizSnapshot() {
+  const r = QUIZ.snapshot;
+  if (S.run || !r) return;
+  if (r.items !== S.banca || r.firma !== firmaQuiz()) { costruisciFiltri(); document.getElementById('prev').textContent += ' La selezione è cambiata. Controlla l’anteprima e premi di nuovo Inizia.'; return; }
+  document.getElementById('start').disabled = true;
+  if (QUIZ.modo === 'sim') return avviaSim(r.fasi[0],r.fasi.slice(1));
+  apri(r.lista,QUIZ.modo,{perche:r.perche, origine:QUIZ.origine || 'quiz', quiz:true});
+}
+function focusOrigineQuiz(origine) {
+  const c = origine.controllo;
+  if (c?.isConnected) return c.focus();
+  const bottoni = [...document.querySelectorAll(`#v-${origine.vista} button`)];
+  const equivalente = c && bottoni.find(b => Object.keys(c.dataset).length && Object.entries(c.dataset).every(([k,v]) => b.dataset[k] === v));
+  if (equivalente) equivalente.focus();
+  else { const titolo = document.querySelector(`#v-${origine.vista} h1`); titolo?.setAttribute('tabindex','-1'); titolo?.focus(); }
+}
+function tornaOrigineQuiz() {
+  const origine = QUIZ.origine;
+  if (!origine) return menuQuiz();
+  mostraVista(origine.vista); focusOrigineQuiz(origine);
 }
 
 /* ===================== RUNNER =========================================== */
@@ -2534,6 +2394,7 @@ function apri(coda, modo, opt = {}) {
     coda, i: 0, modo, t0: 0, risposto: false, giuste: 0, uidCorrente: null,
     sim: opt.sim || null,        // {nome, minuti, erroriMax} se è una prova cronometrata
     primaBase: !!opt.primaBase,
+    quiz: !!opt.quiz,
     origine: opt.origine || null,
     autoCorrente: opt.primaBase ? false : S.auto,
     // L'identita' della sessione nasce QUI, non alla consegna: ogni risposta la
@@ -2557,19 +2418,26 @@ function apri(coda, modo, opt = {}) {
   document.getElementById('r-auto').classList.toggle('on', S.run.autoCorrente);
   const close = document.getElementById('r-close');
   close.textContent = opt.primaBase ? 'Termina l\'attività' : '×';
-  close.setAttribute('aria-label', opt.primaBase ? 'Termina l\'attività' : 'Chiudi');
+  close.setAttribute('aria-label', opt.primaBase ? 'Termina l\'attività' : opt.quiz ? (opt.origine?.vista === 'diag' ? 'Torna ai Progressi' : opt.origine?.vista === 'oggi' ? 'Torna al Percorso' : 'Torna alla configurazione Quiz') : 'Chiudi');
   close.classList.toggle('runner-exit', !!opt.primaBase);
+  document.getElementById('r-title').textContent = opt.sim ? `Simulazione quiz ${opt.sim.nome}` : { mirata: 'Allenamento consigliato', argomento: 'Quiz per argomento', sbagliate: 'Ripasso degli errori', screening: 'Un giro tra gli argomenti' }[modo] || 'Quiz';
+  document.getElementById('r-bank').textContent = `Quiz ${coda[0].k}`;
   dipingiStatoRotta();
   mostra();
 }
 
 function chiudi() {
+  const origine = S.run?.origine, quiz = S.run?.quiz;
   clearInterval(tick); clearTimeout(autoT); S.run = null;
   document.getElementById('quizrun').classList.remove('on');
   document.getElementById('r-fine').classList.remove('on');
   const close = document.getElementById('r-close');
   close.textContent = '×'; close.setAttribute('aria-label', 'Chiudi'); close.classList.remove('runner-exit');
-  dipingi(); anteprima();
+  dipingi(); costruisciFiltri();
+  if (quiz) {
+    if (origine && typeof origine === 'object') { mostraVista(origine.vista); focusOrigineQuiz(origine); }
+    else { mostraVista('quiz'); document.getElementById('quiz-title').focus(); }
+  }
 }
 
 function terminaPrimaAttivita() {
@@ -2586,7 +2454,7 @@ function mostra() {
   document.getElementById('r-pos').textContent = `${R.i + 1} / ${R.coda.length}`;
   const pill = document.getElementById('r-stato');
   if (R.sim) {
-    pill.textContent = R.sim.nome === 'vela' ? 'vela · max 1 errore' : 'quiz base · max 4 errori';
+    pill.textContent = `quiz ${R.sim.nome} · massimo ${R.sim.erroriMax} ${R.sim.erroriMax === 1 ? 'errore' : 'errori'}`;
     pill.className = 'pill';
   } else if (R.perche && R.perche[it.id]) {
     // In Mirata ogni quesito sa dire perche' e' li': un selettore che non si
@@ -2612,6 +2480,12 @@ function mostra() {
   document.getElementById('r-fig').innerHTML = it.f
     ? `<img src="/figure/${it.f}" alt="figura" loading="eager">`
     : it.fm ? `<p class="note nofig">Figura non disponibile: ${esc(it.fm)}.</p>` : '';
+  const immagine = document.querySelector('#r-fig img');
+  if (immagine) immagine.addEventListener('error', () => {
+    const avviso = document.createElement('p'); avviso.className = 'note nofig';
+    avviso.textContent = 'Figura non disponibile. Apri Info per controllare le figure offline.';
+    immagine.replaceWith(avviso);
+  }, {once:true});
   // Il suggerimento dei tasti compare solo dove c'e' una tastiera (la classe
   // solo-tastiera e' vuota altrove). Numeri E lettere funzionano entrambi dal
   // gestore keydown della 0.4.6; qui si scrive, perche' una scorciatoia che
@@ -2625,7 +2499,7 @@ function mostra() {
   document.getElementById('r-verdict').innerHTML = (R.sim
     ? `<span>Nessuna correzione fino alla fine, come all'esame.</span>
        <span class="solo-tastiera" style="color:var(--dim)">&nbsp;· tasti ${tasti} oppure ${lettere}</span>`
-    : R.primaBase && R.i === 0
+    : R.i === 0
       ? `<span>Tocca una risposta per vedere quella ufficiale.</span><span class="solo-tastiera" style="color:var(--dim)">&nbsp;· tasti ${tasti} oppure ${lettere}</span>`
       : `<span class="solo-tastiera" style="color:var(--dim)">tasti: ${tasti} oppure ${lettere}</span>`)
     + notaPrima(it);
@@ -2808,10 +2682,10 @@ function fine(tempoScaduto, parziale = false) {
   const prossima = R.fasi && R.fasi.length ? R.fasi[0] : null;
   const bottoni = prossima
     ? `<button class="btn primary" data-fase="1" style="margin-top:18px">${
-         e.superata ? `Continua con ${prossima === 'vela' ? 'la vela' : 'il quiz base'}` : 'Prosegui comunque con la vela'}</button>
+         e.superata ? `Continua con ${prossima.nome === 'vela' ? 'la vela' : 'il quiz base'}` : 'Prosegui comunque con la vela'}</button>
        ${e.superata ? '' : `<p class="note" style="margin-top:8px;text-align:center">All'esame vero, qui saresti escluso.</p>`}
        <button class="btn" data-chiudi="1" style="margin-top:8px">Chiudi</button>`
-    : `<button class="btn primary" data-chiudi="1" style="margin-top:18px">Chiudi</button>`;
+    : `<button class="btn primary" data-chiudi="1" style="margin-top:18px">${R.quiz ? (R.origine?.vista === 'diag' ? 'Torna ai Progressi' : R.origine?.vista === 'oggi' ? 'Torna al Percorso' : 'Torna alla configurazione Quiz') : 'Chiudi'}</button>`;
 
   el.innerHTML = '<div class="route-alert error" data-fine-save-warning role="alert" hidden></div>' + testa + lista + bottoni;
   el.classList.add('on');
@@ -2828,18 +2702,14 @@ function fine(tempoScaduto, parziale = false) {
 
 /** Chiude la prova corrente senza uscire dal runner: serve fra base e vela. */
 function chiudiSoft() {
-  clearInterval(tick); clearTimeout(autoT);
+  clearInterval(tick); clearTimeout(autoT); S.run = null;
   document.getElementById('r-fine').classList.remove('on');
 }
 
 /** Avvia una prova cronometrata; `resto` sono le fasi che la seguono. */
-function avviaSim(nome, resto = []) {
-  const oggi = S.date.oggi || today(), seme = Date.now() % 100000;
-  const p = S.meta.prove[nome];
-  const coda = nome === 'vela'
-    ? E.simulazioneVela(S.banca, S.prog, oggi, p.n, seme)
-    : E.simulazione(S.banca, S.prog, oggi, S.meta.pesi_esame, seme);
-  apri(coda, 'simulazione', { sim: { nome, minuti: p.minuti, erroriMax: p.errori_max }, fasi: resto });
+function avviaSim(fase, resto = []) {
+  const p = fase.condizioni;
+  apri(fase.lista, 'simulazione', { sim: { nome: fase.nome, minuti: p.minuti, erroriMax: p.errori_max }, fasi: resto, origine:QUIZ.origine || 'quiz', quiz:true });
 }
 
 /* ===================== DIAGNOSI ========================================= */
@@ -3138,7 +3008,7 @@ function rigaProva(p, etichetta) {
 // nuova e qui manca, esce il nome grezzo — brutto ma vero, che e' meglio di una
 // sessione senza nome o, peggio, di una sessione che non compare.
 const NOME_MODO = {
-  simulazione: 'Simulazione', screening: 'Screening', batteria: 'Batteria',
+  simulazione: 'Simulazione', screening: 'Screening', batteria: 'Batteria (attività precedente)',
   argomento: 'Per argomento', mirata: 'Mirata', sbagliate: 'Solo sbagliate',
 };
 
@@ -4110,18 +3980,44 @@ function mostraVista(v) {
     b.classList.toggle('on', b.dataset.v === (v === 'tec' ? 'cart' : v === 'seg' ? vistaPrincipale : v)));
   document.querySelectorAll('.view').forEach((s) => s.classList.toggle('on', s.id === 'v-' + v));
   if (v === 'info') dipingiInfo();
+  if (v === 'quiz') costruisciFiltri();
   if (v === 'seg') dipingiSeg();
   if (v === 'oggi' && !S.caricamento) dipingi();
   scrollTo(0, 0);
 }
 
-function apriQuizDallaRotta(modo) {
-  S.filtro.modo = modo;
-  if (modo === 'argomento') { S.filtro.kind = 'base'; S.filtro.temi = []; S.filtro.voci = []; }
-  LS.set('filtro', S.filtro);
-  costruisciFiltri();
-  mostraVista('quiz');
+function apriQuizDallaRotta(modo, controllo) {
+  const conf = modo === 'argomento' ? defaultQuiz(modo) : null;
+  apriConfigurazioneQuiz(modo,controllo,{vista:'oggi',controllo},conf);
 }
+
+document.getElementById('quiz-panel').addEventListener('cancel', ev => { ev.preventDefault(); chiudiPannelloQuiz(false); });
+document.getElementById('quiz-panel').addEventListener('keydown', ev => {
+  if (ev.key !== 'Tab') return;
+  const controlli = [...ev.currentTarget.querySelectorAll('button,input:not(:disabled)')];
+  const primo = controlli[0], ultimo = controlli[controlli.length - 1];
+  const attivo = document.activeElement;
+  if (ev.shiftKey && (attivo === primo || attivo.id === 'quiz-panel-title')) { ev.preventDefault(); ultimo?.focus(); }
+  else if (!ev.shiftKey && attivo === ultimo) { ev.preventDefault(); primo?.focus(); }
+});
+document.addEventListener('change', ev => {
+  const t = ev.target;
+  if (t.dataset.quizCheck) {
+    const f = QUIZ.bozza, k = t.dataset.quizCheck;
+    if (Array.isArray(f[k])) { f[k] = t.checked ? [...f[k],t.value] : f[k].filter(x => x !== t.value); if (k === 'temi') f.voci = []; }
+    else f[k] = t.checked;
+    const nome = k, valore = t.value;
+    dipingiPannelloQuiz();
+    [...document.querySelectorAll('[data-quiz-check]')].find(el => el.dataset.quizCheck === nome && el.value === valore)?.focus();
+    return;
+  }
+  const k = {'quiz-kind':'kind','quiz-n':'n','quiz-pv':'perVoce','quiz-prova':'prova'}[t.name];
+  if (!k) return;
+  S.filtro[k] = ['n','perVoce'].includes(k) ? +t.value : t.value;
+  if (k === 'kind') { S.filtro.temi = []; S.filtro.voci = []; if (!S.banca.some(it => it.k === t.value && it.f)) S.filtro.soloFigura = false; }
+  costruisciFiltri();
+  [...document.querySelectorAll(`input[name="${t.name}"]`)].find(el => el.value === t.value)?.focus();
+});
 
 document.addEventListener('click', (ev) => {
   // Prima di tutto il resto: i richiami delle spiegazioni stanno **dentro** i
@@ -4150,10 +4046,11 @@ document.addEventListener('click', (ev) => {
   }
   if (t.dataset.firstReturn !== undefined) return chiudi();
   if (t.dataset.firstChoose !== undefined) { chiudi(); return vaiScelta(); }
-  if (t.dataset.rottaTopics !== undefined) return apriQuizDallaRotta('argomento');
-  if (t.dataset.rottaExam !== undefined) return apriQuizDallaRotta('sim');
-  if (t.dataset.rottaQuiz !== undefined) return apriQuizDallaRotta(S.filtro.modo || 'argomento');
+  if (t.dataset.rottaTopics !== undefined) return apriQuizDallaRotta('argomento',t);
+  if (t.dataset.rottaExam !== undefined) return apriQuizDallaRotta('sim',t);
+  if (t.dataset.rottaQuiz !== undefined) return (mostraVista('quiz'), menuQuiz());
   if (t.dataset.v) {
+    if (t.dataset.v === 'quiz') menuQuiz();
     return mostraVista(t.dataset.v);
   }
   if (t.dataset.sv) { segModo = t.dataset.sv; LS.set('segModo', segModo); return dipingiSeg(); }
@@ -4173,73 +4070,37 @@ document.addEventListener('click', (ev) => {
     const g = t.dataset.go;
     if (g === 'tecniche') return apriTec();
     const kind = g === 'quiz-vela' ? 'vela' : 'base';
-    const oggi = S.date.oggi || today();
-    const tr = E.traccia(S.banca, S.prog, oggi, kind, S.date.chiusura_quiz, S.date.inizio_quiz);
-    const quanti = Math.max(10, (S.prep ? quotaPrep(tr) : tr.quota) || 0);
-    // Con «solo mai fatte» acceso vince quel filtro, e il pulsante e' gia'
-    // disabilitato quando i mai visti sono zero (`restano` = t.nuovi).
-    const lista = S.prep
-      ? E.coda(S.banca, S.prog, oggi, { kind, stati: ['nuovo'], n: quanti })
-      : E.daAllenare(S.banca, S.prog, oggi, kind).lista.slice(0, quanti);
-    return apri(lista, 'batteria');
+    return apriConfigurazioneQuiz('argomento',t,{vista:'oggi',controllo:t},{...defaultQuiz('argomento'),kind,n:0});
   }
-  if (t.dataset.voce) {
-    // Dalle voci deboli di Oggi: si allena TUTTA la voce, quindi il filtro
-    // figure si spegne — un filtro residuo che dimezza la lista in silenzio
-    // e' la forma esatta del guasto che perseguita questo progetto.
-    // `data-vk` c'e' solo sui consigli della Diagnosi, che valgono anche per la
-    // vela; le voci deboli di Oggi sono sempre base e non lo mettono.
-    const vk = t.dataset.vk || 'base';
-    const voce = t.dataset.voce;
-    S.filtro = { ...S.filtro, modo: 'argomento', kind: vk, temi: [], voci: [voce], soloFigura: false, stati: [], n: 0 };
-    LS.set('filtro', S.filtro); costruisciFiltri();
-    return apri(vociDaAllenare(vk, voce), 'argomento');
+  if (t.dataset.voce !== undefined) {
+    const vk = t.dataset.vk || 'base', voce = t.dataset.voce;
+    return apriConfigurazioneQuiz('argomento',t,{vista:t.closest('#v-diag') ? 'diag' : 'oggi',controllo:t},
+      {...defaultQuiz('argomento'),kind:vk,voci:[voce],n:0});
   }
-  if (t.dataset.modo) { S.filtro.modo = t.dataset.modo; LS.set('filtro', S.filtro); return costruisciFiltri(); }
-  if (t.dataset.k) {
-    S.filtro.kind = t.dataset.k; S.filtro.temi = []; S.filtro.voci = [];
-    // Se la banca nuova non ha quesiti con figura, il filtro figure si spegne
-    // invece di restare acceso e disabilitato: uno stato che filtra ma non si
-    // puo' toccare e' il guasto muto in miniatura.
-    if (!S.banca.some((it) => it.k === S.filtro.kind && it.f)) S.filtro.soloFigura = false;
-    LS.set('filtro', S.filtro); return costruisciFiltri();
+  if (t.dataset.modo) return apriConfigurazioneQuiz(t.dataset.modo,t,QUIZ.origine);
+  if (t.dataset.quizMenu !== undefined) return menuQuiz();
+  if (t.id === 'quiz-return') return tornaOrigineQuiz();
+  if (t.dataset.quizPanel) return apriPannelloQuiz(t.dataset.quizPanel,t);
+  if (t.dataset.quizApply !== undefined) return chiudiPannelloQuiz(true);
+  if (t.dataset.quizCancel !== undefined) return chiudiPannelloQuiz(false);
+  if (t.dataset.quizClear !== undefined) { S.filtro.temi = []; S.filtro.voci = []; S.filtro.soloNuovi = false; S.filtro.soloFigura = false; return costruisciFiltri(); }
+  if (t.dataset.quizRemove) {
+    const f = S.filtro, k = t.dataset.quizRemove;
+    if (Array.isArray(f[k])) { f[k] = f[k].filter(x => x !== t.dataset.valore); if (k === 'temi') f.voci = []; }
+    else f[k] = false;
+    return costruisciFiltri();
   }
-  if (t.dataset.tema !== undefined) {
-    const x = t.dataset.tema, f = S.filtro;
-    f.temi = f.temi.includes(x) ? f.temi.filter(y => y !== x) : [...f.temi, x];
-    if (f.temi.length !== 1) f.voci = [];
-    LS.set('filtro', f); return costruisciFiltri();
-  }
-  if (t.dataset.vocef !== undefined) {
-    const x = t.dataset.vocef, f = S.filtro;
-    f.voci = f.voci.includes(x) ? f.voci.filter(y => y !== x) : [...f.voci, x];
-    LS.set('filtro', f); return costruisciFiltri();
-  }
-  if (t.dataset.solofig !== undefined) {
-    S.filtro.soloFigura = !S.filtro.soloFigura;
-    LS.set('filtro', S.filtro); return costruisciFiltri();
-  }
-  if (t.dataset.tutti !== undefined) {
-    const f = S.filtro;
-    f.temi = t.dataset.tutti === '1'
-      ? (f.kind === 'vela' ? S.meta.voci_vela.map(v => v.voce) : S.meta.temi.map(x => x.tema)) : [];
-    f.voci = []; LS.set('filtro', f); return costruisciFiltri();
-  }
-  if (t.dataset.pv) { S.filtro.perVoce = +t.dataset.pv; LS.set('filtro', S.filtro); return costruisciFiltri(); }
-  if (t.dataset.n !== undefined && t.dataset.n !== '') { S.filtro.n = +t.dataset.n; LS.set('filtro', S.filtro); return costruisciFiltri(); }
-  if (t.dataset.sim) {
-    const s = t.dataset.sim;
-    return s === 'completa' ? avviaSim('base', ['vela']) : avviaSim(s);
+  if (t.dataset.quizAll !== undefined || t.dataset.quizZero !== undefined) {
+    const f = QUIZ.bozza, k = f.kind === 'vela' ? 'voci' : 'temi';
+    f.temi = []; f.voci = [];
+    if (t.dataset.quizAll !== undefined) f[k] = [...new Set(S.banca.filter(it => it.k === f.kind).map(it => f.kind === 'vela' ? it.v : it.t))];
+    return dipingiPannelloQuiz();
   }
   if (t.dataset.fase) { const p = S.run.fasi[0], resto = S.run.fasi.slice(1); chiudiSoft(); return avviaSim(p, resto); }
   if (t.dataset.chiudi) return chiudi();
   if (t.dataset.dk) { diagKind = t.dataset.dk; return dipingiDiag(); }
   if (t.dataset.do) { diagOrdine = t.dataset.do; LS.set('diagOrdine', diagOrdine); return dipingiDiag(); }
-  if (t.id === 'start') {
-    const c = selezione(Date.now() % 100000);
-    return apri(c, S.filtro.modo,
-      S.filtro.modo === 'mirata' ? { perche: S.mirataPerche } : {});
-  }
+  if (t.id === 'start') return avviaQuizSnapshot();
   if (t.id === 'dl') return scaricaTutto();
   if (t.id === 'esporta') return esporta();
   if (t.id === 'importa') return document.getElementById('importa-file').click();
@@ -4363,13 +4224,6 @@ document.getElementById('esame-data').addEventListener('change', (e) => {
   segnala(S.date.esame ? `esame il ${giornoIt(S.date.esame)}` : S.date.esameNonValida ? 'data d\'esame non valida' : 'data d\'esame tolta');
 });
 
-document.getElementById('prep-on').addEventListener('change', (e) => {
-  S.prep = !!e.target.checked;
-  LS.set('prep', S.prep);
-  segnala(S.prep ? 'solo domande mai fatte' : 'tutte le domande');
-  dipingi();
-  costruisciFiltri();
-});
 
 /**
  * Rispondere da tastiera: **1 2 3** (e a b c, che c'erano gia').
@@ -4435,6 +4289,8 @@ addEventListener('keydown', (e) => {
   else if (e.key === 'Escape') S.run.primaBase ? terminaPrimaAttivita() : chiudi();
 });
 
+addEventListener('online', () => { if (QUIZ.modo) anteprima(); });
+addEventListener('offline', () => { if (QUIZ.modo) anteprima(); });
 avvia();
 </script>
 </body>
