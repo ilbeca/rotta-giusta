@@ -3,7 +3,9 @@
 **P-13, decisioni di interfaccia del 26 settembre 2026, da implementare.**
 **Riallineato da P-28 il 26 settembre 2026** al server che P-11 ha chiuso
 (§1, §5.2, §8), alla simulazione consegnata senza risposte dell'area 3 (§4.1)
-e ai contratti del motore per i trasferimenti (§9.3). Il resto è di P-13.
+e ai contratti del motore per i trasferimenti (§9.3). **P-29 ha aggiunto al §12
+il banco del browser**, con la misura che l'ha scelto e il contratto che la
+pagina deve rispettare. Il resto è di P-13.
 Questo documento specifica flussi, testi, stati e controlli del client. Non
 dichiara un client realizzato, un server in esercizio o una prova con utenti.
 La sessione produce questo file e una voce di CHANGELOG.
@@ -756,6 +758,114 @@ lettura dei punteggi e codice dell'email già registrata è quello di P-11 (§1)
 Claude aggiunge export/test dove servono; non si cambia la regola nel client
 per aggirare un contratto mancante. L'unione di uid identici con payload
 diversi nelle due fonti vecchie va esercitata preservando i file originali.
+
+### Il banco (P-29, 26 settembre 2026)
+
+**La misura.** Prima del codice, le strade per guidare un browser vero dalla
+suite senza aggiungere una dipendenza, provate sul Mac con script da buttare:
+
+| Strada | Regge? | Che cosa costa, misurato | Che cosa non copre |
+|---|---|---|---|
+| **Chrome headless con il suo protocollo (CDP) su una pipe**, `--remote-debugging-pipe` | **sì** | Chrome 153. Risponde 0,33 s dopo l'avvio, primo carico a 0,45 s. Lo script di misura — cookie, IndexedDB, localStorage, sessionStorage e Cache Storage letti da fuori, service worker che controlla la pagina, ricarica offline servita dalla cache, due schede con `BroadcastChannel`, una risposta dell'API sostituita — gira in 2,6 s, identico con Node 25.3 e 24.21 | solo Chromium; vedi sotto |
+| Lo stesso protocollo sul WebSocket, `--remote-debugging-port=0` e il `WebSocket` globale di Node | sì | 0,34 s con Node 25.3, 0,36 con 24.21 | come sopra, più una porta aperta sulla macchina e il file `DevToolsActivePort` da aspettare: nessun vantaggio sulla pipe |
+| Firefox 156 headless, WebDriver BiDi sul WebSocket | **non misurato** | non parte: quattro tentativi — profilo temporaneo, `-profile`, profilo nella cartella di lavoro, fuori dal sandbox dei comandi — danno tutti «Could not find profile folder». Non indagato oltre | — |
+| Safari 27, `safaridriver` | **no, senza un passo dell'autore** | `session not created`: serve «Allow remote automation» nelle impostazioni sviluppatore di Safari, un'impostazione del sistema che una sessione non cambia. E WebDriver classico non legge lo storage né emula l'offline, e apre una finestra vera | — |
+| La pagina che esegue il test e manda l'esito con una POST (il tentativo di P-34, in quarantena) | in parte | nessun protocollo, solo Chrome e l'HTTP di Node | la pagina controlla sé stessa: storage, cookie, offline e ricarica si vedono solo da dentro, cioè con gli strumenti della cosa sotto esame |
+
+**Scelta la prima.** Misurato anche, e serve al §16.3 del progetto degli
+account: in Chrome il cookie `__Host-rg`, `Secure`, arriva e torna fra
+`http://localhost:<sito>` e `http://localhost:8620` con `credentials: 'include'`;
+un contesto isolato (`Target.createBrowserContext`) non vede né i cookie né
+IndexedDB di un altro, quindi è un «nuovo browser» e ne servono molti con un
+Chrome solo.
+
+**Com'è fatto.** `tests/browser.mjs` pilota Chrome; `tests/client_account.mjs`
+serve il sito come l'host, con `/app` sostituita dalla pagina sotto esame,
+avvia il server degli account vero (`server/server.mjs`) sulla porta 8620 con
+l'orologio, la posta e Argon2id economico passati da lì, e crea l'account che
+C-05 trova già iscritto; `tests/test_interfaccia.py` riconosce il regime e
+chiama il banco una volta per tutta la suite. **Due regimi**, con il meccanismo
+di P-06: la pagina che dichiara `function indirizzoApi(` ha il client e passa i
+controlli del progetto; quella che non la dichiara è la pagina di oggi, che
+deve mantenere la promessa di oggi — la risposta resta nel browser e torna dopo
+una ricarica — senza frasi o rotte del client. Finché P-18 non c'è, il regime
+progettato gira su `tests/pagina-client-account.html` e su ventitré rotture di
+quella pagina (`ROTTURE_CLIENT`), ognuna rossa e con il difetto nominato.
+**Il regime attuale ha una scadenza:** lo toglie la regia quando integra P-18.
+
+**Il contratto che la pagina deve rispettare**, perché il banco la guida:
+
+- gli agganci del runner di oggi: `[data-rotta-start]` abilitato quando la
+  palestra è pronta, `#r-text`, `#r-ans .ans`, la risposta esatta segnata
+  `.ans.ok` con `#r-verdict` dopo una risposta, `#r-close`, `#r-fine.on` con il
+  suo `h1`, `[data-ciclo="risposte"]`, `#rivedi.on` con `#rv-body`;
+  `#esame-data` per la data, e `#rotta-last` per l'ultima attività;
+- `function indirizzoApi(loc)`, dal §7.4 del progetto degli account:
+  `https://api.rottagiusta.it` su `rottagiusta.it`, `http://<stesso host>:8620`
+  su `localhost` e `127.0.0.1`, altrimenti `null`;
+- i testi e le etichette di questo progetto, cercati nel testo **che si vede**:
+  le due frasi del §4.1, «Crea un account e salva», le etichette «Email» e
+  «Password» (`<label>` che punta al campo), «Crea l'account e salva», «Questa
+  email è già registrata.», «Accedi», «Reimposta la password», «Torna
+  all'attività» nel modulo di accesso.
+
+Un aggancio cambiato è una conversazione con `main`, non un controllo da
+aggirare: il prompt di P-18 lo dice.
+
+**Che cosa il banco non copre**, e resta al collaudo o a un'altra strada:
+
+- **Safari e WebKit.** ITP, i cookie fra `rottagiusta.it` e `api.rottagiusta.it`,
+  IndexedDB nella navigazione privata: resta Q-PROVE, su un Safari vero.
+- **I sottodomini veri e HTTPS.** Il banco usa `http://localhost` su due porte;
+  il `__Host-` sui domini veri si vede solo in esercizio (P-15).
+- **Le richieste del service worker.** L'emulazione dell'offline e le risposte
+  sostituite valgono per la scheda, non per il worker: per questo, durante la
+  fase offline, il sito del banco smette anche di rispondere. Senza quel passo
+  la rottura «la banca chiesta fuori dal guscio» passa verde, ed è misurato. Il
+  `sw.js` vero ignora le altre origini, quindi le richieste all'API partono
+  dalla pagina e il banco le vede.
+- **Il gesto vero.** I clic sono `element.click()`: niente tastiera, fuoco,
+  lettore di schermo, 375 e 1280 px, gestore di password. Collaudo di P-18.
+- **Le condizioni.** Serve Chrome (`RG_CHROME` se non sta in `/Applications`):
+  senza, il banco è rosso e lo dice, non salta. Serve la porta 8620 libera: un
+  server di sviluppo acceso lì fa un rosso che lo nomina.
+- **Il tempo.** `tests/test_interfaccia.py` passa da 3 a circa 50 s. Il grosso
+  sono le attese che una rottura esaurisce — 10 s per un caricamento, 5 per una
+  reazione a un clic, parecchie volte sopra i tempi misurati —; quelle sul
+  server degli account girano in fila, perché il suo CORS accetta un'origine
+  sola, e le altre in parallelo, ognuna col suo sito. Con attese di 2,5 s e sei
+  prove in parallelo una rottura è uscita rossa per il motivo sbagliato — un
+  quesito non ancora disegnato sotto carico — e alla corsa dopo per quello
+  giusto: un rosso che a volte mente è il difetto opposto a quello di casa, e
+  le attese sono state alzate.
+
+**Il banco contro sé stesso**, una difesa tolta alla volta: il sito acceso
+durante l'offline → «la banca chiesta fuori dal guscio» passa verde; il testo
+cercato nel DOM invece che in quello che si vede → «nessun avviso prima di
+cominciare» passa verde, e la pagina di riferimento diventa rossa, perché il
+sorgente dello script contiene «Questa email è già registrata.»; niente `409`
+finti → le rotture sul riconoscimento da codice e da testo passano verdi; la
+POST non guardata → «la frase detta senza chiedere al server» passa verde; la
+Cache Storage non letta → «le risposte in Cache Storage» passa verde.
+
+**Quali gruppi ci sono, al 26 settembre 2026:**
+
+| Gruppo | Stato | Che cosa esegue |
+|---|---|---|
+| C-01 | **in parte** | Nuovo browser, attività consigliata del Percorso: primo quesito senza campi password, risposta, «Termina», riepilogo, revisione; poi lo stesso offline, dopo che il guscio è in cache. **Mancano** le altre attività — Quiz, simulazioni, Carteggio, tecniche, Segnali — che R-ACC-04 chiede. |
+| C-02 | **fatto** per il Percorso e la data d'esame | Avviso prima e dopo in testo visibile; dopo un'attività e la data, niente in IndexedDB, localStorage, sessionStorage, cookie, né in Cache Storage oltre il guscio e le figure; nessuna richiesta all'API; ricarica senza risposte né data, e ancora niente conservato. **Mancano** Segnali e gli altri controlli delle preferenze, che entrano con C-01 completo. |
+| C-05 | **fatto** | Registrazione dal riepilogo con un'email iscritta sul server vero: la frase, le due porte, zero cookie, zero sessioni e zero mail nuove, Accedi con l'email e senza password, riepilogo e revisione intatti; un `409` finto di un altro genere non parla di email, e uno con un messaggio diverso non spegne la frase. |
+| C-03, C-04, C-06…C-18 | da scrivere | In una sessione dopo, sullo stesso banco: contesti isolati, schede nello stesso contesto, risposte finte, server vero con il suo database. |
+
+**La corsa fra schede di «da verificare»** (§9.3, ultimo paragrafo; §9.1)
+entra con C-06, C-11 e C-15 in questa forma, che il banco sa già fare: due
+schede **nello stesso contesto**, cioè con lo stesso cookie; A invia e B
+riceve, o A esce mentre B ha un invio in volo, con una risposta del server
+trattenuta dall'intercettazione finché l'altra scheda non ha agito. Il
+controllo non guarda solo lo schermo: legge il database del server, perché
+«l'invio sbagliato sul server sarebbe già un danno» (§9.1), e pretende che
+nessuna riga di A arrivi nell'account di B e che «salvate» compaia solo dopo
+che il server ha nominato ogni uid.
 
 **Collaudo dell'implementazione:** screenshot a 375 e 1280 px, prova al 200%,
 tastiera, focus di ritorno al riepilogo/controllo d'origine, lettore di schermo,

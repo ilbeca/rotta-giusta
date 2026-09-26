@@ -28,7 +28,7 @@ questo sito.
 node --test tests/test_engine.mjs                 # il motore, e le tre versioni allineate
 node --test tests/test_server.mjs                 # il server degli account, e il ripristino provato
 python3 tests/test_dati.py                        # dati, invarianti, e il guardiano
-python3 tests/test_interfaccia.py                 # le viste, le porte, le modalità
+python3 tests/test_interfaccia.py                 # le viste, le porte, le modalità, e la pagina in Chrome headless
 python3 tests/test_specifica.py                   # ogni requisito ha il suo controllo
 python3 strumenti/controlla.py                    # il guardiano da solo
 python3 fonte/verifica.py                         # i testi del carteggio contro il PDF (serve pypdf)
@@ -42,8 +42,13 @@ macchina (oggi Node 24), non solo con la versione del Mac: il pacchetto
 ufficiale di nodejs.org, verificato con `SHASUMS256.txt`, in una cartella a
 parte, e `<cartella>/bin/node --test tests/test_server.mjs`.
 
-Tutto gira sull'Air con node e python di sistema. Non c'è nessun servizio da
-riavviare, nessuna macchina remota, nessun database.
+Tutto gira sull'Air con node e python di sistema, **e Chrome**:
+`test_interfaccia.py` guida la pagina vera in Chrome headless, con il suo
+protocollo e senza dipendenze (`RG_CHROME` se l'eseguibile non sta in
+`/Applications`), e accanto avvia il server degli account sulla porta **8620**,
+che deve essere libera. Senza Chrome il controllo è rosso, non saltato. Il
+perché e che cosa non copre: §12 di `docs/account-client-progetto.md`. Non c'è
+nessun servizio da riavviare, nessuna macchina remota, nessun database.
 
 ## Architettura
 

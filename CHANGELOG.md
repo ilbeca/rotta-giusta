@@ -346,6 +346,89 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   con cui anche motore e interfaccia danno gli stessi numeri. Guardiano verde.
   Versione non toccata; `docs/prossime-sessioni.md` non toccato.
 
+### Test — P-29: la pagina in un browser vero, per i controlli del client
+
+- **Prima la misura, e regge una strada sola senza dipendenze.** Il §12 del
+  progetto del client chiede controlli su storage, rete, cookie e offline, che
+  nessuna lettura del sorgente vede, e il repo non ha dipendenze. Provate sul
+  Mac: **Chrome headless con il suo protocollo su una pipe** risponde in 0,33
+  s, e in 2,6 s legge da fuori cookie, IndexedDB, localStorage, sessionStorage
+  e Cache Storage, vede il service worker servire una ricarica offline, fa
+  parlare due schede e sostituisce una risposta dell'API, con Node 25.3 e con
+  la 24.21. Lo stesso protocollo sul WebSocket di Node regge anche lui, senza
+  vantaggi. **Firefox 156** non parte da riga di comando con un profilo suo,
+  in quattro modi; **Safari 27** vuole «Allow remote automation», che è
+  un'impostazione dell'autore, e non legge lo storage. Il tentativo di P-34 in
+  quarantena faceva controllare la pagina da sé stessa. La tabella, la scelta e
+  che cosa non copre sono nel nuovo «Il banco» del §12. Misurato anche, per il
+  §16.3 del progetto degli account: in Chrome il cookie `__Host-rg` va e torna
+  fra due porte di `localhost`.
+
+- **Il banco.** `tests/browser.mjs` pilota Chrome, un contesto isolato per
+  ogni «nuovo browser»; `tests/client_account.mjs` serve il sito con `/app`
+  sostituita dalla pagina sotto esame e avvia accanto il **server degli account
+  vero**, sulla porta 8620, con un account già iscritto. `test_interfaccia.py`
+  riconosce il regime con il meccanismo di P-06: la pagina che dichiara
+  `indirizzoApi()` ha il client. La pagina di oggi non ce l'ha, e deve
+  mantenere la promessa di oggi — la risposta resta nel browser e torna dopo
+  una ricarica — senza frasi o rotte del client; il regime progettato gira su
+  `tests/pagina-client-account.html` finché P-18 non c'è. Il contratto che la
+  pagina deve rispettare — gli agganci del runner, `indirizzoApi()`, i testi
+  del progetto cercati in quello che si vede — è scritto nel §12 prima che P-18
+  lo usi.
+
+- **C-01, C-02 e C-05.** C-01: nuovo browser, attività consigliata, primo
+  quesito senza campi password, risposta, riepilogo e revisione, poi lo stesso
+  offline con il guscio in cache. C-02: le due frasi del §4.1 visibili, e dopo
+  un'attività e la data d'esame niente in nessuno dei cinque depositi del
+  browser oltre il guscio, nessuna richiesta all'API, una ricarica che non
+  ricorda niente. C-05: con un'email iscritta, sul server vero, la frase, le
+  due porte, zero cookie, zero sessioni e zero mail nuove, Accedi con l'email e
+  senza password, il riepilogo intatto; e due `409` finti per vedere che la
+  pagina riconosce il caso da codice **e** `errore`, non dal testo.
+  **C-01 è in parte:** le altre attività — Quiz, simulazioni, Carteggio,
+  tecniche, Segnali — non ci sono ancora, e R-ACC-04 resta scoperto. Gli altri
+  quindici gruppi entrano in una sessione dopo, sullo stesso banco; la corsa
+  fra schede di «da verificare» ha già scritto nel §12 come la eserciteranno
+  C-06, C-11 e C-15, leggendo il database del server e non solo lo schermo.
+
+- **Provati al contrario su ventitré rotture** della pagina di riferimento,
+  tutte rosse con il difetto nominato: fra le altre un modulo prima del primo
+  quesito, la banca chiesta fuori dal guscio, le risposte in localStorage, in
+  sessionStorage, in Cache Storage o in un cookie, l'archivio di prima
+  riaperto, la data riletta dopo la ricarica, le righe inviate senza account,
+  l'avviso nascosto, il `409` riconosciuto dal solo codice o dal testo, la
+  frase detta senza chiedere al server, il link della password chiesto da
+  solo, la password passata al modulo di accesso, le risposte perse dopo il
+  `409`. **E il banco contro sé stesso**, una difesa tolta alla volta, cinque
+  volte una rottura passata verde: il sito acceso durante l'offline — perché
+  l'emulazione della rete vale per la scheda e non per il service worker —, il
+  testo cercato nel DOM invece che in quello che si vede — e allora è rossa
+  anche la pagina giusta, perché lo script contiene la frase —, niente `409`
+  finti, la POST non guardata, la Cache Storage non letta.
+
+- **Un rosso che a volte mente, trovato ripetendo.** Con attese di 2,5 s e sei
+  prove in parallelo, una rottura è uscita rossa per un quesito non ancora
+  disegnato sotto carico, e alla corsa dopo per il motivo giusto; un'altra,
+  una scrittura in Cache Storage asincrona, è passata una volta su tre. Le
+  attese sono salite a 10 e 5 s — costano solo quando una cosa manca davvero —,
+  le prove in parallelo a quattro, e la lettura dello storage aspetta mezzo
+  secondo. Dopo, tre corse della suite intera, una con la 24.21: 571 ogni volta.
+
+- **Il prezzo:** `test_interfaccia.py` passa da 3 a circa 55 s, e vuole Chrome
+  (`RG_CHROME` se non sta in `/Applications`) e la porta 8620 libera; senza, è
+  rosso e lo dice. `AGENTS.md` e la specifica §11 lo scrivono. Specifica:
+  R-ACC-01, 02 e 09 coperti, 02 e 09 in due regimi; R-ACC-41 il `409` visto
+  dalla pagina, R-ACC-42 le rotture; R-ACC-04 scoperto con un motivo più
+  stretto.
+
+  Suite: interfaccia **571** (erano 469); specifica **426** (erano 412); motore
+  155/157 con i due skip di sempre; dati 242; server 59/59. Con la **24.21.0
+  LTS**, scaricata da nodejs.org e verificata con `SHASUMS256.txt`: server
+  59/59, motore 155/157, interfaccia 571. Guardiano e controllo della
+  documentazione verdi. `site/` e `docs/prossime-sessioni.md` non sono stati
+  toccati.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag

@@ -602,6 +602,223 @@ def test_ciclo_provato_al_contrario():
               'rossi: ' + '; '.join(rossi[:3]))
 
 
+# --- 5c. il client degli account, in un browser vero (§12 del progetto del client) --
+#
+# docs/account-client-progetto.md §12 chiede controlli che guardano la pagina
+# viva — storage, rete, cookie, offline — e che una lettura del sorgente non
+# puo' fare. Il banco (tests/client_account.mjs) guida Chrome headless con il
+# suo protocollo, serve il sito come l'host e avvia accanto il server degli
+# account vero. La misura che ha scelto questa strada, il suo costo e che cosa
+# non copre sono nel §12, «Il banco».
+#
+# Due regimi, con il meccanismo dei quiz e del ciclo. La pagina ATTUALE non ha
+# account e promette che le risposte restano nel browser: il banco pretende che
+# mantenga quella promessa, e che non abbia pezzi del client senza il client.
+# La pagina PROGETTATA dichiara indirizzoApi() (account-progetto §7.4), e il
+# banco pretende il contratto del progetto del client. Finche' P-18 non c'e',
+# il regime progettato si esercita sulla pagina di riferimento e sulle sue
+# rotture. **Il regime attuale ha una scadenza:** lo toglie la regia quando
+# integra P-18, e da quel commit una pagina senza client e' rossa.
+BANCO_CLIENT = RADICE / 'tests' / 'client_account.mjs'
+RIFERIMENTO_CLIENT = RADICE / 'tests' / 'pagina-client-account.html'
+GRUPPI_CLIENT = ['C-01', 'C-02', 'C-05']
+
+
+def regime_client(testo):
+    return 'progettato' if re.search(r'^function indirizzoApi\(', senza_commenti(testo), re.M) else 'attuale'
+
+
+# Rotture della pagina di riferimento: (che cosa, gruppi da eseguire,
+# sostituzioni, parola che il rosso deve contenere).
+ROTTURE_CLIENT = [
+    # C-01
+    ('un modulo d\'account prima del primo quesito', ['C-01'],
+     [("if (t.matches('[data-rotta-start]')) return avvia();",
+       "if (t.matches('[data-rotta-start]')) { moduloRegistrazione(); return avvia(); }")],
+     'un campo password'),
+    ('la banca chiesta fuori dal guscio', ['C-01'],
+     [("fetch('/dati/quiz.json')", "fetch('/dati/quiz.json?v=' + Date.now())")],
+     'offline: la palestra si apre'),
+    ('il riepilogo senza la revisione', ['C-01'],
+     [('<button data-ciclo="risposte">Rivedi le risposte</button>', '')],
+     'la revisione mostra il quesito risposto'),
+    ('il service worker mai registrato', ['C-01'],
+     [("if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});", '')],
+     'il guscio offline si carica'),
+    # C-02
+    ('le risposte in localStorage', ['C-02'],
+     [("correct: giusta ? 1 : 0 });", "correct: giusta ? 1 : 0 }); localStorage.setItem('pn.archivio', JSON.stringify(S.righe));")],
+     'localStorage: pn.archivio'),
+    ('l\'archivio di prima riaperto in IndexedDB', ['C-02'],
+     [("function avvia() {", "function avvia() { indexedDB.open('open-patente-nautica');")],
+     'IndexedDB: open-patente-nautica'),
+    ('la data d\'esame in localStorage', ['C-02'],
+     [("S.esame = e.target.value; });", "S.esame = e.target.value; localStorage.setItem('pn.esame', S.esame); });")],
+     'localStorage: pn.esame'),
+    ('una preferenza in sessionStorage', ['C-02'],
+     [("function avvia() {", "function avvia() { sessionStorage.setItem('pn.auto', '0');")],
+     'sessionStorage: pn.auto'),
+    ('un cookie della pagina', ['C-02'],
+     [("function avvia() {", "function avvia() { document.cookie = 'rg-prova=1; path=/';")],
+     'cookie: rg-prova'),
+    ('le risposte in Cache Storage', ['C-02'],
+     [("function termina() {",
+       "function termina() { caches.open('rg-risposte').then((c) => c.put('/risposte.json', new Response(JSON.stringify(S.righe))));")],
+     'Cache Storage «rg-risposte»'),
+    ('le righe inviate senza account', ['C-02'],
+     [("function termina() {",
+       "function termina() { fetch(indirizzoApi(location) + '/v1/righe', { method: 'POST', credentials: 'include', body: JSON.stringify({ righe: S.righe }) }).catch(() => {});")],
+     'nessuna richiesta all\'API'),
+    ('la data d\'esame riletta dopo la ricarica', ['C-02'],
+     [("S.esame = e.target.value; });",
+       "S.esame = e.target.value; sessionStorage.setItem('pn.esame', S.esame); });\n$('esame-data').value = sessionStorage.getItem('pn.esame') || '';")],
+     'dopo la ricarica non restano'),
+    ('nessun avviso prima di cominciare', ['C-02'],
+     [('<p id="avviso-prova">', '<p id="avviso-prova" hidden>')],
+     'prima di cominciare'),
+    ('il riepilogo che non dice che cosa si perde', ['C-02'],
+     [('<p>Senza account, chiudendo o ricaricando la pagina perdi le risposte e le preferenze. ', '<p>')],
+     'che cosa si perde'),
+    # C-05
+    ('il 409 riconosciuto dal solo codice', ['C-05'],
+     [("if (r.status === 409 && corpo && corpo.errore === 'email_registrata') {", 'if (r.status === 409) {')],
+     'non e\' email_registrata non parla di email'),
+    ('il 409 riconosciuto dal testo del server', ['C-05'],
+     [("if (r.status === 409 && corpo && corpo.errore === 'email_registrata') {",
+       "if (corpo && /gi[aà] registrata/.test(corpo.messaggio || '')) {")],
+     'la frase e\' della pagina'),
+    ('al 409 la pagina chiede da sola il link per la password', ['C-05'],
+     [("if (r.status === 409 && corpo && corpo.errore === 'email_registrata') {",
+       "if (r.status === 409 && corpo && corpo.errore === 'email_registrata') { fetch(`${api}/v1/password/dimenticata`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) });")],
+     'nessuna mail nuova'),
+    ('al 409 la pagina segna l\'email in un cookie', ['C-05'],
+     [("if (r.status === 409 && corpo && corpo.errore === 'email_registrata') {",
+       "if (r.status === 409 && corpo && corpo.errore === 'email_registrata') { document.cookie = 'rg-email=' + encodeURIComponent(email) + '; path=/';")],
+     'zero cookie'),
+    ('la frase detta senza chiedere al server', ['C-05'],
+     [("  bottone.disabled = true;\n  esito.textContent = 'Creazione dell\\'account in corso…';",
+       "  if (email) return pannello(`<p role=\"alert\"><strong>Questa email è già registrata.</strong></p>"
+       "<button data-account=\"accedi\" data-email=\"${esc(email)}\">Accedi</button>"
+       "<button data-account=\"reimposta\">Reimposta la password</button><button data-account=\"torna\">Torna al riepilogo</button>`);\n"
+       "  bottone.disabled = true;\n  esito.textContent = 'Creazione dell\\'account in corso…';")],
+     'nessuna POST a /v1/registrazione'),
+    ('il messaggio con una porta sola', ['C-05'],
+     [('<button data-account="reimposta" data-email="${esc(email)}">Reimposta la password</button>', '')],
+     'Reimposta la password'),
+    ('Accedi senza l\'email', ['C-05'],
+     [("if (a === 'accedi') return moduloAccesso(t.dataset.email);", "if (a === 'accedi') return moduloAccesso('');")],
+     'Accedi ha l\'email'),
+    ('la password passa al modulo di accesso', ['C-05'],
+     [("const password = $('account').querySelector('[name=password]').value;",
+       "const password = $('account').querySelector('[name=password]').value; S.pw = password;"),
+      ('<label>Password <input type="password" name="password" autocomplete="current-password"></label>',
+       '<label>Password <input type="password" name="password" autocomplete="current-password" value="${esc(S.pw || \'\')}"></label>')],
+     'la password vuota'),
+    ('dopo il 409 le risposte della pagina si perdono', ['C-05'],
+     [("return pannello(`<h2>Crea un account</h2>\n      <p role=\"alert\">",
+       "S.ultima = null; $('r-fine').classList.remove('on');\n    return pannello(`<h2>Crea un account</h2>\n      <p role=\"alert\">")],
+     'le risposte della pagina sono intatte'),
+]
+
+_BANCO_CLIENT = None
+
+
+def banco_client():
+    """Una sola esecuzione del banco per tutta la suite: la pagina vera, la
+    pagina di riferimento e le sue rotture, un Chrome e un server solo."""
+    global _BANCO_CLIENT
+    if _BANCO_CLIENT is not None:
+        return _BANCO_CLIENT
+    app = leggi('app.html')
+    rif = RIFERIMENTO_CLIENT.read_text(encoding='utf-8')
+    prove = [{'nome': 'app', 'pagina': app, 'regime': regime_client(app), 'gruppi': GRUPPI_CLIENT},
+             {'nome': 'riferimento', 'pagina': rif, 'regime': regime_client(rif), 'gruppi': GRUPPI_CLIENT}]
+    applicate = {}
+    for cosa, gruppi, sostituzioni, _ in ROTTURE_CLIENT:
+        rotta, ok = rif, True
+        for vecchio, nuovo in sostituzioni:
+            ok = ok and vecchio in rotta
+            rotta = rotta.replace(vecchio, nuovo, 1)
+        applicate[cosa] = ok
+        if ok and rotta != rif:
+            prove.append({'nome': 'rottura: ' + cosa, 'pagina': rotta, 'regime': regime_client(rotta), 'gruppi': gruppi})
+    try:
+        p = subprocess.run(['node', str(BANCO_CLIENT)], input=json.dumps({'prove': prove}),
+                           capture_output=True, text=True, timeout=600)
+        out = json.loads(p.stdout) if p.returncode == 0 else None
+    except (OSError, ValueError, subprocess.TimeoutExpired) as e:
+        out, errore = None, str(e)
+    else:
+        errore = (p.stderr or '').strip()[-400:]
+    if out is None:
+        out = {x['nome']: [{'gruppo': 'banco', 'nome': 'il banco del browser parte', 'ok': False, 'extra': errore}]
+               for x in prove}
+    _BANCO_CLIENT = (prove, out, applicate)
+    return _BANCO_CLIENT
+
+
+def registra_client(gruppo):
+    prove, out, _ = banco_client()
+    regime = prove[0]['regime']
+    etichetta = {'attuale': 'regime attuale', 'progettato': 'regime progettato'}[regime]
+    v = out.get('app', [])
+    for x in v:
+        if x['gruppo'] in (gruppo, 'banco'):
+            check('client (%s) %s: %s' % (etichetta, x['gruppo'], x['nome']), x['ok'], x.get('extra', ''))
+    check('client %s: la pagina e\' stata guidata nel browser' % gruppo, any(x['gruppo'] == gruppo for x in v),
+          'nessuna verifica del gruppo: il banco non l\'ha eseguito')
+    if regime == 'attuale':
+        # Un ibrido e' un pezzo del client senza il client: una promessa di
+        # domani su una pagina che fa ancora quella di oggi, o un'API chiamata
+        # senza sapere dove sta. Specifica §2: «Si cambiano nella stessa
+        # versione in cui entrano gli account — non prima e non dopo».
+        js = senza_commenti(leggi('app.html'))
+        if gruppo == 'C-02':
+            check('client (regime attuale) C-02: nessuna promessa del client senza il client',
+                  'valgono solo finché questa pagina resta aperta' not in js,
+                  'la pagina dice che senza account non resta niente, e salva nel browser: '
+                  'la frase entra con indirizzoApi() e il client (§4.1)')
+        if gruppo == 'C-05':
+            check('client (regime attuale) C-05: nessuna rotta /v1/ senza indirizzoApi()',
+                  not re.search(r'/v1/', js) and 'Crea un account' not in js,
+                  'la pagina parla con l\'API o invita a creare un account senza dichiarare indirizzoApi() '
+                  '(account-progetto §7.4)')
+
+
+def test_client_primo_ingresso():
+    registra_client('C-01')
+
+
+def test_client_senza_account():
+    registra_client('C-02')
+
+
+def test_client_email_registrata():
+    registra_client('C-05')
+
+
+def test_client_provato_al_contrario():
+    prove, out, applicate = banco_client()
+    rif = [p for p in prove if p['nome'] == 'riferimento'][0]
+    v = out.get('riferimento', [])
+    rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in v if not x['ok']]
+    check('la pagina di riferimento del client e\' nel regime progettato', rif['regime'] == 'progettato', rif['regime'])
+    check('la pagina di riferimento del client passa il banco del browser', not rossi, '; '.join(rossi[:3]))
+    for g in GRUPPI_CLIENT:
+        check('il banco del browser ha eseguito %s sulla pagina di riferimento' % g,
+              sum(1 for x in v if x['gruppo'] == g) >= 6, 'troppo poche verifiche: il giro non e\' arrivato in fondo')
+    for cosa, gruppi, _, atteso in ROTTURE_CLIENT:
+        check('rottura del client «%s»: si applica alla pagina di riferimento' % cosa, applicate.get(cosa),
+              'il testo da sostituire non c\'e\' piu\': la rottura non romperebbe niente')
+        vr = out.get('rottura: ' + cosa)
+        if vr is None:
+            continue
+        rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in vr if not x['ok']]
+        check('rottura del client «%s»: il banco diventa rosso' % cosa, bool(rossi), 'e\' passata verde')
+        check('rottura del client «%s»: e il rosso nomina il difetto' % cosa, any(atteso in r for r in rossi),
+              'rossi: ' + '; '.join(rossi[:3]))
+
+
 # --- 6. il motore non ha funzioni orfane (R-NAV-02) --------------------------------
 
 def orfani_dichiarati():
@@ -822,6 +1039,8 @@ def main():
               test_voci_barra, test_modalita_quiz, test_selettori,
               test_intenzioni_provate_al_contrario,
               test_ciclo_riepilogo, test_ciclo_riprova, test_ciclo_provato_al_contrario,
+              test_client_primo_ingresso, test_client_senza_account, test_client_email_registrata,
+              test_client_provato_al_contrario,
               test_motore_senza_orfani, test_chiamate_al_motore_preservate,
               test_letture_che_non_mascherano,
               test_testi_leggibili, test_alt_di_contenuto, test_trasloco):

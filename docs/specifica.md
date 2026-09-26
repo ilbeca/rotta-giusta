@@ -1082,15 +1082,15 @@ guardare, e lo dicono. Quelli del server hanno il loro controllo in
 
 | ID | Requisito | Controllo |
 |---|---|---|
-| R-ACC-01 | Si arriva al primo quesito senza registrarsi, anche alla prima visita | scoperto — gli account non esistono ancora; il controllo andrà sul primo ingresso |
-| R-ACC-02 | Senza account nessuna risposta resta dopo la chiusura della pagina, e la pagina lo dice prima di cominciare e alla fine di ogni attività | scoperto — è interfaccia che non c'è ancora, e la suite non esercita il DOM di `app.html` |
+| R-ACC-01 | Si arriva al primo quesito senza registrarsi, anche alla prima visita, con la rete e offline con il guscio caricato; fermata dopo una risposta, l'attività ha il suo riepilogo e la sua revisione | `test_interfaccia.py::test_client_primo_ingresso` |
+| R-ACC-02 | Senza account nessuna risposta resta dopo la chiusura della pagina, e la pagina lo dice prima di cominciare e alla fine di ogni attività. **Due regimi:** la pagina senza client mantiene la promessa di oggi — la risposta resta nel browser e si ritrova dopo una ricarica — e non porta frasi del client; quella con `indirizzoApi()` dice le due frasi del §4.1 del progetto del client, in testo che si vede, e dopo una ricarica non mostra niente di prima | `test_interfaccia.py::test_client_senza_account` |
 | R-ACC-03 | La registrazione si raccomanda alla fine di un'attività con i vantaggi che esistono, e non a ogni schermata | scoperto — è un comportamento del flusso, si fissa quando il flusso esiste |
-| R-ACC-04 | Senza account si fanno tutte le attività con riepilogo e revisione; ai registrati restano solo le viste che vivono di uno storico | scoperto — richiede l'elenco delle viste per stato, che nascerà con il progetto degli account |
+| R-ACC-04 | Senza account si fanno tutte le attività con riepilogo e revisione; ai registrati restano solo le viste che vivono di uno storico | scoperto — il banco del browser (P-29) fa oggi soltanto l'attività consigliata del Percorso, dentro R-ACC-01; le altre attività e le viste per stato sono il resto di C-01 e C-03 (§12 del progetto del client) |
 | R-ACC-05 | Un archivio locale che esiste il giorno del rilascio non sparisce in silenzio: si porta nell'account o si scarica | scoperto — il passaggio non esiste ancora, e va provato su un browser con un archivio vero |
 | R-ACC-06 | Le righe della pagina aperta e quelle dell'account si uniscono per `uid`, senza doppioni e senza vincitore | `test_engine.mjs::fondiArchivio: per uid, senza doppioni` |
 | R-ACC-07 | Una riga si accetta o si rifiuta con una regola sola, `validaRiga()`, e il rifiuto dice il motivo | `test_engine.mjs::validaRiga: una riga rotta` |
 | R-ACC-08 | Le righe dei tag N/L/C, che nascono senza data, si importano | `test_engine.mjs::fondiArchivio: i tag si importano` |
-| R-ACC-09 | Senza account la pagina non conserva niente nel browser, nemmeno le preferenze | scoperto — gli account non esistono ancora, e la suite non esercita il DOM di `app.html` |
+| R-ACC-09 | Senza account la pagina non conserva niente nel browser, nemmeno le preferenze: dopo un'attività e la data d'esame, niente in IndexedDB, localStorage, sessionStorage, cookie, né in Cache Storage oltre il guscio e le figure, e nessuna richiesta all'API; nel regime della pagina di oggi vale R-ACC-02 | `test_interfaccia.py::test_client_senza_account` |
 | R-ACC-10 | Una password più corta di 15 caratteri è rifiutata, senza regole di composizione | `test_server.mjs::account: una password piu corta di 15 caratteri e rifiutata, senza regole di composizione` |
 | R-ACC-11 | Un account non confermato entro sette giorni si cancella con le sue righe, e la schermata dice la data dal primo momento | `test_server.mjs::verifica: un account non confermato entro sette giorni si cancella con le sue righe` |
 | R-ACC-12 | Una riga accolta torna dal server byte per byte com'era, campi sconosciuti compresi | `test_server.mjs::righe: una riga accolta torna dal server byte per byte, campi sconosciuti compresi` |
@@ -1120,6 +1120,8 @@ guardare, e lo dicono. Quelli del server hanno il loro controllo in
 | R-ACC-38 | Le mail si contano per mese dal registro: raggiunte le 300 comprese il titolare riceve un avviso, uno al mese, e nessuna mail è bloccata | `test_server.mjs::mail del mese: oltre le 300 la mail parte lo stesso, e il titolare riceve un avviso solo` |
 | R-ACC-39 | Un trasferimento verso l'account — le righe della pagina alla registrazione, un file, l'archivio di prima — si dice salvato solo quando il server ha nominato ogni sua riga, in un invio o in una ricezione: non per deduzione dalla coda, non dopo un azzeramento, e non con le conferme di un database che un ripristino ha sostituito; scarti locali e del server si contano per motivo | `test_engine.mjs::trasferimento: salvate solo le righe che il server nomina, anche su piu lotti` |
 | R-ACC-40 | Una riga che da sola supera il limite di un invio non ferma quelle dietro, e le righe in coda che non partiranno mai si nominano con il motivo | `test_engine.mjs::coda: una riga oltre il limite non ferma quelle dietro, e si nomina` |
+| R-ACC-41 | La pagina dice «Questa email è già registrata.» dal `409` della registrazione riconosciuto da codice **e** `errore`, con Accedi — email già scritta, password vuota — e Reimposta la password; zero cookie, zero sessioni e zero mail nuove, e le risposte della pagina ancora nel riepilogo. Un `409` di un altro genere non parla di email. Nel regime della pagina di oggi: nessuna rotta `/v1/` e nessun invito a un account | `test_interfaccia.py::test_client_email_registrata` |
+| R-ACC-42 | Il controllo del client progettato gira a ogni esecuzione, in un browser vero, anche finché la pagina pubblicata non ha il client: una pagina di riferimento lo passa, e ciascuna delle sue rotture dichiarate lo fa fallire nominando il difetto | `test_interfaccia.py::test_client_provato_al_contrario` |
 
 R-ACC-20 e R-ACC-24 sono i primi requisiti del server con un controllo che si
 esegue, e il giro intero sta in `node server/ripristina.mjs --prova`, che la
@@ -1165,6 +1167,20 @@ legga la mail degli allarmi; e che la copia sulla macchina giri davvero due
 volte al giorno, che è della messa in esercizio. L'onboarding e le schermate
 che mostrano data, punteggi, cambio d'indirizzo e cancellazione sono della
 pagina.
+
+**La pagina, in un browser vero (P-29).** R-ACC-01, 02, 09, 41 e 42 si
+eseguono guidando Chrome headless con il suo protocollo, senza dipendenze:
+`tests/browser.mjs` lo pilota, `tests/client_account.mjs` è il banco, e
+`tests/test_interfaccia.py` riconosce il regime — la pagina che dichiara
+`indirizzoApi()` ha il client — con il meccanismo di R-NAV-04 e R-FLU-01. Il
+server degli account accanto è quello vero, sulla porta 8620. **Il regime
+attuale ha una scadenza:** lo toglie la regia quando integra P-18. La misura
+che ha scelto questa strada, il contratto che la pagina deve rispettare e che
+cosa il banco **non** copre — Safari e WebKit, i cookie fra i sottodomini veri,
+le richieste fatte dal service worker, le persone — stanno nel §12 del progetto
+del client, «Il banco». Dei diciotto gruppi di quel §12 ci sono C-01 (per
+l'attività consigliata), C-02 e C-05; gli altri sono ancora da scrivere, e
+R-ACC-30 resta al server per la metà dell'API.
 
 ---
 
@@ -1232,6 +1248,7 @@ scritto.
 node --test tests/test_engine.mjs    # il motore — 109 test al 9 settembre 2026
 python3 tests/test_dati.py           # dati e invarianti — 193 verifiche
 python3 tests/test_specifica.py      # ogni requisito ha il suo controllo
+python3 tests/test_interfaccia.py    # le porte, le modalità, e la pagina in Chrome headless
 node --test tests/test_server.mjs    # il server degli account, e il ripristino provato
 python3 strumenti/serve.py           # il sito in locale, come lo serve Pages
 ```
@@ -1418,6 +1435,15 @@ successo, ed è il motivo per cui questo file esiste.
   Segnali, R-ACC-36 i due anni, R-ACC-37 gli allarmi al titolare, R-ACC-38 il
   conto delle 300 mail. Ognuno è stato provato al contrario: ventisei
   rotture, tutte rosse nel loro test.
+- **26 settembre 2026 — la pagina in un browser vero (P-29).** Misurate le
+  strade per guidare un browser dalla suite: regge Chrome headless con il suo
+  protocollo su una pipe, senza dipendenze. R-ACC-01, 02 e 09 passano da
+  scoperti a coperti, R-ACC-02 e 09 in due regimi; entrano R-ACC-41, il `409`
+  visto dalla pagina, e R-ACC-42, le rotture che tengono acceso il regime
+  progettato. R-ACC-04 resta scoperto con un motivo più stretto. Ventitré
+  rotture della pagina di riferimento, tutte rosse nel loro controllo, e il
+  banco contro sé stesso: cinque sue difese tolte una alla volta, e ogni volta
+  una rottura passa verde.
 - **26 settembre 2026 — il confine dell'attività (P-30).** Il progetto
   dell'area 3 aveva trovato, e la regia riprodotto, un'attività registrata
   ripresa dopo 21 minuti che `erroriSessione()` riapriva a metà dichiarando
