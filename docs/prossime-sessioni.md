@@ -116,14 +116,16 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 12 | `ritmo()` che dice «orologio» senza orologio | Claude | `main`, a mano | P-30, che tocca le stesse funzioni | P-16 |
 | 13 | L'ultimo tag di una risposta, nel motore | Claude | `main`, a mano | la cartella libera | P-17 |
 | 7b | La realizzazione del client degli account | ChatGPT | `ui/main` | P-28 e P-29 | P-18 |
-| 6b | Le aree del ridisegno che restano: 4, 5, 6 | ChatGPT | `ui/main` | la precedente, e P-18 | segnaposto P-20…P-25 |
+| 6c | Il progetto dell'area 4, Carteggio | ChatGPT | `ui/main` | niente: è un documento | P-20 |
+| 6b | Le aree del ridisegno che restano: 4 realizzata, poi 5 e 6 | ChatGPT | `ui/main` | la precedente, e P-18 | segnaposto P-21…P-25 |
 | 9a | I testi fuori da `site/` nella versione con gli account | Claude | `main`, a mano | P-18 | segnaposto P-26 |
 | 9 | **La versione con gli account** — il traguardo | tutti | `main` | 7b, 8, 9a, e gli adempimenti del §4 | segnaposto P-27 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**: Claude sul server e sul motore,
-ChatGPT sull'interfaccia. **ChatGPT adesso non ha niente di pronto**: P-18 e
-P-19 aspettano lavoro di Claude su `main`, e quel lavoro è la strettoia. **Per
+ChatGPT sull'interfaccia. **Per ChatGPT è pronto P-20**, il progetto dell'area
+4: un documento, che si fa mentre P-18 e P-19 aspettano il lavoro di Claude su
+`main` — quel lavoro è la strettoia. **Per
 Claude, l'ordine consigliato: P-30** (un difetto vivo del motore), **P-28, P-29,
 P-31**, poi P-16, P-12 e P-17; P-15 quando l'autore ha il tempo. Vanno uno alla
 volta, perché stanno tutti nella cartella principale: è la strettoia della
@@ -1264,6 +1266,45 @@ docs/prossime-sessioni.md.
 
 **Esito:** —
 
+### P-20 — ChatGPT: il progetto dell'area 4, Carteggio
+
+**Stato:** pronto. **Dove:** app di ChatGPT, progetto `~/Software/rotta-giusta-ui`,
+ramo `ui/main`. È un documento, non codice: si fa mentre P-18 e P-19 aspettano
+il lavoro di Claude, e la sua realizzazione (P-21) viene dopo di loro.
+
+```
+Sessione P-20. Progetta l'area 4 di docs/prossima-versione.md §5.1, il
+Carteggio, in docs/area-4-progetto.md, sul modello dei progetti delle
+aree 1, 2 e 3: i capitoli 12–15 della Specifica UX/UI, con i materiali
+e il giudizio all'ingresso, il confronto con la risposta ministeriale,
+l'autovalutazione, e le tre porte — prova, esercizi su carta, «Che
+tecnica serve?».
+
+Tre vincoli che non si spostano: il carteggio non si corregge da solo,
+e il giudizio è di chi studia, detto prima di iniziare (specifica §4.5,
+§7.3, R-UX-03); la composizione della prova è un'assunzione, Q-CART4;
+carteggio_e12.json resta nel cassetto, Q-AMBITO.
+
+Il Carteggio ha due stati, e il progetto li disegna tutti e due. Senza
+account non resta niente (ADR-004): il tappeto non sa da dove
+riprendere, il giro non sa che cosa hai già fatto, e un'ora di lavoro
+scritto vale finché la pagina è aperta — il progetto dice come lo si
+dichiara, prima e alla fine. Con l'account si salva come oggi. Il
+progetto del client (docs/account-client-progetto.md) è la fonte per
+gli stati di accesso: si consuma, non si ridisegna. Il ciclo dell'area
+3 — riepilogo, revisione — vale anche qui, o il progetto dice perché
+no.
+
+Dove serve un controllo o un contratto del motore, scrivi la
+dipendenza come fanno il §10.1 dell'area 2 e dell'area 3: la chiude
+Claude su main. Solo il documento e la voce di CHANGELOG: niente
+site/. Non toccare docs/prossime-sessioni.md. Un commit con il
+trailer, versione non toccata. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
 ---
 
 ### I segnaposto — i prompt che non si possono ancora scrivere
@@ -1275,13 +1316,14 @@ prompt no, perché punterebbe a documenti che non esistono ancora. La regia lo
 scrive quando si chiude quello che aspetta, e lo scrive **qui, al posto del
 segnaposto**.
 
-#### P-20 e P-21 — ChatGPT: l'area 4, Carteggio — progetto, poi realizzazione
+#### P-21 — ChatGPT: la realizzazione dell'area 4
 
-**Aspetta:** P-19 e P-18 — con gli account, Carteggio ha due stati. **Dove:** `ui/main`. **Dovrà contenere:** i capitoli 12–15
-della Specifica UX/UI (`prossima-versione.md` §5.1); il vincolo del §7.3 della
-specifica — il giudizio è di chi studia, detto all'ingresso (R-UX-03) —;
-l'eccezione `figura` di `docs/eccezioni-interfaccia.md`, se l'area 3 non l'ha
-chiusa.
+**Aspetta:** P-20, P-18 e P-19 — la penna su `app.html` è una, e il Carteggio con
+gli account ha due stati che il client deve già avere. **Dove:** `ui/main`.
+**Dovrà contenere:** realizzare `docs/area-4-progetto.md`; le dipendenze da test
+e specifica che il progetto avrà scritto, chiuse prima da Claude come P-06 e
+P-31; l'eccezione `figura` di `docs/eccezioni-interfaccia.md`, se l'area 3 non
+l'ha chiusa.
 
 #### P-22 e P-23 — ChatGPT: l'area 5, Progressi — progetto, poi realizzazione
 
@@ -1444,3 +1486,7 @@ dopo**, la soglia degli allarmi riletta sul registro vero
   del ciclo, P-19 diventa un prompt completo, P-28 riallinea anche il §4.1 del
   client, P-16 aspetta P-30 perché tocca le stesse funzioni. ChatGPT resta
   senza lavoro pronto finché Claude non libera la strettoia.
+- **26 settembre 2026 — P-20.** Su richiesta dell'autore, il progetto dell'area 4
+  anticipato perché ChatGPT non resti fermo mentre Claude libera la strettoia.
+  Porta dentro i due stati del Carteggio con gli account; la realizzazione,
+  P-21, resta dopo P-18 e P-19.
