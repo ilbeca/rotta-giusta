@@ -85,6 +85,12 @@ chat.
    mano, nel checkout principale su `main`. Il §6 dice quale è quale. ChatGPT
    non ha pulsanti: si apre la sua app.
 
+7. **Ogni prompt dice nella sua prima riga per quale agente è e in quale
+   cartella**, e chiede all'agente sbagliato di fermarsi senza scrivere. Il
+   titolo lo diceva già, ma il titolo non si incolla: il 26 settembre P-34, un
+   prompt per Claude, è partito in ChatGPT nella cartella principale, e nessuno
+   dei due aveva modo di accorgersene. La riga la legge l'agente, non l'autore.
+
 ### Il resoconto
 
 Ogni prompt finisce con «Chiudi con il resoconto di docs/prossime-sessioni.md»,
@@ -114,7 +120,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 |---|---|---|---|---|---|
 | 5b | Chiudere il regime vecchio dei controlli dei quiz, e il §5 della specifica | Claude | `main`, a mano | la cartella libera | P-12 |
 | 15 | La prova nel browser, per i controlli del client | Claude | `main`, a mano | niente — **per primo** | P-29 |
-| 18 | Il carteggio sul `main`: composizione, attività intera, bozza, controlli — **P-34 partito fuori ordine, in pausa** | Claude | `main`, a mano | la risposta dell'autore su P-34 | P-32…P-35 |
+| 18 | Il carteggio sul `main`: composizione, attività intera, bozza, controlli | Claude | `main`, a mano | P-29 nell'ordine; P-34 dopo P-33, dalla quarantena | P-32…P-35 |
 | 19 | L'avviso e la conferma del browser nel carteggio | ChatGPT | `ui/main` | niente — **per primo** | P-36 |
 | 6d | Chiudere il regime vecchio dei controlli del ciclo | Claude | `main`, a mano | la cartella libera | P-37 |
 | 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore: il tag `v0.28.0` c'è | P-15 |
@@ -129,10 +135,9 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 **Le due colonne corrono in parallelo**: Claude sul server e sul motore,
 ChatGPT sull'interfaccia. **Per ChatGPT è pronto P-36**; P-18 e P-21
 aspettano lavoro di Claude su `main`: quel lavoro è la strettoia. **Per
-Claude, prima si chiarisce P-34** (§6, il suo stato): finché è aperto nella
-cartella principale nessun'altra sessione ci entra. Poi **P-29** (sblocca P-18),
-**P-32, P-33, P-35** (sbloccano P-21), P-37, P-16, P-12, P-17; P-15 quando
-l'autore ha il tempo. **Per ChatGPT: P-36.** Vanno uno alla
+Claude, l'ordine consigliato: P-29** (sblocca P-18), **P-32, P-33, P-34,
+P-35** (sbloccano P-21), P-37, P-16, P-12, P-17; P-15 quando l'autore ha il
+tempo. **Per ChatGPT: P-36, lanciato.** Vanno uno alla
 volta, perché stanno tutti nella cartella principale: è la strettoia della
 colonna di Claude, e si accetta perché il recinto la vuole. Il numero di una
 riga è il suo nome, non la sua posizione. Le due colonne si incontrano al punto
@@ -915,6 +920,10 @@ dati 242, interfaccia 295, specifica 370, `ripristina --prova` 20 su 20.
 Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano.
 
 ```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
 Sessione P-12, su main. P-05 ha realizzato l'area 2 e la regia l'ha
 fusa: leggi i suoi esiti e quello di P-06 nel §6 di
 docs/prossime-sessioni.md, e il §10.1 di docs/area-2-progetto.md.
@@ -1008,6 +1017,10 @@ ramo **`main`**, a mano: gli strumenti della macchina stanno nel repo. È una
 sessione che si fa **insieme**, come P-08.
 
 ```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
 Sessione P-15: la messa in esercizio del server su Scaleway, insieme
 all'autore. Lui agisce nei pannelli e con le chiavi; tu spieghi un
 passo alla volta, prepari, aspetti che dica «fatto», e verifichi.
@@ -1046,6 +1059,10 @@ docs/prossime-sessioni.md.
 di P-05.
 
 ```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
 Sessione P-16, su main. Il collaudo di P-05 ha trovato che E.ritmo()
 può restituire affidabile: true e fonte: 'orologio' su trenta righe
 con sim_uid e ms ma senza ts, perché sessioni() ripiega sulla somma
@@ -1076,6 +1093,10 @@ docs/prossime-sessioni.md.
 P-01, che lo lasciava scritto come difetto di copertura.
 
 ```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
 Sessione P-17, su main. P-01 ha messo in site/app.html una funzione,
 tagPerTentativo(), che sceglie l'ultima classificazione N/L/C di ogni
 tentativo con E.ordinaRighe(). È una regola sulle righe dell'archivio,
@@ -1146,13 +1167,20 @@ ramo **`main`**, a mano. **Nasce da:** P-13, §12 di
 `docs/account-client-progetto.md`.
 
 ```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
 Sessione P-29, su main. Il §12 di docs/account-client-progetto.md
 chiede diciotto gruppi di controlli, C-01…C-18, che guardano la pagina
 vera: storage, rete, cookie, due schede, offline. La suite oggi non
 guida nessun browser, e il repo non ha dipendenze.
 
-Prima una misura, poi il codice. Misura le strade per guidare un
-browser vero dalla suite — per esempio Chrome headless attraverso il
+Prima una misura, poi il codice. Un tentativo fermato di P-34 ha già
+guidato Chrome headless senza dipendenze, con il protocollo di Chrome e
+l'HTTP di Node: è in
+~/Software/rotta-giusta-quarantena/p34-2026-09-26/tests/test_bozza_carteggio.mjs,
+non verificato. Misura le strade per guidare un browser vero dalla suite — per esempio Chrome headless attraverso il
 suo protocollo con il WebSocket che Node ha già — e scrivi nel §12
 del progetto quale regge, con che cosa costa e che cosa non copre. Se
 nessuna regge senza una dipendenza nuova, fermati e dillo nel
@@ -1181,6 +1209,10 @@ docs/prossime-sessioni.md.
 app di ChatGPT, progetto `~/Software/rotta-giusta-ui`, ramo `ui/main`.
 
 ```
+Questo prompt è per ChatGPT, nel worktree ~/Software/rotta-giusta-ui,
+sul ramo ui/main. Se sei un altro agente o sei in un'altra cartella,
+fermati e dillo, senza scrivere niente.
+
 Sessione P-18. Realizza docs/account-client-progetto.md in
 site/app.html e site/index.html. Prima leggi gli esiti di P-11, P-28 e
 P-29 nel §6 di docs/prossime-sessioni.md: il server ha le rotte che il
@@ -1387,6 +1419,10 @@ documento. Controllato dalla regia: territori puliti, merge chiusa da sola.
 **Stato:** in attesa di P-31 e P-29 nell'ordine consigliato. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-20, §10.1 di `docs/area-4-progetto.md`.
 
 ```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
 Sessione P-32, su main. Leggi il §10.1 di docs/area-4-progetto.md,
 voce D-01, e il suo §5 sulla prova.
 
@@ -1412,6 +1448,10 @@ docs/prossime-sessioni.md.
 **Stato:** in attesa di P-32. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-20, §10.1 di `docs/area-4-progetto.md`.
 
 ```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
 Sessione P-33, su main. Leggi il §10.1 di docs/area-4-progetto.md,
 voce D-02, e l'esito di P-30 nel §6 di docs/prossime-sessioni.md.
 
@@ -1434,18 +1474,25 @@ docs/prossime-sessioni.md.
 
 ### P-34 — Claude: la bozza del carteggio, e la promessa «a ogni tasto»
 
-**Stato:** **lanciato fuori ordine il 26 settembre 2026, e in pausa.** È
-partito prima di P-32 e P-33, molto probabilmente **in ChatGPT e nella cartella
-principale** — il resoconto cita la skill da `~/.agents/skills/`, e fra le
-sessioni di Claude non ce n'è una per P-34 —, mentre `AGENTS.md` vuole ChatGPT
-solo nel suo worktree e questo è un prompt per Claude. Ha scritto cinque file
-non tracciati in `tests/` e un controllo rosso che dimostra il difetto; niente
-commit. Si è fermato vedendo `.claude/launch.json` cambiare sotto di sé, ed è
-stato giusto. La regia aspetta dall'autore chi lo sta eseguendo. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-20, §10.1 di `docs/area-4-progetto.md`.
+**Stato:** **fermato dall'autore il 26 settembre 2026, da rilanciare in Claude
+dopo P-33.** Era partito fuori ordine in ChatGPT, nella cartella principale.
+Il suo lavoro non committato — un controllo rosso del difetto, un raccordo
+IndexedDB di riferimento, un banco che guida Chrome headless senza dipendenze,
+e il raccordo documentale per il progetto del client — l'ha spostato la regia
+in `~/Software/rotta-giusta-quarantena/p34-2026-09-26/`, con un `LEGGIMI.md`.
+Niente di lì è verificato. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-20, §10.1 di `docs/area-4-progetto.md`.
 
 ```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
 Sessione P-34, su main. Leggi il §3.3 e il §10.1, voce D-03, di
 docs/area-4-progetto.md, e il §9 di docs/account-client-progetto.md.
+Un primo tentativo, fatto dall'agente sbagliato e fermato, ha lasciato
+lavoro in ~/Software/rotta-giusta-quarantena/p34-2026-09-26/: leggi
+il suo LEGGIMI.md, e prendi quello che regge dopo averlo verificato —
+niente entra nel repo solo perché esiste.
 
 La specifica, §7.6, dice che il testo del carteggio è salvato a ogni
 tasto. Non è vero: annotaCart() scrive solo in memoria, e una ricarica
@@ -1475,6 +1522,10 @@ docs/prossime-sessioni.md.
 **Stato:** in attesa di P-34. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-20, §10.1 di `docs/area-4-progetto.md`.
 
 ```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
 Sessione P-35, su main. Leggi il §10.1 di docs/area-4-progetto.md,
 voce D-04, e gli esiti di P-06, P-31, P-32, P-33 e P-34 nel §6 di
 docs/prossime-sessioni.md: P-06 e P-31 sono il modello.
@@ -1496,7 +1547,7 @@ docs/prossime-sessioni.md.
 
 ### P-36 — ChatGPT: l'avviso e la conferma del browser nel carteggio, finché il testo non si salva
 
-**Stato:** pronto: P-19 è andato prima, e la penna su `app.html` è libera. **Dove:** app di ChatGPT, progetto `~/Software/rotta-giusta-ui`,
+**Stato:** **lanciato il 26 settembre 2026.** **Dove:** app di ChatGPT, progetto `~/Software/rotta-giusta-ui`,
 ramo `ui/main`. **Nasce da:** P-20, e dalle due decisioni dell'autore del 26
 settembre (§4): l'avviso, e la conferma del browser.
 
@@ -1536,6 +1587,10 @@ Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:**
 il resoconto di P-31 — è per il ciclo quello che P-12 è per i quiz.
 
 ```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
 Sessione P-37, su main. P-19 ha realizzato l'area 3 e la regia l'ha
 fusa: leggi i suoi esiti e quello di P-31 nel §6 di
 docs/prossime-sessioni.md, e il §10.1 di docs/area-3-progetto.md.
@@ -1767,3 +1822,8 @@ dopo**, la soglia degli allarmi riletta sul registro vero
   nella cartella principale: in pausa, e la regia aspetta l'autore. **Da qui ogni
   prompt dice nel titolo chi lo esegue, e la regia lo ripete nella chat quando
   lo propone.**
+- **26 settembre 2026 — P-34 fermato, e la riga «per chi è».** Era ChatGPT
+  nella cartella principale; l'autore l'ha fermato. Il suo lavoro spostato in
+  `~/Software/rotta-giusta-quarantena/p34-2026-09-26/`, e indicato a P-29 e al
+  P-34 di Claude. Ogni prompt aperto comincia ora con la riga che dice per quale
+  agente è e dove, e il punto 7 di «Come si usa» lo spiega. P-36 lanciato.
