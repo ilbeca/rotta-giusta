@@ -709,6 +709,7 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   nodejs.org e verificata con `SHASUMS256.txt` (erano 42); motore **142/143**
   con lo skip di sempre (erano 131/132); dati 242; interfaccia **201** (erano
   183); specifica **344** (erano 310).
+
 ### Realizzato — P-05, le cinque intenzioni dei Quiz
 
 - **Quiz distingue consiglio, argomenti, errori, simulazione e giro**, perché

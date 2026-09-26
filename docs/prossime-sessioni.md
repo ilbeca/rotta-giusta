@@ -106,14 +106,12 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 5 | Area 2, Quiz: la realizzazione — **verificata, merge da rifare** | la regia | `main` | il commit di P-10, che lavora nella stessa cartella | P-05 |
-| 4b | Il server, pezzo 2: le righe, la sincronia, l'azzeramento, e la contabilità della coda nel motore | Claude | `main`, a mano | niente | P-10 |
-| 4c | Il server, pezzo 3: «email già registrata», cambio d'indirizzo e profilo, cancellazione e due anni, allarmi, il conto delle 300 mail | Claude | `main`, a mano | P-10 | P-11 |
-| 5b | Chiudere il regime vecchio dei controlli dei quiz, e il §5 della specifica | Claude | `main`, a mano | la merge di P-05; fra P-10 e P-11, quando la cartella è libera | P-12 |
-| 7a | Il progetto del client degli account | ChatGPT | `ui/main` | la merge di P-05 | P-13 |
+| 4c | Il server, pezzo 3: «email già registrata», cambio d'indirizzo e profilo, cancellazione e due anni, allarmi, il conto delle 300 mail | Claude | `main`, a mano | niente — **per primo**: è sulla strada del traguardo | P-11 |
+| 5b | Chiudere il regime vecchio dei controlli dei quiz, e il §5 della specifica | Claude | `main`, a mano | la cartella libera | P-12 |
+| 7a | Il progetto del client degli account | ChatGPT | `ui/main` | niente | P-13 |
 | 6a | Il progetto dell'area 3, il ciclo che si chiude | ChatGPT | `ui/main` | P-13, nell'ordine consigliato | P-14 |
 | 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | P-11 | P-15 |
-| 12 | `ritmo()` che dice «orologio» senza orologio | Claude | `main`, a mano | la merge di P-05 | P-16 |
+| 12 | `ritmo()` che dice «orologio» senza orologio | Claude | `main`, a mano | la cartella libera | P-16 |
 | 13 | L'ultimo tag di una risposta, nel motore | Claude | `main`, a mano | la cartella libera | P-17 |
 | 7b | La realizzazione del client degli account | ChatGPT | `ui/main` | P-13, e P-10 per le righe | segnaposto P-18 |
 | 6b | Le aree del ridisegno che restano: 3 realizzata, poi 4, 5, 6 | ChatGPT | `ui/main` | la precedente | segnaposto P-19…P-25 |
@@ -122,12 +120,16 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**: Claude sul server (non tocca `site/`),
-ChatGPT sull'interfaccia. Tutto quello che tocca `server/`, `tests/` o la
-specifica passa dalla cartella principale, una sessione per volta: è la
-strettoia della colonna di Claude, e si accetta perché il recinto la vuole.
-Il numero di una riga è il suo nome, non la sua posizione: l'ordine è quello
-della tabella. Le due colonne si incontrano al punto 7b, e il punto 9 è il
-giorno in cui gli account arrivano a chi studia.
+ChatGPT sull'interfaccia. **Adesso sono pronti P-13 per ChatGPT e, per Claude,
+P-11, P-12, P-16 e P-17** — questi quattro uno alla volta, perché stanno tutti
+nella cartella principale. **L'ordine consigliato per Claude: P-11 per primo**,
+perché è l'unico sulla strada del traguardo (P-15 lo aspetta); poi P-12, P-16 e
+P-17, che sono corti e non bloccano nessuno. Tutto quello che tocca `server/`,
+`tests/` o la specifica passa dalla cartella principale, una sessione per
+volta: è la strettoia della colonna di Claude, e si accetta perché il recinto la
+vuole. Il numero di una riga è il suo nome, non la sua posizione: l'ordine è
+quello della tabella. Le due colonne si incontrano al punto 7b, e il punto 9 è
+il giorno in cui gli account arrivano a chi studia.
 
 **L'ordine consigliato per ChatGPT, dopo P-05: prima il client degli account
 (P-13), poi l'area 3 (P-14).** Il traguardo ha bisogno del client e non delle
@@ -383,15 +385,10 @@ consuma, non si riprogetta.
   più l'iscrizione, ma non costano niente e non danno un'informazione in più.
   Scritta anche in `account-progetto.md` (§5.3, §7.1, §20) e nella specifica
   come R-ACC-30; il server la fa con P-11, con il suo test.
-- ~~La merge di P-05 è ferma, e serve un sì~~ — **l'autore ha scelto la prima
-  strada il 26 settembre**: `.gitattributes` con `CHANGELOG.md merge=union`,
-  fra le regole in `territori.yaml` e spiegato in `AGENTS.md` (commit
-  `5229ad6`). La merge di P-05 la rifà la regia quando P-10, che lavora nella
-  cartella principale e tocca anche `docs/eccezioni-interfaccia.md`, ha fatto
-  il suo commit. Resta aperto in `Standards`, e ha la sua segnalazione:
-  `check_territories.py` non riconosce la chiusura di una merge —
-  [ilbeca/standards#1](https://github.com/ilbeca/standards/issues/1), aperta il
-  26 settembre con la riproduzione e il test che la chiuderà.
+- ~~La merge di P-05 è ferma~~ — **fatta il 26 settembre** (`ccd98f0`) con
+  `merge=union`, che l'autore ha scelto: si è chiusa da sola. Il difetto di
+  `Standards` resta, con la sua segnalazione,
+  [ilbeca/standards#1](https://github.com/ilbeca/standards/issues/1).
 - **Q-PROVE**, riaperta da P-05: le prove con persone e lo zoom nativo al 200 %,
   che il browser integrato non fa. `docs/area-2-collaudo-ux.md` dice che cosa
   manca.
@@ -594,7 +591,7 @@ tenendo le due voci; suite su `main` invariate (131 + 1 skip, 221, 135, 262).
 
 ### P-05 — ChatGPT: la realizzazione dell'area 2
 
-**Stato:** **commit verificato il 26 settembre 2026, merge ferma** sulla decisione del §4. **Dove:** come P-04.
+**Stato:** **chiuso il 26 settembre 2026**, merge `ccd98f0`. **Dove:** come P-04.
 
 ```
 Sessione P-05. Realizza docs/area-2-progetto.md in site/app.html.
@@ -614,7 +611,7 @@ il trailer, versione non toccata. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
 ```
 
-**Esito, finché la merge non c'è:** commit `0645970` su `ui/main`: le cinque
+**Esito:** commit `0645970` su `ui/main`: le cinque
 intenzioni, i filtri locali, un'istantanea condivisa fra anteprima e avvio, la
 simulazione in due fasi, ritorni e focus; il collaudo in
 `docs/area-2-collaudo-ux.md`. Controllato dalla regia: territori puliti, il diff
@@ -624,6 +621,12 @@ server 42, dati 242, interfaccia 277, specifica 312. Il secondo skip è voluto: 
 controllo di compatibilità di `totScreening()` si ritira da solo ora che la
 pagina chiama `lunghezzaScreening()`. Trovato: `ritmo()` dice «orologio» anche
 senza orologio, e diventa P-16.
+
+La prima merge si era fermata sul `pre-commit` e la regia l'aveva annullata;
+rifatta dopo `merge=union` e dopo il commit di P-10, si è chiusa da sola. Suite
+sullo stato fuso: motore 141 + 2 skip, server 52, dati 242, interfaccia 295,
+specifica 344. La regia ha aggiunto la riga vuota che il driver non mette fra le
+voci di P-10 e P-05.
 
 ### P-06 — Claude: i controlli dei quiz allineati all'area 2
 
@@ -794,7 +797,7 @@ specifica 310.
 
 ### P-10 — Claude: il server, pezzo 2 — le righe e la sincronia
 
-**Stato:** pronto. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo
+**Stato:** **chiuso il 26 settembre 2026**, commit `c5dc396` su `main`. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo
 **`main`**, a mano.
 
 ```
@@ -822,11 +825,24 @@ Suite verdi, voce in fondo a [Unreleased], un commit. Chiudi con il
 resoconto di docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `c5dc396`, voce nel CHANGELOG. Il §7.2 in
+`server/righe.mjs`: invio con `validaRiga()` e la banca accanto, lettura a pagine
+di 5.000, `GET /v1/esporta` che `importa()` ricarica, `POST /v1/azzera` con la
+password e il file delle cancellazioni; epoca e generazione in ogni risposta, e
+il `409` che non scrive niente. Nel motore la contabilità della coda — sei
+funzioni, con l'epoca del database che si chiama `epocaDb` —, e con lei **la
+metà client di R-ACC-24 è chiusa**. Otto requisiti nel §9.9 con il loro test,
+scritti prima e provati al contrario su 13 rotture. Trovato, e scritto sotto il
+§7.2: `ultima_seq` non è un cursore (R-ACC-31); il primo `413` chiudeva la
+connessione; e **un test a due dispositivi lasciava passare un client che
+ignorava l'epoca** — ora sono tre. Rimandati a P-11: cambio d'indirizzo,
+profilo, `DELETE /v1/account` e i punteggi dei Segnali nell'export. Controllato
+dalla regia: cinque suite su `main` — motore 142 + 1 skip, server 52, dati 242,
+interfaccia 201, specifica 344.
 
 ### P-11 — Claude: il server, pezzo 3 — quello che chiude le sue rotte
 
-**Stato:** in attesa di P-10, che lavora nella stessa cartella. **Dove:** Claude
+**Stato:** pronto — per primo fra quelli di Claude. **Dove:** Claude
 Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano.
 
 ```
@@ -838,7 +854,8 @@ Il terzo pezzo del server, che chiude le sue rotte:
 - «email già registrata», deciso dall'autore il 26 settembre (§5.3):
   409 senza sessione e senza mail, e R-ACC-30 con il suo test;
 - il cambio d'indirizzo e il profilo, con la data d'esame
-  dell'onboarding (§13);
+  dell'onboarding (§13), e i punteggi dei Segnali nell'export (§13.2),
+  che P-10 ha lasciato fuori;
 - DELETE /v1/account, che cancella davvero, e i due anni di
   inattività con l'avviso prima (§14), passando dal file delle
   cancellazioni del §2.7;
@@ -859,7 +876,7 @@ resoconto di docs/prossime-sessioni.md.
 
 ### P-12 — Claude: chiudere il regime vecchio dei controlli dei quiz
 
-**Stato:** in attesa della merge di P-05, e della cartella libera. **Dove:**
+**Stato:** pronto, dopo P-11 nell'ordine consigliato. **Dove:**
 Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano.
 
 ```
@@ -884,8 +901,8 @@ docs/prossime-sessioni.md.
 
 ### P-13 — ChatGPT: il progetto del client degli account
 
-**Stato:** in attesa della merge di P-05 e che la regia allinei `ui/main`.
-**Dove:** app di ChatGPT, progetto `~/Software/rotta-giusta-ui`, ramo `ui/main`.
+**Stato:** pronto: P-05 è fuso e `ui/main` è allineato. **Dove:** app di ChatGPT,
+progetto `~/Software/rotta-giusta-ui`, ramo `ui/main`.
 
 ```
 Sessione P-13. Progetta il client degli account in
@@ -971,8 +988,7 @@ docs/prossime-sessioni.md.
 
 ### P-16 — Claude: `ritmo()` dice «orologio» anche senza orologio
 
-**Stato:** in attesa della merge di P-05, che porta su `main` il collaudo dove il
-caso è scritto, e della cartella libera. **Dove:** Claude Code,
+**Stato:** pronto, dopo P-11 e P-12 nell'ordine consigliato. **Dove:** Claude Code,
 `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** il resoconto
 di P-05.
 
@@ -1200,3 +1216,7 @@ fare: un archivio vero nel browser che passa nell'account senza perdere una riga
 - **26 settembre 2026 — la segnalazione a `Standards`.** Con il sì dell'autore:
   [ilbeca/standards#1](https://github.com/ilbeca/standards/issues/1), etichetta
   `bug`.
+- **26 settembre 2026 — P-10 e P-05 chiusi.** P-05 fuso con `merge=union`,
+  che ha tenuto da solo le voci dei due lati. Pronti P-13 per ChatGPT e P-11,
+  P-12, P-16, P-17 per Claude, in quest'ordine: P-11 per primo perché è sulla
+  strada del traguardo. P-11 prende anche i punteggi dei Segnali nell'export.
