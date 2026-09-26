@@ -109,7 +109,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 5 | Area 2, Quiz: la realizzazione (il progetto è chiuso) | ChatGPT | `ui/main` | niente | P-05 |
 | 5b | Chiudere il regime vecchio dei controlli dei quiz, e il §5 della specifica | Claude | `main`, a mano | la merge di P-05, e la cartella libera | da scrivere |
 | 4b | Il server, pezzo 2: le righe, la sincronia, l'azzeramento, e la contabilità della coda nel motore | Claude | `main`, a mano | niente | P-10 |
-| 4c | Il server, pezzo 3: cancellazione, due anni, cambio d'indirizzo e profilo, allarmi al titolare, il conto delle 300 mail | Claude | `main`, a mano | 4b, e la decisione del §4 sulla registrazione | da scrivere |
+| 4c | Il server, pezzo 3: cancellazione, due anni, cambio d'indirizzo e profilo, allarmi al titolare, il conto delle 300 mail, e «email già registrata» | Claude | `main`, a mano | 4b | P-11, da scrivere |
 | 6 | Aree 3–6 del ridisegno | ChatGPT | `ui/main` | la precedente | da scrivere |
 | 7 | Il client degli account, dentro una fetta del ridisegno | ChatGPT | `ui/main` | 4b | da scrivere |
 | 8 | La messa in esercizio del server su Scaleway | Claude e l'autore | `main`, pannelli | 4c, e dal §4: la macchina, le chiavi | da scrivere |
@@ -358,12 +358,20 @@ consuma, non si riprogetta.
 - ~~I record DNS di `posta.`, la pulizia dopo P-02, il contatto del titolare~~ —
   **fatti in P-08**: quattro record verificati, `privacy@rottagiusta.it` provato,
   la chiave SSH delle prove tolta.
-- **La registrazione dice chi è iscritto** — la decisione aperta nel §20 di
-  `account-progetto.md`, trovata da P-09. Tre strade, e il server oggi fa la
-  prima: accettarlo e dirlo, con il limite di 5 registrazioni l'ora come freno;
-  non aprire la sessione finché l'email non è confermata; rispondere sempre
-  allo stesso modo e aprire la sessione solo dopo la conferma. Blocca il punto
-  4c, non il 4b.
+- ~~La registrazione dice chi è iscritto~~ — **deciso dall'autore il 26
+  settembre 2026, nella regia: si dice apertamente.** Registrarsi con un'email
+  già iscritta dà un errore esplicito, e la pagina scrive «Questa email è già
+  registrata», con le due strade: accedere, o reimpostare la password. È la
+  prima delle tre strade del §20 di `account-progetto.md`, resa esplicita invece
+  che nascosta dietro la stessa frase; il freno resta il limite di 5
+  registrazioni l'ora (§6.5). Conseguenze, che la regia ne deriva: la mail «hai
+  già un account» del §5.3 non parte più, perché serviva solo a non dirlo; il
+  `202` del §7.1 diventa un errore con il suo perché; l'accesso sbagliato e la
+  password dimenticata restano come sono, e R-ACC-28 con loro — non proteggono
+  più l'iscrizione, ma non costano niente e non danno un'informazione in più.
+  **Non è ancora scritta in `account-progetto.md` né nella specifica**, perché
+  P-10 lavora in quei file: la porta lì P-11, il pezzo 4c, con la modifica al
+  server e il suo test.
 - **Gli adempimenti rimasti**, sei punti, tutti nel §15.4 di
   `account-progetto.md` e bloccano il punto 9: l'indirizzo postale del titolare,
   la base giuridica del registro di sicurezza (da far confermare), l'inoltro di
@@ -859,3 +867,7 @@ resoconto di docs/prossime-sessioni.md.
   e la sincronia; il pezzo 4c prende anche il cambio d'indirizzo e il profilo,
   e aspetta la decisione dell'autore sulla registrazione che dice chi è
   iscritto. P-10 porta dentro la lezione di P-09: un test che riavvia il server.
+- **26 settembre 2026 — «email già registrata».** L'autore ha deciso che la
+  registrazione dice apertamente se un'email è iscritta. Scritto nel §4 con le
+  conseguenze; lo porta nel progetto, nella specifica e nel server P-11, perché
+  P-10 lavora negli stessi file.
