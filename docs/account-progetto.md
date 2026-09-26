@@ -1352,7 +1352,7 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
 | ~~IP nel registro di sicurezza~~ | — | **deciso** su delega: 6 mesi l'IP, un anno l'evento, dalla CNIL (§15.3) |
 | Statistiche mostrate a chi studia | l'autore, in un documento suo | fuori da qui (§15.2) |
 | Cosa chiede l'onboarding oltre alla data | l'autore | Q-ONBOARD, specifica §10 |
-| Chiudere il difetto dei tag che resta (§4.2): ritaggare cancella, e i tag nascono senza data | `ui/*` | prima del client degli account; l'import li accetta già |
+| ~~Chiudere il difetto dei tag che resta (§4.2)~~ | — | **chiuso** da P-01 il 26 settembre (merge `6e07525`): i tag nascono con la data, ritaggare aggiunge |
 
 ---
 

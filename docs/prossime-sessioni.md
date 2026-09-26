@@ -106,19 +106,18 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 2 | Le misure su Scaleway, e come si aggiorna e si torna indietro | Claude | `main` | niente: l'account c'è | P-02 |
-| 3 | I tre prerequisiti del server | Claude | `main` | 2 | P-03 |
+| 3 | I tre prerequisiti del server, con l'epoca e il file delle cancellazioni | Claude | `main`, a mano | il sì dell'autore alle due proposte del §2.7 | P-03 |
 | 4 | Il server degli account, un pezzo per volta | Claude | `main` | 3 | da scrivere dopo P-03 |
 | 5 | Area 2, Quiz: prima il progetto, poi la realizzazione | ChatGPT | `ui/main` | niente: P-01 è chiuso | P-04, P-05 |
 | 6 | Aree 3–6 del ridisegno | ChatGPT | `ui/main` | la precedente | da scrivere |
 | 7 | Il client degli account, dentro una fetta del ridisegno | ChatGPT | `ui/main` | 4 | da scrivere |
-| 8 | La messa in esercizio del server su Scaleway | Claude e l'autore | `main`, pannelli | 4 | da scrivere |
+| 8 | La messa in esercizio del server su Scaleway | Claude e l'autore | `main`, pannelli | 4, e dal §4: la macchina, i record di `posta.`, la chiave del bucket | da scrivere |
 | 9 | **La versione con gli account** — il traguardo | tutti | `main` | 7, 8, e gli adempimenti del §4 | da scrivere |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**: Claude sul server (non tocca `site/`),
-ChatGPT sull'interfaccia. **P-02 è in corso e P-04 è pronto**: si possono
-tenere insieme, perché stanno su due cartelle diverse. Si incontrano al punto 7, e il punto 9 è il
+ChatGPT sull'interfaccia. **P-04 è pronto, e P-03 lo è dopo il sì dell'autore**:
+si possono tenere insieme, perché stanno su due cartelle diverse. Si incontrano al punto 7, e il punto 9 è il
 giorno in cui gli account arrivano a chi studia.
 
 I prompt «da scrivere» li scrive la regia quando si chiude quello da cui
@@ -348,9 +347,26 @@ consuma, non si riprogetta.
   modo in cui ti accorgi di una violazione e la notifichi entro 72 ore. L'elenco
   è la tabella «Il GDPR, per intero» dell'ADR-003; il testo dell'informativa è
   lavoro di `ui/*` (§1).
-- **I record DNS su IONOS** per `api.` e `posta.rottagiusta.it`, quando la
-  sessione P-02 li avrà letti su Scaleway (`account-progetto.md` §9.4 e §19). Il
-  record SPF dell'apice non si tocca: regge la tua posta.
+- **Le decisioni aperte del §20 di `account-progetto.md`**, riaperte da P-02:
+  quale macchina (nessuna delle due sta nel tetto dei 10 € senza una rinuncia),
+  i parametri di Argon2id, il «tetto» delle 300 mail che è un prezzo, la durata
+  della sessione, l'elenco delle password comuni. Le proposte sono lì accanto.
+- **Due proposte del §2.7, che P-03 deve sapere prima di scrivere il backup**:
+  l'*epoca* del database, perché un ripristino non renda invisibili le righe
+  nuove (R-ACC-24), e il file `cancellazioni` fuori dal database, perché un
+  ripristino non riporti in vita account cancellati. Entrambe nascono da un
+  difetto misurato, non da una preferenza.
+- **I quattro record DNS di `posta.rottagiusta.it` su IONOS**, MX compreso, con
+  i valori da copiare dalla console di Scaleway (`account-progetto.md` §9.4). Il
+  record SPF dell'apice non si tocca: regge la tua posta. Quello di `api.` viene
+  alla messa in esercizio, con la macchina.
+- **La chiave API di sola scrittura sul bucket `rottagiusta-copie`**, da mettere
+  tu sulla macchina, mai nel repo (§2.5). Serve alla messa in esercizio.
+- **Quello che P-02 ha lasciato sul Mac e su Scaleway**, da tenere o togliere:
+  la chiave SSH `~/.ssh/rotta_giusta_p02` e la sua metà pubblica registrata nel
+  progetto Scaleway, la CLI `scw` installata con Homebrew e non configurata, e
+  il worktree `~/Software/rotta-giusta-p02` con il ramo `sessione/p-02`, già
+  fuso in `main`.
 
 ## 5 · Il traguardo: la versione con gli account
 
@@ -422,9 +438,8 @@ comportamento nuovo dei tag resta coperto solo dal collaudo di quel giorno.
 
 ### P-02 — Claude: le misure su Scaleway, e come si aggiorna il server
 
-**Stato:** pronto. **Dove:** Claude Code, su `rotta-giusta` — dal pulsante
-della regia, in un worktree suo (vedi «Come si usa», punto 6). **Aspetta:**
-niente. Si può lanciare insieme a P-01.
+**Stato:** **chiuso il 26 settembre 2026**, merge `f452c67`. **Dove:** dal
+pulsante della regia, worktree `~/Software/rotta-giusta-p02`, ramo `sessione/p-02`.
 
 ```
 Sessione P-02. Leggi docs/account-progetto.md, e in
@@ -445,24 +460,43 @@ docs/prossime-sessioni.md. Suite verdi, voce in fondo a [Unreleased],
 un commit. Chiudi con il resoconto di docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `4a0b185`, merge `f452c67` su `main`, voce «Misurato —
+Scaleway» nel CHANGELOG. Le misure stanno in `account-progetto.md` §2.6, come si
+aggiorna e si torna indietro nel §2.7 (provato: 1,5 s per aggiornare, 1,1 per
+tornare, circa 105 ms senza risposta), i record di `posta.` nel §9.4, il bucket
+nel §2.5, quello che manca nel §19, e tre decisioni nuove nel §20. Si è fermata
+a chiedere quando una misura ha smentito il costo del §2.2, come il prompt
+chiedeva. Controllato dalla regia: il commit esiste, il diff tocca solo
+`account-progetto.md` e `CHANGELOG.md`, territori puliti. **La merge ha avuto un
+conflitto nel CHANGELOG**, perché P-01 e P-02 avevano aggiunto entrambe una voce
+in fondo a `[Unreleased]`: risolto tenendo le due voci, senza una riga tolta,
+poi le suite su `main` — motore 131 + 1 skip, dati 221, interfaccia 135,
+specifica 262. È il conflitto che `AGENTS.md` prevede; con due sessioni che
+chiudono lo stesso giorno succederà ogni volta, e si risolve così.
 
 ### P-03 — Claude: i tre prerequisiti del server
 
-**Stato:** in attesa di P-02. **Dove:** Claude Code, `~/Software/rotta-giusta`,
+**Stato:** pronto dopo il sì dell'autore alle due proposte del §2.7 di
+`account-progetto.md` (§4 qui sopra). **Dove:** Claude Code, `~/Software/rotta-giusta`,
 ramo **`main`** — non da un pulsante: tocca `territori.yaml` e `tests/`, che il
 `pre-commit` accetta solo da `main`.
 
 ```
-Sessione P-03, su main. Leggi docs/account-progetto.md §2.5 e §16, il
-§3-bis di docs/prossime-sessioni.md, e l'esito di P-02 nel suo §6.
+Sessione P-03, su main. Leggi docs/account-progetto.md §2.5, §2.7 e
+§16, il §3-bis di docs/prossime-sessioni.md, e l'esito di P-02 nel
+suo §6.
 
 I tre prerequisiti, prima del server vero: server/** nel territorio
 di territori.yaml indicato dal §16.2; la suite tests/test_server.mjs,
 che avvia nello stesso processo un server che per ora risponde solo
-alla salute, e che AGENTS.md elenca fra i comandi; il backup con il
-ripristino provato, dentro la stessa suite. controlla.py passa anche
-su server/ e fallisce su una chiave di Scaleway scritta in un file.
+alla salute, che AGENTS.md elenca fra i comandi, e che gira anche con
+Node 24 LTS, non solo con la versione del Mac; il backup con il
+ripristino provato, dentro la stessa suite. Il database nasce con
+PRAGMA user_version, con l'epoca, e con il file delle cancellazioni
+fuori dal database, come dice il §2.7: ripristina --prova li
+esercita tutti, e R-ACC-20 e R-ACC-24 hanno il loro controllo.
+controlla.py passa anche su server/ e fallisce su una chiave di
+Scaleway scritta in un file.
 
 Prima il test che fallisce. Non toccare docs/prossime-sessioni.md.
 Suite verdi, voce in fondo a [Unreleased], un commit. Chiudi con il
@@ -562,3 +596,8 @@ docs/prossime-sessioni.md.
   esito resta scritto che cosa la regia ha controllato e che cosa no: il
   collaudo nel browser è della sessione, e il comportamento nuovo dei tag non ha
   un test nella suite.
+- **26 settembre 2026 — P-02 chiuso.** Merge `f452c67`, con il primo conflitto
+  del CHANGELOG fra due sessioni della regia, risolto tenendo le due voci. P-03
+  riscritto con l'epoca, il file delle cancellazioni e Node 24; aspetta il sì
+  dell'autore. Nel §4 le decisioni che P-02 ha riaperto e quello che ha lasciato
+  sul Mac e su Scaleway.
