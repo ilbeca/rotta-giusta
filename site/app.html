@@ -647,6 +647,52 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
 .quiz-run-context span{display:block;font-size:14px}
 @media(max-width:600px){#f-modo{grid-template-columns:1fr}.quiz-porta{padding:18px}#quiz-panel{padding:18px}#quiz-alerts .route-alert>div{flex:1 1 calc(100% - 40px);min-width:0}}
 
+/* Area 3: il ciclo che si chiude. Riepilogo, anteprima e revisione sono una
+   colonna di lettura sola, nello stesso ordine a 375 e a 1280 px. */
+.vh{position:absolute!important;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;padding:0}
+.ciclo{max-width:72ch;margin:0 auto;padding:4px 2px 28px;color:var(--navy)}
+.ciclo h1{margin:14px 0 4px;font-size:30px;line-height:1.2;letter-spacing:-.6px;outline:none}
+.ciclo p{margin:12px 0 0;font-size:16px;line-height:1.55}
+.ciclo .note{font-size:14px;color:var(--text-soft)}
+.ciclo .ciclo-nome{margin-top:4px;color:var(--text-soft)}
+.ciclo .route-alert{margin-top:14px}
+.ciclo-valori{list-style:none;display:grid;gap:8px;margin:18px 0 0;padding:0}
+.ciclo-valori li{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:11px 14px;border:1px solid var(--line-soft);border-radius:10px;background:var(--surface);font-size:16px}
+.ciclo-valori strong{font-size:20px;font-variant-numeric:tabular-nums}
+.ciclo .ciclo-verdetto{display:inline-block;margin-top:16px;padding:6px 14px;border-radius:99px;font-weight:700}
+.ciclo-verdetto.ok{background:var(--success-soft);color:var(--success)}.ciclo-verdetto.ko{background:var(--danger-soft);color:var(--danger)}
+.ciclo-azioni{display:grid;gap:10px;margin-top:22px}
+.ciclo-azioni .btn{min-height:48px;font-size:16px;white-space:normal}
+.ciclo-azioni .note{margin:0}
+@media(min-width:760px){.ciclo-valori{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}.ciclo-azioni{display:flex;flex-wrap:wrap;align-items:center}.ciclo-azioni .btn{width:auto;padding:0 20px}.ciclo-azioni .note{flex:1 0 100%}}
+.riprova-avviso{flex:1 0 100%;color:var(--navy);font-weight:600}
+.runner-dialog{position:absolute;inset:0;z-index:6;display:grid;place-items:center;padding:20px;background:color-mix(in srgb,var(--navy) 55%,transparent)}
+.runner-dialog[hidden]{display:none}
+.runner-dialog-card{width:min(560px,100%);padding:24px;border-radius:16px;background:var(--surface);color:var(--navy)}
+.runner-dialog-card h2{margin:0;font-size:24px;line-height:1.3;color:var(--navy);text-transform:none;letter-spacing:-.4px;outline:none}
+.runner-dialog-card p{margin:12px 0 0;font-size:16px;line-height:1.55}
+.rv-filtri{display:grid;gap:8px;margin:20px 0 4px;padding:0;border:0;min-width:0}
+@media(min-width:760px){.rv-filtri{grid-template-columns:1fr 1fr}}
+.rv-blocco{padding:18px 0;border-bottom:1px solid var(--line-soft)}
+.ciclo .rv-pos{margin:0;font-size:14px;color:var(--text-soft)}
+.ciclo .rv-q{margin-top:6px;font-size:17px;font-weight:550;line-height:1.45}
+.ciclo .rv-esito{margin-top:10px;font-weight:700}.rv-esito.ok{color:var(--success)}.rv-esito.ko{color:var(--danger)}
+.rv-r{display:grid;grid-template-columns:150px 1fr;gap:10px;margin-top:8px;font-size:16px;line-height:1.45}
+.rv-r .et{font-size:14px;font-weight:700;color:var(--text-soft)}
+.rv-blocco .nb{font-size:14px}
+.rv-tag .note{margin-top:14px}
+.ciclo .rv-tags{flex-wrap:wrap;margin:8px 0 0}
+.ciclo .rv-tags button{min-height:44px;padding:8px 14px;font-size:15px;color:var(--navy)}
+.ciclo .rv-tags button.on{color:var(--surface)}
+.ciclo .qfig{margin-top:12px}
+.fig-box{display:block}.fig-box img{display:block;margin:0 auto}
+.qfig .fig-zoom{display:inline-flex;margin-top:4px;font-size:14px}
+#fig-zoom{width:min(900px,calc(100% - 24px));max-height:calc(100vh - 24px);padding:16px;border:1px solid var(--line-soft);border-radius:16px;background:var(--surface);text-align:center}
+#fig-zoom::backdrop{background:color-mix(in srgb,var(--navy) 70%,transparent)}
+#fig-zoom img{display:block;max-width:100%;max-height:calc(100vh - 140px);margin:0 auto;background:#fff}
+#fig-zoom .btn{width:auto;margin:14px auto 0;padding:0 20px}
+@media(max-width:650px){.ciclo h1{font-size:28px}.rv-r{grid-template-columns:1fr;gap:2px}.ciclo .route-alert,.runner-warning{flex-wrap:wrap}.ciclo .route-alert>div,.runner-warning>div{flex:1 1 100%}.ciclo .route-alert .text-btn,.runner-warning .text-btn{margin-left:0}}
+
 </style>
 </head>
 <body>
@@ -999,6 +1045,15 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
     <button class="btn primary" id="r-next" style="display:none;margin-top:10px">Avanti</button>
   </div>
   <div class="fine" id="r-fine"></div>
+  <!-- La conferma della consegna: in pagina, non un confirm() nativo, e il
+       timer intanto continua (area 3, §4.1). -->
+  <div class="runner-dialog" id="r-consegna" role="dialog" aria-modal="true" aria-labelledby="r-consegna-tit" hidden>
+    <div class="runner-dialog-card">
+      <h2 id="r-consegna-tit" tabindex="-1">Vuoi consegnare la prova?</h2>
+      <p id="r-consegna-txt"></p>
+      <div class="ciclo-azioni"><button class="btn primary" data-consegna="si">Consegna</button><button class="btn" data-consegna="no">Continua la prova</button></div>
+    </div>
+  </div>
 </div>
 
 <!--
@@ -1052,6 +1107,13 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
   <div class="runner-warning" data-save-warning role="alert" hidden></div>
   <div class="rvbody" id="rv-body" tabindex="-1"></div>
 </div>
+
+<!-- La figura di un quesito, ingrandita: dal runner e dalla revisione. -->
+<dialog id="fig-zoom" aria-labelledby="fig-zoom-tit">
+  <h2 id="fig-zoom-tit" class="vh">Figura ingrandita</h2>
+  <img id="fig-zoom-img" alt="">
+  <button class="btn" id="fig-zoom-chiudi">Chiudi la figura</button>
+</dialog>
 
 <!--
   Il gioco dei segnali ha un runner suo, come il carteggio: il runner dei quiz
@@ -1840,7 +1902,9 @@ function dipingi() {
       + (haTecniche ? '<p>Hai svolto attività di riconoscimento delle tecniche. Sono distinte dagli esercizi sulla carta.</p>' : '');
   }
 
-  const sessione = E.sessioni(S.archivio, { limite: 1 })[0];
+  // Il confine dell'attivita': un'attivita' ripresa dopo una pausa e' una sola
+  // (P-30). Con quello per pausa ne usciva la meta' piu' recente.
+  const sessione = E.sessioni(S.archivio, { limite: 1, confine: 'attivita' })[0];
   const last = document.getElementById('rotta-last');
   if (!sessione) {
     last.hidden = true;
@@ -2394,9 +2458,16 @@ function apri(coda, modo, opt = {}) {
     coda, i: 0, modo, t0: 0, risposto: false, giuste: 0, uidCorrente: null,
     sim: opt.sim || null,        // {nome, minuti, erroriMax} se è una prova cronometrata
     primaBase: !!opt.primaBase,
+    // Il ritorno dal riepilogo va al Percorso: la prima attivita', quella
+    // avviata dal Percorso e le loro riprove, che ne ereditano l'origine.
+    percorso: !!(opt.primaBase || opt.percorso || opt.origine === 'percorso'),
+    riprovaDi: opt.riprovaDi || null,          // l'attivita' di cui questa e' la riprova
+    basePrecedente: opt.basePrecedente || null, // la fase base, per la vela di «Base e vela»
     quiz: !!opt.quiz,
     origine: opt.origine || null,
-    autoCorrente: opt.primaBase ? false : S.auto,
+    // La riprova passa `auto: false`: l'avanzamento automatico si spegne per
+    // questo runner soltanto, e la preferenza salvata resta com'era (§6.3).
+    autoCorrente: opt.auto === false || opt.primaBase ? false : S.auto,
     // L'identita' della sessione nasce QUI, non alla consegna: ogni risposta la
     // porta con se' (sim_uid) ed e' cio' che permette di riaprire la sessione
     // dall'elenco e rivederla. La riga di `sim` alla fine usa lo stesso uid.
@@ -2406,21 +2477,28 @@ function apri(coda, modo, opt = {}) {
     // screening non erano niente: solo righe sparse, senza inizio ne' fine, e
     // per sapere che 334 risposte erano due screening e non uno e' servita
     // un'indagine sull'archivio. Una riga, e il confine e' registrato. (Le
-    // righe senza legame le ritaglia comunque `E.sessioni()`.)
-    simUid: uid(),
+    // righe senza legame le ritaglia comunque `E.sessioni()`.) Una riprova
+    // l'identita' la riceve dal raccordo, che l'ha appena creata.
+    simUid: opt.simUid || uid(),
     fasi: opt.fasi || null,      // le prove che restano dopo questa, per la simulazione completa
     perche: opt.perche || null,  // id -> perché è in lista (modalità Mirata)
     esiti: [], errori: [], scadenza: opt.sim ? Date.now() + opt.sim.minuti * 60000 : null,
   };
   document.getElementById('quizrun').classList.add('on');
   document.getElementById('r-fine').classList.remove('on');
-  document.getElementById('r-auto').style.display = opt.sim || opt.primaBase ? 'none' : '';
+  runnerAttivo(null); sfondoInerte();
+  document.getElementById('r-auto').style.display = opt.sim || opt.primaBase || opt.auto === false ? 'none' : '';
   document.getElementById('r-auto').classList.toggle('on', S.run.autoCorrente);
+  // Un controllo con il suo nome, non una croce: in un allenamento si termina
+  // e si vede il riepilogo, in una simulazione si consegna (§4.1).
   const close = document.getElementById('r-close');
-  close.textContent = opt.primaBase ? 'Termina l\'attività' : '×';
-  close.setAttribute('aria-label', opt.primaBase ? 'Termina l\'attività' : opt.quiz ? (opt.origine?.vista === 'diag' ? 'Torna ai Progressi' : opt.origine?.vista === 'oggi' ? 'Torna al Percorso' : 'Torna alla configurazione Quiz') : 'Chiudi');
-  close.classList.toggle('runner-exit', !!opt.primaBase);
-  document.getElementById('r-title').textContent = opt.sim ? `Simulazione quiz ${opt.sim.nome}` : { mirata: 'Allenamento consigliato', argomento: 'Quiz per argomento', sbagliate: 'Ripasso degli errori', screening: 'Un giro tra gli argomenti' }[modo] || 'Quiz';
+  const fermo = opt.sim ? 'Consegna la prova' : 'Termina l\'attività';
+  close.textContent = fermo;
+  close.setAttribute('aria-label', fermo);
+  close.classList.add('runner-exit');
+  document.getElementById('r-title').textContent = opt.sim ? `Simulazione quiz ${opt.sim.nome}`
+    : opt.riprovaDi ? 'Riprova degli errori'
+    : { mirata: 'Allenamento consigliato', argomento: 'Quiz per argomento', sbagliate: 'Ripasso degli errori', screening: 'Un giro tra gli argomenti' }[modo] || 'Quiz';
   document.getElementById('r-bank').textContent = `Quiz ${coda[0].k}`;
   dipingiStatoRotta();
   mostra();
@@ -2429,8 +2507,11 @@ function apri(coda, modo, opt = {}) {
 function chiudi() {
   const origine = S.run?.origine, quiz = S.run?.quiz;
   clearInterval(tick); clearTimeout(autoT); S.run = null;
+  CICLO.ctx = null; CICLO.pannello = null;
+  chiudiConsegna(false);
   document.getElementById('quizrun').classList.remove('on');
   document.getElementById('r-fine').classList.remove('on');
+  runnerAttivo(null); sfondoInerte();
   const close = document.getElementById('r-close');
   close.textContent = '×'; close.setAttribute('aria-label', 'Chiudi'); close.classList.remove('runner-exit');
   dipingi(); costruisciFiltri();
@@ -2438,13 +2519,6 @@ function chiudi() {
     if (origine && typeof origine === 'object') { mostraVista(origine.vista); focusOrigineQuiz(origine); }
     else { mostraVista('quiz'); document.getElementById('quiz-title').focus(); }
   }
-}
-
-function terminaPrimaAttivita() {
-  const R = S.run;
-  if (!R || !R.primaBase) return chiudi();
-  if (!R.esiti.length) return chiudi();
-  fine(false, R.esiti.length < R.coda.length);
 }
 
 function mostra() {
@@ -2473,19 +2547,11 @@ function mostra() {
   // ritrova sul libro, e serve a chi studia col libro accanto.
   document.getElementById('r-num').textContent = it.p ? `n. ${it.p}` : '';
   document.getElementById('r-text').textContent = it.d;
-  // `fm` e' il caso dichiarato: il decreto una figura ce l'ha, il dataset
-  // estratto no. Mostrarlo e' meglio che lasciare il posto vuoto — un quesito
-  // che parla di "figura" senza figura sembra un guasto del rendering, e chi lo
-  // incontra perde tempo a cercare che cosa non ha caricato.
-  document.getElementById('r-fig').innerHTML = it.f
-    ? `<img src="/figure/${it.f}" alt="figura" loading="eager">`
-    : it.fm ? `<p class="note nofig">Figura non disponibile: ${esc(it.fm)}.</p>` : '';
-  const immagine = document.querySelector('#r-fig img');
-  if (immagine) immagine.addEventListener('error', () => {
-    const avviso = document.createElement('p'); avviso.className = 'note nofig';
-    avviso.textContent = 'Figura non disponibile. Apri Info per controllare le figure offline.';
-    immagine.replaceWith(avviso);
-  }, {once:true});
+  // La figura, con il suo testo alternativo e l'ingrandimento: la stessa
+  // funzione della revisione (area 3, §8).
+  const fig = document.getElementById('r-fig');
+  fig.innerHTML = figuraQuiz(it);
+  curaFigure(fig);
   // Il suggerimento dei tasti compare solo dove c'e' una tastiera (la classe
   // solo-tastiera e' vuota altrove). Numeri E lettere funzionano entrambi dal
   // gestore keydown della 0.4.6; qui si scrive, perche' una scorciatoia che
@@ -2500,7 +2566,8 @@ function mostra() {
     ? `<span>Nessuna correzione fino alla fine, come all'esame.</span>
        <span class="solo-tastiera" style="color:var(--dim)">&nbsp;· tasti ${tasti} oppure ${lettere}</span>`
     : R.i === 0
-      ? `<span>Tocca una risposta per vedere quella ufficiale.</span><span class="solo-tastiera" style="color:var(--dim)">&nbsp;· tasti ${tasti} oppure ${lettere}</span>`
+      ? (R.riprovaDi ? '<span class="riprova-avviso">Questi quesiti vengono dagli errori dell\'attività appena scelta.</span>' : '')
+        + `<span>Tocca una risposta per vedere quella ufficiale.</span><span class="solo-tastiera" style="color:var(--dim)">&nbsp;· tasti ${tasti} oppure ${lettere}</span>`
       : `<span class="solo-tastiera" style="color:var(--dim)">tasti: ${tasti} oppure ${lettere}</span>`)
     + notaPrima(it);
   document.getElementById('r-next').style.display = 'none';
@@ -2539,7 +2606,9 @@ function cronometro() {
 }
 
 function rispondi(i) {
-  const R = S.run; if (!R || R.risposto) return;
+  // A riepilogo aperto, o con la conferma della consegna davanti, il quesito
+  // sotto non si risponde: sarebbe una risposta data senza vederla.
+  const R = S.run; if (!R || R.risposto || R.concluso || !document.getElementById('r-consegna').hidden) return;
   // Sul telefono un doppio tap involontario, o un tap partito mentre la
   // schermata cambiava, risponderebbe alla domanda successiva senza che tu
   // l'abbia letta. Duecento millisecondi di sordita' bastano a evitarlo.
@@ -2585,7 +2654,7 @@ function rispondi(i) {
     + notaPrima(it) + nota(it);
   const next = document.getElementById('r-next');
   next.style.display = 'block';
-  next.textContent = R.i + 1 < R.coda.length ? (R.primaBase ? 'Prossima domanda' : 'Avanti') : 'Vedi il riepilogo';
+  next.textContent = R.i + 1 < R.coda.length ? (R.primaBase || R.riprovaDi ? 'Prossima domanda' : 'Avanti') : 'Vedi il riepilogo';
 
   // Autoscroll: se hai indovinato non c'è niente da guardare, si tira dritto.
   // Se hai sbagliato la schermata resta, perché è lì che si impara qualcosa.
@@ -2599,117 +2668,405 @@ function avanti() {
   else fine(false);
 }
 
-/* ===================== riepilogo di fine prova =========================== */
+/* ===================== il ciclo: riepilogo, revisione, riprova ============ */
+//
+// docs/area-3-progetto.md. Dal motore passa un raccordo solo, di tre funzioni:
+// `riepilogoQuiz()`, `anteprimaRiprova()` e `avviaRiprova()` (§10.1). Dipendono
+// soltanto dai loro argomenti, da `E` e da altre funzioni di primo livello,
+// perche' tests/ciclo_quiz.mjs le estrae e le esegue contro il motore e la
+// banca veri, con i dati che cambiano fra un clic e l'altro. Il numero sul
+// pulsante «Riprova questi N» e la lista che si apre sono lo stesso risultato
+// di erroriSessione() del motore: e' la regola del numero promesso, nella
+// colla fra pagina e motore. Fuori da queste tre la pagina non chiede gli
+// errori di un'attivita'.
+
+/**
+ * Il riepilogo di un'attivita' e l'istantanea della sua riprova.
+ *
+ * contesto: { id, totale, erroriMax, corrente } — l'id da E.sessioni(), la
+ *   lunghezza della lista originale (null se non si conosce), la soglia della
+ *   prova (null per un allenamento), true per l'attivita' appena conclusa qui.
+ * fonte: { righe, banca, letturaFallita }.
+ *
+ * Le righe si cercano con il confine dell'attivita' e per id: un'attivita'
+ * ripresa dopo una pausa e' una sola, non due gruppi con lo stesso id (P-30).
+ */
+function riepilogoQuiz(contesto, fonte) {
+  const { righe, banca } = fonte;
+  const s = E.sessioni(righe, { confine: 'attivita' }).find((x) => String(x.id) === String(contesto.id));
+  if (!s && !contesto.corrente) {
+    const stato = fonte.letturaFallita ? 'illeggibile' : 'indisponibile';
+    return { stato, righe: [], risposte: 0, corrette: 0, errate: 0, nonAffrontate: null, superata: null, confine: null,
+             riprova: { id: contesto.id, stato, quanti: null, lista: [], mancanti: [], motivi: [], confine: null } };
+  }
+  // Un'attivita' corrente senza righe e' una simulazione consegnata vuota
+  // (§4.1): un riepilogo con tutte le domande senza risposta, non una perdita.
+  const proprie = s ? s.righe : [];
+  const e = E.esito(proprie.map((r) => !!r.correct), contesto.erroriMax);
+  const nonAffrontate = contesto.totale == null ? null : contesto.totale - e.totale;
+  const r = E.erroriSessione(righe, banca, contesto.id);
+  return {
+    stato: 'pronto',
+    righe: proprie,
+    risposte: e.totale,
+    corrette: e.esatte,
+    errate: e.errori,
+    nonAffrontate,
+    // Con domande senza risposta una prova non e' superata, anche entro la
+    // soglia degli errori: e' il comportamento di prima, detto (§4.3).
+    superata: contesto.erroriMax == null ? null : e.superata && nonAffrontate === 0,
+    confine: s ? s.fonte : null,
+    riprova: istantanea(contesto.id, r),
+  };
+}
+
+/** Che cosa dice un risultato di erroriSessione(): si riapre, o perche' no. */
+function statoRiprova(r) {
+  if (r.ambigua) return 'ambigua';
+  if (r.quanti !== r.lista.length) return 'incoerente';
+  if (r.mancanti.length) return 'mancanti';
+  if (r.quanti === 0) return 'nessun errore';
+  return 'pronta';
+}
+
+/** L'istantanea della riprova: la lista c'e' soltanto quando si puo' aprire. */
+function istantanea(id, r) {
+  const stato = statoRiprova(r);
+  return { id, stato, quanti: r.quanti, lista: stato === 'pronta' ? r.lista : [],
+           mancanti: r.mancanti, motivi: r.motivi, confine: r.fonte };
+}
+
+/**
+ * L'anteprima: la stessa istantanea, se i dati danno ancora gli stessi errori,
+ * negli stessi quesiti e nello stesso ordine. Un tag N/L/C, un'altra attivita'
+ * o la banca ricaricata non cambiano niente; una risposta arrivata da un
+ * import, un azzeramento o una lettura fallita si'. Mai la lista ricalcolata:
+ * quella promessa e' l'istantanea.
+ */
+function anteprimaRiprova(riprova, fonte) {
+  if (riprova.stato !== 'pronta') return { stato: riprova.stato, quanti: null, lista: [] };
+  const ora = E.erroriSessione(fonte.righe, fonte.banca, riprova.id);
+  if (!ora.trovata) return { stato: fonte.letturaFallita ? 'illeggibile' : 'indisponibile', quanti: null, lista: [] };
+  const uguali = !ora.ambigua && ora.fonte === riprova.confine && ora.quanti === riprova.quanti
+    && !ora.mancanti.length && ora.lista.every((it, i) => it.id === riprova.lista[i].id);
+  if (!uguali) return { stato: 'cambiate', quanti: null, lista: [] };
+  return { stato: 'pronta', quanti: riprova.quanti, lista: riprova.lista, confine: riprova.confine };
+}
+
+/**
+ * Inizia: l'istantanea, con un'identita' nuova e l'avanzamento automatico
+ * spento, oppure niente. La riprova e' un'attivita' nuova — `mode:
+ * 'sbagliate'`, un `sim_uid` suo, senza timer —, e il tentativo di prima
+ * resta com'era.
+ */
+function avviaRiprova(riprova, fonte, avvia) {
+  const a = anteprimaRiprova(riprova, fonte);
+  if (a.stato !== 'pronta') return { avviata: false, stato: a.stato };
+  const simUid = uid();
+  avvia(riprova.lista, 'sbagliate', { simUid, riprovaDi: riprova.id, auto: false });
+  return { avviata: true, simUid };
+}
+
+/* --- il collegamento con la pagina ---------------------------------------- */
+
+/** Le righe che la pagina ha: S.archivio tiene anche quelle la cui scrittura
+ *  e' fallita, quindi il dettaglio corrente resta rivedibile (§3). */
+function fonteCiclo() {
+  return { righe: S.archivio, banca: S.banca, letturaFallita: ARCH.lettura === 'errore' };
+}
+
+// I contesti delle attivita' concluse in questa pagina: identita', lista
+// originale, origine, fasi. Stanno in memoria e non si salvano mai (§3, §7.1):
+// sono un indice per tornare a un riepilogo, non una seconda contabilita'. Le
+// righe restano la fonte dei tentativi, e dopo una ricarica non c'e' niente da
+// riprendere.
+const CICLO = { contesti: new Map(), ctx: null, riprova: null, pannello: null };
+
+const NOME_ATTIVITA = {
+  mirata: 'Allenamento consigliato', argomento: 'Quiz per argomento', sbagliate: 'Ripasso degli errori',
+  screening: 'Un giro tra gli argomenti', batteria: 'Batteria', simulazione: 'Simulazione',
+};
+function nomeAttivita(ctx) {
+  if (ctx.sim) return 'Simulazione d\'esame';
+  if (ctx.riprovaDi) return 'Riprova degli errori';
+  return NOME_ATTIVITA[ctx.modo] || 'Quiz';
+}
+
+function contestoDaRun(R, stato) {
+  return {
+    id: R.simUid, modo: R.modo, kind: R.coda[0].k, lista: R.coda, totale: R.coda.length,
+    erroriMax: R.sim ? R.sim.erroriMax : null, sim: R.sim, primaBase: R.primaBase, percorso: R.percorso,
+    riprovaDi: R.riprovaDi, origine: R.origine, quiz: R.quiz, basePrecedente: R.basePrecedente,
+    fasi: R.fasi && R.fasi.length ? R.fasi : null, stato,
+  };
+}
+
+/** Il ritorno esplicito (§6.1): verso l'origine, detta per nome. */
+function testoRitorno(ctx) {
+  if (ctx.percorso) return 'Torna al Percorso';
+  if (ctx.quiz && ctx.origine && ctx.origine.vista === 'diag') return 'Torna ai Progressi';
+  if (ctx.quiz && ctx.origine && ctx.origine.vista === 'oggi') return 'Torna al Percorso';
+  if (ctx.quiz && ctx.origine) return 'Torna alla configurazione Quiz';
+  return 'Torna ai Quiz';
+}
+
+/** Che cosa resta di queste risposte, nel regime che gira oggi (§3). */
+const CONSERVAZIONE = 'Le risposte date restano in questo browser. La lista corrente non si riprende dopo una ricarica.';
+function testoConservazione() {
+  // Gli avvisi prevalgono sulla frase ordinaria: con una scrittura fallita
+  // «restano in questo browser» non e' vero, e lo dice l'avviso sopra.
+  return ARCH.errore ? '' : `<p class="note">${CONSERVAZIONE}</p>`;
+}
+
+/** Gli avvisi del ciclo, prima di tutto il resto (§3). */
+function avvisiCiclo() {
+  const alt = ARCH.lettura === 'ripiego_assente' || ARCH.lettura === 'ripiego_letto'
+    ? '<div class="route-alert" role="alert"><div>Stiamo usando un archivio alternativo: potresti non vedere tutte le risposte precedenti.</div></div>' : '';
+  return '<div class="route-alert error" data-fine-save-warning role="alert" hidden></div>' + alt;
+}
+
+const plurDomande = (n) => (n === 1 ? '1 domanda' : `${n} domande`);
+
+/** Perche' una riprova non si apre, con le parole del §8. */
+function motivoRiprova(p) {
+  if (p.stato === 'mancanti') return 'Non possiamo riaprire tutti i quesiti errati: alcuni non sono disponibili nella banca caricata. Riprova a caricare i quiz.';
+  if (p.stato === 'ambigua' || p.stato === 'incoerente') return 'Non possiamo verificare l\'elenco degli errori di questa attività. Puoi rivedere le risposte disponibili o tornare ai Quiz.';
+  if (p.stato === 'indisponibile') return 'Questa attività non è più disponibile.';
+  if (p.stato === 'illeggibile') return 'Non riusciamo a leggere le risposte di questa attività. Apri Info per controllare l\'archivio.';
+  return '';
+}
+
+function htmlRiepilogo(ctx, r) {
+  const p = r.riprova, M = r.nonAffrontate || 0;
+  const valori = (coppie) => `<ul class="ciclo-valori">${coppie.map(([k, v]) =>
+    `<li><span>${k}:</span> <strong>${v}</strong></li>`).join('')}</ul>`;
+  let testa;
+  const msg = [];
+  if (ctx.sim) {
+    testa = `<h1 tabindex="-1">Simulazione quiz ${ctx.kind} conclusa</h1>
+      <p class="ciclo-nome">Esito di questa prova, non una previsione dell'esame.</p>
+      ${valori([['Risposte corrette', `${r.corrette} su ${ctx.totale}`], ['Risposte errate', r.errate],
+                ['Domande senza risposta', M], ['Errori ammessi', ctx.erroriMax]])}
+      <p class="ciclo-verdetto ${r.superata ? 'ok' : 'ko'}">${r.superata ? 'Prova superata' : 'Prova non superata'}</p>
+      <p>${ctx.stato === 'scaduta' ? 'Tempo scaduto. La prova è stata consegnata.' : 'Prova consegnata.'}</p>`;
+    if (M) msg.push('Le domande senza risposta non entrano nella riprova degli errori. Puoi esercitarle scegliendo un argomento.');
+  } else {
+    testa = `<h1 tabindex="-1">${ctx.stato === 'parziale' ? 'Ti sei fermato qui' : 'Attività conclusa'}</h1>
+      <p class="ciclo-nome">${nomeAttivita(ctx)} · Quiz ${ctx.kind}</p>
+      <p>Hai risposto a ${plurDomande(r.risposte)} su ${ctx.totale}.</p>
+      ${valori([['Risposte corrette', r.corrette], ['Risposte errate', r.errate], ['Domande non affrontate', M]])}`;
+  }
+  if (r.errate && p.stato === 'pronta') msg.push('Puoi rivedere la tua risposta e quella ufficiale, poi riprovare questi quesiti.');
+  else if (!r.errate && r.risposte) msg.push('Tutte le risposte date in questa attività sono corrette.');
+  if (!ctx.sim && M) msg.push('Le domande non affrontate non sono conteggiate come errori.');
+  if (r.confine === 'risposte') msg.push('Il raggruppamento di questa attività è ricostruito dalle risposte: inizio e fine non erano registrati.');
+  // Il solo dato facoltativo della prima attivita', dall'area 1: quanti quiz
+  // base non si sono mai incontrati qui. Non e' un giudizio sullo studio fatto
+  // altrove, e non si estende al giro come «programma coperto» (§4.2).
+  if (ctx.primaBase) {
+    const tb = E.traccia(S.banca, S.prog, S.date.oggi || today(), 'base', S.date.chiusura_quiz, S.date.inizio_quiz);
+    if (tb.mai_visti) msg.push(`Quiz base mai incontrati qui: ${tb.mai_visti}.`);
+  }
+  const blocco = r.errate && p.stato !== 'pronta' && p.stato !== 'nessun errore'
+    ? `<div class="route-alert error" role="alert"><div>${motivoRiprova(p)}</div></div>` : '';
+  return `<div class="ciclo">${avvisiCiclo()}${testa}${msg.map((t) => `<p>${t}</p>`).join('')}${blocco}
+    ${azioniRiepilogo(ctx, r)}
+    ${testoConservazione()}
+    <p>Puoi concludere qui.</p></div>`;
+}
+
+/** Le uscite, nella gerarchia del §6.1: una principale, le altre visibili. */
+function azioniRiepilogo(ctx, r) {
+  const p = r.riprova;
+  const fase = ctx.fasi && ctx.fasi[0];
+  const b = (azione, testo, primaria) => `<button class="btn${primaria ? ' primary' : ''}" data-ciclo="${azione}">${testo}</button>`;
+  const riprova = p.stato === 'pronta'
+    ? (p.quanti === 1 ? 'Riprova questo quesito' : `Riprova questi ${p.quanti} quesiti`) : '';
+  const out = [];
+  let nota = '';
+  if (fase) {
+    out.push(`<button class="btn primary" data-fase="1">${r.superata ? `Continua con la ${fase.nome}` : 'Prosegui comunque con la vela'}</button>`);
+    if (!r.superata) nota = '<p class="note">Il quiz base non è superato. Puoi proseguire con la vela per esercitarti; all\'esame il quiz base deve essere superato per proseguire.</p>';
+    if (riprova) out.push(b('riprova', riprova));
+  } else if (riprova) out.push(b('riprova', riprova, true));
+  if (r.errate) out.push(b('errori', 'Rivedi gli errori'));
+  if (r.risposte) out.push(b('risposte', 'Rivedi le risposte', !fase && !riprova && r.errate));
+  if (ctx.basePrecedente && CICLO.contesti.has(String(ctx.basePrecedente))) out.push(b('base', 'Rivedi il quiz base'));
+  out.push(b('ritorno', testoRitorno(ctx), !fase && !riprova && !r.errate));
+  out.push(b('scegli', 'Scegli un\'altra attività'));
+  // La principale per prima nel DOM, che e' anche l'ordine di lettura.
+  const [prima, ...altre] = out.sort((x, y) => (y.includes(' primary"') ? 1 : 0) - (x.includes(' primary"') ? 1 : 0));
+  return `<div class="ciclo-azioni">${prima}${nota}${altre.join('')}</div>`;
+}
+
+/** Porta in primo piano una superficie del runner, e la sola: le altre non
+ *  prendono il fuoco (§9). Senza argomento, il runner torna tutto vivo. */
+function runnerAttivo(el) {
+  for (const x of document.getElementById('quizrun').children) x.inert = !!el && x !== el;
+}
+
+function mostraRiepilogo(ctx) {
+  const el = document.getElementById('r-fine');
+  const r = riepilogoQuiz({ id: ctx.id, totale: ctx.totale, erroriMax: ctx.erroriMax, corrente: true }, fonteCiclo());
+  CICLO.ctx = ctx; CICLO.riprova = r.riprova; CICLO.pannello = null;
+  el.innerHTML = htmlRiepilogo(ctx, r);
+  el.classList.add('on');
+  runnerAttivo(el);
+  dipingiStatoRotta();
+  el.scrollTop = 0;
+  el.querySelector('h1').focus();
+}
+
+/** L'anteprima prima dell'avvio (§6.2). Stessa pagina per il riepilogo e per
+ *  la revisione storica; cambiano solo il ritorno e il pulsante che avvia. */
+function htmlAnteprima(kind, a, opt) {
+  const ritorno = `<button class="btn" ${opt.torna}>${opt.ritorno}</button>`;
+  if (a.stato !== 'pronta') {
+    const msg = a.stato === 'cambiate'
+      ? 'Le risposte disponibili sono cambiate. Riapri la riprova per aggiornare la selezione.'
+      : motivoRiprova(a) || 'Non possiamo verificare l\'elenco degli errori di questa attività. Puoi rivedere le risposte disponibili o tornare ai Quiz.';
+    return `<div class="ciclo">${avvisiCiclo()}<h1 tabindex="-1">Riprova gli errori di questa attività</h1>
+      <div class="route-alert error" role="alert"><div>${msg}</div></div>
+      <div class="ciclo-azioni">${a.stato === 'illeggibile' ? '<button class="btn" data-info-section="importa">Apri Info</button>' : ''}${ritorno}</div></div>`;
+  }
+  return `<div class="ciclo">${avvisiCiclo()}<h1 tabindex="-1">Riprova gli errori di questa attività</h1>
+    <p class="ciclo-nome">${a.quanti === 1 ? '1 quesito' : `${a.quanti} quesiti`} · Quiz ${kind}</p>
+    <p>Sono i quesiti a cui hai risposto in modo errato in questa attività. Vedrai la risposta ufficiale dopo ogni domanda. È un nuovo allenamento, senza il timer della simulazione.</p>
+    ${a.confine === 'risposte' ? '<p class="note">Il raggruppamento di questa attività è ricostruito dalle risposte: inizio e fine non erano registrati.</p>' : ''}
+    ${opt.fase ? '<p class="note">La vela non è ancora iniziata. Avviare un altro allenamento conclude qui questa simulazione.</p>' : ''}
+    ${testoConservazione()}
+    <div class="ciclo-azioni"><button class="btn primary" ${opt.inizia}>Inizia la riprova</button>${ritorno}</div></div>`;
+}
+
+function mostraAnteprima(forzato) {
+  const ctx = CICLO.ctx, el = document.getElementById('r-fine');
+  const a = forzato ? { stato: forzato } : anteprimaRiprova(CICLO.riprova, fonteCiclo());
+  CICLO.pannello = 'anteprima';
+  el.innerHTML = htmlAnteprima(ctx.kind, a, { fase: !!ctx.fasi, ritorno: 'Torna al riepilogo',
+    torna: 'data-ciclo="torna"', inizia: 'data-ciclo="inizia"' });
+  el.scrollTop = 0;
+  el.querySelector('h1').focus();
+}
+
+/** Inizia la riprova dal riepilogo: il raccordo verifica, e solo lui avvia. */
+function iniziaRiprova() {
+  const ctx = CICLO.ctx;
+  const v = avviaRiprova(CICLO.riprova, fonteCiclo(), (lista, modo, o) => (chiudiSoft(), apri(lista, modo, { ...o, origine: ctx.origine, quiz: ctx.quiz, percorso: ctx.percorso })));
+  if (!v.avviata) mostraAnteprima(v.stato);
+}
+
+/** Con la vela ancora da fare, scegliere altro chiude la simulazione: si dice
+ *  prima (§4.3). */
+function mostraSceltaConFase() {
+  const el = document.getElementById('r-fine');
+  CICLO.pannello = 'fase';
+  el.innerHTML = `<div class="ciclo"><h1 tabindex="-1">Scegli un'altra attività</h1>
+    <p>La vela non è ancora iniziata. Avviare un altro allenamento conclude qui questa simulazione.</p>
+    <div class="ciclo-azioni"><button class="btn primary" data-ciclo="scegli-comunque">Scegli un'altra attività</button>
+      <button class="btn" data-ciclo="torna">Torna al riepilogo</button></div></div>`;
+  el.querySelector('h1').focus();
+}
+
+function sceltaDalCiclo(comunque) {
+  const ctx = CICLO.ctx;
+  if (ctx && ctx.fasi && !comunque) return mostraSceltaConFase();
+  const percorso = ctx && ctx.percorso;
+  chiudi();
+  if (percorso) return vaiScelta();
+  mostraVista('quiz'); menuQuiz();
+}
+
+function azioneCiclo(azione, t) {
+  const ctx = CICLO.ctx; if (!ctx) return;
+  if (azione === 'riprova') return mostraAnteprima();
+  if (azione === 'inizia') return iniziaRiprova();
+  if (azione === 'torna') return mostraRiepilogo(ctx);
+  if (azione === 'errori' || azione === 'risposte') return apriRivedi(ctx.id, { corrente: true, filtro: azione === 'errori' ? 'errori' : 'tutte', origine: t });
+  if (azione === 'base') return apriRivedi(ctx.basePrecedente, { corrente: true, origine: t });
+  if (azione === 'ritorno') return chiudi();
+  if (azione === 'scegli') return sceltaDalCiclo(false);
+  if (azione === 'scegli-comunque') return sceltaDalCiclo(true);
+}
+
+/** Esc sul ciclo: un livello per volta — anteprima o pannello → riepilogo;
+ *  dal riepilogo, il ritorno esplicito (§9). Mai una seconda consegna. */
+function escCiclo() {
+  if (CICLO.pannello) return mostraRiepilogo(CICLO.ctx);
+  chiudi();
+}
+
+/* --- la fine di un'attivita' ---------------------------------------------- */
 
 function fine(tempoScaduto, parziale = false) {
-  const R = S.run; if (!R) return;
+  const R = S.run; if (!R || R.concluso) return;
+  // Una volta sola: il timer a zero, «Consegna» e l'ultima risposta possono
+  // arrivare insieme, e una prova si consegna una volta (§4.1).
+  R.concluso = true;
   clearInterval(tick); clearTimeout(autoT);
-  const el = document.getElementById('r-fine');
-  const e = E.esito(R.esiti, R.sim ? R.sim.erroriMax : null);
-  const senzaRisposta = R.coda.length - R.esiti.length;
-
-  if (R.primaBase) {
-    const avviso = '<div class="route-alert error" data-fine-save-warning role="alert" hidden></div>';
-    const errori = R.errori.length
-      ? `<h2>Le risposte da rivedere</h2>
-         <p class="note">Qui trovi le domande a cui hai risposto in modo errato, con la tua risposta e quella ufficiale.</p>`
-        + R.errori.map(({ it, scelta }) => `<div class="err">
-          <div class="q">${esc(it.d)}</div>
-          <div class="r ko"><span class="et">La tua risposta</span><span class="tx">${esc(it.r[scelta])}</span></div>
-          <div class="r ok"><span class="et">Risposta ufficiale</span><span class="tx">${esc(it.r[it.x])}</span></div>
-          <div class="meta">${esc(it.t)} › ${esc(it.v)}${it.p ? ` · n. ${esc(it.p)}` : ''}</div>
-          ${notaPrima(it)}${nota(it)}
-        </div>`).join('')
-      : '<p class="note">Tutte le risposte date in questa attività sono corrette.</p>';
-    const tb = E.traccia(S.banca, S.prog, S.date.oggi || today(), 'base', S.date.chiusura_quiz, S.date.inizio_quiz);
-    el.innerHTML = `${avviso}<div class="first-summary">
-      <h1>${parziale || senzaRisposta ? 'Ti sei fermato qui' : 'Attività conclusa'}</h1>
-      <p>${R.esiti.length === 1 ? `Hai risposto a 1 domanda su ${R.coda.length}.` : `Hai risposto a ${R.esiti.length} domande su ${R.coda.length}.`}</p>
-      <div class="progress-stats"><div class="progress-stat"><strong>${e.esatte}</strong><span>Risposte corrette</span></div><div class="progress-stat"><strong>${e.errori}</strong><span>Risposte da rivedere</span></div></div>
-      ${errori}
-      ${senzaRisposta ? `<p class="note">Domande non affrontate in questa attività: ${senzaRisposta}.</p>` : ''}
-      ${tb.mai_visti ? `<p class="note">Quiz base mai incontrati qui: ${tb.mai_visti}.</p>` : ''}
-      <div class="row" style="margin-top:18px"><button class="btn primary" data-first-return>Torna al Percorso</button><button class="btn" data-first-choose>Scegli un'altra attività</button></div>
-      <p class="note">Puoi concludere qui.</p>
-    </div>`;
-    el.classList.add('on');
-    dipingiStatoRotta();
-    return;
-  }
-
-  let testa;
-  if (R.sim) {
-    const passa = e.superata && !senzaRisposta;
-    testa = `<div class="esito">
-      <div class="big">${e.esatte}<small style="font-size:22px;color:var(--dim)"> / ${R.coda.length}</small></div>
-      <div class="lab">${e.errori} error${e.errori === 1 ? 'e' : 'i'} su ${R.sim.erroriMax} ammessi${
-        senzaRisposta ? ` · ${senzaRisposta} senza risposta` : ''}</div>
-      <div class="verdetto ${passa ? 'ok' : 'ko'}">${passa ? 'Superata' : 'Non superata'}</div>
-      ${tempoScaduto ? '<div class="lab" style="color:var(--ko);margin-top:10px">Tempo scaduto.</div>' : ''}
-    </div>`;
-  } else {
-    const pc = R.coda.length ? Math.round(100 * e.esatte / R.coda.length) : 0;
-    testa = `<div class="esito">
-      <div class="big">${pc}%</div>
-      <div class="lab">${e.esatte} esatte su ${R.coda.length}</div></div>`;
-  }
-
-  // Le due risposte confrontabili a colpo d'occhio (stessa riga, stessa
-  // dimensione, etichetta esplicita), il tema su una riga sua, e i pulsanti
-  // N/L/C su ogni errore: in simulazione non c'e' correzione durante la prova,
-  // quindi questo riepilogo e' l'unico posto dove quegli errori si possono
-  // taggare. Un tocco, e si puo' saltare: Chiudi resta dov'e'.
-  const TAG_TITOLI = { N: 'non lo sapevo', L: 'letto male', C: 'calcolo' };
-  const tags = tagPerTentativo();
-  const lista = R.errori.length
-    ? `<h2>Gli errori</h2>
-       <p class="note" style="margin:0 0 4px">Se vuoi, di' perché: <b>N</b> non lo sapevo ·
-         <b>L</b> letto male · <b>C</b> calcolo. Un tocco; si può saltare.</p>`
-      + R.errori.map(({ it, scelta, auid }) => `<div class="err">
-      <div class="q">${esc(it.d)}</div>
-      <div class="r ok"><span class="et">Esatta</span><span class="tx">${esc(it.r[it.x])}</span></div>
-      <div class="r ko"><span class="et">La tua</span><span class="tx">${esc(it.r[scelta])}</span></div>
-      <div class="meta">${esc(it.t)} › ${esc(it.v)}${it.p ? ` · n. ${esc(it.p)}` : ''}</div>
-      ${notaPrima(it)}${nota(it)}
-      <div class="tags">${['N', 'L', 'C'].map((tg) =>
-        `<button data-tag="${tg}" data-auid="${esc(auid)}" class="${tags[auid] === tg ? 'on' : ''}"
-                 title="${TAG_TITOLI[tg]}">${tg}</button>`).join('')}</div>
-    </div>`).join('') : '<p class="note" style="text-align:center;padding:10px 0">Nessun errore.</p>';
-
-  // La simulazione completa si ferma se il quiz base non passa: all'esame
-  // saresti escluso dalla prova vela. Ma restare qui non insegna niente, quindi
-  // il proseguimento resta possibile, dichiarandolo.
-  const prossima = R.fasi && R.fasi.length ? R.fasi[0] : null;
-  const bottoni = prossima
-    ? `<button class="btn primary" data-fase="1" style="margin-top:18px">${
-         e.superata ? `Continua con ${prossima.nome === 'vela' ? 'la vela' : 'il quiz base'}` : 'Prosegui comunque con la vela'}</button>
-       ${e.superata ? '' : `<p class="note" style="margin-top:8px;text-align:center">All'esame vero, qui saresti escluso.</p>`}
-       <button class="btn" data-chiudi="1" style="margin-top:8px">Chiudi</button>`
-    : `<button class="btn primary" data-chiudi="1" style="margin-top:18px">${R.quiz ? (R.origine?.vista === 'diag' ? 'Torna ai Progressi' : R.origine?.vista === 'oggi' ? 'Torna al Percorso' : 'Torna alla configurazione Quiz') : 'Chiudi'}</button>`;
-
-  el.innerHTML = '<div class="route-alert error" data-fine-save-warning role="alert" hidden></div>' + testa + lista + bottoni;
-  el.classList.add('on');
-  dipingiStatoRotta();
+  chiudiConsegna(false);
+  const stato = R.sim ? (tempoScaduto ? 'scaduta' : 'consegnata')
+    : parziale || R.esiti.length < R.coda.length ? 'parziale' : 'completa';
+  const ctx = contestoDaRun(R, stato);
+  CICLO.contesti.set(String(ctx.id), ctx);
   if (R.sim) {
     // `R.simUid` e non un uid nuovo: e' lo stesso che portano le risposte
     // della prova, ed e' anche cio' che rende innocuo un doppio passaggio di
     // qui (stesso uid = rinvio idempotente, non seconda prova).
+    const e = E.esito(R.esiti, R.sim.erroriMax);
+    const senzaRisposta = R.coda.length - R.esiti.length;
     archivia({ _t: 's', uid: R.simUid, kind: R.sim.nome, ts: E.isoLocale(),
                score: e.esatte, total: R.coda.length, passed: e.superata && !senzaRisposta ? 1 : 0,
                ms: R.sim.minuti * 60000 });
   }
+  mostraRiepilogo(ctx);
 }
 
-/** Chiude la prova corrente senza uscire dal runner: serve fra base e vela. */
+/** «Termina l'attività» ed Esc durante un allenamento; «Consegna la prova»
+ *  durante una simulazione (§4.1). */
+function terminaAttivita() {
+  const R = S.run;
+  if (!R || R.tec) return chiudi();
+  if (R.concluso) return;
+  if (R.sim) return apriConsegna();
+  // Senza risposte non c'e' niente da riepilogare: nessuna riga inventata,
+  // e nessun invito a salvare un'attivita' che non esiste.
+  if (!R.esiti.length) { chiudi(); return segnala('Attività terminata senza risposte.'); }
+  fine(false, true);
+}
+
+/** La conferma della consegna: in pagina, e il timer intanto continua. */
+function apriConsegna() {
+  const R = S.run; if (!R || !R.sim || R.concluso) return;
+  const box = document.getElementById('r-consegna');
+  document.getElementById('r-consegna-txt').textContent =
+    `Hai risposto a ${plurDomande(R.esiti.length)} su ${R.coda.length}. Dopo la consegna non puoi completare questa prova.`;
+  box.hidden = false;
+  runnerAttivo(box);
+  document.getElementById('r-consegna-tit').focus();
+}
+
+function chiudiConsegna(focus = true) {
+  const box = document.getElementById('r-consegna');
+  if (box.hidden) return;
+  box.hidden = true;
+  runnerAttivo(null);
+  if (focus) document.getElementById('r-close').focus();
+}
+
+/** Chiude la prova corrente senza uscire dal runner: serve fra base e vela, e
+ *  prima di una riprova. */
 function chiudiSoft() {
   clearInterval(tick); clearTimeout(autoT); S.run = null;
+  CICLO.ctx = null; CICLO.pannello = null;
   document.getElementById('r-fine').classList.remove('on');
+  runnerAttivo(null);
 }
 
 /** Avvia una prova cronometrata; `resto` sono le fasi che la seguono. */
-function avviaSim(fase, resto = []) {
+function avviaSim(fase, resto = [], opt = {}) {
   const p = fase.condizioni;
-  apri(fase.lista, 'simulazione', { sim: { nome: fase.nome, minuti: p.minuti, erroriMax: p.errori_max }, fasi: resto, origine:QUIZ.origine || 'quiz', quiz:true });
+  apri(fase.lista, 'simulazione', { sim: { nome: fase.nome, minuti: p.minuti, erroriMax: p.errori_max }, fasi: resto,
+    origine: QUIZ.origine || 'quiz', quiz: true, basePrecedente: opt.basePrecedente || null });
 }
 
 /* ===================== DIAGNOSI ========================================= */
@@ -3016,7 +3373,7 @@ const NOME_MODO = {
  *  ogni riga porta il `sim_uid` della lista in cui e' uscita, quindi il
  *  confine e' registrato; per le righe senza legame — importate da altrove —
  *  si ricostruisce, e la riga in elenco lo dichiara. */
-function sessioniTutte() { return E.sessioni(S.archivio); }
+function sessioniTutte() { return E.sessioni(S.archivio, { confine: 'attivita' }); }
 
 /** Una sessione come riga cliccabile. */
 function rigaSessione(s) {
@@ -3033,7 +3390,8 @@ function rigaSessione(s) {
   // resta alle prove d'esame, che una soglia ce l'hanno davvero. E' la stessa
   // regola della 0.11.0 per il giro delle tecniche e il tappeto.
   const esito = prova ? `<b style="color:var(--${col})">${prova.passed ? 'Superata' : 'Non superata'}</b> · ` : '';
-  const marchio = s.fonte === 'risposte' ? ' · <i>confine ricostruito</i>' : '';
+  const marchio = (s.fonte === 'risposte' ? ' · <i>confine ricostruito</i>' : '')
+    + (s.ambigua ? ' · <i>raggruppamento da verificare</i>' : '');
   return `<button class="weak riv" style="border:0;border-bottom:1px solid var(--line-soft);padding:9px 0" data-rivedi="${esc(s.id)}">
     <div class="n" style="color:var(--${col})">${s.esatte}<small style="color:var(--dim)">/${s.n}</small></div>
     <div class="t"><b>${esc(nome)}</b>
@@ -3075,116 +3433,276 @@ function dipingiSessioni() {
  */
 let rvRitorno = null;
 let rvId = null;
+// La revisione aperta: di quale attivita', con quale filtro, e l'istantanea
+// della sua riprova quando e' storica. In memoria, come il resto del ciclo.
+const RV = { id: null, corrente: false, filtro: 'tutte', riprova: null, kind: 'base' };
+
+/** Da quale schermata si e' entrati, per dire il ritorno col suo nome (§5). */
+function vistaDi(el) {
+  const v = el && el.closest && el.closest('.view');
+  return v ? v.id.replace(/^v-/, '') : null;
+}
+function testoRitornoRevisione(r) {
+  if (!r) return 'Chiudi';
+  if (r.corrente) return 'Torna al riepilogo';
+  if (r.percorso || r.vista === 'oggi') return 'Torna al Percorso';
+  if (r.vista === 'diag') return 'Torna ai Progressi';
+  if (r.vista === 'cart') return 'Torna al Carteggio';
+  return 'Chiudi';
+}
+
 function apriRivedi(id, opt = {}) {
   rvId = id;
-  if (!opt.preservare) rvRitorno = { percorso: !!opt.percorso, origine: opt.origine || document.activeElement };
+  if (!opt.preservare) {
+    const origine = opt.origine || document.activeElement;
+    rvRitorno = { percorso: !!opt.percorso, corrente: !!opt.corrente, origine, vista: vistaDi(origine) };
+    RV.filtro = opt.filtro || 'tutte';
+  }
   const box = document.getElementById('rivedi');
   const body = document.getElementById('rv-body');
-  // Il contenuto sta in una colonna dentro lo scroller a tutta larghezza, e lo
-  // scroller prende il fuoco: cosi' rotella (ovunque), frecce e PageDown
-  // scorrono la prova — non la pagina dietro, che intanto e' bloccata.
+  // Il contenuto sta in una colonna dentro lo scroller a tutta larghezza: cosi'
+  // rotella (ovunque), frecce e PageDown scorrono la revisione — non la pagina
+  // dietro, che intanto e' bloccata. Il fuoco va al titolo (§9).
   const metti = (html) => {
     body.innerHTML = `<div class="rvcol">${html}</div>`;
     body.scrollTop = 0;
-    body.focus({ preventScroll: true });
+    const h = body.querySelector('h1');
+    (h || body).focus({ preventScroll: true });
+    curaFigure(body);
   };
-  const prova = proveSostenute().find(x => String(x.uid) === String(id));
-  const ses = prova ? null : sessioniTutte().find(x => String(x.id) === String(id));
-  document.getElementById('rv-tit').textContent = prova
-    ? (prova.kind === 'carteggio' ? 'Prova di carteggio' : `Simulazione ${prova.kind}`) +
-      ` · ${giornoIt(String(prova.ts).slice(0, 10))}`
-    : ses
-      ? `${NOME_MODO[ses.mode] || ses.mode || 'Sessione'} · ${giornoIt(String(ses.fine).slice(0, 10))}`
-      : 'Sessione';
+  const ritorno = testoRitornoRevisione(rvRitorno);
+  const chiudiBtn = `<div class="ciclo-azioni"><button class="btn" data-rv-torna>${ritorno}</button></div>`;
+  document.getElementById('rv-close').setAttribute('aria-label', ritorno);
   box.classList.add('on');
   document.documentElement.classList.add('rv-aperta');
+  sfondoInerte();
 
-  let d;
+  const prova = proveSostenute().find(x => String(x.uid) === String(id));
   if (prova && prova.kind === 'carteggio') {
+    document.getElementById('rv-tit').textContent = `Prova di carteggio · ${giornoIt(String(prova.ts).slice(0, 10))}`;
     const righe = E.ordinaRighe(S.archivio.filter(r => r._t === 'c' && String(r.sim_uid) === String(id)));
-    d = { sim: prova, fonte: 'sim_uid', righe };
-  } else if (prova) {
-    const g = sessioniTutte().find(x => String(x.id) === String(id));
-    const righe = g ? g.righe
-      : E.ordinaRighe(S.archivio.filter(r => r._t === 'q' && String(r.sim_uid) === String(id)));
-    d = { sim: prova, fonte: 'sim_uid', righe };
-  } else if (ses) {
-    d = {
-      // `ms` qui e' la durata da capo a coda, non la somma dei tempi di
-      // risposta: chi legge la testata si aspetta quanto e' durata la sessione.
-      sim: { uid: ses.id, kind: ses.kind, ts: ses.fine, score: ses.esatte, total: ses.n,
-             passed: null, ms: ses.durata, mode: ses.mode, allenamento: true },
-      fonte: ses.fonte, righe: ses.righe,
-    };
-  } else {
-    metti('<p class="note">Questa attività non è più disponibile nell\'archivio.</p><button class="btn primary" data-rv-torna>Torna al Percorso</button>');
-    return;
+    if (!righe.length) return metti(`<p class="note">Di questa sessione non e' rimasto il dettaglio delle risposte.</p>`);
+    return metti(rivediCarteggio({ sim: prova, fonte: 'sim_uid', righe }));
   }
-  const avviso = d.fonte === 'risposte'
-    ? `<p class="note" style="margin:0 0 10px">Sessione senza identificativo: il suo inizio e
-        la sua fine sono ricostruiti dalle risposte — cambio di modalità, pausa lunga, o un
-        quesito che ricompare.</p>` : '';
-  if (!d.righe.length) {
-    metti(avviso + `<p class="note">Di questa sessione non e' rimasto il dettaglio
-      delle risposte.</p>`);
-    return;
+
+  // I quiz: la stessa fonte del riepilogo, cioe' il raccordo. Numeri, righe e
+  // riprova vengono da riepilogoQuiz(), e un errore di quel tentativo resta un
+  // errore anche se nel frattempo lo stesso quesito e' stato preso altrove.
+  const corrente = rvRitorno && rvRitorno.corrente ? CICLO.contesti.get(String(id)) : null;
+  const totale = corrente ? corrente.totale : prova ? prova.total : null;
+  const erroriMax = corrente ? corrente.erroriMax
+    : prova ? (S.meta && S.meta.prove && S.meta.prove[prova.kind] ? S.meta.prove[prova.kind].errori_max : null) : null;
+  const r = riepilogoQuiz({ id, totale, erroriMax, corrente: !!corrente }, fonteCiclo());
+  RV.id = id; RV.corrente = !!corrente; RV.riprova = corrente ? null : r.riprova;
+  const kind = corrente ? corrente.kind : prova ? prova.kind : (r.righe[0] && r.righe[0].kind) || 'base';
+  RV.kind = kind;
+  const sim = corrente ? !!corrente.sim : !!prova;
+  document.getElementById('rv-tit').textContent = sim ? `Revisione della simulazione quiz ${kind}` : 'Revisione dell\'attività';
+  const titolo = `<h1 tabindex="-1">${sim ? `Revisione della simulazione quiz ${kind}` : 'Revisione dell\'attività'}</h1>`;
+
+  if (r.stato !== 'pronto' || (!corrente && !r.righe.length)) {
+    // Una prova registrata senza righe si legge lo stesso: l'esito c'e', il
+    // dettaglio no, e nessuna riprova fittizia (§5).
+    if (prova && r.stato === 'indisponibile') {
+      return metti(`<div class="ciclo">${titolo}${esitoProvaStorica(prova)}
+        <p>Di questa attività non è disponibile il dettaglio delle risposte.</p>${chiudiBtn}</div>`);
+    }
+    const msg = r.stato === 'illeggibile'
+      ? 'Non riusciamo a leggere le risposte di questa attività. Apri Info per controllare l\'archivio.'
+      : 'Questa attività non è più disponibile.';
+    return metti(`<div class="ciclo">${titolo}<div class="route-alert error" role="alert"><div>${msg}</div></div>
+      <div class="ciclo-azioni">${r.stato === 'illeggibile' ? '<button class="btn" data-info-section="importa">Apri Info</button>' : ''}<button class="btn" data-rv-torna>${ritorno}</button></div></div>`);
   }
-  metti(avviso + (d.sim.kind === 'carteggio' ? rivediCarteggio(d) : rivediQuiz(d)));
+
+  const nome = corrente ? nomeAttivita(corrente) : sim ? 'Simulazione d\'esame' : NOME_ATTIVITA[r.righe[0].mode] || 'Quiz';
+  const data = corrente ? '' : ` · ${giornoIt(String(r.righe.length ? r.righe[r.righe.length - 1].ts : prova.ts).slice(0, 10))}`;
+  const M = r.nonAffrontate || 0;
+  const testa = `${titolo}<p class="ciclo-nome">${nome} · Quiz ${kind}${data}</p>
+    ${!corrente && prova ? esitoProvaStorica(prova) : ''}
+    ${r.confine === 'risposte' ? '<p class="note">Il raggruppamento di questa attività è ricostruito dalle risposte: inizio e fine non erano registrati.</p>' : ''}
+    ${M ? `<p class="note">${sim ? 'Domande senza risposta' : 'Domande non affrontate'}: ${M}. Non sono errori, e qui non compaiono.</p>` : ''}`;
+
+  const byId = new Map(S.banca.map(q => [q.id, q]));
+  const tags = tagPerTentativo();
+  // La posizione e' quella della lista originale, quando la si conosce: «Solo
+  // errori» non rinumera, perche' non e' una lista nuova.
+  const pos = corrente ? new Map(corrente.lista.map((it, i) => [it.id, i + 1])) : null;
+  const blocchi = r.righe.map((riga, i) => bloccoRevisione(riga, pos ? pos.get(riga.item_id) || i + 1 : i + 1, byId, tags)).join('');
+  const filtri = `<fieldset class="rv-filtri"><legend class="vh">Quali risposte mostrare</legend>
+    ${[['tutte', `Tutte le risposte (${r.risposte})`], ['errori', `Solo errori (${r.errate})`]].map(([v, t]) =>
+      `<label class="quiz-radio"><input type="radio" name="rv-filtro" value="${v}"${RV.filtro === v ? ' checked' : ''}> ${t}</label>`).join('')}
+    </fieldset><p class="vh" id="rv-annuncio" aria-live="polite"></p>`;
+  const nessuno = `<p class="rv-nessuno" hidden>Non ci sono risposte errate in questa attività.</p>`;
+  const p = RV.riprova;
+  const riprova = !p ? ''
+    : p.stato === 'pronta'
+      ? `<button class="btn primary" data-rv="riprova">${p.quanti === 1 ? 'Riprova questo quesito' : `Riprova questi ${p.quanti} quesiti`}</button>`
+      : r.errate && p.stato !== 'nessun errore'
+        ? `<div class="route-alert error" role="alert"><div>${motivoRiprova(p)}</div></div>` : '';
+  metti(`<div class="ciclo">${avvisiCiclo()}${testa}${filtri}<div id="rv-lista">${nessuno}${blocchi}</div>
+    <div class="ciclo-azioni">${riprova}<button class="btn" data-rv-torna>${ritorno}</button></div></div>`);
+  applicaFiltroRevisione(false);
+  dipingiStatoRotta();
 }
 
-function chiudiRivedi() {
+/** L'esito registrato di una prova dello storico: quello del giorno, non
+ *  ricalcolato, e senza durata — `ms` di una prova e' il tempo concesso. */
+function esitoProvaStorica(prova) {
+  return `<p class="ciclo-verdetto ${prova.passed ? 'ok' : 'ko'}">${prova.passed ? 'Prova superata' : 'Prova non superata'}</p>
+    <p>Risposte corrette: ${prova.score} su ${prova.total}.</p>`;
+}
+
+/** Tutte le risposte o solo gli errori: si nasconde, non si ridisegna, cosi'
+ *  i tag gia' toccati e il fuoco restano dove sono. */
+function applicaFiltroRevisione(annuncia = true) {
+  const lista = document.getElementById('rv-lista'); if (!lista) return;
+  const soloErrori = RV.filtro === 'errori';
+  const blocchi = [...lista.querySelectorAll('.rv-blocco')];
+  let visibili = 0;
+  for (const b of blocchi) { b.hidden = soloErrori && b.dataset.esito !== 'ko'; if (!b.hidden) visibili++; }
+  lista.querySelector('.rv-nessuno').hidden = visibili > 0;
+  const ann = document.getElementById('rv-annuncio');
+  if (annuncia && ann) ann.textContent = visibili ? `${soloErrori ? 'Solo errori' : 'Tutte le risposte'}: ${visibili}.` : 'Non ci sono risposte errate in questa attività.';
+}
+
+/** Un tentativo nella revisione (§5): posizione, domanda, figura, esito, le
+ *  due risposte, le note, e per gli errori la classificazione facoltativa. */
+function bloccoRevisione(riga, pos, byId, tags) {
+  const it = byId.get(riga.item_id);
+  const ok = !!riga.correct;
+  const esito = `<p class="rv-esito ${ok ? 'ok' : 'ko'}">${ok ? 'Corretta' : 'Errata'}</p>`;
+  if (!it) {
+    return `<article class="rv-blocco" data-esito="${ok ? 'ok' : 'ko'}">
+      <p class="rv-pos">Domanda ${pos} · ${esc(riga.item_id)}</p>
+      <p>Il testo di questo quesito non è disponibile nella banca caricata.</p>${esito}</article>`;
+  }
+  const scelta = riga.chosen != null && it.r[+riga.chosen] != null ? esc(it.r[+riga.chosen]) : 'La tua risposta non è registrata.';
+  return `<article class="rv-blocco" data-esito="${ok ? 'ok' : 'ko'}">
+    <p class="rv-pos">Domanda ${pos} · ${esc(it.t)} › ${esc(it.v)}${it.p ? ` · n. ${esc(it.p)}` : ''}</p>
+    <p class="rv-q">${esc(it.d)}</p>
+    ${it.f || it.fm ? `<div class="qfig">${figuraQuiz(it)}</div>` : ''}
+    ${esito}
+    <div class="rv-r ${ok ? 'ok' : 'ko'}"><span class="et">La tua risposta</span><span class="tx">${scelta}</span></div>
+    <div class="rv-r uff"><span class="et">Risposta ufficiale</span><span class="tx">${esc(it.r[it.x])}</span></div>
+    ${notaPrima(it)}${nota(it)}
+    ${ok ? '' : tagsRevisione(riga.uid, tags)}
+  </article>`;
+}
+
+const TAG_NOMI = [['N', 'Non lo sapevo'], ['L', 'Letto male'], ['C', 'Calcolo']];
+/** I tag di un tentativo: `data-auid` e' quel tentativo, mai l'ultimo quesito
+ *  globale. Nessun tag predefinito: assente e' assente. */
+function tagsRevisione(auid, tags) {
+  return `<div class="rv-tag"><p class="note">Se vuoi, indica perché hai sbagliato. Puoi saltare questo passaggio.</p>
+    <div class="tags rv-tags" role="group" aria-label="Perché hai sbagliato">${TAG_NOMI.map(([k, t]) =>
+      `<button type="button" data-tag="${k}" data-auid="${esc(auid)}" aria-pressed="${tags[auid] === k}" class="${tags[auid] === k ? 'on' : ''}">${k} — ${t}</button>`).join('')}</div></div>`;
+}
+
+/** La riprova dalla revisione storica: anteprima, poi Inizia (§6.4). */
+function anteprimaStorica(forzato) {
+  const body = document.getElementById('rv-body');
+  const a = forzato ? { stato: forzato } : anteprimaRiprova(RV.riprova, fonteCiclo());
+  body.innerHTML = `<div class="rvcol">${htmlAnteprima(RV.kind, a, { ritorno: 'Torna alla revisione',
+    torna: 'data-rv="torna"', inizia: 'data-rv="inizia"' })}</div>`;
+  body.scrollTop = 0;
+  body.querySelector('h1').focus({ preventScroll: true });
+  dipingiStatoRotta();
+}
+
+function iniziaRiprovaStorica() {
+  const r = rvRitorno || {};
+  const origine = { vista: r.percorso ? 'oggi' : r.vista || 'diag', controllo: r.origine };
+  const v = avviaRiprova(RV.riprova, fonteCiclo(), (lista, modo, o) => (chiudiRivedi(true), apri(lista, modo, { ...o, origine, quiz: true })));
+  if (!v.avviata) anteprimaStorica(v.stato);
+}
+
+function azioneRevisione(azione) {
+  if (azione === 'riprova') return anteprimaStorica();
+  if (azione === 'inizia') return iniziaRiprovaStorica();
+  if (azione === 'torna') return apriRivedi(rvId, { preservare: true });
+}
+
+function chiudiRivedi(senzaFuoco = false) {
   document.getElementById('rivedi').classList.remove('on');
   document.documentElement.classList.remove('rv-aperta');
   const ritorno = rvRitorno;
-  rvRitorno = null; rvId = null;
-  if (ritorno && ritorno.percorso) {
-    mostraVista('oggi');
-    const target = ritorno.origine && document.contains(ritorno.origine)
-      ? ritorno.origine : document.querySelector('[data-rotta-rivedi]');
-    if (target) target.focus();
+  rvRitorno = null; rvId = null; RV.id = null; RV.riprova = null;
+  sfondoInerte();
+  if (senzaFuoco || !ritorno) return;
+  const origine = ritorno.origine && document.contains(ritorno.origine) ? ritorno.origine : null;
+  if (ritorno.corrente) {
+    return (origine || document.querySelector('#r-fine h1'))?.focus();
   }
+  if (ritorno.percorso) {
+    mostraVista('oggi');
+    const target = origine || document.querySelector('[data-rotta-rivedi]');
+    if (target) target.focus();
+    return;
+  }
+  origine?.focus();
 }
 
-/** L'intestazione comune: punteggio, verdetto, minuti.
- *
- * Un allenamento non porta un verdetto, e non e' una dimenticanza: non ha una
- * soglia da superare, quindi «Non superata» sarebbe una bocciatura inventata.
- * Al suo posto va il nome della modalita' e la percentuale. */
+/** L'intestazione della revisione del carteggio: punteggio, verdetto, minuti.
+ *  Il carteggio conserva il suo contratto (area 4): qui i quiz non passano. */
 function rivediTesta(sim) {
   const min = sim.ms ? Math.round(sim.ms / 60000) : null;
-  const pc = sim.total ? Math.round(100 * sim.score / sim.total) : 0;
-  const col = sim.allenamento ? (pc >= 80 ? 'ok' : pc >= 60 ? 'warn' : 'ko')
-                              : (sim.passed ? 'ok' : 'ko');
+  const col = sim.passed ? 'ok' : 'ko';
   return `<div class="esito" style="padding:10px 0 16px">
     <div class="big" style="color:var(--${col})">${sim.score}<small style="font-size:22px;color:var(--dim)"> / ${sim.total}</small></div>
     <div class="lab">${giornoIt(String(sim.ts).slice(0, 10))} · ${String(sim.ts).slice(11, 16)}${min != null ? ` · ${min} minuti` : ''}</div>
-    <div class="verdetto ${col}">${sim.allenamento
-      ? `${NOME_MODO[sim.mode] || sim.mode || 'Allenamento'} · ${pc}% esatte`
-      : sim.passed ? 'Superata' : 'Non superata'}</div>
+    <div class="verdetto ${col}">${sim.passed ? 'Superata' : 'Non superata'}</div>
   </div>`;
 }
 
-function rivediQuiz(d) {
-  const byId = new Map(S.banca.map(q => [q.id, q]));
-  const blocchi = d.righe.map((r, i) => {
-    const it = byId.get(r.item_id);
-    if (!it) return '';
-    const scelta = r.chosen != null && it.r[+r.chosen] != null ? it.r[+r.chosen] : null;
-    const ok = !!r.correct;
-    const righe = ok
-      ? `<div class="r ok"><span class="et">Esatta</span><span class="tx">${esc(it.r[it.x])}</span></div>`
-      : `<div class="r ok"><span class="et">Esatta</span><span class="tx">${esc(it.r[it.x])}</span></div>
-         <div class="r ko"><span class="et">La tua</span><span class="tx">${scelta != null ? esc(scelta) : 'senza risposta'}</span></div>`;
-    return `<div class="err">
-      <div class="q"><b style="color:var(--${ok ? 'ok' : 'ko'})">${i + 1}.</b> ${esc(it.d)}</div>
-      ${righe}
-      <div class="meta">${esc(it.t)} › ${esc(it.v)}${it.p ? ` · n. ${esc(it.p)}` : ''}${r.ms ? ` · ${Math.round(r.ms / 1000)} s` : ''}</div>
-      ${notaPrima(it)}${nota(it)}
-    </div>`;
-  }).join('');
-  const mancanti = (d.sim.total || 0) - d.righe.length;
-  return rivediTesta(d.sim) + blocchi +
-    (mancanti > 0 ? `<p class="note" style="margin-top:10px">${mancanti} domand${mancanti === 1 ? 'a' : 'e'} senza risposta registrata.</p>` : '');
+/* --- le figure dei quiz: una funzione sola, nel runner e nella revisione -- */
+
+/**
+ * La figura di un quesito, con un testo alternativo preso dal quesito e non
+ * inventato (§8): la domanda la identifica, non la trascrive, e non suggerisce
+ * la risposta. Fino all'area 3 l'alt era «figura», uguale per 102 disegni.
+ */
+function figuraQuiz(it) {
+  if (it.f) {
+    const alt = it.p ? `Figura del quesito ${it.p}: ${it.d}` : `Figura del quesito: ${it.d}`;
+    const nome = it.p ? `Ingrandisci la figura del quesito ${it.p}` : 'Ingrandisci la figura del quesito';
+    const src = `/figure/${esc(it.f)}`;
+    return `<span class="fig-box"><img src="${src}" alt="${esc(alt)}" loading="eager">
+      <button type="button" class="text-btn fig-zoom" data-zoom="${src}" data-zoom-alt="${esc(alt)}" aria-label="${esc(nome)}">Ingrandisci la figura</button></span>`;
+  }
+  // `fm` e' il caso dichiarato: il decreto una figura ce l'ha, il dataset
+  // estratto no (base-59). Un quesito che parla di «figura» senza figura
+  // sembrerebbe un guasto del rendering.
+  return it.fm ? `<p class="note nofig">Figura non disponibile: ${esc(it.fm)}.</p>` : '';
+}
+
+/** Un'immagine che non carica si dichiara al suo posto, e il quesito resta. */
+function curaFigure(radice) {
+  for (const img of radice.querySelectorAll('.fig-box img')) {
+    img.addEventListener('error', () => {
+      const avviso = document.createElement('p'); avviso.className = 'note nofig';
+      avviso.textContent = 'Figura non disponibile. Apri Info per controllare le figure offline.';
+      img.closest('.fig-box').replaceWith(avviso);
+    }, { once: true });
+  }
+}
+
+let zoomOrigine = null;
+function apriZoom(t) {
+  const d = document.getElementById('fig-zoom');
+  zoomOrigine = t;
+  const img = document.getElementById('fig-zoom-img');
+  img.src = t.dataset.zoom; img.alt = t.dataset.zoomAlt || '';
+  d.showModal();
+  document.getElementById('fig-zoom-chiudi').focus();
+}
+
+/** Lo sfondo non prende il fuoco mentre un runner o la revisione lo coprono
+ *  (§9): Tab resta sulla superficie attiva. */
+function sfondoInerte() {
+  const runner = document.getElementById('quizrun').classList.contains('on');
+  const rv = document.getElementById('rivedi').classList.contains('on');
+  for (const el of document.querySelectorAll('.app-header, main')) el.inert = runner || rv;
+  document.getElementById('quizrun').inert = rv;
 }
 
 function rivediCarteggio(d) {
@@ -4002,6 +4520,7 @@ document.getElementById('quiz-panel').addEventListener('keydown', ev => {
 });
 document.addEventListener('change', ev => {
   const t = ev.target;
+  if (t.name === 'rv-filtro') { RV.filtro = t.value; return applicaFiltroRevisione(); }
   if (t.dataset.quizCheck) {
     const f = QUIZ.bozza, k = t.dataset.quizCheck;
     if (Array.isArray(f[k])) { f[k] = t.checked ? [...f[k],t.value] : f[k].filter(x => x !== t.value); if (k === 'temi') f.voci = []; }
@@ -4044,8 +4563,6 @@ document.addEventListener('click', (ev) => {
     LS.set('esame', null); ricalcola(); dipingi(); costruisciFiltri();
     return segnala('data d\'esame tolta');
   }
-  if (t.dataset.firstReturn !== undefined) return chiudi();
-  if (t.dataset.firstChoose !== undefined) { chiudi(); return vaiScelta(); }
   if (t.dataset.rottaTopics !== undefined) return apriQuizDallaRotta('argomento',t);
   if (t.dataset.rottaExam !== undefined) return apriQuizDallaRotta('sim',t);
   if (t.dataset.rottaQuiz !== undefined) return (mostraVista('quiz'), menuQuiz());
@@ -4066,6 +4583,11 @@ document.addEventListener('click', (ev) => {
   if (t.dataset.rivedi) return apriRivedi(t.dataset.rivedi, { percorso: t.dataset.rottaRivedi !== undefined, origine: t });
   if (t.id === 'rv-close') return chiudiRivedi();
   if (t.dataset.rvTorna !== undefined) return chiudiRivedi();
+  if (t.dataset.rv) return azioneRevisione(t.dataset.rv);
+  if (t.dataset.ciclo) return azioneCiclo(t.dataset.ciclo, t);
+  if (t.dataset.consegna) return t.dataset.consegna === 'si' ? fine(false) : chiudiConsegna();
+  if (t.dataset.zoom) return apriZoom(t);
+  if (t.id === 'fig-zoom-chiudi') return document.getElementById('fig-zoom').close();
   if (t.dataset.go) {
     const g = t.dataset.go;
     if (g === 'tecniche') return apriTec();
@@ -4096,8 +4618,12 @@ document.addEventListener('click', (ev) => {
     if (t.dataset.quizAll !== undefined) f[k] = [...new Set(S.banca.filter(it => it.k === f.kind).map(it => f.kind === 'vela' ? it.v : it.t))];
     return dipingiPannelloQuiz();
   }
-  if (t.dataset.fase) { const p = S.run.fasi[0], resto = S.run.fasi.slice(1); chiudiSoft(); return avviaSim(p, resto); }
-  if (t.dataset.chiudi) return chiudi();
+  if (t.dataset.fase) {
+    // La vela nasce qui, con il suo timer e il suo sim_uid; la base resta
+    // rivedibile dal riepilogo della vela (§4.3).
+    const p = S.run.fasi[0], resto = S.run.fasi.slice(1), base = S.run.simUid;
+    chiudiSoft(); return avviaSim(p, resto, { basePrecedente: base });
+  }
   if (t.dataset.dk) { diagKind = t.dataset.dk; return dipingiDiag(); }
   if (t.dataset.do) { diagOrdine = t.dataset.do; LS.set('diagOrdine', diagOrdine); return dipingiDiag(); }
   if (t.id === 'start') return avviaQuizSnapshot();
@@ -4126,7 +4652,7 @@ document.addEventListener('click', (ev) => {
     segnala(S.auto ? 'avanzamento automatico sulle esatte' : 'avanzamento manuale');
     return;
   }
-  if (t.id === 'r-close') return S.run && S.run.primaBase ? terminaPrimaAttivita() : chiudi();
+  if (t.id === 'r-close') return S.run && S.run.tec ? chiudi() : terminaAttivita();
   if (t.id === 'r-next') return S.run && S.run.tec ? correggiTec() : avanti();
   if (t.id === 't-start') return apriTec();
   if (t.id === 'c-start') return apriCart();
@@ -4188,7 +4714,10 @@ document.addEventListener('click', (ev) => {
     const auid = t.dataset.auid || (S.run && S.run.uidCorrente);
     if (!auid) return;
     archivia({ _t: 'g', uid: uid(), ts: E.isoLocale(), attempt_uid: auid, tag: t.dataset.tag });
-    [...t.parentNode.children].forEach(b => b.classList.toggle('on', b === t));
+    [...t.parentNode.children].forEach(b => {
+      b.classList.toggle('on', b === t);
+      if (b.hasAttribute('aria-pressed')) b.setAttribute('aria-pressed', String(b === t));
+    });
     return;
   }
 });
@@ -4244,6 +4773,9 @@ document.getElementById('esame-data').addEventListener('change', (e) => {
  *    non deve rispondere a un quesito.
  */
 addEventListener('keydown', (e) => {
+  // La figura ingrandita e' un <dialog> nativo: Esc la chiude da se', e deve
+  // chiudere lei soltanto, non la revisione o il runner sotto (§9).
+  if (document.getElementById('fig-zoom').open) return;
   if (document.getElementById('come-funziona').classList.contains('on')) {
     if (e.key === 'Escape') { e.preventDefault(); chiudiComeFunziona(); }
     return;
@@ -4271,6 +4803,16 @@ addEventListener('keydown', (e) => {
     return;
   }
   if (!S.run || S.run.tec) return;
+  // Riepilogo, anteprima e conferma della consegna: le scorciatoie delle
+  // risposte tacciono, Esc risale di un livello, Tab e Invio fanno da soli.
+  if (S.run.concluso) {
+    if (e.key === 'Escape') { e.preventDefault(); escCiclo(); }
+    return;
+  }
+  if (!document.getElementById('r-consegna').hidden) {
+    if (e.key === 'Escape') { e.preventDefault(); chiudiConsegna(); }
+    return;
+  }
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   const a = document.activeElement;
   if (a && (a.tagName === 'INPUT' || a.tagName === 'SELECT' || a.tagName === 'TEXTAREA')) return;
@@ -4285,8 +4827,17 @@ addEventListener('keydown', (e) => {
     e.preventDefault();
     return rispondi(i);
   }
-  if (e.key === 'Enter' || e.key === ' ') { if (S.run.risposto) { e.preventDefault(); avanti(); } }
-  else if (e.key === 'Escape') S.run.primaBase ? terminaPrimaAttivita() : chiudi();
+  if (e.key === 'Enter' || e.key === ' ') {
+    // Su «Termina l'attività» o su «Ingrandisci» Invio fa il suo mestiere.
+    if (a && a.tagName === 'BUTTON' && !a.classList.contains('ans') && a.id !== 'r-next') return;
+    if (S.run.risposto) { e.preventDefault(); avanti(); }
+  }
+  else if (e.key === 'Escape') { e.preventDefault(); terminaAttivita(); }
+});
+
+document.getElementById('fig-zoom').addEventListener('close', () => {
+  const o = zoomOrigine; zoomOrigine = null;
+  if (o && document.contains(o)) o.focus();
 });
 
 addEventListener('online', () => { if (QUIZ.modo) anteprima(); });
