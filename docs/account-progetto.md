@@ -1124,8 +1124,10 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
   con SQLite e i tempi del registro, sei mesi l'IP e un anno l'evento, sulla
   CNIL. Il link di conferma passa da 48 a 24 ore, il numero di NIST. Per
   l'account non confermato non c'è uno standard: sette giorni come Mastodon,
-  in attesa della conferma dell'autore. I requisiti proposti sono rinumerati
-  da R-ACC-11, perché quattro sono entrati nella specifica.
+  in attesa della conferma dell'autore *(confermati poche ore dopo: vedi la
+  voce successiva)*. I requisiti proposti sono rinumerati da R-ACC-11, perché
+  quattro sono entrati nella specifica *(da R-ACC-12 dopo la conferma: vedi la
+  voce successiva)*.
 - **26 settembre 2026 — l'account non confermato.** L'autore conferma i sette
   giorni. Entra R-ACC-11 nella specifica, e i requisiti proposti scalano di
   uno: da R-ACC-12 a R-ACC-23. Il §20 non ha più decisioni dell'autore aperte
