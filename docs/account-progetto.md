@@ -28,6 +28,11 @@ certificato, copie di sicurezza — è progettato sui requisiti e marcato **da
 misurare** (§19). Nessuna scelta di questo documento cambia se le misure
 tornano, e nessuna è stata presa per non doverle fare.
 
+**Misurato su Scaleway il 26 settembre 2026** (sessione P-02), su due macchine
+di prova create e poi cancellate: i numeri stanno nel §2.6, come si aggiorna e
+come si torna indietro nel §2.7, la posta nel §9.4. Una misura ha smentito il
+§2.2 sul costo, e la scelta della macchina è tornata all'autore (§20).
+
 ---
 
 ## 1. Quattro regole, prima dei dettagli
@@ -103,6 +108,10 @@ riga con `ts: "boh"` della 0.4.6, che spegneva la palestra dappertutto.
 **firma delle funzioni**, non sui dati: il formato del file è SQLite, lo stesso
 di sempre, leggibile da qualunque altro strumento. Un'API che cambia rompe la
 suite al primo aggiornamento di Node, non un archivio.
+*(26 settembre 2026, misurato: l'avviso lo stampa solo la 25.3 del Mac. Sulla
+macchina, con Node 24.21.0 LTS e 26.10.0, `node:sqlite` e `crypto.argon2` ci
+sono e non stampano niente. E la 25 non è una versione da produzione: è
+dispari, ed è già senza supporto — §2.6.)*
 
 **Deciso il 26 settembre 2026, su delega dell'autore:** questa forma. L'altra
 era Serverless Containers più il database PostgreSQL gestito di Scaleway: toglie
@@ -111,6 +120,11 @@ servizio da pagare e il problema del §2.3. L'autore ha detto di non avere gli
 elementi per scegliere; la scelta è quella con meno pezzi, e si riapre solo se
 le misure su Scaleway (§19) la smentiscono — per esempio se la macchina più
 piccola non regge Argon2id sotto i 250 ms.
+*(26 settembre 2026: le misure non smentiscono la forma — Argon2id sta a 37 ms
+anche sulla macchina più piccola —, smentiscono il posto e il prezzo. In
+fr-par la più piccola disponibile costa 11,15 € al mese, sopra il tetto di
+10 € che l'autore ha dato oggi; quella che ci starebbe lì è esaurita. §2.6, e
+la scelta nel §20.)*
 
 ### 2.3 Perché un solo scrittore conta: il cursore
 
@@ -156,6 +170,190 @@ riga di codice server, ed è la lezione della 0.4.6 portata sui dati di altri:
   cui un dato cancellato sopravvive (§14.4);
 - `ripristina --prova` fa il giro intero su un'istanza sacrificabile — scrive,
   copia, cancella, ripristina, confronta — ed entra nella suite del server.
+
+**Pronto su Scaleway dal 26 settembre 2026:** il bucket `rottagiusta-copie` in
+`nl-ams`, privato, con la regola `scadenza-30-giorni` attiva su tutti gli
+oggetti. **La copia dalla macchina non è misurata**: serve una chiave API con il
+solo permesso di scrivere su quel bucket, che la crea e la mette sulla macchina
+l'autore — un segreto non passa per una sessione (§19). E ripristinare una copia
+ha due trappole che questa lista non vedeva: il §2.7.
+
+### 2.6 Misurato su Scaleway — 26 settembre 2026
+
+Due macchine di prova nel progetto «Rotta Giusta», Ubuntu 26.04.1 LTS, cancellate
+a fine sessione con IP e disco. Gli script dei banchi di prova non sono nel repo:
+non sono codice del server, e quello che dicono sta qui.
+
+| | DEV1-S, `fr-par-1` | STARDUST1-S, `pl-waw-2` |
+|---|---|---|
+| Processore, memoria | 2 vCPU AMD EPYC 7282 condivise, 2 GB (1,56 GB liberi a riposo) | 1 vCPU, stesso processore, 1 GB (538 MB liberi a riposo) |
+| Disponibilità | c'è | **esaurita in `fr-par-1`**, «low stock» in `nl-ams-1`, disponibile a `pl-waw-2` |
+| Costo all'ora, dalla console | 0,00898 macchina + 0,0013 disco da 10 GB + 0,005 IPv4 = **0,01528 €** | 0,0006 + 0,0013 + 0,005 = **0,0069 €** |
+| Al mese (730 h, come la console) | **11,15 €** | **5,04 €** |
+| Argon2id m=19456 t=2 (i parametri del §5.1) | 37 ms, 95° percentile 44–46 | 34–35 ms, 95° percentile 40–41 |
+| Argon2id m=65536 t=2 | 161–165 ms, p95 177–178 | 148–149 ms, p95 154–156 |
+| Argon2id m=65536 t=3 | 232 ms, p95 251–253 | 203–218 ms, p95 223–243 |
+| Quattro accessi insieme, m=19456 t=2 | 85 ms per tutti e quattro | 147 ms: un core solo |
+| 210.000 righe in SQLite (§2.4) | 1,7–1,9 s | 1,5–2,0 s |
+| Un account intero riletto, 2.100 righe | 2,4–2,7 ms | 1,7–2,3 ms |
+| Latenza dal Mac dell'autore | 29 ms | 46 ms |
+
+Ogni cifra di Argon2id è una mediana su 15 calcoli, con Node 24.21.0 e 26.10.0:
+le due versioni danno gli stessi numeri. Le righe di SQLite pesano **279 byte**
+l'una sulla macchina come sul Mac — con uno schema di prova più povero di quello
+del §3, quindi non smentisce i 347 byte del §2.4, che restano la stima per lo
+schema vero.
+
+**Che cosa ne segue.**
+
+- **Argon2id non è un problema su nessuna delle due.** La STARDUST, con un core
+  solo, è più veloce della DEV1-S su un calcolo singolo e più lenta quando gli
+  accessi si sommano; il limite di due calcoli insieme del §5.1 tiene anche lei
+  sotto i 100 ms. I parametri: §5.1.
+- **Il costo smentisce il §2.2.** La forma — una macchina, SQLite, Node — regge;
+  il posto no. In `fr-par` la macchina più piccola che si può creare è la DEV1-S,
+  e con IPv4 e disco costa **11,15 € al mese**, sopra il tetto di **10 €**
+  dato dall'autore il 26 settembre 2026. La STARDUST starebbe a 5 €, ma in
+  `fr-par` è esaurita, e dove c'è ha scorte scarse: ricrearla dopo un guasto
+  potrebbe non essere possibile subito. Senza IPv4 si risparmiano 3,65 € al
+  mese, ma `api.` diventerebbe irraggiungibile da chi ha una rete solo IPv4, cioè
+  da buona parte dei telefoni. **Aperto — decide l'autore** (§20).
+- **Node non viene da `apt`.** Ubuntu 26.04 offre Node 22.22, che non ha
+  `crypto.argon2` (è arrivato con la 24). Node si installa dal pacchetto
+  ufficiale di nodejs.org, **verificato con `SHASUMS256.txt`**, in una cartella
+  per versione (§2.7). La versione è una **LTS pari**: oggi la 24 «Krypton»; la
+  26 lo diventa a ottobre, secondo il calendario di Node. La 25.3 che gira sul
+  Mac è dispari e già senza supporto: l'ultima 25 è del 31 marzo 2026. La suite
+  del server deve girare anche con la versione della macchina, non solo con
+  quella del Mac.
+- **Quello che la macchina ha già, e va bene così:** gli aggiornamenti di
+  sicurezza automatici (`unattended-upgrades` attivo), SSH solo con chiave
+  (`PasswordAuthentication no`), e nessuna porta in ascolto oltre la 22.
+- **Due trappole della console, sui costi.** Cancellando un'istanza, la casella
+  «Delete Block Storage volumes» è **spenta**: il disco resta, si paga, e niente
+  lo dice. E «Delete» su un'istanza **accesa** l'ha soltanto spenta, due volte
+  su due: senza IP, fatturazione «Inactive», ma ancora in elenco, finché il
+  comando non si ripete a macchina ferma. Una cancellazione si controlla
+  riaprendo l'elenco delle istanze e quello dei volumi, zona per zona.
+
+### 2.7 Come si aggiorna, e come si torna indietro
+
+Non era scritto da nessuna parte. È stato provato davvero sulla DEV1-S del §2.6,
+con due tag pubblici del repo (`v0.26.2` e `v0.27.0`) e un server finto al posto
+di quello vero, che non esiste ancora: importa `site/engine.js` dal rilascio in
+uso, legge `VERSION` e apre il database in WAL, cioè fa le tre cose del server
+vero che contano per un aggiornamento.
+
+**Tre regole.**
+
+1. **Sulla macchina gira solo un tag pubblicato.** Mai un ramo, mai una copia dal
+   Mac. Il tag è quello del rilascio (`AGENTS.md`, «Chiusura di ogni sessione»),
+   quindi il server e il sito hanno lo stesso numero, e quello che gira si può
+   sempre ritrovare nel repo.
+2. **Codice e dati tornano indietro separatamente.** Tornare al codice di prima
+   è una cosa di un secondo, e non tocca il database. Ripristinare il database è
+   un'operazione rara, pesante, con regole sue (sotto). Confonderle significa
+   perdere le risposte arrivate nel frattempo per riparare un difetto che stava
+   nel codice.
+3. **Le migrazioni dello schema sono solo additive** — colonne e tabelle nuove,
+   mai tolte né rinominate —, come quella di `sim_uid` nella 0.8.0. Solo così il
+   rilascio precedente gira sul database di quello nuovo, e il ritorno indietro
+   del codice resta di un secondo. Togliere qualcosa si fa in due rilasci: il
+   primo smette di usarlo, il secondo lo toglie quando il primo non deve più
+   tornare. Lo schema porta il suo numero in `PRAGMA user_version`; un server
+   che trova un numero più alto del suo **parte e lo scrive nel registro**,
+   perché le migrazioni additive lo permettono: rifiutarsi di partire
+   vorrebbe dire che tornare indietro non funziona proprio quando serve.
+
+**Come sta sulla macchina.**
+
+```
+/srv/rg/repo.git              copia nuda del repo pubblico, solo lettura
+/srv/rg/rilasci/<tag>/        un rilascio, estratto con git archive: niente .git
+/srv/rg/attuale -> rilasci/<tag>   il rilascio in uso: un collegamento
+/opt/node-v24.21.0-linux-x64/ una cartella per versione di Node
+/opt/node -> node-v24.21.0-linux-x64   la versione in uso: un collegamento
+/var/lib/rg/conti.db          il database, fuori dai rilasci
+/var/lib/rg/copie/            la copia fatta prima di ogni aggiornamento
+/var/lib/rg/precedente        il rilascio a cui torna rg-torna
+```
+
+Il servizio è un'unità di systemd, `rg-api`, con un utente suo (`rg`, senza
+shell) e il resto del sistema in sola lettura: `ProtectSystem=strict`,
+`ReadWritePaths=/var/lib/rg`, `ProtectHome`, `PrivateTmp`, `NoNewPrivileges`.
+All'avvio risolve `/srv/rg/attuale` una volta, quindi cambiare il collegamento
+non tocca il processo che gira: conta solo al riavvio.
+
+**Aggiornare — `rg-aggiorna <tag>`**, provato con `v0.26.2` → `v0.27.0`:
+
+1. scarica i tag e **stampa il commit del tag**, da confrontare con
+   `git rev-parse <tag>^{commit}` sul Mac: se non coincidono ci si ferma;
+2. estrae il rilascio in una cartella temporanea e la rinomina solo a
+   estrazione finita, così un rilascio a metà non ha mai il suo nome;
+3. fa una copia del database con `VACUUM INTO` e la controlla con
+   `PRAGMA integrity_check`: se non dice `ok`, l'aggiornamento non procede;
+4. si ricorda il rilascio in uso in `/var/lib/rg/precedente`;
+5. cambia il collegamento in modo atomico (`ln -sfn` su un nome nuovo, poi
+   `mv -T`), riavvia il servizio, e interroga il server finché non risponde con
+   la versione nuova.
+
+**Misurato: 1,5 secondi in tutto, e il servizio non risponde per circa 105 ms.**
+Con una richiesta ogni 20 ms per otto secondi, 6 su 371 sono state rifiutate, in
+una finestra di 104 ms. Per le righe non è un problema: il client le tiene «da
+inviare» finché il server non le nomina come accolte (§8.1), e le rimanda. Per
+una registrazione o un accesso sì: chi preme il pulsante in quei 100 ms vede un
+errore. **Proposto:** su una connessione rifiutata il client ritenta **una
+volta**, dopo un secondo, prima di dirlo.
+
+**Tornare indietro — `rg-torna`**, provato con `v0.27.0` → `v0.26.2`: rimette il
+collegamento sul rilascio di `/var/lib/rg/precedente` e riavvia. **1,1 secondi,
+e gli stessi 105 ms.** Il database non si tocca, per la regola 2.
+
+**Cambiare Node** è la stessa operazione con un altro collegamento: una cartella
+nuova in `/opt`, verificata con `SHASUMS256.txt`; `/opt/node` spostato;
+riavvio. Provato 24.21.0 → 26.10.0 → 24.21.0. Si fa in un momento diverso da un
+rilascio, così se qualcosa si rompe si sa quale dei due è stato.
+
+**Il sistema operativo** si aggiorna da solo per la sicurezza. Un aggiornamento
+del kernel chiede un riavvio della macchina, che **non è automatico e non è
+misurato**: quanto dura, e se il servizio riparte da solo (`systemctl enable`
+dice di sì, ma nessuno l'ha visto succedere), si misura alla messa in esercizio.
+
+**Ripristinare il database** è l'eccezione, e ha due trappole che il §2.5 non
+vedeva. Si trovano solo pensando a chi è collegato mentre si ripristina.
+
+- **Il cursore torna indietro, e le righe nuove diventano invisibili.**
+  Misurato: 1.000 righe, una copia, altre 50 righe (il client ha letto fino a
+  `seq` 1050), ripristino. La prima riga arrivata dopo prende `seq` **1001**, e
+  `?dopo=1050` ne restituisce **zero**. Ogni riga che arriva da un dispositivo
+  finché la numerazione non supera il cursore di un altro dispositivo, per
+  quell'altro non esiste: nessun errore, e i due dispositivi non si allineano
+  mai più. È il cursore su `ts` del §2.3 per un'altra strada. E c'è di peggio:
+  le righe accolte dopo la copia sono sparite dal server, e i client che le
+  avevano inviate le hanno già tolte dalla coda (regola 3 del §1), quindi non le
+  rimanderanno mai.
+
+  **Proposto: un'*epoca* del database.** Un identificatore casuale, scritto nel
+  database quando nasce e **rigenerato da ogni ripristino**, che il server
+  restituisce con ogni risposta delle righe. Un client che vede cambiare l'epoca
+  azzera il suo cursore e **rimanda tutte le righe che ha**: l'unione per `uid`
+  rende il rinvio innocuo, e il server si riprende da ogni dispositivo le righe
+  che la copia aveva perso. Costa un invio completo per dispositivo dopo un
+  ripristino — 2.100 righe, meno di mezzo mega — cioè quasi mai. R-ACC-24, §17.
+- **Il registro sta dentro il database che si ripristina.** Il §14.4 vuole che il
+  ripristino ricancelli gli account cancellati dopo la copia, leggendoli dal
+  `registro`: ma il `registro` ripristinato è quello **della copia**, e le
+  cancellazioni successive non ci sono. Lo stesso per gli azzeramenti: una copia
+  di prima riporta la generazione di prima (§8.4), e con lei le righe azzerate.
+  **Proposto:** le cancellazioni e gli azzeramenti si scrivono **anche** in un
+  file a parte, `/var/lib/rg/cancellazioni`, una riga ciascuno — `id` interno,
+  data, generazione nuova, nessuna email —, che il ripristino non tocca e
+  rilegge prima di riaprire il servizio. Fa parte di `ripristina --prova`.
+
+**Non provato**, e resta per la messa in esercizio: le istantanee del disco di
+Scaleway come ritorno indietro del sistema intero, e il gruppo di sicurezza
+della macchina, che la console crea da sola e che va guardato prima di aprire la
+443.
 
 ---
 
@@ -349,6 +547,16 @@ Sulla macchina Scaleway sarà più lento: **da misurare** lì, e i parametri si
 alzano finché un accesso resta sotto i 250 ms. Il ripiego, se `crypto.argon2`
 non ci fosse nella versione di Node installata, è scrypt `N=2¹⁷, r=8, p=1`,
 l'altra riga OWASP.
+
+**Misurato il 26 settembre 2026 (§2.6):** non è più lento. Con i parametri
+OWASP, 37 ms sulla DEV1-S e 35 sulla STARDUST1-S; `crypto.argon2` c'è in Node 24
+e 26, quindi il ripiego su scrypt non serve. La regola dei 250 ms, presa alla
+lettera, porta a **`m = 65536` (64 MiB), `t = 2`, `p = 1`**: 161–165 ms di
+mediana e 178 al 95° percentile sulla più lenta delle due. È più robusta di
+tutte e cinque le righe OWASP, e con due calcoli insieme sono 128 MiB, che anche
+la macchina da 1 GB tiene. La configurazione che la RFC 9106 raccomanda con
+64 MiB, `t = 3`, sta a 232 ms di mediana e 253 al 95° percentile: sul limite,
+quindi no. **Proposto: `m=65536, t=2, p=1`.**
 
 **I parametri stanno nella stringa**, quindi alzarli non richiede una
 migrazione: all'accesso riuscito, se la stringa porta parametri vecchi, si
@@ -646,6 +854,14 @@ tutto: verifiche, reimpostazioni, avvisi dei due anni. Si conta, il conto sta
 nella diagnostica del titolare (§15), e il superamento è un `503` dichiarato,
 non una mail che sparisce.
 
+*(26 settembre 2026, letto nella console: **non è un tetto.** Il piano
+«Essential» è a consumo, 0 € fissi, 300 mail comprese e poi **0,25 € ogni
+1.000**; Scaleway non rifiuta la trecentunesima, la fa pagare. Rispondere `503`
+alla trecentunesima registrazione del mese vorrebbe dire rifiutare una persona
+per risparmiare 0,00025 €. **Proposto:** il conto resta nella diagnostica, con
+un avviso al titolare quando supera le 300, e il `503` resta solo per quando il
+fornitore rifiuta davvero una mail — che è R-ACC-21, e non cambia.)*
+
 ### 9.4 Il mittente, e la posta che c'è già
 
 Misurato oggi sul dominio:
@@ -667,11 +883,34 @@ dell'apice non si tocca. L'allineamento DMARC regge sul sottodominio, e la
 politica `p=none` si eredita dall'apice. I nomi esatti dei record di Scaleway
 sono **da misurare** nel pannello.
 
+**Misurato il 26 settembre 2026.** `posta.rottagiusta.it` è registrato in
+Transactional Email (`fr-par`, piano «Essential»), stato «Unchecked» finché i
+record non ci sono. Sono quattro, tutti sul sottodominio, **nessuno sull'apice**,
+e confermano la proposta:
+
+| Nome | Tipo | Valore |
+|---|---|---|
+| `posta.rottagiusta.it` | TXT | `v=spf1 include:_spf.tem.scaleway.com -all` |
+| `<selettore>._domainkey.posta.rottagiusta.it` | TXT | `v=DKIM1; h=sha256; k=rsa; p=…` — selettore e chiave si copiano dalla console, scheda «DNS Records» |
+| `_dmarc.posta.rottagiusta.it` | TXT | `v=DMARC1; p=none` |
+| `posta.rottagiusta.it` | MX | `10 blackhole.tem.scaleway.com.` |
+
+L'MX non era previsto: Scaleway lo chiede su un dominio di invio, e punta a una
+casella che scarta. Il DMARC di `posta.` è suo e non si eredita più dall'apice,
+con la stessa politica. Li mette l'autore su IONOS; l'autoconfigurazione della
+console vale solo per i domini con i DNS da Scaleway. Letti il giorno stesso sui
+resolver pubblici, `posta.` e `api.` non hanno ancora nessun record, e l'apice
+ha ancora il suo SPF solo.
+
 ### 9.5 Le mail
 
 Testo semplice più un HTML minimo, **nessun pixel di tracciamento e nessun
 link riscritto** per contare i clic: se il servizio lo offre, spento, e
-verificato leggendo il sorgente della mail arrivata. Nessuna mail contiene dati
+verificato leggendo il sorgente della mail arrivata. *(26 settembre 2026: il
+servizio non lo offre. Le impostazioni del dominio non hanno nessuna opzione di
+tracciamento, e la documentazione di Anymail sul fornitore dice che aperture e
+clic non sono supportati. Il sorgente di una mail vera resta da leggere, e si
+può solo dopo i record del §9.4.)* Nessuna mail contiene dati
 di studio. Ogni mail dice perché è arrivata e che cosa fare se non l'hai chiesta.
 
 La schermata dopo l'invio nomina il mittente e dice di guardare nello spam dopo
@@ -902,7 +1141,9 @@ in schermata.
 - **Il ripristino da una copia** riporterebbe in vita account cancellati dopo
   quella copia. Il `registro` tiene gli `id` degli account cancellati, e il
   ripristino **li ricancella** prima di riaprire il servizio. Fa parte di
-  `ripristina --prova`.
+  `ripristina --prova`. *(26 settembre 2026: il `registro` sta nello stesso
+  database, quindi dopo un ripristino è quello della copia e le cancellazioni
+  successive non le ha. L'elenco da rileggere sta in un file a parte, §2.7.)*
 
 ---
 
@@ -1040,6 +1281,7 @@ scoperta.
 | R-ACC-21 | Una mail che il fornitore non accetta produce un errore dichiarato, mai «ti abbiamo scritto» | `test_server.mjs`, con il fornitore finto che rifiuta |
 | R-ACC-22 | All'uscita, righe non inviate fermano la cancellazione dell'archivio locale | scoperto — è la pagina |
 | R-ACC-23 | Un archivio di prima degli account, in IndexedDB o in `pn.archivio`, produce l'avviso finché non è portato o scaricato | scoperto — è la pagina, e va provato su un browser con un archivio vero (è R-ACC-05 reso concreto) |
+| R-ACC-24 | Dopo il ripristino di una copia, una riga accolta dopo la copia torna sul server dal dispositivo che la ha, e ogni altro dispositivo la riceve | `test_server.mjs` con `ripristina --prova`, più `test_engine.mjs` sull'epoca nella contabilità della coda (§2.7) |
 
 ---
 
@@ -1067,10 +1309,19 @@ visitatori**, non prima.
 Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
 (nessuna prova su un dispositivo Apple). In più:
 
-- **Tutto ciò che è di Scaleway**, perché l'account non c'è ancora: il tempo di
-  Argon2id sulla macchina scelta; i record DNS esatti di Transactional Email per
-  `posta.rottagiusta.it`; che il servizio non riscriva i link né aggiunga pixel;
-  il certificato per `api.rottagiusta.it`; la copia verso `nl-ams`.
+- ~~**Tutto ciò che è di Scaleway**, perché l'account non c'è ancora~~ —
+  **misurato il 26 settembre 2026** (§2.6, §2.7, §9.4): il tempo di Argon2id su
+  due macchine, i record DNS di `posta.`, l'assenza di tracciamento nelle
+  impostazioni, il giro di aggiornamento e ritorno. **Resta, e aspetta un passo
+  dell'autore:**
+  - il sorgente di una mail vera, per vedere con gli occhi che i link non siano
+    riscritti (§9.5) — dopo i record DNS del §9.4 su IONOS;
+  - il certificato per `api.rottagiusta.it` — dopo il record `A`/`AAAA` di
+    `api.`, che punta alla macchina di produzione, che non esiste ancora;
+  - la copia verso `nl-ams` — dopo la chiave API col solo permesso di scrivere
+    su `rottagiusta-copie`, che l'autore crea e mette sulla macchina;
+  - il riavvio della macchina dopo un aggiornamento del kernel, e il gruppo di
+    sicurezza (§2.7).
 - **Le regole di `validaRiga()` su archivi diversi da quello dell'autore.**
   Misurate su uno solo (§4.1): 2.341 righe su 2.341. Un archivio che ha
   attraversato versioni diverse, o importato da altrove, può avere forme che
@@ -1079,8 +1330,9 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
   prevenzione del tracciamento attiva (§6.1). È Q-PROVE.
 - **Il peso reale sul server**: i 347 byte a riga del §2.4 vengono da righe
   sintetiche.
-- **`crypto.argon2` nella versione di Node che girerà sulla macchina**:
-  misurato presente in Node 25.3 sul Mac, non verificato altrove.
+- ~~**`crypto.argon2` nella versione di Node che girerà sulla macchina**~~ —
+  misurato il 26 settembre 2026: c'è in Node 24.21.0 e 26.10.0 su Ubuntu
+  26.04, e **non** c'è nella 22 che Ubuntu installa da sé (§2.6).
 
 ---
 
@@ -1089,6 +1341,9 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
 | Questione | Decide | Proposta |
 |---|---|---|
 | ~~Macchina con SQLite, o container con PostgreSQL gestito~~ | — | **deciso** su delega: macchina, SQLite, Node senza dipendenze (§2.2) |
+| **Quale macchina**: DEV1-S in `fr-par` a 11,15 € al mese, sopra il tetto di 10 €; o STARDUST1-S a 5,04 €, che in `fr-par` è esaurita e c'è a `pl-waw-2` con scorte incerte | l'autore | nessuna delle due senza una rinuncia: la prima sfora di 1,15 €, la seconda porta i dati a Varsavia (UE) e potrebbe non essere ricreabile subito dopo un guasto. Le copie restano a `nl-ams` in entrambi i casi (§2.6) |
+| Parametri di Argon2id | l'autore, o su delega | `m=65536, t=2, p=1`: sotto i 250 ms su tutte e due le macchine, più robusti delle righe OWASP (§5.1) |
+| Il tetto delle 300 mail | l'autore, o su delega | non è un tetto: oltre si paga 0,25 € ogni 1.000; un avviso al titolare, non un `503` (§9.3) |
 | ~~Lunghezza minima della password~~ | — | **deciso**: 15, come NIST (§5.2) |
 | Elenco delle password comuni: quale, con che licenza | una misura, poi l'autore | un file dichiarato nel README (§5.2) |
 | Durata della sessione | l'autore | 60 giorni senza uso, un anno al massimo (§6.2) |
@@ -1132,3 +1387,19 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
   giorni. Entra R-ACC-11 nella specifica, e i requisiti proposti scalano di
   uno: da R-ACC-12 a R-ACC-23. Il §20 non ha più decisioni dell'autore aperte
   fuori da Q-ONBOARD e dalle statistiche mostrate a chi studia.
+- **26 settembre 2026 — le misure su Scaleway, e come si aggiorna (P-02).**
+  Due macchine di prova, DEV1-S a Parigi e STARDUST1-S a Varsavia, poi
+  cancellate. Argon2id a 37 e 35 ms con i parametri OWASP, e la proposta di
+  alzarli a 64 MiB (§5.1). Una misura ha smentito il §2.2: in `fr-par` la
+  macchina più piccola costa 11,15 € al mese, sopra il tetto di 10 € dato
+  dall'autore, e quella che ci starebbe è esaurita — la scelta è tornata a lui
+  (§20). Node viene dal pacchetto ufficiale, LTS: quello di Ubuntu non ha
+  Argon2, e la 25 del Mac è senza supporto. `posta.` registrato in
+  Transactional Email, con quattro record che non toccano l'apice e che mette
+  l'autore; il tetto delle 300 mail non è un tetto. Il bucket delle copie c'è,
+  con la scadenza a 30 giorni. Il §2.7 è nuovo: aggiornare e tornare indietro,
+  provati sulla macchina con due tag veri, 1,5 e 1,1 secondi, 105 ms di
+  servizio muto. E ripristinare una copia ha due trappole trovate pensando a chi
+  è collegato: il cursore che torna indietro — misurato, la riga nuova prende
+  `seq` 1001 e un client a 1050 non la vede mai — e il registro delle
+  cancellazioni che sta dentro il database ripristinato. R-ACC-24.

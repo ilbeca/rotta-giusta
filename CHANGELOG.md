@@ -295,6 +295,66 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   Nessun account introdotto e nessun testo anticipato sul prodotto futuro;
   versione, documenti storici e `docs/prossime-sessioni.md` invariati.
 
+### Misurato — Scaleway, e come si aggiorna il server (P-02)
+
+- **Le misure del §19 di `docs/account-progetto.md`, sulla macchina vera.** Due
+  macchine di prova, DEV1-S in `fr-par-1` e STARDUST1-S in `pl-waw-2`, create
+  per la sessione e cancellate con IP e disco. Argon2id con i parametri OWASP a
+  **37 e 35 ms**, 210.000 righe in SQLite in meno di due secondi, un account
+  intero riletto in 2–3 ms. La forma del §2.2 regge.
+
+- **Il prezzo no, ed è il motivo per cui la sessione si è fermata.** In `fr-par`
+  la macchina più piccola che si può creare, la DEV1-S, con IPv4 e disco costa
+  **11,15 € al mese**; l'autore aveva dato un tetto di 10. Quella che ci starebbe,
+  la STARDUST1-S a 5,04 €, a Parigi è **esaurita**. Misurate tutte e due su sua
+  indicazione; la scelta è sua, nel §20.
+
+- **Node non viene da Ubuntu, e non è la versione del Mac.** Ubuntu 26.04 offre
+  Node 22, che non ha `crypto.argon2`; la 25.3 del Mac è dispari e senza supporto
+  dal 31 marzo. Sulla macchina va una LTS pari dal pacchetto ufficiale verificato
+  col suo SHA-256 — provate 24.21.0 e 26.10.0, identiche nei numeri. E in queste
+  due `node:sqlite` non stampa più l'`ExperimentalWarning` che il §2.2 dichiarava
+  come prezzo.
+
+- **Come si aggiorna e come si torna indietro, che non era scritto da nessuna
+  parte**, ora è il §2.7, **provato** e non solo scritto: sulla DEV1-S, con due tag
+  pubblici veri e un server finto che importa `engine.js` e apre il database.
+  Un tag solo, mai un ramo; un rilascio per cartella e un collegamento che si
+  sposta; una copia controllata del database prima di ogni aggiornamento;
+  migrazioni solo additive, perché il codice di prima deve girare sul database
+  di dopo. Aggiornare **1,5 s**, tornare indietro **1,1 s**, servizio muto per
+  **105 ms** — 6 richieste su 371, a una ogni 20 ms. Il database non torna
+  indietro con il codice.
+
+- **Ripristinare una copia avrebbe perso righe senza un errore**, in due modi
+  trovati pensando a chi è collegato mentre si ripristina, e il primo misurato:
+  il cursore `seq` riparte dalla copia, la riga nuova prende **1001** e un
+  dispositivo fermo a 1050 non la vede **mai**; e le righe accolte dopo la copia,
+  che i client hanno già tolto dalla coda, nessuno le rimanda. È il cursore su
+  `ts` del §2.3 arrivato da un'altra parte. Proposta un'*epoca* del database,
+  rigenerata da ogni ripristino: un client che la vede cambiare rimanda tutto, e
+  l'unione per `uid` fa il resto. R-ACC-24, proposto. Il secondo: il §14.4
+  ricancella gli account cancellati dopo la copia leggendoli da un registro che
+  sta **nella copia**.
+
+- **La posta:** `posta.rottagiusta.it` è registrato in Transactional Email, e i
+  quattro record che chiede — SPF, DKIM, DMARC e un MX che il documento non
+  prevedeva — stanno tutti sul sottodominio: il SPF dell'apice, che regge la
+  posta dell'autore, non si tocca. Li mette l'autore su IONOS. Il servizio non ha
+  tracciamento di aperture né di clic. **Il tetto delle 300 mail non è un
+  tetto:** oltre si paga 0,25 € ogni 1.000, e rispondere `503` alla trecentunesima
+  registrazione rifiuterebbe una persona per un quarto di millesimo di euro.
+
+- **Il bucket delle copie** c'è, `rottagiusta-copie` in `nl-ams`, con la scadenza
+  a 30 giorni. La copia dalla macchina non è misurata: vuole una chiave API, e un
+  segreto non passa per una sessione.
+
+- Due trappole della console, sui costi: cancellando un'istanza, il disco **resta**
+  se non si spunta la casella apposta, e si paga senza che niente lo dica; e
+  «Delete» su un'istanza accesa l'ha solo **spenta**, due volte su due. Le due
+  macchine di prova sono sparite al secondo comando, e gli elenchi di istanze e
+  volumi di tutte e due le zone sono vuoti.
+
 ## [0.27.0] — 2026-09-25
 
 ### Verificato — la v0.26.2 sul dominio vero
