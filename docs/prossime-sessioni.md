@@ -106,9 +106,9 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 10 | Allineare i controlli dei quiz all'area 2 | Claude | `main`, a mano | niente | P-06 |
-| 5 | Area 2, Quiz: la realizzazione (il progetto è chiuso) | ChatGPT | `ui/main` | P-06 | P-05 |
-| 4a | Il server, pezzo 1: l'account, la password, la sessione, la verifica dell'email | Claude | `main`, a mano | P-06, perché è la stessa cartella | P-09 |
+| 5 | Area 2, Quiz: la realizzazione (il progetto è chiuso) | ChatGPT | `ui/main` | niente | P-05 |
+| 5b | Chiudere il regime vecchio dei controlli dei quiz, e il §5 della specifica | Claude | `main`, a mano | la merge di P-05, e la cartella libera | da scrivere |
+| 4a | Il server, pezzo 1: l'account, la password, la sessione, la verifica dell'email | Claude | `main`, a mano | niente | P-09 |
 | 4b | Il server, pezzo 2: le righe e la sincronia, con la metà client di R-ACC-24 nel motore | Claude | `main`, a mano | 4a | da scrivere |
 | 4c | Il server, pezzo 3: cancellazione, due anni, allarmi al titolare | Claude | `main`, a mano | 4b | da scrivere |
 | 6 | Aree 3–6 del ridisegno | ChatGPT | `ui/main` | la precedente | da scrivere |
@@ -118,8 +118,8 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**: Claude sul server (non tocca `site/`),
-ChatGPT sull'interfaccia. **Adesso è pronto P-06**, e dopo la sua merge P-05 per
-ChatGPT e P-09 per Claude possono stare aperti insieme. Tutto quello che tocca
+ChatGPT sull'interfaccia. **Adesso sono pronti P-05 per ChatGPT e P-09 per
+Claude**, e possono stare aperti insieme. Tutto quello che tocca
 `server/`, `tests/` o la specifica passa dalla cartella principale, una sessione
 per volta: è la strettoia della colonna di Claude, e si accetta perché il
 recinto la vuole. Il numero di una riga è il suo nome, non la sua posizione:
@@ -553,10 +553,19 @@ tenendo le due voci; suite su `main` invariate (131 + 1 skip, 221, 135, 262).
 
 ### P-05 — ChatGPT: la realizzazione dell'area 2
 
-**Stato:** in attesa di P-06, e che la regia allinei `ui/main` dopo la sua merge. **Dove:** come P-04.
+**Stato:** pronto: P-06 è chiuso e `ui/main` è allineato. **Dove:** come P-04.
 
 ```
 Sessione P-05. Realizza docs/area-2-progetto.md in site/app.html.
+
+Il §10.1 del progetto è ora un contratto che la suite esegue: una
+selezioneQuiz(intenzione, conf, fonte) di primo livello e pura, le
+porte con data-modo, nessun totScreening. tests/quiz_intenzioni.mjs la
+estrae e la esegue sulla banca vera, e tests/pagina-quiz-intenzioni.html
+è la pagina di riferimento con cui è stata provata. Se il contratto ti
+sta stretto, fermati e dillo nel resoconto: cambiarlo tocca tests/, che
+non è del tuo ramo. Non tenere una sesta modalità per far passare un
+controllo.
 
 Non toccare docs/prossime-sessioni.md. Quattro suite verdi, collaudo
 guardato a 375 e 1280 px, voce in fondo a [Unreleased], un commit con
@@ -568,7 +577,7 @@ docs/prossime-sessioni.md.
 
 ### P-06 — Claude: i controlli dei quiz allineati all'area 2
 
-**Stato:** pronto: P-03 è chiuso e la cartella è libera. **Dove:** Claude
+**Stato:** **chiuso il 26 settembre 2026**, commit `af28901` su `main`. **Dove:** Claude
 Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano: tocca `tests/` e la
 specifica.
 
@@ -592,7 +601,20 @@ voce in fondo a [Unreleased], un commit. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `af28901`, voce «Test — P-06» nel CHANGELOG. I controlli
+dei quiz riconoscono i due regimi leggendo `MODI`: in quello di oggi, a sei
+ingressi, restano quelli di prima e in più si rifiuta l'ibrido; in quello a
+cinque, un banco nuovo (`tests/quiz_intenzioni.mjs`) estrae `selezioneQuiz()` e
+la esegue sulla banca vera con una spia sul motore, intenzione per intenzione.
+Il contratto sta nel §10.1 di `area-2-progetto.md`; R-NAV-04 e R-NAV-05
+riscritti, R-NAV-07 nuovo. **Il banco è stato provato contro sé stesso**:
+sedici rotture di una pagina di riferimento, e quattro controlli indeboliti uno
+per volta, uno dei quali è passato verde e ha fatto nascere la sedicesima
+rottura. Non coperti dal banco, e dichiarati nel §9.4 della specifica: «Base e
+vela», la gerarchia visiva, i testi, il focus, i ritorni; restano al collaudo.
+Controllato dalla regia: cinque suite su `main` — motore 131 + 1 skip, server
+23, dati 236, interfaccia 183, specifica 274 —, e la coda toccata solo dalla
+regia. Dopo P-05 la regia toglie il regime vecchio: punto 5b della coda.
 
 ### P-07 — Claude: uno standard per la sessione e per le password comuni
 
@@ -676,8 +698,8 @@ suite verdi su `main` dopo le tre merge.
 
 ### P-09 — Claude: il server, pezzo 1 — l'account
 
-**Stato:** in attesa di P-06, che lavora nella stessa cartella. **Dove:** Claude
-Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano.
+**Stato:** pronto: la cartella principale è libera. **Dove:** Claude Code,
+`~/Software/rotta-giusta`, ramo **`main`**, a mano.
 
 ```
 Sessione P-09, su main. Leggi docs/account-progetto.md per intero —
@@ -778,3 +800,6 @@ un commit. Chiudi con il resoconto di docs/prossime-sessioni.md.
   Il server si divide in tre pezzi (4a, 4b, 4c) e il primo è P-09; P-06 è
   pronto. Nel §1 entrano le cose della pagina che P-07 e P-08 hanno trovato; nel
   §4 restano i sei adempimenti del §15.4 e le chiavi della messa in esercizio.
+- **26 settembre 2026 — P-06 chiuso.** I controlli dei quiz reggono i due
+  regimi, e P-05 riceve il contratto che la suite esegue. Pronti insieme P-05 e
+  P-09. Entra il punto 5b: chiudere il regime vecchio dopo P-05.
