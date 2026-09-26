@@ -268,6 +268,84 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   documentazione verdi. `site/` e `docs/prossime-sessioni.md` non sono stati
   toccati.
 
+### Realizzato — P-19, il ciclo dei quiz che si chiude
+
+- **Un'attività ripresa dopo una pausa compariva due volte, e le due righe
+  aprivano la stessa metà.** Il difetto che P-30 aveva letto nel codice,
+  riprodotto nel browser prima di correggerlo: tre risposte con lo stesso
+  `sim_uid`, la terza 21 minuti e 1 secondo dopo. In Progressi due righe con
+  id `PAUSA1` — «0/1 · 10:22» e «1/2 · 10:00» —; toccando la seconda si apriva
+  la prima, una domanda sola; l'ultima attività del Percorso diceva «Risposte:
+  1». Le tre chiamate a `E.sessioni()` della pagina passano al confine
+  dell'attività, e riguardato dopo: una riga «1/3», una revisione di tre
+  risposte, «Risposte: 3».
+
+- **Ogni attività dei quiz finisce in un riepilogo, e da lì si rivede e si
+  riprova** (`docs/area-3-progetto.md`). Quante risposte, corrette, errate e
+  non affrontate; per una simulazione l'esito della sola prova, detto «non una
+  previsione dell'esame». Le uscite hanno una gerarchia: «Riprova questi N
+  quesiti» quando ci sono errori da riaprire, il ritorno con il nome
+  dell'origine quando non ce ne sono. Il riepilogo di prima dava una
+  percentuale e un elenco di errori, e finiva lì.
+
+- **Il numero sul pulsante e la lista che si apre vengono dal raccordo**,
+  `riepilogoQuiz()`, `anteprimaRiprova()` e `avviaRiprova()`, con il contratto
+  del §10.1: l'unico posto della pagina che chiama `E.erroriSessione()`.
+  Inizia riapre l'istantanea presa al riepilogo, e se nel frattempo gli errori
+  sono cambiati non avvia niente. La riprova è un'attività nuova —
+  `mode: 'sbagliate'`, un `sim_uid` suo, senza timer, avanzamento automatico
+  spento per quel runner e la preferenza salvata intatta — e il tentativo di
+  prima resta com'era. `erroriSessione` passa dagli orfani alle chiamate
+  protette in `docs/eccezioni-interfaccia.md`.
+
+- **La croce del runner era un'uscita senza riepilogo.** Ora è «Termina
+  l'attività» in un allenamento — con risposte apre il riepilogo parziale,
+  senza torna all'origine e lo dice — e «Consegna la prova» in una
+  simulazione, con una conferma in pagina mentre il timer continua. La
+  consegna è una sola anche con due clic o con il timer a zero: misurato,
+  doppio clic su «Consegna» e una riga `_t:'s'`.
+
+- **Una revisione per il riepilogo e per lo storico**, con «Tutte le risposte»
+  e «Solo errori» che non rinumerano, la tua risposta e quella ufficiale anche
+  per le corrette, le note, e i tag N/L/C per tentativo con lo stato premuto.
+  Dallo storico si riprova direttamente, passando dall'anteprima. Nella
+  revisione di una prova non c'è più una durata: `ms` di una riga `_t:'s'` è il
+  tempo concesso, non quello impiegato (difetto noto dalla 0.19.2, qui non si
+  mostra più).
+
+- **Le figure dicono che cosa mostrano.** Un'inserzione sola per runner e
+  revisione, con l'alt «Figura del quesito {n}: {domanda}» e un pulsante
+  «Ingrandisci»; l'eccezione `alt="figura"` esce dal file delle eccezioni.
+
+- **Tre difetti di tastiera e di fuoco, letti nel codice e chiusi**, non
+  riprodotti prima: a riepilogo aperto dopo uno stop i tasti 1/2/3
+  rispondevano ancora al quesito nascosto sotto; Invio su un pulsante del
+  runner faceva «Avanti» invece del pulsante; e la pagina sotto il runner e la
+  revisione prendeva il Tab. Riepilogo, anteprima, conferma e revisione sono
+  ora la sola superficie attiva, e Esc risale un livello per volta — figura,
+  revisione, riepilogo, origine. Verificato dopo: un «1» sul riepilogo non
+  scrive righe, Esc sulla figura ingrandita lascia aperta la revisione.
+
+- **Collaudo guardato a 375 e 1280 px**, nessuno sbordamento; pulsanti del
+  ciclo 48 px, tag 44 px; contrasti misurati: titolo 15,36:1, testi secondari
+  5,16:1, pulsanti 9,78 e 11,08:1. Casi del §10.2 esercitati nel browser:
+  prima attività fermata a 3 su 10 con un errore (R 3, C 2, E 1, M 7, riprova
+  di uno); riprova dallo storico con nuova identità e riepilogo del solo nuovo
+  tentativo, quello di prima invariato; Base e vela consegnata in anticipo, con
+  la fase in attesa, l'anteprima che dice che la vela non è iniziata, e «Rivedi
+  il quiz base» dalla vela; un import con l'anteprima aperta, che riporta alla
+  revisione con numero e lista aggiornati insieme; una scrittura fallita, con
+  l'avviso al posto della frase ordinaria e il dettaglio ancora rivedibile;
+  il drill delle tecniche nel runner, invariato. Console vuota. Non fatti, e
+  sono nel §10.4 del progetto: zoom al 200 %, lettore di schermo, persone.
+
+  Suite: interfaccia **469** (erano 402: il banco del ciclo ora gira anche
+  sulla pagina vera, nel regime progettato); motore 155/157 con i due skip di
+  sempre; dati 242; specifica 412; server 59/59 con Node 25.3 e con la
+  **24.21.0 LTS**, scaricata da nodejs.org e verificata con `SHASUMS256.txt`,
+  con cui anche motore e interfaccia danno gli stessi numeri. Guardiano verde.
+  Versione non toccata; `docs/prossime-sessioni.md` non toccato.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag

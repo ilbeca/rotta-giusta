@@ -1,6 +1,6 @@
 # Area 3 — Il ciclo che si chiude
 
-**Sessione P-14, decisioni di progetto del 26 settembre 2026, da realizzare.**
+**Sessione P-14, decisioni di progetto del 26 settembre 2026. Realizzato da P-19 lo stesso giorno: evidenze e scarti nel §10.4.**
 Consegna sul modello delle aree [1](area-1-progetto.md) e
 [2](area-2-progetto.md): riepilogo, revisione e «Riprova questi N» con testi,
 stati, flussi, contratti e accettazione. Non è una verifica di usabilità né
@@ -744,3 +744,37 @@ I **12 riferimenti locali** del progetto sono risolti; guardiano e controllo
 condiviso della documentazione verdi. Diff limitato a questo file e alla voce
 additiva in fondo a `[Unreleased]`; nessuna modifica a versione, `site/`,
 eccezioni o `prossime-sessioni.md`.
+
+### 10.4 Realizzazione di P-19 e limiti
+
+Realizzato in `site/app.html` su `ui/main`, scritto da Claude con ChatGPT
+fermo. La pagina è nel regime progettato del controllo: dichiara le tre
+funzioni di raccordo, `apri()` legge `opt.simUid` e `opt.auto`, e
+`E.erroriSessione` compare solo dentro il raccordo. Il banco del ciclo gira
+quindi anche sulla pagina vera, oltre che su quella di riferimento.
+
+**Il difetto di P-30, guardato.** Prima: un'attività con una pausa di 21:01
+compariva in Progressi in due righe con lo stesso id, e la seconda apriva la
+revisione della prima metà; il Percorso diceva «Risposte: 1». Dopo, con le tre
+chiamate a `sessioni()` sul confine dell'attività: una riga, tre risposte.
+
+**Scelte prese realizzando, dove il progetto lasciava spazio.**
+
+- La riprova si apre dal riepilogo e dalla revisione **storica**; la revisione
+  dell'attività appena conclusa rimanda al riepilogo, che ha già il pulsante.
+- La croce del runner è diventata «Termina l'attività» per ogni allenamento,
+  non solo per la prima attività: con la croce un allenamento finiva senza
+  riepilogo.
+- Nella revisione di una prova non si mostra una durata: `ms` delle righe
+  `_t:'s'` è il tempo concesso (0.19.2), e il §5 vieta durate inferite. La
+  riga non è stata cambiata.
+- L'ingrandimento della figura è un `<dialog>` nativo, che Esc chiude da sé
+  senza chiudere la revisione o il runner sotto.
+- Lo sfondo del runner e della revisione è `inert`: prima il Tab arrivava alla
+  pagina sotto.
+
+**Non fatto, e resta al collaudo o ad altre aree.** Zoom del testo al 200 %,
+lettore di schermo sui percorsi del ciclo, prova con persone (Q-PROVE). Il
+regime senza account e l'invito alla registrazione del §3 sono del client
+(P-18): oggi il testo di conservazione è quello del prodotto attuale. Il
+controllo del regime vecchio del ciclo è ora senza oggetto, e lo chiude P-37.
