@@ -110,7 +110,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 14 | I contratti del motore che il client chiede | Claude | `main`, a mano | niente — **per primo** | P-28 |
 | 15 | La prova nel browser, per i controlli del client | Claude | `main`, a mano | P-28 | P-29 |
 | 6a | Il progetto dell'area 3, il ciclo che si chiude | ChatGPT | `ui/main` | niente | P-14 |
-| 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | un tag che contenga il server: il rilascio del §4 | P-15 |
+| 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore: il tag `v0.28.0` c'è | P-15 |
 | 12 | `ritmo()` che dice «orologio» senza orologio | Claude | `main`, a mano | la cartella libera | P-16 |
 | 13 | L'ultimo tag di una risposta, nel motore | Claude | `main`, a mano | la cartella libera | P-17 |
 | 7b | La realizzazione del client degli account | ChatGPT | `ui/main` | P-28 e P-29 | P-18 |
@@ -122,8 +122,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 **Le due colonne corrono in parallelo**: Claude sul server (non tocca `site/`),
 ChatGPT sull'interfaccia. **Adesso è pronto P-14 per ChatGPT, e per Claude P-28,
 poi P-29** — sono loro che sbloccano il client, P-18 —; P-12, P-16 e P-17
-riempiono i buchi, e P-15 parte quando c'è un tag con il server e l'autore ha il
-tempo. I prompt di Claude vanno uno alla volta, perché stanno tutti nella
+riempiono i buchi, e P-15 parte quando l'autore ha il tempo: il tag c'è. I prompt di Claude vanno uno alla volta, perché stanno tutti nella
 cartella principale: è la strettoia della colonna di Claude, e si accetta perché
 il recinto la vuole. Il numero di una riga è il suo nome, non la sua posizione:
 l'ordine è quello della tabella. Le due colonne si incontrano al punto 7b, e il
@@ -392,7 +391,9 @@ consuma, non si riprogetta.
   manca.
 - **Q-DUE**, prima dell'area 5: le due classifiche di «cosa fare adesso»
   (specifica §10).
-- **Un rilascio intermedio — sì dell'autore il 26 settembre: v0.28.0.** `site/` è cambiato con
+- ~~Un rilascio intermedio~~ — **fatto il 26 settembre: v0.28.0**, commit
+  `51d9485`, tag e push con il sì dell'autore, «Build now» premuto, verificato
+  sui due indirizzi e nel browser. Il testo di prima, per la storia: `site/` è cambiato con
   P-01 e con l'area 2, e chi studia oggi non lo vede; e P-15 può avviare il
   server soltanto da un tag pubblicato che lo contenga (`account-progetto.md`
   §2.7), mentre l'ultimo, `v0.27.0`, è di prima del server. Un rilascio adesso
@@ -979,7 +980,7 @@ toccata. Chiudi con il resoconto di docs/prossime-sessioni.md.
 
 ### P-15 — Claude con l'autore: la messa in esercizio su Scaleway
 
-**Stato:** in attesa di un tag che contenga il server — il rilascio del §4 — e del tempo dell'autore. **Dove:** Claude Code, `~/Software/rotta-giusta`,
+**Stato:** pronto: il tag `v0.28.0` contiene il server. Parte quando l'autore ha il tempo. **Dove:** Claude Code, `~/Software/rotta-giusta`,
 ramo **`main`**, a mano: gli strumenti della macchina stanno nel repo. È una
 sessione che si fa **insieme**, come P-08.
 
@@ -1343,3 +1344,5 @@ dopo**, la soglia degli allarmi riletta sul registro vero
 - **26 settembre 2026 — la soglia, e il sì al rilascio intermedio.** Soglia a
   100 su delega, da rileggere dopo trenta giorni di esercizio. La regia rilascia
   la v0.28.0 in un commit a sé.
+- **26 settembre 2026 — v0.28.0 pubblicata.** Push, «Build now», verificata sui
+  due indirizzi e nel browser. P-15 pronto: il tag contiene il server.

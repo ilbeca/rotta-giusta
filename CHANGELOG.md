@@ -11,6 +11,16 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+### Verificato — la v0.28.0 sui due indirizzi
+
+- **Su `rottagiusta.it`, dopo «Build now», e su `.pages.dev`:** `CACHE =
+  'rg-0.28.0'` e `versione: 0.28.0`, `/app` risponde 200. Nel browser della
+  regia, che aveva la 0.27.0 con le figure scaricate: service worker attivo,
+  una sola cache `rg-0.28.0`, e Info scrive «v0.28.0 · cache offline rg-0.28.0»
+  e «Pronto per l'offline … figure 102/102» — **le figure passate da una cache
+  all'altra senza un secondo scaricamento**, come R-ARCH-10 promette. I Quiz
+  mostrano le cinque intenzioni; console senza errori.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag
