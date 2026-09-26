@@ -108,9 +108,8 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 |---|---|---|---|---|---|
 | 5 | Area 2, Quiz: la realizzazione (il progetto è chiuso) | ChatGPT | `ui/main` | niente | P-05 |
 | 5b | Chiudere il regime vecchio dei controlli dei quiz, e il §5 della specifica | Claude | `main`, a mano | la merge di P-05, e la cartella libera | da scrivere |
-| 4a | Il server, pezzo 1: l'account, la password, la sessione, la verifica dell'email | Claude | `main`, a mano | niente | P-09 |
-| 4b | Il server, pezzo 2: le righe e la sincronia, con la metà client di R-ACC-24 nel motore | Claude | `main`, a mano | 4a | da scrivere |
-| 4c | Il server, pezzo 3: cancellazione, due anni, allarmi al titolare | Claude | `main`, a mano | 4b | da scrivere |
+| 4b | Il server, pezzo 2: le righe, la sincronia, l'azzeramento, e la contabilità della coda nel motore | Claude | `main`, a mano | niente | P-10 |
+| 4c | Il server, pezzo 3: cancellazione, due anni, cambio d'indirizzo e profilo, allarmi al titolare, il conto delle 300 mail | Claude | `main`, a mano | 4b, e la decisione del §4 sulla registrazione | da scrivere |
 | 6 | Aree 3–6 del ridisegno | ChatGPT | `ui/main` | la precedente | da scrivere |
 | 7 | Il client degli account, dentro una fetta del ridisegno | ChatGPT | `ui/main` | 4b | da scrivere |
 | 8 | La messa in esercizio del server su Scaleway | Claude e l'autore | `main`, pannelli | 4c, e dal §4: la macchina, le chiavi | da scrivere |
@@ -118,8 +117,8 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**: Claude sul server (non tocca `site/`),
-ChatGPT sull'interfaccia. **Adesso sono pronti P-05 per ChatGPT e P-09 per
-Claude**, e possono stare aperti insieme. Tutto quello che tocca
+ChatGPT sull'interfaccia. **P-05 è in mano a ChatGPT, e P-10 è pronto per
+Claude**: possono stare aperti insieme. Tutto quello che tocca
 `server/`, `tests/` o la specifica passa dalla cartella principale, una sessione
 per volta: è la strettoia della colonna di Claude, e si accetta perché il
 recinto la vuole. Il numero di una riga è il suo nome, non la sua posizione:
@@ -359,6 +358,12 @@ consuma, non si riprogetta.
 - ~~I record DNS di `posta.`, la pulizia dopo P-02, il contatto del titolare~~ —
   **fatti in P-08**: quattro record verificati, `privacy@rottagiusta.it` provato,
   la chiave SSH delle prove tolta.
+- **La registrazione dice chi è iscritto** — la decisione aperta nel §20 di
+  `account-progetto.md`, trovata da P-09. Tre strade, e il server oggi fa la
+  prima: accettarlo e dirlo, con il limite di 5 registrazioni l'ora come freno;
+  non aprire la sessione finché l'email non è confermata; rispondere sempre
+  allo stesso modo e aprire la sessione solo dopo la conferma. Blocca il punto
+  4c, non il 4b.
 - **Gli adempimenti rimasti**, sei punti, tutti nel §15.4 di
   `account-progetto.md` e bloccano il punto 9: l'indirizzo postale del titolare,
   la base giuridica del registro di sicurezza (da far confermare), l'inoltro di
@@ -698,8 +703,8 @@ suite verdi su `main` dopo le tre merge.
 
 ### P-09 — Claude: il server, pezzo 1 — l'account
 
-**Stato:** pronto: la cartella principale è libera. **Dove:** Claude Code,
-`~/Software/rotta-giusta`, ramo **`main`**, a mano.
+**Stato:** **chiuso il 26 settembre 2026**, commit `b6ce503` su `main`. **Dove:**
+Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano.
 
 ```
 Sessione P-09, su main. Leggi docs/account-progetto.md per intero —
@@ -723,6 +728,53 @@ un commit, fermati a un confine pulito e dillo nel resoconto. La suite
 del server gira anche con Node 24 LTS. Non toccare
 docs/prossime-sessioni.md. Suite verdi, voce in fondo a [Unreleased],
 un commit. Chiudi con il resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** commit `b6ce503`, voce nel CHANGELOG. Le rotte del §7.1 dalla
+registrazione al cambio della password; Argon2id con i parametri del §20; la
+sessione `__Host-` di 30 giorni; i gettoni monouso; i limiti del §6.5 con i 100
+tentativi, e il conto dei fallimenti **nel database**; gli account non
+confermati cancellati al settimo giorno; lo schema 2 con una migrazione
+additiva; l'elenco delle password comuni generato da `strumenti/password_comuni.py`
+e dichiarato nel README. Nove requisiti del §9.9 con il loro test, scritti prima
+e provati al contrario su 18 rotture. **Si è fermata a un confine pulito**: il
+cambio d'indirizzo, il profilo, l'azzeramento e `DELETE /v1/account` vanno con i
+pezzi dopo, il fornitore di Scaleway è scritto e non misurato. Cinque cose
+trovate, tutte scritte nei §5.3, §6.5 e §9.3; la più importante torna
+all'autore (§4): **la registrazione dice chi è iscritto**. E una, la seconda,
+vale per tutto il progetto: il conto tenuto in memoria lasciava la suite verde
+solo perché nessun test riavviava il server. Controllato dalla regia: cinque
+suite su `main` — motore 131 + 1 skip, server 42, dati 242, interfaccia 183,
+specifica 310.
+
+### P-10 — Claude: il server, pezzo 2 — le righe e la sincronia
+
+**Stato:** pronto. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo
+**`main`**, a mano.
+
+```
+Sessione P-10, su main. Leggi docs/account-progetto.md — soprattutto
+§1, §2.3, §2.7, §4, §7.2, §8 e §16.1 — e gli esiti di P-03 e P-09 nel
+§6 di docs/prossime-sessioni.md.
+
+Il secondo pezzo del server: le righe. L'API del §7.2 sopra
+aggiungiRighe e righeDopo, che esistono già in server/db.mjs, con
+validaRiga() del motore; il cursore, l'epoca in ogni risposta, la
+generazione e l'azzeramento con il suo 409 (§8.4). E la metà che sta
+nel motore (§16.1): la contabilità della coda — quali righe inviare,
+che cosa togliere dopo una risposta, il 409, e l'epoca che cambia —,
+logica pura in site/engine.js con i suoi test, che chiude la metà
+client di R-ACC-24. Il nome per l'epoca del database va scelto diverso
+da epoca(ts), che nel motore esiste già e fa un'altra cosa. Il
+cambio d'indirizzo, il profilo e la cancellazione no: sono il pezzo
+dopo.
+
+Prima il test che fallisce, uno per requisito, e un test che riavvia il
+server dove lo stato potrebbe vivere in memoria. Se il pezzo è troppo
+per un commit, fermati a un confine pulito e dillo. La suite del server
+gira anche con Node 24 LTS. Non toccare docs/prossime-sessioni.md.
+Suite verdi, voce in fondo a [Unreleased], un commit. Chiudi con il
+resoconto di docs/prossime-sessioni.md.
 ```
 
 **Esito:** —
@@ -803,3 +855,7 @@ un commit. Chiudi con il resoconto di docs/prossime-sessioni.md.
 - **26 settembre 2026 — P-06 chiuso.** I controlli dei quiz reggono i due
   regimi, e P-05 riceve il contratto che la suite esegue. Pronti insieme P-05 e
   P-09. Entra il punto 5b: chiudere il regime vecchio dopo P-05.
+- **26 settembre 2026 — P-09 chiuso.** L'account c'è. P-10 pronto per le righe
+  e la sincronia; il pezzo 4c prende anche il cambio d'indirizzo e il profilo,
+  e aspetta la decisione dell'autore sulla registrazione che dice chi è
+  iscritto. P-10 porta dentro la lezione di P-09: un test che riavvia il server.
