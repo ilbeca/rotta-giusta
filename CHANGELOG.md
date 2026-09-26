@@ -175,6 +175,33 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   verde. `site/app.html` e `docs/prossime-sessioni.md` non sono stati toccati.
 
 
+### Progettato — P-20, il Carteggio e il giudizio di chi studia
+
+- **`docs/area-4-progetto.md`: tre porte, materiali, confronto e ciclo completo**
+  per prova, esercizi su carta e «Che tecnica serve?», dai capitoli 12–15
+  della Specifica UX/UI. Testi per esteso, due stati account, guida facoltativa,
+  giudizio rinviabile, riepilogo e revisione: il giudizio umano è detto prima
+  dell'avvio, la composizione della prova resta un'assunzione e il carteggio
+  entro 12 miglia resta escluso. Senza account la perdita del lavoro è
+  dichiarata prima e alla fine; tappeto e giro conoscono soltanto le attività
+  valutate nella pagina aperta. Gli stati di accesso consumano il progetto
+  del client, senza un secondo flusso di registrazione.
+- **Una promessa di conservazione richiede un controllo:** eseguita la funzione
+  reale `annotaCart()` isolata, il testo va in memoria con zero chiamate di
+  persistenza, mentre la specifica promette il salvataggio a ogni tasto.
+  Il §10.1 consegna a Claude su `main` quattro dipendenze: composizione e
+  anteprima, identità/revisione di carta e tecniche, bozza account separata
+  dalle risposte valutate, controlli e specifica. Non si archivia un giudizio
+  mancante come errore; la riprova esatta resta solo quiz finché manca un
+  contratto per gli altri filoni, con il motivo scritto nel progetto.
+- **Verificato il prodotto esistente, non il disegno già realizzato:** motore
+  148/150 con 2 skip previsti, dati 242, interfaccia 295, specifica 394;
+  server 58/58 su Node 25.3.0 e LTS 24.21.0, archivio LTS verificato contro
+  il manifesto SHA-256 ufficiale. Selezioni reali del motore esercitate con
+  storico sintetico, 12 riferimenti locali risolti, guardiano e controllo
+  documentale verdi. Quindici casi di accettazione per la realizzazione;
+  nessun `site/`, coda o numero di versione modificato.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag
