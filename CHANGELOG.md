@@ -170,6 +170,59 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   `ui/*`, e stanno in `docs/prossime-sessioni.md` come lavoro da fare prima del
   client degli account.
 
+### Aggiunto — `validaRiga()`, e l'import che non scarta più i tag
+
+- **Una regola sola dice se una riga è buona, e il rifiuto dice perché.**
+  `validaRiga(riga, { quesiti })` nel motore restituisce `null` o un motivo breve
+  e stabile — «data non valida», «senza uid», «tag non valido» —, e
+  `fondiArchivio()` la usa al posto della sua regola in linea, restituendo
+  anche `motivi`, `{ motivo: quante }`. Con gli account la useranno anche la
+  conversione di un file e il server, importando questo stesso file: due copie
+  della regola sono la riga con `ts: "boh"` della 0.4.6, accettata dal server e
+  fatale su ogni dispositivo.
+
+- **Le righe dei tag N/L/C non si scartano più all'import.** Nascono senza `ts`
+  (`app.html:4319`) e la regola vecchia le rifiutava tutte: una risposta con il
+  suo tag dava `nuove: 1, scartate: 1`. Nell'archivio vero della preparazione
+  erano **160**: esportato e reimportato, quel lavoro le avrebbe perse. La
+  pagina non è stata toccata — legge `nuove`, `gia`, `scartate` come prima.
+
+- **Le regole sono state misurate prima di fissarle**, sull'archivio vero del
+  progetto di preparazione, letto sulla macchina dove sta e non copiato: 2.341
+  righe, 135 con la data in UTC con la `Z` — che ha allargato «con offset» a
+  comprenderla —, `uid` tutti stringhe da 17 caratteri, tag solo N/L/C, la riga
+  più grande 241 byte. Poi `validaRiga()` eseguita su tutte, con la banca
+  accanto: **2.341 accettate, zero scarti**. Scarta di più della regola vecchia
+  solo dove una riga è davvero rotta: una data che non è una data, un'ora senza
+  fuso, un `uid` che non è una stringa, una riga oltre i 4 KiB.
+
+- **Quattro test scritti prima**, e rossi uno per uno — non l'intera suite con
+  un errore d'import — finché la funzione non c'era; l'ultimo cadeva per la
+  ragione misurata, `nuove` 1 invece di 2. **Provati al contrario cinque volte**:
+  tag senza data rifiutati → 4 rossi; offset facoltativo → 1; data impossibile
+  accettata → 1; `fondiArchivio()` con la regola vecchia → 1; banca ignorata → 1.
+  **132 test sul motore** (erano 128), 260 verifiche sulla specifica.
+
+### Deciso — dall'autore, sul progetto degli account
+
+- **Senza account nel browser non resta niente, nemmeno le preferenze.** Il
+  progetto proponeva di tenere filtri e modalità, perché non sono risposte;
+  l'autore ha letto alla lettera la promessa dell'ADR-004. R-ACC-09. Entra nella
+  stessa versione degli account, non prima: oggi il sito salva nel browser, e le
+  chiavi che ci scrive sono vere.
+- **La password è lunga almeno 15 caratteri**, come NIST SP 800-63B-4 per una
+  password usata da sola, senza regole di composizione. R-ACC-10.
+- **Su sua delega**, perché ha detto di non avere gli elementi: la macchina con
+  SQLite e Node senza dipendenze, la forma con meno pezzi; e il registro di
+  sicurezza con **l'IP per sei mesi e l'evento per un anno**, sulla
+  raccomandazione della CNIL (delibera 2021-122: fra sei mesi e un anno). La
+  prima stesura diceva trenta giorni, troppo pochi per capire da quando dura un
+  attacco scoperto tardi.
+- **Il link di conferma vale 24 ore**, il limite di NIST SP 800-63A-4 per un
+  codice mandato per email; la prima stesura diceva 48. Per quanto vive un
+  account non confermato **non c'è uno standard**: Mastodon 7 giorni, Discourse
+  14. Resta la proposta di sette, in attesa dell'autore.
+
 ## [0.27.0] — 2026-09-25
 
 ### Verificato — la v0.26.2 sul dominio vero

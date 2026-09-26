@@ -230,6 +230,14 @@ onboarding non la rende obbligatoria senza una decisione che lo dica. Che
 cos'altro chieda, e se il sito consigli un piano di studio strutturato, è
 Q-ONBOARD nel §10.
 
+**Deciso il 26 settembre 2026, dall'autore:** senza account nel browser **non
+resta niente, nemmeno le preferenze** — filtri, modalità automatica, ordine
+della diagnosi. La proposta di tenerle, perché non sono risposte, è stata
+scartata: la promessa si legge alla lettera. Restano soltanto la cache del sito,
+che non contiene niente di chi studia, e l'archivio di prima degli account
+finché chi l'ha non sceglie (R-ACC-05). R-ACC-09. Il come di tutto il §2 sta in
+`docs/account-progetto.md`.
+
 ### 2.5 Che cosa di questo documento descrive ancora il prodotto senza account
 
 Queste parti sono **vere per la versione pubblicata** e diventano false con gli
@@ -329,6 +337,11 @@ IndexedDB nello stesso browser dichiara 3,7 GB, scrive 30.000 righe in 1,9 s.
 
 Se IndexedDB non si apre, l'app ripiega su `localStorage`, **lo dichiara** nella
 scheda Archivio, e lascia che `setItem` lanci.
+
+**Una riga entra solo se `validaRiga()` la accetta** (R-ACC-07), la stessa
+regola che userà il server degli account. Le righe di tag (`_t: 'g'`) sono le
+sole senza `ts`: la pagina le scrive così, e fino al 26 settembre 2026 ogni
+import le scartava (R-ACC-08).
 
 **Il nome del database resta `open-patente-nautica`** anche dopo il rinomino del
 progetto. È l'identità dell'archivio nel browser di chi studia: rinominarlo
@@ -982,6 +995,10 @@ dalla pagina sono scoperti finché non c'è una pagina da guardare, e lo dicono.
 | R-ACC-04 | Senza account si fanno tutte le attività con riepilogo e revisione; ai registrati restano solo le viste che vivono di uno storico | scoperto — richiede l'elenco delle viste per stato, che nascerà con il progetto degli account |
 | R-ACC-05 | Un archivio locale che esiste il giorno del rilascio non sparisce in silenzio: si porta nell'account o si scarica | scoperto — il passaggio non esiste ancora, e va provato su un browser con un archivio vero |
 | R-ACC-06 | Le righe della pagina aperta e quelle dell'account si uniscono per `uid`, senza doppioni e senza vincitore | `test_engine.mjs::fondiArchivio: per uid, senza doppioni` |
+| R-ACC-07 | Una riga si accetta o si rifiuta con una regola sola, `validaRiga()`, e il rifiuto dice il motivo | `test_engine.mjs::validaRiga: una riga rotta` |
+| R-ACC-08 | Le righe dei tag N/L/C, che nascono senza data, si importano | `test_engine.mjs::fondiArchivio: i tag si importano` |
+| R-ACC-09 | Senza account la pagina non conserva niente nel browser, nemmeno le preferenze | scoperto — gli account non esistono ancora, e la suite non esercita il DOM di `app.html` |
+| R-ACC-10 | Una password più corta di 15 caratteri è rifiutata, senza regole di composizione | scoperto — il server non esiste ancora; il controllo andrà in `test_server.mjs` |
 
 ---
 
@@ -1185,3 +1202,10 @@ successo, ed è il motivo per cui questo file esiste.
   l'onboarding di chi si registra, deciso dall'autore, con la data che resta
   facoltativa, e Q-ONBOARD nel §10 per il suo contenuto e per un piano di
   studio strutturato.
+- **26 settembre 2026 — `validaRiga()` e quattro requisiti di accesso.** La
+  regola che dice se una riga è buona sta ora nel motore, sola, e l'import la
+  usa: misurata sull'archivio vero prima di fissarla, 2.341 righe su 2.341. Le
+  righe di tag, che nascono senza data, non si scartano più. Entrano R-ACC-07 e
+  08, coperti, e R-ACC-09 e 10, scoperti con il motivo, dalle decisioni
+  dell'autore: senza account niente nel browser, nemmeno le preferenze; la
+  password lunga almeno 15 caratteri, come NIST.

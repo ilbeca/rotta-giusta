@@ -104,9 +104,13 @@ riga con `ts: "boh"` della 0.4.6, che spegneva la palestra dappertutto.
 di sempre, leggibile da qualunque altro strumento. Un'API che cambia rompe la
 suite al primo aggiornamento di Node, non un archivio.
 
-**Aperto — decide l'autore:** questa forma, oppure Serverless Containers più il
-database PostgreSQL gestito di Scaleway. La seconda toglie la macchina da
-tenere aggiornata e aggiunge una dipendenza (`pg`) e il problema del §2.3.
+**Deciso il 26 settembre 2026, su delega dell'autore:** questa forma. L'altra
+era Serverless Containers più il database PostgreSQL gestito di Scaleway: toglie
+la macchina da tenere aggiornata, e aggiunge una dipendenza (`pg`), un secondo
+servizio da pagare e il problema del §2.3. L'autore ha detto di non avere gli
+elementi per scegliere; la scelta è quella con meno pezzi, e si riapre solo se
+le misure su Scaleway (§19) la smentiscono — per esempio se la macchina più
+piccola non regge Argon2id sotto i 250 ms.
 
 ### 2.3 Perché un solo scrittore conta: il cursore
 
@@ -218,7 +222,7 @@ registro (                           -- sicurezza e responsabilità, §15
   quando        TEXT NOT NULL,
   evento        TEXT NOT NULL,
   account_id    INTEGER,             -- senza vincolo: sopravvive alla cancellazione dell'account
-  ip            TEXT,                -- tolto dopo 30 giorni (§15.3)
+  ip            TEXT,                -- tolto dopo 6 mesi; la riga dopo un anno (§15.3)
   dettaglio     TEXT
 )
 ```
@@ -254,37 +258,54 @@ Cinque scelte che non si vedono dallo schema.
 
 ### 4.1 Una funzione sola: `validaRiga()`, nel motore
 
-**Proposto:** `site/engine.js` esporta `validaRiga(riga) → null | motivo`, e la
-usano **tre** chiamanti: `fondiArchivio()` nel browser, la conversione di un
-file (§11) e il server. Oggi `fondiArchivio()` ha la sua regola in linea —
-`uid`, `_t` e `ts` presenti — e il server ne avrebbe un'altra: è la forma del
-difetto di casa, due conti della stessa cosa in due posti.
+**Fatto il 26 settembre 2026.** `site/engine.js` esporta
+`validaRiga(riga, { quesiti }) → null | motivo`, e la usano — o la useranno —
+**tre** chiamanti: `fondiArchivio()` nel browser (da subito), la conversione di
+un file (§11) e il server. Prima `fondiArchivio()` aveva la sua regola in linea —
+`uid`, `_t` e `ts` presenti — e il server ne avrebbe avuta un'altra: la forma
+del difetto di casa, due conti della stessa cosa in due posti. R-ACC-07 della
+specifica.
 
-Le regole proposte, da misurare su un archivio vero prima di fissarle (§19):
+Il motivo è una frase breve e stabile — «data non valida», «senza uid», «tag
+non valido» — e `fondiArchivio()` restituisce ora anche `motivi`,
+`{ motivo: quante }`: l'import può dire **perché** ha scartato, non solo quante.
+`quesiti` è l'insieme degli id della banca: se c'è, un `item_id` inesistente è
+rifiutato; la pagina oggi non lo passa, il server sì.
+
+**Le regole sono state misurate prima di fissarle**, sull'archivio vero del
+progetto di preparazione (2.341 righe: 2.100 quiz, 52 carteggio, 29 prove, 160
+tag; lette sulla macchina dove stanno, non copiate). Hanno cambiato una regola:
+**135 righe hanno la data in UTC con la `Z`**, scritte prima della 0.4.5, e
+«con offset» vuol dire anche quella. Poi `validaRiga()` è stata eseguita su
+tutte e 2.341, con la banca accanto: **2.341 accettate, zero scarti**.
 
 | Campo | Regola |
 |---|---|
-| `uid` | stringa, 1–64 caratteri |
+| `uid` | stringa, 1–64 caratteri (nell'archivio vero: tutte stringhe, da 17) |
 | `_t` | uno di `q c t s g` |
-| `ts` | obbligatorio salvo per `g` (§4.2); ISO 8601 **con offset** (0.4.5) e `Date.parse` finito |
-| `item_id` | obbligatorio per `q c t`; esistente nella banca caricata — la banca è immutabile, quindi un id sconosciuto è un sintomo |
-| la riga intera | ≤ 4 KiB serializzata: il carteggio porta testo libero in `input_json` |
+| `ts` | obbligatorio salvo per `g` (§4.2), e se c'è dev'essere una data; ISO 8601 **con `Z` o `±hh:mm`** e `Date.parse` finito. Senza offset si rifiuta: un'ora senza fuso non dice quando è |
+| `item_id` | obbligatorio per `q c t`; con `quesiti`, esistente nella banca — la banca è immutabile, quindi un id sconosciuto è un sintomo |
+| `g` | `attempt_uid` presente e `tag` uno di `N L C` (nell'archivio vero: 139, 20, 1) |
+| la riga intera | ≤ 4 KiB serializzata: il carteggio porta testo libero in `input_json`; la più grande misurata pesa 241 byte |
 | campi sconosciuti | **ammessi e conservati**: la regola 2 del §1 vale anche per quello che il server non capisce |
 
-**Cambiare `fondiArchivio()` cambia che cosa scarta, quindi prima si elencano i
-chiamanti** (regola di `AGENTS.md`): oggi uno solo, `importa()` in `app.html`.
-Con la regola nuova scarta di meno (le righe di tag, §4.2) e di più (`ts` non
-data, `item_id` inesistenti); l'import continua a dire quante e, da qui in poi,
-**perché**.
+**Cambiare `fondiArchivio()` cambia che cosa scarta, quindi prima si sono
+elencati i chiamanti** (regola di `AGENTS.md`): uno solo, `importa()` in
+`app.html`, che legge `nuove`, `gia` e `scartate` e non tocca altro. Con la regola
+nuova scarta di meno (le righe di tag, §4.2) e di più (`ts` che non è una data,
+`ts` senza offset, `uid` non stringa); sull'archivio vero la differenza è
+soltanto la prima. `motivi` è un campo in più: la pagina può cominciare a
+mostrarlo quando vuole, senza che niente si rompa prima.
 
 ### 4.2 Due difetti trovati misurando, che vanno chiusi prima
 
-**Le righe dei tag N/L/C non hanno `ts`, e ogni import le scarta.**
+**Le righe dei tag N/L/C non hanno `ts`, e ogni import le scartava.**
 `app.html:4319` scrive `{ _t: 'g', uid, attempt_uid, tag }` e basta.
-`fondiArchivio()` rifiuta ogni riga senza `ts`. Misurato: un file con una
-risposta e il suo tag dà `nuove: 1, scartate: 1`. Oggi è dichiarato — il
-conteggio degli scartati è in schermata — ma chi lo legge non ha modo di sapere
-perché, e sotto gli account ogni tag si perderebbe alla prima sincronia.
+`fondiArchivio()` rifiutava ogni riga senza `ts`. Misurato: un file con una
+risposta e il suo tag dava `nuove: 1, scartate: 1`. **Chiuso nel motore il 26
+settembre**: `validaRiga()` accetta `g` senza data, e il test che lo tiene fermo
+era rosso prima della correzione. Nell'archivio vero erano 160 righe: chi avesse
+esportato e reimportato quella preparazione le avrebbe perse tutte.
 
 **Ritaggare cancella la riga vecchia.** `app.html:4316-4318` toglie le righe di
 tag dello stesso tentativo con `ARCH.cancella()` prima di scrivere la nuova. È
@@ -294,8 +315,9 @@ sincronia successiva: due tag per lo stesso tentativo, nessun errore.
 
 **Proposto, per `ui/*` e prima del client degli account:** le righe di tag
 nascono con `ts`, ritaggare **aggiunge** una riga e non cancella niente, e chi
-legge prende l'ultima per tentativo. `validaRiga()` accetta `g` senza `ts` solo
-perché negli archivi di oggi ce ne sono; il server non le ordina mai per `ts`.
+legge prende l'ultima per tentativo. `validaRiga()` continuerà ad accettare `g`
+senza `ts`, perché negli archivi di oggi ce ne sono; il server non le ordina mai
+per `ts`.
 
 ---
 
@@ -353,10 +375,9 @@ consumare CPU), nessuna regola di composizione, nessuna scadenza periodica, e un
 elenco locale delle password più comuni sul server. La schermata suggerisce una
 frase — «tre o quattro parole» — invece di chiedere simboli.
 
-**Aperto — decide l'autore:** 15 è il numero di NIST ed è più di quello a cui
-chi arriva è abituato. Il costo lo paga ogni iscritto, il beneficio lo protegge
-uno storico di studio, non un conto. Sotto 15 si esce dalla norma, e lo si
-scrive.
+**Deciso il 26 settembre 2026, dall'autore:** 15 caratteri, come NIST. È più
+di quello a cui chi arriva è abituato, e per questo la schermata suggerisce una
+frase invece di una parola. R-ACC-10 della specifica.
 
 **Aperto — una misura e poi l'autore: l'elenco.** Deve essere **locale**: il
 servizio più usato per il controllo delle password compromesse gira su
@@ -589,8 +610,12 @@ si toccano finché chi studia non ha scelto.
 ### 9.1 I gettoni
 
 32 byte casuali, in base64url nel link, **SHA-256** nel database. Monouso.
-Validità: **48 ore** per la verifica e il cambio d'indirizzo, **1 ora** per la
-reimpostazione della password. Un gettone nuovo dello stesso scopo annulla i
+Validità: **24 ore** per la verifica e il cambio d'indirizzo — il limite di
+NIST SP 800-63A-4 §3.8 per un codice di conferma mandato a un indirizzo email;
+la prima stesura diceva 48, che è il predefinito di Discourse e non una norma —
+e **1 ora** per la reimpostazione della password. Un link scaduto non è un
+vicolo cieco: «rimandami la mail» è sempre a un tocco, e l'account intanto
+funziona (§9.6). Un gettone nuovo dello stesso scopo annulla i
 precedenti.
 
 ### 9.2 Il link
@@ -668,6 +693,16 @@ Due limiti, entrambi dichiarati in schermata dal primo momento:
   non arriva. Protegge chi è iscritto a sua insaputa con un indirizzo non suo, e
   toglie gli account scritti con un refuso, che nessuno potrebbe mai più
   recuperare.
+
+  **Non c'è uno standard**, e l'autore ha chiesto dei riferimenti. NIST regola
+  quanto vale il *codice* (24 ore, §9.1), non quanto vive l'account che lo
+  aspetta. Due software molto diffusi lo scrivono nel codice: **Mastodon**
+  cancella gli utenti non confermati dopo **7 giorni**
+  (`UNCONFIRMED_ACCOUNTS_MAX_AGE_DAYS = 7`), **Discourse** dopo **14**
+  (`purge_unactivated_users_grace_period_days`). Qui sette, il più corto dei
+  due, perché un account non confermato può contenere risposte legate
+  all'indirizzo di qualcun altro, e meno a lungo restano meglio è.
+  **In attesa della conferma dell'autore.**
 - **Niente cambio d'indirizzo** prima della conferma: si corregge l'email solo
   dopo aver dimostrato di possederne una.
 
@@ -801,18 +836,26 @@ server non lo eredita.
 
 ### 13.3 Senza account — la domanda dell'ADR-004
 
-**Proposto:**
+**Deciso il 26 settembre 2026, dall'autore: senza account nel browser non resta
+niente, nemmeno le preferenze.** La proposta era di tenere i filtri, perché non
+sono risposte; l'autore ha letto la promessa dell'ADR-004 alla lettera, ed è la
+lettura che non ha bisogno di una nota a piè di pagina. R-ACC-09 della
+specifica.
 
 | Oggi in `localStorage` | Senza account | Con l'account |
 |---|---|---|
-| `pn.esame` (la data) | **non si conserva**: vale per la pagina aperta. Senza storico non c'è semaforo da calcolare | sul server |
-| `pn.segPunti` | **non si conserva** | sul server |
-| `pn.filtro`, `pn.auto`, `pn.segModo`, `pn.diagOrdine`, `pn.prep` | restano: sono come si usa la pagina, non che cosa si è risposto | restano nel dispositivo, non si sincronizzano |
+| `pn.esame` (la data) | vale per la pagina aperta | sul server |
+| `pn.segPunti` | vale per la pagina aperta | sul server |
+| `pn.filtro`, `pn.auto`, `pn.segModo`, `pn.diagOrdine`, `pn.prep` | valgono per la pagina aperta | nel dispositivo, legate all'account, e si cancellano all'uscita con l'archivio locale (§8.5) |
 
-**Aperto — decide l'autore:** la terza riga. «Non resta niente» è la promessa
-dell'ADR-004, e un filtro ricordato è *qualcosa* che resta. Non è una risposta né
-un dato personale, e l'informativa lo nomina per esteso; ma se l'autore legge la
-promessa alla lettera, si tolgono anche queste.
+Due cose restano nel browser anche senza account, e l'informativa le nomina:
+**la cache del service worker**, che contiene il sito e la banca e non una riga
+di chi studia — è ciò che fa funzionare l'offline dalla prima visita —, e
+**l'archivio di prima degli account**, finché chi l'ha non sceglie che cosa
+farne (§12). Nessuna delle due è scritta dalla versione con gli account.
+
+Come per i testi di `site/`, il cambiamento entra **nella stessa versione** degli
+account: oggi quelle chiavi sono vere, perché oggi il sito salva nel browser.
 
 ---
 
@@ -890,18 +933,29 @@ un documento suo.** Questo progetto si ferma al titolare.
 
 L'ADR-003: una violazione si notifica entro 72 ore, e accorgersene richiede log.
 
-**Proposto:** il `registro` tiene accessi riusciti e falliti, registrazioni,
+Il `registro` tiene accessi riusciti e falliti, registrazioni,
 reimpostazioni, cambi di password e d'indirizzo, azzeramenti, cancellazioni,
-letture del titolare, e le mail rifiutate dal fornitore. **Con l'indirizzo IP
-per 30 giorni**, poi l'IP si toglie e l'evento resta. **Nessun log di accesso
+letture del titolare, e le mail rifiutate dal fornitore. **Nessun log di accesso
 HTTP** con indirizzi o intestazioni. Mai password, gettoni o cookie, in nessun
-log: c'è un test (§17).
+log: c'è un test (R-ACC-15, §17).
+
+**Deciso il 26 settembre 2026, su delega dell'autore: l'IP per 6 mesi, l'evento
+per un anno.** Il riferimento è la raccomandazione della CNIL sulla
+journalisation (delibera n. 2021-122 del 14 ottobre 2021): i log che tracciano
+gli accessi a un sistema si conservano **fra sei mesi e un anno**. Qui si prende
+il minimo per l'indirizzo, che è il dato più personale della riga, e il massimo
+per l'evento senza indirizzo. Sei mesi e non trenta giorni, come diceva la prima
+stesura, perché una violazione si scopre spesso tardi, e le 72 ore dell'art. 33
+cominciano da quando te ne accorgi: trenta giorni di storia non bastano a capire
+da quando qualcuno provava. Le letture del titolare stanno nello stesso registro,
+per un anno: il provvedimento del Garante del 27 novembre 2008 sugli amministratori di
+sistema chiede di conservarne gli accessi «non meno di sei mesi».
 
 `recupero-progetto.md` proponeva di non tenere affatto gli IP. Lì non c'erano
 identità da proteggere da tentativi di accesso; qui ci sono, e senza IP un
 attacco a molti account dallo stesso indirizzo non si vede.
 
-**Aperto — decide l'autore, con l'informativa:** i 30 giorni.
+L'informativa scrive i due numeri.
 
 ---
 
@@ -955,27 +1009,36 @@ Safari non è detto.
 
 ---
 
-## 17. I requisiti proposti per il §9.9 della specifica
+## 17. I requisiti
 
-Si aggiungono a R-ACC-01…06. Con il server nella suite, la maggior parte smette
-di essere scoperta.
+Si aggiungono a R-ACC-01…06. **Quattro sono entrati nel §9.9 della specifica il
+26 settembre 2026**, con le decisioni dell'autore e con `validaRiga()`:
+
+| ID | Requisito | Controllo |
+|---|---|---|
+| R-ACC-07 | Una riga si accetta o si rifiuta con una regola sola, `validaRiga()`, e il rifiuto dice il motivo | `test_engine.mjs` — la metà del browser; la metà del server si aggiunge con `test_server.mjs` |
+| R-ACC-08 | Le righe dei tag N/L/C, che nascono senza data, si importano | `test_engine.mjs` — l'import; che ritaggare non cancelli righe è della pagina, e resta scoperto |
+| R-ACC-09 | Senza account la pagina non conserva niente nel browser, nemmeno le preferenze | scoperto — è la pagina |
+| R-ACC-10 | Una password più corta di 15 caratteri è rifiutata, senza regole di composizione | scoperto — il server non c'è ancora |
+
+Gli altri sono **proposti** ed entrano nella specifica con il codice che li
+controlla. Con il server nella suite, la maggior parte smette di essere
+scoperta.
 
 | ID | Requisito | Controllo proposto |
 |---|---|---|
-| R-ACC-07 | Il browser e il server rifiutano le stesse righe per gli stessi motivi | `test_engine.mjs` su `validaRiga()`, e `test_server.mjs` che la chiama attraverso l'API |
-| R-ACC-08 | Una riga accolta torna dal server byte per byte com'era, campi sconosciuti compresi | `test_server.mjs` |
-| R-ACC-09 | La risposta a un invio nomina gli `uid` accolti, già presenti e scartati, e il client toglie dalla coda solo i primi due | `test_engine.mjs` sulla contabilità della coda |
-| R-ACC-10 | Una riga arrivata tardi con un `ts` vecchio compare nella ricezione successiva | `test_server.mjs` |
-| R-ACC-11 | Dopo un azzeramento, un invio con la generazione vecchia è rifiutato e le sue righe non rientrano | `test_server.mjs` |
-| R-ACC-12 | Nessuna password, gettone o cookie compare nel database in chiaro né nel registro | `test_server.mjs` |
-| R-ACC-13 | L'accesso con un'email inesistente e con una password sbagliata danno la stessa risposta | `test_server.mjs` |
-| R-ACC-14 | L'export dal server si ricarica con `importa()` e dà le stesse righe | `test_server.mjs` più `test_engine.mjs` |
-| R-ACC-15 | Una cancellazione toglie tutte le righe dell'account, e un ripristino da una copia precedente non le riporta | `test_server.mjs`, con `ripristina --prova` |
-| R-ACC-16 | Una copia di sicurezza si ripristina e ha le stesse righe dell'originale | `test_server.mjs` |
-| R-ACC-17 | Le righe di tag si importano e si sincronizzano, e ritaggare non cancella righe | `test_engine.mjs` per la regola; scoperto per la pagina finché la suite non esercita `app.html` |
-| R-ACC-18 | Una mail che il fornitore non accetta produce un errore dichiarato, mai «ti abbiamo scritto» | `test_server.mjs`, con il fornitore finto che rifiuta |
-| R-ACC-19 | All'uscita, righe non inviate fermano la cancellazione dell'archivio locale | scoperto — è la pagina |
-| R-ACC-20 | Un archivio di prima degli account, in IndexedDB o in `pn.archivio`, produce l'avviso finché non è portato o scaricato | scoperto — è la pagina, e va provato su un browser con un archivio vero (è R-ACC-05 reso concreto) |
+| R-ACC-11 | Una riga accolta torna dal server byte per byte com'era, campi sconosciuti compresi | `test_server.mjs` |
+| R-ACC-12 | La risposta a un invio nomina gli `uid` accolti, già presenti e scartati, e il client toglie dalla coda solo i primi due | `test_engine.mjs` sulla contabilità della coda |
+| R-ACC-13 | Una riga arrivata tardi con un `ts` vecchio compare nella ricezione successiva | `test_server.mjs` |
+| R-ACC-14 | Dopo un azzeramento, un invio con la generazione vecchia è rifiutato e le sue righe non rientrano | `test_server.mjs` |
+| R-ACC-15 | Nessuna password, gettone o cookie compare nel database in chiaro né nel registro | `test_server.mjs` |
+| R-ACC-16 | L'accesso con un'email inesistente e con una password sbagliata danno la stessa risposta | `test_server.mjs` |
+| R-ACC-17 | L'export dal server si ricarica con `importa()` e dà le stesse righe | `test_server.mjs` più `test_engine.mjs` |
+| R-ACC-18 | Una cancellazione toglie tutte le righe dell'account, e un ripristino da una copia precedente non le riporta | `test_server.mjs`, con `ripristina --prova` |
+| R-ACC-19 | Una copia di sicurezza si ripristina e ha le stesse righe dell'originale | `test_server.mjs` |
+| R-ACC-20 | Una mail che il fornitore non accetta produce un errore dichiarato, mai «ti abbiamo scritto» | `test_server.mjs`, con il fornitore finto che rifiuta |
+| R-ACC-21 | All'uscita, righe non inviate fermano la cancellazione dell'archivio locale | scoperto — è la pagina |
+| R-ACC-22 | Un archivio di prima degli account, in IndexedDB o in `pn.archivio`, produce l'avviso finché non è portato o scaricato | scoperto — è la pagina, e va provato su un browser con un archivio vero (è R-ACC-05 reso concreto) |
 
 ---
 
@@ -1007,11 +1070,10 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
   Argon2id sulla macchina scelta; i record DNS esatti di Transactional Email per
   `posta.rottagiusta.it`; che il servizio non riscriva i link né aggiunga pixel;
   il certificato per `api.rottagiusta.it`; la copia verso `nl-ams`.
-- **Le regole di `validaRiga()` contro un archivio vero.** Quelle del §4.1 sono
-  dedotte dal codice che scrive le righe. Prima di fissarle vanno passate su un
-  export reale — l'archivio da 2.100 risposte della preparazione dell'autore è il
-  candidato — contando che cosa scarterebbero. È esattamente il tipo di
-  deduzione che qui si misura prima di crederci.
+- **Le regole di `validaRiga()` su archivi diversi da quello dell'autore.**
+  Misurate su uno solo (§4.1): 2.341 righe su 2.341. Un archivio che ha
+  attraversato versioni diverse, o importato da altrove, può avere forme che
+  quello non ha; per questo il rifiuto dice il motivo invece di un numero.
 - **Il cookie fra `rottagiusta.it` e `api.rottagiusta.it` su Safari**, con la
   prevenzione del tracciamento attiva (§6.1). È Q-PROVE.
 - **Il peso reale sul server**: i 347 byte a riga del §2.4 vengono da righe
@@ -1025,16 +1087,16 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
 
 | Questione | Decide | Proposta |
 |---|---|---|
-| Macchina con SQLite, o container con PostgreSQL gestito | l'autore | macchina, SQLite, Node senza dipendenze (§2.2) |
-| Lunghezza minima della password | l'autore | 15, come NIST (§5.2) |
+| ~~Macchina con SQLite, o container con PostgreSQL gestito~~ | — | **deciso** su delega: macchina, SQLite, Node senza dipendenze (§2.2) |
+| ~~Lunghezza minima della password~~ | — | **deciso**: 15, come NIST (§5.2) |
 | Elenco delle password comuni: quale, con che licenza | una misura, poi l'autore | un file dichiarato nel README (§5.2) |
 | Durata della sessione | l'autore | 60 giorni senza uso, un anno al massimo (§6.2) |
-| Account non confermato: quanto vive | l'autore | sette giorni, funzionante (§9.6) |
-| Preferenze dell'interfaccia senza account | l'autore | restano nel browser, dichiarate (§13.3) |
-| IP nel registro di sicurezza | l'autore, con l'informativa | 30 giorni (§15.3) |
+| Account non confermato: quanto vive | l'autore, sui riferimenti | sette giorni, funzionante — Mastodon 7, Discourse 14, nessuno standard (§9.6) |
+| ~~Preferenze dell'interfaccia senza account~~ | — | **deciso**: non si conservano nemmeno quelle (§13.3) |
+| ~~IP nel registro di sicurezza~~ | — | **deciso** su delega: 6 mesi l'IP, un anno l'evento, dalla CNIL (§15.3) |
 | Statistiche mostrate a chi studia | l'autore, in un documento suo | fuori da qui (§15.2) |
 | Cosa chiede l'onboarding oltre alla data | l'autore | Q-ONBOARD, specifica §10 |
-| Chiudere i due difetti dei tag (§4.2) | `ui/*` | prima del client degli account |
+| Chiudere il difetto dei tag che resta (§4.2): ritaggare cancella, e i tag nascono senza data | `ui/*` | prima del client degli account; l'import li accetta già |
 
 ---
 
@@ -1051,3 +1113,15 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
   una riga nuova e una scartata. Insieme al tag che ritaggando si cancella, è
   l'unico punto in cui l'archivio non è append-only, ed è il primo che l'unione
   per `uid` avrebbe tradito.
+- **26 settembre 2026 — `validaRiga()` e le decisioni dell'autore.**
+  `validaRiga()` è nel motore, con quattro test scritti prima e rossi finché la
+  funzione non c'era; provati al contrario cinque volte. Le regole sono state
+  misurate sull'archivio vero prima di fissarle: 135 date con la `Z` hanno
+  allargato «con offset», e alla fine 2.341 righe su 2.341 accettate. L'import
+  accetta ora i tag senza data. Decisi dall'autore i 15 caratteri e le
+  preferenze che senza account non restano; decisi su sua delega la macchina
+  con SQLite e i tempi del registro, sei mesi l'IP e un anno l'evento, sulla
+  CNIL. Il link di conferma passa da 48 a 24 ore, il numero di NIST. Per
+  l'account non confermato non c'è uno standard: sette giorni come Mastodon,
+  in attesa della conferma dell'autore. I requisiti proposti sono rinumerati
+  da R-ACC-11, perché quattro sono entrati nella specifica.

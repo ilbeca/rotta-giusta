@@ -1222,23 +1222,85 @@ export function erroriSessione(righe, items, id, opt = {}) {
   return { lista, quanti: lista.length, fonte: s.fonte, trovata: true };
 }
 
+// Una riga dell'archivio pesa ~200 byte; la piu' grande misurata sull'archivio
+// vero del progetto di preparazione (2.341 righe) ne pesa 241, ed e' una di
+// carteggio, che porta il testo scritto da chi studia. Il tetto lascia spazio a
+// una risposta lunga e non a un file infilato dentro una riga.
+export const RIGA_MAX_BYTE = 4096;
+const TIPI_RIGA = new Set(['q', 'c', 't', 's', 'g']);
+const TIPI_CON_QUESITO = new Set(['q', 'c', 't']);
+const TAG = new Set(['N', 'L', 'C']);
+// Data e ora, con i secondi facoltativi, e **sempre** un offset: `Z` (le righe
+// in UTC scritte fino alla 0.4.5, 135 nell'archivio vero) o `±hh:mm` (tutte le
+// altre). Senza offset un'ora non dice quando e', e il giorno di studio che se
+// ne ricava dipende dal fuso di chi legge.
+const TS_ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d{1,9})?)?(Z|[+-]\d{2}:\d{2})$/;
+
+/**
+ * Se una riga si puo' accettare nell'archivio: `null` se si', altrimenti il
+ * motivo, come frase breve e stabile — «data non valida», «senza uid» — perche'
+ * chi importa possa contare gli scarti per motivo invece di un numero muto.
+ *
+ * E' la regola **sola**. La usano l'import (`fondiArchivio`) e, con gli account,
+ * la conversione di un file e il server, che importa questo stesso file
+ * (docs/account-progetto.md §4.1): il browser e il server rifiutano le stesse
+ * righe per gli stessi motivi. Due copie della regola sono la riga con
+ * `ts: "boh"` della 0.4.6, accettata dal server e fatale su ogni dispositivo.
+ *
+ * Controlla la forma da cui dipende chi legge le righe, e niente di piu':
+ * **un campo che non conosce lo lascia stare**, perche' la forma delle righe la
+ * decide la pagina e cresce, e una riga si conserva com'e' arrivata.
+ *
+ * Le righe di tag (`_t: 'g'`) sono le sole senza data: la pagina le scrive
+ * cosi' (160 nell'archivio vero), e fino a questa funzione ogni import le
+ * scartava. Se la data c'e', deve essere una data.
+ *
+ * Con `quesiti` — l'insieme degli id della banca — un `item_id` che non esiste
+ * e' rifiutato: la banca e' immutabile, quindi e' un sintomo. Senza, non si
+ * controlla: la pagina chiama `fondiArchivio` senza la banca accanto.
+ */
+export function validaRiga(riga, { quesiti } = {}) {
+  if (!riga || typeof riga !== 'object' || Array.isArray(riga)) return "non e' una riga";
+  if (typeof riga.uid !== 'string' || !riga.uid || riga.uid.length > 64) return 'senza uid';
+  if (!TIPI_RIGA.has(riga._t)) return 'tipo sconosciuto';
+  if (riga._t !== 'g' || riga.ts != null) {
+    if (typeof riga.ts !== 'string' || !TS_ISO.test(riga.ts) || epoca(riga.ts) == null) return 'data non valida';
+  }
+  if (TIPI_CON_QUESITO.has(riga._t)) {
+    if (typeof riga.item_id !== 'string' || !riga.item_id) return 'senza quesito';
+    if (quesiti && !quesiti.has(riga.item_id)) return 'quesito sconosciuto';
+  }
+  if (riga._t === 'g' && (typeof riga.attempt_uid !== 'string' || !riga.attempt_uid || !TAG.has(riga.tag))) {
+    return 'tag non valido';
+  }
+  let json;
+  try { json = JSON.stringify(riga); } catch { return "non e' una riga"; }
+  if (new TextEncoder().encode(json).length > RIGA_MAX_BYTE) return 'troppo grande';
+  return null;
+}
+
 /**
  * Fonde un archivio importato con quello presente, per `uid`: una riga gia'
  * presente non si duplica, una nuova entra. Restituisce le righe fuse e i
  * conteggi, perche' «ricaricati» deve dire quante ne ha prese e quante aveva
  * gia' — un pulsante che risponde «fatto» per righe che ha scartato e' un
- * difetto, non una scortesia.
+ * difetto, non una scortesia. `motivi` dice perche' le ha scartate,
+ * `{ motivo: quante }`, con i motivi di `validaRiga()`.
+ *
+ * Le righe accolte entrano **come sono arrivate**, campi sconosciuti compresi.
  */
-export function fondiArchivio(presenti, importate) {
+export function fondiArchivio(presenti, importate, opt = {}) {
   const per = new Map();
   for (const r of presenti || []) if (r && r.uid != null) per.set(String(r.uid), r);
   let nuove = 0, gia = 0, scartate = 0;
+  const motivi = {};
   for (const r of importate || []) {
-    if (!r || r.uid == null || !r._t || !r.ts) { scartate++; continue; }
+    const motivo = validaRiga(r, opt);
+    if (motivo) { scartate++; motivi[motivo] = (motivi[motivo] || 0) + 1; continue; }
     if (per.has(String(r.uid))) { gia++; continue; }
     per.set(String(r.uid), r); nuove++;
   }
-  return { righe: [...per.values()], nuove, gia, scartate };
+  return { righe: [...per.values()], nuove, gia, scartate, motivi };
 }
 
 // --- il gioco dei segnali --------------------------------------------------------

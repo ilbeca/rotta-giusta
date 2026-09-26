@@ -1534,6 +1534,97 @@ test('fondiArchivio: per uid, senza doppioni, e dice quante ne ha scartate', () 
   assert.equal(r.righe.find((x) => x.uid === '1').correct, 1, 'la riga presente vince');
 });
 
+// --- validaRiga: una regola sola per dire che una riga e' buona -----------------
+//
+// Oggi la usa l'import; con gli account la useranno anche la conversione di un
+// file e il server, importando questo stesso file (docs/account-progetto.md
+// §4.1). Due copie della regola sono la riga con `ts: "boh"` della 0.4.6, che
+// entrava con HTTP 200 e spegneva la palestra su ogni dispositivo.
+//
+// Le forme qui sotto sono quelle che `app.html` scrive, e le regole sono state
+// misurate il 26 settembre 2026 sull'archivio vero del progetto di preparazione
+// (2.341 righe, lette e non copiate): 135 date in UTC con la `Z` e le altre con
+// l'offset, 160 tag **senza** data, tag solo N/L/C, `uid` stringhe da 17
+// caratteri, la riga piu' grande 241 byte.
+
+// Dal namespace e non per nome: finche' l'export non c'e' devono cadere questi
+// test, non l'intera suite con un SyntaxError all'import.
+const validaRiga = (...a) => E.validaRiga(...a);
+
+const RIGHE_VERE = {
+  q: { _t: 'q', uid: 'msr5ch8z-2z3kb3yl', kind: 'base', item_id: 'base-90', ts: '2026-08-13T06:38:02.579Z',
+       correct: 1, ms: 14964, mode: 'batteria', chosen: '0', sim_uid: null },
+  c: { _t: 'c', uid: 'mt8rn1xa-uly9zqbr', item_id: '5.4.1-9', ts: '2026-08-25T16:34:12.478+02:00',
+       input_json: '{"risposta":"3.7"}', verdict: 0, delta: null, ms: 899996, mode: 'simulazione', sim_uid: null },
+  t: { _t: 't', uid: 'mt8rn1xa-aaaaaaaa', item_id: '5.1.3-1', ts: '2026-08-25T16:40:00+02:00', correct: 1, ms: 8000 },
+  s: { _t: 's', uid: 'mt8j6px7-ms94s8qf', kind: 'base', ts: '2026-08-25T10:37:33.499Z',
+       score: 17, total: 20, passed: 1, ms: 1800000 },
+  g: { _t: 'g', uid: 'mt9o0qeo-elth0i6w', attempt_uid: 'mt9nrnkj-5s2m6z33', tag: 'N' },
+};
+
+test('validaRiga: le righe nella forma che la pagina scrive passano, tag senza data compresi', () => {
+  for (const [t, r] of Object.entries(RIGHE_VERE)) assert.equal(validaRiga(r), null, `riga ${t}`);
+  // le date con l'offset e quelle in UTC dell'archivio di prima della 0.4.5
+  assert.equal(validaRiga({ ...RIGHE_VERE.q, ts: '2026-08-13T08:38:02+02:00' }), null);
+  assert.equal(validaRiga({ ...RIGHE_VERE.q, ts: '2026-08-13T08:38:02-05:30' }), null);
+  // un campo che il motore non conosce non e' un difetto: si conserva
+  assert.equal(validaRiga({ ...RIGHE_VERE.q, campo_futuro: [1, 2] }), null);
+});
+
+test('validaRiga: una riga rotta e\' rifiutata, e il rifiuto dice perche', () => {
+  const q = RIGHE_VERE.q;
+  const casi = [
+    [null, 'non e\' una riga'],
+    [[q], 'non e\' una riga'],
+    ['riga', 'non e\' una riga'],
+    [{ ...q, uid: undefined }, 'senza uid'],
+    [{ ...q, uid: '' }, 'senza uid'],
+    [{ ...q, uid: 42 }, 'senza uid'],
+    [{ ...q, uid: 'x'.repeat(65) }, 'senza uid'],
+    [{ ...q, _t: undefined }, 'tipo sconosciuto'],
+    [{ ...q, _t: 'z' }, 'tipo sconosciuto'],
+    [{ ...q, ts: undefined }, 'data non valida'],
+    [{ ...q, ts: 'boh' }, 'data non valida'],                     // la 0.4.6
+    [{ ...q, ts: '2026-08-13' }, 'data non valida'],
+    [{ ...q, ts: '2026-08-13T08:38:02' }, 'data non valida'],     // senza offset: che ora e'?
+    [{ ...q, ts: '2026-13-45T08:38:02Z' }, 'data non valida'],
+    [{ ...RIGHE_VERE.s, ts: undefined }, 'data non valida'],
+    [{ ...q, item_id: undefined }, 'senza quesito'],
+    [{ ...RIGHE_VERE.c, item_id: '' }, 'senza quesito'],
+    [{ ...RIGHE_VERE.t, item_id: 7 }, 'senza quesito'],
+    [{ ...RIGHE_VERE.g, attempt_uid: undefined }, 'tag non valido'],
+    [{ ...RIGHE_VERE.g, tag: 'X' }, 'tag non valido'],
+    [{ ...RIGHE_VERE.g, ts: 'boh' }, 'data non valida'],          // la data non serve, ma se c'e' e' una data
+    [{ ...RIGHE_VERE.c, input_json: JSON.stringify({ risposta: 'x'.repeat(5000) }) }, 'troppo grande'],
+  ];
+  for (const [riga, motivo] of casi) assert.equal(validaRiga(riga), motivo, JSON.stringify(riga)?.slice(0, 80));
+});
+
+test('validaRiga: con la banca accanto, un quesito che non esiste e\' un sintomo', () => {
+  const quesiti = new Set(['base-90', '5.4.1-9', '5.1.3-1']);
+  for (const r of Object.values(RIGHE_VERE)) assert.equal(validaRiga(r, { quesiti }), null);
+  assert.equal(validaRiga({ ...RIGHE_VERE.q, item_id: 'base-99999' }, { quesiti }), 'quesito sconosciuto');
+  // senza la banca non si controlla: la pagina chiama fondiArchivio senza
+  assert.equal(validaRiga({ ...RIGHE_VERE.q, item_id: 'base-99999' }), null);
+});
+
+test('fondiArchivio: i tag si importano, e gli scarti si contano per motivo', () => {
+  // Il difetto misurato il 25 settembre: una risposta e il suo tag davano
+  // `nuove: 1, scartate: 1`, perche' il tag non ha `ts`.
+  const r = fondiArchivio([], [RIGHE_VERE.q, RIGHE_VERE.g]);
+  assert.equal(r.nuove, 2); assert.equal(r.scartate, 0);
+  assert.deepEqual(r.motivi, {});
+
+  const s = fondiArchivio([], [
+    RIGHE_VERE.q, { ...RIGHE_VERE.c, ts: 'boh' }, { ...RIGHE_VERE.s, ts: 'boh' }, { ...RIGHE_VERE.t, uid: '' },
+  ]);
+  assert.equal(s.nuove, 1); assert.equal(s.scartate, 3);
+  assert.deepEqual(s.motivi, { 'data non valida': 2, 'senza uid': 1 });
+  // la riga entra com'era, con i campi che il motore non conosce
+  const extra = { ...RIGHE_VERE.q, uid: 'nuova-1', campo_futuro: 'x' };
+  assert.deepEqual(fondiArchivio([], [extra]).righe[0], extra);
+});
+
 test('traccia: senza una scadenza niente quota e semaforo in attesa, invece di NaN', () => {
   const items = banca(10);
   const prog = { 'base-1': { n: 1, c: 1, first: 1, s: 1, lw: null, k: 0, t: '2026-08-08' } };

@@ -108,7 +108,12 @@ cui chi studia decide se fidarsi:
 - il passaggio di chi ha già un archivio nel browser il giorno del rilascio: nell'account o
   scaricato, mai perso in silenzio (R-ACC-05);
 - l'onboarding di chi si registra, con la data d'esame **facoltativa**
-  (specifica §2.4); il resto del contenuto è Q-ONBOARD.
+  (specifica §2.4); il resto del contenuto è Q-ONBOARD;
+- **senza account, niente nel `localStorage`**, nemmeno le preferenze — `pn.filtro`,
+  `pn.auto`, `pn.segModo`, `pn.diagOrdine`, `pn.prep`, `pn.esame`, `pn.segPunti`:
+  valgono per la pagina aperta (R-ACC-09, deciso dall'autore il 26 settembre;
+  `docs/account-progetto.md` §13.3). Con l'account restano nel dispositivo e si
+  cancellano all'uscita.
 
 Il *come* lo decide il progetto di realizzazione, punto 2.
 
@@ -122,18 +127,18 @@ territorio `regole`.
 È `docs/account-progetto.md`. Restano due cose, e nessuna è una sessione di
 progetto:
 
-- **le decisioni dell'autore** del suo §20 — la macchina, la lunghezza della
-  password, quanto vive un account non confermato, le preferenze senza account,
-  gli IP nel registro;
+- **una decisione dell'autore**, quanto vive un account non confermato: sette
+  giorni proposti, sui riferimenti del §9.6. Le altre del §20 sono prese;
 - **le misure su Scaleway** del suo §19, che arrivano con l'account.
 
-E ne nascono due lavori piccoli, che vengono **prima** del client degli account:
+`validaRiga()` è nel motore dal 26 settembre, misurata sull'archivio vero, e
+l'import accetta ora i tag. Resta un lavoro piccolo, **prima** del client degli
+account:
 
-- **`validaRiga()` nel motore** (§4.1) — Claude, su `main`. Non aspetta Scaleway
-  né il ridisegno, e va passata su un export vero prima di fissarne le regole.
-- **I due difetti dei tag N/L/C** (§4.2) — ChatGPT, su `ui/*`: le righe di tag
-  nascono senza `ts` e ogni import le scarta; ritaggare cancella una riga, unico
-  punto non append-only dell'archivio.
+- **Il difetto dei tag N/L/C che resta** (§4.2) — ChatGPT, su `ui/*`: ritaggare
+  cancella la riga vecchia, unico punto non append-only dell'archivio; e le
+  righe di tag nascono senza `ts`. Nello stesso giro, l'import può mostrare
+  `motivi`, che `fondiArchivio()` restituisce ora accanto a `scartate`.
 
 ## 3 · Il ridisegno, la fetta successiva
 
@@ -204,7 +209,7 @@ qui si consuma, non si riprogetta.
 
 - Aprire l'account **Scaleway**: blocca il server (punto 3-bis) e le misure
   del §19 di `docs/account-progetto.md`.
-- Le decisioni del §20 di `docs/account-progetto.md`.
+- Quanto vive un account non confermato (`docs/account-progetto.md` §9.6).
 - Q-ONBOARD (specifica §10): che cosa chiede l'onboarding oltre alla data, e se
   il sito consiglia un piano di studio strutturato.
 
@@ -228,3 +233,8 @@ qui si consuma, non si riprogetta.
   `docs/account-progetto.md`, con quello che dipende da Scaleway marcato «da
   misurare». Ha trovato due difetti vivi nelle righe dei tag, che entrano qui
   come lavoro per `ui/*`.
+- **26 settembre 2026 — `validaRiga()` e le decisioni del §20.** La funzione è
+  nel motore e l'import non scarta più i tag. L'autore ha deciso la password da
+  15 caratteri e che senza account non restino nemmeno le preferenze, e ha
+  delegato la macchina e i tempi del registro; resta la durata dell'account non
+  confermato.
