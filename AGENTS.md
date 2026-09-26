@@ -34,6 +34,7 @@ python3 strumenti/controlla.py                    # il guardiano da solo
 python3 fonte/verifica.py                         # i testi del carteggio contro il PDF (serve pypdf)
 python3 strumenti/serve.py                        # il sito in locale, come lo serve Pages
 node server/ripristina.mjs --prova                # scrive, copia, cancella, ripristina, confronta
+python3 strumenti/password_comuni.py --verifica   # l'elenco delle password comuni contro la fonte (serve la rete)
 ```
 
 La suite del server deve passare anche con la **LTS pari** che gira sulla

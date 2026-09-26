@@ -20,11 +20,11 @@ import { validaRiga } from '../site/engine.js';
  * e tabelle nuove, mai tolte ne' rinominate, cosi' il rilascio precedente gira
  * sul database di quello nuovo e tornare indietro resta di un secondo.
  */
-export const SCHEMA = 1;
+export const SCHEMA = 2;
 
-// Lo schema del §3, per la parte che serve oggi. Le tabelle delle sessioni,
-// dei gettoni, dei segnali e del registro arrivano con i pezzi che le usano:
-// aggiungerle e' una migrazione additiva, cioe' esattamente quella permessa.
+// Lo schema del §3, un pezzo per volta. Le tabelle arrivano con i pezzi che le
+// usano, e ognuno e' una migrazione additiva: la 1 e' di P-03 (le righe e la
+// copia), la 2 di P-09 (l'account). I segnali arrivano con il profilo.
 const SCHEMA_1 = `
   CREATE TABLE impianto (
     id            INTEGER PRIMARY KEY CHECK (id = 1),
@@ -59,6 +59,48 @@ const SCHEMA_1 = `
   ) WITHOUT ROWID;
   CREATE INDEX riga_cursore ON riga (account_id, seq);
 `;
+
+// L'account (§5, §6, §9, §15.3). Le due colonne nuove servono al limite dei
+// tentativi (§6.5): il conto dei fallimenti di fila sta nel database e non in
+// memoria, perche' e' lui a disattivare la password al centesimo, e un
+// riavvio non deve regalare altri cento tentativi.
+const SCHEMA_2 = `
+  ALTER TABLE account ADD COLUMN accessi_falliti INTEGER NOT NULL DEFAULT 0;
+  ALTER TABLE account ADD COLUMN password_disattivata_il TEXT;
+  CREATE TABLE sessione (
+    id_hash       BLOB PRIMARY KEY,   -- SHA-256 del token; il token non si conserva
+    account_id    INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
+    creata_il     TEXT NOT NULL,
+    scade_il      TEXT NOT NULL       -- creata_il + 30 giorni, e non si sposta (§6.2)
+  );
+  CREATE INDEX sessione_account ON sessione (account_id);
+  CREATE TABLE gettone (
+    id_hash       BLOB PRIMARY KEY,   -- SHA-256; il gettone non si conserva
+    account_id    INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
+    scopo         TEXT NOT NULL,      -- 'verifica' | 'password' | 'email'
+    nuova_email   TEXT,
+    creato_il     TEXT NOT NULL,
+    scade_il      TEXT NOT NULL,
+    usato_il      TEXT
+  );
+  CREATE INDEX gettone_account ON gettone (account_id, scopo);
+  CREATE TABLE registro (
+    id            INTEGER PRIMARY KEY,
+    quando        TEXT NOT NULL,
+    evento        TEXT NOT NULL,
+    account_id    INTEGER,            -- senza vincolo: sopravvive alla cancellazione
+    ip            TEXT,               -- tolto dopo 6 mesi; la riga dopo un anno (§15.3)
+    dettaglio     TEXT
+  );
+  CREATE INDEX registro_quando ON registro (quando);
+`;
+
+/**
+ * Le migrazioni, in ordine: la n-esima porta il database da n-1 a n. Un
+ * database nuovo le esegue tutte, cosi' nuovo e migrato sono lo stesso schema
+ * e c'e' una strada sola da provare.
+ */
+export const MIGRAZIONI = [SCHEMA_1, SCHEMA_2];
 
 const adesso = () => new Date().toISOString();
 const nuovaEpoca = () => randomBytes(16).toString('hex');
@@ -95,7 +137,7 @@ export function apri(percorso, { log = (m) => console.error(m) } = {}) {
       throw new Error(`${percorso}: ha delle tabelle ma nessun numero di schema — non e' un database di questo server`);
     }
     transazione(db, () => {
-      db.exec(SCHEMA_1);
+      for (const m of MIGRAZIONI) db.exec(m);
       const ora = adesso();
       db.prepare('INSERT INTO impianto (id, epoca, epoca_dal, nato_il, ultima_seq) VALUES (1, ?, ?, ?, 0)')
         .run(nuovaEpoca(), ora, ora);
@@ -103,8 +145,14 @@ export function apri(percorso, { log = (m) => console.error(m) } = {}) {
     });
   } else if (v > SCHEMA) {
     log(`schema del database ${v}, del codice ${SCHEMA}: si e' tornati a un rilascio precedente; parto, le migrazioni sono additive`);
+  } else if (v < SCHEMA) {
+    // Una transazione sola: o tutte le migrazioni che mancano, o nessuna.
+    transazione(db, () => {
+      for (const m of MIGRAZIONI.slice(v)) db.exec(m);
+      db.exec(`PRAGMA user_version = ${SCHEMA}`);
+    });
+    log(`schema del database portato da ${v} a ${SCHEMA}`);
   }
-  // v < SCHEMA: qui andranno le migrazioni, una per numero, in una transazione.
   return db;
 }
 
@@ -136,8 +184,7 @@ export function rigeneraEpoca(db) {
  * Crea un account. La password arriva gia' come stringa PHC: l'hash lo fa chi
  * registra (§5), non il database. Restituisce l'`id` interno.
  */
-export function creaAccount(db, { email, password }) {
-  const ora = adesso();
+export function creaAccount(db, { email, password, ora = adesso() }) {
   const r = db.prepare(`
     INSERT INTO account (email, password, creato_il, ultimo_accesso_il, chiave_locale)
     VALUES (?, ?, ?, ?, ?)`).run(String(email).trim().toLowerCase(), password, ora, ora.slice(0, 10),
@@ -226,9 +273,9 @@ function account(db, id) {
 }
 
 /** Cancella un account con tutte le sue righe, adesso (§14.1). */
-export function cancellaAccount(db, id, { cancellazioni }) {
+export function cancellaAccount(db, id, { cancellazioni, il = adesso() }) {
   const a = account(db, id);
-  annota(cancellazioni, { evento: 'cancellazione', account: a.id, chiave: a.chiave_locale, il: adesso() });
+  annota(cancellazioni, { evento: 'cancellazione', account: a.id, chiave: a.chiave_locale, il });
   transazione(db, () => db.prepare('DELETE FROM account WHERE id = ?').run(id));
 }
 

@@ -560,6 +560,85 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   **183** (erano 135), specifica **274** (erano 270), server 23/23.
   `site/` non è stato toccato.
 
+### Aggiunto — il server, pezzo 1: l'account (P-09)
+
+- **Il server degli account registra, fa entrare, e verifica l'email.** Le
+  rotte del §7.1 di `docs/account-progetto.md` da `registrazione` a
+  `password/cambia`: accesso, uscita da qui e da tutti i dispositivi, `GET
+  /v1/io`, conferma dell'indirizzo e suo rinvio, password dimenticata, nuova e
+  cambiata. Argon2id a `m=65536, t=2, p=1`, i parametri del §20, nella stringa
+  PHC, con una stringa vecchia che si ricalcola all'accesso riuscito; al più due
+  calcoli insieme. La sessione è un cookie `__Host-` opaco, di cui il database
+  tiene solo l'impronta, e vale **30 giorni dall'accesso**: l'uso non la
+  allunga. I gettoni per email valgono 24 ore la verifica e un'ora la password,
+  una volta sola, nel frammento del link. Una richiesta che cambia qualcosa
+  passa solo con l'`Origin` del sito e un corpo JSON, e il CORS risponde solo a
+  lui. Un account non confermato si cancella al settimo giorno, anche nel file
+  delle cancellazioni, e il registro perde l'indirizzo dopo sei mesi e l'evento
+  dopo un anno. Lo schema passa a 2 con una migrazione additiva, che un database
+  nuovo esegue come uno vecchio. Le righe e la sincronia sono il pezzo dopo, e
+  `site/` non è stato toccato.
+
+- **La password: almeno 15 caratteri, nessuna regola di composizione, e non fra
+  le comuni.** `strumenti/password_comuni.py` scarica i «ten million passwords»
+  di Burnett dal file di SecLists al commit fissato, ne controlla l'impronta, e
+  scrive `server/password-comuni.txt`: **10.898 voci, 191.989 byte**, gli stessi
+  numeri misurati da P-07. Il README ne dichiara fonte, commit, le due impronte
+  e la licenza MIT di SecLists; la suite pretende che il file abbia l'impronta
+  che lo script dichiara e che il README la scriva; e il guardiano fallisce se un
+  file di `server/` che non è un modulo non è dichiarato con percorso e impronta.
+  Il rifiuto dice perché e suggerisce una frase; i caratteri si contano come
+  punti di codice, quindi quindici lettere accentate sono quindici.
+
+- **I limiti del §6.5, con i cento tentativi.** Dal quinto accesso fallito di
+  fila un'attesa che parte da 30 secondi e raddoppia fino a 15 minuti; al
+  centesimo la password si disattiva finché non arriva una reimpostazione, e il
+  proprietario lo sa da una mail. Trenta accessi l'ora per indirizzo, cinque
+  registrazioni, tre mail l'ora e dieci al giorno per destinazione, seicento
+  richieste l'ora per sessione. **Il conto dei fallimenti di un account sta nel
+  database**, perché un riavvio non regali altri cento tentativi; quello di
+  un'email che non esiste sta in memoria, con le stesse risposte codice per
+  codice, così il limite non dice chi è iscritto.
+
+- **Non dire chi è iscritto, e dove non si riesce.** L'accesso sbagliato e
+  l'email inesistente danno lo stesso corpo e costano lo stesso calcolo; la
+  password dimenticata risponde sempre `202` e manda la mail senza aspettare il
+  fornitore. **La registrazione invece lo dice**, per il codice: `201` con la
+  sessione per un'email nuova, `202` senza per una già iscritta. È il §9.6 —
+  l'account non confermato funziona da subito — contro una frase del §5.3, ed è
+  aperto per l'autore nel §20 con tre strade.
+
+- **Nove requisiti con il loro test in `test_server.mjs`.** R-ACC-10 e 11 non
+  sono più scoperti, l'11 per la metà del server; entrano R-ACC-16, 17, 21, 25,
+  26, e tre nuovi: R-ACC-27 i cento tentativi, R-ACC-28 la password dimenticata,
+  R-ACC-29 i gettoni. **Scritti prima: 19 test rossi uno per uno**, con moduli
+  vuoti che lanciavano, e i 23 di prima verdi. **Provati al contrario su
+  diciotto rotture**, una per volta, ognuna rossa nel suo test — la sessione che
+  si allunga con l'uso, niente hash per l'email inesistente, i gettoni in
+  chiaro, l'elenco senza minuscole, un gettone che non si consuma, il rifiuto
+  del fornitore ignorato, i byte al posto dei caratteri, l'`Origin` non
+  guardata, e le altre. **Una è passata verde:** il conto dei fallimenti tenuto
+  solo in memoria, perché nessun test riavviava il server. Ora il test dei cento
+  tentativi lo riavvia a metà, e quella rottura è rossa.
+
+- **Tre correzioni trovate scrivendo.** I testi per chi legge — le mail e i
+  messaggi d'errore — hanno gli accenti veri, non gli apostrofi dei commenti. Il
+  limite delle registrazioni conta quelle che costano un hash e una mail, non le
+  password rifiutate: chi ne prova cinque troppo corte non resta fuori un'ora.
+  Senza la chiave di Scaleway il server parte e lo stampa, e ogni registrazione
+  risponde `503` invece di un «ti abbiamo scritto» falso: provato dalla riga di
+  comando.
+
+- **Non fatto, per i pezzi dopo:** il cambio d'indirizzo, il profilo,
+  l'azzeramento e la cancellazione dal web, che toccano le righe o la
+  generazione; gli allarmi al titolare; il fornitore di Scaleway è scritto ma
+  **non misurato**, perché la chiave si crea con la messa in esercizio.
+
+  Suite: server **42/42** con Node 25.3 e con la **24.21.0 LTS**, scaricata da
+  nodejs.org e verificata con `SHASUMS256.txt` (erano 23); motore 131/132 con lo
+  skip di sempre; dati **242** (erano 236); interfaccia 183; specifica **310**
+  (erano 274).
+
 ## [0.27.0] — 2026-09-25
 
 ### Verificato — la v0.26.2 sul dominio vero

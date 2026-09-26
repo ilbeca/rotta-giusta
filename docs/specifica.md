@@ -997,8 +997,10 @@ liste, perché una lista in un prompt è una regola da ricordare.
 
 ### 9.9 L'accesso
 
-Nati dall'ADR-004. Gli account non esistono ancora: i requisiti che dipendono
-dalla pagina sono scoperti finché non c'è una pagina da guardare, e lo dicono.
+Nati dall'ADR-004. Gli account non esistono ancora nel sito pubblicato: i
+requisiti che dipendono dalla pagina sono scoperti finché non c'è una pagina da
+guardare, e lo dicono. Quelli del server hanno il loro controllo in
+`test_server.mjs` man mano che il server cresce, un pezzo per volta.
 
 | ID | Requisito | Controllo |
 |---|---|---|
@@ -1011,10 +1013,18 @@ dalla pagina sono scoperti finché non c'è una pagina da guardare, e lo dicono.
 | R-ACC-07 | Una riga si accetta o si rifiuta con una regola sola, `validaRiga()`, e il rifiuto dice il motivo | `test_engine.mjs::validaRiga: una riga rotta` |
 | R-ACC-08 | Le righe dei tag N/L/C, che nascono senza data, si importano | `test_engine.mjs::fondiArchivio: i tag si importano` |
 | R-ACC-09 | Senza account la pagina non conserva niente nel browser, nemmeno le preferenze | scoperto — gli account non esistono ancora, e la suite non esercita il DOM di `app.html` |
-| R-ACC-10 | Una password più corta di 15 caratteri è rifiutata, senza regole di composizione | scoperto — il server non esiste ancora; il controllo andrà in `test_server.mjs` |
-| R-ACC-11 | Un account non confermato entro sette giorni si cancella con le sue righe, e la schermata dice la data dal primo momento | scoperto — il server non esiste ancora; il controllo andrà in `test_server.mjs`, la schermata resta della pagina |
+| R-ACC-10 | Una password più corta di 15 caratteri è rifiutata, senza regole di composizione | `test_server.mjs::account: una password piu corta di 15 caratteri e rifiutata, senza regole di composizione` |
+| R-ACC-11 | Un account non confermato entro sette giorni si cancella con le sue righe, e la schermata dice la data dal primo momento | `test_server.mjs::verifica: un account non confermato entro sette giorni si cancella con le sue righe` |
+| R-ACC-16 | Nessuna password, gettone o cookie compare nel database in chiaro, né nel registro, né nel log | `test_server.mjs::segreti: nessuna password, gettone o cookie nel database in chiaro ne nel registro` |
+| R-ACC-17 | L'accesso con un'email inesistente e con una password sbagliata danno la stessa risposta, e costano lo stesso calcolo | `test_server.mjs::accesso: un email inesistente e una password sbagliata danno la stessa risposta` |
 | R-ACC-20 | Una copia di sicurezza si ripristina e ha le stesse righe dell'originale, byte per byte | `test_server.mjs::copia: si ripristina con le stesse righe dell originale` |
+| R-ACC-21 | Una mail che il fornitore non accetta produce un errore dichiarato, mai «ti abbiamo scritto» | `test_server.mjs::posta: una mail che il fornitore rifiuta produce un errore dichiarato` |
 | R-ACC-24 | Dopo il ripristino di una copia, una riga accolta dopo la copia torna sul server dal dispositivo che la ha, e ogni altro dispositivo la riceve | `test_server.mjs::epoca: dopo un ripristino le righe accolte dopo la copia tornano` |
+| R-ACC-25 | Una password dell'elenco delle comuni, in qualunque combinazione di maiuscole, o uguale all'email o alla sua parte prima della `@`, è rifiutata, e il rifiuto dice perché | `test_server.mjs::account: una password comune in qualunque maiuscola, o uguale all email, e rifiutata con il perche` |
+| R-ACC-26 | Una sessione vale 30 giorni dall'accesso e l'uso non la allunga: il trentunesimo giorno la stessa richiesta risponde `401` | `test_server.mjs::sessione: vale 30 giorni dall accesso e l uso non la allunga` |
+| R-ACC-27 | Al centesimo accesso fallito di fila la password si disattiva, anche attraverso un riavvio, finché non arriva una reimpostazione; e un'email che non esiste riceve gli stessi codici | `test_server.mjs::accesso: al centesimo fallimento di fila la password si disattiva` |
+| R-ACC-28 | La richiesta di reimpostare la password risponde allo stesso modo per un'email iscritta e per una che non lo è | `test_server.mjs::password dimenticata: risponde allo stesso modo per un email iscritta e una no` |
+| R-ACC-29 | Un gettone mandato per email vale una volta sola e per il suo tempo — 24 ore la verifica, un'ora la password —, e uno nuovo dello stesso scopo annulla i precedenti | `test_server.mjs::verifica: un gettone vale una volta sola e per il suo tempo` |
 
 R-ACC-20 e R-ACC-24 sono i primi requisiti del server con un controllo che si
 esegue, e il giro intero sta in `node server/ripristina.mjs --prova`, che la
@@ -1024,6 +1034,21 @@ perse — e fa lui la parte del dispositivo. La regola del client, «epoca
 cambiata: azzera il cursore e rimanda tutto», andrà nella contabilità della
 coda in `site/engine.js` (`account-progetto.md` §16.1), con il suo test in
 `test_engine.mjs`; fino ad allora la dice solo questo paragrafo.
+
+**Il pezzo dell'account (P-09).** R-ACC-10, 11, 16, 17, 21 e 25…29 si eseguono
+contro il server avviato nello stesso processo, con l'orologio, la posta e i
+parametri di Argon2id passati dal test. Tre cose restano fuori dai loro
+controlli, e si dicono. **R-ACC-11 è coperto per metà:** il server cancella al
+settimo giorno e dà la data in `GET /v1/io`; che la schermata la scriva dal
+primo momento è della pagina. **R-ACC-17 non misura il tempo:** conta i calcoli
+di Argon2id — uno per l'email che non esiste come per quella sbagliata —,
+perché un confronto di millisecondi nella suite sarebbe un test che a volte
+passa. E **la registrazione dice chi è iscritto**, per il codice di risposta:
+`201` con la sessione aperta per un'email nuova, `202` senza per una già
+iscritta. È la conseguenza di due decisioni prese — la sessione alla
+registrazione (`account-progetto.md` §9.6) e le risposte del §7.1 — contro una
+frase del §5.3, «solo il proprietario lo scopre»; è aperta per l'autore
+nel §20 di quel documento, e nessun requisito qui promette il contrario.
 
 ---
 
@@ -1253,3 +1278,12 @@ successo, ed è il motivo per cui questo file esiste.
   acceso quel ramo finché la pagina pubblicata non lo usa: senza, sarebbe un
   controllo scritto e mai eseguito. Il §5, che descrive ancora Batteria e il
   selettore globale, lo aggiorna chi integra P-05, con la pagina che cambia.
+- **26 settembre 2026 — l'account del server (P-09).** R-ACC-10 e R-ACC-11
+  passano da scoperti a un test in `test_server.mjs`, il secondo per la metà del
+  server; entrano R-ACC-16, 17, 21, 25 e 26, proposti dal progetto degli
+  account, e tre nuovi nati scrivendo il codice: R-ACC-27, i cento tentativi del
+  §6.5 di quel progetto; R-ACC-28, la password dimenticata che non dice chi è
+  iscritto; R-ACC-29, i gettoni monouso e a tempo. Ognuno è stato provato al
+  contrario. Il paragrafo sotto la tabella del §9.9 dice che cosa i controlli non
+  vedono, compresa la registrazione che dice chi è iscritto, aperta per
+  l'autore.

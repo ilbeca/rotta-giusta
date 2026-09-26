@@ -25,6 +25,7 @@ DATI = SITE / 'dati'
 # Le frasi spia sono una sola cosa, e stanno nel guardiano.
 sys.path.insert(0, str(RADICE / 'strumenti'))
 from controlla import SPIA, controlla_testo, file_di_testo  # noqa: E402
+import controlla  # noqa: E402
 
 ok = 0
 falliti = []
@@ -91,6 +92,35 @@ def test_segreti():
         ('una parola che comincia con SCW', 'SCWIPPY e SCW_DEFAULT_REGION=nl-ams'),
     ]:
         check('controlla.py non scambia per chiave %s' % nome, not any('Scaleway' in g for g in trova(testo)))
+
+
+def test_materiale_dichiarato():
+    """Un file del server che non e' codice e' materiale di qualcun altro, e si dichiara.
+
+    `server/password-comuni.txt` viene da SecLists (account-progetto.md §5.2): il
+    README ne dichiara la fonte, la licenza e l'impronta. Il guardiano pretende
+    che ogni file di `server/` che non e' un modulo compaia nel README con il
+    suo percorso e la sua impronta SHA-256: un file nuovo non dichiarato, o uno
+    cambiato senza aggiornare la dichiarazione, fa fallire la suite."""
+    import hashlib
+    check('controlla.py sa dire che cosa manca nel README',
+          hasattr(controlla, 'dichiarazioni'), 'manca controlla.dichiarazioni()')
+    if not hasattr(controlla, 'dichiarazioni'):
+        return
+    readme = (RADICE / 'README.md').read_text(encoding='utf-8')
+    veri = {p.relative_to(RADICE).as_posix(): p.read_bytes()
+            for p in (RADICE / 'server').iterdir() if p.is_file() and p.suffix != '.mjs'}
+    check('c\'e\' almeno l\'elenco delle password comuni', 'server/password-comuni.txt' in veri, sorted(veri))
+    check('il materiale del server e\' dichiarato', controlla.dichiarazioni(veri, readme) == [],
+          controlla.dichiarazioni(veri, readme))
+    nuovo = {'server/altro-elenco.txt': b'una\ndue\n'}
+    check('un file non dichiarato si trova', any('altro-elenco' in g for g in controlla.dichiarazioni(nuovo, readme)))
+    cambiato = {'server/password-comuni.txt': veri.get('server/password-comuni.txt', b'') + b'aggiunta\n'}
+    check('un file cambiato senza la dichiarazione si trova',
+          any('impronta' in g for g in controlla.dichiarazioni(cambiato, readme)))
+    impronta = hashlib.sha256(nuovo['server/altro-elenco.txt']).hexdigest()
+    check('dichiarato con percorso e impronta, passa',
+          controlla.dichiarazioni(nuovo, 'server/altro-elenco.txt ' + impronta) == [])
 
 
 # --- caricamento ----------------------------------------------------------------
@@ -598,7 +628,7 @@ def test_serve():
 
 
 def main():
-    for t in (test_controlla, test_segreti, test_quiz, test_meta, test_figure, test_invarianti,
+    for t in (test_controlla, test_segreti, test_materiale_dichiarato, test_quiz, test_meta, test_figure, test_invarianti,
               test_carteggio, test_sw, test_rinomino, test_prefisso_cache, test_manifest_icone, test_indirizzi,
               test_serve):
         t()

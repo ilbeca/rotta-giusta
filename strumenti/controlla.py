@@ -25,7 +25,12 @@ README o un CHANGELOG ripubblicano esattamente come un dataset — e controlla:
      chiaro nemmeno qui: si confrontano impronte SHA-256, vedi IMPRONTE;
   6. nessuna chiave dell'API di Scaleway: i segreti del server stanno sulla
      macchina, mai nel repo (docs/account-progetto.md §16.2). Vale per ogni
-     file, server/ compreso, e si riporta per riga, mai per valore.
+     file, server/ compreso, e si riporta per riga, mai per valore;
+  7. ogni file di server/ che non e' un modulo — oggi l'elenco delle password
+     comuni, che viene da SecLists (account-progetto.md §5.2) — e' dichiarato
+     nel README con il suo percorso e la sua impronta SHA-256. Un file nuovo
+     senza dichiarazione, o cambiato senza aggiornarla, fa fallire il
+     controllo: la provenienza si scrive, non si ricorda.
 
 I punti 1, 2 e 4 esentano questo file e prepara.py: sono i due strumenti che
 devono poter nominare cio' che cercano, altrimenti la regola non e' leggibile.
@@ -164,6 +169,17 @@ def controlla_testo(rel, testo):
     return guai
 
 
+def dichiarazioni(file_server, readme):
+    """I guai del punto 7: `file_server` e' {percorso: byte}, `readme` il testo."""
+    guai = []
+    for rel, dati in sorted(file_server.items()):
+        if rel not in readme:
+            guai.append('materiale non dichiarato: %s non e\' nominato nel README' % rel)
+        elif hashlib.sha256(dati).hexdigest() not in readme:
+            guai.append('materiale non dichiarato: l\'impronta di %s non e\' quella scritta nel README' % rel)
+    return guai
+
+
 def main():
     guai = []
     esaminati = file_di_testo()
@@ -177,6 +193,12 @@ def main():
                 guai.append('file di provenienza non dichiarata: %s'
                             % (Path(cartella) / v).relative_to(RADICE).as_posix())
 
+    server = RADICE / 'server'
+    if server.is_dir():
+        materiale = {p.relative_to(RADICE).as_posix(): p.read_bytes()
+                     for p in sorted(server.iterdir()) if p.is_file() and p.suffix != '.mjs' and not p.name.startswith('.')}
+        guai.extend(dichiarazioni(materiale, (RADICE / 'README.md').read_text(encoding='utf-8')))
+
     print('esaminati %d file di testo:' % len(esaminati))
     for rel, _ in esaminati:
         print('  ', rel)
@@ -188,7 +210,7 @@ def main():
         sys.exit(1)
     print('controllo superato: nessuna annotazione o etichetta di terzi, nessun loro')
     print('nome, nessun file di provenienza non dichiarata, nessun identificatore privato,')
-    print('nessuna chiave di Scaleway.')
+    print('nessuna chiave di Scaleway, nessun materiale del server senza la sua dichiarazione.')
 
 
 if __name__ == '__main__':

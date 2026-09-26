@@ -413,7 +413,9 @@ account (
   generazione            INTEGER NOT NULL DEFAULT 1,   -- sale a ogni azzeramento (§8.4)
   azzerato_il            TEXT,
   data_esame             TEXT,                  -- facoltativa, specifica §2.4
-  chiave_locale          TEXT NOT NULL UNIQUE   -- casuale: il nome dell'archivio nel browser (§8.1)
+  chiave_locale          TEXT NOT NULL UNIQUE,  -- casuale: il nome dell'archivio nel browser (§8.1)
+  accessi_falliti        INTEGER NOT NULL DEFAULT 0,   -- di fila; al centesimo la password si disattiva (§6.5)
+  password_disattivata_il TEXT                  -- NULL finché non si arriva a cento; la toglie la reimpostazione
 )
 
 riga (
@@ -717,6 +719,25 @@ Il controllo è R-ACC-25, proposto nel §17.
 - **Password dimenticata**: sempre `202`, sempre «se l'indirizzo è iscritto, ti
   è arrivata una mail».
 
+**Fatto il 26 settembre 2026 (P-09), con una cosa che non regge.** L'accesso e la
+password dimenticata non dicono chi è iscritto: stesso codice e stesso corpo, un
+calcolo di Argon2id anche per l'email che non esiste — con un hash fittizio
+calcolato all'avvio con i parametri veri —, e la mail di reimpostazione parte
+**senza aspettare il fornitore**, così il tempo della risposta non dipende da
+lei. Anche il limite dei tentativi (§6.5) dà gli stessi codici per le due email,
+e c'è un test che li confronta uno per uno per cento tentativi.
+
+**La registrazione invece lo dice, per il codice di risposta.** Il §7.1 vuole
+`201` con la sessione aperta per un'email nuova e `202` senza sessione per una
+già iscritta, e il §9.6 vuole che l'account non confermato funzioni da subito,
+quindi la sessione alla registrazione non si può togliere. Chi prova a
+registrarsi con l'email di un altro scopre se è iscritta — non dalla schermata,
+che dice la stessa frase, ma da quello che la pagina riceve. La frase qui sopra,
+«solo il proprietario lo scopre», è vera per la mail e falsa per la risposta. È
+il caso che la cheat sheet OWASP sull'autenticazione riconosce come comune, e il
+freno che resta è il limite di 5 registrazioni l'ora per indirizzo (§6.5).
+**Aperto — decide l'autore** (§20).
+
 ---
 
 ## 6. La sessione
@@ -838,6 +859,37 @@ crescenti fra un tentativo e l'altro. **Deciso dalla regia il 26 settembre
 2026, dentro la delega dell'autore a uno standard:** le attese restano come
 sono, e al centesimo fallimento consecutivo la password si disattiva finché non
 arriva una reimpostazione. La prima riga della tabella va letta così.
+
+**Fatto il 26 settembre 2026 (P-09)**, in `server/limiti.mjs` e
+`server/conti.mjs`. Le scelte che la tabella non diceva:
+
+- **L'attesa parte da 30 secondi** dopo il quinto fallimento di fila, e
+  raddoppia fino a 15 minuti: 30, 60, 120, 240, 480, 900. Durante l'attesa la
+  password non si guarda nemmeno — `429` con `Retry-After`, e il tentativo non
+  conta. Un accesso riuscito o una reimpostazione azzerano il conto.
+- **Il conto dei fallimenti di un account sta nel database**, non in memoria:
+  è lui a disattivare la password al centesimo, e un riavvio che lo azzerasse
+  regalerebbe altri cento tentativi. Le attese restano in memoria, come dice la
+  prima riga di questa sezione. Trovato provando al contrario: con il conto in
+  memoria la suite restava verde, e il test ora riavvia il server a metà.
+- **Un'email che non esiste ha il suo conto in memoria**, con le stesse attese
+  e lo stesso `403` al centesimo: altrimenti il limite direbbe chi è iscritto
+  (§5.3). Il prezzo, dichiarato: attraverso un riavvio il conto di un account
+  vero resta e quello di un'email inesistente riparte, quindi chi fa novantanove
+  tentativi su un'email, aspetta un riavvio e ne fa un altro, lo scopre. Costa
+  un giorno di tentativi per email, e un riavvio che non comanda lui.
+- **Al centesimo il proprietario riceve una mail**, con il link per scegliere
+  una password nuova: altrimenti lo scoprirebbe solo al primo accesso.
+- **Il limite di 5 registrazioni l'ora per indirizzo conta quelle che costano un
+  hash e una mail**, non le password rifiutate per la lunghezza o perché comuni:
+  chi ne prova cinque troppo corte non deve restare fuori un'ora.
+- **Tre mail l'ora per destinazione:** oltre, la password dimenticata risponde
+  `202` come sempre — un `429` direbbe chi è iscritto — e la mail non parte;
+  il registro lo scrive. Il rinvio della verifica, che ha una sessione e quindi
+  non ha niente da nascondere, risponde `429`.
+- **L'indirizzo di chi chiede**, dietro il proxy della macchina, è l'ultimo di
+  `X-Forwarded-For`, quello che il proxy aggiunge; il server lo legge solo con
+  `RG_PROXY=1`, e senza usa quello della connessione.
 
 ---
 
@@ -1030,6 +1082,15 @@ alla trecentunesima registrazione del mese vorrebbe dire rifiutare una persona
 per risparmiare 0,00025 €. **Proposto:** il conto resta nella diagnostica, con
 un avviso al titolare quando supera le 300, e il `503` resta solo per quando il
 fornitore rifiuta davvero una mail — che è R-ACC-21, e non cambia.)*
+
+*(26 settembre 2026, P-09: fatto per la registrazione e per il rinvio della
+verifica, che rispondono `503` con il motivo. **La password dimenticata no:**
+risponde `202` anche quando il fornitore rifiuta, perché un `503` solo per le
+email iscritte direbbe chi lo è (§5.3); il rifiuto va nel registro e nel log,
+dove lo vede il titolare. Senza la chiave di Scaleway il server parte con un
+fornitore che rifiuta tutto, e lo stampa all'avvio: meglio un `503` dichiarato
+di un «ti abbiamo scritto» falso. Il conto delle 300 e l'avviso al titolare sono
+del pezzo degli allarmi.)*
 
 ### 9.4 Il mittente, e la posta che c'è già
 
@@ -1473,6 +1534,23 @@ segreto — da quello che le sta accanto sulla riga. Delle tabelle del §3 ci so
 `account` e `riga`, più `impianto` per l'epoca e il cursore: le altre arrivano
 con i pezzi che le usano, ed è una migrazione additiva.)*
 
+*(26 settembre 2026, P-09: l'account. Lo schema passa a 2 con una migrazione
+additiva — `sessione`, `gettone`, `registro`, e due colonne su `account` per il
+limite dei tentativi —, e un database nuovo esegue le stesse migrazioni di uno
+vecchio, così le strade sono una. Il server risponde alle rotte del §7.1 da
+`registrazione` a `password/cambia`; restano per i pezzi dopo il cambio
+d'indirizzo, il profilo, l'azzeramento e la cancellazione dal web, che toccano
+le righe o la generazione. Il codice sta in cinque moduli: `password.mjs`
+(Argon2id e le regole del §5.2), `limiti.mjs` (§6.5), `posta.mjs` (il fornitore
+e i testi delle mail, §9.5), `conti.mjs` (l'account, senza HTTP) e `server.mjs`
+(le rotte, i cookie, l'`Origin` e il CORS del §6.4 e §7.3). La manutenzione del
+§14.3 e del §15.3 — account non confermati, sessioni e gettoni scaduti, IP del
+registro dopo sei mesi, eventi dopo un anno — gira all'avvio e poi ogni giorno.
+L'elenco del §5.2 è `server/password-comuni.txt`, generato da
+`strumenti/password_comuni.py`, dichiarato nel README; il guardiano fallisce se
+un file di `server/` che non è un modulo non ha nel README il suo percorso e la
+sua impronta.)*
+
 ### 16.3 In locale
 
 `strumenti/serve.py` serve il sito come oggi; il server gira accanto su un'altra
@@ -1500,6 +1578,15 @@ Si aggiungono a R-ACC-01…06. **Cinque sono entrati nel §9.9 della specifica i
 test in `test_server.mjs`; di R-ACC-24 manca la metà del client, la contabilità
 della coda nel motore.
 
+**Con l'account (P-09, 26 settembre 2026) sono entrati R-ACC-16, 17, 21, 25 e
+26**, e **R-ACC-10 e 11 hanno ora il loro controllo** in `test_server.mjs`, di
+R-ACC-11 per la metà del server. Tre sono nuovi, nati scrivendo il codice, ed
+entrati con lui: R-ACC-27, il limite dei cento tentativi deciso nel §6.5;
+R-ACC-28, la password dimenticata che non dice chi è iscritto; R-ACC-29, i
+gettoni monouso e a tempo del §9.1. Un requisito entra solo con il suo test, e
+ognuno dei nove è stato provato al contrario — il codice rotto apposta, e il
+test giusto rosso.
+
 Gli altri sono **proposti** ed entrano nella specifica con il codice che li
 controlla. Con il server nella suite, la maggior parte smette di essere
 scoperta.
@@ -1521,6 +1608,9 @@ scoperta.
 | R-ACC-24 | Dopo il ripristino di una copia, una riga accolta dopo la copia torna sul server dal dispositivo che la ha, e ogni altro dispositivo la riceve | `test_server.mjs` con `ripristina --prova`, più `test_engine.mjs` sull'epoca nella contabilità della coda (§2.7) |
 | R-ACC-25 | Una password dell'elenco delle comuni, in qualunque combinazione di maiuscole, o uguale all'email o alla sua parte prima della `@`, è rifiutata, e il rifiuto dice perché; il file dell'elenco è quello che lo script rigenera dalla fonte dichiarata (§5.2) | `test_server.mjs` sul rifiuto; sul file, un controllo che ne confronti l'impronta con quella che lo script produce |
 | R-ACC-26 | Una sessione vale 30 giorni dall'accesso e l'uso non la allunga: il trentunesimo giorno la stessa richiesta risponde `401` (§6.2) | `test_server.mjs`, con l'orologio del server passato dal test |
+| R-ACC-27 | Al centesimo accesso fallito di fila la password si disattiva, anche attraverso un riavvio, finché non arriva una reimpostazione; un'email che non esiste riceve gli stessi codici (§6.5) | `test_server.mjs` — entrato |
+| R-ACC-28 | La password dimenticata risponde allo stesso modo per un'email iscritta e una no (§5.3) | `test_server.mjs` — entrato |
+| R-ACC-29 | Un gettone vale una volta sola e per il suo tempo, e uno nuovo dello stesso scopo annulla i precedenti (§9.1) | `test_server.mjs` — entrato |
 
 ---
 
@@ -1596,6 +1686,7 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
 | Statistiche mostrate a chi studia | l'autore, in un documento suo | fuori da qui (§15.2) |
 | Cosa chiede l'onboarding oltre alla data | l'autore | Q-ONBOARD, specifica §10 |
 | ~~Chiudere il difetto dei tag che resta (§4.2)~~ | — | **chiuso** da P-01 il 26 settembre (merge `6e07525`): i tag nascono con la data, ritaggare aggiunge |
+| La registrazione dice chi è iscritto, per il codice di risposta (§5.3) | l'autore | Trovato da P-09. `201` con la sessione per un'email nuova, `202` senza per una già iscritta: il §7.1 e il §9.6, insieme, contro la frase «solo il proprietario lo scopre». Tre strade. **Accettarlo e dirlo**, con il limite di 5 registrazioni l'ora per indirizzo come freno — la proposta: è la scelta comune, e l'imbuto dell'ADR-004 vuole la sessione subito. **Non aprire la sessione alla registrazione**, finché l'email non è confermata: la risposta diventa identica, ma le risposte della pagina aperta restano in bilico dietro una mail, cioè il §9.6 si rovescia. **Rispondere sempre `202` e aprire la sessione solo dopo la conferma o un accesso**: come la seconda, con un passo in più per chi si registra. Il server oggi fa la prima; la frase del §5.3 è corretta accanto |
 
 ---
 
@@ -1693,3 +1784,13 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
   il limite di 100 tentativi è un obbligo di quello stesso standard. Il «mai un
   blocco» del §6.5 resta vero nel senso che conta — il proprietario rientra
   sempre con la reimpostazione — e cade nella lettera.
+- **26 settembre 2026 — il server, pezzo 1: l'account (P-09).** Registrazione,
+  accesso, sessione di trenta giorni, verifica dell'email, password dimenticata,
+  nuova e cambiata, con Argon2id ai parametri del §20 e l'elenco delle password
+  comuni generato dalla fonte. Nove requisiti con il loro test, fra cui tre nuovi
+  (R-ACC-27…29), e ogni test provato al contrario su diciotto rotture: una è
+  passata verde — il conto dei fallimenti tenuto solo in memoria — e il test ora
+  riavvia il server a metà (§6.5). Trovato: la registrazione dice chi è iscritto,
+  per il codice di risposta; il §5.3 lo dice, e la scelta è dell'autore (§20).
+  Restano per i pezzi dopo le rotte che toccano le righe o la generazione, gli
+  allarmi al titolare e il client.

@@ -104,6 +104,61 @@ solo un veicolo. Le annotazioni didattiche che quella trascrizione conteneva
 sono state tolte (`strumenti/prepara.py` documenta come), e un controllo che
 gira nella suite, `strumenti/controlla.py`, fallisce se rientrano.
 
+### L'elenco delle password comuni
+
+`server/password-comuni.txt` serve al server degli account, che è in
+costruzione e che il sito pubblicato non usa ancora: una password che sta in
+questo elenco si rifiuta, come chiede NIST SP 800-63B-4 (il perché è in
+`docs/account-progetto.md` §5.2). Sono **10.898 voci, 191.989 byte**, una per
+riga, in minuscolo e ordinate: soltanto quelle lunghe almeno 15 caratteri, perché
+una password più corta la rifiuta già la lunghezza.
+
+- **Da dove viene.** I «ten million passwords» di Mark Burnett (febbraio 2015),
+  rilasciati in **pubblico dominio**, nella versione ordinata e deduplicata di
+  [SecLists](https://github.com/danielmiessler/SecLists): il file
+  `Passwords/Common-Credentials/xato-net-10-million-passwords-1000000.txt`, le
+  prime 1.000.000 per frequenza, al commit
+  `c205c36a445bff37f8e58a9ec829105cd4975c58` (8 maggio 2025), impronta SHA-256
+  `424a3e03a17df0a2bc2b3ca749d81b04e79d59cb7aeec8876a5a3f308d0caf51`.
+  L'articolo originale di Burnett oggi non si apre; il marchio di pubblico
+  dominio sta sulla copia dell'Internet Archive
+  (`archive.org/details/10MillionPasswords`).
+- **Come si rifà.** Non è trascritto: lo genera `strumenti/password_comuni.py`,
+  che scarica la fonte, ne controlla l'impronta e scrive il file. Il file che
+  produce ha impronta SHA-256
+  `cbdc28a68ea4bc20d214755fb333d816c55ceada6cc3da3bd9b70ecea42aead0`, e la suite
+  del server pretende che quello nel repo l'abbia.
+
+  ```bash
+  python3 strumenti/password_comuni.py --verifica
+  ```
+
+- **La licenza di SecLists**, che si porta dietro il file:
+
+  ```
+  MIT License
+
+  Copyright (c) 2018 Daniel Miessler
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+  ```
+
 ## Come funziona
 
 - **Sito statico.** Nessun backend, nessun database, nessun form, nessun cookie,
