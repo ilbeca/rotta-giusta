@@ -1,6 +1,6 @@
 # Prossime sessioni — la coda, con i prompt
 
-**Aggiornato il 25 settembre 2026.** Territorio neutro.
+**Aggiornato il 26 settembre 2026.** Territorio neutro.
 
 > **Questo file invecchia.** È una coda, non una verità: quando un lavoro è
 > fatto, la riga si toglie. Se una riga contraddice un documento di progetto,
@@ -11,7 +11,53 @@
 
 ---
 
-## Lo stato al 25 settembre 2026
+## Dove sta che cosa
+
+**Questo è l'unico file con l'ordine dei lavori e con i prompt.** Gli altri
+documenti dicono *che cosa* e *come*, e non portano né una sequenza né un
+prompt: se ne trovi uno altrove, è vecchio, e vale questo. Il motivo è lo
+stesso della specifica unica: un ordine scritto in due posti diverge, ed è
+successo — la tabella delle aree in `prossima-versione.md` §5.1 ha tenuto per
+due settimane una numerazione che nessuno seguiva più.
+
+**Le domande aperte, invece, restano dove si decidono**, e qui si puntano:
+quelle di prodotto nel §10 della specifica, quelle degli account nel §20 di
+`account-progetto.md`. Copiarle qui farebbe due elenchi da tenere allineati.
+
+| Documento | Che cos'è | Penna | Stato |
+|---|---|---|---|
+| **`docs/prossime-sessioni.md`** | la coda, con i prompt | chiunque, su `main` di norma | vivo |
+| `docs/specifica.md` | che cosa è il prodotto, i requisiti col loro controllo, le domande aperte (§10) | Claude, su `main` | vivo |
+| `docs/filosofia.md` | il perché, e il tono dei testi | Claude, su `main` | vivo |
+| `docs/adr/` | le decisioni, una per file | Claude, su `main` | ADR-002 superato, 001/003/004 validi |
+| `docs/prossima-versione.md` | il piano del ridisegno in sei aree, e i contratti col motore | neutro | vivo; l'ordine delle aree sta qui sotto |
+| `docs/account-progetto.md` | come si fanno gli account; aperte nel §20, non misurate nel §19 | neutro | vivo |
+| `docs/area-1-progetto.md` | il progetto dell'area 1 | neutro | **fatto** — resta come modello per le aree successive |
+| `docs/decisioni-aperte.md` | i cinque punti sull'esperienza discussi in tre dal 10 settembre | neutro | lo stato di ciascuno sta nel file; non verificato il 26 settembre quali siano ancora aperti |
+| `docs/eccezioni-interfaccia.md` | le eccezioni che i test dell'interfaccia leggono | neutro | vivo, lo legge `test_interfaccia.py` |
+| `docs/migrazione-hosting.md` | il trasloco su statichost.eu | neutro | resta la fase D, dell'autore |
+| `docs/recupero-progetto.md` | il backup con una frase | neutro | **superato** dall'ADR-003; valgono §5, 8, 9, 10 |
+| `docs/specifiche-ux.md`, `riscontro-ux.md`, `percorso-ux.md` | come si è arrivati alle decisioni UX | interfaccia | storici, non si aggiornano |
+| `docs/motore.md` | puntatore alla specifica | — | storico |
+
+---
+
+## La coda, in ordine
+
+| # | Lavoro | Chi | Dove | Aspetta | Qui |
+|---|---|---|---|---|---|
+| 1 | Allineare ChatGPT e chiudere il difetto dei tag | ChatGPT | `ui/main` | niente | §3.0 |
+| 2 | Le misure su Scaleway, poi i tre prerequisiti del server | Claude | `main` | niente: l'account c'è | §3-bis |
+| 3 | Il server degli account, un pezzo per volta | Claude | `main` | 2 | §3-bis |
+| 4 | Area 2, Quiz: prima il progetto, poi la realizzazione | ChatGPT | `ui/main` | 1, per la penna su `app.html` | §3.1 |
+| 5 | Aree 3–6 del ridisegno | ChatGPT | `ui/main` | la precedente | §3.1 |
+| 6 | Il client degli account, dentro una fetta del ridisegno | ChatGPT | `ui/main` | 3 | §3-bis |
+| — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
+
+**Le due colonne corrono in parallelo**: Claude sul server (non tocca `site/`),
+ChatGPT sull'interfaccia. Si incontrano al punto 6.
+
+## Lo stato al 26 settembre 2026
 
 **Chiuso.** La migrazione a `rottagiusta.it` su statichost.eu (v0.26.0–0.26.2).
 `lunghezzaScreening()` nel motore con i suoi test. **ADR-003**: account con email
@@ -21,6 +67,13 @@ serve per **salvare**, non per usare. Senza account si fanno tutte le prove e
 non resta niente, nemmeno nel browser; con l'account si salva, si vedono i
 Progressi e si passa da un onboarding. Quattro condizioni fanno parte della
 decisione: R-ACC-02…05 nel §9.9 della specifica.
+
+**Il 26 settembre:** `validaRiga()` nel motore, e l'import che non scarta più i
+tag; le decisioni del §20 di `account-progetto.md`, tranne una (§4 qui sotto);
+**l'account Scaleway è aperto**. `ui/main` e `ui/vetrina` sono stati allineati a
+`main` (8857b79) lo stesso giorno: fino ad allora ChatGPT lavorava su una base
+senza ADR-003, ADR-004 e questo file. `main` è avanti di undici commit su
+`origin`: il push si chiede.
 
 **Superati, e marcati come tali** — non cancellati, perché contengono il
 ragionamento su cui le decisioni successive hanno dovuto rispondere:
@@ -129,7 +182,8 @@ progetto:
 
 - **una decisione dell'autore**, quanto vive un account non confermato: sette
   giorni proposti, sui riferimenti del §9.6. Le altre del §20 sono prese;
-- **le misure su Scaleway** del suo §19, che arrivano con l'account.
+- **le misure su Scaleway** del suo §19: l'account è aperto dal 26 settembre,
+  quindi sono il primo passo della sessione del server (§3-bis).
 
 `validaRiga()` è nel motore dal 26 settembre, misurata sull'archivio vero, e
 l'import accetta ora i tag. Resta un lavoro piccolo, **prima** del client degli
@@ -140,17 +194,64 @@ account:
   righe di tag nascono senza `ts`. Nello stesso giro, l'import può mostrare
   `motivi`, che `fondiArchivio()` restituisce ora accanto a `scartate`.
 
-## 3 · Il ridisegno, la fetta successiva
+## 3 · ChatGPT, su `ui/main`
 
-**ChatGPT, su `ui/main`.** Non aspetta la registrazione: con l'ADR-004 il
-primo quesito resta senza account. Ma va letto l'ADR-004 prima di disegnare
-una schermata che promette di ricordare qualcosa: senza account non si salva, e
-i Progressi sono dei registrati.
+**Una penna sola su `app.html`**: i punti qui sotto si fanno uno dopo l'altro,
+un commit ciascuno, e fra l'uno e l'altro c'è la merge su `main`.
+
+### 3.0 Prima di tutto: allinearsi, e il difetto dei tag
+
+ChatGPT non è stato informato di niente di quello che è successo dal 25
+settembre. Il ramo è allineato; il prompt dice che cosa leggere.
 
 ```
-La fetta successiva di docs/prossima-versione.md §5.1. Include il
-ricablaggio di E.lunghezzaScreening() al posto di totScreening() in
-app.html — vedi docs/eccezioni-interfaccia.md.
+Il ramo ui/main è stato allineato a main. Da allora sono cambiate
+decisioni di fondo: leggi, in quest'ordine, docs/adr/ADR-003-…,
+docs/adr/ADR-004-…, docs/filosofia.md, e docs/prossime-sessioni.md
+per intero — l'ordine dei lavori e i prompt stanno solo lì.
+
+Il lavoro di questa sessione è il punto 1 della coda: il difetto dei
+tag N/L/C, docs/account-progetto.md §4.2. Test verdi, voce in fondo a
+[Unreleased], un commit con il trailer, versione non toccata.
+```
+
+### 3.1 Il ridisegno: le aree
+
+**L'ordine che vale è questo**, deciso da ChatGPT il 12 settembre. La tabella
+del §5.1 di `prossima-versione.md` lo riporta ora con la stessa numerazione;
+fino al 26 settembre ne aveva un'altra.
+
+| Area | Che cosa | Stato |
+|---|---|---|
+| 1 | Percorso e primo ingresso | **fatta** (v0.25.0), progetto in `area-1-progetto.md` |
+| 2 | Quiz: cinque intenzioni con gerarchia, screening rinominato | **prossima** |
+| 3 | Il ciclo che si chiude: riepilogo, revisione, «riprova questi N» | |
+| 4 | Carteggio | |
+| 5 | Progressi | |
+| 6 | Rifinitura trasversale | |
+
+Il ridisegno non aspetta la registrazione: con l'ADR-004 il primo quesito resta
+senza account. Ma va letto l'ADR-004 prima di disegnare una schermata che
+promette di ricordare qualcosa: senza account non si salva, e i Progressi sono
+dei registrati. Come per l'area 1, **prima il progetto, poi la realizzazione**,
+in due sessioni.
+
+**Progetto dell'area 2:**
+
+```
+Progetta l'area 2 di docs/prossima-versione.md §5.1, Quiz, in
+docs/area-2-progetto.md, sul modello di docs/area-1-progetto.md. Solo
+il documento e la voce di CHANGELOG: niente site/. Comprende il
+ricablaggio di E.lunghezzaScreening() al posto di totScreening() —
+vedi docs/eccezioni-interfaccia.md.
+```
+
+**Realizzazione dell'area 2**, dopo la merge del progetto:
+
+```
+Realizza docs/area-2-progetto.md in site/app.html. Quattro suite
+verdi, collaudo guardato a 375 e 1280 px, voce in fondo a
+[Unreleased], un commit con il trailer, versione non toccata.
 ```
 
 ## 3-bis · Il codice: due metà con vincoli opposti
@@ -188,13 +289,15 @@ rifarle. O entra dentro una fetta del ridisegno, o viene dopo.
 
 ### I prompt
 
-**Server** — Claude, dopo il punto 2 e con Scaleway aperto:
+**Server** — Claude, su `main`. L'account Scaleway c'è dal 26 settembre:
 
 ```
-Leggi il progetto di realizzazione degli account. Prima di scrivere
-codice: aggiungi il territorio del server a territori.yaml, crea la sua
-suite, e il backup con il ripristino provato. Poi il server, un pezzo
-per volta, ogni pezzo col suo test che prima fallisce.
+Leggi docs/account-progetto.md. Prima di scrivere codice: le misure
+su Scaleway del suo §19, e se smentiscono una scelta lo si dice prima
+di proseguire. Poi i tre prerequisiti di docs/prossime-sessioni.md
+§3-bis: il territorio del server in territori.yaml, la sua suite, il
+backup con il ripristino provato. Poi il server, un pezzo per volta,
+ogni pezzo col suo test che prima fallisce.
 ```
 
 **Client** — dentro una fetta del ridisegno, non prima:
@@ -207,11 +310,14 @@ qui si consuma, non si riprogetta.
 
 ## 4 · Fuori dalle sessioni — l'autore
 
-- Aprire l'account **Scaleway**: blocca il server (punto 3-bis) e le misure
-  del §19 di `docs/account-progetto.md`.
 - Quanto vive un account non confermato (`docs/account-progetto.md` §9.6).
 - Q-ONBOARD (specifica §10): che cosa chiede l'onboarding oltre alla data, e se
   il sito consiglia un piano di studio strutturato.
+- Il push di `main`, quando lo si vuole: undici commit al 26 settembre.
+- **Dal 16 ottobre 2026**, non prima: il redirect da `.pages.dev` (fase D2 di
+  `docs/migrazione-hosting.md`).
+- Le altre questioni aperte stanno dove si decidono: specifica §10,
+  `account-progetto.md` §20, `prossima-versione.md` §9.
 
 ---
 
@@ -238,3 +344,10 @@ qui si consuma, non si riprogetta.
   15 caratteri e che senza account non restino nemmeno le preferenze, e ha
   delegato la macchina e i tempi del registro; resta la durata dell'account non
   confermato.
+- **26 settembre 2026 — un posto solo per l'ordine dei lavori.** In testa la
+  mappa dei documenti e la coda in una tabella; la regola che l'ordine e i
+  prompt stanno solo qui, mentre le domande aperte restano dove si decidono. La
+  tabella delle aree in `prossima-versione.md` §5.1 è rinumerata come il lavoro
+  l'ha seguita — Percorso 1, Quiz 2, ciclo 3 — e rimanda qui per lo stato.
+  ChatGPT allineato a `main` e il suo prompt d'ingresso in §3.0; Scaleway aperto,
+  quindi il server non aspetta più l'autore.

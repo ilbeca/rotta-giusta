@@ -228,6 +228,27 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   all'indirizzo di qualcun altro. R-ACC-11, scoperto finché il server non c'è; i
   requisiti proposti in `docs/account-progetto.md` scalano di uno, da R-ACC-12.
 
+### Riordinato — un posto solo per l'ordine dei lavori
+
+- **`docs/prossime-sessioni.md` è l'unico file con l'ordine dei lavori e con i
+  prompt**, e ora lo dice in testa, con la mappa di che cosa fa ogni documento
+  di `docs/` e la coda in una tabella: chi, su quale ramo, che cosa aspetta.
+  Le domande aperte no: restano nella specifica §10 e in `account-progetto.md`
+  §20, dove si decidono, e da qui si puntano. Consolidare anche quelle avrebbe
+  fatto due elenchi da tenere allineati, che è il difetto che si voleva
+  togliere.
+
+- **La tabella delle aree in `prossima-versione.md` §5.1 aveva una numerazione
+  che nessuno seguiva**: ciclo 1, Percorso 3, mentre il lavoro — e
+  `area-1-progetto.md`, e `eccezioni-interfaccia.md` — contava Percorso 1, Quiz
+  2, ciclo 3. Lo diceva solo una nota dentro il progetto dell'area 1. Un prompt
+  che puntasse a «la fetta successiva di §5.1», come quello di ieri, poteva
+  mandare ChatGPT sull'area sbagliata. Rinumerata come il lavoro l'ha seguita.
+
+- **ChatGPT lavorava su una base di tredici commit prima**, senza ADR-003,
+  ADR-004 e la coda. `ui/main` e `ui/vetrina`, puliti e senza commit propri,
+  sono stati portati avanti veloce a `main`; il prompt d'ingresso è in §3.0.
+
 ## [0.27.0] — 2026-09-25
 
 ### Verificato — la v0.26.2 sul dominio vero

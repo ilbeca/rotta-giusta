@@ -283,9 +283,9 @@ guardato da solo, l'avrebbe vista.
 
 | # | Fetta | Capitoli della Specifica UX/UI | Perché lì |
 |---|---|---|---|
-| **1** | **Il ciclo che si chiude** — riepilogo, revisione, «riprova questi N» | 10 | Il difetto peggiore; autoconsistente (tocca il runner, non la navigazione); il motore è pronto |
+| 1 | **Il Percorso** — primo ingresso, accoglienza, prima attività, ritorno | 3, 4, 5, 6, 7 | La fetta più grossa: qui sta anche il posto per la domanda sull'ambito |
 | 2 | **Quiz: cinque intenzioni con gerarchia** — nomi, screening rinominato, filtri locali | 8, 9, 11 | È dove vivono le decisioni dei punti 1 e 2 di `decisioni-aperte.md` |
-| 3 | **Il Percorso** — primo ingresso, accoglienza, prima attività, ritorno | 3, 4, 5, 6, 7 | La fetta più grossa: qui sta anche il posto per la domanda sull'ambito |
+| 3 | **Il ciclo che si chiude** — riepilogo, revisione, «riprova questi N» | 10 | Il difetto peggiore; autoconsistente (tocca il runner, non la navigazione); il motore è pronto |
 | 4 | **Carteggio** — materiali e giudizio all'ingresso, confronto, autovalutazione | 12, 13, 14, 15 | Ambiente autonomo, si può fare in parallelo concettuale |
 | 5 | **Progressi** — copertura, difficoltà ed esiti separati | 16 | Dipende da 1 e 3 per i collegamenti |
 | 6 | **Rifinitura trasversale** — linguaggio, componenti, responsive, accessibilità, stati | 17-22 | Si consolida su schermate che esistono |
@@ -296,7 +296,11 @@ quattro suite verdi, una voce di CHANGELOG e un collaudo guardato a 375 e
 
 **L'ordine è stato deciso da ChatGPT il 12 settembre**, e differisce dalla
 proposta iniziale: Percorso per primo, ciclo al terzo. La ragione è buona — le
-uscite del ciclo hanno bisogno di una destinazione che esista già.
+uscite del ciclo hanno bisogno di una destinazione che esista già. Fino al 26
+settembre la tabella qui sopra teneva ancora la numerazione iniziale, con il
+ciclo al primo posto, mentre il lavoro seguiva questa: ora la numerazione è
+quella seguita. **Che cosa è fatto e che cosa viene dopo sta solo in
+[`prossime-sessioni.md`](prossime-sessioni.md)**, non qui.
 
 ### 5.2 Come si esegue una fetta
 
