@@ -732,6 +732,33 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   riprodotto per la regia. Versione invariata, nessun tag o push.
 
 
+### Progettato — P-13, il client degli account
+
+- **[Progetto del client](docs/account-client-progetto.md): flussi, stati e
+  testi prima del codice**, per rendere verificabile la promessa dell'ADR-004:
+  tutte le attività senza account, niente conservazione automatica, account
+  per salvare e vedere i Progressi. Registrazione dopo il riepilogo, accesso
+  con scelta sulle risposte correnti, email già registrata, verifica e
+  recupero, uscita con righe pendenti, passaggio del vecchio archivio,
+  conversione dei file e data facoltativa. Le sei funzioni della coda restano
+  nel motore; la pagina consuma risultati, non ricostruisce la contabilità.
+
+- **Diciotto gruppi di controlli richiesti a Claude su main**, distinti dai
+  controlli già esistenti di motore/server: storage anonimo, trasferimenti,
+  scadenza email visibile, isolamento fra account e schede, scarti, cursore,
+  azzeramento e ripristino. I contratti P-11 ancora assenti nella base letta
+  sono prerequisiti dichiarati, non successi simulati dal client. Q-ONBOARD
+  resta all'autore; il passo minimo della data è già specificato e saltabile.
+
+- **Verificata la base:** motore **141/143**, con i due skip previsti delle
+  copie UI rimosse; dati **242**; interfaccia **295**; specifica **344**;
+  server **52/52** sia con Node 25.3.0 sia con **24.21.0 LTS**, dal pacchetto
+  con SHA-256 confrontato con `SHASUMS256.txt`. Controllo documentale condiviso
+  verde. Le suite dati/server sono state rieseguite con permesso per le loro
+  connessioni HTTP locali, negate dalla sandbox al primo tentativo. Solo
+  progetto e CHANGELOG: nessuna modifica a `site/`, test, versione o coda
+  delle sessioni; nessuna prova di un client ancora da realizzare, tag o push.
+
 ## [0.27.0] — 2026-09-25
 
 ### Verificato — la v0.26.2 sul dominio vero
