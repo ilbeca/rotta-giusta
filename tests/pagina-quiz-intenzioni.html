@@ -1,0 +1,80 @@
+<!doctype html>
+<!--
+  La pagina di riferimento del regime progettato dei quiz: cinque intenzioni,
+  docs/area-2-progetto.md §6. Non e' pubblicata e non e' un prototipo: e' il
+  minimo che soddisfa il controllo di tests/test_interfaccia.py, e serve a
+  quel controllo per provarsi al contrario a ogni esecuzione — questa pagina
+  deve passare, e ognuna delle sue rotture elencate in ROTTURE deve fallire.
+
+  Mostra anche la forma del contratto a chi realizza l'area 2: che cosa riceve
+  selezioneQuiz(), che cosa restituisce. Il disegno, i testi e il flusso sono
+  del progetto, non di qui.
+-->
+<title>Quiz, regime progettato: pagina di riferimento</title>
+<button data-modo="mirata">Apri l'allenamento consigliato</button>
+<button data-modo="argomento">Scegli un argomento</button>
+<button data-modo="sbagliate">Ripassa gli errori</button>
+<button data-modo="sim">Simula la prova</button>
+<details><summary>Altri modi di esercitarti</summary>
+  <button data-modo="screening">Un giro tra gli argomenti</button>
+</details>
+<script type="module">
+import * as E from '/engine.js';
+
+const MODI = [
+  ['mirata', 'Allenamento consigliato'],
+  ['argomento', 'Scegli un argomento'],
+  ['sbagliate', 'Ripassa gli errori'],
+  ['sim', 'Simula la prova'],
+  ['screening', 'Un giro tra gli argomenti'],
+];
+
+/** Per la vela le spunte sono voci: i suoi quesiti hanno tutti il tema VELA. */
+function argomenti(conf) {
+  return conf.kind === 'vela' ? { voci: conf.voci } : { temi: conf.temi, voci: conf.voci };
+}
+
+/**
+ * La configurazione di un'intenzione diventa una chiamata al motore.
+ *
+ * fonte: { items, prog, oggi, pesi, prove, esame }
+ * conf, per intenzione:
+ *   mirata     {}
+ *   argomento  { kind, temi, voci, soloNuovi, soloFigura, n }
+ *   sbagliate  { kind, temi, voci, n }
+ *   screening  { kind, perVoce, seme }
+ *   sim        { prova: 'base' | 'vela', seme }
+ */
+function selezioneQuiz(intenzione, conf, fonte) {
+  const { items, prog, oggi } = fonte;
+  const taglia = (l) => (conf.n > 0 ? l.slice(0, conf.n) : l);
+  if (intenzione === 'mirata') {
+    const r = E.mirata(items, prog, oggi, { n: 25, kind: 'base', pesi: fonte.pesi, esame: fonte.esame });
+    return { lista: r.map((x) => x.it), perche: Object.fromEntries(r.map((x) => [x.it.id, x.perche])) };
+  }
+  if (intenzione === 'argomento') {
+    const g = { ...argomenti(conf), soloFigura: conf.soloFigura };
+    if (conf.soloNuovi) {
+      const l = E.coda(items, prog, oggi, { kind: conf.kind, ...g, stati: ['nuovo'], n: 0 });
+      return { lista: taglia(l), totale: l.length };
+    }
+    const r = E.daAllenare(items, prog, oggi, conf.kind, g);
+    return { lista: taglia(r.lista), totale: r.lista.length, daFare: r.daFare };
+  }
+  if (intenzione === 'sbagliate') {
+    const l = E.coda(items, prog, oggi, { kind: conf.kind, ...argomenti(conf), soloSbagliate: true, n: 0 });
+    return { lista: taglia(l), totale: l.length };
+  }
+  if (intenzione === 'screening') {
+    const previsto = E.lunghezzaScreening(items, conf.perVoce, conf.kind);
+    return { lista: E.screening(items, prog, oggi, conf.perVoce, conf.kind, conf.seme), previsto };
+  }
+  if (intenzione === 'sim') {
+    const lista = conf.prova === 'vela'
+      ? E.simulazioneVela(items, prog, oggi, fonte.prove.vela.n, conf.seme)
+      : E.simulazione(items, prog, oggi, fonte.pesi, conf.seme);
+    return { lista };
+  }
+  throw new Error('intenzione sconosciuta: ' + intenzione);
+}
+</script>

@@ -906,7 +906,7 @@ colonna: «scoperto, perché …» è una risposta accettabile, «—» no.
 
 ### 9.4 La navigazione e la reperibilità
 
-Questi cinque non esistevano prima del 9 settembre 2026, e i primi due sono la
+I primi sei non esistevano prima del 9 settembre 2026, e i primi due sono la
 ragione per cui questo documento è stato scritto.
 
 | ID | Requisito | Controllo |
@@ -914,9 +914,10 @@ ragione per cui questo documento è stato scritto.
 | R-NAV-01 | Ogni schermata dichiarata nel §5.2 ha **almeno un ingresso** nella pagina | `test_interfaccia.py::test_ogni_vista_ha_una_porta` |
 | R-NAV-02 | Ogni funzione esportata dal motore è chiamata dalla pagina, o sta nell'elenco dichiarato delle eccezioni | `test_interfaccia.py::test_motore_senza_orfani` |
 | R-NAV-03 | Ogni voce della barra porta a una vista dichiarata e ha un'etichetta di testo, non la sola icona | `test_interfaccia.py::test_voci_barra` |
-| R-NAV-04 | Le sei modalità dei quiz esistono tutte | `test_interfaccia.py::test_modalita_quiz` |
-| R-NAV-05 | I due selettori globali — «solo mai fatte» e «solo con figura» — esistono | `test_interfaccia.py::test_selettori` |
+| R-NAV-04 | I quiz sono in uno dei due regimi riconosciuti. **Attuale:** le sei modalità esistono tutte, e nessuna pagina tiene Batteria accanto al contratto nuovo. **Progettato** (area 2): cinque intenzioni con una porta ciascuna, nessun ingresso Batteria, e ognuna apre la selezione del §6 di `area-2-progetto.md` — funzione del motore, parametri e lista eseguiti, non letti | `test_interfaccia.py::test_modalita_quiz` |
+| R-NAV-05 | «Solo mai fatte» e «solo con figura» esistono: globali nel regime attuale; nel progettato solo nella scelta per argomento, dove chiedono al motore `stati: ['nuovo']` e `soloFigura`, e nessun'altra intenzione li riceve | `test_interfaccia.py::test_selettori` |
 | R-NAV-06 | L'elenco delle schermate del §5.2 è esattamente quello che sta nel file: nessuna aggiunta e nessuna sparizione in silenzio | `test_interfaccia.py::test_viste_dichiarate` |
+| R-NAV-07 | Il controllo del regime progettato gira a ogni esecuzione, anche finché la pagina pubblicata è a sei ingressi: una pagina di riferimento lo passa, e ciascuna delle sue rotture dichiarate lo fa fallire nominando il difetto | `test_interfaccia.py::test_intenzioni_provate_al_contrario` |
 
 **Che cosa questi controlli non fanno.** Non fissano la composizione della
 barra: quante voci abbia e come si chiamino è Q-NAV, e decide l'autore (§10). Un
@@ -924,6 +925,18 @@ test che ne fissasse l'elenco prenderebbe quella decisione al posto suo. Fissano
 gli invarianti che valgono con quattro destinazioni, con sette e con qualunque
 altra scelta — e R-UX-01 dice che il Carteggio ha una sua stanza, non che debba
 stare nella barra.
+
+**I due regimi dei quiz, e quando ne resta uno.** R-NAV-04 e R-NAV-05 sono
+scritti per il passaggio all'area 2 (`area-2-progetto.md` §10.1): la pagina
+pubblicata ha sei modalità, quella progettata cinque intenzioni, e `main` deve
+restare verde con la prima mentre la seconda si realizza. Il controllo riconosce
+il regime da `MODI`; nel progettato estrae `selezioneQuiz()` e la esegue contro
+il motore vero con una spia sulle chiamate (`tests/quiz_intenzioni.mjs`). Il
+contratto che la pagina deve rispettare è nel §10.1 di quel progetto. **Il
+regime attuale ha una scadenza:** lo toglie la regia quando integra P-05, e da
+quel momento i due requisiti tornano ad avere un regime solo. Che cosa il
+controllo non vede — la gerarchia, il giro dietro un disclosure, i testi, il
+focus, i ritorni, «Base e vela» come due fasi — resta collaudo a 375 e 1280 px.
 
 ### 9.5 Gli stati
 
@@ -1232,3 +1245,11 @@ successo, ed è il motivo per cui questo file esiste.
   `tests/test_server.mjs`, verde con Node 25.3 e con la 24.21.0 LTS della
   macchina. Entrano i due requisiti che il §2.7 di `account-progetto.md` aveva
   proposto per la copia e per l'epoca, con il loro controllo.
+- **26 settembre 2026 — R-NAV-04 e R-NAV-05 per due regimi, e R-NAV-07.** Il
+  progetto dell'area 2 sostituisce le sei modalità dei quiz con cinque
+  intenzioni e i filtri globali con filtri locali; i controlli pretendevano
+  ancora le sei. Ora riconoscono il regime attuale e quello progettato, e nel
+  secondo eseguono la selezione invece di leggere i nomi. R-NAV-07 tiene
+  acceso quel ramo finché la pagina pubblicata non lo usa: senza, sarebbe un
+  controllo scritto e mai eseguito. Il §5, che descrive ancora Batteria e il
+  selettore globale, lo aggiorna chi integra P-05, con la pagina che cambia.

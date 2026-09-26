@@ -20,7 +20,9 @@ valgono con quattro destinazioni, con sette e con qualunque altra scelta.
     python3 tests/test_interfaccia.py
 """
 
+import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -63,9 +65,22 @@ VISTE = {
 # che sembra vivo.
 PORTE_FUORI_DAL_DOM = {}
 
-# Le sei modalita' dei quiz. Non sono sei varianti della stessa cosa: sono sei
-# mestieri diversi, e la specifica (§4.2) dice perche' non si accorpano.
-MODI = ['mirata', 'argomento', 'sbagliate', 'sim', 'screening', 'batteria']
+# I quiz hanno due regimi riconosciuti, e il controllo sa in quale si trova.
+#
+# Il regime ATTUALE, a sei ingressi, e' la pagina pubblicata: sei mestieri, e la
+# specifica (§4.2) dice perche' non si accorpano. Il regime PROGETTATO, a cinque,
+# e' l'area 2 (docs/area-2-progetto.md): Batteria sparisce come ingresso e il suo
+# mestiere resta in «Scegli un argomento», i filtri diventano locali. Il §10.1 di
+# quel progetto chiede che nel regime nuovo si eserciti la selezione — funzioni e
+# parametri — e non la presenza dei nomi, e che `main` resti verde nel passaggio.
+#
+# **Il regime attuale ha una scadenza:** la regia lo toglie quando integra P-05.
+# Da quel commit `MODI_SEI` e il ramo che la usa spariscono, e una pagina a sei
+# ingressi torna a essere rossa.
+MODI_SEI = ['mirata', 'argomento', 'sbagliate', 'sim', 'screening', 'batteria']
+MODI_CINQUE = ['mirata', 'argomento', 'sbagliate', 'sim', 'screening']
+BANCO_QUIZ = RADICE / 'tests' / 'quiz_intenzioni.mjs'
+RIFERIMENTO_QUIZ = RADICE / 'tests' / 'pagina-quiz-intenzioni.html'
 
 # Export del motore che la pagina non chiama, e non e' un difetto. Ogni riga ha
 # il motivo e, dove serve, la condizione alla quale sparisce.
@@ -187,35 +202,177 @@ def test_voci_barra():
               'solo icona: a chi non riconosce il simbolo la voce non dice niente')
 
 
-# --- 4. le sei modalita' ci sono tutte (R-NAV-04) ---------------------------------
+# --- 4. i quiz: il regime e le sue intenzioni (R-NAV-04, R-NAV-05) ------------
+
+def chiavi_modi(testo):
+    """Le chiavi dichiarate in `const MODI = [...]`, o None se l'elenco manca."""
+    m = re.search(r'const MODI = \[(.*?)\];', testo, flags=re.S)
+    if not m:
+        return None
+    return re.findall(r"(?:\[\s*|\b(?:k|chiave)\s*:\s*)'([a-z]+)'", m.group(1))
+
+
+def banco_quiz(testo):
+    """Le verifiche del regime progettato, eseguite sotto Node sulla pagina data.
+
+    Il banco estrae `selezioneQuiz()` e la esegue contro il motore vero con una
+    spia sulle chiamate: vedi tests/quiz_intenzioni.mjs. Se il banco stesso non
+    parte, e' un rosso, non un silenzio.
+    """
+    try:
+        p = subprocess.run(['node', str(BANCO_QUIZ)], input=json.dumps({'pagina': testo}),
+                           capture_output=True, text=True, timeout=120)
+        out = json.loads(p.stdout) if p.returncode == 0 else None
+    except (OSError, ValueError, subprocess.TimeoutExpired) as e:
+        return [{'gruppo': 'intenzioni', 'nome': 'il banco dei quiz parte', 'ok': False, 'extra': str(e)}]
+    if out is None:
+        return [{'gruppo': 'intenzioni', 'nome': 'il banco dei quiz parte', 'ok': False,
+                 'extra': (p.stderr or '').strip()[-400:]}]
+    return out
+
+
+def regime_quiz(testo):
+    """(regime, verifiche): 'attuale', 'progettato' o None, e la lista di esiti.
+
+    Ogni verifica e' {gruppo, nome, ok, extra}; il gruppo «intenzioni» e' di
+    R-NAV-04, il gruppo «filtri» di R-NAV-05.
+    """
+    chiavi = chiavi_modi(testo)
+    js = senza_commenti(testo)
+    if chiavi is None:
+        return None, [{'gruppo': 'intenzioni', 'nome': 'la pagina dichiara l\'elenco MODI', 'ok': False,
+                       'extra': 'senza elenco non si sa quali ingressi abbiano i quiz'}]
+    if set(chiavi) == set(MODI_SEI) and len(chiavi) == 6:
+        v = []
+        # Un ibrido e' la scappatoia che il §10.1 vieta: il contratto nuovo
+        # scritto, e la sesta modalita' tenuta in piedi perche' passi il vecchio.
+        v.append({'gruppo': 'intenzioni', 'nome': 'regime attuale: non e\' un ibrido con quello progettato',
+                  'ok': not re.search(r'^function selezioneQuiz\b', js, re.M),
+                  'extra': 'la pagina ha gia\' selezioneQuiz() ma tiene Batteria fra i MODI: una sesta '
+                           'modalita\' fittizia fa passare il controllo vecchio (area 2, §10.1)'})
+        v.append({'gruppo': 'filtri', 'nome': 'regime attuale: esiste il selettore «solo domande mai fatte»',
+                  'ok': 'mai fatte' in js and 'S.prep' in js,
+                  'extra': 'e\' il filtro che vale su piu\' modalita\': se sparisce, spariscono '
+                           'anche le frasi che dichiarano dove NON vale'})
+        v.append({'gruppo': 'filtri', 'nome': 'regime attuale: esiste il filtro «solo quesiti con figura»',
+                  'ok': 'soloFigura' in js,
+                  'extra': 'all\'esame 119 quesiti mostrano un disegno: e\' l\'unico modo di vederli tutti'})
+        return 'attuale', v
+    # Senza Batteria e dentro le cinque, e' il regime progettato anche se ne
+    # manca una: e' proprio il caso che deve diventare rosso, e il banco dice
+    # quale manca invece di un generico «regime non riconosciuto».
+    if chiavi and 'batteria' not in chiavi and set(chiavi) <= set(MODI_CINQUE):
+        v = banco_quiz(testo)
+        if set(chiavi) != set(MODI_CINQUE) or len(chiavi) != 5:
+            v.append({'gruppo': 'intenzioni', 'nome': 'regime progettato: cinque intenzioni, una volta ciascuna',
+                      'ok': False, 'extra': 'MODI dichiara ' + ', '.join(chiavi)})
+        return 'progettato', v
+    return None, [{'gruppo': 'intenzioni', 'nome': 'i quiz sono in un regime riconosciuto', 'ok': False,
+                   'extra': 'MODI dichiara %s: non sono le sei modalita\' di oggi ne\' le cinque '
+                            'intenzioni dell\'area 2' % ', '.join(chiavi)}]
+
+
+_REGIME_APP = None
+
+
+def regime_app():
+    global _REGIME_APP
+    if _REGIME_APP is None:
+        _REGIME_APP = regime_quiz(leggi('app.html'))
+    return _REGIME_APP
+
+
+def registra(regime, verifiche, gruppo):
+    etichetta = {'attuale': 'regime attuale, a sei', 'progettato': 'regime progettato, a cinque'}
+    for x in verifiche:
+        if x['gruppo'] == gruppo:
+            check('quiz (%s): %s' % (etichetta.get(regime, 'regime ignoto'), x['nome']),
+                  x['ok'], x.get('extra', ''))
+
 
 def test_modalita_quiz():
-    app = leggi('app.html')
-    m = re.search(r'const MODI = \[(.*?)\];', app, flags=re.S)
-    check('la pagina dichiara l\'elenco delle modalita\'', m is not None)
-    if not m:
-        return
-    chiavi = re.findall(r"\['([a-z]+)'", m.group(1))
-    for k in MODI:
-        check('esiste la modalita\' «%s»' % k, k in chiavi,
-              'sparita dall\'elenco MODI')
-    check('non ci sono modalita\' non dichiarate',
-          set(chiavi) <= set(MODI),
-          'in piu\': ' + ', '.join(sorted(set(chiavi) - set(MODI))))
+    regime, v = regime_app()
+    if regime == 'attuale':
+        # Le sei chiavi ci sono tutte: lo ha gia' stabilito regime_quiz(), che
+        # riconosce il regime solo se l'insieme e' esattamente quello.
+        check('quiz (regime attuale, a sei): le sei modalita\' ci sono tutte', True)
+    registra(regime, v, 'intenzioni')
 
-
-# --- 5. i due selettori globali (R-NAV-05) ----------------------------------------
 
 def test_selettori():
-    app = senza_commenti(leggi('app.html'))
-    check('esiste il selettore «solo domande mai fatte»',
-          'mai fatte' in app and 'S.prep' in app,
-          'e\' il filtro che vale su piu\' modalita\': se sparisce, spariscono '
-          'anche le frasi che dichiarano dove NON vale')
-    check('esiste il filtro «solo quesiti con figura»',
-          'soloFigura' in app,
-          'all\'esame 119 quesiti mostrano un disegno: e\' l\'unico modo di '
-          'vederli tutti')
+    regime, v = regime_app()
+    registra(regime, v, 'filtri')
+    check('quiz: i filtri sono stati controllati', any(x['gruppo'] == 'filtri' for x in v),
+          'nessuna verifica sui filtri: «solo mai fatte» e «solo con figura» sono '
+          'spariti senza che nessuno lo dica')
+
+
+# --- 5. il controllo del regime progettato si prova al contrario ----------------
+#
+# Finche' la pagina pubblicata e' a sei ingressi, il ramo del regime progettato
+# non gira mai su di lei: sarebbe un controllo scritto e mai eseguito, che e' la
+# forma del semaforo verde a copertura zero. Quindi gira qui, a ogni esecuzione,
+# su una pagina di riferimento che deve passare e su ciascuna delle sue rotture,
+# che devono fallire nominando il difetto.
+
+ROTTURE = [
+    # (che cosa si rompe, testo da sostituire, sostituzione, frammento atteso fra i rossi)
+    ('perde un\'intenzione', "  ['screening', 'Un giro tra gli argomenti'],\n", '',
+     'dichiarata in MODI'),
+    ('perde una porta', '<button data-modo="sbagliate">Ripassa gli errori</button>', '',
+     'ha una porta'),
+    ('tiene Batteria come sesto ingresso', "  ['sim', 'Simula la prova'],\n",
+     "  ['sim', 'Simula la prova'],\n  ['batteria', 'Batteria'],\n", 'regime attuale: non e\' un ibrido'),
+    ('la Mirata apre 20 quiz invece di 25', 'n: 25, kind', 'n: 20, kind', 'fino a 25 quiz base'),
+    ('la Mirata eredita la banca di un\'altra attivita\'', "n: 25, kind: 'base'", 'n: 25, kind: conf.kind',
+     'fino a 25 quiz base'),
+    ('la vela riceve i temi', "conf.kind === 'vela' ? { voci: conf.voci }", "conf.kind === 'vela' ? { temi: conf.voci }",
+     'argomenti come li ha scelti'),
+    ('«solo mai fatte» ignorato', "stati: ['nuovo'], n: 0", 'n: 0', 'chiede i soli mai visti'),
+    ('il ripasso riceve «solo mai fatte»', 'soloSbagliate: true, n: 0',
+     "soloSbagliate: true, n: 0, ...(conf.soloNuovi ? { stati: ['nuovo'] } : {})", 'non riceve i filtri'),
+    ('«solo con figura» passa al ripasso', 'soloSbagliate: true, n: 0',
+     'soloSbagliate: true, soloFigura: conf.soloFigura, n: 0', 'non riceve i filtri'),
+    ('il tetto non si applica', 'return { lista: taglia(r.lista)', 'return { lista: r.lista', 'tagliata a 20'),
+    ('daFare ricalcolato in pagina', 'daFare: r.daFare', 'daFare: r.lista.length', 'totale e da fare'),
+    ('il giro conta senza lunghezzaScreening', 'const previsto = E.lunghezzaScreening(items, conf.perVoce, conf.kind);',
+     'const previsto = 44 * conf.perVoce;', 'lunghezzaScreening'),
+    ('la prova vela scrive 5 a mano', 'fonte.prove.vela.n', '5', 'meta.prove.vela.n'),
+    ('la selezione legge uno stato globale', 'const { items, prog, oggi } = fonte;',
+     'const { items, oggi } = fonte; const prog = S.prog;', 'lancia'),
+    # Con la Mirata deterministica le due liste coincidono: la prende solo il
+    # conto delle chiamate, ed e' il difetto del §6 — lista e motivi da due fonti.
+    ('i motivi della Mirata vengono da una seconda chiamata',
+     'perche: Object.fromEntries(r.map(',
+     "perche: Object.fromEntries(E.mirata(items, prog, oggi, { n: 25, kind: 'base', pesi: fonte.pesi, esame: fonte.esame }).map(",
+     'nessun\'altra selezione'),
+    ('la simulazione base pesca a caso con estrai', 'E.simulazione(items, prog, oggi, fonte.pesi, conf.seme)',
+     'E.estrai(items, prog, oggi, 20, conf.seme)', 'chiama E.simulazione'),
+]
+
+
+def test_intenzioni_provate_al_contrario():
+    rif = RIFERIMENTO_QUIZ.read_text(encoding='utf-8')
+    regime, v = regime_quiz(rif)
+    rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in v if not x['ok']]
+    check('la pagina di riferimento e\' nel regime progettato', regime == 'progettato', str(regime))
+    check('la pagina di riferimento passa il controllo', not rossi, '; '.join(rossi[:3]))
+    # Un banco che non esegue niente passerebbe tutto: si pretende che abbia
+    # esercitato ogni intenzione e i due filtri.
+    check('il banco ha esercitato la selezione, non solo letto i nomi', len(v) >= 90,
+          'solo %d verifiche' % len(v))
+    for g in ('intenzioni', 'filtri'):
+        check('il banco ha verifiche del gruppo «%s»' % g, any(x['gruppo'] == g for x in v))
+    for cosa, vecchio, nuovo, atteso in ROTTURE:
+        check('rottura «%s»: si applica alla pagina di riferimento' % cosa, vecchio in rif,
+              'il testo da sostituire non c\'e\' piu\': la rottura non romperebbe niente')
+        if vecchio not in rif:
+            continue
+        _, vr = regime_quiz(rif.replace(vecchio, nuovo, 1))
+        rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in vr if not x['ok']]
+        check('rottura «%s»: il controllo diventa rosso' % cosa, bool(rossi), 'e\' passata verde')
+        check('rottura «%s»: e il rosso nomina il difetto' % cosa, any(atteso in r for r in rossi),
+              'rossi: ' + '; '.join(rossi[:3]))
 
 
 # --- 6. il motore non ha funzioni orfane (R-NAV-02) --------------------------------
@@ -436,6 +593,7 @@ def test_trasloco():
 def main():
     for t in (test_viste_dichiarate, test_ogni_vista_ha_una_porta,
               test_voci_barra, test_modalita_quiz, test_selettori,
+              test_intenzioni_provate_al_contrario,
               test_motore_senza_orfani, test_chiamate_al_motore_preservate,
               test_letture_che_non_mascherano,
               test_testi_leggibili, test_alt_di_contenuto, test_trasloco):

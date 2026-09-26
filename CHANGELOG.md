@@ -512,6 +512,54 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   come una scrittura di credenziali, e non è stata aggirata. La STARDUST1-S si
   crea alla messa in esercizio, per non pagarla ferma.
 
+### Test — P-06: i controlli dei quiz conoscono due regimi, e nel nuovo eseguono
+
+- **`test_modalita_quiz` e `test_selettori` riconoscono il regime della pagina**
+  da `MODI`: le sei modalità di oggi, oppure le cinque intenzioni dell'area 2.
+  Nel primo restano i controlli di prima; nel secondo `tests/quiz_intenzioni.mjs`
+  estrae `selezioneQuiz(intenzione, conf, fonte)` dalla pagina e la esegue con
+  la banca vera, uno storico sintetico e un `E` che registra ogni chiamata di
+  selezione prima di eseguirla. Per ciascuna intenzione pretende la **sola**
+  chiamata della tabella del §6 di `area-2-progetto.md`, i suoi parametri, e
+  la lista che il motore ha restituito con il solo tetto `n`. Il contratto è
+  nel §10.1 del progetto, dove P-05 lo legge; R-NAV-04 e R-NAV-05 riscritti.
+
+  **Perché non i nomi.** Cinque nomi giusti possono aprire la lista sbagliata:
+  una Mirata a 20, la vela filtrata per tema, «solo mai fatte» che non arriva al
+  motore, la prova vela con un 5 scritto a mano. È il difetto di casa — il
+  numero promesso e la lista che si apre da due fonti — spostato dal motore
+  alla colla fra pagina e motore. Tre scelte lo stringono: ogni configurazione
+  porta **campi di altre attività**, e un filtro che si trasferisce è rosso; le
+  condizioni della prova vela nella fonte sono **7 domande e non 5**, così una
+  costante in pagina non passa per coincidenza; e si contano le chiamate, perché
+  lista e motivi della Mirata presi da due chiamate coincidono, essendo la
+  Mirata deterministica, e solo il conteggio lo vede.
+
+- **Il ramo nuovo gira a ogni esecuzione, anche se la pagina è a sei.** Senza,
+  sarebbe un controllo scritto e mai eseguito fino a P-05.
+  `test_intenzioni_provate_al_contrario` lo fa girare su
+  `tests/pagina-quiz-intenzioni.html`, il
+  minimo che rispetta il contratto, e su **sedici rotture**, ognuna rossa e con
+  il difetto nominato: un'intenzione o una porta in meno, Batteria tenuta come
+  sesta accanto al contratto nuovo, e tredici di parametri. R-NAV-07.
+
+  **Provati al contrario anche il banco e la pagina vera.** Quattro controlli del
+  banco tolti uno per volta: i primi tre hanno fatto fallire la loro rottura; il
+  quarto — contare solo l'ultima chiamata di selezione — **è passato verde**,
+  perché nessuna rottura faceva due chiamate. È entrata la sedicesima, i motivi
+  della Mirata da una seconda chiamata, e ora lo prende. Sulla pagina di oggi:
+  togliere solo Batteria la fa rossa (niente `selezioneQuiz`, `totScreening`
+  ancora lì), togliere la simulazione pure, togliere `S.prep` pure.
+  L'estrattore, che segue le parentesi saltando stringhe, template, commenti e
+  regex, legge tutte e 115 le funzioni di primo livello di `app.html`, e
+  ognuna compila da sola.
+
+- **Il regime attuale ha una scadenza:** lo toglie la regia quando integra
+  P-05, con il §5 della specifica che descrive ancora Batteria e il selettore
+  globale. Suite: motore 131/132 con lo skip di sempre, dati 236, interfaccia
+  **183** (erano 135), specifica **274** (erano 270), server 23/23.
+  `site/` non è stato toccato.
+
 ## [0.27.0] — 2026-09-25
 
 ### Verificato — la v0.26.2 sul dominio vero

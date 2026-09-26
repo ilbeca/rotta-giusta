@@ -472,6 +472,40 @@ aggiornamento del registro di eccezioni in P-05 è quello del §6, insieme alla
 chiamata reale. `erroriSessione` resta orfana fino all'area 3; `peggiori` resta
 in attesa di Q-DUE. Nessuna chiamata protetta di altre viste va rimossa.
 
+**Come lo legge il controllo — scritto da P-06, 26 settembre 2026.**
+`tests/test_interfaccia.py` riconosce il regime da `const MODI = [...]`: le sei
+chiavi di oggi sono il regime attuale; nessuna `batteria` e chiavi fra le cinque
+sono il regime progettato, e lì ne pretende esattamente cinque. Nel regime
+progettato la pagina deve avere:
+
+- in `MODI` le chiavi `mirata`, `argomento`, `sbagliate`, `sim`, `screening`
+  (il primo elemento di ogni riga, o un campo `k:`), e per ciascuna una porta
+  `data-modo="<chiave>"`, scritta o generata da `MODI`; nessuna porta Batteria;
+- nessun `totScreening`;
+- una funzione di primo livello **`selezioneQuiz(intenzione, conf, fonte)`**,
+  dove la configurazione diventa una chiamata al motore. Deve dipendere solo
+  dai suoi argomenti, da `E` e da altre funzioni dichiarate al primo livello:
+  il controllo la estrae ed esegue senza DOM e senza `S`.
+
+`fonte` è `{ items, prog, oggi, pesi, prove, esame }` — `S.banca`, lo specchio,
+il giorno, `meta.pesi_esame`, `meta.prove`, la data d'esame. `conf` per
+intenzione: `mirata {}`; `argomento { kind, temi, voci, soloNuovi, soloFigura,
+n }`; `sbagliate { kind, temi, voci, n }`; `screening { kind, perVoce, seme }`;
+`sim { prova: 'base' | 'vela', seme }`. Per la vela gli argomenti stanno in
+`voci`. Restituisce `{ lista }` e in più: `perche` per la Mirata, `totale` per
+argomento e ripasso, `daFare` per argomento senza solo-mai-fatte, `previsto`
+per il giro, da `E.lunghezzaScreening()`. Il controllo verifica per ciascuna la
+**sola** chiamata di selezione della tabella del §6, i suoi parametri, e che la
+lista sia quella restituita dal motore con il solo tetto `n`; mette in ogni
+configurazione campi di altre attività e pretende che non passino. «Base e
+vela» è due chiamate `sim` in sequenza e resta al collaudo.
+
+La pagina di riferimento `tests/pagina-quiz-intenzioni.html` mostra la forma
+minima che passa; non è un disegno né un prototipo. Il controllo la esegue a
+ogni run insieme a sedici rotture che devono fallire (R-NAV-07). Se il
+contratto sta stretto alla realizzazione, si dice alla regia: cambiarlo tocca
+`tests/`, che da `ui/*` non si scrive.
+
 ### 10.2 Casi obbligatori per la realizzazione
 
 Sono controlli da eseguire, **non risultati della schermata nuova**.
