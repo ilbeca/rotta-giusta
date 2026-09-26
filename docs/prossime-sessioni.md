@@ -106,7 +106,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 5 | Area 2, Quiz: la realizzazione — **verificata, merge ferma** | la regia | `main` | la decisione del §4 sulla merge con conflitto | P-05 |
+| 5 | Area 2, Quiz: la realizzazione — **verificata, merge da rifare** | la regia | `main` | il commit di P-10, che lavora nella stessa cartella | P-05 |
 | 4b | Il server, pezzo 2: le righe, la sincronia, l'azzeramento, e la contabilità della coda nel motore | Claude | `main`, a mano | niente | P-10 |
 | 4c | Il server, pezzo 3: «email già registrata», cambio d'indirizzo e profilo, cancellazione e due anni, allarmi, il conto delle 300 mail | Claude | `main`, a mano | P-10 | P-11 |
 | 5b | Chiudere il regime vecchio dei controlli dei quiz, e il §5 della specifica | Claude | `main`, a mano | la merge di P-05; fra P-10 e P-11, quando la cartella è libera | P-12 |
@@ -383,18 +383,13 @@ consuma, non si riprogetta.
   più l'iscrizione, ma non costano niente e non danno un'informazione in più.
   Scritta anche in `account-progetto.md` (§5.3, §7.1, §20) e nella specifica
   come R-ACC-30; il server la fa con P-11, con il suo test.
-- **La merge di P-05 è ferma, e serve un sì.** Il commit di ChatGPT è
-  verificato, ma la merge ha un conflitto nel CHANGELOG — le due mani hanno
-  aggiunto in fondo a `[Unreleased]` — e chiudere a mano un conflitto passa dal
-  `pre-commit`, che su `main` rifiuta `site/app.html`. Il controllo dei
-  territori non riconosce la chiusura di una merge (`Standards`,
-  `tools/check_territories.py`, non guarda `MERGE_HEAD`). Due strade: **la
-  regia aggiunge `.gitattributes` con `CHANGELOG.md merge=union`** e
-  `.gitattributes` fra le regole in `territori.yaml` — git tiene le righe dei
-  due lati da sé, provato su una copia: zero righe perse da una parte e
-  dall'altra, e la merge non si ferma più —; oppure **l'autore** chiude questa
-  merge con `TERRITORI_OK=1`, che è la sua uscita e non quella di un agente. La
-  prima risolve anche le prossime.
+- ~~La merge di P-05 è ferma, e serve un sì~~ — **l'autore ha scelto la prima
+  strada il 26 settembre**: `.gitattributes` con `CHANGELOG.md merge=union`,
+  fra le regole in `territori.yaml` e spiegato in `AGENTS.md` (commit
+  `5229ad6`). La merge di P-05 la rifà la regia quando P-10, che lavora nella
+  cartella principale e tocca anche `docs/eccezioni-interfaccia.md`, ha fatto
+  il suo commit. Resta aperto in `Standards`: `check_territories.py` non
+  riconosce la chiusura di una merge.
 - **Q-PROVE**, riaperta da P-05: le prove con persone e lo zoom nativo al 200 %,
   che il browser integrato non fa. `docs/area-2-collaudo-ux.md` dice che cosa
   manca.
@@ -1198,3 +1193,5 @@ fare: un archivio vero nel browser che passa nell'account senza perdere una riga
   segnaposto, con che cosa aspettano e che cosa dovranno contenere. La merge di
   P-05 si è fermata sul `pre-commit`, che non riconosce la chiusura di una
   merge: annullata senza perdite, e nel §4 le due strade per rifarla.
+- **26 settembre 2026 — `merge=union`.** Scelta dell'autore: il CHANGELOG si
+  fonde da sé. La merge di P-05 aspetta che P-10 liberi la cartella.
