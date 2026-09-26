@@ -350,6 +350,38 @@ vedeva. Si trovano solo pensando a chi è collegato mentre si ripristina.
   data, generazione nuova, nessuna email —, che il ripristino non tocca e
   rilegge prima di riaprire il servizio. Fa parte di `ripristina --prova`.
 
+**Fatto il 26 settembre 2026 (P-03)**, in `server/db.mjs` e `server/copie.mjs`,
+con `node server/ripristina.mjs --prova` nella suite (20 controlli). Il file
+delle cancellazioni è una riga JSON per evento, scritta **prima** della
+transazione e con `fsync`: se il processo cade fra i due, il file dice
+«cancellato» e il database no, e il ripristino successivo cancella un account
+che l'aveva chiesto; nell'ordine opposto un account cancellato potrebbe tornare
+da una copia, che è il guasto che il file esiste per impedire. Tre cose trovate
+scrivendolo, ognuna con il suo test in `tests/test_server.mjs`:
+
+- **Un `id` si riusa, e il solo `id` nel file cancellerebbe la persona
+  sbagliata.** Dopo un ripristino il database riparte dal massimo della copia,
+  quindi un account nuovo prende l'`id` di uno cancellato dopo la copia —
+  misurato: lo prende davvero. Il ripristino successivo rileggerebbe «`id` N
+  cancellato» e cancellerebbe lui. Il file porta anche `chiave_locale`, casuale
+  e senza dati personali, e si ricancella solo se combaciano tutte e due.
+- **Un azzeramento si rifà solo se la copia non lo contiene già.** Il file si
+  rilegge per intero, anche le voci più vecchie della copia; rifare un
+  azzeramento che la copia ha già toglierebbe le risposte date dopo, con la
+  generazione nuova. La condizione è `generazione` dell'account minore di
+  quella del file. Trovato rompendola apposta: nessun test lo prendeva.
+- **Il cursore viene da un contatore, non da `MAX(seq) + 1`.** Cancellare
+  l'account con le righe più recenti fa scendere il massimo, e un numero già
+  dato torna in circolo. Oggi non morderebbe, perché ogni cursore è quello di
+  un account; ma basta una risposta che esponga il numero globale, e la riga
+  nuova sta prima del cursore. Il contatore sta in `impianto`, con l'epoca, e
+  il ripristino lo riporta indietro con la copia: è il caso che l'epoca copre.
+
+**Non fatto, e resta della macchina:** il trasporto delle copie verso `nl-ams`,
+che vuole la chiave del §19, e i due giri al giorno. `node server/copia.mjs`
+fa la copia, la verifica e il confronto con la precedente, ed esce 1 su un calo
+che il file delle cancellazioni non spiega: è il pezzo che il giro chiamerà.
+
 **Non provato**, e resta per la messa in esercizio: le istantanee del disco di
 Scaleway come ritorno indietro del sistema intero, e il gruppo di sicurezza
 della macchina, che la console crea da sola e che va guardato prima di aprire la
@@ -1240,6 +1272,17 @@ E in più: `strumenti/controlla.py` passa anche su `server/`, e impara a fallire
 su una chiave dell'API di Scaleway scritta in un file. I segreti stanno nella
 macchina, mai nel repo.
 
+*(26 settembre 2026, P-03: fatti tutti e tre, più il guardiano. `server/**` è
+nel territorio `motore`; `tests/test_server.mjs` avvia nello stesso processo un
+server che risponde solo a `GET /v1/salute` — versione, schema, epoca — e passa
+con Node 25.3 e con la 24.21.0 LTS della macchina, che con `node:sqlite` non
+stampa nemmeno l'avviso; il database nasce con `PRAGMA user_version = 1`,
+l'epoca e `secure_delete`. `controlla.py` riconosce una access key di Scaleway
+dalla forma, e una secret key — che è un UUID, e un UUID da solo non è un
+segreto — da quello che le sta accanto sulla riga. Delle tabelle del §3 ci sono
+`account` e `riga`, più `impianto` per l'epoca e il cursore: le altre arrivano
+con i pezzi che le usano, ed è una migrazione additiva.)*
+
 ### 16.3 In locale
 
 `strumenti/serve.py` serve il sito come oggi; il server gira accanto su un'altra
@@ -1262,6 +1305,10 @@ Si aggiungono a R-ACC-01…06. **Cinque sono entrati nel §9.9 della specifica i
 | R-ACC-09 | Senza account la pagina non conserva niente nel browser, nemmeno le preferenze | scoperto — è la pagina |
 | R-ACC-10 | Una password più corta di 15 caratteri è rifiutata, senza regole di composizione | scoperto — il server non c'è ancora |
 | R-ACC-11 | Un account non confermato entro sette giorni si cancella con le sue righe, e la schermata dice la data dal primo momento | scoperto — il server non c'è ancora; il controllo andrà in `test_server.mjs`, la schermata resta della pagina |
+
+**R-ACC-20 e R-ACC-24 sono entrati il 26 settembre 2026** (P-03), con i loro
+test in `test_server.mjs`; di R-ACC-24 manca la metà del client, la contabilità
+della coda nel motore.
 
 Gli altri sono **proposti** ed entrano nella specifica con il codice che li
 controlla. Con il server nella suite, la maggior parte smette di essere
@@ -1409,3 +1456,10 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
   regia ha preso i parametri di Argon2id proposti da P-02. Per la durata della
   sessione e l'elenco delle password comuni l'autore ha chiesto uno standard:
   li sceglie P-07.
+- **26 settembre 2026 — i tre prerequisiti del server (P-03).** `server/` nel
+  territorio `motore`, la quinta suite con un server che risponde alla salute,
+  e la copia con il ripristino provato: epoca, file delle cancellazioni e
+  numero dello schema, esercitati da `ripristina --prova`. Tre cose trovate
+  scrivendolo, nel §2.7: l'`id` che si riusa dopo un ripristino, l'azzeramento
+  da non rifare quando la copia lo contiene già, e il cursore da un contatore.
+  R-ACC-20 e R-ACC-24 entrano nella specifica.

@@ -26,13 +26,20 @@ questo sito.
 
 ```bash
 node --test tests/test_engine.mjs                 # il motore, e le tre versioni allineate
+node --test tests/test_server.mjs                 # il server degli account, e il ripristino provato
 python3 tests/test_dati.py                        # dati, invarianti, e il guardiano
 python3 tests/test_interfaccia.py                 # le viste, le porte, le modalità
 python3 tests/test_specifica.py                   # ogni requisito ha il suo controllo
 python3 strumenti/controlla.py                    # il guardiano da solo
 python3 fonte/verifica.py                         # i testi del carteggio contro il PDF (serve pypdf)
 python3 strumenti/serve.py                        # il sito in locale, come lo serve Pages
+node server/ripristina.mjs --prova                # scrive, copia, cancella, ripristina, confronta
 ```
+
+La suite del server deve passare anche con la **LTS pari** che gira sulla
+macchina (oggi Node 24), non solo con la versione del Mac: il pacchetto
+ufficiale di nodejs.org, verificato con `SHASUMS256.txt`, in una cartella a
+parte, e `<cartella>/bin/node --test tests/test_server.mjs`.
 
 Tutto gira sull'Air con node e python di sistema. Non c'è nessun servizio da
 riavviare, nessuna macchina remota, nessun database.
@@ -76,7 +83,7 @@ controllo che git esegue.
 
 | territorio | file | chi |
 |---|---|---|
-| **motore** | `site/engine.js`, `site/dati/`, `site/figure/`, `fonte/`, `strumenti/`, `tests/`, `docs/adr/`, `docs/motore.md` | Claude, su `main` |
+| **motore** | `site/engine.js`, `site/dati/`, `site/figure/`, `server/`, `fonte/`, `strumenti/`, `tests/`, `docs/adr/`, `docs/motore.md` | Claude, su `main` |
 | **regole** | `AGENTS.md`, `CLAUDE.md`, `territori.yaml`, `docs-check.yaml`, `.githooks/`, `.claude/`, `.agents/`, `.gitignore`, `README.md`, `LICENSE`, `VERSION` | Claude, su `main` |
 | **interfaccia** | il resto di `site/`, e `docs/*-ux.md` | ChatGPT, su `ui/*` |
 | *condivisi* | `CHANGELOG.md`, `site/sw.js` | tutti |

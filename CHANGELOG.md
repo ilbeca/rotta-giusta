@@ -384,6 +384,59 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   senza oscurati. Nessuna modifica a `site/`, versione o coda; collaudo visivo
   e con persone della schermata nuova restano da svolgere quando sarà realizzata.
 
+### Aggiunto — i tre prerequisiti del server (P-03)
+
+- **`server/` esiste, nel territorio `motore`, e ha la sua suite.**
+  `tests/test_server.mjs`, la quinta, avvia nello stesso processo un server che
+  per ora risponde solo a `GET /v1/salute` — versione, schema, epoca — e lo
+  interroga con `fetch`. Zero dipendenze: `node:http`, `node:sqlite`, e
+  `validaRiga()` importata da `site/engine.js`, così il server rifiuta le stesse
+  righe del browser con lo stesso motivo. `territori.yaml` e `AGENTS.md` lo
+  dicono; niente di `site/` è stato toccato.
+
+- **Il backup con il ripristino provato, dal primo giorno.** La copia si fa con
+  `VACUUM INTO` e si verifica con `integrity_check`; un calo di righe che il file
+  delle cancellazioni non spiega è un allarme. Il ripristino prepara il database
+  accanto e lo sostituisce solo quando è verificato, **rigenera l'epoca** e
+  **rilegge il file delle cancellazioni**, che sta fuori dal database: sono le
+  due decisioni dell'autore dopo P-02. `node server/ripristina.mjs --prova` fa il
+  giro intero — scrive, copia, cancella, ripristina, confronta — in 20 controlli,
+  e la suite lo lancia. Entrano **R-ACC-20** e **R-ACC-24** nella specifica.
+
+  **Tre cose trovate scrivendolo**, in `account-progetto.md` §2.7. Un `id` si
+  riusa dopo un ripristino — misurato: l'account nuovo prende proprio quello
+  cancellato dopo la copia —, e un file che portasse il solo `id` farebbe
+  cancellare al ripristino successivo la persona sbagliata: porta anche la
+  chiave casuale dell'account. Un azzeramento che la copia contiene già non si
+  rifà, altrimenti toglierebbe le risposte date dopo. E il cursore viene da un
+  contatore, non da `MAX(seq) + 1`, che una cancellazione fa scendere.
+
+- **Il guardiano riconosce una chiave di Scaleway**, in qualunque file, e la
+  riporta per riga, mai per valore. La access key dalla forma; la secret key,
+  che è un UUID, da quello che le sta accanto, perché un UUID da solo non è un
+  segreto. Provato dal vero: una chiave finta scritta in `server/`,
+  `controlla.py` esce 1 e nomina le due righe; tolta, esce 0.
+
+- **Prima il test che fallisce.** I 22 test del server, con dei moduli vuoti che
+  lanciavano, erano **20 rossi uno per uno** e 2 verdi, i due controlli di forma;
+  i 7 del guardiano rossi finché la regola non c'era. **Provati al contrario
+  otto volte**: senza rigenerare l'epoca → 3 rossi; senza rileggere il file →
+  3; il file riletto per solo `id` → 1; `MAX(seq) + 1` → 1; il calo mai allarme
+  → 1; la copia con `copyFileSync` invece di `VACUUM INTO` → 2; senza
+  `secure_delete` → 1. **L'ottava è passata verde**: l'azzeramento rifatto
+  sempre, anche quando la copia lo conteneva già. Il test che la prende è stato
+  scritto dopo, e ora è rosso su quella rottura.
+
+- **Gira con Node 24.21.0**, la LTS della macchina, scaricata da nodejs.org e
+  verificata con `SHASUMS256.txt`: 23/23 sul server, 131/132 sul motore con lo
+  skip di sempre, e con la 24 `node:sqlite` non stampa nemmeno l'avviso che la
+  25.3 del Mac stampa. Suite: motore 131/132, server 23/23, dati 236 (erano
+  221), interfaccia 135, specifica 270 (erano 262).
+
+  **Non fatto, ed è della macchina:** il trasporto delle copie verso `nl-ams`,
+  che vuole la chiave che l'autore crea. `node server/copia.mjs` è il pezzo che
+  il giro chiamerà.
+
 ## [0.27.0] — 2026-09-25
 
 ### Verificato — la v0.26.2 sul dominio vero

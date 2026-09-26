@@ -24,7 +24,7 @@ DATI = SITE / 'dati'
 
 # Le frasi spia sono una sola cosa, e stanno nel guardiano.
 sys.path.insert(0, str(RADICE / 'strumenti'))
-from controlla import SPIA  # noqa: E402
+from controlla import SPIA, controlla_testo, file_di_testo  # noqa: E402
 
 ok = 0
 falliti = []
@@ -50,6 +50,47 @@ def test_controlla():
     righe = [r for r in esito.stdout.splitlines() if not r.startswith('   ')]
     check('strumenti/controlla.py esce 0', esito.returncode == 0,
           ' | '.join(righe[-12:]) + (esito.stderr.strip() and ' | ' + esito.stderr.strip()))
+
+
+def test_segreti():
+    """Il guardiano guarda anche il server, e riconosce una chiave di Scaleway.
+
+    I segreti stanno sulla macchina, mai nel repo (account-progetto.md §16.2). Le
+    chiavi qui sotto si compongono a pezzi apposta: scritte intere, questo file
+    farebbe fallire il guardiano che le cerca."""
+    esaminati = {rel for rel, _ in file_di_testo()}
+    check('controlla.py esamina server/', 'server/server.mjs' in esaminati and 'server/db.mjs' in esaminati,
+          'server/ non e\' fra i file di testo esaminati')
+
+    accesso = 'SCW' + 'X7K2M9Q4R8T1V5W3Z'           # 20 caratteri, la forma di una access key
+    segreta = '3f2a9c1e-' + '7b4d-4e8a-9c21-5d6f0a8b1e47'  # un UUID, la forma di una secret key
+
+    def trova(testo, dove='server/configura.mjs'):
+        return controlla_testo(dove, testo)
+
+    casi = [
+        ('una access key in un modulo', "const chiave = '%s';" % accesso),
+        ('una access key in un file di configurazione', 'SCW_ACCESS_KEY=%s' % accesso),
+        ('una secret key accanto al suo nome', 'SCW_SECRET_KEY=%s' % segreta),
+        ('una secret key in un header', "headers: { 'X-Auth-Token': '%s' }" % segreta),
+        ('una secret key in JSON', '{"secret_key": "%s"}' % segreta),
+    ]
+    for nome, testo in casi:
+        guai = trova(testo)
+        check('controlla.py trova %s' % nome, any('Scaleway' in g for g in guai), guai or 'nessun guaio')
+        check('controlla.py non stampa %s' % nome, not any(accesso in g or segreta in g for g in guai),
+              'il messaggio finisce nei log quanto il repo')
+    check('controlla.py trova la chiave anche fuori da server/',
+          any('Scaleway' in g for g in trova('SCW_SECRET_KEY=%s' % segreta, 'docs/appunti.md')))
+
+    # Niente falsi allarmi: un UUID da solo non e' una chiave, e il nome della
+    # variabile senza un valore e' documentazione.
+    for nome, testo in [
+        ('un UUID da solo', "sim_uid: '%s'" % segreta),
+        ('il nome della variabile senza valore', 'la chiave sta in SCW_SECRET_KEY, sulla macchina'),
+        ('una parola che comincia con SCW', 'SCWIPPY e SCW_DEFAULT_REGION=nl-ams'),
+    ]:
+        check('controlla.py non scambia per chiave %s' % nome, not any('Scaleway' in g for g in trova(testo)))
 
 
 # --- caricamento ----------------------------------------------------------------
@@ -557,7 +598,7 @@ def test_serve():
 
 
 def main():
-    for t in (test_controlla, test_quiz, test_meta, test_figure, test_invarianti,
+    for t in (test_controlla, test_segreti, test_quiz, test_meta, test_figure, test_invarianti,
               test_carteggio, test_sw, test_rinomino, test_prefisso_cache, test_manifest_icone, test_indirizzi,
               test_serve):
         t()

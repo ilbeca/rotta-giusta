@@ -1000,6 +1000,17 @@ dalla pagina sono scoperti finché non c'è una pagina da guardare, e lo dicono.
 | R-ACC-09 | Senza account la pagina non conserva niente nel browser, nemmeno le preferenze | scoperto — gli account non esistono ancora, e la suite non esercita il DOM di `app.html` |
 | R-ACC-10 | Una password più corta di 15 caratteri è rifiutata, senza regole di composizione | scoperto — il server non esiste ancora; il controllo andrà in `test_server.mjs` |
 | R-ACC-11 | Un account non confermato entro sette giorni si cancella con le sue righe, e la schermata dice la data dal primo momento | scoperto — il server non esiste ancora; il controllo andrà in `test_server.mjs`, la schermata resta della pagina |
+| R-ACC-20 | Una copia di sicurezza si ripristina e ha le stesse righe dell'originale, byte per byte | `test_server.mjs::copia: si ripristina con le stesse righe dell originale` |
+| R-ACC-24 | Dopo il ripristino di una copia, una riga accolta dopo la copia torna sul server dal dispositivo che la ha, e ogni altro dispositivo la riceve | `test_server.mjs::epoca: dopo un ripristino le righe accolte dopo la copia tornano` |
+
+R-ACC-20 e R-ACC-24 sono i primi requisiti del server con un controllo che si
+esegue, e il giro intero sta in `node server/ripristina.mjs --prova`, che la
+suite lancia. **R-ACC-24 è coperto per metà:** il test prova il server —
+l'epoca che cambia con il ripristino, l'unione per `uid` che riprende le righe
+perse — e fa lui la parte del dispositivo. La regola del client, «epoca
+cambiata: azzera il cursore e rimanda tutto», andrà nella contabilità della
+coda in `site/engine.js` (`account-progetto.md` §16.1), con il suo test in
+`test_engine.mjs`; fino ad allora la dice solo questo paragrafo.
 
 ---
 
@@ -1067,6 +1078,7 @@ scritto.
 node --test tests/test_engine.mjs    # il motore — 109 test al 9 settembre 2026
 python3 tests/test_dati.py           # dati e invarianti — 193 verifiche
 python3 tests/test_specifica.py      # ogni requisito ha il suo controllo
+node --test tests/test_server.mjs    # il server degli account, e il ripristino provato
 python3 strumenti/serve.py           # il sito in locale, come lo serve Pages
 ```
 
@@ -1214,3 +1226,9 @@ successo, ed è il motivo per cui questo file esiste.
   sette giorni, poi si cancella con le sue righe: deciso dall'autore sui
   riferimenti di `docs/account-progetto.md` §9.6 (Mastodon 7, Discourse 14;
   nessuno standard).
+- **26 settembre 2026 — R-ACC-20 e R-ACC-24, la quinta suite.** Nasce
+  `server/`, nel territorio `motore`, con un server che risponde solo alla
+  salute e la copia di sicurezza con il ripristino provato:
+  `tests/test_server.mjs`, verde con Node 25.3 e con la 24.21.0 LTS della
+  macchina. Entrano i due requisiti che il §2.7 di `account-progetto.md` aveva
+  proposto per la copia e per l'epoca, con il loro controllo.

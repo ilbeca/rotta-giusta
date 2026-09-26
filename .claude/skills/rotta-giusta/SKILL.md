@@ -28,7 +28,7 @@ database, nessun build step.
 | cosa e' uscito e **perche'** | `CHANGELOG.md` |
 | perche' esiste, da dove vengono i dati, cosa e' stato corretto | `README.md` |
 | perche' e' stato scelto cosi' | `docs/adr/` |
-| che cosa passa | `node --test tests/test_engine.mjs` e `python3 tests/test_dati.py` |
+| che cosa passa | `AGENTS.md`, «Comandi»: cinque suite, compresa `node --test tests/test_server.mjs` |
 | i dati sono ancora quelli del decreto? | `python3 fonte/verifica.py` |
 | e' rientrato qualcosa che non deve uscire di casa? | `python3 strumenti/controlla.py` |
 | il sito in locale | `python3 strumenti/serve.py` — riproduce statichost.eu, misurato |

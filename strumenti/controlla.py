@@ -22,7 +22,10 @@ README o un CHANGELOG ripubblicano esattamente come un dataset — e controlla:
      non c'e' piu';
   5. nessun identificatore delle macchine private dell'autore (hostname, rete,
      indirizzo, nome di battesimo). Le stringhe cercate NON compaiono in
-     chiaro nemmeno qui: si confrontano impronte SHA-256, vedi IMPRONTE.
+     chiaro nemmeno qui: si confrontano impronte SHA-256, vedi IMPRONTE;
+  6. nessuna chiave dell'API di Scaleway: i segreti del server stanno sulla
+     macchina, mai nel repo (docs/account-progetto.md §16.2). Vale per ogni
+     file, server/ compreso, e si riporta per riga, mai per valore.
 
 I punti 1, 2 e 4 esentano questo file e prepara.py: sono i due strumenti che
 devono poter nominare cio' che cercano, altrimenti la regola non e' leggibile.
@@ -95,6 +98,16 @@ IMPRONTA_K = {h: k + 1 for k, h in enumerate(IMPRONTE)}
 TOKEN = re.compile(r'[A-Za-z0-9][A-Za-z0-9._-]*')
 
 
+# Le chiavi di Scaleway: la access key e' «SCW» seguito da 17 caratteri
+# maiuscoli o cifre; la secret key e' un UUID, e un UUID da solo non e' un
+# segreto (un `sim_uid` potrebbe averne la forma). Quindi la secret key si
+# riconosce da quello che le sta accanto sulla stessa riga: il suo nome, la
+# parola «secret», o l'intestazione con cui l'API di Scaleway la chiede.
+CHIAVE_ACCESSO = re.compile(r'(?<![A-Za-z0-9])SCW[A-Z0-9]{17}(?![A-Za-z0-9])')
+UUID = re.compile(r'(?<![0-9a-fA-F-])[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}(?![0-9a-fA-F-])')
+NOME_SEGRETO = re.compile(r'secret|segret|x-auth-token', re.I)
+
+
 def impronta(s):
     return hashlib.sha256(s.lower().encode('utf-8')).hexdigest()
 
@@ -133,8 +146,13 @@ def controlla_testo(rel, testo):
             guai.append('nome di terzi «%s» in %s: …%s…' % (m.group(1), rel, contesto(testo, m.start(), 40, 50)))
 
     # Gli identificatori privati si riportano per numero d'impronta e riga, mai
-    # per token: il messaggio d'errore finisce nei log quanto il repo.
+    # per token: il messaggio d'errore finisce nei log quanto il repo. Le chiavi
+    # di Scaleway allo stesso modo, per riga.
     for n, riga in enumerate(testo.split('\n'), 1):
+        if CHIAVE_ACCESSO.search(riga):
+            guai.append('chiave di accesso di Scaleway in %s:%d — i segreti stanno sulla macchina' % (rel, n))
+        if UUID.search(riga) and NOME_SEGRETO.search(riga):
+            guai.append('chiave segreta di Scaleway in %s:%d — i segreti stanno sulla macchina' % (rel, n))
         visti = set()
         for tok in TOKEN.findall(riga):
             pezzi = [tok] + (tok.split('.') if '.' in tok else [])
@@ -169,7 +187,8 @@ def main():
             print('  ', g)
         sys.exit(1)
     print('controllo superato: nessuna annotazione o etichetta di terzi, nessun loro')
-    print('nome, nessun file di provenienza non dichiarata, nessun identificatore privato.')
+    print('nome, nessun file di provenienza non dichiarata, nessun identificatore privato,')
+    print('nessuna chiave di Scaleway.')
 
 
 if __name__ == '__main__':
