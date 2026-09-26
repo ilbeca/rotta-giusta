@@ -82,6 +82,23 @@ MODI_CINQUE = ['mirata', 'argomento', 'sbagliate', 'sim', 'screening']
 BANCO_QUIZ = RADICE / 'tests' / 'quiz_intenzioni.mjs'
 RIFERIMENTO_QUIZ = RADICE / 'tests' / 'pagina-quiz-intenzioni.html'
 
+# Il ciclo dei quiz ha anch'esso due regimi, con lo stesso meccanismo.
+#
+# Il regime ATTUALE e' la pagina pubblicata: `fine()` disegna il riepilogo con
+# gli errori del runner, e nessuna riprova delle sole risposte sbagliate di
+# quell'attivita' esiste. Il regime PROGETTATO e' l'area 3
+# (docs/area-3-progetto.md): riepilogo, anteprima e avvio della riprova passano
+# da tre funzioni di raccordo, e il §10.1 di quel progetto chiede che il
+# controllo le **esegua** — riepilogo → anteprima → avvio, con i dati che
+# cambiano fra un clic e l'altro — invece di cercare un nome o un pulsante.
+#
+# Il regime si riconosce dal raccordo: una pagina che dichiara una delle tre
+# funzioni e' nel progettato, e deve dichiararle tutte. **Il regime attuale ha
+# una scadenza:** la regia lo toglie quando integra P-19.
+RACCORDO_CICLO = ['riepilogoQuiz', 'anteprimaRiprova', 'avviaRiprova']
+BANCO_CICLO = RADICE / 'tests' / 'ciclo_quiz.mjs'
+RIFERIMENTO_CICLO = RADICE / 'tests' / 'pagina-ciclo-quiz.html'
+
 # Export del motore che la pagina non chiama, e non e' un difetto. Ogni riga ha
 # il motivo e, dove serve, la condizione alla quale sparisce.
 
@@ -375,6 +392,216 @@ def test_intenzioni_provate_al_contrario():
               'rossi: ' + '; '.join(rossi[:3]))
 
 
+# --- 5b. il ciclo dei quiz: riepilogo, revisione, riprova (R-FLU-01, R-FLU-10) --
+
+def banco_ciclo(testo):
+    """Le verifiche del ciclo progettato, eseguite sotto Node sulla pagina data.
+
+    Il banco estrae le tre funzioni di raccordo e fa il giro riepilogo →
+    anteprima → avvio contro il motore e la banca veri: vedi
+    tests/ciclo_quiz.mjs. Se il banco stesso non parte, e' un rosso.
+    """
+    try:
+        p = subprocess.run(['node', str(BANCO_CICLO)], input=json.dumps({'pagina': testo}),
+                           capture_output=True, text=True, timeout=120)
+        out = json.loads(p.stdout) if p.returncode == 0 else None
+    except (OSError, ValueError, subprocess.TimeoutExpired) as e:
+        return [{'gruppo': 'raccordo', 'nome': 'il banco del ciclo parte', 'ok': False, 'extra': str(e)}]
+    if out is None:
+        return [{'gruppo': 'raccordo', 'nome': 'il banco del ciclo parte', 'ok': False,
+                 'extra': (p.stderr or '').strip()[-400:]}]
+    return out
+
+
+def regime_ciclo(testo):
+    """(regime, verifiche) del ciclo dei quiz: 'attuale' o 'progettato'.
+
+    Gruppi: «riepilogo» e' di R-FLU-01; «giro» e «raccordo» di R-FLU-10.
+    """
+    js = senza_commenti(testo)
+    if any(re.search(r'^function %s\b' % f, js, re.M) for f in RACCORDO_CICLO):
+        return 'progettato', banco_ciclo(testo)
+    v = []
+    # Un ibrido e' la scappatoia che il §10.1 vieta: gli errori dell'attivita'
+    # chiesti al motore, o un pulsante che li promette, senza il raccordo che
+    # il controllo esegue. Numero e lista avrebbero di nuovo due fonti.
+    v.append({'gruppo': 'raccordo', 'nome': 'regime attuale: nessuna riprova senza il raccordo',
+              'ok': not re.search(r'\bE\.erroriSessione\b', js) and not re.search(r'Riprova quest[oi]\b', js),
+              'extra': 'la pagina chiama E.erroriSessione() o promette «Riprova questi N» senza '
+                       'riepilogoQuiz/anteprimaRiprova/avviaRiprova: il contratto e\' nel §10.1 '
+                       'di docs/area-3-progetto.md'})
+    v.append({'gruppo': 'riepilogo', 'nome': 'regime attuale: ogni attivita\' quiz si chiude con un riepilogo',
+              'ok': bool(re.search(r'^function fine\(', js, re.M)) and 'E.esito(' in js,
+              'extra': 'fine() e l\'esito dal motore sono il ciclo di oggi: finche\' il nuovo non c\'e\', '
+                       'non possono sparire'})
+    v.append({'gruppo': 'giro', 'nome': 'regime attuale: una sessione si riapre e si rivede',
+              'ok': bool(re.search(r'^function rivediQuiz\(', js, re.M)) and 'data-auid' in js,
+              'extra': 'la revisione di una sessione e i tag per tentativo sono l\'unica strada, oggi, per '
+                       'rileggere gli errori di un\'attivita\''})
+    return 'attuale', v
+
+
+_REGIME_CICLO = None
+
+
+def regime_ciclo_app():
+    global _REGIME_CICLO
+    if _REGIME_CICLO is None:
+        _REGIME_CICLO = regime_ciclo(leggi('app.html'))
+    return _REGIME_CICLO
+
+
+def registra_ciclo(regime, verifiche, gruppi):
+    etichetta = {'attuale': 'regime attuale', 'progettato': 'regime progettato'}
+    for x in verifiche:
+        if x['gruppo'] in gruppi:
+            check('ciclo quiz (%s): %s' % (etichetta.get(regime, 'regime ignoto'), x['nome']),
+                  x['ok'], x.get('extra', ''))
+
+
+def test_ciclo_riepilogo():
+    regime, v = regime_ciclo_app()
+    registra_ciclo(regime, v, ('riepilogo',))
+    check('ciclo quiz: il riepilogo e\' stato controllato', any(x['gruppo'] == 'riepilogo' for x in v),
+          'nessuna verifica sul riepilogo')
+
+
+def test_ciclo_riprova():
+    regime, v = regime_ciclo_app()
+    registra_ciclo(regime, v, ('giro', 'raccordo'))
+    check('ciclo quiz: la riprova e\' stata controllata', any(x['gruppo'] == 'raccordo' for x in v),
+          'nessuna verifica sul raccordo')
+
+
+# Il ramo del regime progettato non gira mai sulla pagina pubblicata finche'
+# P-19 non arriva: qui gira a ogni esecuzione su una pagina di riferimento che
+# deve passare e su ciascuna delle sue rotture, che devono fallire nominando il
+# difetto. Ogni rottura e' una lista di sostituzioni, applicate in ordine.
+ROTTURE_CICLO = [
+    ('il raccordo perde il riepilogo',
+     [('function riepilogoQuiz(contesto, fonte) {', 'function riepilogoAttivita(contesto, fonte) {')],
+     'dichiara riepilogoQuiz'),
+    ('tutte e tre le funzioni spariscono, e resta la chiamata al motore',
+     [('function riepilogoQuiz(', 'function riepilogoAttivita('),
+      ('function anteprimaRiprova(', 'function anteprimaAttivita('),
+      ('function avviaRiprova(', 'function avviaAttivita(')],
+     'nessuna riprova senza il raccordo'),
+    ('la riprova e\' il ripasso di tutto lo storico',
+     [('const r = E.erroriSessione(righe, banca, contesto.id);',
+       "const l = E.coda(banca, {}, '2026-09-26', { soloSbagliate: true, n: 0 }); "
+       "const r = { lista: l, quanti: l.length, fonte: 'sim_uid', trovata: true, ambigua: false, motivi: [], mancanti: [] };")],
+     'nessuna selezione oltre'),
+    ('le sessioni con il confine per pausa',
+     [("E.sessioni(righe, { confine: 'attivita' })", 'E.sessioni(righe)')],
+     'tre risposte, non la meta\''),
+    # E' la ricostruzione per orario della 0.8.0, spostata nella pagina: con
+    # un'altra scheda intrecciata nello stesso intervallo, conta le sue risposte.
+    ('le risposte contate per orario invece che dall\'attivita\'',
+     [('const proprie = s ? s.righe : [];',
+       "const proprie = s ? righe.filter((r) => r._t === 'q' && r.ts >= s.inizio && r.ts <= s.fine) : [];")],
+     'tre risposte, non la meta\''),
+    ('l\'ultima sessione invece di quella per id',
+     [('.find((x) => String(x.id) === String(contesto.id));', '[0];')],
+     'solo le risposte di questa fase'),
+    ('le errate contate da quello che si riapre',
+     [('errate: e.errori,', 'errate: r.quanti,')],
+     'le errate sono due'),
+    ('i quesiti mancanti ignorati',
+     [("  if (r.mancanti.length) return 'mancanti';\n", '')],
+     'nomina il mancante'),
+    ('l\'ambiguita\' non vista',
+     [("  if (r.ambigua) return 'ambigua';\n", '')],
+     'bloccata come ambigua'),
+    ('il conteggio incoerente non visto',
+     [("  if (r.quanti !== r.lista.length) return 'incoerente';\n", '')],
+     'bloccata come incoerente'),
+    ('il confine ricostruito taciuto',
+     [('mancanti: r.mancanti, motivi: r.motivi, confine: r.fonte };',
+       "mancanti: r.mancanti, motivi: r.motivi, confine: 'sim_uid' };")],
+     'si dichiara, nel riepilogo e nella riprova'),
+    ('superata anche con domande senza risposta',
+     [('e.superata && nonAffrontate === 0', 'e.superata')],
+     'non superata'),
+    ('la prova consegnata vuota presa per sparita',
+     [('if (!s && !contesto.corrente) {', 'if (!s) {')],
+     'venti domande senza risposta'),
+    ('la lettura fallita presa per un archivio senza quell\'attivita\'',
+     [("const stato = fonte.letturaFallita ? 'illeggibile' : 'indisponibile';", "const stato = 'indisponibile';")],
+     'non un riepilogo a zero'),
+    ('l\'anteprima non verifica i dati',
+     [("  if (!uguali) return { stato: 'cambiate', quanti: null, lista: [] };\n", '')],
+     'l\'anteprima dice «cambiate»'),
+    ('l\'anteprima mostra la lista ricalcolata',
+     [('return { stato: \'pronta\', quanti: riprova.quanti, lista: riprova.lista, confine: riprova.confine };',
+       'return { stato: \'pronta\', quanti: ora.quanti, lista: ora.lista, confine: ora.fonte };')],
+     'l\'anteprima mostra la lista ricalcolata'),
+    ('un tag invalida la selezione',
+     [('riprova: istantanea(contesto.id, r),', 'riprova: { ...istantanea(contesto.id, r), righe: righe.length },'),
+      ('const uguali = !ora.ambigua', 'const uguali = riprova.righe === fonte.righe.length && !ora.ambigua')],
+     'non invalidano la selezione'),
+    ('Inizia senza verificare',
+     [('  const a = anteprimaRiprova(riprova, fonte);\n', '  const a = { stato: riprova.stato };\n')],
+     'Inizia non avvia niente'),
+    ('Inizia apre la lista ricalcolata',
+     [("avvia(riprova.lista, 'sbagliate'", "avvia(E.erroriSessione(fonte.righe, fonte.banca, riprova.id).lista, 'sbagliate'")],
+     'non una rifatta'),
+    ('Inizia rimescola',
+     [("avvia(riprova.lista, 'sbagliate'", "avvia([...riprova.lista].reverse(), 'sbagliate'")],
+     'nello stesso ordine'),
+    ('Inizia riusa l\'identita\' dell\'attivita\'',
+     [('const simUid = uid();', 'const simUid = riprova.id;')],
+     'un\'identita\' nuova'),
+    ('Inizia lascia l\'avanzamento automatico',
+     [('riprovaDi: riprova.id, auto: false', 'riprovaDi: riprova.id, auto: true')],
+     'avanzamento automatico spento'),
+    ('il raccordo scrive nella fonte',
+     [('const { righe, banca } = fonte;',
+       'const { righe, banca } = fonte; righe.sort((a, b) => String(a.ts).localeCompare(String(b.ts)));')],
+     'scrivere nella fonte'),
+    ('il raccordo legge uno stato globale',
+     [('const { righe, banca } = fonte;', 'const { banca } = fonte; const righe = S.archivio;')],
+     'lancia'),
+    ('la pagina chiede gli errori anche fuori dal raccordo',
+     [('function fonteCiclo() {',
+       'function contaErrori(id) { return E.erroriSessione(S.archivio, S.banca, id).quanti; }\n\nfunction fonteCiclo() {')],
+     'solo dentro il raccordo'),
+    ('Inizia apre il runner senza il raccordo',
+     [("avviaRiprova(S.riprova, fonteCiclo(), (lista, modo, o) => apri(lista, modo, { ...o, quiz: true }));",
+       "apri(S.riprova.lista, 'sbagliate', { quiz: true });")],
+     'le passa apri'),
+    ('apri ignora l\'identita\' del raccordo',
+     [('simUid: opt.simUid || uid()', 'simUid: uid()')],
+     'usa l\'identita\''),
+]
+
+
+def test_ciclo_provato_al_contrario():
+    rif = RIFERIMENTO_CICLO.read_text(encoding='utf-8')
+    regime, v = regime_ciclo(rif)
+    rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in v if not x['ok']]
+    check('la pagina di riferimento del ciclo e\' nel regime progettato', regime == 'progettato', str(regime))
+    check('la pagina di riferimento del ciclo passa il controllo', not rossi, '; '.join(rossi[:3]))
+    # Un banco che non esegue niente passerebbe tutto: si pretende che abbia
+    # fatto il giro intero, dal riepilogo all'avvio.
+    check('il banco del ciclo ha eseguito il giro, non solo letto i nomi', len(v) >= 70,
+          'solo %d verifiche' % len(v))
+    for g in ('riepilogo', 'giro', 'raccordo'):
+        check('il banco del ciclo ha verifiche del gruppo «%s»' % g, any(x['gruppo'] == g for x in v))
+    for cosa, sostituzioni, atteso in ROTTURE_CICLO:
+        rotta = rif
+        for vecchio, nuovo in sostituzioni:
+            check('rottura del ciclo «%s»: si applica alla pagina di riferimento' % cosa, vecchio in rotta,
+                  'il testo da sostituire non c\'e\' piu\': la rottura non romperebbe niente')
+            rotta = rotta.replace(vecchio, nuovo, 1)
+        if rotta == rif:
+            continue
+        _, vr = regime_ciclo(rotta)
+        rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in vr if not x['ok']]
+        check('rottura del ciclo «%s»: il controllo diventa rosso' % cosa, bool(rossi), 'e\' passata verde')
+        check('rottura del ciclo «%s»: e il rosso nomina il difetto' % cosa, any(atteso in r for r in rossi),
+              'rossi: ' + '; '.join(rossi[:3]))
+
+
 # --- 6. il motore non ha funzioni orfane (R-NAV-02) --------------------------------
 
 def orfani_dichiarati():
@@ -594,6 +821,7 @@ def main():
     for t in (test_viste_dichiarate, test_ogni_vista_ha_una_porta,
               test_voci_barra, test_modalita_quiz, test_selettori,
               test_intenzioni_provate_al_contrario,
+              test_ciclo_riepilogo, test_ciclo_riprova, test_ciclo_provato_al_contrario,
               test_motore_senza_orfani, test_chiamate_al_motore_preservate,
               test_letture_che_non_mascherano,
               test_testi_leggibili, test_alt_di_contenuto, test_trasloco):

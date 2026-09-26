@@ -202,6 +202,72 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   documentale verdi. Quindici casi di accettazione per la realizzazione;
   nessun `site/`, coda o numero di versione modificato.
 
+### Test — P-31: i controlli del ciclo dei quiz conoscono due regimi, e nel nuovo eseguono
+
+- **Il ciclo progettato si riconosce dal raccordo, non da un pulsante.** Il
+  §10.1 di `docs/area-3-progetto.md` chiedeva, prima della realizzazione, che i
+  controlli del ciclo seguissero il meccanismo di P-06: il regime di oggi
+  riconosciuto, e quello nuovo riconosciuto da una funzione che chiama davvero
+  `erroriSessione()` e avvia la sua lista. Il contratto è scritto nel §10.1
+  prima del codice della pagina: tre funzioni di primo livello —
+  `riepilogoQuiz(contesto, fonte)`, `anteprimaRiprova(riprova, fonte)`,
+  `avviaRiprova(riprova, fonte, avvia)` —, che la pagina collega al suo
+  `apri()`. Una pagina che ne dichiara una è nel regime progettato e deve
+  averle tutte; senza, è nel regime attuale, dove una chiamata a
+  `E.erroriSessione` o un «Riprova questi N» sono rossi: un numero con una
+  seconda fonte. Il regime attuale ha una scadenza, P-19.
+
+- **Il banco esegue riepilogo → anteprima → avvio** (`tests/ciclo_quiz.mjs`),
+  con la banca vera, un `E` che registra le chiamate e poi esegue il motore, e
+  uno storico estraneo: il caso del §10.1 con un'altra scheda intrecciata, sei
+  errori di un'altra attività fra cui lo stesso quesito, un errore corretto
+  dopo, base e vela consecutive, un confine ricostruito, un id ambiguo, un
+  quesito che la banca non ha, una prova consegnata vuota, uno storico che non
+  si legge. **Fra un clic e l'altro i dati cambiano**: un tag, un'altra
+  attività, la banca ricaricata e una riclassificazione non devono cambiare
+  niente; una risposta dell'attività arrivata da un import, un azzeramento e
+  una lettura fallita devono fermare Inizia, e numero e lista si aggiornano
+  insieme solo riaprendo. La fonte è congelata, così una funzione che la
+  scrive lancia. Poi il nuovo tentativo scrive le sue righe con l'identità
+  ricevuta, e il suo riepilogo riguarda solo lui mentre quello di prima resta
+  com'era.
+
+- **Provato al contrario su ventisette rotture** della pagina di riferimento
+  (`tests/pagina-ciclo-quiz.html`), ognuna rossa e con il difetto nominato: fra
+  le altre il ripasso di tutto lo storico al posto degli errori dell'attività,
+  il confine per pausa, l'ultima sessione invece di quella per id, le errate
+  contate da ciò che si riapre, mancanti, ambiguità e incoerenza non viste,
+  superata con domande senza risposta, la prova vuota presa per sparita, la
+  lettura fallita presa per vuoto, l'anteprima che non verifica o mostra la
+  lista ricalcolata, un tag che invalida la selezione, Inizia che non verifica,
+  riapre la lista rifatta, rimescola, riusa l'id o lascia l'auto, il raccordo
+  che scrive nella fonte o legge `S`, `erroriSessione` chiamata fuori dal
+  raccordo, Inizia che salta il raccordo, `apri()` che ignora l'identità.
+  **E il banco contro sé stesso**, un indebolimento alla volta: senza la banca
+  ricaricata due rotture passano verdi, senza la fonte congelata una, senza il
+  conto delle chiamate una. **La scheda intrecciata non serviva a nessuna
+  rottura**: è entrata la ventisettesima — il riepilogo che conta le risposte
+  per orario invece che per attività, la ricostruzione della 0.8.0 spostata
+  nella pagina —, che senza quella scheda passa verde e con lei è rossa.
+
+- **Il lettore della pagina è uno solo.** L'estrazione delle funzioni che P-06
+  aveva scritto dentro `quiz_intenzioni.mjs` è passata in `tests/pagina_js.mjs`,
+  e i due banchi la importano; i controlli dei quiz danno gli stessi 307 di
+  prima. Specifica: §4.4 e §7.5 descrivono il ciclo, R-FLU-01 coperto per i
+  quiz e scoperto per carteggio, tecniche e Segnali, R-FLU-02…04 precisati sul
+  motore, R-FLU-10 e R-FLU-11 nuovi, R-UX-06 con la metà coperta dichiarata.
+  **Che cosa il banco non vede**, scritto nel §9.6 e nel §10.1: testi, focus,
+  ritorni, Esc, consegna idempotente, tag nella revisione, avvisi, figure,
+  Base e vela come flusso — collaudo di P-19.
+
+  Suite: interfaccia **402** (erano 307); specifica **412** (erano 402); motore
+  155/157 con i due skip di sempre; dati 242; server 59/59 con Node 25.3 e con
+  la **24.21.0 LTS**, pacchetto scaricato di nuovo da nodejs.org e verificato
+  con `SHASUMS256.txt` — quello lasciato da P-14 non aveva più il manifesto
+  accanto. Con la LTS anche l'interfaccia dà 402. Guardiano e controllo della
+  documentazione verdi. `site/` e `docs/prossime-sessioni.md` non sono stati
+  toccati.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag

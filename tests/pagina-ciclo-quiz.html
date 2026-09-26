@@ -1,0 +1,108 @@
+<!doctype html>
+<!--
+  La pagina di riferimento del ciclo progettato dei quiz: riepilogo, anteprima
+  e avvio della riprova, docs/area-3-progetto.md §§4, 6 e 7. Non e' pubblicata
+  e non e' un prototipo: e' il minimo che soddisfa il controllo di
+  tests/test_interfaccia.py, e serve a quel controllo per provarsi al contrario
+  a ogni esecuzione — questa pagina deve passare, e ognuna delle sue rotture
+  elencate in ROTTURE_CICLO deve fallire.
+
+  Mostra anche la forma del contratto a chi realizza l'area 3: che cosa
+  ricevono le tre funzioni di raccordo, che cosa restituiscono, e come la
+  pagina le collega al runner. Il disegno, i testi e il flusso sono del
+  progetto, non di qui. Il contratto per esteso sta nel §10.1 del progetto.
+-->
+<title>Ciclo dei quiz, regime progettato: pagina di riferimento</title>
+<div id="r-fine"></div>
+<script type="module">
+import * as E from '/engine.js';
+
+const S = { archivio: [], banca: [], run: null, riprova: null };
+
+function uid() { return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10); }
+
+/**
+ * Il riepilogo di un'attivita' e l'istantanea della sua riprova.
+ *
+ * contesto: { id, totale, erroriMax, corrente }
+ *   id         sim_uid dell'attivita', o l'id ricostruito da E.sessioni()
+ *   totale     T, la lunghezza della lista originale; null se non si conosce
+ *   erroriMax  la soglia della prova da meta.prove; null per un allenamento
+ *   corrente   true per l'attivita' appena conclusa in questa pagina
+ * fonte: { righe, banca, letturaFallita }
+ */
+function riepilogoQuiz(contesto, fonte) {
+  const { righe, banca } = fonte;
+  const s = E.sessioni(righe, { confine: 'attivita' }).find((x) => String(x.id) === String(contesto.id));
+  if (!s && !contesto.corrente) {
+    const stato = fonte.letturaFallita ? 'illeggibile' : 'indisponibile';
+    return { stato, righe: [], riprova: { id: contesto.id, stato, quanti: null, lista: [], mancanti: [], motivi: [], confine: null } };
+  }
+  const proprie = s ? s.righe : [];
+  const e = E.esito(proprie.map((r) => !!r.correct), contesto.erroriMax);
+  const nonAffrontate = contesto.totale == null ? null : contesto.totale - e.totale;
+  const r = E.erroriSessione(righe, banca, contesto.id);
+  return {
+    stato: 'pronto',
+    righe: proprie,
+    risposte: e.totale,
+    corrette: e.esatte,
+    errate: e.errori,
+    nonAffrontate,
+    superata: contesto.erroriMax == null ? null : e.superata && nonAffrontate === 0,
+    confine: s ? s.fonte : null,
+    riprova: istantanea(contesto.id, r),
+  };
+}
+
+/** Che cosa dice un risultato di erroriSessione(): si riapre, o perche' no. */
+function statoRiprova(r) {
+  if (r.ambigua) return 'ambigua';
+  if (r.quanti !== r.lista.length) return 'incoerente';
+  if (r.mancanti.length) return 'mancanti';
+  if (r.quanti === 0) return 'nessun errore';
+  return 'pronta';
+}
+
+function istantanea(id, r) {
+  const stato = statoRiprova(r);
+  return { id, stato, quanti: r.quanti, lista: stato === 'pronta' ? r.lista : [],
+           mancanti: r.mancanti, motivi: r.motivi, confine: r.fonte };
+}
+
+/** L'anteprima: la stessa istantanea, se i dati danno ancora gli stessi errori. */
+function anteprimaRiprova(riprova, fonte) {
+  if (riprova.stato !== 'pronta') return { stato: riprova.stato, quanti: null, lista: [] };
+  const ora = E.erroriSessione(fonte.righe, fonte.banca, riprova.id);
+  if (!ora.trovata) return { stato: fonte.letturaFallita ? 'illeggibile' : 'indisponibile', quanti: null, lista: [] };
+  const uguali = !ora.ambigua && ora.fonte === riprova.confine && ora.quanti === riprova.quanti
+    && !ora.mancanti.length && ora.lista.every((it, i) => it.id === riprova.lista[i].id);
+  if (!uguali) return { stato: 'cambiate', quanti: null, lista: [] };
+  return { stato: 'pronta', quanti: riprova.quanti, lista: riprova.lista, confine: riprova.confine };
+}
+
+/** Inizia: la lista dell'istantanea, con un'identita' nuova, o niente. */
+function avviaRiprova(riprova, fonte, avvia) {
+  const a = anteprimaRiprova(riprova, fonte);
+  if (a.stato !== 'pronta') return { avviata: false, stato: a.stato };
+  const simUid = uid();
+  avvia(riprova.lista, 'sbagliate', { simUid, riprovaDi: riprova.id, auto: false });
+  return { avviata: true, simUid };
+}
+
+/* ---- il collegamento con la pagina: letto dal controllo, non eseguito ---- */
+
+function fonteCiclo() {
+  return { righe: S.archivio, banca: S.banca, letturaFallita: false };
+}
+
+function apri(coda, modo, opt = {}) {
+  S.run = { coda, i: 0, modo, simUid: opt.simUid || uid(), autoCorrente: opt.auto ?? true };
+}
+
+document.addEventListener('click', (ev) => {
+  if (ev.target.closest('[data-riprova-inizia]')) {
+    avviaRiprova(S.riprova, fonteCiclo(), (lista, modo, o) => apri(lista, modo, { ...o, quiz: true }));
+  }
+});
+</script>

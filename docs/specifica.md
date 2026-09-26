@@ -511,6 +511,20 @@ Una lista **in memoria** durante l'attività esiste già ed è la forma giusta:
 non passare è la **persistenza**: «continua ad allenarti» avvia una selezione
 nuova, non ripristina la precedente.
 
+**Il ciclo che si chiude sta sopra questo, e non lo cambia** (area 3,
+`docs/area-3-progetto.md` §§4–7; controlli da P-31, 26 settembre 2026). Il
+riepilogo di un'attività e la sua riprova leggono l'attività **intera**, con il
+confine dell'attività e per id — mai «l'ultima sessione», mai le risposte che
+cadono nello stesso orario —, e il confine ricostruito si dichiara. Il
+riepilogo conta risposte, corrette, errate e non affrontate dalle righe di
+quell'attività; le non affrontate non sono errori e non entrano nella riprova.
+«Riprova questi N» è un'**istantanea** di `erroriSessione()`, presa al
+riepilogo: l'anteprima e Inizia la riaprono solo se i dati danno ancora gli
+stessi errori, e altrimenti non avviano niente finché chi studia non riapre.
+La riprova è un'attività nuova, con un `sim_uid` nuovo, `mode: 'sbagliate'` e
+senza timer: il tentativo di prima resta com'era. Anche l'istantanea vive solo
+in memoria, come `S.run`: dopo una ricarica non si riprende.
+
 ### 4.5 Le due eccezioni
 
 **Il carteggio non si corregge da solo.** L'app mette la risposta ministeriale
@@ -807,6 +821,20 @@ schermata: su un telefono un doppio tocco rispondeva alla domanda dopo senza
 averla letta. I modificatori escludono le scorciatoie di sistema — ⌘A rispondeva
 A, e scriveva un errore nello storico.
 
+**La fine di un'attività** (area 3, §§4–6 del suo progetto; controlli da
+P-31). Con almeno una risposta, «Termina l'attività» ed Esc aprono il
+riepilogo **parziale**; senza risposte un allenamento torna all'origine senza
+righe, mentre una simulazione chiede conferma della consegna e, consegnata anche
+vuota, ha il suo riepilogo con le domande senza risposta — non superata. Il
+riepilogo **non dà un voto sulla preparazione**: che cosa è successo, quali
+risposte rivedere, che cosa non è stato affrontato. Dal riepilogo si apre la
+**revisione** di quel tentativo — tutte le risposte o solo gli errori, la tua e
+quella ufficiale — che non scrive niente oltre ai tag, e la **riprova esatta**
+degli errori di quell'attività, con un'anteprima prima dell'avvio. Base e vela
+sono due fasi con due riepiloghi e due riprove. Nel prodotto pubblicato c'è
+ancora il riepilogo di prima, con gli errori del runner e senza riprova:
+arriva con P-19 (`tests/test_interfaccia.py` riconosce i due regimi).
+
 ### 7.6 Il runner del carteggio
 
 **Vincolo.** Quello che scrivi è salvato **a ogni tasto**: un'ora di lavoro non
@@ -981,15 +1009,35 @@ del progetto di preparazione. Il §4 di `prossima-versione.md` li motiva.
 | R-TEMPO-06 | Il ritmo non dipende dalla lunghezza della sessione | `test_engine.mjs::ritmo: una sessione corta non e` |
 | R-TEMPO-07 | `stimaImpegno()` dichiara quale dei tre tempi sta riportando | `test_engine.mjs::stimaImpegno: con il ritmo misurato usa l` |
 | R-TEMPO-08 | Il ritmo si misura sul confine per pausa, e un'attività ripresa dopo una pausa non lo gonfia | `test_engine.mjs::sessioni: il confine per pausa resta quello di prima, e ritmo lo usa` |
-| R-FLU-01 | Ogni attività si chiude con un passo che propone azioni derivate da quello che è appena successo | scoperto — è interfaccia, e arriva con il ridisegno |
-| R-FLU-02 | Gli errori di una sessione si riaprono come esercizio, senza mescolarli con quelli di sempre | `test_engine.mjs::erroriSessione: apre esattamente gli errori di quella lista` |
-| R-FLU-03 | Il conteggio annunciato e la lista che si apre coincidono anche per gli errori di sessione | `test_engine.mjs::erroriSessione: il conteggio promesso e la lista coincidono` |
-| R-FLU-04 | Un confine di sessione ricostruito si dichiara invece di passare per registrato | `test_engine.mjs::erroriSessione: un confine ricostruito si dichiara` |
+| R-FLU-01 | Ogni attività si chiude con un passo che propone azioni derivate da quello che è appena successo. **Quiz, coperti:** riepilogo dell'attività intera — risposte, corrette, errate, non affrontate, esito solo per una prova e mai superata con domande senza risposta — e la riprova che offre, pronta o bloccata col suo motivo. **Carteggio, tecniche e Segnali, scoperti:** i loro cicli non sono ancora realizzati (area 4, P-35) | `test_interfaccia.py::test_ciclo_riepilogo` |
+| R-FLU-02 | Gli errori di una sessione si riaprono come esercizio, senza mescolarli con quelli di sempre: tutti e soltanto gli errori di quell'attività, nell'ordine delle risposte, anche se nel frattempo sono stati corretti altrove | `test_engine.mjs::erroriSessione: apre esattamente gli errori di quella lista` |
+| R-FLU-03 | Il conteggio annunciato e la lista che si apre coincidono anche per gli errori di sessione, nel motore; nella pagina lo tiene R-FLU-10 | `test_engine.mjs::erroriSessione: il conteggio promesso e la lista coincidono` |
+| R-FLU-04 | Un confine di sessione ricostruito si dichiara invece di passare per registrato: il motore lo dice in `fonte`, e il riepilogo e l'istantanea della riprova lo portano fino alla pagina | `test_engine.mjs::erroriSessione: un confine ricostruito si dichiara` |
 | R-FLU-05 | Un'attività registrata si riapre intera anche oltre una pausa: gli errori sono tutti i suoi, e la `fonte` registrata non copre un confine tagliato | `test_engine.mjs::erroriSessione: un attivita registrata resta intera oltre la pausa` |
 | R-FLU-06 | Con il confine dell'attività ogni id compare una volta sola e le attività non si mescolano, nemmeno intrecciate nel tempo o con una riprova | `test_engine.mjs::sessioni: con confine attivita ogni id e unico e le attivita non si mescolano` |
 | R-FLU-07 | Un id che raccoglie un quesito ripetuto, due modalità o due banche si dichiara ambiguo con il motivo, e non apre una lista né promette «zero errori» | `test_engine.mjs::sessioni: un id riusato con un quesito ripetuto o un altra modalita e ambiguo` |
 | R-FLU-08 | Un errore su un quesito che la banca caricata non ha si nomina, invece di sparire dal conteggio | `test_engine.mjs::erroriSessione: un errore su un quesito che la banca non ha si nomina` |
 | R-FLU-09 | Un confine sessione sconosciuto è un errore, non un ritorno silenzioso al predefinito | `test_engine.mjs::sessioni: un confine sconosciuto e un errore, non un ripiego` |
+| R-FLU-10 | «Riprova questi N» apre l'istantanea presa al riepilogo — stesso numero, stessa lista, stesso ordine —, con un'identità nuova, senza timer e senza avanzamento automatico; se fra un clic e l'altro gli errori dell'attività sono cambiati, o l'attività non c'è più o non si legge, l'anteprima lo dice e Inizia non avvia niente. Un tag, un'altra attività o la banca ricaricata non cambiano la lista | `test_interfaccia.py::test_ciclo_riprova` |
+| R-FLU-11 | Il controllo del ciclo progettato gira a ogni esecuzione, anche finché la pagina pubblicata ha il ciclo di prima: una pagina di riferimento lo passa, e ciascuna delle sue rotture dichiarate lo fa fallire nominando il difetto | `test_interfaccia.py::test_ciclo_provato_al_contrario` |
+
+**I due regimi del ciclo, e che cosa il controllo non vede.** R-FLU-01 e
+R-FLU-10 sono scritti per il passaggio all'area 3 (§10.1 del suo progetto), con
+il meccanismo di R-NAV-04: la pagina pubblicata ha il riepilogo di prima, e
+`main` deve restare verde con lei mentre il nuovo si realizza. Il controllo
+riconosce il regime dal **raccordo** — `riepilogoQuiz()`, `anteprimaRiprova()`,
+`avviaRiprova()` —, non da un pulsante: nel regime attuale pretende che il
+riepilogo e la revisione di oggi ci siano e che nessuna riprova esista senza il
+raccordo; nel progettato estrae le tre funzioni e fa il giro riepilogo →
+anteprima → avvio contro il motore e la banca veri, con uno storico estraneo e
+i dati che cambiano fra un clic e l'altro (`tests/ciclo_quiz.mjs`). R-FLU-02…04
+restano sul motore, dove i loro test li tengono; R-FLU-10 li porta nella colla
+fra pagina e motore. **Non vede**, e resta al collaudo a 375 e 1280 px: i testi
+del riepilogo e dell'anteprima, la gerarchia delle uscite, il focus e i
+ritorni, Esc, la conferma e la consegna idempotente di una simulazione, i tag
+nella revisione, gli avvisi di scrittura e di lettura, le figure, Base e vela
+come flusso. **Il regime attuale ha una scadenza:** lo toglie la regia quando
+integra P-19.
 
 ### 9.8 Che cosa non deve sparire, e che cosa si deve leggere
 
@@ -1003,7 +1051,7 @@ liste, perché una lista in un prompt è una regola da ricordare.
 | R-A11Y-01 | Nessun testo sotto gli 11 px, salvo eccezioni dichiarate con l'area che le corregge | `test_interfaccia.py::test_testi_leggibili` |
 | R-A11Y-02 | Un'immagine che porta contenuto dichiara che cosa mostra; `alt=""` resta per le decorative | `test_interfaccia.py::test_alt_di_contenuto` |
 | R-A11Y-03 | Contrasto ≥ 4,5:1 sul testo normale e aree di tocco ≥ 44 px | scoperto — serve il rendering, e si verifica guardando a 375 e 1280 px |
-| R-UX-06 | Una breve attività dichiara che cosa è successo, quali rivedere e che cosa non hai toccato: nessuna quarta affermazione | scoperto — è un testo di schermata, si fissa quando il testo è definitivo |
+| R-UX-06 | Una breve attività dichiara che cosa è successo, quali rivedere e che cosa non hai toccato: nessuna quarta affermazione, e nessun voto sulla preparazione | scoperto — i numeri delle tre affermazioni vengono dal raccordo e li tiene R-FLU-01; le frasi sono testo di schermata, e si fissano al collaudo di P-19 |
 
 ### 9.7 Le decisioni di prodotto
 
@@ -1376,3 +1424,14 @@ successo, ed è il motivo per cui questo file esiste.
   che esegue contro il server vero l'esempio d'uso scritto nel progetto del
   client. Quindici rotture del motore, tutte rosse nel loro test; quattro di
   loro rosse anche nel test del server.
+- **26 settembre 2026 — i controlli del ciclo (P-31).** Il progetto dell'area 3
+  chiedeva, prima della sua realizzazione, controlli che eseguano il ciclo
+  invece di cercarne i nomi, in due regimi come quelli dell'area 2. §4.4 e §7.5
+  descrivono il ciclo che si chiude; R-FLU-01 passa da scoperto a coperto per i
+  quiz, e dichiara scoperti carteggio, tecniche e Segnali; R-FLU-02…04 dicono
+  che cosa tiene il motore; entrano R-FLU-10, la riprova nella colla fra pagina
+  e motore, e R-FLU-11, le rotture che tengono acceso il regime progettato;
+  R-UX-06 dice quale metà è coperta. Il contratto delle tre funzioni di
+  raccordo è nel §10.1 di `area-3-progetto.md`. Ventisette rotture della
+  pagina di riferimento, tutte rosse nel loro controllo, e il banco provato
+  contro sé stesso.

@@ -422,6 +422,11 @@ const riprova = E.erroriSessione(fonte, banca, id);   // confine sempre 'attivit
   che la banca passata non ha: gli errori dell'attività sono
   `quanti + mancanti.length`, senza che la pagina li riconti.
 
+**Dalla pagina al motore passa un raccordo solo** (P-31): `riepilogoQuiz()`,
+`anteprimaRiprova()` e `avviaRiprova()`, di cui il §10.1 dà il contratto che
+il controllo esegue. Lo snippet qui sopra è quello che le tre funzioni fanno
+dentro; la pagina non chiama `E.erroriSessione` fuori da loro.
+
 Per una sessione senza legame registrato, usare il confine ricostruito dal
 motore e dichiararlo. Il nuovo contratto preserva l'ordine delle righe e gli
 errori per tentativo.
@@ -595,6 +600,94 @@ non mantenere percentuali fittizie per farli passare, non deselezionare test.
 P-14 non tocca motore, test, specifica o registro eccezioni. La regia coordina
 questa dipendenza e l'allineamento del ramo prima della realizzazione; la
 coda non viene duplicata o modificata qui.
+
+**Come lo legge il controllo — scritto da P-31, 26 settembre 2026.** La
+dipendenza dei controlli è chiusa: `tests/test_interfaccia.py` riconosce il
+regime del ciclo dal **raccordo**. Una pagina che dichiara al primo livello una
+di queste tre funzioni è nel regime progettato, e deve dichiararle tutte:
+
+```js
+riepilogoQuiz(contesto, fonte)      // il riepilogo, e l'istantanea della riprova
+anteprimaRiprova(riprova, fonte)    // la stessa istantanea, se i dati non sono cambiati
+avviaRiprova(riprova, fonte, avvia) // Inizia: avvia l'istantanea, o niente
+```
+
+Devono dipendere solo dai loro argomenti, da `E` e da altre funzioni dichiarate
+al primo livello (per esempio `uid()`): il controllo le estrae e le esegue
+senza DOM e senza `S`. Senza nessuna delle tre, la pagina è nel regime attuale,
+e lì non deve chiamare `E.erroriSessione` né scrivere «Riprova questi/questo»:
+sarebbe una riprova senza il raccordo, un numero con una seconda fonte.
+
+`fonte` è `{ righe, banca, letturaFallita }`: le righe che la pagina ha — in
+questa versione `S.archivio`, che tiene anche le risposte la cui scrittura è
+fallita; dalla versione del client, le righe in memoria della pagina —, la
+banca caricata, e `true` quando l'archivio non si è potuto leggere.
+`contesto` è `{ id, totale, erroriMax, corrente }`: l'id da `E.sessioni()` (il
+`sim_uid`, o l'id ricostruito); T, la lunghezza della lista originale, oppure
+`null` quando non si conosce (storico di allenamento); la soglia da
+`meta.prove` per una simulazione, `null` per un allenamento; `true` per
+l'attività appena conclusa in questa pagina.
+
+`riepilogoQuiz()` restituisce
+`{ stato, righe, risposte, corrette, errate, nonAffrontate, superata, confine, riprova }`:
+
+- `stato` è `'pronto'`, `'indisponibile'` (l'attività dello storico non c'è
+  più) o `'illeggibile'` (non c'è, e l'archivio non si è letto). Un'attività
+  **corrente** senza righe è `'pronto'` con zero risposte: è la simulazione
+  consegnata vuota del §4.1, non un'attività persa.
+- `righe` sono le `_t:'q'` dell'attività da `E.sessioni(righe, { confine:
+  'attivita' })`, trovata **per id**; le stesse della revisione (§5). I numeri
+  vengono da `E.esito()` su quelle righe: `nonAffrontate` è T − risposte, o
+  `null`; `superata` è `null` per un allenamento, e per una simulazione vale
+  `true` solo con `esito.superata` **e** zero domande senza risposta (§7.1).
+  `confine` è la `fonte` della sessione.
+- `riprova` è l'istantanea: `{ id, stato, quanti, lista, mancanti, motivi,
+  confine }` dal **solo** risultato di `E.erroriSessione(righe, banca, id)`.
+  `stato` è `'pronta'`, `'nessun errore'`, `'ambigua'`, `'mancanti'`,
+  `'incoerente'` (`quanti` diverso dalla lunghezza della lista), o lo stato del
+  riepilogo quando non è pronto; `lista` è vuota salvo che per `'pronta'`.
+  L'etichetta «Riprova questi N» è `riprova.quanti`, e solo con `'pronta'`.
+
+`anteprimaRiprova(riprova, fonte)` richiama `E.erroriSessione()` sui dati di
+adesso e restituisce `{ stato, quanti, lista, confine }`: `'pronta'` con
+**l'istantanea** — non la lista ricalcolata — quando gli errori sono gli
+stessi, negli stessi id e nello stesso ordine; `'cambiate'` quando l'attività
+c'è ma gli errori no; `'indisponibile'` o `'illeggibile'` quando non c'è più. Un
+tag N/L/C, un'altra attività o la banca ricaricata non cambiano niente.
+
+`avviaRiprova(riprova, fonte, avvia)` fa la stessa verifica e, solo se
+l'anteprima è `'pronta'`, chiama **una volta**
+`avvia(riprova.lista, 'sbagliate', { simUid, riprovaDi, auto: false })` con un
+`simUid` nuovo, e restituisce `{ avviata: true, simUid }`; altrimenti
+`{ avviata: false, stato }` senza avviare niente. La pagina passa come `avvia`
+il suo `apri()`, eventualmente dentro una freccia che aggiunge origine e
+`quiz`; e `apri()` usa `opt.simUid` come `sim_uid` delle risposte e
+`opt.auto` per l'avanzamento automatico. Nessuna delle tre funzioni scrive
+nella fonte, e nessuna chiama un'altra selezione del motore. Fuori da loro
+la pagina non chiama `E.erroriSessione`.
+
+Il controllo esegue il giro con la banca vera e uno storico che non è solo
+quello dell'attività: il caso del §10.1 con un'altra scheda intrecciata, sei
+errori di un'altra attività fra cui lo stesso quesito, un errore corretto in
+un tentativo dopo, simulazione base e vela consecutive con le loro `_t:'s'`,
+un confine ricostruito, un id ambiguo, un quesito che la banca non ha. Fra un
+passo e l'altro i dati cambiano — un tag, un'altra attività, la banca
+ricaricata, una riclassificazione; poi una risposta dell'attività arrivata da
+un import, un azzeramento, una lettura che fallisce — e il controllo pretende
+che il numero e la lista si aggiornino insieme solo a una riapertura. La fonte
+è congelata: una funzione che la scrive lancia. Poi il nuovo tentativo scrive
+le sue righe con l'identità ricevuta, e il suo riepilogo riguarda solo lui,
+mentre quello di prima resta com'era.
+
+La pagina di riferimento `tests/pagina-ciclo-quiz.html` mostra la forma minima
+che passa, compreso il collegamento con `apri()`; non è un disegno. Il
+controllo la esegue a ogni run insieme a ventisette rotture che devono fallire
+nominando il difetto (R-FLU-11). **Che cosa non vede**, e resta al collaudo
+del §10.2: i testi, la gerarchia delle uscite, il focus e i ritorni, Esc, la
+conferma di consegna e la consegna idempotente, i tag nella revisione, gli
+avvisi, le figure, Base e vela come flusso. Se il contratto sta stretto alla
+realizzazione, si dice alla regia: cambiarlo tocca `tests/`, che da `ui/*` non
+si scrive.
 
 ### 10.2 Criteri di accettazione della realizzazione
 
