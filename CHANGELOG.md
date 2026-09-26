@@ -295,6 +295,35 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   Nessun account introdotto e nessun testo anticipato sul prodotto futuro;
   versione, documenti storici e `docs/prossime-sessioni.md` invariati.
 
+### Progettato — P-04, l'area Quiz
+
+- **`docs/area-2-progetto.md` chiude il progetto dell'area 2:** cinque intenzioni
+  con gerarchia, scelta per argomento senza ingresso duplicato «Batteria»,
+  filtri locali, «Un giro tra gli argomenti» senza promessa diagnostica e
+  selezione della simulazione separata dall'avvio del timer. Testi per esteso,
+  stati, parametri, snapshot e ritorni perché la realizzazione non debba
+  scegliere il comportamento. Il regime attuale e i due stati dell'ADR-004
+  sono distinti: senza account, dalla versione che li introduce, non restano
+  risposte né preferenze oltre la pagina aperta; nessun testo anticipa un
+  salvataggio o un client che oggi non esiste.
+
+- **Il ricablaggio di `totScreening()` è specificato, non ancora eseguito:**
+  `E.lunghezzaScreening()` conta la banca, e opzioni, anteprima e runner devono
+  coincidere. Riprodotto sotto Node: base **44/85/167/249** e vela **3/6/12/18**
+  per 1/2/4/6 quesiti per voce, con tre semi; banca ridotta a un solo quesito,
+  numero e lista **1**. L'eccezione di funzione orfana resta fino alla chiamata
+  reale. La dipendenza per la realizzazione è dichiarata al §10.1: Claude deve
+  allineare i controlli che oggi pretendono sei modalità e filtri globali,
+  senza una modalità fittizia o test deselezionati per tenere verde la suite.
+
+- **Verifica documentale e dei contratti:** motore **131/132**, uno skip
+  preesistente; dati **221**, interfaccia **135**, specifica **262**. Casi
+  sintetici in memoria distinguono lista disponibile, da fare, nuovi ed errori;
+  base tutti corretti dà Mirata **0** ma argomento **1.472** con da fare **0**;
+  simulazione base **20** e vela **5**, base invariata al cambio di storico e
+  senza oscurati. Nessuna modifica a `site/`, versione o coda; collaudo visivo
+  e con persone della schermata nuova restano da svolgere quando sarà realizzata.
+
 ## [0.27.0] — 2026-09-25
 
 ### Verificato — la v0.26.2 sul dominio vero
