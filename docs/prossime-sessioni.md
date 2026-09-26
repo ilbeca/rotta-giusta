@@ -114,8 +114,9 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 |---|---|---|---|---|---|
 | 5b | Chiudere il regime vecchio dei controlli dei quiz, e il §5 della specifica | Claude | `main`, a mano | la cartella libera | P-12 |
 | 15 | La prova nel browser, per i controlli del client | Claude | `main`, a mano | P-31 nell'ordine | P-29 |
-| 18 | Il carteggio sul `main`: composizione, attività intera, bozza, controlli | Claude | `main`, a mano | P-29 nell'ordine, e una decisione del §4 | P-32…P-35 |
-| 17 | I controlli del ciclo, allineati all'area 3 | Claude | `main`, a mano | niente — **per primo** | P-31 |
+| 18 | Il carteggio sul `main`: composizione, attività intera, bozza, controlli | Claude | `main`, a mano | P-29 nell'ordine | P-32…P-35 |
+| 19 | L'avviso nel carteggio, finché il testo non si salva | ChatGPT | `ui/main` | niente | P-36 |
+| 17 | I controlli del ciclo, allineati all'area 3 — **lanciato** | Claude | `main`, a mano | niente | P-31 |
 | 6a | La realizzazione dell'area 3 | ChatGPT | `ui/main` | P-28, P-30, P-31 | P-19 |
 | 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore: il tag `v0.28.0` c'è | P-15 |
 | 12 | `ritmo()` che dice «orologio» senza orologio | Claude | `main`, a mano | niente | P-16 |
@@ -127,12 +128,12 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**: Claude sul server e sul motore,
-ChatGPT sull'interfaccia. Le realizzazioni di ChatGPT — P-19, P-18, P-21 —
-aspettano tutte lavoro di Claude su `main`: quel lavoro è la strettoia. **Per
+ChatGPT sull'interfaccia. **Per ChatGPT è pronto P-36**, l'avviso nel
+carteggio; le sue realizzazioni grandi — P-19, P-18, P-21 — aspettano lavoro di
+Claude su `main`: quel lavoro è la strettoia. **Per
 Claude, l'ordine consigliato: P-31** (sblocca P-19), **P-29** (sblocca P-18),
 poi **P-32, P-33, P-34, P-35** (sbloccano P-21), poi P-16, P-12 e P-17; P-15
-quando l'autore ha il tempo. **ChatGPT resta senza lavoro finché P-31 non
-chiude**: è il prezzo della strettoia, e lo si accetta. Vanno uno alla
+quando l'autore ha il tempo. ChatGPT ha P-36 mentre P-31 lavora. Vanno uno alla
 volta, perché stanno tutti nella cartella principale: è la strettoia della
 colonna di Claude, e si accetta perché il recinto la vuole. Il numero di una
 riga è il suo nome, non la sua posizione. Le due colonne si incontrano al punto
@@ -396,15 +397,11 @@ consuma, non si riprogetta.
   `merge=union`, che l'autore ha scelto: si è chiusa da sola. Il difetto di
   `Standards` resta, con la sua segnalazione,
   [ilbeca/standards#1](https://github.com/ilbeca/standards/issues/1).
-- **Il testo del carteggio non è salvato «a ogni tasto»**, e la specifica dice
-  che lo è (§7.6). Trovato da P-20, verificato dalla regia nel codice: una
-  ricarica durante la prova di un'ora perde tutto quello che è scritto. È così
-  dalla 0.5.0. La correzione vera è P-34 con l'area 4, dopo gli account, perché
-  l'ADR-004 vuole che senza account non resti niente. **La domanda:** nel
-  frattempo il prodotto pubblicato lo dice — un avviso «non ricaricare la
-  pagina durante la prova», lavoro piccolo di ChatGPT —, oppure si lascia
-  com'è e si corregge solo la frase della specifica? La regia consiglia
-  l'avviso: è onesto, costa poco, e non contraddice l'ADR-004.
+- ~~Il testo del carteggio non è salvato «a ogni tasto»~~ — **deciso
+  dall'autore il 26 settembre: l'avviso.** Nel frattempo il prodotto pubblicato
+  dice di non ricaricare la pagina durante la prova (P-36, ChatGPT), e la frase
+  del §7.6 della specifica si corregge — la regia, appena P-31 libera la
+  specifica. La correzione vera resta P-34, con l'area 4.
 - **Q-PROVE**, riaperta da P-05: le prove con persone e lo zoom nativo al 200 %,
   che il browser integrato non fa. `docs/area-2-collaudo-ux.md` dice che cosa
   manca.
@@ -1254,7 +1251,7 @@ interfaccia 295, specifica 394 —, e il caso del §10.1 ora dà 2 errori su 2.
 
 ### P-31 — Claude: i controlli del ciclo, allineati all'area 3
 
-**Stato:** pronto — **per primo**. **Dove:** Claude Code, `~/Software/rotta-giusta`,
+**Stato:** **lanciato il 26 settembre 2026.** **Dove:** Claude Code, `~/Software/rotta-giusta`,
 ramo **`main`**, a mano. **Nasce da:** P-14, §10.1 di
 `docs/area-3-progetto.md` — è per l'area 3 quello che P-06 è stato per l'area 2.
 
@@ -1408,7 +1405,7 @@ docs/prossime-sessioni.md.
 
 ### P-34 — Claude: la bozza del carteggio, e la promessa «a ogni tasto»
 
-**Stato:** in attesa di P-33, e della decisione dell'autore nel §4 sul difetto già pubblicato. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-20, §10.1 di `docs/area-4-progetto.md`.
+**Stato:** in attesa di P-33. L'autore ha deciso l'avviso per il frattempo (P-36); la frase del §7.6 la corregge la regia prima di questa sessione. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-20, §10.1 di `docs/area-4-progetto.md`.
 
 ```
 Sessione P-34, su main. Leggi il §3.3 e il §10.1, voce D-03, di
@@ -1425,8 +1422,9 @@ cancellata solo a conclusione confermata o scarto esplicito; con
 ricarica, scadenza, errore di scrittura, uscita e cambio d'account fra
 schede esercitati. Senza account nessun salvataggio, come vuole
 l'ADR-004. Il raccordo si scrive nel progetto del client senza
-ridisegnarlo. E la frase del §7.6 si corregge, qualunque cosa decida
-l'autore sul prodotto di oggi.
+ridisegnarlo. La frase del §7.6 l'avrà già corretta la regia: quando
+la bozza c'è, il §7.6 dice che cosa promette adesso, e l'avviso di
+P-36 si toglie dalla pagina nel raccordo.
 
 Non toccare docs/prossime-sessioni.md. Suite verdi, voce in fondo a
 [Unreleased], un commit. Chiudi con il resoconto di
@@ -1455,6 +1453,37 @@ quelli della riprova, che resta solo dei quiz. Il raccordo del client
 Non toccare docs/prossime-sessioni.md. Suite verdi, voce in fondo a
 [Unreleased], un commit. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-36 — ChatGPT: l'avviso nel carteggio, finché il testo non si salva
+
+**Stato:** pronto. **Dove:** app di ChatGPT, progetto `~/Software/rotta-giusta-ui`,
+ramo `ui/main`. **Nasce da:** P-20, e dalla decisione dell'autore del 26
+settembre (§4).
+
+```
+Sessione P-36. Il testo che si scrive nel carteggio sta solo in
+memoria: annotaCart() non lo salva, e una ricarica durante la prova di
+un'ora perde tutto (docs/area-4-progetto.md §3.3). La correzione vera
+arriva con l'area 4 e gli account. Nel frattempo l'autore ha deciso che
+la pagina lo dica.
+
+Un avviso, dove chi studia lo legge prima che serva: all'ingresso della
+prova e degli allenamenti su carta, e nel runner finché c'è testo
+scritto. Dice che cosa succede — il testo resta finché la pagina è
+aperta — e che cosa fare: non ricaricare e non chiudere la scheda fino
+alla consegna. Il tono è quello di docs/filosofia.md: un'informazione
+con la via d'uscita, non un allarme. Nessun salvataggio nuovo, in
+nessuno storage: l'ADR-004 vuole che senza account non resti niente, e
+la bozza vera è il lavoro di P-34.
+
+È un lavoro piccolo, e resta piccolo: niente ridisegno del Carteggio,
+che è l'area 4. Non toccare docs/prossime-sessioni.md. Quattro suite
+verdi, collaudo guardato a 375 e 1280 px, voce in fondo a
+[Unreleased], un commit con il trailer, versione non toccata. Chiudi
+con il resoconto di docs/prossime-sessioni.md.
 ```
 
 **Esito:** —
@@ -1659,3 +1688,6 @@ dopo**, la soglia degli allarmi riletta sul registro vero
   dipendenze che diventano P-32…P-35; nel §4 la domanda su che cosa dire nel
   frattempo. P-28 chiude i contratti del client. Ordine per Claude: P-31, P-29,
   P-32…P-35.
+- **26 settembre 2026 — l'avviso nel carteggio.** L'autore sceglie di dirlo
+  nella pagina: P-36 per ChatGPT, subito. La frase del §7.6 la corregge la
+  regia quando P-31, che lavora sulla specifica, ha chiuso. P-31 lanciato.
