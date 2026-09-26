@@ -437,6 +437,44 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   che vuole la chiave che l'autore crea. `node server/copia.mjs` è il pezzo che
   il giro chiamerà.
 
+### Scelto — P-07: gli standard per la sessione e per le password comuni
+
+- **Tutte e due le risposte vengono da NIST SP 800-63B-4**, lo stesso standard
+  dei 15 caratteri, letto oggi nel testo ufficiale. Una sola fonte per una sola
+  autenticazione: prendere la password da un documento e la sessione da un altro
+  avrebbe dato due risposte alla stessa domanda. Il perché per esteso è in
+  `docs/account-progetto.md` §5.2 e §6.2, le righe chiuse nel §20.
+
+- **La sessione vale 30 giorni dall'accesso, e l'uso non la allunga.** Una
+  password da sola è AAL1, e a AAL1 lo standard chiede un tempo massimo definito,
+  non oltre 30 giorni, contato dall'accesso; la scadenza per inattività è
+  facoltativa, e non c'è. Sostituisce la proposta di 60 giorni rinnovati a ogni
+  uso e un anno al massimo, che dava a un telefono dimenticato dodici volte il
+  tempo dello standard. Scartato l'OWASP Session Management Cheat Sheet (minuti
+  d'inattività, ore al massimo): è pensato per la giornata in ufficio, non per
+  dieci minuti di studio sul telefono. Seguono il cookie (`Max-Age` a trenta
+  giorni) e lo schema della sessione, che perde `usata_il`.
+
+- **L'elenco delle password comuni si tiene solo per le voci da 15 caratteri in
+  su**, come lo standard dice, e la misura mostra quanto conta: nel milione di
+  password più frequenti la prima abbastanza lunga è al posto 2.209, la
+  centesima al 130.955. Ne restano **10.898, 192 KB**. La fonte sono i «ten
+  million passwords» di Mark Burnett (2015, pubblico dominio) nel file da un
+  milione di SecLists (MIT), fissato per commit e SHA-256; si rigenera con uno
+  script invece di trascriverlo. Scartate Pwned Passwords, che si scarica solo
+  come impronte e quindi non si filtra per lunghezza, e l'elenco del NCSC, che
+  all'indirizzo originale risponde `404`. Dichiarato quello che non è stato
+  letto: l'articolo originale di Burnett risponde `403`, e il marchio di pubblico
+  dominio sta sulla copia dell'Internet Archive.
+
+- **Una contraddizione trovata, con una proposta e non con una decisione:** il
+  §6.5 dice «mai un blocco» dopo gli accessi falliti, e lo standard impone di
+  disattivare la password dopo al più 100 tentativi consecutivi — il limite su
+  cui l'elenco stesso è dimensionato. Proposto: le attese crescenti restano, e al
+  centesimo fallimento si passa dalla reimpostazione per email. Aperto nel §20,
+  per l'autore. Proposti **R-ACC-25** (l'elenco, e il rifiuto che dice perché) e
+  **R-ACC-26** (i 30 giorni) nel §17. Nessuna riga di codice, niente `site/`.
+
 ## [0.27.0] — 2026-09-25
 
 ### Verificato — la v0.26.2 sul dominio vero

@@ -425,8 +425,7 @@ sessione (
   id_hash       BLOB PRIMARY KEY,    -- SHA-256 del token; il token non si conserva
   account_id    INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
   creata_il     TEXT NOT NULL,
-  usata_il      TEXT NOT NULL,       -- aggiornata al più una volta al giorno
-  scade_il      TEXT NOT NULL
+  scade_il      TEXT NOT NULL        -- creata_il + 30 giorni, e non si sposta (§6.2)
 )
 
 gettone (                            -- i link che partono per email
@@ -619,12 +618,85 @@ frase — «tre o quattro parole» — invece di chiedere simboli.
 di quello a cui chi arriva è abituato, e per questo la schermata suggerisce una
 frase invece di una parola. R-ACC-10 della specifica.
 
-**Aperto — una misura e poi l'autore: l'elenco.** Deve essere **locale**: il
-servizio più usato per il controllo delle password compromesse gira su
-Cloudflare e riceverebbe un pezzo dell'hash di ogni password scelta. Un file di
-password comuni è materiale di terzi, quindi licenza e provenienza vanno
-dichiarate nel README, e `strumenti/controlla.py` deve continuare a fallire su
-quello che non è dichiarato.
+**L'elenco deve essere locale**: il servizio più usato per il controllo delle
+password compromesse gira su Cloudflare e riceverebbe un pezzo dell'hash di ogni
+password scelta. Un file di password comuni è materiale di terzi, quindi licenza
+e provenienza vanno dichiarate nel README, e `strumenti/controlla.py` deve
+continuare a fallire su quello che non è dichiarato.
+
+**Scelto il 26 settembre 2026 da P-07, sulla delega dell'autore a uno
+standard: l'elenco.** Lo standard è lo stesso dei 15 caratteri, **NIST SP
+800-63B-4** (agosto 2025, la versione corrente), letto oggi nel testo di
+`pages.nist.gov`. Non nomina un elenco: dice com'è fatto, e tre sue regole
+decidono la scelta.
+
+- **Si confronta la password intera**, non le parole che contiene (§3.1.1.2).
+- **Bastano le voci lunghe quanto il minimo**: l'appendice A lo dice in chiaro,
+  perché una password più corta la rifiuta già la lunghezza.
+- **Grande quanto serve, non di più**: deve fermare le password che un
+  attaccante proverebbe prima del limite di tentativi (§3.2.2), e un elenco
+  eccessivo, per lo standard, non aggiunge sicurezza e frustra chi prova a
+  scegliere una frase memorabile (§3.1.1.2 e appendice A).
+
+**Misurato oggi: la regola dei 15 caratteri fa quasi tutto da sola.** Nel
+milione di password più frequenti della fonte scelta, la prima lunga almeno 15
+caratteri è al posto **2.209**; la centesima al posto **130.955**. Di un milione
+ne restano **10.908** (1,1 %), **10.898** portate in minuscolo: **192 KB** di
+testo, 93 KB compressi, tutte ASCII, al più 39 caratteri. Il peso è quello di
+una figura del decreto, non quello di un database.
+
+**La fonte: i «ten million passwords» di Mark Burnett (febbraio 2015), nel file
+`Passwords/Common-Credentials/xato-net-10-million-passwords-1000000.txt` di
+SecLists** — le prime 1.000.000 per frequenza —, all'ultimo commit che lo tocca,
+`c205c36a44` dell'8 maggio 2025, SHA-256
+`424a3e03a17df0a2bc2b3ca749d81b04e79d59cb7aeec8876a5a3f308d0caf51`.
+
+- **La licenza.** La raccolta di Burnett è in **pubblico dominio**: la copia
+  dell'Internet Archive (`archive.org/details/10MillionPasswords`, datata
+  9 febbraio 2015) porta il Public Domain Mark 1.0, e la stampa del tempo
+  riporta così l'annuncio. L'articolo originale di Burnett su Medium oggi
+  risponde `403` e **non è stato letto**: il marchio sull'Internet Archive l'ha
+  messo chi ha caricato la copia, non Burnett. SecLists, che l'ha ordinata e
+  deduplicata, è **MIT**. Pubblico dominio e MIT entrano in un repo MIT: il
+  README dichiara fonte, commit e impronta, e accanto al file va la nota MIT di
+  SecLists.
+- **Scartato Pwned Passwords**, la raccolta più ampia: si scarica solo come
+  impronte SHA-1 o NTLM, quindi il filtro sulla lunghezza — che qui è il punto —
+  non si può applicare, e si porterebbe tutto il corpus per usarne una parte che
+  non si sa riconoscere.
+- **Scartato l'elenco del NCSC britannico** (i 100.000 più frequenti di Pwned
+  Passwords, in chiaro, 2019): all'indirizzo originale,
+  `ncsc.gov.uk/static-assets/documents/PwnedPasswordsTop100k.txt`, oggi risponde
+  `404`, misurato; ne resta la copia in SecLists, di cui solo **331** voci
+  arrivano a 15 caratteri. Una provenienza che non si può più verificare alla
+  fonte non si dichiara.
+- **Il milione, non i 5,2 milioni** della raccolta intera: è la regola «grande
+  quanto serve». Con il limite di tentativi che lo standard impone (§3.2.2) un
+  attaccante prova al più cento password per account prima di fermarsi;
+  diecimila voci lunghe sono già cento volte tanto. **Quel limite, oggi, il §6.5
+  non ce l'ha**: vedi la nota lì.
+
+**Come si usa — Proposto.**
+
+- **Il file si genera, non si trascrive**: uno script in `strumenti/` scarica
+  la fonte, ne controlla l'impronta, tiene le voci da 15 a 256 caratteri, le
+  porta in minuscolo e scrive `server/password-comuni.txt`, una per riga,
+  ordinate. Chiunque può rifarlo, come `fonte/verifica.py` per il decreto. Il
+  file entra nel repo, perché il server non deve scaricare niente per partire.
+- **Il confronto è sulla password intera, portata in minuscolo**: `Iloveyou…` e
+  `iloveyou…` sono la stessa scelta. Il confronto resta sull'intera stringa,
+  come lo standard chiede.
+- **Più le parole del contesto**, la terza categoria dello standard: l'email di
+  chi si registra, la sua parte prima della `@`, e i nomi del servizio. Si
+  scrivono nel codice del server, non nel file.
+- **Il rifiuto dice perché** («è fra le password più usate») **e suggerisce una
+  frase**: sono due obblighi (SHALL) dello stesso paragrafo, e la frase è già il
+  consiglio della schermata.
+- Due obblighi dello standard che questo documento non diceva, e che la pagina
+  deve rispettare: **i gestori di password e il riempimento automatico si
+  lasciano funzionare** (SHALL), e **incollare si permette** (SHOULD).
+
+Il controllo è R-ACC-25, proposto nel §17.
 
 ### 5.3 Non dire chi è iscritto
 
@@ -645,7 +717,7 @@ quello che non è dichiarato.
 ### 6.1 Il cookie — Proposto
 
 ```
-Set-Cookie: __Host-rg=<32 byte casuali, base64url>; Path=/; Secure; HttpOnly; SameSite=Strict; Max-Age=5184000
+Set-Cookie: __Host-rg=<32 byte casuali, base64url>; Path=/; Secure; HttpOnly; SameSite=Strict; Max-Age=2592000
 ```
 
 - **Opaco**, non un JWT: la sessione vive in una riga della tabella `sessione`,
@@ -664,13 +736,54 @@ Set-Cookie: __Host-rg=<32 byte casuali, base64url>; Path=/; Secure; HttpOnly; Sa
 stesso sito anche con la prevenzione del tracciamento attiva. È documentato, non
 verificato qui.
 
-### 6.2 Quanto dura — Proposto
+### 6.2 Quanto dura
 
-**60 giorni senza uso**, rinnovati a ogni richiesta (al più una scrittura al
-giorno), **e un anno al massimo** dalla creazione. Una preparazione dura
-settimane e si fa soprattutto dal telefono: chiedere la password ogni giorno
-spingerebbe verso password peggiori. L'anno al massimo serve a non avere
-sessioni eterne su dispositivi dimenticati.
+**Scelto il 26 settembre 2026 da P-07, sulla delega dell'autore a uno
+standard: 30 giorni dall'accesso, qualunque sia l'uso, e nessuna scadenza per
+inattività.** Poi si rimette la password.
+
+**Lo standard è NIST SP 800-63B-4**, §2.1.3 e §5.2, lo stesso dei 15 caratteri
+del §5.2: un'autenticazione sola, un documento solo. **Il livello è AAL1**, e le
+ragioni sono due, ciascuna sufficiente. Una password da sola non può dare di
+più: AAL2 chiede due fattori distinti. E il danno di una sessione rubata è
+basso: lo storico delle risposte e un'email, niente dati dell'art. 9, e
+azzerare, cancellare o cambiare indirizzo chiedono comunque la password (§7.1).
+
+A AAL1 lo standard chiede tre cose: un tempo massimo della sessione definito
+(SHALL), non oltre **30 giorni** (SHOULD), e lascia facoltativa la scadenza per
+inattività (MAY). Il tempo massimo si conta **dall'accesso o dall'ultimo
+riaccesso**, non dall'ultimo uso; un nuovo accesso azzera il conto (§5.2 dello
+standard).
+
+**Che cosa cambia rispetto alla proposta di prima** — 60 giorni senza uso,
+rinnovati a ogni richiesta, e un anno al massimo —: l'anno diventa un mese, e il
+rinnovo sparisce. La ragione di allora regge ancora: chiedere la password ogni
+giorno spingerebbe verso password peggiori, e una volta al mese è lontano da
+ogni giorno.
+
+**Scartato l'OWASP Session Management Cheat Sheet**, che per le applicazioni a
+basso rischio indica 15–30 minuti d'inattività e un massimo di 4–8 ore. Pensa
+alla giornata di un impiegato, non a chi studia dieci minuti sul telefono fra
+una cosa e l'altra, e dice lui stesso che i valori dipendono dall'applicazione.
+Non è graduato per livello di garanzia, e prendere la password da NIST e la
+sessione da un'altra fonte darebbe due risposte alla stessa domanda.
+
+**Le conseguenze sul resto del documento, fatte qui:**
+
+- il cookie del §6.1 passa a `Max-Age=2592000`, trenta giorni;
+- `sessione.usata_il` non serve più alla scadenza ed esce dallo schema del §3;
+  l'attività che conta i due anni (§14.2) resta su `account.ultimo_accesso_il`,
+  come prima;
+- una sessione che scade mentre si studia offline è già il caso del §8.5: `401`,
+  le righe da inviare non si toccano, si rientra con la password e partono.
+
+**Proposto: nessun avviso prima della scadenza.** Lo standard lo permette, e
+fra le sue considerazioni d'uso chiede di far salvare il lavoro prima di un
+riaccesso fisso; qui il lavoro si salva da solo, riga per riga (§8). Basta che
+la schermata di accesso, quando compare per questo, dica perché: «sono passati
+30 giorni dall'ultimo accesso».
+
+Il controllo è R-ACC-26, proposto nel §17.
 
 ### 6.3 Che cosa la chiude
 
@@ -701,6 +814,22 @@ In memoria, non nel database: si perdono al riavvio, ed è accettabile.
 | Registrazioni e mail di reimpostazione per IP | 5 all'ora |
 | Mail per indirizzo di destinazione | 3 all'ora, 10 al giorno: nessuno usa il sito per tempestare una casella altrui |
 | Richieste complessive per sessione | 600 all'ora |
+
+**Una nota di P-07, 26 settembre 2026: la prima riga contraddice lo standard
+scelto per la password.** NIST SP 800-63B-4 §3.2.2: dopo **al più 100**
+tentativi falliti consecutivi su un account, la password si **disattiva**
+(SHALL), e torna utilizzabile solo ricollegandola all'account — qui, con la
+reimpostazione per email. «Mai un blocco» va contro un obbligo. La riga è
+Proposta, non decisa, quindi P-07 non si è fermata; ma l'elenco del §5.2 è
+dimensionato proprio su quel limite, e senza limite le attese che raddoppiano
+lasciano all'attaccante un numero di tentativi che cresce col tempo, senza tetto.
+
+La ragione della riga — non chiudere fuori il proprietario — lo standard la
+risolve così: il proprietario rientra con la mail di reimpostazione, che resta
+sempre a un tocco, e fra i modi per ridurre il fastidio elenca proprio le attese
+crescenti fra un tentativo e l'altro. **Proposto:** le attese restano come
+sono, e al centesimo fallimento consecutivo la password si disattiva finché non
+arriva una reimpostazione. Aperto nel §20.
 
 ---
 
@@ -1329,6 +1458,8 @@ scoperta.
 | R-ACC-22 | All'uscita, righe non inviate fermano la cancellazione dell'archivio locale | scoperto — è la pagina |
 | R-ACC-23 | Un archivio di prima degli account, in IndexedDB o in `pn.archivio`, produce l'avviso finché non è portato o scaricato | scoperto — è la pagina, e va provato su un browser con un archivio vero (è R-ACC-05 reso concreto) |
 | R-ACC-24 | Dopo il ripristino di una copia, una riga accolta dopo la copia torna sul server dal dispositivo che la ha, e ogni altro dispositivo la riceve | `test_server.mjs` con `ripristina --prova`, più `test_engine.mjs` sull'epoca nella contabilità della coda (§2.7) |
+| R-ACC-25 | Una password dell'elenco delle comuni, in qualunque combinazione di maiuscole, o uguale all'email o alla sua parte prima della `@`, è rifiutata, e il rifiuto dice perché; il file dell'elenco è quello che lo script rigenera dalla fonte dichiarata (§5.2) | `test_server.mjs` sul rifiuto; sul file, un controllo che ne confronti l'impronta con quella che lo script produce |
+| R-ACC-26 | Una sessione vale 30 giorni dall'accesso e l'uso non la allunga: il trentunesimo giorno la stessa richiesta risponde `401` (§6.2) | `test_server.mjs`, con l'orologio del server passato dal test |
 
 ---
 
@@ -1392,8 +1523,9 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
 | ~~Parametri di Argon2id~~ | — | **deciso su delega il 26 settembre 2026, dalla regia**: `m=65536, t=2, p=1`, la proposta di P-02, misurata sotto i 250 ms su tutte e due le macchine (§5.1). Con 1 GB di memoria sulla STARDUST, 64 MiB per verifica reggono i limiti di frequenza del §6.5; va rimisurato sulla macchina di produzione |
 | ~~Il tetto delle 300 mail~~ | — | **deciso dall'autore il 26 settembre 2026: 300 al mese, per il momento.** Oltre non si blocca: si paga 0,25 € ogni 1.000, e il titolare riceve un avviso, non chi si registra un `503` (§9.3) |
 | ~~Lunghezza minima della password~~ | — | **deciso**: 15, come NIST (§5.2) |
-| Elenco delle password comuni: quale, con che licenza | **uno standard**, per scelta dell'autore del 26 settembre 2026; lo sceglie P-07 con la fonte | un file dichiarato nel README (§5.2) |
-| Durata della sessione | **uno standard**, per scelta dell'autore del 26 settembre 2026; lo sceglie P-07 con la fonte | 60 giorni senza uso, un anno al massimo (§6.2) |
+| ~~Elenco delle password comuni: quale, con che licenza~~ | — | **scelto da P-07 il 26 settembre 2026, sulla delega dell'autore a uno standard**: NIST SP 800-63B-4 §3.1.1.2 e appendice A. Fonte: i «ten million passwords» di Burnett (pubblico dominio) nel file da un milione di SecLists (MIT), tenute le 10.898 voci da almeno 15 caratteri, 192 KB, rigenerate da uno script con l'impronta della fonte (§5.2). R-ACC-25 |
+| ~~Durata della sessione~~ | — | **scelto da P-07 il 26 settembre 2026, sulla delega dell'autore a uno standard**: NIST SP 800-63B-4 §2.1.3, livello AAL1 — **30 giorni dall'accesso**, l'uso non la allunga, nessuna scadenza per inattività. Sostituisce la proposta di 60 giorni senza uso e un anno al massimo (§6.2). R-ACC-26 |
+| Il limite dei tentativi falliti (§6.5): «mai un blocco» contro il limite di 100 dello standard | l'autore, o la regia se lo considera dentro la stessa delega | disattivare la password al centesimo fallimento consecutivo, fino a una reimpostazione per email; le attese che raddoppiano restano (§6.5) |
 | ~~Account non confermato: quanto vive~~ | — | **deciso**: sette giorni, funzionante — Mastodon 7, Discourse 14, nessuno standard (§9.6) |
 | ~~Preferenze dell'interfaccia senza account~~ | — | **deciso**: non si conservano nemmeno quelle (§13.3) |
 | ~~IP nel registro di sicurezza~~ | — | **deciso** su delega: 6 mesi l'IP, un anno l'evento, dalla CNIL (§15.3) |
@@ -1463,3 +1595,19 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
   scrivendolo, nel §2.7: l'`id` che si riusa dopo un ripristino, l'azzeramento
   da non rifare quando la copia lo contiene già, e il cursore da un contatore.
   R-ACC-20 e R-ACC-24 entrano nella specifica.
+
+- **26 settembre 2026 — i due standard (P-07).** Per l'elenco delle password
+  comuni e la durata della sessione l'autore aveva chiesto uno standard: per
+  tutte e due è **NIST SP 800-63B-4**, lo stesso dei 15 caratteri. La sessione
+  vale **30 giorni dall'accesso**, il massimo che lo standard indica per AAL1 —
+  il livello di una password da sola —, senza rinnovo e senza scadenza per
+  inattività; sostituisce i 60 giorni rinnovabili e l'anno della proposta. Per
+  l'elenco lo standard dice di tenere solo le voci lunghe quanto il minimo, e la
+  misura gli dà ragione: del milione di password più frequenti della raccolta di
+  Burnett, in pubblico dominio e presa dal file di SecLists (MIT), ne restano
+  10.898, 192 KB. Scartate Pwned Passwords, che esiste solo come impronte e non
+  si filtra per lunghezza, e l'elenco del NCSC, la cui fonte risponde `404`. Il
+  cookie, lo schema della sessione e i requisiti seguono (R-ACC-25, R-ACC-26).
+  Trovata una contraddizione con una proposta, non con una decisione: il «mai un
+  blocco» del §6.5 contro il limite di 100 tentativi dello standard, aperta nel
+  §20.
