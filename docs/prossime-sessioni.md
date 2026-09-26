@@ -106,9 +106,12 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 3 | I tre prerequisiti del server, con l'epoca e il file delle cancellazioni | Claude | `main`, a mano | il sì dell'autore alle due proposte del §2.7 | P-03 |
+| 3 | I tre prerequisiti del server, con l'epoca e il file delle cancellazioni | Claude | `main`, a mano | niente | P-03 |
+| 10 | Allineare i controlli dei quiz all'area 2 | Claude | `main`, a mano | P-03, perché è la stessa cartella | P-06 |
+| 11 | Uno standard per la durata della sessione e per le password comuni | Claude | pulsante | niente | P-07 |
+| 12 | I passi a mano dell'autore, accompagnati | l'autore con Claude | pulsante | niente | P-08 |
 | 4 | Il server degli account, un pezzo per volta | Claude | `main` | 3 | da scrivere dopo P-03 |
-| 5 | Area 2, Quiz: prima il progetto, poi la realizzazione | ChatGPT | `ui/main` | niente: P-01 è chiuso | P-04, P-05 |
+| 5 | Area 2, Quiz: la realizzazione (il progetto è chiuso) | ChatGPT | `ui/main` | P-06 | P-05 |
 | 6 | Aree 3–6 del ridisegno | ChatGPT | `ui/main` | la precedente | da scrivere |
 | 7 | Il client degli account, dentro una fetta del ridisegno | ChatGPT | `ui/main` | 4 | da scrivere |
 | 8 | La messa in esercizio del server su Scaleway | Claude e l'autore | `main`, pannelli | 4, e dal §4: la macchina, i record di `posta.`, la chiave del bucket | da scrivere |
@@ -116,8 +119,10 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**: Claude sul server (non tocca `site/`),
-ChatGPT sull'interfaccia. **P-04 è pronto, e P-03 lo è dopo il sì dell'autore**:
-si possono tenere insieme, perché stanno su due cartelle diverse. Si incontrano al punto 7, e il punto 9 è il
+ChatGPT sull'interfaccia. **Adesso si possono tenere aperti insieme P-03, P-07 e
+P-08**: P-03 nella cartella principale, gli altri due nei loro worktree. P-06 no,
+perché lavora nella stessa cartella di P-03; P-05 aspetta P-06. Il numero di una
+riga è il suo nome, non la sua posizione: l'ordine è quello della tabella. Si incontrano al punto 7, e il punto 9 è il
 giorno in cui gli account arrivano a chi studia.
 
 I prompt «da scrivere» li scrive la regia quando si chiude quello da cui
@@ -347,15 +352,12 @@ consuma, non si riprogetta.
   modo in cui ti accorgi di una violazione e la notifichi entro 72 ore. L'elenco
   è la tabella «Il GDPR, per intero» dell'ADR-003; il testo dell'informativa è
   lavoro di `ui/*` (§1).
-- **Le decisioni aperte del §20 di `account-progetto.md`**, riaperte da P-02:
-  quale macchina (nessuna delle due sta nel tetto dei 10 € senza una rinuncia),
-  i parametri di Argon2id, il «tetto» delle 300 mail che è un prezzo, la durata
-  della sessione, l'elenco delle password comuni. Le proposte sono lì accanto.
-- **Due proposte del §2.7, che P-03 deve sapere prima di scrivere il backup**:
-  l'*epoca* del database, perché un ripristino non renda invisibili le righe
-  nuove (R-ACC-24), e il file `cancellazioni` fuori dal database, perché un
-  ripristino non riporti in vita account cancellati. Entrambe nascono da un
-  difetto misurato, non da una preferenza.
+- ~~Le decisioni del §20 riaperte da P-02, e le due proposte del §2.7~~ —
+  **prese il 26 settembre** e scritte in `account-progetto.md`: STARDUST1-S a
+  Varsavia, 300 mail al mese, Argon2id su delega, sì all'epoca e al file delle
+  cancellazioni. Durata della sessione e password comuni: uno standard, P-07.
+- **I passi qui sotto si fanno in P-08**, una sessione che ti accompagna uno per
+  uno.
 - **I quattro record DNS di `posta.rottagiusta.it` su IONOS**, MX compreso, con
   i valori da copiare dalla console di Scaleway (`account-progetto.md` §9.4). Il
   record SPF dell'apice non si tocca: regge la tua posta. Quello di `api.` viene
@@ -476,8 +478,8 @@ chiudono lo stesso giorno succederà ogni volta, e si risolve così.
 
 ### P-03 — Claude: i tre prerequisiti del server
 
-**Stato:** pronto dopo il sì dell'autore alle due proposte del §2.7 di
-`account-progetto.md` (§4 qui sopra). **Dove:** Claude Code, `~/Software/rotta-giusta`,
+**Stato:** pronto: l'autore ha detto sì alle due proposte del §2.7 il 26
+settembre. **Dove:** Claude Code, `~/Software/rotta-giusta`,
 ramo **`main`** — non da un pulsante: tocca `territori.yaml` e `tests/`, che il
 `pre-commit` accetta solo da `main`.
 
@@ -507,7 +509,7 @@ resoconto di docs/prossime-sessioni.md.
 
 ### P-04 — ChatGPT: il progetto dell'area 2, Quiz
 
-**Stato:** pronto: P-01 è chiuso e `ui/main` è allineato. **Dove:** app di
+**Stato:** **chiuso il 26 settembre 2026**, merge `c57ac3e`. **Dove:** app di
 ChatGPT, progetto `~/Software/rotta-giusta-ui`, ramo `ui/main`.
 
 ```
@@ -524,11 +526,19 @@ versione non toccata. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `9f397a1`, merge `c57ac3e`: `docs/area-2-progetto.md` e la
+sua voce nel CHANGELOG. Cinque intenzioni al posto delle sei modalità, filtri
+locali invece che globali, i testi letti con l'ADR-004, e il ricablaggio a
+`E.lunghezzaScreening()`. **Ha trovato la dipendenza che blocca P-05**: i test e
+la specifica pretendono ancora le sei modalità (`test_modalita_quiz`, R-NAV-04,
+R-NAV-05); il §10.1 del progetto dice come vanno allineati senza lasciare `main`
+rosso, ed è P-06. Controllato dalla regia: territori puliti, il diff tocca solo
+il progetto e il CHANGELOG; secondo conflitto additivo nel CHANGELOG, risolto
+tenendo le due voci; suite su `main` invariate (131 + 1 skip, 221, 135, 262).
 
 ### P-05 — ChatGPT: la realizzazione dell'area 2
 
-**Stato:** in attesa di P-04 e della sua merge. **Dove:** come P-04.
+**Stato:** in attesa di P-06, e che la regia allinei `ui/main` dopo la sua merge. **Dove:** come P-04.
 
 ```
 Sessione P-05. Realizza docs/area-2-progetto.md in site/app.html.
@@ -537,6 +547,89 @@ Non toccare docs/prossime-sessioni.md. Quattro suite verdi, collaudo
 guardato a 375 e 1280 px, voce in fondo a [Unreleased], un commit con
 il trailer, versione non toccata. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-06 — Claude: i controlli dei quiz allineati all'area 2
+
+**Stato:** in attesa di P-03, che lavora nella stessa cartella. **Dove:** Claude
+Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano: tocca `tests/` e la
+specifica.
+
+```
+Sessione P-06, su main. Leggi docs/area-2-progetto.md, soprattutto §6
+e §10.1, e R-NAV-04 e R-NAV-05 in docs/specifica.md.
+
+Il progetto sostituisce le sei modalità dei quiz con cinque
+intenzioni, e i controlli di oggi pretendono ancora le sei. Allinea
+tests/test_interfaccia.py e la specifica come chiede il §10.1: il
+controllo riconosce il regime di oggi, a sei ingressi, e quello
+progettato, a cinque, e in quest'ultimo esercita le funzioni e i
+parametri, non la presenza dei nomi. Non basta togliere l'asserzione
+su Batteria. Main resta verde con la pagina di oggi; il regime vecchio
+lo toglie la regia quando integra P-05.
+
+Provalo al contrario: una pagina a cinque ingressi che perde
+un'intenzione, o ne apre una con i parametri sbagliati, deve
+diventare rossa. Non toccare docs/prossime-sessioni.md. Suite verdi,
+voce in fondo a [Unreleased], un commit. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-07 — Claude: uno standard per la sessione e per le password comuni
+
+**Stato:** pronto. **Dove:** dal pulsante della regia, in un worktree suo: tocca
+solo `docs/account-progetto.md` e il CHANGELOG.
+
+```
+Sessione P-07. Due righe del §20 di docs/account-progetto.md l'autore
+le ha affidate a uno standard: la durata della sessione e l'elenco
+delle password comuni. Per ciascuna scegli uno standard riconosciuto,
+citato nella sua versione corrente: per la sessione, il livello che
+corrisponde a un sito come questo; per l'elenco, una fonte la cui
+licenza ne permetta l'uso in un repo MIT, e che cosa pesa. Scrivi la
+scelta e il perché nel §5.2, nel §6.2 e nel §20; se serve un
+requisito, proponilo nel §17. Se uno standard contraddice qualcosa
+già deciso nel documento, fermati e dillo.
+
+Solo docs/account-progetto.md e CHANGELOG.md. Non toccare
+docs/prossime-sessioni.md. Suite verdi, voce in fondo a [Unreleased],
+un commit. Chiudi con il resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-08 — Claude con l'autore: i passi a mano
+
+**Stato:** pronto. **Dove:** dal pulsante della regia, in un worktree suo. È una
+sessione che si fa **insieme**: l'autore agisce, Claude spiega e verifica.
+
+```
+Sessione P-08: accompagni l'autore nei passi che deve fare a mano per
+gli account. Ha chiesto molto aiuto: un passo alla volta, spiegando
+che cosa fa e perché, aspettando che dica «fatto», e verificando tu
+dove si può — dig per il DNS, la console di Scaleway in lettura.
+
+L'elenco è il §4 di docs/prossime-sessioni.md; il perché di ogni passo
+sta nei punti di docs/account-progetto.md e dell'ADR-003 a cui
+rimanda. In questa sessione: i record DNS di posta.rottagiusta.it su
+IONOS (§9.4); che cosa tenere di quello che P-02 ha lasciato sul Mac e
+su Scaleway; gli adempimenti dell'ADR-003 — l'accordo con Scaleway, il
+registro dei trattamenti, un contatto del titolare, come ci si accorge
+di una violazione. La macchina di produzione e la chiave del bucket
+vengono con la messa in esercizio: se l'autore vuole creare subito la
+STARDUST1-S per non trovarla esaurita, gli spieghi il costo e decide
+lui.
+
+Non inserisci credenziali, non accetti condizioni e non firmi niente
+al suo posto. I documenti con i suoi dati personali non entrano nel
+repo, e strumenti/controlla.py lo impedisce: nel repo si scrive solo
+che cosa è fatto, quando, e dove sta, in docs/account-progetto.md nei
+punti a cui appartiene. Non toccare docs/prossime-sessioni.md. Un
+commit, e chiudi con il resoconto di docs/prossime-sessioni.md.
 ```
 
 **Esito:** —
@@ -601,3 +694,10 @@ docs/prossime-sessioni.md.
   riscritto con l'epoca, il file delle cancellazioni e Node 24; aspetta il sì
   dell'autore. Nel §4 le decisioni che P-02 ha riaperto e quello che ha lasciato
   sul Mac e su Scaleway.
+- **26 settembre 2026 — P-04 chiuso, le decisioni dell'autore, tre prompt
+  nuovi.** Merge `c57ac3e`. L'autore ha deciso le due proposte del §2.7 e il
+  §20 riaperto da P-02, e le decisioni sono scritte in `account-progetto.md`
+  nello stesso commit, non solo in chat. P-03 pronto. Entrano P-06 (i controlli
+  che P-04 ha trovato fermi alle sei modalità, prima di P-05), P-07 (gli
+  standard che l'autore ha chiesto) e P-08 (i passi a mano, accompagnati, in una
+  sessione separata come ha chiesto l'autore).

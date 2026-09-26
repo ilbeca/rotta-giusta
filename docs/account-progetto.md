@@ -333,7 +333,7 @@ vedeva. Si trovano solo pensando a chi è collegato mentre si ripristina.
   avevano inviate le hanno già tolte dalla coda (regola 3 del §1), quindi non le
   rimanderanno mai.
 
-  **Proposto: un'*epoca* del database.** Un identificatore casuale, scritto nel
+  **Deciso dall'autore il 26 settembre 2026: un'*epoca* del database.** Un identificatore casuale, scritto nel
   database quando nasce e **rigenerato da ogni ripristino**, che il server
   restituisce con ogni risposta delle righe. Un client che vede cambiare l'epoca
   azzera il suo cursore e **rimanda tutte le righe che ha**: l'unione per `uid`
@@ -345,7 +345,7 @@ vedeva. Si trovano solo pensando a chi è collegato mentre si ripristina.
   `registro`: ma il `registro` ripristinato è quello **della copia**, e le
   cancellazioni successive non ci sono. Lo stesso per gli azzeramenti: una copia
   di prima riporta la generazione di prima (§8.4), e con lei le righe azzerate.
-  **Proposto:** le cancellazioni e gli azzeramenti si scrivono **anche** in un
+  **Deciso dall'autore il 26 settembre 2026:** le cancellazioni e gli azzeramenti si scrivono **anche** in un
   file a parte, `/var/lib/rg/cancellazioni`, una riga ciascuno — `id` interno,
   data, generazione nuova, nessuna email —, che il ripristino non tocca e
   rilegge prima di riaprire il servizio. Fa parte di `ripristina --prova`.
@@ -1341,12 +1341,12 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
 | Questione | Decide | Proposta |
 |---|---|---|
 | ~~Macchina con SQLite, o container con PostgreSQL gestito~~ | — | **deciso** su delega: macchina, SQLite, Node senza dipendenze (§2.2) |
-| **Quale macchina**: DEV1-S in `fr-par` a 11,15 € al mese, sopra il tetto di 10 €; o STARDUST1-S a 5,04 €, che in `fr-par` è esaurita e c'è a `pl-waw-2` con scorte incerte | l'autore | nessuna delle due senza una rinuncia: la prima sfora di 1,15 €, la seconda porta i dati a Varsavia (UE) e potrebbe non essere ricreabile subito dopo un guasto. Le copie restano a `nl-ams` in entrambi i casi (§2.6) |
-| Parametri di Argon2id | l'autore, o su delega | `m=65536, t=2, p=1`: sotto i 250 ms su tutte e due le macchine, più robusti delle righe OWASP (§5.1) |
-| Il tetto delle 300 mail | l'autore, o su delega | non è un tetto: oltre si paga 0,25 € ogni 1.000; un avviso al titolare, non un `503` (§9.3) |
+| ~~Quale macchina~~ | — | **deciso dall'autore il 26 settembre 2026: STARDUST1-S a `pl-waw-2`**, 5,04 € al mese. Il prezzo che si accetta: i dati stanno a Varsavia (UE), e dopo un guasto la macchina potrebbe non essere ricreabile subito perché le scorte sono incerte. Le copie restano a `nl-ams` (§2.6). L'informativa dirà Polonia |
+| ~~Parametri di Argon2id~~ | — | **deciso su delega il 26 settembre 2026, dalla regia**: `m=65536, t=2, p=1`, la proposta di P-02, misurata sotto i 250 ms su tutte e due le macchine (§5.1). Con 1 GB di memoria sulla STARDUST, 64 MiB per verifica reggono i limiti di frequenza del §6.5; va rimisurato sulla macchina di produzione |
+| ~~Il tetto delle 300 mail~~ | — | **deciso dall'autore il 26 settembre 2026: 300 al mese, per il momento.** Oltre non si blocca: si paga 0,25 € ogni 1.000, e il titolare riceve un avviso, non chi si registra un `503` (§9.3) |
 | ~~Lunghezza minima della password~~ | — | **deciso**: 15, come NIST (§5.2) |
-| Elenco delle password comuni: quale, con che licenza | una misura, poi l'autore | un file dichiarato nel README (§5.2) |
-| Durata della sessione | l'autore | 60 giorni senza uso, un anno al massimo (§6.2) |
+| Elenco delle password comuni: quale, con che licenza | **uno standard**, per scelta dell'autore del 26 settembre 2026; lo sceglie P-07 con la fonte | un file dichiarato nel README (§5.2) |
+| Durata della sessione | **uno standard**, per scelta dell'autore del 26 settembre 2026; lo sceglie P-07 con la fonte | 60 giorni senza uso, un anno al massimo (§6.2) |
 | ~~Account non confermato: quanto vive~~ | — | **deciso**: sette giorni, funzionante — Mastodon 7, Discourse 14, nessuno standard (§9.6) |
 | ~~Preferenze dell'interfaccia senza account~~ | — | **deciso**: non si conservano nemmeno quelle (§13.3) |
 | ~~IP nel registro di sicurezza~~ | — | **deciso** su delega: 6 mesi l'IP, un anno l'evento, dalla CNIL (§15.3) |
@@ -1403,3 +1403,9 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
   è collegato: il cursore che torna indietro — misurato, la riga nuova prende
   `seq` 1001 e un client a 1050 non la vede mai — e il registro delle
   cancellazioni che sta dentro il database ripristinato. R-ACC-24.
+- **26 settembre 2026 — le decisioni dopo P-02.** Dall'autore, nella sessione di
+  regia: sì all'epoca del database e al file delle cancellazioni (§2.7), la
+  STARDUST1-S a Varsavia, 300 mail al mese per il momento. Su sua delega, la
+  regia ha preso i parametri di Argon2id proposti da P-02. Per la durata della
+  sessione e l'elenco delle password comuni l'autore ha chiesto uno standard:
+  li sceglie P-07.
