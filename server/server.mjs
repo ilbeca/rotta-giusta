@@ -1,14 +1,14 @@
-// Il server degli account: la salute e l'account.
+// Il server degli account: la salute, l'account, le righe.
 //
 // docs/account-progetto.md §2.2 e §16.2: `node:http`, `node:sqlite`, zero
 // dipendenze; importa `site/engine.js` dal rilascio in uso, cosi' il browser e
 // il server rifiutano le stesse righe per gli stessi motivi. Le rotte del §7
-// arrivano un pezzo per volta, ognuna con i suoi test in tests/test_server.mjs:
-// qui la salute, l'account (§7.1, P-09) e le righe con la sincronia (§7.2,
-// P-10); il cambio d'indirizzo, il profilo e la cancellazione sono il pezzo
-// dopo.
+// sono arrivate un pezzo per volta, ognuna con i suoi test in
+// tests/test_server.mjs: l'account (§7.1, P-09), le righe con la sincronia
+// (§7.2, P-10), e il cambio d'indirizzo, il profilo, la cancellazione e gli
+// allarmi al titolare (P-11).
 //
-//   RG_DB=… RG_CANCELLAZIONI=… RG_PORTA=8620 node server/server.mjs
+//   RG_DB=… RG_CANCELLAZIONI=… RG_TITOLARE=… RG_PORTA=8620 node server/server.mjs
 //
 // Sulla macchina lo avvia l'unita' `rg-api` (§2.7), dietro il proxy che fa
 // HTTPS: per questo ascolta su 127.0.0.1 se non gli si dice altro.
@@ -21,6 +21,7 @@ import { SCHEMA, apri, versioneSchema, leggiEpoca } from './db.mjs';
 import { hashPassword, calcolati, PARAMETRI } from './password.mjs';
 import { creaConti, COOKIE } from './conti.mjs';
 import { creaRighe, CORPO_RIGHE } from './righe.mjs';
+import { creaAllarmi } from './allarmi.mjs';
 import { postaScaleway, postaAssente } from './posta.mjs';
 
 // La versione si legge dalla radice del codice, non dalla cartella dei dati:
@@ -75,7 +76,7 @@ function tokenDalCookie(req) {
 }
 
 /**
- * Avvia il server. Restituisce `{ indirizzo, db, chiudi, calcoli, manutenzione }`:
+ * Avvia il server. Restituisce `{ indirizzo, db, chiudi, calcoli, manutenzione, allarmi }`:
  * `db` serve alla suite, che lavora sullo stesso database del server che
  * interroga; `calcoli` conta gli hash di Argon2id (§5.3).
  *
@@ -86,7 +87,7 @@ function tokenDalCookie(req) {
 export async function avvia({
   db: percorsoDb, cancellazioni, porta = 8620, host = '127.0.0.1', log = (m) => console.error(m),
   ora = Date.now, posta = postaAssente, argon2 = null,
-  origine = 'https://rottagiusta.it', sito = 'https://rottagiusta.it', proxy = false,
+  origine = 'https://rottagiusta.it', sito = 'https://rottagiusta.it', proxy = false, titolare = null,
 } = {}) {
   if (!percorsoDb) throw new Error('manca il percorso del database (RG_DB)');
   if (!cancellazioni) throw new Error('manca il percorso del file delle cancellazioni (RG_CANCELLAZIONI)');
@@ -97,6 +98,7 @@ export async function avvia({
   const fittizia = await hashPassword(randomBytes(24).toString('base64'), parametri);
   const conti = creaConti({ db, ora, argon2: parametri, posta, sito, cancellazioni, fittizia, log });
   const righe = creaRighe({ db, ora, versione: VERSIONE });
+  const allarmi = creaAllarmi({ db, ora, titolare, spedisci: conti.spedisci, registra: conti.registra, log });
 
   // Le rotte: [gestore, che cosa chiede, quanto puo' pesare il corpo].
   // `sessione` vuol dire che senza una sessione valida la risposta e' 401 prima
@@ -119,6 +121,10 @@ export async function avvia({
     '/v1/password/dimenticata': { POST: [conti.dimenticata] },
     '/v1/password/nuova': { POST: [conti.nuova] },
     '/v1/password/cambia': { POST: [conti.cambia, 'sessione'] },
+    '/v1/email/cambia': { POST: [conti.emailCambia, 'sessione'] },
+    '/v1/email/conferma': { POST: [conti.emailConferma] },
+    '/v1/profilo': { PUT: [conti.profilo, 'sessione'] },
+    '/v1/account': { DELETE: [conti.cancella, 'sessione'] },
     '/v1/azzera': { POST: [conti.azzera, 'sessione'] },
     '/v1/righe': { POST: [righe.invia, 'sessione', CORPO_RIGHE], GET: [righe.ricevi, 'sessione'] },
     '/v1/esporta': { GET: [righe.esporta, 'sessione'] },
@@ -220,6 +226,7 @@ export async function avvia({
     db,
     calcoli: calcolati,
     manutenzione: () => conti.manutenzione(),
+    allarmi: () => allarmi.controlla(),
     chiudi: () => new Promise((ok) => server.close(() => { db.close(); ok(); })),
   };
 }
@@ -241,17 +248,25 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     origine: process.env.RG_ORIGINE || 'https://rottagiusta.it',
     sito: process.env.RG_SITO || 'https://rottagiusta.it',
     proxy: process.env.RG_PROXY === '1',
+    // Dove vanno gli allarmi (§15.4). Senza, restano nel registro e nel log.
+    titolare: process.env.RG_TITOLARE || null,
     posta,
   });
+  if (!process.env.RG_TITOLARE) console.error('titolare non configurato (RG_TITOLARE): gli allarmi andranno solo nel registro e nel log');
   console.error(`rg-api ${VERSIONE} su ${s.indirizzo}`);
-  // Il lavoro quotidiano (§14.3, §15.3): all'avvio e poi ogni giorno.
-  const lavoro = () => {
-    try { console.error(`manutenzione: ${JSON.stringify(s.manutenzione())}`); } catch (e) { console.error(`manutenzione fallita: ${e.message}`); }
+  // Il lavoro quotidiano (§14, §15.3): all'avvio e poi ogni giorno. Gli
+  // allarmi ogni ora: un attacco si deve vedere prima di domani (§15.4).
+  const lavoro = async () => {
+    try { console.error(`manutenzione: ${JSON.stringify(await s.manutenzione())}`); } catch (e) { console.error(`manutenzione fallita: ${e.message}`); }
   };
-  lavoro();
-  const giro = setInterval(lavoro, 24 * 3600 * 1000);
-  giro.unref();
-  const ferma = () => { clearInterval(giro); s.chiudi().then(() => process.exit(0)); };
+  const guarda = async () => {
+    try { await s.allarmi(); } catch (e) { console.error(`ALLARME: il controllo degli allarmi è fallito: ${e.message}`); }
+  };
+  await lavoro();
+  await guarda();
+  const giri = [setInterval(lavoro, 24 * 3600 * 1000), setInterval(guarda, 3600 * 1000)];
+  for (const g of giri) g.unref();
+  const ferma = () => { for (const g of giri) clearInterval(g); s.chiudi().then(() => process.exit(0)); };
   process.on('SIGTERM', ferma);
   process.on('SIGINT', ferma);
 }

@@ -80,7 +80,28 @@ export function copia(percorsoDb, destinazione, { precedente, cancellazioni } = 
       esito.allarme = !spiegato;
     }
   }
+  annotaCopia(percorsoDb, esito);
   return esito;
+}
+
+/**
+ * Scrive l'esito nel registro del database vivo, dove il server lo legge per
+ * gli allarmi (§15.4, server/allarmi.mjs): una copia con meno righe senza
+ * cancellazioni che lo spieghino e' un allarme, e un allarme che resta
+ * nell'uscita di un comando non lo vede nessuno. Il registro c'e' dallo schema 2.
+ */
+function annotaCopia(percorsoDb, esito) {
+  const db = new DatabaseSync(percorsoDb);
+  try {
+    db.exec('PRAGMA busy_timeout = 5000');
+    if (versioneSchema(db) < 2) return;
+    const scrivi = db.prepare('INSERT INTO registro (quando, evento, dettaglio) VALUES (?, ?, ?)');
+    const quando = new Date().toISOString();
+    scrivi.run(quando, 'copia fatta', `${esito.righe} righe, ${esito.account} account`);
+    if (esito.allarme) scrivi.run(quando, 'copia con meno righe', `righe da ${esito.calo.prima} a ${esito.calo.dopo}, nessuna cancellazione lo spiega`);
+  } finally {
+    db.close();
+  }
 }
 
 /**

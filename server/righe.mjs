@@ -76,16 +76,19 @@ export function creaRighe({ db, ora, versione, quesiti = leggiBanca() }) {
 
     /**
      * Il file dei progressi, nella forma di `esporta()` della pagina: si
-     * ricarica con `importa()`, identico. I punteggi dei Segnali non ci sono
-     * ancora — arrivano con il profilo, nel pezzo dopo — e il campo manca
-     * invece di essere vuoto: `importa()` salta un campo assente, mentre un
-     * `{}` direbbe «nessun punteggio».
+     * ricarica con `importa()`, identico, compresi i punteggi dei Segnali in
+     * `segPunti` (§13.2). Dal profilo (P-11) il server li conosce, quindi un
+     * `{}` qui vuol dire davvero «nessuna partita».
      */
     esporta({ account }) {
       const righe = db.prepare('SELECT dati FROM riga WHERE account_id = ? ORDER BY seq').all(account.id)
         .map((r) => JSON.parse(r.dati));
+      const segPunti = {};
+      for (const x of db.prepare('SELECT modo, migliore, giocate FROM segnali WHERE account_id = ? ORDER BY modo').all(account.id)) {
+        segPunti[x.modo] = { migliore: x.migliore, giocate: x.giocate };
+      }
       const giorno = iso().slice(0, 10);
-      return [200, { app: 'rotta-giusta', versione, esportato: iso(), righe },
+      return [200, { app: 'rotta-giusta', versione, esportato: iso(), righe, segPunti },
         { intestazioni: { 'Content-Disposition': `attachment; filename="rotta-giusta-progressi-${giorno}.json"` } }];
     },
   };

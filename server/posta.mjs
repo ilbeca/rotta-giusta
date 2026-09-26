@@ -78,18 +78,6 @@ export function mailVerifica({ a, link, scade }) {
   ]);
 }
 
-export function mailGiaIscritto({ a, link }) {
-  return mail(a, 'Hai già un account su Rotta Giusta', [
-    'Qualcuno ha provato a registrarsi su Rotta Giusta con questo indirizzo,',
-    'ma hai già un account: non ne abbiamo creato un altro.',
-    '',
-    'Se hai dimenticato la password, puoi reimpostarla da qui entro un\'ora:',
-    link,
-    '',
-    'Se non sei stato tu, non fare niente: il tuo account non è cambiato.',
-  ]);
-}
-
 export function mailPassword({ a, link }) {
   return mail(a, 'Reimposta la password di Rotta Giusta', [
     'Hai chiesto di reimpostare la password del tuo account su Rotta Giusta.',
@@ -111,5 +99,67 @@ export function mailDisattivata({ a, link }) {
     link,
     '',
     'Se il link scade, dalla pagina di accesso scegli «Ho dimenticato la password».',
+  ]);
+}
+
+export function mailCambioEmail({ a, link, vecchia }) {
+  return mail(a, 'Conferma il nuovo indirizzo per Rotta Giusta', [
+    `Hai chiesto di spostare il tuo account di Rotta Giusta da ${vecchia} a questo indirizzo.`,
+    '',
+    'Per confermarlo apri questo link entro 24 ore:',
+    link,
+    '',
+    'Finché non lo apri, l\'account resta legato all\'indirizzo di prima.',
+    'Se non sei stato tu, non fare niente: senza conferma non cambia niente.',
+  ]);
+}
+
+export function mailAvvisoEmail({ a, nuova }) {
+  return mail(a, 'Il tuo account di Rotta Giusta cambia indirizzo', [
+    `Qualcuno che conosce la tua password ha chiesto di spostare il tuo account di Rotta Giusta a ${nuova}.`,
+    'Diventa effettivo solo se quell\'indirizzo conferma entro 24 ore.',
+    '',
+    'Se sei stato tu, non devi fare altro.',
+    'Se non sei stato tu, entra e cambia la password: la richiesta si annulla,',
+    'e chi l\'ha fatta resta fuori.',
+  ]);
+}
+
+export function mailCancellato({ a }) {
+  return mail(a, 'Il tuo account di Rotta Giusta è cancellato', [
+    'Come hai chiesto, il tuo account di Rotta Giusta è stato cancellato,',
+    'con tutte le risposte, i punteggi e la data d\'esame.',
+    '',
+    'Dal server è sparito adesso; dalle copie di sicurezza sparisce entro 30 giorni.',
+    'Se vuoi tornare, puoi registrarti di nuovo con questo indirizzo.',
+  ]);
+}
+
+export function mailInattivita({ a, il, sito }) {
+  return mail(a, 'Il tuo account di Rotta Giusta sta per essere cancellato', [
+    'Non entri su Rotta Giusta da quasi due anni.',
+    `Il ${giorno(il)} il tuo account e le tue risposte si cancellano.`,
+    '',
+    'Per tenerli basta entrare, da qui:',
+    `${sito}/app`,
+    '',
+    'Se invece vuoi le tue risposte ma non l\'account, entra e scarica il file dei',
+    'progressi prima di quella data: si ricarica in qualunque momento.',
+  ]);
+}
+
+/**
+ * Gli allarmi al titolare (§15.4). Che cosa e quanto, **senza email e senza
+ * indirizzi IP**: la casella del titolare puo' stare fuori dall'UE (§15.4), e
+ * il dettaglio resta nel registro, sulla macchina, dove si legge.
+ */
+export function mailAllarmi({ a, allarmi }) {
+  return mail(a, `Rotta Giusta: ${allarmi.length === 1 ? 'un allarme' : `${allarmi.length} allarmi`} dal server`, [
+    'Il server degli account ha trovato qualcosa da guardare:',
+    '',
+    ...allarmi.map((x) => `- ${x.testo}`),
+    '',
+    'Il dettaglio è nella tabella registro, sulla macchina. Se è una violazione,',
+    'le 72 ore per notificarla al Garante partono da adesso (art. 33).',
   ]);
 }

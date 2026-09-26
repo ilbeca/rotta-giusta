@@ -731,6 +731,87 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   prova con persone ancora all'autore, e caso dell'orologio senza timestamp
   riprodotto per la regia. Versione invariata, nessun tag o push.
 
+### Aggiunto — il server, pezzo 3: quello che chiude le rotte (P-11)
+
+- **«Questa email è già registrata», con `409`.** Deciso dall'autore: la
+  registrazione lo dice apertamente, senza sessione, senza mail e senza un
+  hash che non serve più. Prima rispondeva `202` con la stessa frase di un'email
+  nuova e mandava al proprietario una mail «hai già un account»: nascosto nella
+  schermata, detto dal codice di risposta, cioè il peggio delle due cose. **Il
+  freno che resta è l'ordine dei controlli:** la password si guarda per prima e
+  un rifiuto non conta; poi le cinque registrazioni l'ora per indirizzo, che il
+  `409` consuma; solo dopo l'email. Chi vuole l'elenco degli iscritti lo paga
+  un posto l'ora. R-ACC-30, da scoperto a coperto.
+
+- **Il cambio d'indirizzo, il profilo, la cancellazione.** `POST
+  /v1/email/cambia` chiede la password e un indirizzo già confermato; l'indirizzo
+  cambia solo quando il nuovo apre il suo link, entro 24 ore, con una rotta sua,
+  `POST /v1/email/conferma`. Il vecchio riceve un avviso che dice verso dove, e
+  il rimedio che l'avviso suggerisce **funziona**: una password cambiata o
+  reimpostata annulla la richiesta in sospeso. `PUT /v1/profilo` tiene la data
+  d'esame, facoltativa, e i punteggi dei Segnali fusi con il massimo — rimandarli
+  non cambia niente, dove `importa()` oggi somma le partite —, e non scrive a
+  metà: un campo rotto non lascia scritti gli altri. I modi e il punteggio
+  massimo vengono dal motore. L'export porta `segPunti`, che P-10 aveva lasciato
+  fuori. `DELETE /v1/account` cancella con la password, passa dal file delle
+  cancellazioni e manda una mail che lo conferma. Lo schema passa a 3 con la
+  tabella `segnali`, additiva.
+
+- **Una cancellazione non cancellava davvero, e nessun test lo vedeva.**
+  Misurato scrivendo il controllo di R-ACC-19, che cerca l'email nei byte e non
+  nelle righe: con `secure_delete` la pagina si azzera, ma il database è in WAL,
+  e la versione di prima — email e risposte leggibili — restava nei frame vecchi
+  del `-wal`. **Anche dopo un checkpoint normale**, che copia le pagine azzerate
+  nel file e lascia il `-wal` com'è; sparisce solo con
+  `wal_checkpoint(TRUNCATE)`. Ora lo fanno ogni cancellazione e ogni
+  azzeramento, e il lavoro quotidiano come rete. Valeva anche per gli account
+  non confermati che P-09 cancella al settimo giorno.
+
+- **I due anni.** A 700 giorni senza attività parte l'avviso con la data; la
+  cancellazione arriva **trenta giorni dopo l'avviso**, non a 730 esatti, così
+  un lavoro quotidiano rimasto fermo non cancella nessuno senza averlo avvisato.
+  Un avviso rifiutato dal fornitore non conta come partito. Qualunque attività
+  — anche solo un accesso — fa decadere l'avviso; il suo segno sta nel database.
+
+- **Gli allarmi al titolare, letti dal registro** (`server/allarmi.mjs`, ogni
+  ora): cento accessi falliti in 24 ore o una password disattivata, una copia
+  con meno righe senza cancellazioni che lo spieghino — `server/copia.mjs` ora
+  scrive il suo esito nel registro del database vivo, perché un allarme che
+  resta nell'uscita di un comando non lo legge nessuno —, una mail rifiutata, e
+  le 300 mail del mese: un avviso, **mai un blocco**. Ogni allarme è una riga
+  del registro, e da lì si sa che cosa è già stato detto: un riavvio non lo
+  ripete e non lo perde. La mail al titolare dice che cosa e quanto, **senza
+  email né indirizzi IP**, perché la sua casella oggi è un inoltro verso Gmail.
+  Una mail al titolare rifiutata non è un allarme a sua volta, altrimenti
+  ricomincerebbe a ogni giro. La soglia di 100 è una proposta, da rivedere sul
+  registro vero. Il titolare si configura con `RG_TITOLARE`.
+
+- **Sette requisiti con il loro test**: R-ACC-19 e 30, e cinque nuovi, R-ACC-34
+  il cambio d'indirizzo, 35 il profilo, 36 i due anni, 37 gli allarmi, 38 le
+  300 mail. **Scritti prima: otto test rossi uno per uno** — i sette più quello
+  della migrazione, che ora pretende la tabella `segnali` —, ognuno per la
+  funzione che mancava, e i 50 di prima verdi. Dove lo stato potrebbe vivere in
+  memoria il test riavvia il server a metà. **Provati al contrario su
+  ventisei rotture**, una per volta, tutte rosse nel loro test: fra le altre il
+  `409` che non conta nel limite, il cambio senza conferma dell'indirizzo
+  attuale, la password cambiata che non chiude la richiesta, i punteggi sommati,
+  il checkpoint `PASSIVE` al posto di `TRUNCATE`, la cancellazione senza il file,
+  l'avviso che un accesso non fa decadere, gli allarmi ricordati in memoria
+  invece che nel registro, il rifiuto al titolare che diventa un allarme, il
+  blocco dopo la trecentesima. **Una rottura non era quella che diceva di
+  essere:** «allarmi in memoria» era scritta male e toglieva la memoria del
+  tutto, doppione di un'altra; rifatta come una mappa che vale fino al riavvio,
+  in due varianti, tutte e due rosse sull'asserzione dopo il riavvio.
+
+- **Non fatto:** l'onboarding e le schermate sono del client; che una mail
+  d'avviso arrivi davvero, e non rimbalzi, il server non lo vede; il giro delle
+  copie due volte al giorno è della messa in esercizio.
+
+  Suite: server **58/58** con Node 25.3 e con la **24.21.0 LTS**, scaricata da
+  nodejs.org e verificata con `SHASUMS256.txt` (erano 52); `ripristina --prova`
+  20/20; motore 141/143 con i due skip di sempre; dati 242; interfaccia 295;
+  specifica **370** (erano 344).
+
 
 ## [0.27.0] — 2026-09-25
 

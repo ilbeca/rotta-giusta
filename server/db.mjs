@@ -20,11 +20,11 @@ import { validaRiga } from '../site/engine.js';
  * e tabelle nuove, mai tolte ne' rinominate, cosi' il rilascio precedente gira
  * sul database di quello nuovo e tornare indietro resta di un secondo.
  */
-export const SCHEMA = 2;
+export const SCHEMA = 3;
 
 // Lo schema del §3, un pezzo per volta. Le tabelle arrivano con i pezzi che le
 // usano, e ognuno e' una migrazione additiva: la 1 e' di P-03 (le righe e la
-// copia), la 2 di P-09 (l'account). I segnali arrivano con il profilo.
+// copia), la 2 di P-09 (l'account), la 3 di P-11 (i punteggi dei Segnali).
 const SCHEMA_1 = `
   CREATE TABLE impianto (
     id            INTEGER PRIMARY KEY CHECK (id = 1),
@@ -95,12 +95,25 @@ const SCHEMA_2 = `
   CREATE INDEX registro_quando ON registro (quando);
 `;
 
+// I punteggi del gioco dei Segnali (§13.2), fuori dall'archivio delle risposte
+// come nella pagina (§4.5 della specifica): per modo, il migliore e le partite,
+// fusi con il massimo.
+const SCHEMA_3 = `
+  CREATE TABLE segnali (
+    account_id    INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
+    modo          TEXT NOT NULL,
+    migliore      INTEGER NOT NULL,
+    giocate       INTEGER NOT NULL,
+    PRIMARY KEY (account_id, modo)
+  ) WITHOUT ROWID;
+`;
+
 /**
  * Le migrazioni, in ordine: la n-esima porta il database da n-1 a n. Un
  * database nuovo le esegue tutte, cosi' nuovo e migrato sono lo stesso schema
  * e c'e' una strada sola da provare.
  */
-export const MIGRAZIONI = [SCHEMA_1, SCHEMA_2];
+export const MIGRAZIONI = [SCHEMA_1, SCHEMA_2, SCHEMA_3];
 
 const adesso = () => new Date().toISOString();
 const nuovaEpoca = () => randomBytes(16).toString('hex');
@@ -297,11 +310,26 @@ function account(db, id) {
   return a;
 }
 
+/**
+ * Svuota il WAL dentro il file e lo tronca a zero. **Serve perche' una
+ * cancellazione cancelli davvero** (§14.4), ed e' misurato, non dedotto (P-11):
+ * `secure_delete` azzera la pagina, ma la versione di prima della pagina resta
+ * nei frame vecchi del `-wal`, con l'email e le righe leggibili, e ci resta
+ * anche dopo un checkpoint normale, che copia le pagine nel file e lascia il
+ * `-wal` com'e'. Solo `TRUNCATE` lo svuota. Restituisce `true` se ci e'
+ * riuscito: con un lettore aperto accanto — una copia in corso — puo' non
+ * riuscirci, e allora riprova il lavoro quotidiano.
+ */
+export function svuotaWal(db) {
+  return db.prepare('PRAGMA wal_checkpoint(TRUNCATE)').get().busy === 0;
+}
+
 /** Cancella un account con tutte le sue righe, adesso (§14.1). */
 export function cancellaAccount(db, id, { cancellazioni, il = adesso() }) {
   const a = account(db, id);
   annota(cancellazioni, { evento: 'cancellazione', account: a.id, chiave: a.chiave_locale, il });
   transazione(db, () => db.prepare('DELETE FROM account WHERE id = ?').run(id));
+  return svuotaWal(db);
 }
 
 /** Azzera i progressi: toglie le righe, tiene l'account, alza la generazione (§8.4). */
@@ -310,6 +338,7 @@ export function azzera(db, id, { cancellazioni, il = adesso() }) {
   const generazione = a.generazione + 1;
   annota(cancellazioni, { evento: 'azzeramento', account: a.id, chiave: a.chiave_locale, generazione, il });
   transazione(db, () => applicaAzzeramento(db, a.id, generazione, il));
+  svuotaWal(db);
   return generazione;
 }
 

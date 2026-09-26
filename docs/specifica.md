@@ -1022,6 +1022,7 @@ guardare, e lo dicono. Quelli del server hanno il loro controllo in
 | R-ACC-16 | Nessuna password, gettone o cookie compare nel database in chiaro, né nel registro, né nel log | `test_server.mjs::segreti: nessuna password, gettone o cookie nel database in chiaro ne nel registro` |
 | R-ACC-17 | L'accesso con un'email inesistente e con una password sbagliata danno la stessa risposta, e costano lo stesso calcolo | `test_server.mjs::accesso: un email inesistente e una password sbagliata danno la stessa risposta` |
 | R-ACC-18 | L'export dal server si ricarica con `importa()` e dà le stesse righe | `test_server.mjs::esporta: il file dal server si ricarica con importa e da le stesse righe` |
+| R-ACC-19 | Una cancellazione chiesta toglie l'account con le sue righe, i suoi punteggi e le sue sessioni, anche dai byte del database e del WAL, e un ripristino da una copia di prima non lo riporta | `test_server.mjs::cancellazione: DELETE /v1/account toglie tutto, anche dai byte del file, e un ripristino da una copia di prima non lo riporta` |
 | R-ACC-20 | Una copia di sicurezza si ripristina e ha le stesse righe dell'originale, byte per byte | `test_server.mjs::copia: si ripristina con le stesse righe dell originale` |
 | R-ACC-21 | Una mail che il fornitore non accetta produce un errore dichiarato, mai «ti abbiamo scritto» | `test_server.mjs::posta: una mail che il fornitore rifiuta produce un errore dichiarato` |
 | R-ACC-24 | Dopo il ripristino di una copia, una riga accolta dopo la copia torna sul server dal dispositivo che la ha, e ogni altro dispositivo la riceve | `test_server.mjs::epoca: con la contabilita del motore, dopo un ripristino le righe perse tornano e ogni dispositivo le riceve` |
@@ -1030,10 +1031,15 @@ guardare, e lo dicono. Quelli del server hanno il loro controllo in
 | R-ACC-27 | Al centesimo accesso fallito di fila la password si disattiva, anche attraverso un riavvio, finché non arriva una reimpostazione; e un'email che non esiste riceve gli stessi codici | `test_server.mjs::accesso: al centesimo fallimento di fila la password si disattiva` |
 | R-ACC-28 | La richiesta di reimpostare la password risponde allo stesso modo per un'email iscritta e per una che non lo è | `test_server.mjs::password dimenticata: risponde allo stesso modo per un email iscritta e una no` |
 | R-ACC-29 | Un gettone mandato per email vale una volta sola e per il suo tempo — 24 ore la verifica, un'ora la password —, e uno nuovo dello stesso scopo annulla i precedenti | `test_server.mjs::verifica: un gettone vale una volta sola e per il suo tempo` |
-| R-ACC-30 | Registrarsi con un'email già iscritta dà un errore esplicito, «email già registrata», senza aprire la sessione e senza mandare una mail | scoperto — deciso dall'autore il 26 settembre 2026; il server risponde ancora `202`, e il controllo lo scrive P-11 in `test_server.mjs` |
+| R-ACC-30 | Registrarsi con un'email già iscritta dà un errore esplicito, «email già registrata», senza aprire la sessione e senza mandare una mail; il `409` conta fra le cinque registrazioni l'ora per indirizzo | `test_server.mjs::registrazione: un email gia registrata risponde 409, senza sessione e senza mail` |
 | R-ACC-31 | Il cursore della ricezione lo sposta solo una ricezione: l'`ultima_seq` di un invio non lo tocca | `test_engine.mjs::coda: l invio non sposta il cursore, lo sposta solo la ricezione` |
 | R-ACC-32 | Un invio oltre 2.000 righe o 2 MiB riceve un `413` che si legge, e niente entra; il lotto che il motore prepara sta nei limiti, che il server importa dal motore | `test_server.mjs::righe: oltre 2000 righe o 2 MiB la risposta e 413, e niente entra` |
 | R-ACC-33 | La ricezione va a pagine di 5.000 righe, e le pagine insieme non perdono e non ripetono una riga | `test_server.mjs::righe: la ricezione va a pagine di 5000, e insieme non perde e non ripete` |
+| R-ACC-34 | L'indirizzo cambia solo con la password, da un indirizzo già confermato, e quando il nuovo conferma entro 24 ore; il vecchio riceve un avviso che dice verso dove, e una password cambiata annulla la richiesta | `test_server.mjs::email: l indirizzo cambia solo quando il nuovo conferma, il vecchio riceve l avviso, e una password nuova annulla la richiesta` |
+| R-ACC-35 | Il profilo tiene la data d'esame, facoltativa e solo se è una data vera, e i punteggi dei Segnali fusi con il massimo, così rimandarli non cambia niente; un campo rotto non lascia scritti gli altri, e l'export porta i punteggi | `test_server.mjs::profilo: la data d esame facoltativa e i punteggi dei Segnali fusi con il massimo, e l export li porta` |
+| R-ACC-36 | A 700 giorni senza attività parte un avviso con la data; trenta giorni dopo l'avviso, se nessuno è tornato, l'account si cancella passando dal file delle cancellazioni; un accesso dopo l'avviso lo salva, e un riavvio non manda un secondo avviso | `test_server.mjs::inattivita: a 700 giorni un avviso con la data, a 730 senza attivita si cancella, e un accesso lo salva` |
+| R-ACC-37 | Cento accessi falliti in 24 ore, una copia con meno righe senza cancellazioni che lo spieghino e una mail rifiutata dal fornitore avvisano il titolare, senza email né indirizzi nella mail, una volta sola, anche attraverso un riavvio | `test_server.mjs::allarmi: accessi falliti oltre soglia, una copia con meno righe e una mail rifiutata avvisano il titolare, una volta sola` |
+| R-ACC-38 | Le mail si contano per mese dal registro: raggiunte le 300 comprese il titolare riceve un avviso, uno al mese, e nessuna mail è bloccata | `test_server.mjs::mail del mese: oltre le 300 la mail parte lo stesso, e il titolare riceve un avviso solo` |
 
 R-ACC-20 e R-ACC-24 sono i primi requisiti del server con un controllo che si
 esegue, e il giro intero sta in `node server/ripristina.mjs --prova`, che la
@@ -1063,9 +1069,22 @@ perché un confronto di millisecondi nella suite sarebbe un test che a volte
 passa. E **la registrazione dice chi è iscritto**: fino al 26 settembre per il
 solo codice di risposta, `201` per un'email nuova e `202` per una già iscritta.
 Quel giorno l'autore ha deciso di dirlo apertamente, «Questa email è già
-registrata» (`account-progetto.md` §5.3): è R-ACC-30, scoperto finché P-11 non
-cambia il server. Accesso e password dimenticata, R-ACC-17 e R-ACC-28, restano
-come sono.
+registrata» (`account-progetto.md` §5.3): è R-ACC-30, coperto da P-11. Accesso
+e password dimenticata, R-ACC-17 e R-ACC-28, restano come sono.
+
+**Il pezzo che chiude le rotte (P-11).** R-ACC-19, 30 e 34…38 si eseguono come
+gli altri, e dove lo stato potrebbe vivere in memoria — il gettone del cambio
+d'indirizzo, i punteggi, il segno dell'avviso dei due anni, gli allarmi già
+detti — il test riavvia il server a metà. **R-ACC-19 misura i byte**, non le
+righe: `secure_delete` non bastava, perché l'email e le risposte restavano nei
+frame vecchi del WAL anche dopo un checkpoint normale (`account-progetto.md`
+§14.4). Quello che i controlli non vedono: che una mail d'avviso arrivi davvero
+e non rimbalzi — il server sa solo che il fornitore l'ha accettata, e un
+rimbalzo non ferma la cancellazione (§14.2 di quel progetto); che il titolare
+legga la mail degli allarmi; e che la copia sulla macchina giri davvero due
+volte al giorno, che è della messa in esercizio. L'onboarding e le schermate
+che mostrano data, punteggi, cambio d'indirizzo e cancellazione sono della
+pagina.
 
 ---
 
@@ -1312,3 +1331,10 @@ successo, ed è il motivo per cui questo file esiste.
   pagine della ricezione. R-ACC-24 passa da coperto per metà a coperto per
   intero. Ognuno è stato provato al contrario: tredici rotture, ognuna rossa
   in almeno un test.
+- **26 settembre 2026 — il pezzo che chiude le rotte (P-11).** R-ACC-30 passa
+  da scoperto a coperto: «email già registrata» con `409`, senza sessione né
+  mail. Entrano R-ACC-19, proposto dal progetto degli account, e cinque nuovi:
+  R-ACC-34 il cambio d'indirizzo, R-ACC-35 il profilo con i punteggi dei
+  Segnali, R-ACC-36 i due anni, R-ACC-37 gli allarmi al titolare, R-ACC-38 il
+  conto delle 300 mail. Ognuno è stato provato al contrario: ventisei
+  rotture, tutte rosse nel loro test.

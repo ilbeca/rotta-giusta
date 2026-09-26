@@ -755,6 +755,15 @@ nel codice di risposta era il peggio delle due cose. Tre conseguenze:
 Il server lo fa con P-11 (`docs/prossime-sessioni.md`), con il suo test:
 R-ACC-30.
 
+**Fatto il 26 settembre 2026 (P-11).** `409 email_registrata`, nessuna
+sessione, nessuna mail, nessun hash. Una cosa che la decisione non diceva:
+**l'ordine dei controlli è il freno.** La password si guarda per prima, e un
+rifiuto non conta nel limite; poi il limite delle cinque registrazioni l'ora
+per indirizzo, che il `409` consuma; solo dopo si guarda se l'email è iscritta.
+Chi vuole sapere chi è iscritto lo scopre al prezzo di uno dei cinque posti
+l'ora, e una password troppo corta non gli dice niente. La mail «hai già un
+account» non esiste più, nemmeno in `server/posta.mjs`.
+
 ---
 
 ## 6. La sessione
@@ -921,20 +930,44 @@ uscirne — vale anche per chi legge la risposta in console.
 
 | Rotta | Che cosa | Risposte |
 |---|---|---|
-| `POST /v1/registrazione` `{email, password}` | crea l'account **non verificato**, apre la sessione, spedisce la mail (§9) | `201` + cookie; `409` «email già registrata», senza sessione e senza mail (§5.3, deciso il 26 settembre 2026; fino a P-11 il server risponde ancora `202`); `422` password che non rispetta il §5.2, col perché; `503` se la mail non è partita (§9.3) |
+| `POST /v1/registrazione` `{email, password}` | crea l'account **non verificato**, apre la sessione, spedisce la mail (§9) | `201` + cookie; `409` «email già registrata», senza sessione e senza mail (§5.3, deciso il 26 settembre 2026); `422` password che non rispetta il §5.2, col perché; `503` se la mail non è partita (§9.3) |
 | `POST /v1/accesso` `{email, password}` | apre la sessione | `200` + cookie; `401` |
 | `POST /v1/uscita` | chiude questa sessione | `204` |
 | `POST /v1/uscita/ovunque` | chiude tutte | `204` |
-| `GET /v1/io` | chi sono | `{email, verificata, scade_se_non_verificata, data_esame, generazione, azzerato_il, epoca, chiave_locale, righe, ultima_seq}`; `401` |
+| `GET /v1/io` | chi sono | `{email, verificata, scade_se_non_verificata, data_esame, segnali, generazione, azzerato_il, epoca, chiave_locale, righe, ultima_seq}`; `401` |
 | `POST /v1/verifica` `{gettone}` | conferma l'email | `200`; `410` gettone scaduto o usato |
 | `POST /v1/verifica/rinvia` | nuova mail di verifica | `202` |
 | `POST /v1/password/dimenticata` `{email}` | mail di reimpostazione | sempre `202` |
 | `POST /v1/password/nuova` `{gettone, password}` | reimposta | `200`; `410` |
 | `POST /v1/password/cambia` `{attuale, nuova}` | cambia | `200`; `401` |
-| `POST /v1/email/cambia` `{password, nuova}` | mail di conferma al nuovo indirizzo, avviso al vecchio | `202` |
-| `PUT /v1/profilo` `{data_esame, segnali}` | onboarding e impostazioni (§13) | `200` |
+| `POST /v1/email/cambia` `{password, nuova}` | mail di conferma al nuovo indirizzo, avviso al vecchio | `202`; `401`; `403` indirizzo non ancora confermato (§9.6); `409` nuovo indirizzo già registrato; `422`; `503` se la mail non è partita |
+| `POST /v1/email/conferma` `{gettone}` | il nuovo indirizzo diventa quello dell'account, confermato | `200` nella forma di `GET /v1/io`; `410`; `409` se nel frattempo l'ha preso un altro account |
+| `PUT /v1/profilo` `{data_esame, segnali}` | onboarding e impostazioni (§13); un campo assente resta com'è | `200` nella forma di `GET /v1/io`; `422` con il campo che non va, e niente scritto |
 | `POST /v1/azzera` `{password}` | cancella le righe, alza la generazione (§8.4) | `200` con la generazione nuova, nella forma di `GET /v1/io`; `401` |
-| `DELETE /v1/account` `{password}` | cancella tutto, adesso (§14.1) | `204` |
+| `DELETE /v1/account` `{password}` | cancella tutto, adesso (§14.1) | `204`, e il cookie tolto; `401` |
+
+**Fatto il 26 settembre 2026 (P-11)**, in `server/conti.mjs`: le rotte che
+mancavano. Le scelte che la tabella non diceva:
+
+- **La conferma del nuovo indirizzo è una rotta sua**, `POST
+  /v1/email/conferma`, che la tabella non aveva: il link del §9.2 porta
+  `#email=<gettone>`, e si apre anche da un dispositivo senza sessione, come
+  quello della verifica. Aprirlo conferma il nuovo indirizzo.
+- **L'avviso al vecchio indirizzo parte alla richiesta**, non alla conferma,
+  e dice verso dove: è il momento in cui il proprietario può ancora fare
+  qualcosa. **Quel qualcosa funziona**: una password cambiata o reimpostata
+  annulla ogni cambio d'indirizzo in sospeso, ed è il rimedio che l'avviso
+  suggerisce.
+- **Un indirizzo già registrato dà `409`**, come la registrazione (§5.3), ma
+  solo dopo la password: chi lo chiede ha già dimostrato di essere il
+  titolare di un account.
+- **Il profilo non scrive a metà.** Si controlla tutto prima di scrivere: una
+  data finta accanto a punteggi buoni non lascia scritti i punteggi. Una data
+  è `AAAA-MM-GG` ed esiste nel calendario; i modi dei Segnali sono quelli di
+  `SEGNALI` nel motore, e il migliore non supera `lunghezzaPartita()`: il
+  server importa l'uno e l'altra da `site/engine.js`.
+- **`GET /v1/io` porta anche `segnali`**, nella forma di `segPunti` della
+  pagina, perché il client sappia i punteggi fusi senza scaricare l'export.
 
 ### 7.2 Le righe
 
@@ -1106,6 +1139,7 @@ precedenti.
 ```
 https://rottagiusta.it/app#verifica=<gettone>
 https://rottagiusta.it/app#password=<gettone>
+https://rottagiusta.it/app#email=<gettone>
 ```
 
 **Nel frammento, dopo `#`, e non nella query.** Il frammento non parte mai verso
@@ -1145,6 +1179,12 @@ dove lo vede il titolare. Senza la chiave di Scaleway il server parte con un
 fornitore che rifiuta tutto, e lo stampa all'avvio: meglio un `503` dichiarato
 di un «ti abbiamo scritto» falso. Il conto delle 300 e l'avviso al titolare sono
 del pezzo degli allarmi.)*
+
+*(26 settembre 2026, P-11: fatto. Le mail si contano **dal registro**, una
+riga «mail spedita» per ognuna che il fornitore ha accettato, per mese di
+calendario in UTC; raggiunte le 300 comprese, il titolare riceve un avviso, uno
+al mese (§15.4). Nessuna mail si blocca. Contano anche le mail al titolare,
+perché costano come le altre. R-ACC-38.)*
 
 ### 9.4 Il mittente, e la posta che c'è già
 
@@ -1376,6 +1416,12 @@ le partite di uno solo. **Oggi `importa()` somma `giocate`**, quindi caricare du
 volte lo stesso file raddoppia le partite: è un difetto piccolo, esistente, e il
 server non lo eredita.
 
+*(26 settembre 2026, P-11: fatto, con lo schema 3 — la tabella `segnali`,
+una migrazione additiva. Si scrivono con `PUT /v1/profilo`, si leggono in
+`GET /v1/io` e l'export li porta in `segPunti`, dove `importa()` li trova. Con il
+server che li conosce, un `segPunti: {}` nell'export vuol dire davvero «nessuna
+partita».)*
+
 ### 13.3 Senza account — la domanda dell'ADR-004
 
 **Deciso il 26 settembre 2026, dall'autore: senza account nel browser non resta
@@ -1413,6 +1459,12 @@ il file (`/v1/esporta`). Una mail conferma che è successo. Nel `registro` resta
 «Azzera i progressi» è un'altra cosa — toglie le righe e tiene l'account — e
 passa dalla generazione (§8.4).
 
+*(26 settembre 2026, P-11: fatto. La mail di conferma parte dopo la
+cancellazione, all'indirizzo che non c'è più nel database, e dice che dalle
+copie il dato sparisce entro 30 giorni. Le tre strade che cancellano un
+account — chiesta, non confermato, inattivo — passano dalla stessa funzione, e
+quindi dal file del §2.7. R-ACC-19.)*
+
 ### 14.2 Due anni di inattività — l'ADR-003
 
 - **Attività** è qualunque richiesta con una sessione valida, sincronia
@@ -1427,6 +1479,16 @@ passa dalla generazione (§8.4).
   §14.1.
 - **Una mail d'avviso che rimbalza non ferma la cancellazione.** Non si può fare
   di meglio senza tenere i dati di più, e l'informativa lo dice.
+
+*(26 settembre 2026, P-11: fatto nel lavoro quotidiano. Due scelte che il
+testo non diceva. **La cancellazione arriva trenta giorni dopo l'avviso, non a
+730 giorni esatti:** se il lavoro quotidiano è rimasto fermo, nessuno si
+cancella senza essere stato avvisato; la data scritta nella mail è la più
+lontana delle due. **Un avviso che il fornitore rifiuta non conta come
+partito:** si riprova il giorno dopo, e il rifiuto è un allarme al titolare
+(§15.4). Un rimbalzo, che arriva dopo che il fornitore ha accettato, invece non
+si vede. Il segno dell'avviso sta in `avviso_inattivita_il`, nel database, e
+decade con qualunque attività, compreso un accesso. R-ACC-36.)*
 
 ### 14.3 Gli account non confermati
 
@@ -1447,6 +1509,17 @@ in schermata.
   `ripristina --prova`. *(26 settembre 2026: il `registro` sta nello stesso
   database, quindi dopo un ripristino è quello della copia e le cancellazioni
   successive non le ha. L'elenco da rileggere sta in un file a parte, §2.7.)*
+- **Il WAL si svuota dopo ogni cancellazione.** *Trovato misurando, 26
+  settembre 2026 (P-11).* Con `secure_delete` la pagina si azzera, ma il
+  database è in WAL, e la versione di prima della pagina — con l'email e le
+  risposte leggibili — resta nei frame vecchi del file `-wal`. Misurato su un
+  account appena cancellato: l'email e una riga ancora nel `-wal` dopo la
+  cancellazione, **ancora dopo un checkpoint normale** (che copia le pagine
+  azzerate nel file e lascia il `-wal` com'è), e sparite solo con
+  `PRAGMA wal_checkpoint(TRUNCATE)`. Ora ogni cancellazione e ogni azzeramento
+  lo fanno; se un lettore aperto accanto — una copia in corso — lo impedisce,
+  lo scrive nel log e ci riprova il lavoro quotidiano. Il controllo di R-ACC-19
+  cerca l'email nei byte del database e del `-wal`, non nelle righe.
 
 ---
 
@@ -1514,7 +1587,32 @@ scrive che cosa è fatto, quando e dove.
 | **Accordo con Scaleway come responsabile** (art. 28) | **Fatto.** Il DPA di Scaleway, versione del 1° giugno 2024, dice di sé che *«forms an integral part of the contract»*: si accetta insieme alle condizioni generali, e non si firma a parte. Verificato nella console il 26 settembre 2026: fra i contratti dell'organizzazione `rottagiusta` c'è il «Data Processing Agreement» 10/2024. Il DPA copre l'avviso scritto al cliente in caso di violazione (art. 9), la cancellazione a fine contratto (art. 13) e i sub-responsabili con autorizzazione generale (art. 7). | Console Scaleway, Organization → Settings → Organization contracts. Una copia in PDF la scarica l'autore e la tiene accanto al registro |
 | **Contatto del titolare**, che non sia un canale pubblico | **Fatto il 26 settembre 2026:** `privacy@rottagiusta.it`, un inoltro IONOS verso la casella personale del titolare, provato con una mail arrivata. **Da quell'indirizzo non si spedisce**, e IONOS non filtra lo spam dell'inoltro. | L'informativa (§18) lo scriverà |
 | **Registro dei trattamenti** (art. 30) | **Bozza del 26 settembre 2026**, con tre trattamenti: account e salvataggio, registro di sicurezza, richieste a privacy@. Descrive il prodotto deciso: va riletto il giorno in cui il server risponde ai visitatori. | Documento dell'autore, fuori dal repo |
-| **Accorgersi di una violazione, e notificarla entro 72 ore** (art. 33) | **Procedura scritta** nella stessa bozza: le 72 ore partono da quando ce se ne accorge; la notifica si fa con la procedura telematica del Garante (`servizi.gpdp.it/databreach`); si documenta ogni violazione (art. 33.5), anche quelle non notificate. Gli allarmi del server sono **da costruire** con il server: un avviso al titolare quando gli accessi falliti superano una soglia, e quando una copia ha meno righe della precedente senza cancellazioni registrate (§2.5). | Bozza dell'autore; gli allarmi nel prompt del server |
+| **Accorgersi di una violazione, e notificarla entro 72 ore** (art. 33) | **Procedura scritta** nella stessa bozza: le 72 ore partono da quando ce se ne accorge; la notifica si fa con la procedura telematica del Garante (`servizi.gpdp.it/databreach`); si documenta ogni violazione (art. 33.5), anche quelle non notificate. Gli allarmi del server sono **fatti** (P-11, `server/allarmi.mjs`), vedi sotto. | Bozza dell'autore; gli allarmi in `server/allarmi.mjs` |
+
+**Gli allarmi — fatto il 26 settembre 2026 (P-11).** Il server guarda il
+registro **ogni ora** e avvisa il titolare di quattro cose: almeno **100 accessi
+falliti in 24 ore**, su tutti gli account, o una password disattivata dopo
+cento tentativi (§6.5); **una copia con meno righe** della precedente senza
+cancellazioni che lo spieghino, che `server/copia.mjs` ora scrive nel registro
+del database vivo; **una mail rifiutata** dal fornitore; e **le 300 mail del
+mese** raggiunte (§9.3). Scelte, con il loro perché:
+
+- **Lo stato sta nel registro.** Ogni allarme è una riga `allarme`, e da quelle
+  righe si sa che cosa è già stato detto: un riavvio non ripete un allarme e non
+  ne perde uno. Gli accessi falliti si dicono al più una volta ogni 24 ore, gli
+  eventi uno per uno una volta sola, le mail una volta al mese.
+- **La mail al titolare dice che cosa e quanto, senza email e senza indirizzi
+  IP.** La casella del titolare oggi è un inoltro verso Gmail (sotto), e il
+  dettaglio sta nel registro, sulla macchina, dove si legge.
+- **Dove va:** `RG_TITOLARE` nell'ambiente della macchina. Senza, l'allarme resta
+  nel registro e nel log con la parola `ALLARME`, e il server lo dice all'avvio.
+- **Una mail al titolare rifiutata non è un allarme**, ha un evento suo: se lo
+  fosse, l'allarme per la mail rifiutata rifiuterebbe la sua mail a ogni giro.
+  Resta il log.
+- **La soglia di 100 è una proposta**, non una norma: è il numero dello standard
+  per un account solo (§6.5), preso qui per tutti gli account insieme. Con pochi
+  iscritti è già molto; si rivede quando il registro dirà quanti fallimenti fa
+  un giorno normale.
 
 **Aperto, decide l'autore** — i punti che la bozza del registro lascia in
 sospeso. Nessuno blocca il server; bloccano la versione con gli account, perché
@@ -1625,6 +1723,12 @@ l'azzeramento in `conti.mjs`. Nessuna migrazione: le tabelle del §3 che servono
 alle righe c'erano dal P-03. Restano per il pezzo dopo il cambio d'indirizzo, il
 profilo e `DELETE /v1/account`.)*
 
+*(26 settembre 2026, P-11: le rotte sono tutte. Il cambio d'indirizzo con la
+sua conferma, il profilo, la cancellazione e i due anni in `conti.mjs`; gli
+allarmi in un modulo nuovo, `server/allarmi.mjs`, che il server chiama ogni
+ora mentre il lavoro quotidiano resta quotidiano. Lo schema passa a 3 con la
+tabella `segnali`, additiva. Tutte le tabelle del §3 ci sono.)*
+
 ### 16.3 In locale
 
 `strumenti/serve.py` serve il sito come oggi; il server gira accanto su un'altra
@@ -1666,6 +1770,12 @@ test giusto rosso.
 il codice: R-ACC-31, il cursore che un invio non sposta; R-ACC-32, il `413` che
 si legge; R-ACC-33, le pagine della ricezione che non perdono e non ripetono.
 
+**Con il pezzo che chiude le rotte (P-11, 26 settembre 2026) sono entrati
+R-ACC-19 e R-ACC-30**, e cinque nuovi: R-ACC-34, il cambio d'indirizzo;
+R-ACC-35, il profilo con i punteggi dei Segnali; R-ACC-36, i due anni;
+R-ACC-37, gli allarmi al titolare; R-ACC-38, il conto delle 300 mail. Il loro
+testo sta nel §9.9 della specifica.
+
 Gli altri sono **proposti** ed entrano nella specifica con il codice che li
 controlla. Con il server nella suite, la maggior parte smette di essere
 scoperta.
@@ -1679,7 +1789,7 @@ scoperta.
 | R-ACC-16 | Nessuna password, gettone o cookie compare nel database in chiaro né nel registro | `test_server.mjs` |
 | R-ACC-17 | L'accesso con un'email inesistente e con una password sbagliata danno la stessa risposta | `test_server.mjs` |
 | R-ACC-18 | L'export dal server si ricarica con `importa()` e dà le stesse righe | `test_server.mjs` più `test_engine.mjs` — entrato |
-| R-ACC-19 | Una cancellazione toglie tutte le righe dell'account, e un ripristino da una copia precedente non le riporta | `test_server.mjs`, con `ripristina --prova` |
+| R-ACC-19 | Una cancellazione toglie tutte le righe dell'account, e un ripristino da una copia precedente non le riporta | `test_server.mjs` — entrato, e misura i byte del database e del WAL (§14.4) |
 | R-ACC-20 | Una copia di sicurezza si ripristina e ha le stesse righe dell'originale | `test_server.mjs` |
 | R-ACC-21 | Una mail che il fornitore non accetta produce un errore dichiarato, mai «ti abbiamo scritto» | `test_server.mjs`, con il fornitore finto che rifiuta |
 | R-ACC-22 | All'uscita, righe non inviate fermano la cancellazione dell'archivio locale | scoperto — è la pagina |
@@ -1889,3 +1999,13 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
   Una trovata rompendo il codice apposta: il test del ripristino con due
   dispositivi non prendeva un client che scopriva l'epoca nuova solo in uno dei
   due modi, inviando o ricevendo; ora i dispositivi sono tre.
+- **26 settembre 2026 — il pezzo che chiude le rotte (P-11).** «Email già
+  registrata» con `409` (§5.3), il cambio d'indirizzo con la sua conferma e
+  l'avviso al vecchio, il profilo con la data d'esame e i punteggi dei Segnali
+  nell'export (§13), `DELETE /v1/account` e i due anni (§14), gli allarmi al
+  titolare letti dal registro e il conto delle 300 mail (§15.4, §9.3). Due
+  cose trovate: **l'ordine dei controlli della registrazione è il freno** che
+  resta contro chi vuole sapere chi è iscritto (§5.3); e, misurando, **una
+  cancellazione non cancellava davvero** — l'email e le risposte restavano nei
+  frame vecchi del WAL anche dopo un checkpoint normale (§14.4). Sette
+  requisiti con il loro test, ventisei rotture, ognuna rossa nel suo.

@@ -5,8 +5,10 @@
 // i requisiti del server non sono «scoperti», si eseguono.
 //
 // Il server risponde alla salute, all'account (P-09) — registrazione, accesso,
-// sessione, verifica dell'email, password — e alle righe (P-10): invio,
-// ricezione, export, azzeramento. L'altra meta' di questo file e' la
+// sessione, verifica dell'email, password —, alle righe (P-10): invio,
+// ricezione, export, azzeramento; e a quello che chiude le sue rotte (P-11):
+// cambio d'indirizzo, profilo, cancellazione, i due anni di inattivita' e gli
+// allarmi al titolare. L'altra meta' di questo file e' la
 // copia di sicurezza con il ripristino provato — *un backup mai ripristinato
 // non e' un backup, e' un file* (0.4.6) — con l'epoca del database e il file
 // delle cancellazioni del §2.7.
@@ -521,6 +523,7 @@ const ORA = 3600000;
 const T0 = Date.parse('2026-10-01T08:00:00Z');
 const BUONA = 'barca vela e vento';        // 18 caratteri, fuori dall'elenco
 const ALTRA = 'rotta giusta per me';       // 19 caratteri, fuori dall'elenco
+const TITOLARE = 'titolare@esempio.it';    // dove vanno gli allarmi (§15.4)
 
 async function conti(t, { posta, argon2 = ECONOMICO, log } = {}) {
   const c = cartella(t);
@@ -529,7 +532,7 @@ async function conti(t, { posta, argon2 = ECONOMICO, log } = {}) {
   const scritto = [];
   const opzioni = {
     db: join(c, 'conti.db'), cancellazioni: join(c, 'cancellazioni'), porta: 0,
-    ora: () => orologio.t, argon2, origine: ORIGINE, sito: ORIGINE, proxy: true,
+    ora: () => orologio.t, argon2, origine: ORIGINE, sito: ORIGINE, proxy: true, titolare: TITOLARE,
     posta: posta ?? { invia: async (m) => { mail.push(m); } },
     log: log ?? ((m) => scritto.push(m)),
   };
@@ -839,24 +842,38 @@ test('password dimenticata: risponde allo stesso modo per un email iscritta e un
   assert.match(k.mail[0].testo, /https:\/\/rottagiusta\.it\/app#password=/, 'il gettone nel frammento, non nella query (§9.2)');
 });
 
-test('registrazione: un email gia iscritta non apre una sessione, e la mail lo dice al proprietario', async (t) => {
-  // §5.3. La risposta dice la stessa cosa di sempre, «ti abbiamo scritto»; la
-  // mail al proprietario dice che l'account c'e' gia' e come reimpostare. Si
-  // calcola comunque un hash.
+test('registrazione: un email gia registrata risponde 409, senza sessione e senza mail', async (t) => {
+  // R-ACC-30, §5.3, deciso dall'autore il 26 settembre 2026: la registrazione
+  // lo dice apertamente, come la maggior parte dei siti. Fino a P-11 rispondeva
+  // 202 con la stessa frase di un'email nuova e mandava al proprietario una
+  // mail «hai gia' un account»: nascosto nella schermata, detto dal codice di
+  // risposta. Nessun hash: non c'e' piu' un tempo da pareggiare.
   const k = await conti(t);
-  const nuova = await k.chiama('POST', '/v1/registrazione', { email: 'a@esempio.it', password: BUONA });
+  await registrato(k, 'a@esempio.it');
+  k.mail.length = 0;
   const calcoli = k.s.calcoli();
   const gia = await k.chiama('POST', '/v1/registrazione', { email: ' A@Esempio.it ', password: ALTRA });
-  assert.equal(gia.status, 202);
-  assert.equal(gia.cookie, null);
-  assert.equal(gia.corpo.messaggio, nuova.corpo.messaggio, 'la schermata dice la stessa cosa');
-  assert.equal(k.s.calcoli() - calcoli, 1);
-  assert.equal(k.mail.length, 2);
-  assert.equal(k.mail[1].a, 'a@esempio.it');
-  assert.match(k.mail[1].testo, /hai gi[aà] un account/i);
-  assert.ok(gettone(k.mail[1], 'password'), 'con il link per reimpostare');
+  assert.equal(gia.status, 409);
+  assert.equal(gia.corpo.errore, 'email_registrata');
+  assert.match(gia.corpo.messaggio, /gi[aà] registrata/);
+  assert.match(gia.corpo.messaggio, /accedi/i, 'offre le due strade: accedere');
+  assert.match(gia.corpo.messaggio, /reimpost/i, 'o reimpostare la password');
+  assert.equal(gia.setCookie, null, 'senza sessione');
+  assert.deepEqual(k.mail, [], 'senza mail');
+  assert.equal(k.s.calcoli(), calcoli, 'senza hash');
   assert.equal((await k.chiama('POST', '/v1/accesso', { email: 'a@esempio.it', password: ALTRA })).status, 401,
     'la password della seconda registrazione non vale');
+
+  // Il freno che resta (§5.3, §6.5): il 409 conta fra le cinque registrazioni
+  // l'ora per indirizzo, altrimenti sarebbe un elenco degli iscritti senza tetto.
+  const ip = '198.51.100.20';
+  for (let i = 0; i < 5; i++) {
+    assert.equal((await k.chiama('POST', '/v1/registrazione', { email: 'a@esempio.it', password: BUONA }, { ip })).status, 409);
+  }
+  assert.equal((await k.chiama('POST', '/v1/registrazione', { email: 'a@esempio.it', password: BUONA }, { ip })).status, 429);
+  // E una password rifiutata risponde prima di guardare l'email, e non conta.
+  const corta = await k.chiama('POST', '/v1/registrazione', { email: 'a@esempio.it', password: 'corta' }, { ip: '198.51.100.21' });
+  assert.equal(corta.status, 422);
 });
 
 test('posta: una mail che il fornitore rifiuta produce un errore dichiarato, mai «ti abbiamo scritto»', async (t) => {
@@ -928,9 +945,9 @@ test('verifica: un account non confermato entro sette giorni si cancella con le 
   aggiungiRighe(k.s.db, id, [riga(1), riga(2)]);
 
   k.orologio.t = T0 + 7 * GIORNO - 1000;
-  assert.deepEqual(k.s.manutenzione().non_confermati, 0, 'l ultimo secondo vale ancora');
+  assert.deepEqual((await k.s.manutenzione()).non_confermati, 0, 'l ultimo secondo vale ancora');
   k.orologio.t = T0 + 7 * GIORNO + 1000;
-  assert.equal(k.s.manutenzione().non_confermati, 1);
+  assert.equal((await k.s.manutenzione()).non_confermati, 1);
   assert.equal(k.s.db.prepare("SELECT count(*) n FROM account WHERE email = 'a@esempio.it'").get().n, 0);
   assert.equal(k.s.db.prepare('SELECT count(*) n FROM riga WHERE account_id = ?').get(id).n, 0, 'con le sue righe');
   assert.equal((await k.chiama('GET', '/v1/io', undefined, { cookie })).status, 401);
@@ -1019,7 +1036,7 @@ test('origine: una richiesta che cambia qualcosa senza l Origin del sito e rifiu
   assert.equal(io.h.get('access-control-allow-origin'), ORIGINE, 'anche le risposte vere portano il CORS');
 });
 
-test('database: uno schema 1 si porta al 2 aggiungendo, senza togliere niente', (t) => {
+test('database: uno schema 1 si porta all ultimo aggiungendo, senza togliere niente', (t) => {
   // §2.7, regola 3. Le tabelle e le colonne dell'account arrivano con una
   // migrazione additiva; un database nato ieri le prende senza perdere righe.
   const c = cartella(t);
@@ -1036,7 +1053,7 @@ test('database: uno schema 1 si porta al 2 aggiungendo, senza togliere niente', 
   const a = db.prepare('SELECT email, accessi_falliti, password_disattivata_il FROM account').get();
   assert.deepEqual({ ...a }, { email: 'a@esempio.it', accessi_falliti: 0, password_disattivata_il: null });
   const tabelle = db.prepare("SELECT name FROM sqlite_schema WHERE type = 'table'").all().map((r) => r.name);
-  for (const nome of ['sessione', 'gettone', 'registro']) assert.ok(tabelle.includes(nome), nome);
+  for (const nome of ['sessione', 'gettone', 'registro', 'segnali']) assert.ok(tabelle.includes(nome), nome);
 
   // E un database nuovo e' identico a uno migrato: una strada sola.
   const nuovo = apri(join(c, 'nuovo.db')); t.after(() => nuovo.close());
@@ -1055,10 +1072,10 @@ test('registro: gli indirizzi si tolgono dopo sei mesi, gli eventi dopo un anno'
   const eventi = () => k.s.db.prepare('SELECT evento, ip FROM registro ORDER BY id').all().map((r) => ({ ...r }));
   assert.ok(eventi().some((e) => e.evento === 'registrazione' && e.ip === '192.0.2.1'));
   k.orologio.t = T0 + 183 * GIORNO;
-  k.s.manutenzione();
+  await k.s.manutenzione();
   assert.ok(eventi().length > 0 && eventi().every((e) => e.ip === null), 'senza indirizzo dopo sei mesi');
   k.orologio.t = T0 + 366 * GIORNO;
-  k.s.manutenzione();
+  await k.s.manutenzione();
   assert.deepEqual(eventi(), [], 'nessun evento oltre l anno');
 });
 
@@ -1363,4 +1380,364 @@ test('epoca: con la contabilita del motore, dopo un ripristino le righe perse to
   assert.deepEqual(portatile.righe.map((r) => r.uid).sort(), [...attese].sort());
   assert.deepEqual(tablet.righe.map((r) => r.uid).sort(), [...attese].sort(), 'chi solo riceve riceve tutto');
   assert.deepEqual([telefono.coda.daInviare, portatile.coda.daInviare, tablet.coda.daInviare], [[], [], []]);
+});
+
+// --- il pezzo che chiude le rotte (P-11) -------------------------------------------
+//
+// docs/account-progetto.md §5.3, §7.1, §9.3, §13, §14, §15.4. Il cambio
+// d'indirizzo, il profilo con la data d'esame e i punteggi dei Segnali, la
+// cancellazione che cancella davvero, i due anni di inattivita', e gli allarmi
+// al titolare letti dal registro. Tutto lo stato che conta sta nel database, e
+// dove potrebbe vivere in memoria il test riavvia il server a meta'.
+
+const confermato = async (k, email) => {
+  const cookie = await registrato(k, email);
+  const m = k.mail.filter((x) => x.a === email).at(-1);
+  assert.equal((await k.chiama('POST', '/v1/verifica', { gettone: gettone(m, 'verifica') })).status, 200);
+  return cookie;
+};
+const idDi = (k, email) => k.s.db.prepare('SELECT id FROM account WHERE email = ?').get(email)?.id;
+const bytesDel = (k) => ['conti.db', 'conti.db-wal'].filter((f) => existsSync(join(k.c, f)))
+  .map((f) => readFileSync(join(k.c, f)).toString('latin1')).join('');
+
+test('email: l indirizzo cambia solo quando il nuovo conferma, il vecchio riceve l avviso, e una password nuova annulla la richiesta', async (t) => {
+  // R-ACC-34, §7.1, §6.3, §9.1, §9.6. Chiede la password e un indirizzo gia'
+  // confermato; al nuovo parte un link che vale 24 ore, al vecchio un avviso;
+  // le sessioni restano. Cambiare la password — il rimedio che l'avviso
+  // suggerisce a chi non l'ha chiesto — rende il link inutile.
+  const k = await conti(t);
+  const nonConfermato = await registrato(k, 'n@esempio.it');
+  const non = await k.chiama('POST', '/v1/email/cambia', { password: BUONA, nuova: 'n2@esempio.it' }, { cookie: nonConfermato });
+  assert.equal(non.status, 403, 'prima si conferma l indirizzo che si ha (§9.6)');
+  assert.equal(non.corpo.errore, 'non_confermata');
+
+  const cookie = await confermato(k, 'a@esempio.it');
+  await registrato(k, 'b@esempio.it');
+  k.mail.length = 0;
+  const cambia = (corpo) => k.chiama('POST', '/v1/email/cambia', corpo, { cookie });
+  assert.equal((await cambia({ password: BUONA, nuova: 'non-una-email' })).status, 422);
+  assert.equal((await cambia({ password: BUONA, nuova: ' A@esempio.it' })).status, 422, 'uguale a quello di adesso');
+  assert.equal((await cambia({ password: ALTRA, nuova: 'nuovo@esempio.it' })).status, 401, 'chiede la password');
+  const presa = await cambia({ password: BUONA, nuova: 'b@esempio.it' });
+  assert.equal(presa.status, 409);
+  assert.equal(presa.corpo.errore, 'email_registrata');
+  assert.deepEqual(k.mail, []);
+
+  const ok = await cambia({ password: BUONA, nuova: ' Nuovo@Esempio.it ' });
+  assert.equal(ok.status, 202, JSON.stringify(ok.corpo));
+  assert.match(ok.corpo.messaggio, /nuovo@esempio\.it/);
+  assert.deepEqual(k.mail.map((m) => m.a).sort(), ['a@esempio.it', 'nuovo@esempio.it']);
+  const alNuovo = k.mail.find((m) => m.a === 'nuovo@esempio.it');
+  const alVecchio = k.mail.find((m) => m.a === 'a@esempio.it');
+  const g = gettone(alNuovo, 'email');
+  assert.ok(g, 'il link al nuovo indirizzo, nel frammento');
+  assert.match(alVecchio.testo, /nuovo@esempio\.it/, 'l avviso al vecchio dice verso dove');
+  assert.match(alVecchio.testo, /password/, 'e che cosa fare se non l hai chiesto');
+  assert.equal(gettone(alVecchio, 'email'), undefined, 'il vecchio non riceve il link');
+  assert.equal((await k.chiama('GET', '/v1/io', undefined, { cookie })).corpo.email, 'a@esempio.it', 'finche non conferma, niente cambia');
+
+  // Il gettone si riavvia con il server: sta nel database.
+  await k.riavvia();
+  const conf = await k.chiama('POST', '/v1/email/conferma', { gettone: g });
+  assert.equal(conf.status, 200, JSON.stringify(conf.corpo));
+  assert.equal(conf.corpo.email, 'nuovo@esempio.it');
+  assert.equal(conf.corpo.verificata, true);
+  assert.equal((await k.chiama('GET', '/v1/io', undefined, { cookie })).corpo.email, 'nuovo@esempio.it', 'la sessione resta (§6.3)');
+  assert.equal((await k.chiama('POST', '/v1/email/conferma', { gettone: g })).status, 410, 'una volta sola');
+  assert.equal((await k.chiama('POST', '/v1/accesso', { email: 'nuovo@esempio.it', password: BUONA })).status, 200);
+  assert.equal((await k.chiama('POST', '/v1/accesso', { email: 'a@esempio.it', password: BUONA })).status, 401);
+  // L'indirizzo lasciato e' libero.
+  assert.equal((await k.chiama('POST', '/v1/registrazione', { email: 'a@esempio.it', password: BUONA }, { ip: '192.0.2.50' })).status, 201);
+
+  // Un link che scade dopo 24 ore; e uno che una password nuova annulla.
+  k.mail.length = 0;
+  await k.chiama('POST', '/v1/email/cambia', { password: BUONA, nuova: 'terzo@esempio.it' }, { cookie });
+  const tardi = gettone(k.mail.find((m) => m.a === 'terzo@esempio.it'), 'email');
+  k.avanza(24 * ORA + 1000);
+  assert.equal((await k.chiama('POST', '/v1/email/conferma', { gettone: tardi })).status, 410, '24 ore');
+  k.mail.length = 0;
+  await k.chiama('POST', '/v1/email/cambia', { password: BUONA, nuova: 'quarto@esempio.it' }, { cookie });
+  const annullato = gettone(k.mail.find((m) => m.a === 'quarto@esempio.it'), 'email');
+  assert.equal((await k.chiama('POST', '/v1/password/cambia', { attuale: BUONA, nuova: ALTRA }, { cookie })).status, 200);
+  assert.equal((await k.chiama('POST', '/v1/email/conferma', { gettone: annullato })).status, 410,
+    'chi ha cambiato la password dopo l avviso ha chiuso la richiesta');
+
+  // Un indirizzo preso da qualcun altro fra la richiesta e la conferma.
+  k.mail.length = 0;
+  await k.chiama('POST', '/v1/email/cambia', { password: ALTRA, nuova: 'conteso@esempio.it' }, { cookie });
+  const conteso = gettone(k.mail.find((m) => m.a === 'conteso@esempio.it'), 'email');
+  await registrato(k, 'conteso@esempio.it');
+  const tardivo = await k.chiama('POST', '/v1/email/conferma', { gettone: conteso });
+  assert.equal(tardivo.status, 409);
+  assert.equal((await k.chiama('GET', '/v1/io', undefined, { cookie })).corpo.email, 'nuovo@esempio.it');
+  const registro = JSON.stringify(k.s.db.prepare('SELECT * FROM registro').all());
+  assert.ok(!registro.includes('nuovo@esempio.it') && !registro.includes('conteso@'), 'nessuna email nel registro (§15.3)');
+});
+
+test('profilo: la data d esame facoltativa e i punteggi dei Segnali fusi con il massimo, e l export li porta', async (t) => {
+  // R-ACC-35, §13. La data e' una data vera o niente; i punteggi si fondono con
+  // il massimo, sia `migliore` sia `giocate`, cosi' rimandarli non cambia niente
+  // — `importa()` oggi somma le partite, e il server non eredita il difetto.
+  // Un invio con un campo rotto non scrive niente, nemmeno i campi buoni.
+  const k = await conti(t);
+  const { cookie } = await dentro(k);
+  const profilo = (corpo) => k.chiama('PUT', '/v1/profilo', corpo, { cookie });
+  assert.equal((await k.chiama('PUT', '/v1/profilo', { data_esame: '2026-11-20' })).status, 401);
+
+  let r = await profilo({ data_esame: '2026-11-20' });
+  assert.equal(r.status, 200, JSON.stringify(r.corpo));
+  assert.equal(r.corpo.data_esame, '2026-11-20');
+  assert.deepEqual(r.corpo.segnali, {});
+  for (const data of ['2026-02-30', '20/11/2026', '2026-11-20T10:00:00Z', 20261120, '']) {
+    const no = await profilo({ data_esame: data });
+    assert.equal(no.status, 422, JSON.stringify(data));
+    assert.equal(no.corpo.errore, 'data_esame');
+  }
+  assert.equal((await k.chiama('GET', '/v1/io', undefined, { cookie })).corpo.data_esame, '2026-11-20', 'un rifiuto non tocca niente');
+
+  r = await profilo({ segnali: { notturni: { migliore: 7, giocate: 3 } } });
+  assert.equal(r.corpo.data_esame, '2026-11-20', 'un campo assente resta com era');
+  assert.deepEqual(r.corpo.segnali, { notturni: { migliore: 7, giocate: 3 } });
+  r = await profilo({ segnali: { notturni: { migliore: 5, giocate: 2 }, diurni: { migliore: 4, giocate: 1 } } });
+  assert.deepEqual(r.corpo.segnali, { notturni: { migliore: 7, giocate: 3 }, diurni: { migliore: 4, giocate: 1 } });
+  const dinuovo = await profilo({ segnali: { notturni: { migliore: 7, giocate: 3 }, diurni: { migliore: 4, giocate: 1 } } });
+  assert.deepEqual(dinuovo.corpo.segnali, r.corpo.segnali, 'rimandare gli stessi valori non cambia niente');
+
+  for (const segnali of [
+    { boh: { migliore: 1, giocate: 1 } },
+    { notturni: { migliore: E.lunghezzaPartita('notturni') + 1, giocate: 1 } },
+    { notturni: { migliore: -1, giocate: 1 } },
+    { notturni: { migliore: 1.5, giocate: 1 } },
+    { notturni: { migliore: 1 } },
+    [1, 2],
+  ]) {
+    const no = await profilo({ data_esame: null, segnali });
+    assert.equal(no.status, 422, JSON.stringify(segnali));
+    assert.equal(no.corpo.errore, 'segnali');
+  }
+  assert.equal((await k.chiama('GET', '/v1/io', undefined, { cookie })).corpo.data_esame, '2026-11-20',
+    'la data resta: l invio con i segnali rotti non ha scritto niente');
+
+  r = await profilo({ data_esame: null });
+  assert.equal(r.corpo.data_esame, null, 'null la toglie: senza data il motore non inventa quota (R-STA-01)');
+
+  await k.riavvia();
+  const io = (await k.chiama('GET', '/v1/io', undefined, { cookie })).corpo;
+  assert.deepEqual(io.segnali, { notturni: { migliore: 7, giocate: 3 }, diurni: { migliore: 4, giocate: 1 } }, 'nel database');
+  const file = (await k.chiama('GET', '/v1/esporta', undefined, { cookie })).corpo;
+  assert.deepEqual(file.segPunti, io.segnali, 'l export porta i punteggi nella forma di esporta() della pagina');
+});
+
+test('cancellazione: DELETE /v1/account toglie tutto, anche dai byte del file, e un ripristino da una copia di prima non lo riporta', async (t) => {
+  // R-ACC-19, §14.1 e §14.4. Con la password; righe, sessioni, gettoni,
+  // segnali e account in una transazione, passando prima dal file delle
+  // cancellazioni (§2.7); una mail lo conferma; il registro tiene l'evento
+  // senza l'email. «Cancella davvero» si misura sui byte del database e del WAL.
+  const k = await conti(t);
+  const email = 'da.cancellare.qui@esempio.it';
+  const cookie = await confermato(k, email);
+  const altro = await confermato(k, 'resta@esempio.it');
+  const segno = 'segno-unico-da-ritrovare-7c1f9e';
+  await k.chiama('POST', '/v1/righe', { generazione: 1, righe: [riga(1, { nota: segno }), riga(2)] }, { cookie });
+  await k.chiama('POST', '/v1/righe', { generazione: 1, righe: [riga(3)] }, { cookie: altro });
+  await k.chiama('PUT', '/v1/profilo', { data_esame: '2026-12-01', segnali: { nebbia: { migliore: 3, giocate: 9 } } }, { cookie });
+  await k.chiama('POST', '/v1/email/cambia', { password: BUONA, nuova: 'in.sospeso.qui@esempio.it' }, { cookie });
+  const id = idDi(k, email);
+  // Una copia di prima, con il servizio acceso.
+  copia(k.opzioni.db, join(k.c, 'copia.db'));
+
+  const sbagliata = await k.chiama('DELETE', '/v1/account', { password: ALTRA }, { cookie });
+  assert.equal(sbagliata.status, 401);
+  assert.ok(idDi(k, email), 'con la password sbagliata non tocca niente');
+
+  k.mail.length = 0;
+  const via = await k.chiama('DELETE', '/v1/account', { password: BUONA }, { cookie });
+  assert.equal(via.status, 204);
+  assert.match(via.setCookie, /Max-Age=0/);
+  assert.equal((await k.chiama('GET', '/v1/io', undefined, { cookie })).status, 401);
+  assert.equal((await k.chiama('POST', '/v1/accesso', { email, password: BUONA })).status, 401);
+  for (const tabella of ['account', 'riga', 'sessione', 'gettone', 'segnali']) {
+    const col = tabella === 'account' ? 'id' : 'account_id';
+    assert.equal(k.s.db.prepare(`SELECT count(*) n FROM ${tabella} WHERE ${col} = ?`).get(id).n, 0, tabella);
+  }
+  assert.equal(k.s.db.prepare('SELECT count(*) n FROM riga').get().n, 1, 'le righe degli altri restano');
+  assert.deepEqual(k.mail.map((m) => m.a), [email], 'una mail conferma che e successo');
+  assert.match(k.mail[0].testo, /30 giorni/, 'e dice quando sparisce dalle copie (§14.4)');
+  assert.ok(k.s.db.prepare("SELECT 1 FROM registro WHERE evento = 'account cancellato' AND account_id = ?").get(id));
+  const file = leggiCancellazioni(k.opzioni.cancellazioni).voci;
+  assert.deepEqual(file.map((v) => [v.evento, v.account]), [['cancellazione', id]]);
+
+  const byte = bytesDel(k);
+  for (const [cosa, valore] of [['l email', email], ['l email in sospeso', 'in.sospeso.qui@esempio.it'], ['una riga', segno]]) {
+    assert.ok(!byte.includes(valore), `${cosa} e ancora nei byte del database`);
+  }
+
+  // Il ripristino da una copia di prima non la riporta.
+  await k.s.chiudi();
+  for (const s of ['', '-wal', '-shm']) rmSync(k.opzioni.db + s, { force: true });
+  const r = ripristina(join(k.c, 'copia.db'), k.opzioni.db, { cancellazioni: k.opzioni.cancellazioni });
+  assert.deepEqual(r.ricancellati, [id]);
+  k.s = await avvia(k.opzioni);
+  assert.equal(idDi(k, email), undefined);
+  assert.equal(k.s.db.prepare('SELECT count(*) n FROM riga WHERE account_id = ?').get(id).n, 0);
+  assert.equal((await k.chiama('POST', '/v1/accesso', { email: 'resta@esempio.it', password: BUONA })).status, 200);
+  // E l'indirizzo e' libero.
+  assert.equal((await k.chiama('POST', '/v1/registrazione', { email, password: BUONA }, { ip: '192.0.2.60' })).status, 201);
+});
+
+test('inattivita: a 700 giorni un avviso con la data, a 730 senza attivita si cancella, e un accesso lo salva', async (t) => {
+  // R-ACC-36, §14.2, l'ADR-003. L'avviso parte trenta giorni prima e porta la
+  // data; la cancellazione passa dal file del §2.7. Il segno dell'avviso sta
+  // nel database: un riavvio non ne manda un secondo e non lo dimentica.
+  const k = await conti(t);
+  await confermato(k, 'a@esempio.it');
+  await confermato(k, 'b@esempio.it');
+  const a = idDi(k, 'a@esempio.it');
+  aggiungiRighe(k.s.db, a, [riga(1), riga(2)]);
+  k.mail.length = 0;
+
+  k.orologio.t = T0 + 699 * GIORNO;
+  assert.equal((await k.s.manutenzione()).avvisi_inattivita, 0);
+  k.orologio.t = T0 + 700 * GIORNO + ORA;
+  assert.equal((await k.s.manutenzione()).avvisi_inattivita, 2);
+  assert.deepEqual(k.mail.map((m) => m.a).sort(), ['a@esempio.it', 'b@esempio.it']);
+  assert.match(k.mail[0].testo, /30 settembre 2028/, 'la data della cancellazione');
+  assert.match(k.mail[0].testo, /https:\/\/rottagiusta\.it\/app/, 'per tenerle basta entrare');
+  assert.match(k.mail[0].testo, /scaric/, 'e il file dei progressi da scaricare prima');
+
+  await k.riavvia();
+  k.orologio.t = T0 + 701 * GIORNO;
+  assert.equal((await k.s.manutenzione()).avvisi_inattivita, 0, 'un avviso solo, anche dopo un riavvio');
+  assert.equal(k.mail.length, 2);
+
+  // b rientra dopo l'avviso: e' attivita', e l'avviso decade.
+  k.orologio.t = T0 + 710 * GIORNO;
+  assert.equal((await k.chiama('POST', '/v1/accesso', { email: 'b@esempio.it', password: BUONA })).status, 200);
+
+  k.orologio.t = T0 + 730 * GIORNO;
+  assert.equal((await k.s.manutenzione()).cancellati_inattivita, 0, 'trenta giorni dall avviso, non meno');
+  k.orologio.t = T0 + 730 * GIORNO + 2 * ORA;
+  assert.equal((await k.s.manutenzione()).cancellati_inattivita, 1);
+  assert.equal(idDi(k, 'a@esempio.it'), undefined);
+  assert.equal(k.s.db.prepare('SELECT count(*) n FROM riga WHERE account_id = ?').get(a).n, 0, 'con le sue righe');
+  assert.ok(idDi(k, 'b@esempio.it'), 'chi e rientrato resta');
+  assert.deepEqual(leggiCancellazioni(k.opzioni.cancellazioni).voci.map((v) => [v.evento, v.account]), [['cancellazione', a]]);
+  assert.ok(!bytesDel(k).includes('a@esempio.it'), 'anche questa cancella davvero');
+
+  // E b, rientrato al giorno 710, riceve il prossimo avviso settecento giorni dopo, non prima.
+  k.orologio.t = T0 + 1400 * GIORNO;
+  assert.equal((await k.s.manutenzione()).avvisi_inattivita, 0);
+  k.orologio.t = T0 + 1410 * GIORNO + ORA;
+  assert.equal((await k.s.manutenzione()).avvisi_inattivita, 1);
+});
+
+test('allarmi: accessi falliti oltre soglia, una copia con meno righe e una mail rifiutata avvisano il titolare, una volta sola', async (t) => {
+  // R-ACC-37, §15.4. Letti dalla tabella registro, non da un contatore in
+  // memoria: un riavvio non ripete un allarme e non ne perde uno. La mail al
+  // titolare dice che cosa e quanto, senza email e senza indirizzi IP, che
+  // restano sulla macchina (§15.4: la casella del titolare puo' essere fuori UE).
+  let rifiuta = false;
+  const mail = [];
+  const posta = { invia: async (m) => { if (rifiuta) throw new Error('rifiutata dal fornitore: 400'); mail.push(m); } };
+  const k = await conti(t, { posta });
+  const cookie = await registrato(k, 'a@esempio.it');
+  const alTitolare = () => mail.filter((m) => m.a === TITOLARE);
+  assert.deepEqual((await k.s.allarmi()).nuovi, [], 'niente da dire');
+
+  const fallisci = async (n, da = 0) => {
+    for (let i = da; i < da + n; i++) {
+      const r = await k.chiama('POST', '/v1/accesso', { email: `n${i}@esempio.it`, password: ALTRA }, { ip: `198.51.100.${i % 5}` });
+      assert.equal(r.status, 401);
+    }
+  };
+  await fallisci(99);
+  assert.deepEqual((await k.s.allarmi()).nuovi, [], '99 in 24 ore: sotto la soglia');
+  await fallisci(1, 99);
+  let r = await k.s.allarmi();
+  assert.deepEqual(r.nuovi.map((a) => a.tipo), ['accessi falliti']);
+  assert.equal(r.nuovi[0].falliti, 100);
+  assert.equal(r.nuovi[0].indirizzi, 5);
+  assert.equal(alTitolare().length, 1);
+  assert.match(alTitolare()[0].testo, /100/);
+  assert.ok(!/@esempio\.it|198\.51\.100/.test(alTitolare()[0].testo), 'ne email ne indirizzi nella mail al titolare');
+  assert.deepEqual((await k.s.allarmi()).nuovi, [], 'lo stesso allarme non si ripete');
+  await k.riavvia();
+  assert.deepEqual((await k.s.allarmi()).nuovi, [], 'nemmeno dopo un riavvio');
+
+  // Una mail rifiutata dal fornitore.
+  rifiuta = true;
+  assert.equal((await k.chiama('POST', '/v1/verifica/rinvia', undefined, { cookie })).status, 503);
+  rifiuta = false;
+  r = await k.s.allarmi();
+  assert.deepEqual(r.nuovi.map((a) => [a.tipo, a.quante]), [['mail rifiutata', 1]]);
+  assert.match(alTitolare().at(-1).testo, /rifiutata dal fornitore: 400/);
+  await k.riavvia();
+  assert.deepEqual((await k.s.allarmi()).nuovi, []);
+
+  // Una copia con meno righe, che nessuna cancellazione spiega: la scrive nel
+  // registro server/copia.mjs, che gira accanto al servizio.
+  aggiungiRighe(k.s.db, idDi(k, 'a@esempio.it'), Array.from({ length: 10 }, (_, i) => riga(i)));
+  const c1 = join(k.c, 'copia-1.db');
+  copia(k.opzioni.db, c1, { cancellazioni: k.opzioni.cancellazioni });
+  const unOraFa = new Date(Date.now() - 3600e3);
+  utimesSync(c1, unOraFa, unOraFa);
+  k.s.db.exec("DELETE FROM riga WHERE uid IN ('u000001', 'u000002', 'u000003')");
+  const c2 = copia(k.opzioni.db, join(k.c, 'copia-2.db'), { precedente: c1, cancellazioni: k.opzioni.cancellazioni });
+  assert.equal(c2.allarme, true);
+  r = await k.s.allarmi();
+  assert.deepEqual(r.nuovi.map((a) => [a.tipo, a.quante]), [['copia con meno righe', 1]]);
+  assert.match(alTitolare().at(-1).testo, /da 10 a 7/);
+  await k.riavvia();
+  assert.deepEqual((await k.s.allarmi()).nuovi, []);
+
+  // Il giorno dopo, altri cento: un allarme nuovo.
+  k.avanza(25 * ORA);
+  await fallisci(100, 1000);
+  assert.deepEqual((await k.s.allarmi()).nuovi.map((a) => a.tipo), ['accessi falliti']);
+  assert.equal(k.s.db.prepare("SELECT count(*) n FROM registro WHERE evento = 'allarme'").get().n, 4, 'ogni allarme nel registro');
+
+  // Se la mail al titolare non parte, l'allarme resta nel registro e nel log,
+  // e il rifiuto non genera un allarme nuovo a ogni giro.
+  rifiuta = true;
+  k.avanza(25 * ORA);
+  await fallisci(100, 2000);
+  assert.equal((await k.s.allarmi()).nuovi.length, 1);
+  rifiuta = false;
+  assert.deepEqual((await k.s.allarmi()).nuovi, [], 'il rifiuto della mail al titolare non e un allarme a sua volta');
+  assert.ok(k.scritto.some((m) => /ALLARME/.test(m)), 'nel log, dove il titolare lo trova comunque');
+});
+
+test('mail del mese: oltre le 300 la mail parte lo stesso, e il titolare riceve un avviso solo', async (t) => {
+  // R-ACC-38, §9.3 e §20, deciso dall'autore il 26 settembre 2026: 300 al mese
+  // sono comprese, oltre si paga 0,25 € ogni 1.000. Non si blocca niente: si
+  // conta dal registro, e raggiunte le 300 il titolare lo sa, una volta al mese.
+  const k = await conti(t);
+  const scrivi = k.s.db.prepare("INSERT INTO registro (quando, evento, dettaglio) VALUES (?, 'mail spedita', 'finta')");
+  for (let i = 0; i < 40; i++) scrivi.run(new Date(T0 - 2 * GIORNO - i * 1000).toISOString());   // settembre: non conta
+  for (let i = 0; i < 298; i++) scrivi.run(new Date(T0 - i * 1000).toISOString());
+  await registrato(k, 'a@esempio.it');
+  let r = await k.s.allarmi();
+  assert.equal(r.mail_del_mese, 299);
+  assert.deepEqual(r.nuovi, []);
+
+  const b = await registrato(k, 'b@esempio.it');
+  r = await k.s.allarmi();
+  assert.deepEqual(r.nuovi.map((a) => [a.tipo, a.spedite, a.mese]), [['mail del mese', 300, '2026-10']]);
+  assert.match(k.mail.at(-1).testo, /300/);
+  assert.equal(k.mail.at(-1).a, TITOLARE);
+
+  // La trecentunesima e le altre partono: mai un blocco.
+  k.mail.length = 0;
+  assert.equal((await k.chiama('POST', '/v1/registrazione', { email: 'c@esempio.it', password: BUONA })).status, 201);
+  assert.equal((await k.chiama('POST', '/v1/verifica/rinvia', undefined, { cookie: b })).status, 202);
+  assert.deepEqual(k.mail.map((m) => m.a), ['c@esempio.it', 'b@esempio.it']);
+  assert.deepEqual((await k.s.allarmi()).nuovi, [], 'un avviso al mese');
+  await k.riavvia();
+  assert.deepEqual((await k.s.allarmi()).nuovi, [], 'anche dopo un riavvio');
+
+  // Il mese dopo il conto riparte.
+  k.orologio.t = Date.parse('2026-11-01T08:00:00Z');
+  r = await k.s.allarmi();
+  assert.equal(r.mail_del_mese, 0);
+  assert.deepEqual(r.nuovi, []);
 });
