@@ -1093,7 +1093,7 @@ docs/prossime-sessioni.md.
 
 ### P-28 — Claude: i contratti del motore che il client chiede
 
-**Stato:** pronto. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo
+**Stato:** **lanciato il 26 settembre 2026.** **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo
 **`main`**, a mano. **Nasce da:** P-13, §12 di `docs/account-client-progetto.md`,
 «Contatti da risolvere su main prima del codice che ne dipende».
 
@@ -1293,8 +1293,12 @@ docs/prossime-sessioni.md.
 
 ### P-20 — ChatGPT: il progetto dell'area 4, Carteggio
 
-**Stato:** pronto. **Dove:** app di ChatGPT, progetto `~/Software/rotta-giusta-ui`,
-ramo `ui/main`. È un documento, non codice: si fa mentre P-18 e P-19 aspettano
+**Stato:** **lanciato il 26 settembre 2026.** Il ramo è stato allineato a
+`main` (`afb0b9c`) mentre la sessione era già aperta, prima che scrivesse
+qualcosa: quello che ha letto prima di allora può essere la versione vecchia,
+e in particolare il §7.1 di `area-3-progetto.md`, riscritto da P-30. La regia
+lo controlla sul resoconto. **Dove:** app di ChatGPT, progetto
+`~/Software/rotta-giusta-ui`, ramo `ui/main`. È un documento, non codice: si fa mentre P-18 e P-19 aspettano
 il lavoro di Claude, e la sua realizzazione (P-21) viene dopo di loro.
 
 ```
@@ -1522,3 +1526,6 @@ dopo**, la soglia degli allarmi riletta sul registro vero
 - **26 settembre 2026 — allineare solo a sessione chiusa.** Regola aggiunta al
   punto 5 di «Come si usa», dopo un allineamento fatto senza sapere se P-20 era
   già partito.
+- **26 settembre 2026 — P-20 e P-28 lanciati.** P-20 era già aperto quando la
+  regia ha allineato `ui/main`: è il caso che la regola del punto 5 ora
+  impedisce, scritto nel suo stato perché si controlli sul resoconto.
