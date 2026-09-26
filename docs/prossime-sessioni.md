@@ -930,7 +930,7 @@ toccata. Chiudi con il resoconto di docs/prossime-sessioni.md.
 
 ### P-14 — ChatGPT: il progetto dell'area 3, il ciclo che si chiude
 
-**Stato:** in attesa della merge di P-05. **Dove:** come P-13 — e dopo P-13,
+**Stato:** in attesa di P-13, nell'ordine consigliato. **Dove:** come P-13 — e dopo P-13,
 se l'autore tiene l'ordine consigliato nella coda.
 
 ```
