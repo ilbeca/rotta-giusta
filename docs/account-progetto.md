@@ -1609,10 +1609,13 @@ mese** raggiunte (§9.3). Scelte, con il loro perché:
 - **Una mail al titolare rifiutata non è un allarme**, ha un evento suo: se lo
   fosse, l'allarme per la mail rifiutata rifiuterebbe la sua mail a ogni giro.
   Resta il log.
-- **La soglia di 100 è una proposta**, non una norma: è il numero dello standard
-  per un account solo (§6.5), preso qui per tutti gli account insieme. Con pochi
-  iscritti è già molto; si rivede quando il registro dirà quanti fallimenti fa
-  un giorno normale.
+- **La soglia di 100 — decisa dalla regia il 26 settembre 2026, su delega
+  dell'autore.** Non è una norma: è il numero dello standard per un account solo
+  (§6.5), preso qui per tutti gli account insieme. Resta 100, perché con pochi
+  iscritti è già molto e la password disattivata di un account solo fa scattare
+  l'allarme comunque. **Si rilegge dopo trenta giorni di esercizio**, sul
+  registro vero: quanti fallimenti fa un giorno normale. È nella coda, dentro il
+  traguardo (P-27), per non restare un'intenzione.
 
 **Aperto, decide l'autore** — i punti che la bozza del registro lascia in
 sospeso. Nessuno blocca il server; bloccano la versione con gli account, perché
@@ -2009,3 +2012,6 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
   cancellazione non cancellava davvero** — l'email e le risposte restavano nei
   frame vecchi del WAL anche dopo un checkpoint normale (§14.4). Sette
   requisiti con il loro test, ventisei rotture, ognuna rossa nel suo.
+- **26 settembre 2026 — la soglia degli allarmi.** La regia, su delega
+  dell'autore, tiene 100 accessi falliti in 24 ore e la fa rileggere dopo trenta
+  giorni di esercizio.

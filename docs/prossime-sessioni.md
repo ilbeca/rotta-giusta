@@ -392,17 +392,16 @@ consuma, non si riprogetta.
   manca.
 - **Q-DUE**, prima dell'area 5: le due classifiche di «cosa fare adesso»
   (specifica §10).
-- **Un rilascio intermedio — ora serve anche al server.** `site/` è cambiato con
+- **Un rilascio intermedio — sì dell'autore il 26 settembre: v0.28.0.** `site/` è cambiato con
   P-01 e con l'area 2, e chi studia oggi non lo vede; e P-15 può avviare il
   server soltanto da un tag pubblicato che lo contenga (`account-progetto.md`
   §2.7), mentre l'ultimo, `v0.27.0`, è di prima del server. Un rilascio adesso
   fa le due cose: la pagina di oggi non chiama il server, quindi pubblicarlo non
   cambia niente per chi studia. La regia lo fa quando dici sì — numero, voce,
   tag, push chiesto, «Build now».
-- **La soglia degli allarmi**, proposta da P-11: 100 accessi falliti in 24 ore
-  fanno scattare un avviso al titolare. Non è una norma
-  (`account-progetto.md` §15.4, «Gli allarmi»): la tieni, la cambi, o la lasci
-  alla regia.
+- ~~La soglia degli allarmi~~ — **decisa dalla regia su tua delega**: resta
+  100 accessi falliti in 24 ore, e si rilegge dopo trenta giorni di esercizio
+  (`account-progetto.md` §15.4; è nel segnaposto P-27).
 - **Gli adempimenti rimasti**, sei punti, tutti nel §15.4 di
   `account-progetto.md` e bloccano il punto 9: l'indirizzo postale del titolare,
   la base giuridica del registro di sicurezza (da far confermare), l'inoltro di
@@ -1223,7 +1222,9 @@ tre posti, voce, tag, push chiesto, «Build now» — **più il server**, aggior
 con `rg-aggiorna` allo stesso tag; poi le due verifiche che solo quel giorno può
 fare: un archivio vero nel browser che passa nell'account senza perdere una riga
 (R-ACC-05), e il cookie fra `rottagiusta.it` e `api.` su un Safari vero
-(Q-PROVE). Il §5 di questo file è la lista di controllo.
+(Q-PROVE). Il §5 di questo file è la lista di controllo. **Trenta giorni
+dopo**, la soglia degli allarmi riletta sul registro vero
+(`account-progetto.md` §15.4).
 
 ---
 
@@ -1339,3 +1340,6 @@ fare: un archivio vero nel browser che passa nell'account senza perdere una riga
   P-11) e P-29 (la prova nel browser), e P-18 passa da segnaposto a prompt. P-15
   aspetta un tag che contenga il server: il rilascio intermedio del §4 serve
   anche a quello.
+- **26 settembre 2026 — la soglia, e il sì al rilascio intermedio.** Soglia a
+  100 su delega, da rileggere dopo trenta giorni di esercizio. La regia rilascia
+  la v0.28.0 in un commit a sé.
