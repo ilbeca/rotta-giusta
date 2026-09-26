@@ -834,9 +834,10 @@ lasciano all'attaccante un numero di tentativi che cresce col tempo, senza tetto
 La ragione della riga — non chiudere fuori il proprietario — lo standard la
 risolve così: il proprietario rientra con la mail di reimpostazione, che resta
 sempre a un tocco, e fra i modi per ridurre il fastidio elenca proprio le attese
-crescenti fra un tentativo e l'altro. **Proposto:** le attese restano come
+crescenti fra un tentativo e l'altro. **Deciso dalla regia il 26 settembre
+2026, dentro la delega dell'autore a uno standard:** le attese restano come
 sono, e al centesimo fallimento consecutivo la password si disattiva finché non
-arriva una reimpostazione. Aperto nel §20.
+arriva una reimpostazione. La prima riga della tabella va letta così.
 
 ---
 
@@ -1588,7 +1589,7 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
 | ~~Lunghezza minima della password~~ | — | **deciso**: 15, come NIST (§5.2) |
 | ~~Elenco delle password comuni: quale, con che licenza~~ | — | **scelto da P-07 il 26 settembre 2026, sulla delega dell'autore a uno standard**: NIST SP 800-63B-4 §3.1.1.2 e appendice A. Fonte: i «ten million passwords» di Burnett (pubblico dominio) nel file da un milione di SecLists (MIT), tenute le 10.898 voci da almeno 15 caratteri, 192 KB, rigenerate da uno script con l'impronta della fonte (§5.2). R-ACC-25 |
 | ~~Durata della sessione~~ | — | **scelto da P-07 il 26 settembre 2026, sulla delega dell'autore a uno standard**: NIST SP 800-63B-4 §2.1.3, livello AAL1 — **30 giorni dall'accesso**, l'uso non la allunga, nessuna scadenza per inattività. Sostituisce la proposta di 60 giorni senza uso e un anno al massimo (§6.2). R-ACC-26 |
-| Il limite dei tentativi falliti (§6.5): «mai un blocco» contro il limite di 100 dello standard | l'autore, o la regia se lo considera dentro la stessa delega | disattivare la password al centesimo fallimento consecutivo, fino a una reimpostazione per email; le attese che raddoppiano restano (§6.5) |
+| ~~Il limite dei tentativi falliti (§6.5)~~ | — | **deciso dalla regia il 26 settembre 2026, dentro la delega dell'autore a uno standard**: è un obbligo dello stesso NIST SP 800-63B-4 scelto per la password (§3.2.2). Al centesimo fallimento consecutivo la password si disattiva fino a una reimpostazione per email; le attese che raddoppiano restano (§6.5) |
 | ~~Account non confermato: quanto vive~~ | — | **deciso**: sette giorni, funzionante — Mastodon 7, Discourse 14, nessuno standard (§9.6) |
 | ~~Preferenze dell'interfaccia senza account~~ | — | **deciso**: non si conservano nemmeno quelle (§13.3) |
 | ~~IP nel registro di sicurezza~~ | — | **deciso** su delega: 6 mesi l'IP, un anno l'evento, dalla CNIL (§15.3) |
@@ -1687,3 +1688,8 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
   e la procedura per le violazioni sono una bozza dell'autore, fuori dal repo.
   Sei punti restano aperti, e ognuno ha l'autore come decidente. La STARDUST1-S
   si crea alla messa in esercizio (§20).
+- **26 settembre 2026 — il limite dei tentativi.** La regia ha chiuso la riga
+  del §20 aperta da P-07: l'autore aveva affidato la password a uno standard, e
+  il limite di 100 tentativi è un obbligo di quello stesso standard. Il «mai un
+  blocco» del §6.5 resta vero nel senso che conta — il proprietario rientra
+  sempre con la reimpostazione — e cade nella lettera.

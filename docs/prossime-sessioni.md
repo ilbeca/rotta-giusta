@@ -106,24 +106,25 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 3 | I tre prerequisiti del server, con l'epoca e il file delle cancellazioni | Claude | `main`, a mano | niente | P-03 |
-| 10 | Allineare i controlli dei quiz all'area 2 | Claude | `main`, a mano | P-03, perché è la stessa cartella | P-06 |
-| 11 | Uno standard per la durata della sessione e per le password comuni | Claude | pulsante | niente | P-07 |
-| 12 | I passi a mano dell'autore, accompagnati | l'autore con Claude | pulsante | niente | P-08 |
-| 4 | Il server degli account, un pezzo per volta | Claude | `main` | 3 | da scrivere dopo P-03 |
+| 10 | Allineare i controlli dei quiz all'area 2 | Claude | `main`, a mano | niente | P-06 |
 | 5 | Area 2, Quiz: la realizzazione (il progetto è chiuso) | ChatGPT | `ui/main` | P-06 | P-05 |
+| 4a | Il server, pezzo 1: l'account, la password, la sessione, la verifica dell'email | Claude | `main`, a mano | P-06, perché è la stessa cartella | P-09 |
+| 4b | Il server, pezzo 2: le righe e la sincronia, con la metà client di R-ACC-24 nel motore | Claude | `main`, a mano | 4a | da scrivere |
+| 4c | Il server, pezzo 3: cancellazione, due anni, allarmi al titolare | Claude | `main`, a mano | 4b | da scrivere |
 | 6 | Aree 3–6 del ridisegno | ChatGPT | `ui/main` | la precedente | da scrivere |
-| 7 | Il client degli account, dentro una fetta del ridisegno | ChatGPT | `ui/main` | 4 | da scrivere |
-| 8 | La messa in esercizio del server su Scaleway | Claude e l'autore | `main`, pannelli | 4, e dal §4: la macchina, i record di `posta.`, la chiave del bucket | da scrivere |
+| 7 | Il client degli account, dentro una fetta del ridisegno | ChatGPT | `ui/main` | 4b | da scrivere |
+| 8 | La messa in esercizio del server su Scaleway | Claude e l'autore | `main`, pannelli | 4c, e dal §4: la macchina, le chiavi | da scrivere |
 | 9 | **La versione con gli account** — il traguardo | tutti | `main` | 7, 8, e gli adempimenti del §4 | da scrivere |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**: Claude sul server (non tocca `site/`),
-ChatGPT sull'interfaccia. **Adesso si possono tenere aperti insieme P-03, P-07 e
-P-08**: P-03 nella cartella principale, gli altri due nei loro worktree. P-06 no,
-perché lavora nella stessa cartella di P-03; P-05 aspetta P-06. Il numero di una
-riga è il suo nome, non la sua posizione: l'ordine è quello della tabella. Si incontrano al punto 7, e il punto 9 è il
-giorno in cui gli account arrivano a chi studia.
+ChatGPT sull'interfaccia. **Adesso è pronto P-06**, e dopo la sua merge P-05 per
+ChatGPT e P-09 per Claude possono stare aperti insieme. Tutto quello che tocca
+`server/`, `tests/` o la specifica passa dalla cartella principale, una sessione
+per volta: è la strettoia della colonna di Claude, e si accetta perché il
+recinto la vuole. Il numero di una riga è il suo nome, non la sua posizione:
+l'ordine è quello della tabella. Le due colonne si incontrano al punto 7, e il
+punto 9 è il giorno in cui gli account arrivano a chi studia.
 
 I prompt «da scrivere» li scrive la regia quando si chiude quello da cui
 dipendono, non prima: un prompt scritto in anticipo punta a uno stato che nel
@@ -240,7 +241,13 @@ cui chi studia decide se fidarsi:
   `pn.auto`, `pn.segModo`, `pn.diagOrdine`, `pn.prep`, `pn.esame`, `pn.segPunti`:
   valgono per la pagina aperta (R-ACC-09, deciso dall'autore il 26 settembre;
   `docs/account-progetto.md` §13.3). Con l'account restano nel dispositivo e si
-  cancellano all'uscita.
+  cancellano all'uscita;
+- la schermata di accesso lascia lavorare i gestori di password e il
+  riempimento automatico, permette di incollare, e alla scadenza dice «sono
+  passati 30 giorni» (P-07; `account-progetto.md` §5.2 e §6.2);
+- l'informativa nomina `privacy@rottagiusta.it` come contatto del titolare, la
+  Polonia come luogo dei dati e i Paesi Bassi per le copie, e porta i punti del
+  §15.4 una volta decisi (P-08).
 
 Il *come* lo decide il progetto di realizzazione, §2.
 
@@ -346,29 +353,27 @@ consuma, non si riprogetta.
   `docs/migrazione-hosting.md`).
 - Le altre questioni aperte stanno dove si decidono: specifica §10,
   `account-progetto.md` §20, `prossima-versione.md` §9.
-- **Gli adempimenti degli account**, che nessuna sessione fa al posto tuo e che
-  bloccano il punto 9: l'accordo con Scaleway come responsabile, il registro dei
-  trattamenti, un contatto del titolare che non sia un canale pubblico, e il
-  modo in cui ti accorgi di una violazione e la notifichi entro 72 ore. L'elenco
-  è la tabella «Il GDPR, per intero» dell'ADR-003; il testo dell'informativa è
-  lavoro di `ui/*` (§1).
-- ~~Le decisioni del §20 riaperte da P-02, e le due proposte del §2.7~~ —
-  **prese il 26 settembre** e scritte in `account-progetto.md`: STARDUST1-S a
-  Varsavia, 300 mail al mese, Argon2id su delega, sì all'epoca e al file delle
-  cancellazioni. Durata della sessione e password comuni: uno standard, P-07.
-- **I passi qui sotto si fanno in P-08**, una sessione che ti accompagna uno per
-  uno.
-- **I quattro record DNS di `posta.rottagiusta.it` su IONOS**, MX compreso, con
-  i valori da copiare dalla console di Scaleway (`account-progetto.md` §9.4). Il
-  record SPF dell'apice non si tocca: regge la tua posta. Quello di `api.` viene
-  alla messa in esercizio, con la macchina.
-- **La chiave API di sola scrittura sul bucket `rottagiusta-copie`**, da mettere
-  tu sulla macchina, mai nel repo (§2.5). Serve alla messa in esercizio.
-- **Quello che P-02 ha lasciato sul Mac e su Scaleway**, da tenere o togliere:
-  la chiave SSH `~/.ssh/rotta_giusta_p02` e la sua metà pubblica registrata nel
-  progetto Scaleway, la CLI `scw` installata con Homebrew e non configurata, e
-  il worktree `~/Software/rotta-giusta-p02` con il ramo `sessione/p-02`, già
-  fuso in `main`.
+- ~~Le decisioni del §20~~ — **tutte prese il 26 settembre**, e scritte in
+  `account-progetto.md`: le tue, quelle su delega (Argon2id, il limite dei 100
+  tentativi) e i due standard scelti da P-07.
+- ~~I record DNS di `posta.`, la pulizia dopo P-02, il contatto del titolare~~ —
+  **fatti in P-08**: quattro record verificati, `privacy@rottagiusta.it` provato,
+  la chiave SSH delle prove tolta.
+- **Gli adempimenti rimasti**, sei punti, tutti nel §15.4 di
+  `account-progetto.md` e bloccano il punto 9: l'indirizzo postale del titolare,
+  la base giuridica del registro di sicurezza (da far confermare), l'inoltro di
+  `privacy@` verso Gmail (un possibile trasferimento fuori dall'UE), per quanto
+  si tengono le richieste evase, il DPA di statichost.eu, i due fattori su
+  Gmail, Scaleway e IONOS. In più: scaricare il PDF del DPA di Scaleway e
+  tenerlo accanto al registro, e «Secure your account» nella console di
+  Scaleway. Il registro dei trattamenti e la procedura per le violazioni sono
+  bozze tue, fuori dal repo.
+- **Alla messa in esercizio** (punto 8), con una sessione che ti accompagna come
+  P-08: creare la STARDUST1-S, la chiave API di sola scrittura sul bucket, una
+  chiave SSH nuova, la chiave API di Transactional Email, e il record di `api.`.
+  Le chiavi si mettono sulla macchina, mai nel repo.
+- **I worktree `~/Software/rotta-giusta-p07` e `-p08`** con i loro rami, già
+  fusi in `main`: si tolgono quando le due sessioni sono chiuse.
 
 ## 5 · Il traguardo: la versione con gli account
 
@@ -478,8 +483,7 @@ chiudono lo stesso giorno succederà ogni volta, e si risolve così.
 
 ### P-03 — Claude: i tre prerequisiti del server
 
-**Stato:** pronto: l'autore ha detto sì alle due proposte del §2.7 il 26
-settembre. **Dove:** Claude Code, `~/Software/rotta-giusta`,
+**Stato:** **chiuso il 26 settembre 2026**, commit `d12b0ad` su `main`. **Dove:** Claude Code, `~/Software/rotta-giusta`,
 ramo **`main`** — non da un pulsante: tocca `territori.yaml` e `tests/`, che il
 `pre-commit` accetta solo da `main`.
 
@@ -505,7 +509,18 @@ Suite verdi, voce in fondo a [Unreleased], un commit. Chiudi con il
 resoconto di docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `d12b0ad`, voce nel CHANGELOG. `server/**` nel territorio
+`motore`; `tests/test_server.mjs`, la quinta suite, con un server che risponde
+solo a `GET /v1/salute`; il database con `user_version`, l'epoca e
+`secure_delete`; `server/copie.mjs` e `ripristina --prova` in 20 controlli;
+R-ACC-20 e R-ACC-24 nella specifica; `controlla.py` su `server/` e contro le
+chiavi di Scaleway. Tre cose trovate scrivendo il codice, nel §2.7: l'`id` che si
+riusa dopo un ripristino, l'azzeramento da non rifare, il cursore da un
+contatore. **R-ACC-24 è coperto a metà**: manca la regola del client nella
+contabilità della coda, che va nel pezzo 4b; e il nome per l'epoca lato client
+va scelto diverso da `epoca(ts)`, che nel motore esiste già e fa un'altra cosa.
+Controllato dalla regia: suite del server 23/23 con Node 25; con la 24 LTS lo
+dichiara la sessione, non l'ha rifatto la regia.
 
 ### P-04 — ChatGPT: il progetto dell'area 2, Quiz
 
@@ -553,7 +568,7 @@ docs/prossime-sessioni.md.
 
 ### P-06 — Claude: i controlli dei quiz allineati all'area 2
 
-**Stato:** in attesa di P-03, che lavora nella stessa cartella. **Dove:** Claude
+**Stato:** pronto: P-03 è chiuso e la cartella è libera. **Dove:** Claude
 Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano: tocca `tests/` e la
 specifica.
 
@@ -581,8 +596,8 @@ docs/prossime-sessioni.md.
 
 ### P-07 — Claude: uno standard per la sessione e per le password comuni
 
-**Stato:** pronto. **Dove:** dal pulsante della regia, in un worktree suo: tocca
-solo `docs/account-progetto.md` e il CHANGELOG.
+**Stato:** **chiuso il 26 settembre 2026**, merge `f926819`. **Dove:** worktree
+`~/Software/rotta-giusta-p07`, ramo `sessione/p-07`.
 
 ```
 Sessione P-07. Due righe del §20 di docs/account-progetto.md l'autore
@@ -600,12 +615,24 @@ docs/prossime-sessioni.md. Suite verdi, voce in fondo a [Unreleased],
 un commit. Chiudi con il resoconto di docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `cc8b5cb`, merge `f926819`. Lo standard è **NIST SP
+800-63B-4** per tutte e due: sessione AAL1, **30 giorni dall'accesso**, senza
+rinnovo né scadenza per inattività; elenco delle password comuni di Burnett
+(pubblico dominio) dal file di SecLists (MIT), fissato per commit e SHA-256,
+tenendo le sole 10.898 voci da 15 caratteri. Proposti R-ACC-25 e R-ACC-26 nel
+§17. Ha trovato che il «mai un blocco» del §6.5 contraddice un obbligo dello
+standard: **deciso dalla regia**, dentro la delega dell'autore, il limite dei
+100 tentativi (§6.5 e §20). Non fatti, e giustamente: lo script che genera
+l'elenco e il file, che sono codice del server (pezzo 4a). La licenza di Burnett
+poggia su una copia marcata su Internet Archive: l'articolo originale risponde
+403, ed è scritto nel §5.2. Controllato dalla regia: territori puliti; conflitti
+additivi nel CHANGELOG e nel registro del documento, risolti tenendo le due
+voci.
 
 ### P-08 — Claude con l'autore: i passi a mano
 
-**Stato:** pronto. **Dove:** dal pulsante della regia, in un worktree suo. È una
-sessione che si fa **insieme**: l'autore agisce, Claude spiega e verifica.
+**Stato:** **chiuso il 26 settembre 2026**, merge `1760df9`. **Dove:** worktree
+`~/Software/rotta-giusta-p08`, ramo `sessione/p-08`.
 
 ```
 Sessione P-08: accompagni l'autore nei passi che deve fare a mano per
@@ -630,6 +657,50 @@ repo, e strumenti/controlla.py lo impedisce: nel repo si scrive solo
 che cosa è fatto, quando, e dove sta, in docs/account-progetto.md nei
 punti a cui appartiene. Non toccare docs/prossime-sessioni.md. Un
 commit, e chiudi con il resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** commit `76d8e5c`, merge `1760df9`. Fatti con l'autore: i quattro
+record di `posta.` su IONOS, verificati con `dig` e «Verified» su Scaleway;
+`privacy@rottagiusta.it`, provato; la chiave SSH delle prove tolta da Scaleway e
+dal Mac, il worktree di P-02 rimosso; il DPA di Scaleway verificato come parte
+del contratto. Il nuovo §15.4 porta lo stato degli adempimenti e sei punti
+aperti per l'autore (§4 qui sopra). **Ha corretto una deduzione del progetto**:
+sull'apice non c'era nessuna casella di posta, quindi «rompere la posta
+dell'autore» non era un rischio vero; `posta.` resta la scelta giusta (§9.4). Ha
+rispettato i limiti: due cancellazioni di credenziali fermate dai permessi le ha
+fatte l'autore, non sono state aggirate. La STARDUST1-S non è creata: l'autore
+la crea alla messa in esercizio. Per il server: gli allarmi al titolare
+(accessi falliti oltre soglia, una copia con meno righe) vanno nel pezzo 4c.
+Controllato dalla regia: territori puliti, conflitti additivi risolti, cinque
+suite verdi su `main` dopo le tre merge.
+
+### P-09 — Claude: il server, pezzo 1 — l'account
+
+**Stato:** in attesa di P-06, che lavora nella stessa cartella. **Dove:** Claude
+Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano.
+
+```
+Sessione P-09, su main. Leggi docs/account-progetto.md per intero —
+soprattutto §3, §5, §6, §7.1 e §9, e il §20 dove tutte le decisioni
+sono prese — e gli esiti di P-03 e P-07 nel §6 di
+docs/prossime-sessioni.md.
+
+Il primo pezzo del server: l'account. Le tabelle che servono, la
+registrazione e l'accesso con Argon2id e i parametri del §20, la
+password di almeno 15 caratteri contro l'elenco delle password comuni
+del §5.2 — lo script che lo genera dalla fonte in strumenti/, il file
+in server/, la dichiarazione nel README con la nota MIT di SecLists —,
+la sessione del §6 a 30 giorni, i limiti del §6.5 con i 100 tentativi,
+il §5.3 che non dice chi è iscritto, e la verifica dell'email del §9
+con un fornitore finto nella suite. Le righe e la sincronia no: sono il
+pezzo dopo. I requisiti del §17 che questo pezzo tocca entrano nella
+specifica con il loro controllo in test_server.mjs.
+
+Prima il test che fallisce, uno per requisito. Se il pezzo è troppo per
+un commit, fermati a un confine pulito e dillo nel resoconto. La suite
+del server gira anche con Node 24 LTS. Non toccare
+docs/prossime-sessioni.md. Suite verdi, voce in fondo a [Unreleased],
+un commit. Chiudi con il resoconto di docs/prossime-sessioni.md.
 ```
 
 **Esito:** —
@@ -701,3 +772,9 @@ commit, e chiudi con il resoconto di docs/prossime-sessioni.md.
   che P-04 ha trovato fermi alle sei modalità, prima di P-05), P-07 (gli
   standard che l'autore ha chiesto) e P-08 (i passi a mano, accompagnati, in una
   sessione separata come ha chiesto l'autore).
+- **26 settembre 2026 — P-03, P-07 e P-08 chiusi.** Tre resoconti insieme,
+  due merge con conflitti solo additivi. La regia ha chiuso su delega il limite
+  dei 100 tentativi, che P-07 aveva trovato in contraddizione con lo standard.
+  Il server si divide in tre pezzi (4a, 4b, 4c) e il primo è P-09; P-06 è
+  pronto. Nel §1 entrano le cose della pagina che P-07 e P-08 hanno trovato; nel
+  §4 restano i sei adempimenti del §15.4 e le chiavi della messa in esercizio.
