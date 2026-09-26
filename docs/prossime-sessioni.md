@@ -52,10 +52,13 @@ quelle di prodotto nel §10 della specifica, quelle degli account nel §20 di
 | 4 | Area 2, Quiz: prima il progetto, poi la realizzazione | ChatGPT | `ui/main` | 1, per la penna su `app.html` | §3.1 |
 | 5 | Aree 3–6 del ridisegno | ChatGPT | `ui/main` | la precedente | §3.1 |
 | 6 | Il client degli account, dentro una fetta del ridisegno | ChatGPT | `ui/main` | 3 | §3-bis |
+| 7 | La messa in esercizio del server su Scaleway | Claude e l'autore | `main`, pannelli | 3 | §5 |
+| 8 | **La versione con gli account** — il traguardo | tutti | `main` | 6, 7, e gli adempimenti del §4 | §5 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**: Claude sul server (non tocca `site/`),
-ChatGPT sull'interfaccia. Si incontrano al punto 6.
+ChatGPT sull'interfaccia. Si incontrano al punto 6, e il punto 8 è il giorno in
+cui gli account arrivano a chi studia.
 
 ## Lo stato al 26 settembre 2026
 
@@ -209,6 +212,10 @@ decisioni di fondo: leggi, in quest'ordine, docs/adr/ADR-003-…,
 docs/adr/ADR-004-…, docs/filosofia.md, e docs/prossime-sessioni.md
 per intero — l'ordine dei lavori e i prompt stanno solo lì.
 
+I tre docs/*-ux.md, docs/recupero-progetto.md e docs/motore.md sono
+storici: non si aggiornano e non si spostano. La mappa di che cosa è
+vivo è in testa a prossime-sessioni.md.
+
 Il lavoro di questa sessione è il punto 1 della coda: il difetto dei
 tag N/L/C, docs/account-progetto.md §4.2. Test verdi, voce in fondo a
 [Unreleased], un commit con il trailer, versione non toccata.
@@ -317,6 +324,39 @@ qui si consuma, non si riprogetta.
   `docs/migrazione-hosting.md`).
 - Le altre questioni aperte stanno dove si decidono: specifica §10,
   `account-progetto.md` §20, `prossima-versione.md` §9.
+- **Gli adempimenti degli account**, che nessuna sessione fa al posto tuo e che
+  bloccano il punto 8: l'accordo con Scaleway come responsabile, il registro dei
+  trattamenti, un contatto del titolare che non sia un canale pubblico, e il
+  modo in cui ti accorgi di una violazione e la notifichi entro 72 ore. L'elenco
+  è la tabella «Il GDPR, per intero» dell'ADR-003; il testo dell'informativa è
+  lavoro di `ui/*` (§1).
+- **I record DNS su IONOS** per `api.` e `posta.rottagiusta.it`, quando la
+  sessione del server li avrà misurati (`account-progetto.md` §9.4 e §19). Il
+  record SPF dell'apice non si tocca: regge la tua posta.
+
+## 5 · Il traguardo: la versione con gli account
+
+È il lavoro più grande della coda, e **non è una sessione**: è il punto in cui
+quattro filoni arrivano insieme, e la regola del §1 — i testi cambiano nella
+stessa versione in cui entrano gli account, non prima né dopo — vale per tutti.
+
+| Filone | Chi | Dove è scritto | Pronto quando |
+|---|---|---|---|
+| Il server, testato | Claude | `account-progetto.md` §2–15, §16.2 | la sua suite è verde e il backup è stato ripristinato davvero |
+| Il server, in esercizio su Scaleway | Claude e l'autore | `account-progetto.md` §2, §9.4, §19 | risponde su `api.rottagiusta.it`, spedisce da `posta.`, copia verso `nl-ams` |
+| Il client e i testi | ChatGPT | §1 qui sopra, `account-progetto.md` §10–13 | R-ACC-01…11 hanno il loro controllo o un «scoperto» motivato |
+| Gli adempimenti | l'autore | §4 qui sopra, ADR-003 | firmati e scritti, prima che una sola email arrivi al server |
+
+Poi il rilascio, come ogni altro: merge, numero, tag, push chiesto, «Build now».
+**Con una differenza**: il server non si pubblica con «Build now», e oggi **non
+è scritto da nessuna parte come si aggiorna e come si torna indietro** sulla
+macchina Scaleway. È una domanda della sessione del server, da chiudere prima
+del punto 7, non il giorno del rilascio.
+
+E due verifiche che solo il giorno vero può fare: un archivio esistente nel
+browser che passa nell'account senza perdere una riga (R-ACC-05, il guasto muto
+più probabile di tutta la versione), e il cookie fra `rottagiusta.it` e `api.`
+su un Safari vero (§19, Q-PROVE).
 
 ---
 
@@ -353,3 +393,9 @@ qui si consuma, non si riprogetta.
 - **26 settembre 2026 — l'ultima decisione del §20.** L'account non confermato
   vive sette giorni (R-ACC-11). Tolto dalla coda il numero dei commit da
   spingere, che era già sbagliato: si legge da git.
+- **26 settembre 2026 — il traguardo.** La coda arrivava al client degli
+  account e si fermava: mancavano la messa in esercizio su Scaleway, gli
+  adempimenti dell'autore e il rilascio che li tiene insieme. Entrano come punti
+  7 e 8 e nel nuovo §5, con la domanda che nessun documento ancora chiude: come
+  si aggiorna il server e come si torna indietro. Il prompt di ChatGPT dice
+  quali documenti sono storici.
