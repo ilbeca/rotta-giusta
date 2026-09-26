@@ -837,9 +837,19 @@ arriva con P-19 (`tests/test_interfaccia.py` riconosce i due regimi).
 
 ### 7.6 Il runner del carteggio
 
-**Vincolo.** Quello che scrivi è salvato **a ogni tasto**: un'ora di lavoro non
-deve dipendere dall'aver premuto un pulsante. Il pallino verde sul numero dice
-«qui ho scritto qualcosa», non «è giusto». La consegna è a due tocchi, in pagina,
+**Difetto aperto, dichiarato il 26 settembre 2026.** Fino a quel giorno qui
+c'era scritto, come Vincolo, che quello che scrivi è salvato **a ogni tasto**.
+Non era vero, e non lo era dalla 0.5.0: `annotaCart()` tiene il testo solo in
+memoria, e una ricarica durante la prova di un'ora perde tutto. Lo ha trovato il
+progetto dell'area 4 (`docs/area-4-progetto.md` §3.3) e la regia l'ha verificato
+nel codice. **Che cosa vale oggi:** il testo resta finché la pagina è aperta, e
+la pagina lo dice, con la conferma del browser prima di lasciarla (P-36). **Che
+cosa vale dopo:** una bozza legata all'account, separata dalle risposte valutate
+(P-34); senza account non si conserva niente (ADR-004). L'intenzione resta
+quella di allora — un'ora di lavoro non deve dipendere dall'aver premuto un
+pulsante —, e questo paragrafo la chiama con il suo nome finché non è vera.
+
+Il pallino verde sul numero dice «qui ho scritto qualcosa», non «è giusto». La consegna è a due tocchi, in pagina,
 **mai** con `confirm()` nativo. Alla correzione, la risposta ministeriale accanto
 alla tua, e **giudichi tu**.
 
@@ -1435,3 +1445,8 @@ successo, ed è il motivo per cui questo file esiste.
   raccordo è nel §10.1 di `area-3-progetto.md`. Ventisette rotture della
   pagina di riferimento, tutte rosse nel loro controllo, e il banco provato
   contro sé stesso.
+- **26 settembre 2026 — il §7.6 smette di promettere.** «Salvato a ogni tasto»
+  era scritto come Vincolo e non era vero dalla 0.5.0: il testo del carteggio
+  sta solo in memoria. Trovato da P-20, verificato dalla regia; il paragrafo
+  dice ora che cosa vale oggi (l'avviso e la conferma del browser, P-36) e dopo
+  (la bozza con l'account, P-34).

@@ -113,11 +113,11 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
 | 5b | Chiudere il regime vecchio dei controlli dei quiz, e il §5 della specifica | Claude | `main`, a mano | la cartella libera | P-12 |
-| 15 | La prova nel browser, per i controlli del client | Claude | `main`, a mano | P-31 nell'ordine | P-29 |
+| 15 | La prova nel browser, per i controlli del client | Claude | `main`, a mano | niente — **per primo** | P-29 |
 | 18 | Il carteggio sul `main`: composizione, attività intera, bozza, controlli | Claude | `main`, a mano | P-29 nell'ordine | P-32…P-35 |
-| 19 | L'avviso nel carteggio, finché il testo non si salva | ChatGPT | `ui/main` | niente | P-36 |
-| 17 | I controlli del ciclo, allineati all'area 3 — **lanciato** | Claude | `main`, a mano | niente | P-31 |
-| 6a | La realizzazione dell'area 3 | ChatGPT | `ui/main` | P-28, P-30, P-31 | P-19 |
+| 19 | L'avviso e la conferma del browser nel carteggio | ChatGPT | `ui/main` | niente — **per primo** | P-36 |
+| 6a | La realizzazione dell'area 3 | ChatGPT | `ui/main` | P-36, per la penna su `app.html` | P-19 |
+| 6d | Chiudere il regime vecchio dei controlli del ciclo | Claude | `main`, a mano | la merge di P-19 | P-37 |
 | 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore: il tag `v0.28.0` c'è | P-15 |
 | 12 | `ritmo()` che dice «orologio» senza orologio | Claude | `main`, a mano | niente | P-16 |
 | 13 | L'ultimo tag di una risposta, nel motore | Claude | `main`, a mano | la cartella libera | P-17 |
@@ -128,12 +128,11 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**: Claude sul server e sul motore,
-ChatGPT sull'interfaccia. **Per ChatGPT è pronto P-36**, l'avviso nel
-carteggio; le sue realizzazioni grandi — P-19, P-18, P-21 — aspettano lavoro di
-Claude su `main`: quel lavoro è la strettoia. **Per
-Claude, l'ordine consigliato: P-31** (sblocca P-19), **P-29** (sblocca P-18),
-poi **P-32, P-33, P-34, P-35** (sbloccano P-21), poi P-16, P-12 e P-17; P-15
-quando l'autore ha il tempo. ChatGPT ha P-36 mentre P-31 lavora. Vanno uno alla
+ChatGPT sull'interfaccia. **Per ChatGPT sono pronti P-36 e poi P-19**; P-18 e
+P-21 aspettano lavoro di Claude su `main`: quel lavoro è la strettoia. **Per
+Claude, l'ordine consigliato: P-29** (sblocca P-18), poi **P-32, P-33, P-34,
+P-35** (sbloccano P-21), poi P-16, P-12, P-17, e P-37 dopo P-19; P-15 quando
+l'autore ha il tempo. **Per ChatGPT: P-36, poi P-19.** Vanno uno alla
 volta, perché stanno tutti nella cartella principale: è la strettoia della
 colonna di Claude, e si accetta perché il recinto la vuole. Il numero di una
 riga è il suo nome, non la sua posizione. Le due colonne si incontrano al punto
@@ -398,10 +397,10 @@ consuma, non si riprogetta.
   `Standards` resta, con la sua segnalazione,
   [ilbeca/standards#1](https://github.com/ilbeca/standards/issues/1).
 - ~~Il testo del carteggio non è salvato «a ogni tasto»~~ — **deciso
-  dall'autore il 26 settembre: l'avviso.** Nel frattempo il prodotto pubblicato
-  dice di non ricaricare la pagina durante la prova (P-36, ChatGPT), e la frase
-  del §7.6 della specifica si corregge — la regia, appena P-31 libera la
-  specifica. La correzione vera resta P-34, con l'area 4.
+  dall'autore il 26 settembre: l'avviso, e la conferma del browser prima di
+  lasciare la pagina.** Tutti e due in P-36, per ChatGPT. La frase del §7.6
+  della specifica è corretta dalla regia, e il difetto è fra i «Difetti noti,
+  aperti» di `AGENTS.md`. La correzione vera resta P-34, con l'area 4.
 - **Q-PROVE**, riaperta da P-05: le prove con persone e lo zoom nativo al 200 %,
   che il browser integrato non fa. `docs/area-2-collaudo-ux.md` dice che cosa
   manca.
@@ -1251,7 +1250,7 @@ interfaccia 295, specifica 394 —, e il caso del §10.1 ora dà 2 errori su 2.
 
 ### P-31 — Claude: i controlli del ciclo, allineati all'area 3
 
-**Stato:** **lanciato il 26 settembre 2026.** **Dove:** Claude Code, `~/Software/rotta-giusta`,
+**Stato:** **chiuso il 26 settembre 2026**, commit `efcf385` su `main`. **Dove:** Claude Code, `~/Software/rotta-giusta`,
 ramo **`main`**, a mano. **Nasce da:** P-14, §10.1 di
 `docs/area-3-progetto.md` — è per l'area 3 quello che P-06 è stato per l'area 2.
 
@@ -1277,11 +1276,22 @@ di oggi. Suite verdi, voce in fondo a [Unreleased], un commit. Chiudi
 con il resoconto di docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `efcf385`, voce nel CHANGELOG. I controlli del ciclo dei quiz
+in due regimi, come P-06: quello di oggi riconosciuto da `fine()` e
+`rivediQuiz()`, quello progettato da tre funzioni di raccordo — `riepilogoQuiz`,
+`anteprimaRiprova`, `avviaRiprova` —, con il contratto scritto nel §10.1 di
+`area-3-progetto.md` prima del codice. `tests/ciclo_quiz.mjs` fa il giro
+riepilogo → anteprima → avvio con motore e banca veri e i dati che cambiano fra
+i clic; ventisette rotture della pagina di riferimento, tutte rosse, una delle
+quali nata perché la prova contro sé stesso ha mostrato un buco. Il lettore
+delle pagine è ora uno, `tests/pagina_js.mjs`, e P-35 lo riusa. Non coperti, e
+dichiarati: testi, focus, ritorni, avvisi, figure — restano al collaudo di
+P-19. Controllato dalla regia: motore 155 + 2 skip, server 59, dati 242,
+interfaccia 402, specifica 412.
 
 ### P-19 — ChatGPT: la realizzazione dell'area 3
 
-**Stato:** in attesa di P-31 (P-28 è chiuso), e che la regia allinei `ui/main`. **Dove:** app di ChatGPT, progetto
+**Stato:** pronto dopo P-36: P-28, P-30 e P-31 sono chiusi. `ui/main` è allineato. **Dove:** app di ChatGPT, progetto
 `~/Software/rotta-giusta-ui`, ramo `ui/main`.
 
 ```
@@ -1289,7 +1299,10 @@ Sessione P-19. Realizza docs/area-3-progetto.md in site/app.html.
 Prima leggi gli esiti di P-28, P-30 e P-31 nel §6 di
 docs/prossime-sessioni.md: il contratto del motore e i controlli del
 ciclo ora esistono, e il §7.1 del progetto è allineato a quello che il
-motore fa. Le tre chiamate a sessioni() di app.html passano al confine
+motore fa. Il contratto di P-31 obbliga la pagina a tre cose, scritte
+nel §10.1: le funzioni di raccordo riepilogoQuiz, anteprimaRiprova e
+avviaRiprova; apri() che legge opt.simUid e opt.auto; nessuna chiamata
+a E.erroriSessione fuori dal raccordo. Le tre chiamate a sessioni() di app.html passano al confine
 dell'attività; P-30 ha letto nel codice un difetto già pubblicato — una
 sessione con una pausa compare due volte, e le due righe aprono la
 stessa metà —: riproducilo nel browser prima di correggerlo, e
@@ -1405,7 +1418,7 @@ docs/prossime-sessioni.md.
 
 ### P-34 — Claude: la bozza del carteggio, e la promessa «a ogni tasto»
 
-**Stato:** in attesa di P-33. L'autore ha deciso l'avviso per il frattempo (P-36); la frase del §7.6 la corregge la regia prima di questa sessione. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-20, §10.1 di `docs/area-4-progetto.md`.
+**Stato:** in attesa di P-33. L'autore ha deciso l'avviso e la conferma del browser per il frattempo (P-36); la frase del §7.6 è già corretta. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-20, §10.1 di `docs/area-4-progetto.md`.
 
 ```
 Sessione P-34, su main. Leggi il §3.3 e il §10.1, voce D-03, di
@@ -1422,9 +1435,10 @@ cancellata solo a conclusione confermata o scarto esplicito; con
 ricarica, scadenza, errore di scrittura, uscita e cambio d'account fra
 schede esercitati. Senza account nessun salvataggio, come vuole
 l'ADR-004. Il raccordo si scrive nel progetto del client senza
-ridisegnarlo. La frase del §7.6 l'avrà già corretta la regia: quando
-la bozza c'è, il §7.6 dice che cosa promette adesso, e l'avviso di
-P-36 si toglie dalla pagina nel raccordo.
+ridisegnarlo. La regia ha già corretto il §7.6, che dichiara il
+difetto: quando la bozza c'è, il §7.6 dice che cosa promette adesso, la
+riga fra i «Difetti noti» di AGENTS.md si toglie, e l'avviso e la
+conferma di P-36 si rivedono nel raccordo.
 
 Non toccare docs/prossime-sessioni.md. Suite verdi, voce in fondo a
 [Unreleased], un commit. Chiudi con il resoconto di
@@ -1457,11 +1471,12 @@ docs/prossime-sessioni.md.
 
 **Esito:** —
 
-### P-36 — ChatGPT: l'avviso nel carteggio, finché il testo non si salva
+### P-36 — ChatGPT: l'avviso e la conferma del browser nel carteggio, finché il testo non si salva
 
-**Stato:** pronto. **Dove:** app di ChatGPT, progetto `~/Software/rotta-giusta-ui`,
-ramo `ui/main`. **Nasce da:** P-20, e dalla decisione dell'autore del 26
-settembre (§4).
+**Stato:** pronto — **prima di P-19**, perché la penna su `app.html` è una e
+questo è corto. **Dove:** app di ChatGPT, progetto `~/Software/rotta-giusta-ui`,
+ramo `ui/main`. **Nasce da:** P-20, e dalle due decisioni dell'autore del 26
+settembre (§4): l'avviso, e la conferma del browser.
 
 ```
 Sessione P-36. Il testo che si scrive nel carteggio sta solo in
@@ -1475,15 +1490,44 @@ prova e degli allenamenti su carta, e nel runner finché c'è testo
 scritto. Dice che cosa succede — il testo resta finché la pagina è
 aperta — e che cosa fare: non ricaricare e non chiudere la scheda fino
 alla consegna. Il tono è quello di docs/filosofia.md: un'informazione
-con la via d'uscita, non un allarme. Nessun salvataggio nuovo, in
-nessuno storage: l'ADR-004 vuole che senza account non resti niente, e
-la bozza vera è il lavoro di P-34.
+con la via d'uscita, non un allarme. E la conferma del browser prima
+di lasciare la pagina — beforeunload — quando c'è testo scritto e la
+prova non è consegnata: protegge dal gesto accidentale, il testo del
+browser non si sceglie, e non è il confirm() nativo che il §7.6 vieta
+per la consegna. Si toglie a consegna fatta, e a runner chiuso. Nessun
+salvataggio nuovo, in nessuno storage: l'ADR-004 vuole che senza
+account non resti niente, e la bozza vera è il lavoro di P-34.
 
 È un lavoro piccolo, e resta piccolo: niente ridisegno del Carteggio,
 che è l'area 4. Non toccare docs/prossime-sessioni.md. Quattro suite
 verdi, collaudo guardato a 375 e 1280 px, voce in fondo a
 [Unreleased], un commit con il trailer, versione non toccata. Chiudi
 con il resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-37 — Claude: chiudere il regime vecchio dei controlli del ciclo
+
+**Stato:** in attesa della merge di P-19, e della cartella libera. **Dove:**
+Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:**
+il resoconto di P-31 — è per il ciclo quello che P-12 è per i quiz.
+
+```
+Sessione P-37, su main. P-19 ha realizzato l'area 3 e la regia l'ha
+fusa: leggi i suoi esiti e quello di P-31 nel §6 di
+docs/prossime-sessioni.md, e il §10.1 di docs/area-3-progetto.md.
+
+Chiudi il regime vecchio del ciclo come P-31 ha lasciato scritto: in
+tests/test_interfaccia.py resta solo il regime con le tre funzioni di
+raccordo, e la pagina di prima, con fine() e rivediQuiz() senza
+raccordo, ora dev'essere rossa. Decidi che cosa resta di
+tests/pagina-ciclo-quiz.html. Nella specifica, R-FLU e R-UX-06 dicono
+coperto quello che adesso la pagina fa davvero.
+
+Non toccare docs/prossime-sessioni.md. Suite verdi, voce in fondo a
+[Unreleased], un commit. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
 ```
 
 **Esito:** —
@@ -1691,3 +1735,7 @@ dopo**, la soglia degli allarmi riletta sul registro vero
 - **26 settembre 2026 — l'avviso nel carteggio.** L'autore sceglie di dirlo
   nella pagina: P-36 per ChatGPT, subito. La frase del §7.6 la corregge la
   regia quando P-31, che lavora sulla specifica, ha chiuso. P-31 lanciato.
+- **26 settembre 2026 — P-31 chiuso, e il §7.6 corretto.** La regia corregge la
+  frase della specifica e mette il difetto fra quelli noti di `AGENTS.md`. P-36
+  prende anche la conferma del browser, per scelta dell'autore, e va prima di
+  P-19. Nasce P-37, che chiude il regime vecchio del ciclo dopo P-19.
