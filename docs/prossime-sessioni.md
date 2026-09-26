@@ -114,10 +114,9 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 |---|---|---|---|---|---|
 | 5b | Chiudere il regime vecchio dei controlli dei quiz, e il §5 della specifica | Claude | `main`, a mano | la cartella libera | P-12 |
 | 15 | La prova nel browser, per i controlli del client | Claude | `main`, a mano | niente — **per primo** | P-29 |
-| 18 | Il carteggio sul `main`: composizione, attività intera, bozza, controlli | Claude | `main`, a mano | P-29 nell'ordine | P-32…P-35 |
+| 18 | Il carteggio sul `main`: composizione, attività intera, bozza, controlli — **P-34 partito fuori ordine, in pausa** | Claude | `main`, a mano | la risposta dell'autore su P-34 | P-32…P-35 |
 | 19 | L'avviso e la conferma del browser nel carteggio | ChatGPT | `ui/main` | niente — **per primo** | P-36 |
-| 6a | La realizzazione dell'area 3 | ChatGPT | `ui/main` | P-36, per la penna su `app.html` | P-19 |
-| 6d | Chiudere il regime vecchio dei controlli del ciclo | Claude | `main`, a mano | la merge di P-19 | P-37 |
+| 6d | Chiudere il regime vecchio dei controlli del ciclo | Claude | `main`, a mano | la cartella libera | P-37 |
 | 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore: il tag `v0.28.0` c'è | P-15 |
 | 12 | `ritmo()` che dice «orologio» senza orologio | Claude | `main`, a mano | niente | P-16 |
 | 13 | L'ultimo tag di una risposta, nel motore | Claude | `main`, a mano | la cartella libera | P-17 |
@@ -128,11 +127,12 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**: Claude sul server e sul motore,
-ChatGPT sull'interfaccia. **Per ChatGPT sono pronti P-36 e poi P-19**; P-18 e
-P-21 aspettano lavoro di Claude su `main`: quel lavoro è la strettoia. **Per
-Claude, l'ordine consigliato: P-29** (sblocca P-18), poi **P-32, P-33, P-34,
-P-35** (sbloccano P-21), poi P-16, P-12, P-17, e P-37 dopo P-19; P-15 quando
-l'autore ha il tempo. **Per ChatGPT: P-36, poi P-19.** Vanno uno alla
+ChatGPT sull'interfaccia. **Per ChatGPT è pronto P-36**; P-18 e P-21
+aspettano lavoro di Claude su `main`: quel lavoro è la strettoia. **Per
+Claude, prima si chiarisce P-34** (§6, il suo stato): finché è aperto nella
+cartella principale nessun'altra sessione ci entra. Poi **P-29** (sblocca P-18),
+**P-32, P-33, P-35** (sbloccano P-21), P-37, P-16, P-12, P-17; P-15 quando
+l'autore ha il tempo. **Per ChatGPT: P-36.** Vanno uno alla
 volta, perché stanno tutti nella cartella principale: è la strettoia della
 colonna di Claude, e si accetta perché il recinto la vuole. Il numero di una
 riga è il suo nome, non la sua posizione. Le due colonne si incontrano al punto
@@ -1291,7 +1291,7 @@ interfaccia 402, specifica 412.
 
 ### P-19 — ChatGPT: la realizzazione dell'area 3
 
-**Stato:** pronto dopo P-36: P-28, P-30 e P-31 sono chiusi. `ui/main` è allineato. **Dove:** app di ChatGPT, progetto
+**Stato:** **chiuso il 26 settembre 2026**, merge `4129dfc`. Fatto da una sessione di **Claude** nel worktree `ui`, con ChatGPT fermo, come `AGENTS.md` permette. **Dove:** app di ChatGPT, progetto
 `~/Software/rotta-giusta-ui`, ramo `ui/main`.
 
 ```
@@ -1317,7 +1317,23 @@ il trailer, versione non toccata. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `a4c0f68`, merge `4129dfc`. L'area 3 in `site/app.html`: il
+raccordo del §10.1 è l'unico punto che chiama `E.erroriSessione`, quindi il banco
+di P-31 ora gira sulla pagina vera; un riepilogo comune a ogni attività quiz;
+una revisione sola per l'attività appena fatta e per lo storico, con i tag e la
+riprova; «Termina l'attività» e «Consegna la prova» confermati in pagina; le
+figure con il loro `alt`. **Il difetto già pubblicato di P-30 riprodotto nel
+browser prima della correzione e guardato sparire dopo**, come il prompt
+chiedeva. Trovati e chiusi tre difetti di tastiera e fuoco, fra cui un «1» sul
+riepilogo che rispondeva al quesito nascosto sotto; tolta dalla revisione di una
+prova la durata che era il tempo concesso, noto dalla 0.19.2. Non fatti: zoom al
+200 %, lettore di schermo, prova con persone (§10.4 del progetto). **Una
+scorrettezza, dichiarata dalla sessione stessa**: per servire il worktree ha
+scritto per qualche minuto `.claude/launch.json` nella cartella principale, ed è
+quello che ha fermato P-34. Controllato dalla regia: territori puliti, merge
+chiusa da sola; suite sullo stato fuso — motore 155 + 2 skip, server 59, dati
+242, interfaccia 469, specifica 412. La regia non ha rifatto il collaudo nel
+browser.
 
 ### P-20 — ChatGPT: il progetto dell'area 4, Carteggio
 
@@ -1418,7 +1434,14 @@ docs/prossime-sessioni.md.
 
 ### P-34 — Claude: la bozza del carteggio, e la promessa «a ogni tasto»
 
-**Stato:** in attesa di P-33. L'autore ha deciso l'avviso e la conferma del browser per il frattempo (P-36); la frase del §7.6 è già corretta. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-20, §10.1 di `docs/area-4-progetto.md`.
+**Stato:** **lanciato fuori ordine il 26 settembre 2026, e in pausa.** È
+partito prima di P-32 e P-33, molto probabilmente **in ChatGPT e nella cartella
+principale** — il resoconto cita la skill da `~/.agents/skills/`, e fra le
+sessioni di Claude non ce n'è una per P-34 —, mentre `AGENTS.md` vuole ChatGPT
+solo nel suo worktree e questo è un prompt per Claude. Ha scritto cinque file
+non tracciati in `tests/` e un controllo rosso che dimostra il difetto; niente
+commit. Si è fermato vedendo `.claude/launch.json` cambiare sotto di sé, ed è
+stato giusto. La regia aspetta dall'autore chi lo sta eseguendo. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-20, §10.1 di `docs/area-4-progetto.md`.
 
 ```
 Sessione P-34, su main. Leggi il §3.3 e il §10.1, voce D-03, di
@@ -1473,8 +1496,7 @@ docs/prossime-sessioni.md.
 
 ### P-36 — ChatGPT: l'avviso e la conferma del browser nel carteggio, finché il testo non si salva
 
-**Stato:** pronto — **prima di P-19**, perché la penna su `app.html` è una e
-questo è corto. **Dove:** app di ChatGPT, progetto `~/Software/rotta-giusta-ui`,
+**Stato:** pronto: P-19 è andato prima, e la penna su `app.html` è libera. **Dove:** app di ChatGPT, progetto `~/Software/rotta-giusta-ui`,
 ramo `ui/main`. **Nasce da:** P-20, e dalle due decisioni dell'autore del 26
 settembre (§4): l'avviso, e la conferma del browser.
 
@@ -1509,7 +1531,7 @@ con il resoconto di docs/prossime-sessioni.md.
 
 ### P-37 — Claude: chiudere il regime vecchio dei controlli del ciclo
 
-**Stato:** in attesa della merge di P-19, e della cartella libera. **Dove:**
+**Stato:** pronto quando la cartella principale è libera: P-19 è fuso. **Dove:**
 Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:**
 il resoconto di P-31 — è per il ciclo quello che P-12 è per i quiz.
 
@@ -1739,3 +1761,9 @@ dopo**, la soglia degli allarmi riletta sul registro vero
   frase della specifica e mette il difetto fra quelli noti di `AGENTS.md`. P-36
   prende anche la conferma del browser, per scelta dell'autore, e va prima di
   P-19. Nasce P-37, che chiude il regime vecchio del ciclo dopo P-19.
+- **26 settembre 2026 — P-19 chiuso, P-34 fuori ordine.** P-19 fatto da Claude
+  nel worktree `ui` e fuso; il difetto delle sessioni doppie è sparito, guardato
+  nel browser. P-34 è partito prima del suo turno e, a quanto pare, in ChatGPT
+  nella cartella principale: in pausa, e la regia aspetta l'autore. **Da qui ogni
+  prompt dice nel titolo chi lo esegue, e la regia lo ripete nella chat quando
+  lo propone.**
