@@ -106,11 +106,10 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 1 | Allineare ChatGPT e chiudere il difetto dei tag | ChatGPT | `ui/main` | niente | P-01 |
 | 2 | Le misure su Scaleway, e come si aggiorna e si torna indietro | Claude | `main` | niente: l'account c'è | P-02 |
 | 3 | I tre prerequisiti del server | Claude | `main` | 2 | P-03 |
 | 4 | Il server degli account, un pezzo per volta | Claude | `main` | 3 | da scrivere dopo P-03 |
-| 5 | Area 2, Quiz: prima il progetto, poi la realizzazione | ChatGPT | `ui/main` | 1, per la penna su `app.html` | P-04, P-05 |
+| 5 | Area 2, Quiz: prima il progetto, poi la realizzazione | ChatGPT | `ui/main` | niente: P-01 è chiuso | P-04, P-05 |
 | 6 | Aree 3–6 del ridisegno | ChatGPT | `ui/main` | la precedente | da scrivere |
 | 7 | Il client degli account, dentro una fetta del ridisegno | ChatGPT | `ui/main` | 4 | da scrivere |
 | 8 | La messa in esercizio del server su Scaleway | Claude e l'autore | `main`, pannelli | 4 | da scrivere |
@@ -118,8 +117,8 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**: Claude sul server (non tocca `site/`),
-ChatGPT sull'interfaccia. **Si possono lanciare insieme adesso P-01 e P-02**:
-stanno su due cartelle diverse. Si incontrano al punto 7, e il punto 9 è il
+ChatGPT sull'interfaccia. **P-02 è in corso e P-04 è pronto**: si possono
+tenere insieme, perché stanno su due cartelle diverse. Si incontrano al punto 7, e il punto 9 è il
 giorno in cui gli account arrivano a chi studia.
 
 I prompt «da scrivere» li scrive la regia quando si chiude quello da cui
@@ -257,10 +256,8 @@ quindi sono il primo passo della sessione del server (§3-bis).
 l'import accetta ora i tag. Resta un lavoro piccolo, **prima** del client degli
 account:
 
-- **Il difetto dei tag N/L/C che resta** (§4.2) — ChatGPT, su `ui/*`: ritaggare
-  cancella la riga vecchia, unico punto non append-only dell'archivio; e le
-  righe di tag nascono senza `ts`. Nello stesso giro, l'import può mostrare
-  `motivi`, che `fondiArchivio()` restituisce ora accanto a `scartate`.
+- ~~Il difetto dei tag N/L/C che resta~~ — **chiuso da P-01** il 26 settembre:
+  l'archivio è append-only anche per i tag, e l'import dice perché scarta.
 
 ## 3 · ChatGPT, su `ui/main`
 
@@ -388,8 +385,8 @@ sé: i prompt non le ripetono.
 
 ### P-01 — ChatGPT: allinearsi, e il difetto dei tag
 
-**Stato:** pronto. **Dove:** app di ChatGPT, progetto `~/Software/rotta-giusta-ui`,
-ramo `ui/main`, modalità Local. **Aspetta:** niente.
+**Stato:** **chiuso il 26 settembre 2026**, merge `6e07525`. **Dove:** app di
+ChatGPT, progetto `~/Software/rotta-giusta-ui`, ramo `ui/main`, modalità Local.
 
 ```
 Sessione P-01. Il ramo ui/main è stato allineato a main, e da allora
@@ -410,7 +407,18 @@ fondo a [Unreleased], un commit con il trailer, versione non toccata.
 Chiudi con il resoconto di docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `aabfb7a` su `ui/main`, merge `6e07525` su `main`, voce
+«Corretto — P-01» nel CHANGELOG. Ritaggare aggiunge una riga con `ts`; il
+riepilogo legge l'ultima classificazione per tentativo con `E.ordinaRighe()`;
+l'import scrive i motivi degli scarti. Controllato dalla regia: il commit e il
+trailer esistono, il diff tocca solo `site/app.html` e `CHANGELOG.md`, i
+territori sono puliti, e dopo la merge le suite danno motore 131 + 1 skip, dati
+221, interfaccia 135, specifica 262, come dichiarato. La regia **non** ha
+ripetuto il collaudo nel browser: vale quello della sessione, a 375 e 1280 px,
+con un file sintetico di tre righe rotte e tre motivi. Il file è rimasto nella
+cartella Download dell'autore. I cinque controlli «sotto Node» della sessione
+non sono nella suite, perché `tests/` è fuori dal territorio di `ui/*`: il
+comportamento nuovo dei tag resta coperto solo dal collaudo di quel giorno.
 
 ### P-02 — Claude: le misure su Scaleway, e come si aggiorna il server
 
@@ -465,8 +473,8 @@ resoconto di docs/prossime-sessioni.md.
 
 ### P-04 — ChatGPT: il progetto dell'area 2, Quiz
 
-**Stato:** in attesa di P-01 e della sua merge. **Dove:** app di ChatGPT,
-progetto `~/Software/rotta-giusta-ui`, ramo `ui/main`.
+**Stato:** pronto: P-01 è chiuso e `ui/main` è allineato. **Dove:** app di
+ChatGPT, progetto `~/Software/rotta-giusta-ui`, ramo `ui/main`.
 
 ```
 Sessione P-04. Progetta l'area 2 di docs/prossima-versione.md §5.1,
@@ -550,3 +558,7 @@ docs/prossime-sessioni.md.
   punti: le misure e i prerequisiti sono due sessioni, non una. Le sessioni di
   Claude che toccano solo file neutri possono partire da un pulsante, in un
   worktree loro.
+- **26 settembre 2026 — P-01 chiuso.** Merge `6e07525`; P-04 pronto. Nel suo
+  esito resta scritto che cosa la regia ha controllato e che cosa no: il
+  collaudo nel browser è della sessione, e il comportamento nuovo dei tag non ha
+  un test nella suite.
