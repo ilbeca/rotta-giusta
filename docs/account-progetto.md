@@ -1669,6 +1669,14 @@ salvate. Un'epoca cambiata azzera il cursore e rimette in coda tutto
 l'archivio, tranne quello che la stessa risposta dice presente e le scartate.
 Senza chiamanti nella pagina finché il client non c'è: dichiarate in
 `docs/eccezioni-interfaccia.md`.)*
+*(26 settembre 2026, P-28: il trasferimento.* Le sei funzioni non bastavano a
+dire «salvate» per un insieme di righe portato nell'account — registrazione,
+file, archivio di prima —: dall'assenza dalla coda non si sa se una riga è sul
+server. Quattro funzioni in più — `nuovoTrasferimento`, `registraEsito`,
+`riepilogoTrasferimento`, `nonInviabili` — tengono le conferme per nome, con
+generazione ed epoca, e nominano le righe che non partono; `lottoDaInviare`
+salta la riga che da sola supera il limite invece di fermare quelle dietro.
+Il contratto e l'esempio d'uso sono nel §9.3 di `account-client-progetto.md`.)*
 - Nessun modulo nuovo in `site/`, quindi nessuna voce nuova nel guscio.
 
 ### 16.2 Il server

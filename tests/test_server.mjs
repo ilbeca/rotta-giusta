@@ -1382,6 +1382,54 @@ test('epoca: con la contabilita del motore, dopo un ripristino le righe perse to
   assert.deepEqual([telefono.coda.daInviare, portatile.coda.daInviare, tablet.coda.daInviare], [[], [], []]);
 });
 
+test('trasferimento: contro il server vero, salvato solo quando il server ha nominato ogni riga', async (t) => {
+  // R-ACC-39 dal lato del server: l'esempio del §9.3 di
+  // docs/account-client-progetto.md, eseguito. Chi si registra alla fine di
+  // un'attivita' porta 2.500 righe — due lotti —, una rotta che la pagina
+  // rifiuta prima di partire, e una con un quesito che la banca non ha, che il
+  // server scarta. Il riepilogo dice «in corso» dopo il primo lotto e «con
+  // scarti» alla fine, mai «completo».
+  const k = await conti(t);
+  const { cookie, io } = await dentro(k);
+  const buone = Array.from({ length: 2500 }, (_, i) => riga(i));
+  const ignota = riga(2500, { item_id: 'base-99999' });
+  const rotta = riga(2501, { ts: 'boh' });
+  const archivio = [...buone, ignota];
+
+  let coda = E.nuovaCoda({ generazione: io.generazione, epocaDb: io.epoca });
+  let tr;
+  ({ trasferimento: tr, coda } = E.nuovoTrasferimento(coda, [...archivio, rotta]));
+  assert.equal(tr.rifiutate.length, 1);
+
+  const stati = [];
+  for (let lotto; (lotto = E.lottoDaInviare(archivio, coda)); ) {
+    const r = await k.chiama('POST', '/v1/righe', lotto, { cookie });
+    const esito = E.dopoInvio(coda, lotto, { codice: r.status, corpo: r.corpo }, archivio);
+    coda = esito.coda; tr = E.registraEsito(tr, esito);
+    stati.push(E.riepilogoTrasferimento(tr, coda, archivio).stato);
+    if (r.status !== 200) break;
+  }
+  assert.deepEqual(stati, ['in corso', 'con scarti']);
+  const fine = E.riepilogoTrasferimento(tr, coda, archivio);
+  assert.equal(fine.completo, false);
+  assert.equal(fine.confermate, 2500);
+  assert.equal(fine.nonSalvate, 2);
+  assert.deepEqual(fine.motivi, { 'data non valida': 1, 'quesito sconosciuto': 1 });
+
+  // Lo stesso trasferimento rifatto — un file ricaricato — si conferma con
+  // «gia presente»: senza la riga ignota e la rotta e' completo.
+  let coda2 = E.nuovaCoda({ generazione: io.generazione, epocaDb: io.epoca });
+  let tr2;
+  ({ trasferimento: tr2, coda: coda2 } = E.nuovoTrasferimento(coda2, buone));
+  for (let lotto; (lotto = E.lottoDaInviare(buone, coda2)); ) {
+    const r = await k.chiama('POST', '/v1/righe', lotto, { cookie });
+    assert.equal(r.corpo.nuove.length, 0, 'tutte gia presenti');
+    const esito = E.dopoInvio(coda2, lotto, { codice: r.status, corpo: r.corpo }, buone);
+    coda2 = esito.coda; tr2 = E.registraEsito(tr2, esito);
+  }
+  assert.equal(E.riepilogoTrasferimento(tr2, coda2, buone).stato, 'completo');
+});
+
 // --- il pezzo che chiude le rotte (P-11) -------------------------------------------
 //
 // docs/account-progetto.md §5.3, §7.1, §9.3, §13, §14, §15.4. Il cambio

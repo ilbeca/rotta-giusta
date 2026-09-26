@@ -1416,6 +1416,7 @@ export const INVIO_MAX_BYTE = 2 * 1024 * 1024;
 
 const chiaveUid = (r) => (r && r.uid != null ? String(r.uid) : null);
 const byteJson = (x) => new TextEncoder().encode(JSON.stringify(x)).length;
+const troppoGrande = (r, generazione, maxByte) => byteJson({ generazione, righe: [r] }) > maxByte;
 
 /**
  * Una coda nuova. Con `righe`, sono tutte da inviare, nell'ordine dell'archivio:
@@ -1449,6 +1450,10 @@ export function lottoDaInviare(righe, coda, { maxRighe = INVIO_MAX_RIGHE, maxByt
   for (const r of righe || []) {
     const u = chiaveUid(r);
     if (u == null || !inCoda.has(u) || presi.has(u) || u in coda.scartate) continue;
+    // Una riga che da sola non sta in un invio non parte mai: si salta, e la
+    // nomina `nonInviabili()`. Con un `break` fermava tutte quelle dietro, e
+    // la coda restituiva `null` — «niente da inviare» — con righe in coda.
+    if (troppoGrande(r, coda.generazione, maxByte)) continue;
     const b = byteJson(r) + (lotto.length ? 1 : 0);
     if (lotto.length >= maxRighe || peso + b > maxByte) break;
     lotto.push(r); presi.add(u); peso += b;
@@ -1552,6 +1557,160 @@ export function dopoRicezione(coda, risposta, righe) {
  */
 export function risolviConflitto(coda, conflitto) {
   return { generazione: conflitto.generazione, epocaDb: conflitto.epocaDb ?? coda.epocaDb, cursore: 0, daInviare: [], scartate: {} };
+}
+
+/**
+ * Le righe in coda che non partiranno mai, con il motivo: `[{ uid, motivo }]`,
+ * nell'ordine della coda. Due modi:
+ *   - «oltre il limite di un invio»: la riga da sola supera `maxByte` (con
+ *     `byte`, il peso del corpo che la porterebbe). `lottoDaInviare()` la salta;
+ *   - «senza riga nell'archivio»: l'uid e' in coda e la riga non c'e' — coda e
+ *     archivio salvati in due momenti. Nessun lotto la porta.
+ * Le scartate non ci sono: il server le ha gia' nominate, con il loro motivo.
+ *
+ * E' la risposta a `lottoDaInviare() === null` con la coda non vuota
+ * (docs/account-client-progetto.md §9.1): la pagina la scrive, non la calcola.
+ */
+export function nonInviabili(righe, coda, { maxByte = INVIO_MAX_BYTE } = {}) {
+  const per = new Map();
+  for (const r of righe || []) { const u = chiaveUid(r); if (u != null && !per.has(u)) per.set(u, r); }
+  const fuori = [];
+  for (const u of coda.daInviare) {
+    if (u in coda.scartate) continue;
+    const r = per.get(u);
+    if (!r) { fuori.push({ uid: u, motivo: "senza riga nell'archivio" }); continue; }
+    const byte = byteJson({ generazione: coda.generazione, righe: [r] });
+    if (byte > maxByte) fuori.push({ uid: u, motivo: 'oltre il limite di un invio', byte });
+  }
+  return fuori;
+}
+
+// --- un trasferimento: portare un insieme di righe nell'account -----------------
+//
+// docs/account-client-progetto.md §4.3, §5.1, §7, §8 e §12. Chi si registra
+// alla fine di un'attivita', chi entra e dice «si', portale», chi converte un
+// file o porta l'archivio di prima degli account: un insieme di righe che deve
+// arrivare sul server per intero, in piu' lotti, con scarti e ritenti. La
+// pagina scrive «{N} risposte salvate» solo quando **ogni** uid e' stato
+// nominato dal server — in un invio o in una ricezione.
+//
+// Perche' non basta la coda: «salvata» dedotta da «non e' in `daInviare`» e'
+// la regola 1 della coda letta al contrario, e sbaglia in due casi misurati.
+// Dopo un azzeramento scelto la coda e' vuota, e tutte le righe sembrano
+// salvate mentre il server le ha tolte; e una riga mai messa in coda sembra
+// salvata senza essere mai partita. Il trasferimento tiene quindi le conferme
+// **per nome**, con la generazione e l'epoca del database in cui sono state
+// date: un azzeramento le annulla, un ripristino le rende da ripetere.
+//
+// Il trasferimento e' un oggetto semplice, da salvare con la coda:
+//   { generazione, epocaDb, uid: [...], confermate: [...], rifiutate: [{ riga, motivo }], conflitto }
+
+/**
+ * Comincia un trasferimento. Ogni riga passa da `validaRiga(riga, opt)` — la
+ * regola di `fondiArchivio()` e del server —: le rifiutate restano in
+ * `rifiutate`, con il motivo, per scaricarle; le altre vanno in coda anche se
+ * c'erano gia' uscite, perche' dall'assenza dalla coda non si sa se sono sul
+ * server: rimandata, una riga che c'e' torna «gia' presente», che e' una
+ * conferma. Le scartate dal server non ripartono.
+ *
+ * Restituisce `{ trasferimento, coda }`; la pagina salva le due cose insieme.
+ */
+export function nuovoTrasferimento(coda, righe, opt = {}) {
+  const uid = [], visti = new Set(), rifiutate = [];
+  for (const r of righe || []) {
+    const motivo = validaRiga(r, opt);
+    if (motivo) { rifiutate.push({ riga: r, motivo }); continue; }
+    const u = String(r.uid);
+    if (!visti.has(u)) { visti.add(u); uid.push(u); }
+  }
+  let nuova = { ...coda, daInviare: [...coda.daInviare] };
+  const inCoda = new Set(nuova.daInviare);
+  for (const u of uid) if (!(u in coda.scartate) && !inCoda.has(u)) { nuova.daInviare.push(u); inCoda.add(u); }
+  return {
+    trasferimento: { generazione: coda.generazione, epocaDb: coda.epocaDb, uid, confermate: [], rifiutate, conflitto: null },
+    coda: nuova,
+  };
+}
+
+/**
+ * Registra nel trasferimento l'esito di `dopoInvio()` o di `dopoRicezione()`:
+ * gli uid che il server ha nominato — `salvate` di un invio, `righe` di una
+ * ricezione — diventano confermati. Un conflitto si ricorda finche' chi studia
+ * non sceglie. Se l'epoca del database e' cambiata, valgono soltanto le
+ * conferme di questo esito: quelle di prima le ha date un database che non c'e'
+ * piu'.
+ */
+export function registraEsito(trasferimento, esito) {
+  const t = { ...trasferimento, confermate: [...trasferimento.confermate] };
+  if (!esito) return t;
+  if (esito.conflitto) return { ...t, conflitto: esito.conflitto };
+  const mie = new Set(t.uid);
+  const nominate = (Array.isArray(esito.salvate) ? esito.salvate : (esito.righe || []).map(chiaveUid))
+    .filter((u) => u != null).map(String).filter((u) => mie.has(u));
+  const epocaDb = esito.coda ? esito.coda.epocaDb : t.epocaDb;
+  const altraEpoca = esito.epocaCambiata || (t.epocaDb != null && epocaDb != null && epocaDb !== t.epocaDb);
+  const confermate = altraEpoca ? [] : t.confermate;
+  const gia = new Set(confermate);
+  for (const u of nominate) if (!gia.has(u)) { gia.add(u); confermate.push(u); }
+  return { ...t, epocaDb: epocaDb ?? t.epocaDb, confermate };
+}
+
+/**
+ * A che punto e' un trasferimento, letto con la coda corrente e l'archivio:
+ *
+ *   { stato, completo, righe, confermate, daInviare, bloccate, scartate,
+ *     daVerificare, nonSalvate, motivi, conflitto }
+ *
+ * `stato` e' uno di:
+ *   - «annullato»: la generazione della coda non e' piu' quella del
+ *     trasferimento. I progressi sono stati azzerati, e con loro anche le righe
+ *     confermate prima: `confermate` e' 0;
+ *   - «sospeso»: un 409 aspetta la scelta di chi studia (§10 del progetto);
+ *   - «in corso»: ci sono righe da ritentare (`daInviare`, un numero);
+ *   - «da verificare»: niente da ritentare, ma qualche uid non e' in coda e il
+ *     server non l'ha nominato (`daVerificare`); una ricezione lo conferma;
+ *   - «con scarti»: tutto quello che poteva arrivare e' arrivato, e qualcosa no;
+ *   - «completo»: ogni riga nominata dal server, niente scartato. Solo qui la
+ *     pagina scrive «salvate».
+ *
+ * `nonSalvate` conta le righe che un nuovo tentativo non porta: rifiutate qui
+ * (`rifiutate` del trasferimento), scartate dal server (`scartate`, dalla
+ * coda), non inviabili (`bloccate`, da `nonInviabili()`); `motivi` le conta per
+ * motivo. Una conferma data da un database con un'altra epoca non vale finche'
+ * il server non la ripete.
+ */
+export function riepilogoTrasferimento(trasferimento, coda, righe, opt = {}) {
+  const t = trasferimento;
+  const annullato = coda.generazione !== t.generazione;
+  const epocaValida = t.epocaDb == null || coda.epocaDb == null || t.epocaDb === coda.epocaDb;
+  const confermateSet = new Set(annullato || !epocaValida ? [] : t.confermate);
+  const inCoda = new Set(coda.daInviare);
+  const bloccateMappa = new Map(nonInviabili(righe, coda, opt).map((x) => [x.uid, x.motivo]));
+  const bloccate = [], scartate = [], daVerificare = [];
+  let daInviare = 0, confermate = 0;
+  for (const u of t.uid) {
+    if (u in coda.scartate) scartate.push({ uid: u, motivo: coda.scartate[u] });
+    else if (inCoda.has(u)) {
+      if (bloccateMappa.has(u)) bloccate.push({ uid: u, motivo: bloccateMappa.get(u) });
+      else daInviare++;
+    } else if (confermateSet.has(u)) confermate++;
+    else daVerificare.push(u);
+  }
+  const motivi = {};
+  for (const m of [...t.rifiutate, ...scartate, ...bloccate].map((x) => x.motivo)) motivi[m] = (motivi[m] || 0) + 1;
+  const nonSalvate = t.rifiutate.length + scartate.length + bloccate.length;
+  let stato;
+  if (annullato) stato = 'annullato';
+  else if (t.conflitto) stato = 'sospeso';
+  else if (daInviare > 0) stato = 'in corso';
+  else if (daVerificare.length > 0) stato = 'da verificare';
+  else if (nonSalvate > 0) stato = 'con scarti';
+  else stato = 'completo';
+  return {
+    stato, completo: stato === 'completo', righe: t.uid.length,
+    confermate: annullato ? 0 : confermate, daInviare, bloccate, scartate, daVerificare,
+    nonSalvate, motivi, conflitto: t.conflitto,
+  };
 }
 
 // --- il gioco dei segnali --------------------------------------------------------

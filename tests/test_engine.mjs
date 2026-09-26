@@ -2435,3 +2435,218 @@ test('coda: le funzioni non toccano quello che ricevono', () => {
   assert.equal(JSON.stringify(c), fotoC);
   assert.equal(JSON.stringify(righe), fotoR);
 });
+
+// --- il riepilogo di un trasferimento, e le righe che non partono ----------------
+//
+// docs/account-client-progetto.md §4.3, §9.1 e §12 (P-13, contatti per P-28).
+// Un trasferimento e' un insieme di righe che chi studia ha chiesto di portare
+// nell'account: quelle della pagina alla registrazione, quelle di un file,
+// l'archivio di prima degli account. «{N} risposte salvate» si scrive solo
+// quando **ogni** uid e' stato nominato dal server — in un invio o in una
+// ricezione —, mai per deduzione dalla coda: misurato il 26 settembre, la
+// deduzione «snapshot meno daInviare» da' per salvate le righe dopo un
+// azzeramento scelto e una riga mai messa in coda.
+
+const trasferisci = (righe, c, opt) => E.nuovoTrasferimento(c, righe, opt);
+
+test('trasferimento: salvate solo le righe che il server nomina, anche su piu lotti', () => {
+  const molte = Array.from({ length: 2500 }, (_, i) => rq(i));
+  let c = E.nuovaCoda({ generazione: 1, epocaDb: EPOCA_A, righe: molte });
+  let { trasferimento: t, coda } = trasferisci(molte, c);
+  c = coda;
+  let r = E.riepilogoTrasferimento(t, c, molte);
+  assert.equal(r.stato, 'in corso');
+  assert.equal(r.righe, 2500);
+  assert.equal(r.confermate, 0);
+  assert.equal(r.daInviare, 2500);
+
+  const primo = E.lottoDaInviare(molte, c);
+  // Una risposta data mentre il primo lotto e' in volo: in coda, ma non e'
+  // del trasferimento, e non ne cambia il conto.
+  c = E.accoda(c, 'r99999');
+  const e1 = E.dopoInvio(c, primo, ok200({ nuove: primo.righe.map((x) => x.uid), gia: [], scartate: [], epoca: EPOCA_A, generazione: 1 }), [...molte, rq(99999)]);
+  t = E.registraEsito(t, e1); c = e1.coda;
+  r = E.riepilogoTrasferimento(t, c, molte);
+  assert.equal(r.stato, 'in corso', 'un lotto su due: non e salvato');
+  assert.equal(r.confermate, 2000);
+  assert.equal(r.daInviare, 500);
+
+  // Un errore di rete non toglie e non aggiunge niente.
+  const secondo = E.lottoDaInviare(molte, c);
+  const rotta = E.dopoInvio(c, secondo, { codice: 0 }, molte);
+  t = E.registraEsito(t, rotta);
+  assert.equal(E.riepilogoTrasferimento(t, rotta.coda, molte).confermate, 2000);
+
+  // Il secondo lotto: il server ne dice 499 nuove e una gia presente.
+  const uidSecondo = secondo.righe.map((x) => x.uid).filter((u) => u !== 'r99999');
+  const e2 = E.dopoInvio(c, secondo, ok200({ nuove: uidSecondo.slice(1), gia: uidSecondo.slice(0, 1), scartate: [], epoca: EPOCA_A, generazione: 1 }), molte);
+  t = E.registraEsito(t, e2); c = e2.coda;
+  r = E.riepilogoTrasferimento(t, c, molte);
+  assert.equal(r.confermate, 2500);
+  assert.equal(r.stato, 'completo');
+  assert.equal(r.completo, true);
+  assert.deepEqual(r.nonSalvate, 0);
+});
+
+test('trasferimento: una riga fuori dalla coda si rimanda, e la conferma una ricezione', () => {
+  // Una riga dell'archivio che non sta in coda puo' essere sul server o no:
+  // dall'assenza non si deduce niente. Il trasferimento la rimette in coda, e il
+  // server la nomina — «gia presente» se c'era.
+  const righe = [rq(1), rq(2), rq(3)];
+  const c0 = E.nuovaCoda({ generazione: 1, epocaDb: EPOCA_A, righe: [rq(1)] });
+  let { trasferimento: t, coda: c } = trasferisci(righe, c0);
+  assert.deepEqual(c.daInviare, ['r00001', 'r00002', 'r00003']);
+  assert.equal(E.riepilogoTrasferimento(t, c, righe).stato, 'in corso');
+
+  // La conferma puo' arrivare da una ricezione: una riga arrivata dal server e' sul server.
+  const ric = E.dopoRicezione(c, ok200({ righe: [rq(2), rq(3)], ultima_seq: 9, altre: false, epoca: EPOCA_A, generazione: 1 }), righe);
+  t = E.registraEsito(t, ric); c = ric.coda;
+  let r = E.riepilogoTrasferimento(t, c, righe);
+  assert.equal(r.confermate, 2);
+  assert.equal(r.daInviare, 1);
+
+  // Una riga che esce dalla coda senza che il server la nomini non e' salvata:
+  // resta da verificare, e il trasferimento non e' completo.
+  const senzaNome = { ...c, daInviare: [] };
+  r = E.riepilogoTrasferimento(t, senzaNome, righe);
+  assert.equal(r.completo, false);
+  assert.deepEqual(r.daVerificare, ['r00001']);
+  assert.equal(r.stato, 'da verificare');
+});
+
+test('trasferimento: dopo un azzeramento non dice salvate le righe che il server ha tolto', () => {
+  const righe = [rq(1), rq(2), rq(3)];
+  let { trasferimento: t, coda: c } = trasferisci(righe, E.nuovaCoda({ generazione: 1, epocaDb: EPOCA_A, righe }));
+  const lotto = E.lottoDaInviare(righe, c);
+  const e1 = E.dopoInvio(c, lotto, ok200({ nuove: ['r00001'], gia: [], scartate: [], epoca: EPOCA_A, generazione: 1 }), righe);
+  t = E.registraEsito(t, e1); c = e1.coda;
+
+  // Un altro dispositivo azzera: il prossimo invio riceve il 409.
+  const e2 = E.dopoInvio(c, E.lottoDaInviare(righe, c), { codice: 409, corpo: { generazione: 2, azzerato_il: '2026-09-26T09:00:00Z', epoca: EPOCA_A } }, righe);
+  t = E.registraEsito(t, e2);
+  let r = E.riepilogoTrasferimento(t, e2.coda, righe);
+  assert.equal(r.stato, 'sospeso');
+  assert.equal(r.conflitto.generazione, 2);
+  assert.equal(r.completo, false);
+
+  // Chi studia sceglie: la coda si svuota. Nessuna riga e' salvata — nemmeno
+  // quella confermata prima, che l'azzeramento ha tolto dal server.
+  c = E.risolviConflitto(e2.coda, e2.conflitto);
+  r = E.riepilogoTrasferimento(t, c, righe);
+  assert.equal(r.stato, 'annullato');
+  assert.equal(r.confermate, 0);
+  assert.equal(r.completo, false);
+});
+
+test('trasferimento: dopo un ripristino del server le conferme di prima non valgono', () => {
+  // R-ACC-24 visto dal trasferimento: una conferma data dal database di prima
+  // non dice che la riga sia nella copia ripristinata.
+  const righe = [rq(1), rq(2), rq(3)];
+  let { trasferimento: t, coda: c } = trasferisci(righe, E.nuovaCoda({ generazione: 1, epocaDb: EPOCA_A, righe }));
+  const e1 = E.dopoInvio(c, E.lottoDaInviare(righe, c), ok200({ nuove: ['r00001', 'r00002', 'r00003'], gia: [], scartate: [], epoca: EPOCA_A, generazione: 1 }), righe);
+  t = E.registraEsito(t, e1); c = e1.coda;
+  assert.equal(E.riepilogoTrasferimento(t, c, righe).stato, 'completo');
+
+  // La ricezione dice un'epoca nuova, e nella copia c'e' solo la prima.
+  const ric = E.dopoRicezione(c, ok200({ righe: [rq(1)], ultima_seq: 1, altre: false, epoca: EPOCA_B, generazione: 1 }), righe);
+  assert.equal(ric.epocaCambiata, true);
+  t = E.registraEsito(t, ric); c = ric.coda;
+  let r = E.riepilogoTrasferimento(t, c, righe);
+  assert.equal(r.confermate, 1);
+  assert.equal(r.daInviare, 2);
+  assert.equal(r.stato, 'in corso');
+
+  // Se il cambio d'epoca l'ha visto un'altra scheda, e questo trasferimento no,
+  // le sue conferme vecchie non contano finche' il server non le ripete.
+  let { trasferimento: t2, coda: c2 } = trasferisci(righe, E.nuovaCoda({ generazione: 1, epocaDb: EPOCA_A, righe }));
+  const e2 = E.dopoInvio(c2, E.lottoDaInviare(righe, c2), ok200({ nuove: ['r00001', 'r00002', 'r00003'], gia: [], scartate: [], epoca: EPOCA_A, generazione: 1 }), righe);
+  t2 = E.registraEsito(t2, e2);
+  const altraScheda = { ...e2.coda, epocaDb: EPOCA_B, cursore: 0 };
+  r = E.riepilogoTrasferimento(t2, altraScheda, righe);
+  assert.equal(r.confermate, 0);
+  assert.equal(r.completo, false);
+  assert.deepEqual(r.daVerificare, ['r00001', 'r00002', 'r00003']);
+  // Una ricezione dal database nuovo conferma quelle che porta, e solo quelle:
+  // le conferme vecchie non tornano valide perche' la coda ha cambiato epoca.
+  const ric2 = E.dopoRicezione(altraScheda, ok200({ righe: [rq(1)], ultima_seq: 1, altre: true, epoca: EPOCA_B, generazione: 1 }), righe);
+  t2 = E.registraEsito(t2, ric2);
+  r = E.riepilogoTrasferimento(t2, ric2.coda, righe);
+  assert.equal(r.confermate, 1);
+  assert.deepEqual(r.daVerificare, ['r00002', 'r00003']);
+  assert.equal(r.stato, 'da verificare');
+  const ric3 = E.dopoRicezione(ric2.coda, ok200({ righe: [rq(2), rq(3)], ultima_seq: 3, altre: false, epoca: EPOCA_B, generazione: 1 }), righe);
+  t2 = E.registraEsito(t2, ric3);
+  assert.equal(E.riepilogoTrasferimento(t2, ric3.coda, righe).stato, 'completo');
+});
+
+test('trasferimento: gli scarti locali e del server si contano con i motivi', () => {
+  // Uno scarto locale e' una riga che validaRiga() rifiuta prima di partire:
+  // la stessa regola di fondiArchivio() e del server, non una seconda.
+  const buone = [rq(1), rq(2), rq(3)];
+  const rotte = [rq(4, { ts: 'boh' }), { _t: 'q', item_id: 'base-5' }];
+  let { trasferimento: t, coda: c } = trasferisci([...buone, ...rotte], E.nuovaCoda({ generazione: 1, epocaDb: EPOCA_A }));
+  assert.deepEqual(c.daInviare, ['r00001', 'r00002', 'r00003'], 'le rotte non partono');
+  assert.equal(t.rifiutate.length, 2, 'le rotte restano, per scaricarle');
+  assert.equal(t.rifiutate[0].motivo, 'data non valida');
+
+  const lotto = E.lottoDaInviare(buone, c);
+  const e = E.dopoInvio(c, lotto, ok200({ nuove: ['r00001', 'r00002'], gia: [], scartate: [{ uid: 'r00003', indice: 2, motivo: 'quesito sconosciuto' }], epoca: EPOCA_A, generazione: 1 }), buone);
+  t = E.registraEsito(t, e); c = e.coda;
+  const r = E.riepilogoTrasferimento(t, c, buone);
+  assert.equal(r.stato, 'con scarti');
+  assert.equal(r.completo, false);
+  assert.equal(r.confermate, 2);
+  assert.equal(r.daInviare, 0);
+  assert.equal(r.nonSalvate, 3);
+  assert.deepEqual(r.motivi, { 'data non valida': 1, 'senza uid': 1, 'quesito sconosciuto': 1 });
+  assert.deepEqual(r.scartate, [{ uid: 'r00003', motivo: 'quesito sconosciuto' }]);
+
+  // Una riga gia scartata dal server prima del trasferimento non riparte, e si conta.
+  const { trasferimento: t2, coda: c2 } = trasferisci(buone, c);
+  assert.equal(c2.daInviare.includes('r00003'), false);
+  assert.equal(E.riepilogoTrasferimento(t2, c2, buone).scartate.length, 1);
+});
+
+test('coda: una riga oltre il limite non ferma quelle dietro, e si nomina', () => {
+  // Misurato il 26 settembre: una riga che da sola non sta in un invio, in
+  // testa alla coda, faceva restituire null a lottoDaInviare() — «niente da
+  // inviare» — con tre righe in coda, e quelle dietro non partivano mai.
+  const grande = rq(1, { input_json: 'x'.repeat(3000) });
+  const righe = [grande, rq(2), rq(3)];
+  const c = E.nuovaCoda({ generazione: 1, epocaDb: EPOCA_A, righe: [...righe, rq(4)] });
+  const lotto = E.lottoDaInviare(righe, c, { maxByte: 1000 });
+  assert.ok(lotto, 'le righe dietro partono');
+  assert.deepEqual(lotto.righe.map((x) => x.uid), ['r00002', 'r00003']);
+
+  // Quelle che non partiranno mai si nominano, con il motivo: la troppo grande,
+  // e un uid in coda la cui riga non c'e' nell'archivio.
+  const non = E.nonInviabili(righe, c, { maxByte: 1000 });
+  assert.deepEqual(non.map((x) => [x.uid, x.motivo]), [
+    ['r00001', 'oltre il limite di un invio'],
+    ['r00004', "senza riga nell'archivio"],
+  ]);
+  assert.ok(non[0].byte > 1000);
+  assert.deepEqual(E.nonInviabili(righe, c), [{ uid: 'r00004', motivo: "senza riga nell'archivio" }], 'con i limiti veri la grande parte');
+
+  // Nel riepilogo di un trasferimento sono non salvate, non da ritentare.
+  const { trasferimento: t, coda: c2 } = E.nuovoTrasferimento(c, righe);
+  const r = E.riepilogoTrasferimento(t, c2, righe, { maxByte: 1000 });
+  assert.equal(r.daInviare, 2);
+  assert.deepEqual(r.bloccate, [{ uid: 'r00001', motivo: 'oltre il limite di un invio' }]);
+  assert.equal(r.nonSalvate, 1);
+});
+
+test('trasferimento: le funzioni non toccano quello che ricevono', () => {
+  const righe = [rq(1), rq(2)];
+  const c = E.nuovaCoda({ generazione: 1, epocaDb: EPOCA_A, righe });
+  const fotoC = JSON.stringify(c), fotoR = JSON.stringify(righe);
+  const { trasferimento: t } = E.nuovoTrasferimento(c, righe);
+  const fotoT = JSON.stringify(t);
+  const e = E.dopoInvio(c, E.lottoDaInviare(righe, c), ok200({ nuove: ['r00001'], gia: [], scartate: [], epoca: EPOCA_A, generazione: 1 }), righe);
+  E.registraEsito(t, e);
+  E.riepilogoTrasferimento(t, c, righe);
+  E.nonInviabili(righe, c);
+  assert.equal(JSON.stringify(c), fotoC);
+  assert.equal(JSON.stringify(righe), fotoR);
+  assert.equal(JSON.stringify(t), fotoT);
+});

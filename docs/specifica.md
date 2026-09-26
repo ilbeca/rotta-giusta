@@ -1060,6 +1060,8 @@ guardare, e lo dicono. Quelli del server hanno il loro controllo in
 | R-ACC-36 | A 700 giorni senza attività parte un avviso con la data; trenta giorni dopo l'avviso, se nessuno è tornato, l'account si cancella passando dal file delle cancellazioni; un accesso dopo l'avviso lo salva, e un riavvio non manda un secondo avviso | `test_server.mjs::inattivita: a 700 giorni un avviso con la data, a 730 senza attivita si cancella, e un accesso lo salva` |
 | R-ACC-37 | Cento accessi falliti in 24 ore, una copia con meno righe senza cancellazioni che lo spieghino e una mail rifiutata dal fornitore avvisano il titolare, senza email né indirizzi nella mail, una volta sola, anche attraverso un riavvio | `test_server.mjs::allarmi: accessi falliti oltre soglia, una copia con meno righe e una mail rifiutata avvisano il titolare, una volta sola` |
 | R-ACC-38 | Le mail si contano per mese dal registro: raggiunte le 300 comprese il titolare riceve un avviso, uno al mese, e nessuna mail è bloccata | `test_server.mjs::mail del mese: oltre le 300 la mail parte lo stesso, e il titolare riceve un avviso solo` |
+| R-ACC-39 | Un trasferimento verso l'account — le righe della pagina alla registrazione, un file, l'archivio di prima — si dice salvato solo quando il server ha nominato ogni sua riga, in un invio o in una ricezione: non per deduzione dalla coda, non dopo un azzeramento, e non con le conferme di un database che un ripristino ha sostituito; scarti locali e del server si contano per motivo | `test_engine.mjs::trasferimento: salvate solo le righe che il server nomina, anche su piu lotti` |
+| R-ACC-40 | Una riga che da sola supera il limite di un invio non ferma quelle dietro, e le righe in coda che non partiranno mai si nominano con il motivo | `test_engine.mjs::coda: una riga oltre il limite non ferma quelle dietro, e si nomina` |
 
 R-ACC-20 e R-ACC-24 sono i primi requisiti del server con un controllo che si
 esegue, e il giro intero sta in `node server/ripristina.mjs --prova`, che la
@@ -1364,3 +1366,13 @@ successo, ed è il motivo per cui questo file esiste.
   il confine registrato. §4.4 porta ora i due confini; entrano R-FLU-05…09 e
   R-TEMPO-08, tutti coperti. Ogni controllo è stato provato al contrario:
   quindici rotture del motore, tutte rosse nel loro test.
+- **26 settembre 2026 — il trasferimento verso l'account (P-28).** Il progetto
+  del client chiedeva al motore due risultati che la pagina non deve calcolare
+  da sé. Misurato prima di scriverli: le sei funzioni della coda non bastavano.
+  «Salvata» dedotta dall'assenza dalla coda dà per salvate le righe dopo un
+  azzeramento scelto e una riga mai messa in coda; e una riga troppo grande in
+  testa alla coda faceva restituire `null` a `lottoDaInviare()`, con le altre
+  ferme dietro. Entrano R-ACC-39 e R-ACC-40, coperti, e un test del server
+  che esegue contro il server vero l'esempio d'uso scritto nel progetto del
+  client. Quindici rotture del motore, tutte rosse nel loro test; quattro di
+  loro rosse anche nel test del server.

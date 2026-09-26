@@ -106,6 +106,74 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   scaricato da nodejs.org. Guardiano e controllo della documentazione verdi.
   `site/app.html` e `docs/prossime-sessioni.md` non sono stati toccati.
 
+### Aggiunto — P-28: il trasferimento verso l'account, e le righe che non partono
+
+- **Le sei funzioni della coda non bastavano, ed è stato misurato prima di
+  aggiungerne.** Il progetto del client (P-13, §12) chiedeva al motore un
+  riepilogo di un trasferimento su più lotti e le righe che non si possono
+  inviare, «se i risultati esistenti non bastano». La strada che la pagina
+  avrebbe preso da sola — salvate = uid del trasferimento meno `daInviare`
+  meno `scartate` — sbaglia in due modi riprodotti: dopo un `409` e
+  `risolviConflitto()` la coda è vuota e **tutte** le righe risultano salvate,
+  mentre l'azzeramento le ha tolte dal server; e una riga mai messa in coda
+  risulta salvata senza essere mai partita. È la regola 1 della coda — esce
+  solo ciò che il server nomina — letta al contrario, cioè la deduzione della
+  0.4.6 spostata dal togliere al contare.
+
+- **E una riga troppo grande fermava la coda, in silenzio.** Con una riga che
+  da sola supera il limite in testa alla coda, `lottoDaInviare()` restituiva
+  `null` — «niente da inviare» — con tre righe in coda, e quelle dietro non
+  partivano mai. Ora la salta. Con i limiti veri una riga così non passa da
+  `validaRiga()`, ma l'archivio della pagina non è validato riga per riga
+  prima di entrare in coda; e lo stesso `null` arriva da un uid in coda senza
+  la sua riga nell'archivio, cioè coda e archivio salvati in due momenti.
+
+- **Quattro funzioni nel motore.** `nuovoTrasferimento()` passa ogni riga da
+  `validaRiga()`, tiene le rifiutate per scaricarle, e rimette in coda anche le
+  righe che ne erano uscite: dall'assenza non si sa se una riga è sul server, e
+  rimandata torna «già presente», che è una conferma. `registraEsito()` tiene
+  le conferme **per nome**, da un invio o da una ricezione, con la generazione
+  e l'epoca del database; un'epoca cambiata vale solo per le conferme che la
+  dicono. `riepilogoTrasferimento()` dà lo stato — completo, in corso, da
+  verificare, con scarti, sospeso, annullato — e scrive «completo» solo quando
+  il server ha nominato ogni riga. `nonInviabili()` nomina le righe che non
+  partiranno, con il motivo. Fra gli orfani dichiarati finché P-18 non le
+  chiama. R-ACC-39 e R-ACC-40.
+
+- **Il progetto del client riallineato, senza ridisegnare niente.** Il §1
+  descriveva il server di prima di P-11: dice ora che cosa è cambiato — il
+  `409` con `errore: 'email_registrata'` al posto del `202`, il `503` che porta
+  già la descrizione dell'account, il profilo con data e Segnali fusi per
+  massimo, la lettura dei punteggi dalla descrizione, il cambio d'indirizzo in
+  due rotte, la cancellazione —, e il §5.2 e il §8 seguono. Il nuovo §9.3 ha
+  il contratto dei trasferimenti, gli stati e che cosa la pagina ne scrive, e
+  un esempio d'uso; i contatti del §12 sono chiusi. Il §4.1 prende l'eccezione
+  che P-14 aveva trovato in contrasto con il §4.1 dell'area 3: una simulazione
+  consegnata con zero risposte apre il suo riepilogo e tiene la riga `_t:'s'`,
+  senza risposte inventate e senza l'invito a salvare.
+
+- **Prima il test che fallisce:** sette test nuovi del motore, rossi uno per
+  uno — sei per la funzione che mancava, quello della riga grande per la
+  ragione misurata, «le righe dietro partono». **Provati al contrario su
+  quindici rotture**, tutte rosse nel loro test: fra le altre la deduzione
+  dalla coda, la generazione non guardata, l'epoca ignorata nel registrare o
+  nel riepilogo, la ricezione che non conferma, il conflitto dimenticato, le
+  righe non rimesse in coda o le scartate rimesse, la validazione tolta, il
+  `break` sulla riga grande, l'uid senza riga taciuto. **Due erano passate
+  verdi** alla prima stesura — l'epoca ignorata da `registraEsito()`, in due
+  varianti —, perché nel test la riga rimessa in coda vinceva comunque; ora
+  una ricezione dal database nuovo che porta una riga sola lascia le altre da
+  verificare, e sono rosse. E l'esempio d'uso del §9.3 è un test del server,
+  eseguito contro il server vero: 2.500 righe in due lotti, una rifiutata in
+  pagina, una scartata dal server, «in corso» poi «con scarti», mai
+  «completo»; quattro rotture lo fanno fallire.
+
+  Suite: motore **155/157** con i due skip di sempre (erano 148/150); server
+  **59/59** (erano 58) con Node 25.3 e con la **24.21.0 LTS**, pacchetto
+  verificato con `SHASUMS256.txt` scaricato da nodejs.org; dati 242;
+  interfaccia **307** (erano 295); specifica **402** (erano 394). Guardiano
+  verde. `site/app.html` e `docs/prossime-sessioni.md` non sono stati toccati.
+
 
 ## [0.28.0] — 2026-09-26
 

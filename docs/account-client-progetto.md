@@ -1,6 +1,9 @@
 # Gli account — progetto del client
 
 **P-13, decisioni di interfaccia del 26 settembre 2026, da implementare.**
+**Riallineato da P-28 il 26 settembre 2026** al server che P-11 ha chiuso
+(§1, §5.2, §8), alla simulazione consegnata senza risposte dell'area 3 (§4.1)
+e ai contratti del motore per i trasferimenti (§9.3). Il resto è di P-13.
 Questo documento specifica flussi, testi, stati e controlli del client. Non
 dichiara un client realizzato, un server in esercizio o una prova con utenti.
 La sessione produce questo file e una voce di CHANGELOG.
@@ -19,8 +22,8 @@ modulo e sapere quali risposte sono davvero salvate. Il timore da risolvere
   API, sincronia, verifica, trasferimenti e impostazioni. La pagina consuma
   questi contratti; non modifica hashing, cookie, limiti o schema del server.
 - [Prossime sessioni](prossime-sessioni.md), §1: testi da sostituire nella
-  versione con gli account e comportamenti richiesti alla pagina; P-11 per
-  le rotte ancora da chiudere, P-13 per il perimetro di questa sessione.
+  versione con gli account e comportamenti richiesti alla pagina; P-13 per il
+  perimetro di questa sessione, P-11 e P-28 per quello che le hanno cambiato.
 - [Specifica](specifica.md), §2.4, §4.3 e §9.9: ingresso, soglie e R-ACC.
   [Filosofia](filosofia.md): promesse vere, perdita dichiarata, nessun invito
   insistente, dati leggibili dal titolare.
@@ -29,6 +32,7 @@ modulo e sapere quali risposte sono davvero salvate. Il timore da risolvere
   conserva proposta, libertà di scelta, riscontro e ritorni.
 - Letti nella base `8f6a0c0`: `site/engine.js` per firme e risultati della coda,
   `server/conti.mjs` per registrazione, reimpostazione e descrizione dell'account.
+  P-28 li ha riletti dopo P-11 (`cd490ac`), e con loro `server/righe.mjs`.
 
 **Precedenza:** task e decisioni esplicite dell'autore, ADR accettati,
 contratti del progetto account, questo documento per il loro consumo. Le
@@ -42,13 +46,39 @@ archivio preesistente, data facoltativa, stato senza account, testi pubblici.
 Le impostazioni account espongono anche le rotte già definite al §7.1 del
 progetto account, senza ridisegnare Progressi o Carteggio.
 
-**Prerequisiti del codice, da verificare prima dell'implementazione:** P-09 e
-P-10 esistono e hanno test; P-11 deve consegnare il `409` della registrazione,
-profilo/data/Segnali, cambio email e cancellazione. Nella base letta la
-registrazione duplicata dà ancora `202`, come dichiarano le fonti. La pagina
-non trasforma quel `202` in un accesso riuscito. Server testato e server
-raggiungibile in produzione sono due evidenze distinte; l'origine e il cookie
-reali richiedono la messa in esercizio e la prova del §12.
+**Prerequisiti del codice.** P-09, P-10 e P-11 esistono e hanno test
+(R-ACC-10…38 nel §9.9 della specifica): il server ha tutte le rotte del §7.1
+del progetto account. Server testato e server raggiungibile in produzione sono
+due evidenze distinte; l'origine e il cookie reali richiedono la messa in
+esercizio (P-15) e la prova del §12.
+
+*Che cosa è cambiato con P-11 (`cd490ac`), rispetto alla base che P-13 ha
+letto:*
+
+- **Email già registrata:** la registrazione risponde `409` con
+  `{ errore: 'email_registrata', messaggio }`, senza sessione, senza cookie e
+  senza mail. Non esiste più il `202` indistinguibile che P-13 aveva letto:
+  la pagina riconosce il caso dal codice **e** da `errore`, non dal testo
+  (§5.2). Il `409` conta fra le cinque registrazioni l'ora per indirizzo, e
+  la password si controlla prima: un `422` di password arriva prima del `409`.
+- **Mail di conferma rifiutata:** `503` con `errore: 'posta'`, e il corpo porta
+  già la descrizione dell'account (email, `scade_se_non_verificata`,
+  generazione, epoca, `chiave_locale`) insieme al cookie. `GET /v1/io` resta
+  la verifica quando la risposta si perde (§4.3).
+- **Profilo:** `PUT /v1/profilo` con `{ data_esame, segnali }`, ognuno
+  facoltativo; `data_esame: null` la toglie; i punteggi si fondono con il
+  massimo di `migliore` e `giocate` per modo; un campo rotto è un `422` che non
+  scrive nemmeno gli altri. La risposta è la descrizione dell'account.
+- **Lettura di data e punteggi:** la descrizione dell'account — `GET /v1/io`,
+  `POST /v1/accesso`, `POST /v1/verifica`, `PUT /v1/profilo` — porta
+  `data_esame` e `segnali`, nella forma di `segPunti`; `GET /v1/esporta` porta
+  `segPunti` accanto alle righe.
+- **Cambio d'indirizzo:** `POST /v1/email/cambia` con la password, solo da un
+  indirizzo già confermato; l'indirizzo cambia quando il nuovo apre il suo
+  link, con `POST /v1/email/conferma`, entro 24 ore. Una password cambiata
+  annulla la richiesta.
+- **Cancellazione:** `DELETE /v1/account` con la password, `204` e cookie tolto.
+- **Azzeramento:** `POST /v1/azzera` con la password, già di P-10.
 
 ## 2. Decisioni che chi implementa deve applicare
 
@@ -143,7 +173,15 @@ leggibili e con target almeno 44 px. Link «Hai già un account? Accedi» e
 modulo. Continuare non richiede una seconda conferma e non riapre l'invito
 durante la prossima attività; il blocco torna al suo riepilogo.
 Con zero risposte nessuna frase «salva questa attività» o sessione inventata:
-si torna alla destinazione d'origine. Nei Segnali il blocco dice «salvare i
+si torna alla destinazione d'origine. **Eccezione, la simulazione consegnata**
+(allineata da P-28 al §4.1 di [area 3](area-3-progetto.md)): una prova
+consegnata o scaduta con zero risposte apre il suo riepilogo — prova conclusa
+con domande mancanti, non superata — e conserva la riga `_t:'s'` che il runner
+già scrive. Non crea risposte e non mostra il blocco «Vuoi conservare le
+attività di questa pagina?»: quel riepilogo non ha risposte da salvare. La
+riga `_t:'s'` resta nelle righe della pagina, e se più tardi chi studia si
+registra viaggia con le altre (§4.3). Un allenamento fermato con zero
+risposte torna all'origine, come sopra. Nei Segnali il blocco dice «salvare i
 punteggi»; non li conta come risposte né come copertura dei quiz.
 
 ### 4.2 Modulo di registrazione
@@ -239,8 +277,8 @@ Con zero righe e nessun punteggio si salta la domanda.
 
 ### 5.2 Email già registrata
 
-Solo il `409` della rotta registrazione con il codice d'errore previsto da
-P-11 produce: **«Questa email è già registrata.»** Poi «Accedi per conservare
+Solo il `409` della rotta registrazione con `errore: 'email_registrata'`
+(P-11) produce: **«Questa email è già registrata.»** Poi «Accedi per conservare
 le risposte di questa pagina, oppure reimposta la password se non la ricordi.»
 Azioni «Accedi» e «Reimposta la password», con email già compilata e password
 non trasferita fra moduli; «Torna al riepilogo». Non apre una sessione e non
@@ -401,7 +439,7 @@ vecchio ramo di `importa()` che somma `giocate`. Dichiarare «Le partite dei
 Segnali usano il massimo tra i dispositivi: le partite svolte in parallelo
 non si sommano». Il riepilogo dice separatamente se i punteggi sono stati
 confermati; un fallimento del profilo non fa ripetere le righe già accolte.
-P-11 deve rendere disponibile questo contratto e l'export completo.
+P-11 ha reso disponibile questo contratto e l'export completo (§1).
 
 Lo stesso contratto vale per le partite nuove dei Segnali con account:
 il risultato aggiorna la copia del solo account corrente, si invia al profilo
@@ -409,8 +447,8 @@ quando c'è rete e resta dichiarato «Punteggi da inviare» fino al PUT riuscito
 Offline la copia e il bisogno di invio sopravvivono alla ricarica nell'archivio
 dell'account; al ritorno della rete si rimandano i valori, che il server fonde
 per massimo. Non sono righe da infilare nella coda delle risposte e non
-si sommano in pagina i contatori ricevuti da altri dispositivi. La lettura
-dei punteggi dal profilo/risultato API resta il contratto P-11 da verificare.
+si sommano in pagina i contatori ricevuti da altri dispositivi. I punteggi
+si leggono da `segnali` nella descrizione dell'account (§1).
 Una uscita con punteggi non confermati offre download e scelta di perdita
 come per le risposte; un file di recupero include anche `segPunti`.
 
@@ -427,6 +465,8 @@ come per le risposte; un file di recupero include anche `segPunti`.
 | Risposta all'invio | `dopoInvio(codaCorrente, lottoCongelato, {codice, corpo}, archivioCorrente)`; salvare la coda restituita e presentare `salvate`, `scartate`, `conflitto`, `epocaCambiata`. |
 | Ricevere | GET con `coda.cursore`, poi `dopoRicezione(codaCorrente, {codice, corpo}, archivioCorrente)`; persistere `righe` per uid e nuova coda insieme; proseguire se `continua`. |
 | Conflitto scelto | `risolviConflitto(coda, conflitto)` soltanto dopo §10; svuotare copia precedente e ricevere da zero. |
+| Trasferimento | `nuovoTrasferimento`, `registraEsito`, `riepilogoTrasferimento` (P-28): §9.3. |
+| Righe che non partono | `nonInviabili(righe, coda)` quando `lottoDaInviare` restituisce `null` con la coda non vuota (P-28): §9.3. |
 | Specchio | `ripiega()` dall'archivio risultante dopo ogni import/ricezione, mai salvato o inviato. |
 
 `codaCorrente` si rilegge alla conferma, non è la copia di inizio fetch:
@@ -454,8 +494,8 @@ Un'epoca cambiata richiama il recupero deciso dal motore, con ricezione da
 zero e reinvio; non si confonde con l'azzeramento volontario della generazione.
 `lottoDaInviare === null` con coda ancora pendente è un'anomalia visibile:
 «Ci sono righe che non riusciamo a inviare. Scaricale e riprova», niente
-«tutto salvato». Caso di una singola riga oltre limite: controllo da aggiungere,
-senza spezzare o modificare la riga in pagina.
+«tutto salvato». Quali righe e perché lo dice `nonInviabili()` (§9.3); la
+pagina non spezza e non modifica la riga.
 
 ### 9.2 Persistenza e origini
 
@@ -490,6 +530,73 @@ non successi. Timeout interrompe l'attesa e permette il ritento idempotente,
 senza cancellare il lotto. Timeout di trasporto: **15 secondi**, dopo i quali
 «Il server non ha risposto. Le risposte sono ancora qui: riprova l'invio»;
 non è una prova che la richiesta non sia stata accolta.
+
+### 9.3 Trasferimenti e righe che non partono (P-28)
+
+Il §12 chiedeva al motore due risultati, «se i risultati esistenti non
+bastano». **Non bastavano**, ed è stato misurato sulle sei funzioni di P-10
+prima di aggiungerne: «salvata» dedotta come «uid del trasferimento meno
+`daInviare` meno `scartate`» dà per salvate **tutte** le righe dopo un
+azzeramento scelto con `risolviConflitto()`, che svuota la coda mentre il
+server le ha tolte; e dà per salvata una riga mai messa in coda. E una riga
+che da sola supera il limite, in testa alla coda, faceva restituire `null` a
+`lottoDaInviare()` con tre righe in coda: le altre non partivano mai. Il
+motore ha quindi quattro funzioni in più, e `lottoDaInviare()` salta la riga
+troppo grande invece di fermarsi (R-ACC-39 e 40).
+
+**Un trasferimento** è un insieme di righe da portare per intero nell'account:
+le righe della pagina alla registrazione (§4.3) o dopo «Sì, portale» (§5.1),
+un file convertito (§8), l'archivio di prima degli account (§7). È un oggetto
+semplice, da salvare con la coda. Registra le conferme **per nome**, con la
+generazione e l'epoca del database in cui sono state date.
+
+| Funzione | Che cosa fa |
+|---|---|
+| `nuovoTrasferimento(coda, righe, opt)` | Passa ogni riga da `validaRiga(riga, opt)`: le rifiutate restano in `trasferimento.rifiutate`, `[{ riga, motivo }]`, per scaricarle. Le altre vanno in coda anche se ne erano uscite, perché l'assenza dalla coda non prova che siano sul server: rimandata, una riga che c'è torna «già presente». Le scartate dal server non ripartono. Restituisce `{ trasferimento, coda }`. |
+| `registraEsito(trasferimento, esito)` | Con l'esito di `dopoInvio()` o di `dopoRicezione()`: gli uid nominati — `salvate` o `righe` — diventano confermati; un `conflitto` si ricorda; con un'epoca diversa valgono solo le conferme di questo esito. |
+| `riepilogoTrasferimento(trasferimento, coda, righe)` | `{ stato, completo, righe, confermate, daInviare, bloccate, scartate, daVerificare, nonSalvate, motivi, conflitto }`. |
+| `nonInviabili(righe, coda)` | `[{ uid, motivo }]`: «oltre il limite di un invio» (con `byte`) e «senza riga nell'archivio». |
+
+Gli stati di `riepilogoTrasferimento`, e che cosa ne fa la pagina:
+
+| `stato` | Significa | La pagina |
+|---|---|---|
+| `completo` | Ogni riga nominata dal server, niente scartato | «{`confermate`} risposte salvate nel tuo account». È l'unico stato che lo permette. |
+| `in corso` | `daInviare` righe da ritentare | «Non chiudere la pagina: le risposte non sono ancora salvate nel tuo account.», «Riprova l'invio» (§4.3). |
+| `da verificare` | Niente da ritentare, ma `daVerificare` uid non sono in coda e il server non li ha nominati: li ha inviati un'altra scheda, o un ripristino ha tolto valore alle conferme | Una ricezione (`GET /v1/righe`) li conferma; non scrivere «salvate» prima. |
+| `con scarti` | Tutto ciò che poteva arrivare è arrivato, e `nonSalvate` righe no | «{`confermate`} risposte salvate · {`nonSalvate`} righe non salvate», `motivi`, download di `rifiutate`, `scartate` e `bloccate` (§4.3). |
+| `sospeso` | Un `409` aspetta la scelta | §10, «Generazione diversa». |
+| `annullato` | La generazione è cambiata: i progressi sono stati azzerati, anche le righe confermate prima | `confermate` è 0: nessun «salvate». |
+
+**Esempio d'uso**, la registrazione alla fine di un'attività (§4.3); il
+trasporto e la persistenza sono della pagina, qui abbreviati:
+
+```js
+// 201 (o 503 con account creato): generazione ed epoca dalla descrizione.
+let coda = E.nuovaCoda({ generazione: io.generazione, epocaDb: io.epoca });
+let t;
+({ trasferimento: t, coda } = E.nuovoTrasferimento(coda, righeDellaPagina));
+salva({ archivio, coda, t });                       // insieme, atomico (§9.1)
+
+for (let lotto; (lotto = E.lottoDaInviare(archivio, coda)); ) {
+  const risposta = await invia(lotto);              // { codice, corpo }; codice 0 senza rete
+  const esito = E.dopoInvio(rileggiCoda(), lotto, risposta, archivio);
+  coda = esito.coda; t = E.registraEsito(t, esito);
+  salva({ coda, t });
+  if (esito.conflitto || risposta.codice !== 200) break;   // §10, o riprova su richiesta
+}
+const r = E.riepilogoTrasferimento(t, coda, archivio);
+if (r.completo) mostra(`${r.confermate} risposte salvate nel tuo account`);
+else if (r.stato === 'da verificare') ricevi();     // poi registraEsito(t, dopoRicezione(...))
+else mostraNonSalvate(r);                           // in corso, con scarti, sospeso, annullato
+```
+
+Con un file (§8) cambia solo l'origine delle righe: `fondiArchivio` le mette
+nell'archivio dell'account e ne dice i conteggi all'anteprima;
+`nuovoTrasferimento(coda, righeDelFile, { quesiti })` le accoda e tiene le
+rifiutate con la stessa regola. Un trasferimento risolto o abbandonato con una
+scelta esplicita si butta; fino ad allora si conserva con la coda, così una
+ricarica non trasforma «in corso» in «salvato».
 
 ## 10. Sincronia, uscita e azzeramenti
 
@@ -642,12 +749,10 @@ cancellazione server, non la scadenza scritta sullo schermo. R-ACC-16 e 20
 da rieseguire; non diventano funzioni da ricostruire nel client. R-ACC-26
 richiede anche riaccesso dopo scadenza senza perdita locale.
 
-**Contatti da risolvere su main prima del codice che ne dipende:** un
-risultato del motore per riepilogare un trasferimento su più lotti con uid
-già confermati, scarti locali/server e ritenti, se i risultati esistenti non
-bastano; un risultato per descrivere righe non inviabili entro il limite,
-senza calcolo alternativo nella pagina; contratto definitivo P-11 per
-profilo/Segnali, lettura dei punteggi e codice dell'email già registrata.
+**Contatti da risolvere su main prima del codice che ne dipende — chiusi.**
+Il riepilogo di un trasferimento su più lotti e le righe non inviabili sono
+nel motore (P-28, §9.3, R-ACC-39 e 40); il contratto di profilo, Segnali,
+lettura dei punteggi e codice dell'email già registrata è quello di P-11 (§1).
 Claude aggiunge export/test dove servono; non si cambia la regola nel client
 per aggirare un contratto mancante. L'unione di uid identici con payload
 diversi nelle due fonti vecchie va esercitata preservando i file originali.
