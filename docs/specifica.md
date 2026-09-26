@@ -1025,6 +1025,7 @@ guardare, e lo dicono. Quelli del server hanno il loro controllo in
 | R-ACC-27 | Al centesimo accesso fallito di fila la password si disattiva, anche attraverso un riavvio, finché non arriva una reimpostazione; e un'email che non esiste riceve gli stessi codici | `test_server.mjs::accesso: al centesimo fallimento di fila la password si disattiva` |
 | R-ACC-28 | La richiesta di reimpostare la password risponde allo stesso modo per un'email iscritta e per una che non lo è | `test_server.mjs::password dimenticata: risponde allo stesso modo per un email iscritta e una no` |
 | R-ACC-29 | Un gettone mandato per email vale una volta sola e per il suo tempo — 24 ore la verifica, un'ora la password —, e uno nuovo dello stesso scopo annulla i precedenti | `test_server.mjs::verifica: un gettone vale una volta sola e per il suo tempo` |
+| R-ACC-30 | Registrarsi con un'email già iscritta dà un errore esplicito, «email già registrata», senza aprire la sessione e senza mandare una mail | scoperto — deciso dall'autore il 26 settembre 2026; il server risponde ancora `202`, e il controllo lo scrive P-11 in `test_server.mjs` |
 
 R-ACC-20 e R-ACC-24 sono i primi requisiti del server con un controllo che si
 esegue, e il giro intero sta in `node server/ripristina.mjs --prova`, che la
@@ -1043,12 +1044,12 @@ settimo giorno e dà la data in `GET /v1/io`; che la schermata la scriva dal
 primo momento è della pagina. **R-ACC-17 non misura il tempo:** conta i calcoli
 di Argon2id — uno per l'email che non esiste come per quella sbagliata —,
 perché un confronto di millisecondi nella suite sarebbe un test che a volte
-passa. E **la registrazione dice chi è iscritto**, per il codice di risposta:
-`201` con la sessione aperta per un'email nuova, `202` senza per una già
-iscritta. È la conseguenza di due decisioni prese — la sessione alla
-registrazione (`account-progetto.md` §9.6) e le risposte del §7.1 — contro una
-frase del §5.3, «solo il proprietario lo scopre»; è aperta per l'autore
-nel §20 di quel documento, e nessun requisito qui promette il contrario.
+passa. E **la registrazione dice chi è iscritto**: fino al 26 settembre per il
+solo codice di risposta, `201` per un'email nuova e `202` per una già iscritta.
+Quel giorno l'autore ha deciso di dirlo apertamente, «Questa email è già
+registrata» (`account-progetto.md` §5.3): è R-ACC-30, scoperto finché P-11 non
+cambia il server. Accesso e password dimenticata, R-ACC-17 e R-ACC-28, restano
+come sono.
 
 ---
 

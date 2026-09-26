@@ -712,10 +712,11 @@ Il controllo è R-ACC-25, proposto nel §17.
 - **Accesso sbagliato**: un messaggio solo, «email o password non corrette», e
   per un'email che non esiste si calcola comunque un hash, così la risposta
   impiega lo stesso tempo.
-- **Registrazione con un'email già iscritta**: la schermata dice la stessa cosa
-  di sempre — «ti abbiamo scritto» — e la mail dice «hai già un account; se hai
-  dimenticato la password, eccola da reimpostare». Solo il proprietario
-  dell'indirizzo lo scopre.
+- **Registrazione con un'email già iscritta** — *deciso dall'autore il 26
+  settembre 2026, vedi sotto*: si dice apertamente. La schermata scrive «Questa
+  email è già registrata» e offre le due strade, accedere o reimpostare la
+  password. Nessuna mail parte. *(Fino a quel giorno: «ti abbiamo scritto» e una
+  mail «hai già un account», perché solo il proprietario lo scoprisse.)*
 - **Password dimenticata**: sempre `202`, sempre «se l'indirizzo è iscritto, ti
   è arrivata una mail».
 
@@ -736,7 +737,23 @@ che dice la stessa frase, ma da quello che la pagina riceve. La frase qui sopra,
 «solo il proprietario lo scopre», è vera per la mail e falsa per la risposta. È
 il caso che la cheat sheet OWASP sull'autenticazione riconosce come comune, e il
 freno che resta è il limite di 5 registrazioni l'ora per indirizzo (§6.5).
-**Aperto — decide l'autore** (§20).
+
+**Deciso dall'autore il 26 settembre 2026: la registrazione lo dice
+apertamente**, «Questa email è già registrata», come fa la maggior parte dei
+siti. È la prima delle tre strade che il §20 elencava, resa esplicita invece
+che nascosta dietro la stessa frase: nasconderla nella schermata e rivelarla
+nel codice di risposta era il peggio delle due cose. Tre conseguenze:
+
+- il server risponde `409` con il suo perché, senza aprire la sessione, al
+  posto del `202` del §7.1;
+- la mail «hai già un account» non parte più: serviva solo a non dirlo, e ogni
+  mail conta nelle 300 al mese;
+- l'accesso sbagliato e la password dimenticata restano come sono, e R-ACC-17
+  e R-ACC-28 con loro. Non proteggono più l'iscrizione, che la registrazione
+  dice, ma non costano niente e non la dicono per un'altra strada.
+
+Il server lo fa con P-11 (`docs/prossime-sessioni.md`), con il suo test:
+R-ACC-30.
 
 ---
 
@@ -904,7 +921,7 @@ uscirne — vale anche per chi legge la risposta in console.
 
 | Rotta | Che cosa | Risposte |
 |---|---|---|
-| `POST /v1/registrazione` `{email, password}` | crea l'account **non verificato**, apre la sessione, spedisce la mail (§9) | `201` + cookie; `202` se l'email era già iscritta, con la stessa forma (§5.3); `422` password che non rispetta il §5.2, col perché; `503` se la mail non è partita (§9.3) |
+| `POST /v1/registrazione` `{email, password}` | crea l'account **non verificato**, apre la sessione, spedisce la mail (§9) | `201` + cookie; `409` «email già registrata», senza sessione e senza mail (§5.3, deciso il 26 settembre 2026; fino a P-11 il server risponde ancora `202`); `422` password che non rispetta il §5.2, col perché; `503` se la mail non è partita (§9.3) |
 | `POST /v1/accesso` `{email, password}` | apre la sessione | `200` + cookie; `401` |
 | `POST /v1/uscita` | chiude questa sessione | `204` |
 | `POST /v1/uscita/ovunque` | chiude tutte | `204` |
@@ -1686,7 +1703,7 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
 | Statistiche mostrate a chi studia | l'autore, in un documento suo | fuori da qui (§15.2) |
 | Cosa chiede l'onboarding oltre alla data | l'autore | Q-ONBOARD, specifica §10 |
 | ~~Chiudere il difetto dei tag che resta (§4.2)~~ | — | **chiuso** da P-01 il 26 settembre (merge `6e07525`): i tag nascono con la data, ritaggare aggiunge |
-| La registrazione dice chi è iscritto, per il codice di risposta (§5.3) | l'autore | Trovato da P-09. `201` con la sessione per un'email nuova, `202` senza per una già iscritta: il §7.1 e il §9.6, insieme, contro la frase «solo il proprietario lo scopre». Tre strade. **Accettarlo e dirlo**, con il limite di 5 registrazioni l'ora per indirizzo come freno — la proposta: è la scelta comune, e l'imbuto dell'ADR-004 vuole la sessione subito. **Non aprire la sessione alla registrazione**, finché l'email non è confermata: la risposta diventa identica, ma le risposte della pagina aperta restano in bilico dietro una mail, cioè il §9.6 si rovescia. **Rispondere sempre `202` e aprire la sessione solo dopo la conferma o un accesso**: come la seconda, con un passo in più per chi si registra. Il server oggi fa la prima; la frase del §5.3 è corretta accanto |
+| ~~La registrazione dice chi è iscritto (§5.3)~~ | — | **deciso dall'autore il 26 settembre 2026**: si dice apertamente, «Questa email è già registrata», con `409` e senza mail; accesso e password dimenticata restano come sono (§5.3). Il server lo fa con P-11 |
 
 ---
 
@@ -1794,3 +1811,7 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
   per il codice di risposta; il §5.3 lo dice, e la scelta è dell'autore (§20).
   Restano per i pezzi dopo le rotte che toccano le righe o la generazione, gli
   allarmi al titolare e il client.
+- **26 settembre 2026 — «email già registrata».** L'autore ha chiuso la riga
+  del §20 aperta da P-09: la registrazione dice apertamente se un'email è
+  iscritta. §5.3 e §7.1 riscritti, R-ACC-30 proposto; il server cambia con
+  P-11.

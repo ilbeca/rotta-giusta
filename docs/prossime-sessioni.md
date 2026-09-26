@@ -106,28 +106,37 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 5 | Area 2, Quiz: la realizzazione (il progetto è chiuso) | ChatGPT | `ui/main` | niente | P-05 |
-| 5b | Chiudere il regime vecchio dei controlli dei quiz, e il §5 della specifica | Claude | `main`, a mano | la merge di P-05, e la cartella libera | da scrivere |
+| 5 | Area 2, Quiz: la realizzazione | ChatGPT | `ui/main` | il resoconto: il commit c'è | P-05 |
 | 4b | Il server, pezzo 2: le righe, la sincronia, l'azzeramento, e la contabilità della coda nel motore | Claude | `main`, a mano | niente | P-10 |
-| 4c | Il server, pezzo 3: cancellazione, due anni, cambio d'indirizzo e profilo, allarmi al titolare, il conto delle 300 mail, e «email già registrata» | Claude | `main`, a mano | 4b | P-11, da scrivere |
-| 6 | Aree 3–6 del ridisegno | ChatGPT | `ui/main` | la precedente | da scrivere |
-| 7 | Il client degli account, dentro una fetta del ridisegno | ChatGPT | `ui/main` | 4b | da scrivere |
-| 8 | La messa in esercizio del server su Scaleway | Claude e l'autore | `main`, pannelli | 4c, e dal §4: la macchina, le chiavi | da scrivere |
-| 9 | **La versione con gli account** — il traguardo | tutti | `main` | 7, 8, e gli adempimenti del §4 | da scrivere |
+| 4c | Il server, pezzo 3: «email già registrata», cambio d'indirizzo e profilo, cancellazione e due anni, allarmi, il conto delle 300 mail | Claude | `main`, a mano | P-10 | P-11 |
+| 5b | Chiudere il regime vecchio dei controlli dei quiz, e il §5 della specifica | Claude | `main`, a mano | la merge di P-05; fra P-10 e P-11, quando la cartella è libera | P-12 |
+| 7a | Il progetto del client degli account | ChatGPT | `ui/main` | la merge di P-05 | P-13 |
+| 6a | Il progetto dell'area 3, il ciclo che si chiude | ChatGPT | `ui/main` | P-13, nell'ordine consigliato | P-14 |
+| 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | P-11 | P-15 |
+| 7b | La realizzazione del client degli account | ChatGPT | `ui/main` | P-13, e P-10 per le righe | da scrivere |
+| 6b | Le aree del ridisegno che restano: 3 realizzata, poi 4, 5, 6 | ChatGPT | `ui/main` | la precedente | da scrivere |
+| 9 | **La versione con gli account** — il traguardo | tutti | `main` | 7b, 8, e gli adempimenti del §4 | da scrivere |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**: Claude sul server (non tocca `site/`),
-ChatGPT sull'interfaccia. **P-05 è in mano a ChatGPT, e P-10 è pronto per
-Claude**: possono stare aperti insieme. Tutto quello che tocca
-`server/`, `tests/` o la specifica passa dalla cartella principale, una sessione
-per volta: è la strettoia della colonna di Claude, e si accetta perché il
-recinto la vuole. Il numero di una riga è il suo nome, non la sua posizione:
-l'ordine è quello della tabella. Le due colonne si incontrano al punto 7, e il
-punto 9 è il giorno in cui gli account arrivano a chi studia.
+ChatGPT sull'interfaccia. Tutto quello che tocca `server/`, `tests/` o la
+specifica passa dalla cartella principale, una sessione per volta: è la
+strettoia della colonna di Claude, e si accetta perché il recinto la vuole.
+Il numero di una riga è il suo nome, non la sua posizione: l'ordine è quello
+della tabella. Le due colonne si incontrano al punto 7b, e il punto 9 è il
+giorno in cui gli account arrivano a chi studia.
+
+**L'ordine consigliato per ChatGPT, dopo P-05: prima il client degli account
+(P-13), poi l'area 3 (P-14).** Il traguardo ha bisogno del client e non delle
+aree 3–6; con il client prima, gli account arrivano a chi studia senza
+aspettare il resto del ridisegno. Le aree successive lo erediteranno invece di
+doverlo rincorrere. Decide l'autore: basta scambiare le due righe.
 
 I prompt «da scrivere» li scrive la regia quando si chiude quello da cui
 dipendono, non prima: un prompt scritto in anticipo punta a uno stato che nel
-frattempo è cambiato.
+frattempo è cambiato. Quelli già scritti con lo stato «in attesa di» si
+rileggono alla chiusura del loro predecessore, e si correggono lì se il
+resoconto ha cambiato qualcosa.
 
 ## Lo stato al 26 settembre 2026
 
@@ -369,9 +378,8 @@ consuma, non si riprogetta.
   `202` del §7.1 diventa un errore con il suo perché; l'accesso sbagliato e la
   password dimenticata restano come sono, e R-ACC-28 con loro — non proteggono
   più l'iscrizione, ma non costano niente e non danno un'informazione in più.
-  **Non è ancora scritta in `account-progetto.md` né nella specifica**, perché
-  P-10 lavora in quei file: la porta lì P-11, il pezzo 4c, con la modifica al
-  server e il suo test.
+  Scritta anche in `account-progetto.md` (§5.3, §7.1, §20) e nella specifica
+  come R-ACC-30; il server la fa con P-11, con il suo test.
 - **Gli adempimenti rimasti**, sei punti, tutti nel §15.4 di
   `account-progetto.md` e bloccano il punto 9: l'indirizzo postale del titolare,
   la base giuridica del registro di sicurezza (da far confermare), l'inoltro di
@@ -787,6 +795,151 @@ resoconto di docs/prossime-sessioni.md.
 
 **Esito:** —
 
+### P-11 — Claude: il server, pezzo 3 — quello che chiude le sue rotte
+
+**Stato:** in attesa di P-10, che lavora nella stessa cartella. **Dove:** Claude
+Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano.
+
+```
+Sessione P-11, su main. Leggi docs/account-progetto.md — soprattutto
+§5.3, §7.1, §9.3, §13, §14 e §15 — e gli esiti di P-09 e P-10 nel §6
+di docs/prossime-sessioni.md.
+
+Il terzo pezzo del server, che chiude le sue rotte:
+- «email già registrata», deciso dall'autore il 26 settembre (§5.3):
+  409 senza sessione e senza mail, e R-ACC-30 con il suo test;
+- il cambio d'indirizzo e il profilo, con la data d'esame
+  dell'onboarding (§13);
+- DELETE /v1/account, che cancella davvero, e i due anni di
+  inattività con l'avviso prima (§14), passando dal file delle
+  cancellazioni del §2.7;
+- gli allarmi al titolare del §15.4 — accessi falliti oltre soglia,
+  una copia con meno righe, una mail rifiutata —, letti dalla tabella
+  registro, e il conto delle 300 mail del §9.3: un avviso, mai un
+  blocco.
+
+Prima il test che fallisce, uno per requisito, e un test che riavvia
+il server dove lo stato potrebbe vivere in memoria. Se è troppo per un
+commit, fermati a un confine pulito e dillo. La suite del server gira
+anche con Node 24 LTS. Non toccare docs/prossime-sessioni.md. Suite
+verdi, voce in fondo a [Unreleased], un commit. Chiudi con il
+resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-12 — Claude: chiudere il regime vecchio dei controlli dei quiz
+
+**Stato:** in attesa della merge di P-05, e della cartella libera. **Dove:**
+Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano.
+
+```
+Sessione P-12, su main. P-05 ha realizzato l'area 2 e la regia l'ha
+fusa: leggi i suoi esiti e quello di P-06 nel §6 di
+docs/prossime-sessioni.md, e il §10.1 di docs/area-2-progetto.md.
+
+Chiudi il regime vecchio, come P-06 ha lasciato scritto: togli
+MODI_SEI e il ramo a sei ingressi da tests/test_interfaccia.py, così
+la pagina a cinque intenzioni è l'unica che passa, e decidi che cosa
+resta di tests/pagina-quiz-intenzioni.html. Aggiorna il §5 della
+specifica, che descrive ancora Batteria e il selettore globale, e ogni
+altro punto che nomina le sei modalità. Provalo al contrario: la
+pagina di prima, a sei ingressi, ora dev'essere rossa.
+
+Non toccare docs/prossime-sessioni.md. Suite verdi, voce in fondo a
+[Unreleased], un commit. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-13 — ChatGPT: il progetto del client degli account
+
+**Stato:** in attesa della merge di P-05 e che la regia allinei `ui/main`.
+**Dove:** app di ChatGPT, progetto `~/Software/rotta-giusta-ui`, ramo `ui/main`.
+
+```
+Sessione P-13. Progetta il client degli account in
+docs/account-client-progetto.md, sul modello di
+docs/area-1-progetto.md: la registrazione alla fine di un'attività,
+l'accesso e l'uscita, «email già registrata», la verifica dell'email,
+il passaggio di chi ha già un archivio nel browser, la conversione di
+un file esportato, l'onboarding con la data facoltativa, e il sito
+senza account che non conserva niente.
+
+Le fonti: l'ADR-004; docs/account-progetto.md dal §5 al §13 — il
+server c'è già ed è testato, qui si consuma, non si riprogetta —; il
+§1 di docs/prossime-sessioni.md, con i testi di site/ che diventano
+falsi e le cose che la pagina deve fare; i requisiti R-ACC nel §9.9
+della specifica. La contabilità della coda sta nel motore: la pagina
+la chiama, non la rifà. Dove un comportamento non ha un controllo,
+scrivi nel documento quale serve: lo aggiunge Claude su main.
+
+Solo il documento e la voce di CHANGELOG: niente site/. Non toccare
+docs/prossime-sessioni.md. Un commit con il trailer, versione non
+toccata. Chiudi con il resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-14 — ChatGPT: il progetto dell'area 3, il ciclo che si chiude
+
+**Stato:** in attesa della merge di P-05. **Dove:** come P-13 — e dopo P-13,
+se l'autore tiene l'ordine consigliato nella coda.
+
+```
+Sessione P-14. Progetta l'area 3 di docs/prossima-versione.md §5.1, il
+ciclo che si chiude — riepilogo, revisione, «riprova questi N» —, in
+docs/area-3-progetto.md, sul modello di docs/area-1-progetto.md e
+docs/area-2-progetto.md. erroriSessione() è già nel motore, ed è
+dichiarata orfana in docs/eccezioni-interfaccia.md fino a questa area.
+Rileggi l'ADR-004: senza account la revisione vale per la pagina
+aperta. Se il progetto chiede di cambiare test o specifica, scrivi la
+dipendenza come fa il §10.1 dell'area 2.
+
+Solo il documento e la voce di CHANGELOG: niente site/. Non toccare
+docs/prossime-sessioni.md. Un commit con il trailer, versione non
+toccata. Chiudi con il resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-15 — Claude con l'autore: la messa in esercizio su Scaleway
+
+**Stato:** in attesa di P-11. **Dove:** Claude Code, `~/Software/rotta-giusta`,
+ramo **`main`**, a mano: gli strumenti della macchina stanno nel repo. È una
+sessione che si fa **insieme**, come P-08.
+
+```
+Sessione P-15: la messa in esercizio del server su Scaleway, insieme
+all'autore. Lui agisce nei pannelli e con le chiavi; tu spieghi un
+passo alla volta, prepari, aspetti che dica «fatto», e verifichi.
+Leggi docs/account-progetto.md §2 per intero, §9.4, §15.4 e §19, e gli
+esiti di P-02, P-08, P-09, P-10 e P-11 nel §6 di
+docs/prossime-sessioni.md.
+
+Nell'ordine: la STARDUST1-S a pl-waw-2 con una chiave SSH nuova; la
+macchina come dice il §2.7 — utente, unità di systemd, Node LTS,
+cartelle, rg-aggiorna e rg-torna —; il gruppo di sicurezza guardato
+prima di aprire la 443; il record di api. su IONOS e il certificato;
+la chiave di Transactional Email e quella di sola scrittura sul
+bucket, messe dall'autore sulla macchina; le copie due volte al giorno
+verso nl-ams; il server avviato da un tag pubblicato. Poi le misure
+che il §19 lascia a questo giorno: il sorgente di una mail vera, una
+copia arrivata a nl-ams e ripristinata, il riavvio dopo un
+aggiornamento del kernel, Argon2id sulla macchina vera.
+
+Se serve un tag che non c'è, fermati: il rilascio lo fa la regia. Il
+server in esercizio non riceve ancora nessuno, perché la pagina non lo
+chiama fino alla versione con gli account. Non inserisci credenziali e
+non accetti condizioni al posto dell'autore; nessun segreto nel repo.
+Non toccare docs/prossime-sessioni.md. Suite verdi, voce in fondo a
+[Unreleased], un commit. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
 ---
 
 ## Registro
@@ -871,3 +1024,12 @@ resoconto di docs/prossime-sessioni.md.
   registrazione dice apertamente se un'email è iscritta. Scritto nel §4 con le
   conseguenze; lo porta nel progetto, nella specifica e nel server P-11, perché
   P-10 lavora negli stessi file.
+- **26 settembre 2026 — da P-11 a P-15.** Su richiesta dell'autore, i prompt
+  scritti prima che si chiudano quelli da cui dipendono, con lo stato «in
+  attesa di» accanto: il pezzo 4c del server con «email già registrata», la
+  chiusura del regime vecchio dei quiz, il progetto del client degli account, il
+  progetto dell'area 3 e la messa in esercizio accompagnata. Restano da scrivere
+  la realizzazione del client, le aree 4–6 e il traguardo, perché dipendono da
+  documenti che non esistono ancora. La decisione «email già registrata» è
+  scritta anche in `account-progetto.md` e nella specifica (R-ACC-30): la
+  cartella principale era libera.
