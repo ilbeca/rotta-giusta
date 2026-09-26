@@ -69,6 +69,12 @@ chat.
 5. **Le merge dei rami `ui/*` le fa la regia**, con il controllo dei territori
    sul diff del ramo prima (`AGENTS.md`), e poi allinea `ui/main` e
    `ui/vetrina` a `main` perché ChatGPT parta sempre dalla base giusta.
+   **Solo quando nessuna sessione di ChatGPT è aperta**: prima guarda
+   `git -C ../rotta-giusta-ui status --short`, e se l'autore ha appena lanciato
+   un prompt di ChatGPT aspetta il suo resoconto. Spostare il ramo sotto una
+   sessione che lavora è uno dei cinque modi in cui due agenti si sono rotti a
+   vicenda il 7 settembre. Il 26 settembre la regia ha allineato una volta senza
+   saperlo: la cartella era pulita, ed è andata bene per caso.
 6. **Una sessione di Claude può partire da un pulsante** che la regia propone
    nella sua chat. Il pulsante non ripete il prompt: dice soltanto di copiarlo
    dal §6, così resta uno solo. La sessione che parte così lavora **in un
@@ -1513,3 +1519,6 @@ dopo**, la soglia degli allarmi riletta sul registro vero
   corretto; quello che ne resta nella pagina pubblicata va a P-19, da
   riprodurre nel browser. Ordine per Claude: P-28, P-31, poi P-29 mentre
   ChatGPT realizza l'area 3.
+- **26 settembre 2026 — allineare solo a sessione chiusa.** Regola aggiunta al
+  punto 5 di «Come si usa», dopo un allineamento fatto senza sapere se P-20 era
+  già partito.
