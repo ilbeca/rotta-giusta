@@ -260,6 +260,41 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   ADR-004 e la coda. `ui/main` e `ui/vetrina`, puliti e senza commit propri,
   sono stati portati avanti veloce a `main`; il prompt d'ingresso è in §3.0.
 
+### Corretto — P-01: tag append-only e motivi degli scarti
+
+- **Ritaggare N/L/C aggiunge una riga con `ts`, senza cancellare le precedenti.**
+  La cancellazione avrebbe fatto tornare i vecchi tag alla prima unione con
+  un'altra copia dell'archivio (`docs/account-progetto.md` §4.2). Il riepilogo
+  legge ora l'ultima classificazione per tentativo dall'archivio, invece della
+  copia in memoria nel runner: `E.ordinaRighe()` mette prima i tag storici
+  senza data, poi gli istanti reali, anche con UTC e offset locale mescolati;
+  a parità di istante vale l'ordine dell'archivio. Le vecchie righe restano
+  importabili, senza riscriverle.
+
+- **L'import mostra anche i motivi degli scarti e quanti sono per motivo**, da
+  `fondiArchivio().motivi`, accanto a nuove, già presenti e scartate. Il messaggio
+  va a capo entro il viewport: aggiungere i motivi senza limitarne la larghezza
+  avrebbe nascosto una parte del risultato sul telefono.
+
+- **Verificato prima e dopo:** cinque controlli mirati sul codice della pagina,
+  eseguito sotto Node con archivio e DOM sostituiti, passano da 1/5 a 5/5:
+  conservazione dei tag precedenti, data valida sulle nuove righe, ultima
+  classificazione con date miste e tag storici, motivi e conteggi dell'import,
+  reimport senza doppioni. Collaudo in Chrome, guardato a **375 e 1280 px**:
+  N→L nel verdetto, L selezionato nel riepilogo, poi C dal riepilogo. L'export
+  contiene **8 righe: 2 risposte e 6 tag**, di cui un tag storico senza data;
+  sul tentativo ritaggato restano N, L e C, tutti con data valida. Dopo una
+  ricarica, reimport dello stesso export: **0 nuove, 8 già presenti, 0 scartate**.
+  Il file sintetico con un tag valido e tre righe rotte mostra **1 nuova e
+  3 scartate**: data non valida 1, tag non valido 1, senza uid 1; al secondo
+  import **0 nuove, 1 già presente, 3 scartate**, con gli stessi motivi.
+
+  Quattro suite verdi: **motore 131/132, con uno skip preesistente** (il vecchio
+  confronto con `daAllenare()` in pagina, ormai nel motore); **dati 221,
+  interfaccia 135, specifica 262**. Controllo della documentazione verde.
+  Nessun account introdotto e nessun testo anticipato sul prodotto futuro;
+  versione, documenti storici e `docs/prossime-sessioni.md` invariati.
+
 ## [0.27.0] — 2026-09-25
 
 ### Verificato — la v0.26.2 sul dominio vero
