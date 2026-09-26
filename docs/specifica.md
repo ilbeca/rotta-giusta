@@ -1015,26 +1015,42 @@ guardare, e lo dicono. Quelli del server hanno il loro controllo in
 | R-ACC-09 | Senza account la pagina non conserva niente nel browser, nemmeno le preferenze | scoperto — gli account non esistono ancora, e la suite non esercita il DOM di `app.html` |
 | R-ACC-10 | Una password più corta di 15 caratteri è rifiutata, senza regole di composizione | `test_server.mjs::account: una password piu corta di 15 caratteri e rifiutata, senza regole di composizione` |
 | R-ACC-11 | Un account non confermato entro sette giorni si cancella con le sue righe, e la schermata dice la data dal primo momento | `test_server.mjs::verifica: un account non confermato entro sette giorni si cancella con le sue righe` |
+| R-ACC-12 | Una riga accolta torna dal server byte per byte com'era, campi sconosciuti compresi | `test_server.mjs::righe: una riga accolta torna dal server byte per byte, campi sconosciuti compresi` |
+| R-ACC-13 | La risposta a un invio nomina gli `uid` accolti, già presenti e scartati, e il client toglie dalla coda solo quelli che il server nomina | `test_engine.mjs::coda: dopo un invio si tolgono solo gli uid che il server nomina, non tutto tranne gli scartati` |
+| R-ACC-14 | Una riga arrivata tardi con un `ts` vecchio compare nella ricezione successiva | `test_server.mjs::righe: una riga arrivata tardi con un ts vecchio compare nella ricezione successiva` |
+| R-ACC-15 | Dopo un azzeramento, un invio con la generazione vecchia è rifiutato con `409`, le sue righe non rientrano, e il client non le rimanda né le butta finché chi studia non sceglie | `test_server.mjs::azzera: dopo un azzeramento un invio con la generazione vecchia e rifiutato, e le sue righe non rientrano` |
 | R-ACC-16 | Nessuna password, gettone o cookie compare nel database in chiaro, né nel registro, né nel log | `test_server.mjs::segreti: nessuna password, gettone o cookie nel database in chiaro ne nel registro` |
 | R-ACC-17 | L'accesso con un'email inesistente e con una password sbagliata danno la stessa risposta, e costano lo stesso calcolo | `test_server.mjs::accesso: un email inesistente e una password sbagliata danno la stessa risposta` |
+| R-ACC-18 | L'export dal server si ricarica con `importa()` e dà le stesse righe | `test_server.mjs::esporta: il file dal server si ricarica con importa e da le stesse righe` |
 | R-ACC-20 | Una copia di sicurezza si ripristina e ha le stesse righe dell'originale, byte per byte | `test_server.mjs::copia: si ripristina con le stesse righe dell originale` |
 | R-ACC-21 | Una mail che il fornitore non accetta produce un errore dichiarato, mai «ti abbiamo scritto» | `test_server.mjs::posta: una mail che il fornitore rifiuta produce un errore dichiarato` |
-| R-ACC-24 | Dopo il ripristino di una copia, una riga accolta dopo la copia torna sul server dal dispositivo che la ha, e ogni altro dispositivo la riceve | `test_server.mjs::epoca: dopo un ripristino le righe accolte dopo la copia tornano` |
+| R-ACC-24 | Dopo il ripristino di una copia, una riga accolta dopo la copia torna sul server dal dispositivo che la ha, e ogni altro dispositivo la riceve | `test_server.mjs::epoca: con la contabilita del motore, dopo un ripristino le righe perse tornano e ogni dispositivo le riceve` |
 | R-ACC-25 | Una password dell'elenco delle comuni, in qualunque combinazione di maiuscole, o uguale all'email o alla sua parte prima della `@`, è rifiutata, e il rifiuto dice perché | `test_server.mjs::account: una password comune in qualunque maiuscola, o uguale all email, e rifiutata con il perche` |
 | R-ACC-26 | Una sessione vale 30 giorni dall'accesso e l'uso non la allunga: il trentunesimo giorno la stessa richiesta risponde `401` | `test_server.mjs::sessione: vale 30 giorni dall accesso e l uso non la allunga` |
 | R-ACC-27 | Al centesimo accesso fallito di fila la password si disattiva, anche attraverso un riavvio, finché non arriva una reimpostazione; e un'email che non esiste riceve gli stessi codici | `test_server.mjs::accesso: al centesimo fallimento di fila la password si disattiva` |
 | R-ACC-28 | La richiesta di reimpostare la password risponde allo stesso modo per un'email iscritta e per una che non lo è | `test_server.mjs::password dimenticata: risponde allo stesso modo per un email iscritta e una no` |
 | R-ACC-29 | Un gettone mandato per email vale una volta sola e per il suo tempo — 24 ore la verifica, un'ora la password —, e uno nuovo dello stesso scopo annulla i precedenti | `test_server.mjs::verifica: un gettone vale una volta sola e per il suo tempo` |
 | R-ACC-30 | Registrarsi con un'email già iscritta dà un errore esplicito, «email già registrata», senza aprire la sessione e senza mandare una mail | scoperto — deciso dall'autore il 26 settembre 2026; il server risponde ancora `202`, e il controllo lo scrive P-11 in `test_server.mjs` |
+| R-ACC-31 | Il cursore della ricezione lo sposta solo una ricezione: l'`ultima_seq` di un invio non lo tocca | `test_engine.mjs::coda: l invio non sposta il cursore, lo sposta solo la ricezione` |
+| R-ACC-32 | Un invio oltre 2.000 righe o 2 MiB riceve un `413` che si legge, e niente entra; il lotto che il motore prepara sta nei limiti, che il server importa dal motore | `test_server.mjs::righe: oltre 2000 righe o 2 MiB la risposta e 413, e niente entra` |
+| R-ACC-33 | La ricezione va a pagine di 5.000 righe, e le pagine insieme non perdono e non ripetono una riga | `test_server.mjs::righe: la ricezione va a pagine di 5000, e insieme non perde e non ripete` |
 
 R-ACC-20 e R-ACC-24 sono i primi requisiti del server con un controllo che si
 esegue, e il giro intero sta in `node server/ripristina.mjs --prova`, che la
-suite lancia. **R-ACC-24 è coperto per metà:** il test prova il server —
-l'epoca che cambia con il ripristino, l'unione per `uid` che riprende le righe
-perse — e fa lui la parte del dispositivo. La regola del client, «epoca
-cambiata: azzera il cursore e rimanda tutto», andrà nella contabilità della
-coda in `site/engine.js` (`account-progetto.md` §16.1), con il suo test in
-`test_engine.mjs`; fino ad allora la dice solo questo paragrafo.
+suite lancia. **R-ACC-24 è coperto per intero dal 26 settembre (P-10):** il
+suo controllo mette tre dispositivi, ognuno con la contabilità della coda di
+`site/engine.js` (`account-progetto.md` §16.1), contro il server vero, e
+ripristina una copia in mezzo; due scoprono l'epoca nuova inviando, il terzo
+solo ricevendo. La regola del client, «epoca cambiata: azzera il cursore e
+rimanda tutto», ha anche il suo test nel motore.
+
+**Le righe (P-10).** R-ACC-12…15, 18 e 31…33 si eseguono come quelli
+dell'account. Quello che i loro controlli non vedono: la contabilità della coda
+è logica pura, e che la pagina la chiami — salvando la coda accanto
+all'archivio, mostrando le scartate e il conflitto — è del client degli
+account, che non esiste ancora; e il `409` visto da chi studia, «scaricale o
+scartale», è un testo di schermata. Di R-ACC-15 il server prova il rifiuto, il
+motore che il `409` lasci la coda com'era.
 
 **Il pezzo dell'account (P-09).** R-ACC-10, 11, 16, 17, 21 e 25…29 si eseguono
 contro il server avviato nello stesso processo, con l'orologio, la posta e i
@@ -1288,3 +1304,11 @@ successo, ed è il motivo per cui questo file esiste.
   contrario. Il paragrafo sotto la tabella del §9.9 dice che cosa i controlli non
   vedono, compresa la registrazione che dice chi è iscritto, aperta per
   l'autore.
+- **26 settembre 2026 — le righe del server (P-10).** Entrano R-ACC-12, 13,
+  14, 15 e 18, proposti dal progetto degli account, e tre nati scrivendo il
+  codice: R-ACC-31, il cursore che un invio non deve spostare — l'`ultima_seq`
+  di un invio conta anche le righe di un altro dispositivo, e un cursore messo
+  lì le salterebbe per sempre —; R-ACC-32, il `413` che si legge; R-ACC-33, le
+  pagine della ricezione. R-ACC-24 passa da coperto per metà a coperto per
+  intero. Ognuno è stato provato al contrario: tredici rotture, ognuna rossa
+  in almeno un test.

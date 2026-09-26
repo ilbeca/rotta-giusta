@@ -4,8 +4,9 @@
 // stesso processo, su un database temporaneo, e si interroga con `fetch`: cosi'
 // i requisiti del server non sono «scoperti», si eseguono.
 //
-// Il server risponde alla salute e all'account (P-09): registrazione, accesso,
-// sessione, verifica dell'email, password. L'altra meta' di questo file e' la
+// Il server risponde alla salute, all'account (P-09) — registrazione, accesso,
+// sessione, verifica dell'email, password — e alle righe (P-10): invio,
+// ricezione, export, azzeramento. L'altra meta' di questo file e' la
 // copia di sicurezza con il ripristino provato — *un backup mai ripristinato
 // non e' un backup, e' un file* (0.4.6) — con l'epoca del database e il file
 // delle cancellazioni del §2.7.
@@ -30,7 +31,9 @@ import {
 } from '../server/db.mjs';
 import { copia, ripristina, prova } from '../server/copie.mjs';
 import { hashPassword } from '../server/password.mjs';
-import { validaRiga } from '../site/engine.js';
+import * as E from '../site/engine.js';
+
+const { validaRiga } = E;
 
 const RADICE = join(dirname(fileURLToPath(import.meta.url)), '..');
 const VERSION = readFileSync(join(RADICE, 'VERSION'), 'utf8').trim();
@@ -73,7 +76,7 @@ test('salute: una rotta che non esiste risponde con un errore che si legge', asy
   const s = await avvia({ db: join(c, 'conti.db'), cancellazioni: join(c, 'cancellazioni'), porta: 0 });
   t.after(() => s.chiudi());
 
-  for (const [metodo, percorso, codice] of [['GET', '/', 404], ['GET', '/v1/righe', 404], ['POST', '/v1/salute', 405]]) {
+  for (const [metodo, percorso, codice] of [['GET', '/', 404], ['GET', '/v1/nessuna', 404], ['POST', '/v1/salute', 405]]) {
     const r = await fetch(`${s.indirizzo}${percorso}`, { method: metodo });
     assert.equal(r.status, codice, `${metodo} ${percorso}`);
     const b = await r.json();
@@ -530,7 +533,7 @@ async function conti(t, { posta, argon2 = ECONOMICO, log } = {}) {
     posta: posta ?? { invia: async (m) => { mail.push(m); } },
     log: log ?? ((m) => scritto.push(m)),
   };
-  const k = { c, orologio, mail, scritto, s: await avvia(opzioni) };
+  const k = { c, orologio, mail, scritto, opzioni, s: await avvia(opzioni) };
   t.after(() => k.s.chiudi());
   // Un riavvio vero: il processo perde la memoria, il database resta.
   k.riavvia = async () => { await k.s.chiudi(); k.s = await avvia(opzioni); };
@@ -1057,4 +1060,307 @@ test('registro: gli indirizzi si tolgono dopo sei mesi, gli eventi dopo un anno'
   k.orologio.t = T0 + 366 * GIORNO;
   k.s.manutenzione();
   assert.deepEqual(eventi(), [], 'nessun evento oltre l anno');
+});
+
+// --- le righe e la sincronia (P-10) -------------------------------------------------
+//
+// docs/account-progetto.md §1, §2.3, §2.7, §7.2, §8. Il server aggiunge per
+// `uid` con `validaRiga()` del motore e la banca accanto, numera con un
+// cursore che non torna indietro, dice l'epoca in ogni risposta, e rifiuta con
+// un 409 un invio della generazione di prima di un azzeramento.
+
+const BANCA = new Set([
+  ...JSON.parse(readFileSync(join(RADICE, 'site/dati/quiz.json'), 'utf8')).map((q) => q.id),
+  ...JSON.parse(readFileSync(join(RADICE, 'site/dati/carteggio.json'), 'utf8')).map((e) => e.id),
+]);
+
+async function dentro(k, email = 'studente@esempio.it') {
+  const cookie = await registrato(k, email);
+  const io = (await k.chiama('GET', '/v1/io', undefined, { cookie })).corpo;
+  return { cookie, io };
+}
+
+test('righe: una riga accolta torna dal server byte per byte, campi sconosciuti compresi', async (t) => {
+  // R-ACC-12. La forma delle righe la decide la pagina e cresce: il server non
+  // la ricostruisce dalle colonne, la restituisce com'e' arrivata (§3).
+  const k = await conti(t);
+  const { cookie } = await dentro(k);
+  const strane = [
+    riga(1, { campo_futuro: { annidato: [1, 2.5, null, 'è'], vuoto: {} }, chosen: '2', sim_uid: null }),
+    { _t: 'c', uid: 'c1', item_id: '5.1.3-1', ts: '2026-09-26T08:00:00Z', verdict: 1, delta: null,
+      input_json: '{"lat":"42°49’,7N","nota":"a capo\\nqui"}' },
+    { _t: 'g', uid: 'g1', attempt_uid: 'u000001', tag: 'N' },
+  ];
+  const inv = await k.chiama('POST', '/v1/righe', { generazione: 1, righe: strane }, { cookie });
+  assert.equal(inv.status, 200, JSON.stringify(inv.corpo));
+  assert.deepEqual(inv.corpo.nuove, ['u000001', 'c1', 'g1']);
+  const ric = await k.chiama('GET', '/v1/righe?dopo=0', undefined, { cookie });
+  assert.equal(ric.status, 200);
+  assert.deepEqual(ric.corpo.righe.map((r) => JSON.stringify(r)), strane.map((r) => JSON.stringify(r)));
+});
+
+test('righe: la risposta nomina gli uid accolti, gia presenti e scartati, con la regola del motore e la banca', async (t) => {
+  // R-ACC-13, la meta' del server, e R-ACC-07 sul server vero: la banca
+  // accanto, quindi un quesito che non esiste e' rifiutato come lo
+  // rifiuterebbe il browser con la banca in mano.
+  const k = await conti(t);
+  const { cookie, io } = await dentro(k);
+  await k.chiama('POST', '/v1/righe', { generazione: 1, righe: [riga(1)] }, { cookie });
+  const rotte = [riga(2, { item_id: 'base-99999' }), riga(3, { ts: '2026-09-26T10:00:00' }), { ...riga(4), uid: 7 }];
+  const r = await k.chiama('POST', '/v1/righe', { generazione: 1, righe: [riga(1), ...rotte, riga(5)] }, { cookie });
+  assert.equal(r.status, 200);
+  assert.deepEqual(r.corpo.nuove, ['u000005']);
+  assert.deepEqual(r.corpo.gia, ['u000001']);
+  assert.deepEqual(r.corpo.scartate, [
+    { uid: 'u000002', motivo: validaRiga(rotte[0], { quesiti: BANCA }), indice: 1 },
+    { uid: 'u000003', motivo: validaRiga(rotte[1], { quesiti: BANCA }), indice: 2 },
+    { uid: null, motivo: 'senza uid', indice: 3 },
+  ]);
+  assert.equal(r.corpo.scartate[0].motivo, 'quesito sconosciuto');
+  assert.equal(r.corpo.epoca, io.epoca, 'l epoca c e in ogni risposta delle righe');
+  assert.match(r.corpo.epoca, /^[0-9a-f]{32}$/);
+  assert.equal(r.corpo.generazione, 1);
+  assert.equal(typeof r.corpo.ultima_seq, 'number');
+});
+
+test('righe: una riga arrivata tardi con un ts vecchio compare nella ricezione successiva', async (t) => {
+  // R-ACC-14, §2.3. Il cursore e' un numero dato dal server all'arrivo, non
+  // `ts`: una risposta data offline il 3 e inviata il 10 ha un `ts` piu'
+  // vecchio dell'ultima scaricata, e un cursore su `ts` la salterebbe per
+  // sempre, su ogni altro dispositivo, senza un errore.
+  const k = await conti(t);
+  const { cookie } = await dentro(k);
+  await k.chiama('POST', '/v1/righe', { generazione: 1, righe: [riga(1, { ts: '2026-10-10T09:00:00+02:00' })] }, { cookie });
+  const portatile = (await k.chiama('GET', '/v1/righe?dopo=0', undefined, { cookie })).corpo.ultima_seq;
+  const tardiva = riga(2, { ts: '2026-10-03T18:00:00+02:00' });
+  await k.chiama('POST', '/v1/righe', { generazione: 1, righe: [tardiva] }, { cookie });
+  const r = await k.chiama('GET', `/v1/righe?dopo=${portatile}`, undefined, { cookie });
+  assert.deepEqual(r.corpo.righe, [tardiva]);
+  assert.ok(r.corpo.ultima_seq > portatile);
+});
+
+test('righe: la ricezione va a pagine di 5000, e insieme non perde e non ripete', async (t) => {
+  const k = await conti(t);
+  const { cookie } = await dentro(k);
+  const id = k.s.db.prepare("SELECT id FROM account WHERE email = 'studente@esempio.it'").get().id;
+  aggiungiRighe(k.s.db, id, Array.from({ length: 5003 }, (_, i) => riga(i)));
+  const p1 = (await k.chiama('GET', '/v1/righe?dopo=0', undefined, { cookie })).corpo;
+  assert.equal(p1.righe.length, 5000);
+  assert.equal(p1.altre, true);
+  const p2 = (await k.chiama('GET', `/v1/righe?dopo=${p1.ultima_seq}`, undefined, { cookie })).corpo;
+  assert.equal(p2.righe.length, 3);
+  assert.equal(p2.altre, false);
+  const uid = [...p1.righe, ...p2.righe].map((r) => r.uid);
+  assert.equal(new Set(uid).size, 5003);
+  const p3 = (await k.chiama('GET', `/v1/righe?dopo=${p2.ultima_seq}`, undefined, { cookie })).corpo;
+  assert.deepEqual([p3.righe, p3.altre, p3.ultima_seq], [[], false, p2.ultima_seq]);
+
+  for (const dopo of ['-1', 'abc', '1.5']) {
+    const r = await k.chiama('GET', `/v1/righe?dopo=${dopo}`, undefined, { cookie });
+    assert.equal(r.status, 422, dopo);
+    assert.ok(r.corpo.messaggio.length > 10);
+  }
+});
+
+test('righe: oltre 2000 righe o 2 MiB la risposta e 413, e niente entra', async (t) => {
+  const k = await conti(t);
+  const { cookie } = await dentro(k);
+  const troppe = await k.chiama('POST', '/v1/righe', { generazione: 1, righe: Array.from({ length: 2001 }, (_, i) => riga(i)) }, { cookie });
+  assert.equal(troppe.status, 413);
+  assert.match(troppe.corpo.messaggio, /2\.?000/);
+  const pesanti = Array.from({ length: 700 }, (_, i) => riga(i, { input_json: 'x'.repeat(3500) }));
+  const grosso = await k.chiama('POST', '/v1/righe', { generazione: 1, righe: pesanti }, { cookie });
+  assert.equal(grosso.status, 413);
+  assert.equal(k.s.db.prepare('SELECT count(*) n FROM riga').get().n, 0);
+  // E il lotto che il motore prepara, con gli stessi limiti, passa.
+  const lotto = E.lottoDaInviare(pesanti, E.nuovaCoda({ generazione: 1, righe: pesanti }));
+  const ok = await k.chiama('POST', '/v1/righe', lotto, { cookie });
+  assert.equal(ok.status, 200, JSON.stringify(ok.corpo).slice(0, 200));
+  assert.equal(ok.corpo.nuove.length, lotto.righe.length);
+});
+
+test('righe: senza sessione 401, e un account non vede e non tocca le righe di un altro', async (t) => {
+  // §3: la chiave e' (account, uid). Lo stesso uid in due archivi sono due righe.
+  const k = await conti(t);
+  const a = await dentro(k, 'a@esempio.it');
+  const b = await dentro(k, 'b@esempio.it');
+  assert.equal((await k.chiama('POST', '/v1/righe', { generazione: 1, righe: [riga(1)] })).status, 401);
+  assert.equal((await k.chiama('GET', '/v1/righe?dopo=0')).status, 401);
+  assert.equal((await k.chiama('GET', '/v1/esporta')).status, 401);
+  await k.chiama('POST', '/v1/righe', { generazione: 1, righe: [riga(1, { correct: 1 })] }, { cookie: a.cookie });
+  const diB = await k.chiama('POST', '/v1/righe', { generazione: 1, righe: [riga(1, { correct: 0 })] }, { cookie: b.cookie });
+  assert.deepEqual(diB.corpo.nuove, ['u000001'], 'per b e una riga nuova');
+  assert.equal((await k.chiama('GET', '/v1/righe?dopo=0', undefined, { cookie: a.cookie })).corpo.righe[0].correct, 1);
+  assert.equal((await k.chiama('GET', '/v1/righe?dopo=0', undefined, { cookie: b.cookie })).corpo.righe[0].correct, 0);
+  // E un invio senza generazione, o senza righe, si rifiuta dicendo perche'.
+  for (const corpo of [{ righe: [riga(2)] }, { generazione: 1 }, { generazione: '1', righe: [] }]) {
+    const r = await k.chiama('POST', '/v1/righe', corpo, { cookie: a.cookie });
+    assert.equal(r.status, 422, JSON.stringify(corpo));
+    assert.ok(r.corpo.messaggio.length > 10);
+  }
+});
+
+test('azzera: dopo un azzeramento un invio con la generazione vecchia e rifiutato, e le sue righe non rientrano', async (t) => {
+  // R-ACC-15, §8.4. Senza la generazione, un telefono rimasto in un cassetto
+  // rimanderebbe alla prima connessione tutte le righe cancellate: una
+  // cancellazione che non cancella, senza un errore. E il riavvio in mezzo: la
+  // generazione sta nel database, non in memoria.
+  const k = await conti(t);
+  const { cookie } = await dentro(k);
+  const vecchie = Array.from({ length: 20 }, (_, i) => riga(i));
+  await k.chiama('POST', '/v1/righe', { generazione: 1, righe: vecchie }, { cookie });
+
+  const sbagliata = await k.chiama('POST', '/v1/azzera', { password: ALTRA }, { cookie });
+  assert.equal(sbagliata.status, 401, 'azzerare chiede la password');
+  assert.equal(k.s.db.prepare('SELECT count(*) n FROM riga').get().n, 20, 'e con quella sbagliata non tocca niente');
+
+  k.avanza(60000);
+  const az = await k.chiama('POST', '/v1/azzera', { password: BUONA }, { cookie });
+  assert.equal(az.status, 200, JSON.stringify(az.corpo));
+  assert.equal(az.corpo.generazione, 2);
+  assert.equal(az.corpo.azzerato_il, new Date(T0 + 60000).toISOString(), 'con l orologio del server');
+  assert.equal(az.corpo.righe, 0);
+  const file = leggiCancellazioni(join(k.c, 'cancellazioni')).voci;
+  assert.deepEqual(file.map((v) => [v.evento, v.generazione]), [['azzeramento', 2]], 'anche nel file, per il ripristino (§2.7)');
+
+  await k.riavvia();
+  const cassetto = await k.chiama('POST', '/v1/righe', { generazione: 1, righe: vecchie }, { cookie });
+  assert.equal(cassetto.status, 409);
+  assert.equal(cassetto.corpo.errore, 'generazione');
+  assert.equal(cassetto.corpo.generazione, 2);
+  assert.equal(cassetto.corpo.azzerato_il, az.corpo.azzerato_il);
+  assert.match(cassetto.corpo.epoca, /^[0-9a-f]{32}$/);
+  assert.match(cassetto.corpo.messaggio, /azzerat/);
+  assert.equal(k.s.db.prepare('SELECT count(*) n FROM riga').get().n, 0, 'le righe azzerate non rientrano');
+
+  const ric = await k.chiama('GET', '/v1/righe?dopo=0', undefined, { cookie });
+  assert.equal(ric.corpo.generazione, 2, 'anche chi riceve soltanto scopre l azzeramento');
+  assert.deepEqual(ric.corpo.righe, []);
+  assert.equal((await k.chiama('POST', '/v1/righe', { generazione: 2, righe: [riga(100)] }, { cookie })).status, 200);
+  const io = (await k.chiama('GET', '/v1/io', undefined, { cookie })).corpo;
+  assert.deepEqual([io.generazione, io.righe, io.azzerato_il], [2, 1, az.corpo.azzerato_il]);
+});
+
+test('righe: cursore, generazione ed epoca vivono nel database, e un riavvio non li cambia', async (t) => {
+  // Lo stato che potrebbe vivere in memoria, e non deve: un cursore che dopo
+  // un riavvio ripartisse da un numero gia' dato sarebbe il ripristino del
+  // §2.7 senza un ripristino, e senza un'epoca nuova che lo dica.
+  const k = await conti(t);
+  const { cookie } = await dentro(k);
+  const a = await k.chiama('POST', '/v1/righe', { generazione: 1, righe: [riga(1), riga(2)] }, { cookie });
+  const cursore = (await k.chiama('GET', '/v1/righe?dopo=0', undefined, { cookie })).corpo.ultima_seq;
+  await k.riavvia();
+  const b = await k.chiama('POST', '/v1/righe', { generazione: 1, righe: [riga(3)] }, { cookie });
+  assert.equal(b.corpo.epoca, a.corpo.epoca, 'un riavvio non e un ripristino');
+  const dopo = (await k.chiama('GET', `/v1/righe?dopo=${cursore}`, undefined, { cookie })).corpo;
+  assert.deepEqual(dopo.righe.map((r) => r.uid), ['u000003']);
+  assert.ok(dopo.ultima_seq > cursore);
+});
+
+test('esporta: il file dal server si ricarica con importa e da le stesse righe', async (t) => {
+  // R-ACC-18, §7.2. La portabilita' dell'art. 20 senza una riga nuova dal lato
+  // di chi riceve: e' il file di `esporta()`, e lo legge `importa()`, cioe'
+  // `fondiArchivio()`. Si scarica dal server, non dalla memoria della pagina:
+  // chiude per chi ha un account il difetto della 0.19.2, due schede aperte e
+  // un export con 95 righe su 101.
+  const k = await conti(t);
+  const { cookie } = await dentro(k);
+  const mie = [...Array.from({ length: 30 }, (_, i) => riga(i)), { _t: 'g', uid: 'g1', attempt_uid: 'u000001', tag: 'L', ts: '2026-09-26T10:01:00+02:00' }];
+  await k.chiama('POST', '/v1/righe', { generazione: 1, righe: mie }, { cookie });
+  const r = await fetch(`${k.s.indirizzo}/v1/esporta`, { headers: { cookie, origin: ORIGINE } });
+  assert.equal(r.status, 200);
+  assert.match(r.headers.get('content-disposition'), /^attachment; filename="rotta-giusta-progressi-2026-10-01\.json"$/);
+  const file = await r.json();
+  assert.equal(file.app, 'rotta-giusta');
+  assert.equal(file.versione, VERSION);
+  assert.ok(Array.isArray(file.righe));
+  const vuoto = E.fondiArchivio([], file.righe);
+  assert.deepEqual([vuoto.nuove, vuoto.gia, vuoto.scartate], [31, 0, 0]);
+  assert.deepEqual(vuoto.righe, mie);
+  const pieno = E.fondiArchivio(mie, file.righe);
+  assert.deepEqual([pieno.nuove, pieno.gia, pieno.scartate], [0, 31, 0]);
+});
+
+test('epoca: con la contabilita del motore, dopo un ripristino le righe perse tornano e ogni dispositivo le riceve', async (t) => {
+  // R-ACC-24 per intero: il server (l'epoca che cambia con il ripristino) e il
+  // client (la contabilita' della coda nel motore, che la vede cambiare,
+  // azzera il cursore e rimanda tutto). Tre dispositivi dello stesso account,
+  // ognuno con il suo archivio e la sua coda, contro il server vero: dopo il
+  // ripristino due scoprono l'epoca nuova inviando, il terzo solo ricevendo.
+  const k = await conti(t);
+  const { cookie, io } = await dentro(k);
+
+  const dispositivo = () => ({ righe: [], coda: E.nuovaCoda({ generazione: io.generazione }) });
+  const invia = async (d) => {
+    for (;;) {
+      const lotto = E.lottoDaInviare(d.righe, d.coda);
+      if (!lotto) return;
+      const r = await k.chiama('POST', '/v1/righe', lotto, { cookie });
+      const e = E.dopoInvio(d.coda, lotto, { codice: r.status, corpo: r.corpo }, d.righe);
+      d.coda = e.coda;
+      if (r.status !== 200) return;
+    }
+  };
+  const ricevi = async (d) => {
+    for (let giri = 0; giri < 10; giri++) {
+      const r = await k.chiama('GET', `/v1/righe?dopo=${d.coda.cursore}`, undefined, { cookie });
+      const e = E.dopoRicezione(d.coda, { codice: r.status, corpo: r.corpo }, d.righe);
+      d.righe = E.fondiArchivio(d.righe, e.righe).righe;
+      d.coda = e.coda;
+      if (!e.continua) return;
+    }
+  };
+  const rispondi = (d, n) => { const r = riga(n); d.righe.push(r); d.coda = E.accoda(d.coda, r.uid); };
+  const sincronizza = async (d) => { await invia(d); await ricevi(d); await invia(d); };
+
+  const telefono = dispositivo(), portatile = dispositivo(), tablet = dispositivo();
+  for (let i = 0; i < 40; i++) rispondi(telefono, i);
+  await sincronizza(telefono);
+  await sincronizza(portatile);
+  assert.equal(portatile.righe.length, 40);
+
+  // La copia, con il servizio fermo; poi il servizio riparte.
+  await k.s.chiudi();
+  copia(k.opzioni.db, join(k.c, 'copia.db'));
+  k.s = await avvia(k.opzioni);
+
+  // Dopo la copia il telefono risponde a cinque, il server le accoglie, il
+  // telefono le toglie dalla coda. Il portatile le riceve e avanza il cursore.
+  for (let i = 500; i < 505; i++) rispondi(telefono, i);
+  await sincronizza(telefono);
+  assert.deepEqual(telefono.coda.daInviare, []);
+  await sincronizza(portatile);
+  assert.equal(portatile.righe.length, 45);
+  await sincronizza(tablet);
+  assert.equal(tablet.righe.length, 45);
+
+  // Il disastro, e il ripristino dalla copia, a servizio fermo.
+  await k.s.chiudi();
+  for (const s of ['', '-wal', '-shm']) rmSync(k.opzioni.db + s, { force: true });
+  ripristina(join(k.c, 'copia.db'), k.opzioni.db, { cancellazioni: k.opzioni.cancellazioni });
+  k.s = await avvia(k.opzioni);
+  assert.equal(k.s.db.prepare('SELECT count(*) n FROM riga').get().n, 40, 'la copia ha perso le cinque');
+
+  // Tutti e due rispondono a una domanda nuova prima di collegarsi, cosi' il
+  // cambio d'epoca lo scopre prima un invio che una ricezione: le righe nuove
+  // prendono numeri che l'altro dispositivo ha gia' superato. Il telefono si
+  // collega per primo: e' lui ad avere le cinque perse. (Con il solo portatile
+  // che rispondeva, un invio che ignorava l'epoca passava verde: il telefono
+  // la scopriva ricevendo. Trovato rompendolo apposta.)
+  rispondi(portatile, 900);
+  rispondi(telefono, 901);
+  await sincronizza(telefono);
+  await sincronizza(portatile);
+  await sincronizza(telefono);
+  // Il tablet non ha niente da mandare: l'epoca la vede solo ricevendo, con un
+  // cursore che il database ripristinato ha gia' superato.
+  await sincronizza(tablet);
+
+  const sulServer = new Set(k.s.db.prepare('SELECT uid FROM riga').all().map((r) => r.uid));
+  const attese = [...Array.from({ length: 40 }, (_, i) => riga(i).uid), ...[500, 501, 502, 503, 504, 900, 901].map((n) => riga(n).uid)];
+  assert.deepEqual([...sulServer].sort(), [...attese].sort(), 'le cinque perse tornano dal telefono');
+  assert.deepEqual(telefono.righe.map((r) => r.uid).sort(), [...attese].sort(), 'il telefono riceve la nuova del portatile');
+  assert.deepEqual(portatile.righe.map((r) => r.uid).sort(), [...attese].sort());
+  assert.deepEqual(tablet.righe.map((r) => r.uid).sort(), [...attese].sort(), 'chi solo riceve riceve tutto');
+  assert.deepEqual([telefono.coda.daInviare, portatile.coda.daInviare, tablet.coda.daInviare], [[], [], []]);
 });

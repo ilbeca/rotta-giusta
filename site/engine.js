@@ -1303,6 +1303,179 @@ export function fondiArchivio(presenti, importate, opt = {}) {
   return { righe: [...per.values()], nuove, gia, scartate, motivi };
 }
 
+// --- la coda verso il server degli account ---------------------------------------
+//
+// docs/account-progetto.md §1, §2.7, §8, §16.1. Chi ha un account tiene
+// l'archivio anche sul server, e le righe viaggiano in un senso e nell'altro.
+// Qui c'e' la contabilita' di quel viaggio, senza `fetch`: quali righe
+// inviare, che cosa togliere dopo una risposta, che cosa fare con un 409 e con
+// un'epoca del database che cambia. Il trasporto e l'archivio per account
+// stanno nella pagina; le regole stanno qui, dove un test le raggiunge.
+//
+// La coda e' un oggetto semplice, da salvare accanto all'archivio:
+//   { generazione, epocaDb, cursore, daInviare: [uid], scartate: { uid: motivo } }
+// `generazione` sale a ogni azzeramento (§8.4); `epocaDb` e' l'epoca del
+// database del server, che un ripristino rigenera (§2.7) — l'epoca di un
+// database, da non confondere con `epoca(ts)`, che e' un istante; `cursore` e'
+// l'ultimo numero di riga ricevuto (§2.3).
+//
+// Tre regole, e ogni funzione qui sotto ne tiene ferma almeno una:
+//   1. una riga esce da `daInviare` solo se il server la nomina — accolta, gia'
+//      presente, o arrivata in una ricezione. Mai per deduzione (§1, regola 3:
+//      la 0.4.6 buttava le risposte date durante l'invio);
+//   2. il cursore lo sposta solo la ricezione. L'`ultima_seq` di un invio conta
+//      anche le righe di un altro dispositivo arrivate nel frattempo, e un
+//      cursore messo li' le salterebbe per sempre;
+//   3. una generazione diversa da quella della coda non rimanda e non butta:
+//      decide chi studia (§8.4).
+//
+// Nessuna funzione modifica quello che riceve: restituiscono una coda nuova, e
+// la pagina decide quando salvarla.
+
+/** I limiti di un invio, gli stessi che il server applica: li importa da qui (§7.2). */
+export const INVIO_MAX_RIGHE = 2000;
+export const INVIO_MAX_BYTE = 2 * 1024 * 1024;
+
+const chiaveUid = (r) => (r && r.uid != null ? String(r.uid) : null);
+const byteJson = (x) => new TextEncoder().encode(JSON.stringify(x)).length;
+
+/**
+ * Una coda nuova. Con `righe`, sono tutte da inviare, nell'ordine dell'archivio:
+ * e' il caso di chi si registra alla fine di un'attivita' (ADR-004) o porta un
+ * archivio di prima degli account (§12). `epocaDb` resta `null` finche' il
+ * server non la dice.
+ */
+export function nuovaCoda({ generazione = 1, epocaDb = null, righe = [] } = {}) {
+  const daInviare = [...new Set((righe || []).map(chiaveUid).filter((u) => u != null))];
+  return { generazione, epocaDb, cursore: 0, daInviare, scartate: {} };
+}
+
+/** Una risposta nuova: il suo `uid` entra in coda, una volta sola. */
+export function accoda(coda, uid) {
+  const u = String(uid);
+  if (coda.daInviare.includes(u)) return { ...coda };
+  return { ...coda, daInviare: [...coda.daInviare, u] };
+}
+
+/**
+ * Il corpo del prossimo `POST /v1/righe`, `{ generazione, righe }`, o `null` se
+ * non c'e' niente da inviare. Le righe sono quelle dell'archivio che stanno in
+ * coda, nel loro ordine, una volta sola, fino a `INVIO_MAX_RIGHE` e con il
+ * corpo intero entro `INVIO_MAX_BYTE`: il resto parte al giro dopo.
+ */
+export function lottoDaInviare(righe, coda, { maxRighe = INVIO_MAX_RIGHE, maxByte = INVIO_MAX_BYTE } = {}) {
+  const inCoda = new Set(coda.daInviare);
+  const presi = new Set();
+  const lotto = [];
+  let peso = byteJson({ generazione: coda.generazione, righe: [] });
+  for (const r of righe || []) {
+    const u = chiaveUid(r);
+    if (u == null || !inCoda.has(u) || presi.has(u) || u in coda.scartate) continue;
+    const b = byteJson(r) + (lotto.length ? 1 : 0);
+    if (lotto.length >= maxRighe || peso + b > maxByte) break;
+    lotto.push(r); presi.add(u); peso += b;
+  }
+  return lotto.length ? { generazione: coda.generazione, righe: lotto } : null;
+}
+
+function conflittoDa(coda, corpo, righe) {
+  return {
+    generazione: corpo.generazione,
+    azzerato_il: corpo.azzerato_il ?? null,
+    epocaDb: corpo.epoca ?? coda.epocaDb,
+    nonSalvate: (righe || []).filter((r) => coda.daInviare.includes(chiaveUid(r))).length,
+  };
+}
+
+/**
+ * L'epoca del database e' cambiata: il server e' stato ripristinato da una
+ * copia (§2.7). Il cursore torna a zero, e si rimanda tutto quello che c'e'
+ * nell'archivio, tranne `sulServer` — le righe che questa stessa risposta dice
+ * presenti nel database nuovo — e le scartate, che verrebbero scartate di nuovo.
+ */
+function epocaNuova(coda, epocaDb, righe, sulServer) {
+  const daInviare = [...new Set((righe || []).map(chiaveUid)
+    .filter((u) => u != null && !sulServer.has(u) && !(u in coda.scartate)))];
+  return { ...coda, epocaDb, cursore: 0, daInviare };
+}
+
+const cambiata = (coda, corpo) => coda.epocaDb != null && typeof corpo.epoca === 'string' && corpo.epoca !== coda.epocaDb;
+
+/**
+ * Che cosa cambia dopo un invio. `risposta` e' `{ codice, corpo }`, con
+ * `codice: 0` se la rete non ha risposto; `righe` e' l'archivio intero, che
+ * serve solo se l'epoca e' cambiata.
+ *
+ * Restituisce `{ coda, salvate, scartate, conflitto, epocaCambiata }`. Con un
+ * codice che non e' 200 la coda resta com'era: un errore non toglie niente. Con
+ * il 409 `conflitto` dice la generazione nuova, quando e' stata azzerata, e
+ * quante risposte di qui non sono sul server; la coda resta com'era finche'
+ * `risolviConflitto()` non la chiude.
+ */
+export function dopoInvio(coda, lotto, risposta, righe) {
+  const fermo = { coda: { ...coda }, salvate: [], scartate: [], conflitto: null, epocaCambiata: false };
+  const { codice, corpo } = risposta || {};
+  if (codice === 409 && corpo && Number.isInteger(corpo.generazione)) {
+    return { ...fermo, conflitto: conflittoDa(coda, corpo, righe) };
+  }
+  if (codice !== 200 || !corpo || !Array.isArray(corpo.nuove) || !Array.isArray(corpo.gia)) return fermo;
+
+  const nelLotto = new Set(((lotto && lotto.righe) || []).map(chiaveUid));
+  const salvate = [...corpo.nuove, ...corpo.gia].map(String).filter((u) => nelLotto.has(u));
+  const scartate = [];
+  for (const s of Array.isArray(corpo.scartate) ? corpo.scartate : []) {
+    // Il server scrive `uid: null` quando l'uid non e' una stringa: la riga si
+    // riconosce dalla sua posizione nel lotto.
+    const perIndice = Number.isInteger(s.indice) ? chiaveUid(lotto.righe[s.indice]) : null;
+    const u = perIndice ?? (s.uid != null ? String(s.uid) : null);
+    if (u != null && nelLotto.has(u)) scartate.push({ uid: u, motivo: String(s.motivo) });
+  }
+  const tolte = new Set([...salvate, ...scartate.map((s) => s.uid)]);
+  const scartateMappa = { ...coda.scartate };
+  for (const s of scartate) scartateMappa[s.uid] = s.motivo;
+  let nuova = { ...coda, daInviare: coda.daInviare.filter((u) => !tolte.has(u)), scartate: scartateMappa };
+  const epocaCambiata = cambiata(coda, corpo);
+  if (epocaCambiata) nuova = epocaNuova(nuova, corpo.epoca, righe, new Set(salvate));
+  else if (typeof corpo.epoca === 'string') nuova.epocaDb = corpo.epoca;
+  return { coda: nuova, salvate, scartate, conflitto: null, epocaCambiata };
+}
+
+/**
+ * Che cosa cambia dopo una ricezione (`GET /v1/righe?dopo=<cursore>`).
+ *
+ * Restituisce `{ coda, righe, continua, conflitto, epocaCambiata }`: `righe` sono
+ * quelle da mettere nell'archivio, per `uid`; `continua` dice se chiedere
+ * un'altra pagina. Una riga arrivata dal server e' sul server, quindi esce da
+ * `daInviare`. Con una generazione diversa niente entra: prima si sceglie.
+ */
+export function dopoRicezione(coda, risposta, righe) {
+  const fermo = { coda: { ...coda }, righe: [], continua: false, conflitto: null, epocaCambiata: false };
+  const { codice, corpo } = risposta || {};
+  if (codice !== 200 || !corpo || !Array.isArray(corpo.righe) || !Number.isInteger(corpo.ultima_seq)) return fermo;
+  if (Number.isInteger(corpo.generazione) && corpo.generazione !== coda.generazione) {
+    return { ...fermo, conflitto: conflittoDa(coda, corpo, righe) };
+  }
+  const arrivate = new Set(corpo.righe.map(chiaveUid).filter((u) => u != null));
+  const base = { ...coda, daInviare: coda.daInviare.filter((u) => !arrivate.has(u)) };
+  if (cambiata(coda, corpo)) {
+    // Le righe arrivate valgono, ma il cursore con cui sono state chieste e'
+    // quello del database di prima: si ricomincia da zero.
+    return { coda: epocaNuova(base, corpo.epoca, righe, arrivate), righe: corpo.righe, continua: true, conflitto: null, epocaCambiata: true };
+  }
+  const nuova = { ...base, cursore: Math.max(coda.cursore, corpo.ultima_seq) };
+  if (typeof corpo.epoca === 'string') nuova.epocaDb = corpo.epoca;
+  return { coda: nuova, righe: corpo.righe, continua: corpo.altre === true, conflitto: null, epocaCambiata: false };
+}
+
+/**
+ * Chi studia ha scelto — scaricare le risposte non salvate, o scartarle — e la
+ * pagina svuota l'archivio locale: si riparte dalla generazione nuova,
+ * dall'inizio, senza niente da inviare (§8.4).
+ */
+export function risolviConflitto(coda, conflitto) {
+  return { generazione: conflitto.generazione, epocaDb: conflitto.epocaDb ?? coda.epocaDb, cursore: 0, daInviare: [], scartate: {} };
+}
+
 // --- il gioco dei segnali --------------------------------------------------------
 //
 // Fanali, segnali diurni e segnali sonori del Regolamento per prevenire gli

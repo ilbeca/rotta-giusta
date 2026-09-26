@@ -925,7 +925,7 @@ uscirne — vale anche per chi legge la risposta in console.
 | `POST /v1/accesso` `{email, password}` | apre la sessione | `200` + cookie; `401` |
 | `POST /v1/uscita` | chiude questa sessione | `204` |
 | `POST /v1/uscita/ovunque` | chiude tutte | `204` |
-| `GET /v1/io` | chi sono | `{email, verificata, scade_se_non_verificata, data_esame, generazione, chiave_locale, righe, ultima_seq}`; `401` |
+| `GET /v1/io` | chi sono | `{email, verificata, scade_se_non_verificata, data_esame, generazione, azzerato_il, epoca, chiave_locale, righe, ultima_seq}`; `401` |
 | `POST /v1/verifica` `{gettone}` | conferma l'email | `200`; `410` gettone scaduto o usato |
 | `POST /v1/verifica/rinvia` | nuova mail di verifica | `202` |
 | `POST /v1/password/dimenticata` `{email}` | mail di reimpostazione | sempre `202` |
@@ -933,15 +933,15 @@ uscirne — vale anche per chi legge la risposta in console.
 | `POST /v1/password/cambia` `{attuale, nuova}` | cambia | `200`; `401` |
 | `POST /v1/email/cambia` `{password, nuova}` | mail di conferma al nuovo indirizzo, avviso al vecchio | `202` |
 | `PUT /v1/profilo` `{data_esame, segnali}` | onboarding e impostazioni (§13) | `200` |
-| `POST /v1/azzera` `{password}` | cancella le righe, alza la generazione (§8.4) | `200` con la generazione nuova |
+| `POST /v1/azzera` `{password}` | cancella le righe, alza la generazione (§8.4) | `200` con la generazione nuova, nella forma di `GET /v1/io`; `401` |
 | `DELETE /v1/account` `{password}` | cancella tutto, adesso (§14.1) | `204` |
 
 ### 7.2 Le righe
 
 | Rotta | Che cosa | Risposte |
 |---|---|---|
-| `POST /v1/righe` `{generazione, righe: [...]}` | aggiunge, per `uid` | `200 {nuove: [uid], gia: [uid], scartate: [{uid, motivo}], ultima_seq}`; `409` generazione vecchia; `413` oltre 2.000 righe o 2 MiB |
-| `GET /v1/righe?dopo=<seq>` | le righe arrivate dopo il cursore, al più 5.000 | `200 {righe, ultima_seq, altre: bool}` |
+| `POST /v1/righe` `{generazione, righe: [...]}` | aggiunge, per `uid` | `200 {nuove: [uid], gia: [uid], scartate: [{uid, motivo, indice}], ultima_seq, epoca, generazione}`; `409 {generazione, azzerato_il, epoca}` generazione vecchia; `413` oltre 2.000 righe o 2 MiB; `422` senza generazione o senza righe |
+| `GET /v1/righe?dopo=<seq>` | le righe arrivate dopo il cursore, al più 5.000 | `200 {righe, ultima_seq, altre: bool, epoca, generazione, azzerato_il}`; `422` se `dopo` non è un intero da zero in su |
 | `GET /v1/esporta` | **il file dei progressi**, nella forma di `esporta()` | `200`, `Content-Disposition: attachment` |
 
 **`/v1/righe` risponde con gli `uid`, non con i conteggi soli.** I conteggi
@@ -954,6 +954,43 @@ dal lato di chi riceve: il file si ricarica con `importa()`, identico a oggi.
 Si scarica dal server, non da `S.archivio`, e questo chiude per chi ha un
 account il difetto aperto dalla 0.19.2 — con due schede aperte l'export scriveva
 95 righe su 101.
+
+**Fatto il 26 settembre 2026 (P-10)**, in `server/righe.mjs`, con
+`POST /v1/azzera` in `server/conti.mjs`. Le scelte che la tabella non diceva:
+
+- **Ogni risposta delle righe dice `epoca` e `generazione`**, anche il `409`, e
+  la ricezione anche `azzerato_il`: chi riceve soltanto scopre così un
+  azzeramento fatto altrove, senza aspettare di avere qualcosa da inviare.
+  `GET /v1/io` le dice anche lui.
+- **Una scartata porta `indice`**, la sua posizione nell'invio. Con un `uid` che
+  non è una stringa il server risponde `uid: null`, e senza la posizione il
+  client non saprebbe quale riga togliere dalla coda: la rimanderebbe a ogni
+  giro, in silenzio.
+- **L'`ultima_seq` di un invio non è un cursore.** È l'ultima riga
+  dell'account, comprese quelle di un altro dispositivo arrivate nel frattempo:
+  un client che ci spostasse il cursore le salterebbe per sempre. Il cursore lo
+  sposta solo la ricezione (R-ACC-31).
+- **Il confronto della generazione sta nella transazione che scrive**, non
+  nella lettura della sessione: fra le due c'è la lettura del corpo, e un
+  azzeramento da un'altra scheda può arrivare lì in mezzo.
+- **Il server passa la banca a `validaRiga()`** — gli id di `quiz.json` e di
+  `carteggio.json`, perché le righe di tecnica portano l'id di un esercizio —,
+  quindi un `item_id` che non esiste è rifiutato come «quesito sconosciuto».
+- **I limiti di un invio vengono dal motore**, `INVIO_MAX_RIGHE` e
+  `INVIO_MAX_BYTE`: il server li importa da `site/engine.js`, lo stesso file con
+  cui il client prepara il lotto. Due numeri scritti in due posti sono il
+  difetto di casa.
+- **Il `413` si legge.** La prima stesura rispondeva prima di leggere un corpo
+  dichiarato troppo grande e chiudeva la connessione: misurato, il client
+  riceveva `ECONNRESET`, un errore di rete che non dice che cosa rimandare.
+  Ora il corpo oltre il limite scorre senza essere tenuto, e la risposta arriva;
+  oltre quattro volte il limite la connessione si chiude comunque.
+- **L'export non porta ancora `segPunti`**: i punteggi dei Segnali arrivano con
+  il profilo (P-11). Il campo manca invece di essere `{}`, perché `importa()`
+  salta un campo assente, mentre uno vuoto direbbe «nessun punteggio».
+- **Azzerare chiede la password**, e un tentativo sbagliato conta come un
+  accesso fallito (§6.5). L'azzeramento si scrive nel file delle cancellazioni
+  prima che nel database (§2.7), con l'orologio del server.
 
 ### 7.3 CORS
 
@@ -1517,6 +1554,20 @@ arriva il server.
   nessun test arriva.
 - Il trasporto (`fetch`), l'archivio per account e le schermate stanno in
   `app.html`, sul ramo `ui/*`, dentro una fetta del ridisegno.
+
+*(26 settembre 2026, P-10: la contabilità della coda è nel motore.* Sei
+funzioni pure — `nuovaCoda`, `accoda`, `lottoDaInviare`, `dopoInvio`,
+`dopoRicezione`, `risolviConflitto` — su una coda che è un oggetto semplice,
+`{ generazione, epocaDb, cursore, daInviare, scartate }`, da salvare accanto
+all'archivio; nessuna modifica quello che riceve. L'epoca del database si
+chiama `epocaDb`, perché `epoca(ts)` nel motore è un istante. Tre regole: una
+riga esce dalla coda solo se il server la nomina, accolta, già presente o
+arrivata in una ricezione; il cursore lo sposta solo la ricezione; una
+generazione diversa non rimanda e non butta, e dice quante risposte non sono
+salvate. Un'epoca cambiata azzera il cursore e rimette in coda tutto
+l'archivio, tranne quello che la stessa risposta dice presente e le scartate.
+Senza chiamanti nella pagina finché il client non c'è: dichiarate in
+`docs/eccezioni-interfaccia.md`.)*
 - Nessun modulo nuovo in `site/`, quindi nessuna voce nuova nel guscio.
 
 ### 16.2 Il server
@@ -1568,6 +1619,12 @@ L'elenco del §5.2 è `server/password-comuni.txt`, generato da
 un file di `server/` che non è un modulo non ha nel README il suo percorso e la
 sua impronta.)*
 
+*(26 settembre 2026, P-10: le righe. `POST` e `GET /v1/righe`, `GET
+/v1/esporta` e `POST /v1/azzera`, in un modulo nuovo, `server/righe.mjs`, più
+l'azzeramento in `conti.mjs`. Nessuna migrazione: le tabelle del §3 che servono
+alle righe c'erano dal P-03. Restano per il pezzo dopo il cambio d'indirizzo, il
+profilo e `DELETE /v1/account`.)*
+
 ### 16.3 In locale
 
 `strumenti/serve.py` serve il sito come oggi; il server gira accanto su un'altra
@@ -1604,30 +1661,38 @@ gettoni monouso e a tempo del §9.1. Un requisito entra solo con il suo test, e
 ognuno dei nove è stato provato al contrario — il codice rotto apposta, e il
 test giusto rosso.
 
+**Con le righe (P-10, 26 settembre 2026) sono entrati R-ACC-12, 13, 14, 15 e
+18**, e R-ACC-24 ha ora anche la metà del client. Tre sono nuovi, nati scrivendo
+il codice: R-ACC-31, il cursore che un invio non sposta; R-ACC-32, il `413` che
+si legge; R-ACC-33, le pagine della ricezione che non perdono e non ripetono.
+
 Gli altri sono **proposti** ed entrano nella specifica con il codice che li
 controlla. Con il server nella suite, la maggior parte smette di essere
 scoperta.
 
 | ID | Requisito | Controllo proposto |
 |---|---|---|
-| R-ACC-12 | Una riga accolta torna dal server byte per byte com'era, campi sconosciuti compresi | `test_server.mjs` |
-| R-ACC-13 | La risposta a un invio nomina gli `uid` accolti, già presenti e scartati, e il client toglie dalla coda solo i primi due | `test_engine.mjs` sulla contabilità della coda |
-| R-ACC-14 | Una riga arrivata tardi con un `ts` vecchio compare nella ricezione successiva | `test_server.mjs` |
-| R-ACC-15 | Dopo un azzeramento, un invio con la generazione vecchia è rifiutato e le sue righe non rientrano | `test_server.mjs` |
+| R-ACC-12 | Una riga accolta torna dal server byte per byte com'era, campi sconosciuti compresi | `test_server.mjs` — entrato |
+| R-ACC-13 | La risposta a un invio nomina gli `uid` accolti, già presenti e scartati, e il client toglie dalla coda solo i primi due | `test_engine.mjs` sulla contabilità della coda — entrato |
+| R-ACC-14 | Una riga arrivata tardi con un `ts` vecchio compare nella ricezione successiva | `test_server.mjs` — entrato |
+| R-ACC-15 | Dopo un azzeramento, un invio con la generazione vecchia è rifiutato e le sue righe non rientrano | `test_server.mjs` — entrato |
 | R-ACC-16 | Nessuna password, gettone o cookie compare nel database in chiaro né nel registro | `test_server.mjs` |
 | R-ACC-17 | L'accesso con un'email inesistente e con una password sbagliata danno la stessa risposta | `test_server.mjs` |
-| R-ACC-18 | L'export dal server si ricarica con `importa()` e dà le stesse righe | `test_server.mjs` più `test_engine.mjs` |
+| R-ACC-18 | L'export dal server si ricarica con `importa()` e dà le stesse righe | `test_server.mjs` più `test_engine.mjs` — entrato |
 | R-ACC-19 | Una cancellazione toglie tutte le righe dell'account, e un ripristino da una copia precedente non le riporta | `test_server.mjs`, con `ripristina --prova` |
 | R-ACC-20 | Una copia di sicurezza si ripristina e ha le stesse righe dell'originale | `test_server.mjs` |
 | R-ACC-21 | Una mail che il fornitore non accetta produce un errore dichiarato, mai «ti abbiamo scritto» | `test_server.mjs`, con il fornitore finto che rifiuta |
 | R-ACC-22 | All'uscita, righe non inviate fermano la cancellazione dell'archivio locale | scoperto — è la pagina |
 | R-ACC-23 | Un archivio di prima degli account, in IndexedDB o in `pn.archivio`, produce l'avviso finché non è portato o scaricato | scoperto — è la pagina, e va provato su un browser con un archivio vero (è R-ACC-05 reso concreto) |
-| R-ACC-24 | Dopo il ripristino di una copia, una riga accolta dopo la copia torna sul server dal dispositivo che la ha, e ogni altro dispositivo la riceve | `test_server.mjs` con `ripristina --prova`, più `test_engine.mjs` sull'epoca nella contabilità della coda (§2.7) |
+| R-ACC-24 | Dopo il ripristino di una copia, una riga accolta dopo la copia torna sul server dal dispositivo che la ha, e ogni altro dispositivo la riceve | `test_server.mjs` con `ripristina --prova`, più `test_engine.mjs` sull'epoca nella contabilità della coda (§2.7) — entrato |
 | R-ACC-25 | Una password dell'elenco delle comuni, in qualunque combinazione di maiuscole, o uguale all'email o alla sua parte prima della `@`, è rifiutata, e il rifiuto dice perché; il file dell'elenco è quello che lo script rigenera dalla fonte dichiarata (§5.2) | `test_server.mjs` sul rifiuto; sul file, un controllo che ne confronti l'impronta con quella che lo script produce |
 | R-ACC-26 | Una sessione vale 30 giorni dall'accesso e l'uso non la allunga: il trentunesimo giorno la stessa richiesta risponde `401` (§6.2) | `test_server.mjs`, con l'orologio del server passato dal test |
 | R-ACC-27 | Al centesimo accesso fallito di fila la password si disattiva, anche attraverso un riavvio, finché non arriva una reimpostazione; un'email che non esiste riceve gli stessi codici (§6.5) | `test_server.mjs` — entrato |
 | R-ACC-28 | La password dimenticata risponde allo stesso modo per un'email iscritta e una no (§5.3) | `test_server.mjs` — entrato |
 | R-ACC-29 | Un gettone vale una volta sola e per il suo tempo, e uno nuovo dello stesso scopo annulla i precedenti (§9.1) | `test_server.mjs` — entrato |
+| R-ACC-31 | Il cursore della ricezione lo sposta solo una ricezione: l'`ultima_seq` di un invio non lo tocca (§7.2) | `test_engine.mjs` — entrato |
+| R-ACC-32 | Un invio oltre 2.000 righe o 2 MiB riceve un `413` che si legge, e niente entra (§7.2) | `test_server.mjs` — entrato |
+| R-ACC-33 | La ricezione va a pagine di 5.000 righe, che insieme non perdono e non ripetono (§7.2) | `test_server.mjs` — entrato |
 
 ---
 
@@ -1815,3 +1880,12 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
   del §20 aperta da P-09: la registrazione dice apertamente se un'email è
   iscritta. §5.3 e §7.1 riscritti, R-ACC-30 proposto; il server cambia con
   P-11.
+- **26 settembre 2026 — le righe (P-10).** Il §7.2 e la metà del client del
+  §16.1: `POST` e `GET /v1/righe`, `GET /v1/esporta`, `POST /v1/azzera`, e la
+  contabilità della coda nel motore. Sette scelte che la tabella non diceva,
+  scritte sotto il §7.2; la più importante è che l'`ultima_seq` di un invio non
+  è un cursore. Una trovata misurando: il `413` anticipato chiudeva la
+  connessione, e il client riceveva `ECONNRESET` invece di un errore da leggere.
+  Una trovata rompendo il codice apposta: il test del ripristino con due
+  dispositivi non prendeva un client che scopriva l'epoca nuova solo in uno dei
+  due modi, inviando o ricevendo; ora i dispositivi sono tre.

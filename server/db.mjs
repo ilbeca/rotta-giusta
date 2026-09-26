@@ -198,42 +198,67 @@ export function creaAccount(db, { email, password, ora = adesso() }) {
  * funzione del browser, importata dal motore e non riscritta (§4.1).
  *
  * Restituisce gli `uid`, non i conteggi soli: il client toglie dalla coda solo
- * quelli che il server nomina (§1, regola 3).
+ * quelli che il server nomina (§1, regola 3). Una scartata porta anche
+ * `indice`, la sua posizione nell'invio: con un `uid` che non e' una stringa,
+ * e' l'unico modo che il client ha di riconoscerla.
+ *
+ * Con `generazione`, un invio della generazione sbagliata non scrive niente e
+ * restituisce `{ conflitto: { generazione, azzerato_il } }` (§8.4). Il
+ * confronto sta dentro la transazione che scrive: fra la lettura della
+ * sessione e l'invio un azzeramento puo' essere arrivato da un'altra scheda.
  */
-export function aggiungiRighe(db, accountId, righe, { quesiti } = {}) {
+export function aggiungiRighe(db, accountId, righe, { quesiti, generazione } = {}) {
   const nuove = [], gia = [], scartate = [];
   const esiste = db.prepare('SELECT 1 FROM riga WHERE account_id = ? AND uid = ?');
   const inserisci = db.prepare(`
     INSERT INTO riga (account_id, uid, seq, tipo, item_id, ts, ricevuta_il, dati)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`);
+  let conflitto = null;
   transazione(db, () => {
+    if (generazione !== undefined) {
+      const a = db.prepare('SELECT generazione, azzerato_il FROM account WHERE id = ?').get(accountId);
+      if (a.generazione !== generazione) {
+        conflitto = { generazione: a.generazione, azzerato_il: a.azzerato_il };
+        return;
+      }
+    }
     let seq = db.prepare('SELECT ultima_seq FROM impianto WHERE id = 1').get().ultima_seq;
     const ora = adesso();
-    for (const r of righe) {
+    righe.forEach((r, indice) => {
       const motivo = validaRiga(r, { quesiti });
-      if (motivo) { scartate.push({ uid: typeof r?.uid === 'string' ? r.uid : null, motivo }); continue; }
-      if (esiste.get(accountId, r.uid)) { gia.push(r.uid); continue; }
+      if (motivo) { scartate.push({ uid: typeof r?.uid === 'string' ? r.uid : null, motivo, indice }); return; }
+      if (esiste.get(accountId, r.uid)) { gia.push(r.uid); return; }
       // Il cursore viene da un contatore che sale sempre, non da MAX(seq):
       // cancellare l'account con le righe piu' recenti farebbe scendere il
       // massimo, e un numero gia' dato tornerebbe in circolo.
       seq += 1;
       inserisci.run(accountId, r.uid, seq, r._t, r.item_id ?? null, r.ts ?? null, ora, JSON.stringify(r));
       nuove.push(r.uid);
-    }
+    });
     db.prepare('UPDATE impianto SET ultima_seq = ? WHERE id = 1').run(seq);
   });
+  if (conflitto) return { conflitto };
   return { nuove, gia, scartate, ultima_seq: ultimaSeq(db, accountId) };
 }
 
-function ultimaSeq(db, accountId) {
+export function ultimaSeq(db, accountId) {
   return db.prepare('SELECT COALESCE(MAX(seq), 0) s FROM riga WHERE account_id = ?').get(accountId).s;
 }
 
-/** Le righe di un account arrivate dopo il cursore, come sono arrivate. */
-export function righeDopo(db, accountId, dopo = 0) {
-  const righe = db.prepare('SELECT dati FROM riga WHERE account_id = ? AND seq > ? ORDER BY seq')
-    .all(accountId, dopo).map((r) => JSON.parse(r.dati));
-  return { righe, ultima_seq: Math.max(Number(dopo) || 0, ultimaSeq(db, accountId)) };
+/**
+ * Le righe di un account arrivate dopo il cursore, come sono arrivate, al piu'
+ * `quante` (§7.2). Con `altre`, `ultima_seq` e' il numero dell'ultima riga
+ * restituita, da cui si chiede la pagina dopo; senza, e' l'ultima dell'account.
+ */
+export function righeDopo(db, accountId, dopo = 0, { quante = Infinity } = {}) {
+  const limite = Number.isFinite(quante) ? quante + 1 : -1;
+  const trovate = db.prepare('SELECT seq, dati FROM riga WHERE account_id = ? AND seq > ? ORDER BY seq LIMIT ?')
+    .all(accountId, dopo, limite);
+  const altre = Number.isFinite(quante) && trovate.length > quante;
+  const pagina = altre ? trovate.slice(0, quante) : trovate;
+  const righe = pagina.map((r) => JSON.parse(r.dati));
+  const ultima_seq = altre ? pagina.at(-1).seq : Math.max(Number(dopo) || 0, ultimaSeq(db, accountId));
+  return { righe, ultima_seq, altre };
 }
 
 // --- il file delle cancellazioni -------------------------------------------------
@@ -280,10 +305,9 @@ export function cancellaAccount(db, id, { cancellazioni, il = adesso() }) {
 }
 
 /** Azzera i progressi: toglie le righe, tiene l'account, alza la generazione (§8.4). */
-export function azzera(db, id, { cancellazioni }) {
+export function azzera(db, id, { cancellazioni, il = adesso() }) {
   const a = account(db, id);
   const generazione = a.generazione + 1;
-  const il = adesso();
   annota(cancellazioni, { evento: 'azzeramento', account: a.id, chiave: a.chiave_locale, generazione, il });
   transazione(db, () => applicaAzzeramento(db, a.id, generazione, il));
   return generazione;

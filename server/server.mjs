@@ -4,8 +4,9 @@
 // dipendenze; importa `site/engine.js` dal rilascio in uso, cosi' il browser e
 // il server rifiutano le stesse righe per gli stessi motivi. Le rotte del §7
 // arrivano un pezzo per volta, ognuna con i suoi test in tests/test_server.mjs:
-// qui la salute e l'account (§7.1, P-09); le righe e la sincronia (§7.2) sono
-// il pezzo dopo.
+// qui la salute, l'account (§7.1, P-09) e le righe con la sincronia (§7.2,
+// P-10); il cambio d'indirizzo, il profilo e la cancellazione sono il pezzo
+// dopo.
 //
 //   RG_DB=… RG_CANCELLAZIONI=… RG_PORTA=8620 node server/server.mjs
 //
@@ -19,6 +20,7 @@ import { fileURLToPath } from 'node:url';
 import { SCHEMA, apri, versioneSchema, leggiEpoca } from './db.mjs';
 import { hashPassword, calcolati, PARAMETRI } from './password.mjs';
 import { creaConti, COOKIE } from './conti.mjs';
+import { creaRighe, CORPO_RIGHE } from './righe.mjs';
 import { postaScaleway, postaAssente } from './posta.mjs';
 
 // La versione si legge dalla radice del codice, non dalla cartella dei dati:
@@ -27,6 +29,7 @@ import { postaScaleway, postaAssente } from './posta.mjs';
 const VERSIONE = readFileSync(new URL('../VERSION', import.meta.url), 'utf8').trim();
 
 // Un corpo dell'account e' un'email e una password: 16 KiB bastano e avanzano.
+// L'invio delle righe ha il suo limite, quello del §7.2 (server/righe.mjs).
 const CORPO_MASSIMO = 16 * 1024;
 
 // Ogni errore dice che cosa e' successo e che cosa fare (§7, e §8 della specifica).
@@ -36,18 +39,25 @@ class Rifiuto extends Error {
   constructor(codice, corpo) { super(corpo.messaggio); this.codice = codice; this.corpo = corpo; }
 }
 
-function leggiCorpo(req) {
+const troppoGrande = (massimo) => new Rifiuto(413, errore('troppo_grande',
+  `La richiesta è troppo grande: al più ${massimo >= 1048576 ? `${massimo / 1048576} MiB` : `${massimo / 1024} KiB`}. Niente è stato salvato.`));
+
+// Oltre il limite il corpo si lascia scorrere senza tenerlo, e la risposta e'
+// un 413 che il client legge: chiudere la connessione mentre il client scrive
+// ancora gli da' un ECONNRESET — misurato scrivendo il test —, cioe' un errore
+// di rete che non spiega che cosa rimandare. Oltre quattro volte il limite si
+// chiude comunque: e' qualcuno che manda roba a caso.
+function leggiCorpo(req, massimo) {
   return new Promise((ok, ko) => {
     const pezzi = [];
     let n = 0;
     req.on('data', (p) => {
       n += p.length;
-      if (n > CORPO_MASSIMO) {
-        ko(new Rifiuto(413, errore('troppo_grande', 'La richiesta è troppo grande.')));
-        req.destroy();
-      } else pezzi.push(p);
+      if (n <= massimo) pezzi.push(p);
+      else if (n > 4 * massimo) { ko(troppoGrande(massimo)); req.destroy(); }
     });
     req.on('end', () => {
+      if (n > massimo) return ko(troppoGrande(massimo));
       const testo = Buffer.concat(pezzi).toString('utf8');
       if (!testo) return ok(undefined);
       try { ok(JSON.parse(testo)); } catch { ko(new Rifiuto(400, errore('json', 'Il corpo della richiesta non è JSON valido.'))); }
@@ -86,9 +96,11 @@ export async function avvia({
   // una volta, adesso, con i parametri veri, cosi' costa quanto uno vero.
   const fittizia = await hashPassword(randomBytes(24).toString('base64'), parametri);
   const conti = creaConti({ db, ora, argon2: parametri, posta, sito, cancellazioni, fittizia, log });
+  const righe = creaRighe({ db, ora, versione: VERSIONE });
 
-  // Le rotte: [gestore, che cosa chiede]. `sessione` vuol dire che senza una
-  // sessione valida la risposta e' 401 prima di arrivare al gestore.
+  // Le rotte: [gestore, che cosa chiede, quanto puo' pesare il corpo].
+  // `sessione` vuol dire che senza una sessione valida la risposta e' 401 prima
+  // di arrivare al gestore.
   const salute = () => [200, {
     stato: 'ok',
     versione: VERSIONE,
@@ -107,6 +119,9 @@ export async function avvia({
     '/v1/password/dimenticata': { POST: [conti.dimenticata] },
     '/v1/password/nuova': { POST: [conti.nuova] },
     '/v1/password/cambia': { POST: [conti.cambia, 'sessione'] },
+    '/v1/azzera': { POST: [conti.azzera, 'sessione'] },
+    '/v1/righe': { POST: [righe.invia, 'sessione', CORPO_RIGHE], GET: [righe.ricevi, 'sessione'] },
+    '/v1/esporta': { GET: [righe.esporta, 'sessione'] },
   };
 
   // §7.3: il CORS, solo per l'origine del sito, con i cookie.
@@ -114,8 +129,8 @@ export async function avvia({
     ? { 'Access-Control-Allow-Origin': origine, 'Access-Control-Allow-Credentials': 'true', Vary: 'Origin' }
     : { Vary: 'Origin' });
 
-  function rispondi(req, res, codice, corpo, { cookie, attesa } = {}) {
-    const h = { 'Cache-Control': 'no-store', ...cors(req) };
+  function rispondi(req, res, codice, corpo, { cookie, attesa, intestazioni } = {}) {
+    const h = { 'Cache-Control': 'no-store', ...cors(req), ...intestazioni };
     if (cookie) h['Set-Cookie'] = cookie;
     if (attesa) h['Retry-After'] = String(attesa);
     if (corpo === null || corpo === undefined) {
@@ -134,7 +149,8 @@ export async function avvia({
     : req.socket.remoteAddress);
 
   async function gestisci(req, res) {
-    const percorso = new URL(req.url, 'http://x').pathname;
+    const url = new URL(req.url, 'http://x');
+    const percorso = url.pathname;
     const rotta = rotte[percorso];
     if (!rotta) return rispondi(req, res, 404, errore('sconosciuta', `${percorso} non esiste: le rotte stanno sotto /v1`));
     const metodi = Object.keys(rotta).join(', ');
@@ -156,7 +172,7 @@ export async function avvia({
       res.setHeader('Allow', metodi);
       return rispondi(req, res, 405, errore('metodo', `${percorso} non accetta ${req.method}: usa ${metodi}`));
     }
-    const [gestore, richiede] = voce;
+    const [gestore, richiede, massimo = CORPO_MASSIMO] = voce;
 
     // §6.4: una richiesta che cambia qualcosa arriva solo dal sito. Il cookie e'
     // SameSite=Strict, l'Origin dev'essere esattamente quella, e il corpo JSON
@@ -182,8 +198,8 @@ export async function avvia({
       return rispondi(req, res, 401, errore('sessione', 'Non sei dentro, o la sessione è scaduta: '
         + 'si entra di nuovo con email e password. Una sessione dura 30 giorni dall\'accesso.'));
     }
-    const corpo = req.method === 'GET' ? undefined : await leggiCorpo(req);
-    const [codice, risposta, extra] = await gestore({ corpo, account, token, ip: indirizzoDi(req) });
+    const corpo = req.method === 'GET' ? undefined : await leggiCorpo(req, massimo);
+    const [codice, risposta, extra] = await gestore({ corpo, account, token, ip: indirizzoDi(req), query: url.searchParams });
     rispondi(req, res, codice, risposta, extra);
   }
 

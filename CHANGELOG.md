@@ -651,6 +651,65 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   entra fra le regole in `territori.yaml`. Resta aperto in `Standards`: il
   controllo dei territori non riconosce la chiusura di una merge.
 
+### Aggiunto — il server, pezzo 2: le righe e la sincronia (P-10)
+
+- **Il server accoglie le righe, le restituisce, e sa di un azzeramento.**
+  `POST /v1/righe` aggiunge per `uid` con `validaRiga()` del motore e la banca
+  accanto — un quesito che non esiste è «quesito sconosciuto», come nel
+  browser con la banca in mano —; `GET /v1/righe?dopo=` restituisce le righe
+  dopo il cursore, a pagine di 5.000, com'erano arrivate; `GET /v1/esporta` dà
+  il file di `esporta()`, che `importa()` ricarica identico; `POST /v1/azzera`,
+  con la password, toglie le righe, alza la generazione e lo scrive nel file
+  delle cancellazioni prima che nel database. Ogni risposta delle righe dice
+  **l'epoca del database e la generazione**; un invio della generazione di
+  prima riceve `409` e **non scrive niente**. Nessuna migrazione: le tabelle
+  c'erano dal P-03. Il codice sta in `server/righe.mjs`; `site/` non è stato
+  toccato fuori dal motore.
+
+- **La contabilità della coda è nel motore, dove un test la raggiunge.** Sei
+  funzioni pure in `site/engine.js` — `nuovaCoda`, `accoda`, `lottoDaInviare`,
+  `dopoInvio`, `dopoRicezione`, `risolviConflitto` — su una coda che si salva
+  accanto all'archivio. Tre regole: una riga esce dalla coda solo se il server
+  la nomina, mai «tutto tranne le scartate», che è la forma della 0.4.6; **il
+  cursore lo sposta solo la ricezione**; un `409` non rimanda e non butta, e
+  dice quante risposte non sono salvate. Un'epoca cambiata — un ripristino —
+  azzera il cursore e rimette in coda tutto l'archivio. L'epoca del database si
+  chiama `epocaDb`: `epoca(ts)` nel motore è un istante. Le funzioni aspettano
+  il client degli account, e intanto sono dichiarate fra gli orfani.
+
+- **Una trappola trovata scrivendo il contratto:** l'`ultima_seq` di un invio
+  è l'ultima riga dell'account, comprese quelle di un altro dispositivo arrivate
+  nel frattempo. Un client che ci spostasse il cursore le salterebbe per sempre,
+  senza un errore: il cursore su `ts` del §2.3 per un'altra strada. Ora è un
+  requisito, R-ACC-31, con il suo test.
+
+- **Una trovata misurando:** il primo `413` rispondeva senza leggere un corpo
+  dichiarato troppo grande e chiudeva la connessione, e il client riceveva
+  `ECONNRESET` — un errore di rete, non un messaggio da leggere. Ora il corpo
+  oltre il limite scorre senza essere tenuto, e il `413` arriva. I limiti,
+  2.000 righe e 2 MiB, il server li importa dal motore, lo stesso file con cui
+  il client prepara il lotto.
+
+- **Otto requisiti entrano con il loro test**, e R-ACC-24 passa da coperto per
+  metà a coperto per intero: R-ACC-12, 13, 14, 15 e 18 dal progetto, e tre
+  nuovi, R-ACC-31, 32 e 33. **Scritti prima: 11 test del motore e 10 del
+  server rossi uno per uno**, i 42 di prima verdi. **Provati al contrario su
+  tredici rotture**, una per volta — «tutto tranne le scartate», l'invio che
+  sposta il cursore, il `409` che butta la coda, il lotto che ignora i byte, il
+  server che non guarda la generazione, la riga ricostruita dalle colonne, il
+  cursore in memoria, la pagina che dice l'ultima riga dell'account, il server
+  senza la banca, l'azzeramento senza password, le righe ricevute che restano
+  da inviare, e l'epoca ignorata inviando o ricevendo. **Due sono passate
+  verdi sul test del server**, le ultime due: con due dispositivi lo scenario
+  ne esercitava una sola per volta. Ora i dispositivi sono tre, due la scoprono inviando e uno solo
+  ricevendo, e tutte e tredici le rotture sono rosse. Il test del riavvio tiene
+  fermi cursore, generazione ed epoca nel database.
+
+  Suite: server **52/52** con Node 25.3 e con la **24.21.0 LTS**, scaricata da
+  nodejs.org e verificata con `SHASUMS256.txt` (erano 42); motore **142/143**
+  con lo skip di sempre (erano 131/132); dati 242; interfaccia **201** (erano
+  183); specifica **344** (erano 310).
+
 ## [0.27.0] — 2026-09-25
 
 ### Verificato — la v0.26.2 sul dominio vero

@@ -6,10 +6,11 @@
 //
 // L'orologio e' passato da fuori (`ora()`, in millisecondi): la suite lo sposta
 // per provare i trenta giorni della sessione, i gettoni e le attese senza
-// aspettarli. Le righe e la sincronia non sono qui: sono il pezzo dopo.
+// aspettarli. Le righe e la sincronia stanno in server/righe.mjs; qui c'e'
+// l'azzeramento, che chiede la password come le altre operazioni dell'account.
 
 import { randomBytes, createHash } from 'node:crypto';
-import { creaAccount, cancellaAccount, transazione } from './db.mjs';
+import { creaAccount, cancellaAccount, azzera as azzeraProgressi, transazione, leggiEpoca } from './db.mjs';
 import { hashPassword, verificaPassword, valutaPassword, PARAMETRI } from './password.mjs';
 import { Finestra, Fallimenti, DISATTIVA_A } from './limiti.mjs';
 import { mailVerifica, mailGiaIscritto, mailPassword, mailDisattivata } from './posta.mjs';
@@ -78,6 +79,8 @@ export function creaConti({ db, ora, argon2 = PARAMETRI, posta, sito, cancellazi
       scade_se_non_verificata: a.email_verificata_il ? null : iso(Date.parse(a.creato_il) + NON_CONFERMATO_MS),
       data_esame: a.data_esame,
       generazione: a.generazione,
+      azzerato_il: a.azzerato_il,
+      epoca: leggiEpoca(db),
       chiave_locale: a.chiave_locale,
       righe: r.n,
       ultima_seq: r.s,
@@ -370,6 +373,20 @@ export function creaConti({ db, ora, argon2 = PARAMETRI, posta, sito, cancellazi
         db.prepare('DELETE FROM sessione WHERE account_id = ? AND id_hash != ?').run(account.id, impronta(token));
       });
       registra('password cambiata', account.id, ip);
+      return [200, descrivi(perId.get(account.id))];
+    },
+
+    /**
+     * Azzera i progressi (§8.4): toglie le righe, tiene l'account, alza la
+     * generazione. Chiede la password, e un tentativo sbagliato conta come un
+     * accesso fallito. Passa dal file delle cancellazioni prima del database
+     * (§2.7), cosi' un ripristino da una copia di prima non riporta le righe.
+     */
+    async azzera({ account, corpo, ip }) {
+      const rifiuto = await controlla(account.email, account, corpo?.password, ip);
+      if (rifiuto) return rifiuto;
+      azzeraProgressi(db, account.id, { cancellazioni, il: iso() });
+      registra('progressi azzerati', account.id, ip);
       return [200, descrivi(perId.get(account.id))];
     },
 

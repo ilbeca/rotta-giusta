@@ -2061,3 +2061,235 @@ test('sw.js: senza figure scaricate, il rilascio non ne inventa', async () => {
   const figure = [...cs.cache.get(CACHE).keys()].filter((k) => k.includes('/figure/'));
   assert.deepEqual(figure, []);
 });
+
+// --- la coda verso il server degli account ----------------------------------------
+//
+// docs/account-progetto.md §1, §2.7, §8, §16.1. Quali righe inviare, che cosa
+// togliere dopo una risposta, il 409 della generazione, e l'epoca del database
+// che cambia dopo un ripristino. E' logica pura e sta nel motore: in `app.html`
+// nessun test arriva, e la regola 3 del §1 — «salvato» solo dopo la conferma
+// per `uid` — e' la correzione della 0.4.6, dove `filter` sulla coda corrente
+// buttava le risposte date durante l'invio.
+
+const rq = (n, extra = {}) => ({
+  _t: 'q', uid: `r${String(n).padStart(5, '0')}`, item_id: `base-${n}`,
+  ts: '2026-10-01T10:00:00+02:00', ms: 9000, correct: 1, ...extra,
+});
+const EPOCA_A = 'a'.repeat(32);
+const EPOCA_B = 'b'.repeat(32);
+const ok200 = (corpo) => ({ codice: 200, corpo });
+
+test('coda: dopo un invio si tolgono solo gli uid che il server nomina, non tutto tranne gli scartati', () => {
+  // R-ACC-13. La forma della 0.4.6: una risposta data mentre l'invio era in
+  // volo non e' fra le rifiutate, e «tutto tranne le rifiutate» la buttava.
+  const righe = [rq(1), rq(2), rq(3)];
+  let c = E.nuovaCoda({ generazione: 1, epocaDb: EPOCA_A, righe });
+  const lotto = E.lottoDaInviare(righe, c);
+  assert.deepEqual(lotto.righe.map((r) => r.uid), ['r00001', 'r00002', 'r00003']);
+  assert.equal(lotto.generazione, 1);
+
+  // Mentre l'invio e' in volo arriva una risposta nuova.
+  righe.push(rq(4));
+  c = E.accoda(c, 'r00004');
+  const esito = E.dopoInvio(c, lotto, ok200({
+    nuove: ['r00001'], gia: ['r00002'], scartate: [{ uid: 'r00003', motivo: 'quesito sconosciuto', indice: 2 }],
+    ultima_seq: 99, epoca: EPOCA_A, generazione: 1,
+  }), righe);
+  assert.deepEqual(esito.coda.daInviare, ['r00004'], 'la risposta data durante l invio resta da inviare');
+  assert.deepEqual(esito.salvate, ['r00001', 'r00002']);
+  assert.deepEqual(esito.coda.scartate, { r00003: 'quesito sconosciuto' });
+  assert.equal(esito.conflitto, null);
+
+  // E una riga del lotto che il server non nomina affatto resta da inviare:
+  // tolta solo per conferma, mai per deduzione.
+  const c2 = E.nuovaCoda({ generazione: 1, epocaDb: EPOCA_A, righe: [rq(1), rq(2)] });
+  const l2 = E.lottoDaInviare([rq(1), rq(2)], c2);
+  const e2 = E.dopoInvio(c2, l2, ok200({ nuove: ['r00001'], gia: [], scartate: [], epoca: EPOCA_A, generazione: 1 }), [rq(1), rq(2)]);
+  assert.deepEqual(e2.coda.daInviare, ['r00002']);
+});
+
+test('coda: un invio fallito, rifiutato o senza risposta non toglie niente', () => {
+  const righe = [rq(1), rq(2)];
+  const c = E.nuovaCoda({ generazione: 1, epocaDb: EPOCA_A, righe });
+  const lotto = E.lottoDaInviare(righe, c);
+  for (const risposta of [{ codice: 0 }, { codice: 401, corpo: { errore: 'sessione' } }, { codice: 413 },
+    { codice: 500, corpo: { errore: 'interno' } }, { codice: 503 }, { codice: 200 }, { codice: 200, corpo: {} }]) {
+    const e = E.dopoInvio(c, lotto, risposta, righe);
+    assert.deepEqual(e.coda.daInviare, ['r00001', 'r00002'], `codice ${risposta.codice}`);
+    assert.deepEqual(e.salvate, []);
+  }
+});
+
+test('coda: le scartate escono dalla coda con il motivo, e non si rimandano in silenzio', () => {
+  // §8.1: restano nell'archivio, visibili con il motivo, e non si ritentano
+  // all'infinito. Una riga con un uid che non e' una stringa torna dal server
+  // con `uid: null`: la si riconosce dalla sua posizione nel lotto.
+  const righe = [rq(1), { ...rq(2), uid: 12345 }, rq(3)];
+  const c = E.nuovaCoda({ generazione: 1, epocaDb: EPOCA_A, righe });
+  const lotto = E.lottoDaInviare(righe, c);
+  const e = E.dopoInvio(c, lotto, ok200({
+    nuove: ['r00001', 'r00003'], gia: [], scartate: [{ uid: null, motivo: 'senza uid', indice: 1 }],
+    epoca: EPOCA_A, generazione: 1,
+  }), righe);
+  assert.deepEqual(e.coda.daInviare, []);
+  assert.deepEqual(e.coda.scartate, { 12345: 'senza uid' });
+  assert.deepEqual(e.scartate, [{ uid: '12345', motivo: 'senza uid' }]);
+  assert.equal(E.lottoDaInviare(righe, e.coda), null, 'niente da inviare: la scartata non riparte');
+});
+
+test('coda: il lotto sta sotto 2000 righe e 2 MiB, e il resto parte al giro dopo', () => {
+  // I limiti sono quelli del server (§7.2): lo stesso numero, dallo stesso
+  // file, perche' il server lo importa da qui.
+  assert.equal(E.INVIO_MAX_RIGHE, 2000);
+  assert.equal(E.INVIO_MAX_BYTE, 2 * 1024 * 1024);
+  const molte = Array.from({ length: 2500 }, (_, i) => rq(i));
+  let c = E.nuovaCoda({ generazione: 3, epocaDb: EPOCA_A, righe: molte });
+  const primo = E.lottoDaInviare(molte, c);
+  assert.equal(primo.righe.length, 2000);
+  const e = E.dopoInvio(c, primo, ok200({ nuove: primo.righe.map((r) => r.uid), gia: [], scartate: [], epoca: EPOCA_A, generazione: 3 }), molte);
+  const secondo = E.lottoDaInviare(molte, e.coda);
+  assert.equal(secondo.righe.length, 500);
+  assert.equal(secondo.righe[0].uid, rq(2000).uid, 'nell ordine dell archivio, senza saltarne');
+
+  // Righe grosse: comanda il peso. Il corpo che si spedisce sta nei 2 MiB.
+  const grosse = Array.from({ length: 900 }, (_, i) => rq(i, { input_json: 'x'.repeat(3500) }));
+  c = E.nuovaCoda({ generazione: 1, epocaDb: EPOCA_A, righe: grosse });
+  const l = E.lottoDaInviare(grosse, c);
+  const peso = new TextEncoder().encode(JSON.stringify(l)).length;
+  assert.ok(peso <= E.INVIO_MAX_BYTE, `${peso} byte`);
+  assert.ok(l.righe.length > 500 && l.righe.length < 900, `${l.righe.length} righe`);
+
+  // E un uid nella coda due volte parte una volta sola.
+  c = E.accoda(E.accoda(E.nuovaCoda({ generazione: 1, epocaDb: EPOCA_A }), 'r00001'), 'r00001');
+  assert.deepEqual(c.daInviare, ['r00001']);
+  assert.equal(E.lottoDaInviare([rq(1), rq(1)], c).righe.length, 1);
+});
+
+test('coda: l invio non sposta il cursore, lo sposta solo la ricezione', () => {
+  // `ultima_seq` di un invio e' l'ultima riga dell'account, comprese quelle di
+  // un altro dispositivo arrivate intanto: un cursore spostato li' le
+  // salterebbe per sempre, senza un errore. E' il cursore su `ts` del §2.3 per
+  // un'altra strada.
+  const righe = [rq(1)];
+  const c = { ...E.nuovaCoda({ generazione: 1, epocaDb: EPOCA_A, righe }), cursore: 40 };
+  const e = E.dopoInvio(c, E.lottoDaInviare(righe, c), ok200({ nuove: ['r00001'], gia: [], scartate: [], ultima_seq: 57, epoca: EPOCA_A, generazione: 1 }), righe);
+  assert.equal(e.coda.cursore, 40);
+});
+
+test('coda: la ricezione avanza il cursore, continua finche ci sono altre, e toglie dalla coda cio che arriva', () => {
+  const locali = [rq(1), rq(2)];
+  let c = { ...E.nuovaCoda({ generazione: 1, epocaDb: EPOCA_A, righe: locali }), cursore: 10 };
+  const r = E.dopoRicezione(c, ok200({ righe: [rq(2), rq(7)], ultima_seq: 25, altre: true, epoca: EPOCA_A, generazione: 1 }), locali);
+  assert.deepEqual(r.righe.map((x) => x.uid), ['r00002', 'r00007']);
+  assert.equal(r.coda.cursore, 25);
+  assert.equal(r.continua, true);
+  // r00002 e' arrivata dal server, quindi e' sul server: un'altra scheda l'ha
+  // gia' inviata, e rimandarla non serve.
+  assert.deepEqual(r.coda.daInviare, ['r00001']);
+
+  const fine = E.dopoRicezione(r.coda, ok200({ righe: [], ultima_seq: 25, altre: false, epoca: EPOCA_A, generazione: 1 }), locali);
+  assert.equal(fine.continua, false);
+  assert.equal(fine.coda.cursore, 25);
+
+  // Senza una risposta buona il cursore non si muove e niente entra.
+  for (const risposta of [{ codice: 0 }, { codice: 401 }, { codice: 200, corpo: { righe: 'no' } }]) {
+    const x = E.dopoRicezione(c, risposta, locali);
+    assert.equal(x.coda.cursore, 10);
+    assert.deepEqual(x.righe, []);
+    assert.equal(x.continua, false);
+  }
+});
+
+test('coda: il 409 non rimanda e non butta, e dice quante risposte non sono salvate', () => {
+  // R-ACC-15, la meta' del client (§8.4). Il telefono rimasto nel cassetto
+  // dopo un azzeramento fatto altrove: le sue righe non ripartono — sarebbe una
+  // cancellazione che non cancella — e non spariscono — sarebbe una perdita
+  // scoperta dopo. Decide chi studia: scaricarle o scartarle.
+  const righe = [rq(1), rq(2), rq(3)];
+  const c = E.nuovaCoda({ generazione: 1, epocaDb: EPOCA_A, righe });
+  const lotto = E.lottoDaInviare(righe, c);
+  const e = E.dopoInvio(c, lotto, { codice: 409, corpo: {
+    errore: 'generazione', generazione: 2, azzerato_il: '2026-10-12T09:00:00.000Z', epoca: EPOCA_A,
+  } }, righe);
+  assert.deepEqual(e.coda, c, 'la coda resta com era');
+  assert.deepEqual(e.salvate, []);
+  assert.deepEqual(e.conflitto, { generazione: 2, azzerato_il: '2026-10-12T09:00:00.000Z', epocaDb: EPOCA_A, nonSalvate: 3 });
+  assert.equal(E.lottoDaInviare(righe, e.coda).generazione, 1, 'finche non si sceglie, si resta alla generazione di prima');
+
+  // Scelto: si riparte dalla generazione nuova, dall'inizio, senza niente da
+  // inviare — la pagina svuota l'archivio locale e riceve tutto.
+  const nuova = E.risolviConflitto(e.coda, e.conflitto);
+  assert.deepEqual(nuova, { generazione: 2, epocaDb: EPOCA_A, cursore: 0, daInviare: [], scartate: {} });
+});
+
+test('coda: una ricezione con un altra generazione e un conflitto, e le sue righe non entrano', () => {
+  const locali = [rq(1)];
+  const c = { ...E.nuovaCoda({ generazione: 1, epocaDb: EPOCA_A, righe: locali }), cursore: 12 };
+  const r = E.dopoRicezione(c, ok200({ righe: [rq(9)], ultima_seq: 30, altre: false, epoca: EPOCA_A, generazione: 2, azzerato_il: '2026-10-12T09:00:00.000Z' }), locali);
+  assert.deepEqual(r.righe, []);
+  assert.deepEqual(r.coda, c);
+  assert.equal(r.continua, false);
+  assert.deepEqual(r.conflitto, { generazione: 2, azzerato_il: '2026-10-12T09:00:00.000Z', epocaDb: EPOCA_A, nonSalvate: 1 });
+});
+
+test('coda: se l epoca del database cambia, il cursore torna a zero e si rimanda tutto', () => {
+  // R-ACC-24, la meta' del client (§2.7). Dopo il ripristino di una copia il
+  // server ha perso le righe accolte dopo la copia, e i client le hanno gia'
+  // tolte dalla coda; e il cursore riparte dalla copia, quindi le righe nuove
+  // prendono numeri gia' visti. Chi vede cambiare l'epoca azzera il cursore e
+  // rimanda tutto quello che ha: l'unione per `uid` rende il rinvio innocuo.
+  const locali = [rq(1), rq(2), rq(3), rq(4)];
+  const tutti = locali.map((r) => r.uid);
+  const allineata = { generazione: 1, epocaDb: EPOCA_A, cursore: 1050, daInviare: [], scartate: { r00004: 'quesito sconosciuto' } };
+
+  // Dalla ricezione.
+  const r = E.dopoRicezione(allineata, ok200({ righe: [rq(2)], ultima_seq: 1003, altre: false, epoca: EPOCA_B, generazione: 1 }), locali);
+  assert.equal(r.epocaCambiata, true);
+  assert.equal(r.coda.epocaDb, EPOCA_B);
+  assert.equal(r.coda.cursore, 0, 'il cursore vecchio salterebbe le righe nuove');
+  assert.equal(r.continua, true, 'si riceve di nuovo dall inizio');
+  assert.deepEqual(r.coda.daInviare, ['r00001', 'r00003'],
+    'tutto, tranne quello che e appena arrivato dal server e le scartate, che verrebbero scartate di nuovo');
+  assert.deepEqual(r.righe.map((x) => x.uid), ['r00002'], 'le righe arrivate valgono: stanno sul server nuovo');
+
+  // Dall'invio: le righe del lotto che il server nomina ci sono, le altre si rimandano.
+  const c = E.accoda(allineata, 'r00003');
+  const lotto = E.lottoDaInviare(locali, c);
+  const e = E.dopoInvio(c, lotto, ok200({ nuove: ['r00003'], gia: [], scartate: [], ultima_seq: 1001, epoca: EPOCA_B, generazione: 1 }), locali);
+  assert.equal(e.epocaCambiata, true);
+  assert.equal(e.coda.cursore, 0);
+  assert.equal(e.coda.epocaDb, EPOCA_B);
+  assert.deepEqual(e.coda.daInviare, ['r00001', 'r00002']);
+  assert.deepEqual(E.lottoDaInviare(locali, e.coda).righe.map((x) => x.uid), ['r00001', 'r00002']);
+
+  // Prima del primo contatto l'epoca non e' nota: si prende, e non e' un cambio.
+  const nuova = E.nuovaCoda({ generazione: 1, righe: [] });
+  assert.equal(nuova.epocaDb, null);
+  const prima = E.dopoRicezione(nuova, ok200({ righe: [], ultima_seq: 0, altre: false, epoca: EPOCA_A, generazione: 1 }), []);
+  assert.equal(prima.epocaCambiata, false);
+  assert.equal(prima.coda.epocaDb, EPOCA_A);
+  assert.ok(tutti.length === 4);
+});
+
+test('coda: chi si registra alla fine di un attivita manda tutte le sue righe', () => {
+  // ADR-004, §10: le righe della pagina aperta salgono sull'account. La coda
+  // nuova le ha tutte da inviare, nell'ordine dell'archivio.
+  const righe = [rq(3), rq(1), rq(2)];
+  const c = E.nuovaCoda({ generazione: 1, righe });
+  assert.deepEqual(c, { generazione: 1, epocaDb: null, cursore: 0, daInviare: ['r00003', 'r00001', 'r00002'], scartate: {} });
+});
+
+test('coda: le funzioni non toccano quello che ricevono', () => {
+  // La coda si salva accanto all'archivio: una funzione che la modificasse sul
+  // posto cambierebbe lo stato salvato prima che la pagina decida di salvarlo.
+  const righe = [rq(1), rq(2)];
+  const c = E.nuovaCoda({ generazione: 1, epocaDb: EPOCA_A, righe });
+  const fotoC = JSON.stringify(c), fotoR = JSON.stringify(righe);
+  const lotto = E.lottoDaInviare(righe, c);
+  E.accoda(c, 'r00009');
+  E.dopoInvio(c, lotto, ok200({ nuove: ['r00001'], gia: [], scartate: [{ uid: 'r00002', motivo: 'x', indice: 1 }], epoca: EPOCA_B, generazione: 1 }), righe);
+  E.dopoRicezione(c, ok200({ righe: [rq(1)], ultima_seq: 5, altre: false, epoca: EPOCA_B, generazione: 1 }), righe);
+  E.dopoInvio(c, lotto, { codice: 409, corpo: { generazione: 2 } }, righe);
+  assert.equal(JSON.stringify(c), fotoC);
+  assert.equal(JSON.stringify(righe), fotoR);
+});
