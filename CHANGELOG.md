@@ -21,6 +21,29 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   all'altra senza un secondo scaricamento**, come R-ARCH-10 promette. I Quiz
   mostrano le cinque intenzioni; console senza errori.
 
+### Progettato — P-14, il ciclo dei quiz che si chiude
+
+- **`docs/area-3-progetto.md`: riepilogo, revisione e «Riprova questi N»**
+  con testi completi, conclusione parziale, simulazioni base/vela, ritorni,
+  figure, tag per tentativo e criteri di accettazione. La riprova apre una
+  nuova attività dai soli errori di quella scelta, con numero e lista dallo
+  stesso risultato di `erroriSessione()`; senza account, dalla versione del
+  client, revisione e riprova valgono per la pagina aperta. I testi distinguono
+  quel regime dal prodotto attuale che salva nel browser.
+- **Trovato un confine che perde errori, riprodotto prima del progetto:** tre
+  risposte con lo stesso `sim_uid`, due errori e una pausa di 21 minuti e
+  1 secondo diventano due gruppi; `erroriSessione()` ne restituisce solo uno.
+  Il §10.1 chiede su `main` il contratto per l'attività intera e i controlli
+  del ciclo prima della realizzazione, preservando il raggruppamento usato
+  dal ritmo. Dichiara anche il contatto col client per una simulazione
+  consegnata con zero risposte. Orfano ed eccezione alt restano fino alla
+  correzione reale; questa sessione non modifica la pagina o la coda.
+- **Verificato il prodotto esistente, non una UI già realizzata:** motore
+  141/143 con 2 skip previsti, dati 242, interfaccia 295, specifica 370;
+  server 58/58 su Node 25.3.0 e LTS 24.21.0, pacchetto separato verificato
+  contro il manifesto SHA-256 ufficiale. Riferimenti locali, guardiano e
+  controllo della documentazione verdi; nessuna versione modificata.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag
