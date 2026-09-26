@@ -72,8 +72,10 @@ decisione: R-ACC-02…05 nel §9.9 della specifica.
 tag; tutte le decisioni del §20 di `account-progetto.md`;
 **l'account Scaleway è aperto**. `ui/main` e `ui/vetrina` sono stati allineati a
 `main` (8857b79) lo stesso giorno: fino ad allora ChatGPT lavorava su una base
-senza ADR-003, ADR-004 e questo file. `main` è avanti di undici commit su
-`origin`: il push si chiede.
+senza ADR-003, ADR-004 e questo file. `main` è avanti su `origin`, e il push
+si chiede: quanti commit lo dice `git rev-list --count origin/main..main`, non
+questo file — un numero scritto qui invecchia al commit successivo, ed è
+successo (erano «undici», misurati quattordici poche ore dopo).
 
 **Superati, e marcati come tali** — non cancellati, perché contengono il
 ragionamento su cui le decisioni successive hanno dovuto rispondere:
@@ -309,7 +311,8 @@ qui si consuma, non si riprogetta.
 
 - Q-ONBOARD (specifica §10): che cosa chiede l'onboarding oltre alla data, e se
   il sito consiglia un piano di studio strutturato.
-- Il push di `main`, quando lo si vuole: undici commit al 26 settembre.
+- Il push di `main`, quando lo si vuole. Ricorda che su `rottagiusta.it` il push
+  non pubblica niente da solo: serve «Build now» su statichost.eu.
 - **Dal 16 ottobre 2026**, non prima: il redirect da `.pages.dev` (fase D2 di
   `docs/migrazione-hosting.md`).
 - Le altre questioni aperte stanno dove si decidono: specifica §10,
@@ -347,3 +350,6 @@ qui si consuma, non si riprogetta.
   l'ha seguita — Percorso 1, Quiz 2, ciclo 3 — e rimanda qui per lo stato.
   ChatGPT allineato a `main` e il suo prompt d'ingresso in §3.0; Scaleway aperto,
   quindi il server non aspetta più l'autore.
+- **26 settembre 2026 — l'ultima decisione del §20.** L'account non confermato
+  vive sette giorni (R-ACC-11). Tolto dalla coda il numero dei commit da
+  spingere, che era già sbagliato: si legge da git.
