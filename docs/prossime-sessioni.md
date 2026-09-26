@@ -388,8 +388,10 @@ consuma, non si riprogetta.
   fra le regole in `territori.yaml` e spiegato in `AGENTS.md` (commit
   `5229ad6`). La merge di P-05 la rifà la regia quando P-10, che lavora nella
   cartella principale e tocca anche `docs/eccezioni-interfaccia.md`, ha fatto
-  il suo commit. Resta aperto in `Standards`: `check_territories.py` non
-  riconosce la chiusura di una merge.
+  il suo commit. Resta aperto in `Standards`, e ha la sua segnalazione:
+  `check_territories.py` non riconosce la chiusura di una merge —
+  [ilbeca/standards#1](https://github.com/ilbeca/standards/issues/1), aperta il
+  26 settembre con la riproduzione e il test che la chiuderà.
 - **Q-PROVE**, riaperta da P-05: le prove con persone e lo zoom nativo al 200 %,
   che il browser integrato non fa. `docs/area-2-collaudo-ux.md` dice che cosa
   manca.
@@ -1195,3 +1197,6 @@ fare: un archivio vero nel browser che passa nell'account senza perdere una riga
   merge: annullata senza perdite, e nel §4 le due strade per rifarla.
 - **26 settembre 2026 — `merge=union`.** Scelta dell'autore: il CHANGELOG si
   fonde da sé. La merge di P-05 aspetta che P-10 liberi la cartella.
+- **26 settembre 2026 — la segnalazione a `Standards`.** Con il sì dell'autore:
+  [ilbeca/standards#1](https://github.com/ilbeca/standards/issues/1), etichetta
+  `bug`.
