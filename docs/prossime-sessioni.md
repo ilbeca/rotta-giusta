@@ -106,16 +106,19 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 5 | Area 2, Quiz: la realizzazione | ChatGPT | `ui/main` | il resoconto: il commit c'è | P-05 |
+| 5 | Area 2, Quiz: la realizzazione — **verificata, merge ferma** | la regia | `main` | la decisione del §4 sulla merge con conflitto | P-05 |
 | 4b | Il server, pezzo 2: le righe, la sincronia, l'azzeramento, e la contabilità della coda nel motore | Claude | `main`, a mano | niente | P-10 |
 | 4c | Il server, pezzo 3: «email già registrata», cambio d'indirizzo e profilo, cancellazione e due anni, allarmi, il conto delle 300 mail | Claude | `main`, a mano | P-10 | P-11 |
 | 5b | Chiudere il regime vecchio dei controlli dei quiz, e il §5 della specifica | Claude | `main`, a mano | la merge di P-05; fra P-10 e P-11, quando la cartella è libera | P-12 |
 | 7a | Il progetto del client degli account | ChatGPT | `ui/main` | la merge di P-05 | P-13 |
 | 6a | Il progetto dell'area 3, il ciclo che si chiude | ChatGPT | `ui/main` | P-13, nell'ordine consigliato | P-14 |
 | 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | P-11 | P-15 |
-| 7b | La realizzazione del client degli account | ChatGPT | `ui/main` | P-13, e P-10 per le righe | da scrivere |
-| 6b | Le aree del ridisegno che restano: 3 realizzata, poi 4, 5, 6 | ChatGPT | `ui/main` | la precedente | da scrivere |
-| 9 | **La versione con gli account** — il traguardo | tutti | `main` | 7b, 8, e gli adempimenti del §4 | da scrivere |
+| 12 | `ritmo()` che dice «orologio» senza orologio | Claude | `main`, a mano | la merge di P-05 | P-16 |
+| 13 | L'ultimo tag di una risposta, nel motore | Claude | `main`, a mano | la cartella libera | P-17 |
+| 7b | La realizzazione del client degli account | ChatGPT | `ui/main` | P-13, e P-10 per le righe | segnaposto P-18 |
+| 6b | Le aree del ridisegno che restano: 3 realizzata, poi 4, 5, 6 | ChatGPT | `ui/main` | la precedente | segnaposto P-19…P-25 |
+| 9a | I testi fuori da `site/` nella versione con gli account | Claude | `main`, a mano | P-18 | segnaposto P-26 |
+| 9 | **La versione con gli account** — il traguardo | tutti | `main` | 7b, 8, 9a, e gli adempimenti del §4 | segnaposto P-27 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**: Claude sul server (non tocca `site/`),
@@ -380,6 +383,26 @@ consuma, non si riprogetta.
   più l'iscrizione, ma non costano niente e non danno un'informazione in più.
   Scritta anche in `account-progetto.md` (§5.3, §7.1, §20) e nella specifica
   come R-ACC-30; il server la fa con P-11, con il suo test.
+- **La merge di P-05 è ferma, e serve un sì.** Il commit di ChatGPT è
+  verificato, ma la merge ha un conflitto nel CHANGELOG — le due mani hanno
+  aggiunto in fondo a `[Unreleased]` — e chiudere a mano un conflitto passa dal
+  `pre-commit`, che su `main` rifiuta `site/app.html`. Il controllo dei
+  territori non riconosce la chiusura di una merge (`Standards`,
+  `tools/check_territories.py`, non guarda `MERGE_HEAD`). Due strade: **la
+  regia aggiunge `.gitattributes` con `CHANGELOG.md merge=union`** e
+  `.gitattributes` fra le regole in `territori.yaml` — git tiene le righe dei
+  due lati da sé, provato su una copia: zero righe perse da una parte e
+  dall'altra, e la merge non si ferma più —; oppure **l'autore** chiude questa
+  merge con `TERRITORI_OK=1`, che è la sua uscita e non quella di un agente. La
+  prima risolve anche le prossime.
+- **Q-PROVE**, riaperta da P-05: le prove con persone e lo zoom nativo al 200 %,
+  che il browser integrato non fa. `docs/area-2-collaudo-ux.md` dice che cosa
+  manca.
+- **Q-DUE**, prima dell'area 5: le due classifiche di «cosa fare adesso»
+  (specifica §10).
+- **Un rilascio intermedio**, se lo vuoi: `site/` è cambiato con P-01 e con
+  l'area 2, e chi studia oggi non lo vede. La regia lo fa dopo la merge di
+  P-05, quando dici sì.
 - **Gli adempimenti rimasti**, sei punti, tutti nel §15.4 di
   `account-progetto.md` e bloccano il punto 9: l'indirizzo postale del titolare,
   la base giuridica del registro di sicurezza (da far confermare), l'inoltro di
@@ -574,7 +597,7 @@ tenendo le due voci; suite su `main` invariate (131 + 1 skip, 221, 135, 262).
 
 ### P-05 — ChatGPT: la realizzazione dell'area 2
 
-**Stato:** pronto: P-06 è chiuso e `ui/main` è allineato. **Dove:** come P-04.
+**Stato:** **commit verificato il 26 settembre 2026, merge ferma** sulla decisione del §4. **Dove:** come P-04.
 
 ```
 Sessione P-05. Realizza docs/area-2-progetto.md in site/app.html.
@@ -594,7 +617,16 @@ il trailer, versione non toccata. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito, finché la merge non c'è:** commit `0645970` su `ui/main`: le cinque
+intenzioni, i filtri locali, un'istantanea condivisa fra anteprima e avvio, la
+simulazione in due fasi, ritorni e focus; il collaudo in
+`docs/area-2-collaudo-ux.md`. Controllato dalla regia: territori puliti, il diff
+tocca `site/app.html`, il CHANGELOG, `docs/eccezioni-interfaccia.md` e il
+collaudo; con la merge provata, le cinque suite danno motore 130 + 2 skip,
+server 42, dati 242, interfaccia 277, specifica 312. Il secondo skip è voluto: il
+controllo di compatibilità di `totScreening()` si ritira da solo ora che la
+pagina chiama `lunghezzaScreening()`. Trovato: `ritmo()` dice «orologio» anche
+senza orologio, e diventa P-16.
 
 ### P-06 — Claude: i controlli dei quiz allineati all'area 2
 
@@ -940,6 +972,133 @@ docs/prossime-sessioni.md.
 
 **Esito:** —
 
+### P-16 — Claude: `ritmo()` dice «orologio» anche senza orologio
+
+**Stato:** in attesa della merge di P-05, che porta su `main` il collaudo dove il
+caso è scritto, e della cartella libera. **Dove:** Claude Code,
+`~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** il resoconto
+di P-05.
+
+```
+Sessione P-16, su main. Il collaudo di P-05 ha trovato che E.ritmo()
+può restituire affidabile: true e fonte: 'orologio' su trenta righe
+con sim_uid e ms ma senza ts, perché sessioni() ripiega sulla somma
+dei tempi quando non può misurare l'intervallo fra prima e ultima
+risposta: docs/area-2-collaudo-ux.md, «Trovato e contatto con la
+regia». Il Quiz se ne difende passando solo righe con ts; gli altri
+chiamanti no.
+
+Prima elenca i chiamanti di ritmo(), di sessioni() e di stimaImpegno(),
+e scrivi che cosa cambia per ciascuno (AGENTS.md). Poi un test che
+fallisce e riproduce il caso, e la correzione nel motore, così che
+nessun chiamante debba difendersene da sé. R-TEMPO-05 e R-TEMPO-07
+nella specifica restano veri, o si correggono dicendo perché.
+
+Non toccare docs/prossime-sessioni.md. Suite verdi, voce in fondo a
+[Unreleased], un commit. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-17 — Claude: l'ultimo tag di una risposta, nel motore
+
+**Stato:** pronto quando la cartella principale è libera. **Dove:** Claude Code,
+`~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** l'esito di
+P-01, che lo lasciava scritto come difetto di copertura.
+
+```
+Sessione P-17, su main. P-01 ha messo in site/app.html una funzione,
+tagPerTentativo(), che sceglie l'ultima classificazione N/L/C di ogni
+tentativo con E.ordinaRighe(). È una regola sulle righe dell'archivio,
+vive nella pagina, e nessun test la esercita: l'esito di P-01 nel §6
+di docs/prossime-sessioni.md lo dice.
+
+Portala nel motore come funzione pura, con i suoi test scritti prima:
+tag storici senza data, date miste UTC e offset locale, lo stesso
+istante, un ritag. La pagina non si tocca: la nuova funzione entra fra
+gli orfani dichiarati in docs/eccezioni-interfaccia.md, con l'area che
+la ricablerà. Quella riga è un punto della coda, non un ricordo.
+
+Non toccare docs/prossime-sessioni.md. Suite verdi, voce in fondo a
+[Unreleased], un commit. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+---
+
+### I segnaposto — i prompt che non si possono ancora scrivere
+
+Qui sotto c'è **tutto quello che resta** fino alla versione con gli account e
+alla fine del ridisegno, perché niente si perda. Ogni segnaposto ha già il suo
+numero, che cosa aspetta, e che cosa il prompt dovrà contenere; il testo del
+prompt no, perché punterebbe a documenti che non esistono ancora. La regia lo
+scrive quando si chiude quello che aspetta, e lo scrive **qui, al posto del
+segnaposto**.
+
+#### P-18 — ChatGPT: la realizzazione del client degli account
+
+**Aspetta:** P-13 (il progetto) e P-10 (le righe sul server). **Dove:** `ui/main`.
+**Dovrà contenere:** realizzare `docs/account-client-progetto.md` in
+`site/app.html` e `site/index.html`; **tutti i testi del §1** di questo file,
+nella stessa versione e non prima; i requisiti R-ACC della pagina — 01, 02, 03,
+04, 05, 09, 11 per la metà della schermata, 22, 23, 30 —; la contabilità della
+coda chiamata dal motore, non rifatta; il ricablaggio della funzione di P-17 al
+posto di `tagPerTentativo()`, se P-17 è chiuso; i controlli che il progetto
+avrà chiesto a Claude, scritti prima su `main`.
+
+#### P-19 — ChatGPT: la realizzazione dell'area 3
+
+**Aspetta:** P-14. **Dove:** `ui/main`. **Dovrà contenere:** realizzare
+`docs/area-3-progetto.md`; `erroriSessione()` che esce dagli orfani dichiarati;
+le dipendenze da test e specifica che il progetto avrà scritto, chiuse prima da
+Claude come ha fatto P-06 per l'area 2.
+
+#### P-20 e P-21 — ChatGPT: l'area 4, Carteggio — progetto, poi realizzazione
+
+**Aspetta:** P-19. **Dove:** `ui/main`. **Dovrà contenere:** i capitoli 12–15
+della Specifica UX/UI (`prossima-versione.md` §5.1); il vincolo del §7.3 della
+specifica — il giudizio è di chi studia, detto all'ingresso (R-UX-03) —;
+l'eccezione `figura` di `docs/eccezioni-interfaccia.md`, se l'area 3 non l'ha
+chiusa.
+
+#### P-22 e P-23 — ChatGPT: l'area 5, Progressi — progetto, poi realizzazione
+
+**Aspetta:** P-21. **Dove:** `ui/main`. **Dovrà contenere:** il capitolo 16;
+**Progressi è dei soli registrati** (ADR-004), quindi viene dopo il client;
+Q-DUE — le due classifiche, e `peggiori()` ancora orfana — deciso dall'autore
+prima del progetto; le tabelle che sforano a 375 px, difetto aperto dalla 0.3.0.
+
+#### P-24 e P-25 — ChatGPT: l'area 6, rifinitura trasversale — progetto, poi realizzazione
+
+**Aspetta:** P-23. **Dove:** `ui/main`. **Dovrà contenere:** i capitoli 17–22;
+le misure dell'appendice A della specifica rifatte sul tema chiaro; lo zoom
+nativo al 200 % che P-05 non ha potuto verificare nel browser integrato.
+
+#### P-26 — Claude: i testi fuori da `site/`, nella versione con gli account
+
+**Aspetta:** P-18. **Dove:** `main`, a mano. **Dovrà contenere:** i punti del
+§1 di questo file che non sono della pagina — `README.md` («niente account,
+niente registrazione»), la skill `.claude/skills/rotta-giusta/SKILL.md`
+(«nessun server»), `AGENTS.md` («`site/` è l'unica cosa pubblicata»,
+`account-progetto.md` §18) —; il §2.5 della specifica e le sezioni che
+descrivevano il prodotto senza account, riscritte ora che è vero; il §2 di
+`docs/filosofia.md` riletto. Nella stessa versione in cui la pagina cambia, non
+prima.
+
+#### P-27 — la regia, con tutti: il traguardo
+
+**Aspetta:** P-15, P-18, P-26, e gli adempimenti del §15.4 di
+`account-progetto.md` chiusi dall'autore. **Dove:** `main`. **Dovrà
+contenere:** la merge di tutto; il rilascio come dice `AGENTS.md` — numero nei
+tre posti, voce, tag, push chiesto, «Build now» — **più il server**, aggiornato
+con `rg-aggiorna` allo stesso tag; poi le due verifiche che solo quel giorno può
+fare: un archivio vero nel browser che passa nell'account senza perdere una riga
+(R-ACC-05), e il cookie fra `rottagiusta.it` e `api.` su un Safari vero
+(Q-PROVE). Il §5 di questo file è la lista di controllo.
+
 ---
 
 ## Registro
@@ -1033,3 +1192,9 @@ docs/prossime-sessioni.md.
   documenti che non esistono ancora. La decisione «email già registrata» è
   scritta anche in `account-progetto.md` e nella specifica (R-ACC-30): la
   cartella principale era libera.
+- **26 settembre 2026 — i segnaposto, e P-05 fermo alla merge.** Su richiesta
+  dell'autore, tutto quello che resta ha un numero nel §6: P-16 e P-17 scritti
+  per intero, perché nascono dai resoconti di P-05 e P-01; da P-18 a P-27 come
+  segnaposto, con che cosa aspettano e che cosa dovranno contenere. La merge di
+  P-05 si è fermata sul `pre-commit`, che non riconosce la chiusura di una
+  merge: annullata senza perdite, e nel §4 le due strade per rifarla.
