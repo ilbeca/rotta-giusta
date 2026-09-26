@@ -107,26 +107,29 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
 | 5b | Chiudere il regime vecchio dei controlli dei quiz, e il §5 della specifica | Claude | `main`, a mano | la cartella libera | P-12 |
-| 14 | I contratti del motore che il client chiede | Claude | `main`, a mano | niente — **per primo** | P-28 |
+| 16 | Un'attività registrata resta intera dopo una pausa: il difetto di `erroriSessione()` | Claude | `main`, a mano | niente — **per primo** | P-30 |
+| 14 | I contratti del motore che il client chiede, e il progetto del client riallineato | Claude | `main`, a mano | niente | P-28 |
 | 15 | La prova nel browser, per i controlli del client | Claude | `main`, a mano | P-28 | P-29 |
-| 6a | Il progetto dell'area 3, il ciclo che si chiude | ChatGPT | `ui/main` | niente | P-14 |
+| 17 | I controlli del ciclo, allineati all'area 3 | Claude | `main`, a mano | P-30 | P-31 |
+| 6a | La realizzazione dell'area 3 | ChatGPT | `ui/main` | P-28, P-30, P-31 | P-19 |
 | 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore: il tag `v0.28.0` c'è | P-15 |
-| 12 | `ritmo()` che dice «orologio» senza orologio | Claude | `main`, a mano | la cartella libera | P-16 |
+| 12 | `ritmo()` che dice «orologio» senza orologio | Claude | `main`, a mano | P-30, che tocca le stesse funzioni | P-16 |
 | 13 | L'ultimo tag di una risposta, nel motore | Claude | `main`, a mano | la cartella libera | P-17 |
 | 7b | La realizzazione del client degli account | ChatGPT | `ui/main` | P-28 e P-29 | P-18 |
-| 6b | Le aree del ridisegno che restano: 3 realizzata, poi 4, 5, 6 | ChatGPT | `ui/main` | la precedente | segnaposto P-19…P-25 |
+| 6b | Le aree del ridisegno che restano: 4, 5, 6 | ChatGPT | `ui/main` | la precedente, e P-18 | segnaposto P-20…P-25 |
 | 9a | I testi fuori da `site/` nella versione con gli account | Claude | `main`, a mano | P-18 | segnaposto P-26 |
 | 9 | **La versione con gli account** — il traguardo | tutti | `main` | 7b, 8, 9a, e gli adempimenti del §4 | segnaposto P-27 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
-**Le due colonne corrono in parallelo**: Claude sul server (non tocca `site/`),
-ChatGPT sull'interfaccia. **Adesso è pronto P-14 per ChatGPT, e per Claude P-28,
-poi P-29** — sono loro che sbloccano il client, P-18 —; P-12, P-16 e P-17
-riempiono i buchi, e P-15 parte quando l'autore ha il tempo: il tag c'è. I prompt di Claude vanno uno alla volta, perché stanno tutti nella
-cartella principale: è la strettoia della colonna di Claude, e si accetta perché
-il recinto la vuole. Il numero di una riga è il suo nome, non la sua posizione:
-l'ordine è quello della tabella. Le due colonne si incontrano al punto 7b, e il
-punto 9 è il giorno in cui gli account arrivano a chi studia.
+**Le due colonne corrono in parallelo**: Claude sul server e sul motore,
+ChatGPT sull'interfaccia. **ChatGPT adesso non ha niente di pronto**: P-18 e
+P-19 aspettano lavoro di Claude su `main`, e quel lavoro è la strettoia. **Per
+Claude, l'ordine consigliato: P-30** (un difetto vivo del motore), **P-28, P-29,
+P-31**, poi P-16, P-12 e P-17; P-15 quando l'autore ha il tempo. Vanno uno alla
+volta, perché stanno tutti nella cartella principale: è la strettoia della
+colonna di Claude, e si accetta perché il recinto la vuole. Il numero di una
+riga è il suo nome, non la sua posizione. Le due colonne si incontrano al punto
+7b, e il punto 9 è il giorno in cui gli account arrivano a chi studia.
 
 **L'ordine consigliato per ChatGPT, dopo P-05: prima il client degli account
 (P-13), poi l'area 3 (P-14).** Il traguardo ha bisogno del client e non delle
@@ -959,7 +962,7 @@ CHANGELOG, merge chiusa da sola con `merge=union`.
 
 ### P-14 — ChatGPT: il progetto dell'area 3, il ciclo che si chiude
 
-**Stato:** pronto: P-13 è chiuso. **Dove:** come P-13.
+**Stato:** **chiuso il 26 settembre 2026**, merge `adf84a0`. **Dove:** come P-13.
 
 ```
 Sessione P-14. Progetta l'area 3 di docs/prossima-versione.md §5.1, il
@@ -976,7 +979,15 @@ docs/prossime-sessioni.md. Un commit con il trailer, versione non
 toccata. Chiudi con il resoconto di docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `3bcc4b7`, `docs/area-3-progetto.md` e la sua voce.
+Riepilogo, revisione e «riprova questi N», con testi, stati, contratti e
+accettazione. **Ha trovato un difetto vivo del motore**, e la regia l'ha
+riprodotto: una pausa di più di 20 minuti dentro la stessa attività registrata
+la spezza in due, ed `erroriSessione()` restituisce un errore su due
+dichiarando il confine registrato. Diventa P-30. Le dipendenze del §10.1 —
+controlli in due regimi e specifica — diventano P-31, e il contrasto con il
+§4.1 del progetto del client entra in P-28. Controllato dalla regia: territori
+puliti, il diff tocca il progetto e il CHANGELOG, merge chiusa da sola.
 
 ### P-15 — Claude con l'autore: la messa in esercizio su Scaleway
 
@@ -1093,7 +1104,10 @@ gli orfani dichiarati finché P-18 non le chiama.
 Il progetto del client è stato scritto prima di P-11: dove il suo §1 o
 il §9 descrivono il server com'era — il 202 della registrazione, le
 rotte che mancavano —, correggili con quello che P-11 ha fatto,
-dicendo che cosa è cambiato. Non ridisegnare niente del client.
+dicendo che cosa è cambiato. E il suo §4.1 sulla simulazione
+consegnata senza risposte, che P-14 ha trovato in contrasto con il
+§4.1 di docs/area-3-progetto.md (il suo §10.1 dice come). Non
+ridisegnare niente del client.
 
 Non toccare docs/prossime-sessioni.md. Suite verdi, voce in fondo a
 [Unreleased], un commit. Chiudi con il resoconto di
@@ -1164,6 +1178,92 @@ docs/prossime-sessioni.md.
 
 **Esito:** —
 
+### P-30 — Claude: un'attività registrata resta intera, anche dopo una pausa
+
+**Stato:** pronto — **per primo** fra quelli di Claude: è un difetto vivo del
+motore. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a
+mano. **Nasce da:** P-14, §10.1 di `docs/area-3-progetto.md`.
+
+```
+Sessione P-30, su main. Il progetto dell'area 3 ha trovato un difetto
+del motore, e la regia l'ha riprodotto: tre risposte con lo stesso
+sim_uid, la terza dopo 21 minuti, due sbagliate. sessioni() le spezza
+in due gruppi con lo stesso id, ed erroriSessione() restituisce un
+errore su due dichiarando fonte 'sim_uid' — il confine registrato,
+proprio mentre lo taglia. I cinque test di erroriSessione() passano
+perché nessuno esercita una pausa: il conteggio resta coerente con la
+lista sbagliata. Il caso esatto è nel §10.1 di
+docs/area-3-progetto.md.
+
+Prima elenca i chiamanti di sessioni() ed erroriSessione() — ritmo()
+compreso — e scrivi che cosa cambia per ciascuno (AGENTS.md). Poi il
+test che fallisce, e il contratto del §7.1 del progetto: l'attività
+registrata intera anche oltre la pausa, la sessione ricostruita
+dichiarata, l'isolamento fra attività, un id ambiguo rilevato. Il
+raggruppamento che ritmo() usa non cambia in silenzio; il test del
+quesito ripetuto resta. Se il contratto finale differisce dal §7.1,
+correggi il §7.1 nello stesso commit.
+
+Non toccare docs/prossime-sessioni.md. Suite verdi, voce in fondo a
+[Unreleased], un commit. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-31 — Claude: i controlli del ciclo, allineati all'area 3
+
+**Stato:** in attesa di P-30. **Dove:** Claude Code, `~/Software/rotta-giusta`,
+ramo **`main`**, a mano. **Nasce da:** P-14, §10.1 di
+`docs/area-3-progetto.md` — è per l'area 3 quello che P-06 è stato per l'area 2.
+
+```
+Sessione P-31, su main. Leggi il §7 e il §10.1 di
+docs/area-3-progetto.md, l'esito di P-30 e quello di P-06 nel §6 di
+docs/prossime-sessioni.md: il meccanismo di P-06 è il modello.
+
+I controlli del ciclo in due regimi: il ciclo di oggi riconosciuto, e
+quello progettato riconosciuto dalla funzione di raccordo che chiama
+davvero erroriSessione() e avvia la sua lista, non da un pulsante.
+Nel regime nuovo il banco esegue riepilogo → anteprima → avvio con il
+motore e la banca veri, con uno storico estraneo e i dati che cambiano
+fra un clic e l'altro. Una pagina di riferimento e rotture deliberate,
+ognuna rossa. Il contratto estraibile scritto nel repo prima del codice
+della pagina, come selezioneQuiz() per l'area 2. Nella specifica:
+§4.4, §7.5, R-FLU-01…04 e R-UX-06 come chiede il §10.1, con ogni
+copertura dichiarata; R-FLU-01 dice coperti i quiz e scoperti i cicli
+non ancora fatti.
+
+Non toccare docs/prossime-sessioni.md. Main resta verde con la pagina
+di oggi. Suite verdi, voce in fondo a [Unreleased], un commit. Chiudi
+con il resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-19 — ChatGPT: la realizzazione dell'area 3
+
+**Stato:** in attesa di P-30, P-31 e della parte di P-28 sul client, e che la
+regia allinei `ui/main`. **Dove:** app di ChatGPT, progetto
+`~/Software/rotta-giusta-ui`, ramo `ui/main`.
+
+```
+Sessione P-19. Realizza docs/area-3-progetto.md in site/app.html.
+Prima leggi gli esiti di P-28, P-30 e P-31 nel §6 di
+docs/prossime-sessioni.md: il contratto del motore e i controlli del
+ciclo ora esistono, e il §7.1 del progetto è allineato a quello che il
+motore fa. erroriSessione() esce dagli orfani dichiarati in
+docs/eccezioni-interfaccia.md nello stesso commit. Se un contratto o un
+controllo ti sta stretto, fermati e dillo: cambiarlo tocca main.
+
+Non toccare docs/prossime-sessioni.md. Tutte le suite verdi, collaudo
+guardato a 375 e 1280 px, voce in fondo a [Unreleased], un commit con
+il trailer, versione non toccata. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
 ---
 
 ### I segnaposto — i prompt che non si possono ancora scrivere
@@ -1175,16 +1275,9 @@ prompt no, perché punterebbe a documenti che non esistono ancora. La regia lo
 scrive quando si chiude quello che aspetta, e lo scrive **qui, al posto del
 segnaposto**.
 
-#### P-19 — ChatGPT: la realizzazione dell'area 3
-
-**Aspetta:** P-14. **Dove:** `ui/main`. **Dovrà contenere:** realizzare
-`docs/area-3-progetto.md`; `erroriSessione()` che esce dagli orfani dichiarati;
-le dipendenze da test e specifica che il progetto avrà scritto, chiuse prima da
-Claude come ha fatto P-06 per l'area 2.
-
 #### P-20 e P-21 — ChatGPT: l'area 4, Carteggio — progetto, poi realizzazione
 
-**Aspetta:** P-19. **Dove:** `ui/main`. **Dovrà contenere:** i capitoli 12–15
+**Aspetta:** P-19 e P-18 — con gli account, Carteggio ha due stati. **Dove:** `ui/main`. **Dovrà contenere:** i capitoli 12–15
 della Specifica UX/UI (`prossima-versione.md` §5.1); il vincolo del §7.3 della
 specifica — il giudizio è di chi studia, detto all'ingresso (R-UX-03) —;
 l'eccezione `figura` di `docs/eccezioni-interfaccia.md`, se l'area 3 non l'ha
@@ -1346,3 +1439,8 @@ dopo**, la soglia degli allarmi riletta sul registro vero
   la v0.28.0 in un commit a sé.
 - **26 settembre 2026 — v0.28.0 pubblicata.** Push, «Build now», verificata sui
   due indirizzi e nel browser. P-15 pronto: il tag contiene il server.
+- **26 settembre 2026 — P-14 chiuso.** Un difetto del motore trovato dal
+  progetto e riprodotto dalla regia: P-30, per primo. P-31 porta i controlli
+  del ciclo, P-19 diventa un prompt completo, P-28 riallinea anche il §4.1 del
+  client, P-16 aspetta P-30 perché tocca le stesse funzioni. ChatGPT resta
+  senza lavoro pronto finché Claude non libera la strettoia.
