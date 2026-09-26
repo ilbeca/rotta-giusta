@@ -376,6 +376,7 @@ nav button{position:relative;padding:9px 2px 10px;font-size:10.5px;color:var(--d
 nav button i{display:block;font-size:19px;font-style:normal;margin-bottom:2px}
 nav button.on{color:var(--acc)}
 .sync{position:fixed;top:calc(6px + env(safe-area-inset-top,0px));right:10px;z-index:30;
+      max-width:calc(100vw - 20px);line-height:1.5;
       font-size:11px;padding:4px 9px;border-radius:99px;background:var(--bg3);border:1px solid var(--line);
       color:var(--dim);opacity:0;transition:opacity .3s;pointer-events:none}
 .sync.show{opacity:1}
@@ -1330,6 +1331,17 @@ async function archivia(riga) {
   DIAG.arch = !!ARCH.errore || ['ripiego_assente', 'ripiego_letto', 'errore'].includes(ARCH.lettura); aggiornaBadge();
 }
 
+// Una classificazione visibile per tentativo, senza perdere le precedenti.
+// L'ordine viene dal motore: vecchi tag senza data prima, poi istanti reali
+// (UTC e offset locale), ordine dell'archivio a parita' di istante.
+function tagPerTentativo() {
+  const tags = Object.create(null);
+  for (const r of E.ordinaRighe(S.archivio.filter(r => r._t === 'g'))) {
+    tags[r.attempt_uid] = r.tag;
+  }
+  return tags;
+}
+
 /** Lo specchio e le date, dall'archivio. Si chiama all'avvio e dopo ogni
  *  import o azzeramento: e' l'unico modo in cui S.prog cambia oltre a
  *  `E.applica()` risposta per risposta, e i due modi coincidono per test. */
@@ -1437,7 +1449,7 @@ function esporta() {
 }
 
 /** Fonde un file di progressi con l'archivio: per uid, senza doppioni, e
- *  dice quante righe ha preso, quante aveva gia' e quante ha scartato. */
+ *  dice quante righe ha preso, quante aveva gia' e perche' ha scartato. */
 async function importa(file) {
   let d;
   try { d = JSON.parse(await file.text()); }
@@ -1468,7 +1480,9 @@ async function importa(file) {
   }
   ricalcola(); dipingi(); costruisciFiltri(); dipingiSeg();
   if (rvId && document.getElementById('rivedi').classList.contains('on')) apriRivedi(rvId, { preservare: true });
-  segnala(`${r.nuove} righe nuove · ${r.gia} gia' presenti · ${r.scartate} scartate`, r.scartate > 0);
+  const motivi = Object.entries(r.motivi).map(([motivo, n]) => `${motivo}: ${n}`).join(' · ');
+  segnala(`${r.nuove} righe nuove · ${r.gia} gia' presenti · ${r.scartate} scartate`
+    + (motivi ? ` · ${motivi}` : ''), r.scartate > 0);
 }
 
 async function azzera() {
@@ -2535,7 +2549,6 @@ function apri(coda, modo, opt = {}) {
     simUid: uid(),
     fasi: opt.fasi || null,      // le prove che restano dopo questa, per la simulazione completa
     perche: opt.perche || null,  // id -> perché è in lista (modalità Mirata)
-    tags: {},                    // attempt_uid -> tag scelto, per il riepilogo
     esiti: [], errori: [], scadenza: opt.sim ? Date.now() + opt.sim.minuti * 60000 : null,
   };
   document.getElementById('quizrun').classList.add('on');
@@ -2773,6 +2786,7 @@ function fine(tempoScaduto, parziale = false) {
   // quindi questo riepilogo e' l'unico posto dove quegli errori si possono
   // taggare. Un tocco, e si puo' saltare: Chiudi resta dov'e'.
   const TAG_TITOLI = { N: 'non lo sapevo', L: 'letto male', C: 'calcolo' };
+  const tags = tagPerTentativo();
   const lista = R.errori.length
     ? `<h2>Gli errori</h2>
        <p class="note" style="margin:0 0 4px">Se vuoi, di' perché: <b>N</b> non lo sapevo ·
@@ -2784,7 +2798,7 @@ function fine(tempoScaduto, parziale = false) {
       <div class="meta">${esc(it.t)} › ${esc(it.v)}${it.p ? ` · n. ${esc(it.p)}` : ''}</div>
       ${notaPrima(it)}${nota(it)}
       <div class="tags">${['N', 'L', 'C'].map((tg) =>
-        `<button data-tag="${tg}" data-auid="${esc(auid)}" class="${R.tags[auid] === tg ? 'on' : ''}"
+        `<button data-tag="${tg}" data-auid="${esc(auid)}" class="${tags[auid] === tg ? 'on' : ''}"
                  title="${TAG_TITOLI[tg]}">${tg}</button>`).join('')}</div>
     </div>`).join('') : '<p class="note" style="text-align:center;padding:10px 0">Nessun errore.</p>';
 
@@ -4308,16 +4322,11 @@ document.addEventListener('click', (ev) => {
     //
     // `data-auid` c'e' sui pulsanti del riepilogo (dove ogni errore porta il suo
     // tentativo); nella schermata del verdetto vale il tentativo corrente.
-    // Un tag per tentativo: ritaggare sostituisce — si tolgono le righe vecchie
-    // dello stesso tentativo, poi entra la nuova. Mai due righe per lo stesso
-    // tentativo.
+    // Ritaggare aggiunge: le righe vecchie restano, anche dopo un import.
+    // Il riepilogo legge l'ultima classificazione dall'archivio.
     const auid = t.dataset.auid || (S.run && S.run.uidCorrente);
     if (!auid) return;
-    const vecchie = S.archivio.filter(r => r._t === 'g' && r.attempt_uid === auid).map(r => r.uid);
-    S.archivio = S.archivio.filter(r => !(r._t === 'g' && r.attempt_uid === auid));
-    ARCH.cancella(vecchie).catch(() => {});
-    archivia({ _t: 'g', uid: uid(), attempt_uid: auid, tag: t.dataset.tag });
-    if (S.run) (S.run.tags = S.run.tags || {})[auid] = t.dataset.tag;
+    archivia({ _t: 'g', uid: uid(), ts: E.isoLocale(), attempt_uid: auid, tag: t.dataset.tag });
     [...t.parentNode.children].forEach(b => b.classList.toggle('on', b === t));
     return;
   }
