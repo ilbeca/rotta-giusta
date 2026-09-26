@@ -106,30 +106,28 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 4c | Il server, pezzo 3: «email già registrata», cambio d'indirizzo e profilo, cancellazione e due anni, allarmi, il conto delle 300 mail | Claude | `main`, a mano | niente — **per primo**: è sulla strada del traguardo | P-11 |
 | 5b | Chiudere il regime vecchio dei controlli dei quiz, e il §5 della specifica | Claude | `main`, a mano | la cartella libera | P-12 |
-| 7a | Il progetto del client degli account | ChatGPT | `ui/main` | niente | P-13 |
-| 6a | Il progetto dell'area 3, il ciclo che si chiude | ChatGPT | `ui/main` | P-13, nell'ordine consigliato | P-14 |
-| 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | P-11 | P-15 |
+| 14 | I contratti del motore che il client chiede | Claude | `main`, a mano | niente — **per primo** | P-28 |
+| 15 | La prova nel browser, per i controlli del client | Claude | `main`, a mano | P-28 | P-29 |
+| 6a | Il progetto dell'area 3, il ciclo che si chiude | ChatGPT | `ui/main` | niente | P-14 |
+| 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | un tag che contenga il server: il rilascio del §4 | P-15 |
 | 12 | `ritmo()` che dice «orologio» senza orologio | Claude | `main`, a mano | la cartella libera | P-16 |
 | 13 | L'ultimo tag di una risposta, nel motore | Claude | `main`, a mano | la cartella libera | P-17 |
-| 7b | La realizzazione del client degli account | ChatGPT | `ui/main` | P-13, e P-10 per le righe | segnaposto P-18 |
+| 7b | La realizzazione del client degli account | ChatGPT | `ui/main` | P-28 e P-29 | P-18 |
 | 6b | Le aree del ridisegno che restano: 3 realizzata, poi 4, 5, 6 | ChatGPT | `ui/main` | la precedente | segnaposto P-19…P-25 |
 | 9a | I testi fuori da `site/` nella versione con gli account | Claude | `main`, a mano | P-18 | segnaposto P-26 |
 | 9 | **La versione con gli account** — il traguardo | tutti | `main` | 7b, 8, 9a, e gli adempimenti del §4 | segnaposto P-27 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**: Claude sul server (non tocca `site/`),
-ChatGPT sull'interfaccia. **Adesso sono pronti P-13 per ChatGPT e, per Claude,
-P-11, P-12, P-16 e P-17** — questi quattro uno alla volta, perché stanno tutti
-nella cartella principale. **L'ordine consigliato per Claude: P-11 per primo**,
-perché è l'unico sulla strada del traguardo (P-15 lo aspetta); poi P-12, P-16 e
-P-17, che sono corti e non bloccano nessuno. Tutto quello che tocca `server/`,
-`tests/` o la specifica passa dalla cartella principale, una sessione per
-volta: è la strettoia della colonna di Claude, e si accetta perché il recinto la
-vuole. Il numero di una riga è il suo nome, non la sua posizione: l'ordine è
-quello della tabella. Le due colonne si incontrano al punto 7b, e il punto 9 è
-il giorno in cui gli account arrivano a chi studia.
+ChatGPT sull'interfaccia. **Adesso è pronto P-14 per ChatGPT, e per Claude P-28,
+poi P-29** — sono loro che sbloccano il client, P-18 —; P-12, P-16 e P-17
+riempiono i buchi, e P-15 parte quando c'è un tag con il server e l'autore ha il
+tempo. I prompt di Claude vanno uno alla volta, perché stanno tutti nella
+cartella principale: è la strettoia della colonna di Claude, e si accetta perché
+il recinto la vuole. Il numero di una riga è il suo nome, non la sua posizione:
+l'ordine è quello della tabella. Le due colonne si incontrano al punto 7b, e il
+punto 9 è il giorno in cui gli account arrivano a chi studia.
 
 **L'ordine consigliato per ChatGPT, dopo P-05: prima il client degli account
 (P-13), poi l'area 3 (P-14).** Il traguardo ha bisogno del client e non delle
@@ -394,9 +392,17 @@ consuma, non si riprogetta.
   manca.
 - **Q-DUE**, prima dell'area 5: le due classifiche di «cosa fare adesso»
   (specifica §10).
-- **Un rilascio intermedio**, se lo vuoi: `site/` è cambiato con P-01 e con
-  l'area 2, e chi studia oggi non lo vede. La regia lo fa dopo la merge di
-  P-05, quando dici sì.
+- **Un rilascio intermedio — ora serve anche al server.** `site/` è cambiato con
+  P-01 e con l'area 2, e chi studia oggi non lo vede; e P-15 può avviare il
+  server soltanto da un tag pubblicato che lo contenga (`account-progetto.md`
+  §2.7), mentre l'ultimo, `v0.27.0`, è di prima del server. Un rilascio adesso
+  fa le due cose: la pagina di oggi non chiama il server, quindi pubblicarlo non
+  cambia niente per chi studia. La regia lo fa quando dici sì — numero, voce,
+  tag, push chiesto, «Build now».
+- **La soglia degli allarmi**, proposta da P-11: 100 accessi falliti in 24 ore
+  fanno scattare un avviso al titolare. Non è una norma
+  (`account-progetto.md` §15.4, «Gli allarmi»): la tieni, la cambi, o la lasci
+  alla regia.
 - **Gli adempimenti rimasti**, sei punti, tutti nel §15.4 di
   `account-progetto.md` e bloccano il punto 9: l'indirizzo postale del titolare,
   la base giuridica del registro di sicurezza (da far confermare), l'inoltro di
@@ -842,7 +848,7 @@ interfaccia 201, specifica 344.
 
 ### P-11 — Claude: il server, pezzo 3 — quello che chiude le sue rotte
 
-**Stato:** pronto — per primo fra quelli di Claude. **Dove:** Claude
+**Stato:** **chiuso il 26 settembre 2026**, commit `cd490ac` su `main`. **Dove:** Claude
 Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano.
 
 ```
@@ -872,7 +878,21 @@ verdi, voce in fondo a [Unreleased], un commit. Chiudi con il
 resoconto di docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `cd490ac`, voce nel CHANGELOG. Tutte le rotte del §7.1:
+«email già registrata» con `409`, senza sessione né mail (R-ACC-30); il cambio
+d'indirizzo con una rotta in più, `POST /v1/email/conferma`, e l'avviso al
+vecchio indirizzo (R-ACC-34); il profilo con la data d'esame e i punteggi dei
+Segnali, anche nell'export (R-ACC-35); `DELETE /v1/account` (R-ACC-19); i due
+anni con l'avviso (R-ACC-36); gli allarmi al titolare (R-ACC-37) e il conto
+delle 300 mail (R-ACC-38). Schema 3, additivo. **Trovato il difetto più serio
+del server finora: una cancellazione non cancellava davvero** — email e
+risposte restavano leggibili nel `-wal` anche con `secure_delete`, e solo
+`wal_checkpoint(TRUNCATE)` le toglie; valeva anche per le cancellazioni al
+settimo giorno di P-09 (§14.4). Per P-15: `RG_TITOLARE` nell'ambiente della
+macchina, altrimenti gli allarmi restano nel registro, e `server/copia.mjs`
+che scrive il suo esito nel registro. Una decisione per l'autore, nel §4: la
+soglia degli allarmi. Controllato dalla regia: server 58, motore 141 + 2 skip,
+dati 242, interfaccia 295, specifica 370, `ripristina --prova` 20 su 20.
 
 ### P-12 — Claude: chiudere il regime vecchio dei controlli dei quiz
 
@@ -901,7 +921,7 @@ docs/prossime-sessioni.md.
 
 ### P-13 — ChatGPT: il progetto del client degli account
 
-**Stato:** pronto: P-05 è fuso e `ui/main` è allineato. **Dove:** app di ChatGPT,
+**Stato:** **chiuso il 26 settembre 2026**, merge `f875e0c`. **Dove:** app di ChatGPT,
 progetto `~/Software/rotta-giusta-ui`, ramo `ui/main`.
 
 ```
@@ -926,12 +946,20 @@ docs/prossime-sessioni.md. Un commit con il trailer, versione non
 toccata. Chiudi con il resoconto di docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `3aa4e9e`, `docs/account-client-progetto.md` e la sua voce.
+Flussi, testi, stati, i contratti con il motore, e **diciotto gruppi di
+controlli, C-01…C-18, che chiede a Claude di scrivere su `main` prima della
+realizzazione, in un browser vero** (§12): il resoconto non lo diceva, la regia
+l'ha letto nel documento. Più due contratti del motore da risolvere prima del
+codice. Scritto sulla base di prima di P-11: il `202` della registrazione e le
+rotte mancanti sono descritti com'erano. Da qui P-28 (i contratti, e il
+progetto riallineato a P-11) e P-29 (la prova nel browser), prima di P-18.
+Controllato dalla regia: territori puliti, il diff tocca solo il progetto e il
+CHANGELOG, merge chiusa da sola con `merge=union`.
 
 ### P-14 — ChatGPT: il progetto dell'area 3, il ciclo che si chiude
 
-**Stato:** in attesa di P-13, nell'ordine consigliato. **Dove:** come P-13 — e dopo P-13,
-se l'autore tiene l'ordine consigliato nella coda.
+**Stato:** pronto: P-13 è chiuso. **Dove:** come P-13.
 
 ```
 Sessione P-14. Progetta l'area 3 di docs/prossima-versione.md §5.1, il
@@ -952,7 +980,7 @@ toccata. Chiudi con il resoconto di docs/prossime-sessioni.md.
 
 ### P-15 — Claude con l'autore: la messa in esercizio su Scaleway
 
-**Stato:** in attesa di P-11. **Dove:** Claude Code, `~/Software/rotta-giusta`,
+**Stato:** in attesa di un tag che contenga il server — il rilascio del §4 — e del tempo dell'autore. **Dove:** Claude Code, `~/Software/rotta-giusta`,
 ramo **`main`**, a mano: gli strumenti della macchina stanno nel repo. È una
 sessione che si fa **insieme**, come P-08.
 
@@ -969,8 +997,10 @@ macchina come dice il §2.7 — utente, unità di systemd, Node LTS,
 cartelle, rg-aggiorna e rg-torna —; il gruppo di sicurezza guardato
 prima di aprire la 443; il record di api. su IONOS e il certificato;
 la chiave di Transactional Email e quella di sola scrittura sul
-bucket, messe dall'autore sulla macchina; le copie due volte al giorno
-verso nl-ams; il server avviato da un tag pubblicato. Poi le misure
+bucket, messe dall'autore sulla macchina, e RG_TITOLARE nell'ambiente,
+senza il quale gli allarmi restano nel registro; le copie due volte al
+giorno verso nl-ams con server/copia.mjs, che scrive il suo esito nel
+registro; il server avviato da un tag pubblicato. Poi le misure
 che il §19 lascia a questo giorno: il sorgente di una mail vera, una
 copia arrivata a nl-ams e ripristinata, il riavvio dopo un
 aggiornamento del kernel, Argon2id sulla macchina vera.
@@ -1040,6 +1070,100 @@ docs/prossime-sessioni.md.
 
 **Esito:** —
 
+### P-28 — Claude: i contratti del motore che il client chiede
+
+**Stato:** pronto. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo
+**`main`**, a mano. **Nasce da:** P-13, §12 di `docs/account-client-progetto.md`,
+«Contatti da risolvere su main prima del codice che ne dipende».
+
+```
+Sessione P-28, su main. Leggi il §9 e il §12 di
+docs/account-client-progetto.md, il §16.1 di docs/account-progetto.md,
+e gli esiti di P-10, P-11 e P-13 nel §6 di docs/prossime-sessioni.md.
+
+P-13 chiede al motore quello che la pagina non deve calcolare da sé:
+un risultato che riepiloghi un trasferimento su più lotti — uid già
+confermati, scarti locali e del server, ritenti —, e uno che descriva
+le righe che non si possono inviare entro il limite. Prima guarda se
+le sei funzioni della coda di P-10 bastano già: se sì, scrivilo nel
+§9 del progetto del client con l'esempio d'uso, e non aggiungere
+niente. Se no, le funzioni nuove con i loro test scritti prima, fra
+gli orfani dichiarati finché P-18 non le chiama.
+
+Il progetto del client è stato scritto prima di P-11: dove il suo §1 o
+il §9 descrivono il server com'era — il 202 della registrazione, le
+rotte che mancavano —, correggili con quello che P-11 ha fatto,
+dicendo che cosa è cambiato. Non ridisegnare niente del client.
+
+Non toccare docs/prossime-sessioni.md. Suite verdi, voce in fondo a
+[Unreleased], un commit. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-29 — Claude: la prova nel browser, per i controlli del client
+
+**Stato:** pronto, dopo P-28. **Dove:** Claude Code, `~/Software/rotta-giusta`,
+ramo **`main`**, a mano. **Nasce da:** P-13, §12 di
+`docs/account-client-progetto.md`.
+
+```
+Sessione P-29, su main. Il §12 di docs/account-client-progetto.md
+chiede diciotto gruppi di controlli, C-01…C-18, che guardano la pagina
+vera: storage, rete, cookie, due schede, offline. La suite oggi non
+guida nessun browser, e il repo non ha dipendenze.
+
+Prima una misura, poi il codice. Misura le strade per guidare un
+browser vero dalla suite — per esempio Chrome headless attraverso il
+suo protocollo con il WebSocket che Node ha già — e scrivi nel §12
+del progetto quale regge, con che cosa costa e che cosa non copre. Se
+nessuna regge senza una dipendenza nuova, fermati e dillo nel
+resoconto: aggiungerne una è una decisione dell'autore.
+
+Poi il banco, con il meccanismo di P-06: i controlli riconoscono se la
+pagina ha il client degli account o no, main resta verde con la pagina
+di oggi, e il regime nuovo si esercita su una pagina di riferimento
+finché P-18 non c'è. Comincia da C-01, C-02 e C-05, e prova ognuno al
+contrario; gli altri entrano quando il banco regge, in questa
+sessione o in una dopo — dillo nel resoconto. R-ACC dal banco nel §9.9
+della specifica.
+
+Non toccare docs/prossime-sessioni.md. Suite verdi, voce in fondo a
+[Unreleased], un commit. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-18 — ChatGPT: la realizzazione del client degli account
+
+**Stato:** in attesa di P-28 e P-29, e che la regia allinei `ui/main`. **Dove:**
+app di ChatGPT, progetto `~/Software/rotta-giusta-ui`, ramo `ui/main`.
+
+```
+Sessione P-18. Realizza docs/account-client-progetto.md in
+site/app.html e site/index.html. Prima leggi gli esiti di P-11, P-28 e
+P-29 nel §6 di docs/prossime-sessioni.md: il server ha le rotte che il
+progetto dava per mancanti, e i controlli del §12 ora esistono e
+girano. I testi del §1 di docs/prossime-sessioni.md cambiano in questa
+stessa sessione, tutti — la privacy compresa, che poi passa
+dall'autore.
+
+La contabilità della coda è nel motore: la pagina la chiama, non la
+rifà. Se la funzione di P-17 esiste, sostituisce tagPerTentativo().
+Se un contratto o un controllo ti sta stretto, fermati e dillo: cambiarlo
+tocca main.
+
+Non toccare docs/prossime-sessioni.md. Tutte le suite verdi, i
+controlli del §12 compresi, collaudo guardato a 375 e 1280 px e in un
+Safari vero se c'è, voce in fondo a [Unreleased], un commit con il
+trailer, versione non toccata. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
 ---
 
 ### I segnaposto — i prompt che non si possono ancora scrivere
@@ -1050,17 +1174,6 @@ numero, che cosa aspetta, e che cosa il prompt dovrà contenere; il testo del
 prompt no, perché punterebbe a documenti che non esistono ancora. La regia lo
 scrive quando si chiude quello che aspetta, e lo scrive **qui, al posto del
 segnaposto**.
-
-#### P-18 — ChatGPT: la realizzazione del client degli account
-
-**Aspetta:** P-13 (il progetto) e P-10 (le righe sul server). **Dove:** `ui/main`.
-**Dovrà contenere:** realizzare `docs/account-client-progetto.md` in
-`site/app.html` e `site/index.html`; **tutti i testi del §1** di questo file,
-nella stessa versione e non prima; i requisiti R-ACC della pagina — 01, 02, 03,
-04, 05, 09, 11 per la metà della schermata, 22, 23, 30 —; la contabilità della
-coda chiamata dal motore, non rifatta; il ricablaggio della funzione di P-17 al
-posto di `tagPerTentativo()`, se P-17 è chiuso; i controlli che il progetto
-avrà chiesto a Claude, scritti prima su `main`.
 
 #### P-19 — ChatGPT: la realizzazione dell'area 3
 
@@ -1220,3 +1333,9 @@ fare: un archivio vero nel browser che passa nell'account senza perdere una riga
   che ha tenuto da solo le voci dei due lati. Pronti P-13 per ChatGPT e P-11,
   P-12, P-16, P-17 per Claude, in quest'ordine: P-11 per primo perché è sulla
   strada del traguardo. P-11 prende anche i punteggi dei Segnali nell'export.
+- **26 settembre 2026 — P-11 e P-13 chiusi.** Il server ha tutte le sue rotte.
+  Il progetto del client chiede diciotto controlli in un browser vero prima del
+  codice: nascono P-28 (i contratti del motore, e il progetto riallineato a
+  P-11) e P-29 (la prova nel browser), e P-18 passa da segnaposto a prompt. P-15
+  aspetta un tag che contenga il server: il rilascio intermedio del §4 serve
+  anche a quello.
