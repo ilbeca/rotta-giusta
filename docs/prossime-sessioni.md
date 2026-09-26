@@ -69,7 +69,7 @@ Progressi e si passa da un onboarding. Quattro condizioni fanno parte della
 decisione: R-ACC-02…05 nel §9.9 della specifica.
 
 **Il 26 settembre:** `validaRiga()` nel motore, e l'import che non scarta più i
-tag; le decisioni del §20 di `account-progetto.md`, tranne una (§4 qui sotto);
+tag; tutte le decisioni del §20 di `account-progetto.md`;
 **l'account Scaleway è aperto**. `ui/main` e `ui/vetrina` sono stati allineati a
 `main` (8857b79) lo stesso giorno: fino ad allora ChatGPT lavorava su una base
 senza ADR-003, ADR-004 e questo file. `main` è avanti di undici commit su
@@ -177,13 +177,10 @@ territorio `regole`.
 
 ## 2 · Il progetto di realizzazione degli account — fatto
 
-È `docs/account-progetto.md`. Restano due cose, e nessuna è una sessione di
-progetto:
-
-- **una decisione dell'autore**, quanto vive un account non confermato: sette
-  giorni proposti, sui riferimenti del §9.6. Le altre del §20 sono prese;
-- **le misure su Scaleway** del suo §19: l'account è aperto dal 26 settembre,
-  quindi sono il primo passo della sessione del server (§3-bis).
+È `docs/account-progetto.md`, e le decisioni del suo §20 sono prese tutte,
+l'ultima il 26 settembre: l'account non confermato vive sette giorni.
+**Restano le misure su Scaleway** del suo §19: l'account è aperto dal 26 settembre,
+quindi sono il primo passo della sessione del server (§3-bis).
 
 `validaRiga()` è nel motore dal 26 settembre, misurata sull'archivio vero, e
 l'import accetta ora i tag. Resta un lavoro piccolo, **prima** del client degli
@@ -310,7 +307,6 @@ qui si consuma, non si riprogetta.
 
 ## 4 · Fuori dalle sessioni — l'autore
 
-- Quanto vive un account non confermato (`docs/account-progetto.md` §9.6).
 - Q-ONBOARD (specifica §10): che cosa chiede l'onboarding oltre alla data, e se
   il sito consiglia un piano di studio strutturato.
 - Il push di `main`, quando lo si vuole: undici commit al 26 settembre.
