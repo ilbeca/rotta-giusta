@@ -475,6 +475,43 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   per l'autore. Proposti **R-ACC-25** (l'elenco, e il rifiuto che dice perché) e
   **R-ACC-26** (i 30 giorni) nel §17. Nessuna riga di codice, niente `site/`.
 
+### Fatto — i passi a mano dell'autore (P-08)
+
+- **`posta.rottagiusta.it` è pronto a spedire.** I quattro record — SPF, DKIM,
+  DMARC e MX, tutti sul sottodominio — sono su IONOS, inseriti da Claude nella
+  sessione del browser dell'autore e su sua richiesta, con i valori letti nella
+  console di Scaleway quel giorno. Verificati con `dig` sul nameserver
+  autorevole e su tre resolver pubblici: il DKIM coincide **carattere per
+  carattere** con quello della console, e l'apice è intatto. Scaleway dà il
+  dominio **«Verified»**. Il sorgente di una mail vera, per vedere che i link
+  non siano riscritti, aspetta una chiave API, e quindi il server.
+
+- **Misurando, il §9.4 del progetto si è corretto da solo:** su `rottagiusta.it`
+  non c'era nessuna casella. L'SPF unico che «non si doveva toccare per non
+  rompere la posta dell'autore» era quello che IONOS mette di default, e
+  proteggeva una posta che non c'era. La conclusione non cambia — un servizio
+  che può vivere su un sottodominio non tocca l'apice — ma il motivo scritto era
+  una deduzione dal DNS, non una misura sul pannello.
+
+- **Il titolare ha un contatto che non è un canale pubblico:**
+  `privacy@rottagiusta.it`, un inoltro IONOS, provato con una mail arrivata.
+  **Il DPA di Scaleway non va firmato:** dice di sé che è parte integrante del
+  contratto, e nella console, fra i contratti dell'organizzazione, c'è la
+  versione 10/2024. Il registro dei trattamenti e la procedura per le violazioni
+  sono una bozza dell'autore, **fuori dal repo** perché portano il suo nome; il
+  loro stato, e sei punti ancora aperti per lui — fra cui l'inoltro che finisce
+  su Gmail, cioè possibilmente fuori dall'UE —, stanno nel nuovo §15.4 di
+  `account-progetto.md`.
+
+- **Quello che P-02 aveva lasciato è stato tolto:** la chiave SSH delle prove,
+  dal progetto Scaleway (ora a zero chiavi) e dal Mac — registrata, sarebbe
+  finita in ogni macchina nuova, compresa quella di produzione —, e il worktree
+  `rotta-giusta-p02` con il suo ramo, già fuso. Resta la CLI `scw`, senza
+  configurazione. La conferma della cancellazione su Scaleway l'ha data
+  l'autore: il controllo dei permessi della sessione l'ha fermata, trattandola
+  come una scrittura di credenziali, e non è stata aggirata. La STARDUST1-S si
+  crea alla messa in esercizio, per non pagarla ferma.
+
 ## [0.27.0] — 2026-09-25
 
 ### Verificato — la v0.26.2 sul dominio vero

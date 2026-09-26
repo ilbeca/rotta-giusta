@@ -229,6 +229,13 @@ schema vero.
 - **Quello che la macchina ha già, e va bene così:** gli aggiornamenti di
   sicurezza automatici (`unattended-upgrades` attivo), SSH solo con chiave
   (`PasswordAuthentication no`), e nessuna porta in ascolto oltre la 22.
+- **La chiave delle prove non c'è più** (26 settembre 2026, P-08). La chiave
+  SSH `rotta-giusta-p02-misure` è stata tolta sia dal progetto Scaleway, che
+  adesso ha **zero** chiavi, sia dal Mac. Registrata nel progetto, sarebbe stata
+  iniettata in ogni macchina nuova, compresa quella di produzione. Per la
+  produzione si crea una chiave nuova alla messa in esercizio, con un nome che
+  dica a che cosa serve. La CLI `scw` resta installata sul Mac, senza
+  configurazione: senza una chiave API non fa niente.
 - **Due trappole della console, sui costi.** Cancellando un'istanza, la casella
   «Delete Block Storage volumes» è **spenta**: il disco resta, si paga, e niente
   lo dice. E «Delete» su un'istanza **accesa** l'ha soltanto spenta, due volte
@@ -1063,6 +1070,25 @@ console vale solo per i domini con i DNS da Scaleway. Letti il giorno stesso sui
 resolver pubblici, `posta.` e `api.` non hanno ancora nessun record, e l'apice
 ha ancora il suo SPF solo.
 
+**Fatto il 26 settembre 2026 (P-08).** I quattro record sono su IONOS, con i
+valori letti nella console quel giorno, uguali a quelli della tabella. Verificati
+con `dig` sul nameserver autorevole (`ns1039.ui-dns.org`) e su 1.1.1.1, 8.8.8.8
+e 9.9.9.9: SPF, DMARC e MX come sopra, il DKIM **identico carattere per
+carattere** a quello della console (417 caratteri; selettore
+`e108b686-1952-408c-ae7b-bc21f2b7acae`). L'apice è intatto: stesso SPF, stessi
+due MX. Scaleway, dopo qualche minuto, dà il dominio **«Verified — All DNS
+records are verified»**. Nel pannello di IONOS i record sono passati da 11 a 15,
+e gli 11 di prima sono invariati.
+
+**Una correzione a questa sezione, misurata lo stesso giorno:** sul dominio
+**non c'era nessuna casella di posta**. Il pannello di IONOS non elencava nessun
+indirizzo `@rottagiusta.it`, quindi l'SPF e gli MX dell'apice sono quelli che
+IONOS mette di default su ogni dominio, e non reggevano una posta in uso.
+«Romperebbe la posta dell'autore» era quindi un rischio per una posta che non
+esisteva. La scelta di `posta.` non cambia: resta quella giusta, perché l'apice
+non si tocca per un servizio che può vivere su un sottodominio, e da oggi
+sull'apice c'è davvero un indirizzo, quello del titolare (§15.4).
+
 ### 9.5 Le mail
 
 Testo semplice più un HTML minimo, **nessun pixel di tracciamento e nessun
@@ -1359,6 +1385,40 @@ attacco a molti account dallo stesso indirizzo non si vede.
 
 L'informativa scrive i due numeri.
 
+### 15.4 Gli adempimenti del titolare — l'ADR-003
+
+La tabella «Il GDPR, per intero» dell'ADR-003 elenca obblighi che nessuna
+sessione può assolvere al posto dell'autore. Qui c'è lo stato di ciascuno.
+**I documenti che li assolvono non stanno nel repo**, perché portano i dati
+personali del titolare (`strumenti/controlla.py`): li tiene l'autore, e qui si
+scrive che cosa è fatto, quando e dove.
+
+| Adempimento | Stato | Dove |
+|---|---|---|
+| **Accordo con Scaleway come responsabile** (art. 28) | **Fatto.** Il DPA di Scaleway, versione del 1° giugno 2024, dice di sé che *«forms an integral part of the contract»*: si accetta insieme alle condizioni generali, e non si firma a parte. Verificato nella console il 26 settembre 2026: fra i contratti dell'organizzazione `rottagiusta` c'è il «Data Processing Agreement» 10/2024. Il DPA copre l'avviso scritto al cliente in caso di violazione (art. 9), la cancellazione a fine contratto (art. 13) e i sub-responsabili con autorizzazione generale (art. 7). | Console Scaleway, Organization → Settings → Organization contracts. Una copia in PDF la scarica l'autore e la tiene accanto al registro |
+| **Contatto del titolare**, che non sia un canale pubblico | **Fatto il 26 settembre 2026:** `privacy@rottagiusta.it`, un inoltro IONOS verso la casella personale del titolare, provato con una mail arrivata. **Da quell'indirizzo non si spedisce**, e IONOS non filtra lo spam dell'inoltro. | L'informativa (§18) lo scriverà |
+| **Registro dei trattamenti** (art. 30) | **Bozza del 26 settembre 2026**, con tre trattamenti: account e salvataggio, registro di sicurezza, richieste a privacy@. Descrive il prodotto deciso: va riletto il giorno in cui il server risponde ai visitatori. | Documento dell'autore, fuori dal repo |
+| **Accorgersi di una violazione, e notificarla entro 72 ore** (art. 33) | **Procedura scritta** nella stessa bozza: le 72 ore partono da quando ce se ne accorge; la notifica si fa con la procedura telematica del Garante (`servizi.gpdp.it/databreach`); si documenta ogni violazione (art. 33.5), anche quelle non notificate. Gli allarmi del server sono **da costruire** con il server: un avviso al titolare quando gli accessi falliti superano una soglia, e quando una copia ha meno righe della precedente senza cancellazioni registrate (§2.5). | Bozza dell'autore; gli allarmi nel prompt del server |
+
+**Aperto, decide l'autore** — i punti che la bozza del registro lascia in
+sospeso. Nessuno blocca il server; bloccano la versione con gli account, perché
+finiscono nell'informativa:
+
+- **un indirizzo postale del titolare**, che l'informativa deve dare (art. 13.1.a);
+- **la base giuridica del registro di sicurezza** — obbligo di legge (6.1.c) o
+  legittimo interesse (6.1.f). È un giudizio giuridico, come il paragrafo «Cosa
+  non c'è» della privacy (`migrazione-hosting.md`), da far confermare a chi può
+  darlo;
+- **l'inoltro di privacy@ finisce in una casella Gmail**, cioè da Google, che
+  può trasferire dati fuori dall'UE (Data Privacy Framework). O l'informativa lo
+  dice, o l'inoltro va verso una casella nell'UE;
+- **per quanto si conservano le richieste evase** — proposta: 2 anni;
+- **il DPA di statichost.eu**, già aperto in `migrazione-hosting.md`: le pagine
+  non trattano account, ma l'IP di chi visita è un dato personale;
+- **l'autenticazione a due fattori** sulla casella del titolare, su Scaleway e
+  su IONOS. La dashboard di Scaleway, il 26 settembre 2026, aveva ancora «Secure
+  your account» fra i passi da fare.
+
 ---
 
 ## 16. Dove vive il codice
@@ -1493,7 +1553,9 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
   impostazioni, il giro di aggiornamento e ritorno. **Resta, e aspetta un passo
   dell'autore:**
   - il sorgente di una mail vera, per vedere con gli occhi che i link non siano
-    riscritti (§9.5) — dopo i record DNS del §9.4 su IONOS;
+    riscritti (§9.5). I record DNS del §9.4 ci sono dal 26 settembre 2026 e il
+    dominio è «Verified»; manca una mail spedita davvero, cioè una chiave API di
+    Transactional Email, che è un segreto e si crea con il server;
   - il certificato per `api.rottagiusta.it` — dopo il record `A`/`AAAA` di
     `api.`, che punta alla macchina di produzione, che non esiste ancora;
   - la copia verso `nl-ams` — dopo la chiave API col solo permesso di scrivere
@@ -1519,7 +1581,8 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
 | Questione | Decide | Proposta |
 |---|---|---|
 | ~~Macchina con SQLite, o container con PostgreSQL gestito~~ | — | **deciso** su delega: macchina, SQLite, Node senza dipendenze (§2.2) |
-| ~~Quale macchina~~ | — | **deciso dall'autore il 26 settembre 2026: STARDUST1-S a `pl-waw-2`**, 5,04 € al mese. Il prezzo che si accetta: i dati stanno a Varsavia (UE), e dopo un guasto la macchina potrebbe non essere ricreabile subito perché le scorte sono incerte. Le copie restano a `nl-ams` (§2.6). L'informativa dirà Polonia |
+| ~~Quale macchina~~ | — | **deciso dall'autore il 26 settembre 2026: STARDUST1-S a `pl-waw-2`**, 5,04 € al mese. Il prezzo che si accetta: i dati stanno a Varsavia (UE), e dopo un guasto la macchina potrebbe non essere ricreabile subito perché le scorte sono incerte. Le copie restano a `nl-ams` (§2.6). L'informativa dirà Polonia. **Si crea alla messa in esercizio, non prima** (dall'autore, il 26 settembre 2026): accesa da subito costerebbe 5,04 € al mese per settimane senza niente sopra, e andrebbe comunque tenuta aggiornata. Il prezzo che si accetta è di trovarla esaurita quel giorno; allora si sceglie fra la DEV1-S a `fr-par` e un'altra zona |
+| Gli adempimenti rimasti del titolare: indirizzo postale, base giuridica del registro di sicurezza, inoltro verso Gmail, conservazione delle richieste, DPA di statichost.eu, due fattori | l'autore | §15.4 |
 | ~~Parametri di Argon2id~~ | — | **deciso su delega il 26 settembre 2026, dalla regia**: `m=65536, t=2, p=1`, la proposta di P-02, misurata sotto i 250 ms su tutte e due le macchine (§5.1). Con 1 GB di memoria sulla STARDUST, 64 MiB per verifica reggono i limiti di frequenza del §6.5; va rimisurato sulla macchina di produzione |
 | ~~Il tetto delle 300 mail~~ | — | **deciso dall'autore il 26 settembre 2026: 300 al mese, per il momento.** Oltre non si blocca: si paga 0,25 € ogni 1.000, e il titolare riceve un avviso, non chi si registra un `503` (§9.3) |
 | ~~Lunghezza minima della password~~ | — | **deciso**: 15, come NIST (§5.2) |
@@ -1611,3 +1674,16 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
   Trovata una contraddizione con una proposta, non con una decisione: il «mai un
   blocco» del §6.5 contro il limite di 100 tentativi dello standard, aperta nel
   §20.
+
+- **26 settembre 2026 — i passi a mano dell'autore (P-08).** I quattro record
+  di `posta.` sono su IONOS: verificati con `dig`, il DKIM identico a quello
+  della console, e il dominio «Verified» su Scaleway (§9.4). La stessa misura ha
+  corretto il §9.4: sull'apice non c'era nessuna casella, quindi l'SPF unico
+  proteggeva una posta che non esisteva; `posta.` resta comunque la scelta
+  giusta. La chiave SSH delle prove di P-02 non c'è più, né su Scaleway né sul
+  Mac (§2.6). Il nuovo §15.4 dà lo stato degli adempimenti dell'ADR-003: il DPA
+  di Scaleway è già parte del contratto, verificato nella console; il contatto
+  del titolare è `privacy@rottagiusta.it`, provato; il registro dei trattamenti
+  e la procedura per le violazioni sono una bozza dell'autore, fuori dal repo.
+  Sei punti restano aperti, e ognuno ha l'autore come decidente. La STARDUST1-S
+  si crea alla messa in esercizio (§20).
