@@ -1,0 +1,5 @@
+# Il CHANGELOG e' additivo (AGENTS.md): due rami che aggiungono in fondo a
+# [Unreleased] non devono fermare una merge. Il driver union tiene le righe dei
+# due lati. Senza, la chiusura a mano del conflitto passa dal pre-commit, che su
+# main rifiuta i file di ui/* (26 settembre 2026, la merge di P-05).
+CHANGELOG.md merge=union

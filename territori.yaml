@@ -6,7 +6,7 @@
 # tutto: `site/sw.js` resta di tutti anche se combacerebbe `site/**`.
 territori:
   motore:      [site/engine.js, site/dati/**, site/figure/**, server/**, fonte/**, strumenti/**, tests/**, docs/adr/**, docs/motore.md, docs/specifica.md, docs/filosofia.md]
-  regole:      [AGENTS.md, CLAUDE.md, territori.yaml, docs-check.yaml, .githooks/**, .claude/**, .agents/**, .gitignore, README.md, LICENSE, VERSION]
+  regole:      [AGENTS.md, CLAUDE.md, territori.yaml, docs-check.yaml, .githooks/**, .claude/**, .agents/**, .gitignore, .gitattributes, README.md, LICENSE, VERSION]
   interfaccia: [docs/*-ux.md, site/**]
 condivisi:     [CHANGELOG.md, site/sw.js]
 rami:

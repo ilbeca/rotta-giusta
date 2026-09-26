@@ -85,7 +85,7 @@ controllo che git esegue.
 | territorio | file | chi |
 |---|---|---|
 | **motore** | `site/engine.js`, `site/dati/`, `site/figure/`, `server/`, `fonte/`, `strumenti/`, `tests/`, `docs/adr/`, `docs/motore.md` | Claude, su `main` |
-| **regole** | `AGENTS.md`, `CLAUDE.md`, `territori.yaml`, `docs-check.yaml`, `.githooks/`, `.claude/`, `.agents/`, `.gitignore`, `README.md`, `LICENSE`, `VERSION` | Claude, su `main` |
+| **regole** | `AGENTS.md`, `CLAUDE.md`, `territori.yaml`, `docs-check.yaml`, `.githooks/`, `.claude/`, `.agents/`, `.gitignore`, `.gitattributes`, `README.md`, `LICENSE`, `VERSION` | Claude, su `main` |
 | **interfaccia** | il resto di `site/`, e `docs/*-ux.md` | ChatGPT, su `ui/*` |
 | *condivisi* | `CHANGELOG.md`, `site/sw.js` | tutti |
 
@@ -117,7 +117,13 @@ Cinque cose che la tabella non dice.
 - **`CHANGELOG.md` e' additivo.** Si aggiunge in fondo alla sezione
   `[Unreleased]`; non si riscrivono mai le voci di un altro. Due mani che
   aggiungono non collidono, due che riscrivono si'. Il hook lo fa rispettare:
-  rifiuta un commit che cancella righe del changelog fuori da un rilascio.
+  rifiuta un commit che cancella righe del changelog fuori da un rilascio. E
+  git lo fa rispettare alla merge: `.gitattributes` dichiara `CHANGELOG.md
+  merge=union`, quindi due voci aggiunte nello stesso punto entrano tutte e
+  due senza fermarsi. Serve perche' chiudere a mano un conflitto passa dal
+  `pre-commit`, che su `main` rifiuta i file di `ui/*`: il 26 settembre 2026 la
+  merge di P-05 si e' fermata cosi'. Dopo una merge si guarda che fra le due
+  voci ci sia una riga vuota: il driver non la mette.
 - **Il guscio offline e' scritto in due posti** — `GUSCIO` in `site/sw.js` e in
   `site/app.html` — e chi aggiunge un asset li aggiorna tutti e due. C'e' un
   test. E' per questo che `sw.js` e' condiviso invece di essere dell'interfaccia.

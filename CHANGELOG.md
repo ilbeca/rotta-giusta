@@ -639,6 +639,18 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   skip di sempre; dati **242** (erano 236); interfaccia 183; specifica **310**
   (erano 274).
 
+### Regole — il CHANGELOG additivo anche per git
+
+- **`CHANGELOG.md merge=union` in `.gitattributes`.** Due rami che aggiungono in
+  fondo a `[Unreleased]` fermavano la merge con un conflitto, e chiuderlo a mano
+  passa dal `pre-commit`, che su `main` rifiuta i file dell'interfaccia: la
+  merge di P-05 si è fermata così, ed è stata annullata senza perdite invece di
+  aggirare il recinto. Il driver `union` tiene le righe dei due lati, cioè fa
+  per git quello che `AGENTS.md` chiede alle mani. Provato su una copia del repo
+  con la merge vera: zero righe perse da una parte e dall'altra. `.gitattributes`
+  entra fra le regole in `territori.yaml`. Resta aperto in `Standards`: il
+  controllo dei territori non riconosce la chiusura di una merge.
+
 ## [0.27.0] — 2026-09-25
 
 ### Verificato — la v0.26.2 sul dominio vero
