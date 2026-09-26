@@ -222,6 +222,11 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   codice mandato per email; la prima stesura diceva 48. Per quanto vive un
   account non confermato **non c'è uno standard**: Mastodon 7 giorni, Discourse
   14. Resta la proposta di sette, in attesa dell'autore.
+- **Un account non confermato vive sette giorni**, poi si cancella con le sue
+  righe: confermato dall'autore sui riferimenti qui sopra. Sette e non
+  quattordici, perché un account non confermato può contenere risposte legate
+  all'indirizzo di qualcun altro. R-ACC-11, scoperto finché il server non c'è; i
+  requisiti proposti in `docs/account-progetto.md` scalano di uno, da R-ACC-12.
 
 ## [0.27.0] — 2026-09-25
 

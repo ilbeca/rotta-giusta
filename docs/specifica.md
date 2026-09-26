@@ -999,6 +999,7 @@ dalla pagina sono scoperti finché non c'è una pagina da guardare, e lo dicono.
 | R-ACC-08 | Le righe dei tag N/L/C, che nascono senza data, si importano | `test_engine.mjs::fondiArchivio: i tag si importano` |
 | R-ACC-09 | Senza account la pagina non conserva niente nel browser, nemmeno le preferenze | scoperto — gli account non esistono ancora, e la suite non esercita il DOM di `app.html` |
 | R-ACC-10 | Una password più corta di 15 caratteri è rifiutata, senza regole di composizione | scoperto — il server non esiste ancora; il controllo andrà in `test_server.mjs` |
+| R-ACC-11 | Un account non confermato entro sette giorni si cancella con le sue righe, e la schermata dice la data dal primo momento | scoperto — il server non esiste ancora; il controllo andrà in `test_server.mjs`, la schermata resta della pagina |
 
 ---
 
@@ -1209,3 +1210,7 @@ successo, ed è il motivo per cui questo file esiste.
   08, coperti, e R-ACC-09 e 10, scoperti con il motivo, dalle decisioni
   dell'autore: senza account niente nel browser, nemmeno le preferenze; la
   password lunga almeno 15 caratteri, come NIST.
+- **26 settembre 2026 — R-ACC-11.** Un account con l'email non confermata vive
+  sette giorni, poi si cancella con le sue righe: deciso dall'autore sui
+  riferimenti di `docs/account-progetto.md` §9.6 (Mastodon 7, Discourse 14;
+  nessuno standard).

@@ -702,7 +702,7 @@ Due limiti, entrambi dichiarati in schermata dal primo momento:
   (`purge_unactivated_users_grace_period_days`). Qui sette, il più corto dei
   due, perché un account non confermato può contenere risposte legate
   all'indirizzo di qualcun altro, e meno a lungo restano meglio è.
-  **In attesa della conferma dell'autore.**
+  **Deciso il 26 settembre 2026, dall'autore**, sui riferimenti. R-ACC-11.
 - **Niente cambio d'indirizzo** prima della conferma: si corregge l'email solo
   dopo aver dimostrato di possederne una.
 
@@ -937,7 +937,7 @@ Il `registro` tiene accessi riusciti e falliti, registrazioni,
 reimpostazioni, cambi di password e d'indirizzo, azzeramenti, cancellazioni,
 letture del titolare, e le mail rifiutate dal fornitore. **Nessun log di accesso
 HTTP** con indirizzi o intestazioni. Mai password, gettoni o cookie, in nessun
-log: c'è un test (R-ACC-15, §17).
+log: c'è un test (R-ACC-16, §17).
 
 **Deciso il 26 settembre 2026, su delega dell'autore: l'IP per 6 mesi, l'evento
 per un anno.** Il riferimento è la raccomandazione della CNIL sulla
@@ -1011,7 +1011,7 @@ Safari non è detto.
 
 ## 17. I requisiti
 
-Si aggiungono a R-ACC-01…06. **Quattro sono entrati nel §9.9 della specifica il
+Si aggiungono a R-ACC-01…06. **Cinque sono entrati nel §9.9 della specifica il
 26 settembre 2026**, con le decisioni dell'autore e con `validaRiga()`:
 
 | ID | Requisito | Controllo |
@@ -1020,6 +1020,7 @@ Si aggiungono a R-ACC-01…06. **Quattro sono entrati nel §9.9 della specifica 
 | R-ACC-08 | Le righe dei tag N/L/C, che nascono senza data, si importano | `test_engine.mjs` — l'import; che ritaggare non cancelli righe è della pagina, e resta scoperto |
 | R-ACC-09 | Senza account la pagina non conserva niente nel browser, nemmeno le preferenze | scoperto — è la pagina |
 | R-ACC-10 | Una password più corta di 15 caratteri è rifiutata, senza regole di composizione | scoperto — il server non c'è ancora |
+| R-ACC-11 | Un account non confermato entro sette giorni si cancella con le sue righe, e la schermata dice la data dal primo momento | scoperto — il server non c'è ancora; il controllo andrà in `test_server.mjs`, la schermata resta della pagina |
 
 Gli altri sono **proposti** ed entrano nella specifica con il codice che li
 controlla. Con il server nella suite, la maggior parte smette di essere
@@ -1027,18 +1028,18 @@ scoperta.
 
 | ID | Requisito | Controllo proposto |
 |---|---|---|
-| R-ACC-11 | Una riga accolta torna dal server byte per byte com'era, campi sconosciuti compresi | `test_server.mjs` |
-| R-ACC-12 | La risposta a un invio nomina gli `uid` accolti, già presenti e scartati, e il client toglie dalla coda solo i primi due | `test_engine.mjs` sulla contabilità della coda |
-| R-ACC-13 | Una riga arrivata tardi con un `ts` vecchio compare nella ricezione successiva | `test_server.mjs` |
-| R-ACC-14 | Dopo un azzeramento, un invio con la generazione vecchia è rifiutato e le sue righe non rientrano | `test_server.mjs` |
-| R-ACC-15 | Nessuna password, gettone o cookie compare nel database in chiaro né nel registro | `test_server.mjs` |
-| R-ACC-16 | L'accesso con un'email inesistente e con una password sbagliata danno la stessa risposta | `test_server.mjs` |
-| R-ACC-17 | L'export dal server si ricarica con `importa()` e dà le stesse righe | `test_server.mjs` più `test_engine.mjs` |
-| R-ACC-18 | Una cancellazione toglie tutte le righe dell'account, e un ripristino da una copia precedente non le riporta | `test_server.mjs`, con `ripristina --prova` |
-| R-ACC-19 | Una copia di sicurezza si ripristina e ha le stesse righe dell'originale | `test_server.mjs` |
-| R-ACC-20 | Una mail che il fornitore non accetta produce un errore dichiarato, mai «ti abbiamo scritto» | `test_server.mjs`, con il fornitore finto che rifiuta |
-| R-ACC-21 | All'uscita, righe non inviate fermano la cancellazione dell'archivio locale | scoperto — è la pagina |
-| R-ACC-22 | Un archivio di prima degli account, in IndexedDB o in `pn.archivio`, produce l'avviso finché non è portato o scaricato | scoperto — è la pagina, e va provato su un browser con un archivio vero (è R-ACC-05 reso concreto) |
+| R-ACC-12 | Una riga accolta torna dal server byte per byte com'era, campi sconosciuti compresi | `test_server.mjs` |
+| R-ACC-13 | La risposta a un invio nomina gli `uid` accolti, già presenti e scartati, e il client toglie dalla coda solo i primi due | `test_engine.mjs` sulla contabilità della coda |
+| R-ACC-14 | Una riga arrivata tardi con un `ts` vecchio compare nella ricezione successiva | `test_server.mjs` |
+| R-ACC-15 | Dopo un azzeramento, un invio con la generazione vecchia è rifiutato e le sue righe non rientrano | `test_server.mjs` |
+| R-ACC-16 | Nessuna password, gettone o cookie compare nel database in chiaro né nel registro | `test_server.mjs` |
+| R-ACC-17 | L'accesso con un'email inesistente e con una password sbagliata danno la stessa risposta | `test_server.mjs` |
+| R-ACC-18 | L'export dal server si ricarica con `importa()` e dà le stesse righe | `test_server.mjs` più `test_engine.mjs` |
+| R-ACC-19 | Una cancellazione toglie tutte le righe dell'account, e un ripristino da una copia precedente non le riporta | `test_server.mjs`, con `ripristina --prova` |
+| R-ACC-20 | Una copia di sicurezza si ripristina e ha le stesse righe dell'originale | `test_server.mjs` |
+| R-ACC-21 | Una mail che il fornitore non accetta produce un errore dichiarato, mai «ti abbiamo scritto» | `test_server.mjs`, con il fornitore finto che rifiuta |
+| R-ACC-22 | All'uscita, righe non inviate fermano la cancellazione dell'archivio locale | scoperto — è la pagina |
+| R-ACC-23 | Un archivio di prima degli account, in IndexedDB o in `pn.archivio`, produce l'avviso finché non è portato o scaricato | scoperto — è la pagina, e va provato su un browser con un archivio vero (è R-ACC-05 reso concreto) |
 
 ---
 
@@ -1091,7 +1092,7 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
 | ~~Lunghezza minima della password~~ | — | **deciso**: 15, come NIST (§5.2) |
 | Elenco delle password comuni: quale, con che licenza | una misura, poi l'autore | un file dichiarato nel README (§5.2) |
 | Durata della sessione | l'autore | 60 giorni senza uso, un anno al massimo (§6.2) |
-| Account non confermato: quanto vive | l'autore, sui riferimenti | sette giorni, funzionante — Mastodon 7, Discourse 14, nessuno standard (§9.6) |
+| ~~Account non confermato: quanto vive~~ | — | **deciso**: sette giorni, funzionante — Mastodon 7, Discourse 14, nessuno standard (§9.6) |
 | ~~Preferenze dell'interfaccia senza account~~ | — | **deciso**: non si conservano nemmeno quelle (§13.3) |
 | ~~IP nel registro di sicurezza~~ | — | **deciso** su delega: 6 mesi l'IP, un anno l'evento, dalla CNIL (§15.3) |
 | Statistiche mostrate a chi studia | l'autore, in un documento suo | fuori da qui (§15.2) |
@@ -1125,3 +1126,7 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
   l'account non confermato non c'è uno standard: sette giorni come Mastodon,
   in attesa della conferma dell'autore. I requisiti proposti sono rinumerati
   da R-ACC-11, perché quattro sono entrati nella specifica.
+- **26 settembre 2026 — l'account non confermato.** L'autore conferma i sette
+  giorni. Entra R-ACC-11 nella specifica, e i requisiti proposti scalano di
+  uno: da R-ACC-12 a R-ACC-23. Il §20 non ha più decisioni dell'autore aperte
+  fuori da Q-ONBOARD e dalle statistiche mostrate a chi studia.
