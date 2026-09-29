@@ -119,25 +119,27 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
 | 5b | Chiudere il regime vecchio dei controlli dei quiz, e il §5 della specifica | Claude | `main`, a mano | la cartella libera | P-12 |
-| 15 | La prova nel browser, per i controlli del client | Claude | `main`, a mano | niente — **per primo** | P-29 |
+| 20 | Il banco del browser, stabile | Claude | `main`, a mano | niente — **per primo** | P-38 |
+| 21 | I controlli del client che mancano | Claude | `main`, a mano | P-38 | P-39 |
 | 18 | Il carteggio sul `main`: composizione, attività intera, bozza, controlli | Claude | `main`, a mano | P-29 nell'ordine; P-34 dopo P-33, dalla quarantena | P-32…P-35 |
-| 19 | L'avviso e la conferma del browser nel carteggio | ChatGPT | `ui/main` | niente — **per primo** | P-36 |
 | 6d | Chiudere il regime vecchio dei controlli del ciclo | Claude | `main`, a mano | la cartella libera | P-37 |
 | 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore: il tag `v0.28.0` c'è | P-15 |
 | 12 | `ritmo()` che dice «orologio» senza orologio | Claude | `main`, a mano | niente | P-16 |
 | 13 | L'ultimo tag di una risposta, nel motore | Claude | `main`, a mano | la cartella libera | P-17 |
-| 7b | La realizzazione del client degli account | ChatGPT | `ui/main` | P-28 e P-29 | P-18 |
+| 7b | La realizzazione del client degli account | ChatGPT | `ui/main` | P-38 e P-39 | P-18 |
+| 7c | Chiudere il regime vecchio dei controlli del client | Claude | `main`, a mano | la merge di P-18 | segnaposto P-40 |
 | 6b | Le aree del ridisegno che restano: 4 realizzata, poi 5 e 6 | ChatGPT | `ui/main` | la precedente, e P-18 | segnaposto P-21…P-25 |
 | 9a | I testi fuori da `site/` nella versione con gli account | Claude | `main`, a mano | P-18 | segnaposto P-26 |
 | 9 | **La versione con gli account** — il traguardo | tutti | `main` | 7b, 8, 9a, e gli adempimenti del §4 | segnaposto P-27 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**: Claude sul server e sul motore,
-ChatGPT sull'interfaccia. **Per ChatGPT è pronto P-36**; P-18 e P-21
-aspettano lavoro di Claude su `main`: quel lavoro è la strettoia. **Per
-Claude, l'ordine consigliato: P-29** (sblocca P-18), **P-32, P-33, P-34,
-P-35** (sbloccano P-21), P-37, P-16, P-12, P-17; P-15 quando l'autore ha il
-tempo. **Per ChatGPT: P-36, lanciato.** Vanno uno alla
+ChatGPT sull'interfaccia. P-18 e P-21 aspettano lavoro di Claude su `main`:
+quel lavoro è la strettoia. **Per
+Claude, l'ordine consigliato: P-38, P-39** (sbloccano P-18), **P-32, P-33,
+P-34, P-35** (sbloccano P-21), P-37, P-16, P-12, P-17; P-15 quando l'autore ha
+il tempo. **Per ChatGPT non c'è niente di pronto**: il progetto dell'area 5
+(P-22) aspetta Q-DUE, una decisione dell'autore nel §4. Vanno uno alla
 volta, perché stanno tutti nella cartella principale: è la strettoia della
 colonna di Claude, e si accetta perché il recinto la vuole. Il numero di una
 riga è il suo nome, non la sua posizione. Le due colonne si incontrano al punto
@@ -410,7 +412,15 @@ consuma, non si riprogetta.
   che il browser integrato non fa. `docs/area-2-collaudo-ux.md` dice che cosa
   manca.
 - **Q-DUE**, prima dell'area 5: le due classifiche di «cosa fare adesso»
-  (specifica §10).
+  (specifica §10). **Adesso è quella che tiene fermo ChatGPT**: deciderla
+  permette di scrivere P-22, il progetto dell'area 5, mentre Claude lavora.
+- **La suite dell'interfaccia dura circa un minuto e vuole Chrome**, da P-29.
+  È il prezzo del browser vero; accorciarla vuol dire aprire il CORS del server
+  o accorciare attese che hanno già dato un rosso falso. Se non ti va bene,
+  dillo prima di P-38, che ci mette le mani.
+- **Safari nel banco** vorrebbe «Allow remote automation», un'impostazione
+  tua, e anche così non leggerebbe lo storage: resta Q-PROVE, su un Safari
+  vero (§12 del progetto del client).
 - ~~Un rilascio intermedio~~ — **fatto il 26 settembre: v0.28.0**, commit
   `51d9485`, tag e push con il sì dell'autore, «Build now» premuto, verificato
   sui due indirizzi e nel browser. Il testo di prima, per la storia: `site/` è cambiato con
@@ -1162,7 +1172,7 @@ Controllato dalla regia: motore 155 + 2 skip, server 59, dati 242, interfaccia
 
 ### P-29 — Claude: la prova nel browser, per i controlli del client
 
-**Stato:** pronto, dopo P-31 nell'ordine consigliato. **Dove:** Claude Code, `~/Software/rotta-giusta`,
+**Stato:** **chiuso il 26 settembre 2026**, commit `194aafe` su `main`. **Dove:** Claude Code, `~/Software/rotta-giusta`,
 ramo **`main`**, a mano. **Nasce da:** P-13, §12 di
 `docs/account-client-progetto.md`.
 
@@ -1201,11 +1211,25 @@ Non toccare docs/prossime-sessioni.md. Suite verdi, voce in fondo a
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `194aafe`, voce nel CHANGELOG. La misura prima: una strada sola
+regge senza dipendenze, Chrome headless con il suo protocollo su una pipe, che
+legge da fuori cookie, IndexedDB, localStorage, sessionStorage e Cache Storage,
+fa l'offline, il service worker e due schede. Il banco: `tests/browser.mjs`
+pilota Chrome, `tests/client_account.mjs` serve il sito e avvia il server vero
+sulla porta 8620; regime riconosciuto da `indirizzoApi()`, come P-06; C-01 in
+parte, C-02 e C-05; ventitré rotture rosse e il banco provato contro sé stesso.
+R-ACC-01, 02, 09 coperti; R-ACC-41 e 42 nuovi. Trovato: l'offline emulato vale
+per la scheda e non per il service worker; il cookie `__Host-` va e torna fra
+due porte di localhost in Chrome. **La suite dell'interfaccia ora vuole Chrome e
+la porta 8620 libera, e dura circa un minuto.** **Verificato dalla regia: il
+banco è instabile** — quattro giri sullo stesso albero, due rossi su controlli
+diversi della pagina di riferimento, due verdi —, e diventa P-38, prima di P-18.
+Il resto dei controlli è P-39. Per l'autore, nel §4: il tempo della suite, e
+Safari.
 
 ### P-18 — ChatGPT: la realizzazione del client degli account
 
-**Stato:** in attesa di P-28 e P-29, e che la regia allinei `ui/main`. **Dove:**
+**Stato:** in attesa di P-38 e P-39: il banco stabile, e i controlli che mancano. **Dove:**
 app di ChatGPT, progetto `~/Software/rotta-giusta-ui`, ramo `ui/main`.
 
 ```
@@ -1223,6 +1247,10 @@ dall'autore.
 
 La contabilità della coda è nel motore: la pagina la chiama, non la
 rifà. Se la funzione di P-17 esiste, sostituisce tagPerTentativo().
+Il contratto del banco — gli agganci del runner, indirizzoApi(), i
+testi visibili — è nel §12, «Il banco». La suite dell'interfaccia vuole
+Chrome e la porta 8620 libera, e dura circa un minuto: se nel tuo
+ambiente non gira, fermati e dillo, non saltarla.
 Se un contratto o un controllo ti sta stretto, fermati e dillo: cambiarlo
 tocca main.
 
@@ -1547,7 +1575,7 @@ docs/prossime-sessioni.md.
 
 ### P-36 — ChatGPT: l'avviso e la conferma del browser nel carteggio, finché il testo non si salva
 
-**Stato:** **lanciato il 26 settembre 2026.** **Dove:** app di ChatGPT, progetto `~/Software/rotta-giusta-ui`,
+**Stato:** **chiuso il 26 settembre 2026**, merge `88ea980`. **Dove:** app di ChatGPT, progetto `~/Software/rotta-giusta-ui`,
 ramo `ui/main`. **Nasce da:** P-20, e dalle due decisioni dell'autore del 26
 settembre (§4): l'avviso, e la conferma del browser.
 
@@ -1578,7 +1606,13 @@ verdi, collaudo guardato a 375 e 1280 px, voce in fondo a
 con il resoconto di docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `2a74d2c`, merge `88ea980`. Gli avvisi prima della prova e
+degli allenamenti su carta e nel runner con testo scritto, e `beforeunload`
+fino alla consegna o alla chiusura; nessuno storage nuovo. Collaudo in Chromium
+a 375 e 1280 px, con sei ricariche annullate e il testo rimasto. Trovato e
+corretto un commento del codice che prometteva ancora il salvataggio a ogni
+tasto. Controllato dalla regia: territori puliti, merge chiusa da sola, suite
+verdi sullo stato fuso — interfaccia compresa, in quel giro.
 
 ### P-37 — Claude: chiudere il regime vecchio dei controlli del ciclo
 
@@ -1604,6 +1638,69 @@ coperto quello che adesso la pagina fa davvero.
 
 Non toccare docs/prossime-sessioni.md. Suite verdi, voce in fondo a
 [Unreleased], un commit. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-38 — Claude: il banco del browser, stabile
+
+**Stato:** pronto — **per primo**, prima di P-18. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** la
+verifica della regia su P-29.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-38, su main. Il banco del browser di P-29 è instabile: la
+regia ha fatto girare tests/test_interfaccia.py quattro volte sullo
+stesso albero, e due sono state rosse — ogni volta su un controllo
+diverso della pagina di riferimento, «Inizia non apre un quesito con le
+sue risposte» o «troppo poche verifiche: il giro non è arrivato in
+fondo» —, due verdi. Una suite che a volte è rossa senza motivo insegna
+a ignorare il rosso, che per questo progetto è il danno peggiore.
+
+Prima misura: venti giri almeno, contando i rossi e dove cadono, sul
+Mac dell'autore e sotto carico. Poi trova la causa invece di alzare le
+attese: che cosa aspetta il banco, e che cosa dovrebbe aspettare — un
+evento, uno stato della pagina, non un tempo. Se un'attesa a tempo
+resta, dichiarala con il perché. Il criterio di fine è un numero: zero
+rossi su venti giri, e le rotture deliberate tutte rosse per il loro
+motivo. Scrivi le misure nel §12 del progetto del client, «Il banco».
+
+Non toccare docs/prossime-sessioni.md. Suite verdi, voce in fondo a
+[Unreleased], un commit. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-39 — Claude: i controlli del client che mancano
+
+**Stato:** in attesa di P-38. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** il resoconto di P-29.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-39, su main. Leggi il §12 di
+docs/account-client-progetto.md, «Il banco» compreso, e gli esiti di
+P-28, P-29 e P-38 nel §6 di docs/prossime-sessioni.md.
+
+Sullo stesso banco, stabile dopo P-38: il resto di C-01 — Quiz,
+simulazioni, Carteggio, tecniche e Segnali, così R-ACC-04 si può dire
+coperto —, poi C-03, C-04 e C-06…C-18, con il meccanismo dei due regimi
+e le rotture deliberate. C-06, C-11 e C-15 esercitano la corsa fra
+schede di «da verificare» (§9.3), leggendo il database del server. Se
+il banco non regge un controllo, dillo e lascialo dichiarato scoperto
+con il motivo: meglio un buco scritto che un verde che non misura. Se è
+troppo per un commit, fermati a un confine pulito e dillo. Il tempo
+della suite resta un numero da dire nel resoconto.
+
+Non toccare docs/prossime-sessioni.md. Suite verdi — più giri, non uno —,
+voce in fondo a [Unreleased], un commit. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
 ```
 
@@ -1641,6 +1738,14 @@ prima del progetto; le tabelle che sforano a 375 px, difetto aperto dalla 0.3.0.
 **Aspetta:** P-23. **Dove:** `ui/main`. **Dovrà contenere:** i capitoli 17–22;
 le misure dell'appendice A della specifica rifatte sul tema chiaro; lo zoom
 nativo al 200 % che P-05 non ha potuto verificare nel browser integrato.
+
+#### P-40 — Claude: chiudere il regime vecchio dei controlli del client
+
+**Aspetta:** la merge di P-18. **Dove:** `main`, a mano. **Dovrà contenere:**
+come P-12 e P-37: togliere da `tests/test_interfaccia.py` il regime della
+pagina di oggi per C-01, C-02, C-05 e quelli di P-39, così resta solo il client;
+la pagina di prima ora rossa; la specifica che dice coperto quello che la
+pagina fa davvero.
 
 #### P-26 — Claude: i testi fuori da `site/`, nella versione con gli account
 
@@ -1827,3 +1932,9 @@ dopo**, la soglia degli allarmi riletta sul registro vero
   `~/Software/rotta-giusta-quarantena/p34-2026-09-26/`, e indicato a P-29 e al
   P-34 di Claude. Ogni prompt aperto comincia ora con la riga che dice per quale
   agente è e dove, e il punto 7 di «Come si usa» lo spiega. P-36 lanciato.
+- **29 settembre 2026 — P-29 e P-36 chiusi, e un banco instabile.** P-36 fuso.
+  P-29 ha dato al progetto un browser vero senza dipendenze; la regia l'ha
+  fatto girare quattro volte e due sono state rosse per motivi diversi: nasce
+  P-38, prima di tutto, e P-39 per i controlli che mancano; P-18 li aspetta. P-40
+  segnaposto per chiudere il regime vecchio del client. Nel §4, Q-DUE sblocca
+  ChatGPT.
