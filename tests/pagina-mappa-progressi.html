@@ -1,0 +1,89 @@
+<!doctype html>
+<!--
+  La pagina di riferimento della mappa di Progressi: docs/area-5-progetto.md
+  §§4, 5 e 10.1. Non e' pubblicata e non e' un prototipo: e' il minimo che
+  soddisfa il controllo di tests/test_interfaccia.py, e serve a quel controllo
+  per provarsi al contrario a ogni esecuzione — questa pagina deve passare, e
+  ognuna delle sue rotture elencate in ROTTURE_MAPPA deve fallire.
+
+  Mostra anche la forma del contratto a chi realizza l'area 5: che cosa
+  ricevono le tre funzioni di raccordo, che cosa restituiscono, e come la
+  pagina le collega al runner. Il disegno, i testi e il flusso sono del
+  progetto, non di qui. Il contratto per esteso sta nel §10.1 del progetto.
+-->
+<title>Progressi, regime progettato: pagina di riferimento</title>
+<div id="d-mappa"></div>
+<script type="module">
+import * as E from '/engine.js';
+
+const S = { banca: [], prog: {}, meta: { pesi_esame: {} }, oggi: '', mappa: null, run: null };
+
+/** Una riga del motore, con l'azione del suo pulsante: mai un pulsante da zero. */
+function rigaProgressi(r) {
+  const out = { ...r, azione: r.daRifare > 0 ? { azione: 'rifai', quanti: r.daRifare, selezione: r.rifai } : null };
+  if (r.voci) out.voci = r.voci.map(rigaProgressi);
+  return out;
+}
+
+/**
+ * La mappa di Progressi: le righe e le selezioni, dal motore, senza rifarle.
+ *
+ * richiesta: { banca, progress, oggi, kind, pesi }
+ *   banca     la banca caricata
+ *   progress  lo specchio dell'account, ricalcolato con E.ripiega()
+ *   oggi      il giorno, 'AAAA-MM-GG'
+ *   kind      'base' | 'vela', il selettore della mappa
+ *   pesi      meta.pesi_esame, o null quando i metadati non li hanno
+ */
+function mappaProgressi(richiesta) {
+  const { banca, progress, oggi, kind, pesi } = richiesta;
+  const q = E.quadro(banca, progress, oggi, kind, pesi);
+  const d = kind === 'base' ? E.dovePesa(q) : { indicazione: null, assente: 'senza pesi' };
+  return {
+    kind,
+    righe: q.righe.map(rigaProgressi),
+    totale: q.totale,
+    indicazione: d.indicazione,
+    assente: d.assente,
+  };
+}
+
+/** Quanti quesiti apre un pulsante adesso: la sua lista, o niente se i dati sono cambiati. */
+function anteprimaProgressi(azione, richiesta) {
+  const { banca, progress, oggi } = richiesta;
+  const lista = E.coda(banca, progress, oggi, azione.selezione);
+  if (!azione.quanti || lista.length !== azione.quanti) return { stato: 'cambiata', quanti: null, lista: [] };
+  return { stato: 'pronta', quanti: lista.length, lista };
+}
+
+/** Inizia: la lista dell'anteprima, o niente. */
+function avviaProgressi(azione, richiesta, avvia) {
+  const a = anteprimaProgressi(azione, richiesta);
+  if (a.stato !== 'pronta') return { avviata: false, stato: a.stato };
+  avvia(a.lista, azione.azione === 'mai visti' ? 'argomento' : 'sbagliate', { origine: 'diag' });
+  return { avviata: true, quanti: a.quanti };
+}
+
+/* ---- il collegamento con la pagina: letto dal controllo, non eseguito ---- */
+
+function richiestaProgressi(kind) {
+  return { banca: S.banca, progress: S.prog, oggi: S.oggi, kind, pesi: S.meta.pesi_esame || null };
+}
+
+function dipingiMappa(kind) {
+  S.mappa = { richiesta: richiestaProgressi(kind), vista: null };
+  S.mappa.vista = mappaProgressi(S.mappa.richiesta);
+}
+
+function apri(coda, modo, opt = {}) {
+  S.run = { coda, i: 0, modo, origine: opt.origine || null };
+}
+
+document.addEventListener('click', (ev) => {
+  const b = ev.target.closest('[data-rifai]');
+  if (b) {
+    const azione = JSON.parse(b.dataset.rifai);
+    avviaProgressi(azione, S.mappa.richiesta, (lista, modo, o) => apri(lista, modo, o));
+  }
+});
+</script>

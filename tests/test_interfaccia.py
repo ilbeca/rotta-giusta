@@ -99,6 +99,23 @@ RACCORDO_CICLO = ['riepilogoQuiz', 'anteprimaRiprova', 'avviaRiprova']
 BANCO_CICLO = RADICE / 'tests' / 'ciclo_quiz.mjs'
 RIFERIMENTO_CICLO = RADICE / 'tests' / 'pagina-ciclo-quiz.html'
 
+# La mappa di Progressi ha anch'essa due regimi, con lo stesso meccanismo.
+#
+# Il regime ATTUALE e' la pagina pubblicata: la diagnosi a due tabelle ordinate
+# per «Punti persi», da `E.diagnosi()`, e la lista «Cosa studiare adesso» da
+# `E.consigli()`. Il regime PROGETTATO e' l'area 5 (docs/area-5-progetto.md):
+# la mappa per tema di Q-DUE, da `E.quadro()` e `E.dovePesa()`, attraverso tre
+# funzioni di raccordo che il §10.1 di quel progetto chiede di **eseguire** —
+# righe, frase e selezioni contro il motore vero, con i dati che cambiano fra un
+# clic e l'altro — invece di cercare un nome o un pulsante.
+#
+# Il regime si riconosce dal raccordo: una pagina che dichiara una delle tre
+# funzioni e' nel progettato, e deve dichiararle tutte. **Il regime attuale ha
+# una scadenza:** la regia lo toglie quando integra P-23.
+RACCORDO_MAPPA = ['mappaProgressi', 'anteprimaProgressi', 'avviaProgressi']
+BANCO_MAPPA = RADICE / 'tests' / 'mappa_progressi.mjs'
+RIFERIMENTO_MAPPA = RADICE / 'tests' / 'pagina-mappa-progressi.html'
+
 # Export del motore che la pagina non chiama, e non e' un difetto. Ogni riga ha
 # il motivo e, dove serve, la condizione alla quale sparisce.
 
@@ -599,6 +616,219 @@ def test_ciclo_provato_al_contrario():
         rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in vr if not x['ok']]
         check('rottura del ciclo «%s»: il controllo diventa rosso' % cosa, bool(rossi), 'e\' passata verde')
         check('rottura del ciclo «%s»: e il rosso nomina il difetto' % cosa, any(atteso in r for r in rossi),
+              'rossi: ' + '; '.join(rossi[:3]))
+
+
+# --- 5b'. la mappa di Progressi (R-MAPPA-14…16) ---------------------------------
+
+def banco_mappa(testo):
+    """Le verifiche della mappa progettata, eseguite sotto Node sulla pagina data.
+
+    Il banco estrae le tre funzioni di raccordo e le esegue contro il motore e
+    la banca veri: vedi tests/mappa_progressi.mjs. Se il banco stesso non
+    parte, e' un rosso.
+    """
+    try:
+        p = subprocess.run(['node', str(BANCO_MAPPA)], input=json.dumps({'pagina': testo}),
+                           capture_output=True, text=True, timeout=120)
+        out = json.loads(p.stdout) if p.returncode == 0 else None
+    except (OSError, ValueError, subprocess.TimeoutExpired) as e:
+        return [{'gruppo': 'raccordo', 'nome': 'il banco della mappa parte', 'ok': False, 'extra': str(e)}]
+    if out is None:
+        return [{'gruppo': 'raccordo', 'nome': 'il banco della mappa parte', 'ok': False,
+                 'extra': (p.stderr or '').strip()[-400:]}]
+    return out
+
+
+def regime_mappa(testo):
+    """(regime, verifiche) di Progressi: 'attuale' o 'progettato'.
+
+    Gruppi: «righe» e «frase» sono di R-MAPPA-14; «azioni» e «raccordo» di
+    R-MAPPA-15.
+    """
+    js = senza_commenti(testo)
+    if any(re.search(r'^function %s\b' % f, js, re.M) for f in RACCORDO_MAPPA):
+        return 'progettato', banco_mappa(testo)
+    v = []
+    # Un ibrido e' la scappatoia che il §10.1 vieta: la mappa chiesta al
+    # motore, o un pulsante che promette gli errori da rifare, senza il raccordo
+    # che il controllo esegue. Numero e lista avrebbero di nuovo due fonti.
+    v.append({'gruppo': 'righe', 'nome': 'regime attuale: nessuna mappa senza il raccordo',
+              'ok': not re.search(r'\bE\.quadro\b', js),
+              'extra': 'la pagina chiama E.quadro() senza mappaProgressi/anteprimaProgressi/avviaProgressi: '
+                       'il contratto e\' nel §10.1 di docs/area-5-progetto.md'})
+    v.append({'gruppo': 'frase', 'nome': 'regime attuale: nessuna frase «Dove pesa di più» senza il raccordo',
+              'ok': not re.search(r'\bE\.dovePesa\b', js) and 'Dove pesa di pi' not in js,
+              'extra': 'la frase in cima la decide E.dovePesa() attraverso mappaProgressi(): altrove e\' una '
+                       'seconda fonte, o una frase inventata'})
+    v.append({'gruppo': 'azioni', 'nome': 'regime attuale: nessun «Rifai N errori» senza il raccordo',
+              'ok': 'soloDaRifare' not in js and not re.search(r'Rifai\s*(\d|\$\{)', js),
+              'extra': '«Rifai N errori» apre la selezione rifai di quadro() attraverso anteprimaProgressi(): '
+                       'altrove il numero e la lista hanno due fonti'})
+    v.append({'gruppo': 'raccordo', 'nome': 'regime attuale: la diagnosi di oggi c\'e\' ancora',
+              'ok': bool(re.search(r'^function dipingiDiag\(', js, re.M)) and 'E.diagnosi(' in js
+                    and 'id="d-temi"' in testo and 'id="d-voci"' in testo,
+              'extra': 'le due tabelle da E.diagnosi() sono Progressi di oggi: finche\' la mappa non c\'e\', '
+                       'non possono sparire'})
+    return 'attuale', v
+
+
+_REGIME_MAPPA = None
+
+
+def regime_mappa_app():
+    global _REGIME_MAPPA
+    if _REGIME_MAPPA is None:
+        _REGIME_MAPPA = regime_mappa(leggi('app.html'))
+    return _REGIME_MAPPA
+
+
+def registra_mappa(regime, verifiche, gruppi):
+    etichetta = {'attuale': 'regime attuale', 'progettato': 'regime progettato'}
+    for x in verifiche:
+        if x['gruppo'] in gruppi:
+            check('mappa di Progressi (%s): %s' % (etichetta.get(regime, 'regime ignoto'), x['nome']),
+                  x['ok'], x.get('extra', ''))
+
+
+def test_mappa_righe():
+    regime, v = regime_mappa_app()
+    registra_mappa(regime, v, ('righe', 'frase'))
+    check('mappa di Progressi: righe e frase sono state controllate',
+          any(x['gruppo'] == 'righe' for x in v) and any(x['gruppo'] == 'frase' for x in v),
+          'nessuna verifica sulle righe o sulla frase')
+
+
+def test_mappa_azioni():
+    regime, v = regime_mappa_app()
+    registra_mappa(regime, v, ('azioni', 'raccordo'))
+    check('mappa di Progressi: le azioni sono state controllate', any(x['gruppo'] == 'azioni' for x in v),
+          'nessuna verifica sulle azioni')
+
+
+# Il ramo del regime progettato non gira mai sulla pagina pubblicata finche'
+# P-23 non arriva: qui gira a ogni esecuzione su una pagina di riferimento che
+# deve passare e su ciascuna delle sue rotture, che devono fallire nominando il
+# difetto. Le prime dieci sono le otto che il §10.1 del progetto elenca — il
+# tetto di 20 e l'ordine in due punti ciascuno —; le altre sono nate provando
+# il banco contro se' stesso.
+ROTTURE_MAPPA = [
+    ('il numero del pulsante non e\' la lista',
+     [('quanti: r.daRifare, selezione: r.rifai', 'quanti: r.visti, selezione: r.rifai')],
+     'porta N = daRifare'),
+    ('«Rifai N errori» con il tetto di 20',
+     [('quanti: r.daRifare, selezione: r.rifai', 'quanti: r.daRifare, selezione: { ...r.rifai, n: 20 }')],
+     'tutti e soli'),
+    ('l\'anteprima apre con il tetto predefinito di coda()',
+     [('const lista = E.coda(banca, progress, oggi, azione.selezione);',
+       'const lista = E.coda(banca, progress, oggi, { ...azione.selezione, n: undefined });')],
+     'con la selezione del pulsante'),
+    ('soloSbagliate al posto di soloDaRifare',
+     [('quanti: r.daRifare, selezione: r.rifai',
+       'quanti: r.daRifare, selezione: { ...r.filtro, soloSbagliate: true, n: 0 }')],
+     'soloDaRifare'),
+    ('i temi riordinati per errori',
+     [('righe: q.righe.map(rigaProgressi),',
+       'righe: [...q.righe].sort((a, b) => b.daRifare - a.daRifare).map(rigaProgressi),')],
+     'nell\'ordine di quadro()'),
+    ('le voci riordinate per errori',
+     [('if (r.voci) out.voci = r.voci.map(rigaProgressi);',
+       'if (r.voci) out.voci = [...r.voci].sort((a, b) => b.daRifare - a.daRifare).map(rigaProgressi);')],
+     'nell\'ordine'),
+    ('«X su Y» anche sotto la soglia',
+     [('const out = { ...r, azione:', 'const out = { ...r, primo: r.primo || { esatte: r.giusti, su: r.visti }, azione:')],
+     'sotto soglia non c\'e\''),
+    ('una frase inventata quando il motore non ne da\'',
+     [('indicazione: d.indicazione,',
+       'indicazione: d.indicazione || (q.righe.find((x) => x.maiVisti > 0) || {}).nome || null,')],
+     'la pagina non mette niente al suo posto'),
+    ('un peso inventato per la vela',
+     [('const out = { ...r, azione:', 'const out = { ...r, peso: r.peso ?? (r.tema ? null : 5), azione:')],
+     'nessun peso dove quadro()'),
+    ('consigli() ancora chiamata',
+     [('/* ---- il collegamento con la pagina',
+       'function cosaStudiare(d) { return E.consigli(d, { quante: 6 }); }\n\n/* ---- il collegamento con la pagina')],
+     'E.consigli non si chiama'),
+    ('il raccordo perde l\'anteprima',
+     [('function anteprimaProgressi(azione, richiesta) {', 'function anteprimaMappa(azione, richiesta) {'),
+      ('const a = anteprimaProgressi(azione, richiesta);', 'const a = anteprimaMappa(azione, richiesta);')],
+     'dichiara anteprimaProgressi'),
+    ('le tre funzioni spariscono, e resta la chiamata al motore',
+     [('function mappaProgressi(', 'function mappaAttivita('),
+      ('function anteprimaProgressi(', 'function anteprimaAttivita('),
+      ('function avviaProgressi(', 'function avviaAttivita(')],
+     'nessuna mappa senza il raccordo'),
+    ('un pulsante da zero',
+     [('azione: r.daRifare > 0 ? { azione: \'rifai\', quanti: r.daRifare, selezione: r.rifai } : null',
+       'azione: { azione: \'rifai\', quanti: r.daRifare, selezione: r.rifai }')],
+     'nessun pulsante da zero'),
+    ('l\'ordine chiesto alla diagnosi',
+     [('const q = E.quadro(banca, progress, oggi, kind, pesi);',
+       'const q = E.quadro(banca, progress, oggi, kind, pesi); E.diagnosi(banca, progress, oggi, kind, pesi);')],
+     'nessun\'altra funzione'),
+    ('la frase su un quadro rifatto',
+     [('E.dovePesa(q)', 'E.dovePesa(E.quadro(banca, progress, oggi, kind, pesi))')],
+     'una sola chiamata a E.quadro()'),
+    ('i pesi scritti in pagina',
+     [('const q = E.quadro(banca, progress, oggi, kind, pesi);',
+       "const q = E.quadro(banca, progress, oggi, kind, pesi && { 'NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA': 4, "
+       "'MANOVRA E CONDOTTA': 4, 'SICUREZZA DELLA NAVIGAZIONE': 3, 'NORMATIVA DIPORTISTICA E AMBIENTALE': 3, "
+       "'COLREG E SEGNALAMENTO MARITTIMO': 2, METEOROLOGIA: 2, 'TEORIA DELLO SCAFO': 1, MOTORI: 1 });")],
+     'i pesi sono quelli della richiesta'),
+    ('l\'anteprima non verifica',
+     [("if (!azione.quanti || lista.length !== azione.quanti) return { stato: 'cambiata', quanti: null, lista: [] };\n", '')],
+     'dice «cambiata»'),
+    ('Inizia senza verificare',
+     [("  if (a.stato !== 'pronta') return { avviata: false, stato: a.stato };\n  avvia(a.lista,",
+       "  avvia(E.coda(richiesta.banca, richiesta.progress, richiesta.oggi, azione.selezione),")],
+     'Inizia non avvia niente'),
+    ('il raccordo legge uno stato globale',
+     [('const { banca, progress, oggi, kind, pesi } = richiesta;',
+       'const { banca, oggi, kind, pesi } = richiesta; const progress = S.prog;')],
+     'lancia'),
+    ('il raccordo scrive nella richiesta',
+     [('const q = E.quadro(banca, progress, oggi, kind, pesi);',
+       'richiesta.disegnata = true; const q = E.quadro(banca, progress, oggi, kind, pesi);')],
+     'scrivere nella richiesta'),
+    ('la pagina chiede la mappa anche fuori dal raccordo',
+     [('/* ---- il collegamento con la pagina',
+       'function contaErrori() { return E.quadro(S.banca, S.prog, S.oggi, \'base\', null).totale.daRifare; }\n\n'
+       '/* ---- il collegamento con la pagina')],
+     'solo dentro il raccordo'),
+    ('Inizia apre il runner senza il raccordo',
+     [('avviaProgressi(azione, S.mappa.richiesta, (lista, modo, o) => apri(lista, modo, o));',
+       'apri(E.coda(S.banca, S.prog, S.oggi, azione.selezione), \'sbagliate\');')],
+     'le passa apri'),
+    ('il raccordo dichiarato e mai chiamato',
+     [('S.mappa.vista = mappaProgressi(S.mappa.richiesta);', 'S.mappa.vista = null;')],
+     'disegna la mappa da mappaProgressi'),
+]
+
+
+def test_mappa_provata_al_contrario():
+    rif = RIFERIMENTO_MAPPA.read_text(encoding='utf-8')
+    regime, v = regime_mappa(rif)
+    rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in v if not x['ok']]
+    check('la pagina di riferimento della mappa e\' nel regime progettato', regime == 'progettato', str(regime))
+    check('la pagina di riferimento della mappa passa il controllo', not rossi, '; '.join(rossi[:3]))
+    # Un banco che non esegue niente passerebbe tutto: si pretende che abbia
+    # confrontato le righe e fatto il giro delle azioni.
+    check('il banco della mappa ha eseguito il giro, non solo letto i nomi', len(v) >= 150,
+          'solo %d verifiche' % len(v))
+    for g in ('righe', 'frase', 'azioni', 'raccordo'):
+        check('il banco della mappa ha verifiche del gruppo «%s»' % g, any(x['gruppo'] == g for x in v))
+    for cosa, sostituzioni, atteso in ROTTURE_MAPPA:
+        rotta = rif
+        for vecchio, nuovo in sostituzioni:
+            check('rottura della mappa «%s»: si applica alla pagina di riferimento' % cosa, vecchio in rotta,
+                  'il testo da sostituire non c\'e\' piu\': la rottura non romperebbe niente')
+            rotta = rotta.replace(vecchio, nuovo, 1)
+        if rotta == rif:
+            continue
+        _, vr = regime_mappa(rotta)
+        rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in vr if not x['ok']]
+        check('rottura della mappa «%s»: il controllo diventa rosso' % cosa, bool(rossi), 'e\' passata verde')
+        check('rottura della mappa «%s»: e il rosso nomina il difetto' % cosa, any(atteso in r for r in rossi),
               'rossi: ' + '; '.join(rossi[:3]))
 
 
@@ -1557,6 +1787,7 @@ def main():
               test_voci_barra, test_modalita_quiz, test_selettori,
               test_intenzioni_provate_al_contrario,
               test_ciclo_riepilogo, test_ciclo_riprova, test_ciclo_provato_al_contrario,
+              test_mappa_righe, test_mappa_azioni, test_mappa_provata_al_contrario,
               test_client_nella_pagina, test_client_primo_ingresso, test_client_senza_account, test_client_email_registrata,
               test_client_invito_e_viste, test_client_tutte_le_attivita, test_client_registrazione,
               test_client_dispositivo_condiviso, test_client_coda, test_client_uscita,

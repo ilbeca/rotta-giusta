@@ -887,6 +887,83 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   La prima corsa dell'interfaccia ha incontrato la porta 8620 occupata dal
   checkout `main`; la corsa completa successiva è verde, senza esclusioni.
 
+### Test — P-44: i controlli della mappa di Progressi in due regimi, e nel nuovo eseguono
+
+- **La mappa progettata si riconosce dal raccordo, non da un pulsante.** Il
+  §10.1 di `docs/area-5-progetto.md` chiedeva, prima della realizzazione, i
+  controlli di Progressi con il meccanismo di P-06 e P-31: la diagnosi di oggi
+  riconosciuta, e la mappa riconosciuta da un raccordo che chiama davvero
+  `E.quadro()` ed `E.dovePesa()`. Il contratto è scritto nel §10.1 prima del
+  codice della pagina: tre funzioni di primo livello —
+  `mappaProgressi(richiesta)`, `anteprimaProgressi(azione, richiesta)`,
+  `avviaProgressi(azione, richiesta, avvia)` —, con `richiesta` uguale a
+  `{ banca, progress, oggi, kind, pesi }`. La prima restituisce le righe di
+  `quadro()` com'erano, ciascuna con l'azione del suo «Rifai N errori», e la
+  frase di `dovePesa()`; le altre due aprono una selezione solo se la lista ha
+  ancora il numero promesso. Senza raccordo la pagina è nel regime attuale, dove
+  una mappa, una frase o un «Rifai N errori» sono rossi — un numero con una
+  seconda fonte — e la diagnosi a due tabelle deve restare. Il regime attuale ha
+  una scadenza, P-23.
+
+- **Il banco esegue la mappa** (`tests/mappa_progressi.mjs`), con la banca vera
+  e sei storici: 35 errori aperti in un tema e 25 in una sua voce, con tre
+  errori già ripresi che `soloSbagliate` porterebbe a 38; la vela con i pesi
+  nella richiesta; cinque risposte, sotto la soglia della frase; senza pesi;
+  nessuna risposta; tutto giusto; quasi tutto giusto, dove la frase parla degli
+  errori da rifare con due pulsanti. Confronta righe, totale e frase con il
+  motore sugli stessi dati, campo per campo, e conta le chiamate: una a
+  `quadro()`, `dovePesa()` sullo stesso oggetto, niente `diagnosi()`,
+  `consigli()` o `classifica()`. Poi apre ogni azione e **fra un clic e l'altro
+  i dati cambiano**: una risposta in un altro tema e la banca ricaricata non
+  devono cambiare niente; un errore del tema ripreso, un errore nuovo e un
+  azzeramento devono fermare anteprima e Inizia, e riaperta la mappa il numero
+  è sceso insieme alla lista. La richiesta è congelata, e i suoi pesi hanno due
+  temi scambiati rispetto al decreto: una pagina che li scrive a mano esce rossa.
+
+- **Provato al contrario su ventitré rotture** della pagina di riferimento
+  (`tests/pagina-mappa-progressi.html`), tutte rosse per il loro motivo: le otto
+  che il §10.1 elenca — numero diverso dalla lista, il tetto di 20 in due punti,
+  `soloSbagliate` al posto di `soloDaRifare`, temi e voci riordinati per errori,
+  «X su Y» sotto soglia, una frase inventata dove il motore non ne dà, un peso
+  per la vela, `consigli()` ancora chiamata — e tredici nate provandolo, fra cui
+  un pulsante da zero, l'ordine chiesto alla diagnosi, la frase su un quadro
+  rifatto, i pesi scritti in pagina, l'anteprima che non verifica, Inizia che
+  non verifica o salta il raccordo, il raccordo che legge `S` o scrive nella
+  richiesta. **E il banco contro sé stesso**, una difesa tolta alla volta: senza
+  la richiesta congelata passa verde una rottura, senza i dati che cambiano
+  due, senza il conto delle chiamate a `quadro()` una; il confronto
+  dell'azione delle righe e quello della selezione passata a `coda()` si
+  coprono a vicenda, e toglierne uno solo non fa passare niente.
+
+- **Una misura trovata dal banco, e scritta nel §4.3 della specifica.** Provando
+  il banco contro sé stesso con i pesi del decreto al posto dei suoi, il suo
+  storico non aveva la frase, e la premessa «lo storico ha una frase» è
+  diventata rossa: chi ha visto 20 quesiti e più
+  senza toccare né Navigazione né Manovra ha `assente: 'pari'`, perché i due
+  temi valgono 4 domande ciascuno e mai visti sono in ballo per 4 tutti e due.
+  Riprodotto con 25 risposte nei COLREG. È la regola confermata il 29 settembre
+  che fa il suo lavoro. I pesi scambiati del banco, scelti per prendere i pesi
+  scritti in pagina, lo tengono lontano anche da questo `pari`.
+
+- **Nella specifica**, R-MAPPA-14 passa da scoperto a coperto per quello che il
+  banco esegue; entrano R-MAPPA-15, le azioni viste dalla pagina, R-MAPPA-16, le
+  rotture, e R-MAPPA-17, scoperto: i testi e il disegno — «Visti Y su N», «Troppo
+  poche risposte per dire come va», «Dove pesa di più adesso», il riquadro che
+  non c'è — che il banco non guarda. Il §10.1 del progetto dice anche due cose
+  per P-23 che il §8 non diceva: `diagnosi` esce dalle chiamate protette con la
+  vecchia diagnosi, che ne è l'unico chiamante, e `serieGruppi` resta solo se
+  l'andamento la chiama ancora.
+
+  Suite: interfaccia **1.181** (erano 1.096); specifica **572** (erano 560);
+  motore 167/169 con i due skip di sempre; dati 242; server 60/60. Con la
+  **24.21.0 LTS**, il pacchetto verificato con `SHASUMS256.txt` riletto da
+  nodejs.org: server 60/60, motore 167/169, interfaccia 1.181. **Cinque giri della suite dell'interfaccia intera, tutti
+  verdi**: tre senza carico in 116–119 s, uno con la LTS nel `PATH`, uno con
+  dieci `yes` in 133 s; prima di ognuno la 8620 guardata libera. I controlli
+  della mappa, rotture comprese, costano circa due secondi della suite.
+  Guardiano e controllo della documentazione verdi. `site/` e
+  `docs/prossime-sessioni.md` non sono stati toccati.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag

@@ -268,6 +268,104 @@ neutro. Se il raccordo consegnato non coincide, allineare questo §10.1 **prima*
 di codificare; non mantenere una classifica nascosta o abbassare test/soglie
 per tenere verde la suite. P-22 non modifica quei file né la coda.
 
+**Come lo legge il controllo — scritto da P-44, 30 settembre 2026.** La
+dipendenza dei controlli è chiusa: `tests/test_interfaccia.py` riconosce il
+regime di Progressi dal **raccordo**. Una pagina che dichiara al primo livello
+una di queste tre funzioni è nel regime progettato, e deve dichiararle tutte:
+
+```js
+mappaProgressi(richiesta)                  // righe, totale, frase: dal motore, senza rifarli
+anteprimaProgressi(azione, richiesta)      // quanti quesiti apre un pulsante adesso, o niente
+avviaProgressi(azione, richiesta, avvia)   // Inizia: la lista dell'anteprima, o niente
+```
+
+Devono dipendere solo dai loro argomenti, da `E` e da altre funzioni dichiarate
+al primo livello: il controllo le estrae e le esegue senza DOM e senza `S`.
+Senza nessuna delle tre, la pagina è nel regime attuale, e lì non deve chiamare
+`E.quadro` né `E.dovePesa`, né scrivere «Rifai N errori», `soloDaRifare` o «Dove
+pesa di più»: sarebbe la mappa senza il raccordo, un numero con una seconda
+fonte. E la diagnosi di oggi — `dipingiDiag()`, `E.diagnosi()`, le tabelle
+`d-temi` e `d-voci` — resta finché la mappa non c'è.
+
+`richiesta` è `{ banca, progress, oggi, kind, pesi }`: la banca caricata; lo
+specchio dell'account ricalcolato con `E.ripiega()` (§3); il giorno; `'base'` o
+`'vela'`, il selettore della mappa; `meta.pesi_esame`, oppure `null` quando i
+metadati non li hanno. La richiesta non si scrive: il controllo la congela.
+
+`mappaProgressi()` chiama **una volta** `E.quadro(banca, progress, oggi, kind,
+pesi)` e, sulla base, **una volta** `E.dovePesa()` sul **medesimo oggetto**;
+nessun'altra funzione che conti o scelga — né `diagnosi()` per l'ordine, né
+`consigli()`, né `classifica()` per ricontare. Restituisce
+`{ kind, righe, totale, indicazione, assente }`:
+
+- `righe` sono le righe di `quadro()`, **nello stesso ordine**, e le `voci` di
+  ciascun tema nel loro: ogni campo che il motore dà — `nome`, `peso`, `n`,
+  `giusti`, `daRifare`, `maiVisti`, `visti`, `primo`, `filtro`, `rifai` — resta
+  com'è. `primo` resta `null` sotto soglia, `peso` resta `null` sulle voci e
+  sulla vela. In più ogni riga porta `azione`, il suo «Rifai N errori»:
+  `{ azione: 'rifai', quanti: riga.daRifare, selezione: riga.rifai }`, oppure
+  `null` quando `daRifare` è zero — mai un pulsante da zero. La pagina può
+  aggiungere campi suoi, come lo stato aperto di un tema; non cambiarne.
+- `totale` è quello di `quadro()`.
+- `indicazione` e `assente` sono quelli di `dovePesa()`: sulla vela
+  `indicazione: null` e `assente: 'senza pesi'`, chiamando o no `dovePesa()`.
+  Quando `indicazione` è `null` la pagina non ne mette un'altra. I pulsanti
+  della frase sono `indicazione.pulsanti`, ognuno già `{ azione, quanti,
+  selezione }`.
+
+`anteprimaProgressi(azione, richiesta)` riceve un'azione — di una riga o della
+frase — e chiama **una volta** `E.coda(banca, progress, oggi,
+azione.selezione)` con la selezione com'è: senza tetto, `soloDaRifare` e non
+`soloSbagliate`. Restituisce `{ stato: 'pronta', quanti, lista }` solo quando
+la lista ha esattamente `azione.quanti` quesiti; altrimenti `{ stato:
+'cambiata', quanti: null, lista: [] }` — una lista diversa dal numero promesso
+non si apre chiamandola N, e la pagina rifà la mappa. Può chiamare anche
+`quadro()` e `dovePesa()` per rifarla; nessun'altra selezione.
+
+`avviaProgressi(azione, richiesta, avvia)` fa la stessa verifica e, solo se
+l'anteprima è `'pronta'`, chiama **una volta** `avvia(lista, modo, opt)` con
+la lista dell'anteprima, e restituisce `{ avviata: true, quanti }`;
+altrimenti `{ avviata: false, stato }`. `modo` e `opt` sono della pagina — il
+controllo non li legge. La pagina passa come `avvia` il suo `apri()`, anche
+dentro una freccia; disegna la mappa da `mappaProgressi()`; fuori dalle tre
+funzioni non chiama `E.quadro` né `E.dovePesa`; e `E.consigli` non si chiama
+più, in nessun punto (§8).
+
+Il controllo esegue il raccordo con la banca vera e sei storici: uno con 35
+errori aperti in un tema, 25 in una sua voce e tre errori già ripresi —
+`soloSbagliate` ne aprirebbe 38 —, righe sopra e sotto la soglia di «X su Y», e
+la vela; lo stesso sulla vela, con i pesi nella richiesta; cinque risposte,
+sotto la soglia della frase; senza pesi; nessuna risposta; tutto giusto; e
+quasi tutto giusto, dove la frase parla degli errori da rifare con i suoi due
+pulsanti. I pesi della richiesta hanno due temi scambiati rispetto al decreto:
+una pagina che li scrive a mano esce rossa. Poi apre ogni azione — il tema, la
+voce, i pulsanti delle due frasi — e fra un passo e l'altro cambia i dati: una
+risposta in un altro tema e la banca ricaricata non cambiano niente; un errore
+del tema ripreso, un errore nuovo nel tema e un azzeramento devono fermare
+anteprima e Inizia; riaperta la mappa, numero e lista tornano insieme.
+
+La pagina di riferimento `tests/pagina-mappa-progressi.html` mostra la forma
+minima che passa; non è un disegno. Il controllo gira su di lei e su 23 sue
+rotture a ogni esecuzione — le otto del paragrafo qui sopra, in dieci rotture,
+e tredici nate provandolo —, finché la pagina pubblicata è nel regime attuale.
+
+**Che cosa il controllo non vede**, e resta al collaudo del §9: i testi
+(«Visti Y su N», «X su Y giusti al primo tentativo», «Troppo poche risposte per
+dire come va», «Dove pesa di più adesso»), il disegno della barra e della
+legenda, il dettaglio che si apre, il focus e i ritorni, la geometria a 375 e
+1280 px, gli stati d'accesso del §3 con il client (A-01), prove, andamento e
+sessioni (A-06), il ridisegno dopo una ricezione (A-07). Un disegno che
+scrivesse numeri presi da un'altra parte invece che dal risultato di
+`mappaProgressi()` passerebbe: del collegamento il controllo legge soltanto
+che il raccordo sia l'unico a chiedere la mappa e che Inizia passi da lui.
+
+**Due cose per P-23 che il §8 non dice.** `E.diagnosi()` ha un solo chiamante
+in pagina, `dipingiDiag()`: quando la vecchia diagnosi esce, esce anche la
+riga `diagnosi` dalle «Chiamate al motore protette», nello stesso commit — la
+funzione resta viva nel motore, perché `quadro()` la usa. E `E.serieGruppi()`
+oggi lo chiama solo `dipingiDiag()`, per le barrette: se l'andamento del §6 lo
+chiama da un'altra funzione, la riga resta; se l'andamento esce, esce con lui.
+
 ### 10.2 Evidenze di P-22 e limiti
 
 P-22 ha letto il contratto del motore, le decisioni Q-DUE, il progetto del

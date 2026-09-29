@@ -524,6 +524,19 @@ preso su delega: la vela non ha la frase, perché un peso per voce non esiste;
 la soglia è `FRASE_MIN_VISTI = 20`, le domande di una prova base; il motivo è
 «da rifare» quando gli errori sono almeno quanti i mai visti.
 
+**Misurato il 30 settembre 2026 (P-44), da sapere e non da decidere:** con i
+pesi del decreto, chi ha visto 20 quesiti e più **senza toccare né Navigazione
+né Manovra** non ha la frase, per `pari`. I due temi valgono 4 domande
+ciascuno, e interamente mai visti sono in ballo per 4 × 322 / 322 = 4 × 155 /
+155 = 4: nessun altro tema può superarli, e fra loro due la regola non sceglie.
+Riprodotto con 25 risposte nei COLREG: `assente: 'pari'`; con le stesse 25 in
+Navigazione, la frase indica Manovra. È la regola confermata qui sopra che fa
+il suo lavoro — scegliere uno dei due sarebbe l'ordine dell'elenco —, e la
+mappa sotto resta leggibile; se l'autore volesse una frase anche lì, sarebbe
+una decisione nuova su `dovePesa()`. L'ha trovato il banco della pagina,
+provato contro sé stesso: con i pesi veri al posto dei suoi, scambiati, il suo
+storico dava `pari`, e la premessa «lo storico ha una frase» è diventata rossa.
+
 **`peggiori()` e `consigli()`, i chiamanti e che cosa ne è stato** (P-41).
 `peggiori()` non aveva chiamanti in pagina dal 9 settembre 2026 — era fra gli
 orfani dichiarati, in attesa di Q-DUE — e nel motore la citavano soltanto i
@@ -1307,7 +1320,8 @@ R-ACC-47; R-ACC-30 ha la metà della pagina in R-ACC-41.
 
 Nati da Q-DUE (§10), chiusa dall'autore il 29 settembre 2026; il motore è di
 P-41. La pagina non li consuma ancora: `quadro()` e `dovePesa()` sono fra gli
-orfani dichiarati fino alla realizzazione dell'area 5.
+orfani dichiarati fino alla realizzazione dell'area 5. I controlli della pagina
+ci sono da P-44, in due regimi (sotto la tabella).
 
 | ID | Requisito | Controllo |
 |---|---|---|
@@ -1324,7 +1338,27 @@ orfani dichiarati fino alla realizzazione dell'area 5.
 | R-MAPPA-11 | A pari merito in testa la frase non c'è: non si sceglie per ordine d'elenco | `test_engine.mjs::dovePesa: a pari merito nessuna frase` |
 | R-MAPPA-12 | Con niente da fare la frase non c'è | `test_engine.mjs::dovePesa: con niente da fare nessuna frase` |
 | R-MAPPA-13 | Sulla vela, e senza pesi d'esame, la frase non c'è | `test_engine.mjs::dovePesa: sulla vela nessuna frase, perche un peso per voce non esiste` |
-| R-MAPPA-14 | La pagina scrive i numeri della mappa e la frase da `quadro()` e `dovePesa()`, senza rifarli, e dove la frase manca non mette niente al suo posto | scoperto — la pagina non ha ancora la mappa: è la realizzazione dell'area 5 (P-23), e il controllo lo chiede il suo progetto (P-22), come il §10.1 delle aree 2 e 3 |
+| R-MAPPA-14 | La pagina prende i numeri della mappa e la frase da `quadro()` e `dovePesa()` attraverso il raccordo, senza rifarli: una chiamata a `quadro()` con i dati e i pesi della richiesta e `dovePesa()` sullo stesso oggetto; i temi e le voci nel loro ordine; giusti, da rifare, mai visti e visti del motore; `primo` nullo sotto soglia; nessun peso sulle voci né sulla vela; nessuna frase dove `dovePesa()` non ne dà, e nessun'altra funzione che conti. **Regime attuale:** nessuna mappa, frase o «Rifai N errori» senza il raccordo, e la diagnosi di oggi ancora al suo posto | `test_interfaccia.py::test_mappa_righe` |
+| R-MAPPA-15 | Dalla pagina, «Rifai N errori» di un tema, di una voce e i pulsanti della frase aprono esattamente la selezione del motore: N è `daRifare`, la lista è `coda()` con `soloDaRifare` e senza tetto — tutti i 35, non 20, e non i 38 di `soloSbagliate` —; mai un pulsante da zero; se fra un clic e l'altro gli errori della riga sono cambiati, l'anteprima dice «cambiata» e Inizia non avvia niente, mentre una risposta altrove o la banca ricaricata non cambiano niente | `test_interfaccia.py::test_mappa_azioni` |
+| R-MAPPA-16 | Il controllo della mappa progettata gira a ogni esecuzione, anche finché la pagina pubblicata ha la diagnosi di oggi: una pagina di riferimento lo passa, e ciascuna delle sue rotture dichiarate lo fa fallire nominando il difetto | `test_interfaccia.py::test_mappa_provata_al_contrario` |
+| R-MAPPA-17 | La schermata scrive quello che il raccordo restituisce e niente altro: «N domande nella prova» solo con un peso, «Visti Y su N», «X su Y giusti al primo tentativo» o «Troppo poche risposte per dire come va», «Rifai N errori» o «Nessun errore da rifare qui», la frase con il suo titolo, e nessun riquadro dove la frase manca | scoperto — sono testi e disegno, e il banco della mappa non guarda il DOM: un disegno che prendesse i numeri da un'altra parte passerebbe. Si fissa al collaudo della realizzazione dell'area 5 (P-23), a 375 e 1280 px |
+
+**I due regimi di Progressi, e che cosa il controllo non vede** (P-44, 30
+settembre 2026). R-MAPPA-14 e R-MAPPA-15 sono scritti per il passaggio all'area
+5, con il meccanismo di R-NAV-04 e R-FLU-01: la pagina pubblicata ha la diagnosi
+a due tabelle e «Cosa studiare adesso», e `main` deve restare verde con lei
+mentre la mappa si realizza. Il controllo riconosce il regime dal **raccordo** —
+`mappaProgressi()`, `anteprimaProgressi()`, `avviaProgressi()`, contratto nel
+§10.1 di `area-5-progetto.md` —: nel regime attuale pretende che non ci siano
+una mappa, una frase o un «Rifai N errori» senza il raccordo, e che la diagnosi
+di oggi resti; nel progettato estrae le tre funzioni e le esegue contro il motore
+e la banca veri, su sei storici e con i dati che cambiano fra un clic e l'altro
+(`tests/mappa_progressi.mjs`). R-MAPPA-01…13 restano sul motore, dove i loro
+test li tengono; R-MAPPA-14 e 15 li portano nella colla fra pagina e motore.
+**Non vede**, ed è R-MAPPA-17 o il collaudo del §9 del progetto: i testi, la
+barra, il dettaglio, il focus e i ritorni, la geometria, gli stati d'accesso,
+prove, andamento e sessioni, il ridisegno dopo una ricezione. **Il regime
+attuale ha una scadenza:** lo toglie la regia quando integra P-23.
 
 ---
 
@@ -1702,3 +1736,13 @@ successo, ed è il motivo per cui questo file esiste.
   gruppi su 17 — provato sulla pagina di `f218935`. R-ACC-02, 09, 41, 42 e 57
   perdono i due regimi; entrano R-ACC-59…63, scoperti con il motivo, per quello
   che il banco non vede. La pagina di riferimento resta per le rotture.
+- **30 settembre 2026 — i controlli della mappa di Progressi (P-44).** Il §10.1
+  del progetto dell'area 5 chiedeva, prima della sua realizzazione, controlli
+  che eseguano la mappa invece di cercarne i nomi, in due regimi come quelli
+  delle aree 2 e 3. Il contratto del raccordo — `mappaProgressi()`,
+  `anteprimaProgressi()`, `avviaProgressi()` — è nel §10.1 di quel progetto;
+  R-MAPPA-14 passa da scoperto a coperto per quello che il banco esegue, ed
+  entrano R-MAPPA-15, le azioni, R-MAPPA-16, le rotture, e R-MAPPA-17, i testi e
+  il disegno, scoperto. Ventitré rotture della pagina di riferimento, tutte
+  rosse per il loro motivo; il §4.3 porta una misura sul `pari` che il banco ha
+  trovato da solo.
