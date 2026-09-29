@@ -91,6 +91,72 @@ chat.
    prompt per Claude, è partito in ChatGPT nella cartella principale, e nessuno
    dei due aveva modo di accorgersene. La riga la legge l'agente, non l'autore.
 
+### Che cosa fa la regia, passo per passo
+
+Scritto il 30 settembre 2026 perché la regia possa passare da una sessione
+all'altra senza perdere il metodo. A ogni resoconto incollato dall'autore:
+
+1. **Chi è al lavoro.** `git status --short` nella cartella principale e in
+   `../rotta-giusta-ui`; se una sessione di Claude lavora nella principale, la
+   regia tocca solo questo file e lo mette in stage per nome.
+2. **Il commit esiste** (`git log`), con il trailer giusto, e questo file l'ha
+   toccato solo la regia (`git log -- docs/prossime-sessioni.md`).
+3. **Per un ramo di ChatGPT o un worktree:** `python3
+   ../Standards/tools/check_territories.py --range main...<ramo>`, poi `git diff
+   main...<ramo> --stat`, poi `git merge --no-ff <ramo>`. Il CHANGELOG si fonde
+   da sé (`merge=union`): dopo, si aggiunge la riga vuota che manca fra due
+   voci. Se una merge si ferma con un conflitto su file non condivisi, si
+   annulla (`git merge --abort`) e non si aggira il `pre-commit`.
+4. **Le suite, sullo stato fuso**, e i numeri confrontati con il resoconto:
+   motore, server, dati, interfaccia, specifica. Prima dell'interfaccia,
+   `lsof -iTCP:8620 -sTCP:LISTEN` vuoto. Una suite rossa una volta sola si
+   rilancia: se è instabile, è un prompt, non un dettaglio.
+5. **Il resoconto letto contro il repo**: una riga «Trovato» o «Per l'autore»
+   senza un posto scritto torna indietro. Un documento di progetto nuovo si
+   legge nel suo §10.1: le dipendenze per Claude diventano prompt.
+6. **La coda:** il prompt si chiude con **Stato** e **Esito** (che cosa ha
+   fatto, che cosa la regia ha controllato e che cosa no); i prompt sbloccati
+   passano a pronti; i nuovi si scrivono con la riga «per chi è»; la tabella,
+   il §4 e il registro si aggiornano. Poi un commit, solo di questo file e dei
+   documenti che la decisione tocca.
+7. **Allineare i rami di ChatGPT** — `git -C ../rotta-giusta-ui merge --ff-only
+   main`, e lo stesso per `rotta-giusta-vetrina` — solo con la loro cartella
+   pulita e nessuna sessione di ChatGPT aperta.
+8. **Una decisione dell'autore si scrive subito** dove si decide — specifica
+   §10, §20 di `account-progetto.md`, un progetto d'area — e qui nel §4; se una
+   sessione sta scrivendo in quel file, la si porta dentro il prompt che lo
+   toccherà.
+9. **Un rilascio** lo fa la regia con il sì dell'autore, come dice `AGENTS.md`;
+   e fino al traguardo `main` non si pusha (§4).
+
+### Come si riprende la regia in una sessione nuova
+
+Quando la sessione di regia si avvicina al limite del suo contesto, se ne apre
+una nuova di Claude Code nella cartella principale, e le si dà questo:
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sei la nuova sessione di regia della versione con gli account di Rotta
+Giusta. Leggi AGENTS.md, e poi docs/prossime-sessioni.md per intero:
+«Come si usa», «Che cosa fa la regia, passo per passo», la coda, il §4
+e il §6 con gli esiti di tutti i prompt chiusi. È l'unica memoria della
+regia precedente: quello che non c'è scritto non lo sai, e non lo
+inventi.
+
+Poi controlla lo stato vero — git log, git status nella cartella
+principale e in ../rotta-giusta-ui, i rami non fusi — e dimmi in poche
+righe dove siamo, che cosa è in corso, che cosa è pronto da lanciare e
+che cosa aspetta una mia decisione. Non lanciare niente e non scrivere
+niente finché non te lo chiedo: da lì ti incollerò i resoconti.
+```
+
+La prima risposta della sessione nuova è anche la prova che questo file basta:
+se dice qualcosa di sbagliato o le manca qualcosa, il difetto è qui, e va
+scritto qui.
+
 ### Il resoconto
 
 Ogni prompt finisce con «Chiudi con il resoconto di docs/prossime-sessioni.md»,
@@ -2348,3 +2414,7 @@ dopo**, la soglia degli allarmi riletta sul registro vero
   più. Nascono P-45 (i controlli dell'area 6) e P-46 (tre scelte del client
   senza controllo, prima del traguardo); nel §4 le quattro proposte di P-24.
   ChatGPT aspetta P-44.
+- **30 settembre 2026 — la regia si passa di mano.** Scritti in «Come si usa» i
+  passi che la regia fa a ogni resoconto e il prompt per riprenderla in una
+  sessione nuova, perché il contesto della sessione di regia stava per finire.
+  Il metodo non viveva solo in chat, ma i suoi passi sì.
