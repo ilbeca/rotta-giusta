@@ -868,6 +868,23 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   giro la 8620 si è guardata libera: al primo tentativo la teneva la suite di
   `rotta-giusta-ui`, e si è aspettato. `site/` e `docs/prossime-sessioni.md` non
   sono stati toccati.
+### Progettato — P-24: rifinitura trasversale dell'area 6
+
+- **`docs/area-6-progetto.md`** traduce i capitoli 17–22 della Specifica UX/UI
+  in criteri per linguaggio, componenti, responsive, accessibilità e stati nei
+  due regimi, senza ridisegnare le aree 1–5. Il vecchio testo del Word sui dati
+  nel browser è subordinato al client degli account già integrato; i cambi
+  alle scelte delle aree sono proposte da far decidere all'autore.
+- **Restano prove da fare, non risultati attribuiti a P-24:** contrasto del tema
+  chiaro e reflow a 320 px, zoom nativo e testo al 200 %, lettore di schermo,
+  tastiera e stati di errore nei due regimi. P-05 aveva provato soltanto il
+  reflow equivalente al 200 %; il banco del client usa clic sintetici. Il
+  §10.1 assegna a Claude su `main` controlli e specifica prima di P-25.
+- **Verificata la consegna documentale, non la UI progettata:** motore 167/169
+  (due skip previsti), dati 242, interfaccia 1.094, specifica 546, server 60/60
+  sia su Node 25 sia su Node 24 LTS; guardiano e controllo documentale verdi.
+  La prima corsa dell'interfaccia ha incontrato la porta 8620 occupata dal
+  checkout `main`; la corsa completa successiva è verde, senza esclusioni.
 
 ## [0.28.0] — 2026-09-26
 
