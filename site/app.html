@@ -556,6 +556,8 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
 .fine .esito .verdetto.ok{background:var(--success-soft);color:var(--success)}.fine .esito .verdetto.ko{background:var(--danger-soft);color:var(--danger)}.fine .esito .verdetto.warn{background:var(--amber-soft);color:var(--amber-dark)}
 #quizrun,#cartrun,#segrun,.fine,#rivedi{background:var(--paper)}
 .ctesto,.crisp textarea,.rvcard{background:var(--surface);border-color:var(--line-soft)}
+.cart-memoria{margin:12px 0;padding:12px 14px;border-radius:10px;background:var(--sky-soft);color:var(--text-soft);font-size:14px;line-height:1.5}
+.cart-memoria[hidden]{display:none}
 
 .eyebrow{margin:0 0 12px;color:var(--blue);font-size:12px;font-weight:750;line-height:1.4;letter-spacing:.5px;text-transform:uppercase}
 .rotta-hero{position:relative;min-height:238px;display:flex;align-items:center}
@@ -902,6 +904,8 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
 
     <div id="c-stat"></div>
 
+    <p class="cart-memoria">Il testo che scrivi resta solo finché questa pagina è aperta.
+      Non ricaricare la pagina e non chiudere la scheda fino alla consegna.</p>
     <div style="margin-top:16px">
       <button class="btn primary" id="c-start">Inizia prova d'esame</button>
     </div>
@@ -913,6 +917,8 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
     </div>
 
     <h2>Allenamento <span class="hint">sulla carta, senza limite di tempo</span></h2>
+    <p class="cart-memoria">Il testo che scrivi resta solo finché questa pagina è aperta.
+      Non ricaricare la pagina e non chiudere la scheda fino alla consegna.</p>
     <div id="c-allena"></div>
 
     <h2>Le prove che hai fatto</h2>
@@ -1081,6 +1087,8 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
       <label for="c-input">La tua risposta <span class="hint" id="c-forma"></span></label>
       <textarea id="c-input" rows="2" spellcheck="false" autocapitalize="off"
                 placeholder="Scrivi qui il risultato che hai trovato sulla carta"></textarea>
+      <p class="cart-memoria" id="c-memoria" hidden>Il testo che scrivi resta solo finché questa pagina è aperta.
+        Non ricaricare la pagina e non chiudere la scheda fino alla consegna.</p>
       <p class="note" id="c-eco"></p>
     </div>
   </div>
@@ -3808,6 +3816,24 @@ function argomentiSenzaNuovi() {
 /* --- il runner ----------------------------------------------------------- */
 
 let cTick;
+let cUscitaProtetta = false;
+
+/** Il browser sceglie il testo della conferma: protegge una bozza che vive
+ *  solo in memoria. Il listener esiste soltanto finché serve. */
+function confermaUscitaCart(evento) {
+  evento.preventDefault();
+  evento.returnValue = '';
+}
+
+function aggiornaProtezioneCart() {
+  const R = S.cprova;
+  const proteggi = !!R && !R.consegnata && R.risp.some(testo => testo.trim());
+  document.getElementById('c-memoria').hidden = !proteggi;
+  if (proteggi === cUscitaProtetta) return;
+  cUscitaProtetta = proteggi;
+  if (proteggi) window.addEventListener('beforeunload', confermaUscitaCart);
+  else window.removeEventListener('beforeunload', confermaUscitaCart);
+}
 
 // Quanti esercizi per sessione a tappeto: come la prova, circa un'ora di carta.
 const TAPPETO_N = 4;
@@ -3914,6 +3940,7 @@ function mostraCart() {
 
   document.getElementById('c-prev').disabled = R.i === 0;
   document.getElementById('c-next').disabled = R.i === R.coda.length - 1;
+  aggiornaProtezioneCart();
   inp.focus();
 }
 
@@ -3923,6 +3950,7 @@ function annotaCart() {
   R.risp[R.i] = document.getElementById('c-input').value;
   const d = document.querySelector(`[data-cq="${R.i}"]`);
   if (d) d.classList.toggle('fatto', !!R.risp[R.i].trim());
+  aggiornaProtezioneCart();
 }
 
 function vaiCart(k) {
@@ -3939,6 +3967,7 @@ function consegnaCart() {
   const R = S.cprova; if (!R || R.consegnata) return;
   annotaCart();
   R.consegnata = true;
+  aggiornaProtezioneCart();
   R.ms = Date.now() - R.t0;
   clearInterval(cTick);
   cronoCart();
@@ -4065,6 +4094,7 @@ function chiudiCart() {
   clearTimeout(cAnnulla);
   clearInterval(cTick);
   S.cprova = null;
+  aggiornaProtezioneCart();
   document.getElementById('cartrun').classList.remove('on');
   document.getElementById('c-fine').classList.remove('on');
   dipingiCart();
@@ -4722,9 +4752,9 @@ document.addEventListener('click', (ev) => {
   }
 });
 
-// Quello che scrivi e' salvato a ogni tasto, non alla conferma: se il telefono
-// si blocca o il browser ricarica a meta' prova, un'ora di carteggio non deve
-// dipendere dall'aver premuto un pulsante.
+// A ogni tasto il testo si aggiorna solo in memoria: cambiare esercizio lo
+// conserva, ricaricare o chiudere la pagina lo perde. P-36 lo dichiara e
+// protegge l'uscita accidentale; la bozza persistente e' il lavoro di P-34.
 //
 // E scrivere annulla una consegna in sospeso: se hai premuto "Consegna" e poi
 // torni a scrivere, evidentemente non avevi finito.

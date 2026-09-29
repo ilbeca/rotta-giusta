@@ -428,6 +428,35 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   59/59, motore 155/157, interfaccia 571. Guardiano e controllo della
   documentazione verdi. `site/` e `docs/prossime-sessioni.md` non sono stati
   toccati.
+### Corretto — P-36: il testo del carteggio resta nella pagina aperta, e si dice prima
+
+- **Una ricarica perdeva il testo senza che la pagina lo dicesse.** Prima
+  della prova e degli allenamenti sulla carta, e nel runner quando c'è testo
+  non vuoto, si legge: «Il testo che scrivi resta solo finché questa pagina è
+  aperta. Non ricaricare la pagina e non chiudere la scheda fino alla
+  consegna.» Un'informazione con l'azione per proteggere il lavoro, senza
+  promettere una bozza salvata. Corretto anche il commento che prometteva
+  erroneamente un salvataggio a ogni tasto.
+- **La conferma del browser protegge l'uscita accidentale.** Il listener
+  `beforeunload` si registra soltanto con testo in almeno un esercizio e
+  attività non consegnata; si rimuove quando tutto il testo è cancellato,
+  alla consegna (anche per scadenza) e alla chiusura del runner. La consegna
+  conserva i due tocchi in pagina. Nessun nuovo salvataggio: la bozza per
+  account resta P-34, come `docs/area-4-progetto.md` §3.3 richiede.
+- **Collaudo in Chromium, guardato a 375 e 1280 px:** prova, giro delle
+  tecniche e tappeto, sei casi. Avvisi leggibili a 14 px; vuoto e soli spazi
+  non attivano la protezione; testo in un altro esercizio la mantiene;
+  navigazione e ricarica annullata conservano i risultati. Primo tocco di
+  consegna ancora protetto, scrittura che annulla la conferma, secondo tocco
+  che rimuove la protezione; scadenza e chiusura la rimuovono, una nuova
+  attività vuota non la eredita. Ricarica dopo consegna e dopo chiusura senza
+  conferma. Zero scritture della bozza in localStorage, sessionStorage o
+  IndexedDB durante scrittura, navigazione e consegna; zero errori JavaScript.
+
+  Suite: motore **155/157**, con i due skip di sempre; dati **242**;
+  interfaccia **469**; specifica **412**; server **59/59** con Node 25.3 e
+  **24.21.0 LTS**. Guardiano e controllo della documentazione verdi.
+  Versione e `docs/prossime-sessioni.md` non toccati.
 
 ## [0.28.0] — 2026-09-26
 
