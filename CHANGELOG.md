@@ -773,6 +773,7 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   **24.21.0 LTS**, scaricata da nodejs.org e verificata con `SHASUMS256.txt`;
   motore 167/169 con i due skip di sempre; dati 242. `site/` e
   `docs/prossime-sessioni.md` non sono stati toccati.
+
 ### Realizzato — P-18: l'account salva, la prova senza account non lascia dati
 
 - La palestra offre tutte le attività anche senza accesso e avvisa prima e dopo

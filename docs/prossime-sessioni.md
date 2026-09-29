@@ -118,37 +118,28 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 5b | Chiudere il regime vecchio dei controlli dei quiz, e il §5 della specifica | Claude | `main`, a mano | la cartella libera | P-12 |
-| 24 | I dieci gruppi di controlli del client che restano | Claude | `main`, a mano | niente — **per primo**, insieme a P-18 | P-43 |
-| 25 | I controlli della mappa di Progressi | Claude | `main`, a mano | P-43 | P-44 |
-| 18 | Il carteggio sul `main`: composizione, attività intera, bozza, controlli | Claude | `main`, a mano | P-29 nell'ordine; P-34 dopo P-33, dalla quarantena | P-32…P-35 |
-| 6d | Chiudere il regime vecchio dei controlli del ciclo | Claude | `main`, a mano | la cartella libera | P-37 |
-| 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore: il tag `v0.28.0` c'è | P-15 |
-| 12 | `ritmo()` che dice «orologio» senza orologio | Claude | `main`, a mano | niente | P-16 |
-| 13 | L'ultimo tag di una risposta, nel motore | Claude | `main`, a mano | la cartella libera | P-17 |
-| 7b | La realizzazione del client degli account | ChatGPT | `ui/main` | niente — **pronto** | P-18 |
-| 7c | Chiudere il regime vecchio dei controlli del client | Claude | `main`, a mano | la merge di P-18 | segnaposto P-40 |
-| 6b | Le aree del ridisegno che restano: 4 e 5 realizzate, poi 6 | ChatGPT | `ui/main` | la precedente, e P-18 | P-21, P-23, P-24, P-25 |
-| 9a | I testi fuori da `site/` nella versione con gli account | Claude | `main`, a mano | P-18 | segnaposto P-26 |
-| 9 | **La versione con gli account** — il traguardo | tutti | `main` | 7b, 8, 9a, e gli adempimenti del §4 | segnaposto P-27 |
+| 7c | Chiudere il regime vecchio dei controlli del client | Claude | `main`, a mano | niente — **per primo** | P-40 |
+| 25 | I controlli della mappa di Progressi | Claude | `main`, a mano | P-40, nell'ordine | P-44 |
+| 18 | Il carteggio su `main`: composizione, attività intera, bozza, controlli | Claude | `main`, a mano | P-44, nell'ordine | P-32…P-35 |
+| 9a | I testi fuori da `site/` nella versione con gli account | Claude | `main`, a mano | niente | P-26 |
+| 6d, 5b, 12, 13 | Il regime vecchio del ciclo e dei quiz, `ritmo()`, l'ultimo tag | Claude | `main`, a mano | niente: riempiono i buchi | P-37, P-12, P-16, P-17 |
+| 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore | P-15 |
+| 26 | Il progetto dell'area 6 | ChatGPT | `ui/main` | niente — **pronto** | P-24 |
+| 23b | La realizzazione dell'area 5 | ChatGPT | `ui/main` | P-44 | segnaposto P-23 |
+| 21b | La realizzazione dell'area 4 | ChatGPT | `ui/main` | P-35 | segnaposto P-21 |
+| 26b | La realizzazione dell'area 6 | ChatGPT | `ui/main` | P-24, P-21, P-23 | segnaposto P-25 |
+| 9 | **La versione con gli account** — il traguardo | tutti | `main` | P-15, P-26, e gli adempimenti del §4 | segnaposto P-27 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
-**Le due colonne corrono in parallelo**: Claude sul server e sul motore,
-ChatGPT sull'interfaccia. P-18 e P-21 aspettano lavoro di Claude su `main`:
-quel lavoro è la strettoia. **Per
-Claude, l'ordine consigliato: P-43** (in parallelo a P-18), **P-44** (sblocca
-P-23), **P-32, P-33, P-34, P-35** (sbloccano P-21), P-37, P-16, P-12, P-17;
-P-15 quando l'autore ha il tempo. **Per ChatGPT: P-18.** Vanno uno alla
-volta, perché stanno tutti nella cartella principale: è la strettoia della
-colonna di Claude, e si accetta perché il recinto la vuole. Il numero di una
-riga è il suo nome, non la sua posizione. Le due colonne si incontrano al punto
-7b, e il punto 9 è il giorno in cui gli account arrivano a chi studia.
-
-**L'ordine consigliato per ChatGPT, dopo P-05: prima il client degli account
-(P-13), poi l'area 3 (P-14).** Il traguardo ha bisogno del client e non delle
-aree 3–6; con il client prima, gli account arrivano a chi studia senza
-aspettare il resto del ridisegno. Le aree successive lo erediteranno invece di
-doverlo rincorrere. Decide l'autore: basta scambiare le due righe.
+**Le due colonne corrono in parallelo**, e si sono incontrate: il client degli
+account è nella pagina (P-18). **Per Claude, l'ordine consigliato: P-40, P-44**
+(sblocca P-23), **P-32…P-35** (sbloccano P-21), P-26, poi i piccoli; P-15 quando
+l'autore ha il tempo. **Per ChatGPT: P-24 adesso**, poi P-23 e P-21 quando si
+sbloccano. I prompt di Claude vanno uno alla volta nella cartella principale, e
+la suite dell'interfaccia di un worktree esclude quella dell'altro, per la porta
+8620. Il numero di una riga è il suo nome, non la sua posizione. Il traguardo,
+P-27, non aspetta le aree 4–6: aspetta il server in esercizio, i testi e gli
+adempimenti.
 
 I prompt «da scrivere» li scrive la regia quando si chiude quello da cui
 dipendono, non prima: un prompt scritto in anticipo punta a uno stato che nel
@@ -371,6 +362,17 @@ consuma, non si riprogetta.
 
 ## 4 · Fuori dalle sessioni — l'autore
 
+- **Da `b50edec`, il 29 settembre 2026, `main` non si pusha fino al
+  traguardo.** Contiene la pagina con gli account, e il server in produzione non
+  c'è ancora: finché `.pages.dev` è acceso un push la pubblica lì da solo, con
+  una registrazione che non può funzionare e un'informativa che descrive un
+  server che non esiste. Su `rottagiusta.it` servirebbe «Build now», ma il
+  rischio di `.pages.dev` basta. Se serve un rilascio prima del traguardo — una
+  correzione urgente —, si fa da un ramo che parte dal tag `v0.28.0`, non da
+  `main`. Il redirect di `.pages.dev` (fase D2, dal 16 ottobre) toglie la
+  metà automatica del rischio, non l'altra.
+- **La privacy scritta da P-18 è una bozza**, da completare e verificare da te
+  prima del rilascio, con i punti del §15.4 di `account-progetto.md`.
 - Q-ONBOARD (specifica §10): che cosa chiede l'onboarding oltre alla data, e se
   il sito consiglia un piano di studio strutturato.
 - Il push di `main`, quando lo si vuole. Ricorda che su `rottagiusta.it` il push
@@ -1224,7 +1226,7 @@ Safari.
 
 ### P-18 — ChatGPT: la realizzazione del client degli account
 
-**Stato:** pronto: P-38 e P-39 sono chiusi, e `ui/main` è allineato. **Dove:**
+**Stato:** **chiuso il 29 settembre 2026**, merge `b50edec`. **Dove:**
 app di ChatGPT, progetto `~/Software/rotta-giusta-ui`, ramo `ui/main`.
 
 ```
@@ -1262,7 +1264,18 @@ trailer, versione non toccata. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `abbd564`, merge `b50edec`. Il client degli account in
+`site/app.html`, i testi dei due stati in `index.html` e `privacy.html`, la
+contabilità della coda chiamata dal motore. I due difetti che P-39 aveva
+trovato — la richiesta con il cookie di un altro account, la registrazione con
+la risposta persa — hanno i loro controlli nella pagina. Collaudo a 375 e 1280
+px in Chrome, e il dialogo di accesso in un Safari vero. Non fatto:
+`tagPerTentativo()` resta, perché P-17 non c'è ancora. **La privacy è una bozza
+da completare e verificare dall'autore prima del rilascio** (§15.4 di
+`account-progetto.md`). Controllato dalla regia: territori puliti, merge chiusa
+da sola; **la pagina vera passa i diciotto gruppi di P-43**, 1.094 verifiche
+dell'interfaccia in due giri di fila, circa 115 s l'uno, e le altre suite
+invariate. La regia non ha rifatto il collaudo nel browser.
 
 ### P-30 — Claude: un'attività registrata resta intera, anche dopo una pausa
 
@@ -1840,7 +1853,7 @@ Controllato dalla regia: territori puliti, merge chiusa da sola.
 
 ### P-43 — Claude: i dieci gruppi di controlli del client che restano
 
-**Stato:** pronto — **per primo**; può stare aperto insieme a P-18. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano.
+**Stato:** **chiuso il 29 settembre 2026**, commit `f218935` su `main`. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano.
 **Nasce da:** il resoconto di P-39.
 
 ```
@@ -1867,11 +1880,20 @@ fondo a [Unreleased], un commit. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `f218935`, voce nel CHANGELOG. Tutti e diciotto i gruppi del
+§12 esistono: C-07…C-10, C-12…C-14, C-16, C-17, il resto di C-15, e C-18 come
+ricerca di frasi senza browser; R-ACC-05 coperto, R-ACC-47…57 nuovi; 110
+rotture in tutto. **Un difetto del server trovato misurando**: il CORS non
+esponeva `Retry-After`, quindi nessuna pagina poteva dire quanto aspettare dopo
+un `429` — corretto, R-ACC-49. Due difetti della pagina di riferimento che
+valevano anche per P-18, tre verdi falsi del banco, un banco che si appendeva,
+e uno caduto una volta su diciassette, con il meccanismo riprodotto. **Q-SUITE
+peggiora**: circa 85 s, e le suite di due worktree si contendono la porta 8620.
+Controllato dalla regia: interfaccia 928 in 86 s, specifica 546, server 60.
 
 ### P-44 — Claude: i controlli della mappa di Progressi
 
-**Stato:** in attesa di P-43, che lavora nella stessa cartella. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce
+**Stato:** pronto, dopo P-40 nell'ordine consigliato. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce
 da:** P-22, §10.1 di `docs/area-5-progetto.md`.
 
 ```
@@ -1899,6 +1921,97 @@ docs/prossime-sessioni.md.
 
 **Esito:** —
 
+### P-40 — Claude: chiudere il regime vecchio dei controlli del client
+
+**Stato:** pronto — **per primo**: P-18 è fuso. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-40, su main. P-18 ha portato il client degli account nella
+pagina vera, e la regia l'ha fuso: leggi gli esiti di P-18 e P-43 nel
+§6 di docs/prossime-sessioni.md, e il §12 di
+docs/account-client-progetto.md.
+
+Chiudi il regime vecchio come hanno fatto P-12 e P-37: in
+tests/test_interfaccia.py resta solo il regime del client per C-01…C-18,
+e la pagina di prima, senza indirizzoApi(), ora dev'essere rossa.
+Decidi che cosa resta di tests/pagina-client-account.html: se serve
+ancora alle rotture, resta. Nella specifica i requisiti R-ACC dicono
+coperto quello che la pagina fa davvero, e scoperto — con il motivo —
+quello che il banco non vede. Prima di lanciare la suite dell'interfaccia guarda che la porta 8620
+sia libera (AGENTS.md): la suite di un altro worktree la contende.
+
+Non toccare docs/prossime-sessioni.md. Suite verdi su più giri, voce in
+fondo a [Unreleased], un commit. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-26 — Claude: i testi fuori da `site/`, nella versione con gli account
+
+**Stato:** pronto: P-18 è fuso. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-26, su main. Il client degli account è nella pagina (P-18),
+e con lui i testi di site/. Restano quelli fuori da site/ che gli
+account rendono falsi, elencati nel §1 di docs/prossime-sessioni.md e
+nel §18 di docs/account-progetto.md: README.md («niente account, niente
+registrazione», «Come funziona»), la skill .claude/skills/rotta-giusta
+(«nessun server»), AGENTS.md («site/ è l'unica cosa pubblicata», il
+server che gira altrove). Nella specifica le sezioni che il §2.5 elenca
+come vere solo senza account si riscrivono per i due stati, e il §2.5
+dice che cosa è cambiato; in docs/filosofia.md la nota in testa, che
+dice che descrive il sito deciso e non quello pubblicato, resta finché
+il rilascio non c'è — scrivilo così.
+
+Il sito con gli account non è ancora pubblicato: ogni testo dice il
+vero nel giorno del rilascio, e fino ad allora main non si pusha (§4 di
+docs/prossime-sessioni.md). Non toccare docs/prossime-sessioni.md.
+Suite verdi, voce in fondo a [Unreleased], un commit. Chiudi con il
+resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-24 — ChatGPT: il progetto dell'area 6, la rifinitura trasversale
+
+**Stato:** pronto: è un documento, e non aspetta la penna su `app.html`.
+**Dove:** app di ChatGPT, progetto `~/Software/rotta-giusta-ui`, ramo `ui/main`.
+
+```
+Questo prompt è per ChatGPT, nel worktree ~/Software/rotta-giusta-ui,
+sul ramo ui/main. Se sei un altro agente o sei in un'altra cartella,
+fermati e dillo, senza scrivere niente.
+
+Sessione P-24. Progetta l'area 6 di docs/prossima-versione.md §5.1, la
+rifinitura trasversale — linguaggio, componenti, responsive,
+accessibilità, stati: i capitoli 17–22 della Specifica UX/UI —, in
+docs/area-6-progetto.md, sul modello dei progetti delle aree 1–5.
+
+Parti da quello che c'è già: le misure dell'appendice A della specifica
+da rifare sul tema chiaro, lo zoom nativo al 200 % che P-05 non ha
+potuto verificare, il lettore di schermo mai provato, e i limiti che i
+collaudi delle aree 1–4 e del client hanno dichiarato. Il sito ha ora
+due stati, con e senza account: la rifinitura li copre tutti e due. Non
+ridisegnare le aree: dove una scelta di un'area va cambiata, scrivilo
+come proposta per l'autore. Le dipendenze da test e specifica le
+scrivi come il §10.1 delle altre aree: le chiude Claude su main.
+
+Solo il documento e la voce di CHANGELOG: niente site/. Non toccare
+docs/prossime-sessioni.md. Un commit con il trailer, versione non
+toccata. Chiudi con il resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
 ---
 
 ### I segnaposto — i prompt che non si possono ancora scrivere
@@ -1921,8 +2034,8 @@ l'ha chiusa.
 
 #### P-23 — ChatGPT: la realizzazione dell'area 5
 
-**Aspetta:** P-44, P-18 — Progressi è dei registrati —, e P-21 per la penna su
-`app.html`. **Dove:** `ui/main`. **Dovrà contenere:** realizzare
+**Aspetta:** P-44 (P-18 è fuso). Non aspetta P-21: chi dei due è pronto prima
+prende la penna su `app.html`, l'altro dopo. **Dove:** `ui/main`. **Dovrà contenere:** realizzare
 `docs/area-5-progetto.md`; togliere la chiamata a `consigli()` e, nello
 stesso commit, spostarla in `docs/eccezioni-interfaccia.md` dalle chiamate
 protette agli orfani, con il motivo «esce»; togliere `quadro` e `dovePesa`
@@ -1936,31 +2049,11 @@ secondo tempo che P-41 ha lasciato scritto — togliere `consigli()` e
 `CONSIGLIO_MIN_VISTI` con i loro test, e la riga degli orfani; prima elencare
 chi li usa ancora, che a quel punto non dev'essere nessuno.
 
-#### P-24 e P-25 — ChatGPT: l'area 6, rifinitura trasversale — progetto, poi realizzazione
+#### P-25 — ChatGPT: la realizzazione dell'area 6
 
-**Aspetta:** P-23. **Dove:** `ui/main`. **Dovrà contenere:** i capitoli 17–22;
-le misure dell'appendice A della specifica rifatte sul tema chiaro; lo zoom
-nativo al 200 % che P-05 non ha potuto verificare nel browser integrato.
-
-#### P-40 — Claude: chiudere il regime vecchio dei controlli del client
-
-**Aspetta:** la merge di P-18. **Dove:** `main`, a mano. **Dovrà contenere:**
-come P-12 e P-37: togliere da `tests/test_interfaccia.py` il regime della
-pagina di oggi per C-01, C-02, C-05, C-03, C-04, C-06, C-11, C-15 e quelli di
-P-43, così resta solo il client;
-la pagina di prima ora rossa; la specifica che dice coperto quello che la
-pagina fa davvero.
-
-#### P-26 — Claude: i testi fuori da `site/`, nella versione con gli account
-
-**Aspetta:** P-18. **Dove:** `main`, a mano. **Dovrà contenere:** i punti del
-§1 di questo file che non sono della pagina — `README.md` («niente account,
-niente registrazione»), la skill `.claude/skills/rotta-giusta/SKILL.md`
-(«nessun server»), `AGENTS.md` («`site/` è l'unica cosa pubblicata»,
-`account-progetto.md` §18) —; il §2.5 della specifica e le sezioni che
-descrivevano il prodotto senza account, riscritte ora che è vero; il §2 di
-`docs/filosofia.md` riletto. Nella stessa versione in cui la pagina cambia, non
-prima.
+**Aspetta:** P-24, e le aree 4 e 5 realizzate (P-21, P-23). **Dove:** `ui/main`.
+**Dovrà contenere:** realizzare `docs/area-6-progetto.md`; le dipendenze del
+progetto chiuse prima da Claude come P-06, P-31, P-35, P-44.
 
 #### P-27 — la regia, con tutti: il traguardo
 
@@ -2159,3 +2252,8 @@ dopo**, la soglia degli allarmi riletta sul registro vero
   contratto cresciuto e i due difetti trovati da P-39. Nascono P-43 per i dieci
   gruppi di controlli che restano, in parallelo a P-18, e P-44 per i controlli
   della mappa, prima di P-23. L'autore conferma le tre scelte di `dovePesa()`.
+- **29 settembre 2026 — P-43 e P-18 chiusi: il client è nella pagina.** La
+  pagina vera passa i diciotto gruppi di controlli, due giri su due. Da qui
+  `main` non si pusha fino al traguardo, scritto in testa al §4. P-40 e P-26
+  scritti per intero, P-44 pronto, P-24 pronto per ChatGPT (il progetto
+  dell'area 6), P-25 segnaposto; P-23 non aspetta più P-21.
