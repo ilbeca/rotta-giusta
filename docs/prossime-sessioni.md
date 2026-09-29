@@ -119,9 +119,8 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
 | 5b | Chiudere il regime vecchio dei controlli dei quiz, e il §5 della specifica | Claude | `main`, a mano | la cartella libera | P-12 |
-| 22 | Il motore della mappa di Progressi | Claude | `main`, a mano | niente — **per primo** | P-41 |
-| 23 | Il progetto dell'area 5, Progressi | ChatGPT | `ui/main` | P-41 | P-22 |
-| 21 | I controlli del client che mancano | Claude | `main`, a mano | P-41, nell'ordine | P-39 |
+| 23 | Il progetto dell'area 5, Progressi | ChatGPT | `ui/main` | niente — **pronto** | P-22 |
+| 21 | I controlli del client che mancano | Claude | `main`, a mano | niente — **per primo** | P-39 |
 | 18 | Il carteggio sul `main`: composizione, attività intera, bozza, controlli | Claude | `main`, a mano | P-29 nell'ordine; P-34 dopo P-33, dalla quarantena | P-32…P-35 |
 | 6d | Chiudere il regime vecchio dei controlli del ciclo | Claude | `main`, a mano | la cartella libera | P-37 |
 | 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore: il tag `v0.28.0` c'è | P-15 |
@@ -137,9 +136,9 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 **Le due colonne corrono in parallelo**: Claude sul server e sul motore,
 ChatGPT sull'interfaccia. P-18 e P-21 aspettano lavoro di Claude su `main`:
 quel lavoro è la strettoia. **Per
-Claude, l'ordine consigliato: P-41** (sblocca P-22 per ChatGPT), **P-39** (sblocca P-18), **P-32, P-33, P-34, P-35** (sbloccano
+Claude, l'ordine consigliato: P-39** (sblocca P-18), **P-32, P-33, P-34, P-35** (sbloccano
 P-21), P-37, P-16, P-12, P-17; P-15 quando l'autore ha il tempo. **Per ChatGPT:
-P-22 dopo P-41, poi P-18 dopo P-39.** Vanno uno alla
+P-22 adesso, poi P-18 dopo P-39.** Vanno uno alla
 volta, perché stanno tutti nella cartella principale: è la strettoia della
 colonna di Claude, e si accetta perché il recinto la vuole. Il numero di una
 riga è il suo nome, non la sua posizione. Le due colonne si incontrano al punto
@@ -417,6 +416,12 @@ consuma, non si riprogetta.
 - **La suite che dura un minuto, e Safari** — rimandati dall'autore il 29
   settembre, e scritti come punti aperti nel §10 della specifica: Q-SUITE, e
   Safari dentro Q-PROVE.
+- **Tre scelte di P-41 da confermare** (§4.3 della specifica). La vela non ha
+  la frase «Dove pesa di più adesso», perché un peso per voce non esiste; la
+  soglia della frase è **20 quesiti visti**, quante le domande di una prova
+  base; il motivo della frase è «da rifare» quando gli errori sono almeno
+  quanti i mai visti, altrimenti «mai visti». Se ne cambi una, è una riga nel
+  §4.3 e un test: dillo prima di P-23.
 - ~~I file di esplorazione dell'area 5~~ — **tolti il 29 settembre, per scelta
   dell'autore.** La regia li ha spostati nel Cestino del Mac
   (`~/.Trash/rotta-giusta-area5-esplorazione-2026-09-29/`), non cancellati:
@@ -1714,7 +1719,7 @@ docs/prossime-sessioni.md.
 
 ### P-41 — Claude: il motore della mappa di Progressi
 
-**Stato:** pronto — **per primo**: sblocca ChatGPT. **Dove:** Claude Code, `~/Software/rotta-giusta`,
+**Stato:** **chiuso il 29 settembre 2026**, commit `95c7a18` su `main`. **Dove:** Claude Code, `~/Software/rotta-giusta`,
 ramo **`main`**, a mano. **Nasce da:** Q-DUE, chiusa il 29 settembre 2026.
 
 ```
@@ -1749,12 +1754,31 @@ Suite verdi, voce in fondo a [Unreleased], un commit. Chiudi con il
 resoconto di docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `95c7a18`, voce nel CHANGELOG. **Il contratto sta nel §4.3 della
+specifica**, ed è quello che P-22 deve leggere:
+- `coda({ soloDaRifare })` — solo gli errori la cui ultima risposta è sbagliata,
+  contati con `classifica()` come la barra; `soloSbagliate` resta il «Ripasso
+  degli errori» dei Quiz;
+- `quadro()` — una riga per tema nell'ordine di `diagnosi().temi`, le voci in
+  ordine di banca, `giusti`/`daRifare`/`maiVisti` che sommano a `n`, «X su Y»
+  come `primo: {esatte, su}` o `null` sotto `PRIMA_MIN_VISTI = 5`, e `rifai`,
+  la selezione di «Rifai N errori», con `n: 0`; la vela per voce, con peso
+  `null`;
+- `dovePesa()` — un tema solo, con motivo e pulsanti, oppure niente con il
+  perché: senza pesi, sotto soglia (`FRASE_MIN_VISTI = 20`), niente da fare,
+  pari;
+- `peggiori()` è uscita dal motore; `consigli()` esce in due tempi.
+
+R-MAPPA-01…14 nel nuovo §9.10, tredici coperti e la pagina scoperta.
+`quadro` e `dovePesa` fra gli orfani dichiarati. Tre rotture passate verdi alla
+prima stesura, ora ciascuna con il suo test; e una trovata provando: senza
+`n: 0` il tetto predefinito di `coda()` avrebbe aperto 20 errori su 35 senza
+dirlo. Tre scelte da confermare dall'autore, nel §4. Controllato dalla regia:
+motore 167 + 2 skip, server 59, dati 242, interfaccia 579, specifica 480.
 
 ### P-22 — ChatGPT: il progetto dell'area 5, Progressi
 
-**Stato:** in attesa di P-41. I file di esplorazione sono stati tolti, e
-`ui/main` è allineato. **Dove:** app di
+**Stato:** pronto: P-41 è chiuso e `ui/main` è allineato. **Dove:** app di
 ChatGPT, progetto `~/Software/rotta-giusta-ui`, ramo `ui/main`.
 
 ```
@@ -1769,9 +1793,11 @@ di docs/specifica.md, sette punti con la data — una mappa per tema,
 non un bilancio e non una classifica. Il progetto la realizza, non la
 rimette in discussione; se un punto non regge, dillo nel resoconto.
 
-Il motore è pronto: leggi l'esito di P-41 nel §6 di
-docs/prossime-sessioni.md, e la pagina chiama quelle funzioni, non
-rifà i conti. Le soglie del §4.3 non si abbassano. Progressi è dei soli
+Il motore è pronto: il contratto è nel §4.3 della specifica e nel
+§9.10 (R-MAPPA), e l'esito di P-41 nel §6 di docs/prossime-sessioni.md
+lo riassume. La pagina chiama quadro(), dovePesa() e
+coda({ soloDaRifare }), e non rifà i conti; peggiori() non c'è più, e
+consigli() esce dalla pagina. Le soglie del §4.3 non si abbassano. Progressi è dei soli
 registrati (ADR-004): il progetto dice che cosa vede chi non ha un
 account, e il progetto del client è la fonte per gli stati di accesso.
 Le tabelle che sforano a 375 px, difetto aperto dalla 0.3.0, qui si
@@ -1809,9 +1835,18 @@ l'ha chiusa.
 
 **Aspetta:** P-22, P-18 — Progressi è dei registrati —, e P-21 per la penna su
 `app.html`. **Dove:** `ui/main`. **Dovrà contenere:** realizzare
-`docs/area-5-progetto.md`; `peggiori()` e `consigli()` secondo quello che P-41
-ha deciso; le dipendenze del progetto chiuse prima da Claude come P-06, P-31,
+`docs/area-5-progetto.md`; togliere la chiamata a `consigli()` e, nello
+stesso commit, spostarla in `docs/eccezioni-interfaccia.md` dalle chiamate
+protette agli orfani, con il motivo «esce»; togliere `quadro` e `dovePesa`
+dagli orfani; le dipendenze del progetto chiuse prima da Claude come P-06, P-31,
 P-35.
+
+#### P-42 — Claude: `consigli()` esce dal motore
+
+**Aspetta:** la merge di P-23. **Dove:** `main`, a mano. **Dovrà contenere:** il
+secondo tempo che P-41 ha lasciato scritto — togliere `consigli()` e
+`CONSIGLIO_MIN_VISTI` con i loro test, e la riga degli orfani; prima elencare
+chi li usa ancora, che a quel punto non dev'essere nessuno.
 
 #### P-24 e P-25 — ChatGPT: l'area 6, rifinitura trasversale — progetto, poi realizzazione
 
@@ -2028,3 +2063,6 @@ dopo**, la soglia degli allarmi riletta sul registro vero
 - **29 settembre 2026 — P-38 chiuso.** Il banco non è più rosso a caso: due
   cause trovate e provate, nessuna delle due era un'attesa troppo corta. La
   regia l'ha rifatto girare tre volte, tutte verdi. P-41 per primo.
+- **29 settembre 2026 — P-41 chiuso.** Il motore della mappa c'è; P-22 è pronto
+  per ChatGPT e P-39 per Claude. Nasce il segnaposto P-42 per il secondo tempo
+  di `consigli()`. Tre scelte del motore da confermare nel §4.
