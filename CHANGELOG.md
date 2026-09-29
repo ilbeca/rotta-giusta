@@ -799,6 +799,76 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   in Chrome e nel Safari installato. P-17 non è ancora nel motore: resta la
   funzione di pagina `tagPerTentativo()` finché arriva l'export.
 
+### Test — P-40: il client degli account ha un regime solo
+
+- **La pagina senza account non passa più.** P-18 ha portato il client nella
+  pagina vera, e da qui il banco (`tests/client_account.mjs`) guida ogni pagina
+  come una pagina con il client: tolto il regime di prima — la risposta che
+  resta nel browser, nessuna frase e nessuna rotta del client —, tolti
+  `senzaClient()` e il ramo «attuale» di C-02, C-03, C-05 e C-09, e C-18 cerca
+  soltanto i testi della versione con gli account. Un controllo statico nuovo,
+  `test_client_nella_pagina` (R-ACC-58), nomina una pagina che non dichiara
+  `indirizzoApi()`, ed è provato al contrario sulla pagina di riferimento con la
+  dichiarazione tolta o in un commento. **Provato sulla pagina vera di prima**, il
+  `site/app.html` di `f218935`: statico rosso, C-18 con 18 difetti, e nel banco
+  **16 gruppi su 17 rossi**, 43 verifiche rosse su 142. Resta verde C-01, e deve:
+  le attività senza account quella pagina le faceva già.
+
+- **La pagina di riferimento resta**, perché porta le 110 rotture e la variante,
+  cioè il banco provato contro i propri verdi e rossi falsi (R-ACC-42). Spostarle
+  sulla pagina vera vorrebbe dire sostituzioni di testo in un file
+  dell'interfaccia da 200 KB, che si spezzerebbero a ogni ritocco di `ui/*`: una
+  rottura che non si applica più è un controllo spento. Il commento in testa lo
+  dice; la forma del contratto per chi realizza ora è la pagina vera.
+
+- **Il conteggio vale anche per la pagina vera.** Fino a qui a un gruppo sulla
+  pagina vera bastava una verifica — nel regime senza client ne faceva una sola
+  —, quindi un giro fermato a metà passava verde. Ora deve farne quante sulla
+  pagina di riferimento (`VERIFICHE_CLIENT`). **È lui ad aver visto il rosso
+  qui sotto**: «troppo poche verifiche (5 su 8)» accanto al rosso vero.
+
+- **Un rosso falso del banco, in C-13, trovato dal primo giro.** «Scoperto
+  ricevendo» azzerava l'account appena il server aveva la riga e ricaricava, con
+  la pagina ancora in mezzo al suo invio: a volte la ricezione che segue l'invio
+  scopriva l'azzeramento **prima** della ricarica, e dopo la pagina mostrava la
+  scelta già rimandata, con «Scegli adesso», invece di «Carica il nuovo
+  archivio». Misurato ripetendo solo quella parte sulla pagina vera: **1 rosso su
+  14**, e il rosso, ora, dice che cosa c'era in schermata. La pagina non ha
+  torto: la scelta c'è e si raggiunge. Il banco aspetta che la pagina smetta di
+  parlare con l'API — nessuna richiesta aperta e nessuna nuova per 300 ms —
+  prima di azzerare, e se non smette è un rosso che lo dice: **0 su 28**.
+
+- **Un secondo rosso falso, trovato dai giri sotto carico, e nella pagina di
+  riferimento.** Con dieci `yes` C-15 è uscito rosso su «un 401 all'uscita»:
+  la copia restava, perché «Esci» non partiva mai. Il rosso, fatto parlare, ha
+  detto che la pagina era ancora dentro l'account e senza finestre aperte.
+  `dentro()` dava l'accesso per finito appena l'intestazione diceva «Account»,
+  ma la pagina chiude la finestra d'accesso un attimo dopo; sotto carico il
+  banco apriva il pannello dell'account in quell'attimo, e la pagina glielo
+  chiudeva sotto. Misurato su C-15 da solo: **4 su 176** sotto carico, 0 su 24
+  senza. Ora `dentro()` aspetta anche che nessuna finestra resti aperta — i
+  tredici chiamanti entrano tutti in un contesto nuovo, senza risposte —: **0 su
+  160** sulla pagina di riferimento e **0 su 80** su quella vera, sotto carico.
+  Non c'entra con il regime tolto: era lì da P-43, e l'ha visto il giro in più.
+
+- **Nella specifica**, R-ACC-02, 09, 41, 42 e 57 perdono i due regimi e dicono
+  quello che la pagina fa; il §9.9 lo racconta in «Un regime solo». Quello che
+  il banco non vede non sta più solo in prosa: **R-ACC-59…63**, scoperti con il
+  motivo — Safari e i sottodomini veri in HTTPS, il gesto vero, la mail vera, un
+  archivio di prima vero, e tre scelte che nessun gruppo preme («Scarica e passa
+  al nuovo archivio», «Cancella queste risposte», l'uscita con punteggi dei
+  Segnali non accolti). Il §12 del progetto del client ha il suo «Un regime solo».
+
+  Suite: interfaccia **1.096** (erano 1.094), in 116–117 s senza carico e
+  132–140 s sotto carico; **sei giri verdi con il codice finale**: tre senza
+  carico, uno con la **24.21.0 LTS** nel `PATH`, due con dieci `yes` (prima della
+  correzione di `dentro()` erano stati cinque verdi e uno rosso, quello sopra); specifica **560** (erano 546); motore 167/169 con i due skip di sempre;
+  dati 242; server 60/60, anche con la **24.21.0 LTS**, scaricata di nuovo da
+  nodejs.org e verificata con `SHASUMS256.txt`. Guardiano verde. Prima di ogni
+  giro la 8620 si è guardata libera: al primo tentativo la teneva la suite di
+  `rotta-giusta-ui`, e si è aspettato. `site/` e `docs/prossime-sessioni.md` non
+  sono stati toccati.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag

@@ -611,14 +611,20 @@ def test_ciclo_provato_al_contrario():
 # account vero. La misura che ha scelto questa strada, il suo costo e che cosa
 # non copre sono nel §12, «Il banco».
 #
-# Due regimi, con il meccanismo dei quiz e del ciclo. La pagina ATTUALE non ha
-# account e promette che le risposte restano nel browser: il banco pretende che
-# mantenga quella promessa, e che non abbia pezzi del client senza il client.
-# La pagina PROGETTATA dichiara indirizzoApi() (account-progetto §7.4), e il
-# banco pretende il contratto del progetto del client. Finche' P-18 non c'e',
-# il regime progettato si esercita sulla pagina di riferimento e sulle sue
-# rotture. **Il regime attuale ha una scadenza:** lo toglie la regia quando
-# integra P-18, e da quel commit una pagina senza client e' rossa.
+# Un regime solo, dal 30 settembre 2026 (P-40). Fino a P-18 i regimi erano
+# due, con il meccanismo dei quiz e del ciclo: la pagina senza account doveva
+# mantenere la promessa di allora, quella con indirizzoApi() (account-progetto
+# §7.4) il contratto del progetto del client. P-18 ha portato il client nella
+# pagina vera, e da qui una pagina che non dichiara indirizzoApi() e' rossa:
+# nel controllo statico qui sotto, e in ogni gruppo del banco, che la guida come
+# una pagina con il client.
+#
+# La pagina di riferimento resta, e non per nostalgia: e' lei che porta le
+# rotture e le varianti, cioe' il banco provato contro i propri verdi e rossi
+# falsi. Le rotture sono sostituzioni di testo in una pagina piccola e scritta
+# per il banco; sulla pagina vera, da 200 KB e dell'interfaccia, si
+# spezzerebbero a ogni ritocco di ui/*, e un controllo che si spegne da solo
+# quando cambia la pagina e' il verde a copertura zero.
 BANCO_CLIENT = RADICE / 'tests' / 'client_account.mjs'
 RIFERIMENTO_CLIENT = RADICE / 'tests' / 'pagina-client-account.html'
 GRUPPI_CLIENT = ['C-01', 'C-02', 'C-03', 'C-04', 'C-05', 'C-06', 'C-07', 'C-08', 'C-09', 'C-10', 'C-11', 'C-12',
@@ -632,8 +638,9 @@ VERIFICHE_CLIENT = {'C-01': 33, 'C-02': 15, 'C-03': 11, 'C-04': 20, 'C-05': 13, 
 ATTIVITA_CLIENT = ['Quiz per argomento: ', 'Simulazione: ', 'Che tecnica serve?: ', 'Carteggio: ', 'Segnali: ']
 
 
-def regime_client(testo):
-    return 'progettato' if re.search(r'^function indirizzoApi\(', senza_commenti(testo), re.M) else 'attuale'
+def ha_il_client(testo):
+    """La pagina dichiara indirizzoApi() fuori dai commenti: e' il segno del client."""
+    return bool(re.search(r'^function indirizzoApi\(', senza_commenti(testo), re.M))
 
 
 # Rotture della pagina di riferimento: (che cosa, gruppi da eseguire,
@@ -1083,8 +1090,8 @@ def banco_client():
         return _BANCO_CLIENT
     app = leggi('app.html')
     rif = RIFERIMENTO_CLIENT.read_text(encoding='utf-8')
-    prove = [{'nome': 'app', 'pagina': app, 'regime': regime_client(app), 'gruppi': GRUPPI_CLIENT},
-             {'nome': 'riferimento', 'pagina': rif, 'regime': regime_client(rif), 'gruppi': GRUPPI_CLIENT}]
+    prove = [{'nome': 'app', 'pagina': app, 'gruppi': GRUPPI_CLIENT},
+             {'nome': 'riferimento', 'pagina': rif, 'gruppi': GRUPPI_CLIENT}]
     applicate = {}
     for cosa, gruppi, sostituzioni in VARIANTI_CLIENT:
         variante, ok = rif, True
@@ -1093,7 +1100,7 @@ def banco_client():
             variante = variante.replace(vecchio, nuovo, 1)
         applicate['variante: ' + cosa] = ok
         if ok:
-            prove.append({'nome': 'variante: ' + cosa, 'pagina': variante, 'regime': regime_client(variante), 'gruppi': gruppi})
+            prove.append({'nome': 'variante: ' + cosa, 'pagina': variante, 'gruppi': gruppi})
     for cosa, gruppi, sostituzioni, _ in ROTTURE_CLIENT:
         rotta, ok = rif, True
         for vecchio, nuovo in sostituzioni:
@@ -1101,7 +1108,7 @@ def banco_client():
             rotta = rotta.replace(vecchio, nuovo, 1)
         applicate[cosa] = ok
         if ok and rotta != rif:
-            prove.append({'nome': 'rottura: ' + cosa, 'pagina': rotta, 'regime': regime_client(rotta), 'gruppi': gruppi})
+            prove.append({'nome': 'rottura: ' + cosa, 'pagina': rotta, 'gruppi': gruppi})
     try:
         p = subprocess.run(['node', str(BANCO_CLIENT)], input=json.dumps({'prove': prove}),
                            capture_output=True, text=True, timeout=600)
@@ -1121,31 +1128,34 @@ def banco_client():
 
 
 def registra_client(gruppo):
-    prove, out, _ = banco_client()
-    regime = prove[0]['regime']
-    etichetta = {'attuale': 'regime attuale', 'progettato': 'regime progettato'}[regime]
+    _, out, _ = banco_client()
     v = out.get('app', [])
     for x in v:
         if x['gruppo'] in (gruppo, 'banco'):
-            check('client (%s) %s: %s' % (etichetta, x['gruppo'], x['nome']), x['ok'], x.get('extra', ''))
-    check('client %s: la pagina e\' stata guidata nel browser' % gruppo, any(x['gruppo'] == gruppo for x in v),
-          'nessuna verifica del gruppo: il banco non l\'ha eseguito')
-    if regime == 'attuale':
-        # Un ibrido e' un pezzo del client senza il client: una promessa di
-        # domani su una pagina che fa ancora quella di oggi, o un'API chiamata
-        # senza sapere dove sta. Specifica §2: «Si cambiano nella stessa
-        # versione in cui entrano gli account — non prima e non dopo».
-        js = senza_commenti(leggi('app.html'))
-        if gruppo == 'C-02':
-            check('client (regime attuale) C-02: nessuna promessa del client senza il client',
-                  'valgono solo finché questa pagina resta aperta' not in js,
-                  'la pagina dice che senza account non resta niente, e salva nel browser: '
-                  'la frase entra con indirizzoApi() e il client (§4.1)')
-        if gruppo == 'C-05':
-            check('client (regime attuale) C-05: nessuna rotta /v1/ senza indirizzoApi()',
-                  not re.search(r'/v1/', js) and 'Crea un account' not in js,
-                  'la pagina parla con l\'API o invita a creare un account senza dichiarare indirizzoApi() '
-                  '(account-progetto §7.4)')
+            check('client %s: %s' % (x['gruppo'], x['nome']), x['ok'], x.get('extra', ''))
+    # Fino a P-40 bastava una verifica: nel regime senza client i gruppi ne
+    # facevano una sola. Ora la pagina vera fa il giro intero, e un giro fermato
+    # a meta' e' un verde a copertura parziale, come sulla pagina di riferimento.
+    n = sum(1 for x in v if x['gruppo'] == gruppo)
+    check('client %s: il giro sulla pagina vera e\' arrivato in fondo' % gruppo, n >= VERIFICHE_CLIENT[gruppo],
+          'troppo poche verifiche (%d su %d): il banco non l\'ha eseguito per intero' % (n, VERIFICHE_CLIENT[gruppo]))
+
+
+def test_client_nella_pagina():
+    """R-ACC-42: la pagina vera ha il client. Senza indirizzoApi() e' la pagina
+    di prima di P-18, e da P-40 e' rossa: qui, con il nome del difetto, e in
+    ogni gruppo del banco, che la guida come una pagina con il client."""
+    check('client: la pagina dichiara indirizzoApi(), cioe\' ha il client degli account', ha_il_client(leggi('app.html')),
+          'site/app.html non dichiara function indirizzoApi(: e\' la pagina senza account, che dal 30 settembre 2026 '
+          'non passa (account-client-progetto §12, P-40)')
+    # Provato al contrario sulla pagina di riferimento, senza browser: tolta la
+    # dichiarazione, o lasciata solo in un commento, il segno non c'e'.
+    rif = RIFERIMENTO_CLIENT.read_text(encoding='utf-8')
+    check('client: la pagina di riferimento dichiara indirizzoApi()', ha_il_client(rif))
+    senza = rif.replace('function indirizzoApi(', 'function indirizzoDellApi(', 1)
+    check('client provato al contrario: senza indirizzoApi() la pagina non ha il client', not ha_il_client(senza))
+    commentata = rif.replace('function indirizzoApi(', '// function indirizzoApi(', 1)
+    check('client provato al contrario: indirizzoApi() in un commento non basta', not ha_il_client(commentata))
 
 
 def test_client_primo_ingresso():
@@ -1175,10 +1185,9 @@ def test_client_tutte_le_attivita():
         fatte = [x for x in v if x['gruppo'] == 'C-01' and x['nome'].startswith(a)]
         check('client: l\'attivita\' «%s» guidata senza account' % a.rstrip(': '), bool(fatte) and all(x['ok'] for x in fatte),
               'nessuna verifica' if not fatte else '; '.join(x['nome'] for x in fatte if not x['ok']))
-    if prove[0]['regime'] == 'progettato':
-        porta = [x for x in v if x['gruppo'] == 'C-03' and 'Progressi dice perche\'' in x['nome']]
-        check('client: senza account Progressi non e\' un cruscotto', bool(porta) and all(x['ok'] for x in porta),
-              'la verifica di C-03 su Progressi manca o e\' rossa')
+    porta = [x for x in v if x['gruppo'] == 'C-03' and 'Progressi dice perche\'' in x['nome']]
+    check('client: senza account Progressi non e\' un cruscotto', bool(porta) and all(x['ok'] for x in porta),
+          'la verifica di C-03 su Progressi manca o e\' rossa')
 
 
 def test_client_registrazione():
@@ -1233,15 +1242,15 @@ def test_client_export():
     registra_client('C-17')
 
 
-# --- C-18: i testi, letti nei due stati (§11.2 del progetto del client) --------
+# --- C-18: i testi della versione con gli account (§11.2 del progetto del client) --
 #
 # Non serve un browser: sono frasi nei file di site/. Le false vengono dal §1 di
 # docs/prossime-sessioni.md, cercate con grep il 25 settembre 2026 e ricontate
-# il 29 da P-43; le nuove dal §11.2 del progetto del client. Vere oggi, false
-# con il client: si cambiano **nella stessa versione** (specifica §2). Quindi
-# due regimi, riconosciuti dalla pagina come per C-01…C-17: nella pagina di oggi
-# nessuna frase nuova, che sarebbe una promessa di domani; nella pagina con il
-# client nessuna delle vecchie, commenti compresi, e tutte le nuove.
+# il 29 da P-43; le nuove dal §11.2 del progetto del client. Vere senza account,
+# false con il client: si cambiano **nella stessa versione** (specifica §2). Fino
+# a P-18 i regimi erano due, come per C-01…C-17; da P-40 la pagina ha il client,
+# e i testi sono quelli suoi: nessuna delle frasi vecchie, commenti compresi, e
+# tutte le nuove.
 #
 # Non vede: se l'informativa e' giusta. Il suo gate e' dell'autore (§4 della
 # coda); qui si pretende solo che non dica piu' quello che e' diventato falso e
@@ -1271,65 +1280,39 @@ FRASI_NUOVE = [
 ]
 
 
-def testi_dei_due_stati(regime, testi):
-    """I difetti dei testi di site/ per un regime: [(file, che cosa)]."""
+def difetti_dei_testi(testi):
+    """I difetti dei testi di site/ nella versione con gli account: [(file, che cosa)]."""
     difetti = []
-    if regime == 'progettato':
-        for f, frase in FRASI_FALSE:
-            if frase in testi[f]:
-                difetti.append((f, 'dice ancora «%s»' % frase))
-        for f, frase, n in FRASI_NUOVE:
-            if testi[f].count(frase) < n:
-                difetti.append((f, 'non dice «%s»%s' % (frase, ' in %d copie' % n if n > 1 else '')))
-    else:
-        for f, frase, _ in FRASI_NUOVE:
-            if f != 'privacy.html' and frase in testi[f]:
-                difetti.append((f, 'dice gia\' «%s», che senza il client e\' falso' % frase))
+    for f, frase in FRASI_FALSE:
+        if frase in testi[f]:
+            difetti.append((f, 'dice ancora «%s»' % frase))
+    for f, frase, n in FRASI_NUOVE:
+        if testi[f].count(frase) < n:
+            difetti.append((f, 'non dice «%s»%s' % (frase, ' in %d copie' % n if n > 1 else '')))
     return difetti
 
 
 def test_client_testi():
-    """R-ACC-57 (C-18): i testi pubblici dicono lo stato in cui la pagina e'."""
+    """R-ACC-57 (C-18): i testi pubblici sono quelli della versione con gli account."""
     testi = {f: leggi(f) for f in ('index.html', 'app.html', 'privacy.html')}
-    regime = regime_client(testi['app.html'])
-    etichetta = {'attuale': 'regime attuale', 'progettato': 'regime progettato'}[regime]
-    difetti = testi_dei_due_stati(regime, testi)
-    check('client (%s) C-18: i testi di site/ sono quelli del loro stato' % etichetta, not difetti,
+    difetti = difetti_dei_testi(testi)
+    check('client C-18: i testi di site/ sono quelli della versione con gli account', not difetti,
           '; '.join('%s %s' % d for d in difetti[:4]))
-    # Provato al contrario, sui testi di oggi e senza toccarli: con una frase
-    # falsa aggiunta a una pagina con il client il controllo la nomina; tolte le
-    # false e messe le nuove, passa. Cosi' non e' un verde a copertura zero, e
-    # non dipende da quale regime la pagina ha oggi.
-    pulite = {f: t for f, t in testi.items()}
+    # Provato al contrario, sui testi veri: ogni frase falsa rimessa in una
+    # pagina si vede, e ogni frase nuova tolta anche. Cosi' il verde non e' a
+    # copertura zero.
     for f, frase in FRASI_FALSE:
-        pulite[f] = pulite[f].replace(frase, '')
-    for f, frase, n in FRASI_NUOVE:
-        pulite[f] += ('\n' + frase) * n
-    check('C-18 provato al contrario: tolte le frasi false e messe le nuove, il regime progettato passa',
-          not testi_dei_due_stati('progettato', pulite), str(testi_dei_due_stati('progettato', pulite)[:2]))
-    for f, frase in FRASI_FALSE:
-        rotte = dict(pulite)
-        rotte[f] = rotte[f] + '\n' + frase
-        d = testi_dei_due_stati('progettato', rotte)
-        check('C-18 provato al contrario: «%s» rimasta in %s si vede' % (frase, f), any(frase in x[1] for x in d), 'passata verde')
-    oggi = dict(testi)
+        d = difetti_dei_testi({**testi, f: testi[f] + '\n' + frase})
+        check('C-18 provato al contrario: «%s» rimessa in %s si vede' % (frase, f), any(frase in x[1] for x in d), 'passata verde')
     for f, frase, _ in FRASI_NUOVE:
-        oggi[f] = oggi[f].replace(frase, '')
-    check('C-18 provato al contrario: senza le frasi nuove il regime attuale passa', not testi_dei_due_stati('attuale', oggi),
-          str(testi_dei_due_stati('attuale', oggi)[:2]))
-    for f, frase, _ in FRASI_NUOVE:
-        if f == 'privacy.html':
-            continue
-        d = testi_dei_due_stati('attuale', {**oggi, f: oggi[f] + '\n' + frase})
-        check('C-18 provato al contrario: «%s» nella pagina senza client si vede' % frase[:40], any(frase in x[1] for x in d), 'passata verde')
+        d = difetti_dei_testi({**testi, f: testi[f].replace(frase, '')})
+        check('C-18 provato al contrario: «%s» tolta da %s si vede' % (frase[:40], f), any(frase in x[1] for x in d), 'passata verde')
 
 
 def test_client_provato_al_contrario():
-    prove, out, applicate = banco_client()
-    rif = [p for p in prove if p['nome'] == 'riferimento'][0]
+    _, out, applicate = banco_client()
     v = out.get('riferimento', [])
     rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in v if not x['ok']]
-    check('la pagina di riferimento del client e\' nel regime progettato', rif['regime'] == 'progettato', rif['regime'])
     check('la pagina di riferimento del client passa il banco del browser', not rossi, '; '.join(rossi[:3]))
     for g in GRUPPI_CLIENT:
         n = sum(1 for x in v if x['gruppo'] == g)
@@ -1574,7 +1557,7 @@ def main():
               test_voci_barra, test_modalita_quiz, test_selettori,
               test_intenzioni_provate_al_contrario,
               test_ciclo_riepilogo, test_ciclo_riprova, test_ciclo_provato_al_contrario,
-              test_client_primo_ingresso, test_client_senza_account, test_client_email_registrata,
+              test_client_nella_pagina, test_client_primo_ingresso, test_client_senza_account, test_client_email_registrata,
               test_client_invito_e_viste, test_client_tutte_le_attivita, test_client_registrazione,
               test_client_dispositivo_condiviso, test_client_coda, test_client_uscita,
               test_client_verifica, test_client_password, test_client_vecchio_archivio, test_client_file,

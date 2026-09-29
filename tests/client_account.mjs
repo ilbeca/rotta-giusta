@@ -6,11 +6,11 @@
 // Chrome headless (tests/browser.mjs), il sito servito da qui come lo serve
 // l'host, e il server degli account vero (server/server.mjs) accanto.
 //
-// Uso: node tests/client_account.mjs  < {"prove":[{nome,pagina,regime,gruppi}]}
+// Uso: node tests/client_account.mjs  < {"prove":[{nome,pagina,gruppi}]}
 // Stampa {nome: [{gruppo, nome, ok, extra}]}. La pagina sostituisce /app; il
-// resto del sito e' quello di site/. Il regime lo decide chi chiama
-// (tests/test_interfaccia.py): 'attuale' e' la pagina di oggi, senza client;
-// 'progettato' e' quella con il client, riconosciuta da indirizzoApi().
+// resto del sito e' quello di site/. Ogni pagina e' guidata come una pagina con
+// il client: dal 30 settembre 2026 (P-40) non c'e' piu' il regime della pagina
+// senza account, e una pagina senza client e' rossa in ogni gruppo.
 //
 // **Il contratto che la pagina deve rispettare** (§12 del progetto, «Il banco»
 // e «Il resto dei controlli»), per esteso li'. In breve:
@@ -21,7 +21,7 @@
 //    con #rv-body; le porte [data-v], [data-modo], #start, [data-consegna],
 //    #t-start con le .chip, #c-start, #c-input, #c-consegna, #c-fine, #s-start,
 //    #sr-ans, #sr-next, #sr-fine;
-//  - nel regime progettato, i testi e le etichette del progetto, cercati in
+//  - i testi e le etichette del progetto, cercati in
 //    quello che si vede; le finestre modali con aria-modal, che si chiudono con
 //    Esc; l'archivio dell'account `rg-account-<chiave_locale>`; e l'API in
 //    locale su http://<stesso host>:8620 (account-progetto §7.4 e §16.3).
@@ -257,7 +257,7 @@ async function guscioPronto(tab) {
 
 // --- C-01: il primo quesito senza account, con la rete e senza ------------------
 
-async function c01(b, ctx, v, regime, parte) {
+async function c01(b, ctx, v, parte) {
   const g = 'C-01';
   const vuole = (x) => !parte || parte === x;
   if (vuole('attivita')) {
@@ -429,28 +429,11 @@ function personale(cons, api) {
   return out;
 }
 
-async function c02(b, ctx, v, regime) {
+async function c02(b, ctx, v) {
   const g = 'C-02';
   const c = await b.nuovoContesto();
   try {
     const tab = await c.apri(ctx.sito + '/app');
-    if (regime === 'attuale') {
-      // La pagina di oggi promette il contrario, e deve mantenerlo finche' il
-      // client non c'e': le risposte restano nel browser (specifica §2, «la
-      // decisione non e' ancora il prodotto»). Una pagina senza client che le
-      // perde alla ricarica rompe la promessa di oggi senza mantenere quella
-      // di domani.
-      const testo = await unaRisposta(tab, v, g, 'regime attuale: ');
-      if (!testo) return;
-      const cons = await c.conservato(ctx.sito, tab);
-      v.push({ gruppo: g, nome: 'regime attuale: la risposta e\' nell\'archivio del browser', ok: cons.idb.includes('open-patente-nautica') || cons.local.some((e) => e[0] === 'pn.archivio'),
-        extra: 'ne\' IndexedDB open-patente-nautica ne\' pn.archivio: ' + JSON.stringify(cons) });
-      await tab.ricarica();
-      const resta = await tab.attendi(js(`const s = document.querySelector('#rotta-last'); return !!s && !s.hidden && V(s);`), CARICO);
-      v.push({ gruppo: g, nome: 'regime attuale: dopo la ricarica l\'ultima attivita\' c\'e\' ancora', ok: resta,
-        extra: 'la pagina di oggi dice che le risposte restano nel browser, e dopo una ricarica non le mostra' });
-      return;
-    }
     const pronto = await tab.attendi(PRONTO, CARICO);
     const prima = pronto && await tab.valuta(testoVisibile(PRIMA));
     v.push({ gruppo: g, nome: 'prima di cominciare la pagina dice che senza account non resta niente', ok: prima,
@@ -501,23 +484,13 @@ async function c02(b, ctx, v, regime) {
 
 // --- C-05: l'email gia' registrata ------------------------------------------------
 
-async function c05(b, ctx, v, regime) {
+async function c05(b, ctx, v) {
   const g = 'C-05';
   const c = await b.nuovoContesto();
   try {
     const tab = await c.apri(ctx.sito + '/app');
-    const testo = await unaRisposta(tab, v, g, regime === 'attuale' ? 'regime attuale: ' : '');
+    const testo = await unaRisposta(tab, v, g);
     if (!testo) return;
-    if (regime === 'attuale') {
-      // Senza client, niente che somigli a un account: nessuna rotta dell'API,
-      // nessun campo password, nessun invito a crearne uno.
-      const api = tab.richieste.filter((r) => /\/v1\//.test(r.url));
-      v.push({ gruppo: g, nome: 'regime attuale: nessuna richiesta a un\'API degli account', ok: !api.length,
-        extra: api.map((r) => r.url).join(', ') });
-      v.push({ gruppo: g, nome: 'regime attuale: nessun modulo d\'account nel riepilogo', ok: !await tab.valuta(passwordVisibile) && !await tab.valuta(pulsante('Crea un account e salva')),
-        extra: 'la pagina senza indirizzoApi() offre un account che non puo\' esistere' });
-      return;
-    }
     const invito = await clicca(tab, 'Crea un account e salva');
     const modulo = invito && await tab.attendi(js(`const e = ${campo('Email')}, p = ${campo('Password')}; return V(e) && V(p) && e.type === 'email' && p.type === 'password';`), REAZIONE);
     v.push({ gruppo: g, nome: 'dal riepilogo si apre il modulo, con le etichette Email e Password', ok: modulo,
@@ -664,18 +637,6 @@ function trattenuta() {
 
 const richiesteA = (tab, metodo, percorso) => tab.richieste.filter((r) => r.metodo === metodo && new URL(r.url).pathname === percorso);
 
-/** Nel regime attuale il client non c'e': niente API, niente account (specifica §2). */
-async function senzaClient(b, ctx, v, g) {
-  const c = await b.nuovoContesto();
-  try {
-    const tab = await c.apri(ctx.sito + '/app');
-    const pronto = await tab.attendi(PRONTO, CARICO);
-    const api = tab.richieste.filter((r) => /\/v1\//.test(r.url));
-    v.push({ gruppo: g, nome: 'regime attuale: la pagina si apre, senza API e senza moduli d\'account', ok: pronto && !api.length && !await tab.valuta(passwordVisibile) && !await tab.valuta(pulsante('Crea un account e salva')),
-      extra: !pronto ? 'la palestra non si apre' : api.length ? api.map((r) => r.url).join(', ') : 'un modulo o un invito d\'account senza indirizzoApi()' });
-  } finally { await c.chiudi(); }
-}
-
 // --- C-03: le viste, e l'invito solo nei riepiloghi ---------------------------------
 
 const VISTE = ['oggi', 'quiz', 'cart', 'diag', 'seg', 'info'];
@@ -684,7 +645,7 @@ const PORTA_PROGRESSI = 'I Progressi descrivono le attività salvate nel tuo acc
 // una vista di zeri costruita dallo storico temporaneo (§3.2).
 const CRUSCOTTO = ['#d-temi', '#d-voci', '#d-cons', '#sessioni'];
 
-async function c03(b, ctx, v, regime) {
+async function c03(b, ctx, v) {
   const g = 'C-03';
   const c = await b.nuovoContesto();
   try {
@@ -703,11 +664,6 @@ async function c03(b, ctx, v, regime) {
     v.push({ gruppo: g, nome: 'ogni vista si apre dal Percorso', ok: !mute.length, extra: 'non si aprono: ' + mute.join(', ') });
     v.push({ gruppo: g, nome: 'in nessuna vista un invito, un modulo o una finestra d\'account', ok: !invadenti.length, extra: 'invito, campo password o finestra modale in: ' + invadenti.join(', ') });
     await clic(tab, '[data-v="diag"]');
-    if (regime === 'attuale') {
-      v.push({ gruppo: g, nome: 'regime attuale: Progressi e\' la vista di oggi, senza porte d\'account', ok: await tab.valuta(visibile('#v-diag')) && !await tab.valuta(testoVisibile(PORTA_PROGRESSI)),
-        extra: 'Progressi non si vede, o parla di un account che non c\'e\'' });
-      return;
-    }
     const cruscotto = await tab.valuta(js(`return ${q(CRUSCOTTO)}.filter((s) => V(document.querySelector(s)));`));
     v.push({ gruppo: g, nome: 'senza account Progressi dice perche\' non c\'e\', con Vai al Percorso e Accedi, senza un cruscotto',
       ok: await tab.valuta(testoVisibile(PORTA_PROGRESSI)) && await tab.valuta(pulsante('Vai al Percorso')) && await tab.valuta(pulsante('Accedi')) && !cruscotto.length,
@@ -737,9 +693,8 @@ async function c03(b, ctx, v, regime) {
 
 // --- C-04: registrarsi dopo piu' attivita' ------------------------------------------
 
-async function c04(b, ctx, v, regime, parte) {
+async function c04(b, ctx, v, parte) {
   const g = 'C-04';
-  if (regime === 'attuale') return senzaClient(b, ctx, v, g);
   const vuole = (x) => !parte || parte === x;
   if (vuole('registrazione')) await c04registrazione(b, ctx, v, g);
   if (vuole('persa')) await c04persa(b, ctx, v, g);
@@ -822,9 +777,8 @@ async function c04persa(b, ctx, v, g) {
 
 const DOMANDA = 'Vuoi portare nel tuo account';
 
-async function c06(b, ctx, v, regime, parte) {
+async function c06(b, ctx, v, parte) {
   const g = 'C-06';
-  if (regime === 'attuale') return senzaClient(b, ctx, v, g);
   const vuole = (x) => !parte || parte === x;
   const A = await nuovoAccount(ctx, 'c06a'), B = await nuovoAccount(ctx, 'c06b');
   if (vuole('scelta')) await c06scelta(b, ctx, v, g, A);
@@ -934,9 +888,8 @@ async function c06congelata(b, ctx, v, g, A, B) {
 
 // --- C-11: la coda sotto pressione --------------------------------------------------
 
-async function c11(b, ctx, v, regime, parte) {
+async function c11(b, ctx, v, parte) {
   const g = 'C-11';
-  if (regime === 'attuale') return senzaClient(b, ctx, v, g);
   const vuole = (x) => !parte || parte === x;
   if (vuole('volo')) await c11volo(b, ctx, v, g);
   if (vuole('ricarica')) await c11ricarica(b, ctx, v, g);
@@ -1024,9 +977,8 @@ async function esciDa(tab) {
 
 const copieAccount = (cons) => cons.idb.filter((n) => n.startsWith('rg-account-'));
 
-async function c15(b, ctx, v, regime, parte) {
+async function c15(b, ctx, v, parte) {
   const g = 'C-15';
-  if (regime === 'attuale') return senzaClient(b, ctx, v, g);
   const vuole = (x) => !parte || parte === x;
   const U = await nuovoAccount(ctx, 'c15');
   if (vuole('uscite')) await c15uscite(b, ctx, v, g, U);
@@ -1195,7 +1147,16 @@ const finti = (ctx, codice, corpo, intestazioni = {}) => ({ codice, corpo: JSON.
 async function dentro(tab, conto) {
   await tab.attendi(PRONTO, CARICO);
   await entraCome(tab, conto);
-  return tab.attendi(nellaPagina('Account'), REAZIONE);
+  if (!await tab.attendi(nellaPagina('Account'), REAZIONE)) return false;
+  // «Account» nell'intestazione non vuol dire che l'accesso sia finito: la
+  // pagina chiude la sua finestra un attimo dopo. Sotto carico il banco apriva
+  // il pannello dell'account in quell'attimo e la pagina glielo chiudeva sotto,
+  // cosi' «Esci» non partiva mai: misurato il 30 settembre 2026 in C-15, 4 giri
+  // su 176 sotto carico e nessuno su 24 senza (P-40). I chiamanti entrano in
+  // un contesto nuovo, senza risposte, dove dopo l'accesso non resta niente di
+  // aperto: si aspetta quello.
+  await tab.attendi(js(`return ![...document.querySelectorAll('[aria-modal="true"], dialog[open]')].some(V);`), REAZIONE);
+  return true;
 }
 
 /** Un pulsante visibile in tutta la pagina, anche con una finestra aperta sopra. */
@@ -1234,9 +1195,8 @@ async function fermaAlPrimo(v, fn) {
 
 // --- C-07: la verifica dell'email -----------------------------------------------------------
 
-async function c07(b, ctx, v, regime, parte) {
+async function c07(b, ctx, v, parte) {
   const g = 'C-07';
-  if (regime === 'attuale') return senzaClient(b, ctx, v, g);
   const vuole = (x) => !parte || parte === x;
   if (vuole('posta')) await fermaAlPrimo(v, (w) => c07posta(b, ctx, w, g));
   if (vuole('link')) await fermaAlPrimo(v, (w) => c07link(b, ctx, w, g));
@@ -1318,9 +1278,8 @@ async function c07link(b, ctx, v, g) {
 
 // --- C-08: la password, gli errori dell'accesso, il recupero ------------------------------
 
-async function c08(b, ctx, v, regime, parte) {
+async function c08(b, ctx, v, parte) {
   const g = 'C-08';
-  if (regime === 'attuale') return senzaClient(b, ctx, v, g);
   const vuole = (x) => !parte || parte === x;
   if (vuole('password')) await fermaAlPrimo(v, (w) => c08password(b, ctx, w, g));
   if (vuole('accesso')) await fermaAlPrimo(v, (w) => c08accesso(b, ctx, w, g));
@@ -1475,25 +1434,12 @@ async function scriviVecchio(c, ctx, idb, ls) {
 const VECCHIO_FALLITO = `(() => { const o = IDBFactory.prototype.open; IDBFactory.prototype.open = function (n, ...a) {
   if (n === 'open-patente-nautica') throw new DOMException('lettura fallita dal banco', 'UnknownError'); return o.call(this, n, ...a); }; })();`;
 
-async function c09(b, ctx, v, regime, parte) {
+async function c09(b, ctx, v, parte) {
   const g = 'C-09';
   const vuole = (x) => !parte || parte === x;
-  if (regime === 'attuale') return fermaAlPrimo(v, (w) => c09attuale(b, ctx, w, g));
   if (vuole('porta')) await fermaAlPrimo(v, (w) => c09porta(b, ctx, w, g));
   if (vuole('dopo')) await fermaAlPrimo(v, (w) => c09dopo(b, ctx, w, g));
   if (vuole('fallita')) await fermaAlPrimo(v, (w) => c09fallita(b, ctx, w, g));
-}
-
-async function c09attuale(b, ctx, v, g) {
-  // La pagina di oggi usa quell'archivio come suo: aprirla non lo deve perdere.
-  const c = await b.nuovoContesto();
-  try {
-    await scriviVecchio(c, ctx, righeDi('vecchio', 4));
-    const tab = await c.apri(ctx.sito + '/app');
-    await tab.attendi(PRONTO, CARICO);
-    const n = await c.voci(ctx.sito, 'open-patente-nautica', tab);
-    v.push({ gruppo: g, nome: 'regime attuale: aprire la palestra non perde l\'archivio che c\'e\'', ok: !!n && n.righe >= 4, extra: `nell'archivio ${JSON.stringify(n)}` });
-  } finally { await c.chiudi(); }
 }
 
 async function c09porta(b, ctx, v, g) {
@@ -1609,9 +1555,8 @@ function fileDiProva(prefisso) {
   return { app: 'open-patente-nautica', versione: '0.19.0', righe, segPunti: { notturni: { migliore: 7, giocate: 2 }, diurni: { migliore: 3, giocate: 9 } } };
 }
 
-async function c10(b, ctx, v, regime, parte) {
+async function c10(b, ctx, v, parte) {
   const g = 'C-10';
-  if (regime === 'attuale') return senzaClient(b, ctx, v, g);
   const vuole = (x) => !parte || parte === x;
   if (vuole('senza')) await fermaAlPrimo(v, (w) => c10senza(b, ctx, w, g));
   if (vuole('file')) await fermaAlPrimo(v, (w) => c10file(b, ctx, w, g));
@@ -1706,9 +1651,8 @@ async function c10segnali(b, ctx, v, g) {
 
 // --- C-12: i limiti di un invio e della ricezione ----------------------------------------
 
-async function c12(b, ctx, v, regime, parte) {
+async function c12(b, ctx, v, parte) {
   const g = 'C-12';
-  if (regime === 'attuale') return senzaClient(b, ctx, v, g);
   const vuole = (x) => !parte || parte === x;
   if (vuole('lotti')) await fermaAlPrimo(v, (w) => c12lotti(b, ctx, w, g));
   if (vuole('413')) await fermaAlPrimo(v, (w) => c12troppo(b, ctx, w, g));
@@ -1784,9 +1728,8 @@ async function c12ricezione(b, ctx, v, g) {
 
 // --- C-13: un azzeramento fatto altrove ---------------------------------------------------
 
-async function c13(b, ctx, v, regime, parte) {
+async function c13(b, ctx, v, parte) {
   const g = 'C-13';
-  if (regime === 'attuale') return senzaClient(b, ctx, v, g);
   const vuole = (x) => !parte || parte === x;
   if (vuole('invio')) await fermaAlPrimo(v, (w) => c13invio(b, ctx, w, g));
   if (vuole('ricezione')) await fermaAlPrimo(v, (w) => c13ricezione(b, ctx, w, g));
@@ -1838,13 +1781,32 @@ async function c13ricezione(b, ctx, v, g) {
     if (!await dentro(tab, K)) { v.push({ gruppo: g, nome: 'ricezione: si entra', ok: false, extra: 'l\'intestazione non dice «Account»' }); return; }
     await clic(tab, '[data-rotta-start]');
     await rispondiQuiz(tab, [], g, '');
-    await finche(() => ctx.righeDi(K.email) === 1, REAZIONE);
+    // L'azzeramento va scoperto dopo la ricarica, ricevendo: prima si aspetta
+    // che la pagina abbia finito di parlare con l'API. Senza, a volte la
+    // ricezione che segue l'invio lo scopriva ancora prima della ricarica, e
+    // dopo la pagina mostrava la scelta gia' rimandata — un rosso del banco,
+    // non della pagina: misurato il 30 settembre 2026, 1 giro su 14 (P-40).
+    // Ferma vuol dire nessuna richiesta aperta e nessuna nuova per 300 ms: fra la
+    // conferma dell'invio e la ricezione che la segue c'e' un attimo di silenzio.
+    const versoApi = () => tab.richieste.filter((r) => r.url.startsWith(ctx.api));
+    const quieta = await finche(async () => {
+      if (ctx.righeDi(K.email) !== 1 || !versoApi().every((r) => r.finita)) return false;
+      const n = versoApi().length;
+      await pausa(300);
+      return versoApi().length === n && versoApi().every((r) => r.finita);
+    }, REAZIONE);
+    if (!quieta) {
+      v.push({ gruppo: g, nome: 'ricezione: la risposta arriva sul server e la pagina smette di inviare', ok: false,
+        extra: `server ${ctx.righeDi(K.email)} righe; richieste all'API ancora aperte: ${versoApi().filter((r) => !r.finita).map((r) => r.metodo + ' ' + r.url).join(', ')}` });
+      return;
+    }
     ctx.azzera(K.email);
     await tab.ricarica();
     await tab.attendi(PRONTO, CARICO);
     const detto = await tab.attendi(js(`return new RegExp(${q(AZZERATI.source)}, 'i').test(M().innerText);`), REAZIONE) && await tab.valuta(pulsante('Carica il nuovo archivio'));
     v.push({ gruppo: g, nome: 'scoperto ricevendo, senza risposte da salvare: la pagina lo dice e chiede di caricare il nuovo archivio', ok: detto,
-      extra: 'dopo l\'azzeramento la ricezione non dice niente, o manca «Carica il nuovo archivio»' });
+      extra: 'dopo l\'azzeramento la ricezione non dice niente, o manca «Carica il nuovo archivio»; in schermata: '
+        + (await tab.valuta(js(`const m = M(); return (m === document ? document.body : m).innerText.replace(/\\s+/g, ' ').slice(0, 400);`))) });
     v.push({ gruppo: g, nome: 'e prima della scelta la copia non cambia', ok: await maiPer(async () => await nellaCopia(c, ctx, tab, K.chiave) !== 1), extra: `nella copia ${await nellaCopia(c, ctx, tab, K.chiave)} righe` });
     // «Decidi più tardi», una risposta, poi la scelta di nuovo: ora c'e' una
     // risposta da perdere, e «Carica il nuovo archivio» non la butta in silenzio.
@@ -1866,9 +1828,8 @@ async function c13ricezione(b, ctx, v, g) {
 
 // --- C-14: il ripristino del server --------------------------------------------------------
 
-async function c14(b, ctx, v, regime) {
+async function c14(b, ctx, v) {
   const g = 'C-14';
-  if (regime === 'attuale') return senzaClient(b, ctx, v, g);
   return fermaAlPrimo(v, (w) => c14giro(b, ctx, w, g));
 }
 
@@ -1920,7 +1881,8 @@ async function c15scaduta(b, ctx, v, g) {
     await esciDa(tab);
     const fuori = await finche(async () => await tab.valuta(pulsante('Accedi')) && !copieAccount(await c.conservato(ctx.sito, tab)).length, USCITA);
     v.push({ gruppo: g, nome: 'un 401 all\'uscita: la sessione non c\'era piu\', e la copia si pulisce lo stesso', ok: fuori && !await tab.valuta(testoVisibile(SERVE_RETE)),
-      extra: fuori ? `si vede «${SERVE_RETE}»: il 401 e' stato preso per la rete che manca` : `copie ${copieAccount(await c.conservato(ctx.sito, tab)).join(', ') || 'nessuna'}, «Accedi» ${await tab.valuta(pulsante('Accedi')) ? '' : 'non '}c'e'` });
+      extra: fuori ? `si vede «${SERVE_RETE}»: il 401 e' stato preso per la rete che manca` : `copie ${copieAccount(await c.conservato(ctx.sito, tab)).join(', ') || 'nessuna'}, «Accedi» ${await tab.valuta(pulsante('Accedi')) ? '' : 'non '}c'e'; in schermata: `
+        + await tab.valuta(js(`const m = M(); return (m === document ? document.body : m).innerText.replace(/\\s+/g, ' ').slice(0, 300);`)) });
     // Di nuovo dentro; una risposta offline; poi la sessione revocata altrove.
     await entraCome(tab, U);
     await tab.attendi(pulsante('Account'), REAZIONE);
@@ -1972,9 +1934,8 @@ async function c15ovunque(b, ctx, v, g) {
 
 const ONBOARDING = 'Hai una data d\'esame?';
 
-async function c16(b, ctx, v, regime, parte) {
+async function c16(b, ctx, v, parte) {
   const g = 'C-16';
-  if (regime === 'attuale') return senzaClient(b, ctx, v, g);
   const vuole = (x) => !parte || parte === x;
   if (vuole('proposta')) await fermaAlPrimo(v, (w) => c16proposta(b, ctx, w, g));
   if (vuole('salto')) await fermaAlPrimo(v, (w) => c16salto(b, ctx, w, g));
@@ -2057,9 +2018,8 @@ async function c16accesso(b, ctx, v, g) {
 
 const ALTROVE = 'https://rottagiusta.it/app';
 
-async function c17(b, ctx, v, regime, parte) {
+async function c17(b, ctx, v, parte) {
   const g = 'C-17';
-  if (regime === 'attuale') return senzaClient(b, ctx, v, g);
   const vuole = (x) => !parte || parte === x;
   if (vuole('export')) await fermaAlPrimo(v, (w) => c17export(b, ctx, w, g));
   if (vuole('origine')) await fermaAlPrimo(v, (w) => c17origine(b, ctx, w, g));
@@ -2130,12 +2090,10 @@ const GRUPPI = { 'C-01': c01, 'C-02': c02, 'C-03': c03, 'C-04': c04, 'C-05': c05
   'C-10': c10, 'C-11': c11, 'C-12': c12, 'C-13': c13, 'C-14': c14, 'C-15': c15, 'C-16': c16, 'C-17': c17 };
 // I gruppi che parlano con l'API: il server accetta una sola origine (§7.3),
 // quindi girano uno alla volta sul sito principale. Gli altri girano in
-// parallelo, ognuno con il suo sito e quindi con la sua origine. C-05 ci sta
-// anche nel regime attuale, dove guarda che la pagina non chiami l'API; i
-// gruppi nuovi, nel regime attuale, controllano solo che il client non ci sia.
+// parallelo, ognuno con il suo sito e quindi con la sua origine.
 const CON_API = new Set(['C-05', 'C-04', 'C-06', 'C-07', 'C-08', 'C-09', 'C-10', 'C-11', 'C-12', 'C-13', 'C-14', 'C-15', 'C-16', 'C-17']);
 const SOLO_ALTRE = new Set(['C-14']);
-const usaApi = (p, gr) => { const g = gr.split(':')[0]; return g === 'C-05' || (CON_API.has(g) && p.regime === 'progettato'); };
+const usaApi = (gr) => CON_API.has(gr.split(':')[0]);
 
 async function servi(corrente) {
   const s = sito(corrente);
@@ -2148,10 +2106,10 @@ async function servi(corrente) {
  * corsa fra schede. Le rotture chiedono solo la parte che rompono, cosi' non
  * pagano il resto del gruppo.
  */
-async function gruppo(b, ctx, gr, regime) {
+async function gruppo(b, ctx, gr) {
   const v = [];
   const [nome, parte] = gr.split(':');
-  try { await GRUPPI[nome](b, ctx, v, regime, parte || null); } catch (e) { v.push({ gruppo: nome, nome: `il gruppo ${gr} si esegue`, ok: false, extra: e.message }); }
+  try { await GRUPPI[nome](b, ctx, v, parte || null); } catch (e) { v.push({ gruppo: nome, nome: `il gruppo ${gr} si esegue`, ok: false, extra: e.message }); }
   return v;
 }
 
@@ -2262,7 +2220,7 @@ async function corsia(k, cartella, portaApi = PORTA_API) {
     async esegui(b, p, g) {
       corrente.pagina = porta !== PORTA_API ? p.pagina.replaceAll(':8620', `:${porta}`) : p.pagina;
       orologio.t += 2 * 3600 * 1000;
-      return gruppo(b, ctx, g, p.regime);
+      return gruppo(b, ctx, g);
     },
     chiudi: async () => { if (!spento) await api.chiudi(); await sp.chiudi(); },
   };
@@ -2290,7 +2248,7 @@ export async function esegui(prove, { portaApi = PORTA_API } = {}) {
     for (let k = 0; k < CORSIE; k++) corsie.push(await corsia(k, cartella, portaApi));
     b = await avviaChrome({ nomi: ['rotta.test'] });
 
-    const libere = prove.flatMap((p) => p.gruppi.filter((g) => !usaApi(p, g)).map((g) => ({ p, g })));
+    const libere = prove.flatMap((p) => p.gruppi.filter((g) => !usaApi(g)).map((g) => ({ p, g })));
     const lavora = async () => {
       for (let x; (x = libere.shift());) {
         const inizio = performance.now();
@@ -2300,15 +2258,15 @@ export async function esegui(prove, { portaApi = PORTA_API } = {}) {
           // La pagina di questi gruppi non e' riscritta: parla con la 8620, e il
           // banco guarda quell'indirizzo anche se la corsia 0 ascolta altrove.
           const ctx = { ...corsie[0].ctx, sito: sv.origine, api: `http://localhost:${PORTA_API}`, spegni: (si) => { proprio.spento = si; } };
-          esiti.get(x.p.nome)[x.g] = await gruppo(b, ctx, x.g, x.p.regime);
+          esiti.get(x.p.nome)[x.g] = await gruppo(b, ctx, x.g);
         } finally { await sv.chiudi(); }
         tempi(inizio, `${x.p.nome} ${x.g}`);
       }
     };
     // I gruppi con l'API: quelli della pagina vera solo nella corsia 0, gli
     // altri dove c'e' posto. Le corsie corrono accanto ai gruppi senza API.
-    const fissi = prove.filter((p) => p.nome === 'app').flatMap((p) => p.gruppi.filter((g) => usaApi(p, g)).map((g) => ({ p, g })));
-    const mobili = prove.filter((p) => p.nome !== 'app').flatMap((p) => p.gruppi.filter((g) => usaApi(p, g)).map((g) => ({ p, g })));
+    const fissi = prove.filter((p) => p.nome === 'app').flatMap((p) => p.gruppi.filter((g) => usaApi(g)).map((g) => ({ p, g })));
+    const mobili = prove.filter((p) => p.nome !== 'app').flatMap((p) => p.gruppi.filter((g) => usaApi(g)).map((g) => ({ p, g })));
     // C-14 riavvia il server a meta' giro: sulla 8620 un'altra suite — quella
     // di un altro worktree — puo' prendersi la porta in quell'istante, quindi
     // gira solo sulle corsie con una porta qualunque.

@@ -796,7 +796,8 @@ progettato gira su `tests/pagina-client-account.html`, su ventiquattro rotture
 di quella pagina (`ROTTURE_CLIENT`; ventitré da P-29, una da P-38), ognuna rossa
 e con il difetto nominato, e su una variante che deve restare verde
 (`VARIANTI_CLIENT`, P-38).
-**Il regime attuale ha una scadenza:** lo toglie la regia quando integra P-18.
+**Il regime attuale aveva una scadenza:** l'ha tolto P-40, dopo la merge di
+P-18 (qui sotto, «Un regime solo»).
 
 **Il contratto che la pagina deve rispettare**, perché il banco la guida:
 
@@ -1275,6 +1276,47 @@ succede alla chiusura, registrarsi dopo il riepilogo e trovare una mail
 scaduta. Con una persona che ha uno storico: scaricare o trasferire e
 spiegare quali righe sono sul server. La prova con persone resta distinta
 dal superamento delle suite.
+
+### Un regime solo (P-40, 30 settembre 2026)
+
+P-18 ha portato il client nella pagina vera, fusa su `main` il 29 settembre. Da
+P-40 il banco non conosce più la pagina senza account: `tests/client_account.mjs`
+guida ogni pagina come una pagina con il client, e `tests/test_interfaccia.py`
+non riconosce più un regime. **La pagina di prima di P-18 è rossa**, in due
+modi: il controllo statico `test_client_nella_pagina` (R-ACC-58) la nomina
+perché non dichiara `indirizzoApi()`, e ogni gruppo del banco che la guida
+fallisce sul suo contratto. Provato una volta sul `site/app.html` di `f218935`,
+l'ultimo `main` prima della merge: i numeri stanno nella voce P-40 del
+CHANGELOG.
+
+**La pagina di riferimento resta.** Porta le rotture e la variante: è il banco
+provato contro i propri verdi e rossi falsi (R-ACC-42). Spostarle sulla pagina
+vera vorrebbe dire sostituzioni di testo in un file dell'interfaccia da 200 KB,
+che si spezzerebbero a ogni ritocco di `ui/*`, e una rottura che non si applica
+più è un controllo spento. La pagina di riferimento non dà più la forma del
+contratto a chi realizza: quella ora è la pagina vera.
+
+**Il conteggio vale anche per la pagina vera.** Fino a P-40 un gruppo sulla
+pagina vera bastava che facesse una verifica, perché nel regime senza client
+ne faceva una; ora ne deve fare quante ne fa sulla pagina di riferimento
+(`VERIFICHE_CLIENT`), altrimenti il giro si è fermato a metà ed è un verde a
+copertura parziale.
+
+**Due rossi falsi del banco, trovati facendo girare la pagina vera e i giri
+sotto carico.** In C-13 «scoperto ricevendo» azzerava e ricaricava con la pagina
+ancora in mezzo al suo invio, e a volte la ricezione che segue l'invio scopriva
+l'azzeramento prima della ricarica: dopo, la pagina mostrava giustamente la
+scelta già rimandata. 1 giro su 14; ora il banco aspetta che la pagina smetta di
+parlare con l'API, e 0 su 28. In C-15 `dentro()` dava l'accesso per finito
+appena l'intestazione diceva «Account», prima che la pagina chiudesse la sua
+finestra, e sotto carico «Esci» non partiva: 4 su 176 sotto carico, 0 su 24
+senza; ora aspetta anche la finestra chiusa, e 0 su 240 sotto carico, fra le due
+pagine. Tutti e due i rossi, ora, dicono che cosa c'era in schermata.
+
+**Quello che il banco non vede** ha ora righe sue nella specifica, scoperte con
+il motivo: R-ACC-59 Safari e i sottodomini veri, R-ACC-60 il gesto vero,
+R-ACC-61 la mail vera, R-ACC-62 un archivio di prima vero, R-ACC-63 le scelte
+che nessun gruppo preme.
 
 ## 13. Evidenze e limiti di P-13
 

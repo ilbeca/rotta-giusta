@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  La pagina di riferimento del client degli account, regime progettato:
+  La pagina di riferimento del client degli account:
   docs/account-client-progetto.md §§3.2, 4, 5, 9, 10 e 11.1. Non e' pubblicata
   e non e' un prototipo: e' il minimo che soddisfa il banco del browser
   (tests/client_account.mjs) per C-01…C-17, e serve a quel banco
@@ -8,11 +8,12 @@
   ognuna delle rotture elencate in ROTTURE_CLIENT di tests/test_interfaccia.py
   deve fallire nominando il difetto.
 
-  Mostra anche la forma del contratto a chi realizza il client (P-18): gli
-  agganci delle attivita' di oggi, i testi del progetto, indirizzoApi(), da cui
-  il controllo riconosce il regime, l'archivio per account `rg-account-<chiave>`
-  e la coda del motore. Il disegno, gli altri stati e il resto dei flussi sono
-  del progetto, non di qui. Il contratto per esteso sta nel §12.
+  Fino a P-18 mostrava anche la forma del contratto a chi realizzava il
+  client: gli agganci delle attivita', i testi del progetto, indirizzoApi(),
+  l'archivio per account `rg-account-<chiave>` e la coda del motore. Da P-40
+  il client e' nella pagina vera, che il banco guida con gli stessi gruppi; questa
+  resta perche' porta le rotture e le varianti, cioe' il banco provato contro
+  i propri verdi e rossi falsi. Il contratto per esteso sta nel §12.
 
   Senza account questa pagina non scrive niente: ne' IndexedDB, ne'
   localStorage, ne' sessionStorage, ne' cookie. Tutto sta in S, in memoria. Con
@@ -20,7 +21,7 @@
 -->
 <html lang="it">
 <meta charset="utf-8">
-<title>Client degli account, regime progettato: pagina di riferimento</title>
+<title>Client degli account: pagina di riferimento</title>
 <style>[hidden]{display:none!important} .view:not(.on), #quizrun:not(.on), #rivedi:not(.on), #r-fine:not(.on), #cartrun:not(.on), #c-fine:not(.on), #segrun:not(.on), #sr-fine:not(.on) {display:none}</style>
 <body>
 <header>
@@ -126,8 +127,8 @@
 import * as E from '/engine.js';
 
 /** Dove sta l'API (account-progetto §7.4): la ricava la pagina dal proprio
- *  indirizzo, e altrove non c'e'. Dichiararla e' cio' da cui il controllo
- *  riconosce il regime progettato. */
+ *  indirizzo, e altrove non c'e'. Dichiararla e' il segno del client che il
+ *  controllo statico cerca (R-ACC-58). */
 function indirizzoApi(loc) {
   if (loc.hostname === 'rottagiusta.it') return 'https://api.rottagiusta.it';
   if (loc.hostname === 'localhost' || loc.hostname === '127.0.0.1') return `http://${loc.hostname}:8620`;
