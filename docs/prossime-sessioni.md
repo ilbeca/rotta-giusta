@@ -119,14 +119,14 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
 | 5b | Chiudere il regime vecchio dei controlli dei quiz, e il §5 della specifica | Claude | `main`, a mano | la cartella libera | P-12 |
-| 23 | Il progetto dell'area 5, Progressi | ChatGPT | `ui/main` | niente — **pronto** | P-22 |
-| 21 | I controlli del client che mancano | Claude | `main`, a mano | niente — **per primo** | P-39 |
+| 24 | I dieci gruppi di controlli del client che restano | Claude | `main`, a mano | niente — **per primo**, insieme a P-18 | P-43 |
+| 25 | I controlli della mappa di Progressi | Claude | `main`, a mano | P-43 | P-44 |
 | 18 | Il carteggio sul `main`: composizione, attività intera, bozza, controlli | Claude | `main`, a mano | P-29 nell'ordine; P-34 dopo P-33, dalla quarantena | P-32…P-35 |
 | 6d | Chiudere il regime vecchio dei controlli del ciclo | Claude | `main`, a mano | la cartella libera | P-37 |
 | 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore: il tag `v0.28.0` c'è | P-15 |
 | 12 | `ritmo()` che dice «orologio» senza orologio | Claude | `main`, a mano | niente | P-16 |
 | 13 | L'ultimo tag di una risposta, nel motore | Claude | `main`, a mano | la cartella libera | P-17 |
-| 7b | La realizzazione del client degli account | ChatGPT | `ui/main` | P-38 e P-39 | P-18 |
+| 7b | La realizzazione del client degli account | ChatGPT | `ui/main` | niente — **pronto** | P-18 |
 | 7c | Chiudere il regime vecchio dei controlli del client | Claude | `main`, a mano | la merge di P-18 | segnaposto P-40 |
 | 6b | Le aree del ridisegno che restano: 4 e 5 realizzate, poi 6 | ChatGPT | `ui/main` | la precedente, e P-18 | P-21, P-23, P-24, P-25 |
 | 9a | I testi fuori da `site/` nella versione con gli account | Claude | `main`, a mano | P-18 | segnaposto P-26 |
@@ -136,9 +136,9 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 **Le due colonne corrono in parallelo**: Claude sul server e sul motore,
 ChatGPT sull'interfaccia. P-18 e P-21 aspettano lavoro di Claude su `main`:
 quel lavoro è la strettoia. **Per
-Claude, l'ordine consigliato: P-39** (sblocca P-18), **P-32, P-33, P-34, P-35** (sbloccano
-P-21), P-37, P-16, P-12, P-17; P-15 quando l'autore ha il tempo. **Per ChatGPT:
-P-22 adesso, poi P-18 dopo P-39.** Vanno uno alla
+Claude, l'ordine consigliato: P-43** (in parallelo a P-18), **P-44** (sblocca
+P-23), **P-32, P-33, P-34, P-35** (sbloccano P-21), P-37, P-16, P-12, P-17;
+P-15 quando l'autore ha il tempo. **Per ChatGPT: P-18.** Vanno uno alla
 volta, perché stanno tutti nella cartella principale: è la strettoia della
 colonna di Claude, e si accetta perché il recinto la vuole. Il numero di una
 riga è il suo nome, non la sua posizione. Le due colonne si incontrano al punto
@@ -416,7 +416,8 @@ consuma, non si riprogetta.
 - **La suite che dura un minuto, e Safari** — rimandati dall'autore il 29
   settembre, e scritti come punti aperti nel §10 della specifica: Q-SUITE, e
   Safari dentro Q-PROVE.
-- **Tre scelte di P-41 da confermare** (§4.3 della specifica). La vela non ha
+- ~~Tre scelte di P-41 da confermare~~ — **confermate dall'autore il 29
+  settembre**, e il §4.3 della specifica lo dice. Il testo di prima: La vela non ha
   la frase «Dove pesa di più adesso», perché un peso per voce non esiste; la
   soglia della frase è **20 quesiti visti**, quante le domande di una prova
   base; il motivo della frase è «da rifare» quando gli errori sono almeno
@@ -1223,7 +1224,7 @@ Safari.
 
 ### P-18 — ChatGPT: la realizzazione del client degli account
 
-**Stato:** in attesa di P-38 e P-39: il banco stabile, e i controlli che mancano. **Dove:**
+**Stato:** pronto: P-38 e P-39 sono chiusi, e `ui/main` è allineato. **Dove:**
 app di ChatGPT, progetto `~/Software/rotta-giusta-ui`, ramo `ui/main`.
 
 ```
@@ -1241,9 +1242,15 @@ dall'autore.
 
 La contabilità della coda è nel motore: la pagina la chiama, non la
 rifà. Se la funzione di P-17 esiste, sostituisce tagPerTentativo().
-Il contratto del banco — gli agganci del runner, indirizzoApi(), i
-testi visibili — è nel §12, «Il banco». La suite dell'interfaccia vuole
-Chrome e la porta 8620 libera, e dura circa un minuto: se nel tuo
+Il contratto del banco è cresciuto con P-39 — gli agganci delle
+attività, le porte e i testi dell'account, aria-modal, l'archivio
+rg-account-<chiave> — ed è nel §12, «Il contratto»: la pagina lo
+rispetta. I due difetti che P-39 ha trovato costruendo il client minimo
+— la richiesta che parte con il cookie di un altro account, la
+registrazione persa che lascia il cookie — valgono anche per te.
+Altri controlli (P-43) arrivano su main mentre lavori: quelli che
+trovi alla merge li deve passare anche la pagina. La suite dell'interfaccia vuole
+Chrome, la porta 8620 e tre porte libere, e dura circa un minuto: se nel tuo
 ambiente non gira, fermati e dillo, non saltarla.
 Se un contratto o un controllo ti sta stretto, fermati e dillo: cambiarlo
 tocca main.
@@ -1686,7 +1693,7 @@ invariate.
 
 ### P-39 — Claude: i controlli del client che mancano
 
-**Stato:** pronto dopo P-41, nell'ordine consigliato: il banco è stabile. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** il resoconto di P-29.
+**Stato:** **chiuso il 29 settembre 2026**, commit `ae022f6` su `main`. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** il resoconto di P-29.
 
 ```
 Questo prompt è per Claude Code, nella cartella principale
@@ -1715,7 +1722,21 @@ voce in fondo a [Unreleased], un commit. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `ae022f6`, voce nel CHANGELOG. C-01 completo — Quiz,
+simulazione, tecniche, prova di carteggio, Segnali, senza account —, e C-03,
+C-04, C-06, C-11, C-15 in due regimi; C-06, C-11 e C-15 esercitano la corsa fra
+schede leggendo il database del server. La pagina di riferimento è ora un client
+minimo. 57 rotture in tutto, ognuna rossa per il suo motivo; R-ACC-03 e 04
+coperti, R-ACC-43…46 nuovi. **Due difetti di progetto trovati costruendo il
+client minimo**: una richiesta trattenuta e lasciata andare dopo un cambio
+d'account partiva con il cookie nuovo, cioè una riga di A finiva in B (ora
+annullata con `AbortController`); e una risposta di registrazione persa lascia
+comunque il cookie. E un verde falso dipendente dal tempo, sostituito. Non
+fatti, per dimensione: C-07…C-10, C-12…C-14, C-16…C-18, scritti nel §12 con che
+cosa chiedono al banco — diventano P-43. La suite ora avvia quattro server ed è
+intorno al minuto: 20 giri senza carico e 10 sotto carico tutti verdi.
+Controllato dalla regia: interfaccia 722 in 63 s, specifica 500, le altre
+invariate.
 
 ### P-41 — Claude: il motore della mappa di Progressi
 
@@ -1778,7 +1799,7 @@ motore 167 + 2 skip, server 59, dati 242, interfaccia 579, specifica 480.
 
 ### P-22 — ChatGPT: il progetto dell'area 5, Progressi
 
-**Stato:** pronto: P-41 è chiuso e `ui/main` è allineato. **Dove:** app di
+**Stato:** **chiuso il 29 settembre 2026**, merge `fc5cfe3`. **Dove:** app di
 ChatGPT, progetto `~/Software/rotta-giusta-ui`, ramo `ui/main`.
 
 ```
@@ -1809,6 +1830,73 @@ docs/prossime-sessioni.md. Un commit con il trailer, versione non
 toccata. Chiudi con il resoconto di docs/prossime-sessioni.md.
 ```
 
+**Esito:** commit `e8f019f`, merge `fc5cfe3`: `docs/area-5-progetto.md` e la sua
+voce. La mappa per tema sui sette punti di Q-DUE, senza rimetterli in
+discussione; il caso senza pesi d'esame resta leggibile senza peso e senza frase.
+**Una dipendenza per Claude prima di P-23**, nel §10.1: i controlli della
+pagina in due regimi, con un raccordo estraibile che chiama davvero
+`E.quadro()` e `E.dovePesa()` e le rotture già elencate — diventa P-44.
+Controllato dalla regia: territori puliti, merge chiusa da sola.
+
+### P-43 — Claude: i dieci gruppi di controlli del client che restano
+
+**Stato:** pronto — **per primo**; può stare aperto insieme a P-18. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano.
+**Nasce da:** il resoconto di P-39.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-43, su main. Leggi il §12 di
+docs/account-client-progetto.md — «Il contratto», «Il banco stabile» e
+«Il resto dei controlli» — e gli esiti di P-38 e P-39 nel §6 di
+docs/prossime-sessioni.md.
+
+Sullo stesso banco, i gruppi che P-39 ha lasciato scritti con che cosa
+chiedono al banco: C-07…C-10, C-12…C-14, C-16…C-18, in due regimi, con
+le rotture deliberate e il banco provato contro sé stesso. Poi quello
+che P-39 ha dichiarato scoperto: R-ACC-05, il 401 all'uscita, «Esci da
+tutti i dispositivi». P-18 lavora intanto sulla pagina: i tuoi
+controlli nuovi riconoscono il regime, e main resta verde. Se è troppo
+per un commit, fermati a un confine pulito e dillo; se un gruppo il
+banco non lo vede, resta scoperto con il motivo.
+
+Non toccare docs/prossime-sessioni.md. Suite verdi su più giri, voce in
+fondo a [Unreleased], un commit. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-44 — Claude: i controlli della mappa di Progressi
+
+**Stato:** in attesa di P-43, che lavora nella stessa cartella. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce
+da:** P-22, §10.1 di `docs/area-5-progetto.md`.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-44, su main. Leggi il §10.1 di docs/area-5-progetto.md, il
+§4.3 e il §9.10 della specifica, e gli esiti di P-06, P-31 e P-41 nel
+§6 di docs/prossime-sessioni.md.
+
+I controlli della pagina di Progressi in due regimi, come il §10.1
+chiede: il regime della diagnosi di oggi e quello della mappa. Il
+raccordo estraibile — da { banca, progress, oggi, kind, pesi } alle
+righe e alle selezioni, chiamando davvero E.quadro() ed E.dovePesa() —
+scritto nel repo prima del codice della pagina, con la pagina di
+riferimento e le rotture che il §10.1 elenca. R-MAPPA-14 nella
+specifica con la copertura che il banco dà davvero. Main resta verde
+con la pagina di oggi.
+
+Non toccare docs/prossime-sessioni.md. Suite verdi su più giri, voce in
+fondo a [Unreleased], un commit. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
 **Esito:** —
 
 ---
@@ -1833,7 +1921,7 @@ l'ha chiusa.
 
 #### P-23 — ChatGPT: la realizzazione dell'area 5
 
-**Aspetta:** P-22, P-18 — Progressi è dei registrati —, e P-21 per la penna su
+**Aspetta:** P-44, P-18 — Progressi è dei registrati —, e P-21 per la penna su
 `app.html`. **Dove:** `ui/main`. **Dovrà contenere:** realizzare
 `docs/area-5-progetto.md`; togliere la chiamata a `consigli()` e, nello
 stesso commit, spostarla in `docs/eccezioni-interfaccia.md` dalle chiamate
@@ -1858,7 +1946,8 @@ nativo al 200 % che P-05 non ha potuto verificare nel browser integrato.
 
 **Aspetta:** la merge di P-18. **Dove:** `main`, a mano. **Dovrà contenere:**
 come P-12 e P-37: togliere da `tests/test_interfaccia.py` il regime della
-pagina di oggi per C-01, C-02, C-05 e quelli di P-39, così resta solo il client;
+pagina di oggi per C-01, C-02, C-05, C-03, C-04, C-06, C-11, C-15 e quelli di
+P-43, così resta solo il client;
 la pagina di prima ora rossa; la specifica che dice coperto quello che la
 pagina fa davvero.
 
@@ -2066,3 +2155,7 @@ dopo**, la soglia degli allarmi riletta sul registro vero
 - **29 settembre 2026 — P-41 chiuso.** Il motore della mappa c'è; P-22 è pronto
   per ChatGPT e P-39 per Claude. Nasce il segnaposto P-42 per il secondo tempo
   di `consigli()`. Tre scelte del motore da confermare nel §4.
+- **29 settembre 2026 — P-39 e P-22 chiusi.** P-18 pronto per ChatGPT, con il
+  contratto cresciuto e i due difetti trovati da P-39. Nascono P-43 per i dieci
+  gruppi di controlli che restano, in parallelo a P-18, e P-44 per i controlli
+  della mappa, prima di P-23. L'autore conferma le tre scelte di `dovePesa()`.

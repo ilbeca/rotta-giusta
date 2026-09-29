@@ -519,6 +519,11 @@ casi: `senza pesi` (la vela, o i pesi mancanti), `sotto soglia`, `niente da
 fare`, `pari` — due temi in testa con lo stesso valore, dove sceglierne uno
 sarebbe l'ordine dell'elenco travestito da consiglio. Niente minuti (punto 7).
 
+**Confermate dall'autore il 29 settembre 2026** le tre scelte che P-41 aveva
+preso su delega: la vela non ha la frase, perché un peso per voce non esiste;
+la soglia è `FRASE_MIN_VISTI = 20`, le domande di una prova base; il motivo è
+«da rifare» quando gli errori sono almeno quanti i mai visti.
+
 **`peggiori()` e `consigli()`, i chiamanti e che cosa ne è stato** (P-41).
 `peggiori()` non aveva chiamanti in pagina dal 9 settembre 2026 — era fra gli
 orfani dichiarati, in attesa di Q-DUE — e nel motore la citavano soltanto i
@@ -1638,3 +1643,6 @@ successo, ed è il motivo per cui questo file esiste.
   verde per una ragione di tempo misurata — il timer di una scheda in secondo
   piano — ed è stata sostituita con quella che il §9.1 del progetto del client
   nomina. Dieci gruppi restano da scrivere, e lo dicono.
+- **29 settembre 2026 — le tre scelte di `dovePesa()` confermate.** L'autore
+  conferma la vela senza frase, la soglia a 20 e la regola del motivo, prese da
+  P-41 su delega; il §4.3 lo dice.
