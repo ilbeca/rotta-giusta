@@ -665,6 +665,12 @@ ROTTURE_CLIENT = [
      [("function termina() {",
        "function termina() { caches.open('rg-risposte').then((c) => c.put('/risposte.json', new Response(JSON.stringify(S.righe))));")],
      'Cache Storage «rg-risposte»'),
+    # Una scrittura che arriva tardi: con la pausa di 500 ms del banco di prima
+    # passava verde sempre, non a volte (P-38, §12 del progetto del client).
+    ('le risposte in Cache Storage, un secondo dopo il riepilogo', ['C-02'],
+     [("function termina() {",
+       "function termina() { setTimeout(() => caches.open('rg-tardi').then((c) => c.put('/risposte.json', new Response(JSON.stringify(S.righe)))), 1000);")],
+     'Cache Storage «rg-tardi»'),
     ('le righe inviate senza account', ['C-02'],
      [("function termina() {",
        "function termina() { fetch(indirizzoApi(location) + '/v1/righe', { method: 'POST', credentials: 'include', body: JSON.stringify({ righe: S.righe }) }).catch(() => {});")],
@@ -720,6 +726,18 @@ ROTTURE_CLIENT = [
      'le risposte della pagina sono intatte'),
 ]
 
+# Varianti della pagina di riferimento che devono restare **verdi**: il banco
+# contro i propri rossi falsi, come le rotture lo provano contro i verdi falsi.
+# (che cosa, gruppi, sostituzioni). La pagina di riferimento pesca a caso, e
+# fino al 29 settembre 2026 un quesito dal testo corto dava un rosso che non
+# c'era nello 0,5 % degli avvii (P-38, §12 del progetto del client): qui la
+# pesca comincia sempre dal testo piu' corto della banca, «I flaps:».
+VARIANTI_CLIENT = [
+    ('il primo quesito e\' il piu\' corto della banca', ['C-01'],
+     [('E.estrai(S.banca, {}, E.isoLocale().slice(0, 10), 10, Date.now() % 997)',
+       'S.banca.slice().sort((a, b) => a.d.trim().length - b.d.trim().length).slice(0, 10)')]),
+]
+
 _BANCO_CLIENT = None
 
 
@@ -734,6 +752,14 @@ def banco_client():
     prove = [{'nome': 'app', 'pagina': app, 'regime': regime_client(app), 'gruppi': GRUPPI_CLIENT},
              {'nome': 'riferimento', 'pagina': rif, 'regime': regime_client(rif), 'gruppi': GRUPPI_CLIENT}]
     applicate = {}
+    for cosa, gruppi, sostituzioni in VARIANTI_CLIENT:
+        variante, ok = rif, True
+        for vecchio, nuovo in sostituzioni:
+            ok = ok and vecchio in variante
+            variante = variante.replace(vecchio, nuovo, 1)
+        applicate['variante: ' + cosa] = ok
+        if ok:
+            prove.append({'nome': 'variante: ' + cosa, 'pagina': variante, 'regime': regime_client(variante), 'gruppi': gruppi})
     for cosa, gruppi, sostituzioni, _ in ROTTURE_CLIENT:
         rotta, ok = rif, True
         for vecchio, nuovo in sostituzioni:
@@ -807,6 +833,13 @@ def test_client_provato_al_contrario():
     for g in GRUPPI_CLIENT:
         check('il banco del browser ha eseguito %s sulla pagina di riferimento' % g,
               sum(1 for x in v if x['gruppo'] == g) >= 6, 'troppo poche verifiche: il giro non e\' arrivato in fondo')
+    for cosa, gruppi, _ in VARIANTI_CLIENT:
+        check('variante del client «%s»: si applica alla pagina di riferimento' % cosa, applicate.get('variante: ' + cosa),
+              'il testo da sostituire non c\'e\' piu\': la variante non proverebbe niente')
+        vv = out.get('variante: ' + cosa, [])
+        rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in vv if not x['ok']]
+        check('variante del client «%s»: il banco resta verde' % cosa, bool(vv) and not rossi,
+              '; '.join(rossi[:3]) or 'nessuna verifica eseguita')
     for cosa, gruppi, _, atteso in ROTTURE_CLIENT:
         check('rottura del client «%s»: si applica alla pagina di riferimento' % cosa, applicate.get(cosa),
               'il testo da sostituire non c\'e\' piu\': la rottura non romperebbe niente')

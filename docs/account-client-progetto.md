@@ -789,14 +789,17 @@ di P-06: la pagina che dichiara `function indirizzoApi(` ha il client e passa i
 controlli del progetto; quella che non la dichiara è la pagina di oggi, che
 deve mantenere la promessa di oggi — la risposta resta nel browser e torna dopo
 una ricarica — senza frasi o rotte del client. Finché P-18 non c'è, il regime
-progettato gira su `tests/pagina-client-account.html` e su ventitré rotture di
-quella pagina (`ROTTURE_CLIENT`), ognuna rossa e con il difetto nominato.
+progettato gira su `tests/pagina-client-account.html`, su ventiquattro rotture
+di quella pagina (`ROTTURE_CLIENT`; ventitré da P-29, una da P-38), ognuna rossa
+e con il difetto nominato, e su una variante che deve restare verde
+(`VARIANTI_CLIENT`, P-38).
 **Il regime attuale ha una scadenza:** lo toglie la regia quando integra P-18.
 
 **Il contratto che la pagina deve rispettare**, perché il banco la guida:
 
 - gli agganci del runner di oggi: `[data-rotta-start]` abilitato quando la
-  palestra è pronta, `#r-text`, `#r-ans .ans`, la risposta esatta segnata
+  palestra è pronta, `#r-text` con il testo del quesito com'è nella banca (il
+  campo `d`, e nient'altro), `#r-ans .ans` una per risposta, la risposta esatta segnata
   `.ans.ok` con `#r-verdict` dopo una risposta, `#r-close`, `#r-fine.on` con il
   suo `h1`, `[data-ciclo="risposte"]`, `#rivedi.on` con `#rv-body`;
   `#esame-data` per la data, e `#rotta-last` per l'ultima attività;
@@ -837,7 +840,9 @@ aggirare: il prompt di P-18 lo dice.
   prove in parallelo una rottura è uscita rossa per il motivo sbagliato — un
   quesito non ancora disegnato sotto carico — e alla corsa dopo per quello
   giusto: un rosso che a volte mente è il difetto opposto a quello di casa, e
-  le attese sono state alzate.
+  le attese sono state alzate. **Quella lettura era sbagliata**, e l'ha
+  corretta P-38 qui sotto: con ogni probabilità quel quesito era disegnato, ed
+  era uno degli otto troppo corti per il banco.
 
 **Il banco contro sé stesso**, una difesa tolta alla volta: il sito acceso
 durante l'offline → «la banca chiesta fuori dal guscio» passa verde; il testo
@@ -847,6 +852,121 @@ sorgente dello script contiene «Questa email è già registrata.»; niente `409
 finti → le rotture sul riconoscimento da codice e da testo passano verdi; la
 POST non guardata → «la frase detta senza chiedere al server» passa verde; la
 Cache Storage non letta → «le risposte in Cache Storage» passa verde.
+
+### Il banco stabile (P-38, 29 settembre 2026)
+
+**Il sintomo.** La regia aveva fatto girare `tests/test_interfaccia.py` quattro
+volte sullo stesso albero: due rosse, sulla pagina di riferimento, con «Inizia
+non apre un quesito con le sue risposte» o «troppo poche verifiche: il giro non
+è arrivato in fondo»; due verdi.
+
+**La misura, prima di toccare niente**, sul Mac dell'autore (10 core, Chrome
+153, Node 25.3), con i soli controlli del banco del client — gli stessi della
+suite, importati da lì — giro dopo giro:
+
+| Condizione | Giri | Rossi | Dove | Durata media |
+|---|---|---|---|---|
+| senza carico | 20 | **2** | giro 16: pagina di riferimento, «il primo quesito compare senza account»; giro 18: la rottura «al 409 la pagina segna l'email in un cookie», rossa per il motivo sbagliato — lo stesso quesito che non compare | 52,2 s |
+| sotto carico: dieci `yes > /dev/null`, uno per core, load average 24 | 20 | **1** | giro 2: pagina di riferimento, «il primo quesito compare senza account» | 55,4 s |
+
+Tre rossi su quaranta, **tutti nello stesso punto**, e il carico non li
+moltiplica. Non era lentezza.
+
+**La causa.** Il banco riconosceva il quesito in schermata da
+`#r-text` con **più di 10 caratteri** e almeno due risposte visibili. Otto
+quesiti base su 1.472 sono più corti — «I flaps:», «La tuga è:», «La meda è:»,
+tre «La brezza:», «Il fronte:», «Il nodo è:» —, e la pagina di riferimento
+pesca il primo quesito con `E.estrai(…, Date.now() % 997)`: 5 semi su 997 ne
+mettono uno in testa, lo **0,5 % di ogni avvio**, e un giro ne fa una
+quarantina fra pagina di riferimento e rotture. Il quesito era in schermata;
+era il banco a non riconoscerlo. Su C-01 il giro si ferma a cinque verifiche,
+quindi lo stesso difetto dà anche il secondo messaggio, «troppo poche
+verifiche». La pagina vera non ne era toccata, e anche questo è misurato: la
+sua prima attività è la Mirata con il seme del giorno, e su 365 giorni dal 1°
+settembre 2026, con un archivio vuoto, non mette mai in testa uno degli otto. Il
+client di P-18 però pescherà come vorrà: il banco non può dipendere da quale
+quesito esce.
+
+**Provata deterministicamente**, non dedotta dalla frequenza: la pagina di
+riferimento con la pesca che comincia dal testo più corto della banca dà, col
+banco di prima, «Inizia non apre un quesito» online e offline e cinque verifiche
+su C-01; col banco corretto, undici verifiche verdi. Esclusi misurando due altri
+sospetti: dopo `vai()` e `ricarica()` la scheda era sulla pagina giusta e
+completa 40 volte su 40; e quando il «guscio pronto» diventava vero il service
+worker era attivo o in attivazione 40 volte su 40.
+
+**Che cosa aspetta il banco adesso**, uno stato e non un tempo:
+
+- **il quesito**: `#r-text` mostra il testo di un quesito della banca — il
+  banco legge `site/dati/quiz.json`, la stessa che il sito serve — e sotto ci
+  sono tante risposte visibili quante quel quesito ne ha. Lo giudica il banco,
+  non la pagina (`attendiValore()` in `tests/browser.mjs`), e un rosso dice che
+  cosa c'era in schermata invece di «non apre»;
+- **il guscio**: un service worker **attivo** e in cache `/app`, `/engine.js`,
+  `/dati/quiz.json`. L'install scrive la cache prima di attivarsi, quindi la
+  sola cache non bastava; non ha mai dato un rosso misurato, ma è lo stato da
+  cui dipende la ricarica offline;
+- **la ricarica di C-02**: la palestra di nuovo pronta, controllata, prima di
+  guardare che non mostri niente di prima. Prima il risultato si ignorava, e
+  una pagina che non si ricaricava sarebbe passata per «vuota»;
+- **i `409` finti di C-05**: se il giro non arriva al riepilogo, un rosso che
+  lo dice. Prima il gruppo tornava in silenzio e i due controlli dei `409`
+  sparivano senza che la pagina di riferimento diventasse rossa.
+
+**La seconda causa, trovata dai giri dopo la prima correzione.** Venti giri
+della suite intera senza carico, tutti verdi; venti sotto carico, **uno
+rosso, e dalla parte peggiore**: la rottura «le risposte in Cache Storage» è
+passata **verde**. C-02 aspettava mezzo secondo dopo il riepilogo e leggeva lo
+storage una volta sola. Misurato con 60 prove per condizione, dal clic su
+«Termina» a quando la scrittura della rottura si vede da fuori: mediana 32 ms e
+massimo **271 ms** senza carico; mediana 17 ms e massimo **592 ms** sotto
+carico, una volta su sessanta oltre i 500. E la lettura dopo la ricarica non la
+ripescava: una scrittura non ancora partita muore con la pagina. È il difetto
+che P-29 aveva visto «passare una volta su tre» e aveva curato allungando la
+stessa pausa.
+
+**Le attese a tempo che restano, dichiarate.** `CARICO` (10 s) e `REAZIONE`
+(5 s) sono scadenze, non attese: una pagina che funziona non le raggiunge, e le
+esaurisce solo una rottura. Il tocco ripetuto sulla risposta, ogni 250 ms fino
+a venti volte, c'è perché la sordità di 200 ms dopo un cambio di schermata
+(specifica §7.5) non si vede da fuori: si ripete il gesto e si aspetta lo stato
+`.ans.ok`. Resta **una sola finestra a tempo**, `OSSERVAZIONE`, in C-02: il
+controllo è che una scrittura **non** avvenga, e un'assenza non ha un evento da
+aspettare. Non è più una pausa seguita da una lettura: il banco rilegge lo
+storage da fuori per tre secondi e si ferma alla prima scrittura trovata, quindi
+una pagina rotta non paga la finestra e una giusta la paga intera. Tre secondi
+sono cinque volte il peggio misurato; **una scrittura partita più di tre
+secondi dopo il riepilogo sfuggirebbe**, ed è il limite dichiarato di questo
+controllo. La rottura nuova «le risposte in Cache Storage, un secondo dopo il
+riepilogo» lo tiene fermo: col banco di prima passava verde sempre, anche dopo
+la ricarica, e ora è rossa sia prima sia dopo.
+
+**Il banco contro i propri rossi falsi.** Le rotture lo provano contro i verdi
+falsi; ora c'è anche il verso opposto: `VARIANTI_CLIENT` in
+`tests/test_interfaccia.py`, varianti della pagina di riferimento che devono
+restare **verdi**. La prima comincia la pesca da «I flaps:», e a ogni
+esecuzione della suite tiene fermo il caso di P-38.
+
+**I giri**, con la suite dell'interfaccia intera, venti per condizione:
+
+| Codice | Condizione | Giri | Rossi | Durata media |
+|---|---|---|---|---|
+| solo la prima correzione | senza carico | 20 | 0 | 55 s |
+| solo la prima correzione | sotto carico | 20 | 1, il verde falso qui sopra | 62 s |
+| **finale** | senza carico, nessun `yes` vivo | 20 | **0** | 55 s |
+| **finale** | dieci `yes` | 20 | **0** | 61 s |
+| **finale** | venti `yes`, load average fino a 181 (gli ultimi due giri con dieci) | 20 | **0** | 78 s |
+
+La serie con dieci e quella con venti `yes` non erano previste così: dieci
+processi di una misura precedente erano rimasti orfani, e se ne è accorto il
+load average. Le due serie valgono come carico, più pesante del previsto; la
+serie senza carico è stata rifatta dopo averli fermati. Con la LTS 24.21.0 la
+suite dà gli stessi 576.
+
+Le rotture, ventiquattro con quella nuova, sono rosse ognuna per il suo motivo
+a ogni giro: è un controllo della suite stessa. La finestra di tre secondi non
+allunga la suite in modo misurabile, perché le prove di C-02 girano in
+parallelo: 55 s senza carico, come prima.
 
 **Quali gruppi ci sono, al 26 settembre 2026:**
 

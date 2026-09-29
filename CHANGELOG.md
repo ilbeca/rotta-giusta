@@ -458,6 +458,80 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   **24.21.0 LTS**. Guardiano e controllo della documentazione verdi.
   Versione e `docs/prossime-sessioni.md` non toccati.
 
+### Corretto — P-38: il banco del browser non è più rosso a caso
+
+- **Misurato prima di toccare niente:** quaranta giri del banco del client sul
+  Mac dell'autore, venti senza carico e venti con dieci `yes > /dev/null`
+  (load average 24). **Tre rossi, tutti nello stesso punto** — «Inizia non apre
+  un quesito con le sue risposte», due sulla pagina di riferimento e uno su una
+  rottura che così diventava rossa per il motivo sbagliato —, e il carico non li
+  moltiplica: 2 su 20 senza, 1 su 20 con. Non era lentezza, e alzare le attese
+  non l'avrebbe tolto.
+
+- **La causa: il banco non riconosceva i quesiti corti.** Cercava in `#r-text`
+  un testo di più di 10 caratteri. Otto quesiti base su 1.472 sono più corti —
+  «I flaps:», «La tuga è:», tre «La brezza:»… —, e la pagina di riferimento
+  pesca il primo quesito con `Date.now() % 997`: 5 semi su 997 ne mettono uno in
+  testa, lo 0,5 % di ogni avvio, una quarantina di avvii per giro. Il quesito era
+  in schermata. Su C-01 il giro si fermava a cinque verifiche, quindi lo stesso
+  difetto dava anche il secondo messaggio visto dalla regia, «troppo poche
+  verifiche». **Provato deterministicamente**: con la pesca che comincia da «I
+  flaps:», il banco di prima è rosso online e offline, quello nuovo dà undici
+  verifiche verdi. Il rosso «per un quesito non ancora disegnato sotto carico»
+  che in P-29 aveva fatto alzare le attese era, con ogni probabilità, questo.
+
+- **Il banco aspetta uno stato, non una lunghezza:** il testo di un quesito
+  della banca — letta dallo stesso `quiz.json` che il sito serve — con tante
+  risposte visibili quante ne ha, giudicato dal banco con `attendiValore()`; e
+  il rosso dice che cosa c'era in schermata. Il «guscio pronto» chiede ora anche
+  un service worker attivo, perché l'install scrive la cache prima di attivarsi
+  (misurato: 40 su 40 lo trovavano comunque attivo o in attivazione, quindi è
+  lo stato giusto, non un rosso visto). Esclusi misurando anche i caricamenti:
+  dopo `vai()` e `ricarica()` la scheda era sulla pagina giusta 40 volte su 40.
+
+- **Due verdi che non misuravano niente, trovati leggendo le attese.** In C-02
+  la ricarica non controllava che la palestra tornasse pronta, e una pagina
+  rimasta a metà sarebbe passata per «non mostra niente di prima». In C-05, se
+  il giro con i `409` finti non arrivava al riepilogo, il gruppo tornava in
+  silenzio e due controlli sparivano senza un rosso. Ora sono due verifiche.
+
+- **Il banco provato anche contro i propri rossi falsi:** `VARIANTI_CLIENT`,
+  varianti della pagina di riferimento che devono restare verdi. La prima
+  comincia da «I flaps:» e tiene fermo il caso a ogni esecuzione.
+
+- **La seconda causa l'hanno trovata i giri dopo la prima correzione, ed era un
+  verde falso.** Venti giri senza carico tutti verdi; sotto carico uno su venti
+  con la rottura «le risposte in Cache Storage» **passata verde**. C-02 faceva
+  una pausa di mezzo secondo dopo il riepilogo e leggeva lo storage una volta.
+  Misurato, 60 prove per condizione: la scrittura della rottura compare fino a
+  271 ms dopo senza carico e fino a **592 ms** sotto carico; e la lettura dopo
+  la ricarica non la ripescava, perché una scrittura non ancora partita muore
+  con la pagina. Ora il banco rilegge lo storage per tre secondi, cinque volte
+  il peggio misurato, e si ferma alla prima scrittura trovata. È **l'unica
+  finestra a tempo che resta**, perché il controllo è un'assenza e un'assenza
+  non ha un evento; una scrittura più tarda di tre secondi sfuggirebbe, ed è
+  dichiarato nel codice e nel §12 di `docs/account-client-progetto.md`, che ha
+  le misure per esteso. Una rottura nuova scrive un secondo dopo il riepilogo:
+  col banco di prima passava verde **sempre**, anche dopo la ricarica; ora è
+  rossa prima e dopo.
+
+- **Il criterio di fine:** con il codice finale, la suite dell'interfaccia
+  intera **zero rossi su 20 giri senza carico**, e zero su altri 40 sotto
+  carico — 20 con dieci `yes`, 20 con venti e un load average fino a 181 —, con
+  le ventiquattro rotture rosse ognuna per il suo motivo a ogni giro. Prima
+  della correzione erano tre su quaranta. Le due serie sotto carico non erano
+  previste così: dieci processi di una misura precedente erano rimasti orfani;
+  valgono come carico più pesante, e la serie senza carico è stata rifatta dopo
+  averli fermati. Durata invariata, 55 s senza carico: le prove di C-02 girano
+  in parallelo, e la finestra non si vede.
+
+  Suite: interfaccia **576** (erano 571: la variante che deve restare verde, e
+  la rottura nuova con i suoi controlli);
+  motore 155/157 con i due skip di sempre; dati 242; specifica 426; server
+  59/59 con Node 25.3 e con la **24.21.0 LTS**, scaricata da nodejs.org e
+  verificata con `SHASUMS256.txt`, con cui anche motore e interfaccia danno gli
+  stessi numeri. Guardiano verde. `site/` e `docs/prossime-sessioni.md` non sono stati toccati.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag

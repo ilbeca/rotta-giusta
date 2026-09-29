@@ -13,7 +13,8 @@
 // 'progettato' e' quella con il client, riconosciuta da indirizzoApi().
 //
 // **Il contratto che la pagina deve rispettare** (§12 del progetto, «Il banco»):
-//  - gli agganci del runner di oggi: [data-rotta-start], #r-text, #r-ans .ans,
+//  - gli agganci del runner di oggi: [data-rotta-start], #r-text con il testo
+//    del quesito com'e' nella banca (il campo `d`), #r-ans .ans una per risposta,
 //    #r-verdict e .ans.ok sulla risposta esatta dopo una risposta, #r-close, #r-fine.on con il suo h1, [data-ciclo="risposte"],
 //    #rivedi.on con #rv-body;
 //  - nel regime progettato, i testi e le etichette del progetto — «Crea un
@@ -38,15 +39,29 @@ export const PORTA_API = 8620;
 const ESISTENTE = { email: 'gia@esempio.it', password: 'barca vela e vento' };
 const ECONOMICO = { memory: 1024, passes: 1, parallelism: 1 };
 
-// Quanto si aspetta. Misurato in locale il 26 settembre 2026: la palestra e' pronta in
-// 0,3 s dal primo ingresso, il guscio in cache in meno di un secondo, e una
-// reazione a un clic in millisecondi. Le attese stanno parecchie volte sopra,
+// Quanto si aspetta, al massimo. Il banco aspetta **stati della pagina** — il
+// pulsante abilitato, un quesito della banca con le sue risposte, il
+// riepilogo, il service worker attivo —, e questi numeri sono solo le
+// scadenze oltre le quali lo stato non e' arrivato: una pagina che funziona
+// non le tocca. Misurato in locale il 26 settembre 2026: la palestra e' pronta
+// in 0,3 s dal primo ingresso, il guscio in cache in meno di un secondo, e una
+// reazione a un clic in millisecondi. Le scadenze stanno parecchie volte sopra,
 // perche' una macchina carica non faccia un rosso falso; ogni rottura che le
 // esaurisce costa quel tempo, ed e' il grosso della durata del banco.
 const CARICO = 10000;
 const REAZIONE = 5000;
 const PARALLELE = 4;
-const ASSESTAMENTO = 500;
+// L'unica finestra a tempo che resta, e non si puo' togliere: C-02 controlla
+// che una scrittura **non** avvenga, e un'assenza non ha un evento da
+// aspettare. Dopo il riepilogo il banco rilegge lo storage da fuori per
+// OSSERVAZIONE ms e si ferma alla prima scrittura trovata: una pagina giusta
+// paga la finestra intera, una rotta no. Fino al 29 settembre era una pausa di
+// 500 ms e poi una lettura sola; misurato quel giorno, la scrittura in Cache
+// Storage di una rottura compare fino a 271 ms dopo il riepilogo senza carico
+// e fino a 592 ms sotto carico (60 prove per condizione), e una volta su venti
+// giri la rottura e' passata verde. Tre secondi sono cinque volte il peggio
+// visto; una scrittura partita piu' tardi sfuggirebbe (§12, «Il banco»).
+const OSSERVAZIONE = 3000;
 
 // Le frasi del progetto, §4.1 e §5.2. Il controllo le cerca nel testo che si
 // vede (innerText), non nel sorgente: una frase scritta e nascosta non avvisa.
@@ -54,6 +69,19 @@ const PRIMA = 'Senza account le risposte valgono solo finché questa pagina rest
 const DOPO = 'Vuoi conservare le attività di questa pagina?';
 const PERDITA = 'chiudendo o ricaricando la pagina perdi le risposte';
 const GIA = 'Questa email è già registrata.';
+
+// La banca che il sito serve: il quesito in schermata si riconosce da qui.
+// Per ogni testo, i numeri di risposte che un quesito con quel testo ha (tre
+// «La brezza:» diversi, per esempio, ne hanno tre ciascuno).
+const BANCA = (() => {
+  const m = new Map();
+  for (const it of JSON.parse(readFileSync(join(SITE, 'dati', 'quiz.json'), 'utf8'))) {
+    const d = it.d.trim();
+    if (!m.has(d)) m.set(d, new Set());
+    m.get(d).add(it.r.length);
+  }
+  return m;
+})();
 
 const GUSCIO = (() => {
   const sw = readFileSync(join(SITE, 'sw.js'), 'utf8');
@@ -107,7 +135,15 @@ const clic = (tab, sel) => tab.valuta(js(`const e = document.querySelector(${q(s
 const passwordVisibile = js(`return [...document.querySelectorAll('input[type=password]')].some(V);`);
 
 const PRONTO = js(`const b = document.querySelector('[data-rotta-start]'); return V(b) && !b.disabled;`);
-const QUESITO = js(`const t = document.querySelector('#r-text'); return V(t) && t.textContent.trim().length > 10 && [...document.querySelectorAll('#r-ans .ans')].filter(V).length >= 2;`);
+// Il quesito e' in schermata quando #r-text mostra il testo di un quesito della
+// banca e sotto ci sono tante risposte visibili quante ne ha. Fino al 29
+// settembre 2026 qui si chiedeva un testo di piu' di 10 caratteri: otto
+// quesiti base su 1.472 sono piu' corti («I flaps:», «La tuga è:»), e la pagina
+// di riferimento pesca a caso — cioe' un rosso falso nello 0,5 % degli avvii,
+// una quarantina per giro. Era l'instabilita' di P-38 (§12, «Il banco»).
+const QUESITO = js(`const t = document.querySelector('#r-text');
+  return { testo: V(t) ? t.textContent.trim() : null, risposte: [...document.querySelectorAll('#r-ans .ans')].filter(V).length };`);
+const quesitoDellaBanca = (x) => !!x && x.testo !== null && !!BANCA.get(x.testo)?.has(x.risposte);
 const RIEPILOGO = js(`const f = document.querySelector('#r-fine.on'); return V(f) && V(f.querySelector('h1'));`);
 
 /** Dal primo ingresso a una risposta, poi «Termina»: il giro minimo. */
@@ -118,14 +154,17 @@ async function unaRisposta(tab, v, gruppo, prefisso = '') {
   if (!pronto) return null;
   const moduloPrima = await tab.valuta(passwordVisibile);
   await clic(tab, '[data-rotta-start]');
-  const quesito = await tab.attendi(QUESITO, REAZIONE);
+  const { ok: quesito, valore: visto } = await tab.attendiValore(QUESITO, quesitoDellaBanca, REAZIONE);
   const moduloDopo = await tab.valuta(passwordVisibile);
   v.push({ gruppo, nome: `${prefisso}il primo quesito compare senza account`, ok: quesito && !moduloPrima && !moduloDopo,
-    extra: !quesito ? 'Inizia non apre un quesito con le sue risposte' : 'un campo password e\' visibile prima del primo quesito' });
+    extra: !quesito ? `Inizia non apre un quesito della banca con le sue risposte: in schermata ${JSON.stringify(visto)}`
+      : 'un campo password e\' visibile prima del primo quesito' });
   if (!quesito) return null;
-  const testo = (await tab.valuta(`document.querySelector('#r-text').textContent.trim()`)).slice(0, 40);
+  const testo = visto.testo.slice(0, 40);
   // La pagina e' sorda agli input per 200 ms dopo ogni cambio di schermata
   // (specifica §7.5): si ritocca finche' la risposta esatta non si accende.
+  // La sordita' non si vede da fuori, quindi qui si ripete il gesto e si
+  // aspetta lo stato; un tocco in piu' dopo la risposta la pagina lo ignora.
   let verdetto = false;
   for (let i = 0; i < 20 && !verdetto; i++) {
     await clic(tab, '#r-ans .ans');
@@ -144,9 +183,16 @@ async function revisione(tab, testo) {
   return tab.attendi(js(`const r = document.querySelector('#rivedi'); return r.classList.contains('on') && V(document.querySelector('#rv-body')) && document.querySelector('#rv-body').textContent.includes(${q(testo)});`), REAZIONE);
 }
 
+// Pronto vuol dire: un service worker **attivo** — e' lui a servire la
+// ricarica offline, e uno ancora in installazione la lascerebbe alla rete — e
+// in cache quello che la pagina chiede. L'install scrive la cache prima di
+// attivarsi, quindi la sola cache non basta; misurato il 29 settembre, 40 prove
+// su 40 trovavano comunque il worker attivo o in attivazione, e la
+// navigazione aspetta l'attivazione: e' lo stato giusto, non un rosso visto.
 async function guscioPronto(tab) {
   return tab.attendi(`(async () => {
-    if (!navigator.serviceWorker || !navigator.serviceWorker.controller && !(await navigator.serviceWorker.getRegistration())) return false;
+    const reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration();
+    if (!reg || !reg.active) return false;
     for (const k of await caches.keys()) {
       const c = await caches.open(k);
       if (await c.match('/app') && await c.match('/engine.js') && await c.match('/dati/quiz.json')) return true;
@@ -237,18 +283,25 @@ async function c02(b, ctx, v, regime) {
     const dopo = await tab.valuta(testoVisibile(DOPO)) && await tab.valuta(js(`return document.querySelector('#r-fine').innerText.includes(${q(PERDITA)});`));
     v.push({ gruppo: g, nome: 'alla fine dell\'attivita\' la pagina dice che cosa si perde', ok: dopo,
       extra: `il riepilogo non porta «${DOPO}» con «${PERDITA}» (§4.1)` });
-    // Una scrittura puo' partire dopo il riepilogo, e finire dopo: si lascia
-    // alla pagina il tempo di farla prima di guardare.
-    await new Promise((ok) => setTimeout(ok, ASSESTAMENTO));
-    const cons = await c.conservato(ctx.sito, tab);
-    const trovato = personale(cons, ctx.api);
+    // Una scrittura puo' partire dopo il riepilogo, e finire dopo: si guarda
+    // per tutta la finestra, non una volta sola.
+    let trovato = [];
+    for (const fine = Date.now() + OSSERVAZIONE; !trovato.length && Date.now() < fine;) {
+      trovato = personale(await c.conservato(ctx.sito, tab), ctx.api);
+      if (!trovato.length) await new Promise((ok) => setTimeout(ok, 50));
+    }
     v.push({ gruppo: g, nome: 'nessuna scrittura personale nel browser: IndexedDB, localStorage, sessionStorage, cookie, Cache Storage', ok: !trovato.length,
       extra: 'trovato ' + trovato.join(' · ') });
     const inviate = tab.richieste.filter((r) => r.url.startsWith(ctx.api));
     v.push({ gruppo: g, nome: 'nessuna richiesta all\'API senza account', ok: !inviate.length,
       extra: 'inviate: ' + inviate.map((r) => `${r.metodo} ${r.url}`).join(', ') });
     await tab.ricarica();
-    await tab.attendi(PRONTO, CARICO);
+    // Una pagina che non si ricarica non mostra niente, e «niente di prima»
+    // passerebbe per vero: prima si aspetta che sia di nuovo pronta.
+    const ripronta = await tab.attendi(PRONTO, CARICO);
+    v.push({ gruppo: g, nome: 'dopo la ricarica la palestra torna pronta', ok: ripronta,
+      extra: `nessun [data-rotta-start] abilitato entro ${CARICO / 1000} s dalla ricarica` });
+    if (!ripronta) return;
     const vuota = await tab.valuta(js(`const s = document.querySelector('#rotta-last'); const d = document.querySelector('#esame-data');
       return !(s && !s.hidden && V(s)) && !(d && d.value) && !document.body.innerText.includes(${q(testo)});`));
     v.push({ gruppo: g, nome: 'dopo la ricarica non restano risposte, data ne\' preferenze', ok: vuota,
@@ -323,7 +376,14 @@ async function c05(b, ctx, v, regime) {
       ? { codice: 409, corpo: JSON.stringify(finti[Math.min(n++, 1)]),
           intestazioni: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': ctx.sito, 'Access-Control-Allow-Credentials': 'true' } }
       : null));
-    if (!await unaRisposta(tab, [], g)) return;
+    // Il giro fino al riepilogo e' gia' controllato sopra: qui se non arriva in
+    // fondo lo si dice, invece di saltare in silenzio i due controlli dei 409.
+    const giro = [];
+    if (!await unaRisposta(tab, giro, g)) {
+      const perche = giro.filter((x) => !x.ok).map((x) => x.extra).join('; ');
+      v.push({ gruppo: g, nome: 'i 409 finti: il giro arriva al riepilogo', ok: false, extra: perche });
+      return;
+    }
     await clicca(tab, 'Crea un account e salva');
     await tab.attendi(js(`return V(${campo('Email')});`), REAZIONE);
     await imposta(tab, 'Email', 'nuova@esempio.it');

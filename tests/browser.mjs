@@ -149,10 +149,23 @@ export async function avviaChrome({ attesaMs = 15000 } = {}) {
       },
       /** Aspetta che l'espressione sia vera; restituisce false allo scadere. */
       async attendi(espressione, ms = 8000) {
+        return (await s.attendiValore(espressione, Boolean, ms)).ok;
+      },
+      /**
+       * Aspetta che il valore dell'espressione soddisfi `verifica`, giudicata
+       * qui e non nella pagina: serve quando lo stato atteso dipende da dati
+       * che stanno nel banco, come la banca dei quesiti. Restituisce anche
+       * l'ultimo valore visto, perche' un rosso dica che cosa c'era.
+       */
+      async attendiValore(espressione, verifica, ms = 8000) {
         const fine = Date.now() + ms;
+        let valore;
         for (;;) {
-          try { if (await s.valuta(espressione)) return true; } catch { /* la pagina si sta ricaricando */ }
-          if (Date.now() > fine) return false;
+          try {
+            valore = await s.valuta(espressione);
+            if (verifica(valore)) return { ok: true, valore };
+          } catch { /* la pagina si sta ricaricando */ }
+          if (Date.now() > fine) return { ok: false, valore };
           await pausa(40);
         }
       },
