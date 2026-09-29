@@ -433,7 +433,7 @@ avanzamento usa i tre, non la percentuale sola.**
 
 | Funzione | Mestiere | Guarda lo storico? |
 |---|---|---|
-| `coda()` | filtro + ordine generici: banca, temi, voci, stati, solo sbagliate, solo con figura | sì |
+| `coda()` | filtro + ordine generici: banca, temi, voci, stati, solo sbagliate, solo da rifare, solo con figura | sì |
 | `estrai()` | pescata **cieca**, come il ministero | **no, di proposito** |
 | `estraiNuoviPrima()` | esplorazione: prima i mai visti | sì |
 | `simulazione()` / `simulazioneVela()` | composizione ministeriale, **esclusi i 37 oscurati** | no |
@@ -458,6 +458,16 @@ in ordine di priorità, perché una batteria non deve restare a corto di domande
 `traccia()`. Chi disegna scrive `daFare` come «da fare» e la differenza come
 ripasso.
 
+**Due liste di errori, e non una** (dal 29 settembre 2026, P-41).
+`soloSbagliate` apre tutti gli errori di sempre, anche quelli già ripresi: è il
+«Ripasso degli errori» dei Quiz, e sbagliare una volta non scade (0.5.1).
+`soloDaRifare` apre soltanto quelli la cui **ultima** risposta è sbagliata —
+il segmento «da rifare» della mappa di Progressi, contato da `classifica()`
+come la barra — ed è il «Rifai N errori» di Q-DUE. Il secondo apre gli N **per
+contratto**: con il primo e un tetto a N si otterrebbero gli stessi N solo
+perché le riprese stanno in fondo, e il primo tetto diverso le rimescolerebbe
+dentro. Le due liste hanno lo stesso ordine; cambia chi ci entra.
+
 Tutte le selezioni con seme sono **deterministiche**: stesso storico e stesso
 giorno, stessa lista.
 
@@ -466,8 +476,9 @@ giorno, stessa lista.
 | Funzione | Che cosa dà | Soglia dichiarata |
 |---|---|---|
 | `diagnosi()` | per tema e per voce: visti, esatte **alla prima risposta**, sbagliati, **aperti**, tempo medio, copertura, costo in domande d'esame | — |
-| `peggiori()` | le voci più deboli | almeno **5 quesiti distinti visti**, e almeno un errore alla prima risposta |
-| `consigli()` | che cosa studiare adesso, con il perché e i minuti | `CONSIGLIO_MIN_VISTI = 5` |
+| `quadro()` | la mappa di Progressi: per tema e per voce giusti, da rifare, mai visti, visti, e «X su Y giusti al primo tentativo»; la selezione di «Rifai N errori» | `primo` è `null` sotto `PRIMA_MIN_VISTI = 5` quesiti distinti visti nella riga |
+| `dovePesa()` | la frase in cima a Progressi: un tema, il motivo, i pulsanti con le loro selezioni — oppure niente, e perché | almeno `FRASE_MIN_VISTI = 20` quesiti distinti visti, le domande di una prova base; e mai sulla vela |
+| `consigli()` | che cosa studiare adesso, con il perché e i minuti — **esce** con la realizzazione dell'area 5 | `CONSIGLIO_MIN_VISTI = 5` |
 | `traccia()` | copertura nei tre stati, rimanenti, quota, giorni, semaforo | **senza data d'esame `quota` e `giorni` sono `null` e il semaforo è `attesa`** |
 | `semaforo()` | verde/giallo/rosso sull'atteso lineare | l'inizio è **il giorno della prima risposta**, non «oggi» |
 | `stimaImpegno()` | ore e minuti al giorno | sotto `MIN_MISURATE = 30` usa `RIPIEGO_MS = 15000` **e lo dichiara** |
@@ -478,6 +489,51 @@ giorno, stessa lista.
 **Ogni soglia esiste perché un numero calcolato sotto quella soglia è rumore con
 l'aria di essere una misura.** Chi disegna non può abbassarle per far comparire
 prima una tessera: comparirebbe una tessera che mente.
+
+**La mappa di Progressi** (Q-DUE, §10; motore da P-41, 29 settembre 2026).
+`quadro()` dà una riga per tema, nell'ordine di `diagnosi().temi` — peso
+d'esame, poi dimensione: non si muove con lo storico —, con il suo `peso` e le
+sue voci in ordine di banca. Sulla vela le tre voci fanno da righe, con
+`peso: null`: un peso per voce non esiste, e non si inventa. I tre stati,
+`giusti`, `daRifare`, `maiVisti`, sono quelli di `classifica()` letti
+all'ultima risposta, sommano a `n`, e i primi due fanno `visti`. «X su Y» è
+`primo: { esatte, su }`, interi esatti con `su` uguale a `visti`, e sotto soglia
+`null`: le esatte alla prima risposta non si espongono da sole, così non c'è
+niente da scrivere per sbaglio. Ogni riga porta `filtro`, le opzioni di
+`coda()` che la restringono, e `rifai`, la selezione di «Rifai N errori»
+**senza tetto** — il tetto predefinito di `coda()` è 20, e «Rifai 35 errori»
+ne aprirebbe 20 in silenzio. Le righe si costruiscono sugli aggregati di
+`diagnosi()`: nessuna seconda contabilità.
+
+**La frase in cima** la decide `dovePesa()`, su fatti e non su stime. Per ogni
+tema, *in ballo* = domande d'esame × (da rifare + mai visti) / quesiti del
+tema: quanta parte del tema non hai preso giusta all'ultima risposta, pesata
+da quanto vale all'esame. **Non è una previsione** di quante ne sbaglierai, e
+per questo non presta alla parte mai vista una debolezza che non si è misurata,
+come faceva `consigli()`. Vince il valore più alto, confrontato in interi. Il
+motivo è la parte più grossa — «da rifare» se gli errori sono almeno quanti i
+mai visti, altrimenti «mai visti» —; i pulsanti sono prima quello del motivo,
+poi l'altro, mai uno da zero, e ciascuno porta `quanti` e la selezione che
+apre esattamente quelli. La frase non c'è, e `assente` dice perché, in quattro
+casi: `senza pesi` (la vela, o i pesi mancanti), `sotto soglia`, `niente da
+fare`, `pari` — due temi in testa con lo stesso valore, dove sceglierne uno
+sarebbe l'ordine dell'elenco travestito da consiglio. Niente minuti (punto 7).
+
+**`peggiori()` e `consigli()`, i chiamanti e che cosa ne è stato** (P-41).
+`peggiori()` non aveva chiamanti in pagina dal 9 settembre 2026 — era fra gli
+orfani dichiarati, in attesa di Q-DUE — e nel motore la citavano soltanto i
+suoi test e il commento di `consigli()`. Non serve alla frase: conta gli errori
+alla **prima** risposta, che ripassando non calano, mentre la mappa legge
+l'ultima. **È uscita dal motore**, con i suoi due test e la riga fra gli
+orfani; il test del liscio della diagnosi è rimasto, senza di lei.
+`consigli()` ha un chiamante, «Cosa studiare adesso» in Progressi, e con lei
+`CONSIGLIO_MIN_VISTI`. Non serve alla frase — presta una debolezza alla parte
+mai vista, e calcola minuti — e Q-DUE toglie la sua lista dalla pagina.
+**Esce anche lei, in due tempi**: la realizzazione dell'area 5 (P-23) toglie la
+chiamata e nello stesso commit la sposta dalle «Chiamate al motore protette»
+agli orfani dichiarati di `docs/eccezioni-interfaccia.md`, con il motivo
+«esce»; poi una sessione di Claude su `main` la toglie dal motore con i suoi
+test e con `CONSIGLIO_MIN_VISTI`. Fino ad allora vale com'era.
 
 ### 4.4 Le sessioni sono derivate, non registrate
 
@@ -633,8 +689,7 @@ codice.
 | Banca base / vela, quante | Quiz | |
 | Data d'esame | Rotta | Facoltativa. Senza, `quota` e `giorni` sono `null` e il semaforo è `attesa` |
 | Tessere di copertura a tre stati | Rotta | La barra è impilata: il buco sta *dentro* la barra |
-| «Le tue voci più deboli» | Rotta | `peggiori()` — **senza chiamanti sul ramo `ui/main`** |
-| «Cosa studiare adesso» | Progressi | `consigli()` — classifica **diversa** da quella sopra: ordina per domande d'esame in ballo e nomina anche le voci mai aperte |
+| «Cosa studiare adesso» | Progressi | `consigli()` — esce con l'area 5 (§4.3): al suo posto la mappa di `quadro()` e la frase di `dovePesa()`. «Le tue voci più deboli», `peggiori()`, non c'è più, e dal 29 settembre 2026 nemmeno nel motore |
 | Barrette dell'andamento | Progressi | `serieGruppi()`, `tendenza()` |
 | «Le sessioni che hai fatto» | Progressi | `sessioni()`; ogni riga si riapre |
 | «Che cosa non torna, e lo diciamo» | Rotta | I numeri si contano dalla banca caricata |
@@ -686,9 +741,10 @@ Questi valgono con quattro destinazioni, con cinque, e con qualunque altra cosa.
 - **Una stanza, una porta principale.** Un secondo accesso a una stessa attività
   non è un difetto, ma deve aprire *la stessa schermata*, con lo stesso titolo e
   lo stesso ritorno. Due strade con intestazioni diverse sono due gerarchie.
-- **Non due classifiche concorrenti di «cosa fare adesso».** Oggi ce ne sono due
-  — «Le tue voci più deboli» in Rotta e «Cosa studiare adesso» in Progressi — e
-  sono *davvero* diverse (§5.4). O si dichiara la differenza, o se ne tiene una.
+- **Non due classifiche concorrenti di «cosa fare adesso».** Ce n'erano due —
+  «Le tue voci più deboli» in Rotta e «Cosa studiare adesso» in Progressi. Q-DUE
+  (§10) le ha tolte tutte e due: resta, al massimo, la frase in cima a
+  Progressi.
 - **I guasti non possono essere visibili soltanto dopo aver aperto Info.**
 - **Non ridurre il testo per far entrare la navigazione.** A 375 px sette voci da
   54 px stavano senza sbordamento: è il limite già toccato. Le etichette restano
@@ -1182,6 +1238,29 @@ del client, «Il banco». Dei diciotto gruppi di quel §12 ci sono C-01 (per
 l'attività consigliata), C-02 e C-05; gli altri sono ancora da scrivere, e
 R-ACC-30 resta al server per la metà dell'API.
 
+### 9.10 La mappa di Progressi
+
+Nati da Q-DUE (§10), chiusa dall'autore il 29 settembre 2026; il motore è di
+P-41. La pagina non li consuma ancora: `quadro()` e `dovePesa()` sono fra gli
+orfani dichiarati fino alla realizzazione dell'area 5.
+
+| ID | Requisito | Controllo |
+|---|---|---|
+| R-MAPPA-01 | «Rifai N errori» apre soltanto gli errori la cui ultima risposta è sbagliata, e il «Ripasso degli errori» continua ad aprirli tutti | `test_engine.mjs::soloDaRifare: apre solo gli errori la cui ultima risposta e sbagliata` |
+| R-MAPPA-02 | Il numero di «Rifai N errori» e la lista che apre coincidono su ogni tema e ogni voce della banca vera, base e vela, senza tetto e con un tetto più alto di N | `test_engine.mjs::soloDaRifare: il numero del quadro e la lista che si apre coincidono, riga per riga` |
+| R-MAPPA-03 | Giusti, da rifare e mai visti sono disgiunti e sommano al totale, per tema, per voce e in tutto; visti sono giusti più da rifare | `test_engine.mjs::quadro: tre stati disgiunti che sommano al totale` |
+| R-MAPPA-04 | «X su Y giusti al primo tentativo» è fatto di interi esatti, con Y uguale ai visti; sotto `PRIMA_MIN_VISTI` non c'è un numero, e le esatte non si espongono da sole | `test_engine.mjs::quadro: X su Y giusti al primo tentativo, esatti, e sotto soglia nessun numero` |
+| R-MAPPA-05 | I temi stanno in ordine fisso di peso d'esame, che lo storico non muove, e le voci in ordine di banca, senza un peso | `test_engine.mjs::quadro: i temi in ordine fisso di peso d esame, le voci in ordine di banca` |
+| R-MAPPA-06 | Sulla vela le tre voci fanno da righe, in ordine di banca, con peso nullo anche quando il chiamante passa il peso della prova, e si restringono per voce | `test_engine.mjs::quadro: la vela per voce, senza un peso inventato` |
+| R-MAPPA-07 | La frase indica il tema con più domande d'esame in ballo, con il motivo e i pulsanti di quello che dice, ciascuno con il numero e la selezione che apre esattamente quelli, e senza minuti | `test_engine.mjs::dovePesa: vince il tema che pesa di piu in domande d esame, e i pulsanti aprono quello che dicono` |
+| R-MAPPA-08 | Il valore in ballo è la quota del tema non presa, non il numero dei suoi quesiti | `test_engine.mjs::dovePesa: conta la quota del tema che non hai preso, non i quesiti` |
+| R-MAPPA-09 | Quando gli errori da rifare sono almeno quanti i mai visti la frase parla di quelli, e non offre un pulsante da zero | `test_engine.mjs::dovePesa: quando gli errori da rifare sono di piu, parla di quelli` |
+| R-MAPPA-10 | Sotto `FRASE_MIN_VISTI` quesiti visti la frase non c'è | `test_engine.mjs::dovePesa: sotto la soglia dichiarata nessuna frase` |
+| R-MAPPA-11 | A pari merito in testa la frase non c'è: non si sceglie per ordine d'elenco | `test_engine.mjs::dovePesa: a pari merito nessuna frase` |
+| R-MAPPA-12 | Con niente da fare la frase non c'è | `test_engine.mjs::dovePesa: con niente da fare nessuna frase` |
+| R-MAPPA-13 | Sulla vela, e senza pesi d'esame, la frase non c'è | `test_engine.mjs::dovePesa: sulla vela nessuna frase, perche un peso per voce non esiste` |
+| R-MAPPA-14 | La pagina scrive i numeri della mappa e la frase da `quadro()` e `dovePesa()`, senza rifarli, e dove la frase manca non mette niente al suo posto | scoperto — la pagina non ha ancora la mappa: è la realizzazione dell'area 5 (P-23), e il controllo lo chiede il suo progetto (P-22), come il §10.1 delle aree 2 e 3 |
+
 ---
 
 ## 10. Che cosa non è deciso
@@ -1198,7 +1277,7 @@ Ogni riga dice **chi decide**. Una questione senza un decidente non si chiude ma
 | Q-AMBITO | Se `carteggio_e12.json` esce dal cassetto | l'autore | 50 esercizi pubblicati e non usati; cambia il pubblico più di ogni scelta di navigazione |
 | Q-CART4 | «Un esercizio per ciascuno dei quattro argomenti» è un'assunzione | serve la scuola nautica | La composizione della prova resta non confermata, e la 42/D non ha esercizi di carburante |
 | Q-PROVE | Verifiche con dispositivi reali e con persone — e Safari, che il banco del browser non raggiunge (rimandato dall'autore il 29 settembre 2026) | l'autore fornisce dispositivi e persone | Nessuna prova su hardware Apple vero, e nessuna prova con persone diverse dall'autore. Safari nel banco vorrebbe «Allow remote automation», un'impostazione dell'autore, e anche così WebDriver non legge lo storage (`account-client-progetto.md` §12): il cookie fra `rottagiusta.it` e `api.` su Safari si prova a mano |
-| Q-ONBOARD | Che cosa chiede l'onboarding di chi si registra, oltre alla data d'esame; e se il sito consiglia un piano di studio strutturato | l'autore | Un piano deve reggersi su quello che il motore sa: niente programma d'esame (Q-PROG), niente studio fatto altrove (chiusa l'8 settembre), niente «quanto tempo hai?» (R-TEMPO-03), e senza data niente quota. I pezzi ci sono già — `traccia()`, `consigli()`, `stimaImpegno()` —, e il piano di 17 sessioni del progetto originario è stato tolto nella 0.19.0 con il resto del servizio personale |
+| Q-ONBOARD | Che cosa chiede l'onboarding di chi si registra, oltre alla data d'esame; e se il sito consiglia un piano di studio strutturato | l'autore | Un piano deve reggersi su quello che il motore sa: niente programma d'esame (Q-PROG), niente studio fatto altrove (chiusa l'8 settembre), niente «quanto tempo hai?» (R-TEMPO-03), e senza data niente quota. I pezzi ci sono già — `traccia()`, `quadro()`, `dovePesa()`, `stimaImpegno()` —, e il piano di 17 sessioni del progetto originario è stato tolto nella 0.19.0 con il resto del servizio personale |
 | Q-SUITE | La suite dell'interfaccia dura circa un minuto e vuole Chrome e la porta 8620 libera, da P-29: è il prezzo del browser vero, accettarlo o accorciarlo | l'autore, rimandata il 29 settembre 2026 | Accorciarla vuol dire aprire il CORS del server a più origini o accorciare attese che hanno già dato un rosso falso; finché resta aperta, la suite si fa girare intera e un'esecuzione saltata si dice |
 
 **Chiuse, e non si riaprono senza un motivo nuovo:**
@@ -1244,7 +1323,9 @@ Ogni riga dice **chi decide**. Una questione senza un decidente non si chiude ma
   `coda({ soloSbagliate })` include anche gli errori già ripresi e li mette in
   fondo, quindi «Rifai N errori» aprirebbe gli N giusti solo per ordinamento e
   tetto, non per contratto — serve un filtro esplicito —; e `peggiori()` conta
-  gli errori alla prima risposta, che ripassando non calano.
+  gli errori alla prima risposta, che ripassando non calano. **Chiusi da P-41**
+  (29 settembre 2026): `coda({ soloDaRifare })`, la mappa di `quadro()`, la
+  frase di `dovePesa()`, e `peggiori()` fuori dal motore — §4.2, §4.3, §9.10.
 
 - **Non si traccia lo studio esterno** (8 settembre 2026). Nessuna lista di
   argomenti da spuntare: non la compila nessuno. Il costo è dichiarato: l'app non
@@ -1524,3 +1605,12 @@ successo, ed è il motivo per cui questo file esiste.
   classifiche escono dalla pagina. Entrano Q-SUITE — la suite dell'interfaccia
   che dura un minuto — e Safari dentro Q-PROVE, tutte e due rimandate
   dall'autore e scritte perché non si perdano.
+- **29 settembre 2026 — il motore della mappa (P-41).** I due fatti di Q-DUE
+  diventano contratti: `coda({ soloDaRifare })` accanto a `soloSbagliate`,
+  `quadro()` con i tre stati e «X su Y», `dovePesa()` con la frase e i suoi
+  quattro modi di mancare; soglie nuove nel §4.3, `PRIMA_MIN_VISTI` e
+  `FRASE_MIN_VISTI`. `peggiori()` esce dal motore, `consigli()` esce in due
+  tempi con l'area 5: i chiamanti e il perché nel §4.3. Nuovo §9.10, tredici
+  requisiti coperti e uno scoperto. Ventiquattro rotture del motore, tutte
+  rosse nel loro test; tre erano passate verdi alla prima stesura, e il test
+  che le prende è stato scritto dopo.

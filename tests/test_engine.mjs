@@ -5,13 +5,13 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  addGiorni, giorniTra, stato, sbagliato, classifica, coda, diagnosi, peggiori,
+  addGiorni, giorniTra, stato, sbagliato, classifica, coda, diagnosi,
   traccia, semaforo, applica, rimescola, semeGiorno,
   estrai, estraiNuoviPrima, simulazione, simulazioneVela, screening, lunghezzaScreening, esito,
   fondi, isoLocale, stimaImpegno, mirata, consigli, oscurato, RIPIEGO_MS,
   serieGruppi, tendenza, TENDENZA_MIN_GIORNI, TENDENZA_MIN_RISPOSTE,
   SEGNALI, SEGNALI_MODI, poolSegnali, domandeSegnali, lunghezzaPartita,
-  giroTecniche, tappeto, daAllenare,
+  giroTecniche, tappeto, daAllenare, quadro, dovePesa, FRASE_MIN_VISTI, PRIMA_MIN_VISTI,
   epoca, ordinaRighe, ripiega, sessioni, fondiArchivio, PAUSA_SESSIONE_MS,
   ritmo, erroriSessione,
 } from '../site/engine.js';
@@ -310,7 +310,10 @@ test('la diagnosi conta visti, risposte e copertura per tema', () => {
   assert.equal(mot.acc1, null);
 });
 
-test('una voce vista una volta sola non scala la classifica dei punti deboli', () => {
+test('col liscio, una voce vista una volta sola non pesa piu di una misurata', () => {
+  // Il liscio (errori+1)/(visti+3) regge il `costo` della diagnosi e i
+  // `consigli()`. Fino alla 0.28.0 lo teneva fermo anche la classifica dei
+  // punti deboli, `peggiori()`, uscita dal motore con Q-DUE (P-41).
   const items = [
     ...banca(1, 'T', 'minuscola'),
     ...banca(40, 'T', 'grossa').map((q, i) => ({ ...q, id: `base-g${i}` })),
@@ -320,29 +323,17 @@ test('una voce vista una volta sola non scala la classifica dei punti deboli', (
   for (let i = 0; i < 20; i++) applica(progress, `base-g${i}`, i < 8, 0, OGGI); // 12 su 20: 60%
 
   const d = diagnosi(items, progress, OGGI);
-  const p = peggiori(d, 5, 5);
-  assert.equal(p.length, 1, 'la voce da un quesito e sotto la soglia di 5 risposte');
-  assert.equal(p[0].nome, 'grossa');
-
   const min = d.voci.find((v) => v.nome === 'minuscola');
   const gro = d.voci.find((v) => v.nome === 'grossa');
   assert.ok(gro.debolezza > min.debolezza, 'col liscio, 12/20 pesa piu di 1/1');
 });
 
-test('una voce senza nemmeno un errore non e un punto debole', () => {
-  const items = banca(30, 'T', 'perfetta');
-  const progress = {};
-  for (let i = 1; i <= 20; i++) applica(progress, `base-${i}`, true, 0, OGGI);
-  const d = diagnosi(items, progress, OGGI);
-  assert.equal(peggiori(d, 5, 5).length, 0, '20 su 20 esatte non va nella classifica dei deboli');
-});
-
 // --- che cosa studiare adesso -------------------------------------------------------
 
-test('i consigli vedono la voce mai aperta, che la classifica dei deboli non puo vedere', () => {
+test('i consigli vedono la voce mai aperta, che una classifica di errori non puo vedere', () => {
   // Due voci dello stesso tema e della stessa dimensione: una la sai al 100%,
-  // l'altra non l'hai mai aperta. `peggiori` non ha niente da dire — errori non
-  // ce ne sono — e il consiglio invece deve nominare quella intatta.
+  // l'altra non l'hai mai aperta. Una classifica di errori non avrebbe niente
+  // da dire, e il consiglio invece deve nominare quella intatta.
   const items = [
     ...banca(20, 'T', 'saputa'),
     ...banca(20, 'T', 'intatta').map((q, i) => ({ ...q, id: `base-i${i}` })),
@@ -351,7 +342,6 @@ test('i consigli vedono la voce mai aperta, che la classifica dei deboli non puo
   for (let i = 1; i <= 20; i++) applica(progress, `base-${i}`, true, 10000, OGGI);
 
   const d = diagnosi(items, progress, OGGI, 'base', { T: 4 });
-  assert.equal(peggiori(d, 5, 5).length, 0, 'nessun errore: la classifica dei deboli e vuota');
 
   const c = consigli(d, { pesi: { T: 4 } });
   assert.equal(c.voci.length, 1, 'la voce gia chiusa non ha niente da fare e non compare');
@@ -450,6 +440,275 @@ test('i consigli funzionano anche sulla vela, che non sta in PESI_ESAME', () => 
   const c = consigli(d, { pesi: { VELA: 5 } });
   assert.equal(c.voci.length, 1);
   assert.ok(Math.abs(c.voci[0].peso - 5) < 1e-9, 'una voce sola si prende tutte e 5 le domande');
+});
+
+// --- la mappa di Progressi (Q-DUE, 29 settembre 2026) --------------------------
+//
+// Progressi smette di essere due classifiche e diventa una mappa per tema: una
+// barra a tre stati per riga, «X su Y giusti al primo tentativo», il pulsante
+// «Rifai N errori» con N uguale al segmento «da rifare», e in cima al massimo
+// una frase. I numeri li da' il motore, e la pagina non li rifa'.
+
+/** Uno storico sintetico ma riproducibile su qualunque banca: circa un terzo
+ *  mai visto, gli altri risposti una o due volte, esatti o no. */
+function storicoMisto(items, seme = 7) {
+  let s = seme >>> 0;
+  const rnd = () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296);
+  const progress = {};
+  for (const it of items) {
+    const r = rnd();
+    if (r < 0.34) continue;
+    applica(progress, it.id, rnd() < 0.7, 9000, '2026-08-01');
+    if (r > 0.75) applica(progress, it.id, rnd() < 0.6, 9000, '2026-08-05');
+  }
+  return progress;
+}
+
+test('soloDaRifare: apre solo gli errori la cui ultima risposta e sbagliata', () => {
+  const items = banca(4, 'T', 'v');
+  const progress = {};
+  applica(progress, 'base-1', false, 0, '2026-08-01');   // sbagliata, ancora da rifare
+  applica(progress, 'base-2', false, 0, '2026-08-01');   // sbagliata...
+  applica(progress, 'base-2', true, 0, '2026-08-02');    // ...e ripresa
+  applica(progress, 'base-3', true, 0, '2026-08-01');    // mai sbagliata
+  const ids = (o) => coda(items, progress, OGGI, { n: 0, ...o }).map((x) => x.id).sort();
+
+  assert.deepEqual(ids({ soloSbagliate: true }), ['base-1', 'base-2'],
+    '«Ripasso degli errori» apre tutti gli errori di sempre, e resta com e');
+  assert.deepEqual(ids({ soloDaRifare: true }), ['base-1'],
+    '«Rifai N errori» apre solo quelli la cui ultima risposta e sbagliata');
+
+  applica(progress, 'base-2', false, 0, OGGI);           // risbagliata: torna da rifare
+  applica(progress, 'base-1', true, 0, OGGI);            // ripresa: esce
+  assert.deepEqual(ids({ soloDaRifare: true }), ['base-2']);
+});
+
+test('soloDaRifare: il numero del quadro e la lista che si apre coincidono, riga per riga', () => {
+  // Per contratto, non per ordinamento: con un tetto piu alto di N la lista deve
+  // restare N. Con `soloSbagliate` e un tetto a N si otterrebbero gli stessi N
+  // solo perche le riprese stanno in fondo — e il primo tetto sbagliato li
+  // mescolerebbe.
+  const items = bancaPubblicata();
+  for (const [kind, pesi] of [['base', PESI], ['vela', null]]) {
+    const progress = storicoMisto(items.filter((x) => x.k === kind));
+    const q = quadro(items, progress, OGGI, kind, pesi);
+    const righe = q.righe.flatMap((r) => [r, ...(r.voci || [])]);
+    assert.ok(righe.length >= 3, `${kind}: la banca vera ha almeno tre righe`);
+    for (const r of righe) {
+      const attese = items.filter((it) => it.k === kind && (!r.filtro.tema || it.t === r.filtro.tema)
+        && (!r.filtro.voce || it.v === r.filtro.voce) && classifica(progress[it.id]) === 'da_ripassare');
+      // La selezione del pulsante e' pronta, senza tetto: il tetto predefinito
+      // di `coda()` e' 20, e «Rifai 35 errori» ne aprirebbe 20 in silenzio.
+      assert.deepEqual(r.rifai, { ...r.filtro, soloDaRifare: true, n: 0 });
+      const lista = coda(items, progress, OGGI, r.rifai);
+      assert.equal(lista.length, r.daRifare, `${kind} · ${r.nome}: il pulsante promette ${r.daRifare}`);
+      assert.equal(coda(items, progress, OGGI, { ...r.rifai, n: 5000 }).length, r.daRifare,
+        `${kind} · ${r.nome}: e con un tetto piu alto resta ${r.daRifare}`);
+      assert.deepEqual(lista.map((x) => x.id).sort(), attese.map((x) => x.id).sort(),
+        `${kind} · ${r.nome}: e apre esattamente quelli`);
+    }
+  }
+});
+
+test('quadro: tre stati disgiunti che sommano al totale, per tema, per voce e in tutto', () => {
+  const items = bancaPubblicata();
+  for (const [kind, pesi] of [['base', PESI], ['vela', null]]) {
+    const mie = items.filter((x) => x.k === kind);
+    const progress = storicoMisto(mie, 11);
+    const q = quadro(items, progress, OGGI, kind, pesi);
+    const conta = (lista) => {
+      const c = { n: lista.length, giusti: 0, daRifare: 0, maiVisti: 0 };
+      for (const it of lista) {
+        const s = classifica(progress[it.id]);
+        if (s === 'coperto') c.giusti++; else if (s === 'da_ripassare') c.daRifare++; else c.maiVisti++;
+      }
+      return c;
+    };
+    const verifica = (r, lista, dove) => {
+      const c = conta(lista);
+      assert.equal(r.n, c.n, `${dove}: totale`);
+      assert.equal(r.giusti, c.giusti, `${dove}: giusti sono l ultima risposta esatta`);
+      assert.equal(r.daRifare, c.daRifare, `${dove}: da rifare sono l ultima risposta sbagliata`);
+      assert.equal(r.maiVisti, c.maiVisti, `${dove}: mai visti`);
+      assert.equal(r.giusti + r.daRifare + r.maiVisti, r.n, `${dove}: i tre stati sommano al totale`);
+      assert.equal(r.visti, r.giusti + r.daRifare, `${dove}: visti sono giusti piu da rifare`);
+    };
+    for (const r of q.righe) {
+      const inRiga = mie.filter((it) => it.t === (r.filtro.tema ?? it.t) && it.v === (r.filtro.voce ?? it.v));
+      verifica(r, inRiga, `${kind} · ${r.nome}`);
+      for (const v of r.voci || [])
+        verifica(v, inRiga.filter((it) => it.v === v.nome), `${kind} · ${r.nome} › ${v.nome}`);
+    }
+    verifica(q.totale, mie, `${kind} · totale`);
+  }
+});
+
+test('quadro: X su Y giusti al primo tentativo, esatti, e sotto soglia nessun numero', () => {
+  const items = [
+    ...banca(10, 'MOTORI', 'quattro'),
+    ...banca(10, 'MOTORI', 'cinque').map((q, i) => ({ ...q, id: `base-c${i}` })),
+  ];
+  const progress = {};
+  for (let i = 1; i <= 4; i++) applica(progress, `base-${i}`, true, 0, OGGI);
+  // cinque viste: due sbagliate al primo colpo e poi riprese. Il ripasso sposta
+  // la barra, non il «primo tentativo».
+  for (let i = 0; i < 5; i++) applica(progress, `base-c${i}`, i >= 2, 0, '2026-08-01');
+  for (let i = 0; i < 2; i++) applica(progress, `base-c${i}`, true, 0, OGGI);
+
+  const q = quadro(items, progress, OGGI, 'base', PESI);
+  const [mot] = q.righe;
+  const quattro = mot.voci.find((v) => v.nome === 'quattro');
+  const cinque = mot.voci.find((v) => v.nome === 'cinque');
+  assert.equal(PRIMA_MIN_VISTI, 5);
+  assert.equal(quattro.visti, 4);
+  assert.equal(quattro.primo, null, 'quattro viste: troppo poche risposte per dire come va');
+  assert.deepEqual(cinque.primo, { esatte: 3, su: 5 }, 'tre su cinque, contate alla prima risposta');
+  assert.equal(cinque.giusti, 5, 'ma la barra, dopo il ripasso, le da tutte giuste');
+  assert.equal(cinque.primo.su, cinque.visti, 'lo stesso Y di «Visti Y su N»');
+  assert.deepEqual(mot.primo, { esatte: 7, su: 9 }, 'il tema somma le sue voci');
+  assert.deepEqual(q.totale.primo, { esatte: 7, su: 9 }, 'e il totale somma i temi');
+  assert.ok(!('acc1' in cinque) && !('esatte1' in cinque),
+    'nessuna frazione e nessun conteggio da scrivere sotto soglia: solo `primo`');
+});
+
+test('quadro: i temi in ordine fisso di peso d esame, le voci in ordine di banca', () => {
+  const items = bancaPubblicata();
+  const vuoto = quadro(items, {}, OGGI, 'base', PESI);
+  const pieno = quadro(items, storicoMisto(items.filter((x) => x.k === 'base'), 3), OGGI, 'base', PESI);
+  const nomi = (q) => q.righe.map((r) => r.nome);
+  assert.deepEqual(nomi(pieno), nomi(vuoto), 'l ordine non dipende da quello che hai fatto');
+  assert.deepEqual(nomi(vuoto), diagnosi(items, {}, OGGI, 'base', PESI).temi.map((t) => t.nome),
+    'e l ordine di diagnosi().temi');
+  assert.deepEqual(vuoto.righe.map((r) => r.peso), [4, 4, 3, 3, 2, 2, 1, 1]);
+  for (const r of pieno.righe) {
+    const banca = [...new Set(items.filter((it) => it.k === 'base' && it.t === r.nome).map((it) => it.v))];
+    assert.deepEqual(r.voci.map((v) => v.nome), banca, `${r.nome}: le voci nell ordine della banca`);
+    for (const v of r.voci) assert.equal(v.peso, null, 'un peso per voce non esiste');
+  }
+});
+
+test('quadro: la vela per voce, senza un peso inventato', () => {
+  const items = bancaPubblicata();
+  const q = quadro(items, {}, OGGI, 'vela', { VELA: 5 });
+  assert.deepEqual(q.righe.map((r) => r.nome),
+    ['TEORIA DELLA VELA', "ATTREZZATURA DELLE UNITA' A VELA", "MANOVRE DELLE UNITA' A VELA"],
+    'le tre voci fanno da righe, in ordine di banca');
+  assert.deepEqual(q.righe.map((r) => r.n), [99, 86, 65]);
+  for (const r of q.righe) {
+    assert.equal(r.peso, null, 'anche se il chiamante passa il peso della prova vela');
+    assert.equal(r.voci, undefined, 'una riga di vela non ha righe sotto');
+    assert.deepEqual(r.filtro, { kind: 'vela', voce: r.nome }, 'e si restringe per voce, mai per tema');
+  }
+});
+
+// Tre temi di una banca in miniatura, con i pesi veri.
+const MAN = 'MANOVRA E CONDOTTA', MOT = 'MOTORI', NAV = 'NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA';
+function tre(n = 40) {
+  return [MAN, MOT, NAV].flatMap((t, j) => banca(n, t, 'v').map((q, i) => ({ ...q, id: `base-${j}-${i}` })));
+}
+
+test('dovePesa: sotto la soglia dichiarata nessuna frase', () => {
+  const items = tre();
+  const progress = {};
+  for (let i = 0; i < FRASE_MIN_VISTI - 1; i++) applica(progress, `base-0-${i}`, true, 0, OGGI);
+  assert.equal(FRASE_MIN_VISTI, 20, 'le domande di una prova base');
+  const sotto = dovePesa(quadro(items, progress, OGGI, 'base', PESI));
+  assert.equal(sotto.indicazione, null);
+  assert.equal(sotto.assente, 'sotto soglia');
+
+  applica(progress, `base-0-${FRASE_MIN_VISTI - 1}`, true, 0, OGGI);
+  const sopra = dovePesa(quadro(items, progress, OGGI, 'base', PESI));
+  assert.ok(sopra.indicazione, 'a venti quesiti visti la frase c e');
+  assert.equal(sopra.assente, null);
+});
+
+test('dovePesa: vince il tema che pesa di piu in domande d esame, e i pulsanti aprono quello che dicono', () => {
+  const items = tre(60);
+  const progress = {};
+  // Manovra (4 domande): 25 giusti, 5 da rifare, 30 mai visti — 35 su 60 non
+  // presi, cioe 2,33 domande d esame. Navigazione (4): 58 giusti, 2 mai visti
+  // — 0,13. Motori (1): mai aperto, 60 su 60 non presi ma una domanda sola — 1.
+  // I mai visti sono piu di 20, il tetto predefinito di `coda()`.
+  for (let i = 0; i < 30; i++) applica(progress, `base-0-${i}`, i >= 5, 0, OGGI);
+  for (let i = 0; i < 58; i++) applica(progress, `base-2-${i}`, true, 0, OGGI);
+  const q = quadro(items, progress, OGGI, 'base', PESI);
+  const { indicazione: f } = dovePesa(q);
+  assert.equal(f.tema, MAN, 'il peso batte il numero: Motori ha piu quesiti non presi, ma vale una domanda');
+  assert.equal(f.peso, 4);
+  assert.deepEqual([f.giusti, f.daRifare, f.maiVisti, f.n], [25, 5, 30, 60]);
+  assert.ok(Math.abs(f.inBallo - 4 * 35 / 60) < 1e-9, '4 domande per 35 su 60');
+  assert.equal(f.motivo, 'mai visti', 'i mai visti sono piu degli errori da rifare');
+  assert.deepEqual(f.pulsanti.map((p) => [p.azione, p.quanti]), [['mai visti', 30], ['rifai', 5]],
+    'prima il pulsante di quello che dice, poi l altro');
+  for (const p of f.pulsanti) {
+    const lista = coda(items, progress, OGGI, p.selezione);
+    assert.equal(lista.length, p.quanti, `${p.azione}: il numero sul pulsante e la lista che apre`);
+    assert.ok(lista.every((it) => it.t === MAN), `${p.azione}: e sono del tema della frase`);
+  }
+  assert.ok(!JSON.stringify([q, f]).includes('minut'), 'niente minuti: Q-DUE punto 7');
+});
+
+test('dovePesa: conta la quota del tema che non hai preso, non i quesiti', () => {
+  // Manovra ha 40 quesiti e 10 non presi: un quarto delle sue 4 domande, 1.
+  // Navigazione ne ha 160 e 20 non presi: il doppio dei quesiti, ma un ottavo
+  // delle sue 4 domande, 0,5. Conta la quota, perche l esame pesca 4 domande
+  // da ciascuno dei due temi, qualunque sia la sua dimensione.
+  const items = [
+    ...banca(40, MAN, 'v').map((q, i) => ({ ...q, id: `base-m${i}` })),
+    ...banca(160, NAV, 'v').map((q, i) => ({ ...q, id: `base-n${i}` })),
+  ];
+  const progress = {};
+  for (let i = 0; i < 30; i++) applica(progress, `base-m${i}`, true, 0, OGGI);
+  for (let i = 0; i < 140; i++) applica(progress, `base-n${i}`, true, 0, OGGI);
+  const { indicazione: f } = dovePesa(quadro(items, progress, OGGI, 'base', PESI));
+  assert.equal(f.tema, MAN);
+  assert.ok(Math.abs(f.inBallo - 1) < 1e-9);
+});
+
+test('dovePesa: quando gli errori da rifare sono di piu, parla di quelli', () => {
+  const items = tre();
+  const progress = {};
+  for (let i = 0; i < 40; i++) applica(progress, `base-0-${i}`, i >= 12, 0, OGGI);
+  for (let i = 0; i < 40; i++) applica(progress, `base-1-${i}`, true, 0, OGGI);
+  for (let i = 0; i < 40; i++) applica(progress, `base-2-${i}`, true, 0, OGGI);
+  const { indicazione: f } = dovePesa(quadro(items, progress, OGGI, 'base', PESI));
+  assert.equal(f.tema, MAN);
+  assert.equal(f.motivo, 'da rifare');
+  assert.deepEqual(f.pulsanti.map((p) => [p.azione, p.quanti]), [['rifai', 12]],
+    'nessun pulsante da zero: i mai visti non ci sono');
+  assert.deepEqual(f.pulsanti[0].selezione, { kind: 'base', tema: MAN, soloDaRifare: true, n: 0 });
+});
+
+test('dovePesa: a pari merito nessuna frase, perche non c e un indicazione sola', () => {
+  const items = tre();
+  const progress = {};
+  // Manovra e Navigazione valgono 4 e hanno 20 su 40 non presi: 2 domande
+  // ciascuna. Motori, 1 domanda, tutta presa.
+  for (let i = 0; i < 20; i++) applica(progress, `base-0-${i}`, true, 0, OGGI);
+  for (let i = 0; i < 20; i++) applica(progress, `base-2-${i}`, true, 0, OGGI);
+  for (let i = 0; i < 40; i++) applica(progress, `base-1-${i}`, true, 0, OGGI);
+  const r = dovePesa(quadro(items, progress, OGGI, 'base', PESI));
+  assert.equal(r.indicazione, null);
+  assert.equal(r.assente, 'pari');
+});
+
+test('dovePesa: con niente da fare nessuna frase', () => {
+  const items = tre();
+  const progress = {};
+  for (const it of items) applica(progress, it.id, true, 0, OGGI);
+  const r = dovePesa(quadro(items, progress, OGGI, 'base', PESI));
+  assert.equal(r.indicazione, null);
+  assert.equal(r.assente, 'niente da fare');
+});
+
+test('dovePesa: sulla vela nessuna frase, perche un peso per voce non esiste', () => {
+  const items = bancaPubblicata();
+  const progress = storicoMisto(items.filter((x) => x.k === 'vela'));
+  const r = dovePesa(quadro(items, progress, OGGI, 'vela', { VELA: 5 }));
+  assert.equal(r.indicazione, null);
+  assert.equal(r.assente, 'senza pesi');
+  const base = dovePesa(quadro(items, storicoMisto(items.filter((x) => x.k === 'base')), OGGI, 'base'));
+  assert.equal(base.assente, 'senza pesi', 'e nemmeno sulla base, se nessuno le passa i pesi');
 });
 
 // --- quote e semaforo ---------------------------------------------------------------

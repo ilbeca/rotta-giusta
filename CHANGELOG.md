@@ -532,6 +532,81 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   verificata con `SHASUMS256.txt`, con cui anche motore e interfaccia danno gli
   stessi numeri. Guardiano verde. `site/` e `docs/prossime-sessioni.md` non sono stati toccati.
 
+### Aggiunto — P-41: il motore della mappa di Progressi
+
+- **«Rifai N errori» apre gli N per contratto, non per ordinamento.**
+  `coda({ soloSbagliate })` apre tutti gli errori di sempre, anche quelli già
+  ripresi, e li mette in fondo: con un tetto a N dava gli N giusti solo perché
+  le riprese stavano dietro. È il «Ripasso degli errori» dei Quiz, e resta
+  com'è. Accanto c'è ora `coda({ soloDaRifare })`, che apre soltanto gli errori
+  la cui **ultima** risposta è sbagliata, contati da `classifica()` come la
+  barra della mappa. Stessa regola, stesso numero, e un test lo pretende su
+  ognuno degli 8 temi, delle 44 voci e delle 3 voci della vela della banca
+  vera, senza tetto e con un tetto più alto di N.
+
+- **`quadro()`: la mappa per tema, a tre stati che sommano al totale.** Una
+  riga per tema nell'ordine di `diagnosi().temi`, che lo storico non muove, con
+  il peso d'esame e le voci in ordine di banca; sulla vela le tre voci fanno da
+  righe con `peso: null`, anche se il chiamante passa il peso della prova — un
+  peso per voce non esiste. Ogni riga dà `giusti`, `daRifare`, `maiVisti`,
+  `visti`, e «X su Y giusti al primo tentativo» come `primo: { esatte, su }`,
+  interi esatti, `null` sotto `PRIMA_MIN_VISTI = 5`: le esatte alla prima non
+  si espongono da sole, così sotto soglia non c'è niente da scrivere per
+  sbaglio. E `rifai`, la selezione del pulsante **senza tetto**: il tetto
+  predefinito di `coda()` è 20, e «Rifai 35 errori» ne avrebbe aperti 20 in
+  silenzio. Le righe stanno sugli aggregati di `diagnosi()`, non su un conto
+  nuovo.
+
+- **`dovePesa()`: la frase in cima, oppure niente, e perché.** Vince il tema
+  con più domande d'esame in ballo — peso × (da rifare + mai visti) / quesiti —,
+  confrontato in interi. È la quota del tema non presa all'ultima risposta,
+  **non una previsione**: alla parte mai vista non si presta la debolezza che
+  `consigli()` prendeva dal tema. Il motivo è la parte più grossa; i pulsanti
+  sono prima quello del motivo, poi l'altro, mai uno da zero, ognuno con il
+  numero e la selezione che apre esattamente quelli. Manca, e lo dice, sotto
+  `FRASE_MIN_VISTI = 20` quesiti visti — le domande di una prova base: sotto, la
+  frase la deciderebbero i pesi del ministero e non quello che hai fatto —, con
+  niente da fare, a pari merito in testa, e sulla vela, dove «pesa di più» non
+  ha un peso su cui reggersi. Niente minuti, come vuole il punto 7.
+
+- **`peggiori()` esce dal motore; `consigli()` esce in due tempi.** I chiamanti,
+  prima di decidere: `peggiori()` non ne aveva in pagina dal 9 settembre, solo i
+  suoi test e un commento; conta gli errori alla prima risposta, che ripassando
+  non calano, quindi non serve a una mappa che legge l'ultima. Tolta, con i suoi
+  due test e la riga fra gli orfani; il test del liscio della diagnosi resta.
+  `consigli()` ha ancora «Cosa studiare adesso»: resta finché la realizzazione
+  dell'area 5 (P-23) non toglie la chiamata e la sposta fra gli orfani, poi una
+  sessione su `main` la toglie con `CONSIGLIO_MIN_VISTI`. Scritto nel §4.3 della
+  specifica, perché P-22 lo trovi. `quadro()` e `dovePesa()` sono orfani
+  dichiarati fino a P-23.
+
+- **Prima il test che fallisce:** dodici test nuovi del motore, rossi uno per
+  uno con dei moduli vuoti che lanciavano, e il primo per la ragione misurata —
+  l'opzione ignorata apriva il mai visto invece dell'errore; il tredicesimo è
+  nato dalle rotture, qui sotto. **Provati al
+  contrario su ventiquattro rotture**, una per volta: fra le altre
+  `soloDaRifare` trattato come `soloSbagliate` o ignorato, gli errori contati
+  fra i giusti, i sbagliati di sempre al posto dei da rifare, `primo` senza
+  soglia o dalle esatte di sempre, `esatte1` esposto, il tetto sul pulsante, i
+  temi ordinati per quello che manca, le voci nell'ordine della diagnosi, un
+  peso inventato per la vela o la vela filtrata per tema, la frase senza
+  soglia, senza peso, che risolve il pari con l'ordine, che parla sulla vela,
+  col motivo fisso, col pulsante da zero o nell'ordine sbagliato, o con
+  `soloSbagliate` dietro «Rifai». **Tre erano passate verdi** alla prima
+  stesura: il totale senza le esatte, la frase che conta i quesiti invece della
+  quota — i temi del test erano tutti da 40 —, e il pulsante «mai visti» con il
+  tetto — i mai visti erano 10. Ora c'è un test con due temi di dimensione
+  diversa, e un caso con 30 mai visti: tutte e ventiquattro rosse. Specifica:
+  §4.2, §4.3, §5.4, §6.3, Q-DUE nel §10, nuovo §9.10 con R-MAPPA-01…14,
+  tredici coperti e uno scoperto — la pagina, che è di P-23.
+
+  Suite: motore **167/169** con i due skip di sempre (erano 155/157); dati 242;
+  interfaccia **579** (erano 576: due orfani nuovi, uno in meno), in 55 s;
+  specifica **480** (erano 426); server 59/59. Con la **24.21.0 LTS**,
+  scaricata da nodejs.org e verificata con `SHASUMS256.txt`: motore 167/169,
+  server 59/59, interfaccia 579. Guardiano e controllo della documentazione
+  verdi. `site/app.html` e `docs/prossime-sessioni.md` non sono stati toccati.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag

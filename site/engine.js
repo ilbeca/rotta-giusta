@@ -123,7 +123,9 @@ const cmp = (x, y) => (x < y ? -1 : x > y ? 1 : 0);
 
 export function coda(items, progress, oggi, opt = {}) {
   const { kind, tema, voce, temi, voci, stati, n = 20, includiChiusi = false,
-          mescola = false, soloSbagliate = false, soloFigura = false } = opt;
+          mescola = false, soloSbagliate = false, soloDaRifare = false, soloFigura = false } = opt;
+  // Le due liste di errori hanno lo stesso ordine; cambia chi ci entra.
+  const errori = soloSbagliate || soloDaRifare;
   const sel = [];
   for (const it of items) {
     if (kind && it.k !== kind) continue;
@@ -137,7 +139,16 @@ export function coda(items, progress, oggi, opt = {}) {
     const p = progress[it.id];
     // "Solo sbagliate" e' l'unico filtro che tiene *apposta* i gia' visti: sono
     // esattamente quelli che vuoi rivedere. Quindi passa davanti a includiChiusi.
-    if (soloSbagliate) {
+    //
+    // "Solo da rifare" (Q-DUE, 29 settembre 2026) e' la sua meta' stretta: solo
+    // gli errori la cui **ultima** risposta e' sbagliata, cioe' il segmento
+    // «da rifare» della mappa di Progressi, contato da `classifica()` come la
+    // barra. «Rifai N errori» apre gli N per contratto: con `soloSbagliate` e
+    // un tetto a N li avrebbe aperti solo perche' le riprese stanno in fondo,
+    // e il primo tetto diverso da N le avrebbe rimescolate dentro.
+    if (soloDaRifare) {
+      if (classifica(p) !== 'da_ripassare') continue;
+    } else if (soloSbagliate) {
       if (!sbagliato(p)) continue;
     } else {
       const s = stato(p);
@@ -176,7 +187,7 @@ export function coda(items, progress, oggi, opt = {}) {
   //    costruzione perche' e' derivata, non memorizzata.
   // 3. a parita', `lw` decrescente: l'intenzione originale della 0.5.1,
   //    l'errore fresco prima, che resta giusta come spareggio.
-  sel.sort((a, b) => soloSbagliate
+  sel.sort((a, b) => errori
     ? (a.ripreso - b.ripreso) || cmp(a.t, b.t) || cmp(b.lw, a.lw)
     : (ORDINE[a.s] - ORDINE[b.s]));
   let out = sel.map((x) => x.it);
@@ -541,31 +552,22 @@ export function diagnosi(items, progress, oggi, kind = 'base', pesi = null) {
 }
 
 /**
- * Le voci su cui sei piu' debole — ordinate per punti d'esame attesi in meno,
- * non per tasso d'errore nudo.
- *
- * `minVisti` esiste perche' una voce vista due volte non dice ancora niente:
- * senza soglia la classifica sarebbe dominata dal rumore dei primi minuti.
- */
-export function peggiori(d, minVisti = 5, quante = 5, per = 'costo') {
-  // Serve almeno un errore alla prima risposta: una voce dove le hai azzeccate
-  // tutte non e' un punto debole, per quanto poco l'abbia vista.
-  const chiave = per === 'errore' ? (v) => v.debolezza : (v) => v.costo ?? v.debolezza;
-  return d.voci
-    .filter((v) => v.visti >= minVisti && v.esatte1 < v.visti)
-    .sort((a, b) => chiave(b) - chiave(a))
-    .slice(0, quante);
-}
-
-/**
  * Che cosa conviene studiare adesso, in ordine, e quanto costa in minuti.
  *
- * `peggiori()` risponde a "dove sbaglio": guarda solo le voci gia' viste, e con
- * una soglia di 5 viste, perche' e' una classifica di debolezza e sotto quella
- * soglia sarebbe rumore. E' la domanda giusta a meta' preparazione, ed e' la
- * domanda **sbagliata** all'ultima settimana, quando la parte di banca che non
- * hai mai aperto e' il rischio piu' grosso che hai — e per costruzione non
- * compare in nessuna classifica di errori, perche' errori non ne ha.
+ * **Esce dal motore, e lo dice** (P-41, 29 settembre 2026). Q-DUE ha tolto le
+ * due classifiche dalla pagina: al suo posto c'e' la mappa per tema di
+ * `quadro()`, e in cima la frase di `dovePesa()`, che non la usa — la sua
+ * parte mai vista e' una debolezza presa in prestito dal tema, e i minuti sono
+ * esclusi dal punto 7. La pagina la chiama ancora in «Cosa studiare adesso»
+ * finche' l'area 5 non e' realizzata (P-23); quella realizzazione toglie la
+ * chiamata, e una sessione su `main` toglie la funzione con i suoi test.
+ * Fino ad allora vale com'era.
+ *
+ * Nasceva contro la sua gemella, `peggiori()` — «dove sbaglio», solo voci gia'
+ * viste, errori alla prima risposta che ripassando non calano —, tolta dal
+ * motore nella stessa sessione: all'ultima settimana la parte di banca mai
+ * aperta e' il rischio piu' grosso, e per costruzione non compare in nessuna
+ * classifica di errori, perche' errori non ne ha.
  *
  * Qui le due cose stanno nella stessa unita' di misura, domande d'esame attese
  * in meno, e si sommano:
@@ -586,8 +588,9 @@ export function peggiori(d, minVisti = 5, quante = 5, per = 'costo') {
  * ripassata restava in elenco e i minuti dichiarati comprendevano lavoro gia'
  * fatto: sull'archivio del 2 settembre 175 quesiti invece dei 76 veri.
  */
-/** Sotto questa soglia una percentuale di esatte non e' un dato: e' la stessa
- *  di `peggiori()`, e la schermata la usa per non scrivere «100% su 1 vista». */
+/** Sotto questa soglia una percentuale di esatte non e' un dato, e la schermata
+ *  la usa per non scrivere «100% su 1 vista». Esce con `consigli()`; la mappa
+ *  ha la sua, `PRIMA_MIN_VISTI`, con lo stesso valore. */
 export const CONSIGLIO_MIN_VISTI = 5;
 
 export function consigli(d, opt = {}) {
@@ -632,6 +635,161 @@ export function consigli(d, opt = {}) {
     // che dice se vale la pena, non solo in che ordine.
     punti: scelte.reduce((s, r) => s + r.priorita, 0),
     restanti: Math.max(0, righe.length - scelte.length),
+  };
+}
+
+// --- la mappa di Progressi ----------------------------------------------------
+//
+// Q-DUE, chiusa dall'autore il 29 settembre 2026 (`docs/specifica.md` §10):
+// Progressi non e' piu' due classifiche — `peggiori()` in Rotta, `consigli()`
+// in Progressi —, che su quattro storici sintetici davano le stesse prime voci
+// fino a cinque volte su cinque. E' una mappa: una riga per tema, in ordine
+// fisso di peso d'esame, con una barra a tre stati e, toccando il tema, le sue
+// voci in ordine di banca. In cima, al massimo una frase.
+//
+// I tre stati sono quelli di `classifica()`, e sono letti **all'ultima
+// risposta**: un errore si chiude con una risposta giusta (punto 2). Le parole
+// in schermata sono «giusti · da rifare · mai visti» (punto 3): qui i campi si
+// chiamano cosi', perche' la pagina non debba tradurre `coperto` e
+// `da_ripassare`, e con la traduzione sbagliare.
+//
+// Le righe si costruiscono sugli aggregati di `diagnosi()`, non con un conto
+// nuovo: `visti`, `aperti`, `nuovi` ed `esatte1` sono gia' li', contati con
+// `stato()` e `classifica()`. Una seconda contabilita' della stessa copertura
+// e' la forma del difetto tornato tre volte.
+
+/** Quante risposte servono in una riga per scrivere «X su Y giusti al primo
+ *  tentativo». Sotto, `primo` e' null e la schermata scrive «troppo poche
+ *  risposte per dire come va» (punto 5). E' il valore delle soglie che c'erano
+ *  gia' su questa misura, `CONSIGLIO_MIN_VISTI` e la vecchia `peggiori()`. */
+export const PRIMA_MIN_VISTI = 5;
+
+/** Quanti quesiti distinti visti servono perche' la frase in cima compaia: le
+ *  domande di una prova base, 20 (Allegato C al DM 323/2021). Sotto, la frase
+ *  la deciderebbero i pesi del ministero e non quello che hai fatto — cioe'
+ *  ripeterebbe l'orientamento della Rotta con l'aria di una diagnosi. */
+export const FRASE_MIN_VISTI = 20;
+
+function rigaMappa(a, filtro, peso) {
+  return {
+    nome: a.nome,
+    ...(a.tema ? { tema: a.tema } : {}),
+    peso,
+    n: a.n,
+    giusti: a.visti - a.aperti,
+    daRifare: a.aperti,
+    maiVisti: a.nuovi,
+    visti: a.visti,
+    // X ed Y esatti, mai una frazione arrotondata: X le esatte alla prima
+    // risposta, Y i visti, lo stesso Y di «Visti Y su N». Conta solo la prima
+    // volta, quindi ripassando non migliora: col ripasso si muove la barra.
+    // `esatte1` non si espone da solo, cosi' sotto soglia non c'e' niente da
+    // scrivere per sbaglio.
+    primo: a.visti >= PRIMA_MIN_VISTI ? { esatte: a.esatte1, su: a.visti } : null,
+    filtro,
+    // La selezione di «Rifai N errori», pronta e senza tetto: il tetto
+    // predefinito di `coda()` e' 20, e «Rifai 35 errori» ne aprirebbe 20.
+    rifai: { ...filtro, soloDaRifare: true, n: 0 },
+  };
+}
+
+/**
+ * La mappa: `{ kind, righe, totale }`.
+ *
+ * Sulla base, una riga per tema nell'ordine di `diagnosi().temi` — peso
+ * d'esame, poi dimensione del tema: non dipende da quello che hai fatto — col
+ * suo `peso` e le sue `voci` in ordine di banca. Sulla vela le tre voci fanno
+ * da righe, in ordine di banca, con `peso: null` (punto 4): la prova vela vale
+ * 5 domande, ma come si dividano fra le voci non e' scritto da nessuna parte,
+ * e un peso per voce non si inventa. Per la stessa ragione `peso` e' null su
+ * ogni riga di voce, anche sulla base.
+ *
+ * Ogni riga porta `filtro`, le opzioni di `coda()` che la restringono, e
+ * `rifai`, la selezione del suo pulsante. Il numero sul pulsante e' `daRifare`,
+ * contato da `classifica()` come il filtro `soloDaRifare`: stessa regola,
+ * stesso numero, e un test lo pretende su ogni riga della banca vera.
+ */
+export function quadro(items, progress, oggi, kind = 'base', pesi = null) {
+  const conPesi = kind === 'base' && pesi ? pesi : null;
+  const d = diagnosi(items, progress, oggi, kind, conPesi);
+  const perChiave = new Map(d.voci.map((v) => [v.tema + ' › ' + v.nome, v]));
+  const ordine = [];
+  for (const it of items) {
+    if (it.k !== kind) continue;
+    const v = perChiave.get(it.t + ' › ' + it.v);
+    if (v && !ordine.includes(v)) ordine.push(v);
+  }
+  const righe = kind === 'base'
+    ? d.temi.map((t) => ({
+        ...rigaMappa(t, { kind, tema: t.nome }, conPesi ? (conPesi[t.nome] ?? 0) : null),
+        voci: ordine.filter((v) => v.tema === t.nome)
+          .map((v) => rigaMappa(v, { kind, tema: v.tema, voce: v.nome }, null)),
+      }))
+    : ordine.map((v) => {
+        const r = rigaMappa(v, { kind, voce: v.nome }, null);
+        delete r.tema;
+        return r;
+      });
+  const somma = { nome: kind, n: 0, visti: 0, aperti: 0, nuovi: 0, esatte1: 0 };
+  for (const a of kind === 'base' ? d.temi : ordine)
+    for (const k of ['n', 'visti', 'aperti', 'nuovi', 'esatte1']) somma[k] += a[k];
+  return { kind, righe, totale: rigaMappa(somma, { kind }, null) };
+}
+
+/**
+ * La frase in cima a Progressi, «Dove pesa di più adesso» (punti 1 e 6):
+ * `{ indicazione, assente }`, e sempre uno solo dei due.
+ *
+ * La regola, su fatti e non su stime. Per ogni tema,
+ *
+ *   in ballo = domande d'esame del tema x (da rifare + mai visti) / quesiti
+ *
+ * cioe' quanta parte del tema non hai preso giusta all'ultima risposta, pesata
+ * da quanto vale all'esame. **Non** e' una previsione di quante domande
+ * sbaglierai: sulla parte mai vista non si sa niente, e `consigli()` ci
+ * metteva una debolezza presa in prestito; qui non si presta niente. Vince il
+ * tema con il valore piu' alto, confrontato in interi, senza arrotondamenti.
+ *
+ * `motivo` e' la parte piu' grossa: «da rifare» se gli errori sono almeno
+ * quanti i mai visti, altrimenti «mai visti». I `pulsanti` sono coerenti con
+ * quello che la frase dice: prima quello del motivo, poi l'altro, e mai uno
+ * da zero; ognuno porta `quanti` e la `selezione` di `coda()` che apre
+ * esattamente quelli.
+ *
+ * La frase non c'e', e `assente` dice perche':
+ *   'senza pesi'      sulla vela, o senza i pesi d'esame: «pesa di piu'» non
+ *                     ha un fondamento se il peso di una riga non esiste;
+ *   'sotto soglia'    meno di `FRASE_MIN_VISTI` quesiti visti;
+ *   'niente da fare'  nessun tema ha errori da rifare o mai visti;
+ *   'pari'            due temi in testa con lo stesso valore: non c'e'
+ *                     un'indicazione sola, e sceglierne uno sarebbe l'ordine
+ *                     dell'elenco travestito da consiglio.
+ * La schermata, quando manca, non mette niente al suo posto.
+ */
+export function dovePesa(q) {
+  const niente = (assente) => ({ indicazione: null, assente });
+  if (!q || q.kind !== 'base' || !q.righe.length || q.righe.some((r) => r.peso == null)) return niente('senza pesi');
+  if (q.totale.visti < FRASE_MIN_VISTI) return niente('sotto soglia');
+  const nonPresi = (r) => r.daRifare + r.maiVisti;
+  const cand = q.righe.filter((r) => r.peso > 0 && r.n > 0 && nonPresi(r) > 0);
+  if (!cand.length) return niente('niente da fare');
+  // a/b contro c/d senza divisioni: peso x non presi x n dell'altro.
+  const confronta = (a, b) => b.peso * nonPresi(b) * a.n - a.peso * nonPresi(a) * b.n;
+  cand.sort(confronta);
+  if (cand.length > 1 && confronta(cand[0], cand[1]) === 0) return niente('pari');
+  const r = cand[0];
+  const motivo = r.daRifare >= r.maiVisti ? 'da rifare' : 'mai visti';
+  const rifai = { azione: 'rifai', quanti: r.daRifare, selezione: r.rifai };
+  const nuovi = { azione: 'mai visti', quanti: r.maiVisti, selezione: { ...r.filtro, stati: ['nuovo'], n: 0 } };
+  return {
+    indicazione: {
+      tema: r.nome, peso: r.peso, n: r.n,
+      giusti: r.giusti, daRifare: r.daRifare, maiVisti: r.maiVisti,
+      inBallo: r.peso * nonPresi(r) / r.n,
+      motivo,
+      pulsanti: (motivo === 'da rifare' ? [rifai, nuovi] : [nuovi, rifai]).filter((p) => p.quanti > 0),
+    },
+    assente: null,
   };
 }
 
