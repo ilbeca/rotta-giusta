@@ -698,6 +698,82 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   chiede a `main` un controllo eseguibile a due regimi prima di P-23 e lascia
   R-MAPPA-14 scoperto finché la pagina non chiama davvero il motore.
 
+### Test — P-43: i gruppi del client che restavano, e un difetto del server
+
+- **Tutti e diciotto i gruppi del §12 del progetto del client ci sono.** Sullo
+  stesso banco di P-38 e P-39: C-07 la verifica dell'email e i link, C-08 la
+  password, l'accesso e il recupero, C-09 l'archivio di prima degli account,
+  C-10 un file dei progressi e i Segnali con l'account, C-12 i limiti di un
+  invio e della ricezione, C-13 un azzeramento fatto altrove, C-14 il
+  ripristino del server, C-16 la data dopo la registrazione, C-17 l'export e le
+  origini senza API, e il resto di C-15 — il `401` all'uscita e «Esci da tutti
+  i dispositivi». C-18, la ricerca delle frasi dei due stati, non ha bisogno di
+  un browser: undici frasi che gli account rendono false e sette nuove, commenti
+  compresi. Nel regime della pagina di oggi i gruppi nuovi controllano che il
+  client non ci sia. R-ACC-05 da scoperto a coperto, su un archivio sintetico;
+  nuovi R-ACC-47…57. Il contratto per P-18 è cresciuto, ed è nel §12 prima del
+  client: fra l'altro le risposte nell'archivio `righe` della copia dell'account.
+
+- **Un difetto del server, trovato misurando prima di scrivere C-08.** Il §5.1
+  vuole «Troppi tentativi. Puoi riprovare fra {attesa}», dal `Retry-After`; la
+  pagina sta su un'origine e l'API su un'altra, e il CORS non esponeva
+  l'intestazione. Misurato in Chrome: `headers.get('Retry-After')` è `null`
+  senza `Access-Control-Expose-Headers`, `'30'` con. Il server la mandava e
+  nessuna pagina poteva leggerla. Ora la espone, solo al sito: R-ACC-49, con un
+  test del server rosso prima e verde dopo, e il §7.3 del progetto degli account
+  lo scrive; C-08 lo tiene fermo dalla pagina con il `429` del server vero.
+
+- **La pagina di riferimento è diventata il client che i gruppi chiedono**, e
+  costruendola sono usciti due difetti che valgono anche per P-18: dopo
+  «Decidi più tardi» la scelta sull'azzeramento non si riapriva, e una
+  risposta data intanto sarebbe stata buttata da «Carica il nuovo archivio»,
+  che non chiede niente — ora le risposte non salvate si ricontano al momento
+  della scelta; e il modulo di registrazione restava aperto sopra «Riprova
+  l'invio», l'unica azione utile dopo un `413`.
+
+- **Cinquantatré rotture nuove, 110 in tutto, ognuna rossa per il suo motivo.
+  Tre verdi falsi del banco trovati facendolo girare**, non leggendolo: le
+  righe di C-12 che IndexedDB rimescola per uid, così una fetta da 2.000 stava
+  sotto i 2 MiB; il banco che tornava online prima che l'invio dei punteggi
+  fosse davvero fallito — ora `browser.mjs` segna come finisce ogni richiesta,
+  e si aspetta quello —; l'azzeramento che la ricezione scopriva prima
+  dell'invio, sotto carico. **E un banco appeso**: un'eccezione dentro un
+  `onsuccess` lasciava una promessa aperta e la suite non finiva; ora ogni
+  comando al browser scade in 30 s con un rosso che lo dice. **E un banco
+  caduto, una volta su diciassette giri**, senza un motivo leggibile: il rosso
+  mostrava solo l'avviso di `node:sqlite`, e ora mostra codice d'uscita ed
+  errore. Il meccanismo, riprodotto: la porta di C-14 presa al riavvio, poi una
+  seconda chiusura dello stesso server, eccezione non gestita, uscita 1 senza
+  risultati. Ora il riavvio riprova, e la corsia non chiude due volte. Che sia
+  stata proprio questa la causa di quel giro non si può dimostrare. Sotto
+  carico, un'altra volta, un'uscita di C-15 uguale a quella del riferimento non
+  ha finito entro la sua scadenza, in una rottura: le uscite nuove hanno ora la
+  scadenza di un caricamento più i tre secondi del lucchetto. **Il banco contro
+  sé stesso**, una difesa tolta alla volta, quattro rotture passano verdi: senza
+  l'orologio del server tre giorni avanti, con le righe di prima di C-12, senza
+  cercare il gettone negli storage, senza leggere il database dopo «Tienile».
+
+- **Il tempo, misurato gruppo per gruppo con `RG_TEMPI=1`:** con i gruppi nuovi
+  il banco era passato da 61 a 182 s, e andava quasi tutto nelle rotture, che
+  dopo il primo rosso continuavano e pagavano le scadenze del resto. Le parti
+  nuove si fermano al primo rosso, come le uscite di C-15, e le corsie sono
+  otto. E una contesa vera, non teorica: la suite di P-18 nel worktree
+  dell'interfaccia e questa si prendono la stessa 8620, e una parte quando
+  l'altra la tiene è rossa. `AGENTS.md` e Q-SUITE lo dicono; C-14, che riavvia
+  il server, gira solo sulle corsie con una porta qualunque.
+
+  **I giri, con la suite dell'interfaccia intera:** prima delle ultime due
+  correzioni 16 verdi su 17, e il diciassettesimo è il banco caduto; con il
+  riavvio di C-14 corretto 14 su 15, e il rosso è la scadenza dell'uscita sotto
+  carico; con il codice finale **6 su 6**, uno con la LTS 24.21 e cinque con
+  dieci `yes`, in 84 s senza carico e 96–101 s sotto.
+
+  Suite: interfaccia **928** (erano 722), in circa 85 s (erano 61); specifica
+  **546** (erano 500); server **60/60** (erano 59), con Node 25.3 e con la
+  **24.21.0 LTS**, scaricata da nodejs.org e verificata con `SHASUMS256.txt`;
+  motore 167/169 con i due skip di sempre; dati 242. `site/` e
+  `docs/prossime-sessioni.md` non sono stati toccati.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag

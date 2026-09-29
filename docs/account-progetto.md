@@ -1035,10 +1035,16 @@ Access-Control-Allow-Credentials: true
 Access-Control-Allow-Methods: GET, POST, PUT, DELETE
 Access-Control-Allow-Headers: Content-Type
 Access-Control-Max-Age: 86400
+Access-Control-Expose-Headers: Retry-After
 Vary: Origin
 ```
 
 `open-patente-nautica.pages.dev` resta fuori, per la ragione già scritta lì.
+
+**`Expose-Headers` l'ha aggiunto P-43 il 29 settembre 2026**, misurando:
+senza, una pagina su un'altra origine legge `Retry-After` come `null`, e
+l'attesa di un `429` che il §5.1 del progetto del client vuole scrivere non si
+può sapere (R-ACC-49).
 
 ### 7.4 In quale pagina l'API esiste
 

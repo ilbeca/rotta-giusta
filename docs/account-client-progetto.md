@@ -7,7 +7,8 @@ e ai contratti del motore per i trasferimenti (§9.3). **P-29 ha aggiunto al §1
 il banco del browser**, con la misura che l'ha scelto e il contratto che la
 pagina deve rispettare; **P-38 l'ha reso stabile e P-39 ci ha aggiunto i
 gruppi C-01 completo, C-03, C-04, C-06, C-11 e C-15**, con il contratto che
-cresce di conseguenza. Il resto è di P-13.
+cresce di conseguenza; **P-43 ha scritto gli altri dieci e C-15 per intero**.
+Il resto è di P-13.
 Questo documento specifica flussi, testi, stati e controlli del client. Non
 dichiara un client realizzato, un server in esercizio o una prova con utenti.
 La sessione produce questo file e una voce di CHANGELOG.
@@ -847,6 +848,63 @@ Da P-39, per le attività e per l'account:
 - **l'archivio dell'account** in IndexedDB si chiama `rg-account-<chiave_locale>`
   (§9.2): il banco lo cerca per nome, e senza account non ce n'è nessuno.
 
+Da P-43, per i gruppi che restavano:
+
+- **l'archivio dell'account**: le risposte stanno nell'archivio `righe` di
+  `rg-account-<chiave_locale>`, una per uid. Il banco le conta da fuori
+  (C-12, C-13, C-14), e un altro archivio con lo stesso numero di voci lo
+  ingannerebbe: per questo il nome è nel contratto;
+- **la verifica** (§6): l'avviso «Conferma {email} entro il {giorno} …», con il
+  giorno e il mese scritti in italiano nell'ora di Roma, dalla descrizione
+  dell'account; «Rimanda la mail» e «Ho confermato: verifica lo stato»; «L'account
+  è creato, ma non siamo riusciti a spedire la mail di conferma.»; «La mail di
+  conferma è stata inviata. Il link vale 24 ore.» e, se il fornitore rifiuta,
+  «Non siamo riusciti a spedire la mail di conferma.»; «Email confermata» e «Il
+  link è scaduto o è già stato usato.»; `/app#verifica=` e `/app#password=`
+  lasciano l'indirizzo appena la pagina si apre;
+- **la password** (§4.2, §5.1, §5.3): il `messaggio` del server accanto al
+  campo; «Email o password non corrette. Riprova oppure reimposta la
+  password.»; «Troppi tentativi. Puoi riprovare fra {attesa}.», con «30
+  secondi» quando il `Retry-After` dice 30; «Ho dimenticato la password» nel
+  modulo di accesso, poi «Chiedi il link» e «Se questo indirizzo è iscritto,
+  riceverai una mail da Rotta Giusta. Il link vale un'ora.»; «Scegli una nuova
+  password» con «Salva la nuova password»; «Password aggiornata. Le sessioni
+  precedenti sono state chiuse»; «Questo account non era confermato e contiene
+  {N} risposte. Vuoi tenerle o cancellarle?» con «Tienile» e «Cancella queste
+  risposte»; «Questo link è scaduto o è già stato usato. Chiedi un nuovo link
+  per reimpostare la password.»;
+- **l'archivio di prima** (§7): «In questo browser ci sono {N} risposte
+  salvate prima degli account.», «Registrati o entra e portale», «Scarica il
+  file», «Più tardi»; entrando, «Vuoi portare nel tuo account le {N} risposte
+  salvate in questo browser prima degli account?» con l'email e «Portale nel
+  mio account»; in Info «{N} risposte portate nel tuo account il …»; una
+  lettura fallita «Non siamo riusciti a leggere le risposte già presenti in
+  questo browser.» con «Riprova»;
+- **un file** (§8): in Info il campo `#importa-file`, etichettato «Importa un
+  file dei progressi»; «Non riusciamo a leggere questo file di progressi.»;
+  senza account «Per conservare le risposte del file, crea un account o
+  accedi»; l'anteprima con il nome del file, l'email e «{nuove} nuove · {gia}
+  già presenti · {scartate} scartate», poi «Importa nel mio account», lo stesso
+  riepilogo alla fine e «Scarica le righe non importate»; «Punteggi da
+  inviare» finché il profilo non ha accolto una partita;
+- **l'azzeramento altrove** (§10): «… i progressi sono stati azzerati da un altro
+  dispositivo», «Qui ci sono {N} risposte non salvate», le tre scelte del §10,
+  «Sì, scartale e passa al nuovo archivio» con «andranno perse», «Carica il
+  nuovo archivio» senza risposte da perdere, e dopo «Decidi più tardi» un
+  «Scegli adesso» che la riapre;
+- **l'uscita** (§10): «Scarica le risposte non salvate», poi «Ho conservato il
+  file: esci e cancella la copia da questo dispositivo»; nel pannello «Esci da
+  tutti i dispositivi»; all'apertura con una sessione revocata «L'accesso non è
+  più valido.»;
+- **la data** (§11.1): nel passo «Hai una data d'esame?» il campo «Data d'esame
+  (facoltativa)», «Salva la data», «Data salvata», e «La data non è stata
+  salvata. Riprova oppure continua senza cambiarla»; `#esame-data` mostra la
+  data dell'account;
+- **l'export e le origini senza API** (§11.2, §3.1): in Info «Scarica i tuoi
+  progressi», «Il file del server non contiene ancora le {N} risposte da
+  inviare», «Scarica le risposte da inviare»; su un'origine senza API un link
+  visibile a `https://rottagiusta.it/app`, e nessun «Accedi».
+
 Un aggancio cambiato è una conversazione con `main`, non un controllo da
 aggirare: il prompt di P-18 lo dice.
 
@@ -1014,8 +1072,17 @@ parallelo: 55 s senza carico, come prima.
 | C-05 | **fatto** (P-29) | Registrazione dal riepilogo con un'email iscritta sul server vero: la frase, le due porte, zero cookie, zero sessioni e zero mail nuove, Accedi con l'email e senza password, riepilogo e revisione intatti; un `409` finto di un altro genere non parla di email, e uno con un messaggio diverso non spegne la frase. |
 | C-06 | **fatto** (P-39) | Con risposte di prova l'accesso chiede se portarle e dice dove; per la finestra intera la scelta proposta non manda niente; con il no l'account resta vuoto, e la risposta dopo l'accesso ci entra. La corsa: A risponde e la sua richiesta resta ferma prima di partire; da un'altra scheda A esce e B entra; lasciata andare, nel database di B nessuna riga, e quella di A è nel suo account; la copia di A non resta. La coda di A congelata da un `401` non entra in B, e resta nella copia di A. |
 | C-11 | **fatto** (P-39) | Una risposta data mentre la conferma della precedente è ferma arriva anche lei. Due schede rispondono nello stesso istante: quattro righe sul server, non tre. Una ricarica con il trasferimento fermo prima del server: la pagina riprende e dice «salvate» con la riga nel database. **Non** esercita l'import di un file né più lotti: sono C-10 e C-12. |
-| C-15 | **fatto**, tranne il `401` (P-39) | Con una riga che non parte, «Esci» dice quante non sono sul server e non esce. Offline dice che serve la rete, e copia, cookie e sessione restano. Con un'altra scheda sulla copia, la sessione si chiude e la pagina dice che la copia non è stata cancellata. L'uscita normale da una scheda mentre l'altra ha una conferma in volo: sessione chiusa, niente dell'account nel browser per tutta la finestra, anche dopo la risposta tardiva, e l'altra scheda senza account. **Non** esercita il `401` all'uscita né «Esci da tutti i dispositivi». |
-| C-07…C-10, C-12…C-14, C-16…C-18 | da scrivere | Vedi «Il resto dei controlli», qui sotto: che cosa chiede ognuno al banco, e che cosa non potrà vedere. |
+| C-15 | **fatto** (P-39, P-43) | Con una riga che non parte, «Esci» dice quante non sono sul server e non esce. Offline dice che serve la rete, e copia, cookie e sessione restano. Con un'altra scheda sulla copia, la sessione si chiude e la pagina dice che la copia non è stata cancellata. L'uscita normale da una scheda mentre l'altra ha una conferma in volo: sessione chiusa, niente dell'account nel browser per tutta la finestra, anche dopo la risposta tardiva, e l'altra scheda senza account. Da P-43: un `401` all'uscita pulisce la copia senza dire che serve la rete; con la sessione revocata e una risposta non inviata la fa scaricare e cancella solo dopo «Ho conservato il file…», senza mandarla a nessun account; «Esci da tutti i dispositivi» chiude ogni sessione sul server e qui la copia, e l'altro dispositivo lo scopre con un `401` e tiene la sua. |
+| C-07 | **fatto** (P-43) | Posta del banco che rifiuta: la frase del `503`, l'account che salva, la scadenza del server dal primo momento — l'orologio del server è tre giorni avanti, così una scadenza del browser cade in un altro giorno — e dopo una ricarica; il rinvio rifiutato senza successo, quello accolto con la mail. Il link aperto in un'altra scheda: frammento tolto, email confermata sul server, l'avviso che sparisce nell'altra scheda, il gettone in nessuno storage; il link usato e quello scaduto lo dicono. |
+| C-08 | **fatto** (P-43) | Password corta e comune: il `messaggio` del server — chiesto dal banco allo stesso server — accanto al campo, con l'email ancora scritta. La stessa frase per email ignota e password sbagliata; al sesto tentativo il `429` del server vero, con l'attesa del `Retry-After`; un `403` finto con il suo messaggio e «Reimposta la password». Recupero: la frase condizionale per iscritto e non iscritto, il link della password con il gettone tenuto dopo un `422`, le sessioni di prima chiuse, la domanda su un account appena confermato e nessuna cancellazione da sola; il link scaduto dopo un'ora e un minuto. |
+| C-09 | **fatto** (P-43) | L'archivio di prima scritto nel browser prima del primo carico, IndexedDB e `pn.archivio` con un uid in comune. Avviso con l'unione, file scaricato con tutte, domanda all'accesso, niente prima del sì, poi tutte sul server; Info lo dice; l'archivio resta; dopo una ricarica niente avviso, e una riga nuova a conteggio uguale lo riaccende. «Più tardi» senza scritture, e l'avviso che torna. Una lettura fallita — `IDBFactory.open` che lancia, iniettato prima del carico — detta, con l'archivio intatto. Nel regime di oggi: aprire la palestra non perde l'archivio. |
+| C-10 | **fatto** (P-43) | Un file illeggibile; senza account niente parte e niente resta. Con un file del nome di prima, un tag senza data, un uid doppio, una data rotta e un quesito che non c'è: l'anteprima con i conteggi del motore, niente prima del clic, poi le righe valide sul server, gli scarti scaricati, i Segnali per massimo, e la seconda importazione che non cambia niente. Una partita offline «da inviare» che, dopo una ricarica con la rete, arriva. |
+| C-12 | **fatto** (P-43) | 2.500 righe da un chilo e mezzo, 3,7 MiB, importate da un file: tutte sul server, in più invii. Un `413` finto che si legge e non dice «salvate», poi «Riprova l'invio». 5.200 righe ricevute in più pagine; poi tre righe di un altro dispositivo e una risposta qui: la conferma dell'invio non sposta il cursore, e arrivano. |
+| C-13 | **fatto** (P-43) | Scoperto inviando, con la ricezione che non passa: quante risposte non salvate, le tre scelte, niente che rientri né riparta per la finestra intera, la perdita confermata, la copia vuota, poi una risposta nuova che entra da sola. Scoperto ricevendo, dopo una ricarica: «Carica il nuovo archivio», la copia ferma prima della scelta; «Decidi più tardi», una risposta, «Scegli adesso» che la conta. |
+| C-14 | **fatto** (P-43) | Una risposta, una copia del database del server, un'altra risposta, il ripristino — il server si ferma e riparte sulla stessa porta con un'epoca nuova —: la pagina rimanda quella persa, e un altro dispositivo le riceve tutte e due. Solo sulle corsie con una porta qualunque (§12, qui sotto). |
+| C-16 | **fatto** (P-43) | Dopo la registrazione: una data passata scritta nella pagina si propone, non si salva prima del clic e si salva com'è; senza, il campo è vuoto e «Continua senza data» lascia il server senza data; un `PUT` fallito lo dice. Entrando in un account con la data, il passo non si ripete e la pagina la mostra. |
+| C-17 | **fatto** (P-43) | Con la ricezione e l'invio fermati, una riga di un altro dispositivo sul server e una risposta qui: il file è l'export del server, la pagina dice la risposta che non contiene, e questa si scarica a parte. Su `rotta.test` (Chrome con `--host-resolver-rules`): il link a `rottagiusta.it/app`, nessun «Accedi», nessun invito nel riepilogo, nessuna richiesta all'API e niente nel browser. |
+| C-18 | **fatto** (P-43), senza browser | `test_client_testi` in `tests/test_interfaccia.py`: undici frasi che gli account rendono false (§1 della coda, ricontate da P-43) e sette del §11.2, commenti compresi, nei due regimi, provato al contrario sui testi stessi. Non guarda il contenuto giuridico dell'informativa. |
 
 **La corsa fra schede di «da verificare»** (§9.3, ultimo paragrafo; §9.1)
 entra con C-06, C-11 e C-15 in questa forma, che il banco sa già fare: due
@@ -1108,6 +1175,91 @@ per il banco; le parti che non vedrà sono scritte accanto.
 | C-16 | un `PUT /v1/profilo` fallito, una data passata | Q-ONBOARD, che non è deciso |
 | C-17 | un'origine esclusa: un nome che non sia `localhost` né `127.0.0.1` per il sito, per esempio con `--host-resolver-rules` | — |
 | C-18 | la ricerca delle frasi nelle due pagine e nei metadati | la privacy: il suo gate è dell'autore |
+
+### I gruppi che restavano (P-43, 29 settembre 2026)
+
+**Tutti e diciotto i gruppi ci sono.** La pagina di riferimento è diventata un
+client che fa quello che i gruppi chiedono — verifica e link, recupero,
+archivio di prima, file, Segnali con l'account, conflitto, ripristino, uscita
+da tutti i dispositivi, export, origini senza API —, e ogni gruppo ha le sue
+rotture: 53 nuove, **110 in tutto**, ognuna rossa per il suo motivo in ogni giro.
+Nel regime della pagina di oggi i gruppi nuovi controllano che il client non
+ci sia, e C-09 che aprire la palestra non perda l'archivio che c'è.
+
+**Un difetto del server, trovato misurando prima di scrivere C-08.** Il §5.1
+vuole «Troppi tentativi. Puoi riprovare fra {attesa}», dal `Retry-After`. La
+pagina sta su un'origine e l'API su un'altra, e un'intestazione che il CORS non
+espone il browser la nasconde: in Chrome `headers.get('Retry-After')` dava
+`null` senza `Access-Control-Expose-Headers` e `'30'` con. Il server la
+mandava, e nessuna pagina poteva leggerla. Ora il CORS la espone, e solo al
+sito (R-ACC-49, `test_server.mjs`). Il gruppo C-08 usa il `429` del server
+vero, quindi lo tiene fermo anche dal lato della pagina.
+
+**Due difetti della pagina di riferimento, trovati dai controlli.** Dopo
+«Decidi più tardi» la scelta sull'azzeramento non si poteva riaprire, e una
+risposta data intanto sarebbe finita buttata da «Carica il nuovo archivio»,
+che non chiede niente perché al momento dell'avviso non c'era niente da
+perdere: le risposte non salvate si ricontano al momento della scelta. E il
+modulo di registrazione restava aperto sopra «Riprova l'invio», l'unica
+azione utile dopo un `413`. P-18 ha gli stessi due punti da guardare.
+
+**Tre verdi falsi del banco, trovati facendolo girare.** In C-12 le prime
+1.600 righe grandi e le altre piccole: IndexedDB le rende in ordine di uid, le
+mescola, e una fetta da 2.000 stava sotto i 2 MiB — la rottura «lotti a fette
+di 2.000 righe» passava; ora le righe sono tutte grandi. In C-10 la rottura
+«punteggi da inviare tenuti solo in memoria» passava sotto carico: il banco
+tornava online prima che l'invio fallito fosse davvero partito; ora aspetta la
+fine della richiesta — `browser.mjs` segna come finisce ognuna —, non un tempo.
+In C-13 l'azzeramento, sotto carico, lo scopriva la ricezione dopo il primo
+invio e non l'invio: un percorso giusto, che ha la sua parte; in quella
+«inviando» la ricezione ora non passa. **E un banco appeso:** un'eccezione
+dentro un `onsuccess` del banco lasciava una promessa aperta per sempre, e la
+suite non finiva; ora il passo rifiuta, e ogni comando al browser scade dopo
+30 s con un rosso che dice quale. **E un banco caduto, una volta su diciassette giri:**
+168 rossi in 54 s, senza un motivo, perché il rosso riportava solo l'avviso
+sperimentale di `node:sqlite`. Il meccanismo, riprodotto: C-14 chiude il server
+della sua corsia e lo riapre sulla stessa porta; se in quell'istante la porta è
+presa, il riavvio fallisce, la corsia richiude alla fine un server già chiuso, e
+la seconda chiusura è un'eccezione non gestita che fa uscire il banco con 1 e
+nessun risultato. Che sia stato questo in quel giro non si può dimostrare — la
+sua uscita non c'è più —; è l'unico meccanismo trovato che dà quel sintomo. Ora
+il riavvio riprova per cinque secondi e poi è un rosso che nomina la porta, la
+corsia non chiude due volte, e un banco caduto dice il codice d'uscita e
+l'errore invece dell'avviso.
+
+**Il banco contro sé stesso**, una difesa tolta alla volta: senza l'orologio
+del server tre giorni avanti, «la scadenza calcolata con l'orologio del
+browser» passa verde; con le righe di C-12 di prima, «lotti a fette di 2.000
+righe»; senza cercare il gettone negli storage, «il gettone salvato in
+sessionStorage»; senza guardare il database del server dopo «Tienile», «le
+risposte … cancellate senza chiedere».
+
+**Il tempo.** Con i gruppi nuovi e le loro rotture il banco è passato da 61 a
+182 s, misurato gruppo per gruppo con `RG_TEMPI=1`: il tempo andava nelle
+rotture, che dopo il primo rosso continuavano e pagavano le scadenze del resto.
+Due correzioni: le parti dei gruppi nuovi si fermano al primo rosso
+(`fermaAlPrimo()`, la regola delle uscite di C-15), e le corsie sono otto
+invece di quattro. `tests/test_interfaccia.py` fa **928 verifiche in circa
+85 s** (erano 722 in 61).
+
+**Le corsie e la porta 8620.** C-14 riavvia il server a metà giro, e sulla 8620
+un'altra suite può prendersi la porta in quell'istante: gira solo sulle corsie
+con una porta qualunque. **Misurato il 29 settembre, e non teorico:** la suite
+di P-18 nel worktree dell'interfaccia e questa si contendono la 8620, e una
+parte quando l'altra la tiene è rossa con «la porta 8620 è occupata». Chi fa
+girare la suite con un'altra sessione aperta guarda prima la porta
+(`lsof -iTCP:8620 -sTCP:LISTEN`); `esegui(prove, { portaApi })` sposta la corsia
+0 per chi prova soltanto la pagina di riferimento. È un pezzo di Q-SUITE.
+
+**Che cosa i gruppi nuovi non vedono**, oltre a quello scritto nella tabella
+del «Resto dei controlli»: la mail vera e lo spam (C-07); incolla, riempimento
+automatico e gestore di password (C-08); un archivio vero di anni — il banco ne
+scrive uno sintetico di sei righe, e R-ACC-05 lo dice coperto su quello (C-09;
+l'archivio vero resta al collaudo di P-27); la scelta «Scarica e passa al nuovo
+archivio» di C-13, che non esercita; «Cancella queste risposte» dopo il
+recupero, che il banco non preme; un'uscita con punteggi dei Segnali non
+confermati; il tempo di un archivio grande su un telefono; la privacy, il cui
+gate è dell'autore.
 
 **Collaudo dell'implementazione:** screenshot a 375 e 1280 px, prova al 200%,
 tastiera, focus di ritorno al riepilogo/controllo d'origine, lettore di schermo,

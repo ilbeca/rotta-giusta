@@ -16,15 +16,18 @@
 // una sola istanza di Chrome fa molti primi ingressi.
 
 import { spawn } from 'node:child_process';
-import { existsSync, mkdtempSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, rmSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 export const CHROME = process.env.RG_CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 
 const pausa = (ms) => new Promise((r) => setTimeout(r, ms));
+// Quanto puo' aspettare un comando al browser, al piu'. Le attese del banco
+// sono sue, fuori da qui: nessun comando dura tanto in una pagina che funziona.
+const COMANDO = 30000;
 
-export async function avviaChrome({ attesaMs = 15000 } = {}) {
+export async function avviaChrome({ attesaMs = 15000, nomi = [] } = {}) {
   if (!existsSync(CHROME)) {
     // Niente skip: un controllo che salta quando manca il browser e' verde a
     // copertura zero, che e' il difetto fondativo di questo progetto.
@@ -35,6 +38,10 @@ export async function avviaChrome({ attesaMs = 15000 } = {}) {
     '--headless=new', '--remote-debugging-pipe', '--no-first-run', '--no-default-browser-check',
     '--disable-background-networking', '--disable-component-update', '--disable-sync',
     '--disable-extensions', '--disable-default-apps', '--mute-audio',
+    // Un nome che non e' localhost ne' 127.0.0.1 per il sito: l'origine senza
+    // API del §3.1 del progetto del client (C-17). Il nome risolve qui, e il
+    // resto della rete non lo vede.
+    ...(nomi.length ? [`--host-resolver-rules=${nomi.map((n) => `MAP ${n} 127.0.0.1`).join(', ')}`] : []),
     `--user-data-dir=${profilo}`, 'about:blank',
   ], { stdio: ['ignore', 'ignore', 'pipe', 'pipe', 'pipe'] });
   let stderr = '';
@@ -59,12 +66,18 @@ export async function avviaChrome({ attesaMs = 15000 } = {}) {
   const morto = new Promise((_, ko) => figlio.once('exit', (c) => ko(new Error(`Chrome e' uscito (${c}): ${stderr}`))));
   morto.catch(() => {});
 
+  // Ogni comando ha una scadenza: una promessa della pagina che non si chiude
+  // mai — misurato il 29 settembre 2026, un'eccezione dentro un onsuccess del
+  // banco — appendeva tutto il banco, e la suite non finiva. Un banco appeso e'
+  // peggio di un rosso: questo lo trasforma in un rosso che dice dove.
   function cmd(metodo, params = {}, sessionId) {
     const id = ++prossimo;
+    let scadenza;
     return Promise.race([morto, new Promise((ok, ko) => {
       attese.set(id, { ok, ko, metodo });
+      scadenza = setTimeout(() => { attese.delete(id); ko(new Error(`${metodo}: nessuna risposta in ${COMANDO / 1000} s`)); }, COMANDO);
       figlio.stdio[3].write(JSON.stringify({ id, method: metodo, params, sessionId }) + '\0');
-    })]);
+    })]).finally(() => clearTimeout(scadenza));
   }
 
   await Promise.race([cmd('Browser.getVersion'), pausa(attesaMs).then(() => { throw new Error('Chrome non risponde: ' + stderr); })]);
@@ -72,16 +85,57 @@ export async function avviaChrome({ attesaMs = 15000 } = {}) {
   async function nuovoContesto() {
     const { browserContextId } = await cmd('Target.createBrowserContext', { disposeOnDetach: false });
     const schede = [];
+    // I file che la pagina fa scaricare finiscono qui, con il nome dato dal
+    // browser (il guid), e il banco li legge: un download si controlla dal
+    // contenuto, non dal clic che lo avvia.
+    const cartella = mkdtempSync(join(tmpdir(), 'rg-scaricati-'));
+    const scaricati = [];
+    const segui = (m) => {
+      if (m.sessionId || !m.params || m.params.browserContextId !== undefined && m.params.browserContextId !== browserContextId) return;
+      if (m.method === 'Browser.downloadWillBegin' && m.params.frameId !== undefined) {
+        if (!schede.some((x) => x.targetId === m.params.frameId)) return;
+        scaricati.push({ guid: m.params.guid, nome: m.params.suggestedFilename, stato: 'in corso' });
+      }
+      if (m.method === 'Browser.downloadProgress') {
+        const d = scaricati.find((x) => x.guid === m.params.guid);
+        if (d && m.params.state !== 'inProgress') d.stato = m.params.state;
+      }
+    };
+    ascoltatori.add(segui);
+    await cmd('Browser.setDownloadBehavior', { behavior: 'allowAndName', browserContextId, downloadPath: cartella, eventsEnabled: true });
     return {
       id: browserContextId,
-      async apri(url) {
+      async apri(url, { prima } = {}) {
         const { targetId } = await cmd('Target.createTarget', { url: 'about:blank', browserContextId });
         const { sessionId } = await cmd('Target.attachToTarget', { targetId, flatten: true });
         const s = scheda(sessionId, targetId);
         await s.prepara();
-        if (url) await s.vai(url);
+        // Uno script che gira prima di quelli della pagina, a ogni carico: e'
+        // cosi' che il banco fa fallire una lettura (C-09) senza toccare la pagina.
+        if (prima) await cmd('Page.addScriptToEvaluateOnNewDocument', { source: prima }, sessionId);
         schede.push(s);
+        if (url) await s.vai(url);
         return s;
+      },
+      /** I download completati, dal primo: `[{ nome, testo }]`. */
+      scaricati() {
+        return scaricati.filter((d) => d.stato === 'completed').map((d) => ({ nome: d.nome, testo: readFileSync(join(cartella, d.guid), 'utf8') }));
+      },
+      /**
+       * Quante voci ha ogni archivio di un database IndexedDB, letto da fuori:
+       * `{ archivio: quante }`, o null se il database non c'e'. Non chiede i
+       * nomi degli archivi alla pagina: li legge il protocollo.
+       */
+      async voci(origine, nome, s) {
+        const sid = s.sessionId;
+        const nomi = (await cmd('IndexedDB.requestDatabaseNames', { securityOrigin: origine }, sid)).databaseNames;
+        if (!nomi.includes(nome)) return null;
+        const { databaseWithObjectStores: d } = await cmd('IndexedDB.requestDatabase', { securityOrigin: origine, databaseName: nome }, sid);
+        const out = {};
+        for (const st of d.objectStores) {
+          out[st.name] = (await cmd('IndexedDB.getMetadata', { securityOrigin: origine, databaseName: nome, objectStoreName: st.name }, sid)).entriesCount;
+        }
+        return out;
       },
       /** Tutto quello che il contesto conserva per un'origine, letto da fuori. */
       async conservato(origine, s) {
@@ -104,6 +158,8 @@ export async function avviaChrome({ attesaMs = 15000 } = {}) {
       async chiudi() {
         for (const s of schede) await cmd('Target.closeTarget', { targetId: s.targetId }).catch(() => {});
         await cmd('Target.disposeBrowserContext', { browserContextId }).catch(() => {});
+        ascoltatori.delete(segui);
+        rmSync(cartella, { recursive: true, force: true });
       },
     };
   }
@@ -115,7 +171,11 @@ export async function avviaChrome({ attesaMs = 15000 } = {}) {
     let caricata = 0;
     const ascolta = (m) => {
       if (m.sessionId !== sessionId) return;
-      if (m.method === 'Network.requestWillBeSent') richieste.push({ url: m.params.request.url, metodo: m.params.request.method });
+      if (m.method === 'Network.requestWillBeSent') richieste.push({ id: m.params.requestId, url: m.params.request.url, metodo: m.params.request.method });
+      // Come e' finita: un'assenza di rete si aspetta cosi', non con un tempo.
+      if (m.method === 'Network.loadingFinished' || m.method === 'Network.loadingFailed') {
+        for (const r of richieste) if (r.id === m.params.requestId) { r.finita = true; r.fallita = m.method === 'Network.loadingFailed'; }
+      }
       if (m.method === 'Page.loadEventFired') caricata++;
       if (m.method === 'Runtime.exceptionThrown') console_.push(m.params.exceptionDetails?.exception?.description || m.params.exceptionDetails?.text);
       if (m.method === 'Fetch.requestPaused') ferma(m.params);
@@ -183,6 +243,13 @@ export async function avviaChrome({ attesaMs = 15000 } = {}) {
           if (Date.now() > fine) return { ok: false, valore };
           await pausa(40);
         }
+      },
+      /** Un file scelto nel campo che combacia con `selettore`, come lo sceglie chi studia. */
+      async caricaFile(selettore, percorso) {
+        const r = await cmd('Runtime.evaluate', { expression: `document.querySelector(${JSON.stringify(selettore)})` }, sessionId);
+        if (!r.result.objectId) return false;
+        await cmd('DOM.setFileInputFiles', { files: [percorso], objectId: r.result.objectId }, sessionId);
+        return true;
       },
       async offline(si) {
         await cmd('Network.emulateNetworkConditions', { offline: si, latency: 0, downloadThroughput: -1, uploadThroughput: -1 }, sessionId);

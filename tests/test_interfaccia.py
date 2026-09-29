@@ -621,11 +621,13 @@ def test_ciclo_provato_al_contrario():
 # integra P-18, e da quel commit una pagina senza client e' rossa.
 BANCO_CLIENT = RADICE / 'tests' / 'client_account.mjs'
 RIFERIMENTO_CLIENT = RADICE / 'tests' / 'pagina-client-account.html'
-GRUPPI_CLIENT = ['C-01', 'C-02', 'C-03', 'C-04', 'C-05', 'C-06', 'C-11', 'C-15']
+GRUPPI_CLIENT = ['C-01', 'C-02', 'C-03', 'C-04', 'C-05', 'C-06', 'C-07', 'C-08', 'C-09', 'C-10', 'C-11', 'C-12',
+                 'C-13', 'C-14', 'C-15', 'C-16', 'C-17']
 # Quante verifiche fa ogni gruppo quando arriva in fondo, sulla pagina di
 # riferimento: meno vuol dire che il giro si e' fermato prima e che una parte
 # dei controlli non e' stata eseguita, cioe' un verde a copertura parziale.
-VERIFICHE_CLIENT = {'C-01': 33, 'C-02': 15, 'C-03': 11, 'C-04': 20, 'C-05': 13, 'C-06': 15, 'C-11': 8, 'C-15': 6}
+VERIFICHE_CLIENT = {'C-01': 33, 'C-02': 15, 'C-03': 11, 'C-04': 20, 'C-05': 13, 'C-06': 15, 'C-07': 17, 'C-08': 18,
+                    'C-09': 13, 'C-10': 10, 'C-11': 8, 'C-12': 9, 'C-13': 8, 'C-14': 3, 'C-15': 12, 'C-16': 23, 'C-17': 10}
 # Le verifiche delle attivita' oltre il Percorso, in C-01: R-ACC-04 le chiede tutte.
 ATTIVITA_CLIENT = ['Quiz per argomento: ', 'Simulazione: ', 'Che tecnica serve?: ', 'Carteggio: ', 'Segnali: ']
 
@@ -864,6 +866,198 @@ ROTTURE_CLIENT = [
       ('    let esito;\n    await tx((s) => {\n      esito = E.dopoInvio(',
        '    let esito;\n    if (!S.db) { S.conto = conto; S.db = await apriDb(conto.chiave); }\n    await tx((s) => {\n      esito = E.dopoInvio(')],
      'dopo l\'uscita niente dell\'account resta'),
+    # --- P-43 ---------------------------------------------------------------
+    # C-07, la verifica dell'email
+    ('il 503 di posta preso per un errore', ['C-07:posta'],
+     [('if (r.status === 201 || (r.status === 503 && corpo && corpo.chiave_locale)) return registrato(corpo);',
+       'if (r.status === 201) return registrato(corpo);')],
+     'con la mail rifiutata dal fornitore'),
+    ('la scadenza calcolata con l\'orologio del browser', ['C-07:posta'],
+     [('  el.innerHTML = (S.conto.scade\n', '  el.innerHTML = ((S.conto.scade = new Date(Date.now() + 7 * 86400000).toISOString())\n')],
+     'la scadenza della conferma si vede dal primo momento'),
+    ('un rinvio rifiutato detto spedito', ['C-07:posta'],
+     [('  if (r.codice === 202) {\n    S.postaFallita = false;', '  if (r.codice === 202 || r.codice === 503) {\n    S.postaFallita = false;')],
+     'nessuna frase di successo'),
+    ('il gettone lasciato nell\'indirizzo', ['C-07:link'],
+     [("  history.replaceState(null, '', location.pathname + location.search);\n", '')],
+     'il gettone esce dall\'indirizzo'),
+    ('il gettone salvato in sessionStorage', ['C-07:link'],
+     [('  return { scopo: m[1], gettone: m[2] };', "  sessionStorage.setItem('rg-link', m[2]);\n  return { scopo: m[1], gettone: m[2] };")],
+     'il gettone non resta'),
+    ('un link gia\' usato preso per buono', ['C-07:link'],
+     [('  if (r.codice === 200) {\n    // Un link di verifica', '  if (r.codice === 200 || r.codice === 410) {\n    // Un link di verifica')],
+     'gia\' usato, lo dice'),
+    # C-08, la password
+    ('il motivo della password sostituito da una frase generica', ['C-08:password'],
+     [("  esito.textContent = (corpo && corpo.messaggio) || 'La registrazione non è riuscita. Le risposte sono ancora qui: riprova.';",
+       "  esito.textContent = 'La registrazione non è riuscita. Le risposte sono ancora qui: riprova.';")],
+     'il motivo del server accanto al campo'),
+    ('dopo un rifiuto il modulo si svuota', ['C-08:password'],
+     [("  esito.textContent = (corpo && corpo.messaggio) || 'La registrazione non è riuscita. Le risposte sono ancora qui: riprova.';",
+       "  moduloRegistrazione(); $('account-esito').textContent = (corpo && corpo.messaggio) || '';")],
+     'svuotato'),
+    ('l\'email sconosciuta distinta dalla password sbagliata', ['C-08:accesso'],
+     [("  if (r.codice === 401) e.textContent = 'Email o password non corrette. Riprova oppure reimposta la password.';",
+       "  if (r.codice === 401) e.textContent = /nessuno-/.test($('account').querySelector('[name=email]').value) ? 'Nessun account con questa email.' : 'Email o password non corrette. Riprova oppure reimposta la password.';")],
+     'la stessa frase'),
+    ('il 429 senza l\'attesa', ['C-08:accesso'],
+     [('  else if (r.codice === 429) e.textContent = `Troppi tentativi. Puoi riprovare fra ${secondi(r.attesa)}.`;',
+       '  else if (r.codice === 429) e.textContent = \'Troppi tentativi. Puoi riprovare fra poco.\';')],
+     'dal Retry-After'),
+    ('il recupero che promette la mail', ['C-08:recupero'],
+     [("    ? 'Se questo indirizzo è iscritto, riceverai una mail da Rotta Giusta.", "    ? 'Ti abbiamo mandato una mail da Rotta Giusta.")],
+     'la stessa frase condizionale'),
+    ('il gettone della password perso dopo un 422', ['C-08:recupero'],
+     [('  // Un 422 tiene il gettone in memoria: si corregge la password e si riprova.\n',
+       "  if (r.codice === 422) LINK.gettone = 'perso';\n")],
+     'lo stesso gettone, dopo il rifiuto'),
+    ('le risposte di un account appena confermato tenute senza chiedere', ['C-08:recupero'],
+     [('  if (r.corpo.confermato_ora && r.corpo.righe > 0) {', '  if (false) {')],
+     'la pagina chiede se tenerle'),
+    ('le risposte di un account appena confermato cancellate senza chiedere', ['C-08:recupero'],
+     [('    S.pwNuova = pw;\n    return pannello(`<h2>Account confermato</h2>',
+       "    S.pwNuova = pw;\n    api('POST', '/v1/azzera', { password: pw });\n    return pannello(`<h2>Account confermato</h2>")],
+     'nessuna risposta si cancella da sola'),
+    # C-09, l'archivio di prima
+    ('l\'archivio di prima letto solo da IndexedDB', ['C-09:porta'],
+     [('  const daLs = raw ? JSON.parse(raw) : [];', '  const daLs = [];')],
+     'unite per uid'),
+    ('le due fonti sommate invece di unite', ['C-09:porta'],
+     [('  return E.fondiArchivio(daIdb, daLs).righe;', '  return [...daIdb, ...daLs];')],
+     'unite per uid'),
+    ('le risposte di prima portate senza chiedere', ['C-09:porta'],
+     [('  const righe = await leggiVecchio();\n  pannello(`<h2>Porta le risposte nel tuo account</h2>',
+       '  return confermaVecchio();\n  const righe = await leggiVecchio();\n  pannello(`<h2>Porta le risposte nel tuo account</h2>')],
+     'chiede se portarle'),
+    ('portarle cancella l\'archivio di prima', ['C-09:porta'],
+     [("  await trasferisci(righe, { fonte: 'vecchio' });",
+       "  await trasferisci(righe, { fonte: 'vecchio' });\n  indexedDB.deleteDatabase(VECCHIO); localStorage.removeItem('pn.archivio');")],
+     'resta dov\'era'),
+    ('il segno che guarda il numero e non gli uid', ['C-09:porta'],
+     [('  const nuove = righe.filter((r) => !portate.has(String(r.uid)));',
+       '  const nuove = segno && righe.length === segno.n ? [] : righe.filter((r) => !portate.has(String(r.uid)));')],
+     'anche a conteggio uguale'),
+    ('«Più tardi» ricordato nel browser', ['C-09:dopo'],
+     [("  if (vv === 'dopo') { S.vecchioDopo = true;", "  if (vv === 'dopo') { S.vecchioDopo = true; localStorage.setItem('pn.vecchioDopo', '1');")],
+     'senza scrivere niente'),
+    ('una lettura fallita presa per un archivio vuoto', ['C-09:fallita'],
+     [("  try { righe = await leggiVecchio(); } catch { $('vecchio').hidden = true; $('vecchio-errore').hidden = false; return; }",
+       '  try { righe = await leggiVecchio(); } catch { righe = []; }')],
+     'una lettura fallita'),
+    # C-10, un file
+    ('il file filtrato sul nome dell\'app', ['C-10:file'],
+     [("if (!dati || !Array.isArray(dati.righe)) throw new Error('formato');",
+       "if (!dati || !Array.isArray(dati.righe) || dati.app !== 'rotta-giusta') throw new Error('formato');")],
+     'l\'anteprima dice i conteggi'),
+    ('i tag senza data scartati dalla pagina', ['C-10:file'],
+     [('  S.file = { nome: f.name, righe: dati.righe,', '  S.file = { nome: f.name, righe: dati.righe.filter((r) => r.ts),')],
+     'l\'anteprima dice i conteggi'),
+    ('i Segnali del file sommati in pagina', ['C-10:file'],
+     [("    const r = await api('PUT', '/v1/profilo', { segnali: F.segPunti });",
+       "    const r = await api('PUT', '/v1/profilo', { segnali: Object.fromEntries(Object.entries(F.segPunti).map(([m, p]) => [m, { migliore: p.migliore, giocate: p.giocate + (((S.conto.segnali || {})[m] || {}).giocate || 0) }])) });")],
+     'si fondono con il massimo'),
+    ('le righe non importate non si scaricano', ['C-10:file'],
+     [("      + (scarti ? ' <button data-importa=\"scarti\">Scarica le righe non importate</button>' : '');", "      + '';")],
+     'gli scarti da scaricare'),
+    ('l\'anteprima che non guarda le righe gia\' presenti', ['C-10:file'],
+     [('  const f = E.fondiArchivio(righe, F.righe, { quesiti: quesiti() });', '  const f = E.fondiArchivio([], F.righe, { quesiti: quesiti() });')],
+     'reimportato'),
+    ('senza account il file conservato nel browser', ['C-10:senza'],
+     [('  if (!S.conto) {\n    return pannello(`<h2>Importa un file dei progressi</h2>',
+       "  if (!S.conto) {\n    localStorage.setItem('pn.file', JSON.stringify(S.file));\n    return pannello(`<h2>Importa un file dei progressi</h2>")],
+     'non parte e non si conserva'),
+    ('un file illeggibile preso per vuoto', ['C-10:senza'],
+     [("  catch { $('importa-esito').textContent = 'Non riusciamo a leggere questo file di progressi. Scegli un file esportato da Rotta Giusta'; return; }",
+       '  catch { dati = { righe: [] }; }')],
+     'un file illeggibile lo dice'),
+    ('i punteggi da inviare tenuti solo in memoria', ['C-10:segnali'],
+     [('    return { seg };\n  });\n  await punteggiInSospeso();',
+       "    return {};\n  });\n  $('seg-stato').textContent = 'Punteggi da inviare';\n  api('PUT', '/v1/profilo', { segnali: seg.punti });")],
+     'dopo una ricarica con la rete'),
+    # C-12, i limiti
+    ('lotti a fette di 2.000 righe, senza guardare i byte', ['C-12:lotti'],
+     [('    const lotto = E.lottoDaInviare(righe, coda);',
+       '    const inCoda = new Set(coda.daInviare), fetta = righe.filter((r) => inCoda.has(String(r.uid))).slice(0, 2000);\n'
+       '    const lotto = fetta.length ? { generazione: coda.generazione, righe: fetta } : null;')],
+     'arrivano tutte'),
+    ('la ricezione ferma alla prima pagina', ['C-12:ricezione'],
+     [('    if (!esito.continua) return risposta.codice === 200;', '    return risposta.codice === 200;')],
+     'si ricevono tutte'),
+    ('il cursore spostato dalla conferma di un invio', ['C-12:ricezione'],
+     [('      esito = E.dopoInvio(s.coda, lotto, risposta, s.righe);\n      return { coda: esito.coda,',
+       '      esito = E.dopoInvio(s.coda, lotto, risposta, s.righe);\n      return { coda: { ...esito.coda, cursore: Math.max(esito.coda.cursore, (risposta.corpo && risposta.corpo.ultima_seq) || 0) },')],
+     'l\'invio non sposta il cursore'),
+    ('un 413 senza il messaggio del server', ['C-12:413'],
+     [('    S.erroreInvio = risposta.codice === 200 ? null : (risposta.corpo && risposta.corpo.messaggio) || null;', '    S.erroreInvio = null;')],
+     'un 413 si legge'),
+    # C-13, l'azzeramento
+    ('l\'azzeramento risolto senza chiedere', ['C-13:invio'],
+     [('function mostraConflitto(c) {\n  S.sospeso = c;', 'function mostraConflitto(c) {\n  S.sospeso = c; return risolvi();')],
+     'scoperto inviando'),
+    ('le risposte di prima rimandate con la generazione nuova', ['C-13:invio'],
+     [('  await tx((s) => ({ svuota: true, coda: E.risolviConflitto(s.coda, c), trasf: null }));',
+       '  await tx((s) => ({ coda: { ...E.risolviConflitto(s.coda, c), daInviare: s.coda.daInviare }, trasf: null }));')],
+     'la copia si svuota'),
+    ('scartare senza confermare la perdita', ['C-13:invio'],
+     [("  if (k === 'scarta') return pannello(", "  if (k === 'scarta') return risolvi(); if (false) pannello(")],
+     'scartare chiede di confermare'),
+    ('la scelta rimandata senza una strada per tornarci', ['C-13:ricezione'],
+     [("    $('conto-stato').innerHTML = 'I progressi sono stati azzerati da un altro dispositivo: scegli che cosa fare delle risposte di qui. <button data-conflitto=\"riapri\">Scegli adesso</button>';\n", '')],
+     'resta raggiungibile'),
+    ('la risposta data dopo «Decidi più tardi» non contata', ['C-13:ricezione'],
+     [('  S.sospeso = { ...S.sospeso, nonSalvate: righe.filter((r) => inCoda.has(String(r.uid))).length };', '  S.sospeso = { ...S.sospeso };')],
+     'conta la risposta data intanto'),
+    # C-14, il ripristino
+    ('l\'epoca nuova vista, e le righe perse non rimesse in coda', ['C-14'],
+     [('      esito = E.dopoRicezione(s.coda, risposta, s.righe);\n      return { nuove: esito.righe, coda: esito.coda,',
+       '      esito = E.dopoRicezione(s.coda, risposta, s.righe);\n      return { nuove: esito.righe, coda: esito.epocaCambiata ? { ...esito.coda, daInviare: s.coda.daInviare } : esito.coda,')],
+     'rimanda la risposta persa'),
+    # C-15, il resto
+    ('un 401 all\'uscita preso per la rete che manca', ['C-15:scaduta'],
+     [('      if (r.codice !== 204 && r.codice !== 401) {', '      if (r.codice !== 204) {')],
+     'un 401 all\'uscita'),
+    ('con la sessione revocata le risposte buttate senza scaricarle', ['C-15:scaduta'],
+     [("  if (c === 'scarica-pendenti') return scaricaPendenti();", "  if (c === 'scarica-pendenti') return chiudiAccesso(S.conto.chiave, S.uscitaTutti);")],
+     'la risposta non inviata si scarica'),
+    ('«Esci da tutti i dispositivi» che chiude solo qui', ['C-15:ovunque'],
+     [("      const r = await api('POST', tutti ? '/v1/uscita/ovunque' : '/v1/uscita');", "      const r = await api('POST', '/v1/uscita');")],
+     'chiude ogni sessione'),
+    ('un 401 all\'apertura che cancella la copia', ['C-15:ovunque'],
+     [("    $('conto-stato').textContent = 'L\\'accesso non è più valido. Entra di nuovo per inviare le risposte rimaste in questo dispositivo.';",
+       "    $('conto-stato').textContent = 'L\\'accesso non è più valido. Entra di nuovo per inviare le risposte rimaste in questo dispositivo.';\n    for (const n of nomi) indexedDB.deleteDatabase(n);")],
+     'la sua copia resta'),
+    # C-16, la data
+    ('la data proposta con oggi', ['C-16:salto'],
+     [('<input type="date" name="data" value="${esc(S.esame)}">', '<input type="date" name="data" value="${esc(S.esame || oggi())}">')],
+     'nessuna data inventata'),
+    ('la data salvata prima del clic', ['C-16:proposta'],
+     [('function onboarding() {\n', "function onboarding() {\n  if (S.esame) api('PUT', '/v1/profilo', { data_esame: S.esame });\n")],
+     'non si salva prima del clic'),
+    ('una data passata sostituita con oggi', ['C-16:proposta'],
+     [("  const r = await api('PUT', '/v1/profilo', { data_esame: v || null });", "  const r = await api('PUT', '/v1/profilo', { data_esame: v && v < oggi() ? oggi() : v || null });")],
+     'anche passata'),
+    ('un salvataggio fallito detto riuscito', ['C-16:fallito'],
+     [('  if (r.codice === 200) {\n    S.conto.data = r.corpo.data_esame;', '  if (true) {\n    S.conto.data = r.corpo && r.corpo.data_esame;')],
+     'un salvataggio della data fallito'),
+    ('l\'accesso ripete il passo della data', ['C-16:accesso'],
+     [('  if (!S.righe.length) { chiudiPannello(); return catena(); }', '  if (!S.righe.length) { onboarding(); return catena(); }')],
+     'il passo non si ripete'),
+    ('l\'accesso toglie la data del server', ['C-16:accesso'],
+     [("  if (io.data_esame !== undefined) $('esame-data').value = io.data_esame || '';", "  api('PUT', '/v1/profilo', { data_esame: S.esame || null });")],
+     'la data resta'),
+    # C-17, l'export e le origini senza API
+    ('l\'export fatto dalla copia locale', ['C-17:export'],
+     [("  const r = await api('GET', '/v1/esporta');", "  const r = { codice: 200, corpo: { app: 'rotta-giusta', righe: (await tx(() => null)).righe } };")],
+     'l\'export del server'),
+    ('le risposte da inviare taciute', ['C-17:export'],
+     [('  const n = coda.daInviare.length;\n  e.innerHTML = n ?', '  const n = 0;\n  e.innerHTML = n ?')],
+     'quante risposte da inviare'),
+    ('un\'API anche fuori dagli indirizzi previsti', ['C-17:origine'],
+     [('  return null;\n}\nconst API = indirizzoApi(location);', "  return 'http://localhost:8620';\n}\nconst API = indirizzoApi(location);")],
+     'non offre «Accedi»'),
+    ('l\'invito a un account che su quell\'origine non puo\' esistere', ['C-17:origine'],
+     [("  const invito = S.conto ? '' : !API ? ", "  const invito = S.conto ? '' : false ? ")],
+     'nel riepilogo nessun modulo'),
 ]
 
 # Varianti della pagina di riferimento che devono restare **verdi**: il banco
@@ -915,7 +1109,10 @@ def banco_client():
     except (OSError, ValueError, subprocess.TimeoutExpired) as e:
         out, errore = None, str(e)
     else:
-        errore = (p.stderr or '').strip()[-400:]
+        # Un banco caduto deve dire perche': l'avviso sperimentale di node:sqlite
+        # riempiva da solo le ultime righe, e il rosso non diceva niente (P-43).
+        righe = [r for r in (p.stderr or '').splitlines() if 'ExperimentalWarning' not in r and '--trace-warnings' not in r]
+        errore = 'uscito con %s: %s' % (p.returncode, '\n'.join(righe)[-1200:] or 'nessun messaggio')
     if out is None:
         out = {x['nome']: [{'gruppo': 'banco', 'nome': 'il banco del browser parte', 'ok': False, 'extra': errore}]
                for x in prove}
@@ -998,6 +1195,133 @@ def test_client_coda():
 
 def test_client_uscita():
     registra_client('C-15')
+
+
+def test_client_verifica():
+    registra_client('C-07')
+
+
+def test_client_password():
+    registra_client('C-08')
+
+
+def test_client_vecchio_archivio():
+    registra_client('C-09')
+
+
+def test_client_file():
+    registra_client('C-10')
+
+
+def test_client_limiti():
+    registra_client('C-12')
+
+
+def test_client_azzeramento():
+    registra_client('C-13')
+
+
+def test_client_ripristino():
+    registra_client('C-14')
+
+
+def test_client_data():
+    registra_client('C-16')
+
+
+def test_client_export():
+    registra_client('C-17')
+
+
+# --- C-18: i testi, letti nei due stati (§11.2 del progetto del client) --------
+#
+# Non serve un browser: sono frasi nei file di site/. Le false vengono dal §1 di
+# docs/prossime-sessioni.md, cercate con grep il 25 settembre 2026 e ricontate
+# il 29 da P-43; le nuove dal §11.2 del progetto del client. Vere oggi, false
+# con il client: si cambiano **nella stessa versione** (specifica §2). Quindi
+# due regimi, riconosciuti dalla pagina come per C-01…C-17: nella pagina di oggi
+# nessuna frase nuova, che sarebbe una promessa di domani; nella pagina con il
+# client nessuna delle vecchie, commenti compresi, e tutte le nuove.
+#
+# Non vede: se l'informativa e' giusta. Il suo gate e' dell'autore (§4 della
+# coda); qui si pretende solo che non dica piu' quello che e' diventato falso e
+# che nomini il contatto del titolare.
+FRASI_FALSE = [
+    ('index.html', 'tutto nel tuo browser'),
+    ('index.html', 'Le risposte restano nel tuo browser'),
+    ('index.html', 'Nessun account, nessun cookie'),
+    ('app.html', 'Tutto nel tuo browser, nessun account'),
+    ('app.html', 'I progressi restano in questo browser'),
+    ('app.html', 'non esiste un account'),
+    ('app.html', 'Le risposte restano in questo browser'),
+    ('app.html', "Non c'e' un server"),
+    ('privacy.html', 'restano nel tuo browser'),
+    ('privacy.html', 'non esiste un server che li riceva'),
+    ('privacy.html', 'Nessun dato personale viene trattato'),
+]
+# (file, frase, quante volte almeno): «Come funziona» ha due copie (§11.2).
+FRASI_NUOVE = [
+    ('index.html', 'Prova quiz e carteggio senza account; crea un account per salvare i progressi.', 1),
+    ('app.html', 'Prova quiz e carteggio senza account; crea un account per salvare i progressi.', 1),
+    ('index.html', 'Prova senza account', 1),
+    ('index.html', 'Tutte le attività sono disponibili. Senza account non conserviamo risposte o preferenze.', 1),
+    ('index.html', 'Nessuna newsletter e nessun cookie di tracciamento.', 1),
+    ('app.html', 'Non serve un account per provare.', 2),
+    ('privacy.html', 'privacy@rottagiusta.it', 1),
+]
+
+
+def testi_dei_due_stati(regime, testi):
+    """I difetti dei testi di site/ per un regime: [(file, che cosa)]."""
+    difetti = []
+    if regime == 'progettato':
+        for f, frase in FRASI_FALSE:
+            if frase in testi[f]:
+                difetti.append((f, 'dice ancora «%s»' % frase))
+        for f, frase, n in FRASI_NUOVE:
+            if testi[f].count(frase) < n:
+                difetti.append((f, 'non dice «%s»%s' % (frase, ' in %d copie' % n if n > 1 else '')))
+    else:
+        for f, frase, _ in FRASI_NUOVE:
+            if f != 'privacy.html' and frase in testi[f]:
+                difetti.append((f, 'dice gia\' «%s», che senza il client e\' falso' % frase))
+    return difetti
+
+
+def test_client_testi():
+    """R-ACC-57 (C-18): i testi pubblici dicono lo stato in cui la pagina e'."""
+    testi = {f: leggi(f) for f in ('index.html', 'app.html', 'privacy.html')}
+    regime = regime_client(testi['app.html'])
+    etichetta = {'attuale': 'regime attuale', 'progettato': 'regime progettato'}[regime]
+    difetti = testi_dei_due_stati(regime, testi)
+    check('client (%s) C-18: i testi di site/ sono quelli del loro stato' % etichetta, not difetti,
+          '; '.join('%s %s' % d for d in difetti[:4]))
+    # Provato al contrario, sui testi di oggi e senza toccarli: con una frase
+    # falsa aggiunta a una pagina con il client il controllo la nomina; tolte le
+    # false e messe le nuove, passa. Cosi' non e' un verde a copertura zero, e
+    # non dipende da quale regime la pagina ha oggi.
+    pulite = {f: t for f, t in testi.items()}
+    for f, frase in FRASI_FALSE:
+        pulite[f] = pulite[f].replace(frase, '')
+    for f, frase, n in FRASI_NUOVE:
+        pulite[f] += ('\n' + frase) * n
+    check('C-18 provato al contrario: tolte le frasi false e messe le nuove, il regime progettato passa',
+          not testi_dei_due_stati('progettato', pulite), str(testi_dei_due_stati('progettato', pulite)[:2]))
+    for f, frase in FRASI_FALSE:
+        rotte = dict(pulite)
+        rotte[f] = rotte[f] + '\n' + frase
+        d = testi_dei_due_stati('progettato', rotte)
+        check('C-18 provato al contrario: «%s» rimasta in %s si vede' % (frase, f), any(frase in x[1] for x in d), 'passata verde')
+    oggi = dict(testi)
+    for f, frase, _ in FRASI_NUOVE:
+        oggi[f] = oggi[f].replace(frase, '')
+    check('C-18 provato al contrario: senza le frasi nuove il regime attuale passa', not testi_dei_due_stati('attuale', oggi),
+          str(testi_dei_due_stati('attuale', oggi)[:2]))
+    for f, frase, _ in FRASI_NUOVE:
+        if f == 'privacy.html':
+            continue
+        d = testi_dei_due_stati('attuale', {**oggi, f: oggi[f] + '\n' + frase})
+        check('C-18 provato al contrario: «%s» nella pagina senza client si vede' % frase[:40], any(frase in x[1] for x in d), 'passata verde')
 
 
 def test_client_provato_al_contrario():
@@ -1253,6 +1577,9 @@ def main():
               test_client_primo_ingresso, test_client_senza_account, test_client_email_registrata,
               test_client_invito_e_viste, test_client_tutte_le_attivita, test_client_registrazione,
               test_client_dispositivo_condiviso, test_client_coda, test_client_uscita,
+              test_client_verifica, test_client_password, test_client_vecchio_archivio, test_client_file,
+              test_client_limiti, test_client_azzeramento, test_client_ripristino, test_client_data,
+              test_client_export, test_client_testi,
               test_client_provato_al_contrario,
               test_motore_senza_orfani, test_chiamate_al_motore_preservate,
               test_letture_che_non_mascherano,

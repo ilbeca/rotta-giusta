@@ -794,6 +794,26 @@ test('accesso: dal quinto fallimento di fila un attesa che raddoppia fino a 15 m
   assert.equal(k.s.calcoli(), calcoli, 'durante l attesa non si calcola niente');
 });
 
+test('cors: il Retry-After di un 429 lo legge anche la pagina, che sta su un altra origine', async (t) => {
+  // §5.1 del progetto del client: «Troppi tentativi. Puoi riprovare fra
+  // {attesa}», dal Retry-After. La pagina sta su rottagiusta.it e l'API su
+  // api.rottagiusta.it: un'intestazione che il CORS non espone, il browser la
+  // nasconde — misurato in Chrome il 29 settembre 2026 (P-43), `null` senza
+  // Access-Control-Expose-Headers e `'30'` con. Il server la mandava, e nessuno
+  // la poteva leggere.
+  const k = await conti(t);
+  await registrato(k, 'a@esempio.it');
+  for (let i = 0; i < 5; i++) await k.chiama('POST', '/v1/accesso', { email: 'a@esempio.it', password: ALTRA });
+  const r = await k.chiama('POST', '/v1/accesso', { email: 'a@esempio.it', password: BUONA });
+  assert.equal(r.status, 429);
+  assert.equal(r.h.get('retry-after'), '30');
+  const esposte = (r.h.get('access-control-expose-headers') || '').split(',').map((x) => x.trim().toLowerCase());
+  assert.ok(esposte.includes('retry-after'), `Access-Control-Expose-Headers: ${r.h.get('access-control-expose-headers')}`);
+  // E solo per l'origine del sito, come il resto del CORS.
+  const altrove = await k.chiama('GET', '/v1/salute', undefined, { origine: 'https://altrove.example' });
+  assert.equal(altrove.h.get('access-control-expose-headers'), null);
+});
+
 test('limiti: 30 accessi all ora per indirizzo, 5 registrazioni, 3 mail all ora per destinazione', async (t) => {
   // §6.5. In memoria: si perdono al riavvio, ed e' accettabile.
   const k = await conti(t);

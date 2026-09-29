@@ -3,7 +3,7 @@
   La pagina di riferimento del client degli account, regime progettato:
   docs/account-client-progetto.md §§3.2, 4, 5, 9, 10 e 11.1. Non e' pubblicata
   e non e' un prototipo: e' il minimo che soddisfa il banco del browser
-  (tests/client_account.mjs) per C-01…C-06, C-11 e C-15, e serve a quel banco
+  (tests/client_account.mjs) per C-01…C-17, e serve a quel banco
   per provarsi al contrario a ogni esecuzione — questa pagina deve passare, e
   ognuna delle rotture elencate in ROTTURE_CLIENT di tests/test_interfaccia.py
   deve fallire nominando il difetto.
@@ -29,11 +29,21 @@
   </nav>
   <button id="conto-porta">Accedi</button>
   <p id="conto-stato" role="status"></p>
+  <p id="conto-verifica" role="status" hidden></p>
+  <p id="seg-stato" role="status"></p>
+  <p id="link-esito" role="status"></p>
+  <p id="data-esito" role="status"></p>
 </header>
 
 <section class="view on" id="v-oggi">
   <h1>Il tuo percorso</h1>
   <p id="avviso-prova">Senza account le risposte valgono solo finché questa pagina resta aperta. Se la chiudi o la ricarichi, le perdi. Non salviamo niente, nemmeno le tue preferenze.</p>
+  <p id="altrove" hidden>Su questo indirizzo non si può creare un account. Per salvare le risposte vai su <a href="https://rottagiusta.it/app">rottagiusta.it/app</a>.</p>
+  <section id="vecchio" hidden><p id="vecchio-txt"></p>
+    <button data-vecchio="porta">Registrati o entra e portale</button>
+    <button data-vecchio="scarica">Scarica il file</button>
+    <button data-vecchio="dopo">Più tardi</button></section>
+  <p id="vecchio-errore" role="alert" hidden>Non siamo riusciti a leggere le risposte già presenti in questo browser. Riprova prima di cancellare i dati del sito. <button data-vecchio="riprova">Riprova</button></p>
   <button data-rotta-start disabled>Inizia l'attività</button>
   <label>Data d'esame (facoltativa) <input type="date" id="esame-data"></label>
   <section id="rotta-last" hidden><h2>Ultima attività nei quiz</h2><p id="rotta-last-txt"></p></section>
@@ -73,7 +83,13 @@
   <button id="s-start">Inizia</button>
 </section>
 
-<section class="view" id="v-info"><h1>Info</h1></section>
+<section class="view" id="v-info"><h1>Info</h1>
+  <label>Importa un file dei progressi <input type="file" id="importa-file" accept=".json,application/json"></label>
+  <p id="importa-esito" role="status"></p>
+  <button data-conto="esporta" id="esporta" hidden>Scarica i tuoi progressi</button>
+  <p id="esporta-esito" role="status"></p>
+  <p id="vecchio-info"></p>
+</section>
 
 <div id="quizrun">
   <span id="r-pos"></span>
@@ -119,10 +135,21 @@ function indirizzoApi(loc) {
 }
 const API = indirizzoApi(location);
 
+// Il gettone di un link sta nel frammento: lo si legge in memoria e lo si
+// toglie dall'indirizzo prima di ogni richiesta e di ogni disegno (§6). Mai in
+// uno storage, mai in un log.
+const LINK = (() => {
+  const m = location.hash.match(/^#(verifica|password)=([^&#]+)$/);
+  if (!m) return null;
+  history.replaceState(null, '', location.pathname + location.search);
+  return { scopo: m[1], gettone: m[2] };
+})();
+
 // Senza account tutto in memoria (§9.2). Con l'account, S.conto e il suo
 // archivio: S.righe resta la prova della pagina, finche' non si sceglie.
 const S = { banca: [], cart: [], righe: [], run: null, esame: '', auto: false, ultima: null,
-  conto: null, db: null, ciclo: 0, ac: null, inVolo: null, ancora: false, rilascia: null, trasf: null, onboarding: false };
+  conto: null, db: null, ciclo: 0, ac: null, inVolo: null, ancora: false, rilascia: null, trasf: null, onboarding: false,
+  idQuiz: [], vecchio: null, vecchioDopo: false, portaVecchio: false, file: null, sospeso: null, erroreInvio: null, postaFallita: false };
 const $ = (id) => document.getElementById(id);
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
@@ -132,11 +159,15 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').cat
 
 fetch('/dati/quiz.json').then((r) => r.json()).then((b) => {
   S.banca = b.filter((q) => q.k === 'base');
+  S.idQuiz = b.map((q) => q.id);
   document.querySelector('[data-rotta-start]').disabled = false;
 });
 fetch('/dati/carteggio.json').then((r) => r.json()).then((c) => { S.cart = c; }).catch(() => {});
 
 $('esame-data').addEventListener('change', (e) => { S.esame = e.target.value; });
+// Con l'account la data sta sul server; senza, solo in memoria (§11.1).
+$('esame-data').addEventListener('change', (e) => { if (S.conto) api('PUT', '/v1/profilo', { data_esame: e.target.value || null }); });
+const quesiti = () => new Set([...S.idQuiz, ...S.cart.map((e) => e.id)]);
 
 function vista(v) {
   for (const s of document.querySelectorAll('.view')) s.classList.toggle('on', s.id === 'v-' + v);
@@ -202,7 +233,7 @@ function termina() {
 function riepilogo() {
   const u = S.ultima, esatte = u.esiti.filter(Boolean).length;
   // L'invito solo senza account: con l'account le risposte si salvano da sole.
-  const invito = S.conto ? '' : `<section class="invito">
+  const invito = S.conto ? '' : !API ? `<p>Su questo indirizzo non si può creare un account. Per salvare le risposte vai su <a href="https://rottagiusta.it/app">rottagiusta.it/app</a>.</p>` : `<section class="invito">
       <h2>Vuoi conservare le attività di questa pagina?</h2>
       <p>Senza account, chiudendo o ricaricando la pagina perdi le risposte e le preferenze. Crea un account per salvare le risposte, ritrovarle su un altro dispositivo e vedere i Progressi quando ci sono abbastanza dati.</p>
       <p>Le risposte saranno legate alla tua email e conservate sul nostro server, in chiaro. Il titolare può leggerle per supporto e statistiche.</p>
@@ -301,6 +332,7 @@ function rispondiSeg(j) {
   // Il punteggio resta in S: senza account i Segnali non conservano niente.
   $('sr-fine').innerHTML = `<p>${G.esatte} / ${G.dom.length}</p><button id="sr-basta">Chiudi</button>`;
   $('sr-fine').classList.add('on');
+  if (S.conto) registraPunteggio('notturni', G.esatte);
 }
 
 // --- account: registrazione ed email gia' registrata (§4.2, §5.2) ---------------
@@ -324,6 +356,7 @@ function moduloAccesso(email) {
     <label>Password <input type="password" name="password" autocomplete="current-password"></label>
     <p id="account-esito" role="status"></p>
     <button data-account="entra">Accedi</button>
+    <button data-account="dimenticata" data-email="${esc(email)}">Ho dimenticato la password</button>
     <button data-account="torna">Torna all'attività</button>`);
 }
 
@@ -333,7 +366,7 @@ async function api(metodo, percorso, corpo, signal) {
     const r = await fetch(API + percorso, { method: metodo, credentials: 'include', signal,
       headers: corpo === undefined ? {} : { 'Content-Type': 'application/json' },
       body: corpo === undefined ? undefined : JSON.stringify(corpo) });
-    return { codice: r.status, corpo: await r.json().catch(() => null) };
+    return { codice: r.status, corpo: await r.json().catch(() => null), attesa: r.headers.get('Retry-After') };
   } catch (e) {
     return { codice: 0, corpo: null, annullata: e.name === 'AbortError' };
   }
@@ -367,6 +400,7 @@ async function registra() {
       <button data-account="reimposta" data-email="${esc(email)}">Reimposta la password</button>
       <button data-account="torna">Torna al riepilogo</button>`);
   }
+  S.postaFallita = r.status === 503;
   // Un 503 di posta ha gia' creato account e cookie: vale come un 201 (§4.3).
   if (r.status === 201 || (r.status === 503 && corpo && corpo.chiave_locale)) return registrato(corpo);
   esito.textContent = (corpo && corpo.messaggio) || 'La registrazione non è riuscita. Le risposte sono ancora qui: riprova.';
@@ -384,6 +418,8 @@ async function dopoRispostaPersa() {
 /** Registrato: l'identita', poi le righe della pagina — tutte, di ogni attivita' —, poi la data (§4.3). */
 async function registrato(io) {
   await entra(io);
+  // Il modulo si chiude: lo stato dell'invio, e il suo «Riprova», stanno fuori (§4.3).
+  chiudiPannello();
   S.onboarding = true;
   await trasferisci(S.righe.splice(0));
 }
@@ -410,16 +446,20 @@ function tx(fai) {
   return new Promise((ok, ko) => {
     const t = S.db.transaction(['righe', 'meta'], 'readwrite');
     const righe = t.objectStore('righe'), meta = t.objectStore('meta');
-    const qr = righe.getAll(), qc = meta.get('coda'), qt = meta.get('trasf');
+    const qr = righe.getAll(), qc = meta.get('coda'), qv = meta.get('vecchio'), qs = meta.get('seg'), qt = meta.get('trasf');
     let stato;
     t.oncomplete = () => ok(stato);
     t.onerror = () => ko(t.error);
     qt.onsuccess = () => {
-      stato = { righe: qr.result, coda: qc.result || E.nuovaCoda({ generazione: S.conto.generazione, epocaDb: S.conto.epoca }), trasf: qt.result || null };
+      stato = { righe: qr.result, coda: qc.result || E.nuovaCoda({ generazione: S.conto.generazione, epocaDb: S.conto.epoca }), trasf: qt.result || null,
+        vecchio: qv.result || null, seg: qs.result || null };
       const out = fai(stato) || {};
+      if (out.svuota) righe.clear();
       for (const r of out.nuove || []) righe.put(r);
       if (out.coda) meta.put(out.coda, 'coda');
       if (out.trasf !== undefined) meta.put(out.trasf, 'trasf');
+      if (out.vecchio) meta.put(out.vecchio, 'vecchio');
+      if (out.seg !== undefined) meta.put(out.seg, 'seg');
     };
   });
 }
@@ -450,7 +490,7 @@ async function catena() {
 
 async function invia(mio) {
   for (;;) {
-    if (mio !== S.ciclo) return false;
+    if (mio !== S.ciclo || S.sospeso) return false;
     const { righe, coda } = await tx(() => null);
     const lotto = E.lottoDaInviare(righe, coda);
     if (!lotto) return true;
@@ -464,13 +504,16 @@ async function invia(mio) {
       esito = E.dopoInvio(s.coda, lotto, risposta, s.righe);
       return { coda: esito.coda, trasf: s.trasf ? E.registraEsito(s.trasf, esito) : null };
     });
+    // Un rifiuto del server si legge: il suo messaggio, non un «salvate» (§4.3).
+    S.erroreInvio = risposta.codice === 200 ? null : (risposta.corpo && risposta.corpo.messaggio) || null;
+    if (esito.conflitto) { mostraConflitto(esito.conflitto); return false; }
     if (risposta.codice !== 200 || esito.conflitto) return false;
   }
 }
 
 async function ricevi(mio) {
   for (;;) {
-    if (mio !== S.ciclo) return false;
+    if (mio !== S.ciclo || S.sospeso) return false;
     const { coda } = await tx(() => null);
     S.ac = new AbortController();
     const risposta = await api('GET', `/v1/righe?dopo=${coda.cursore}`, undefined, S.ac.signal);
@@ -480,16 +523,22 @@ async function ricevi(mio) {
       esito = E.dopoRicezione(s.coda, risposta, s.righe);
       return { nuove: esito.righe, coda: esito.coda, trasf: s.trasf ? E.registraEsito(s.trasf, esito) : null };
     });
+    // Una generazione nuova: prima si sceglie, poi si riceve (§10).
+    if (esito.conflitto) { mostraConflitto(esito.conflitto); return false; }
+    // Un'epoca nuova: il motore ha rimesso in coda le righe che il server ha
+    // perso, e la catena le rimanda (R-ACC-24).
+    if (esito.epocaCambiata) S.ancora = true;
     if (!esito.continua) return risposta.codice === 200;
   }
 }
 
 /** Un trasferimento: righe e coda insieme, poi la catena (§9.3). */
-async function trasferisci(righe) {
+async function trasferisci(righe, { quesiti: q, ...extra } = {}) {
   await tx((s) => {
-    const { trasferimento, coda } = E.nuovoTrasferimento(s.coda, righe);
-    const valide = righe.filter((r) => trasferimento.uid.includes(String(r.uid)));
-    return { nuove: valide, coda, trasf: trasferimento };
+    const { trasferimento, coda } = E.nuovoTrasferimento(s.coda, righe, q ? { quesiti: q } : {});
+    const mie = new Set(trasferimento.uid), gia = new Set(s.righe.map((r) => String(r.uid)));
+    const valide = righe.filter((r) => mie.has(String(r.uid)) && !gia.has(String(r.uid)));
+    return { nuove: valide, coda, trasf: { ...trasferimento, ...extra } };
   });
   await dipingiStato();
   await catena();
@@ -498,12 +547,19 @@ async function trasferisci(righe) {
 /** Lo stato dell'invio, dal motore: «salvate» solo quando il server le ha nominate tutte. */
 async function dipingiStato() {
   if (!S.conto) { $('conto-stato').textContent = ''; return; }
+  // Sospesi da un azzeramento altrove: la scelta resta raggiungibile (§10).
+  if (S.sospeso) {
+    $('conto-stato').innerHTML = 'I progressi sono stati azzerati da un altro dispositivo: scegli che cosa fare delle risposte di qui. <button data-conflitto="riapri">Scegli adesso</button>';
+    return;
+  }
   const { righe, coda, trasf } = await tx(() => null);
+  const guasto = S.erroreInvio ? ' ' + S.erroreInvio : '';
   if (!trasf) {
-    $('conto-stato').textContent = coda.daInviare.length ? `${coda.daInviare.length} risposte da inviare` : 'Le risposte di questo dispositivo sono confermate sul server';
+    $('conto-stato').textContent = coda.daInviare.length ? `${coda.daInviare.length} risposte da inviare.${guasto}` : 'Le risposte di questo dispositivo sono confermate sul server';
     return;
   }
   const r = E.riepilogoTrasferimento(trasf, coda, righe);
+  await chiudiTrasferimento(trasf, r, coda, righe);
   if (r.completo) {
     $('conto-stato').textContent = `${r.confermate} ${r.confermate === 1 ? 'risposta salvata' : 'risposte salvate'} nel tuo account`;
     if (S.onboarding) { S.onboarding = false; onboarding(); }
@@ -513,22 +569,40 @@ async function dipingiStato() {
   } else if (r.stato === 'con scarti') {
     $('conto-stato').textContent = `${r.confermate} risposte salvate · ${r.nonSalvate} righe non salvate`;
   } else {
-    $('conto-stato').innerHTML = 'Non chiudere la pagina: le risposte non sono ancora salvate nel tuo account. <button data-conto="riprova">Riprova l\'invio</button>';
+    $('conto-stato').innerHTML = 'Non chiudere la pagina: le risposte non sono ancora salvate nel tuo account. <button data-conto="riprova">Riprova l\'invio</button>' + esc(guasto);
   }
 }
 
 function onboarding() {
+  // La data scritta nella pagina si propone, dicendo da dove viene, e si salva
+  // solo al clic; senza, il campo resta vuoto: nessuna data inventata (§11.1).
   pannello(`<h2>Hai una data d'esame?</h2>
-    <label>Data d'esame (facoltativa) <input type="date" name="data"></label>
+    <label>Data d'esame (facoltativa) <input type="date" name="data" value="${esc(S.esame)}"></label>
+    ${S.esame ? '<p>È la data che hai scritto in questa pagina: salvala solo se è quella giusta.</p>' : ''}
     <p>Puoi aggiungerla quando la conosci. Puoi allenarti anche senza una data.</p>
+    <p id="account-esito" role="status"></p>
     <button data-conto="data">Salva la data</button><button data-account="torna">Continua senza data</button>`);
+}
+
+async function salvaData() {
+  const v = $('account').querySelector('[name=data]').value;
+  const r = await api('PUT', '/v1/profilo', { data_esame: v || null });
+  if (r.codice === 200) {
+    S.conto.data = r.corpo.data_esame;
+    $('esame-data').value = r.corpo.data_esame || '';
+    chiudiPannello();
+    $('data-esito').textContent = 'Data salvata';
+    return;
+  }
+  $('account-esito').textContent = 'La data non è stata salvata. Riprova oppure continua senza cambiarla';
 }
 
 // --- l'identita': entrare, riconoscersi all'apertura, uscire -------------------------
 
 async function entra(io) {
   S.ciclo++;
-  S.conto = { email: io.email, chiave: io.chiave_locale, generazione: io.generazione, epoca: io.epoca };
+  S.conto = { email: io.email, chiave: io.chiave_locale, generazione: io.generazione, epoca: io.epoca,
+    verificata: io.verificata, scade: io.scade_se_non_verificata, data: io.data_esame, segnali: io.segnali || {} };
   S.db = await apriDb(S.conto.chiave);
   // Un lucchetto condiviso per scheda: chi esce aspetta che ogni scheda lo
   // lasci, cioe' che abbia fermato le sue richieste (§9.1).
@@ -536,6 +610,10 @@ async function entra(io) {
   navigator.locks.request(nomeDb(S.conto.chiave), { mode: 'shared' }, () => (mio !== S.ciclo ? null : new Promise((r) => { S.rilascia = r; })));
   $('conto-porta').textContent = 'Account';
   $('avviso-prova').hidden = true;
+  $('esporta').hidden = false;
+  if (io.data_esame !== undefined) $('esame-data').value = io.data_esame || '';
+  dipingiVerifica();
+  await punteggiInSospeso();
 }
 
 /** Ferma questa scheda: niente piu' invii, niente scritture, memoria pulita. */
@@ -549,6 +627,11 @@ function fermaQui() {
   $('conto-porta').textContent = 'Accedi';
   $('conto-stato').textContent = '';
   $('avviso-prova').hidden = false;
+  $('esporta').hidden = true;
+  $('seg-stato').textContent = '';
+  $('esame-data').value = ''; S.esame = '';
+  S.sospeso = null; S.erroreInvio = null;
+  dipingiVerifica();
 }
 
 const canale = new BroadcastChannel('rg-account');
@@ -561,16 +644,20 @@ async function accedi() {
   const pw = $('account').querySelector('[name=password]').value;
   $('account-esito').textContent = 'Accesso in corso…';
   const r = await api('POST', '/v1/accesso', { email, password: pw });
-  if (r.codice !== 200) {
-    $('account-esito').textContent = r.codice === 401 ? 'Email o password non corrette. Riprova oppure reimposta la password.' : 'L\'accesso non è riuscito. Riprova.';
-    return;
-  }
+  if (r.codice !== 200) return erroreAccesso(r);
   await entra(r.corpo);
+  return dopoIngresso(r.corpo);
+}
+
+/** Dopo l'accesso o una password nuova: l'archivio di prima, o le risposte della pagina (§5.1, §7). */
+async function dopoIngresso(io) {
+  await controllaVecchio();
+  if (S.portaVecchio) { S.portaVecchio = false; return portaVecchio(); }
   if (!S.righe.length) { chiudiPannello(); return catena(); }
   // Le risposte della prova entrano solo dopo una domanda esplicita (§5.1).
   pannello(`<h2>Accedi</h2>
     <p>Vuoi portare nel tuo account le ${S.righe.length} risposte di questa pagina?</p>
-    <p>Account: ${esc(r.corpo.email)}</p>
+    <p>Account: ${esc(io.email)}</p>
     <label><input type="radio" name="porta" value="si" checked> Sì, portale</label>
     <label><input type="radio" name="porta" value="no"> No, continua senza portarle</label>
     <button data-conto="scelta">Conferma la scelta</button>`);
@@ -599,14 +686,21 @@ async function avvioConto() {
   await dipingiStato();
   await catena();
 }
-avvioConto();
+// All'apertura: l'account, l'archivio di prima, il link (§3.1, §6, §7).
+(async () => {
+  // Su un'origine senza API nessun modulo destinato a fallire: la strada e' il link (§3.1).
+  if (API) await avvioConto();
+  else { $('altrove').hidden = false; for (const b of document.querySelectorAll('#conto-porta, [data-conto="accedi"]')) b.hidden = true; }
+  await controllaVecchio();
+  await seguiLink();
+})();
 
 function pannelloConto() {
   pannello(`<h2>Il tuo account</h2><p>${esc(S.conto.email)}</p><p id="account-esito" role="status"></p>
-    <button data-conto="esci">Esci</button><button data-account="torna">Torna all'attività</button>`);
+    <button data-conto="esci">Esci</button><button data-conto="ovunque">Esci da tutti i dispositivi</button><button data-account="torna">Torna all'attività</button>`);
 }
 
-async function esci() {
+async function esci(tutti = false) {
   const esito = $('account-esito'), chiave = S.conto.chiave;
   esito.textContent = 'Uscita in corso…';
   // Prima si prova a inviare; con righe che non sono sul server non si esce (§10).
@@ -615,18 +709,28 @@ async function esci() {
   const { coda } = await tx(() => null);
   const pendenti = coda.daInviare.length + Object.keys(coda.scartate).length;
   if (pendenti) {
-    esito.textContent = `${pendenti} ${pendenti === 1 ? 'risposta non è' : 'risposte non sono'} sul server. Collegati alla rete e riprova, oppure scaricale prima di uscire.`;
+    esito.innerHTML = `${pendenti} ${pendenti === 1 ? 'risposta non è' : 'risposte non sono'} sul server. Collegati alla rete e riprova, oppure scaricale prima di uscire. <button data-conto="scarica-pendenti">Scarica le risposte non salvate</button>`;
+    S.uscitaTutti = tutti;
     return;
   }
+  return chiudiAccesso(chiave, tutti);
+}
+
+/**
+ * Chiude l'accesso da qui — o da tutti i dispositivi — e cancella la copia.
+ * Un 401 vuol dire che la sessione non c'era gia' piu': la pulizia locale si fa
+ * lo stesso (§10). Senza rete non si esce per finta.
+ */
+async function chiudiAccesso(chiave, tutti) {
   canale.postMessage({ tipo: 'uscita', chiave });
   const conto = S.conto;
   fermaQui();
   try {
     await navigator.locks.request(nomeDb(chiave), { mode: 'exclusive', signal: AbortSignal.timeout(3000) }, async () => {
-      const r = await api('POST', '/v1/uscita');
+      const r = await api('POST', tutti ? '/v1/uscita/ovunque' : '/v1/uscita');
       if (r.codice !== 204 && r.codice !== 401) {
         // Senza rete il server non revoca il cookie: niente falso «sei uscito».
-        await entra({ email: conto.email, chiave_locale: chiave, generazione: conto.generazione, epoca: conto.epoca });
+        await entra({ email: conto.email, chiave_locale: chiave, generazione: conto.generazione, epoca: conto.epoca, verificata: conto.verificata, scade_se_non_verificata: conto.scade });
         pannelloConto();
         $('account-esito').textContent = 'Per uscire dall\'account serve la rete. Puoi scaricare le risposte e restare qui; non lasciare il dispositivo condiviso finché l\'uscita non è confermata.';
         return;
@@ -644,6 +748,372 @@ async function esci() {
   } catch {
     pannello('<h2>Uscita</h2><p role="alert">Un\'altra scheda non si ferma: chiudila e riprova.</p>');
   }
+}
+
+// --- la verifica dell'email e i link (§6) --------------------------------------------
+
+const quando = (iso) => new Date(iso).toLocaleString('it-IT', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Rome' });
+
+/** L'avviso di conferma: la data e' quella del server, dal primo momento (§6). */
+function dipingiVerifica() {
+  const el = $('conto-verifica');
+  if (!S.conto || S.conto.verificata) { el.hidden = true; el.innerHTML = ''; return; }
+  el.innerHTML = (S.conto.scade
+    ? `Conferma ${esc(S.conto.email)} entro il ${quando(S.conto.scade)}. Se non lo fai, l'account e tutte le sue risposte saranno cancellati. Nel frattempo puoi allenarti, salvare e vedere i Progressi.`
+    : `Conferma ${esc(S.conto.email)}: la scadenza non è disponibile adesso, la stiamo rileggendo.`)
+    + (S.postaFallita ? ' <strong>L\'account è creato, ma non siamo riusciti a spedire la mail di conferma. Riprova fra qualche minuto.</strong>' : '')
+    + ' <button data-conto="rinvia">Rimanda la mail</button> <button data-conto="stato">Ho confermato: verifica lo stato</button> <span id="rinvio-esito"></span>';
+  el.hidden = false;
+}
+
+async function rileggiIo() {
+  const io = await api('GET', '/v1/io');
+  if (io.codice === 200 && S.conto && io.corpo.chiave_locale === S.conto.chiave) {
+    S.conto.verificata = io.corpo.verificata;
+    S.conto.scade = io.corpo.scade_se_non_verificata;
+    dipingiVerifica();
+  }
+  return io;
+}
+
+async function rinvia() {
+  const r = await api('POST', '/v1/verifica/rinvia');
+  if (r.codice === 202) {
+    S.postaFallita = false;
+    dipingiVerifica();
+    $('rinvio-esito').textContent = 'La mail di conferma è stata inviata. Il link vale 24 ore. Usa l\'ultimo link ricevuto. Se dopo cinque minuti non trovi la mail di Rotta Giusta, controlla lo spam.';
+  } else if (r.codice === 200) await rileggiIo();
+  else if (r.codice === 429) $('rinvio-esito').textContent = (r.corpo && r.corpo.messaggio) || 'Troppe richieste: riprova più tardi.';
+  else $('rinvio-esito').textContent = 'Non siamo riusciti a spedire la mail di conferma. Riprova fra qualche minuto.';
+}
+
+async function seguiLink() {
+  if (!LINK || !API) return;
+  if (LINK.scopo === 'password') return moduloNuovaPassword();
+  const e = $('link-esito');
+  const r = await api('POST', '/v1/verifica', { gettone: LINK.gettone });
+  if (r.codice === 200) {
+    // Un link di verifica non e' un accesso, e non cambia l'account di questa scheda.
+    if (S.conto && S.conto.chiave === r.corpo.chiave_locale) { e.textContent = 'Email confermata.'; await rileggiIo(); }
+    else if (!S.conto) e.innerHTML = 'Email confermata. <button data-conto="accedi">Accedi</button>';
+    else e.textContent = 'Email confermata.';
+  } else if (r.codice === 410) e.textContent = 'Il link è scaduto o è già stato usato. Se l\'email non è ancora confermata, entra nel tuo account e chiedi una nuova mail.';
+  else if (r.codice === 0) e.innerHTML = 'La conferma richiede la rete. Lascia aperta questa pagina e riprova quando sei online. <button data-conto="link">Riprova</button>';
+  else e.textContent = (r.corpo && r.corpo.messaggio) || 'La conferma non è riuscita.';
+}
+
+// --- la password: errori dell'accesso, recupero, link (§5.1, §5.3) --------------------
+
+function secondi(n) {
+  const s = Number(n);
+  if (!Number.isFinite(s) || s <= 0) return 'poco';
+  return s < 90 ? `${s} secondi` : `${Math.ceil(s / 60)} minuti`;
+}
+
+function erroreAccesso(r) {
+  const e = $('account-esito');
+  // Email sconosciuta e password sbagliata non si distinguono (§5.1).
+  if (r.codice === 401) e.textContent = 'Email o password non corrette. Riprova oppure reimposta la password.';
+  else if (r.codice === 429) e.textContent = `Troppi tentativi. Puoi riprovare fra ${secondi(r.attesa)}.`;
+  else if (r.codice === 403) {
+    const email = $('account').querySelector('[name=email]').value;
+    e.innerHTML = `${esc((r.corpo && r.corpo.messaggio) || 'La password è disattivata.')} <button data-account="reimposta" data-email="${esc(email)}">Reimposta la password</button>`;
+  } else e.textContent = 'L\'accesso non è riuscito. Riprova.';
+}
+
+function moduloReimposta(email = '') {
+  pannello(`<h2>Reimposta la password</h2>
+    <label>Email <input type="email" name="email" autocomplete="username" value="${esc(email)}"></label>
+    <p id="account-esito" role="status"></p>
+    <button data-account="chiedi">Chiedi il link</button>
+    <button data-account="accedi" data-email="${esc(email)}">Torna all'accesso</button>`);
+}
+
+async function chiediLink() {
+  const email = $('account').querySelector('[name=email]').value;
+  const r = await api('POST', '/v1/password/dimenticata', { email });
+  // Condizionale sempre: la rotta risponde uguale per chi e' iscritto e per chi no (§5.3).
+  $('account-esito').textContent = r.codice === 202
+    ? 'Se questo indirizzo è iscritto, riceverai una mail da Rotta Giusta. Il link vale un\'ora. Se dopo cinque minuti non la trovi, controlla lo spam.'
+    : (r.corpo && r.corpo.messaggio) || 'La richiesta non è partita. Riprova.';
+}
+
+function moduloNuovaPassword() {
+  pannello(`<h2>Scegli una nuova password</h2>
+    <label>Password <input type="password" name="password" autocomplete="new-password"></label>
+    <p>Almeno 15 caratteri, al massimo 256. Puoi usare una frase di tre o quattro parole.</p>
+    <p id="account-esito" role="status"></p>
+    <button data-account="nuova">Salva la nuova password</button>
+    <button data-account="torna">Torna all'attività</button>`);
+}
+
+async function nuovaPassword() {
+  const pw = $('account').querySelector('[name=password]').value;
+  const r = await api('POST', '/v1/password/nuova', { gettone: LINK.gettone, password: pw });
+  if (r.codice === 410) {
+    return pannello(`<h2>Reimposta la password</h2><p role="alert">Questo link è scaduto o è già stato usato. Chiedi un nuovo link per reimpostare la password.</p>
+      <button data-account="reimposta" data-email="">Chiedi un altro link</button><button data-account="torna">Torna all'attività</button>`);
+  }
+  // Un 422 tiene il gettone in memoria: si corregge la password e si riprova.
+  if (r.codice !== 200) { $('account-esito').textContent = (r.corpo && r.corpo.messaggio) || 'La password non è stata cambiata. Riprova.'; return; }
+  if (S.conto && S.conto.chiave !== r.corpo.chiave_locale) fermaQui();
+  await entra(r.corpo);
+  $('link-esito').textContent = 'Password aggiornata. Le sessioni precedenti sono state chiuse.';
+  // Un account che non era confermato puo' avere risposte di chiunque: si chiede (§5.3).
+  if (r.corpo.confermato_ora && r.corpo.righe > 0) {
+    S.pwNuova = pw;
+    return pannello(`<h2>Account confermato</h2>
+      <p>Questo account non era confermato e contiene ${r.corpo.righe} risposte. Vuoi tenerle o cancellarle?</p>
+      <button data-account="tieni">Tienile</button><button data-account="cancella-righe">Cancella queste risposte</button>`);
+  }
+  return dopoIngresso(r.corpo);
+}
+
+async function cancellaRighe() {
+  const r = await api('POST', '/v1/azzera', { password: S.pwNuova });
+  S.pwNuova = null;
+  if (r.codice !== 200) { pannello(`<h2>Account confermato</h2><p role="alert">Le risposte non sono state cancellate. Riprova.</p><button data-account="tieni">Tienile</button>`); return; }
+  const io = await api('GET', '/v1/io');
+  S.conto.generazione = io.corpo.generazione;
+  await tx(() => ({ svuota: true, coda: E.nuovaCoda({ generazione: io.corpo.generazione, epocaDb: io.corpo.epoca }), trasf: null }));
+  return dopoIngresso(io.corpo);
+}
+
+// --- l'archivio di prima degli account (§7) ---------------------------------------------
+
+const VECCHIO = 'open-patente-nautica';
+
+/** Le due fonti, unite per uid dal motore. Non si apre un database che non c'e': lo creerebbe vuoto. */
+async function leggiVecchio() {
+  const nomi = (await indexedDB.databases()).map((d) => d.name);
+  let daIdb = [];
+  if (nomi.includes(VECCHIO)) {
+    daIdb = await new Promise((ok, ko) => {
+      const q = indexedDB.open(VECCHIO);
+      q.onerror = () => ko(q.error);
+      q.onsuccess = () => {
+        const db = q.result;
+        if (!db.objectStoreNames.contains('righe')) { db.close(); return ok([]); }
+        const g = db.transaction('righe').objectStore('righe').getAll();
+        g.onsuccess = () => { db.close(); ok(g.result); };
+        g.onerror = () => { db.close(); ko(g.error); };
+      };
+    });
+  }
+  const raw = localStorage.getItem('pn.archivio');
+  const daLs = raw ? JSON.parse(raw) : [];
+  if (!Array.isArray(daLs)) throw new Error('pn.archivio non è un elenco');
+  return E.fondiArchivio(daIdb, daLs).righe;
+}
+
+async function controllaVecchio() {
+  $('vecchio-errore').hidden = true;
+  let righe;
+  // Una lettura fallita non e' un archivio vuoto: si dice, e si offre di riprovare.
+  try { righe = await leggiVecchio(); } catch { $('vecchio').hidden = true; $('vecchio-errore').hidden = false; return; }
+  const segno = S.conto ? (await tx(() => null)).vecchio : null;
+  const portate = new Set(segno ? segno.uid : []);
+  const nuove = righe.filter((r) => !portate.has(String(r.uid)));
+  S.vecchio = { righe, nuove };
+  $('vecchio-info').textContent = segno ? `${segno.uid.length} risposte portate nel tuo account il ${new Date(segno.il).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })}` : '';
+  if (!nuove.length || S.vecchioDopo) { $('vecchio').hidden = true; return; }
+  $('vecchio-txt').textContent = `In questo browser ci sono ${nuove.length} risposte salvate prima degli account. Da questa versione, senza account non si salva più niente. Portale nel tuo account, oppure scaricale.`;
+  $('vecchio').hidden = false;
+  document.querySelector('[data-vecchio="porta"]').hidden = !API;
+}
+
+async function portaVecchio() {
+  if (!S.conto) { S.portaVecchio = true; return moduloAccesso(''); }
+  const righe = await leggiVecchio();
+  pannello(`<h2>Porta le risposte nel tuo account</h2>
+    <p>Vuoi portare nel tuo account le ${righe.length} risposte salvate in questo browser prima degli account?</p>
+    <p>Account: ${esc(S.conto.email)}</p>
+    <button data-vecchio="conferma">Portale nel mio account</button><button data-account="torna">Non ora</button>`);
+}
+
+async function confermaVecchio() {
+  // Si rilegge prima del trasferimento: un'altra scheda vecchia puo' aver scritto (§7).
+  const righe = await leggiVecchio();
+  chiudiPannello();
+  $('vecchio').hidden = true;
+  await trasferisci(righe, { fonte: 'vecchio' });
+}
+
+// --- un file dei progressi (§8) ---------------------------------------------------------
+
+$('importa-file').addEventListener('change', async (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  let dati;
+  // Il formato e' quello di esporta(); il campo `app` non si guarda: i nomi di prima valgono.
+  const testo = await f.text();
+  e.target.value = '';
+  try { dati = JSON.parse(testo); if (!dati || !Array.isArray(dati.righe)) throw new Error('formato'); }
+  catch { $('importa-esito').textContent = 'Non riusciamo a leggere questo file di progressi. Scegli un file esportato da Rotta Giusta'; return; }
+  S.file = { nome: f.name, righe: dati.righe, segPunti: dati.segPunti && typeof dati.segPunti === 'object' ? dati.segPunti : null };
+  if (!S.conto) {
+    return pannello(`<h2>Importa un file dei progressi</h2><p>Per conservare le risposte del file, crea un account o accedi.</p>
+      <button data-conto="accedi">Accedi</button><button data-account="torna">Annulla</button>`);
+  }
+  return anteprimaFile();
+});
+
+async function anteprimaFile() {
+  const F = S.file, { righe } = await tx(() => null);
+  const f = E.fondiArchivio(righe, F.righe, { quesiti: quesiti() });
+  F.conti = { nuove: f.nuove, gia: f.gia, scartate: f.scartate };
+  const motivi = Object.entries(f.motivi).map(([m, n]) => `${m}: ${n}`).join(' · ');
+  pannello(`<h2>Importa un file dei progressi</h2><p>File: ${esc(F.nome)}</p><p>Account: ${esc(S.conto.email)}</p>
+    <p>${f.nuove} nuove · ${f.gia} già presenti · ${f.scartate} scartate</p>${motivi ? `<p>Scartate: ${esc(motivi)}</p>` : ''}
+    <p>Carica soltanto un file di progressi che ti appartiene.</p>
+    ${F.segPunti ? '<p>Le partite dei Segnali usano il massimo tra i dispositivi: le partite svolte in parallelo non si sommano.</p>' : ''}
+    <button data-importa="si">Importa nel mio account</button><button data-account="torna">Annulla</button>`);
+}
+
+async function importaFile() {
+  const F = S.file;
+  chiudiPannello();
+  $('importa-esito').textContent = 'Importazione in corso…';
+  await trasferisci(F.righe, { quesiti: quesiti(), fonte: 'file', conti: F.conti });
+  // I punteggi vanno al profilo, che li fonde per massimo: la pagina non somma (§8).
+  if (F.segPunti && Object.keys(F.segPunti).length) {
+    const r = await api('PUT', '/v1/profilo', { segnali: F.segPunti });
+    $('seg-stato').textContent = r.codice === 200 ? 'Punteggi dei Segnali confermati' : 'Punteggi dei Segnali da inviare';
+  }
+}
+
+/** A trasferimento finito: il segno dell'archivio di prima, il riepilogo del file (§7, §8). */
+async function chiudiTrasferimento(trasf, r, coda, righe) {
+  if (trasf.fonte === 'vecchio' && r.completo && !trasf.segnato) {
+    // Il segno solo quando il server ha nominato ogni uid, con il manifest (§7).
+    await tx((s) => ({ vecchio: { uid: trasf.uid, n: trasf.uid.length, chiave: S.conto.chiave, il: new Date().toISOString() },
+      trasf: { ...s.trasf, segnato: true } }));
+    await controllaVecchio();
+  }
+  if (trasf.fonte === 'file' && (r.completo || r.stato === 'con scarti')) {
+    const c = trasf.conti || { nuove: 0, gia: 0, scartate: 0 };
+    const scarti = trasf.rifiutate.length + r.scartate.length;
+    $('importa-esito').innerHTML = `${c.nuove} nuove · ${c.gia} già presenti · ${c.scartate} scartate`
+      + (scarti ? ' <button data-importa="scarti">Scarica le righe non importate</button>' : '');
+  }
+}
+
+async function scaricaScarti() {
+  const { trasf, righe } = await tx(() => null);
+  const server = new Set(E.riepilogoTrasferimento(trasf, (await tx(() => null)).coda, righe).scartate.map((x) => x.uid));
+  scarica('rotta-giusta-righe-non-importate.json', { app: 'rotta-giusta', righe: [...trasf.rifiutate.map((x) => x.riga), ...righe.filter((r) => server.has(String(r.uid)))] });
+}
+
+// --- i Segnali con l'account (§8) ---------------------------------------------------
+
+/** Una partita finita: la copia dell'account, poi il profilo; «da inviare» finche' il PUT non riesce. */
+async function registraPunteggio(modo, esatte) {
+  let seg;
+  await tx((s) => {
+    const base = { ...(S.conto.segnali || {}), ...((s.seg && s.seg.punti) || {}) };
+    const p = base[modo] || { migliore: 0, giocate: 0 };
+    seg = { punti: { ...base, [modo]: { migliore: Math.max(p.migliore, esatte), giocate: p.giocate + 1 } }, daInviare: true };
+    return { seg };
+  });
+  await punteggiInSospeso();
+}
+
+async function punteggiInSospeso() {
+  if (!S.conto) return;
+  const { seg } = await tx(() => null);
+  if (!seg || !seg.daInviare) return;
+  $('seg-stato').textContent = 'Punteggi da inviare';
+  const r = await api('PUT', '/v1/profilo', { segnali: seg.punti });
+  if (r.codice !== 200) return;
+  S.conto.segnali = r.corpo.segnali || {};
+  await tx(() => ({ seg: { punti: r.corpo.segnali, daInviare: false } }));
+  $('seg-stato').textContent = 'Punteggi dei Segnali confermati';
+}
+
+// --- scaricare (§10, §11.2) ----------------------------------------------------------
+
+function scarica(nome, dati) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(dati)], { type: 'application/json' }));
+  a.download = nome;
+  document.body.append(a);
+  a.click();
+  a.remove();
+}
+
+async function scaricaVecchio() {
+  scarica('rotta-giusta-progressi-precedenti.json', { app: 'rotta-giusta', righe: await leggiVecchio() });
+}
+
+async function pendenti() {
+  const { righe, coda } = await tx(() => null);
+  const u = new Set([...coda.daInviare, ...Object.keys(coda.scartate)]);
+  return righe.filter((r) => u.has(String(r.uid)));
+}
+
+async function scaricaPendenti() {
+  scarica(`rotta-giusta-recupero-${oggi()}.json`, { app: 'rotta-giusta', recupero: true, righe: await pendenti() });
+  // Avviare il download non prova che il file sia al sicuro: si chiede (§10).
+  $('account-esito').innerHTML += ' <button data-conto="esci-comunque">Ho conservato il file: esci e cancella la copia da questo dispositivo</button>';
+}
+
+/** Il file del server, dopo aver provato a inviare; le risposte pendenti a parte, nominate (§11.2). */
+async function esporta() {
+  const e = $('esporta-esito');
+  e.textContent = 'Preparazione del file…';
+  await catena();
+  const { coda } = await tx(() => null);
+  const r = await api('GET', '/v1/esporta');
+  if (r.codice !== 200 || !r.corpo) { e.textContent = 'Il file del server non si è potuto scaricare. Riprova.'; return; }
+  scarica(`rotta-giusta-progressi-${oggi()}.json`, r.corpo);
+  const n = coda.daInviare.length;
+  e.innerHTML = n ? `Il file del server non contiene ancora le ${n} risposte da inviare. <button data-conto="recupero">Scarica le risposte da inviare</button>` : 'File scaricato.';
+}
+
+async function scaricaRecupero() {
+  scarica(`rotta-giusta-recupero-${oggi()}.json`, { app: 'rotta-giusta', recupero: true, righe: await pendenti() });
+}
+
+// --- una generazione diversa: prima si sceglie (§10) ----------------------------------
+
+function mostraConflitto(c) {
+  S.sospeso = c;
+  const giorno = c.azzerato_il ? `Il ${new Date(c.azzerato_il).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })} i progressi sono stati azzerati da un altro dispositivo.` : 'I progressi sono stati azzerati da un altro dispositivo.';
+  if (c.nonSalvate) {
+    return pannello(`<h2>Progressi azzerati</h2><p>${giorno} Qui ci sono ${c.nonSalvate} risposte non salvate. Scaricale oppure scegli di scartarle prima di caricare il nuovo archivio.</p>
+      <button data-conflitto="scarica">Scarica e passa al nuovo archivio</button><button data-conflitto="scarta">Scarta e passa al nuovo archivio</button><button data-conflitto="dopo">Decidi più tardi</button>`);
+  }
+  pannello(`<h2>Progressi azzerati</h2><p>${giorno} La copia di questo dispositivo verrà sostituita.</p>
+    <button data-conflitto="carica">Carica il nuovo archivio</button><button data-conflitto="dopo">Decidi più tardi</button>`);
+}
+
+async function scaricaConflitto() {
+  scarica(`rotta-giusta-recupero-${oggi()}.json`, { app: 'rotta-giusta', recupero: true, righe: await pendenti() });
+  pannello(`<h2>Progressi azzerati</h2><p>Il file con le ${S.sospeso.nonSalvate} risposte non salvate è stato scaricato.</p>
+    <button data-conflitto="passa">Ho conservato il file: passa al nuovo archivio</button><button data-conflitto="dopo">Decidi più tardi</button>`);
+}
+
+/**
+ * Le risposte non salvate si ricontano al momento della scelta: una data dopo
+ * «Decidi più tardi» e' una perdita da dichiarare, non da buttare con «Carica
+ * il nuovo archivio».
+ */
+async function riapriConflitto(carica) {
+  const { righe, coda } = await tx(() => null);
+  const inCoda = new Set(coda.daInviare);
+  S.sospeso = { ...S.sospeso, nonSalvate: righe.filter((r) => inCoda.has(String(r.uid))).length };
+  if (carica && !S.sospeso.nonSalvate) return risolvi();
+  return mostraConflitto(S.sospeso);
+}
+
+/** Solo dopo la scelta: la coda del motore, la copia svuotata, e si riceve da zero. */
+async function risolvi() {
+  const c = S.sospeso;
+  S.sospeso = null;
+  chiudiPannello();
+  await tx((s) => ({ svuota: true, coda: E.risolviConflitto(s.coda, c), trasf: null }));
+  S.conto.generazione = c.generazione;
+  await catena();
 }
 
 // I pannelli si chiudono con Esc (§12, collaudo).
@@ -676,8 +1146,30 @@ document.addEventListener('click', (e) => {
   if (c === 'accedi') return moduloAccesso('');
   if (c === 'scelta') return scelta();
   if (c === 'esci') return esci();
+  if (c === 'ovunque') return esci(true);
+  if (c === 'scarica-pendenti') return scaricaPendenti();
+  if (c === 'esci-comunque') return chiudiAccesso(S.conto.chiave, S.uscitaTutti);
   if (c === 'riprova') return catena();
-  if (c === 'data') return chiudiPannello();
+  if (c === 'data') return salvaData();
+  if (c === 'rinvia') return rinvia();
+  if (c === 'stato') return rileggiIo();
+  if (c === 'link') return seguiLink();
+  if (c === 'esporta') return esporta();
+  if (c === 'recupero') return scaricaRecupero();
+  const vv = t.dataset.vecchio;
+  if (vv === 'porta') return portaVecchio();
+  if (vv === 'scarica') return scaricaVecchio();
+  if (vv === 'dopo') { S.vecchioDopo = true; $('vecchio').hidden = true; return; }
+  if (vv === 'riprova') return controllaVecchio();
+  if (vv === 'conferma') return confermaVecchio();
+  if (t.dataset.importa === 'si') return importaFile();
+  if (t.dataset.importa === 'scarti') return scaricaScarti();
+  const k = t.dataset.conflitto;
+  if (k === 'scarta') return pannello(`<h2>Progressi azzerati</h2><p>Le ${S.sospeso.nonSalvate} risposte non salvate andranno perse.</p><button data-conflitto="passa">Sì, scartale e passa al nuovo archivio</button><button data-conflitto="dopo">Decidi più tardi</button>`);
+  if (k === 'scarica') return scaricaConflitto();
+  if (k === 'passa') return risolvi();
+  if (k === 'carica' || k === 'riapri') return riapriConflitto(k === 'carica');
+  if (k === 'dopo') { chiudiPannello(); return dipingiStato(); }
   const a = t.dataset.account;
   if (a === 'registra') return moduloRegistrazione();
   if (a === 'continua') { $('quizrun').classList.remove('on'); return; }
@@ -685,7 +1177,11 @@ document.addEventListener('click', (e) => {
   if (a === 'entra') return accedi();
   if (a === 'verifica') return dopoRispostaPersa();
   if (a === 'accedi') return moduloAccesso(t.dataset.email);
-  if (a === 'reimposta') return pannello(`<h2>Reimposta la password</h2><label>Email <input type="email" name="email" value="${esc(t.dataset.email)}"></label><button data-account="torna">Torna all'attività</button>`);
+  if (a === 'reimposta' || a === 'dimenticata') return moduloReimposta(t.dataset.email);
+  if (a === 'chiedi') return chiediLink();
+  if (a === 'nuova') return nuovaPassword();
+  if (a === 'tieni') return dopoIngresso(S.conto);
+  if (a === 'cancella-righe') return cancellaRighe();
   if (a === 'torna') return chiudiPannello();
 });
 </script>

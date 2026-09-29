@@ -1147,7 +1147,7 @@ guardare, e lo dicono. Quelli del server hanno il loro controllo in
 | R-ACC-02 | Senza account nessuna risposta resta dopo la chiusura della pagina, e la pagina lo dice prima di cominciare e alla fine di ogni attività. **Due regimi:** la pagina senza client mantiene la promessa di oggi — la risposta resta nel browser e si ritrova dopo una ricarica — e non porta frasi del client; quella con `indirizzoApi()` dice le due frasi del §4.1 del progetto del client, in testo che si vede, e dopo una ricarica non mostra niente di prima | `test_interfaccia.py::test_client_senza_account` |
 | R-ACC-03 | La registrazione si raccomanda alla fine di un'attività con i vantaggi che esistono, e non a ogni schermata: in nessuna vista un invito, un modulo o una finestra d'account; nel riepilogo sì, «Continua senza account» lo chiude senza chiedere altro, e non torna durante l'attività dopo ma nel suo riepilogo | `test_interfaccia.py::test_client_invito_e_viste` |
 | R-ACC-04 | Senza account si fanno tutte le attività — il Percorso, i Quiz per argomento, la simulazione con la sua consegna, «Che tecnica serve?», la prova di carteggio, i Segnali —, ognuna fino al suo punto d'arrivo; ai registrati restano solo le viste che vivono di uno storico, e Progressi senza account dice perché non c'è invece di un cruscotto di zeri | `test_interfaccia.py::test_client_tutte_le_attivita` |
-| R-ACC-05 | Un archivio locale che esiste il giorno del rilascio non sparisce in silenzio: si porta nell'account o si scarica | scoperto — il passaggio non esiste ancora, e va provato su un browser con un archivio vero |
+| R-ACC-05 | Un archivio locale che esiste il giorno del rilascio non sparisce in silenzio: si porta nell'account o si scarica. L'avviso conta le due fonti — IndexedDB `open-patente-nautica` e `pn.archivio` — unite per uid; «Scarica il file» le porta tutte senza rete; portarle chiede con quante e dove, e le lascia dov'erano; il segno guarda gli uid, e una riga nuova riaccende l'avviso a conteggio uguale; «Più tardi» non scrive niente; una lettura fallita si dice e non diventa «nessuna risposta» | `test_interfaccia.py::test_client_vecchio_archivio` |
 | R-ACC-06 | Le righe della pagina aperta e quelle dell'account si uniscono per `uid`, senza doppioni e senza vincitore | `test_engine.mjs::fondiArchivio: per uid, senza doppioni` |
 | R-ACC-07 | Una riga si accetta o si rifiuta con una regola sola, `validaRiga()`, e il rifiuto dice il motivo | `test_engine.mjs::validaRiga: una riga rotta` |
 | R-ACC-08 | Le righe dei tag N/L/C, che nascono senza data, si importano | `test_engine.mjs::fondiArchivio: i tag si importano` |
@@ -1187,6 +1187,17 @@ guardare, e lo dicono. Quelli del server hanno il loro controllo in
 | R-ACC-44 | Su un dispositivo condiviso le risposte di prova entrano nell'account solo con un sì confermato, e la scelta proposta non parte da sola; una risposta di A in volo quando A esce da un'altra scheda non arriva nell'account di B, letto nel database del server; la coda di A congelata da un accesso non più valido non entra in B | `test_interfaccia.py::test_client_dispositivo_condiviso` |
 | R-ACC-45 | Nella pagina riga e coda si scrivono insieme: una risposta data mentre un invio è in volo arriva anche lei, due schede che rispondono nello stesso istante mandano ogni riga, e una ricarica a metà trasferimento riprende dalla coda salvata e dice «salvate» solo quando il server le ha | `test_interfaccia.py::test_client_coda` |
 | R-ACC-46 | «Esci» non perde niente e non finge: con righe non inviate non esce e lo dice, offline dice che serve la rete e non cancella, una copia che un'altra scheda tiene aperta si dichiara non cancellata; dopo l'uscita niente dell'account resta nel browser, e la risposta tardiva di un'altra scheda non lo ricrea | `test_interfaccia.py::test_client_uscita` |
+| R-ACC-47 | La verifica dell'email si vede e non si finge: con la mail di conferma rifiutata dal fornitore la pagina dice che l'account c'è e la mail no, e l'account salva; la scadenza è quella del server, dal primo momento e dopo una ricarica, fino alla conferma; un rinvio rifiutato non dice «inviata»; il gettone del link esce dall'indirizzo appena la pagina si apre e non resta in nessuno storage; un link già usato o scaduto lo dice | `test_interfaccia.py::test_client_verifica` |
+| R-ACC-48 | La password e l'accesso dicono il motivo vero: il rifiuto di una password nuova è quello del server, accanto al campo e con l'email ancora scritta; email ignota e password sbagliata danno la stessa frase; un `429` dice quanto aspettare, dal `Retry-After`; un `403` porta alla reimpostazione; la richiesta del link risponde con la stessa frase condizionale; il gettone della password resta in memoria dopo un `422`; un account appena confermato con risposte chiede se tenerle, e non ne cancella nessuna da solo | `test_interfaccia.py::test_client_password` |
+| R-ACC-49 | Il `Retry-After` di un `429` lo legge anche la pagina, che sta su un'altra origine: il CORS lo espone, e solo al sito | `test_server.mjs::cors: il Retry-After di un 429 lo legge anche la pagina, che sta su un altra origine` |
+| R-ACC-50 | Un file dei progressi si porta nell'account dalla stessa porta delle righe: un file illeggibile lo dice; senza account non parte e non si conserva; l'anteprima dice i conteggi del motore, con il nome del file e l'account, senza filtrare sul nome dell'app né scartare i tag senza data; importato, le righe valide sono sul server, gli scarti si scaricano, i Segnali si fondono con il massimo; reimportato non cambia niente; una partita dei Segnali offline resta «da inviare» anche attraverso una ricarica, e arriva | `test_interfaccia.py::test_client_file` |
+| R-ACC-51 | Dalla pagina i limiti del server reggono: più di 2.000 righe e più di 2 MiB arrivano tutte, in lotti che il server accetta; un `413` si legge e non dice «salvate»; oltre 5.000 righe si ricevono tutte; la conferma di un invio non sposta il cursore, e le righe di un altro dispositivo arrivano lo stesso | `test_interfaccia.py::test_client_limiti` |
+| R-ACC-52 | Un azzeramento fatto altrove, scoperto inviando o ricevendo, sospende invii e ricezioni finché chi studia non sceglie: la pagina dice quante risposte di qui non sono salvate, niente rientra, scartare chiede di confermare la perdita, la scelta rimandata resta raggiungibile e riaperta conta anche le risposte date intanto; dopo, la copia è quella del server e le risposte nuove entrano | `test_interfaccia.py::test_client_azzeramento` |
+| R-ACC-53 | Dopo il ripristino di una copia, la pagina vede l'epoca nuova, rimanda la risposta che il server ha perso, e un altro dispositivo la riceve: R-ACC-24 visto dalla pagina | `test_interfaccia.py::test_client_ripristino` |
+| R-ACC-54 | L'uscita regge anche una sessione che non c'è più: un `401` all'uscita pulisce la copia, non dice che serve la rete; con la sessione revocata e risposte non inviate le fa scaricare e cancella solo dopo una scelta esplicita, senza mandarle a nessun account. «Esci da tutti i dispositivi» chiude ogni sessione sul server e pulisce qui; l'altro dispositivo lo scopre con un `401` e tiene la sua copia, congelata | `test_interfaccia.py::test_client_uscita` |
+| R-ACC-55 | La data d'esame dopo la registrazione è facoltativa e non inventata: la data scritta nella pagina si propone e si salva solo al clic, com'è anche se passata; senza, il campo è vuoto; un salvataggio fallito lo dice; entrando in un account che ha la data, il passo non si ripete, la data resta e la pagina mostra quella del server | `test_interfaccia.py::test_client_data` |
+| R-ACC-56 | «Scarica i tuoi progressi» con l'account è l'export del server, e dice quante risposte da inviare non contiene, scaricabili a parte; su un'origine senza API nessun modulo d'account, nessuna richiesta all'API e niente di personale nel browser: un link a `rottagiusta.it/app` | `test_interfaccia.py::test_client_export` |
+| R-ACC-57 | I testi di `site/` sono quelli del loro stato: nella pagina di oggi nessuna frase del client; con il client nessuna delle frasi che gli account rendono false, commenti compresi, e tutte quelle del §11.2 del progetto del client. Il contenuto giuridico dell'informativa resta al gate dell'autore | `test_interfaccia.py::test_client_testi` |
 
 R-ACC-20 e R-ACC-24 sono i primi requisiti del server con un controllo che si
 esegue, e il giro intero sta in `node server/ripristina.mjs --prova`, che la
@@ -1260,6 +1271,18 @@ scoperto con loro. Che cosa il banco non vede nei gruppi nuovi — il gesto
 vero, il lucchetto fra schede come unico modo di aspettarle, una corsa più
 stretta di quella che il banco sa provocare — sta nello stesso §12.
 
+**I gruppi che restavano (P-43).** Entrano C-07…C-10, C-12…C-14, C-16 e C-17
+sullo stesso banco, e C-15 per intero — il `401` all'uscita e «Esci da tutti i
+dispositivi» —; C-18 è una ricerca di frasi, senza browser. R-ACC-05 passa a
+coperto, su un archivio di prima sintetico; entrano R-ACC-47…57. R-ACC-11 ha ora
+anche la metà della pagina, in R-ACC-47: la scadenza scritta dal primo momento,
+ed è quella del server. **R-ACC-49 è del server**, e nasce da una misura fatta
+per C-08: il CORS non esponeva il `Retry-After`, e nessuna pagina su un'altra
+origine poteva leggere l'attesa di un `429`. Nel regime della pagina di oggi i
+gruppi nuovi controllano che il client non ci sia. Che cosa non vedono — la mail
+vera, il gestore di password, un archivio vero di anni, la privacy — sta nel §12
+del progetto del client, «I gruppi che restavano».
+
 ### 9.10 La mappa di Progressi
 
 Nati da Q-DUE (§10), chiusa dall'autore il 29 settembre 2026; il motore è di
@@ -1300,7 +1323,7 @@ Ogni riga dice **chi decide**. Una questione senza un decidente non si chiude ma
 | Q-CART4 | «Un esercizio per ciascuno dei quattro argomenti» è un'assunzione | serve la scuola nautica | La composizione della prova resta non confermata, e la 42/D non ha esercizi di carburante |
 | Q-PROVE | Verifiche con dispositivi reali e con persone — e Safari, che il banco del browser non raggiunge (rimandato dall'autore il 29 settembre 2026) | l'autore fornisce dispositivi e persone | Nessuna prova su hardware Apple vero, e nessuna prova con persone diverse dall'autore. Safari nel banco vorrebbe «Allow remote automation», un'impostazione dell'autore, e anche così WebDriver non legge lo storage (`account-client-progetto.md` §12): il cookie fra `rottagiusta.it` e `api.` su Safari si prova a mano |
 | Q-ONBOARD | Che cosa chiede l'onboarding di chi si registra, oltre alla data d'esame; e se il sito consiglia un piano di studio strutturato | l'autore | Un piano deve reggersi su quello che il motore sa: niente programma d'esame (Q-PROG), niente studio fatto altrove (chiusa l'8 settembre), niente «quanto tempo hai?» (R-TEMPO-03), e senza data niente quota. I pezzi ci sono già — `traccia()`, `quadro()`, `dovePesa()`, `stimaImpegno()` —, e il piano di 17 sessioni del progetto originario è stato tolto nella 0.19.0 con il resto del servizio personale |
-| Q-SUITE | La suite dell'interfaccia dura circa un minuto e vuole Chrome e la porta 8620 libera, da P-29: è il prezzo del browser vero, accettarlo o accorciarlo | l'autore, rimandata il 29 settembre 2026 | Accorciarla vuol dire aprire il CORS del server a più origini o accorciare attese che hanno già dato un rosso falso; finché resta aperta, la suite si fa girare intera e un'esecuzione saltata si dice |
+| Q-SUITE | La suite dell'interfaccia vuole Chrome e la porta 8620 libera, da P-29, e dura circa 85 s da P-43 (era un minuto): è il prezzo del browser vero, accettarlo o accorciarlo. La 8620 è una sola anche fra i worktree, e due suite in parallelo — P-18 e P-43 il 29 settembre — si escludono | l'autore, rimandata il 29 settembre 2026 | Accorciarla vuol dire aprire il CORS del server a più origini o accorciare attese che hanno già dato un rosso falso; finché resta aperta, la suite si fa girare intera e un'esecuzione saltata si dice |
 
 **Chiuse, e non si riaprono senza un motivo nuovo:**
 
@@ -1646,3 +1669,10 @@ successo, ed è il motivo per cui questo file esiste.
 - **29 settembre 2026 — le tre scelte di `dovePesa()` confermate.** L'autore
   conferma la vela senza frase, la soglia a 20 e la regola del motivo, prese da
   P-41 su delega; il §4.3 lo dice.
+- **29 settembre 2026 — i gruppi del client che restavano (P-43).** C-07…C-10,
+  C-12…C-14, C-16…C-18 e il resto di C-15: R-ACC-05 da scoperto a coperto, nuovi
+  R-ACC-47…57, uno del server — il `Retry-After` che il CORS non esponeva, trovato
+  misurando. Cinquantatré rotture nuove della pagina di riferimento, tutte rosse
+  per il loro motivo; tre verdi falsi del banco trovati facendolo girare, e un
+  banco che si appendeva, corretti. Il §12 del progetto del client dice che cosa
+  resta fuori.

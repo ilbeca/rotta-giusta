@@ -130,9 +130,12 @@ export async function avvia({
     '/v1/esporta': { GET: [righe.esporta, 'sessione'] },
   };
 
-  // §7.3: il CORS, solo per l'origine del sito, con i cookie.
+  // §7.3: il CORS, solo per l'origine del sito, con i cookie. Il Retry-After
+  // di un 429 si espone: la pagina sta su un'altra origine, e senza questa riga
+  // il browser glielo nasconde — l'attesa del §5.1 del progetto del client non
+  // si potrebbe dire (misurato da P-43).
   const cors = (req) => (req.headers.origin === origine
-    ? { 'Access-Control-Allow-Origin': origine, 'Access-Control-Allow-Credentials': 'true', Vary: 'Origin' }
+    ? { 'Access-Control-Allow-Origin': origine, 'Access-Control-Allow-Credentials': 'true', 'Access-Control-Expose-Headers': 'Retry-After', Vary: 'Origin' }
     : { Vary: 'Origin' });
 
   function rispondi(req, res, codice, corpo, { cookie, attesa, intestazioni } = {}) {
