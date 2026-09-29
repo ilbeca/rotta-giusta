@@ -607,6 +607,25 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   server 59/59, interfaccia 579. Guardiano e controllo della documentazione
   verdi. `site/app.html` e `docs/prossime-sessioni.md` non sono stati toccati.
 
+### Progettato — P-22: Progressi come mappa per tema
+
+- **`docs/area-5-progetto.md` applica i sette punti di Q-DUE**, chiusa il 29
+  settembre: una sola indicazione quando `dovePesa()` la fonda, otto temi base
+  in ordine fisso e voci in ordine di banca, tre stati dall'ultima risposta,
+  vela senza peso per voce, primo tentativo con la soglia di cinque visti e
+  nessun minuto sui pulsanti. Il testo e la lista di «Rifai N errori» vengono
+  dalla stessa riga di `quadro()` e da `coda({ soloDaRifare })`, senza il tetto
+  di 20. `consigli()` esce dalla pagina nella realizzazione, insieme alla sua
+  lista; il ripasso storico dei Quiz resta distinto.
+- **Accesso e geometria sono contratti della realizzazione, non promesse già
+  verificate.** Senza account il client mostra la porta esplicativa invece di
+  Progressi da righe temporanee; account riconosciuto, offline, `401` e
+  conflitto conservano i propri stati. Le tabelle che dalla 0.3.0 sforano di
+  89 px a 375 px diventano schede verticali da misurare e guardare a 375 e
+  1280 px. Prove, andamento e sessioni restano separati dalla mappa. Il §10.1
+  chiede a `main` un controllo eseguibile a due regimi prima di P-23 e lascia
+  R-MAPPA-14 scoperto finché la pagina non chiama davvero il motore.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag
