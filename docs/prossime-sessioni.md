@@ -121,7 +121,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 5b | Chiudere il regime vecchio dei controlli dei quiz, e il §5 della specifica | Claude | `main`, a mano | la cartella libera | P-12 |
 | 20 | Il banco del browser, stabile — **lanciato** | Claude | `main`, a mano | niente | P-38 |
 | 22 | Il motore della mappa di Progressi | Claude | `main`, a mano | P-38 | P-41 |
-| 23 | Il progetto dell'area 5, Progressi | ChatGPT | `ui/main` | P-41, e la decisione del §4 sui file di esplorazione | P-22 |
+| 23 | Il progetto dell'area 5, Progressi | ChatGPT | `ui/main` | P-41 | P-22 |
 | 21 | I controlli del client che mancano | Claude | `main`, a mano | P-38 | P-39 |
 | 18 | Il carteggio sul `main`: composizione, attività intera, bozza, controlli | Claude | `main`, a mano | P-29 nell'ordine; P-34 dopo P-33, dalla quarantena | P-32…P-35 |
 | 6d | Chiudere il regime vecchio dei controlli del ciclo | Claude | `main`, a mano | la cartella libera | P-37 |
@@ -419,29 +419,11 @@ consuma, non si riprogetta.
 - **La suite che dura un minuto, e Safari** — rimandati dall'autore il 29
   settembre, e scritti come punti aperti nel §10 della specifica: Q-SUITE, e
   Safari dentro Q-PROVE.
-- **I file di esplorazione dell'area 5, non tracciati nel worktree `ui`** —
-  `docs/area-5-esplorazione.md` e `docs/prototipi/progressi-2026-09-29/`,
-  scritti con ChatGPT durante il confronto su Q-DUE. Raccomandano il bilancio,
-  non la mappa che è stata decisa, e i prototipi hanno tre difetti dichiarati
-  dal confronto (una pagina ripetuta quattro volte, una frase che parla di mai
-  visti con un pulsante «Riprendi 66 errori», i 99′ del punto 7). **La
-  decisione è tua.** Claude propone di committarli come esplorazione datata,
-  con una nota in testa «superata dalla decisione del 29 settembre» e i difetti
-  scritti, perché la tabella delle fonti verificate ha valore; ChatGPT
-  preferisce non considerarli pronti. Finché restano lì, il worktree `ui` non è
-  pulito e la regia non allinea `ui/main`.
-- ~~Un rilascio intermedio~~ — **fatto il 26 settembre: v0.28.0**, commit
-  `51d9485`, tag e push con il sì dell'autore, «Build now» premuto, verificato
-  sui due indirizzi e nel browser. Il testo di prima, per la storia: `site/` è cambiato con
-  P-01 e con l'area 2, e chi studia oggi non lo vede; e P-15 può avviare il
-  server soltanto da un tag pubblicato che lo contenga (`account-progetto.md`
-  §2.7), mentre l'ultimo, `v0.27.0`, è di prima del server. Un rilascio adesso
-  fa le due cose: la pagina di oggi non chiama il server, quindi pubblicarlo non
-  cambia niente per chi studia. La regia lo fa quando dici sì — numero, voce,
-  tag, push chiesto, «Build now».
-- ~~La soglia degli allarmi~~ — **decisa dalla regia su tua delega**: resta
-  100 accessi falliti in 24 ore, e si rilegge dopo trenta giorni di esercizio
-  (`account-progetto.md` §15.4; è nel segnaposto P-27).
+- ~~I file di esplorazione dell'area 5~~ — **tolti il 29 settembre, per scelta
+  dell'autore.** La regia li ha spostati nel Cestino del Mac
+  (`~/.Trash/rotta-giusta-area5-esplorazione-2026-09-29/`), non cancellati:
+  si recuperano finché il Cestino non si svuota. Il worktree `ui` è pulito e
+  `ui/main` è allineato.
 - **Gli adempimenti rimasti**, sei punti, tutti nel §15.4 di
   `account-progetto.md` e bloccano il punto 9: l'indirizzo postale del titolare,
   la base giuridica del registro di sicurezza (da far confermare), l'inoltro di
@@ -1757,8 +1739,8 @@ resoconto di docs/prossime-sessioni.md.
 
 ### P-22 — ChatGPT: il progetto dell'area 5, Progressi
 
-**Stato:** in attesa di P-41, e della decisione dell'autore sui file di
-esplorazione che stanno non tracciati nel worktree `ui` (§4). **Dove:** app di
+**Stato:** in attesa di P-41. I file di esplorazione sono stati tolti, e
+`ui/main` è allineato. **Dove:** app di
 ChatGPT, progetto `~/Software/rotta-giusta-ui`, ramo `ui/main`.
 
 ```
@@ -2027,3 +2009,5 @@ dopo**, la soglia degli allarmi riletta sul registro vero
   motore della mappa, subito dopo P-38 perché sblocca ChatGPT, e P-22, il
   progetto dell'area 5; P-23 resta segnaposto. Nel §4 la decisione sui file di
   esplorazione non tracciati nel worktree `ui`. P-38 lanciato.
+- **29 settembre 2026 — i file di esplorazione tolti.** Scelta dell'autore;
+  spostati nel Cestino, non cancellati. P-22 aspetta solo P-41.
