@@ -1140,8 +1140,8 @@ guardare, e lo dicono. Quelli del server hanno il loro controllo in
 |---|---|---|
 | R-ACC-01 | Si arriva al primo quesito senza registrarsi, anche alla prima visita, con la rete e offline con il guscio caricato; fermata dopo una risposta, l'attività ha il suo riepilogo e la sua revisione | `test_interfaccia.py::test_client_primo_ingresso` |
 | R-ACC-02 | Senza account nessuna risposta resta dopo la chiusura della pagina, e la pagina lo dice prima di cominciare e alla fine di ogni attività. **Due regimi:** la pagina senza client mantiene la promessa di oggi — la risposta resta nel browser e si ritrova dopo una ricarica — e non porta frasi del client; quella con `indirizzoApi()` dice le due frasi del §4.1 del progetto del client, in testo che si vede, e dopo una ricarica non mostra niente di prima | `test_interfaccia.py::test_client_senza_account` |
-| R-ACC-03 | La registrazione si raccomanda alla fine di un'attività con i vantaggi che esistono, e non a ogni schermata | scoperto — è un comportamento del flusso, si fissa quando il flusso esiste |
-| R-ACC-04 | Senza account si fanno tutte le attività con riepilogo e revisione; ai registrati restano solo le viste che vivono di uno storico | scoperto — il banco del browser (P-29) fa oggi soltanto l'attività consigliata del Percorso, dentro R-ACC-01; le altre attività e le viste per stato sono il resto di C-01 e C-03 (§12 del progetto del client) |
+| R-ACC-03 | La registrazione si raccomanda alla fine di un'attività con i vantaggi che esistono, e non a ogni schermata: in nessuna vista un invito, un modulo o una finestra d'account; nel riepilogo sì, «Continua senza account» lo chiude senza chiedere altro, e non torna durante l'attività dopo ma nel suo riepilogo | `test_interfaccia.py::test_client_invito_e_viste` |
+| R-ACC-04 | Senza account si fanno tutte le attività — il Percorso, i Quiz per argomento, la simulazione con la sua consegna, «Che tecnica serve?», la prova di carteggio, i Segnali —, ognuna fino al suo punto d'arrivo; ai registrati restano solo le viste che vivono di uno storico, e Progressi senza account dice perché non c'è invece di un cruscotto di zeri | `test_interfaccia.py::test_client_tutte_le_attivita` |
 | R-ACC-05 | Un archivio locale che esiste il giorno del rilascio non sparisce in silenzio: si porta nell'account o si scarica | scoperto — il passaggio non esiste ancora, e va provato su un browser con un archivio vero |
 | R-ACC-06 | Le righe della pagina aperta e quelle dell'account si uniscono per `uid`, senza doppioni e senza vincitore | `test_engine.mjs::fondiArchivio: per uid, senza doppioni` |
 | R-ACC-07 | Una riga si accetta o si rifiuta con una regola sola, `validaRiga()`, e il rifiuto dice il motivo | `test_engine.mjs::validaRiga: una riga rotta` |
@@ -1178,6 +1178,10 @@ guardare, e lo dicono. Quelli del server hanno il loro controllo in
 | R-ACC-40 | Una riga che da sola supera il limite di un invio non ferma quelle dietro, e le righe in coda che non partiranno mai si nominano con il motivo | `test_engine.mjs::coda: una riga oltre il limite non ferma quelle dietro, e si nomina` |
 | R-ACC-41 | La pagina dice «Questa email è già registrata.» dal `409` della registrazione riconosciuto da codice **e** `errore`, con Accedi — email già scritta, password vuota — e Reimposta la password; zero cookie, zero sessioni e zero mail nuove, e le risposte della pagina ancora nel riepilogo. Un `409` di un altro genere non parla di email. Nel regime della pagina di oggi: nessuna rotta `/v1/` e nessun invito a un account | `test_interfaccia.py::test_client_email_registrata` |
 | R-ACC-42 | Il controllo del client progettato gira a ogni esecuzione, in un browser vero, anche finché la pagina pubblicata non ha il client: una pagina di riferimento lo passa, e ciascuna delle sue rotture dichiarate lo fa fallire nominando il difetto | `test_interfaccia.py::test_client_provato_al_contrario` |
+| R-ACC-43 | Registrandosi dopo più attività, le righe di tutte arrivano nell'account; un doppio clic fa una registrazione sola; «N risposte salvate» e la data d'esame vengono solo dopo che il server ha nominato ogni riga, e finché no la pagina dice di non chiuderla; una risposta persa si verifica con `GET /v1/io` prima di ripetere, e non si ripete | `test_interfaccia.py::test_client_registrazione` |
+| R-ACC-44 | Su un dispositivo condiviso le risposte di prova entrano nell'account solo con un sì confermato, e la scelta proposta non parte da sola; una risposta di A in volo quando A esce da un'altra scheda non arriva nell'account di B, letto nel database del server; la coda di A congelata da un accesso non più valido non entra in B | `test_interfaccia.py::test_client_dispositivo_condiviso` |
+| R-ACC-45 | Nella pagina riga e coda si scrivono insieme: una risposta data mentre un invio è in volo arriva anche lei, due schede che rispondono nello stesso istante mandano ogni riga, e una ricarica a metà trasferimento riprende dalla coda salvata e dice «salvate» solo quando il server le ha | `test_interfaccia.py::test_client_coda` |
+| R-ACC-46 | «Esci» non perde niente e non finge: con righe non inviate non esce e lo dice, offline dice che serve la rete e non cancella, una copia che un'altra scheda tiene aperta si dichiara non cancellata; dopo l'uscita niente dell'account resta nel browser, e la risposta tardiva di un'altra scheda non lo ricrea | `test_interfaccia.py::test_client_uscita` |
 
 R-ACC-20 e R-ACC-24 sono i primi requisiti del server con un controllo che si
 esegue, e il giro intero sta in `node server/ripristina.mjs --prova`, che la
@@ -1237,6 +1241,19 @@ le richieste fatte dal service worker, le persone — stanno nel §12 del proget
 del client, «Il banco». Dei diciotto gruppi di quel §12 ci sono C-01 (per
 l'attività consigliata), C-02 e C-05; gli altri sono ancora da scrivere, e
 R-ACC-30 resta al server per la metà dell'API.
+
+**Il resto dei controlli del client (P-39).** C-01 è completo — le cinque
+attività oltre il Percorso, ognuna fino al suo punto d'arrivo, con gli agganci
+della pagina di oggi —, e entrano C-03, C-04, C-06, C-11 e C-15: R-ACC-03 e 04
+passano a coperti, e R-ACC-43…46 dicono che cosa tengono fermo. C-06, C-11 e
+C-15 guardano il database del server, non lo schermo: una riga nell'account
+sbagliato si vede lì. Nel regime della pagina di oggi i gruppi nuovi
+controllano solo che il client non ci sia. **Restano scoperti** C-07…C-10,
+C-12…C-14 e C-16…C-18, per dimensione e non perché il banco non li regga,
+salvo le parti dichiarate nel §12 del progetto del client; R-ACC-05 resta
+scoperto con loro. Che cosa il banco non vede nei gruppi nuovi — il gesto
+vero, il lucchetto fra schede come unico modo di aspettarle, una corsa più
+stretta di quella che il banco sa provocare — sta nello stesso §12.
 
 ### 9.10 La mappa di Progressi
 
@@ -1614,3 +1631,10 @@ successo, ed è il motivo per cui questo file esiste.
   requisiti coperti e uno scoperto. Ventiquattro rotture del motore, tutte
   rosse nel loro test; tre erano passate verdi alla prima stesura, e il test
   che le prende è stato scritto dopo.
+- **29 settembre 2026 — il resto dei controlli del client (P-39).** Sullo
+  stesso banco: C-01 completo, C-03, C-04, C-06, C-11 e C-15. R-ACC-03 e 04 da
+  scoperti a coperti; entrano R-ACC-43…46. Trentatré rotture nuove della
+  pagina di riferimento, tutte rosse ognuna per il suo motivo; una era passata
+  verde per una ragione di tempo misurata — il timer di una scheda in secondo
+  piano — ed è stata sostituita con quella che il §9.1 del progetto del client
+  nomina. Dieci gruppi restano da scrivere, e lo dicono.

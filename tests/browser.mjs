@@ -110,6 +110,7 @@ export async function avviaChrome({ attesaMs = 15000 } = {}) {
 
   function scheda(sessionId, targetId) {
     const richieste = [];
+    const regole = [];
     const console_ = [];
     let caricata = 0;
     const ascolta = (m) => {
@@ -117,7 +118,21 @@ export async function avviaChrome({ attesaMs = 15000 } = {}) {
       if (m.method === 'Network.requestWillBeSent') richieste.push({ url: m.params.request.url, metodo: m.params.request.method });
       if (m.method === 'Page.loadEventFired') caricata++;
       if (m.method === 'Runtime.exceptionThrown') console_.push(m.params.exceptionDetails?.exception?.description || m.params.exceptionDetails?.text);
+      if (m.method === 'Fetch.requestPaused') ferma(m.params);
     };
+    async function ferma(params) {
+      const fase = params.responseStatusCode !== undefined || params.responseErrorReason !== undefined ? 'Response' : 'Request';
+      const regola = regole.find((r) => r.fase === fase && r.re.test(params.request.url));
+      const id = { requestId: params.requestId };
+      const r = regola ? await regola.gestore(params.request, params) : null;
+      // La pagina puo' aver annullato la richiesta nel frattempo: allora il
+      // comando fallisce, ed e' quello che si vuole.
+      if (r && r.fallisci) return cmd('Fetch.failRequest', { ...id, errorReason: r.fallisci }, sessionId).catch(() => {});
+      if (!r) return cmd(fase === 'Response' ? 'Fetch.continueResponse' : 'Fetch.continueRequest', id, sessionId).catch(() => {});
+      const h = Object.entries(r.intestazioni || {}).map(([name, value]) => ({ name, value }));
+      await cmd('Fetch.fulfillRequest', { ...id, responseCode: r.codice, responseHeaders: h,
+        body: Buffer.from(r.corpo ?? '').toString('base64') }, sessionId).catch(() => {});
+    }
     ascoltatori.add(ascolta);
     const s = {
       sessionId, targetId, richieste, errori: console_,
@@ -172,19 +187,20 @@ export async function avviaChrome({ attesaMs = 15000 } = {}) {
       async offline(si) {
         await cmd('Network.emulateNetworkConditions', { offline: si, latency: 0, downloadThroughput: -1, uploadThroughput: -1 }, sessionId);
       },
-      /** Risposte finte per un percorso: il banco decide che cosa torna. */
-      async intercetta(schema, gestore) {
-        ascoltatori.add(async (m) => {
-          if (m.sessionId !== sessionId || m.method !== 'Fetch.requestPaused') return;
-          const r = await gestore(m.params.request);
-          if (!r) return cmd('Fetch.continueRequest', { requestId: m.params.requestId }, sessionId).catch(() => {});
-          const h = Object.entries(r.intestazioni || {}).map(([name, value]) => ({ name, value }));
-          await cmd('Fetch.fulfillRequest', {
-            requestId: m.params.requestId, responseCode: r.codice, responseHeaders: h,
-            body: Buffer.from(r.corpo ?? '').toString('base64'),
-          }, sessionId).catch(() => {});
-        });
-        await cmd('Fetch.enable', { patterns: [{ urlPattern: schema }] }, sessionId);
+      /**
+       * Risposte finte, trattenute o fallite per un percorso: il banco decide.
+       * `gestore(request, params)` restituisce `null` per lasciar passare,
+       * `{ codice, corpo, intestazioni }` per una risposta finta, `{ fallisci }`
+       * con un motivo del protocollo (per esempio 'ConnectionReset') per un
+       * errore di rete; puo' essere asincrono, e allora la richiesta resta ferma
+       * finche' non risponde: e' cosi' che il banco tiene una richiesta in volo.
+       * `fase` e' 'Request' — prima che parta — o 'Response' — dopo che il
+       * server ha risposto, cioe' con la richiesta gia' accolta.
+       * Piu' chiamate sulla stessa scheda si sommano.
+       */
+      async intercetta(schema, gestore, { fase = 'Request' } = {}) {
+        regole.push({ schema, gestore, fase, re: new RegExp('^' + schema.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*').replace(/\?/g, '.') + '$') });
+        await cmd('Fetch.enable', { patterns: regole.map((r) => ({ urlPattern: r.schema, requestStage: r.fase })) }, sessionId);
       },
     };
     return s;

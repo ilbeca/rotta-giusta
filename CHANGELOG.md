@@ -607,6 +607,79 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   server 59/59, interfaccia 579. Guardiano e controllo della documentazione
   verdi. `site/app.html` e `docs/prossime-sessioni.md` non sono stati toccati.
 
+### Test — P-39: il resto dei controlli del client, e la corsa fra schede
+
+- **C-01 è completo, ed entrano C-03, C-04, C-06, C-11 e C-15**, sul banco
+  stabile di P-38. Senza account ogni attività arriva al suo punto d'arrivo —
+  Quiz per argomento con riepilogo e revisione, la simulazione con la consegna
+  confermata in pagina e nessuna correzione durante la prova, «Che tecnica
+  serve?» con la correzione che nomina le tecniche dell'esercizio, la prova di
+  carteggio con la risposta scritta accanto a quella ministeriale, una partita
+  dei Segnali —, e ogni esercizio e ogni scheda si riconoscono dalla banca, la
+  lezione di P-38. Sulla pagina di oggi passano tutti, con gli agganci che ha
+  già; il contratto per P-18 è scritto nel §12 del progetto del client prima
+  che il client esista. R-ACC-03 e 04 da scoperti a coperti; nuovi R-ACC-43…46.
+
+- **La corsa fra schede, misurata prima di scriverla.** Una richiesta
+  trattenuta dal banco e lasciata andare dopo un cambio d'account **parte con
+  il cookie nuovo**: la riga di A finirebbe in B, cioè il danno del §9.1 del
+  progetto, riprodotto con un'API finta. Annullata dalla pagina con un
+  `AbortController`, non arriva al server. E una risposta alla registrazione
+  persa dopo il server lascia comunque il cookie: `GET /v1/io` sa che l'account
+  c'è. Da lì i controlli: C-06 trattiene la richiesta di A, fa uscire A da
+  un'altra scheda ed entrare B, poi la lascia andare e **legge il database del
+  server**; C-11 trattiene la conferma di un invio e risponde intanto, fa
+  rispondere due schede nello stesso istante, ricarica a metà trasferimento;
+  C-15 esce con righe pendenti, offline, con un'altra scheda sulla copia, e
+  con una conferma tardiva in volo. Le assenze si guardano per tutta la
+  finestra `OSSERVAZIONE`, come in C-02.
+
+- **La pagina di riferimento diventa un client minimo vero**: archivio
+  `rg-account-<chiave>` con righe e coda nella stessa transazione, la coda del
+  motore, una catena d'invio annullabile, il trasferimento di P-28, l'uscita
+  che avvisa le altre schede con un `BroadcastChannel` e le aspetta con un
+  lucchetto. Senza account continua a non scrivere niente. Il lucchetto è un
+  modo, non il contratto: il banco guarda server e browser, e lo dice il §12.
+
+- **Trentatré rotture nuove**, ognuna rossa per il suo motivo; cinquantasette
+  in tutto. **Una è passata verde, e la ragione è il tempo:** scrivere riga e
+  coda in due transazioni con un secondo in mezzo. Misurato con un registro
+  nella pagina: le due schede leggevano la coda nello stesso millisecondo, ma
+  il timer della scheda in secondo piano scattava dopo 1,76 s, quando l'altra
+  aveva già inviato. Il banco ora fa il clic nelle due schede nello stesso
+  istante, e la rottura è quella che il §9.1 nomina — la coda tenuta in memoria
+  da ogni scheda e scritta intera —, rossa tre volte su tre. Due rotture erano
+  rosse per il motivo sbagliato alla prima stesura: una finestra che si apriva
+  dopo il giro delle viste, e l'uscita senza avviso, che nel riferimento si
+  blocca sul lucchetto invece di mandare la riga in B; sono state corrette, e
+  la seconda lo dichiara.
+
+- **Il tempo, misurato, e le corsie.** Il server accetta una sola origine,
+  quindi i gruppi con l'API giravano in fila: con quelli nuovi la suite
+  dell'interfaccia faceva 84 s, e una rottura sola 37 s di scadenze. Ora ci
+  sono quattro corsie, ognuna con sito, server, database, orologio e posta
+  suoi: la corsia 0 sulla porta 8620 porta la pagina vera, le altre ascoltano
+  dove capita, con `:8620` riscritto solo nelle pagine di riferimento. Una
+  rottura chiede solo la parte del gruppo che rompe (`C-06:corsa`), e le
+  uscite di C-15 si fermano al primo rosso. `tests/browser.mjs` sa trattenere
+  e far fallire una richiesta prima o dopo il server.
+
+- **Non fatto, e scritto:** C-07…C-10, C-12…C-14 e C-16…C-18. Per dimensione,
+  non perché il banco non li regga: il §12 dice per ognuno che cosa chiederà
+  al banco e che cosa non potrà vedere, e R-ACC-05 resta scoperto con loro.
+  Nemmeno lo stato «da verificare» in sé: la pagina di riferimento non lo
+  produce, e il banco controlla l'invariante — «salvate» solo quando il server
+  ha ogni riga —, che vale lo stesso.
+
+  Suite: interfaccia **722** (erano 579), in circa 61 s senza carico (erano
+  55); specifica **500** (erano 480); motore 167/169 con i due skip di sempre;
+  dati 242; server 59/59. **Più giri, non uno:** la suite dell'interfaccia
+  intera 20 volte senza carico, 722 su 722 ogni volta in 61–63 s, e 10 volte
+  con dieci `yes`, 722 su 722 in 67–69 s; con la **24.21.0 LTS**, scaricata da
+  nodejs.org e verificata con `SHASUMS256.txt`, interfaccia 722, server 59/59,
+  motore 167/169. Guardiano e controllo della documentazione verdi. `site/` e
+  `docs/prossime-sessioni.md` non sono stati toccati.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag

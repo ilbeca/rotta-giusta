@@ -46,7 +46,8 @@ Tutto gira sull'Air con node e python di sistema, **e Chrome**:
 `test_interfaccia.py` guida la pagina vera in Chrome headless, con il suo
 protocollo e senza dipendenze (`RG_CHROME` se l'eseguibile non sta in
 `/Applications`), e accanto avvia il server degli account sulla porta **8620**,
-che deve essere libera. Senza Chrome il controllo è rosso, non saltato. Il
+che deve essere libera, più tre copie su porte libere qualunque per le rotture
+(P-39). Senza Chrome il controllo è rosso, non saltato. Il
 perché e che cosa non copre: §12 di `docs/account-client-progetto.md`. Non c'è
 nessun servizio da riavviare, nessuna macchina remota, nessun database.
 

@@ -5,7 +5,9 @@
 (§1, §5.2, §8), alla simulazione consegnata senza risposte dell'area 3 (§4.1)
 e ai contratti del motore per i trasferimenti (§9.3). **P-29 ha aggiunto al §12
 il banco del browser**, con la misura che l'ha scelto e il contratto che la
-pagina deve rispettare. Il resto è di P-13.
+pagina deve rispettare; **P-38 l'ha reso stabile e P-39 ci ha aggiunto i
+gruppi C-01 completo, C-03, C-04, C-06, C-11 e C-15**, con il contratto che
+cresce di conseguenza. Il resto è di P-13.
 Questo documento specifica flussi, testi, stati e controlli del client. Non
 dichiara un client realizzato, un server in esercizio o una prova con utenti.
 La sessione produce questo file e una voce di CHANGELOG.
@@ -812,6 +814,39 @@ e con il difetto nominato, e su una variante che deve restare verde
   email è già registrata.», «Accedi», «Reimposta la password», «Torna
   all'attività» nel modulo di accesso.
 
+Da P-39, per le attività e per l'account:
+
+- **le attività di oggi**, con i loro agganci: dal Percorso una porta
+  `[data-v]` verso ogni vista (`quiz`, `cart`, `diag`, `seg`, `info`), e
+  `[data-v="tec"]` dal Carteggio; nei Quiz `[data-modo="argomento"]` e
+  `[data-modo="sim"]`, poi `#start`; nella simulazione `#r-pos` che avanza a
+  ogni risposta senza `.ans.ok`, e `#r-close` che apre la conferma in pagina
+  `[data-consegna="si"]`; nel riepilogo `[data-ciclo="ritorno"]`; in «Che
+  tecnica serve?» `#t-start`, `#r-text` con il testo di un esercizio, le
+  `#r-ans .chip`, `#r-next` che corregge e `#r-verdict` che nomina le tecniche
+  dell'esercizio; nella prova di carteggio `#c-start`, `#c-testo`, `#c-input`,
+  `#c-consegna` a due tocchi e `#c-fine` con la risposta scritta accanto a
+  quella ministeriale; nei Segnali `#s-start`, `#sr-ans button`, `#sr-next`,
+  `#sr-fine` con un punteggio «n / N». Ogni testo si riconosce dalla banca —
+  `quiz.json`, `carteggio.json`, le schede di `E.SEGNALI` —, mai dalla forma;
+- **le porte dell'account**: nell'intestazione «Accedi» senza account e
+  «Account» con l'account (§3.2), e nel pannello dell'account «Esci»; senza
+  account in Progressi la frase del §3.2 con «Vai al Percorso» e «Accedi», e
+  nessuno di `#d-temi`, `#d-voci`, `#d-cons`, `#sessioni` visibile;
+- **i testi dei flussi**: «Continua senza account», «Hai una data d'esame?» con
+  «Continua senza data» (§11.1), «Non chiudere la pagina: le risposte non sono
+  ancora salvate nel tuo account.», «{N} risposte salvate nel tuo account» (anche
+  al singolare), «Non sappiamo se l'account è stato creato» (§4.3), «Vuoi
+  portare nel tuo account …» con l'email di destinazione, le etichette «Sì,
+  portale» e «No, continua senza portarle», «Conferma la scelta» (§5.1), «{N}
+  risposte non sono sul server», «Per uscire dall'account serve la rete.»,
+  «L'accesso è chiuso, ma la copia su questo dispositivo non è stata
+  cancellata.» (§10), e la frase dei Segnali del §4.1;
+- **la finestra modale**: un pannello aperto porta `aria-modal="true"`, e il
+  banco cerca pulsanti e campi lì dentro; si chiude con Esc;
+- **l'archivio dell'account** in IndexedDB si chiama `rg-account-<chiave_locale>`
+  (§9.2): il banco lo cerca per nome, e senza account non ce n'è nessuno.
+
 Un aggancio cambiato è una conversazione con `main`, non un controllo da
 aggirare: il prompt di P-18 lo dice.
 
@@ -968,14 +1003,19 @@ a ogni giro: è un controllo della suite stessa. La finestra di tre secondi non
 allunga la suite in modo misurabile, perché le prove di C-02 girano in
 parallelo: 55 s senza carico, come prima.
 
-**Quali gruppi ci sono, al 26 settembre 2026:**
+**Quali gruppi ci sono, al 29 settembre 2026:**
 
 | Gruppo | Stato | Che cosa esegue |
 |---|---|---|
-| C-01 | **in parte** | Nuovo browser, attività consigliata del Percorso: primo quesito senza campi password, risposta, «Termina», riepilogo, revisione; poi lo stesso offline, dopo che il guscio è in cache. **Mancano** le altre attività — Quiz, simulazioni, Carteggio, tecniche, Segnali — che R-ACC-04 chiede. |
-| C-02 | **fatto** per il Percorso e la data d'esame | Avviso prima e dopo in testo visibile; dopo un'attività e la data, niente in IndexedDB, localStorage, sessionStorage, cookie, né in Cache Storage oltre il guscio e le figure; nessuna richiesta all'API; ricarica senza risposte né data, e ancora niente conservato. **Mancano** Segnali e gli altri controlli delle preferenze, che entrano con C-01 completo. |
-| C-05 | **fatto** | Registrazione dal riepilogo con un'email iscritta sul server vero: la frase, le due porte, zero cookie, zero sessioni e zero mail nuove, Accedi con l'email e senza password, riepilogo e revisione intatti; un `409` finto di un altro genere non parla di email, e uno con un messaggio diverso non spegne la frase. |
-| C-03, C-04, C-06…C-18 | da scrivere | In una sessione dopo, sullo stesso banco: contesti isolati, schede nello stesso contesto, risposte finte, server vero con il suo database. |
+| C-01 | **fatto** (P-29, P-39) | Nuovo browser, attività consigliata del Percorso: primo quesito senza campi password, risposta, «Termina», riepilogo, revisione; poi lo stesso offline, dopo che il guscio è in cache. Poi le altre attività, ognuna fino al suo punto d'arrivo e senza un campo password: Quiz per argomento con riepilogo e revisione, simulazione con la consegna confermata in pagina e nessuna correzione durante la prova, «Che tecnica serve?» con la correzione che nomina le tecniche dell'esercizio, prova di carteggio con la risposta scritta accanto a quella ministeriale, una partita dei Segnali fino al punteggio. Offline, solo il Percorso. |
+| C-02 | **fatto** (P-29, P-39) | Avviso prima e dopo in testo visibile; una partita dei Segnali con la sua frase, un'attività e la data; niente in IndexedDB, localStorage, sessionStorage, cookie, né in Cache Storage oltre il guscio e le figure, per tutta la finestra d'osservazione; nessuna richiesta all'API; ricarica senza risposte né data, e ancora niente conservato. |
+| C-03 | **fatto** (P-39) | Dal Percorso ogni vista: nessun invito, campo password o finestra modale. Progressi senza account: la frase del §3.2, «Vai al Percorso», «Accedi», nessun cruscotto. L'invito nel riepilogo; «Continua senza account» lo chiude senza aprire altro; durante l'attività dopo non c'è, nel suo riepilogo torna. |
+| C-04 | **fatto** (P-39) | Due attività, poi la registrazione con un doppio clic: una POST sola. La risposta dell'invio trattenuta dopo il server: per tutta la finestra niente «salvate» e niente data d'esame, e «Non chiudere la pagina…» visibile; lasciata andare, «2 risposte salvate» con 2 righe nel database, poi la data facoltativa. La risposta alla registrazione persa dopo il server: `GET /v1/io` prima di ripetere, nessuna seconda registrazione, e le risposte salvate. **Non** esercita un `503` di posta, un `422` o un `429`: sono C-07 e C-08. |
+| C-05 | **fatto** (P-29) | Registrazione dal riepilogo con un'email iscritta sul server vero: la frase, le due porte, zero cookie, zero sessioni e zero mail nuove, Accedi con l'email e senza password, riepilogo e revisione intatti; un `409` finto di un altro genere non parla di email, e uno con un messaggio diverso non spegne la frase. |
+| C-06 | **fatto** (P-39) | Con risposte di prova l'accesso chiede se portarle e dice dove; per la finestra intera la scelta proposta non manda niente; con il no l'account resta vuoto, e la risposta dopo l'accesso ci entra. La corsa: A risponde e la sua richiesta resta ferma prima di partire; da un'altra scheda A esce e B entra; lasciata andare, nel database di B nessuna riga, e quella di A è nel suo account; la copia di A non resta. La coda di A congelata da un `401` non entra in B, e resta nella copia di A. |
+| C-11 | **fatto** (P-39) | Una risposta data mentre la conferma della precedente è ferma arriva anche lei. Due schede rispondono nello stesso istante: quattro righe sul server, non tre. Una ricarica con il trasferimento fermo prima del server: la pagina riprende e dice «salvate» con la riga nel database. **Non** esercita l'import di un file né più lotti: sono C-10 e C-12. |
+| C-15 | **fatto**, tranne il `401` (P-39) | Con una riga che non parte, «Esci» dice quante non sono sul server e non esce. Offline dice che serve la rete, e copia, cookie e sessione restano. Con un'altra scheda sulla copia, la sessione si chiude e la pagina dice che la copia non è stata cancellata. L'uscita normale da una scheda mentre l'altra ha una conferma in volo: sessione chiusa, niente dell'account nel browser per tutta la finestra, anche dopo la risposta tardiva, e l'altra scheda senza account. **Non** esercita il `401` all'uscita né «Esci da tutti i dispositivi». |
+| C-07…C-10, C-12…C-14, C-16…C-18 | da scrivere | Vedi «Il resto dei controlli», qui sotto: che cosa chiede ognuno al banco, e che cosa non potrà vedere. |
 
 **La corsa fra schede di «da verificare»** (§9.3, ultimo paragrafo; §9.1)
 entra con C-06, C-11 e C-15 in questa forma, che il banco sa già fare: due
@@ -985,7 +1025,89 @@ trattenuta dall'intercettazione finché l'altra scheda non ha agito. Il
 controllo non guarda solo lo schermo: legge il database del server, perché
 «l'invio sbagliato sul server sarebbe già un danno» (§9.1), e pretende che
 nessuna riga di A arrivi nell'account di B e che «salvate» compaia solo dopo
-che il server ha nominato ogni uid.
+che il server ha nominato ogni uid. **Fatto da P-39**, qui sotto; lo stato
+«da verificare» in sé il banco non lo provoca, e lo dice.
+
+### Il resto dei controlli (P-39, 29 settembre 2026)
+
+**Tre misure prima dei controlli**, con un'API finta su due porte e il banco:
+
+| Che cosa | Misurato |
+|---|---|
+| Una risposta fatta fallire dopo il server (`Fetch.failRequest` alla fase *Response*) | la pagina vede `Failed to fetch`, ma **il cookie c'è**: un `GET` dopo parte con il cookie nuovo. Una registrazione la cui risposta si perde ha quindi già aperto la sessione, e `GET /v1/io` lo dice (§4.3) |
+| Una richiesta trattenuta prima di partire, poi annullata dalla pagina con `AbortController` e lasciata andare dal banco | **non arriva al server**: arriva solo il preflight, senza cookie |
+| La stessa richiesta non annullata, lasciata andare dopo un accesso con un altro account | **parte con il cookie nuovo**: la riga di A finirebbe in B. È il danno del §9.1, riprodotto; la difesa è annullare l'invio prima che l'uscita si compia |
+
+**Come la pagina di riferimento aspetta le altre schede.** Con un lucchetto
+condiviso per scheda (`navigator.locks`), preso all'accesso e lasciato quando
+la scheda si è fermata — invio annullato, archivio chiuso, memoria pulita —; chi
+esce avvisa con un `BroadcastChannel` e chiede il lucchetto esclusivo, per al
+più tre secondi, poi dice di chiudere l'altra scheda. È un modo, non il
+contratto: il banco guarda il database del server e il browser, non il
+lucchetto, e una pagina che aspetta in un altro modo passa lo stesso. Per
+questo la rottura «l'uscita non avvisa le altre schede» qui è rossa perché
+l'uscita non si compie, e in una pagina senza lucchetto lo sarebbe sulla riga
+di A in B.
+
+**Un verde falso trovato, dal tempo.** La prima rottura di C-11 per due schede
+scriveva riga e coda in due transazioni con un secondo in mezzo, e passava
+verde sotto carico e a volte da sola. Misurato con un registro nella pagina: le
+due schede leggono la coda nello stesso millisecondo, ma **il timer da un
+secondo della scheda in secondo piano scatta dopo 1,76 s**, quando l'altra ha
+già inviato la sua riga, e la sovrascrittura non perde niente di non inviato.
+Due correzioni: il banco fa il clic nelle due schede nello stesso istante,
+passata la sordità di 200 ms, invece di ritoccare a turno; e la rottura è
+diventata quella che il §9.1 nomina — la coda tenuta in memoria da ogni scheda
+e scritta intera —, rossa tre volte su tre.
+
+**Le corsie.** Il server accetta una sola origine (§7.3 del progetto degli
+account), quindi i gruppi con l'API giravano in fila; con i gruppi nuovi e le
+loro rotture la fila supera i quattro minuti. Ora sono quattro corsie, ognuna
+con un sito, un server con il suo database, il suo orologio e la sua posta:
+la corsia 0 è sulla porta 8620 e porta la pagina vera; le altre ascoltano su
+una porta qualunque, e la pagina che ci gira ha `:8620` riscritto con la sua —
+solo la pagina di riferimento e le sue rotture, mai quella vera. Una rottura
+chiede solo la parte del gruppo che rompe (`C-06:corsa`), e nelle uscite di
+C-15 il giro si ferma al primo rosso, perché ogni passo parte dallo stato del
+precedente: una rottura lì costava 37 s di scadenze.
+
+**Il tempo.** `tests/test_interfaccia.py` passa da 576 a 722 verifiche e da
+55 s a circa 61 s senza carico. Senza le corsie e le parti, misurato, erano
+84 s con una rottura sola da 37 s.
+
+**Che cosa i gruppi nuovi non coprono**, oltre al §12 «Il banco»:
+
+- **lo stato «da verificare» in sé.** La pagina di riferimento tiene il
+  trasferimento nell'archivio condiviso, e ogni scheda vi registra le sue
+  conferme: le due schede non lo producono. Il banco controlla l'invariante —
+  «salvate» solo quando il server ha ogni riga, letto nel database — e non
+  lo stato; una pagina che tiene il trasferimento per scheda lo produrrà, e
+  il controllo resterà lo stesso;
+- **una corsa più stretta di quella che il banco sa provocare.** Due clic nello
+  stesso istante e una richiesta trattenuta sono le finestre più larghe; una
+  scrittura non atomica con una finestra di pochi millisecondi può passare. Il
+  §9.1 resta un requisito da leggere nel codice alla merge di P-18;
+- **il `401` all'uscita, «Esci da tutti i dispositivi», un `IndexedDB` che non
+  si scrive** (§9.2) — di C-15 e del resto del §10;
+- **la scheda in secondo piano.** Chrome rallenta i timer delle schede che non
+  si vedono: è la stessa cosa del telefono con due schede, ma i tempi del banco
+  non sono quelli di un telefono.
+
+**Il resto dei gruppi**, da scrivere sullo stesso banco. Nessuno è impossibile
+per il banco; le parti che non vedrà sono scritte accanto.
+
+| Gruppo | Che cosa chiede al banco | Che cosa non vedrà |
+|---|---|---|
+| C-07 | la posta del banco che rifiuta (`503`), i gettoni letti dalle mail del banco, il frammento `#verifica=` e `history.replaceState`, la scadenza scritta dal primo momento | la mail vera, lo spam |
+| C-08 | `422`, `401`, `403`, `429` dal server vero o finti, il recupero con il gettone della mail | incolla e autofill: il gesto vero e il gestore di password sono del collaudo |
+| C-09 | un archivio di prima scritto nel contesto prima del primo carico (IndexedDB `open-patente-nautica` e `pn.archivio`), una lettura fallita | un archivio vero di anni: è P-27 (R-ACC-05) |
+| C-10 | un file dato al campo con `DOM.setFileInputFiles`, i Segnali per massimo sul server | — |
+| C-12 | più di 2.000 righe e più di 2 MiB, un `413` finto, più di 5.000 righe da ricevere | il tempo di un archivio grande su un telefono |
+| C-13 | un azzeramento dal banco con la generazione nuova, scoperto inviando e ricevendo | — |
+| C-14 | un ripristino di una copia del database del server a metà giro (`server/copie.mjs`) | — |
+| C-16 | un `PUT /v1/profilo` fallito, una data passata | Q-ONBOARD, che non è deciso |
+| C-17 | un'origine esclusa: un nome che non sia `localhost` né `127.0.0.1` per il sito, per esempio con `--host-resolver-rules` | — |
+| C-18 | la ricerca delle frasi nelle due pagine e nei metadati | la privacy: il suo gate è dell'autore |
 
 **Collaudo dell'implementazione:** screenshot a 375 e 1280 px, prova al 200%,
 tastiera, focus di ritorno al riepilogo/controllo d'origine, lettore di schermo,

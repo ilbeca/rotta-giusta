@@ -621,7 +621,13 @@ def test_ciclo_provato_al_contrario():
 # integra P-18, e da quel commit una pagina senza client e' rossa.
 BANCO_CLIENT = RADICE / 'tests' / 'client_account.mjs'
 RIFERIMENTO_CLIENT = RADICE / 'tests' / 'pagina-client-account.html'
-GRUPPI_CLIENT = ['C-01', 'C-02', 'C-05']
+GRUPPI_CLIENT = ['C-01', 'C-02', 'C-03', 'C-04', 'C-05', 'C-06', 'C-11', 'C-15']
+# Quante verifiche fa ogni gruppo quando arriva in fondo, sulla pagina di
+# riferimento: meno vuol dire che il giro si e' fermato prima e che una parte
+# dei controlli non e' stata eseguita, cioe' un verde a copertura parziale.
+VERIFICHE_CLIENT = {'C-01': 33, 'C-02': 15, 'C-03': 11, 'C-04': 20, 'C-05': 13, 'C-06': 15, 'C-11': 8, 'C-15': 6}
+# Le verifiche delle attivita' oltre il Percorso, in C-01: R-ACC-04 le chiede tutte.
+ATTIVITA_CLIENT = ['Quiz per argomento: ', 'Simulazione: ', 'Che tecnica serve?: ', 'Carteggio: ', 'Segnali: ']
 
 
 def regime_client(testo):
@@ -724,6 +730,140 @@ ROTTURE_CLIENT = [
      [("return pannello(`<h2>Crea un account</h2>\n      <p role=\"alert\">",
        "S.ultima = null; $('r-fine').classList.remove('on');\n    return pannello(`<h2>Crea un account</h2>\n      <p role=\"alert\">")],
      'le risposte della pagina sono intatte'),
+    # C-01, le altre attivita' (P-39)
+    ('la simulazione consegna senza conferma', ['C-01:attivita'],
+     [("if (t.id === 'r-close') return S.run && S.run.sim ? ($('r-consegna').hidden = false) : termina();",
+       "if (t.id === 'r-close') return termina();")],
+     'chiede conferma in pagina'),
+    ('la simulazione corregge durante la prova', ['C-01:attivita'],
+     [('  if (R.sim) {', '  if (R.sim && false) {')],
+     'nessuna correzione durante la prova'),
+    ('il carteggio senza la risposta ministeriale', ['C-01:attivita'],
+     [('<p>Risposta ministeriale: ${esc(e.risposta_ufficiale)}</p>', '<p>Risposta ministeriale: vedi il decreto</p>')],
+     'accanto a quella ministeriale'),
+    ('il carteggio chiede un account prima della prova', ['C-01:attivita'],
+     [("if (t.id === 'c-start') return avviaCart();", "if (t.id === 'c-start') { moduloRegistrazione(); return avviaCart(); }")],
+     'Carteggio: si apre un esercizio della banca, senza account'),
+    ('le tecniche corrette senza dire quali servono', ['C-01:attivita'],
+     [("$('r-verdict').textContent = 'Servono: ' + it.tecniche.join(' + ');", "$('r-verdict').textContent = 'Corretto.';")],
+     'le tecniche che l\'esercizio chiede'),
+    ('la partita dei Segnali che non finisce', ['C-01:attivita'],
+     [("  if (G.i + 1 < G.dom.length) { $('sr-next').hidden = false; return; }",
+       "  if (G.i + 1 < G.dom.length) { $('sr-next').hidden = false; return; }\n  return;")],
+     'la partita arriva in fondo'),
+    # C-02, i Segnali (P-39)
+    ('i punteggi dei Segnali in localStorage', ['C-02'],
+     [("  $('sr-fine').classList.add('on');",
+       "  $('sr-fine').classList.add('on'); localStorage.setItem('pn.segPunti', JSON.stringify({ notturni: { migliore: G.esatte, giocate: 1 } }));")],
+     'localStorage: pn.segPunti'),
+    ('i Segnali senza l\'avviso', ['C-02'],
+     [('<p id="seg-avviso">', '<p id="seg-avviso" hidden>')],
+     'i punteggi valgono per questa pagina'),
+    # C-03 (P-39)
+    ('una finestra d\'account all\'apertura', ['C-03'],
+     [("fetch('/dati/carteggio.json').then((r) => r.json()).then((c) => { S.cart = c; }).catch(() => {});",
+       "fetch('/dati/carteggio.json').then((r) => r.json()).then((c) => { S.cart = c; }).catch(() => {});\nmoduloRegistrazione();")],
+     'in nessuna vista'),
+    ('l\'invito in una vista, fuori dal riepilogo', ['C-03'],
+     [('  <h1>Quiz</h1>', '  <h1>Quiz</h1>\n  <button data-account="registra">Crea un account e salva</button>')],
+     'in nessuna vista'),
+    ('Progressi con il cruscotto senza account', ['C-03'],
+     [('<div id="d-temi" hidden>', '<div id="d-temi">')],
+     'senza un cruscotto'),
+    ('«Continua senza account» apre il modulo di accesso', ['C-03'],
+     [("if (a === 'continua') { $('quizrun').classList.remove('on'); return; }",
+       "if (a === 'continua') { $('quizrun').classList.remove('on'); return moduloAccesso(''); }")],
+     'lo chiude senza chiedere altro'),
+    ('l\'invito durante l\'attivita\' dopo', ['C-03'],
+     [('function mostra() {', "function mostra() {\n  if (!S.conto && S.ultima) $('conto-stato').textContent = 'Vuoi conservare le attività di questa pagina?';")],
+     'durante l\'attivita\' dopo'),
+    # C-04 (P-39)
+    ('«salvate» con l\'invio ancora in volo', ['C-04:registrazione'],
+     [('  if (r.completo) {', "  if (r.completo || r.stato === 'in corso') {")],
+     'niente «salvate» e niente data'),
+    ('la data d\'esame prima del trasferimento', ['C-04:registrazione'],
+     [('  S.onboarding = true;\n  await trasferisci(', '  onboarding();\n  await trasferisci(')],
+     'niente «salvate» e niente data'),
+    ('solo l\'ultima attivita\' nel trasferimento', ['C-04:registrazione'],
+     [('  await trasferisci(S.righe.splice(0));', '  await trasferisci(S.righe.splice(0).filter((r) => r.sim_uid === S.ultima.id));')],
+     'di tutte e due le attivita\''),
+    ('doppio clic, due registrazioni', ['C-04:registrazione'],
+     [("  bottone.disabled = true;\n  esito.textContent = 'Creazione dell\\'account in corso…';",
+       "  esito.textContent = 'Creazione dell\\'account in corso…';")],
+     'doppio clic'),
+    ('risposta persa: la registrazione si ripete', ['C-04:persa'],
+     [('    return dopoRispostaPersa();', '    return registra();')],
+     'e non ripete'),
+    ('risposta persa: niente domanda al server', ['C-04:persa'],
+     [('    return dopoRispostaPersa();', "    { esito.textContent = 'Il server non ha risposto. Riprova.'; bottone.disabled = false; return; }")],
+     'chiede al server'),
+    # C-06 (P-39)
+    ('le risposte di prova portate senza chiedere', ['C-06:scelta'],
+     [('  if (!S.righe.length) { chiudiPannello(); return catena(); }',
+       '  if (S.righe.length) { chiudiPannello(); return trasferisci(S.righe.splice(0)); }')],
+     'chiede se portarle'),
+    ('la scelta proposta parte da sola', ['C-06:scelta'],
+     [('    <button data-conto="scelta">Conferma la scelta</button>`);',
+       '    <button data-conto="scelta">Conferma la scelta</button>`);\n  trasferisci(S.righe.slice());')],
+     'non fa partire niente da sola'),
+    ('il no porta comunque le righe', ['C-06:scelta'],
+     [('  else { S.prova = S.righe; S.righe = []; await catena(); }', '  else { await trasferisci(S.righe.splice(0)); }')],
+     'con il no'),
+    ('l\'uscita non annulla l\'invio in volo delle altre schede', ['C-06:corsa'],
+     [('  if (S.ac) S.ac.abort();\n', '')],
+     'non arriva nell\'account di B'),
+    # Nella pagina di riferimento l'uscita aspetta il lucchetto delle altre
+    # schede: senza l'avviso non si compie, e B non entra. Una pagina senza il
+    # lucchetto la compirebbe, e la rottura sarebbe rossa sulla riga di A in B.
+    ('l\'uscita non avvisa le altre schede', ['C-06:corsa'],
+     [("  canale.postMessage({ tipo: 'uscita', chiave });\n", '')],
+     'dall\'altra scheda A esce'),
+    ('la coda di A importata in B', ['C-06:congelata'],
+     [('  S.db = await apriDb(S.conto.chiave);',
+       "  S.db = await apriDb(S.conto.chiave);\n"
+       "  for (const d of await indexedDB.databases()) if (d.name.startsWith('rg-account-') && d.name !== nomeDb(S.conto.chiave)) {\n"
+       "    const vecchio = await new Promise((ok) => { const q = indexedDB.open(d.name); q.onsuccess = () => ok(q.result); });\n"
+       "    const righe = await new Promise((ok) => { const q = vecchio.transaction('righe').objectStore('righe').getAll(); q.onsuccess = () => ok(q.result); });\n"
+       "    vecchio.close();\n"
+       "    await tx((s) => ({ nuove: righe, coda: righe.reduce((c, r) => E.accoda(c, r.uid), s.coda) }));\n"
+       "  }")],
+     'non entra in B'),
+    # C-11 (P-39)
+    ('la coda di inizio invio salvata alla conferma', ['C-11:volo'],
+     [('      esito = E.dopoInvio(s.coda, lotto, risposta, s.righe);', '      esito = E.dopoInvio(coda, lotto, risposta, s.righe);')],
+     'la risposta data durante l\'invio'),
+    # La coda che ogni scheda tiene in memoria e scrive intera: due schede si
+    # sovrascrivono (§9.1). Una prima versione scriveva in due transazioni con
+    # un secondo in mezzo, e passava verde: il timer della scheda in secondo
+    # piano scattava dopo 1,76 s, quando l'altra aveva gia' inviato (misurato).
+    ('la coda tenuta in memoria da ogni scheda e scritta intera', ['C-11:volo'],
+     [('  await tx((s) => ({ nuove: [riga], coda: E.accoda(s.coda, riga.uid) }));',
+       '  S.codaMia = E.accoda(S.codaMia || E.nuovaCoda({ generazione: S.conto.generazione, epocaDb: S.conto.epoca }), riga.uid);\n'
+       '  await tx(() => ({ nuove: [riga], coda: S.codaMia }));')],
+     'due schede che rispondono insieme'),
+    ('dopo la ricarica l\'invio non riprende', ['C-11:ricarica'],
+     [('  await entra(io.corpo);\n  await dipingiStato();\n  await catena();', '  await entra(io.corpo);\n  await dipingiStato();')],
+     'ricarica: la pagina riprende'),
+    # C-15 (P-39)
+    ('si esce con risposte non inviate', ['C-15:uscite'],
+     [('  if (pendenti) {', '  if (false) {')],
+     'con risposte non inviate'),
+    ('offline l\'uscita si dichiara fatta', ['C-15:uscite'],
+     [('      if (r.codice !== 204 && r.codice !== 401) {', '      if (false) {')],
+     'offline, «Esci»'),
+    ('la cancellazione bloccata presa per riuscita', ['C-15:uscite'],
+     [('        q.onblocked = () => ok(false);', '        q.onblocked = () => ok(true);')],
+     'una copia che non si cancella'),
+    ('l\'uscita lascia la copia dell\'account', ['C-15:corsa'],
+     [('        const q = indexedDB.deleteDatabase(nomeDb(chiave));', '        const q = {}; setTimeout(() => q.onsuccess(), 0);')],
+     'dopo l\'uscita niente dell\'account resta'),
+    ('la risposta tardiva scritta dopo l\'uscita', ['C-15:corsa'],
+     [('async function invia(mio) {\n  for (;;) {', 'async function invia(mio) {\n  const conto = S.conto;\n  for (;;) {'),
+      ('    if (mio !== S.ciclo || risposta.annullata) return false;\n    // La coda si rilegge', '    // La coda si rilegge'),
+      ('  if (S.ac) S.ac.abort();\n', ''),
+      ('    let esito;\n    await tx((s) => {\n      esito = E.dopoInvio(',
+       '    let esito;\n    if (!S.db) { S.conto = conto; S.db = await apriDb(conto.chiave); }\n    await tx((s) => {\n      esito = E.dopoInvio(')],
+     'dopo l\'uscita niente dell\'account resta'),
 ]
 
 # Varianti della pagina di riferimento che devono restare **verdi**: il banco
@@ -823,6 +963,43 @@ def test_client_email_registrata():
     registra_client('C-05')
 
 
+def test_client_invito_e_viste():
+    registra_client('C-03')
+
+
+def test_client_tutte_le_attivita():
+    """R-ACC-04: senza account ogni attivita' arriva al suo punto d'arrivo (C-01,
+    registrato da test_client_primo_ingresso), e Progressi non costruisce un
+    cruscotto dallo storico temporaneo (C-03). Qui si pretende che le une e
+    l'altro ci siano, non si contano due volte."""
+    prove, out, _ = banco_client()
+    v = out.get('app', [])
+    for a in ATTIVITA_CLIENT:
+        fatte = [x for x in v if x['gruppo'] == 'C-01' and x['nome'].startswith(a)]
+        check('client: l\'attivita\' «%s» guidata senza account' % a.rstrip(': '), bool(fatte) and all(x['ok'] for x in fatte),
+              'nessuna verifica' if not fatte else '; '.join(x['nome'] for x in fatte if not x['ok']))
+    if prove[0]['regime'] == 'progettato':
+        porta = [x for x in v if x['gruppo'] == 'C-03' and 'Progressi dice perche\'' in x['nome']]
+        check('client: senza account Progressi non e\' un cruscotto', bool(porta) and all(x['ok'] for x in porta),
+              'la verifica di C-03 su Progressi manca o e\' rossa')
+
+
+def test_client_registrazione():
+    registra_client('C-04')
+
+
+def test_client_dispositivo_condiviso():
+    registra_client('C-06')
+
+
+def test_client_coda():
+    registra_client('C-11')
+
+
+def test_client_uscita():
+    registra_client('C-15')
+
+
 def test_client_provato_al_contrario():
     prove, out, applicate = banco_client()
     rif = [p for p in prove if p['nome'] == 'riferimento'][0]
@@ -831,8 +1008,9 @@ def test_client_provato_al_contrario():
     check('la pagina di riferimento del client e\' nel regime progettato', rif['regime'] == 'progettato', rif['regime'])
     check('la pagina di riferimento del client passa il banco del browser', not rossi, '; '.join(rossi[:3]))
     for g in GRUPPI_CLIENT:
+        n = sum(1 for x in v if x['gruppo'] == g)
         check('il banco del browser ha eseguito %s sulla pagina di riferimento' % g,
-              sum(1 for x in v if x['gruppo'] == g) >= 6, 'troppo poche verifiche: il giro non e\' arrivato in fondo')
+              n >= VERIFICHE_CLIENT[g], 'troppo poche verifiche: il giro non e\' arrivato in fondo (%d su %d)' % (n, VERIFICHE_CLIENT[g]))
     for cosa, gruppi, _ in VARIANTI_CLIENT:
         check('variante del client «%s»: si applica alla pagina di riferimento' % cosa, applicate.get('variante: ' + cosa),
               'il testo da sostituire non c\'e\' piu\': la variante non proverebbe niente')
@@ -1073,6 +1251,8 @@ def main():
               test_intenzioni_provate_al_contrario,
               test_ciclo_riepilogo, test_ciclo_riprova, test_ciclo_provato_al_contrario,
               test_client_primo_ingresso, test_client_senza_account, test_client_email_registrata,
+              test_client_invito_e_viste, test_client_tutte_le_attivita, test_client_registrazione,
+              test_client_dispositivo_condiviso, test_client_coda, test_client_uscita,
               test_client_provato_al_contrario,
               test_motore_senza_orfani, test_chiamate_al_motore_preservate,
               test_letture_che_non_mascherano,

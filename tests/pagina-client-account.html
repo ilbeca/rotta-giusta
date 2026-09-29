@@ -1,27 +1,37 @@
 <!doctype html>
 <!--
   La pagina di riferimento del client degli account, regime progettato:
-  docs/account-client-progetto.md §§4.1, 4.2, 5.2 e 9.2. Non e' pubblicata e
-  non e' un prototipo: e' il minimo che soddisfa il banco del browser
-  (tests/client_account.mjs) per C-01, C-02 e C-05, e serve a quel banco per
-  provarsi al contrario a ogni esecuzione — questa pagina deve passare, e
+  docs/account-client-progetto.md §§3.2, 4, 5, 9, 10 e 11.1. Non e' pubblicata
+  e non e' un prototipo: e' il minimo che soddisfa il banco del browser
+  (tests/client_account.mjs) per C-01…C-06, C-11 e C-15, e serve a quel banco
+  per provarsi al contrario a ogni esecuzione — questa pagina deve passare, e
   ognuna delle rotture elencate in ROTTURE_CLIENT di tests/test_interfaccia.py
   deve fallire nominando il difetto.
 
   Mostra anche la forma del contratto a chi realizza il client (P-18): gli
-  agganci del runner di oggi, i testi del progetto, e indirizzoApi(), da cui il
-  controllo riconosce il regime. Il disegno, gli altri stati e il resto dei
-  flussi sono del progetto, non di qui. Il contratto per esteso sta nel §12.
+  agganci delle attivita' di oggi, i testi del progetto, indirizzoApi(), da cui
+  il controllo riconosce il regime, l'archivio per account `rg-account-<chiave>`
+  e la coda del motore. Il disegno, gli altri stati e il resto dei flussi sono
+  del progetto, non di qui. Il contratto per esteso sta nel §12.
 
   Senza account questa pagina non scrive niente: ne' IndexedDB, ne'
-  localStorage, ne' sessionStorage, ne' cookie. Tutto sta in S, in memoria.
+  localStorage, ne' sessionStorage, ne' cookie. Tutto sta in S, in memoria. Con
+  l'account scrive solo nel suo archivio, e lo cancella all'uscita.
 -->
 <html lang="it">
 <meta charset="utf-8">
 <title>Client degli account, regime progettato: pagina di riferimento</title>
-<style>[hidden]{display:none!important} #quizrun:not(.on), #rivedi:not(.on), #r-fine:not(.on) {display:none}</style>
+<style>[hidden]{display:none!important} .view:not(.on), #quizrun:not(.on), #rivedi:not(.on), #r-fine:not(.on), #cartrun:not(.on), #c-fine:not(.on), #segrun:not(.on), #sr-fine:not(.on) {display:none}</style>
 <body>
-<section id="v-oggi">
+<header>
+  <nav>
+    <button data-v="oggi">Percorso</button><button data-v="quiz">Quiz</button><button data-v="cart">Carteggio</button><button data-v="diag">Progressi</button><button data-v="seg">Segnali</button><button data-v="info">Info</button>
+  </nav>
+  <button id="conto-porta">Accedi</button>
+  <p id="conto-stato" role="status"></p>
+</header>
+
+<section class="view on" id="v-oggi">
   <h1>Il tuo percorso</h1>
   <p id="avviso-prova">Senza account le risposte valgono solo finché questa pagina resta aperta. Se la chiudi o la ricarichi, le perdi. Non salviamo niente, nemmeno le tue preferenze.</p>
   <button data-rotta-start disabled>Inizia l'attività</button>
@@ -29,12 +39,67 @@
   <section id="rotta-last" hidden><h2>Ultima attività nei quiz</h2><p id="rotta-last-txt"></p></section>
 </section>
 
+<section class="view" id="v-quiz">
+  <h1>Quiz</h1>
+  <button data-modo="argomento">Scegli un argomento</button>
+  <button data-modo="sim">Simula la prova</button>
+  <button id="start" hidden>Inizia</button>
+</section>
+
+<section class="view" id="v-cart">
+  <h1>Carteggio</h1>
+  <button data-v="tec">Apri l'allenamento</button>
+  <button id="c-start">Inizia prova d'esame</button>
+</section>
+
+<section class="view" id="v-tec">
+  <h1>Che tecnica serve?</h1>
+  <button id="t-start">Inizia</button>
+</section>
+
+<section class="view" id="v-diag">
+  <h1>Progressi</h1>
+  <div id="diag-porta">
+    <p>I Progressi descrivono le attività salvate nel tuo account. Senza account puoi fare tutte le attività e rivedere quelle della pagina aperta.</p>
+    <button data-v="oggi">Vai al Percorso</button>
+    <button data-conto="accedi">Accedi</button>
+  </div>
+  <div id="d-temi" hidden><h2>Per tema</h2></div>
+</section>
+
+<section class="view" id="v-seg">
+  <h1>Riconosci fanali e segnali</h1>
+  <p id="seg-avviso">Senza account anche i punteggi dei Segnali valgono solo per questa pagina.</p>
+  <button id="s-start">Inizia</button>
+</section>
+
+<section class="view" id="v-info"><h1>Info</h1></section>
+
 <div id="quizrun">
+  <span id="r-pos"></span>
   <button id="r-close">Termina l'attività</button>
   <div id="r-text"></div>
   <div id="r-verdict"></div>
   <div id="r-ans"></div>
+  <button id="r-next" hidden>Avanti</button>
+  <div id="r-consegna" role="dialog" hidden><p>Vuoi consegnare la prova?</p><button data-consegna="si">Consegna</button><button data-consegna="no">Continua la prova</button></div>
   <div id="r-fine"></div>
+</div>
+
+<div id="cartrun">
+  <span id="c-pos"></span>
+  <div id="c-testo"></div>
+  <label for="c-input">La tua risposta</label><textarea id="c-input"></textarea>
+  <button id="c-consegna">Consegna</button>
+  <div id="c-fine"></div>
+</div>
+
+<div id="segrun">
+  <span id="sr-pos"></span>
+  <div id="sr-verdict"></div>
+  <div id="sr-ans"></div>
+  <button id="sr-next" hidden>Avanti</button>
+  <div id="sr-fine"></div>
 </div>
 
 <div id="rivedi"><button id="rv-close">Chiudi</button><div id="rv-body"></div></div>
@@ -52,12 +117,16 @@ function indirizzoApi(loc) {
   if (loc.hostname === 'localhost' || loc.hostname === '127.0.0.1') return `http://${loc.hostname}:8620`;
   return null;
 }
+const API = indirizzoApi(location);
 
-// Tutto in memoria: senza account la pagina non conserva niente (§9.2).
-const S = { banca: [], righe: [], run: null, esame: '', auto: false, ultima: null };
+// Senza account tutto in memoria (§9.2). Con l'account, S.conto e il suo
+// archivio: S.righe resta la prova della pagina, finche' non si sceglie.
+const S = { banca: [], cart: [], righe: [], run: null, esame: '', auto: false, ultima: null,
+  conto: null, db: null, ciclo: 0, ac: null, inVolo: null, ancora: false, rilascia: null, trasf: null, onboarding: false };
 const $ = (id) => document.getElementById(id);
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+const oggi = () => E.isoLocale().slice(0, 10);
 
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
 
@@ -65,20 +134,34 @@ fetch('/dati/quiz.json').then((r) => r.json()).then((b) => {
   S.banca = b.filter((q) => q.k === 'base');
   document.querySelector('[data-rotta-start]').disabled = false;
 });
+fetch('/dati/carteggio.json').then((r) => r.json()).then((c) => { S.cart = c; }).catch(() => {});
 
 $('esame-data').addEventListener('change', (e) => { S.esame = e.target.value; });
 
+function vista(v) {
+  for (const s of document.querySelectorAll('.view')) s.classList.toggle('on', s.id === 'v-' + v);
+}
+
+// --- le attivita' dei quiz: Percorso, per argomento, simulazione -----------------
+
 function avvia() {
-  S.run = { id: uid(), lista: E.estrai(S.banca, {}, E.isoLocale().slice(0, 10), 10, Date.now() % 997), i: 0, esiti: [], pronta: Date.now() + 200 };
+  apriRun(E.estrai(S.banca, {}, E.isoLocale().slice(0, 10), 10, Date.now() % 997), 'mirata');
+}
+
+function apriRun(lista, mode, sim = false) {
+  S.run = { id: uid(), lista, i: 0, esiti: [], mode, sim, pronta: Date.now() + 200 };
   $('quizrun').classList.add('on');
   $('r-fine').classList.remove('on');
+  $('r-close').textContent = sim ? 'Consegna la prova' : 'Termina l\'attività';
   mostra();
 }
 
 function mostra() {
-  const it = S.run.lista[S.run.i];
+  const R = S.run, it = R.lista[R.i];
+  $('r-pos').textContent = `${R.i + 1} / ${R.lista.length}`;
   $('r-text').textContent = it.d;
   $('r-verdict').textContent = '';
+  $('r-next').hidden = true;
   $('r-ans').innerHTML = it.r.map((t, j) => `<button class="ans" data-i="${j}">${esc(t)}</button>`).join('');
 }
 
@@ -87,15 +170,30 @@ function rispondi(j) {
   if (Date.now() < R.pronta || R.esiti.length > R.i) return;
   const giusta = j === it.x;
   R.esiti.push(giusta);
-  S.righe.push({ _t: 'q', uid: uid(), item_id: it.id, ts: E.isoLocale(), ms: 5000, mode: 'mirata', kind: 'base', sim_uid: R.id, correct: giusta ? 1 : 0 });
+  S.righe.push({ _t: 'q', uid: uid(), item_id: it.id, ts: E.isoLocale(), ms: 5000, mode: R.mode, kind: 'base', sim_uid: R.id, correct: giusta ? 1 : 0 });
+  // Con l'account la risposta va nel suo archivio, insieme alla coda (§9.1).
+  if (S.conto) archivia(S.righe.splice(-1, 1)[0]);
+  if (R.sim) {
+    // Nessuna correzione durante la prova (specifica §7.5): si passa avanti.
+    if (R.i + 1 < R.lista.length) { R.i++; R.pronta = Date.now() + 200; mostra(); }
+    return;
+  }
   [...$('r-ans').children].forEach((b, k) => { if (k === it.x) b.classList.add('ok'); else if (k === j) b.classList.add('ko'); });
   $('r-verdict').textContent = giusta ? 'Risposta esatta.' : 'Risposta errata.';
+  if (R.i + 1 < R.lista.length) $('r-next').hidden = false;
+}
+
+function avanti() {
+  const R = S.run;
+  if (R.esiti.length <= R.i || R.i + 1 >= R.lista.length) return;
+  R.i++; R.pronta = Date.now() + 200; mostra();
 }
 
 function termina() {
   const R = S.run;
+  if (R.tec) { $('quizrun').classList.remove('on'); S.run = null; return; }
   if (!R.esiti.length) { $('quizrun').classList.remove('on'); S.run = null; return; }
-  S.ultima = { id: R.id, lista: R.lista.slice(0, R.esiti.length), esiti: R.esiti.slice() };
+  S.ultima = { id: R.id, lista: R.lista.slice(0, R.esiti.length), esiti: R.esiti.slice(), sim: R.sim, n: R.lista.length };
   $('rotta-last').hidden = false;
   $('rotta-last-txt').textContent = `Risposte: ${R.esiti.length}`;
   riepilogo();
@@ -103,10 +201,8 @@ function termina() {
 
 function riepilogo() {
   const u = S.ultima, esatte = u.esiti.filter(Boolean).length;
-  $('r-fine').innerHTML = `<h1 tabindex="-1">Ti sei fermato qui</h1>
-    <p>Hai risposto a ${u.esiti.length} su 10. Risposte corrette: ${esatte}. Risposte errate: ${u.esiti.length - esatte}.</p>
-    <button data-ciclo="risposte">Rivedi le risposte</button>
-    <section class="invito">
+  // L'invito solo senza account: con l'account le risposte si salvano da sole.
+  const invito = S.conto ? '' : `<section class="invito">
       <h2>Vuoi conservare le attività di questa pagina?</h2>
       <p>Senza account, chiudendo o ricaricando la pagina perdi le risposte e le preferenze. Crea un account per salvare le risposte, ritrovarle su un altro dispositivo e vedere i Progressi quando ci sono abbastanza dati.</p>
       <p>Le risposte saranno legate alla tua email e conservate sul nostro server, in chiaro. Il titolare può leggerle per supporto e statistiche.</p>
@@ -114,6 +210,11 @@ function riepilogo() {
       <button data-account="continua">Continua senza account</button>
       <a href="/privacy">Come trattiamo i dati</a>
     </section>`;
+  $('r-fine').innerHTML = `<h1 tabindex="-1">${u.sim ? 'Simulazione conclusa' : 'Ti sei fermato qui'}</h1>
+    <p>Hai risposto a ${u.esiti.length} su ${u.n}. Risposte corrette: ${esatte}. Risposte errate: ${u.esiti.length - esatte}.</p>
+    <button data-ciclo="risposte">Rivedi le risposte</button>
+    <button data-ciclo="ritorno">Torna al Percorso</button>
+    ${invito}`;
   $('r-fine').classList.add('on');
 }
 
@@ -122,6 +223,84 @@ function rivedi() {
   $('rv-body').innerHTML = `<h1>Rivedi le risposte</h1>` + u.lista.map((it, k) =>
     `<p>${esc(it.d)} — ${u.esiti[k] ? 'esatta' : 'errata'}; risposta ufficiale: ${esc(it.r[it.x])}</p>`).join('');
   $('rivedi').classList.add('on');
+}
+
+// --- Che tecnica serve?, il carteggio, i Segnali: il minimo per C-01 --------------
+
+function avviaTec() {
+  const lista = S.cart.slice(0, 5);
+  S.run = { id: uid(), tec: true, lista, i: 0, scelte: new Set(), esiti: [] };
+  $('quizrun').classList.add('on');
+  $('r-fine').classList.remove('on');
+  $('r-close').textContent = '×';
+  const it = lista[0], tutte = [...new Set(S.cart.flatMap((e) => e.tecniche))];
+  $('r-pos').textContent = `1 / ${lista.length}`;
+  $('r-text').textContent = it.testo;
+  $('r-verdict').textContent = 'Quali tecniche servono?';
+  $('r-ans').innerHTML = tutte.map((t) => `<button class="chip" data-tec="${esc(t)}">${esc(t)}</button>`).join('');
+  $('r-next').textContent = 'Correggi';
+  $('r-next').hidden = false;
+}
+
+function correggiTec() {
+  const it = S.run.lista[S.run.i];
+  $('r-verdict').textContent = 'Servono: ' + it.tecniche.join(' + ');
+  $('r-next').hidden = true;
+}
+
+function avviaCart() {
+  const per = new Map();
+  for (const e of S.cart) if (!per.has(e.argomento)) per.set(e.argomento, e);
+  S.cprova = { lista: [...per.values()], i: 0, risp: [] };
+  $('c-pos').textContent = `Esercizio 1 di ${S.cprova.lista.length}`;
+  $('c-testo').textContent = S.cprova.lista[0].testo;
+  $('c-input').value = '';
+  $('c-fine').classList.remove('on');
+  $('c-consegna').textContent = 'Consegna';
+  delete $('c-consegna').dataset.sicuro;
+  $('cartrun').classList.add('on');
+}
+
+function consegnaCart() {
+  const P = S.cprova, b = $('c-consegna');
+  P.risp[P.i] = $('c-input').value;
+  // Due tocchi, in pagina (specifica §7.6).
+  if (!b.dataset.sicuro) { b.dataset.sicuro = '1'; b.textContent = 'Sicuro? Consegna definitivamente'; return; }
+  $('c-fine').innerHTML = P.lista.map((e, k) => `<section><h2>Esercizio ${k + 1} · N. ${esc(e.id)}</h2>
+    <p>La tua risposta: ${esc(P.risp[k] || 'non hai risposto')}</p>
+    <p>Risposta ministeriale: ${esc(e.risposta_ufficiale)}</p>
+    <button data-cs="${k}" data-ok="1">L'avevo presa</button><button data-cs="${k}" data-ok="0">No</button></section>`).join('');
+  $('c-fine').classList.add('on');
+}
+
+function avviaSeg() {
+  const dom = E.domandeSegnali('notturni', E.lunghezzaPartita('notturni'), Date.now() % 997);
+  S.seg = { dom, i: 0, esatte: 0, risposto: false };
+  $('sr-fine').classList.remove('on');
+  $('segrun').classList.add('on');
+  mostraSeg();
+}
+
+function mostraSeg() {
+  const G = S.seg, d = G.dom[G.i];
+  $('sr-pos').textContent = `${G.i + 1} / ${G.dom.length}`;
+  $('sr-verdict').textContent = '';
+  $('sr-next').hidden = true;
+  G.risposto = false;
+  $('sr-ans').innerHTML = d.opzioni.map((o, j) => `<button class="ans" data-si="${j}">${esc(o)}</button>`).join('');
+}
+
+function rispondiSeg(j) {
+  const G = S.seg, d = G.dom[G.i];
+  if (G.risposto) return;
+  G.risposto = true;
+  const giusta = j === d.corretta;
+  if (giusta) G.esatte++;
+  $('sr-verdict').textContent = giusta ? 'Esatto.' : 'No.';
+  if (G.i + 1 < G.dom.length) { $('sr-next').hidden = false; return; }
+  // Il punteggio resta in S: senza account i Segnali non conservano niente.
+  $('sr-fine').innerHTML = `<p>${G.esatte} / ${G.dom.length}</p><button id="sr-basta">Chiudi</button>`;
+  $('sr-fine').classList.add('on');
 }
 
 // --- account: registrazione ed email gia' registrata (§4.2, §5.2) ---------------
@@ -143,8 +322,21 @@ function moduloAccesso(email) {
   pannello(`<h2>Accedi</h2>
     <label>Email <input type="email" name="email" autocomplete="username" value="${esc(email)}"></label>
     <label>Password <input type="password" name="password" autocomplete="current-password"></label>
+    <p id="account-esito" role="status"></p>
     <button data-account="entra">Accedi</button>
     <button data-account="torna">Torna all'attività</button>`);
+}
+
+/** Una chiamata all'API: `{ codice, corpo }`, con codice 0 se la rete non risponde (§9.2). */
+async function api(metodo, percorso, corpo, signal) {
+  try {
+    const r = await fetch(API + percorso, { method: metodo, credentials: 'include', signal,
+      headers: corpo === undefined ? {} : { 'Content-Type': 'application/json' },
+      body: corpo === undefined ? undefined : JSON.stringify(corpo) });
+    return { codice: r.status, corpo: await r.json().catch(() => null) };
+  } catch (e) {
+    return { codice: 0, corpo: null, annullata: e.name === 'AbortError' };
+  }
 }
 
 async function registra() {
@@ -161,9 +353,10 @@ async function registra() {
       headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
     corpo = await r.json().catch(() => null);
   } catch {
-    esito.textContent = 'Il server non ha risposto. Le risposte sono ancora qui: riprova.';
-    bottone.disabled = false;
-    return;
+    // La risposta si e' persa: l'account puo' esserci gia', con il suo cookie.
+    // Prima si chiede al server, poi si decide; mai una seconda registrazione
+    // alla cieca (§4.3).
+    return dopoRispostaPersa();
   }
   bottone.disabled = false;
   // Il caso si riconosce dal codice e da `errore`, non dal testo (§5.2).
@@ -174,21 +367,323 @@ async function registra() {
       <button data-account="reimposta" data-email="${esc(email)}">Reimposta la password</button>
       <button data-account="torna">Torna al riepilogo</button>`);
   }
+  // Un 503 di posta ha gia' creato account e cookie: vale come un 201 (§4.3).
+  if (r.status === 201 || (r.status === 503 && corpo && corpo.chiave_locale)) return registrato(corpo);
   esito.textContent = (corpo && corpo.messaggio) || 'La registrazione non è riuscita. Le risposte sono ancora qui: riprova.';
 }
+
+async function dopoRispostaPersa() {
+  const io = await api('GET', '/v1/io');
+  if (io.codice === 200) return registrato(io.corpo);
+  pannello(`<h2>Crea un account</h2>
+    <p role="alert">Non sappiamo se l'account è stato creato. Le risposte sono ancora qui. Riprova a verificare l'accesso o entra con email e password.</p>
+    <button data-account="verifica">Riprova a verificare l'accesso</button>
+    <button data-account="accedi" data-email="">Accedi</button>`);
+}
+
+/** Registrato: l'identita', poi le righe della pagina — tutte, di ogni attivita' —, poi la data (§4.3). */
+async function registrato(io) {
+  await entra(io);
+  S.onboarding = true;
+  await trasferisci(S.righe.splice(0));
+}
+
+// --- l'archivio dell'account: righe e coda insieme (§9.1, §9.2) -------------------
+
+const nomeDb = (chiave) => `rg-account-${chiave}`;
+
+function apriDb(chiave) {
+  return new Promise((ok, ko) => {
+    const q = indexedDB.open(nomeDb(chiave), 1);
+    q.onupgradeneeded = () => { q.result.createObjectStore('righe', { keyPath: 'uid' }); q.result.createObjectStore('meta'); };
+    q.onsuccess = () => { q.result.onversionchange = () => q.result.close(); ok(q.result); };
+    q.onerror = () => ko(q.error);
+  });
+}
+
+/**
+ * Una transazione sola: legge righe, coda e trasferimento, scrive quello che
+ * `fai` restituisce, e restituisce quello che ha letto. Due schede che
+ * scrivono insieme si mettono in fila qui, non si sovrascrivono (§9.1).
+ */
+function tx(fai) {
+  return new Promise((ok, ko) => {
+    const t = S.db.transaction(['righe', 'meta'], 'readwrite');
+    const righe = t.objectStore('righe'), meta = t.objectStore('meta');
+    const qr = righe.getAll(), qc = meta.get('coda'), qt = meta.get('trasf');
+    let stato;
+    t.oncomplete = () => ok(stato);
+    t.onerror = () => ko(t.error);
+    qt.onsuccess = () => {
+      stato = { righe: qr.result, coda: qc.result || E.nuovaCoda({ generazione: S.conto.generazione, epocaDb: S.conto.epoca }), trasf: qt.result || null };
+      const out = fai(stato) || {};
+      for (const r of out.nuove || []) righe.put(r);
+      if (out.coda) meta.put(out.coda, 'coda');
+      if (out.trasf !== undefined) meta.put(out.trasf, 'trasf');
+    };
+  });
+}
+
+/** Una risposta nuova: la riga e il suo posto in coda nella stessa transazione. */
+async function archivia(riga) {
+  await tx((s) => ({ nuove: [riga], coda: E.accoda(s.coda, riga.uid) }));
+  pianifica();
+}
+
+let timer = null;
+function pianifica() { clearTimeout(timer); timer = setTimeout(catena, 500); }
+
+/** Una catena di invii e ricezioni per scheda (§10). */
+async function catena() {
+  if (S.inVolo) { S.ancora = true; return S.inVolo; }
+  const mio = S.ciclo;
+  S.inVolo = (async () => {
+    do {
+      S.ancora = false;
+      if (!await invia(mio)) break;
+      if (!await ricevi(mio)) break;
+    } while (S.ancora && mio === S.ciclo);
+  })();
+  try { await S.inVolo; } finally { S.inVolo = null; }
+  if (mio === S.ciclo) await dipingiStato();
+}
+
+async function invia(mio) {
+  for (;;) {
+    if (mio !== S.ciclo) return false;
+    const { righe, coda } = await tx(() => null);
+    const lotto = E.lottoDaInviare(righe, coda);
+    if (!lotto) return true;
+    S.ac = new AbortController();
+    const risposta = await api('POST', '/v1/righe', lotto, S.ac.signal);
+    // Una risposta arrivata dopo l'uscita o un cambio d'account non si scrive (§9.1).
+    if (mio !== S.ciclo || risposta.annullata) return false;
+    // La coda si rilegge alla conferma: una risposta data intanto resta in coda.
+    let esito;
+    await tx((s) => {
+      esito = E.dopoInvio(s.coda, lotto, risposta, s.righe);
+      return { coda: esito.coda, trasf: s.trasf ? E.registraEsito(s.trasf, esito) : null };
+    });
+    if (risposta.codice !== 200 || esito.conflitto) return false;
+  }
+}
+
+async function ricevi(mio) {
+  for (;;) {
+    if (mio !== S.ciclo) return false;
+    const { coda } = await tx(() => null);
+    S.ac = new AbortController();
+    const risposta = await api('GET', `/v1/righe?dopo=${coda.cursore}`, undefined, S.ac.signal);
+    if (mio !== S.ciclo || risposta.annullata) return false;
+    let esito;
+    await tx((s) => {
+      esito = E.dopoRicezione(s.coda, risposta, s.righe);
+      return { nuove: esito.righe, coda: esito.coda, trasf: s.trasf ? E.registraEsito(s.trasf, esito) : null };
+    });
+    if (!esito.continua) return risposta.codice === 200;
+  }
+}
+
+/** Un trasferimento: righe e coda insieme, poi la catena (§9.3). */
+async function trasferisci(righe) {
+  await tx((s) => {
+    const { trasferimento, coda } = E.nuovoTrasferimento(s.coda, righe);
+    const valide = righe.filter((r) => trasferimento.uid.includes(String(r.uid)));
+    return { nuove: valide, coda, trasf: trasferimento };
+  });
+  await dipingiStato();
+  await catena();
+}
+
+/** Lo stato dell'invio, dal motore: «salvate» solo quando il server le ha nominate tutte. */
+async function dipingiStato() {
+  if (!S.conto) { $('conto-stato').textContent = ''; return; }
+  const { righe, coda, trasf } = await tx(() => null);
+  if (!trasf) {
+    $('conto-stato').textContent = coda.daInviare.length ? `${coda.daInviare.length} risposte da inviare` : 'Le risposte di questo dispositivo sono confermate sul server';
+    return;
+  }
+  const r = E.riepilogoTrasferimento(trasf, coda, righe);
+  if (r.completo) {
+    $('conto-stato').textContent = `${r.confermate} ${r.confermate === 1 ? 'risposta salvata' : 'risposte salvate'} nel tuo account`;
+    if (S.onboarding) { S.onboarding = false; onboarding(); }
+  } else if (r.stato === 'da verificare') {
+    $('conto-stato').textContent = 'Non chiudere la pagina: le risposte non sono ancora salvate nel tuo account.';
+    S.ancora = true; pianifica();
+  } else if (r.stato === 'con scarti') {
+    $('conto-stato').textContent = `${r.confermate} risposte salvate · ${r.nonSalvate} righe non salvate`;
+  } else {
+    $('conto-stato').innerHTML = 'Non chiudere la pagina: le risposte non sono ancora salvate nel tuo account. <button data-conto="riprova">Riprova l\'invio</button>';
+  }
+}
+
+function onboarding() {
+  pannello(`<h2>Hai una data d'esame?</h2>
+    <label>Data d'esame (facoltativa) <input type="date" name="data"></label>
+    <p>Puoi aggiungerla quando la conosci. Puoi allenarti anche senza una data.</p>
+    <button data-conto="data">Salva la data</button><button data-account="torna">Continua senza data</button>`);
+}
+
+// --- l'identita': entrare, riconoscersi all'apertura, uscire -------------------------
+
+async function entra(io) {
+  S.ciclo++;
+  S.conto = { email: io.email, chiave: io.chiave_locale, generazione: io.generazione, epoca: io.epoca };
+  S.db = await apriDb(S.conto.chiave);
+  // Un lucchetto condiviso per scheda: chi esce aspetta che ogni scheda lo
+  // lasci, cioe' che abbia fermato le sue richieste (§9.1).
+  const mio = S.ciclo;
+  navigator.locks.request(nomeDb(S.conto.chiave), { mode: 'shared' }, () => (mio !== S.ciclo ? null : new Promise((r) => { S.rilascia = r; })));
+  $('conto-porta').textContent = 'Account';
+  $('avviso-prova').hidden = true;
+}
+
+/** Ferma questa scheda: niente piu' invii, niente scritture, memoria pulita. */
+function fermaQui() {
+  S.ciclo++;
+  if (S.ac) S.ac.abort();
+  clearTimeout(timer);
+  if (S.db) S.db.close();
+  if (S.rilascia) S.rilascia();
+  S.db = null; S.conto = null; S.rilascia = null; S.trasf = null;
+  $('conto-porta').textContent = 'Accedi';
+  $('conto-stato').textContent = '';
+  $('avviso-prova').hidden = false;
+}
+
+const canale = new BroadcastChannel('rg-account');
+canale.onmessage = (e) => {
+  if (e.data && e.data.tipo === 'uscita' && S.conto && S.conto.chiave === e.data.chiave) fermaQui();
+};
+
+async function accedi() {
+  const email = $('account').querySelector('[name=email]').value;
+  const pw = $('account').querySelector('[name=password]').value;
+  $('account-esito').textContent = 'Accesso in corso…';
+  const r = await api('POST', '/v1/accesso', { email, password: pw });
+  if (r.codice !== 200) {
+    $('account-esito').textContent = r.codice === 401 ? 'Email o password non corrette. Riprova oppure reimposta la password.' : 'L\'accesso non è riuscito. Riprova.';
+    return;
+  }
+  await entra(r.corpo);
+  if (!S.righe.length) { chiudiPannello(); return catena(); }
+  // Le risposte della prova entrano solo dopo una domanda esplicita (§5.1).
+  pannello(`<h2>Accedi</h2>
+    <p>Vuoi portare nel tuo account le ${S.righe.length} risposte di questa pagina?</p>
+    <p>Account: ${esc(r.corpo.email)}</p>
+    <label><input type="radio" name="porta" value="si" checked> Sì, portale</label>
+    <label><input type="radio" name="porta" value="no"> No, continua senza portarle</label>
+    <button data-conto="scelta">Conferma la scelta</button>`);
+}
+
+async function scelta() {
+  const si = $('account').querySelector('[name=porta]:checked').value === 'si';
+  chiudiPannello();
+  // Il no separa le righe della prova dall'account: restano nel riepilogo di
+  // questa pagina e non entrano nella coda (§5.1).
+  if (si) await trasferisci(S.righe.splice(0));
+  else { S.prova = S.righe; S.righe = []; await catena(); }
+}
+
+async function avvioConto() {
+  // Senza una copia d'account in questo browser non si chiede niente al
+  // server: chi prova non manda richieste (R-ACC-09).
+  const nomi = (await indexedDB.databases()).map((d) => d.name).filter((n) => n && n.startsWith('rg-account-'));
+  if (!nomi.length) return;
+  const io = await api('GET', '/v1/io');
+  if (io.codice !== 200) {
+    $('conto-stato').textContent = 'L\'accesso non è più valido. Entra di nuovo per inviare le risposte rimaste in questo dispositivo.';
+    return;
+  }
+  await entra(io.corpo);
+  await dipingiStato();
+  await catena();
+}
+avvioConto();
+
+function pannelloConto() {
+  pannello(`<h2>Il tuo account</h2><p>${esc(S.conto.email)}</p><p id="account-esito" role="status"></p>
+    <button data-conto="esci">Esci</button><button data-account="torna">Torna all'attività</button>`);
+}
+
+async function esci() {
+  const esito = $('account-esito'), chiave = S.conto.chiave;
+  esito.textContent = 'Uscita in corso…';
+  // Prima si prova a inviare; con righe che non sono sul server non si esce (§10).
+  await catena();
+  if (!S.conto) return;
+  const { coda } = await tx(() => null);
+  const pendenti = coda.daInviare.length + Object.keys(coda.scartate).length;
+  if (pendenti) {
+    esito.textContent = `${pendenti} ${pendenti === 1 ? 'risposta non è' : 'risposte non sono'} sul server. Collegati alla rete e riprova, oppure scaricale prima di uscire.`;
+    return;
+  }
+  canale.postMessage({ tipo: 'uscita', chiave });
+  const conto = S.conto;
+  fermaQui();
+  try {
+    await navigator.locks.request(nomeDb(chiave), { mode: 'exclusive', signal: AbortSignal.timeout(3000) }, async () => {
+      const r = await api('POST', '/v1/uscita');
+      if (r.codice !== 204 && r.codice !== 401) {
+        // Senza rete il server non revoca il cookie: niente falso «sei uscito».
+        await entra({ email: conto.email, chiave_locale: chiave, generazione: conto.generazione, epoca: conto.epoca });
+        pannelloConto();
+        $('account-esito').textContent = 'Per uscire dall\'account serve la rete. Puoi scaricare le risposte e restare qui; non lasciare il dispositivo condiviso finché l\'uscita non è confermata.';
+        return;
+      }
+      const cancellata = await new Promise((ok) => {
+        const q = indexedDB.deleteDatabase(nomeDb(chiave));
+        q.onsuccess = () => ok(true);
+        q.onerror = () => ok(false);
+        q.onblocked = () => ok(false);
+      });
+      // Uscita completa: si torna al Percorso, in prova vuota (§10).
+      if (cancellata) { chiudiPannello(); vista('oggi'); return; }
+      pannello('<h2>Uscita</h2><p role="alert">L\'accesso è chiuso, ma la copia su questo dispositivo non è stata cancellata. Chiudi le altre schede e riprova.</p>');
+    });
+  } catch {
+    pannello('<h2>Uscita</h2><p role="alert">Un\'altra scheda non si ferma: chiudila e riprova.</p>');
+  }
+}
+
+// I pannelli si chiudono con Esc (§12, collaudo).
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('account').hidden) chiudiPannello(); });
 
 document.addEventListener('click', (e) => {
   const t = e.target.closest('button');
   if (!t) return;
   if (t.matches('[data-rotta-start]')) return avvia();
   if (t.matches('#r-ans .ans')) return rispondi(Number(t.dataset.i));
-  if (t.id === 'r-close') return termina();
+  if (t.matches('#r-ans .chip')) return t.classList.toggle('on');
+  if (t.id === 'r-next') return S.run && S.run.tec ? correggiTec() : avanti();
+  if (t.id === 'r-close') return S.run && S.run.sim ? ($('r-consegna').hidden = false) : termina();
+  if (t.dataset.consegna) { $('r-consegna').hidden = true; if (t.dataset.consegna === 'si') termina(); return; }
   if (t.dataset.ciclo === 'risposte') return rivedi();
+  if (t.dataset.ciclo === 'ritorno') { $('quizrun').classList.remove('on'); S.run = null; return vista('oggi'); }
   if (t.id === 'rv-close') return $('rivedi').classList.remove('on');
+  if (t.dataset.v) return vista(t.dataset.v);
+  if (t.dataset.modo) { S.modo = t.dataset.modo; $('start').hidden = false; return; }
+  if (t.id === 'start') return apriRun(E.estrai(S.banca, {}, oggi(), S.modo === 'sim' ? 20 : 10, Date.now() % 991), S.modo === 'sim' ? 'simulazione' : 'argomento', S.modo === 'sim');
+  if (t.id === 't-start') return avviaTec();
+  if (t.id === 'c-start') return avviaCart();
+  if (t.id === 'c-consegna') return consegnaCart();
+  if (t.id === 's-start') return avviaSeg();
+  if (t.dataset.si !== undefined) return rispondiSeg(Number(t.dataset.si));
+  if (t.id === 'sr-next') { S.seg.i++; return mostraSeg(); }
+  if (t.id === 'sr-basta') return $('segrun').classList.remove('on');
+  if (t.id === 'conto-porta') return S.conto ? pannelloConto() : moduloAccesso('');
+  const c = t.dataset.conto;
+  if (c === 'accedi') return moduloAccesso('');
+  if (c === 'scelta') return scelta();
+  if (c === 'esci') return esci();
+  if (c === 'riprova') return catena();
+  if (c === 'data') return chiudiPannello();
   const a = t.dataset.account;
   if (a === 'registra') return moduloRegistrazione();
   if (a === 'continua') { $('quizrun').classList.remove('on'); return; }
   if (a === 'crea') return registra();
+  if (a === 'entra') return accedi();
+  if (a === 'verifica') return dopoRispostaPersa();
   if (a === 'accedi') return moduloAccesso(t.dataset.email);
   if (a === 'reimposta') return pannello(`<h2>Reimposta la password</h2><label>Email <input type="email" name="email" value="${esc(t.dataset.email)}"></label><button data-account="torna">Torna all'attività</button>`);
   if (a === 'torna') return chiudiPannello();
