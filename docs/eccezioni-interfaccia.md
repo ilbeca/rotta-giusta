@@ -52,16 +52,6 @@ dichiarazione che mente.
 | `fondi` | Fusione di due specchi: serviva alla sincronia col server, tolta nella 0.19.0. Resta esportata e testata perché descrive la semantica della fusione, ma nessuno la chiama. Non ha un'area: è storia |
 | `quadro` | La mappa di Progressi (29 settembre 2026, P-41): una riga per tema a tre stati — giusti, da rifare, mai visti — con «X su Y giusti al primo tentativo» e la selezione di «Rifai N errori»; in cima, al massimo la frase «Dove pesa di più adesso». È Q-DUE in `docs/specifica.md` §10, R-MAPPA-01…14 nel §9.10. La chiamerà l'area 5 in `app.html` — **il progetto P-22, poi la sua realizzazione P-23, su `ui/*`** |
 | `dovePesa` | La mappa di Progressi (29 settembre 2026, P-41): una riga per tema a tre stati — giusti, da rifare, mai visti — con «X su Y giusti al primo tentativo» e la selezione di «Rifai N errori»; in cima, al massimo la frase «Dove pesa di più adesso». È Q-DUE in `docs/specifica.md` §10, R-MAPPA-01…14 nel §9.10. La chiamerà l'area 5 in `app.html` — **il progetto P-22, poi la sua realizzazione P-23, su `ui/*`** |
-| `nuovaCoda` | La contabilità della coda verso il server degli account (26 settembre 2026, P-10): quali righe inviare, che cosa togliere dopo una risposta, il `409` della generazione, l'epoca del database che cambia. R-ACC-13, 15 e 24. La chiamerà il client degli account in `app.html` — **il progetto P-13, poi la sua realizzazione su `ui/*`** |
-| `accoda` | La contabilità della coda verso il server degli account (26 settembre 2026, P-10): quali righe inviare, che cosa togliere dopo una risposta, il `409` della generazione, l'epoca del database che cambia. R-ACC-13, 15 e 24. La chiamerà il client degli account in `app.html` — **il progetto P-13, poi la sua realizzazione su `ui/*`** |
-| `lottoDaInviare` | La contabilità della coda verso il server degli account (26 settembre 2026, P-10): quali righe inviare, che cosa togliere dopo una risposta, il `409` della generazione, l'epoca del database che cambia. R-ACC-13, 15 e 24. La chiamerà il client degli account in `app.html` — **il progetto P-13, poi la sua realizzazione su `ui/*`** |
-| `dopoInvio` | La contabilità della coda verso il server degli account (26 settembre 2026, P-10): quali righe inviare, che cosa togliere dopo una risposta, il `409` della generazione, l'epoca del database che cambia. R-ACC-13, 15 e 24. La chiamerà il client degli account in `app.html` — **il progetto P-13, poi la sua realizzazione su `ui/*`** |
-| `dopoRicezione` | La contabilità della coda verso il server degli account (26 settembre 2026, P-10): quali righe inviare, che cosa togliere dopo una risposta, il `409` della generazione, l'epoca del database che cambia. R-ACC-13, 15 e 24. La chiamerà il client degli account in `app.html` — **il progetto P-13, poi la sua realizzazione su `ui/*`** |
-| `risolviConflitto` | La contabilità della coda verso il server degli account (26 settembre 2026, P-10): quali righe inviare, che cosa togliere dopo una risposta, il `409` della generazione, l'epoca del database che cambia. R-ACC-13, 15 e 24. La chiamerà il client degli account in `app.html` — **il progetto P-13, poi la sua realizzazione su `ui/*`** |
-| `nonInviabili` | Il riepilogo di un trasferimento verso l'account e le righe che non partono (26 settembre 2026, P-28): «salvate» solo per gli uid che il server ha nominato, un azzeramento che annulla le conferme, un ripristino che le rende da ripetere, scarti locali e del server con i motivi, e la riga che da sola supera il limite di un invio. R-ACC-39 e 40. La chiamerà il client degli account in `app.html` — **P-18, su `ui/*`** |
-| `nuovoTrasferimento` | Il riepilogo di un trasferimento verso l'account e le righe che non partono (26 settembre 2026, P-28): «salvate» solo per gli uid che il server ha nominato, un azzeramento che annulla le conferme, un ripristino che le rende da ripetere, scarti locali e del server con i motivi, e la riga che da sola supera il limite di un invio. R-ACC-39 e 40. La chiamerà il client degli account in `app.html` — **P-18, su `ui/*`** |
-| `registraEsito` | Il riepilogo di un trasferimento verso l'account e le righe che non partono (26 settembre 2026, P-28): «salvate» solo per gli uid che il server ha nominato, un azzeramento che annulla le conferme, un ripristino che le rende da ripetere, scarti locali e del server con i motivi, e la riga che da sola supera il limite di un invio. R-ACC-39 e 40. La chiamerà il client degli account in `app.html` — **P-18, su `ui/*`** |
-| `riepilogoTrasferimento` | Il riepilogo di un trasferimento verso l'account e le righe che non partono (26 settembre 2026, P-28): «salvate» solo per gli uid che il server ha nominato, un azzeramento che annulla le conferme, un ripristino che le rende da ripetere, scarti locali e del server con i motivi, e la riga che da sola supera il limite di un invio. R-ACC-39 e 40. La chiamerà il client degli account in `app.html` — **P-18, su `ui/*`** |
 
 ## Chiamate al motore protette
 
@@ -83,7 +73,7 @@ trentatré — misurato scrivendo il controllo.
 
 | funzione |
 |---|
-| `SEGNALI` |
+| `accoda` |
 | `addGiorni` |
 | `applica` |
 | `classifica` |
@@ -92,6 +82,8 @@ trentatré — misurato scrivendo il controllo.
 | `daAllenare` |
 | `diagnosi` |
 | `domandeSegnali` |
+| `dopoInvio` |
+| `dopoRicezione` |
 | `erroriSessione` |
 | `esito` |
 | `estrai` |
@@ -100,16 +92,24 @@ trentatré — misurato scrivendo il controllo.
 | `giorniTra` |
 | `giroTecniche` |
 | `isoLocale` |
+| `lottoDaInviare` |
 | `lunghezzaPartita` |
 | `lunghezzaScreening` |
 | `mirata` |
+| `nonInviabili` |
+| `nuovaCoda` |
+| `nuovoTrasferimento` |
 | `ordinaRighe` |
 | `poolSegnali` |
+| `registraEsito` |
+| `riepilogoTrasferimento` |
 | `rimescola` |
-| `ritmo` |
 | `ripiega` |
+| `risolviConflitto` |
+| `ritmo` |
 | `sbagliato` |
 | `screening` |
+| `SEGNALI` |
 | `serieGruppi` |
 | `sessioni` |
 | `simulazione` |
