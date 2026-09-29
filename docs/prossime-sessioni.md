@@ -1,6 +1,6 @@
 # Prossime sessioni — la coda, con i prompt
 
-**Aggiornato il 26 settembre 2026.** Territorio neutro. **Penna: la sessione di regia** (sotto, «Come si usa»).
+**Aggiornato il 30 settembre 2026.** Territorio neutro. **Penna: la sessione di regia** (sotto, «Come si usa»).
 
 > **Questo file invecchia.** È una coda, non una verità: quando un lavoro è
 > fatto, il suo prompt si chiude con l'esito e resta, la riga della coda si
@@ -106,7 +106,12 @@ all'altra senza perdere il metodo. A ogni resoconto incollato dall'autore:
    main...<ramo> --stat`, poi `git merge --no-ff <ramo>`. Il CHANGELOG si fonde
    da sé (`merge=union`): dopo, si aggiunge la riga vuota che manca fra due
    voci. Se una merge si ferma con un conflitto su file non condivisi, si
-   annulla (`git merge --abort`) e non si aggira il `pre-commit`.
+   annulla (`git merge --abort`) e non si aggira il `pre-commit`. **Dopo la
+   merge, `git log main..<ramo>` dev'essere vuoto**: se non lo è, il ramo è
+   andato avanti rispetto al resoconto, e si guarda che cosa c'è prima di
+   chiudere il prompt. Una merge del commit citato nel resoconto invece della
+   punta del ramo ha lasciato fuori, per quattro giorni, una correzione di P-08
+   (registro, 30 settembre).
 4. **Le suite, sullo stato fuso**, e i numeri confrontati con il resoconto:
    motore, server, dati, interfaccia, specifica. Prima dell'interfaccia,
    `lsof -iTCP:8620 -sTCP:LISTEN` vuoto. Una suite rossa una volta sola si
@@ -184,7 +189,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 25 | I controlli della mappa di Progressi | Claude | `main`, a mano | niente — **per primo** | P-44 |
+| 25 | I controlli della mappa di Progressi — **in corso dal 30 settembre** | Claude | `main`, a mano | niente | P-44 |
 | 18 | Il carteggio su `main`: composizione, attività intera, bozza, controlli | Claude | `main`, a mano | P-44, nell'ordine | P-32…P-35 |
 | 9a | I testi fuori da `site/` nella versione con gli account | Claude | `main`, a mano | niente | P-26 |
 | 6d, 5b, 12, 13 | Il regime vecchio del ciclo e dei quiz, `ritmo()`, l'ultimo tag | Claude | `main`, a mano | niente: riempiono i buchi | P-37, P-12, P-16, P-17 |
@@ -195,6 +200,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 21b | La realizzazione dell'area 4 | ChatGPT | `ui/main` | P-35 | segnaposto P-21 |
 | 26b | La realizzazione dell'area 6 | ChatGPT | `ui/main` | P-45, P-21, P-23, e il §8 dell'area 6 | segnaposto P-25 |
 | 9 | **La versione con gli account** — il traguardo | tutti | `main` | P-15, P-26, e gli adempimenti del §4 | segnaposto P-27 |
+| 29 | Fondere la punta di `sessione/p-08` (`35055a4`), con tre conflitti in `account-progetto.md` | la regia | `main` | la cartella principale libera | — |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**, e si sono incontrate: il client degli
@@ -994,7 +1000,7 @@ dati 242, interfaccia 295, specifica 370, `ripristina --prova` 20 su 20.
 
 ### P-12 — Claude: chiudere il regime vecchio dei controlli dei quiz
 
-**Stato:** pronto, dopo P-11 nell'ordine consigliato. **Dove:**
+**Stato:** pronto: P-11 è chiuso, e P-05 è fuso. **Dove:**
 Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano.
 
 ```
@@ -1529,7 +1535,7 @@ documento. Controllato dalla regia: territori puliti, merge chiusa da sola.
 
 ### P-32 — Claude: la composizione della prova di carteggio, nel motore
 
-**Stato:** in attesa di P-31 e P-29 nell'ordine consigliato. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-20, §10.1 di `docs/area-4-progetto.md`.
+**Stato:** pronto: P-31 e P-29 sono chiusi. Apre la fila del carteggio, P-32 → P-33 → P-34 → P-35. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-20, §10.1 di `docs/area-4-progetto.md`.
 
 ```
 Questo prompt è per Claude Code, nella cartella principale
@@ -1964,7 +1970,7 @@ Controllato dalla regia: interfaccia 928 in 86 s, specifica 546, server 60.
 
 ### P-44 — Claude: i controlli della mappa di Progressi
 
-**Stato:** pronto — **per primo**. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce
+**Stato:** **in corso dal 30 settembre 2026**, nella cartella principale; confermato dall'autore. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce
 da:** P-22, §10.1 di `docs/area-5-progetto.md`.
 
 ```
@@ -2418,3 +2424,23 @@ dopo**, la soglia degli allarmi riletta sul registro vero
   passi che la regia fa a ogni resoconto e il prompt per riprenderla in una
   sessione nuova, perché il contesto della sessione di regia stava per finire.
   Il metodo non viveva solo in chat, ma i suoi passi sì.
+- **30 settembre 2026 — la regia nuova, e una correzione di P-08 mai fusa.**
+  La prima risposta della sessione nuova ha trovato che `sessione/p-08` non è
+  contenuto in `main`: la merge `1760df9` ha preso `76d8e5c`, il commit citato
+  nel resoconto, mentre la punta del ramo è `35055a4`, lo stesso commit
+  emendato sei minuti dopo. Porta in più una riga del §15.4 di
+  `account-progetto.md` — l'attività programmata «Registro privacy — Rotta
+  Giusta», che tiene aggiornati i registri delle richieste e delle violazioni —,
+  la procedura del Garante precisata (solo il modulo online, bozza sezioni
+  A–O) e la sua voce di CHANGELOG. L'autore ha deciso di portarla su `main`.
+  Territori puliti; la prova di merge si ferma su tre conflitti in
+  `account-progetto.md`: la riga delle 72 ore, che P-11 ha riscritto nel
+  frattempo, e due punti del registro in fondo. **Non è fatta:** mentre la
+  regia provava la merge è comparso nella cartella principale
+  `tests/pagina-mappa-progressi.html`, cioè il lavoro di P-44 già partito, e
+  la merge è stata annullata subito, prima di lasciare nel checkout uno stato
+  di merge sotto un'altra sessione; l'autore ha confermato che P-44 è al
+  lavoro. Resta in coda come riga 29, dopo P-44. Nel
+  passo 3 della regia entra il controllo che l'avrebbe presa: dopo la merge,
+  `git log main..<ramo>` vuoto. Corretti gli stati vecchi di P-12 e P-32, e la
+  testata.
