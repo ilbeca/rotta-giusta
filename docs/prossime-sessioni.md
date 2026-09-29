@@ -119,7 +119,9 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
 | 5b | Chiudere il regime vecchio dei controlli dei quiz, e il §5 della specifica | Claude | `main`, a mano | la cartella libera | P-12 |
-| 20 | Il banco del browser, stabile | Claude | `main`, a mano | niente — **per primo** | P-38 |
+| 20 | Il banco del browser, stabile — **lanciato** | Claude | `main`, a mano | niente | P-38 |
+| 22 | Il motore della mappa di Progressi | Claude | `main`, a mano | P-38 | P-41 |
+| 23 | Il progetto dell'area 5, Progressi | ChatGPT | `ui/main` | P-41, e la decisione del §4 sui file di esplorazione | P-22 |
 | 21 | I controlli del client che mancano | Claude | `main`, a mano | P-38 | P-39 |
 | 18 | Il carteggio sul `main`: composizione, attività intera, bozza, controlli | Claude | `main`, a mano | P-29 nell'ordine; P-34 dopo P-33, dalla quarantena | P-32…P-35 |
 | 6d | Chiudere il regime vecchio dei controlli del ciclo | Claude | `main`, a mano | la cartella libera | P-37 |
@@ -128,7 +130,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 13 | L'ultimo tag di una risposta, nel motore | Claude | `main`, a mano | la cartella libera | P-17 |
 | 7b | La realizzazione del client degli account | ChatGPT | `ui/main` | P-38 e P-39 | P-18 |
 | 7c | Chiudere il regime vecchio dei controlli del client | Claude | `main`, a mano | la merge di P-18 | segnaposto P-40 |
-| 6b | Le aree del ridisegno che restano: 4 realizzata, poi 5 e 6 | ChatGPT | `ui/main` | la precedente, e P-18 | segnaposto P-21…P-25 |
+| 6b | Le aree del ridisegno che restano: 4 e 5 realizzate, poi 6 | ChatGPT | `ui/main` | la precedente, e P-18 | P-21, P-23, P-24, P-25 |
 | 9a | I testi fuori da `site/` nella versione con gli account | Claude | `main`, a mano | P-18 | segnaposto P-26 |
 | 9 | **La versione con gli account** — il traguardo | tutti | `main` | 7b, 8, 9a, e gli adempimenti del §4 | segnaposto P-27 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
@@ -136,10 +138,10 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 **Le due colonne corrono in parallelo**: Claude sul server e sul motore,
 ChatGPT sull'interfaccia. P-18 e P-21 aspettano lavoro di Claude su `main`:
 quel lavoro è la strettoia. **Per
-Claude, l'ordine consigliato: P-38, P-39** (sbloccano P-18), **P-32, P-33,
-P-34, P-35** (sbloccano P-21), P-37, P-16, P-12, P-17; P-15 quando l'autore ha
-il tempo. **Per ChatGPT non c'è niente di pronto**: il progetto dell'area 5
-(P-22) aspetta Q-DUE, una decisione dell'autore nel §4. Vanno uno alla
+Claude, l'ordine consigliato: P-38** (in corso), **P-41** (sblocca P-22 per
+ChatGPT), **P-39** (sblocca P-18), **P-32, P-33, P-34, P-35** (sbloccano
+P-21), P-37, P-16, P-12, P-17; P-15 quando l'autore ha il tempo. **Per ChatGPT:
+P-22 dopo P-41, poi P-18 dopo P-39.** Vanno uno alla
 volta, perché stanno tutti nella cartella principale: è la strettoia della
 colonna di Claude, e si accetta perché il recinto la vuole. Il numero di una
 riga è il suo nome, non la sua posizione. Le due colonne si incontrano al punto
@@ -411,16 +413,23 @@ consuma, non si riprogetta.
 - **Q-PROVE**, riaperta da P-05: le prove con persone e lo zoom nativo al 200 %,
   che il browser integrato non fa. `docs/area-2-collaudo-ux.md` dice che cosa
   manca.
-- **Q-DUE**, prima dell'area 5: le due classifiche di «cosa fare adesso»
-  (specifica §10). **Adesso è quella che tiene fermo ChatGPT**: deciderla
-  permette di scrivere P-22, il progetto dell'area 5, mentre Claude lavora.
-- **La suite dell'interfaccia dura circa un minuto e vuole Chrome**, da P-29.
-  È il prezzo del browser vero; accorciarla vuol dire aprire il CORS del server
-  o accorciare attese che hanno già dato un rosso falso. Se non ti va bene,
-  dillo prima di P-38, che ci mette le mani.
-- **Safari nel banco** vorrebbe «Allow remote automation», un'impostazione
-  tua, e anche così non leggerebbe lo storage: resta Q-PROVE, su un Safari
-  vero (§12 del progetto del client).
+- ~~Q-DUE~~ — **chiusa il 29 settembre 2026**: Progressi diventa una mappa per
+  tema. I sette punti sono nel §10 della specifica, fra le chiuse; da lì P-41 e
+  P-22.
+- **La suite che dura un minuto, e Safari** — rimandati dall'autore il 29
+  settembre, e scritti come punti aperti nel §10 della specifica: Q-SUITE, e
+  Safari dentro Q-PROVE.
+- **I file di esplorazione dell'area 5, non tracciati nel worktree `ui`** —
+  `docs/area-5-esplorazione.md` e `docs/prototipi/progressi-2026-09-29/`,
+  scritti con ChatGPT durante il confronto su Q-DUE. Raccomandano il bilancio,
+  non la mappa che è stata decisa, e i prototipi hanno tre difetti dichiarati
+  dal confronto (una pagina ripetuta quattro volte, una frase che parla di mai
+  visti con un pulsante «Riprendi 66 errori», i 99′ del punto 7). **La
+  decisione è tua.** Claude propone di committarli come esplorazione datata,
+  con una nota in testa «superata dalla decisione del 29 settembre» e i difetti
+  scritti, perché la tabella delle fonti verificate ha valore; ChatGPT
+  preferisce non considerarli pronti. Finché restano lì, il worktree `ui` non è
+  pulito e la regia non allinea `ui/main`.
 - ~~Un rilascio intermedio~~ — **fatto il 26 settembre: v0.28.0**, commit
   `51d9485`, tag e push con il sì dell'autore, «Build now» premuto, verificato
   sui due indirizzi e nel browser. Il testo di prima, per la storia: `site/` è cambiato con
@@ -1706,6 +1715,80 @@ docs/prossime-sessioni.md.
 
 **Esito:** —
 
+### P-41 — Claude: il motore della mappa di Progressi
+
+**Stato:** pronto dopo P-38, che lavora nella stessa cartella — **prima di
+P-39**, perché sblocca ChatGPT. **Dove:** Claude Code, `~/Software/rotta-giusta`,
+ramo **`main`**, a mano. **Nasce da:** Q-DUE, chiusa il 29 settembre 2026.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-41, su main. Leggi Q-DUE fra le questioni chiuse del §10
+di docs/specifica.md: i sette punti sono la decisione, e i due fatti
+sotto sono il lavoro. Leggi anche il §4.2 e il §4.3.
+
+Quattro cose nel motore, ognuna con i test scritti prima e provati al
+contrario:
+- un filtro esplicito «solo gli errori la cui ultima risposta è
+  sbagliata», con il numero e la lista dalla stessa fonte: oggi
+  coda({ soloSbagliate }) include anche quelli già ripresi, e «Rifai
+  N errori» deve aprire gli N per contratto, non per ordinamento;
+- il quadro per tema e per voce a tre stati disgiunti — giusti, da
+  rifare, mai visti — che sommano al totale, con visti ed esatte alla
+  prima risposta esatti; la vela per voce, senza un peso inventato;
+- la regola della frase in cima: una sola indicazione con il suo
+  motivo e le selezioni dei suoi pulsanti, oppure niente, con una
+  soglia dichiarata nel §4.3;
+- il destino di peggiori() e consigli(), che non hanno più una lista
+  in pagina: prima elenca i chiamanti e che cosa cambia per ciascuno,
+  poi decidi se servono alla regola della frase, se restano orfane
+  dichiarate o se escono, e scrivilo.
+
+I requisiti nel §9 della specifica con il loro controllo. Niente
+minuti: il punto 7 lo esclude. Non toccare docs/prossime-sessioni.md.
+Suite verdi, voce in fondo a [Unreleased], un commit. Chiudi con il
+resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-22 — ChatGPT: il progetto dell'area 5, Progressi
+
+**Stato:** in attesa di P-41, e della decisione dell'autore sui file di
+esplorazione che stanno non tracciati nel worktree `ui` (§4). **Dove:** app di
+ChatGPT, progetto `~/Software/rotta-giusta-ui`, ramo `ui/main`.
+
+```
+Questo prompt è per ChatGPT, nel worktree ~/Software/rotta-giusta-ui,
+sul ramo ui/main. Se sei un altro agente o sei in un'altra cartella,
+fermati e dillo, senza scrivere niente.
+
+Sessione P-22. Progetta l'area 5 di docs/prossima-versione.md §5.1,
+Progressi, in docs/area-5-progetto.md, sul modello dei progetti delle
+aree 1–4. La forma è decisa: è Q-DUE, fra le questioni chiuse del §10
+di docs/specifica.md, sette punti con la data — una mappa per tema,
+non un bilancio e non una classifica. Il progetto la realizza, non la
+rimette in discussione; se un punto non regge, dillo nel resoconto.
+
+Il motore è pronto: leggi l'esito di P-41 nel §6 di
+docs/prossime-sessioni.md, e la pagina chiama quelle funzioni, non
+rifà i conti. Le soglie del §4.3 non si abbassano. Progressi è dei soli
+registrati (ADR-004): il progetto dice che cosa vede chi non ha un
+account, e il progetto del client è la fonte per gli stati di accesso.
+Le tabelle che sforano a 375 px, difetto aperto dalla 0.3.0, qui si
+chiudono. Dove serve un controllo, scrivi la dipendenza come il §10.1
+delle aree 2, 3 e 4.
+
+Solo il documento e la voce di CHANGELOG: niente site/. Non toccare
+docs/prossime-sessioni.md. Un commit con il trailer, versione non
+toccata. Chiudi con il resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
 ---
 
 ### I segnaposto — i prompt che non si possono ancora scrivere
@@ -1726,12 +1809,13 @@ e specifica che il progetto avrà scritto, chiuse prima da Claude come P-06 e
 P-31; l'eccezione `figura` di `docs/eccezioni-interfaccia.md`, se l'area 3 non
 l'ha chiusa.
 
-#### P-22 e P-23 — ChatGPT: l'area 5, Progressi — progetto, poi realizzazione
+#### P-23 — ChatGPT: la realizzazione dell'area 5
 
-**Aspetta:** P-21. **Dove:** `ui/main`. **Dovrà contenere:** il capitolo 16;
-**Progressi è dei soli registrati** (ADR-004), quindi viene dopo il client;
-Q-DUE — le due classifiche, e `peggiori()` ancora orfana — deciso dall'autore
-prima del progetto; le tabelle che sforano a 375 px, difetto aperto dalla 0.3.0.
+**Aspetta:** P-22, P-18 — Progressi è dei registrati —, e P-21 per la penna su
+`app.html`. **Dove:** `ui/main`. **Dovrà contenere:** realizzare
+`docs/area-5-progetto.md`; `peggiori()` e `consigli()` secondo quello che P-41
+ha deciso; le dipendenze del progetto chiuse prima da Claude come P-06, P-31,
+P-35.
 
 #### P-24 e P-25 — ChatGPT: l'area 6, rifinitura trasversale — progetto, poi realizzazione
 
@@ -1938,3 +2022,8 @@ dopo**, la soglia degli allarmi riletta sul registro vero
   P-38, prima di tutto, e P-39 per i controlli che mancano; P-18 li aspetta. P-40
   segnaposto per chiudere il regime vecchio del client. Nel §4, Q-DUE sblocca
   ChatGPT.
+- **29 settembre 2026 — Q-DUE chiusa.** La decisione è nel §10 della specifica;
+  Q-SUITE e Safari sono punti aperti lì, rimandati dall'autore. Nascono P-41, il
+  motore della mappa, subito dopo P-38 perché sblocca ChatGPT, e P-22, il
+  progetto dell'area 5; P-23 resta segnaposto. Nel §4 la decisione sui file di
+  esplorazione non tracciati nel worktree `ui`. P-38 lanciato.

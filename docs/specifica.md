@@ -1197,11 +1197,54 @@ Ogni riga dice **chi decide**. Una questione senza un decidente non si chiude ma
 | Q-PROG | Il programma d'esame come dataset | serve una fonte, poi l'autore | Nessuna mappa del programma è possibile: nel repo non c'è (§4.6) |
 | Q-AMBITO | Se `carteggio_e12.json` esce dal cassetto | l'autore | 50 esercizi pubblicati e non usati; cambia il pubblico più di ogni scelta di navigazione |
 | Q-CART4 | «Un esercizio per ciascuno dei quattro argomenti» è un'assunzione | serve la scuola nautica | La composizione della prova resta non confermata, e la 42/D non ha esercizi di carburante |
-| Q-PROVE | Verifiche con dispositivi reali e con persone | l'autore fornisce dispositivi e persone | Nessuna prova su hardware Apple vero, e nessuna prova con persone diverse dall'autore |
+| Q-PROVE | Verifiche con dispositivi reali e con persone — e Safari, che il banco del browser non raggiunge (rimandato dall'autore il 29 settembre 2026) | l'autore fornisce dispositivi e persone | Nessuna prova su hardware Apple vero, e nessuna prova con persone diverse dall'autore. Safari nel banco vorrebbe «Allow remote automation», un'impostazione dell'autore, e anche così WebDriver non legge lo storage (`account-client-progetto.md` §12): il cookie fra `rottagiusta.it` e `api.` su Safari si prova a mano |
 | Q-ONBOARD | Che cosa chiede l'onboarding di chi si registra, oltre alla data d'esame; e se il sito consiglia un piano di studio strutturato | l'autore | Un piano deve reggersi su quello che il motore sa: niente programma d'esame (Q-PROG), niente studio fatto altrove (chiusa l'8 settembre), niente «quanto tempo hai?» (R-TEMPO-03), e senza data niente quota. I pezzi ci sono già — `traccia()`, `consigli()`, `stimaImpegno()` —, e il piano di 17 sessioni del progetto originario è stato tolto nella 0.19.0 con il resto del servizio personale |
-| Q-DUE | Due classifiche di «cosa fare adesso»: dichiararne la differenza o tenerne una | l'autore | La sovrapposizione resta, e sul ramo `ui/main` una delle due è già sparita senza decisione |
+| Q-SUITE | La suite dell'interfaccia dura circa un minuto e vuole Chrome e la porta 8620 libera, da P-29: è il prezzo del browser vero, accettarlo o accorciarlo | l'autore, rimandata il 29 settembre 2026 | Accorciarla vuol dire aprire il CORS del server a più origini o accorciare attese che hanno già dato un rosso falso; finché resta aperta, la suite si fa girare intera e un'esecuzione saltata si dice |
 
 **Chiuse, e non si riaprono senza un motivo nuovo:**
+
+- **Q-DUE: Progressi diventa una mappa per tema** (29 settembre 2026, l'autore,
+  dopo un confronto con Claude e ChatGPT). Nessuna delle due classifiche —
+  `peggiori()` in Rotta, `consigli()` in Progressi — resta come lista. Il
+  perché è misurato: su quattro storici sintetici le prime cinque voci delle
+  due liste coincidevano due, quattro e cinque volte su cinque, e la tabella
+  *Per voce* ordinata per «punti persi» era una terza copia della stessa
+  graduatoria. Sette punti fanno parte della decisione:
+  1. **La forma.** In cima, al massimo una frase «Dove pesa di più adesso», con
+     il perché e pulsanti coerenti con quello che dice; poi una riga compatta
+     per ciascuno degli otto temi, in ordine fisso di peso d'esame
+     (`diagnosi().temi`), con nome, peso, barra a tre stati con la legenda in
+     parole, e i dati sotto; toccando un tema, le sue voci in ordine di banca;
+     sotto, separati, prove, andamento, sessioni. È un punto di partenza, da
+     rivedere con l'uso.
+  2. **Un errore si chiude con una risposta giusta**, come oggi; rafforzarlo è
+     un'idea, [ilbeca/rotta-giusta#1](https://github.com/ilbeca/rotta-giusta/issues/1).
+     Rimandare è sicuro: lo stato si ricalcola dalle righe con `ripiega()`.
+  3. **Le parole della barra: «giusti · da rifare · mai visti»**, con il `?`
+     «in base all'ultima risposta», e il pulsante «Rifai N errori» con N uguale
+     al segmento «da rifare». In schermata non compaiono «aperto», «ripreso»,
+     «coperto». Scartato «da ripassare»: nei Quiz «Ripasso degli errori» apre
+     tutti gli errori di sempre, e la stessa parola indicherebbe due liste.
+  4. *(su delega)* **La vela**: le sue tre voci fanno da righe, in ordine di
+     banca. Un peso per voce non esiste, e non si inventa.
+  5. *(su delega)* **«X su Y giusti al primo tentativo»**, con X le esatte alla
+     prima risposta e Y i visti, numeri esatti e non frazioni arrotondate — lo
+     stesso Y di «Visti Y su N». Si dichiara che conta solo la prima volta e non
+     migliora ripassando: col ripasso si muove la barra. Sotto soglia nessun
+     numero, ma «troppo poche risposte per dire come va».
+  6. *(su delega)* **La frase in cima la decide una regola del motore**, che
+     restituisce anche il motivo e le selezioni dei pulsanti. Sotto soglia, o
+     senza un'indicazione fondata, la frase non compare. La soglia entra nel
+     §4.3 con le altre.
+  7. *(su delega)* **Niente minuti sui pulsanti** dell'area 5, finché non c'è
+     una stima verificata (R-TEMPO-01/02): nel prototipo «66 errori · circa 99′»
+     faceva 90 secondi a domanda, contro i circa 23 dell'archivio vero.
+
+  Due fatti trovati nel confronto, che diventano lavoro del motore:
+  `coda({ soloSbagliate })` include anche gli errori già ripresi e li mette in
+  fondo, quindi «Rifai N errori» aprirebbe gli N giusti solo per ordinamento e
+  tetto, non per contratto — serve un filtro esplicito —; e `peggiori()` conta
+  gli errori alla prima risposta, che ripassando non calano.
 
 - **Non si traccia lo studio esterno** (8 settembre 2026). Nessuna lista di
   argomenti da spuntare: non la compila nessuno. Il costo è dichiarato: l'app non
@@ -1476,3 +1519,8 @@ successo, ed è il motivo per cui questo file esiste.
   sta solo in memoria. Trovato da P-20, verificato dalla regia; il paragrafo
   dice ora che cosa vale oggi (l'avviso e la conferma del browser, P-36) e dopo
   (la bozza con l'account, P-34).
+- **29 settembre 2026 — Q-DUE chiusa, due questioni rimandate.** Progressi
+  diventa una mappa per tema, con i sette punti della decisione nel §10; le due
+  classifiche escono dalla pagina. Entrano Q-SUITE — la suite dell'interfaccia
+  che dura un minuto — e Safari dentro Q-PROVE, tutte e due rimandate
+  dall'autore e scritte perché non si perdano.
