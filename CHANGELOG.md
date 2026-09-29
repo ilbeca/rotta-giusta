@@ -868,6 +868,7 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   giro la 8620 si è guardata libera: al primo tentativo la teneva la suite di
   `rotta-giusta-ui`, e si è aspettato. `site/` e `docs/prossime-sessioni.md` non
   sono stati toccati.
+
 ### Progettato — P-24: rifinitura trasversale dell'area 6
 
 - **`docs/area-6-progetto.md`** traduce i capitoli 17–22 della Specifica UX/UI
