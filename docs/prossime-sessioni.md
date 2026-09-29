@@ -119,10 +119,9 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
 | 5b | Chiudere il regime vecchio dei controlli dei quiz, e il §5 della specifica | Claude | `main`, a mano | la cartella libera | P-12 |
-| 20 | Il banco del browser, stabile — **lanciato** | Claude | `main`, a mano | niente | P-38 |
-| 22 | Il motore della mappa di Progressi | Claude | `main`, a mano | P-38 | P-41 |
+| 22 | Il motore della mappa di Progressi | Claude | `main`, a mano | niente — **per primo** | P-41 |
 | 23 | Il progetto dell'area 5, Progressi | ChatGPT | `ui/main` | P-41 | P-22 |
-| 21 | I controlli del client che mancano | Claude | `main`, a mano | P-38 | P-39 |
+| 21 | I controlli del client che mancano | Claude | `main`, a mano | P-41, nell'ordine | P-39 |
 | 18 | Il carteggio sul `main`: composizione, attività intera, bozza, controlli | Claude | `main`, a mano | P-29 nell'ordine; P-34 dopo P-33, dalla quarantena | P-32…P-35 |
 | 6d | Chiudere il regime vecchio dei controlli del ciclo | Claude | `main`, a mano | la cartella libera | P-37 |
 | 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore: il tag `v0.28.0` c'è | P-15 |
@@ -138,8 +137,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 **Le due colonne corrono in parallelo**: Claude sul server e sul motore,
 ChatGPT sull'interfaccia. P-18 e P-21 aspettano lavoro di Claude su `main`:
 quel lavoro è la strettoia. **Per
-Claude, l'ordine consigliato: P-38** (in corso), **P-41** (sblocca P-22 per
-ChatGPT), **P-39** (sblocca P-18), **P-32, P-33, P-34, P-35** (sbloccano
+Claude, l'ordine consigliato: P-41** (sblocca P-22 per ChatGPT), **P-39** (sblocca P-18), **P-32, P-33, P-34, P-35** (sbloccano
 P-21), P-37, P-16, P-12, P-17; P-15 quando l'autore ha il tempo. **Per ChatGPT:
 P-22 dopo P-41, poi P-18 dopo P-39.** Vanno uno alla
 volta, perché stanno tutti nella cartella principale: è la strettoia della
@@ -1636,7 +1634,7 @@ docs/prossime-sessioni.md.
 
 ### P-38 — Claude: il banco del browser, stabile
 
-**Stato:** pronto — **per primo**, prima di P-18. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** la
+**Stato:** **chiuso il 29 settembre 2026**, commit `0c1b079` su `main`. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** la
 verifica della regia su P-29.
 
 ```
@@ -1665,11 +1663,25 @@ Non toccare docs/prossime-sessioni.md. Suite verdi, voce in fondo a
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `0c1b079`, voce nel CHANGELOG. Prima la misura: 40 giri, metà
+sotto carico, 3 rossi. **Due cause, e nessuna era il tempo.** La prima: il banco
+voleva più di dieci caratteri nel testo del quesito, e 8 quesiti base su 1.472
+sono più corti — la pagina di riferimento ne pescava uno nello 0,5 % degli
+avvii. Ora il quesito si riconosce dalla banca, non dalla lunghezza. La seconda,
+trovata dai giri dopo la prima correzione, era peggio: **un verde falso sotto
+carico** — C-02 guardava lo storage dopo 500 ms, e una scrittura arrivava fino a
+592 ms dopo. Ora c'è una finestra d'osservazione di 3 s che si chiude alla prima
+scrittura, l'unica attesa a tempo rimasta, dichiarata. Entrambe provate in modo
+deterministico sul banco di prima. Aggiunti una variante che deve restare verde,
+una rottura che scrive in ritardo, e due controlli che prima non dicevano
+niente. Risultato: 0 rossi su 20 giri senza carico e su 40 sotto carico, le
+rotture rosse ognuna per il suo motivo. Controllato dalla regia: tre giri di
+fila dell'interfaccia, 576 su 576 tutte e tre le volte, in 55 s; le altre suite
+invariate.
 
 ### P-39 — Claude: i controlli del client che mancano
 
-**Stato:** in attesa di P-38. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** il resoconto di P-29.
+**Stato:** pronto dopo P-41, nell'ordine consigliato: il banco è stabile. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** il resoconto di P-29.
 
 ```
 Questo prompt è per Claude Code, nella cartella principale
@@ -1684,7 +1696,10 @@ Sullo stesso banco, stabile dopo P-38: il resto di C-01 — Quiz,
 simulazioni, Carteggio, tecniche e Segnali, così R-ACC-04 si può dire
 coperto —, poi C-03, C-04 e C-06…C-18, con il meccanismo dei due regimi
 e le rotture deliberate. C-06, C-11 e C-15 esercitano la corsa fra
-schede di «da verificare» (§9.3), leggendo il database del server. Se
+schede di «da verificare» (§9.3), leggendo il database del server.
+Le due lezioni di P-38 valgono per ogni controllo nuovo: un'assenza si
+dimostra con la finestra OSSERVAZIONE, e un quesito si riconosce dalla
+banca, non dalla lunghezza del suo testo (§12, «Il banco stabile»). Se
 il banco non regge un controllo, dillo e lascialo dichiarato scoperto
 con il motivo: meglio un buco scritto che un verde che non misura. Se è
 troppo per un commit, fermati a un confine pulito e dillo. Il tempo
@@ -1699,8 +1714,7 @@ docs/prossime-sessioni.md.
 
 ### P-41 — Claude: il motore della mappa di Progressi
 
-**Stato:** pronto dopo P-38, che lavora nella stessa cartella — **prima di
-P-39**, perché sblocca ChatGPT. **Dove:** Claude Code, `~/Software/rotta-giusta`,
+**Stato:** pronto — **per primo**: sblocca ChatGPT. **Dove:** Claude Code, `~/Software/rotta-giusta`,
 ramo **`main`**, a mano. **Nasce da:** Q-DUE, chiusa il 29 settembre 2026.
 
 ```
@@ -2011,3 +2025,6 @@ dopo**, la soglia degli allarmi riletta sul registro vero
   esplorazione non tracciati nel worktree `ui`. P-38 lanciato.
 - **29 settembre 2026 — i file di esplorazione tolti.** Scelta dell'autore;
   spostati nel Cestino, non cancellati. P-22 aspetta solo P-41.
+- **29 settembre 2026 — P-38 chiuso.** Il banco non è più rosso a caso: due
+  cause trovate e provate, nessuna delle due era un'attesa troppo corta. La
+  regia l'ha rifatto girare tre volte, tutte verdi. P-41 per primo.
