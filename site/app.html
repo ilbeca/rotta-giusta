@@ -17,10 +17,10 @@
 <meta property="og:type" content="website">
 <meta property="og:locale" content="it_IT">
 <meta property="og:title" content="Rotta Giusta — quiz e carteggio per la patente nautica">
-<meta property="og:description" content="1.722 quesiti e 135 esercizi di carteggio dall'elenco unico nazionale. Gratis, senza account, open source.">
+<meta property="og:description" content="1.722 quesiti e 135 esercizi di carteggio dall'elenco unico nazionale. Prova senza account; crea un account per salvare i progressi.">
 <meta property="og:image" content="/og-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="description" content="Quiz e carteggio per la patente nautica senza limiti dalla costa. Banca d'esame ministeriale (DD 131/2022), simulazioni, diagnosi. Tutto nel tuo browser, nessun account.">
+<meta name="description" content="Quiz e carteggio per la patente nautica senza limiti dalla costa. Gratis e open source. Prova senza account; crea un account per salvare i progressi.">
 <!-- Il titolo NON e' quello della vetrina: dalla 0.22.0 stanno a due indirizzi
      diversi e con lo stesso titolo erano due schede indistinguibili, e per un
      motore di ricerca due pagine in gara per la stessa query. Un test lo tiene
@@ -601,7 +601,7 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
 @media(hover:hover) and (pointer:fine){.app-nav button:hover,.app-info:hover,.direction-card:hover,.extra-card:hover{color:var(--blue)}.direction-card:hover,.extra-card:hover{transform:translateY(-2px);box-shadow:0 5px 18px var(--shadow)}}
 @media(max-width:900px){.app-header-inner{gap:14px}.brand-name{font-size:17px}.app-nav{gap:0}.app-nav button{padding:0 9px}.app-nav .ico{display:none}.rotta-scene{width:410px;opacity:.8}.rotta-intro{width:60%}.rotta-intro h1{font-size:36px}.rotta-topgrid{grid-template-columns:1fr;gap:16px}.recommend-card,.cart-route-card{padding:24px}.cart-route-card>img{width:165px;right:-25px;opacity:.45}.progress-strip{grid-template-columns:1fr}.progress-data{padding:15px 0 0;border-left:0;border-top:1px solid var(--line-soft)}}
 @media(max-width:650px){
-  .app-header{height:70px;position:sticky}.app-header-inner{gap:4px;padding:0 8px}.app-brand{gap:6px}.app-brand img{width:30px;height:34px}.brand-name{font-size:15px;letter-spacing:.5px}.brand-tag{font-size:11px;line-height:1.35;letter-spacing:.5px}.app-info{max-width:155px;padding:6px 7px;font-size:11px;border-radius:18px}.app-info .ico{width:16px;height:16px}
+  .app-header{height:70px;position:sticky}.app-header-inner{gap:4px;padding:0 8px}.app-brand{gap:6px}.app-brand img{width:30px;height:34px}.brand-name{font-size:15px;letter-spacing:.5px}.brand-tag{font-size:11px;line-height:1.35;letter-spacing:.5px}.app-info{max-width:155px;padding:6px 7px;font-size:11px;border-radius:18px}.app-info .ico{width:16px;height:16px}.header-statuses span:not(#nav-info-label){position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
   .app-nav{position:fixed;z-index:45;left:0;right:0;bottom:0;height:calc(70px + var(--safe-b));padding:0 0 var(--safe-b);display:grid;grid-template-columns:repeat(4,1fr);background:color-mix(in srgb,var(--surface) 96%,transparent);border-top:1px solid var(--line-soft);backdrop-filter:blur(12px)}
   .app-nav button{display:flex;flex-direction:column;justify-content:center;gap:3px;min-height:60px;padding:8px 0;font-size:11px}.app-nav .ico{display:block;width:21px;height:21px}.app-nav button.on::after{top:0;bottom:auto;left:29%;right:29%}
   .sync{top:76px}main{padding:0 16px calc(90px + var(--safe-b))}.view{padding-top:24px}.rotta-view{padding-top:0}
@@ -686,6 +686,15 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
 .ciclo .rv-tags{flex-wrap:wrap;margin:8px 0 0}
 .ciclo .rv-tags button{min-height:44px;padding:8px 14px;font-size:15px;color:var(--navy)}
 .ciclo .rv-tags button.on{color:var(--surface)}
+.account-panel{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:16px;background:color-mix(in srgb,var(--navy) 60%,transparent)}
+.account-panel[hidden]{display:none}
+.account-card{width:min(560px,100%);max-height:calc(100vh - 32px);overflow:auto;padding:24px;border-radius:18px;background:var(--surface);box-shadow:0 20px 60px #0004}
+.account-card h2{margin:0 0 12px;text-transform:none;font-size:24px;line-height:1.2;letter-spacing:0;color:var(--navy)}.account-card label{display:block;margin:14px 0;font-weight:650}.account-card input:not([type=radio]):not([type=checkbox]){display:block;width:100%;min-height:44px;margin-top:5px;padding:8px;border:1px solid var(--line);border-radius:8px;font:inherit}
+.account-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.account-actions .btn{min-height:44px}.account-panel [role=status],.account-panel [role=alert]{margin:12px 0;color:var(--navy)}
+.account-invite{margin-top:22px;padding:18px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.account-invite .btn{min-height:44px;margin:5px 8px 5px 0}.account-warning{padding:12px;border:2px solid var(--warn);border-radius:10px;margin:12px 0}
+.account-invite h2{text-transform:none;font-size:21px;line-height:1.25;letter-spacing:0;color:var(--navy)}
+#conto-stato{margin:0 auto;padding:8px 16px;max-width:1120px;font-size:15px;font-weight:650;color:var(--navy)}#conto-stato:empty{display:none}
 .ciclo .qfig{margin-top:12px}
 .fig-box{display:block}.fig-box img{display:block;margin:0 auto}
 .qfig .fig-zoom{display:inline-flex;margin-top:4px;font-size:14px}
@@ -725,16 +734,21 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
       <button data-v="oggi" class="on"><svg class="ico" aria-hidden="true"><use href="#i-route"/></svg><span>Percorso</span></button>
       <button data-v="quiz"><svg class="ico" aria-hidden="true"><use href="#i-quiz"/></svg><span>Quiz</span></button>
       <button data-v="cart"><svg class="ico" aria-hidden="true"><use href="#i-chart"/></svg><span>Carteggio</span></button>
-      <button data-v="diag"><svg class="ico" aria-hidden="true"><use href="#i-bars"/></svg><span>Progressi</span></button>
+      <button id="nav-progressi" data-v="diag"><svg class="ico" aria-hidden="true"><use href="#i-bars"/></svg><span>Progressi</span></button>
     </nav>
     <button class="app-info" data-v="info"><span class="ndot" id="nav-info-dot"></span><svg class="ico" aria-hidden="true"><use href="#i-info"/></svg><span class="header-statuses"><span id="nav-info-label">Info</span><span id="nav-save-status" hidden>Salvataggio da controllare</span><span id="nav-offline-status" hidden>Offline da completare</span></span></button>
+    <button class="app-info" id="conto-porta" data-account="porta">Accedi</button>
   </div>
 </header>
+<p id="conto-stato" role="status" aria-live="polite"></p>
 
 <main>
   <!-- ====================== PERCORSO ====================== -->
   <section class="view on rotta-view" id="v-oggi">
     <div class="rotta-alerts" id="rotta-alerts" aria-live="polite"></div>
+    <section class="account-warning" id="vecchio-avviso" hidden></section>
+    <div class="account-warning" id="conto-verifica" hidden></div>
+    <p class="account-warning prova-avviso">Senza account le risposte valgono solo finché questa pagina resta aperta. Se la chiudi o la ricarichi, le perdi. Non salviamo niente, nemmeno le tue preferenze.</p>
 
     <section class="rotta-hero">
       <div class="rotta-intro">
@@ -801,7 +815,7 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
 
     <section class="date-progress-grid">
       <div class="card date-card">
-        <h2>Hai una data d'esame?</h2>
+        <h2>Data d'esame</h2>
         <label for="esame-data">Data d'esame (facoltativa)</label>
         <div class="date-input-row"><input type="date" id="esame-data"><button class="text-btn" id="esame-rimuovi" hidden>Rimuovi la data</button></div>
         <p class="date-status" id="esame-sub">Puoi aggiungerla quando la conosci. Puoi allenarti anche senza una data.</p>
@@ -809,7 +823,7 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
       </div>
       <div class="card save-card">
         <h2>I tuoi progressi</h2>
-        <p>I progressi restano in questo browser. Non si sincronizzano e possono andare persi se cancelli i dati del sito.</p>
+        <p>Senza account le risposte valgono solo per questa pagina. Con l'account si salvano sul server e puoi vedere i Progressi.</p>
         <div class="save-actions"><button class="btn" data-route-export>Scarica i progressi</button><button class="btn" data-info-section="importa">Importa un file dei progressi</button><button class="btn" data-info-section="difetti">Fonti e difetti dichiarati</button></div>
       </div>
     </section>
@@ -817,6 +831,7 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
 
   <!-- ====================== ALLENAMENTO ====================== -->
   <section class="view" id="v-quiz">
+    <p class="account-warning prova-avviso">Senza account le risposte valgono solo finché questa pagina resta aperta. Se la chiudi o la ricarichi, le perdi. Non salviamo niente, nemmeno le tue preferenze.</p>
     <h1>Quiz</h1>
     <p class="sub">Scegli come esercitarti con i quiz base o vela. Puoi cambiare attività quando vuoi.</p>
     <div id="quiz-alerts" class="route-alerts" aria-live="polite"></div>
@@ -858,6 +873,8 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
 
   <!-- ====================== DIAGNOSI ====================== -->
   <section class="view" id="v-diag">
+    <div id="progressi-porta" hidden><h1>Progressi</h1><p>I Progressi descrivono le attività salvate nel tuo account. Senza account puoi fare tutte le attività e rivedere quelle della pagina aperta.</p><div class="row"><button class="btn" data-v="oggi">Vai al Percorso</button><button class="btn primary" data-account="accedi">Accedi</button></div></div>
+    <div id="progressi-contenuto" hidden>
     <h1>Progressi</h1>
     <p class="sub">L'accuratezza e' calcolata sulla <b>prima</b> risposta a ogni quesito:
       e' l'unica che misura quanto sai, non quanto ricordi del drill.</p>
@@ -884,13 +901,15 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
     <h2 style="margin-top:26px">Le sessioni che hai fatto</h2>
     <p class="sub">Tutte, non solo le simulazioni: batterie, screening, Mirata, per argomento.
       Questo elenco <b>non segue</b> i selettori qui sopra. Sono ritagliate dal tuo archivio,
-      che sta in questo browser.</p>
+      che si conserva nel tuo account.</p>
     <div class="card" id="sessioni"></div>
+    </div>
   </section>
 
   <!-- ====================== TECNICHE ====================== -->
   <!-- ====================== CARTEGGIO ====================== -->
   <section class="view" id="v-cart">
+    <p class="account-warning prova-avviso">Senza account le risposte valgono solo finché questa pagina resta aperta. Se la chiudi o la ricarichi, le perdi. Non salviamo niente, nemmeno le tue preferenze.</p>
     <h1>Carteggio</h1>
     <p class="sub">La fase 1, quella eliminatoria: <b>4 esercizi in 60 minuti, 3 su 4 per passare</b>.
       L'app pesca gli esercizi e tiene il tempo; tu li fai sulla carta nautica. Alla fine
@@ -926,6 +945,7 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
   </section>
 
   <section class="view" id="v-tec">
+    <p class="account-warning prova-avviso">Senza account le risposte valgono solo finché questa pagina resta aperta. Se la chiudi o la ricarichi, le perdi. Non salviamo niente, nemmeno le tue preferenze.</p>
     <h1>Che tecnica serve?</h1>
     <p class="sub">I 135 testi del carteggio senza limiti, senza carte e senza squadrette.
       All'esame l'errore quasi mai sta nel tracciamento: sta nell'impostazione. Questo allena quella.</p>
@@ -938,6 +958,7 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
 
   <!-- ====================== IL GIOCO DEI SEGNALI ====================== -->
   <section class="view" id="v-seg">
+    <p class="account-warning prova-avviso">Senza account anche i punteggi dei Segnali valgono solo per questa pagina.</p>
     <h1>Riconosci fanali e segnali</h1>
     <p class="sub">Fanali, segnali diurni e segnali sonori del Regolamento per prevenire gli
       abbordi in mare, da riconoscere a colpo d'occhio: un'immagine, tre risposte.
@@ -959,6 +980,7 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
   <!-- ====================== INFO ====================== -->
   <section class="view" id="v-info">
     <h1>Info e diagnostica</h1>
+    <button class="text-btn" data-v="diag">Vedi i progressi</button>
     <p class="sub">Versione, archivio delle risposte, offline. Quando qualcosa non torna,
       la risposta comincia da qui — e il pallino ambra sulla voce Info si accende da solo.</p>
 
@@ -968,20 +990,18 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
     </div>
 
     <h2 id="info-importa" tabindex="-1">Archivio delle risposte</h2>
+    <button class="btn" data-account="porta">Accedi o apri Account</button>
     <div class="card">
       <p class="note" id="i-archivio">…</p>
-      <!-- Le risposte non escono mai da questo browser: cambiare telefono o
-           svuotare i dati del sito le cancella. Scaricarle e ricaricarle e' il
-           minimo per chi usa l'app davvero, e non c'e' nessun altro modo. -->
+      <div id="vecchio-info" class="note" hidden></div>
+      <!-- La prova resta in memoria; l'account usa il server e una copia locale
+           isolata. L'archivio precedente è una fonte di migrazione separata. -->
       <div class="row" style="margin-top:12px">
         <button class="btn" id="esporta" style="flex:1 1 200px">Scarica i tuoi progressi</button>
         <button class="btn" id="importa" style="flex:1 1 200px">Ricaricali da un file</button>
         <input type="file" id="importa-file" accept="application/json,.json" hidden>
       </div>
-      <p class="note" style="margin-top:10px">Le risposte restano in questo browser e non arrivano a
-        nessun server: non esiste un account e non c'e' niente da recuperare se le perdi.
-        <b>Scaricale prima di cambiare telefono, cambiare browser o svuotare i dati del sito.</b>
-        Ricaricarle fonde il file con quello che c'e' gia': nessuna risposta si duplica.</p>
+      <p class="note" style="margin-top:10px">Senza account le risposte della pagina non vengono conservate. Con l'account le risposte sono legate alla tua email e arrivano al nostro server in chiaro. Puoi scaricare il file dei progressi e importare un file precedente.</p>
       <button class="btn" id="azzera" style="margin-top:12px">Azzera i progressi su questo dispositivo</button>
     </div>
 
@@ -1016,13 +1036,15 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
     <a href="/avvertenza">avvertenza</a> · <a href="/privacy">privacy</a></footer>
 </main>
 
+<section class="account-panel" id="account" role="dialog" aria-modal="true" aria-labelledby="account-title" hidden><div class="account-card" id="account-card"></div></section>
+
 <div class="route-dialog" id="come-funziona" role="dialog" aria-modal="true" aria-labelledby="come-title">
   <div class="route-dialog-card">
     <h2 id="come-title">Come funziona Rotta Giusta</h2>
     <p>Nei quiz scegli una risposta e vedi quella ufficiale dopo ogni domanda.</p>
     <p>Nel carteggio svolgi gli esercizi sulla carta e valuti il risultato confrontandolo con quello ufficiale.</p>
     <p>Il sito affianca la scuola o il manuale: qui trovi esercizi e riscontri, non un corso completo.</p>
-    <p id="come-storage">Non serve un account. Le risposte restano in questo browser; puoi scaricarle in un file.</p>
+    <p id="come-storage">Non serve un account per provare. Senza account le risposte e le preferenze valgono solo finché questa pagina resta aperta. Con l'account salvi sul server e vedi i Progressi.</p>
     <button class="btn primary" id="come-close">Torna al Percorso</button>
   </div>
 </div>
@@ -1152,12 +1174,9 @@ import * as E from '/engine.js';
 
 /* ===================== stato e persistenza ============================== */
 //
-// Non c'e' un server. Tutto quello che l'app sa di te sta in questo browser:
-//
-//   - le **impostazioni** (filtro, selettore, data d'esame, punteggi del gioco
-//     dei segnali) in localStorage, sotto il prefisso `pn.`;
-//   - l'**archivio delle risposte**, una riga per risposta, in IndexedDB
-//     (vedi ARCH qui sotto). E' l'unica copia dello storico.
+// Senza account risposte e preferenze vivono soltanto nella pagina aperta.
+// La copia precedente agli account viene letta a parte, per il passaggio
+// esplicito. Con account righe e coda sono nello stesso database per chiave.
 //
 // Lo specchio per quesito (S.prog, S.tprog, S.cprog) — quello che il motore di
 // selezione legge — **non si salva mai**: si ricalcola dall'archivio con
@@ -1165,15 +1184,32 @@ import * as E from '/engine.js';
 // specchio era una seconda copia da fondere col server, e la fusione ha perso
 // giorni di studio prima di avere un test. Qui la seconda copia non esiste.
 
+let preferenzeTimer = null;
 const LS = {
-  get(k, d) { try { return JSON.parse(localStorage.getItem('pn.' + k)) ?? d; } catch { return d; } },
-  set(k, v) { try { localStorage.setItem('pn.' + k, JSON.stringify(v)); } catch {} },
+  valori: Object.create(null),
+  get(k, d) { return Object.hasOwn(this.valori, k) ? this.valori[k] : d; },
+  set(k, v) {
+    this.valori[k] = v;
+    if (S.conto && !['esame', 'segPunti'].includes(k)) {
+      clearTimeout(preferenzeTimer);
+      const ciclo = S.ciclo;
+      preferenzeTimer = setTimeout(() => {
+        if (S.conto && S.ciclo === ciclo) contoTx(() => ({ preferenze: { ...LS.valori } })).catch((e) => {
+          ARCH.errore = String(e?.message || e); DIAG.arch = true; aggiornaBadge();
+        });
+      }, 80);
+    }
+  },
+  svuota() { this.valori = Object.create(null); },
 };
 
 const S = {
   banca: [], meta: null, tec: [], cart: [],
   caricamento: true, bancaErrore: null, cartStato: 'caricamento',
-  archivio: [],                        // tutte le righe: q, t, c, g, s (vedi engine.js)
+  archivio: [],                        // righe della pagina o dell'account corrente
+  prova: [], conto: null, contoDb: null, ciclo: 0, invioController: null, profiloController: null, puliziaChiave: null,
+  invio: null, invioAncora: false, vecchio: [], vecchioFonti: [], vecchioConflitti: [], vecchioErrore: null, vecchioMigrato: null,
+  accountOrigine: null, trasferimento: null, onboarding: false, dataProposta: null,
   prog: {}, tprog: {}, cprog: {},      // derivati dall'archivio, mai salvati
   // Modalita' copertura: pesca **solo** i quesiti mai risposti, per arrivare
   // all'esame avendo visto almeno una volta tutta la banca.
@@ -1197,135 +1233,938 @@ function segnala(t, err) {
   clearTimeout(syncT); syncT = setTimeout(() => el.className = 'sync', err ? 6000 : 2200);
 }
 
-/* ===================== l'archivio ======================================= */
-//
-// Una riga per risposta, in IndexedDB, nel dispositivo. Questo archivio E' lo
-// storico: non viaggia da nessuna parte.
-//
-// Perche' IndexedDB e non localStorage: misurato (CHANGELOG 0.19.0), una riga
-// di risposta pesa ~180 byte e localStorage ha un tetto di ~5 MB per origine,
-// cioe' ~27.000 risposte — tre settimane di studio intenso ne producono 2.000,
-// un utente accanito ci arriva in un anno. E il modo in cui fallisce e' il
-// guasto di casa: `setItem` lancia, e se nessuno la prende la risposta sparisce
-// mentre l'interfaccia dice che va tutto bene. IndexedDB ha una quota di
-// centinaia di MB, e comunque **ogni scrittura fallita si vede**: pallino
-// ambra su Info, avviso in schermata, e la riga nella scheda Archivio.
-//
-// Se IndexedDB non si apre (qualche navigazione privata lo nega) si ripiega su
-// localStorage, dichiarandolo, e lasciando che `setItem` lanci: un ripiego che
-// ingoia l'errore sarebbe peggio di nessun ripiego.
-
+/* ===================== stato locale ===================================== */
+// Le risposte anonime restano in memoria. Le sole scritture persistenti nuove
+// passano dall'archivio rg-account-<chiave_locale>; la copia precedente si
+// legge in leggiVecchio() e non si modifica implicitamente.
 const ARCH = {
-  // Il nome del database NON segue il nome del sito, ed e' deliberato: e'
-  // l'identita' dell'archivio nel browser di chi studia. Rinominarlo aprirebbe
-  // un database nuovo e vuoto, e ogni risposta data finora sparirebbe senza un
-  // errore — il guasto muto di casa, servito al rinomino. Il nome qui sotto
-  // e' quindi rimasto quello della 0.19.2, ed e' l'unico posto in cui resta.
-  NOME: 'open-patente-nautica', STORE: 'righe',
-  db: null,
-  modo: null,             // 'indexeddb' | 'localstorage'
-  nota: null,             // perche' si e' ripiegato, se si e' ripiegato
-  lettura: 'in_corso',    // 'ordinario' | 'ripiego_assente' | 'ripiego_letto' | 'errore'
-  erroreLettura: null,
-  errore: null,           // l'ultima scrittura fallita, con l'ora
-  ultimaScrittura: null,
-  apri() {
-    return new Promise((res, rej) => {
-      if (!('indexedDB' in window)) return rej(new Error('IndexedDB non disponibile'));
-      let r;
-      try { r = indexedDB.open(this.NOME, 1); } catch (e) { return rej(e); }
-      r.onupgradeneeded = () => r.result.createObjectStore(this.STORE, { keyPath: 'uid' });
-      r.onsuccess = () => res(r.result);
-      r.onerror = () => rej(r.error || new Error('apertura fallita'));
-      r.onblocked = () => rej(new Error('bloccato da un\'altra scheda'));
-    });
-  },
-  tx(modo, fn) {
-    return new Promise((res, rej) => {
-      let out;
-      let tr;
-      try { tr = this.db.transaction(this.STORE, modo); out = fn(tr.objectStore(this.STORE)); }
-      catch (e) { return rej(e); }
-      tr.oncomplete = () => res(out && typeof out === 'object' && 'result' in out ? out.result : out);
-      tr.onerror = () => rej(tr.error || new Error('transazione fallita'));
-      tr.onabort = () => rej(tr.error || new Error('transazione interrotta'));
-    });
-  },
-  async carica() {
-    try {
-      this.db = await this.apri();
-      this.modo = 'indexeddb';
-      this.lettura = 'ordinario';
-      this.nota = null;
-      this.erroreLettura = null;
-      return (await this.tx('readonly', (st) => st.getAll())) || [];
-    } catch (e) {
-      this.nota = `IndexedDB non disponibile (${e && e.message ? e.message : e}): uso localStorage, `
-        + 'che ha un tetto di pochi MB — scarica i progressi spesso';
-      let raw;
-      try { raw = localStorage.getItem('pn.archivio'); }
-      catch (le) {
-        this.modo = null;
-        this.lettura = 'errore';
-        this.erroreLettura = (le && le.message) || String(le);
-        return [];
-      }
-      if (raw == null) {
-        this.modo = 'localstorage';
-        this.lettura = 'ripiego_assente';
-        this.erroreLettura = null;
-        return [];
-      }
-      try {
-        const righe = JSON.parse(raw);
-        if (!Array.isArray(righe)) throw new Error('formato non valido');
-        this.modo = 'localstorage';
-        this.lettura = 'ripiego_letto';
-        this.erroreLettura = null;
-        return righe;
-      } catch (le) {
-        this.modo = null;
-        this.lettura = 'errore';
-        this.erroreLettura = (le && le.message) || String(le);
-        return [];
-      }
-    }
-  },
-  async scrivi(righe) {
-    if (this.modo === 'indexeddb') {
-      await this.tx('readwrite', (st) => { for (const r of righe) st.put(r); });
-    } else if (this.modo === 'localstorage') {
-      // Di proposito NON LS.set: quello ingoia l'eccezione, e qui deve salire.
-      localStorage.setItem('pn.archivio', JSON.stringify(S.archivio));
-    } else throw new Error('archivio non disponibile');
-    this.ultimaScrittura = new Date().toISOString();
-  },
-  async cancella(uids) {
-    if (!uids.length) return;
-    if (this.modo === 'indexeddb') await this.tx('readwrite', (st) => { for (const u of uids) st.delete(u); });
-    else if (this.modo === 'localstorage') localStorage.setItem('pn.archivio', JSON.stringify(S.archivio));
-    else throw new Error('archivio non disponibile');
-  },
-  async svuota() {
-    if (this.modo === 'indexeddb') await this.tx('readwrite', (st) => st.clear());
-    else if (this.modo === 'localstorage') localStorage.removeItem('pn.archivio');
-    else throw new Error('archivio non disponibile');
-  },
+  modo: 'memoria', lettura: 'in_corso', nota: null, erroreLettura: null,
+  errore: null, ultimaScrittura: null,
   async stima() {
     try {
-      if (!navigator.storage || !navigator.storage.estimate) return null;
+      if (!navigator.storage?.estimate) return null;
       const e = await navigator.storage.estimate();
       return { usage: e.usage || 0, quota: e.quota || 0 };
     } catch { return null; }
   },
 };
 
+/* ===================== account e sincronia =============================== */
+
+function indirizzoApi(loc) {
+  if (loc.hostname === 'rottagiusta.it') return 'https://api.rottagiusta.it';
+  if (loc.hostname === 'localhost' || loc.hostname === '127.0.0.1') return `http://${loc.hostname}:8620`;
+  return null;
+}
+const API = indirizzoApi(location);
+const NOME_VECCHIO_DB = 'open-patente-nautica'; // NOME: 'open-patente-nautica' — archivio precedente, mai rinominare.
+const nomeConto = (chiave) => `rg-account-${chiave}`;
+const CANALE = typeof BroadcastChannel === 'function' ? new BroadcastChannel('rg-account') : null;
+let invioTimer = null, rilascioLock = null, primoTrasferimento = false;
+let gettone = null, tipoGettone = null;
+if (location.hash.startsWith('#verifica=') || location.hash.startsWith('#password=') || location.hash.startsWith('#email=')) {
+  const [tipo, valore] = location.hash.slice(1).split('=', 2);
+  tipoGettone = tipo; gettone = decodeURIComponent(valore || '');
+  history.replaceState(null, '', location.pathname + location.search);
+}
+
+function apriDbConto(chiave) {
+  return new Promise((ok, ko) => {
+    const q = indexedDB.open(nomeConto(chiave), 1);
+    q.onupgradeneeded = () => {
+      q.result.createObjectStore('righe', { keyPath: 'uid' });
+      q.result.createObjectStore('meta');
+    };
+    q.onsuccess = () => { q.result.onversionchange = () => q.result.close(); ok(q.result); };
+    q.onerror = () => ko(q.error || new Error('archivio account non disponibile'));
+    q.onblocked = () => ko(new Error('chiudi le altre schede per aprire l’archivio'));
+  });
+}
+
+function descrizioneLocale(db) {
+  return new Promise((ok, ko) => {
+    const tx = db.transaction('meta', 'readonly');
+    const q = tx.objectStore('meta').get('descrizione');
+    q.onsuccess = () => ok(q.result || null);
+    q.onerror = () => ko(q.error);
+  });
+}
+function salvaDescrizione(db, io) {
+  return new Promise((ok, ko) => {
+    const tx = db.transaction('meta', 'readwrite');
+    tx.objectStore('meta').put(io, 'descrizione');
+    tx.oncomplete = () => ok(); tx.onerror = () => ko(tx.error);
+  });
+}
+
+// La lettura, la nuova risposta e la coda condividono una transazione. Ogni
+// conferma di rete rilegge la coda qui, dopo che il fetch ha terminato.
+function contoTx(fai = () => null) {
+  return new Promise((ok, ko) => {
+    if (!S.contoDb || !S.conto) return ko(new Error('account non aperto'));
+    let tx;
+    try { tx = S.contoDb.transaction(['righe', 'meta'], 'readwrite'); }
+    catch (e) { return ko(e); }
+    const righe = tx.objectStore('righe'), meta = tx.objectStore('meta');
+    const qr = righe.getAll(), qc = meta.get('coda'), qt = meta.get('trasferimento'), qf = meta.get('conflitto'), qs = meta.get('segnali-pendenti'), qm = meta.get('migrazione-vecchio'), qp = meta.get('preferenze');
+    let stato;
+    tx.oncomplete = () => ok(stato);
+    tx.onerror = () => ko(tx.error || new Error('transazione fallita'));
+    tx.onabort = () => ko(tx.error || new Error('transazione interrotta'));
+    qp.onsuccess = () => {
+      stato = { righe: qr.result || [], coda: qc.result || E.nuovaCoda({ generazione: S.conto.generazione, epocaDb: S.conto.epoca }), trasferimento: qt.result || null, conflitto: qf.result || null, segnaliPendenti: qs.result || null, migrazione: qm.result || null, preferenze: qp.result || null };
+      try {
+        const out = fai(stato) || {};
+        for (const r of out.nuove || []) righe.put(r);
+        if (out.svuota) righe.clear();
+        if (out.coda) meta.put(out.coda, 'coda');
+        if (out.trasferimento !== undefined) meta.put(out.trasferimento, 'trasferimento');
+        if (out.conflitto !== undefined) meta.put(out.conflitto, 'conflitto');
+        if (out.segnaliPendenti !== undefined) meta.put(out.segnaliPendenti, 'segnali-pendenti');
+        if (out.migrazione !== undefined) meta.put(out.migrazione, 'migrazione-vecchio');
+        if (out.preferenze !== undefined) meta.put(out.preferenze, 'preferenze');
+      } catch (e) { tx.abort(); ko(e); }
+    };
+  });
+}
+
+async function chiamaApi(metodo, percorso, corpo, signal) {
+  if (!API) return { codice: 0, corpo: null };
+  const ac = new AbortController();
+  const timeout = setTimeout(() => ac.abort(), 15000);
+  if (signal) signal.addEventListener('abort', () => ac.abort(), { once: true });
+  try {
+    const r = await fetch(API + percorso, { method: metodo, credentials: 'include', signal: ac.signal,
+      headers: corpo === undefined ? {} : { 'Content-Type': 'application/json' },
+      body: corpo === undefined ? undefined : JSON.stringify(corpo) });
+    if (r.status === 204) return { codice: 204, corpo: null };
+    const json = await r.json().catch(() => null);
+    return { codice: json == null ? 0 : r.status, corpo: json, attesa: r.headers.get('Retry-After') };
+  } catch (e) { return { codice: 0, corpo: null, annullata: e.name === 'AbortError' }; }
+  finally { clearTimeout(timeout); }
+}
+
+function pannelloAccount(html) {
+  const el = document.getElementById('account');
+  S.accountOrigine ||= document.activeElement;
+  document.getElementById('account-card').innerHTML = html;
+  el.hidden = false;
+  const titolo = el.querySelector('h2');
+  if (titolo) { titolo.tabIndex = -1; titolo.focus(); }
+  else el.querySelector('input, button')?.focus();
+}
+function chiudiAccount() {
+  document.getElementById('account').hidden = true;
+  document.getElementById('account-card').innerHTML = '';
+  const o = S.accountOrigine; S.accountOrigine = null;
+  S.portaVecchio = false;
+  if (o && document.contains(o)) o.focus();
+}
+const esitoAccount = (t) => { const el = document.getElementById('account-esito'); if (el) el.textContent = t; };
+const avvisoProva = 'Senza account le risposte valgono solo finché questa pagina resta aperta. Se la chiudi o la ricarichi, le perdi. Non salviamo niente, nemmeno le tue preferenze.';
+const invitoBreve = 'Prova quiz e carteggio senza account; crea un account per salvare i progressi.';
+
+function moduloRegistrazione(email = '') {
+  if (!API) return pannelloAccount('<h2 id="account-title">Account non disponibile qui</h2><p>Scarica le risposte di questa pagina e apri <a href="https://rottagiusta.it/app">rottagiusta.it/app</a> per registrarti.</p><button class="btn" data-account="torna">Torna all’attività</button>');
+  pannelloAccount(`<h2 id="account-title">Crea un account</h2><p>Salva le risposte di questa pagina e ritrovale quando torni.</p>
+    <label>Email<input type="email" name="email" autocomplete="username" value="${esc(email)}"></label>
+    <label>Password<input type="password" name="password" autocomplete="new-password"></label>
+    <button class="btn" data-account="mostra">Mostra password</button>
+    <p>Almeno 15 caratteri, al massimo 256. Puoi usare una frase di tre o quattro parole. Non servono maiuscole, numeri o simboli obbligatori.</p>
+    <p>L'email serve per accedere, recuperare la password e ricevere gli avvisi sull'account. Nessuna newsletter. Puoi scaricare e cancellare i tuoi dati; dopo due anni di inattività ti avvisiamo prima di cancellarli. <a href="/privacy">Come trattiamo i dati</a></p>
+    <p id="account-esito" role="status" aria-live="polite"></p>
+    <div class="account-actions"><button class="btn primary" data-account="crea">Crea l'account e salva</button><button class="btn" data-account="torna">Torna al riepilogo</button></div>`);
+}
+function moduloAccesso(email = '') {
+  if (!API) return moduloRegistrazione(email);
+  pannelloAccount(`<h2 id="account-title">Accedi</h2>
+    <label>Email<input type="email" name="email" autocomplete="username" value="${esc(email)}"></label>
+    <label>Password<input type="password" name="password" autocomplete="current-password"></label>
+    <button class="btn" data-account="mostra">Mostra password</button><p id="account-esito" role="status" aria-live="polite"></p>
+    <div class="account-actions"><button class="btn primary" data-account="entra">Accedi</button><button class="btn" data-account="reimposta">Ho dimenticato la password</button><button class="btn" data-account="registra">Crea un account</button><button class="btn" data-account="torna">Torna all'attività</button></div>`);
+}
+
+async function fermaConto() {
+  S.ciclo++;
+  clearTimeout(invioTimer);
+  clearTimeout(preferenzeTimer);
+  S.invioController?.abort();
+  S.profiloController?.abort();
+  S.profiloController = null;
+  try { await S.invio; } catch {}
+  S.contoDb?.close(); S.contoDb = null;
+  if (rilascioLock) { rilascioLock(); rilascioLock = null; }
+  S.conto = null; S.trasferimento = null;
+  document.getElementById('conto-porta').textContent = 'Accedi';
+  document.getElementById('conto-stato').textContent = '';
+  document.getElementById('conto-verifica').hidden = true;
+  aggiornaPorteConto();
+}
+if (CANALE) CANALE.onmessage = (e) => {
+  if (e.data?.tipo === 'uscita' && S.conto?.chiave_locale === e.data.chiave) {
+    fermaConto().then(() => { S.archivio = []; S.run = null; S.cprova = null; segPunti = {}; LS.svuota(); ricalcola(); dipingi(); dipingiSeg(); mostraVista('oggi'); });
+  }
+};
+
+async function entraConto(io) {
+  if (!io?.chiave_locale) throw new Error('Il server non ha restituito la chiave locale');
+  if (S.conto) await fermaConto();
+  S.ciclo++;
+  S.conto = io;
+  S.sessioneScaduta = false;
+  S.contoDb = await apriDbConto(io.chiave_locale);
+  await salvaDescrizione(S.contoDb, io);
+  ARCH.modo = 'indexeddb';
+  segPunti = io.segnali || {};
+  try { localStorage.setItem('rg.ultimo-account', io.chiave_locale); }
+  catch { /* offline richiede il database; l'errore di preferenza non perde righe */ }
+  if (navigator.locks) {
+    const mio = S.ciclo;
+    navigator.locks.request(nomeConto(io.chiave_locale), { mode: 'shared' }, () =>
+      mio !== S.ciclo ? null : new Promise((ok) => { rilascioLock = ok; }));
+  }
+  document.getElementById('conto-porta').textContent = 'Account';
+  document.getElementById('progressi-porta').hidden = true;
+  const locale = await contoTx();
+  S.archivio = locale.righe;
+  LS.valori = { ...(locale.preferenze || {}), esame: io.data_esame || null };
+  S.prep = LS.get('prep', false);
+  S.auto = LS.get('auto', true);
+  if (LS.get('filtro', null)) S.filtro = LS.get('filtro', null);
+  segModo = LS.get('segModo', 'notturni');
+  if (!SEGMODI[segModo]) segModo = 'notturni';
+  S.vecchioMigrato = locale.migrazione;
+  mostraVecchio();
+  const pendentiSegnali = locale.segnaliPendenti;
+  if (pendentiSegnali) {
+    for (const [modo, p] of Object.entries(pendentiSegnali)) {
+      const remoto = segPunti[modo] || { migliore: 0, giocate: 0 };
+      segPunti[modo] = { migliore: Math.max(remoto.migliore || 0, p.migliore || 0), giocate: Math.max(remoto.giocate || 0, p.giocate || 0) };
+    }
+  }
+  ricalcola(); dipingi(); dipingiSeg();
+  mostraVerifica();
+}
+
+function mostraVerifica() {
+  const el = document.getElementById('conto-verifica');
+  if (!el) return;
+  if (!S.conto || S.conto.verificata) { el.hidden = true; el.textContent = ''; return; }
+  const scadenza = S.conto.scade_se_non_verificata
+    ? new Date(S.conto.scade_se_non_verificata).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', timeZone: 'Europe/Rome' }) : 'una data non disponibile';
+  el.innerHTML = `Conferma ${esc(S.conto.email)} entro il ${scadenza}. Se non lo fai, l'account e tutte le sue risposte saranno cancellati. Nel frattempo puoi allenarti, salvare e vedere i Progressi. <button class="btn" data-account="stato">Ho confermato: verifica lo stato</button> <button class="btn" data-account="rinvia">Rimanda la mail</button>${S.verificaEsito ? `<span role="status"> ${esc(S.verificaEsito)}</span>` : ''}`;
+  el.hidden = false;
+}
+
+function pianificaInvio() { clearTimeout(invioTimer); if (S.conto) invioTimer = setTimeout(sincronizza, 500); }
+
+async function sincronizza() {
+  if (!S.conto || !API) return;
+  if ((await contoTx()).conflitto) { await dipingiContoStato(); return; }
+  if (S.invio) { S.invioAncora = true; return S.invio; }
+  const ciclo = S.ciclo, chiave = S.conto.chiave_locale;
+  S.invio = (async () => {
+    do {
+      S.invioAncora = false;
+      // Il cookie è comune fra schede. Prima di ogni catena si verifica che
+      // appartenga ancora alla copia che sta per partire.
+      const io = await chiamaApi('GET', '/v1/io');
+      if (ciclo !== S.ciclo || !S.conto || io.codice === 0) return;
+      if (io.codice === 401 || io.corpo?.chiave_locale !== chiave) {
+        S.sessioneScaduta = true;
+        document.getElementById('conto-porta').textContent = 'Accedi';
+        document.getElementById('conto-stato').textContent = "L'accesso non è più valido. Entra di nuovo per inviare le risposte rimaste in questo dispositivo.";
+        return;
+      }
+      S.conto = { ...S.conto, ...io.corpo };
+      mostraVerifica();
+      for (;;) {
+        if (ciclo !== S.ciclo) return;
+        const s = await contoTx();
+        const lotto = E.lottoDaInviare(s.righe, s.coda);
+        if (!lotto) break;
+        S.invioController = new AbortController();
+        const risposta = await chiamaApi('POST', '/v1/righe', lotto, S.invioController.signal);
+        if (ciclo !== S.ciclo || risposta.annullata) return;
+        let esito;
+        await contoTx((attuale) => {
+          esito = E.dopoInvio(attuale.coda, lotto, risposta, attuale.righe);
+          return { coda: esito.coda, trasferimento: attuale.trasferimento ? E.registraEsito(attuale.trasferimento, esito) : null, conflitto: esito.conflitto || attuale.conflitto };
+        });
+        if (risposta.codice !== 200 || esito.conflitto) {
+          if (risposta.codice && risposta.codice !== 409) S.invioErrore = risposta.corpo?.messaggio || 'Invio non riuscito. Riprova.';
+          if (esito.conflitto) S.conflittoDaMostrare = true;
+          return;
+        }
+      }
+      for (;;) {
+        if (ciclo !== S.ciclo) return;
+        const s = await contoTx();
+        S.invioController = new AbortController();
+        const risposta = await chiamaApi('GET', `/v1/righe?dopo=${s.coda.cursore}`, undefined, S.invioController.signal);
+        if (ciclo !== S.ciclo || risposta.annullata) return;
+        let esito;
+        await contoTx((attuale) => {
+          esito = E.dopoRicezione(attuale.coda, risposta, attuale.righe);
+          return { nuove: esito.righe, coda: esito.coda, trasferimento: attuale.trasferimento ? E.registraEsito(attuale.trasferimento, esito) : null, conflitto: esito.conflitto || attuale.conflitto };
+        });
+        if (esito.conflitto || risposta.codice !== 200) {
+          if (esito.conflitto) S.conflittoDaMostrare = true;
+          return;
+        }
+        if (esito.epocaCambiata) S.invioAncora = true;
+        if (!esito.continua) break;
+      }
+      if (ciclo !== S.ciclo) return;
+      S.archivio = (await contoTx()).righe; ricalcola(); dipingi();
+      const pendentiSegnali = (await contoTx()).segnaliPendenti;
+      if (pendentiSegnali) await salvaSegnali(pendentiSegnali);
+    } while (S.invioAncora && ciclo === S.ciclo);
+  })();
+  try { await S.invio; }
+  catch (e) { ARCH.errore = String(e?.message || e); }
+  finally {
+    S.invio = null;
+    if (ciclo === S.ciclo) {
+      await dipingiContoStato();
+      if (S.conflittoDaMostrare) { S.conflittoDaMostrare = false; await azioneAccount({ dataset: { account: 'conflitto' } }); }
+    }
+  }
+}
+
+async function dipingiContoStato() {
+  const el = document.getElementById('conto-stato');
+  if (!S.conto) { el.textContent = ''; return; }
+  const s = await contoTx();
+  if (S.invioErrore) {
+    el.innerHTML = `${esc(S.invioErrore)} <button class="btn" data-account="riprova">Riprova l'invio</button>`;
+    S.invioErrore = null;
+    return;
+  }
+  if (s.conflitto) {
+    const quando = s.conflitto.azzerato_il ? `Il ${esc(new Date(s.conflitto.azzerato_il).toLocaleString('it-IT'))} i progressi sono stati azzerati da un altro dispositivo.` : 'I progressi sono stati azzerati da un altro dispositivo.';
+    const conflitto = E.dopoInvio(s.coda, null, { codice: 409, corpo: { generazione: s.conflitto.generazione, epoca: s.conflitto.epocaDb, azzerato_il: s.conflitto.azzerato_il } }, s.righe).conflitto;
+    el.innerHTML = `${quando} Qui ci sono ${conflitto.nonSalvate} risposte non salvate. ${conflitto.nonSalvate ? 'Scaricale oppure scegli di scartarle prima di caricare il nuovo archivio.' : 'La copia precedente sarà sostituita.'} <button class="btn" data-account="conflitto">Scegli adesso</button>`;
+    return;
+  }
+  if (s.trasferimento) {
+    const r = E.riepilogoTrasferimento(s.trasferimento, s.coda, s.righe);
+    if (r.completo) {
+      el.textContent = `${r.confermate} ${r.confermate === 1 ? 'risposta salvata' : 'risposte salvate'} nel tuo account`;
+      if (S.portaVecchio && S.vecchio.length && !S.vecchioConflitti.length) {
+        const migrazione = { chiave: S.conto.chiave_locale, numero: S.vecchio.length, data: E.isoLocale(), uid: S.vecchio.map((x) => String(x.uid)).sort() };
+        try { await contoTx(() => ({ migrazione })); S.vecchioMigrato = migrazione; mostraVecchio(); }
+        catch { el.append(' · Non siamo riusciti a segnare il trasferimento della copia precedente. Riprova prima di cancellarla.'); }
+      }
+      if (S.onboarding) { S.onboarding = false; mostraOnboarding(); }
+    } else if (r.stato === 'con scarti') {
+      el.innerHTML = `${r.confermate} risposte salvate · ${r.nonSalvate} righe non salvate. ${esc(Object.entries(r.motivi || {}).map(([m, n]) => `${m}: ${n}`).join(' · '))} <button class="btn" data-account="scarica-scartate">Scarica le righe non importate</button>`;
+    }
+    else el.innerHTML = 'Non chiudere la pagina: le risposte non sono ancora salvate nel tuo account. <button class="btn" data-account="riprova">Riprova l’invio</button>';
+  } else {
+    const bloccate = E.nonInviabili(s.righe, s.coda);
+    const scartate = Object.keys(s.coda.scartate).length;
+    el.textContent = bloccate.length ? `Ci sono ${bloccate.length} righe che non riusciamo a inviare. Scaricale e riprova.` :
+      scartate ? `${scartate} righe non accolte dal server. Scaricale e controlla i motivi.` :
+      s.coda.daInviare.length ? `${s.coda.daInviare.length} risposte da inviare` : 'Le risposte di questo dispositivo sono confermate sul server';
+    if (scartate || bloccate.length) el.insertAdjacentHTML('beforeend', ' <button class="btn" data-account="scarica-scartate">Scarica le righe non salvate</button>');
+  }
+  if (s.segnaliPendenti) el.append(' · Punteggi dei Segnali da inviare');
+}
+
+async function trasferisciConto(righe) {
+  if (!righe.length) { await sincronizza(); return; }
+  const opt = { quesiti: new Set([...S.banca, ...S.cart].map((x) => x.id)) };
+  await contoTx((s) => {
+    const { trasferimento, coda } = E.nuovoTrasferimento(s.coda, righe, opt);
+    const esistenti = new Set(s.righe.map((r) => String(r.uid)));
+    const valide = E.fondiArchivio([], righe, opt).righe;
+    return { nuove: valide.filter((r) => !esistenti.has(String(r.uid))), coda, trasferimento };
+  });
+  await dipingiContoStato();
+  await sincronizza();
+}
+
+function aggiornaPorteConto() {
+  document.getElementById('conto-porta').hidden = !API;
+  document.querySelector('#v-info [data-account="porta"]').hidden = !API;
+  document.querySelectorAll('.prova-avviso').forEach((x) => { x.hidden = !!S.conto; });
+  const navProgressi = document.getElementById('nav-progressi');
+  if (navProgressi) { navProgressi.hidden = !S.conto; if (S.conto) navProgressi.dataset.v = 'diag'; else delete navProgressi.dataset.v; }
+  const porta = document.getElementById('progressi-porta');
+  if (porta) porta.hidden = !!S.conto;
+  const accessoProgressi = porta?.querySelector('[data-account="accedi"]');
+  if (accessoProgressi) accessoProgressi.hidden = !API;
+  const azzeraInfo = document.getElementById('azzera');
+  if (azzeraInfo) azzeraInfo.textContent = S.conto ? 'Azzera i progressi dell’account' : 'Azzera le risposte di questa pagina';
+  const contenuto = document.getElementById('progressi-contenuto');
+  if (contenuto) contenuto.hidden = !S.conto;
+}
+
+async function dopoRegistrazionePersa() {
+  const io = await chiamaApi('GET', '/v1/io');
+  if (io.codice === 200) return registratoConto(io.corpo);
+  pannelloAccount(`<h2 id="account-title">Crea un account</h2><p role="alert">Non sappiamo se l'account è stato creato. Le risposte sono ancora qui. Riprova a verificare l'accesso o entra con email e password.</p>
+    <div class="account-actions"><button class="btn" data-account="verifica-sessione">Riprova a verificare l'accesso</button><button class="btn" data-account="accedi">Accedi</button></div>`);
+}
+
+async function registratoConto(io, postaFallita = false) {
+  S.dataProposta ||= LS.get('esame', null);
+  if (!S.dataProposta && S.portaVecchio) {
+    try { S.dataProposta = JSON.parse(localStorage.getItem('pn.esame') || 'null'); } catch { S.dataProposta = null; }
+  }
+  if (!dataIsoValida(S.dataProposta)) S.dataProposta = null;
+  let righe = S.archivio.slice();
+  if (S.fileImport) righe.push(...S.fileImport.righe);
+  if (S.portaVecchio) {
+    await leggiVecchio();
+    if (S.vecchioErrore) return esitoAccount('Non riusciamo a leggere la copia precedente. Riprova prima di trasferirla.');
+    if (S.vecchioConflitti.length) return esitoAccount('Le copie precedenti hanno risposte diverse con gli stessi uid. Scarica entrambe le fonti prima di continuare.');
+    righe = E.fondiArchivio(righe, S.vecchio, { quesiti: new Set([...S.banca, ...S.cart].map((x) => x.id)) }).righe;
+  }
+  try { await entraConto(io); } catch (e) { esitoAccount('Non riusciamo ad aprire la copia di questo account: ' + e.message); return; }
+  aggiornaPorteConto();
+  S.onboarding = true;
+  if (postaFallita) S.postaFallita = true;
+  await trasferisciConto(righe);
+  S.portaVecchio = false;
+  if (!righe.length) { S.onboarding = false; mostraOnboarding(); }
+  else if (document.getElementById('account').hidden === false && S.onboarding) chiudiAccount();
+}
+
+async function registraConto() {
+  const panel = document.getElementById('account');
+  S.dataProposta = LS.get('esame', null) || document.getElementById('esame-data')?.value || null;
+  const email = panel.querySelector('[name=email]')?.value || '';
+  const password = panel.querySelector('[name=password]')?.value || '';
+  const b = panel.querySelector('[data-account=crea]');
+  if (b.disabled) return;
+  b.disabled = true; esitoAccount('Creazione dell’account in corso…');
+  const r = await chiamaApi('POST', '/v1/registrazione', { email, password });
+  b.disabled = false;
+  if (r.codice === 0) return dopoRegistrazionePersa();
+  if (r.codice === 409 && r.corpo?.errore === 'email_registrata') return pannelloAccount(`<h2 id="account-title">Crea un account</h2><p role="alert"><b>Questa email è già registrata.</b> Accedi per conservare le risposte di questa pagina, oppure reimposta la password se non la ricordi.</p>
+    <div class="account-actions"><button class="btn" data-account="accedi" data-email="${esc(email)}">Accedi</button><button class="btn" data-account="reimposta" data-email="${esc(email)}">Reimposta la password</button><button class="btn" data-account="torna">Torna al riepilogo</button></div>`);
+  if (r.codice === 201 || (r.codice === 503 && r.corpo?.chiave_locale)) return registratoConto(r.corpo, r.codice === 503);
+  esitoAccount(r.corpo?.messaggio || 'La registrazione non è riuscita. Le risposte sono ancora qui: riprova.');
+}
+
+async function accediConto() {
+  const panel = document.getElementById('account');
+  const email = panel.querySelector('[name=email]')?.value || '';
+  const password = panel.querySelector('[name=password]')?.value || '';
+  const b = panel.querySelector('[data-account=entra]');
+  if (b.disabled) return;
+  b.disabled = true; esitoAccount('Accesso in corso…');
+  const r = await chiamaApi('POST', '/v1/accesso', { email, password });
+  b.disabled = false;
+  if (r.codice !== 200) {
+    esitoAccount(r.codice === 401 ? 'Email o password non corrette. Riprova oppure reimposta la password.' :
+      r.codice === 429 ? `Troppi tentativi. Puoi riprovare fra ${r.attesa ? `${r.attesa} secondi` : 'qualche minuto'}` :
+      r.corpo?.messaggio || "L'accesso non è riuscito. Riprova.");
+    if (r.codice === 403) document.getElementById('account-esito')?.insertAdjacentHTML('afterend', '<button class="btn" data-account="reimposta">Reimposta la password</button>');
+    return;
+  }
+  // Se qui c'è ancora A (per esempio dopo un 401), quelle righe sono di A:
+  // un accesso a B non le rende risposte anonime da proporre per B.
+  let prova = S.conto ? [] : S.archivio.slice();
+  if (!S.conto && S.portaVecchio) {
+    await leggiVecchio();
+    if (S.vecchioErrore) { esitoAccount('Non riusciamo a leggere la copia precedente. Riprova prima di trasferirla.'); return; }
+    if (S.vecchioConflitti.length) { esitoAccount('Le copie precedenti hanno risposte diverse con gli stessi uid. Scarica entrambe le fonti prima di continuare.'); return; }
+    prova = E.fondiArchivio(prova, S.vecchio, { quesiti: new Set([...S.banca, ...S.cart].map((x) => x.id)) }).righe;
+  }
+  if (!S.conto && S.fileImport) prova = E.fondiArchivio(prova, S.fileImport.righe, { quesiti: new Set([...S.banca, ...S.cart].map((x) => x.id)) }).righe;
+  if (!prova.length && !Object.keys(segPunti || {}).length) {
+    await entraConto(r.corpo); aggiornaPorteConto(); chiudiAccount(); return sincronizza();
+  }
+  S.prova = prova;
+  await entraConto(r.corpo);
+  aggiornaPorteConto();
+  domandaRigheDellaPagina(prova);
+}
+
+function domandaRigheDellaPagina(prova) {
+  pannelloAccount(`<h2 id="account-title">Accedi</h2><p>${S.portaVecchio ? `Vuoi portare nel tuo account le ${prova.length} risposte salvate in questo browser prima degli account?` : `Vuoi portare nel tuo account le ${prova.length} risposte di questa pagina?`}</p>
+    <p>Account: ${esc(S.conto.email)}</p><label><input type="radio" name="porta" value="si" checked> Sì, portale</label>
+    <label><input type="radio" name="porta" value="no"> No, continua senza portarle</label>
+    <label><input type="checkbox" name="segnali"> Porta anche i punteggi dei Segnali</label>
+    <button class="btn primary" data-account="scelta">${S.portaVecchio ? 'Portale nel mio account' : 'Conferma la scelta'}</button>`);
+}
+
+async function sceltaConto() {
+  const si = document.querySelector('#account [name=porta]:checked')?.value === 'si';
+  const segnali = document.querySelector('#account [name=segnali]')?.checked;
+  const portaVecchio = S.portaVecchio;
+  chiudiAccount();
+  if (si) { S.portaVecchio = portaVecchio; await trasferisciConto(S.prova); }
+  else await sincronizza();
+  if (segnali && Object.keys(segPunti || {}).length) await salvaSegnali(segPunti);
+  S.prova = [];
+  S.portaVecchio = false;
+}
+
+function mostraOnboarding() {
+  pannelloAccount(`<h2 id="account-title">Hai una data d'esame?</h2>
+    ${S.postaFallita ? '<p>L\'account è creato, ma non siamo riusciti a spedire la mail di conferma.</p>' : ''}
+    <label>Data d'esame (facoltativa)<input type="date" name="data" value="${esc(S.dataProposta || '')}"></label>
+    ${S.dataProposta ? `<p>Ti proponiamo la data ${esc(S.dataProposta)} della ${S.portaVecchio ? 'copia precedente' : 'pagina aperta'}. La salviamo solo se scegli «Salva la data».</p>` : ''}
+    <p>Puoi aggiungerla quando la conosci. Puoi allenarti anche senza una data.</p>
+    <p id="account-esito" role="status" aria-live="polite"></p>
+    <div class="account-actions"><button class="btn primary" data-account="salva-data">Salva la data</button><button class="btn" data-account="torna">Continua senza data</button></div>`);
+}
+
+async function salvaDataConto(valore) {
+  const r = await chiamaApi('PUT', '/v1/profilo', { data_esame: valore || null });
+  if (r.codice !== 200) { esitoAccount('La data non è stata salvata. Riprova oppure continua senza cambiarla'); return false; }
+  S.conto = r.corpo; S.dataProposta = null; LS.set('esame', r.corpo.data_esame); ricalcola(); dipingi();
+  esitoAccount('Data salvata');
+  return true;
+}
+
+function pannelloConto() {
+  if (!S.conto) return moduloAccesso();
+  pannelloAccount(`<h2 id="account-title">Il tuo account</h2><p>${esc(S.conto.email)}</p>
+    ${S.postaFallita ? '<p>L\'account è creato, ma non siamo riusciti a spedire la mail di conferma.</p>' : ''}
+    <p>${S.conto.verificata ? 'Email confermata' : 'Email da confermare'}</p>
+    <p>${esc(document.getElementById('conto-stato').textContent)}</p>
+    <p>Data d'esame: ${S.conto.data_esame ? esc(S.conto.data_esame) : 'non indicata'}</p>
+    <p id="account-esito" role="status" aria-live="polite"></p>
+    <div class="account-actions"><button class="btn" data-account="riprova">Riprova l'invio</button><button class="btn" data-account="modifica-data">Modifica la data d'esame</button>
+    ${S.conto.verificata ? '' : '<button class="btn" data-account="rinvia">Rimanda la mail</button><button class="btn" data-account="stato">Ho confermato: verifica lo stato</button>'}
+    <button class="btn" data-account="cambia-password">Cambia password</button><button class="btn" data-account="cambia-email">Cambia email</button>
+    <button class="btn" data-account="azzera-account">Azzera i progressi</button><button class="btn" data-account="cancella-account">Cancella l'account</button>
+    <button class="btn" data-account="esci-ovunque">Esci da tutti i dispositivi</button><button class="btn" data-account="esci">Esci</button><button class="btn" data-account="torna">Torna all’attività</button></div>`);
+}
+
+async function salvaSegnali(punti) {
+  if (!S.conto || !Object.keys(punti || {}).length) return;
+  const chiave = S.conto.chiave_locale, ciclo = S.ciclo;
+  const inviati = structuredClone(punti);
+  try { await contoTx(() => ({ segnaliPendenti: inviati })); }
+  catch (e) { ARCH.errore = String(e?.message || e); segnala('I punteggi dei Segnali non sono conservati in questo dispositivo. Scaricali prima di chiudere.', true); return; }
+  if (S.profiloController) return;
+  S.profiloController = new AbortController();
+  const controller = S.profiloController;
+  const io = await chiamaApi('GET', '/v1/io', undefined, controller.signal);
+  if (ciclo !== S.ciclo || io.codice !== 200 || io.corpo?.chiave_locale !== chiave) {
+    if (S.profiloController === controller) S.profiloController = null;
+    return segnala('Punteggi da inviare: entra nello stesso account prima di inviarli.', true);
+  }
+  const r = await chiamaApi('PUT', '/v1/profilo', { segnali: inviati }, S.profiloController.signal);
+  if (ciclo !== S.ciclo) return;
+  S.profiloController = null;
+  if (r.codice === 200) {
+    S.conto = r.corpo;
+    await contoTx((s) => ({ segnaliPendenti: JSON.stringify(s.segnaliPendenti) === JSON.stringify(inviati) ? null : s.segnaliPendenti }));
+    const ancora = (await contoTx()).segnaliPendenti;
+    if (!ancora) { segPunti = r.corpo.segnali || segPunti; dipingiSeg(); }
+    else void salvaSegnali(ancora);
+  } else segnala('Punteggi da inviare: i Segnali non sono ancora confermati dal server.', true);
+}
+
+function moduloRecupero(email = '') {
+  pannelloAccount(`<h2 id="account-title">Reimposta la password</h2>
+    <label>Email<input type="email" name="email" autocomplete="username" value="${esc(email)}"></label>
+    <p id="account-esito" role="status" aria-live="polite"></p><div class="account-actions"><button class="btn primary" data-account="chiedi-link">Chiedi il link</button><button class="btn" data-account="accedi">Torna all'accesso</button></div>`);
+}
+
+async function gestisciGettone() {
+  if (!gettone || !API) return;
+  if (tipoGettone === 'password') {
+    pannelloAccount(`<h2 id="account-title">Scegli una nuova password</h2>
+      <label>Password<input type="password" name="password" autocomplete="new-password"></label>
+      <p>Almeno 15 caratteri, al massimo 256. Puoi usare una frase di tre o quattro parole.</p>
+      <button class="btn" data-account="mostra">Mostra password</button><p id="account-esito" role="status"></p>
+      <div class="account-actions"><button class="btn primary" data-account="nuova-password">Salva la nuova password</button><button class="btn" data-account="reimposta">Chiedi un nuovo link</button></div>`);
+    return;
+  }
+  const percorso = tipoGettone === 'email' ? '/v1/email/conferma' : '/v1/verifica';
+  const r = await chiamaApi('POST', percorso, { gettone });
+  if (r.codice === 0) return pannelloAccount(`<h2 id="account-title">Conferma dell'email</h2><p>La conferma richiede la rete. Lascia aperta questa pagina e riprova quando sei online.</p><button class="btn" data-account="riprova-gettone">Riprova</button>`);
+  if (r.codice === 410) return pannelloAccount(`<h2 id="account-title">Link scaduto</h2><p>Il link è scaduto o è già stato usato. Se l'email non è ancora confermata, entra nel tuo account e chiedi una nuova mail.</p><button class="btn" data-account="accedi">Accedi</button>`);
+  if (r.codice !== 200) return pannelloAccount(`<h2 id="account-title">Conferma non riuscita</h2><p>${esc(r.corpo?.messaggio || 'Riprova con la rete.')}</p><button class="btn" data-account="riprova-gettone">Riprova</button>`);
+  gettone = null;
+  const io = await chiamaApi('GET', '/v1/io');
+  if (io.codice === 200 && S.conto?.chiave_locale === io.corpo.chiave_locale) { S.conto = io.corpo; await salvaDescrizione(S.contoDb, io.corpo); mostraVerifica(); }
+  pannelloAccount(`<h2 id="account-title">${tipoGettone === 'email' ? 'Email cambiata' : 'Email confermata'}</h2><p>La conferma non equivale a un nuovo accesso. Puoi entrare se non sei già in questo account.</p><button class="btn" data-account="accedi">Accedi</button><button class="btn" data-account="torna">Torna all'attività</button>`);
+}
+
+async function nuovaPasswordDaGettone() {
+  const password = document.querySelector('#account [name=password]')?.value || '';
+  const r = await chiamaApi('POST', '/v1/password/nuova', { gettone, password });
+  if (r.codice === 422) return esitoAccount(r.corpo?.messaggio || 'Scegli una password diversa.');
+  if (r.codice === 410) { gettone = null; return esitoAccount('Questo link è scaduto o è già stato usato. Chiedi un nuovo link per reimpostare la password.'); }
+  if (r.codice !== 200) return esitoAccount('La password non è stata aggiornata. Riprova con la rete.');
+  gettone = null;
+  S.prova = S.conto ? [] : S.archivio.slice();
+  await entraConto(r.corpo); aggiornaPorteConto();
+  if (r.corpo.confermato_ora && r.corpo.righe > 0) {
+    S.passwordNuova = password;
+    pannelloAccount(`<h2 id="account-title">Risposte già presenti</h2><p>Password aggiornata. Le sessioni precedenti sono state chiuse.</p><p>Questo account non era confermato e contiene ${r.corpo.righe} risposte. Vuoi tenerle o cancellarle?</p>
+      <div class="account-actions"><button class="btn primary" data-account="tieni-precedenti">Tienile</button><button class="btn" data-account="cancella-precedenti">Cancella queste risposte</button></div>`);
+  } else {
+    if (S.prova.length) domandaRigheDellaPagina(S.prova);
+    else { pannelloAccount('<h2 id="account-title">Password aggiornata</h2><p>Password aggiornata. Le sessioni precedenti sono state chiuse.</p><button class="btn" data-account="torna">Torna all’attività</button>'); await sincronizza(); }
+  }
+}
+
+async function azioneAccount(t) {
+  const a = t.dataset.account;
+  if (a === 'porta') return S.conto && !S.sessioneScaduta ? pannelloConto() : moduloAccesso();
+  if (a === 'registra') return moduloRegistrazione();
+  if (a === 'porta-vecchio') {
+    S.portaVecchio = true;
+    if (S.conto) return pannelloAccount(`<h2 id="account-title">Porta l'archivio precedente</h2><p>Vuoi portare ${S.vecchio.length} risposte precedenti in ${esc(S.conto.email)}?</p><div class="account-actions"><button class="btn primary" data-account="conferma-vecchio">Sì, portale</button><button class="btn" data-account="torna">Annulla</button></div>`);
+    return moduloAccesso();
+  }
+  if (a === 'conferma-vecchio') {
+    await leggiVecchio();
+    if (S.vecchioErrore) return esitoAccount('La copia precedente non si legge. Riprova prima di trasferire.');
+    if (S.vecchioConflitti.length) return esitoAccount('Le copie precedenti hanno risposte diverse con gli stessi uid. Scarica entrambe le fonti prima di continuare.');
+    await trasferisciConto(S.vecchio);
+    S.portaVecchio = false; chiudiAccount(); return;
+  }
+  if (a === 'accedi') return moduloAccesso(t.dataset.email || '');
+  if (a === 'reimposta') return moduloRecupero(t.dataset.email || document.querySelector('#account [name=email]')?.value || '');
+  if (a === 'torna') return chiudiAccount();
+  if (a === 'continua') { t.closest('.account-invite')?.remove(); chiudi(); mostraVista('oggi'); return; }
+  if (a === 'crea') return registraConto();
+  if (a === 'entra') return accediConto();
+  if (a === 'scelta') return sceltaConto();
+  if (a === 'modifica-data') return pannelloAccount(`<h2 id="account-title">Data d'esame</h2><p>La data dell'account è ${S.conto?.data_esame ? esc(S.conto.data_esame) : 'non indicata'}.</p><label>Data d'esame (facoltativa)<input type="date" name="data" value="${esc(S.conto?.data_esame || '')}"></label><p>Lascia vuoto per toglierla.</p><p id="account-esito" role="status"></p><button class="btn primary" data-account="salva-data">Salva la data</button><button class="btn" data-account="porta">Torna all'account</button>`);
+  if (a === 'cambia-password') return pannelloAccount('<h2 id="account-title">Cambia password</h2><label>Password attuale<input type="password" name="attuale" autocomplete="current-password"></label><label>Nuova password<input type="password" name="nuova" autocomplete="new-password"></label><p>Almeno 15 caratteri, al massimo 256.</p><p id="account-esito" role="status"></p><button class="btn primary" data-account="conferma-password">Cambia password</button><button class="btn" data-account="porta">Torna all\'account</button>');
+  if (a === 'conferma-password') {
+    const attuale = document.querySelector('#account [name=attuale]')?.value || '';
+    const nuova = document.querySelector('#account [name=nuova]')?.value || '';
+    const r = await chiamaApi('POST', '/v1/password/cambia', { attuale, nuova });
+    if (r.codice === 200) { S.conto = r.corpo; return pannelloAccount('<h2 id="account-title">Password aggiornata</h2><p>Le altre sessioni sono state chiuse.</p><button class="btn" data-account="porta">Torna all\'account</button>'); }
+    return esitoAccount(r.corpo?.messaggio || 'Non siamo riusciti a cambiare la password. Riprova.');
+  }
+  if (a === 'cambia-email') {
+    if (!S.conto?.verificata) return pannelloAccount('<h2 id="account-title">Cambia email</h2><p>Conferma prima l’indirizzo attuale.</p><button class="btn" data-account="porta">Torna all’account</button>');
+    return pannelloAccount(`<h2 id="account-title">Cambia email</h2><p>Indirizzo attuale: ${esc(S.conto.email)}. Il nuovo diventa attivo solo dopo che apri il link spedito lì.</p><label>Nuova email<input type="email" name="nuova" autocomplete="email"></label><label>Password<input type="password" name="password" autocomplete="current-password"></label><p id="account-esito" role="status"></p><button class="btn primary" data-account="conferma-email">Chiedi il cambio</button><button class="btn" data-account="porta">Torna all'account</button>`);
+  }
+  if (a === 'conferma-email') {
+    const nuova = document.querySelector('#account [name=nuova]')?.value || '';
+    const password = document.querySelector('#account [name=password]')?.value || '';
+    const r = await chiamaApi('POST', '/v1/email/cambia', { nuova, password });
+    return esitoAccount(r.codice === 202 ? `Abbiamo chiesto la conferma del nuovo indirizzo ${nuova}. Fino al link, l'account resta su ${S.conto.email}.` : r.corpo?.messaggio || 'Non siamo riusciti a chiedere il cambio. Riprova.');
+  }
+  if (a === 'azzera-account') return azzera();
+  if (a === 'cancella-account') return pannelloAccount('<h2 id="account-title">Cancella l’account</h2><p>Cancelleremo account, risposte e sessioni dal server. Scarica i progressi prima se vuoi conservarli.</p><label>Password<input type="password" name="password" autocomplete="current-password"></label><label><input type="checkbox" name="conferma"> Confermo la cancellazione dell’account</label><p id="account-esito" role="status"></p><button class="btn primary" data-account="conferma-cancella">Cancella l’account</button><button class="btn" data-account="porta">Torna all’account</button>');
+  if (a === 'conferma-cancella') {
+    if (!document.querySelector('#account [name=conferma]')?.checked) return esitoAccount('Conferma prima la cancellazione.');
+    const s = await contoTx();
+    if (s.coda.daInviare.length || Object.keys(s.coda.scartate).length || s.segnaliPendenti) return esitoAccount('Ci sono dati non salvati sul server. Scarica una copia o risolvi l’invio prima di cancellare l’account.');
+    const password = document.querySelector('#account [name=password]')?.value || '';
+    const r = await chiamaApi('DELETE', '/v1/account', { password });
+    if (r.codice !== 204) return esitoAccount(r.corpo?.messaggio || 'La cancellazione non è riuscita. Riprova.');
+    return uscitaConto(true);
+  }
+  if (a === 'esci-ovunque') {
+    const s = await contoTx();
+    if (s.coda.daInviare.length || Object.keys(s.coda.scartate).length || s.segnaliPendenti) return esitoAccount('Ci sono dati non salvati su questo dispositivo. Scaricali o completa l’invio prima di uscire.');
+    const r = await chiamaApi('POST', '/v1/uscita/ovunque');
+    if (r.codice !== 204) return esitoAccount(r.corpo?.messaggio || 'Non siamo riusciti a chiudere le sessioni. Riprova.');
+    return uscitaConto(true, true);
+  }
+  if (a === 'esci') return uscitaConto();
+  if (a === 'riprova-uscita') return uscitaConto();
+  if (a === 'scarica-uscita') {
+    const s = await contoTx();
+    const uid = new Set([...s.coda.daInviare, ...Object.keys(s.coda.scartate)]);
+    scaricaJson({ app: 'rotta-giusta', righe: s.righe.filter((r) => uid.has(String(r.uid))), segPunti: s.segnaliPendenti || {} }, `rotta-giusta-recupero-${today()}.json`);
+    return pannelloAccount('<h2 id="account-title">Uscita con copia di recupero</h2><p>Controlla di avere conservato il file prima di cancellare questa copia dal dispositivo.</p><button class="btn primary" data-account="esci-dopo-download">Ho conservato il file: esci e cancella la copia da questo dispositivo</button><button class="btn" data-account="torna">Resta qui</button><p id="account-esito" role="status"></p>');
+  }
+  if (a === 'scarica-recupero') {
+    const s = await contoTx();
+    const uid = new Set([...s.coda.daInviare, ...Object.keys(s.coda.scartate)]);
+    return scaricaJson({ app: 'rotta-giusta', righe: s.righe.filter((r) => uid.has(String(r.uid))), segPunti: s.segnaliPendenti || {} }, `rotta-giusta-recupero-${today()}.json`);
+  }
+  if (a === 'esci-dopo-download') {
+    return uscitaConto(true);
+  }
+  if (a === 'riprova-pulizia' && S.puliziaChiave) {
+    const chiave = S.puliziaChiave;
+    const cancellata = await new Promise((ok) => { const q = indexedDB.deleteDatabase(nomeConto(chiave)); q.onsuccess = () => ok(true); q.onerror = q.onblocked = () => ok(false); });
+    if (!cancellata) { esitoAccount('La copia è ancora bloccata. Chiudi le altre schede e riprova.'); document.getElementById('conto-stato').prepend('La copia è ancora bloccata. '); return; }
+    S.puliziaChiave = null; localStorage.removeItem('rg.pulizia-chiave'); localStorage.removeItem('rg.ultimo-account'); LS.svuota(); S.archivio = []; segPunti = {}; ricalcola(); dipingi(); dipingiSeg(); chiudiAccount(); mostraVista('oggi'); return;
+  }
+  if (a === 'riprova') return sincronizza();
+  if (a === 'scarica-scartate') {
+    const s = await contoTx();
+    const uid = new Set([...Object.keys(s.coda.scartate), ...E.nonInviabili(s.righe, s.coda).map((x) => x.uid)]);
+    const righe = [...(s.trasferimento?.rifiutate || []).map((x) => x.riga), ...s.righe.filter((r) => uid.has(String(r.uid)))];
+    return scaricaJson({ app: 'rotta-giusta', righe, motivi: s.coda.scartate }, `rotta-giusta-righe-non-salvate-${today()}.json`);
+  }
+  if (a === 'conflitto') {
+    const s = await contoTx();
+    if (!s.conflitto) return pannelloConto();
+    const conflitto = E.dopoInvio(s.coda, null, { codice: 409, corpo: { generazione: s.conflitto.generazione, epoca: s.conflitto.epocaDb, azzerato_il: s.conflitto.azzerato_il } }, s.righe).conflitto;
+    const avviso = s.conflitto.azzerato_il ? `Il ${esc(new Date(s.conflitto.azzerato_il).toLocaleString('it-IT'))} i progressi sono stati azzerati da un altro dispositivo.` : 'I progressi sono stati azzerati da un altro dispositivo.';
+    if (!conflitto.nonSalvate) return pannelloAccount(`<h2 id="account-title">Archivio azzerato altrove</h2><p>${avviso} La copia precedente sarà sostituita dal nuovo archivio. Nessuna risposta è in attesa di invio.</p><button class="btn primary" data-account="risolvi-conflitto">Carica il nuovo archivio</button><button class="btn" data-account="torna">Decidi più tardi</button>`);
+    return pannelloAccount(`<h2 id="account-title">Archivio azzerato altrove</h2><p>${avviso} Qui ci sono ${conflitto.nonSalvate} risposte non salvate. La copia precedente sarà sostituita dal nuovo archivio.</p>
+      <div class="account-actions"><button class="btn" data-account="scarica-conflitto">Scarica e passa al nuovo archivio</button><button class="btn" data-account="scarta-conflitto">Scarta e passa al nuovo archivio</button><button class="btn" data-account="torna">Decidi più tardi</button></div>`);
+  }
+  if (a === 'scarica-conflitto') {
+    const s = await contoTx();
+    scaricaJson({ app: 'rotta-giusta', righe: s.righe }, `rotta-giusta-copia-prima-azzeramento-${today()}.json`);
+    return pannelloAccount('<h2 id="account-title">Passa al nuovo archivio</h2><p>Il download è stato avviato. Controlla di avere conservato il file prima di cancellare questa copia.</p><label><input type="checkbox" name="conferma"> Ho conservato il file</label><button class="btn primary" data-account="risolvi-conflitto">Carica il nuovo archivio</button><button class="btn" data-account="torna">Decidi più tardi</button>');
+  }
+  if (a === 'scarta-conflitto') return pannelloAccount('<h2 id="account-title">Scarta la copia precedente</h2><p>Le risposte di questa copia andranno perse su questo dispositivo.</p><button class="btn primary" data-account="risolvi-conflitto">Sì, scartale e passa al nuovo archivio</button><button class="btn" data-account="torna">Decidi più tardi</button>');
+  if (a === 'risolvi-conflitto') {
+    const s = await contoTx();
+    if (!s.conflitto) return;
+    const conflitto = E.dopoInvio(s.coda, null, { codice: 409, corpo: { generazione: s.conflitto.generazione, epoca: s.conflitto.epocaDb } }, s.righe).conflitto;
+    if (conflitto.nonSalvate && t.textContent !== 'Sì, scartale e passa al nuovo archivio' && !document.querySelector('#account [name=conferma]')?.checked) return esitoAccount('Conferma la scelta prima di continuare.');
+    await contoTx((attuale) => ({ svuota: true, coda: E.risolviConflitto(attuale.coda, attuale.conflitto), trasferimento: null, conflitto: null }));
+    S.conto = { ...S.conto, generazione: s.conflitto.generazione, epoca: s.conflitto.epocaDb };
+    S.archivio = []; ricalcola(); dipingi(); chiudiAccount(); return sincronizza();
+  }
+  if (a === 'conferma-import') {
+    if (!S.conto || !S.fileImport) return;
+    const { righe, dati, esito } = S.fileImport;
+    await trasferisciConto(righe);
+    if (dati?.segPunti) await salvaSegnali(dati.segPunti);
+    const s = await contoTx();
+    const r = s.trasferimento ? E.riepilogoTrasferimento(s.trasferimento, s.coda, s.righe) : null;
+    const motivi = Object.entries(r?.motivi || esito.motivi || {}).map(([m, n]) => `${esc(m)}: ${n}`).join(' · ');
+    return pannelloAccount(`<h2 id="account-title">Esito dell'importazione</h2><p>${esito.nuove} nuove · ${esito.gia} già presenti · ${r?.nonSalvate ?? esito.scartate} scartate</p><p>${r?.completo ? 'Le righe valide sono state confermate dal server.' : 'L’importazione non è completa. Le righe non confermate restano in questo dispositivo.'}</p><p>${motivi}</p><p>${dati?.segPunti ? (s.segnaliPendenti ? 'Punteggi dei Segnali da inviare.' : 'Punteggi dei Segnali confermati dal server. Le partite usano il massimo tra i dispositivi.') : ''}</p><button class="btn" data-account="scarica-scartate">Scarica le righe non importate</button><button class="btn" data-account="riprova">Riprova l’invio</button><button class="btn" data-account="torna">Torna all’attività</button>`);
+  }
+  if (a === 'conferma-azzera') {
+    if (!document.querySelector('#account [name=conferma]')?.checked) return esitoAccount('Conferma prima la cancellazione delle risposte.');
+    const password = document.querySelector('#account [name=password]')?.value || '';
+    const r = await chiamaApi('POST', '/v1/azzera', { password });
+    if (r.codice !== 200) return esitoAccount(r.corpo?.messaggio || 'Non siamo riusciti ad azzerare i progressi.');
+    await contoTx((s) => ({ svuota: true, coda: E.risolviConflitto(s.coda, { generazione: r.corpo.generazione, epocaDb: r.corpo.epoca }), trasferimento: null }));
+    S.archivio = []; S.conto = r.corpo; ricalcola(); dipingi(); chiudiAccount(); return;
+  }
+  if (a === 'salva-data') return salvaDataConto(document.querySelector('#account [name=data]')?.value || '');
+  if (a === 'verifica-sessione') return dopoRegistrazionePersa();
+  if (a === 'rileggi-vecchio') return leggiVecchio();
+  if (a === 'rinvia-vecchio') return document.getElementById('vecchio-avviso').hidden = true;
+  if (a === 'scarica-vecchio') { await leggiVecchio(); if (S.vecchioErrore) return segnala('La copia precedente non si legge. Riprova.', true); return scaricaJson({ app: 'rotta-giusta', righe: S.vecchio, fonti: S.vecchioFonti }, `rotta-giusta-archivio-precedente-${today()}.json`); }
+  if (a === 'scarica-fonti') {
+    await leggiVecchio();
+    if (S.vecchioErrore) return esitoAccount('Non riusciamo a rileggere entrambe le copie. Riprova.');
+    for (const fonte of S.vecchioFonti) scaricaJson({ app: 'rotta-giusta', fonte: fonte.nome, righe: fonte.righe }, `rotta-giusta-${fonte.nome}-${today()}.json`);
+    return;
+  }
+  if (a === 'cancella-vecchio' || a === 'conferma-cancella-vecchio') {
+    if (a === 'conferma-cancella-vecchio' && !document.querySelector('#account [name=conferma]')?.checked) return esitoAccount('Conferma prima la cancellazione.');
+    await leggiVecchio();
+    if (S.vecchioErrore || S.vecchioConflitti.length || !S.vecchioMigrato ||
+        JSON.stringify(S.vecchioMigrato.uid) !== JSON.stringify(S.vecchio.map((x) => String(x.uid)).sort()))
+      return pannelloAccount('<h2 id="account-title">Copia precedente cambiata</h2><p>Ci sono risposte nuove, diverse o illeggibili nella copia precedente. Scaricale o trasferiscile prima di cancellarla.</p><button class="btn" data-account="torna">Torna all’attività</button>');
+    if (a === 'cancella-vecchio') return pannelloAccount(`<h2 id="account-title">Cancella la copia precedente</h2><p>Cancelleremo ${S.vecchioFonti.map((f) => esc(f.nome)).join(' e ')} da questo browser. Il file già scaricato e le risposte nell'account restano.</p><label><input type="checkbox" name="conferma"> Confermo la cancellazione delle copie precedenti</label><p id="account-esito" role="status"></p><button class="btn primary" data-account="conferma-cancella-vecchio">Cancella la copia precedente</button><button class="btn" data-account="torna">Annulla</button>`);
+    try {
+      if (S.vecchioFonti.some((f) => f.nome === NOME_VECCHIO_DB)) await new Promise((ok, ko) => {
+        const q = indexedDB.deleteDatabase(NOME_VECCHIO_DB);
+        q.onsuccess = ok; q.onerror = () => ko(q.error); q.onblocked = () => ko(new Error('Chiudi le altre schede e riprova.'));
+      });
+      if (S.vecchioFonti.some((f) => f.nome === 'pn.archivio')) localStorage.removeItem('pn.archivio');
+      S.vecchio = []; S.vecchioFonti = []; mostraVecchio(); chiudiAccount();
+    } catch (e) { esitoAccount(`La cancellazione non è completa: ${e?.message || e}. Riprova dopo aver chiuso le altre schede.`); }
+    return;
+  }
+  if (a === 'stato') {
+    const r = await chiamaApi('GET', '/v1/io');
+    if (r.codice === 200) { S.conto = r.corpo; mostraVerifica(); pannelloConto(); }
+    else esitoAccount('Non riusciamo a verificare lo stato. Riprova con la rete.');
+    return;
+  }
+  if (a === 'rinvia') {
+    const r = await chiamaApi('POST', '/v1/verifica/rinvia');
+    if (r.codice === 202) S.postaFallita = false;
+    S.verificaEsito = r.codice === 202 ? 'La mail di conferma è stata inviata. Il link vale 24 ore. Usa l’ultimo link ricevuto. Se dopo cinque minuti non trovi la mail di Rotta Giusta, controlla lo spam.' : 'Non siamo riusciti a spedire la mail di conferma. Riprova fra qualche minuto.';
+    esitoAccount(S.verificaEsito);
+    mostraVerifica();
+    return;
+  }
+  if (a === 'chiedi-link') {
+    const email = document.querySelector('#account [name=email]')?.value || '';
+    const r = await chiamaApi('POST', '/v1/password/dimenticata', { email });
+    esitoAccount(r.codice === 202 ? "Se questo indirizzo è iscritto, riceverai una mail da Rotta Giusta. Il link vale un'ora. Se dopo cinque minuti non la trovi, controlla lo spam." : 'Non riusciamo a chiedere il link. Riprova.');
+    return;
+  }
+  if (a === 'mostra') {
+    const p = document.querySelector('#account [name=password]');
+    if (p) { p.type = p.type === 'password' ? 'text' : 'password'; t.textContent = p.type === 'password' ? 'Mostra password' : 'Nascondi password'; }
+  }
+  if (a === 'riprova-gettone') return gestisciGettone();
+  if (a === 'nuova-password') return nuovaPasswordDaGettone();
+  if (a === 'tieni-precedenti') { S.passwordNuova = null; if (S.prova.length) return domandaRigheDellaPagina(S.prova); chiudiAccount(); return sincronizza(); }
+  if (a === 'cancella-precedenti') {
+    pannelloAccount(`<h2 id="account-title">Cancella queste risposte</h2><p>Le risposte già presenti sul server saranno cancellate. Quelle della pagina aperta restano separate.</p><label><input type="checkbox" name="conferma"> Confermo la cancellazione</label><button class="btn primary" data-account="conferma-precedenti">Cancella queste risposte</button><button class="btn" data-account="tieni-precedenti">Tienile</button>`);
+    return;
+  }
+  if (a === 'conferma-precedenti') {
+    if (!document.querySelector('#account [name=conferma]')?.checked) return;
+    const r = await chiamaApi('POST', '/v1/azzera', { password: S.passwordNuova });
+    if (r.codice !== 200) return pannelloAccount(`<h2 id="account-title">Cancellazione non riuscita</h2><p>${esc(r.corpo?.messaggio || 'Riprova con la rete.')}</p><button class="btn" data-account="tieni-precedenti">Tienile</button>`);
+    await contoTx((s) => ({ svuota: true, coda: E.risolviConflitto(s.coda, { generazione: r.corpo.generazione, epocaDb: r.corpo.epoca }), trasferimento: null }));
+    S.conto = r.corpo; S.passwordNuova = null; S.archivio = []; ricalcola(); if (S.prova.length) return domandaRigheDellaPagina(S.prova); chiudiAccount(); return sincronizza();
+  }
+}
+
+async function uscitaConto(dopoDownload = false, giaRevocata = false) {
+  if (!S.conto) return;
+  esitoAccount('Uscita in corso…');
+  await sincronizza();
+  const s = await contoTx();
+  const n = s.coda.daInviare.length + Object.keys(s.coda.scartate).length;
+  if ((n || s.segnaliPendenti) && !dopoDownload) {
+    pannelloAccount(`<h2 id="account-title">Risposte non salvate</h2><p>${n} risposte non sono sul server${s.segnaliPendenti ? ' e ci sono punteggi dei Segnali da inviare' : ''}. Collegati alla rete e riprova, oppure scaricale prima di uscire.</p>
+      <div class="account-actions"><button class="btn" data-account="riprova-uscita">Riprova l'invio</button><button class="btn" data-account="scarica-uscita">Scarica le risposte non salvate</button><button class="btn" data-account="torna">Resta qui</button></div>`);
+    return;
+  }
+  const chiave = S.conto.chiave_locale, conto = S.conto;
+  CANALE?.postMessage({ tipo: 'uscita', chiave });
+  await fermaConto();
+  let r;
+  try {
+    r = giaRevocata ? { codice: 204 } : navigator.locks ? await navigator.locks.request(nomeConto(chiave), { mode: 'exclusive', signal: AbortSignal.timeout(3000) },
+      () => chiamaApi('POST', '/v1/uscita')) : await chiamaApi('POST', '/v1/uscita');
+  } catch { r = { codice: 0 }; }
+  if (r.codice !== 204 && r.codice !== 401) {
+    await entraConto(conto); aggiornaPorteConto(); pannelloConto();
+    esitoAccount("Per uscire dall'account serve la rete. Puoi scaricare le risposte e restare qui; non lasciare il dispositivo condiviso finché l'uscita non è confermata.");
+    return;
+  }
+  const cancellata = await new Promise((ok) => {
+    const q = indexedDB.deleteDatabase(nomeConto(chiave));
+    q.onsuccess = () => ok(true); q.onerror = q.onblocked = () => ok(false);
+  });
+  if (!cancellata) { S.puliziaChiave = chiave; localStorage.setItem('rg.pulizia-chiave', chiave); return pannelloAccount('<h2 id="account-title">Uscita</h2><p role="alert">L\'accesso è chiuso, ma la copia su questo dispositivo non è stata cancellata. Chiudi le altre schede e riprova.</p><p id="account-esito" role="status"></p><button class="btn primary" data-account="riprova-pulizia">Riprova la cancellazione locale</button>'); }
+  localStorage.removeItem('rg.pulizia-chiave'); localStorage.removeItem('rg.ultimo-account');
+  LS.svuota(); S.archivio = []; segPunti = {}; ricalcola(); aggiornaPorteConto(); dipingi(); dipingiSeg();
+  chiudiAccount(); mostraVista('oggi');
+}
+
+async function avvioConto() {
+  if (!API) return;
+  const pulizia = localStorage.getItem('rg.pulizia-chiave');
+  if (pulizia) {
+    S.puliziaChiave = pulizia;
+    document.getElementById('conto-stato').innerHTML = 'L’accesso è chiuso, ma la copia su questo dispositivo non è stata cancellata. Chiudi le altre schede e <button class="btn" data-account="riprova-pulizia">riprova la cancellazione locale</button>.';
+    return;
+  }
+  const chiave = localStorage.getItem('rg.ultimo-account');
+  if (!chiave) return; // chi prova non manda richieste all'API
+  const io = await chiamaApi('GET', '/v1/io');
+  if (io.codice === 200 && io.corpo?.chiave_locale === chiave) {
+    await entraConto(io.corpo); aggiornaPorteConto(); await sincronizza();
+  } else if (io.codice === 0 && !navigator.onLine) {
+    try {
+      const db = await apriDbConto(chiave);
+      const locale = await descrizioneLocale(db);
+      db.close();
+      if (locale?.chiave_locale !== chiave) throw new Error('copia senza identità');
+      await entraConto(locale); aggiornaPorteConto();
+      document.getElementById('conto-stato').textContent = 'Sei offline. Le nuove risposte sono in questo dispositivo e saranno inviate quando tornerà la rete.';
+    } catch {
+      document.getElementById('conto-stato').textContent = 'La copia di questo account non è leggibile offline. Apri il sito con la rete e riprova.';
+    }
+  } else {
+    document.getElementById('conto-stato').textContent = "L'accesso non è più valido. Entra di nuovo per inviare le risposte rimaste in questo dispositivo.";
+  }
+}
+
+async function leggiVecchio() {
+  // L'archivio precedente è una fonte protetta: la ricerca non deve aprire
+  // un database vuoto, né usare le sue righe come attività della prova.
+  const fonti = [];
+  try {
+    const raw = localStorage.getItem('pn.archivio');
+    if (raw != null) {
+      const righe = JSON.parse(raw);
+      if (!Array.isArray(righe)) throw new Error('pn.archivio non è un elenco');
+      fonti.push({ nome: 'pn.archivio', righe });
+    }
+    const presenti = indexedDB.databases ? await indexedDB.databases() : [];
+    if (presenti.some((x) => x.name === NOME_VECCHIO_DB)) {
+      const righe = await new Promise((ok, ko) => {
+        const q = indexedDB.open(NOME_VECCHIO_DB);
+        q.onsuccess = () => {
+          const db = q.result;
+          if (!db.objectStoreNames.contains('righe')) { db.close(); return ko(new Error('archivio precedente senza righe')); }
+          const tx = db.transaction('righe', 'readonly');
+          const r = tx.objectStore('righe').getAll();
+          r.onsuccess = () => { db.close(); ok(r.result || []); };
+          r.onerror = () => { db.close(); ko(r.error); };
+        };
+        q.onerror = () => ko(q.error);
+      });
+      fonti.push({ nome: NOME_VECCHIO_DB, righe });
+    }
+    const perUid = new Map(), conflitti = new Set();
+    for (const fonte of fonti) for (const r of fonte.righe) {
+      if (r?.uid == null) continue;
+      const uid = String(r.uid);
+      if (perUid.has(uid) && JSON.stringify(perUid.get(uid)) !== JSON.stringify(r)) conflitti.add(uid);
+      else perUid.set(uid, r);
+    }
+    const unione = fonti.reduce((r, f) => E.fondiArchivio(r, f.righe).righe, []);
+    S.vecchio = unione;
+    S.vecchioFonti = fonti;
+    S.vecchioConflitti = [...conflitti];
+    S.vecchioErrore = null;
+  } catch (e) { S.vecchioErrore = String(e?.message || e); S.vecchioFonti = fonti; }
+  mostraVecchio();
+}
+
+function mostraVecchio() {
+  const el = document.getElementById('vecchio-avviso');
+  if (!el) return;
+  const giaPortati = S.conto && S.vecchioMigrato?.chiave === S.conto.chiave_locale ? new Set(S.vecchioMigrato.uid || []) : new Set();
+  const ancoraDaPortare = S.vecchio.filter((r) => !giaPortati.has(String(r.uid)));
+  if (S.vecchioErrore) {
+    el.innerHTML = '<p>Non siamo riusciti a leggere le risposte già presenti in questo browser. Riprova prima di cancellare i dati del sito.</p><button class="btn" data-account="rileggi-vecchio">Riprova</button>';
+    el.hidden = false;
+  } else if (S.vecchioConflitti.length) {
+    el.innerHTML = `<p>Le due copie precedenti hanno ${S.vecchioConflitti.length} uid uguali con contenuti diversi. Scarica entrambe le fonti prima di scegliere che cosa importare: non scegliamo una risposta al posto tuo.</p><button class="btn" data-account="scarica-fonti">Scarica entrambe le fonti</button><button class="btn" data-account="rinvia-vecchio">Più tardi</button>`;
+    el.hidden = false;
+  } else if (S.vecchio.length && S.conto && S.vecchioMigrato?.chiave === S.conto.chiave_locale && !ancoraDaPortare.length) {
+    el.innerHTML = `<p>${S.vecchioMigrato.numero} risposte portate nel tuo account il ${esc(new Date(S.vecchioMigrato.data).toLocaleString('it-IT'))}. La copia precedente è ancora in questo browser.</p><button class="btn" data-account="scarica-vecchio">Scarica la copia precedente</button><button class="btn" data-account="cancella-vecchio">Cancella la copia precedente da questo browser</button>`;
+    el.hidden = true;
+  } else if (S.vecchio.length) {
+    el.innerHTML = `<p>In questo browser ci sono ${ancoraDaPortare.length} risposte salvate prima degli account. Da questa versione, senza account non si salva più niente. Portale nel tuo account, oppure scaricale.</p>
+      <div class="row"><button class="btn primary" data-account="porta-vecchio">Registrati o entra e portale</button><button class="btn" data-account="scarica-vecchio">Scarica il file</button><button class="btn" data-account="rinvia-vecchio">Più tardi</button></div>`;
+    el.hidden = false;
+  } else { el.innerHTML = ''; el.hidden = true; }
+  const info = document.getElementById('vecchio-info');
+  if (info) { info.innerHTML = el.innerHTML; info.hidden = !el.innerHTML; }
+}
+
+function invitoAccount() {
+  if (S.conto || !API) return '';
+  return `<section class="account-invite"><h2>Vuoi conservare le attività di questa pagina?</h2>
+    <p>Senza account, chiudendo o ricaricando la pagina perdi le risposte e le preferenze. Crea un account per salvare le risposte, ritrovarle su un altro dispositivo e vedere i Progressi quando ci sono abbastanza dati.</p>
+    <p>Le risposte saranno legate alla tua email e conservate sul nostro server, in chiaro. Il titolare può leggerle per supporto e statistiche.</p>
+    <button class="btn primary" data-account="registra">Crea un account e salva</button><button class="btn" data-account="continua">Continua senza account</button>
+    <button class="text-btn" data-account="accedi">Hai già un account? Accedi</button><a href="/privacy">Come trattiamo i dati</a></section>`;
+}
+
+function aggiornaInviti() {
+  for (const id of ['r-fine', 'c-fine', 'sr-fine']) {
+    const el = document.getElementById(id);
+    if (!el || !el.classList.contains('on') || el.querySelector('.account-invite') || S.conto) continue;
+    if (id === 'r-fine') continue; // l'invito dei quiz è nel template del riepilogo
+    if (el.textContent.trim()) el.insertAdjacentHTML('beforeend', invitoAccount());
+  }
+}
+const osservaInviti = new MutationObserver(() => queueMicrotask(aggiornaInviti));
+for (const id of ['c-fine', 'sr-fine']) osservaInviti.observe(document.getElementById(id), { childList: true, subtree: true, attributes: true });
+
 /** Scrive una riga nell'archivio. Se la scrittura fallisce, lo dice — subito
  *  e in schermata — invece di far finta di niente. */
 async function archivia(riga) {
   S.archivio.push(riga);
+  if (!S.conto) { ricalcola(); return; }
   try {
-    await ARCH.scrivi([riga]);
+    await contoTx((st) => ({ nuove: [riga], coda: E.accoda(st.coda, riga.uid) }));
+    pianificaInvio();
   } catch (e) {
     const quota = e && (e.name === 'QuotaExceededError' || /quota/i.test(String(e.message)));
     ARCH.errore = `${new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })} — `
@@ -1340,9 +2179,7 @@ async function archivia(riga) {
 // (UTC e offset locale), ordine dell'archivio a parita' di istante.
 function tagPerTentativo() {
   const tags = Object.create(null);
-  for (const r of E.ordinaRighe(S.archivio.filter(r => r._t === 'g'))) {
-    tags[r.attempt_uid] = r.tag;
-  }
+  for (const r of E.ordinaRighe(S.archivio.filter(r => r._t === 'g'))) tags[r.attempt_uid] = r.tag;
   return tags;
 }
 
@@ -1423,13 +2260,19 @@ async function avvia() {
   }).catch((e) => {
     S.cartStato = 'errore'; segnala('carteggio non caricato: ' + e.message, true); dipingi();
   });
-  S.archivio = await ARCH.carica();
+  S.archivio = [];
+  await leggiVecchio();
+  ARCH.modo = 'memoria'; ARCH.lettura = 'ordinario';
   ricalcola();
   S.caricamento = false;
-  S.avvioInCorso = false;
   costruisciFiltri();
   dipingi();
   dipingiSeg();
+  aggiornaPorteConto();
+  await avvioConto();
+  if (gettone) await gestisciGettone();
+  S.avvioInCorso = false;
+  dipingi();
   const fv = document.getElementById('foot-ver');
   if (fv) fv.textContent = 'v' + (S.meta.versione || '?');
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
@@ -1438,18 +2281,31 @@ async function avvia() {
 /* ===================== scarica / ricarica / azzera ====================== */
 
 /** Il file dei progressi: l'archivio intero piu' i punteggi del gioco. */
-function esporta() {
+async function esporta() {
+  if (S.conto) {
+    await sincronizza();
+    const s = await contoTx();
+    const r = await chiamaApi('GET', '/v1/esporta');
+    if (r.codice !== 200) return segnala('Non riusciamo a scaricare il file dal server. Riprova.', true);
+    scaricaJson(r.corpo, `rotta-giusta-progressi-${today()}.json`);
+    const n = s.coda.daInviare.length + Object.keys(s.coda.scartate).length;
+    if (n || s.segnaliPendenti) pannelloAccount(`<h2 id="account-title">File del server scaricato</h2><p>Il file del server non contiene ancora le ${n} risposte da inviare${s.segnaliPendenti ? ' e i punteggi dei Segnali ancora pendenti' : ''}. Scarica anche la copia locale di recupero.</p><button class="btn primary" data-account="scarica-recupero">Scarica le risposte da inviare</button><button class="btn" data-account="torna">Torna all'attività</button>`);
+    return;
+  }
   const dati = {
     app: 'rotta-giusta', versione: (S.meta && S.meta.versione) || '?',
     esportato: E.isoLocale(), righe: S.archivio, segPunti: LS.get('segPunti', {}),
   };
+  scaricaJson(dati, `rotta-giusta-risposte-pagina-${today()}.json`);
+  segnala(`${S.archivio.length} righe della pagina nel file`);
+}
+function scaricaJson(dati, nome) {
   const blob = new Blob([JSON.stringify(dati)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `rotta-giusta-progressi-${today()}.json`;
+  a.download = nome;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 10000);
-  segnala(`${S.archivio.length} righe nel file`);
 }
 
 /** Fonde un file di progressi con l'archivio: per uid, senza doppioni, e
@@ -1457,44 +2313,26 @@ function esporta() {
 async function importa(file) {
   let d;
   try { d = JSON.parse(await file.text()); }
-  catch { return segnala('file non leggibile: non e\' JSON', true); }
+  catch { return segnala('Non riusciamo a leggere questo file di progressi. Scegli un file esportato da Rotta Giusta.', true); }
   const righe = Array.isArray(d) ? d : d && Array.isArray(d.righe) ? d.righe : null;
-  if (!righe) return segnala('non e\' un file di progressi di questa app', true);
-  const prima = new Set(S.archivio.map((r) => String(r.uid)));
-  const r = E.fondiArchivio(S.archivio, righe);
-  const nuove = r.righe.filter((x) => !prima.has(String(x.uid)));
-  S.archivio = r.righe;
-  try {
-    if (nuove.length) {
-      await ARCH.scrivi(nuove);
-      // Una scrittura realmente riuscita dimostra che il guasto precedente
-      // non e' piu' attivo; un import senza righe nuove non lo dimostra.
-      ARCH.errore = null;
-    }
-  }
-  catch (e) { ARCH.errore = `import: ${(e && e.message) || e}`; segnala('IMPORT NON SALVATO: ' + ARCH.errore, true); }
-  if (d && d.segPunti && typeof d.segPunti === 'object') {
-    const mio = LS.get('segPunti', {});
-    for (const [k, v] of Object.entries(d.segPunti)) {
-      if (!v || typeof v !== 'object') continue;
-      const m = mio[k] || { migliore: 0, giocate: 0 };
-      mio[k] = { migliore: Math.max(m.migliore || 0, v.migliore || 0), giocate: (m.giocate || 0) + (v.giocate || 0) };
-    }
-    LS.set('segPunti', mio); segPunti = mio;
-  }
-  ricalcola(); dipingi(); costruisciFiltri(); dipingiSeg();
-  if (rvId && document.getElementById('rivedi').classList.contains('on')) apriRivedi(rvId, { preservare: true });
+  if (!righe) return segnala('Non riusciamo a leggere questo file di progressi. Scegli un file esportato da Rotta Giusta.', true);
+  const quesiti = new Set([...S.banca, ...S.cart].map((x) => x.id));
+  const r = E.fondiArchivio(S.archivio, righe, { quesiti });
+  S.fileImport = { dati: d, righe, esito: r, nome: file.name };
   const motivi = Object.entries(r.motivi).map(([motivo, n]) => `${motivo}: ${n}`).join(' · ');
-  segnala(`${r.nuove} righe nuove · ${r.gia} gia' presenti · ${r.scartate} scartate`
-    + (motivi ? ` · ${motivi}` : ''), r.scartate > 0);
+  pannelloAccount(`<h2 id="account-title">Importa un file dei progressi</h2>
+    <p>File: ${esc(file.name)} · ${S.conto ? `account: ${esc(S.conto.email)}` : 'nessun account aperto'}</p>
+    <p>${r.nuove} nuove · ${r.gia} già presenti · ${r.scartate} scartate${motivi ? ` · ${esc(motivi)}` : ''}</p><p>Carica soltanto un file di progressi che ti appartiene.</p>
+    <p>${S.conto ? 'Le risposte valide saranno inviate nel tuo account.' : 'Per conservare le risposte del file, crea un account o accedi.'}</p>
+    <div class="account-actions">${S.conto ? '<button class="btn primary" data-account="conferma-import">Importa nel mio account</button>' : '<button class="btn" data-account="registra">Crea un account</button><button class="btn" data-account="accedi">Accedi</button>'}<button class="btn" data-account="torna">Annulla</button></div>`);
 }
 
 async function azzera() {
-  try { await ARCH.svuota(); } catch (e) { return segnala('non riesco a svuotare l\'archivio: ' + e.message, true); }
-  S.archivio = [];
-  ARCH.errore = null;
-  ricalcola(); dipingi(); costruisciFiltri();
-  segnala('archivio azzerato');
+  if (!S.conto) { S.archivio = []; ricalcola(); dipingi(); costruisciFiltri(); return segnala('risposte della pagina azzerate'); }
+  pannelloAccount(`<h2 id="account-title">Azzera i progressi</h2><p>Questa azione cancella le risposte del tuo account su tutti i dispositivi. Scarica prima il file dei progressi se vuoi conservarle.</p>
+    <label>Password<input type="password" name="password" autocomplete="current-password"></label>
+    <label><input type="checkbox" name="conferma"> Confermo che voglio cancellare le risposte</label>
+    <p id="account-esito" role="status"></p><div class="account-actions"><button class="btn primary" data-account="conferma-azzera">Azzera i progressi</button><button class="btn" data-account="torna">Annulla</button></div>`);
 }
 
 /* ===================== OGGI ============================================= */
@@ -1535,12 +2373,11 @@ function statoArchivio() {
   const ul = ARCH.ultimaScrittura
     ? new Date(ARCH.ultimaScrittura).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })
     : 'nessuna in questa apertura';
-  const dove = ARCH.modo === 'indexeddb' ? 'IndexedDB'
-    : ARCH.modo === 'localstorage' ? '<b style="color:var(--warn)">localStorage (ripiego)</b>' : '<b style="color:var(--ko)">non disponibile</b>';
+  const dove = S.conto ? 'copia di questo account in IndexedDB, più server' : 'memoria della pagina aperta';
   el.innerHTML =
     `risposte ai quiz <b style="color:var(--fg)">${n('q')}</b> · tecniche <b style="color:var(--fg)">${n('t')}</b> · ` +
     `carteggio <b style="color:var(--fg)">${n('c')}</b> · prove <b style="color:var(--fg)">${n('s')}</b> · ` +
-    `ultimo salvataggio <b style="color:var(--fg)">${ul}</b> · archivio in ${dove}` +
+    `${S.conto ? 'ultima scrittura locale' : 'nessun salvataggio automatico'} <b style="color:var(--fg)">${S.conto ? ul : ''}</b> · archivio in ${dove}` +
     (ARCH.nota ? `<br><b style="color:var(--warn)">${esc(ARCH.nota)}</b>` : '') +
     (ARCH.erroreLettura ? `<br><b style="color:var(--ko)">Lettura fallita (${esc(ARCH.erroreLettura)}). Questo non significa che i progressi siano stati cancellati.</b>` : '') +
     (ARCH.errore
@@ -1595,7 +2432,7 @@ function dipingiStatoRotta() {
   // Il trasloco viene prima di tutto: e' l'unico stato che fa perdere qualcosa
   // se lo si ignora, e lo si scopre solo quando e' troppo tardi.
   if (fuoriCasa()) righe.push(alert(
-    '<strong>Rotta Giusta ora è su ' + CASA + '.</strong><span>Questo indirizzo sta per essere chiuso. I tuoi progressi restano in questo browser, legati a questo indirizzo, e non si spostano da soli: scaricali in un file, apri la palestra nuova e ricaricali dalla schermata Info.</span>',
+    '<strong>Rotta Giusta ora è su ' + CASA + '.</strong><span>Se hai una copia precedente su questo indirizzo, scaricala in un file e importala nel tuo account sul nuovo sito.</span>',
     '<button class="text-btn" data-route-export>Scarica i progressi</button><a class="text-btn" href="' + 'https://' + CASA + '/app' + '">Vai a ' + CASA + '</a>'));
   if (ARCH.errore) righe.push(alert(
     '<strong>Le ultime risposte potrebbero non essere salvate.</strong><span>Scarica i progressi prima di chiudere la pagina e controlla l\'archivio.</span>',
@@ -1629,7 +2466,7 @@ function dipingiStatoRotta() {
   const come = document.getElementById('come-storage');
   if (come) come.textContent = ARCH.errore
     ? "Le ultime risposte potrebbero non essere salvate. Scarica i progressi prima di chiudere la pagina e controlla l'archivio."
-    : 'Non serve un account. Le risposte restano in questo browser; puoi scaricarle in un file.';
+    : 'Non serve un account per provare. Senza account le risposte e le preferenze valgono solo finché questa pagina resta aperta. Con l’account salvi sul server e vedi i Progressi.';
 }
 
 // Il guscio minimo per aprire l'app e fare una batteria. Stessa lista di sw.js:
@@ -1844,11 +2681,11 @@ function dipingi() {
   if (tb.risposte > 0) {
     intro.textContent = "Puoi continuare con i quiz oppure scegliere un'altra attività. I riscontri descrivono le risposte date qui.";
   } else if (haAttivita) {
-    intro.textContent = 'Qui ritrovi le attività svolte in questo browser. Quiz e carteggio restano due allenamenti distinti.';
+    intro.textContent = S.conto ? 'Qui ritrovi le attività salvate nel tuo account. Quiz e carteggio restano due allenamenti distinti.' : 'Queste attività restano solo finché la pagina è aperta.';
   } else if (haSegnali) {
-    intro.textContent = 'Allena quiz e carteggio per la patente nautica senza limiti, insieme allo studio con la scuola o il manuale. Non ci sono ancora risposte a quiz o carteggio in questo browser. I risultati dei Segnali restano separati.';
+    intro.textContent = 'Allena quiz e carteggio per la patente nautica senza limiti, insieme allo studio con la scuola o il manuale. Non ci sono ancora risposte a quiz o carteggio in questa pagina. I risultati dei Segnali restano separati.';
   } else if (archivioOrdinario) {
-    intro.textContent = 'Allena quiz e carteggio per la patente nautica senza limiti, insieme allo studio con la scuola o il manuale. Non ci sono ancora attività in questo browser.';
+    intro.textContent = 'Allena quiz e carteggio per la patente nautica senza limiti, insieme allo studio con la scuola o il manuale. Non ci sono ancora attività in questa pagina.';
   } else {
     intro.textContent = 'Allena quiz e carteggio per la patente nautica senza limiti, insieme allo studio con la scuola o il manuale.';
   }
@@ -1870,7 +2707,7 @@ function dipingi() {
     ? 'Puoi fermarti quando vuoi. Le ultime risposte potrebbero non essere salvate.'
     : mostraDurata
       ? `${stima.minutiTotali > 1 ? `Durata stimata: circa ${stima.minutiTotali} minuti.` : stima.minutiTotali === 1 ? 'Durata stimata: circa 1 minuto.' : 'Durata stimata: meno di un minuto.'} Puoi fermarti quando vuoi.`
-      : 'Ti fermi quando vuoi, e quello che hai risposto resta.';
+      : S.conto ? 'Ti fermi quando vuoi. Le risposte entrano nel tuo account.' : 'Ti fermi quando vuoi. Senza account le risposte valgono solo per questa pagina.';
 
   document.getElementById('rotta-rec-titolo').textContent = primaBase ? 'Comincia con i quiz base' : 'Continua con i quiz base';
   document.getElementById('rotta-rec-testo').textContent = lista.length
@@ -1890,10 +2727,10 @@ function dipingi() {
   document.getElementById('rotta-rec-motivo').textContent = primaBase ? '' : frammenti.join(' ');
   document.getElementById('rotta-perche').textContent = primaBase
     ? 'È una selezione di quiz base per iniziare a usare il sito. Non copre tutti gli argomenti e non misura la tua preparazione.'
-    : 'La selezione usa le risposte registrate in questo browser e la distribuzione dei quesiti per tema. Non conosce lo studio che hai fatto altrove.';
+    : 'La selezione usa le risposte disponibili qui e la distribuzione dei quesiti per tema. Non conosce lo studio che hai fatto altrove.';
   const start = document.querySelector('[data-rotta-start]');
   start.hidden = !lista.length;
-  start.disabled = !lista.length;
+  start.disabled = !lista.length || S.avvioInCorso;
   document.getElementById('rotta-start-label').textContent = primaBase ? "Inizia l'attività" : 'Continua ad allenarti';
   document.getElementById('route-import-shortcut').hidden = haAttivita && archivioOrdinario;
 
@@ -2395,7 +3232,7 @@ function anteprima() {
   document.getElementById('quiz-storage').innerHTML = ARCH.errore
     ? 'Le ultime risposte potrebbero non essere salvate. Apri Info e scarica i progressi adesso. <button class="text-btn" data-info-section="importa">Apri Info</button>'
     : ARCH.lettura === 'errore' ? 'Non riusciamo a leggere le risposte. Apri Info per controllare l’archivio. <button class="text-btn" data-info-section="importa">Apri Info</button>'
-    : ARCH.nota ? 'Stiamo usando un archivio alternativo: potresti non vedere tutte le risposte precedenti.' : 'Puoi fermarti quando vuoi. Le risposte date restano in questo browser; la lista corrente non si riprende dopo una ricarica.';
+    : ARCH.nota ? 'Stiamo usando un archivio alternativo: potresti non vedere tutte le risposte precedenti.' : S.conto ? 'Puoi fermarti quando vuoi. Le risposte vengono inviate al tuo account; la lista corrente non si riprende dopo una ricarica.' : avvisoProva;
   document.getElementById('quiz-offline').textContent = (!navigator.onLine ? 'Sei offline. Puoi usare i quiz disponibili su questo dispositivo. ' : '') + (DIAG.figureMancanti ? 'Alcune figure potrebbero non essere disponibili offline. Apri Info per controllarle.' : '');
   if (S.caricamento) { el.textContent = 'Caricamento dei quiz…'; return; }
   if (S.bancaErrore || !S.banca.length) { el.textContent = 'Non riusciamo a caricare i quiz. Controlla la connessione e riprova.'; vide.innerHTML = '<button class="btn" data-retry-load>Riprova</button>'; return; }
@@ -2819,11 +3656,11 @@ function testoRitorno(ctx) {
 }
 
 /** Che cosa resta di queste risposte, nel regime che gira oggi (§3). */
-const CONSERVAZIONE = 'Le risposte date restano in questo browser. La lista corrente non si riprende dopo una ricarica.';
 function testoConservazione() {
   // Gli avvisi prevalgono sulla frase ordinaria: con una scrittura fallita
   // «restano in questo browser» non e' vero, e lo dice l'avviso sopra.
-  return ARCH.errore ? '' : `<p class="note">${CONSERVAZIONE}</p>`;
+  if (ARCH.errore) return '';
+  return S.conto ? '<p class="note">Le risposte si conservano nel tuo account e in questo dispositivo per l’offline. Controlla lo stato dell’invio in Info.</p>' : `<p class="note">${avvisoProva}</p>`;
 }
 
 /** Gli avvisi del ciclo, prima di tutto il resto (§3). */
@@ -2880,6 +3717,7 @@ function htmlRiepilogo(ctx, r) {
   return `<div class="ciclo">${avvisiCiclo()}${testa}${msg.map((t) => `<p>${t}</p>`).join('')}${blocco}
     ${azioniRiepilogo(ctx, r)}
     ${testoConservazione()}
+    ${!ctx.sim || r.risposte ? invitoAccount() : ''}
     <p>Puoi concludere qui.</p></div>`;
 }
 
@@ -4207,8 +5045,8 @@ function correggiTec() {
 //
 // Le domande le fabbrica `E.domandeSegnali` (dataset e selezione stanno nel
 // motore, dove si testano); qui c'e' solo il disegno e il giro di gioco.
-// Niente archivio, di proposito: e' allenamento extra banca, e il punteggio
-// migliore vive solo in localStorage.
+// I punteggi non sono risposte della banca: nella prova restano in memoria;
+// con account si tengono nella sua copia locale e si inviano al profilo.
 
 const SEGMODI = {
   notturni: { nome: 'Fanali notturni', sub: 'regole 23–31 · che nave è?', dom: 'Che cosa vedi?',
@@ -4434,6 +5272,7 @@ function fineSeg() {
   const p = segPunti[segModo] || { migliore: 0, giocate: 0 };
   p.giocate++; p.migliore = Math.max(p.migliore, R.giuste);
   segPunti[segModo] = p; LS.set('segPunti', segPunti);
+  if (S.conto) void salvaSegnali(segPunti).catch((e) => { ARCH.errore = String(e?.message || e); DIAG.arch = true; aggiornaBadge(); segnala('Punteggi dei Segnali non confermati: scaricali prima di chiudere.', true); });
   const errori = R.errori.map(({ d, mia }) => `
     <div class="err" style="display:flex;gap:12px;align-items:flex-start">
       <div style="flex:0 0 120px">${figSeg(d.e, false)}</div>
@@ -4577,6 +5416,7 @@ document.addEventListener('click', (ev) => {
   if (spAperta) chiudiSpiega();
 
   const t = ev.target.closest('button'); if (!t) return;
+  if (t.dataset.account) return azioneAccount(t);
 
   if (t.dataset.rottaStart !== undefined) {
     if (!S.rotta || !S.rotta.lista.length) return;
@@ -4590,6 +5430,7 @@ document.addEventListener('click', (ev) => {
   if (t.dataset.infoSection) return vaiInfo(t.dataset.infoSection);
   if (t.dataset.retryLoad !== undefined) return avvia();
   if (t.id === 'esame-rimuovi') {
+    if (S.conto) return salvaDataConto(null);
     LS.set('esame', null); ricalcola(); dipingi(); costruisciFiltri();
     return segnala('data d\'esame tolta');
   }
@@ -4776,8 +5617,14 @@ document.getElementById('importa-file').addEventListener('change', (e) => {
 });
 
 // La data d'esame: si scrive, e da lei si ricalcolano quota e semaforo.
-document.getElementById('esame-data').addEventListener('change', (e) => {
+document.getElementById('esame-data').addEventListener('change', async (e) => {
   const v = e.target.value;
+  if (S.conto) {
+    const salvata = await salvaDataConto(v || null);
+    if (!salvata) { dipingi(); segnala('La data non è stata salvata. Riprova oppure continua senza cambiarla.', true); }
+    else segnala(v ? `esame il ${giornoIt(v)}` : 'data d’esame tolta');
+    return;
+  }
   LS.set('esame', v || null);
   ricalcola(); dipingi(); costruisciFiltri();
   segnala(S.date.esame ? `esame il ${giornoIt(S.date.esame)}` : S.date.esameNonValida ? 'data d\'esame non valida' : 'data d\'esame tolta');
@@ -4803,6 +5650,16 @@ document.getElementById('esame-data').addEventListener('change', (e) => {
  *    non deve rispondere a un quesito.
  */
 addEventListener('keydown', (e) => {
+  if (!document.getElementById('account').hidden) {
+    if (e.key === 'Escape') { e.preventDefault(); chiudiAccount(); }
+    if (e.key === 'Tab') {
+      const elementi = [...document.querySelectorAll('#account button:not([disabled]), #account input:not([disabled]), #account a[href], #account select:not([disabled])')].filter((x) => x.offsetParent !== null);
+      if (elementi.length && (e.shiftKey ? document.activeElement === elementi[0] || document.activeElement === document.getElementById('account-title') : document.activeElement === elementi.at(-1))) {
+        e.preventDefault(); (e.shiftKey ? elementi.at(-1) : elementi[0]).focus();
+      }
+    }
+    return;
+  }
   // La figura ingrandita e' un <dialog> nativo: Esc la chiude da se', e deve
   // chiudere lei soltanto, non la revisione o il runner sotto (§9).
   if (document.getElementById('fig-zoom').open) return;
@@ -4870,7 +5727,8 @@ document.getElementById('fig-zoom').addEventListener('close', () => {
   if (o && document.contains(o)) o.focus();
 });
 
-addEventListener('online', () => { if (QUIZ.modo) anteprima(); });
+addEventListener('online', () => { if (QUIZ.modo) anteprima(); if (S.conto) void sincronizza(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && S.conto) void sincronizza(); });
 addEventListener('offline', () => { if (QUIZ.modo) anteprima(); });
 avvia();
 </script>

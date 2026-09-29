@@ -698,6 +698,31 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   chiede a `main` un controllo eseguibile a due regimi prima di P-23 e lascia
   R-MAPPA-14 scoperto finché la pagina non chiama davvero il motore.
 
+### Realizzato — P-18: l'account salva, la prova senza account non lascia dati
+
+- La palestra offre tutte le attività anche senza accesso e avvisa prima e dopo
+  che le risposte valgono soltanto per la pagina aperta. Con l'account usa
+  l'archivio isolato `rg-account-<chiave>`, la coda e i riepiloghi del motore:
+  registra, accede, verifica l'email, recupera la password, sincronizza e
+  gestisce conflitti, azzeramenti, uscita e import. Le risposte del vecchio
+  archivio restano disponibili per un trasferimento scelto o per l'export.
+  La richiesta viene fermata e riconfrontata con `GET /v1/io` prima dell'invio,
+  perché il cookie può cambiare fra schede; dopo una registrazione con risposta
+  persa, la pagina ricontrolla il cookie invece di considerarla fallita.
+- Vetrina e informativa privacy ora descrivono entrambi i regimi. La privacy è
+  una **bozza per la versione con gli account**: prima del rilascio l'autore deve
+  completare e verificare i punti del §15.4 di `docs/account-progetto.md`
+  (identificazione e recapito postale del titolare, log di sicurezza, fornitori
+  e accordi, luoghi effettivi dei dati, revisione legale). In
+  `docs/eccezioni-interfaccia.md` le chiamate al motore sono aggiornate.
+- Verificato: motore **167/169** (due skip previsti), dati **242**, interfaccia
+  **780** sul ramo e **1.094** con i controlli P-43 di `main` applicati in una
+  copia temporanea, specifica **500**, server **59/59** con Node 25 e con la
+  LTS 24.21.0 verificata tramite `SHASUMS256.txt`; guardiano verde. La
+  geometria e il dialogo account sono stati guardati a **375** e **1280 px**
+  in Chrome e nel Safari installato. P-17 non è ancora nel motore: resta la
+  funzione di pagina `tagPerTentativo()` finché arriva l'export.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag
