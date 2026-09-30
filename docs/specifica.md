@@ -349,7 +349,21 @@ sim_uid  la lista in cui è uscito, quando registrata
 correct  1|0   (quiz e tecniche)
 verdict  1|0   (carteggio: il giudizio è di chi studia)
 delta    sempre null nel carteggio, perché nessuno analizza la tua risposta
+proposti quanti esercizi aveva la lista proposta (carteggio e tecniche, da P-33)
+pos      la posizione dell'esercizio in quella lista, da 0 (carteggio e tecniche, da P-33)
+variante 'cieca' | 'nuoviPrima', solo nella prova di carteggio (da P-32)
 ```
+
+**Carteggio e tecniche: lo schema del 30 settembre 2026** (P-33, D-02 del §10.1
+di `area-4-progetto.md`, dove sta per esteso). Ogni attività su carta — prova,
+giro, tappeto — e ogni riconoscimento delle tecniche scrive un `sim_uid` nuovo
+a ogni avvio, lo stesso su tutte le sue righe, con `proposti` e `pos`; la prova
+anche `variante`, e resta la sola con una riga `_t:'s'`. Fino alla
+realizzazione dell'area 4 (P-21) la pagina scrive ancora le righe di prima —
+giro e tappeto con `sim_uid: null`, le tecniche senza legame, nessuna con
+`proposti` o `pos` —, e il motore le legge per come sono: ricostruite e
+dichiarate, con quantità, ordine e variante «non registrati», mai dedotti
+(§4.4).
 
 È **append-only**: non si corregge una riga, se ne aggiunge un'altra.
 
@@ -704,6 +718,27 @@ stessi errori, e altrimenti non avviano niente finché chi studia non riapre.
 La riprova è un'attività nuova, con un `sim_uid` nuovo, `mode: 'sbagliate'` e
 senza timer: il tentativo di prima resta com'era. Anche l'istantanea vive solo
 in memoria, come `S.run`: dopo una ricarica non si riprende.
+
+**Carteggio e tecniche: lo stesso confine, un contratto a parte** (dal 30
+settembre 2026, P-33). `sessioni()` ed `erroriSessione()` leggono soltanto le
+righe `_t:'q'`, e restano così: il confine per pausa di `ritmo()` non cambia.
+Le righe `_t:'c'` e `_t:'t'` hanno `attivitaCarteggio(righe, { tipo })` — il
+tipo si nomina, e `'q'` o un tipo sconosciuto sono un errore — e
+`dettaglioCarteggio(righe, banca, id, { tipo, filtro })`. Il confine è sempre
+quello dell'attività: le righe di un `sim_uid` stanno insieme oltre ogni pausa
+e intrecciate con altre attività, e quelle senza legame si ricostruiscono e lo
+dichiarano — sulla carta per **istante e modalità**, perché `salvaCart()` ha
+sempre scritto un solo `ts` per salvataggio; sulle tecniche con le regole dei
+quiz. Un'attività ambigua — un esercizio ripetuto, due modalità, lo stesso id
+su un altro tipo, una riga di prova estranea, due varianti, una quantità
+proposta incoerente — si dice, e non apre un dettaglio. Il dettaglio dà dalla
+stessa fonte le schede, i conteggi e il filtro della revisione: sulla carta
+coincidenti, da rivedere, senza giudizio, campi scritti, vuoti e non
+registrati; sulle tecniche scelte coincidenti e non coincidenti; su entrambi i
+non affrontati, soltanto quando la quantità proposta è registrata. Un giudizio
+che manca non diventa «da rivedere», e la soglia della prova si dice solo con
+tutti i giudizi. Nessuna riprova per questi tipi: il ciclo dell'area 4 si
+chiude con revisione e nuova preparazione (`area-4-progetto.md` §7.3).
 
 ### 4.5 Le due eccezioni
 
@@ -1267,7 +1302,7 @@ del progetto di preparazione. Il §4 di `prossima-versione.md` li motiva.
 | R-TEMPO-06 | Il ritmo non dipende dalla lunghezza della sessione | `test_engine.mjs::ritmo: una sessione corta non e` |
 | R-TEMPO-07 | `stimaImpegno()` dichiara quale dei tre tempi sta riportando | `test_engine.mjs::stimaImpegno: con il ritmo misurato usa l` |
 | R-TEMPO-08 | Il ritmo si misura sul confine per pausa, e un'attività ripresa dopo una pausa non lo gonfia | `test_engine.mjs::sessioni: il confine per pausa resta quello di prima, e ritmo lo usa` |
-| R-FLU-01 | Ogni attività si chiude con un passo che propone azioni derivate da quello che è appena successo. **Quiz, coperti:** riepilogo dell'attività intera — risposte, corrette, errate, non affrontate, esito solo per una prova e mai superata con domande senza risposta — e la riprova che offre, pronta o bloccata col suo motivo. **Carteggio, tecniche e Segnali, scoperti:** i loro cicli non sono ancora realizzati (area 4, P-35) | `test_interfaccia.py::test_ciclo_riepilogo` |
+| R-FLU-01 | Ogni attività si chiude con un passo che propone azioni derivate da quello che è appena successo. **Quiz, coperti:** riepilogo dell'attività intera — risposte, corrette, errate, non affrontate, esito solo per una prova e mai superata con domande senza risposta — e la riprova che offre, pronta o bloccata col suo motivo. **Carteggio, tecniche e Segnali, scoperti:** i loro cicli non sono ancora realizzati nella pagina (area 4, P-21 e P-35); il contratto del motore per carta e tecniche c'è, R-FLU-12…22 | `test_interfaccia.py::test_ciclo_riepilogo` |
 | R-FLU-02 | Gli errori di una sessione si riaprono come esercizio, senza mescolarli con quelli di sempre: tutti e soltanto gli errori di quell'attività, nell'ordine delle risposte, anche se nel frattempo sono stati corretti altrove | `test_engine.mjs::erroriSessione: apre esattamente gli errori di quella lista` |
 | R-FLU-03 | Il conteggio annunciato e la lista che si apre coincidono anche per gli errori di sessione, nel motore; nella pagina lo tiene R-FLU-10 | `test_engine.mjs::erroriSessione: il conteggio promesso e la lista coincidono` |
 | R-FLU-04 | Un confine di sessione ricostruito si dichiara invece di passare per registrato: il motore lo dice in `fonte`, e il riepilogo e l'istantanea della riprova lo portano fino alla pagina | `test_engine.mjs::erroriSessione: un confine ricostruito si dichiara` |
@@ -1278,6 +1313,18 @@ del progetto di preparazione. Il §4 di `prossima-versione.md` li motiva.
 | R-FLU-09 | Un confine sessione sconosciuto è un errore, non un ritorno silenzioso al predefinito | `test_engine.mjs::sessioni: un confine sconosciuto e un errore, non un ripiego` |
 | R-FLU-10 | «Riprova questi N» apre l'istantanea presa al riepilogo — stesso numero, stessa lista, stesso ordine —, con un'identità nuova, senza timer e senza avanzamento automatico; se fra un clic e l'altro gli errori dell'attività sono cambiati, o l'attività non c'è più o non si legge, l'anteprima lo dice e Inizia non avvia niente. Un tag, un'altra attività o la banca ricaricata non cambiano la lista | `test_interfaccia.py::test_ciclo_riprova` |
 | R-FLU-11 | Il controllo del ciclo progettato gira a ogni esecuzione, anche finché la pagina pubblicata ha il ciclo di prima: una pagina di riferimento lo passa, e ciascuna delle sue rotture dichiarate lo fa fallire nominando il difetto | `test_interfaccia.py::test_ciclo_provato_al_contrario` |
+| R-FLU-12 | Le attività del carteggio e delle tecniche si leggono con un contratto proprio, che nomina il tipo: un tipo mancante, sconosciuto o dei quiz è un errore, e `sessioni()` e `ritmo()` restano dei soli quiz | `test_engine.mjs::attivitaCarteggio: il tipo si sceglie per nome` |
+| R-FLU-13 | Un'attività di carteggio o di tecniche registrata resta intera oltre qualunque pausa, e il suo dettaglio conta tutte le sue righe | `test_engine.mjs::attivitaCarteggio: un attivita registrata resta intera oltre la pausa` |
+| R-FLU-14 | Le attività non si mescolano: fra due intrecciate nel tempo, con i quiz, con l'altro tipo, e ognuna porta soltanto le sue righe; la prova porta la sua riga di prova, un allenamento nessuna | `test_engine.mjs::attivitaCarteggio: le attivita non si mescolano, nemmeno intrecciate` |
+| R-FLU-15 | Le righe senza legame si ricostruiscono e lo dichiarano — sulla carta per istante e modalità, sulle tecniche con le regole dei quiz —, e l'id di un gruppo ricostruito non dipende dall'ordine in cui l'archivio restituisce le righe | `test_engine.mjs::attivitaCarteggio: le righe senza legame si ricostruiscono` |
+| R-FLU-16 | Un legame ambiguo — esercizio ripetuto, modalità diverse, tipi diversi, riga di prova estranea, variante diversa, quantità proposta incoerente — si dichiara con il motivo, e non apre schede né conteggi | `test_engine.mjs::attivitaCarteggio: un legame ambiguo si dice` |
+| R-FLU-17 | Le schede, i conteggi e il filtro della revisione di carteggio vengono dalla stessa chiamata: «da rivedere» conta le schede che il filtro apre, le schede sono nell'ordine registrato della lista, e un campo vuoto è distinto da un campo non registrato | `test_engine.mjs::dettaglioCarteggio: schede, conteggi e filtro dalla stessa fonte` |
+| R-FLU-18 | Un giudizio che manca non diventa «da rivedere», e la soglia di una prova di carteggio si dice soltanto con tutti i giudizi | `test_engine.mjs::dettaglioCarteggio: un giudizio che manca non diventa` |
+| R-FLU-19 | Il riconoscimento delle tecniche conta le scelte coincidenti e non coincidenti e i non affrontati, e il filtro «non coincidenti» apre quelle che conta; nessuna scelta è distinta da una scelta non registrata | `test_engine.mjs::dettaglioCarteggio: le tecniche contano le scelte che non coincidono e i non affrontati` |
+| R-FLU-20 | Le righe di prima non inventano niente: quantità proposta, non affrontati, variante e ordine sono «non registrati» quando mancano, e la quantità di una prova vecchia viene dalla sua riga di prova | `test_engine.mjs::dettaglioCarteggio: le righe vecchie non inventano quantita, variante ne ordine` |
+| R-FLU-21 | Un esercizio che la banca caricata non ha si nomina e conserva il risultato proprio; senza la banca i mancanti non si dicono «nessuno», e i conteggi restano quelli delle righe | `test_engine.mjs::dettaglioCarteggio: un esercizio che la banca non ha si nomina` |
+| R-FLU-22 | Un ritento della scrittura con gli stessi uid non conta due volte, uno con uid nuovi è un esercizio ripetuto, e un id che non c'è non è un'attività vuota | `test_engine.mjs::dettaglioCarteggio: un ritento con gli stessi uid non conta due volte` |
+| R-FLU-23 | La pagina scrive le righe di carta e tecniche con lo schema di P-33 — un `sim_uid` nuovo a ogni attività, anche per giro, tappeto e tecniche, `proposti` e `pos`, gli stessi uid al ritento — e ne legge riepilogo e revisione da `attivitaCarteggio()` e `dettaglioCarteggio()`, senza filtrare le righe da sé | scoperto — la pagina scrive ancora le righe di prima e filtra le righe della prova in `apriRivedi()`; il passaggio è la realizzazione dell'area 4 (P-21), il controllo che lo tiene fermo è D-04 (P-35) |
 
 **I due regimi del ciclo, e che cosa il controllo non vede.** R-FLU-01 e
 R-FLU-10 sono scritti per il passaggio all'area 3 (§10.1 del suo progetto), con
@@ -1997,3 +2044,12 @@ successo, ed è il motivo per cui questo file esiste.
   non la realizza P-21. Diciotto rotture del motore, tutte rosse; due le vedeva
   solo il test che si ritirerà con la copia della pagina, e per una c'è ora
   un'asserzione che resta.
+- **30 settembre 2026 — l'attività intera per carteggio e tecniche (P-33).** D-02
+  del §10.1 di `area-4-progetto.md`: `attivitaCarteggio()` e
+  `dettaglioCarteggio()`, un contratto a parte che nomina il tipo, perché
+  `sessioni()` e `ritmo()` restano dei quiz. §3.2 porta lo schema delle righe
+  nuove — `sim_uid` per ogni attività, `proposti`, `pos` — e §4.4 il confine;
+  nuovi R-FLU-12…22, coperti, e R-FLU-23, la pagina, scoperto finché non la
+  realizza P-21. Trentasette rotture del motore, tutte rosse nel loro test; due
+  erano rosse per la ragione sbagliata alla prima stesura — un errore di sintassi
+  e un crash — e sono state rifatte come rotture di comportamento.

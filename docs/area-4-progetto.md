@@ -498,7 +498,8 @@ il motore non espone si chiede l'export (§10.1), non lo si ricalcola nel DOM.
 
 Righe finali su carta: `_t:'c'`, `uid`, `item_id`, `ts`, `input_json` con
 risposta libera, `verdict: 1|0` scelto dalla persona, **`delta: null`**, `mode`,
-`ms`, legame registrato dell'attività da concordare su `main`. Solo la prova
+`ms`, legame registrato dell'attività (`sim_uid`, `proposti`, `pos`: schema
+consegnato da P-33, §10.1 D-02). Solo la prova
 ha `_t:'s', kind:'carteggio'`, score/total/passed dal risultato del motore,
 mai un allenamento; «passed» è sempre presentato come autovalutazione.
 Righe tecniche `_t:'t'`, `chosen`, `correct`, proprio legame di attività:
@@ -637,6 +638,82 @@ legami ambigui, righe vecchie e filtro di revisione. Proposta, quantità e
 variante storiche si mostrano solo quando realmente registrate: `main`
 documenta schema e compatibilità prima del raccordo UI. Non serve una nuova
 API di riprova per chiudere il ciclo progettato (§7.3).
+
+*Consegnata il 30 settembre 2026 (P-33), come contratto puro nel motore.*
+`sessioni()`, `erroriSessione()` e `ritmo()` non cambiano: leggono solo
+`_t:'q'`, e il confine per pausa resta il predefinito. Carta e tecniche hanno
+due funzioni che **nominano il tipo** (`'c'` o `'t'`; `'q'` o un tipo
+sconosciuto lanciano):
+
+- `E.attivitaCarteggio(righe, { tipo })`: le attività dalla più recente, con
+  `id`, `fonte` (`'sim_uid'` o `'risposte'`), `mode`, `inizio`, `fine`, `n`,
+  `ms` (somma dei tempi registrati, non una misura per esercizio), `righe`,
+  `prova` (la riga `_t:'s'`, solo per una prova di carteggio), `proposti`,
+  `variante`, `ordine` (`'registrato'` o `'non registrato'`), `ambigua` e
+  `motivi`. Le righe di un `sim_uid` stanno insieme oltre ogni pausa e
+  intrecciate con altre attività. Senza legame: sulla carta un gruppo per
+  **istante e modalità** — `salvaCart()` scrive un solo `ts` per salvataggio
+  dalla 0.5.0 —, sulle tecniche le regole di `sessioni()` (modalità,
+  esercizio ricomparso, pausa oltre 20 minuti, una riga con legame in mezzo).
+  L'id ricostruito è `'r:'` + il più piccolo uid del gruppo, stabile qualunque
+  sia l'ordine dell'archivio. Righe con lo stesso uid contano una volta (un
+  ritento); la prima vince, come in `fondiArchivio()`. I motivi di ambiguità:
+  «esercizio ripetuto», «modalità diverse», «tipi diversi» (lo stesso
+  `sim_uid` su righe `q` o dell'altro tipo), «riga di prova estranea» (una
+  `_t:'s'` con lo stesso uid che non è `kind: 'carteggio'` su una
+  `simulazione`, o che sta su un allenamento o sulle tecniche), «variante
+  diversa», «quantità proposta incoerente».
+- `E.dettaglioCarteggio(righe, banca, id, { tipo, filtro })`: `schede`,
+  `mostrate`, `conteggi`, `mancanti`, `esito`, più i campi dell'attività e
+  `trovata`, `banca`. Scheda carta: `risposta` com'è (o `null` se la riga non
+  la registra), `scritta` (`false` vuota, `null` non registrata), `giudizio`
+  (`true`, `false`, `null` se manca). Scheda tecniche: `scelte` (`[]` se
+  nessuna, `null` se non registrate), `attese` dalla banca, `coincidono`
+  (l'esito registrato allora, non ricalcolato). Ogni scheda ha `esercizio`
+  dalla banca o `null`. Conteggi carta: `proposti, esercizi, scritti, vuoti,
+  nonRegistrati, coincidenti, daRivedere, senzaGiudizio, nonAffrontati`;
+  tecniche: `proposti, risposte, coincidenti, nonCoincidenti, senzaEsito,
+  nonAffrontati`. Filtri per nome: `'tutti' | 'da-rivedere'` sulla carta,
+  `'tutte' | 'non-coincidenti'` sulle tecniche; un altro è un errore.
+  `esito` `{ coincidenti, su, soglia, raggiunta }` solo per una `simulazione`
+  con **tutti** i giudizi, con la soglia di `PROVA_CARTEGGIO`; un allenamento
+  non ne ha. Con la banca `null`, `mancanti` è `null`: non si sa. Un'attività
+  ambigua ha schede vuote e `conteggi`/`esito` `null`; un id assente
+  `trovata: false`.
+
+**Lo schema delle righe nuove**, che la realizzazione (P-21) scrive:
+
+| Riga | Campi di prima | Campi nuovi |
+|---|---|---|
+| `_t:'c'` prova, giro, tappeto | `uid`, `item_id`, `ts`, `input_json` `{ risposta }`, `verdict` 1/0 scelto, `delta: null`, `ms`, `mode` | `sim_uid` **nuovo a ogni avvio**, anche per giro e tappeto (oggi `null`), uguale su tutte le righe e, nella prova, all'uid della `_t:'s'`; `proposti`, la lunghezza della lista preparata; `pos`, 0…`proposti`−1; `variante` solo nella prova (P-32, invariata) |
+| `_t:'t'` | `uid`, `item_id`, `ts`, `correct` 1/0, `ms`, `chosen` `'a\|b'` | `sim_uid` nuovo a ogni `apriTec()`, lo stesso per ogni risposta di quella lista (oggi non c'è); `proposti`, la lunghezza della coda; `pos`, `R.i` |
+| `_t:'s'` | invariata, solo per la prova; `variante` da P-32 | nessuna per giro, tappeto o tecniche |
+
+Gli uid delle righe nascono una volta — alla conclusione sulla carta, alla
+risposta sulle tecniche — e un ritento della scrittura li riusa. Nessuna riga
+con `verdict` diverso da 1/0: il giudizio rinviato non si scrive (D-03). Per
+il riepilogo corrente la pagina chiama le stesse due funzioni sulle righe
+dell'attività appena conclusa (anche in memoria, senza account), e con
+`esito` scrive la `_t:'s'`: `score` da `coincidenti`, `total` da `su`,
+`passed` da `raggiunta`. «Rivedi quelli da rivedere ({D})» è
+`conteggi.daRivedere`, e apre `mostrate` con `'da-rivedere'`; il ramo della
+prova in `apriRivedi()`, che filtra le righe da sé, esce.
+
+**Compatibilità con le righe di prima, che restano come sono:** giro e
+tappeto senza legame si ricostruiscono per istante e modalità, e la pagina li
+dice ricostruiti (§7.2); le tecniche senza legame con le regole dei quiz, con
+il limite dichiarato che due riconoscimenti entro 20 minuti senza esercizi in
+comune diventano uno. Nessuna riga di prima porta `proposti` o `pos`:
+quantità, non affrontati e ordine sono «non registrati» — l'ordine è quello
+del tempo, e per le righe di uno stesso salvataggio quello dell'archivio, non
+garantito. Le prove di prima di P-32 hanno il legame e non la variante:
+`variante: null`, sconosciuta; la quantità proposta viene da `total` della
+loro `_t:'s'`. Lo schema della variante di D-01 non cambia; una `_t:'s'` che
+porta una variante diversa dalle sue righe rende la prova ambigua.
+
+Requisiti: R-FLU-12…22 coperti, R-FLU-23 per la pagina scoperto. Le due
+funzioni sono fra gli orfani dichiarati di `docs/eccezioni-interfaccia.md`
+fino a P-21.
 
 **D-03 — Bozza account e giudizio rinviato.** Discrepanza §7.6 / runtime al
 §10.3: fissarla con un controllo che fallisce prima della correzione, poi

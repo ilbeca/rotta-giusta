@@ -1496,6 +1496,259 @@ export function erroriSessione(righe, items, id, opt = {}) {
            ambigua: false, motivi: [], mancanti };
 }
 
+// --- Carteggio e tecniche: l'attivita' intera (P-33) -------------------------
+//
+// `sessioni()` ed `erroriSessione()` leggono soltanto le righe dei quiz, e cosi'
+// restano: il loro confine predefinito e' quello di `ritmo()`. Il carteggio
+// (`_t: 'c'`) e il riconoscimento delle tecniche (`_t: 't'`) hanno qui il loro
+// contratto, D-02 del §10.1 di docs/area-4-progetto.md: lo schema delle righe e
+// la compatibilita' con quelle di prima sono scritti li'.
+
+/** Il tipo si sceglie per nome: un'opzione ignorata tornerebbe in silenzio ai quiz. */
+function tipoCarteggio(opt, chi) {
+  const tipo = opt && opt.tipo;
+  if (tipo === 'q') throw new Error(`${chi}: i quiz hanno sessioni() ed erroriSessione(), non questa funzione`);
+  if (tipo !== 'c' && tipo !== 't') throw new Error(`${chi}: tipo sconosciuto «${tipo}» (c | t)`);
+  return tipo;
+}
+
+/** 1/true e 0/false; qualunque altra cosa e' «non registrato», mai un no. */
+function siNo(v) {
+  if (v === 1 || v === true) return true;
+  if (v === 0 || v === false) return false;
+  return null;
+}
+
+/** Il testo scritto da chi studia, com'e', o null se la riga non lo porta. */
+function rispostaScritta(r) {
+  let o = r.input_json;
+  if (typeof o === 'string') { try { o = JSON.parse(o); } catch { return null; } }
+  return o && typeof o === 'object' && typeof o.risposta === 'string' ? o.risposta : null;
+}
+
+/**
+ * Le attivita' del Carteggio di un tipo — `tipo: 'c'`, gli esercizi sulla
+ * carta (prova, giro, tappeto), o `tipo: 't'`, il riconoscimento delle tecniche —
+ * dalla piu' recente. Il tipo e' obbligatorio: questa funzione non vede i quiz,
+ * e `sessioni()` non vede questi due tipi.
+ *
+ * **Il confine e' quello dell'attivita'.** Le righe con lo stesso `sim_uid`
+ * stanno insieme oltre qualunque pausa e anche intrecciate con altre attivita'
+ * (`fonte: 'sim_uid'`). Le righe senza legame — tutte quelle scritte prima di
+ * P-33, fuori dalla prova — si **ricostruiscono**, e lo dicono
+ * (`fonte: 'risposte'`):
+ *
+ *   - `'c'`: stesso istante e stessa modalita'. E' il modo in cui `salvaCart()`
+ *     le ha sempre scritte, un `ts` solo per salvataggio (0.5.0);
+ *   - `'t'`: le regole di `sessioni()` — cambia modalita', ricompare un
+ *     esercizio, passano piu' di PAUSA_SESSIONE_MS, o in mezzo c'e' una riga
+ *     con un legame.
+ *
+ * L'id di un gruppo ricostruito e' `'r:' +` il piu' piccolo `uid` delle sue
+ * righe: non dipende dall'ordine in cui l'archivio le restituisce, perche' la
+ * revisione riapre per id. Le righe con lo stesso `uid` sono la stessa riga
+ * (un ritento), e contano una volta; la prima vince, come in `fondiArchivio()`.
+ *
+ * Ogni attivita' porta, oltre a `righe`, `n`, `ms` (la somma dei tempi
+ * registrati: su carta e' il tempo della lista diviso per esercizio, non una
+ * misura per esercizio), `inizio` e `fine`:
+ *   - `prova`: la riga `_t: 's'` con lo stesso uid, solo per una prova di
+ *     carteggio (`kind: 'carteggio'`, modalita' `simulazione`);
+ *   - `proposti`: quanti esercizi aveva la lista proposta, se registrato — dal
+ *     campo `proposti` delle righe o, per le prove di prima, da `total` della
+ *     riga di prova; altrimenti `null`, non il numero delle righe;
+ *   - `variante`: quella della prova (P-32), o `null` se non registrata — non
+ *     `'cieca'`;
+ *   - `ordine`: `'registrato'` quando ogni riga porta la sua `pos` nella lista,
+ *     e allora le righe sono in quell'ordine; altrimenti `'non registrato'`, e
+ *     sono in ordine di tempo;
+ *   - `ambigua` e `motivi`: un'attivita' che non si puo' verificare — un
+ *     esercizio ripetuto, modalita' diverse, lo stesso id su righe di un altro
+ *     tipo, una riga di prova estranea (di un altro `kind`, o su un
+ *     allenamento, o sulle tecniche), varianti diverse, una quantita' proposta
+ *     incoerente (diversa fra le righe, presente solo su alcune, o minore delle
+ *     righe). Non si risolve scegliendo: si dice.
+ */
+export function attivitaCarteggio(righe, opt = {}) {
+  const tipo = tipoCarteggio(opt, 'attivitaCarteggio');
+  const uidViste = new Set(), mie = [], altrui = new Set(), prove = new Map();
+  for (const r of righe || []) {
+    if (!r || typeof r !== 'object') continue;
+    if (r._t === 's') { if (!prove.has(String(r.uid))) prove.set(String(r.uid), r); continue; }
+    if (r._t === tipo) {
+      if (typeof r.uid === 'string' && r.uid) { if (uidViste.has(r.uid)) continue; uidViste.add(r.uid); }
+      mie.push(r);
+      continue;
+    }
+    if ((r._t === 'q' || r._t === 'c' || r._t === 't') && r.sim_uid) altrui.add(String(r.sim_uid));
+  }
+
+  const gruppi = [], perUid = new Map(), perIstante = new Map();
+  const nuovo = (su) => { const a = { sim_uid: su, righe: [] }; gruppi.push(a); return a; };
+  let g = null;
+  for (const r of ordinaRighe(mie)) {
+    const su = r.sim_uid ? String(r.sim_uid) : null;
+    if (su) {
+      g = null;
+      if (!perUid.has(su)) perUid.set(su, nuovo(su));
+      perUid.get(su).righe.push(r);
+      continue;
+    }
+    if (tipo === 'c') {
+      const chiave = `${epoca(r.ts) ?? String(r.ts)}\u0000${r.mode ?? ''}`;
+      if (!perIstante.has(chiave)) perIstante.set(chiave, nuovo(null));
+      perIstante.get(chiave).righe.push(r);
+      continue;
+    }
+    const t = epoca(r.ts);
+    if (!g || r.mode !== g.mode || g.visti.has(r.item_id)
+        || (t != null && g.ultimo != null && t - g.ultimo > PAUSA_SESSIONE_MS)) {
+      g = nuovo(null); g.mode = r.mode; g.visti = new Set(); g.ultimo = null;
+    }
+    g.visti.add(r.item_id);
+    if (t != null) g.ultimo = t;
+    g.righe.push(r);
+  }
+
+  const out = gruppi.map(({ sim_uid, righe: rr }) => {
+    const n = rr.length;
+    const motivi = [];
+    if (new Set(rr.map((r) => r.item_id)).size < n) motivi.push('esercizio ripetuto');
+    const modi = new Set(rr.map((r) => r.mode ?? null));
+    if (modi.size > 1) motivi.push('modalità diverse');
+    const mode = modi.size === 1 ? [...modi][0] : null;
+    if (sim_uid && altrui.has(sim_uid)) motivi.push('tipi diversi');
+    let prova = null;
+    const s = sim_uid ? prove.get(sim_uid) : null;
+    if (s) {
+      if (tipo === 'c' && s.kind === 'carteggio' && mode === 'simulazione') prova = s;
+      else motivi.push('riga di prova estranea');
+    }
+    const varianti = new Set(rr.map((r) => r.variante ?? null));
+    if (prova && prova.variante != null) varianti.add(prova.variante);
+    if (varianti.size > 1) motivi.push('variante diversa');
+    const variante = varianti.size === 1 ? [...varianti][0] : null;
+    const dichiarati = rr.map((r) => r.proposti).filter((p) => p != null);
+    const candidati = [...dichiarati];
+    if (prova && prova.total != null) candidati.push(prova.total);
+    let proposti = null;
+    if (candidati.length) {
+      const ok = (dichiarati.length === 0 || dichiarati.length === n)
+        && new Set(candidati).size === 1 && Number.isInteger(candidati[0]) && candidati[0] >= n;
+      if (ok) proposti = candidati[0]; else motivi.push('quantità proposta incoerente');
+    }
+    const pos = rr.map((r) => r.pos);
+    const registrato = pos.every((p) => Number.isInteger(p) && p >= 0 && (proposti == null || p < proposti))
+      && new Set(pos).size === n;
+    const ordinate = registrato ? [...rr].sort((a, b) => a.pos - b.pos) : rr;
+    const uids = rr.map((r) => String(r.uid)).sort();
+    return {
+      id: sim_uid || 'r:' + uids[0], tipo, fonte: sim_uid ? 'sim_uid' : 'risposte', sim_uid,
+      mode, inizio: rr[0].ts, fine: rr[n - 1].ts, n, ms: rr.reduce((a, r) => a + (+r.ms || 0), 0),
+      righe: ordinate, prova, proposti, variante,
+      ordine: registrato ? 'registrato' : 'non registrato',
+      ambigua: motivi.length > 0, motivi,
+    };
+  });
+  out.sort((x, y) => ((epoca(y.fine) ?? 0) - (epoca(x.fine) ?? 0))
+                  || ((epoca(y.inizio) ?? 0) - (epoca(x.inizio) ?? 0)));
+  return out;
+}
+
+const FILTRI_CARTEGGIO = { c: ['tutti', 'da-rivedere'], t: ['tutte', 'non-coincidenti'] };
+
+/**
+ * Il dettaglio di **una** attivita' del Carteggio: le schede, i conteggi e il
+ * filtro della revisione, dalla stessa fonte — il numero su «Rivedi quelli da
+ * rivedere ({D})» e le schede che apre sono lo stesso calcolo (§7.1–7.3 di
+ * docs/area-4-progetto.md). `id` e' quello di `attivitaCarteggio()`, `banca`
+ * l'elenco degli esercizi (`carteggio.json` o `tecniche.json`), o `null` se
+ * non e' caricata.
+ *
+ * Una scheda di carteggio porta `risposta` (il testo com'e', senza
+ * normalizzarlo; `null` se la riga non lo registra), `scritta` (`false` per un
+ * campo vuoto, `null` se non registrato: due cose diverse) e `giudizio`
+ * (`true` «il risultato coincide», `false` «da rivedere», `null` se manca — e
+ * un giudizio che manca non diventa «da rivedere»). Una scheda di tecniche
+ * porta `scelte` (`[]` se non ne hai scelta nessuna, `null` se non
+ * registrate), `attese` dalla banca e `coincidono`, l'esito registrato allora.
+ * Ogni scheda ha `esercizio`, l'elemento della banca, o `null`.
+ *
+ * `conteggi` — carteggio: `proposti, esercizi, scritti, vuoti, nonRegistrati,
+ * coincidenti, daRivedere, senzaGiudizio, nonAffrontati`; tecniche: `proposti,
+ * risposte, coincidenti, nonCoincidenti, senzaEsito, nonAffrontati`.
+ * `nonAffrontati` e' `null` quando la quantita' proposta non e' registrata:
+ * dalle righe assenti non si deduce niente.
+ *
+ * `filtro` si sceglie per nome — `'tutti' | 'da-rivedere'` sul carteggio,
+ * `'tutte' | 'non-coincidenti'` sulle tecniche — e `mostrate` sono le schede
+ * che passa. Un filtro sconosciuto e' un errore.
+ *
+ * `esito` c'e' solo per una prova (modalita' `simulazione`) con **tutti** i
+ * giudizi: `{ coincidenti, su, soglia, raggiunta }`, con la soglia di
+ * `PROVA_CARTEGGIO`; un allenamento non ha soglia.
+ *
+ * `mancanti`: gli esercizi che la banca passata non ha — la scheda resta, con
+ * il risultato proprio; `null` se la banca non c'e', perche' allora non si sa.
+ * Un'attivita' ambigua ha `schede` vuote, `conteggi` ed `esito` `null`: non
+ * «zero da rivedere», che sarebbe falso. Un id che non c'e' ha `trovata: false`.
+ */
+export function dettaglioCarteggio(righe, banca, id, opt = {}) {
+  const tipo = tipoCarteggio(opt, 'dettaglioCarteggio');
+  const filtri = FILTRI_CARTEGGIO[tipo];
+  const filtro = opt.filtro ?? filtri[0];
+  if (!filtri.includes(filtro)) {
+    throw new Error(`dettaglioCarteggio: filtro sconosciuto «${filtro}» per il tipo ${tipo} (${filtri.join(' | ')})`);
+  }
+  const conBanca = Array.isArray(banca);
+  const vuoto = { trovata: false, id, tipo, fonte: null, mode: null, variante: null, proposti: null,
+    ordine: null, prova: null, ambigua: false, motivi: [], banca: conBanca, filtro,
+    schede: [], mostrate: [], conteggi: null, mancanti: conBanca ? [] : null, esito: null };
+  const a = attivitaCarteggio(righe, { tipo }).find((x) => String(x.id) === String(id));
+  if (!a) return vuoto;
+  const testa = { ...vuoto, trovata: true, id: a.id, fonte: a.fonte, mode: a.mode, variante: a.variante,
+    proposti: a.proposti, ordine: a.ordine, prova: a.prova, ambigua: a.ambigua, motivi: a.motivi };
+  if (a.ambigua) return testa;
+
+  const per = conBanca ? new Map(banca.filter(Boolean).map((e) => [e.id, e])) : null;
+  const mancanti = conBanca ? [] : null;
+  const schede = a.righe.map((r) => {
+    const esercizio = per ? per.get(r.item_id) ?? null : null;
+    if (per && !esercizio && !mancanti.includes(r.item_id)) mancanti.push(r.item_id);
+    const base = { item_id: r.item_id, uid: r.uid, ts: r.ts, pos: Number.isInteger(r.pos) ? r.pos : null, esercizio, riga: r };
+    if (tipo === 'c') {
+      const risposta = rispostaScritta(r);
+      return { ...base, risposta, scritta: risposta == null ? null : risposta.trim() !== '', giudizio: siNo(r.verdict) };
+    }
+    return { ...base,
+      scelte: typeof r.chosen === 'string' ? (r.chosen ? r.chosen.split('|') : []) : null,
+      attese: esercizio && Array.isArray(esercizio.tecniche) ? [...esercizio.tecniche] : null,
+      coincidono: siNo(r.correct) };
+  });
+  const quante = (f) => schede.filter(f).length;
+  const nonAffrontati = a.proposti == null ? null : a.proposti - a.n;
+  let conteggi, mostrate, esito = null;
+  if (tipo === 'c') {
+    conteggi = { proposti: a.proposti, esercizi: a.n,
+      scritti: quante((s) => s.scritta === true), vuoti: quante((s) => s.scritta === false),
+      nonRegistrati: quante((s) => s.scritta === null),
+      coincidenti: quante((s) => s.giudizio === true), daRivedere: quante((s) => s.giudizio === false),
+      senzaGiudizio: quante((s) => s.giudizio === null), nonAffrontati };
+    mostrate = filtro === 'da-rivedere' ? schede.filter((s) => s.giudizio === false) : schede;
+    if (a.mode === 'simulazione' && conteggi.senzaGiudizio === 0) {
+      const soglia = PROVA_CARTEGGIO.soglia;
+      esito = { coincidenti: conteggi.coincidenti, su: a.proposti ?? a.n, soglia,
+                raggiunta: conteggi.coincidenti >= soglia };
+    }
+  } else {
+    conteggi = { proposti: a.proposti, risposte: a.n,
+      coincidenti: quante((s) => s.coincidono === true), nonCoincidenti: quante((s) => s.coincidono === false),
+      senzaEsito: quante((s) => s.coincidono === null), nonAffrontati };
+    mostrate = filtro === 'non-coincidenti' ? schede.filter((s) => s.coincidono === false) : schede;
+  }
+  return { ...testa, schede, mostrate, conteggi, mancanti, esito };
+}
+
 // Una riga dell'archivio pesa ~200 byte; la piu' grande misurata sull'archivio
 // vero del progetto di preparazione (2.341 righe) ne pesa 241, ed e' una di
 // carteggio, che porta il testo scritto da chi studia. Il tetto lascia spazio a

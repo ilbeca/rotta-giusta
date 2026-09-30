@@ -3043,3 +3043,319 @@ test('trasferimento: le funzioni non toccano quello che ricevono', () => {
   assert.equal(JSON.stringify(righe), fotoR);
   assert.equal(JSON.stringify(t), fotoT);
 });
+
+
+/* --- P-33: l'attivita' intera anche per carteggio e tecniche ------------------ */
+//
+// P-30 ha dato a `sessioni()` il confine dell'attivita', ma solo per le righe
+// `_t:'q'`. D-02 del §10.1 di docs/area-4-progetto.md chiede lo stesso per il
+// carteggio (`_t:'c'`) e le tecniche (`_t:'t'`): un contratto puro per il
+// dettaglio e i conteggi, completo oltre le pause, distinto dalle sessioni
+// ricostruite, isolato dalle attivita' estranee — senza applicare in silenzio
+// l'API dei quiz ai tipi nuovi, e senza toccare il confine per pausa di ritmo().
+
+const TS = (ora) => `2026-09-30T${ora}+02:00`;
+/** Una riga di carteggio come la scrive salvaCart(), piu' i campi di P-33. */
+const rc = (uid, item, o = {}) => ({
+  _t: 'c', uid, item_id: item, ts: TS('10:00:00'),
+  input_json: JSON.stringify({ risposta: 'Lat 42°50,0N' }), verdict: 1, delta: null,
+  ms: 600000, mode: 'giro-tecniche', sim_uid: null, ...o,
+});
+/** Una riga di tecnica come la scrive correggiTec(), piu' i campi di P-33. */
+const rt = (uid, item, o = {}) => ({
+  _t: 't', uid, item_id: item, ts: TS('11:00:00'), correct: 1, ms: 20000,
+  chosen: 'Rilevamento polare singolo', ...o,
+});
+/** Una banca minima con la forma di carteggio.json / tecniche.json. */
+const bancaC = (...ids) => ids.map((id) => ({ id, testo: 'Testo ' + id,
+  risposta_ufficiale: 'Uff ' + id, tecniche: ['Rilevamento polare singolo', 'Conversione bussola-vero'] }));
+
+test('attivitaCarteggio: il tipo si sceglie per nome, e sessioni() resta dei quiz', () => {
+  const righe = [rc('c1', '5.1.3-1'), rt('t1', '5.1.3-1'),
+    { _t: 'q', uid: 'q1', item_id: 'base-1', kind: 'base', mode: 'batteria', ts: TS('09:00:00'), correct: 1, ms: 9000 },
+    { _t: 'q', uid: 'q2', item_id: 'base-2', kind: 'base', mode: 'batteria', ts: TS('09:01:00'), correct: 1, ms: 9000 }];
+  // Un tipo che manca o che non e' uno dei due e' un errore, non un ripiego:
+  // un'opzione ignorata tornerebbe in silenzio ai quiz, o a tutti i tipi.
+  assert.throws(() => E.attivitaCarteggio(righe), /tipo/);
+  assert.throws(() => E.attivitaCarteggio(righe, { tipo: 'q' }), /sessioni/);
+  assert.throws(() => E.attivitaCarteggio(righe, { tipo: 'carteggio' }), /tipo/);
+  assert.throws(() => E.dettaglioCarteggio(righe, [], 'x'), /tipo/);
+  // I quiz non entrano, e il carteggio non entra nei quiz.
+  assert.deepEqual(E.attivitaCarteggio(righe, { tipo: 'c' }).flatMap((a) => a.righe.map((r) => r.uid)), ['c1']);
+  assert.deepEqual(E.attivitaCarteggio(righe, { tipo: 't' }).flatMap((a) => a.righe.map((r) => r.uid)), ['t1']);
+  assert.deepEqual(sessioni(righe).flatMap((s) => s.righe.map((r) => r.uid)), ['q1', 'q2'],
+    'sessioni() resta dei soli quiz, anche col confine predefinito');
+  assert.deepEqual(sessioni(righe, { confine: 'attivita' }).flatMap((s) => s.righe.map((r) => r.uid)), ['q1', 'q2']);
+  assert.deepEqual(ritmo(righe), ritmo(righe.filter((r) => r._t === 'q')), 'il ritmo non vede carteggio e tecniche');
+});
+
+test('attivitaCarteggio: un attivita registrata resta intera oltre la pausa', () => {
+  // Il giro registrato con il suo sim_uid, concluso in due momenti; e un
+  // riconoscimento delle tecniche con la terza risposta 21 minuti dopo — il
+  // caso di P-30, per il tipo 't'.
+  const giro = [
+    rc('g0', '5.1.3-1', { sim_uid: 'giro', proposti: 3, pos: 0, ts: TS('10:00:00') }),
+    rc('g1', '5.1.3-2', { sim_uid: 'giro', proposti: 3, pos: 1, ts: TS('10:00:00') }),
+    rc('g2', '5.2.3-1', { sim_uid: 'giro', proposti: 3, pos: 2, ts: TS('10:41:00') }),
+  ];
+  const [a] = E.attivitaCarteggio(giro, { tipo: 'c' });
+  assert.equal(E.attivitaCarteggio(giro, { tipo: 'c' }).length, 1, 'una attivita, un gruppo');
+  assert.equal(a.id, 'giro'); assert.equal(a.fonte, 'sim_uid'); assert.equal(a.n, 3);
+  assert.equal(a.ambigua, false); assert.deepEqual(a.motivi, []);
+  assert.equal(a.inizio, TS('10:00:00')); assert.equal(a.fine, TS('10:41:00'));
+  assert.equal(a.ms, 1800000, 'la somma dei tempi registrati, non una durata inventata');
+
+  const tec = [['11:00:00', 1], ['11:01:00', 0], ['11:22:01', 0]].map(([ora, ok], i) =>
+    rt('t' + i, '5.1.3-' + (i + 1), { sim_uid: 'riconosci', proposti: 5, pos: i, ts: TS(ora), correct: ok }));
+  const ta = E.attivitaCarteggio(tec, { tipo: 't' });
+  assert.equal(ta.length, 1); assert.equal(ta[0].n, 3); assert.equal(ta[0].fonte, 'sim_uid');
+  const d = E.dettaglioCarteggio(tec, bancaC('5.1.3-1', '5.1.3-2', '5.1.3-3'), 'riconosci', { tipo: 't' });
+  assert.equal(d.conteggi.risposte, 3);
+  assert.equal(d.conteggi.nonCoincidenti, 2, 'le due scelte che non coincidono, non una');
+  assert.equal(d.conteggi.nonAffrontati, 2);
+});
+
+test('attivitaCarteggio: le attivita non si mescolano, nemmeno intrecciate', () => {
+  // Due riconoscimenti intrecciati (due schede), un giro e una prova sulla
+  // carta, e un quiz: ognuno porta solo le sue righe, e ogni id compare una volta.
+  const a = [0, 1, 2].map((i) => rt('a' + i, '5.1.3-' + (i + 1), { sim_uid: 'A', ts: TS(`11:0${2 * i}:00`) }));
+  const b = [0, 1, 2].map((i) => rt('b' + i, '5.2.3-' + (i + 1), { sim_uid: 'B', ts: TS(`11:0${2 * i + 1}:00`), correct: 0 }));
+  const giro = [rc('g0', '5.1.3-1', { sim_uid: 'G' }), rc('g1', '5.1.3-2', { sim_uid: 'G' })];
+  const prova = [rc('p0', '5.1.3-3', { sim_uid: 'P', mode: 'simulazione' }), rc('p1', '5.2.3-1', { sim_uid: 'P', mode: 'simulazione' })];
+  const s = { _t: 's', uid: 'P', kind: 'carteggio', ts: TS('10:00:00'), score: 2, total: 2, passed: 0, ms: 3600000 };
+  const q = { _t: 'q', uid: 'q1', item_id: 'base-1', kind: 'base', mode: 'batteria', sim_uid: 'Q', ts: TS('11:03:30'), correct: 0, ms: 9000 };
+  const righe = [...a, ...b, ...giro, ...prova, s, q];
+  const tt = E.attivitaCarteggio(righe, { tipo: 't' });
+  assert.deepEqual(tt.map((x) => x.id).sort(), ['A', 'B']);
+  for (const x of tt) assert.ok(x.righe.every((r) => r.sim_uid === x.id && r._t === 't'), x.id);
+  const cc = E.attivitaCarteggio(righe, { tipo: 'c' });
+  assert.deepEqual(cc.map((x) => x.id).sort(), ['G', 'P']);
+  assert.equal(cc.find((x) => x.id === 'P').prova, s, 'la prova porta la sua riga di prova');
+  assert.equal(cc.find((x) => x.id === 'G').prova, null, 'un allenamento non ha una riga di prova');
+  assert.ok(cc.every((x) => !x.ambigua));
+  assert.equal(E.dettaglioCarteggio(righe, bancaC('5.1.3-1', '5.1.3-2', '5.1.3-3'), 'A', { tipo: 't' }).conteggi.nonCoincidenti, 0,
+    'gli errori della scheda accanto non entrano');
+  assert.equal(E.dettaglioCarteggio(righe, [], 'Q', { tipo: 't' }).trovata, false, 'un quiz non e un attivita di tecniche');
+  assert.ok(epoca(tt[0].fine) >= epoca(tt[1].fine), 'la piu recente per prima');
+});
+
+test('attivitaCarteggio: le righe senza legame si ricostruiscono, e lo dichiarano', () => {
+  // Le righe di prima di P-33: giro e tappeto con sim_uid null, tutte le righe
+  // di un salvataggio con lo stesso ts (salvaCart() ne usa uno solo); le
+  // tecniche senza legame, una riga per risposta.
+  const giro = [0, 1, 2].map((i) => rc('gx' + (9 - i), '5.1.3-' + (i + 1), { ts: TS('10:00:00') }));
+  const tappeto = [0, 1, 2, 3].map((i) => rc('tp' + i, '5.2.3-' + (i + 1), { ts: TS('10:05:00'), mode: 'tappeto' }));
+  // un secondo giro salvato un minuto dopo il primo: istante diverso, attivita' diversa
+  const giro2 = [rc('gy0', '5.1.3-4', { ts: TS('10:01:00') })];
+  const vecchie = [...giro, ...tappeto, ...giro2];
+  const cc = E.attivitaCarteggio(vecchie, { tipo: 'c' });
+  assert.equal(cc.length, 3, JSON.stringify(cc.map((x) => [x.mode, x.n])));
+  assert.ok(cc.every((x) => x.fonte === 'risposte'), 'ricostruito, e dichiarato');
+  assert.deepEqual(cc.map((x) => x.n).sort(), [1, 3, 4]);
+  // L'id di un gruppo ricostruito non dipende dall'ordine in cui l'archivio
+  // restituisce le righe: IndexedDB puo' riordinarle, e la revisione riapre per id.
+  const rovescio = E.attivitaCarteggio([...vecchie].reverse(), { tipo: 'c' });
+  assert.deepEqual(rovescio.map((x) => x.id).sort(), cc.map((x) => x.id).sort());
+  for (const x of cc) {
+    assert.ok(x.id.startsWith('r:'), x.id);
+    assert.deepEqual(rovescio.find((y) => y.id === x.id).righe.map((r) => r.uid).sort(), x.righe.map((r) => r.uid).sort());
+  }
+  assert.equal(E.dettaglioCarteggio(vecchie, bancaC(), cc.find((x) => x.n === 4).id, { tipo: 'c' }).fonte, 'risposte');
+
+  // Tecniche senza legame: la pausa e il quesito ripetuto chiudono, come nei quiz.
+  const tec = [
+    rt('u0', '5.1.3-1', { ts: TS('11:00:00') }), rt('u1', '5.1.3-2', { ts: TS('11:01:00') }),
+    rt('u2', '5.1.3-3', { ts: TS('11:30:00') }),                 // oltre la pausa
+    rt('u3', '5.1.3-3', { ts: TS('11:31:00') }),                 // ricompare: lista nuova
+  ];
+  const tt = E.attivitaCarteggio(tec, { tipo: 't' });
+  assert.deepEqual(tt.map((x) => x.n).sort(), [1, 1, 2]);
+  assert.ok(tt.every((x) => x.fonte === 'risposte' && !x.ambigua));
+  // Un legame registrato in mezzo chiude il gruppo ricostruito, come in sessioni().
+  const conLegame = [tec[0], rt('l0', '5.2.3-1', { sim_uid: 'L', ts: TS('11:00:30') }), tec[1]];
+  assert.equal(E.attivitaCarteggio(conLegame, { tipo: 't' }).length, 3);
+});
+
+test('attivitaCarteggio: un legame ambiguo si dice, e non apre un dettaglio', () => {
+  const base = () => [0, 1].map((i) => rc('x' + i, '5.1.3-' + (i + 1),
+    { sim_uid: 'X', mode: 'simulazione', variante: 'cieca', pos: i }));
+  const casi = [
+    ['esercizio ripetuto', (r) => [...r, rc('x9', '5.1.3-1', { sim_uid: 'X', mode: 'simulazione', variante: 'cieca' })]],
+    ['modalità diverse', (r) => [r[0], { ...r[1], mode: 'tappeto' }]],
+    ['tipi diversi', (r) => [...r, { _t: 'q', uid: 'q9', item_id: 'base-1', kind: 'base', mode: 'batteria', sim_uid: 'X', ts: TS('09:00:00'), correct: 1 }]],
+    ['tipi diversi', (r) => [...r, rt('t9', '5.1.3-1', { sim_uid: 'X' })]],
+    ['riga di prova estranea', (r) => [...r, { _t: 's', uid: 'X', kind: 'base', ts: TS('10:00:00'), score: 1, total: 2, passed: 0 }]],
+    ['riga di prova estranea', (r) => [...r.map((x) => ({ ...x, mode: 'giro-tecniche', variante: undefined })),
+      { _t: 's', uid: 'X', kind: 'carteggio', ts: TS('10:00:00'), score: 1, total: 2, passed: 0 }]],
+    ['variante diversa', (r) => [r[0], { ...r[1], variante: 'nuoviPrima' }]],
+    ['variante diversa', (r) => [r[0], { ...r[1], variante: undefined }]],
+    ['variante diversa', (r) => [...r, { _t: 's', uid: 'X', kind: 'carteggio', ts: TS('10:00:00'), score: 1, total: 2, passed: 0, variante: 'nuoviPrima' }]],
+    ['quantità proposta incoerente', (r) => [{ ...r[0], proposti: 2 }, { ...r[1], proposti: 3 }]],
+    ['quantità proposta incoerente', (r) => [{ ...r[0], proposti: 2 }, r[1]]],
+    ['quantità proposta incoerente', (r) => r.map((x) => ({ ...x, proposti: 1 }))],
+  ];
+  for (const [motivo, fai] of casi) {
+    const righe = fai(base());
+    const a = E.attivitaCarteggio(righe, { tipo: 'c' }).find((x) => x.id === 'X');
+    assert.equal(a.ambigua, true, motivo);
+    assert.deepEqual(a.motivi, [motivo], motivo);
+    const d = E.dettaglioCarteggio(righe, bancaC('5.1.3-1', '5.1.3-2'), 'X', { tipo: 'c' });
+    assert.equal(d.trovata, true); assert.equal(d.ambigua, true);
+    assert.deepEqual(d.schede, [], 'nessun dettaglio da un attivita che non si puo verificare');
+    assert.equal(d.conteggi, null, 'non «zero da rivedere»: non si sa');
+    assert.equal(d.esito, null);
+  }
+  assert.equal(E.attivitaCarteggio(base(), { tipo: 'c' })[0].ambigua, false);
+  // Per le tecniche: una riga di prova con lo stesso uid e' estranea.
+  const t = [rt('t0', '5.1.3-1', { sim_uid: 'T' }), { _t: 's', uid: 'T', kind: 'carteggio', ts: TS('11:05:00'), score: 1, total: 1, passed: 1 }];
+  assert.deepEqual(E.attivitaCarteggio(t, { tipo: 't' })[0].motivi, ['riga di prova estranea']);
+});
+
+test('dettaglioCarteggio: schede, conteggi e filtro dalla stessa fonte', () => {
+  const ids = ['5.1.3-1', '5.1.3-2', '5.2.3-1', '5.2.3-2'];
+  const righe = [
+    rc('d0', ids[0], { sim_uid: 'D', proposti: 4, pos: 0, verdict: 1 }),
+    rc('d1', ids[1], { sim_uid: 'D', proposti: 4, pos: 1, verdict: 0 }),
+    rc('d2', ids[2], { sim_uid: 'D', proposti: 4, pos: 2, verdict: 0, input_json: JSON.stringify({ risposta: '   ' }) }),
+    rc('d3', ids[3], { sim_uid: 'D', proposti: 4, pos: 3, verdict: 1, input_json: undefined }),
+  ];
+  // l'archivio le restituisce in un altro ordine: conta la posizione registrata
+  const d = E.dettaglioCarteggio([righe[2], righe[0], righe[3], righe[1]], bancaC(...ids), 'D', { tipo: 'c' });
+  assert.equal(d.ordine, 'registrato');
+  assert.deepEqual(d.schede.map((s) => s.item_id), ids, 'nell\'ordine della lista proposta');
+  assert.deepEqual(d.schede.map((s) => s.giudizio), [true, false, false, true]);
+  assert.deepEqual(d.schede.map((s) => s.scritta), [true, true, false, null],
+    'un campo vuoto e un campo non registrato sono due cose diverse');
+  assert.equal(d.schede[0].risposta, 'Lat 42°50,0N', 'la risposta com\'e\', senza normalizzarla');
+  assert.equal(d.schede[3].risposta, null);
+  assert.equal(d.schede[0].esercizio.risposta_ufficiale, 'Uff 5.1.3-1');
+  assert.deepEqual(d.conteggi, { proposti: 4, esercizi: 4, scritti: 2, vuoti: 1, nonRegistrati: 1,
+    coincidenti: 2, daRivedere: 2, senzaGiudizio: 0, nonAffrontati: 0 });
+  assert.equal(d.filtro, 'tutti');
+  assert.deepEqual(d.mostrate, d.schede);
+  const f = E.dettaglioCarteggio(righe, bancaC(...ids), 'D', { tipo: 'c', filtro: 'da-rivedere' });
+  assert.deepEqual(f.mostrate.map((s) => s.item_id), [ids[1], ids[2]]);
+  assert.equal(f.mostrate.length, f.conteggi.daRivedere, 'il numero sul pulsante e le schede che apre coincidono');
+  assert.throws(() => E.dettaglioCarteggio(righe, bancaC(...ids), 'D', { tipo: 'c', filtro: 'errori' }), /filtro/);
+  assert.throws(() => E.dettaglioCarteggio(righe, bancaC(...ids), 'D', { tipo: 'c', filtro: 'non-coincidenti' }), /filtro/);
+  assert.equal(d.esito, null, 'un allenamento non ha soglia');
+});
+
+test('dettaglioCarteggio: un giudizio che manca non diventa «da rivedere», e la soglia vuole tutti i giudizi', () => {
+  const ids = ['5.1.3-1', '5.1.3-2', '5.2.3-1', '5.2.3-2'];
+  const prova = (verdetti) => [
+    ...ids.map((id, i) => rc('p' + i, id, { sim_uid: 'P', mode: 'simulazione', variante: 'cieca', proposti: 4, pos: i, verdict: verdetti[i] })),
+    { _t: 's', uid: 'P', kind: 'carteggio', ts: TS('10:00:00'), score: 3, total: 4, passed: 1, ms: 3600000, variante: 'cieca' },
+  ];
+  const tutti = E.dettaglioCarteggio(prova([1, 1, 0, 1]), bancaC(...ids), 'P', { tipo: 'c' });
+  assert.deepEqual(tutti.esito, { coincidenti: 3, su: 4, soglia: E.PROVA_CARTEGGIO.soglia, raggiunta: true });
+  assert.equal(tutti.variante, 'cieca');
+  assert.equal(E.dettaglioCarteggio(prova([1, 0, 0, 1]), bancaC(...ids), 'P', { tipo: 'c' }).esito.raggiunta, false);
+  const manca = E.dettaglioCarteggio(prova([1, 1, null, 1]), bancaC(...ids), 'P', { tipo: 'c' });
+  assert.equal(manca.conteggi.senzaGiudizio, 1);
+  assert.equal(manca.conteggi.daRivedere, 0, 'un giudizio assente non e un giudizio negativo');
+  assert.equal(manca.schede[2].giudizio, null);
+  assert.equal(manca.esito, null, 'senza tutti i giudizi nessuna soglia, raggiunta o no');
+  const f = E.dettaglioCarteggio(prova([1, 1, null, 1]), bancaC(...ids), 'P', { tipo: 'c', filtro: 'da-rivedere' });
+  assert.deepEqual(f.mostrate, []);
+});
+
+test('dettaglioCarteggio: le tecniche contano le scelte che non coincidono e i non affrontati', () => {
+  const ids = ['5.1.3-1', '5.1.3-2', '5.2.3-1'];
+  const righe = [
+    rt('k0', ids[0], { sim_uid: 'K', proposti: 5, pos: 0, ts: TS('11:00:00'), correct: 1, chosen: 'Rilevamento polare singolo|Conversione bussola-vero' }),
+    rt('k1', ids[1], { sim_uid: 'K', proposti: 5, pos: 1, ts: TS('11:01:00'), correct: 0, chosen: 'Conversione bussola-vero' }),
+    rt('k2', ids[2], { sim_uid: 'K', proposti: 5, pos: 2, ts: TS('11:02:00'), correct: 0, chosen: '' }),
+  ];
+  const d = E.dettaglioCarteggio(righe, bancaC(...ids), 'K', { tipo: 't' });
+  assert.deepEqual(d.conteggi, { proposti: 5, risposte: 3, coincidenti: 1, nonCoincidenti: 2, senzaEsito: 0, nonAffrontati: 2 });
+  assert.deepEqual(d.schede[0].scelte, ['Rilevamento polare singolo', 'Conversione bussola-vero']);
+  assert.deepEqual(d.schede[2].scelte, [], 'nessuna tecnica scelta non e una scelta non registrata');
+  assert.deepEqual(d.schede[1].attese, ['Rilevamento polare singolo', 'Conversione bussola-vero'], 'le attese dalla banca');
+  assert.deepEqual(d.schede.map((s) => s.coincidono), [true, false, false]);
+  assert.equal(d.filtro, 'tutte');
+  const f = E.dettaglioCarteggio(righe, bancaC(...ids), 'K', { tipo: 't', filtro: 'non-coincidenti' });
+  assert.deepEqual(f.mostrate.map((s) => s.item_id), [ids[1], ids[2]]);
+  assert.equal(f.mostrate.length, f.conteggi.nonCoincidenti);
+  assert.throws(() => E.dettaglioCarteggio(righe, bancaC(...ids), 'K', { tipo: 't', filtro: 'da-rivedere' }), /filtro/);
+  assert.equal(d.esito, null);
+  // una scelta non registrata resta non registrata
+  const senza = E.dettaglioCarteggio([{ ...righe[0], chosen: undefined }], bancaC(...ids), 'K', { tipo: 't' });
+  assert.equal(senza.schede[0].scelte, null);
+});
+
+test('dettaglioCarteggio: le righe vecchie non inventano quantita, variante ne ordine', () => {
+  const banca = bancaCarteggioVera();
+  const ids = banca.slice(0, 4).map((e) => e.id);
+  // Un giro di prima di P-33: niente sim_uid, niente proposti, niente pos.
+  const giro = ids.slice(0, 3).map((id, i) => rc('v' + i, id, { verdict: i === 1 ? 0 : 1 }));
+  const [g] = E.attivitaCarteggio(giro, { tipo: 'c' });
+  const d = E.dettaglioCarteggio(giro, banca, g.id, { tipo: 'c' });
+  assert.equal(d.proposti, null); assert.equal(d.conteggi.proposti, null);
+  assert.equal(d.conteggi.nonAffrontati, null, 'non zero: non si sa quanti ne erano stati proposti');
+  assert.equal(d.variante, null);
+  assert.equal(d.ordine, 'non registrato');
+  assert.equal(d.fonte, 'risposte');
+  assert.equal(d.conteggi.daRivedere, 1);
+  assert.equal(d.schede[1].esercizio.id, ids[1], 'la banca vera');
+  // Una prova di prima di P-32: il legame c'e', la variante no. E' sconosciuta,
+  // non 'cieca'; la quantita' proposta e' quella registrata nella riga di prova.
+  const prova = [...ids.map((id, i) => rc('o' + i, id, { sim_uid: 'OLD', mode: 'simulazione' })),
+    { _t: 's', uid: 'OLD', kind: 'carteggio', ts: TS('10:00:00'), score: 4, total: 4, passed: 1, ms: 3000000 }];
+  const o = E.dettaglioCarteggio(prova, banca, 'OLD', { tipo: 'c' });
+  assert.equal(o.variante, null, 'sconosciuta, non la predefinita');
+  assert.equal(o.proposti, 4, 'dalla riga di prova, dove e registrata');
+  assert.equal(o.conteggi.nonAffrontati, 0);
+  assert.equal(o.esito.raggiunta, true);
+  assert.equal(o.fonte, 'sim_uid');
+  // Una prova nuova porta la variante di P-32.
+  const nuova = prova.map((r) => ({ ...r, uid: r._t === 's' ? 'NEW' : r.uid + 'n', sim_uid: r._t === 's' ? undefined : 'NEW', variante: 'nuoviPrima' }));
+  assert.equal(E.dettaglioCarteggio(nuova, banca, 'NEW', { tipo: 'c' }).variante, 'nuoviPrima');
+  // Tecniche di prima: nessun legame, nessuna quantita'.
+  const tec = [rt('w0', ids[0], { ts: TS('11:00:00') }), rt('w1', ids[1], { ts: TS('11:01:00'), correct: 0 })];
+  const [ta] = E.attivitaCarteggio(tec, { tipo: 't' });
+  const td = E.dettaglioCarteggio(tec, banca, ta.id, { tipo: 't' });
+  assert.equal(td.conteggi.nonAffrontati, null);
+  assert.equal(td.conteggi.nonCoincidenti, 1);
+  assert.deepEqual(td.schede.map((s) => s.item_id), [ids[0], ids[1]], 'senza posizioni, nell\'ordine delle risposte');
+});
+
+test('dettaglioCarteggio: un esercizio che la banca non ha si nomina, e senza banca non si inventa', () => {
+  const righe = [rc('m0', '5.1.3-1', { sim_uid: 'M', verdict: 0 }), rc('m1', '9.9.9-9', { sim_uid: 'M', verdict: 0 })];
+  const d = E.dettaglioCarteggio(righe, bancaC('5.1.3-1'), 'M', { tipo: 'c' });
+  assert.deepEqual(d.mancanti, ['9.9.9-9']);
+  assert.equal(d.banca, true);
+  const m = d.schede.find((s) => s.item_id === '9.9.9-9');
+  assert.equal(m.esercizio, null);
+  assert.equal(m.risposta, 'Lat 42°50,0N', 'il risultato proprio resta');
+  assert.equal(d.conteggi.daRivedere, 2, 'un esercizio che manca in banca conta lo stesso');
+  const senza = E.dettaglioCarteggio(righe, null, 'M', { tipo: 'c' });
+  assert.equal(senza.banca, false);
+  assert.equal(senza.mancanti, null, 'non «nessuno»: la banca non e caricata');
+  assert.ok(senza.schede.every((s) => s.esercizio === null));
+  assert.deepEqual(senza.conteggi, d.conteggi, 'i conteggi vengono dalle righe, non dalla banca');
+  const t = E.dettaglioCarteggio([rt('n0', '9.9.9-9', { sim_uid: 'N' })], bancaC('5.1.3-1'), 'N', { tipo: 't' });
+  assert.deepEqual(t.mancanti, ['9.9.9-9']);
+  assert.equal(t.schede[0].attese, null);
+});
+
+test('dettaglioCarteggio: un ritento con gli stessi uid non conta due volte, e un id assente non e un attivita vuota', () => {
+  const righe = [rc('r0', '5.1.3-1', { sim_uid: 'R', verdict: 0 }), rc('r1', '5.1.3-2', { sim_uid: 'R' })];
+  // La scrittura fallita si ritenta con gli stessi uid (§6.3 del progetto):
+  // le righe arrivate due volte sono le stesse righe.
+  const d = E.dettaglioCarteggio([...righe, ...righe.map((r) => ({ ...r }))], bancaC('5.1.3-1', '5.1.3-2'), 'R', { tipo: 'c' });
+  assert.equal(d.ambigua, false);
+  assert.equal(d.conteggi.esercizi, 2);
+  assert.equal(d.conteggi.daRivedere, 1);
+  // Con uid nuovi non e' un ritento: e' un esercizio ripetuto, e si dice.
+  const doppio = [...righe, ...righe.map((r) => ({ ...r, uid: r.uid + '-bis' }))];
+  assert.deepEqual(E.dettaglioCarteggio(doppio, bancaC(), 'R', { tipo: 'c' }).motivi, ['esercizio ripetuto']);
+  const no = E.dettaglioCarteggio(righe, bancaC(), 'nessuno', { tipo: 'c' });
+  assert.equal(no.trovata, false);
+  assert.equal(no.conteggi, null);
+  assert.deepEqual(no.schede, []);
+  // e niente di quello che riceve viene toccato
+  const foto = JSON.stringify(righe);
+  E.attivitaCarteggio(righe, { tipo: 'c' }); E.dettaglioCarteggio(righe, bancaC('5.1.3-1'), 'R', { tipo: 'c', filtro: 'da-rivedere' });
+  assert.equal(JSON.stringify(righe), foto);
+});

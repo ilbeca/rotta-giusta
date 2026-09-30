@@ -1330,6 +1330,89 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   documentazione verdi. `site/app.html` e `docs/prossime-sessioni.md` non sono
   stati toccati.
 
+### Aggiunto — P-33: l'attività intera anche per carteggio e tecniche
+
+- **Il confine dell'attività di P-30 valeva solo per i quiz, e restava così.**
+  `sessioni()` ed `erroriSessione()` scartano ogni riga che non è `_t:'q'`, e
+  il loro confine predefinito è quello per pausa che `ritmo()` usa. Estenderle
+  ai tipi nuovi avrebbe cambiato in silenzio il ritmo, che oggi non vede
+  carteggio e tecniche, e messo nelle loro liste righe con un altro significato
+  — `verdict` invece di `correct`, un testo scritto invece di una scelta. D-02
+  del §10.1 di `docs/area-4-progetto.md` lo diceva: non applicare ai tipi nuovi
+  l'API dei quiz. Quindi due funzioni a parte, che **nominano il tipo**:
+  `attivitaCarteggio(righe, { tipo })` e `dettaglioCarteggio(righe, banca, id,
+  { tipo, filtro })`. Un tipo che manca, sconosciuto o `'q'` lancia: un'opzione
+  ignorata tornerebbe in silenzio a un altro tipo. Un test pretende che
+  `sessioni()` e `ritmo()` restino dei soli quiz.
+
+- **Le righe di oggi, lette nel codice della pagina, dicono che cosa c'è da
+  ricostruire.** `salvaCart()` lega le righe alla prova e dà a giro e tappeto
+  `sim_uid: null`, e scrive tutte le righe di un salvataggio con **un solo
+  `ts`**, dalla 0.5.0; `correggiTec()` non scrive né `sim_uid` né `mode`.
+  Quindi senza legame il carteggio si ricostruisce per **istante e modalità**,
+  che è come le righe sono nate — le regole dei quiz, pausa e doppione, lo
+  avrebbero fatto peggio: due giri salvati a un minuto di distanza e senza
+  esercizi in comune sarebbero diventati uno, e un test lo prova. Le tecniche,
+  una riga per risposta, si ricostruiscono con le regole di `sessioni()`. In
+  entrambi i casi `fonte: 'risposte'`, dichiarato; l'id ricostruito viene dal
+  più piccolo uid del gruppo, perché le righe di uno stesso istante l'archivio
+  può restituirle in qualunque ordine, e la revisione riapre per id.
+
+- **Il dettaglio dà schede, conteggi e filtro dalla stessa chiamata**, così il
+  numero su «Rivedi quelli da rivedere» e le schede che apre non possono
+  divergere. Sulla carta: coincidenti, da rivedere, **senza giudizio** — un
+  giudizio che manca non diventa «da rivedere», e la soglia della prova si dice
+  solo con tutti i giudizi —, campi scritti, vuoti e **non registrati**, che
+  sono due cose diverse. Sulle tecniche: scelte coincidenti e non coincidenti,
+  «nessuna scelta» distinta da «scelta non registrata». Su entrambi i non
+  affrontati, **solo se la quantità proposta è registrata**: dalle righe
+  assenti non si deduce niente. Un esercizio che la banca non ha si nomina e
+  conserva il risultato proprio; senza la banca i mancanti sono `null`, non
+  «nessuno». Righe con lo stesso uid contano una volta — il ritento della
+  scrittura che il §6.3 del progetto chiede con gli stessi uid —, e un ritento
+  con uid nuovi è un esercizio ripetuto. Un'attività ambigua — esercizio
+  ripetuto, modalità diverse, lo stesso id su un altro tipo, una riga di prova
+  estranea, due varianti, una quantità proposta incoerente — non apre schede né
+  conteggi.
+
+- **Lo schema per la pagina è scritto prima del raccordo**, nel §10.1 del
+  progetto e nel §3.2 della specifica: ogni attività su carta e ogni
+  riconoscimento delle tecniche con un `sim_uid` nuovo a ogni avvio, `proposti`
+  e `pos` su ogni riga, la variante solo nella prova, nessuna riga `_t:'s'` per
+  un allenamento, nessun `verdict` diverso da 1/0. E la compatibilità: le righe
+  di prima restano com'erano, e quantità, variante e ordine vi sono «non
+  registrati» — tranne la quantità di una prova vecchia, che sta davvero in
+  `total` della sua riga di prova, e da lì si legge. Lo schema della variante
+  di P-32 non cambia. `site/app.html` non è stato toccato: scrivere le righe
+  nuove e leggere da qui riepilogo e revisione è della realizzazione dell'area
+  4 (P-21).
+
+- **Prima il test che fallisce:** undici test nuovi, rossi uno per uno per la
+  funzione che mancava. **Provati al contrario su trentasette rotture**, una
+  per volta, ognuna rossa nel test che la riguarda: fra le altre il tipo
+  ignorato, un'attività registrata tagliata dalla pausa, il carteggio
+  ricostruito con le regole dei quiz, l'id dalla prima riga, niente deduplica,
+  ciascuno dei sei motivi di ambiguità non visto, la variante predefinita
+  «cieca», la quantità dedotta dalle righe, la posizione ignorata, il giudizio
+  mancante contato come «da rivedere», il campo vuoto confuso con quello non
+  registrato, la risposta normalizzata, la soglia senza tutti i giudizi o su un
+  allenamento, i mancanti taciuti, e `sessioni()` che comincia a vedere il
+  carteggio. **Due erano rosse per la ragione sbagliata** alla prima stesura —
+  un errore di sintassi lasciato dalla rottura, e un crash — e sono state
+  rifatte come rotture di comportamento; una frase del progetto, la riga di
+  prova con una variante diversa dalle sue righe, non aveva un caso, e l'ha
+  avuto prima del commit. Specifica: §3.2, §4.4, R-FLU-01 aggiornato, nuovi
+  R-FLU-12…22 coperti e R-FLU-23, la pagina, scoperto; le due funzioni fra gli
+  orfani dichiarati di `docs/eccezioni-interfaccia.md` fino a P-21.
+
+  Suite: motore **177/179** con i due skip di sempre (erano 166/168);
+  specifica **654** (erano 608); dati 242; server 60/60; interfaccia
+  **1.442** (erano 1.436: i tre controlli di ciascuno dei due orfani
+  dichiarati nuovi), in 150 s. Con la **24.21.0 LTS**, scaricata da nodejs.org e verificata con
+  `SHASUMS256.txt`: motore 177/179, server 60/60. Prima del giro
+  dell'interfaccia la 8620 guardata libera. Guardiano verde. `site/app.html` e
+  `docs/prossime-sessioni.md` non sono stati toccati.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag

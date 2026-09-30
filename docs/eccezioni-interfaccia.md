@@ -51,6 +51,8 @@ dichiarazione che mente.
 |---|---|
 | `fondi` | Fusione di due specchi: serviva alla sincronia col server, tolta nella 0.19.0. Resta esportata e testata perché descrive la semantica della fusione, ma nessuno la chiama. Non ha un'area: è storia |
 | `provaCarteggio` | La composizione della prova di carteggio nel motore (P-32, D-01 del §10.1 di `area-4-progetto.md`): lista, argomenti rappresentati e mancanti, riprese, completamento dichiarato, e le condizioni 4/60/3 in `PROVA_CARTEGGIO`. La pagina compone ancora con la sua `componiProva()`, che un test del motore tiene identica. La consuma la realizzazione dell'area 4 (P-21): allora `componiProva()`, `argomentiSenzaNuovi()` e le tre costanti `PROVA_*` escono dalla pagina, questa riga esce da qui, e se la pagina non chiama più `E.estrai` né `E.estraiNuoviPrima` le loro righe escono dalle chiamate protette, nello stesso commit |
+| `attivitaCarteggio` | Le attività del Carteggio con il confine dell'attività, per `_t:'c'` e `_t:'t'` (P-33, D-02 del §10.1 di `area-4-progetto.md`): intere oltre le pause, ricostruite e dichiarate per le righe senza legame, isolate dai quiz e dall'altro tipo, ambigue con il motivo. La pagina non ha ancora un riepilogo o una revisione di carta e tecniche fuori dalla prova: la consuma la realizzazione dell'area 4 (P-21), e allora questa riga esce da qui |
+| `dettaglioCarteggio` | Schede, conteggi — coincidenti e da rivedere, scelte non coincidenti, campi vuoti e non registrati, non affrontati — e filtro della revisione di carta e tecniche, dalla stessa fonte (P-33, D-02). Oggi la revisione di una prova di carteggio filtra le righe in `apriRivedi()`; la sostituisce la realizzazione dell'area 4 (P-21), e allora questa riga esce da qui |
 
 ## Chiamate al motore protette
 
