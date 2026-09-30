@@ -200,7 +200,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 18 | Il carteggio su `main`: composizione, attività intera, bozza, controlli — **P-34 in corso**, lanciato dalla regia | Claude | `main`, a mano | niente: P-32 apre la fila | P-32…P-35 |
+| 18 | Il carteggio su `main`: composizione, attività intera, bozza, controlli — **P-35 in corso**, lanciato dalla regia | Claude | `main`, a mano | niente: P-32 apre la fila | P-32…P-35 |
 | 6d, 5b, 12, 13 | Il regime vecchio del ciclo e dei quiz, `ritmo()`, l'ultimo tag | Claude | `main`, a mano | niente: riempiono i buchi | P-37, P-12, P-16, P-17 |
 | 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore | P-15 |
 | 28 | I controlli e la specifica dell'area 6 | Claude | `main`, a mano | in fondo all'ordine | P-45 |
@@ -515,6 +515,19 @@ consuma, non si riprogetta.
   (`~/.Trash/rotta-giusta-area5-esplorazione-2026-09-29/`), non cancellati:
   si recuperano finché il Cestino non si svuota. Il worktree `ui` è pulito e
   `ui/main` è allineato.
+- **Due cose da P-34, che non bloccano niente** (30 settembre 2026), da
+  confermare prima di P-21, che le realizza:
+  1. **Una scelta presa su delega di D-03**: un'attività di carteggio
+     cominciata senza account resta senza bozza fino alla fine, anche se
+     intanto entri; le sue righe passano nell'account dalle solite porte, alla
+     fine. §9.4 di `account-client-progetto.md` e D-03 dell'area 4.
+  2. **Tre testi nuovi** nel §9.4 del progetto del client: all'uscita con
+     lavoro in corso «Su questo dispositivo c'è del lavoro di carteggio non
+     concluso: uscendo lo perdi.», con «Resta qui», «Copia i risultati»,
+     «Scarta il lavoro ed esci»; e la conferma dello scarto, con «Sì, scarta la
+     bozza». C-19 li cerca parola per parola: cambiarli è una riga lì e una
+     nel test.
+  E Q-SUITE cresce ancora: con C-19 la suite dell'interfaccia dura circa 170 s.
 - **Gli adempimenti rimasti**, sei punti, tutti nel §15.4 di
   `account-progetto.md` e bloccano il punto 9: l'indirizzo postale del titolare,
   la base giuridica del registro di sicurezza (da far confermare), l'inoltro di
@@ -1636,7 +1649,7 @@ specifica 654, guardiano verde, interfaccia 1.442 in 150 s.
 ### P-34 — Claude: la bozza del carteggio, e la promessa «a ogni tasto»
 
 **Stato:** **fermato dall'autore il 26 settembre 2026, da rilanciare in Claude
-dopo P-33**; **in corso dal 30 settembre 2026**, lanciato dalla regia (punto 8). Era partito fuori ordine in ChatGPT, nella cartella principale.
+dopo P-33**; **chiuso il 30 settembre 2026**, commit `4c0fbb7` su `main`, lanciato dalla regia (punto 8). Era partito fuori ordine in ChatGPT, nella cartella principale.
 Il suo lavoro non committato — un controllo rosso del difetto, un raccordo
 IndexedDB di riferimento, un banco che guida Chrome headless senza dipendenze,
 e il raccordo documentale per il progetto del client — l'ha spostato la regia
@@ -1676,11 +1689,35 @@ Non toccare docs/prossime-sessioni.md. Suite verdi, voce in fondo a
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `4c0fbb7`, voce nel CHANGELOG. **Prima il difetto**, dimostrato
+in un browser vero: `C-19:ricarica` scrive due testi con l'account, ricarica, e
+il lavoro è perso; la verifica è rossa sulla pagina di oggi ed è dichiarata
+nella tabella nuova «Difetti aperti dichiarati» di
+`docs/eccezioni-interfaccia.md`, che diventa rossa lei il giorno in cui la
+verifica passa. **Poi il contratto**, puro, nel motore — `nuovaBozza`,
+`validaBozza`, `modificaBozza`, `sostituisciBozza`, `riprendiBozza`,
+`concludiBozza`, `BOZZA_CARTEGGIO` —, e il raccordo nel §9.4 del progetto del
+client: la bozza sta in `meta` della copia dell'account, chiave
+`bozza-carteggio:<id>`, senza versione nuova del database e **senza niente sul
+server**; «salvato» solo a transazione completa; ripresa proposta, mai
+automatica; conclusione e cancellazione della bozza in una transazione. La
+pagina di riferimento passa C-19 intero, quattordici rotture rosse. Specifica
+§7.6 al futuro, §3.2, nuovo §9.11 con R-BOZZA-01…07. La riga fra i «Difetti
+noti» di `AGENTS.md` resta, con i puntatori nuovi: la tolgono P-21 e la
+dichiarazione nello stesso commit. **La quarantena è stata letta e non presa**,
+per tre motivi scritti nel CHANGELOG — il suo controllo rosso sarebbe passato
+con una scrittura in `localStorage`, cioè violando l'ADR-004. **Trovato:** un
+verde falso del banco (il tempo della ripresa, ora letto con l'orologio dieci
+minuti avanti), una regola del motore che stava in due posti, e il limite di
+cinque registrazioni l'ora che fermava C-19. **Per l'autore**, nel §4: una
+scelta presa su delega di D-03 e tre testi nuovi. La suite cresce di circa 24
+s (Q-SUITE). Controllato dalla regia: motore 185/187, server 60/60, dati 242,
+specifica 682, guardiano verde, interfaccia 1.517 in 171 s; la quarantena è
+intatta.
 
 ### P-35 — Claude: i controlli del carteggio, allineati all'area 4
 
-**Stato:** in attesa di P-34; lo lancia la regia (punto 8). **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-20, §10.1 di `docs/area-4-progetto.md`.
+**Stato:** **in corso dal 30 settembre 2026**, lanciato dalla regia (punto 8). **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-20, §10.1 di `docs/area-4-progetto.md`.
 
 ```
 Questo prompt è per Claude Code, nella cartella principale
@@ -2466,8 +2503,13 @@ gli account ha due stati che il client deve già avere. **Dove:** `ui/main`.
 **Dovrà contenere:** realizzare `docs/area-4-progetto.md`; le dipendenze da test
 e specifica che il progetto avrà scritto, chiuse prima da Claude come P-06 e
 P-31; l'eccezione `figura` di `docs/eccezioni-interfaccia.md`, se l'area 3 non
-l'ha chiusa; e il CSS morto di `.cons` che P-47 ha trovato (voce P-47 del
-CHANGELOG).
+l'ha chiusa; il CSS morto di `.cons` che P-47 ha trovato (voce P-47 del
+CHANGELOG); i contratti che P-32, P-33 e P-34 hanno scritto nel §10.1 dell'area
+4 e nel §9.4 del progetto del client, con le loro funzioni che escono dagli
+orfani; e, nello stesso commit della bozza, la riga del difetto in
+`docs/eccezioni-interfaccia.md` («Difetti aperti dichiarati») e fra i «Difetti
+noti» di `AGENTS.md`, che è del territorio `regole`: quella la toglie la regia
+alla merge, o la sessione la segnala.
 
 #### P-42 — assorbito in P-47
 
@@ -2749,3 +2791,7 @@ la nota in testa a `docs/filosofia.md`, che lo dice di sé (P-26).
 - **30 settembre 2026 — P-33 chiuso, P-34 lanciato.** L'attività intera anche
   per carteggio e tecniche, nel motore; il resoconto torna con il repo e con le
   suite.
+- **30 settembre 2026 — P-34 chiuso, P-35 lanciato.** La bozza del carteggio ha
+  il suo contratto nel motore e nel client, e il difetto è dimostrato rosso sulla
+  pagina vera, dichiarato. Nel §4 una scelta su delega e tre testi da
+  confermare, senza fermare la fila.
