@@ -1,22 +1,30 @@
 ---
 name: rotta-giusta
 description: >
-  Coordinate di Rotta Giusta, il sito statico open source con quiz e
-  carteggio per la patente nautica senza limiti dalla costa. Dove guardare e le
-  trappole. MUST trigger on: rotta giusta, rotta-giusta, open patente nautica (nome fino alla 0.19.2), sito
-  statico patente, statichost patente, rottagiusta.it, Cloudflare Pages patente (hoster fino alla 0.26), pubblicare la palestra. NON per il
+  Coordinate di Rotta Giusta, il sito open source con quiz e carteggio per la
+  patente nautica senza limiti dalla costa: pagine statiche, e un server a parte
+  per gli account. Dove guardare e le trappole. MUST trigger on: rotta giusta, rotta-giusta, open patente nautica (nome fino alla 0.19.2), sito
+  statico patente, statichost patente, rottagiusta.it, api.rottagiusta.it, server degli account, Cloudflare Pages patente (hoster fino alla 0.26), pubblicare la palestra. NON per il
   progetto personale di preparazione (patente), che e' un altro repo.
 ---
 
 # Rotta Giusta
 
-Sito statico con i 1.722 quesiti e i 135 esercizi di carteggio dell'Allegato A
-al DD 131/2022, il motore di selezione del progetto personale da cui e' estratto,
-e le risposte che restano nel browser di chi studia. Repo `~/Software/rotta-giusta`
-sull'Air, remoto `ilbeca/rotta-giusta` (pubblico), pubblicato da
-statichost.eu su `rottagiusta.it`, cartella `site/`, con «Build now» dopo il push
-(nessun webhook: il push da solo non pubblica). Nessun server, nessun
-database, nessun build step.
+Sito con i 1.722 quesiti e i 135 esercizi di carteggio dell'Allegato A al DD
+131/2022 e il motore di selezione del progetto personale da cui e' estratto.
+Senza account si prova e non resta niente, nemmeno nel browser; con l'account
+le risposte si salvano sul server, in chiaro (ADR-003, ADR-004). Repo
+`~/Software/rotta-giusta` sull'Air, remoto `ilbeca/rotta-giusta` (pubblico).
+
+Due cose pubblicate, in due modi:
+
+- **le pagine**, cartella `site/`, da statichost.eu su `rottagiusta.it`, con
+  «Build now» dopo il push (nessun webhook: il push da solo non pubblica).
+  Nessun build step;
+- **il server degli account**, cartella `server/`, su `api.rottagiusta.it`: Node
+  senza dipendenze npm e un file SQLite, su una macchina Scaleway, dove gira
+  soltanto un tag pubblicato. Come si aggiorna e come si torna indietro:
+  `docs/account-progetto.md` §2.7.
 
 ## Dove sono le informazioni
 
@@ -29,6 +37,9 @@ database, nessun build step.
 | perche' esiste, da dove vengono i dati, cosa e' stato corretto | `README.md` |
 | perche' e' stato scelto cosi' | `docs/adr/` |
 | che cosa passa | `AGENTS.md`, «Comandi»: cinque suite, compresa `node --test tests/test_server.mjs` |
+| che cosa e' il prodotto, e ogni requisito col suo controllo | `docs/specifica.md` |
+| come sono fatti gli account, server e pagina | `docs/account-progetto.md`, `docs/account-client-progetto.md` |
+| che cosa si fa dopo, e in che ordine | `docs/prossime-sessioni.md` |
 | i dati sono ancora quelli del decreto? | `python3 fonte/verifica.py` |
 | e' rientrato qualcosa che non deve uscire di casa? | `python3 strumenti/controlla.py` |
 | il sito in locale | `python3 strumenti/serve.py` — riproduce statichost.eu, misurato |
@@ -48,7 +59,9 @@ database, nessun build step.
    `site/dati/`, e `strumenti/controlla.py` fallisce se rientra materiale che
    non e' del decreto o un identificatore delle macchine dell'autore.
 5. **Niente push senza chiedere.** E dopo il push di un rilascio, «Build now» su
-   statichost.eu: senza, `rottagiusta.it` resta alla versione di prima.
+   statichost.eu: senza, `rottagiusta.it` resta alla versione di prima. Il
+   server degli account si aggiorna a parte, sulla sua macchina, allo stesso
+   tag (`rg-aggiorna <tag>`): nessuno dei due passi fa l'altro.
 6. **Su questo repo lavorano due agenti, e il confine lo fa rispettare git.**
    ChatGPT sta nel worktree `~/Software/rotta-giusta-ui` sul ramo `ui/main` e
    tiene l'interfaccia; Claude sta nel checkout principale su `main` e tiene
@@ -56,6 +69,10 @@ database, nessun build step.
    `pre-commit` rifiuta un commit fuori territorio. Mai `--no-verify`, mai
    `git add -A`: si mette in stage per nome. Il perche' e' in `AGENTS.md`,
    sezione «Chi tocca cosa».
+7. **Lo storico derivato non si salva e non viaggia.** Le righe delle risposte
+   si uniscono per `uid` fra server e dispositivo; lo specchio che il motore
+   legge si ricalcola sempre in locale con `ripiega()`. Una seconda contabilita'
+   che viaggia e' la sincronia che nella 0.4.2 ha perso giorni di studio.
 
 ## Git
 

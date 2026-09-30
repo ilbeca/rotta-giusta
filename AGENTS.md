@@ -1,7 +1,7 @@
 # Rotta Giusta — AGENTS.md
 
-Sito statico open source: quiz e carteggio per la patente nautica senza limiti
-dalla costa. È l'estratto di un progetto personale con cui l'autore ha superato
+Sito open source — pagine statiche, e un server a parte per gli account —: quiz
+e carteggio per la patente nautica senza limiti dalla costa. È l'estratto di un progetto personale con cui l'autore ha superato
 l'esame; ora è **pubblico**, ha **più utenti** e **nessuna scadenza**. I vincoli
 del progetto originario (data d'esame, freeze, utente singolo, server) non
 valgono più. Quelli qui sotto sì, e sono il metodo che ha fatto passare l'esame.
@@ -32,7 +32,7 @@ python3 tests/test_interfaccia.py                 # le viste, le porte, le modal
 python3 tests/test_specifica.py                   # ogni requisito ha il suo controllo
 python3 strumenti/controlla.py                    # il guardiano da solo
 python3 fonte/verifica.py                         # i testi del carteggio contro il PDF (serve pypdf)
-python3 strumenti/serve.py                        # il sito in locale, come lo serve Pages
+python3 strumenti/serve.py                        # il sito in locale, come lo serve statichost.eu
 node server/ripristina.mjs --prova                # scrive, copia, cancella, ripristina, confronta
 python3 strumenti/password_comuni.py --verifica   # l'elenco delle password comuni contro la fonte (serve la rete)
 ```
@@ -50,25 +50,40 @@ che deve essere libera, più sette copie su porte libere qualunque per le rottur
 (P-39, P-43). La 8620 è una sola anche fra i worktree: la suite dell'interfaccia
 in `rotta-giusta-ui` e questa si escludono, e prima di lanciarla si guarda che sia
 libera (`lsof -iTCP:8620 -sTCP:LISTEN`). Senza Chrome il controllo è rosso, non saltato. Il
-perché e che cosa non copre: §12 di `docs/account-client-progetto.md`. Non c'è
-nessun servizio da riavviare, nessuna macchina remota, nessun database.
+perché e che cosa non copre: §12 di `docs/account-client-progetto.md`. In locale non c'è
+nessun servizio da riavviare né un database da preparare: ogni suite avvia i
+suoi server e crea i suoi database, temporanei. **In produzione una macchina
+c'è**: quella del server degli account, su Scaleway, con il suo database. Non si
+tocca da una sessione di sviluppo: ci gira soltanto un tag pubblicato, e come si
+aggiorna, come si torna indietro e come si ripristina una copia sta nel §2.7 di
+`docs/account-progetto.md`.
 
 ## Architettura
 
-- `site/` è **l'unica cosa pubblicata**: statichost.eu, su `rottagiusta.it`,
-  nessun comando di build, cartella di output `site`. Tutto il resto del repo è sorgente, verifica
-  e documentazione.
+- **Due cose pubblicate, in due modi.** `site/` è l'unica cosa che pubblica
+  statichost.eu, su `rottagiusta.it`: nessun comando di build, cartella di
+  output `site`. `server/` è il server degli account, su `api.rottagiusta.it`:
+  un processo Node senza dipendenze npm e un file SQLite, su una macchina
+  Scaleway, che si aggiorna a parte allo stesso tag del sito. Il service worker
+  non vede l'API, e l'API non passa mai dal guscio offline. Tutto il resto del
+  repo è sorgente, verifica e documentazione.
 - **La logica di selezione sta solo in `site/engine.js`.** Logica pura, senza
-  DOM né rete, che gira identica nella pagina e sotto `node --test`. Nessuna
-  seconda implementazione, in nessun posto.
-- **L'archivio delle risposte vive nel browser** (IndexedDB, una riga per
-  risposta) ed è l'unica copia. Lo specchio per quesito che il motore legge
-  **non si salva mai**: si ricalcola con `E.ripiega()` a ogni avvio e dopo ogni
-  import, e c'è un test che pretende che coincida con `E.applica()` risposta
-  per risposta. Non introdurre una seconda contabilità.
-- **Niente build step, bundler o dipendenze nuove.** `index.html` è una pagina
-  autoconsistente che importa solo `/engine.js`. Quello che è nel repo è quello
-  che gira.
+  DOM né rete, che gira identica nella pagina, nel server e sotto `node
+  --test`. Nessuna seconda implementazione, in nessun posto: il server importa
+  `validaRiga()` e i limiti da lì, e rifiuta le stesse righe del browser.
+- **Le risposte sono righe, una per risposta, che non si modificano mai.**
+  Senza account vivono solo nella memoria della pagina aperta, e nel browser
+  non resta niente, nemmeno le preferenze (ADR-004). Con l'account stanno sul
+  server e, per l'offline, nella copia `rg-account-<chiave>` del dispositivo, e
+  le due si uniscono per `uid` senza un vincitore. Lo specchio per quesito che
+  il motore legge **non si salva mai e non viaggia**: si ricalcola con
+  `E.ripiega()` a ogni avvio, dopo ogni import e dopo ogni ricezione, e c'è un
+  test che pretende che coincida con `E.applica()` risposta per risposta. Non
+  introdurre una seconda contabilità.
+- **Niente build step, bundler o dipendenze nuove**, né nelle pagine né nel
+  server. `index.html` e `app.html` sono pagine autoconsistenti che importano
+  solo `/engine.js`; il server usa solo i moduli di Node. Quello che è nel repo
+  è quello che gira.
 - **Non toccare `site/dati/`** se non con una correzione motivata, fissata da
   un test in `tests/test_dati.py` e dichiarata nel README. È la copia
   dell'Allegato A al DD 131/2022. Una risposta della banca **non si cambia per
@@ -204,7 +219,7 @@ Poi si guarda il `CHANGELOG.md`, che e' il posto dove il conflitto arriva.
   `estraiNuoviPrima()` serve lo screening e il selettore «solo mai fatte».
   Sono due funzioni perché sono due mestieri.
 - **Il guscio offline è scritto in due posti** — `GUSCIO` in `sw.js` e in
-  `index.html` — e devono restare identici. C'è un test.
+  `app.html` — e devono restare identici. C'è un test.
 - **Gli indirizzi sono quelli puliti, non i nomi dei file**: `/privacy` e
   `/avvertenza`, mai `/privacy.html`. La regola è nata sull'host precedente, che
   rispondeva **308** al percorso con l'estensione: una risposta rediretta messa
@@ -216,8 +231,9 @@ Poi si guarda il `CHANGELOG.md`, che e' il posto dove il conflitto arriva.
   riproduce in locale l'host di **oggi**, misurato — e un test pretende che lo
   faccia.
 - **Una versione, in tre posti, tenuta insieme da un test**: `VERSION`, `CACHE`
-  in `site/sw.js`, `versione` in `site/dati/meta.json`. Non c'è un server che
-  la sostituisca al volo. Dopo un rilascio serve **una ricarica in più** sul
+  in `site/sw.js`, `versione` in `site/dati/meta.json`. Nessuno la sostituisce
+  al volo: il server degli account legge `VERSION` dal tag che gira, e la dice
+  in `GET /v1/salute`, ma non la scrive nelle pagine. Dopo un rilascio serve **una ricarica in più** sul
   dispositivo: la prima serve ancora dalla cache precedente, e la schermata
   Info dice quale cache è installata.
 - **Niente dati che non escono di casa.** `strumenti/controlla.py` fallisce se
@@ -249,7 +265,10 @@ commit con il trailer. **Il numero non si tocca**, e non si tagga.
 la merge, e lo fa chi la merge la fa: bump di `VERSION`, di `CACHE` in `sw.js` e
 di `versione` in `meta.json` → voce di CHANGELOG con lo stesso numero → tag
 annotato `vX.Y.Z` → chiedere prima del push → dopo il push, «Build now» su
-statichost.eu, e `curl https://rottagiusta.it/sw.js` per vedere il `CACHE` nuovo.
+statichost.eu, e `curl https://rottagiusta.it/sw.js` per vedere il `CACHE` nuovo
+→ sulla macchina degli account `rg-aggiorna <tag>`, e `GET /v1/salute` per
+vedere la versione nuova (`docs/account-progetto.md` §2.7). Un passo non fa
+l'altro: un rilascio fermato a metà lascia la pagina e il server su due numeri.
 
 ## Il rischio caratteristico: il guasto muto
 
@@ -261,14 +280,19 @@ non una spiegazione.
 
 ## Difetti noti, aperti
 
-- Il gioco dei Segnali non entra nell'archivio, per scelta: i punteggi vivono in
-  localStorage e viaggiano nel file dei progressi solo come migliore/giocate.
+- Il gioco dei Segnali non entra nell'archivio, per scelta: restano soltanto
+  migliore e giocate per modalità. Senza account valgono per la pagina aperta;
+  con l'account stanno nel profilo sul server, fusi con il massimo, e
+  viaggiano nel file dei progressi.
 - Il ritaglio delle sessioni per righe senza `sim_uid` (archivi importati da
   altrove) è ricostruito e dichiarato in schermata; non è mai stato esercitato
   su un archivio esterno vero.
-- Su Safari IndexedDB in navigazione privata può non aprirsi: l'app ripiega su
-  localStorage e lo dichiara nella scheda Archivio. Non verificato su un
-  dispositivo Apple reale.
+- Su Safari IndexedDB in navigazione privata può non aprirsi. Senza account non
+  serve; con l'account la copia del dispositivo sta solo lì, la pagina non
+  ripiega su localStorage (`docs/account-client-progetto.md` §9.2), e se la
+  copia non si apre l'accesso lo dice («Non riusciamo ad aprire la copia di
+  questo account»). Non verificato su un dispositivo Apple reale (R-ACC-59,
+  Q-PROVE).
 - Il testo scritto nel carteggio sta solo in memoria: una ricarica durante la
   prova lo perde. È così dalla 0.5.0, e la specifica diceva il contrario fino
   al 26 settembre 2026 (§7.6). La pagina lo dichiara (P-36); la correzione è la

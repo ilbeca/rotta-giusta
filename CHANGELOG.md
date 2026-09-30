@@ -1030,6 +1030,61 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   Guardiano e controllo della documentazione verdi. `site/` e
   `docs/prossime-sessioni.md` non sono stati toccati.
 
+### Riscritto — P-26: i testi fuori da `site/`, nella versione con gli account
+
+- **Il client degli account è nella pagina dal 29 settembre (P-18), e con lui i
+  testi di `site/`; quelli fuori da `site/` dicevano ancora il sito di prima.**
+  Cercati per frase, non per numero di riga, a partire dal §1 di
+  `docs/prossime-sessioni.md` e dal §18 di `docs/account-progetto.md`: il
+  `README.md` apriva con «Niente account, niente registrazione: le risposte
+  restano nel browser di chi studia e non arrivano mai a nessuno», e «Come
+  funziona» diceva «nessun backend, nessun database, nessun cookie» e che
+  scaricare il file era l'unico modo di non perdere tutto; la skill del
+  progetto, «Nessun server, nessun database»; `AGENTS.md`, «`site/` è l'unica
+  cosa pubblicata», «nessuna macchina remota, nessun database», e l'archivio
+  nel browser come «l'unica copia». Ora dicono i due stati — senza account si
+  prova e non resta niente, nemmeno nel browser; con l'account le righe stanno
+  sul server, in chiaro, e in una copia del dispositivo, unite per `uid` — e il
+  server a parte, su `api.rottagiusta.it`, che si aggiorna allo stesso tag del
+  sito. La chiusura di un rilascio in `AGENTS.md` ha il passo in più:
+  `rg-aggiorna <tag>` sulla macchina, e `GET /v1/salute` per vederlo arrivato.
+
+- **Nella specifica, le parti che il §2.5 elencava come vere solo senza account
+  sono riscritte per i due stati**: il §3, con un titolo nuovo e il server nel
+  §3.7, senza «l'unica copia» e senza il ripiego su `localStorage` che la pagina
+  non ha più; il §4.6; il §5.3 e il §5.4, con i controlli dell'accesso; il §7.1,
+  dove l'archivio vuoto senza account è la regola e non un caso limite; il §7.4
+  dei soli registrati; il §7.8, dove il file non è più l'unica via di
+  salvataggio; l'Appendice A, dove «nessun dark pattern possibile» diventa un
+  imbuto dichiarato e le promesse che lo tengono onesto. Il §2.5 dice ora che
+  cosa è cambiato. **Due parti fuori dall'elenco erano false anche loro**: il
+  §4.5 metteva i punteggi dei Segnali in `localStorage`, e il §8 diceva, per
+  *Interruzione*, che «quello che è stato risposto è salvato». Nessun requisito
+  nuovo: le frasi nuove citano quelli che le tengono.
+
+- **`docs/filosofia.md` tiene la nota in testa**, riscritta: il sito deciso è
+  nella pagina su `main`, quello pubblicato è ancora la v0.28.0, e la nota si
+  toglie nel commit del rilascio che porta gli account — non prima, perché oggi
+  è vera, e non dopo. Il resto non cambia.
+
+- **Perché adesso e non al rilascio:** ogni testo nuovo dice il vero dal giorno
+  del rilascio, e fino ad allora `main` non si pusha (`prossime-sessioni.md`
+  §4), quindi nessuno lo legge pubblicato prima del tempo. Riscriverli il giorno
+  del rilascio li avrebbe messi nella stessa sessione del numero di versione.
+
+- **Trovato, e lasciato dove sta.** In `site/app.html` resta un avviso per
+  `ARCH.lettura` uguale a `ripiego_assente` o `ripiego_letto` — «Stiamo usando
+  un archivio alternativo in questo browser» —, ma nessun punto della pagina
+  assegna più quei due valori: è codice che non può comparire, dell'interfaccia.
+  E il §5 della specifica descrive ancora le sei modalità dei Quiz e il selettore
+  globale: le toglie P-12, e il §2.5 lo dice. Il README, invece, nominava le sei
+  modalità dentro «Come funziona», e ora nomina le cinque intenzioni.
+
+  Suite: motore **167/169** con i due skip di sempre; server **60/60**; dati
+  **242**; interfaccia **1.246**, in 153 s, con la 8620 guardata libera prima;
+  specifica **584**. Guardiano e controllo della documentazione verdi. `site/`,
+  `tests/` e `docs/prossime-sessioni.md` non sono stati toccati.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag

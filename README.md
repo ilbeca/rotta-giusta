@@ -2,12 +2,20 @@
 
 **Quiz e carteggio per la patente nautica senza limiti dalla costa.**
 
-Un sito statico, gratuito e open source, per prepararsi all'esame di patente
-nautica categoria A senza alcun limite dalla costa, motore e vela: i 1.722
-quesiti e i 135 esercizi di carteggio dell'elenco unico nazionale, con
-simulazioni d'esame, diagnosi per argomento e un allenamento per il carteggio
-che si fa senza carte. Niente account, niente registrazione: le risposte
-restano nel browser di chi studia e non arrivano mai a nessuno.
+Un sito gratuito e open source per prepararsi all'esame di patente nautica
+categoria A senza alcun limite dalla costa, motore e vela: i 1.722 quesiti e i
+135 esercizi di carteggio dell'elenco unico nazionale, con simulazioni d'esame,
+progressi per argomento e un allenamento per il carteggio che si fa senza carte.
+
+**Si prova senza account, e si salva con l'account.** Senza registrarsi si
+fanno tutte le attività, ma le risposte valgono solo finché la pagina resta
+aperta: il sito non conserva niente, nemmeno nel browser. Con un account
+(email e password) le risposte si salvano sul server del sito, **in chiaro**:
+si ritrovano su un altro dispositivo, danno i Progressi, e il titolare le può
+leggere per il supporto e per le statistiche. Che cosa si tratta, dove e per
+quanto lo dice l'[informativa](site/privacy.html); perché si è scelto così lo
+dicono l'[ADR-003](docs/adr/ADR-003-account-obbligatorio-e-dati-sul-server.md)
+e l'[ADR-004](docs/adr/ADR-004-senza-account-si-prova-con-l-account-si-salva.md).
 
 È la palestra che l'autore ha scritto per sé, con l'aiuto di Claude, e con cui
 ha superato l'esame il 3 settembre 2026. Ora la restituisce alla comunità che
@@ -106,9 +114,8 @@ gira nella suite, `strumenti/controlla.py`, fallisce se rientrano.
 
 ### L'elenco delle password comuni
 
-`server/password-comuni.txt` serve al server degli account, che è in
-costruzione e che il sito pubblicato non usa ancora: una password che sta in
-questo elenco si rifiuta, come chiede NIST SP 800-63B-4 (il perché è in
+`server/password-comuni.txt` serve al server degli account: una password che
+sta in questo elenco si rifiuta, come chiede NIST SP 800-63B-4 (il perché è in
 `docs/account-progetto.md` §5.2). Sono **10.898 voci, 191.989 byte**, una per
 riga, in minuscolo e ordinate: soltanto quelle lunghe almeno 15 caratteri, perché
 una password più corta la rifiuta già la lunghezza.
@@ -161,62 +168,88 @@ una password più corta la rifiuta già la lunghezza.
 
 ## Come funziona
 
-- **Sito statico.** Nessun backend, nessun database, nessun form, nessun cookie,
-  nessun analytics. L'hosting è [statichost.eu](https://www.statichost.eu/),
-  in Svezia, all'indirizzo `rottagiusta.it`; i quattro file JSON in
-  `site/dati/` sono la banca.
-- **Le risposte restano nel browser**, in IndexedDB, una riga per risposta. Da
-  quelle righe l'app deriva tutto: la copertura, la diagnosi, le sessioni.
-  Dalla schermata Info si scaricano in un file e si ricaricano su un altro
-  dispositivo. Non c'è nessun altro modo di recuperarle: scaricale prima di
-  cambiare telefono.
-- **Funziona offline** (service worker, cache-first: la banca è immutabile). Le
-  figure si scaricano con un pulsante, apposta.
+- **Le pagine sono statiche.** L'hosting è
+  [statichost.eu](https://www.statichost.eu/), in Svezia, all'indirizzo
+  `rottagiusta.it`; i file JSON in `site/dati/` sono la banca. Nessun analytics
+  e nessun cookie di tracciamento: c'è un solo cookie, quello di sessione, e
+  solo per chi ha fatto l'accesso.
+- **Il server degli account sta a parte**, all'indirizzo `api.rottagiusta.it`,
+  su una macchina Scaleway nell'Unione europea: un processo Node senza
+  dipendenze npm e un file SQLite, in `server/`. Importa `site/engine.js`, quindi
+  rifiuta le stesse righe del browser con la stessa funzione, `validaRiga()`.
+  Sulla macchina gira soltanto un tag pubblicato di questo repo, e le copie di
+  sicurezza hanno un ripristino provato (`docs/account-progetto.md` §2.5–2.7).
+- **Le risposte sono righe, una per risposta, che non si modificano mai.** Senza
+  account stanno solo nella memoria della pagina aperta, e una ricarica le
+  perde: il sito lo dice prima di cominciare e alla fine di ogni attività. Con
+  l'account stanno sul server e, per l'offline, in una copia nel browser; le
+  due si uniscono per `uid`, senza un vincitore. Da quelle righe l'app deriva
+  tutto — la copertura, i Progressi, le sessioni —, e quello che deriva non si
+  salva e non viaggia: si ricalcola in locale.
+- **Dalla schermata Info si scarica un file.** Con l'account è l'export del
+  server, e un file dei progressi si carica nell'account; senza account si
+  scaricano le risposte della pagina aperta. Chi ha ancora nel browser le
+  risposte di prima degli account le porta nell'account o le scarica: la pagina
+  lo propone, e non le cancella da sola.
+- **Funziona offline** (service worker, cache-first: la banca è immutabile). Si
+  prova offline dopo aver caricato il sito una volta; con un account già aperto
+  su quel dispositivo le risposte restano nella sua copia e partono quando
+  torna la rete. Le figure si scaricano con un pulsante, apposta.
 - **La logica di selezione sta in un solo file**, `site/engine.js`, che gira
-  identico nella pagina e sotto `node --test`. Non ha DOM né rete.
-- **Niente build step.** La pagina importa `engine.js` e basta; quello che è
+  identico nella pagina, nel server e sotto `node --test`. Non ha DOM né rete.
+- **Niente build step.** Le pagine importano `engine.js` e basta; quello che è
   nel repo è quello che gira.
 
-Le modalità: simulazione d'esame con composizione, tempi e soglie del ministero;
-allenamento per argomento, screening di tutte le 44 voci, batteria, solo
-sbagliate, e *Mirata* (richiami, esplorazione pesata sulla resa d'esame,
-conferme); diagnosi per tema e per voce con l'accuratezza sulla prima risposta;
-prova di carteggio con cronometro (4 esercizi, 60 minuti, 3 su 4) che **non si
-corregge da sola**: l'app mette la risposta ministeriale accanto alla tua e sei
-tu a giudicare; il drill «che tecnica serve?» sui 135 testi, senza carte; e il
-**gioco dei Segnali** (fanali, segnali diurni e sonori COLREG), l'unica parte
-interamente scritta dall'autore, extra banca.
+I Quiz: l'allenamento consigliato (richiami, esplorazione pesata sulla resa
+d'esame, conferme), la scelta per argomento, il ripasso degli errori, la
+simulazione d'esame con composizione, tempi e soglie del ministero, e un giro
+fra tutte le 44 voci. I Progressi, per chi ha un account: per tema e per voce,
+con l'accuratezza sulla prima risposta. La prova di carteggio con cronometro (4
+esercizi, 60 minuti, 3 su 4) **non si corregge da sola**: l'app mette la
+risposta ministeriale accanto alla tua e sei tu a giudicare. Il drill «che
+tecnica serve?» sui 135 testi, senza carte; e il **gioco dei Segnali** (fanali,
+segnali diurni e sonori COLREG), l'unica parte interamente scritta
+dall'autore, extra banca.
 
 ## Struttura del repo
 
 ```
 site/                 quello che statichost.eu pubblica, e niente altro
-  index.html          la palestra, una pagina sola
+  index.html          la vetrina
+  app.html            la palestra, una pagina sola, con il client degli account
   engine.js           motore di selezione e statistiche (logica pura, testata)
   sw.js               service worker; il nome della cache segue VERSION
   dati/               quiz.json, meta.json, tecniche.json, carteggio.json, carteggio_e12.json
   figure/             le figure del decreto (103 caselle, 102 disegni: la n. 8 era un doppione)
   privacy.html, avvertenza.html
+server/               il server degli account, che gira su api.rottagiusta.it
 fonte/                il PDF dell'Allegato A al DD 131/2022 e verifica.py
-strumenti/            controlla.py (il guardiano), prepara.py, tecniche-carteggio/
-tests/                test_engine.mjs (motore), test_dati.py (dati e invarianti)
-docs/adr/             le decisioni, con il perché
+strumenti/            controlla.py (il guardiano), serve.py, password_comuni.py, prepara.py
+tests/                le cinque suite: motore, server, dati, interfaccia, specifica
+docs/                 specifica.md, filosofia.md, i progetti, e adr/ con le decisioni
 CHANGELOG.md          la storia, compresa quella del progetto da cui è estratto
 ```
 
 ## Sviluppo
 
 ```bash
-python3 strumenti/serve.py                        # il sito in locale, come lo serve Pages
+python3 strumenti/serve.py                        # il sito in locale, come lo serve statichost.eu
 node --test tests/test_engine.mjs                 # il motore
+node --test tests/test_server.mjs                 # il server degli account
 python3 tests/test_dati.py                        # i dati, le invarianti, e controlla.py
+python3 tests/test_interfaccia.py                 # la pagina, anche in Chrome headless
+python3 tests/test_specifica.py                   # ogni requisito ha il suo controllo
 ```
+
+Che cosa serve a ciascuna — Chrome, la porta 8620 libera, una LTS pari di Node —
+lo dice `AGENTS.md`, «Comandi».
 
 Un rilascio alza **tre** numeri che un test tiene insieme — `VERSION`, `CACHE`
 in `site/sw.js`, `versione` in `site/dati/meta.json` — e ha una voce nel
-CHANGELOG con lo stesso numero. Non c'è un server che sostituisca il numero al
-volo: se uno dei tre resta indietro, la suite è rossa. Dopo un rilascio ogni
-dispositivo prende la versione nuova alla **seconda** ricarica.
+CHANGELOG con lo stesso numero. Nessuno sostituisce il numero al volo: se uno
+dei tre resta indietro, la suite è rossa. Dopo un rilascio ogni dispositivo
+prende la versione nuova alla **seconda** ricarica, e il server degli account
+si aggiorna a parte, sulla sua macchina, allo stesso tag.
 
 Le regole di lavoro sono in [`CLAUDE.md`](CLAUDE.md); vale anche per gli umani.
 

@@ -1841,6 +1841,11 @@ account — rende falsi, e stanno fuori da `site/`:
 Come per il resto: **nella stessa versione in cui il server risponde ai
 visitatori**, non prima.
 
+*(30 settembre 2026, P-26: riscritti tutti, su `main`, e con loro `README.md`
+all'inizio, la skill del progetto e le parti della specifica che il suo §2.5
+elencava. `docs/filosofia.md` tiene la nota in testa finché il rilascio non c'è.
+Dicono il vero dal giorno del rilascio: fino ad allora `main` non si pusha.)*
+
 ---
 
 ## 19. Che cosa non è misurato

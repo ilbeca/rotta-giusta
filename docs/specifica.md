@@ -130,12 +130,16 @@ qui cadono. Sotto: che cosa
 resta, che cosa cade, e che cosa si perde — detto per esteso, perché è il posto
 in cui una decisione del genere si è tentati di scriverla a mezza voce.
 
-**La decisione non è ancora il prodotto.** La versione pubblicata non ha
-account: finché non arrivano, i Vincoli caduti descrivono ancora correttamente
-ciò che gira, e i testi di `site/` che li dichiarano dicono il vero. Si
-cambiano **nella stessa versione** in cui entrano gli account — non prima e non
-dopo. Un'informativa che descrive un server che non c'è è falsa quanto una che
-tace quello che c'è.
+**La decisione è nel prodotto su `main`, non ancora in quello pubblicato.**
+Dal 29 settembre 2026 la pagina su `main` ha il client degli account (P-18), e
+con lei i testi di `site/`; il server è scritto e provato dalla sua suite; dal
+30 settembre (P-26) questo documento, `README.md`, `AGENTS.md` e la skill del
+progetto descrivono il sito con gli account. La versione pubblicata, la
+v0.28.0, non li ha: finché il rilascio che li porta non c'è, chi apre
+`rottagiusta.it` trova il sito di prima, e `main` non si pusha
+(`docs/prossime-sessioni.md` §4). Testi e prodotto cambiano **nella stessa
+versione** — non prima e non dopo. Un'informativa che descrive un server che
+non c'è è falsa quanto una che tace quello che c'è.
 
 ### 2.1 Che cosa resta — Vincolo
 
@@ -238,25 +242,41 @@ che non contiene niente di chi studia, e l'archivio di prima degli account
 finché chi l'ha non sceglie (R-ACC-05). R-ACC-09. Il come di tutto il §2 sta in
 `docs/account-progetto.md`.
 
-### 2.5 Che cosa di questo documento descrive ancora il prodotto senza account
+### 2.5 Le parti di questo documento riscritte per i due stati
 
-Queste parti sono **vere per la versione pubblicata** e diventano false con gli
-account. Non si riscrivono qui perché dipendono da scelte che l'ADR-003 dichiara
-di non prendere — tabelle, sessione, API, statistiche aggregate — e che spettano
-al progetto di realizzazione:
+Fino al 30 settembre 2026 questa sezione elencava le parti del documento
+**vere solo senza account**, e non le riscriveva perché dipendevano da scelte —
+tabelle, sessione, API, statistiche — che spettavano al progetto di
+realizzazione. Quelle scelte sono state prese (`docs/account-progetto.md`,
+`docs/account-client-progetto.md`) e realizzate (P-09…P-11 il server, P-18 la
+pagina), e P-26 ha riscritto le parti per i due stati. Che cosa è cambiato:
 
-- §3, a cominciare dal titolo, e §3.2 «l'unica copia» — senza account, di
-  copie non ce n'è nessuna;
-- §4.6, «non sa niente degli altri utenti» e «non sa se sei alla prima visita»
-  — per chi ha fatto l'accesso;
-- §7.1, gli stati della Rotta e il caso limite «un archivio vuoto non prova che
-  sia la prima visita» — senza account l'archivio è sempre vuoto;
-- §7.4, Progressi, che diventa dei soli registrati;
-- §7.8, scarica / ricarica come unica via di salvataggio;
-- §5.3 e §5.4, che elencano attività e controlli senza dire in quale dei due
-  stati;
-- Appendice A, «nessun dark pattern possibile: non c'è account, non c'è un
-  imbuto» — c'è, per salvare.
+- **§3**, a cominciare dal titolo: c'è un backend, e ha una sezione sua (§3.7).
+  Il §3.2 non dice più «l'unica copia» — senza account di copie non ce n'è
+  nessuna, con l'account ce ne sono due, sul server e nel dispositivo, unite
+  per `uid` —, e non dice più che l'app ripiega su `localStorage`. Il §3.3 e il
+  §3.4 aggiungono la ricezione dal server; il §3.5 dice che l'API non entra
+  nel guscio.
+- **§4.5**, i punteggi dei Segnali: non stanno più in `localStorage`, ma in
+  memoria senza account e nel profilo sul server con l'account. Non era
+  nell'elenco, ed era falso anche lui.
+- **§4.6**: il motore continua a non sapere niente degli altri e della prima
+  visita; il server e la pagina sanno qualcosa, e si dice che cosa.
+- **§5.3 e §5.4**: in quale stato vale ogni attività e ogni controllo, e i
+  controlli nuovi dell'accesso.
+- **§7.1**, la Rotta: lo stato senza account, e il caso limite dell'archivio
+  vuoto, che senza account è la regola e non un caso.
+- **§7.4**, Progressi, che è dei soli registrati; **§7.8**, Info, dove
+  scaricare e ricaricare non sono più l'unica via di salvataggio.
+- **§8**, gli stati trasversali: *Vuoto* e *Interruzione* dicevano che quello
+  che è stato risposto è salvato. Senza account non lo è, e la pagina lo dice.
+  Nemmeno questo era nell'elenco.
+- **Appendice A**: «nessun dark pattern possibile, non c'è un imbuto» — c'è,
+  per salvare, e l'appendice dice quali promesse lo tengono onesto.
+
+Restano com'erano, e non sono di questo lavoro, le righe del §5 che descrivono
+le sei modalità dei Quiz e il selettore globale: le toglie P-12 con il regime
+vecchio dei controlli.
 
 E una cosa che c'è e resta: **il sito dichiara i propri difetti**, quesito per
 quesito. È l'unica cosa che nessun concorrente può copiare, ed è il motivo per
@@ -265,10 +285,14 @@ stanno in prima pagina invece che in una nota.
 
 ---
 
-## 3. L'architettura: non c'è un backend
+## 3. L'architettura: righe che viaggiano, e niente altro
 
-Quello che in un'altra applicazione sarebbe il backend, qui è un **livello di
-dati** fatto di tre oggetti. Uno solo si salva.
+Fino alla v0.28.0 qui c'era scritto «non c'è un backend», ed era vero. Con gli
+account un backend c'è (§3.7), ma fa un mestiere solo: **conserva le righe delle
+risposte di chi si registra, e le restituisce.** Non seleziona, non calcola
+misure, non ha uno specchio. Tutto il resto è ancora un **livello di dati**
+fatto di tre oggetti, nel browser e nel motore. Uno solo si salva, e solo con
+l'account.
 
 ### 3.1 La banca — `site/dati/*.json`, immutabile
 
@@ -311,7 +335,7 @@ C'è anche `carteggio_e12.json` — 50 esercizi entro 12 miglia, verificati cont
 il PDF — **pubblicato e non usato dall'app**. È materiale nel cassetto, e la
 decisione se tirarlo fuori è §10, Q-AMBITO.
 
-### 3.2 L'archivio — IndexedDB, una riga per risposta, **l'unica copia**
+### 3.2 L'archivio — una riga per risposta, in due stati
 
 ```
 _t       'q' quiz · 'c' carteggio · 't' tecnica · 'g' tag · 's' prova sostenuta
@@ -329,24 +353,54 @@ delta    sempre null nel carteggio, perché nessuno analizza la tua risposta
 
 È **append-only**: non si corregge una riga, se ne aggiunge un'altra.
 
+**Dove vive dipende dall'accesso** (ADR-004; nella pagina da P-18):
+
+- **Senza account, in memoria, e basta.** Le righe della pagina aperta non
+  finiscono in IndexedDB, `localStorage`, `sessionStorage`, cookie o Cache
+  Storage (R-ACC-09): una ricarica le perde, e la pagina lo dice prima di
+  cominciare e alla fine di ogni attività (R-ACC-02). Registrandosi alla fine di
+  un'attività, le righe di tutte le attività della pagina salgono sull'account
+  (R-ACC-43).
+- **Con l'account, sul server e nel dispositivo.** Il server le conserva in
+  chiaro, byte per byte (§3.7, R-ACC-12). Il dispositivo ne tiene una copia per
+  l'offline, in un database IndexedDB per account, `rg-account-<chiave_locale>`,
+  con righe e coda scritte nella stessa transazione (R-ACC-45). Le due copie si
+  uniscono per `uid` (R-ACC-06): le righe non si modificano, quindi nessuna è in
+  conflitto e nessuna vince. Una riga esce dalla coda solo quando il server la
+  nomina (R-ACC-13), e la si dice salvata solo allora (R-ACC-39). All'uscita, la
+  copia del dispositivo si cancella (R-ACC-46).
+
+Fino alla v0.28.0 questa sezione diceva «l'unica copia», ed era la ragione per
+cui cambiare telefono perdeva tutto. Oggi senza account di copie non ce n'è
+nessuna, e con l'account ce ne sono due — ma **nessuna delle due è derivata**:
+si uniscono righe, non stati, ed è per questo che non è la sincronia della
+0.4.2 (§2.2).
+
 La scelta di IndexedDB è misurata, non dedotta: una riga pesa 192 byte;
 `localStorage` sta intorno ai 5 MB in Chrome e Safari, cioè ~27.000 risposte, e
 **il modo in cui fallisce è il guasto di casa** — `setItem` lancia, e se nessuno
 la prende la risposta sparisce mentre la schermata dice che va tutto bene.
 IndexedDB nello stesso browser dichiara 3,7 GB, scrive 30.000 righe in 1,9 s.
 
-Se IndexedDB non si apre, l'app ripiega su `localStorage`, **lo dichiara** nella
-scheda Archivio, e lascia che `setItem` lanci.
+**Non c'è più il ripiego su `localStorage`.** Fino alla v0.28.0, se IndexedDB
+non si apriva, l'app ripiegava lì e lo dichiarava. Con l'account la copia del
+dispositivo sta solo in IndexedDB; se non si apre, l'accesso lo dice, e la
+pagina non scrive «salvato sul dispositivo» (`account-client-progetto.md`
+§9.2). Senza account non c'è niente da aprire.
 
 **Una riga entra solo se `validaRiga()` la accetta** (R-ACC-07), la stessa
-regola che userà il server degli account. Le righe di tag (`_t: 'g'`) sono le
-sole senza `ts`: la pagina le scrive così, e fino al 26 settembre 2026 ogni
-import le scartava (R-ACC-08).
+funzione che il server importa dal motore: il browser e il server rifiutano le
+stesse righe per gli stessi motivi. Le righe di tag (`_t: 'g'`) scritte prima
+del 26 settembre 2026 sono le sole senza `ts`, e fino a quel giorno ogni import
+le scartava (R-ACC-08); da P-01 i tag nascono con la data.
 
-**Il nome del database resta `open-patente-nautica`** anche dopo il rinomino del
-progetto. È l'identità dell'archivio nel browser di chi studia: rinominarlo
-aprirebbe un database vuoto e ogni risposta data finora sparirebbe **senza un
-errore**. È l'unica eccezione ammessa al rinomino, ed è dichiarata da un test.
+**Il database di prima si chiama ancora `open-patente-nautica`**, anche dopo il
+rinomino del progetto. È l'archivio che chi studiava prima degli account ha nel
+browser: la pagina lo legge soltanto, per proporre di portarlo nell'account o
+di scaricarlo, e non lo cancella da sola (R-ACC-05). Rinominarlo farebbe
+cercare un database che non c'è, e ogni risposta di prima sparirebbe dalla
+proposta **senza un errore**. È l'unica eccezione ammessa al rinomino, ed è
+dichiarata da un test.
 
 ### 3.3 Lo specchio — in memoria, **non si salva mai**
 
@@ -354,24 +408,33 @@ Per ogni quesito: `n` risposte, `c` esatte, `first` (1 se la prima era esatta),
 `s` streak, `lw` giorno dell'ultimo errore, `k` riprese dopo un errore, `t`
 giorno dell'ultimo tocco, `avg` tempo medio.
 
-Si ricalcola con `ripiega()` a ogni avvio e dopo ogni import, e un test pretende
-che coincida con `applica()` risposta per risposta.
+Si ricalcola con `ripiega()` a ogni avvio, dopo ogni import e dopo ogni
+ricezione dal server, e un test pretende che coincida con `applica()` risposta
+per risposta.
 
-**Questa è l'invariante architetturale del progetto.** Una copia sola dello
-storico, quindi un numero in schermata e la lista che apre non possono divergere.
-Nel progetto originario lo specchio era una seconda copia da fondere col server,
-e la fusione perse giorni di studio (0.4.2).
+**Questa è l'invariante architetturale del progetto.** Una contabilità sola
+dello storico, quindi un numero in schermata e la lista che apre non possono
+divergere. Nel progetto originario lo specchio era una seconda copia da fondere
+col server, e la fusione perse giorni di studio (0.4.2). Con gli account il
+server è tornato, e la regola conta di più: **le righe viaggiano, lo specchio
+mai**, in nessuna direzione. Il server non ne ha uno.
 
 ### 3.4 Il giro dei dati
 
 ```
-IndexedDB (righe)  --ripiega()-->  specchio  --coda/mirata/diagnosi/...-->  schermata
-       ^                                                                        |
-       +---------------------- archivia(riga) <--------- una risposta -----------+
+                    server degli account (righe)            solo con l'account
+                        ^ invio, dalla coda   | ricezione, dal cursore
+                        |                     v
+righe (memoria, o IndexedDB dell'account) --ripiega()--> specchio --coda/mirata/...--> schermata
+       ^                                                                                  |
+       +----------------------------- archivia(riga) <----------- una risposta -----------+
 ```
 
-`engine.js` non ha né DOM né `fetch`: gira identico nella pagina e sotto
-`node --test`.
+`engine.js` non ha né DOM né `fetch`: gira identico nella pagina, nel server e
+sotto `node --test`. La contabilità della coda — che cosa inviare, che cosa
+togliere, dove spostare il cursore, che cosa fare di una generazione diversa —
+è anche lei nel motore, logica pura (`account-progetto.md` §16.1); la pagina fa
+solo il trasporto.
 
 ### 3.5 Il guscio offline
 
@@ -389,6 +452,10 @@ costate:
   questo: è lei che rende il sito indifferente all'host. Due test la tengono
   ferma, e `strumenti/serve.py` riproduce in locale l'host di **oggi**, misurato,
   non quello di ieri.
+- **L'API non entra nel guscio.** Sta su un'altra origine, `api.rottagiusta.it`,
+  e il service worker ignora le richieste verso le altre origini: nessuna
+  risposta dell'API finisce in cache. Senza account la cache contiene il sito e
+  la banca, e nessuna risposta di chi studia (R-ACC-09).
 
 Le figure si scaricano con un pulsante, apposta: sono 102 file. **E si scaricano
 una volta sola**: a ogni rilascio l'`activate` le copia dalla cache vecchia a
@@ -400,10 +467,46 @@ prima che trova. Fino alla 0.26.0 le figure si perdevano a ogni rilascio
 
 ### 3.6 La versione, in tre posti
 
-`VERSION`, `CACHE` in `site/sw.js`, `versione` in `site/dati/meta.json`. Non c'è
-un server che la sostituisca al volo: se uno dei tre resta indietro la suite è
-rossa. Dopo un rilascio ogni dispositivo prende la versione nuova alla
-**seconda** ricarica, e la schermata Info dice quale cache è installata.
+`VERSION`, `CACHE` in `site/sw.js`, `versione` in `site/dati/meta.json`. Nessuno
+la sostituisce al volo: se uno dei tre resta indietro la suite è rossa. Dopo un
+rilascio ogni dispositivo prende la versione nuova alla **seconda** ricarica, e
+la schermata Info dice quale cache è installata.
+
+Il server degli account legge `VERSION` dal tag che gira e la dice in `GET
+/v1/salute`, ma non la scrive nelle pagine: le pagine e il server si aggiornano
+in due passi, allo stesso tag (§3.7), e un rilascio fermato a metà li lascia su
+due numeri.
+
+### 3.7 Il server degli account — `server/`
+
+Deciso il 25 settembre 2026 (ADR-003, ADR-004); il come è
+`docs/account-progetto.md`, e questa sezione ne dice soltanto quello che resta
+vero anche quando l'implementazione cambia.
+
+- **Dove.** `https://api.rottagiusta.it`, un'origine separata dal sito, in HTTPS
+  dal primo giorno. Una macchina Scaleway nell'Unione europea — la STARDUST1-S a
+  Varsavia, decisa dall'autore e creata alla messa in esercizio —, un processo
+  Node di una LTS pari, senza dipendenze npm, e un file SQLite con un solo
+  scrittore. Le copie di sicurezza vanno in un altro Paese dell'Unione, e il
+  ripristino è provato (R-ACC-20, R-ACC-24).
+- **Che cosa conserva.** Gli account (l'email, e la password solo come
+  impronta Argon2id: R-ACC-16), le sessioni, le righe delle risposte **in chiaro**, il
+  profilo — data d'esame e punteggi dei Segnali —, e un registro di sicurezza.
+  Il titolare le legge per il supporto e per le statistiche; niente esce verso
+  script di terzi (§2.1).
+- **Che cosa non fa.** Non seleziona quesiti, non calcola misure, non ha uno
+  specchio. Accoglie righe che `validaRiga()` — **importata da
+  `site/engine.js`** — accetta, e le restituisce com'erano. Una seconda copia
+  delle regole in un altro linguaggio sarebbe la riga con `ts: "boh"` della
+  0.4.6, accettata dal server e fatale su ogni dispositivo.
+- **Come si aggiorna.** Sulla macchina gira soltanto un tag pubblicato di questo
+  repo, lo stesso delle pagine; codice e database tornano indietro
+  separatamente; lo schema cambia solo per aggiunte
+  (`account-progetto.md` §2.7).
+- **Come si prova.** La quinta suite, `tests/test_server.mjs`, avvia il server
+  nello stesso processo su un database temporaneo, con l'orologio e la posta del
+  test; `node server/ripristina.mjs --prova` fa il giro della copia. I
+  requisiti del server stanno nel §9.9.
 
 ---
 
@@ -608,7 +711,10 @@ potrebbe scrivere: non c'è perché sbaglierebbe dicendo «errato» a una rispos
 giusta scritta in un altro formato, **sulla prova che manda a casa**.
 
 **Il gioco dei Segnali non entra nell'archivio.** Ha un runner suo; restano solo
-migliore e giocate in `localStorage`, che viaggiano nel file dei progressi.
+migliore e giocate per modalità. Senza account valgono per la pagina aperta; con
+l'account stanno nel profilo sul server, fusi con il massimo così che rimandarli
+non cambi niente, e viaggiano nel file dei progressi (R-ACC-35). Fino alla
+v0.28.0 stavano in `localStorage`.
 
 ### 4.6 Che cosa il motore **non** sa
 
@@ -623,12 +729,21 @@ migliore e giocate in `localStorage`, che viaggiano nel file dei progressi.
 - **Non conosce l'ordine delle prove d'esame**, né i parametri della prova di
   carteggio: `meta.prove` conosce solo base e vela.
 - **Non sa niente degli altri utenti.** Nessuna calibrazione, nessuna media,
-  nessun confronto: la difficoltà di un quesito è solo la tua.
+  nessun confronto: la difficoltà di un quesito è solo la tua. Con gli account
+  il **server** ha le righe di tutti i registrati, e il titolare le legge per le
+  statistiche (`account-progetto.md` §15.2); il motore no, e riceve soltanto
+  le righe di chi è entrato. Mostrare a chi studia qualcosa degli altri — una
+  media, un confronto — è una decisione dell'autore ancora aperta
+  (`account-progetto.md` §20).
 - **Non ha un budget di tempo.** Non sa quanti minuti hai oggi.
   `stimaImpegno()` stima quanto **costa** ciò che resta, non quanto puoi fare.
 - **Non giudica il carteggio.**
 - **Non sa se sei alla prima visita.** Un archivio vuoto è indistinguibile da un
-  archivio cancellato o aperto in un altro browser.
+  archivio cancellato o aperto in un altro browser. La pagina sa soltanto se
+  sei entrato: senza account le righe sono solo quelle della pagina aperta, e
+  ogni visita comincia vuota **per costruzione** — anche quella di chi ha mesi
+  di risposte nel suo account e non ha ancora fatto l'accesso. Con l'account,
+  un archivio vuoto non prova che l'account sia nuovo.
 
 ### 4.7 Il confine con l'interfaccia
 
@@ -683,7 +798,12 @@ codice.
 
 ### 5.3 Le attività
 
-| Attività | Dove | Motore | Scrive in archivio |
+**Tutte, in tutti e due gli stati** (R-ACC-04), ognuna fino al suo punto
+d'arrivo, con riepilogo e revisione. L'ultima colonna dice se l'attività scrive
+righe: senza account restano nella memoria della pagina aperta, con l'account
+vanno nella copia del dispositivo e sul server (§3.2).
+
+| Attività | Dove | Motore | Scrive righe |
 |---|---|---|---|
 | Mirata | Quiz | `mirata()` | sì, `mode` proprio |
 | Per argomento | Quiz | `daAllenare()` + `coda()` | sì |
@@ -705,17 +825,22 @@ codice.
 | Filtro «solo quesiti con figura» | Quiz → Per argomento | Si spegne da solo su una banca che non ne ha, col perché scritto |
 | Spunte argomenti, spunte voci | Quiz | Più voci insieme; per la vela le spunte viaggiano come `voci`, non `temi` |
 | Banca base / vela, quante | Quiz | |
-| Data d'esame | Rotta | Facoltativa. Senza, `quota` e `giorni` sono `null` e il semaforo è `attesa` |
-| Tessere di copertura a tre stati | Rotta | La barra è impilata: il buco sta *dentro* la barra |
+| Data d'esame | Rotta | Facoltativa. Senza, `quota` e `giorni` sono `null` e il semaforo è `attesa`. Senza account vale per la pagina aperta; con l'account sta nel profilo sul server, e dopo la registrazione si propone senza salvarla da sola (R-ACC-55) |
+| Tessere di copertura a tre stati | Rotta, con l'account | La barra è impilata: il buco sta *dentro* la barra. Senza account nessuna copertura cumulativa: non c'è uno storico da coprire |
 | «Cosa studiare adesso» | Progressi | `consigli()` — esce con l'area 5 (§4.3): al suo posto la mappa di `quadro()` e la frase di `dovePesa()`. «Le tue voci più deboli», `peggiori()`, non c'è più, e dal 29 settembre 2026 nemmeno nel motore |
 | Barrette dell'andamento | Progressi | `serieGruppi()`, `tendenza()` |
-| «Le sessioni che hai fatto» | Progressi | `sessioni()`; ogni riga si riapre |
+| «Le sessioni che hai fatto» | Progressi | `sessioni()`; ogni riga si riapre. Progressi è dei soli registrati (§7.4) |
 | «Che cosa non torna, e lo diciamo» | Rotta | I numeri si contano dalla banca caricata |
-| Scarica / ricarica / azzera i progressi | Info | `fondiArchivio()`; dice quante righe ha preso, quante aveva già, **quante ha scartato** |
+| Scarica / ricarica / azzera i progressi | Info | Con l'account: scaricare è l'export del server, e dice quante risposte da inviare non contiene (R-ACC-56); ricaricare porta un file nell'account, con l'anteprima dei conteggi del motore (R-ACC-50); azzerare chiede la password e vale su tutti i dispositivi (R-ACC-15). Senza account: si scaricano o si azzerano le risposte della pagina aperta, e un file non si carica. In tutti e due, un import dice quante righe ha preso, quante aveva già, **quante ha scartato** |
+| Accedi / Account | intestazione, e da Info | «Accedi» senza account, «Account» con: email, verifica, stato dell'invio, data d'esame, trasferimenti, uscita, azzeramento, cancellazione |
+| «Senza account non resta niente» | accanto a ogni avvio senza account, e nel riepilogo | R-ACC-02 |
+| L'invito a registrarsi | nel riepilogo di un'attività senza account, e in nessun altro posto | Con i vantaggi che esistono; «Continua senza account» lo chiude (R-ACC-03) |
+| L'archivio di prima degli account | Rotta, prima delle attività, e Info | Le risposte trovate nel browser si portano nell'account o si scaricano; non si cancellano da sole (R-ACC-05) |
+| Lo stato dell'invio | Account e Info | Da inviare, in corso, confermate, non accolte con il motivo: dalla coda del motore, non da un conto della pagina |
 | Autodiagnosi offline | Info | Apre ogni voce del guscio e guarda che sia *servibile*, non che la chiave esista |
 | Pallino ambra dei guasti | sulla voce Info, visibile da ogni schermata | R-STA-05 |
 | Tag N/L/C sugli errori | runner e riepilogo | Un tag per tentativo |
-| Revisione di una sessione | Progressi e Carteggio | La tua risposta accanto a quella esatta |
+| Revisione di una sessione | riepilogo di ogni attività; con l'account anche Progressi e Carteggio | La tua risposta accanto a quella esatta. Senza account si rivedono le attività della pagina aperta |
 | Spiegazioni in schermata (`?`) | Rotta | Funzionano col mouse **e al tocco** |
 
 ---
@@ -789,9 +914,19 @@ la vetrina.
 **Cosa si vede.** Un'attività consigliata con la sua motivazione e il numero di
 quesiti che apre; la scelta libera; una sintesi dei progressi che rimanda al
 dettaglio senza occupare il posto dell'azione; il riquadro dei difetti
-dichiarati; in fondo, dove restano i progressi.
+dichiarati; in fondo, dove restano i progressi — senza account da nessuna
+parte, con l'account nel tuo account e in questo dispositivo.
 
-**Stati.**
+**Stati.** Quello d'accesso viene prima degli altri, e non li sostituisce.
+- *Senza account*: tutte le attività, e l'avviso che non resta niente accanto
+  all'avvio (R-ACC-02). **È lo stato *archivio vuoto* per costruzione**, a ogni
+  apertura: niente copertura cumulativa, diagnosi, andamento, sessioni di prima,
+  quota o semaforo da storico, perché uno storico non c'è. Il motore può usare
+  le righe della pagina aperta per scegliere l'attività dopo; questo non le
+  rende uno storico (`account-client-progetto.md` §3.2).
+- *Archivio di prima trovato*: l'avviso di passaggio viene prima delle attività,
+  anche con l'accesso fatto (R-ACC-05).
+- *Con l'account*: gli stati qui sotto, sulle righe dell'account.
 - *Archivio vuoto*: orientamento, **non** una diagnosi a zero. Con archivio vuoto
   e senza data, il prodotto v0.22.1 mostrava tre zeri, «1722 quesiti rimasti ·
   7 h 11 m» e due pulsanti da 1472 e 250: nessuna misura che si muova e nessun
@@ -801,16 +936,21 @@ dichiarati; in fondo, dove restano i progressi.
 - *Senza data d'esame*: niente quota, niente semaforo, niente «sei indietro» — e
   **nessun numero inventato al loro posto**. Il traguardo è locale: la selezione
   avviata, poi il riepilogo. Non chiamarlo «quota giornaliera raggiunta».
-- *Con data*: quota, ritmo e semaforo rispetto alla scadenza.
+- *Con data*: quota, ritmo e semaforo rispetto alla scadenza. Senza account la
+  data vale per la pagina aperta, e non accende misure da storico.
 - *Errore di salvataggio*: avviso esplicito **prima** delle attività.
 
 **Cosa si può fare.** Avviare l'attività consigliata → runner. Scegliere
 liberamente → Quiz o Carteggio. Aprire un extra. Leggere i progressi → Progressi.
 Mettere o togliere la data d'esame.
 
-**Casi limite.** Archivio vuoto non prova che sia la prima visita: offrire anche
-l'importazione. Se esistono progressi, non trattare la persona come un nuovo
-candidato.
+**Casi limite.** Senza account ogni visita sembra la prima, e la pagina non può
+sapere se lo è: chi ha mesi di risposte nel suo account e non è ancora entrato
+vede la stessa Rotta di chi arriva adesso. Per questo «Accedi» sta
+nell'intestazione, e l'archivio di prima, se c'è, si propone da sé. Con
+l'account, un archivio vuoto non prova che l'account sia nuovo: offrire anche
+l'importazione di un file. Se esistono progressi, non trattare la persona come
+un nuovo candidato.
 
 **Accessibilità.** Le spiegazioni `?` funzionano col mouse **e al tocco** — un
 aiuto che esiste solo in hover, su un telefono, non esiste. Si chiudono con Esc.
@@ -860,8 +1000,17 @@ su una carta sola. È un'assunzione, non una regola del decreto (§10).
 **Scopo.** Rispondere a «ho affrontato tutto?», «dove ho difficoltà?» e — con
 collegamenti, non con una seconda classifica — «che cosa faccio adesso».
 
+**Per chi.** Per chi ha un account (ADR-004): i Progressi sono misure su uno
+storico, e senza salvataggio lo storico non c'è. Senza account la vista non
+diventa un cruscotto di zeri né un pulsante bloccato: dice perché non c'è, e
+porta al Percorso o ad Accedi (R-ACC-04, `account-client-progetto.md` §3.2).
+Non è un ricatto: il ricatto sarebbe salvare le risposte e nasconderne le
+misure, ed è l'alternativa che l'ADR-004 ha scartato.
+
 **Cosa si vede.** Copertura, difficoltà osservate e risultati delle prove,
-**separati**. L'andamento nel tempo. Le sessioni, riapribili.
+**separati**. L'andamento nel tempo. Le sessioni, riapribili. Tutto dalle righe
+dell'account, comprese quelle arrivate da un altro dispositivo: dopo una
+ricezione la vista si ridisegna dallo stesso specchio nuovo.
 
 **Vincolo.** Copertura e risultati non si presentano come padronanza
 dell'argomento. Con dati insufficienti si dice; con dati assenti non si mostra
@@ -944,9 +1093,19 @@ con il tema.
 ### 7.8 Info
 
 **Cosa si vede.** La versione che gira su questo dispositivo **e la cache
-installata**, che con un guscio offline possono divergere per giorni. L'archivio:
-righe, spazio, e la riga «ultima scrittura fallita». L'autodiagnosi offline. Le
-fonti e le anomalie della banca. Scarica / ricarica / azzera.
+installata**, che con un guscio offline possono divergere per giorni.
+L'archivio, nei due stati: senza account le righe della pagina aperta, dette
+come tali; con l'account la copia del dispositivo, lo stato dell'invio — da
+inviare, in corso, confermate, non accolte con il motivo — e la riga «ultima
+scrittura fallita». L'autodiagnosi offline. Le fonti e le anomalie della banca.
+Scarica / ricarica / azzera (§5.4), e la porta dell'archivio di prima degli
+account, anche dopo «Più tardi».
+
+**Non è più l'unica via di salvataggio.** Fino alla v0.28.0 scaricare il file
+era l'unico modo di non perdere tutto cambiando telefono. Con l'account si
+salva sul server, e il file è l'export, una portabilità; senza account è il
+modo di portarsi via le risposte della pagina aperta, e il sito non ne
+conserva altre.
 
 **Vincolo.** Un pulsante che risponde «fatto» per righe che ha scartato è un
 difetto: l'import dice quante ne ha prese, quante aveva già e **quante ne ha
@@ -960,9 +1119,9 @@ Da disegnare e provare per **ogni** flusso, non solo per quello che va bene.
 
 | Stato | Regola |
 |---|---|
-| **Vuoto** | Orientamento, non una diagnosi a zero. E un archivio vuoto non prova che sia la prima visita. |
+| **Vuoto** | Orientamento, non una diagnosi a zero. Senza account è lo stato di ogni apertura; con l'account, un archivio vuoto non prova che l'account sia nuovo. |
 | **Dati parziali** | Dirlo. Sotto le soglie del §4.3 non si mostra la misura, si mostra che non c'è. |
-| **Interruzione** | Quello che è stato risposto è salvato. Il numero in schermata deve dirlo, altrimenti sembra lavoro perduto — è già successo. |
+| **Interruzione** | Con l'account, quello che è stato risposto è nella copia del dispositivo e parte per il server: il numero in schermata deve dirlo, altrimenti sembra lavoro perduto — è già successo. Senza account resta finché la pagina è aperta, e una ricarica lo perde: la pagina l'ha detto prima di cominciare, e non lo nasconde dopo. |
 | **Offline** | Non una promessa generica: lo stato riflette la disponibilità **reale** di guscio, banca e figure, e una voce in cache ma non servibile compare in rosso. |
 | **Contenuto mancante** | Una figura indisponibile si dichiara con il perché (base-59), non si lascia un buco. |
 | **Errore di salvataggio** | Avviso in schermata + pallino su Info + riga nella scheda Archivio, che chiede di scaricare i progressi adesso. **Non si spegne mai «per pulizia».** |
@@ -1487,7 +1646,7 @@ python3 tests/test_dati.py           # dati e invarianti — 193 verifiche
 python3 tests/test_specifica.py      # ogni requisito ha il suo controllo
 python3 tests/test_interfaccia.py    # le porte, le modalità, e la pagina in Chrome headless
 node --test tests/test_server.mjs    # il server degli account, e il ripristino provato
-python3 strumenti/serve.py           # il sito in locale, come lo serve Pages
+python3 strumenti/serve.py           # il sito in locale, come lo serve statichost.eu
 ```
 
 **Chiusura di sessione.** Su `ui/*`: test verdi, voce di CHANGELOG in fondo a
@@ -1520,8 +1679,15 @@ per una decisione.
   divergenza consapevole dalla pratica dominante nelle app di studio, ed è
   coerente col pubblico: chi prepara un esame in poche settimane non ha bisogno
   di essere trattenuto, ha bisogno di sapere dove è scoperto.
-- **Nessun dark pattern possibile**: non c'è account, non c'è un imbuto, non c'è
-  niente da vendere.
+- **Un imbuto dichiarato, e nessun dark pattern.** Il 9 settembre qui c'era
+  scritto «nessun dark pattern possibile: non c'è account, non c'è un imbuto».
+  Dall'ADR-004 un imbuto c'è — per salvare bisogna registrarsi — e quindi un
+  dark pattern è **possibile**: non lo impedisce più l'architettura, lo
+  impediscono promesse con il loro controllo. Si prova senza account, tutte le
+  attività (R-ACC-04); che non resta niente si dice prima e dopo (R-ACC-02);
+  l'invito sta nel riepilogo, con i vantaggi che esistono, e «Continua senza
+  account» lo chiude senza chiedere altro (R-ACC-03); le risposte non si tengono
+  per nasconderne le misure. Niente da vendere, come prima.
 - **Offline-first vero**, verificato misurando **zero byte trasferiti** a pagina
   ricaricata, e non dedotto dalla presenza del service worker.
 - **Errori con una via d'uscita** e non rimproveri.
@@ -1767,3 +1933,12 @@ successo, ed è il motivo per cui questo file esiste.
   domanda, era vuota su tutte e due le pagine —, corretto. Entra R-ACC-66,
   scoperto: un difetto della pagina, i pulsanti di conferma muti senza la
   spunta.
+- **30 settembre 2026 — il documento per i due stati (P-26).** Le parti che il
+  §2.5 elencava come vere solo senza account sono riscritte: §3, con un titolo
+  nuovo e il server degli account nel §3.7; §4.6; §5.3 e §5.4, con i controlli
+  dell'accesso; §7.1, §7.4, §7.8; l'Appendice A. Due parti fuori dall'elenco
+  erano false anche loro, e sono corrette: i punteggi dei Segnali nel §4.5, e
+  *Vuoto* e *Interruzione* nel §8. Il §2 dice che la decisione è nel prodotto
+  su `main` e non ancora in quello pubblicato; il §2.5 dice che cosa è
+  cambiato. Nessun requisito nuovo: quelli che tengono le frasi nuove ci sono
+  già, e sono citati accanto a ognuna.
