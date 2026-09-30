@@ -1030,14 +1030,21 @@ tecniche (senza carte, con i suoi limiti espliciti), prova di carteggio.
 
 **Vincolo.** All'ingresso dell'ambiente, **prima** dell'avvio, va detto che il
 giudizio della prova è di chi studia. È la cosa che più sorprende chi arriva, e
-non deve arrivare alla consegna.
+non deve arrivare alla consegna. Lo tiene R-UX-03, guidando la pagina in un
+browser vero: la frase si cerca nel testo che si vede, prima di Inizia.
+
+**La lista annunciata è quella che parte** (area 4, §8.1 e D-04). Numero,
+carte, condizioni, assunzione di Q-CART4 e riprese si scrivono dalla
+preparazione, che le prende dal motore; Inizia apre la stessa lista, con
+un'identità nuova, oppure non avvia niente e lo dice. R-SEL-17.
 
 **Stati.** *Foglio finito* nel tappeto: dirlo, non spegnere il pulsante in
 silenzio.
 
 **Casi limite.** La carta 42/D non ha **nessun** esercizio di carburante, quindi
 la regola «un esercizio per ciascuno dei quattro argomenti» non potrebbe reggersi
-su una carta sola. È un'assunzione, non una regola del decreto (§10).
+su una carta sola. È un'assunzione, non una regola del decreto (§10), e la
+preparazione la dichiara prima dell'avvio con il testo del motore.
 
 **Come deve sentirsi chi la usa.** Come al tavolo, non davanti a un quiz.
 
@@ -1138,6 +1145,14 @@ scarto confermato; l'uscita la conta, anche quella di un'altra scheda, e non la
 cancella senza una scelta. L'intenzione di allora — un'ora di lavoro non deve
 dipendere dall'aver premuto un pulsante — diventa vera per chi ha l'account,
 quel giorno; fino ad allora questo paragrafo la chiama con il suo nome.
+
+**Il lavoro ha la stessa forma nei due stati** (D-04, P-35). Dall'avvio il
+runner della carta tiene il suo lavoro come una bozza di `nuovaBozza()`, **in
+memoria**: con l'account lo stesso oggetto si scrive nella copia dell'account,
+senza account no, e niente arriva in uno storage (R-BOZZA-05). Le righe finali
+vengono da `concludiBozza()` in tutti e due gli stati — nessuna con un giudizio
+rinviato, gli stessi uid a un ritento —, e la pagina non ne scrive altre
+(R-FLU-23).
 
 Il pallino verde sul numero dice «qui ho scritto qualcosa», non «è giusto». La consegna è a due tocchi, in pagina,
 **mai** con `confirm()` nativo. Alla correzione, la risposta ministeriale accanto
@@ -1260,7 +1275,7 @@ colonna: «scoperto, perché …» è una risposta accettabile, «—» no.
 | R-SEL-14 | La prova cieca non guarda lo storico, risultato intero compreso, e le sue riprese non si contano: `null`, non zero | `test_engine.mjs::provaCarteggio: la prova cieca non guarda lo storico` |
 | R-SEL-15 | Con la precedenza ai mai provati le riprese effettive si dichiarano per argomento e per esercizio, prima dell'avvio, e la prova non esce mai corta | `test_engine.mjs::provaCarteggio: con la precedenza ai mai provati le riprese si dicono per argomento` |
 | R-SEL-16 | Su una banca incompleta gli argomenti mancanti si nominano e non contano come rappresentati, il completamento dal resto si dichiara, e una lista corta non si dice pronta | `test_engine.mjs::provaCarteggio: su una banca incompleta i mancanti si nominano` |
-| R-SEL-17 | La pagina compone la prova e ne scrive le condizioni da `provaCarteggio()` e `PROVA_CARTEGGIO`, senza un secondo algoritmo né un secondo conto degli argomenti | scoperto — la pagina compone ancora con la sua `componiProva()` e le sue costanti `PROVA_*`: finché ci sono, `test_engine.mjs` le esegue estratte dal file e pretende la stessa prova, e il test si ritira con la copia. Il passaggio è la realizzazione dell'area 4 (P-21), il controllo che lo tiene fermo è D-04 |
+| R-SEL-17 | La pagina compone la prova e ne scrive le condizioni da `provaCarteggio()` e `PROVA_CARTEGGIO`, senza un secondo algoritmo né un secondo conto degli argomenti. **Attuale:** la sua `componiProva()` resta, e `test_engine.mjs` la esegue estratta dal file e pretende la stessa prova; nessuna chiamata al motore nuovo senza il raccordo. **Progettato** (area 4, D-04): la lista annunciata del giro, del tappeto, della prova e del riconoscimento viene da una sola selezione del motore, con condizioni, carte, assunzione di Q-CART4, mancanti e riprese com'erano, e Inizia apre quella lista, con un'identità nuova, solo se la selezione di adesso è la stessa — eseguiti, non letti | `test_interfaccia.py::test_carteggio_preparazione` |
 
 ### 9.4 La navigazione e la reperibilità
 
@@ -1325,7 +1340,7 @@ del progetto di preparazione. Il §4 di `prossima-versione.md` li motiva.
 | R-TEMPO-06 | Il ritmo non dipende dalla lunghezza della sessione | `test_engine.mjs::ritmo: una sessione corta non e` |
 | R-TEMPO-07 | `stimaImpegno()` dichiara quale dei tre tempi sta riportando | `test_engine.mjs::stimaImpegno: con il ritmo misurato usa l` |
 | R-TEMPO-08 | Il ritmo si misura sul confine per pausa, e un'attività ripresa dopo una pausa non lo gonfia | `test_engine.mjs::sessioni: il confine per pausa resta quello di prima, e ritmo lo usa` |
-| R-FLU-01 | Ogni attività si chiude con un passo che propone azioni derivate da quello che è appena successo. **Quiz, coperti:** riepilogo dell'attività intera — risposte, corrette, errate, non affrontate, esito solo per una prova e mai superata con domande senza risposta — e la riprova che offre, pronta o bloccata col suo motivo. **Carteggio, tecniche e Segnali, scoperti:** i loro cicli non sono ancora realizzati nella pagina (area 4, P-21 e P-35); il contratto del motore per carta e tecniche c'è, R-FLU-12…22 | `test_interfaccia.py::test_ciclo_riepilogo` |
+| R-FLU-01 | Ogni attività si chiude con un passo che propone azioni derivate da quello che è appena successo. **Quiz, coperti:** riepilogo dell'attività intera — risposte, corrette, errate, non affrontate, esito solo per una prova e mai superata con domande senza risposta — e la riprova che offre, pronta o bloccata col suo motivo. **Carteggio e tecniche:** R-FLU-24 per il riepilogo e la revisione, R-FLU-25 per la riprova che non c'è — due controlli distinti, come R-FLU-01 e R-FLU-10 per i quiz; il contratto del motore è R-FLU-12…22. **Segnali, scoperti:** il loro ciclo non è progettato | `test_interfaccia.py::test_ciclo_riepilogo` |
 | R-FLU-02 | Gli errori di una sessione si riaprono come esercizio, senza mescolarli con quelli di sempre: tutti e soltanto gli errori di quell'attività, nell'ordine delle risposte, anche se nel frattempo sono stati corretti altrove | `test_engine.mjs::erroriSessione: apre esattamente gli errori di quella lista` |
 | R-FLU-03 | Il conteggio annunciato e la lista che si apre coincidono anche per gli errori di sessione, nel motore; nella pagina lo tiene R-FLU-10 | `test_engine.mjs::erroriSessione: il conteggio promesso e la lista coincidono` |
 | R-FLU-04 | Un confine di sessione ricostruito si dichiara invece di passare per registrato: il motore lo dice in `fonte`, e il riepilogo e l'istantanea della riprova lo portano fino alla pagina | `test_engine.mjs::erroriSessione: un confine ricostruito si dichiara` |
@@ -1347,7 +1362,10 @@ del progetto di preparazione. Il §4 di `prossima-versione.md` li motiva.
 | R-FLU-20 | Le righe di prima non inventano niente: quantità proposta, non affrontati, variante e ordine sono «non registrati» quando mancano, e la quantità di una prova vecchia viene dalla sua riga di prova | `test_engine.mjs::dettaglioCarteggio: le righe vecchie non inventano quantita, variante ne ordine` |
 | R-FLU-21 | Un esercizio che la banca caricata non ha si nomina e conserva il risultato proprio; senza la banca i mancanti non si dicono «nessuno», e i conteggi restano quelli delle righe | `test_engine.mjs::dettaglioCarteggio: un esercizio che la banca non ha si nomina` |
 | R-FLU-22 | Un ritento della scrittura con gli stessi uid non conta due volte, uno con uid nuovi è un esercizio ripetuto, e un id che non c'è non è un'attività vuota | `test_engine.mjs::dettaglioCarteggio: un ritento con gli stessi uid non conta due volte` |
-| R-FLU-23 | La pagina scrive le righe di carta e tecniche con lo schema di P-33 — un `sim_uid` nuovo a ogni attività, anche per giro, tappeto e tecniche, `proposti` e `pos`, gli stessi uid al ritento — e ne legge riepilogo e revisione da `attivitaCarteggio()` e `dettaglioCarteggio()`, senza filtrare le righe da sé | scoperto — la pagina scrive ancora le righe di prima e filtra le righe della prova in `apriRivedi()`; il passaggio è la realizzazione dell'area 4 (P-21), il controllo che lo tiene fermo è D-04 (P-35) |
+| R-FLU-23 | La pagina scrive le righe di carta e tecniche con lo schema di P-33 — un `sim_uid` nuovo a ogni attività, anche per giro, tappeto e tecniche, `proposti` e `pos`, gli stessi uid al ritento — e ne legge riepilogo e revisione da `attivitaCarteggio()` e `dettaglioCarteggio()`, senza filtrare le righe da sé. **Attuale:** `salvaCart()` e `correggiTec()` scrivono le righe di prima, e nessuna riga viene dalla bozza senza il raccordo. **Progettato:** le righe della carta sono quelle di `concludiBozza()` sul lavoro dell'avvio, nessuna con un giudizio rinviato e le stesse a un ritento; quelle del riconoscimento hanno il legame e l'esito esatto; fuori dal raccordo la pagina non scrive righe del Carteggio e non le filtra per tipo | `test_interfaccia.py::test_carteggio_righe` |
+| R-FLU-24 | Carta e riconoscimento si chiudono con un riepilogo e una revisione dell'attività intera, da una sola chiamata a `dettaglioCarteggio()`: conteggi, schede ed esito come il motore li dà — l'esito solo per una prova con tutti i giudizi —, «Rivedi quelli da rivedere (D)» con D uguale alle schede che apre, un legame ambiguo senza numeri, una lettura fallita distinta da un'attività che non c'è, i mancanti `null` senza la banca; anche per le prove di prima, i giri ricostruiti e fra attività estranee. **Attuale:** il confronto e la revisione di oggi | `test_interfaccia.py::test_carteggio_riepilogo` |
+| R-FLU-25 | La riprova esatta resta dei quiz: il riepilogo del Carteggio non chiama `erroriSessione()` né offre una lista da riaprire, e il seguito è una preparazione nuova (area 4 §7.3). Un controllo suo, distinto da quello del riepilogo | `test_interfaccia.py::test_carteggio_senza_riprova` |
+| R-FLU-26 | Il controllo del Carteggio progettato gira a ogni esecuzione, anche finché la pagina pubblicata è nel regime attuale: una pagina di riferimento lo passa, e ciascuna delle sue rotture dichiarate lo fa fallire nominando il difetto | `test_interfaccia.py::test_carteggio_provato_al_contrario` |
 
 **I due regimi del ciclo, e che cosa il controllo non vede.** R-FLU-01 e
 R-FLU-10 sono scritti per il passaggio all'area 3 (§10.1 del suo progetto), con
@@ -1366,6 +1384,28 @@ ritorni, Esc, la conferma e la consegna idempotente di una simulazione, i tag
 nella revisione, gli avvisi di scrittura e di lettura, le figure, Base e vela
 come flusso. **Il regime attuale ha una scadenza:** lo toglie la regia quando
 integra P-19.
+
+**I due regimi del Carteggio, e che cosa il controllo non vede** (D-04, P-35).
+R-SEL-17, R-FLU-23…26 e R-UX-07 sono scritti per il passaggio all'area 4, con
+il meccanismo di R-NAV-04 e R-FLU-01: la pagina pubblicata compone la prova con
+la sua `componiProva()`, e `main` deve restare verde con lei mentre il nuovo si
+realizza. Il controllo riconosce il regime dal **raccordo** —
+`preparaCarteggio()`, `avviaCarteggio()`, `concludiCarteggio()`,
+`rispostaTecnica()`, `riepilogoCarteggio()`, il cui contratto è nel §10.1 di
+`area-4-progetto.md` —: nel regime attuale pretende che il ciclo di oggi ci
+sia e che il motore nuovo non sia chiamato senza il raccordo; nel progettato
+estrae le cinque funzioni e fa il giro preparazione → avvio → conclusione →
+riepilogo contro il motore e le banche vere, con i dati che cambiano fra un clic
+e l'altro (`tests/ciclo_carteggio.mjs`). L'assunzione di Q-CART4 e i minuti
+della prova tornano dal banco con un valore suo, così una pagina che li copia
+dal motore a mano esce rossa. **Il lavoro del runner ha la forma della bozza in
+tutti e due gli stati d'accesso**, in memoria: le righe finali e i loro uid
+vengono da `concludiBozza()` con e senza account, e con l'account lo stesso
+oggetto si scrive come bozza (§7.6, §9.11). **Non vede**, e resta al collaudo di
+P-21 a 375 e 1280 px: i testi, i materiali, la guida e l'esempio, la consegna a
+due tocchi, il confronto affiancato, il giudizio rinviato come stato della
+pagina, «Valutazione in corso», i ritorni e il focus, le tre porte. **Il regime
+attuale ha una scadenza:** lo toglie la regia quando integra P-21.
 
 ### 9.8 Che cosa non deve sparire, e che cosa si deve leggere
 
@@ -1387,9 +1427,10 @@ liste, perché una lista in un prompt è una regola da ricordare.
 |---|---|---|
 | R-UX-01 | Il Carteggio è un ambiente proprio, raggiungibile senza cercarlo fra i quiz | `test_interfaccia.py::test_ogni_vista_ha_una_porta` |
 | R-UX-02 | Il gioco dei Segnali non scrive nell'archivio delle risposte | scoperto — richiede di giocare e contare le righe; verificato a mano nella 0.19.2, quattro partite e archivio fermo a 101 righe |
-| R-UX-03 | La prova di carteggio dichiara **all'ingresso** che il giudizio è di chi studia | scoperto — è un testo in schermata, si fissa quando il testo è definitivo |
+| R-UX-03 | La prova di carteggio dichiara **prima dell'avvio** che il giudizio è di chi studia, nel testo che si vede del Carteggio e non alla consegna: guidata in un browser vero senza account, prima di Inizia. Le frasi riconosciute sono quella del progetto dell'area 4 (§4, «Sei tu a giudicare») e quella della pagina di oggi, che esce con il suo regime | `test_interfaccia.py::test_client_tutte_le_attivita` |
 | R-UX-04 | Gli extra non compaiono dentro la mappa della copertura | scoperto — dipende dalla struttura della Rotta, ancora aperta (§10) |
 | R-UX-05 | Il carico di un'attività si annuncia in minuti, non solo in domande | scoperto — decisione aperta (§10) |
+| R-UX-07 | Finché Q-AMBITO è aperta, la pagina non carica `carteggio_e12.json`, in nessuno dei due regimi del Carteggio | `test_interfaccia.py::test_carteggio_ambito` |
 
 ### 9.9 L'accesso
 
@@ -1662,8 +1703,8 @@ Ogni riga dice **chi decide**. Una questione senza un decidente non si chiude ma
 | Q-DIM | La dimensione della prima attività per chi comincia | l'autore, dopo un confronto fra due varianti | Restano i 25 quesiti attuali, mai verificati su chi inizia |
 | Q-TEMA | Il tema scuro: opzione futura o requisito | l'autore | Il tema chiaro va comunque misurato da solo (appendice A) |
 | Q-PROG | Il programma d'esame come dataset | serve una fonte, poi l'autore | Nessuna mappa del programma è possibile: nel repo non c'è (§4.6) |
-| Q-AMBITO | Se `carteggio_e12.json` esce dal cassetto | l'autore | 50 esercizi pubblicati e non usati; cambia il pubblico più di ogni scelta di navigazione |
-| Q-CART4 | «Un esercizio per ciascuno dei quattro argomenti» è un'assunzione | serve la scuola nautica | La composizione della prova resta non confermata, e la 42/D non ha esercizi di carburante. Dal 30 settembre 2026 l'assunzione viaggia con il contratto, `PROVA_CARTEGGIO.assunzione`, e chi compone la prova la riceve con la lista (R-SEL-12) |
+| Q-AMBITO | Se `carteggio_e12.json` esce dal cassetto | l'autore | 50 esercizi pubblicati e non usati; cambia il pubblico più di ogni scelta di navigazione. Finché resta aperta, un controllo pretende che la pagina non li carichi (R-UX-07): tirarli fuori è una decisione, non un ritocco |
+| Q-CART4 | «Un esercizio per ciascuno dei quattro argomenti» è un'assunzione | serve la scuola nautica | La composizione della prova resta non confermata, e la 42/D non ha esercizi di carburante. Dal 30 settembre 2026 l'assunzione viaggia con il contratto, `PROVA_CARTEGGIO.assunzione`, e chi compone la prova la riceve con la lista (R-SEL-12). Dal 30 settembre 2026 (P-35) arriva anche alla preparazione della pagina, che la dichiara prima dell'avvio come la dà il motore, e un controllo la segue fino lì (R-SEL-17) |
 | Q-PROVE | Verifiche con dispositivi reali e con persone — e Safari, che il banco del browser non raggiunge (rimandato dall'autore il 29 settembre 2026) | l'autore fornisce dispositivi e persone | Nessuna prova su hardware Apple vero, e nessuna prova con persone diverse dall'autore. Safari nel banco vorrebbe «Allow remote automation», un'impostazione dell'autore, e anche così WebDriver non legge lo storage (`account-client-progetto.md` §12): il cookie fra `rottagiusta.it` e `api.` su Safari si prova a mano |
 | Q-ONBOARD | Che cosa chiede l'onboarding di chi si registra, oltre alla data d'esame; e se il sito consiglia un piano di studio strutturato | l'autore | Un piano deve reggersi su quello che il motore sa: niente programma d'esame (Q-PROG), niente studio fatto altrove (chiusa l'8 settembre), niente «quanto tempo hai?» (R-TEMPO-03), e senza data niente quota. I pezzi ci sono già — `traccia()`, `quadro()`, `dovePesa()`, `stimaImpegno()` —, e il piano di 17 sessioni del progetto originario è stato tolto nella 0.19.0 con il resto del servizio personale |
 | Q-SUITE | La suite dell'interfaccia vuole Chrome e la porta 8620 libera, da P-29, e dura circa 150 s da P-46 (85 s con P-43, un minuto prima): la pagina vera parla solo con la 8620, quindi i suoi gruppi con l'API girano in fila su una corsia, e quella somma è la durata. È il prezzo del browser vero, accettarlo o accorciarlo. La 8620 è una sola anche fra i worktree, e due suite in parallelo — P-18 e P-43 il 29 settembre — si escludono | l'autore, rimandata il 29 settembre 2026 | Accorciarla vuol dire aprire il CORS del server a più origini o accorciare attese che hanno già dato un rosso falso; finché resta aperta, la suite si fa girare intera e un'esecuzione saltata si dice |
@@ -2107,3 +2148,15 @@ successo, ed è il motivo per cui questo file esiste.
   dichiarato** — un controllo che resta rosso sulla pagina vera, tenuto acceso
   da una tabella in `docs/eccezioni-interfaccia.md` invece che spento. Il §3.2
   dice che la bozza non è una riga.
+- **30 settembre 2026 — i controlli del Carteggio (P-35).** D-04 del §10.1 di
+  `area-4-progetto.md`, con il meccanismo di P-06, P-31 e P-44: il raccordo in
+  cinque funzioni, scritto in quel §10.1 prima della pagina, e il regime
+  riconosciuto da lui. R-SEL-17 e R-FLU-23, lasciati scoperti per la pagina da
+  P-32 e P-33, diventano coperti per quello che il banco esegue; nuovi R-FLU-24
+  (il riepilogo di carta e tecniche), R-FLU-25 (la riprova che resta dei quiz,
+  con un controllo suo), R-FLU-26 (il banco contro sé stesso) e R-UX-07
+  (Q-AMBITO). R-UX-03 passa a coperto, **prima dell'avvio**, nel browser: C-01
+  cerca la frase nel testo che si vede del Carteggio. §7.3 e §7.6 dicono che la
+  lista annunciata è quella che parte e che il lavoro ha la forma della bozza in
+  tutti e due gli stati. Trentanove rotture della pagina di riferimento, tutte
+  rosse per il loro motivo; una è nata provando il banco contro sé stesso.

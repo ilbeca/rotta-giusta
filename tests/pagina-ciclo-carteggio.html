@@ -1,0 +1,156 @@
+<!doctype html>
+<!--
+  La pagina di riferimento del Carteggio progettato: preparazione, avvio,
+  conclusione, riconoscimento e riepilogo, docs/area-4-progetto.md §§5–8. Non
+  e' pubblicata e non e' un prototipo: e' il minimo che soddisfa il controllo
+  di tests/test_interfaccia.py, e serve a quel controllo per provarsi al
+  contrario a ogni esecuzione — questa pagina deve passare, e ognuna delle sue
+  rotture elencate in ROTTURE_CARTEGGIO deve fallire.
+
+  Mostra anche la forma del contratto a chi realizza l'area 4 (P-21): che cosa
+  ricevono le cinque funzioni di raccordo, che cosa restituiscono, e come la
+  pagina le collega al runner. Il disegno, i testi e il flusso sono del
+  progetto, non di qui. Il contratto per esteso sta nel §10.1, D-04.
+-->
+<title>Carteggio, regime progettato: pagina di riferimento</title>
+<section id="v-cart"></section>
+<script type="module">
+import * as E from '/engine.js';
+
+const S = { cart: [], cprog: {}, tec: [], tprog: {}, archivio: [], prep: null, lavoro: null, run: null, fine: null };
+
+function uid() { return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10); }
+
+function carteDi(lista) { return [...new Set(lista.map((e) => e.carta ?? null))]; }
+
+/**
+ * La lista annunciata, dal motore, e che cosa dichiarare prima di Inizia.
+ *
+ * scelta: { attivita, seme, nuoviPrima }
+ *   attivita   'prova' | 'giro-tecniche' | 'tappeto' | 'tecniche'
+ * fonte: { banca, specchio, tecniche, specchioTecniche, righe, oggi, adesso, ts, letturaFallita }
+ */
+function preparaCarteggio(scelta, fonte) {
+  const { attivita } = scelta;
+  const tec = attivita === 'tecniche';
+  const banca = tec ? fonte.tecniche : fonte.banca;
+  const vuota = { scelta, attivita, lista: [], quanti: 0, carte: tec ? null : [], motivi: null, condizioni: null,
+    assunzione: null, variante: null, argomenti: null, mancanti: null, completamento: null, riprese: null };
+  if (!Array.isArray(banca) || !banca.length) return { ...vuota, stato: 'senza banca' };
+  // Una fonte che non si legge non diventa uno storico vuoto (§3.2): solo la
+  // prova cieca, che non lo guarda, si prepara lo stesso.
+  if ((attivita !== 'prova' || scelta.nuoviPrima) && fonte.letturaFallita) return { ...vuota, stato: 'illeggibile' };
+  if (attivita === 'prova') {
+    const r = E.provaCarteggio(banca, fonte.specchio, fonte.oggi, { seme: scelta.seme, nuoviPrima: !!scelta.nuoviPrima });
+    return { ...vuota, stato: r.pronta ? 'pronta' : 'corta', lista: r.lista, quanti: r.lista.length, carte: r.carte,
+      condizioni: r.condizioni, assunzione: r.assunzione, variante: r.variante, argomenti: r.argomenti,
+      mancanti: r.mancanti, completamento: r.completamento, riprese: r.riprese };
+  }
+  if (attivita === 'giro-tecniche') {
+    const g = E.giroTecniche(banca, fonte.specchio);
+    const lista = g.map((x) => x.e);
+    return { ...vuota, stato: lista.length ? 'pronta' : 'vuota', lista, quanti: lista.length, carte: carteDi(lista),
+      motivi: g.map((x) => x.tecniche) };
+  }
+  if (attivita === 'tappeto') {
+    // Fino a 4 esercizi per attivita' (§5.2).
+    const lista = E.tappeto(banca, fonte.specchio, 4);
+    return { ...vuota, stato: lista.length ? 'pronta' : 'foglio finito', lista, quanti: lista.length, carte: carteDi(lista) };
+  }
+  if (tec) {
+    const voci = banca.map((e) => ({ id: e.id, k: 'tec', t: e.argomento, v: e.carta, d: e.testo, _e: e }));
+    // Fino a 15 testi (§5.3).
+    const lista = E.coda(voci, fonte.specchioTecniche, fonte.oggi, { n: 15 }).map((x) => x._e);
+    return { ...vuota, stato: lista.length ? 'pronta' : 'vuota', lista, quanti: lista.length };
+  }
+  throw new Error('attività sconosciuta: ' + attivita);
+}
+
+/** Inizia: la stessa lista, con un'identita' nuova, o niente. */
+function avviaCarteggio(preparazione, fonte, avvia) {
+  if (preparazione.stato !== 'pronta') return { avviata: false, stato: preparazione.stato };
+  const ora = preparaCarteggio(preparazione.scelta, fonte);
+  if (ora.stato !== 'pronta') return { avviata: false, stato: ora.stato };
+  const ids = preparazione.lista.map((e) => e.id);
+  if (ora.lista.length !== ids.length || ora.lista.some((e, i) => e.id !== ids[i])) return { avviata: false, stato: 'cambiata' };
+  const simUid = uid();
+  const modo = { prova: 'simulazione', 'giro-tecniche': 'giro-tecniche', tappeto: 'tappeto', tecniche: 'tecnica' }[preparazione.attivita];
+  const opt = { simUid, proposti: ids.length };
+  // Il lavoro del runner ha la forma della bozza in tutti e due gli stati: con
+  // l'account si scrive in meta (§9.4 del client), senza resta in memoria.
+  if (modo !== 'tecnica') {
+    opt.lavoro = E.nuovaBozza({ id: simUid, modo, lista: ids, inizio: fonte.adesso,
+      variante: modo === 'simulazione' ? preparazione.variante : null });
+  }
+  if (preparazione.motivi) opt.motivi = preparazione.motivi;
+  avvia(preparazione.lista, modo, opt);
+  return { avviata: true, simUid };
+}
+
+/** Le righe finali della carta, dal motore: nessuna con un giudizio rinviato, le stesse a un ritento. */
+function concludiCarteggio(lavoro, fonte) {
+  const quesiti = Array.isArray(fonte.banca) ? new Set(fonte.banca.map((e) => e.id)) : undefined;
+  const { righe, motivo } = E.concludiBozza(lavoro, { ts: fonte.ts, quesiti });
+  return { righe, motivo };
+}
+
+/** La riga di una risposta del riconoscimento: le scelte coincidono solo se sono esattamente quelle attese. */
+function rispostaTecnica(corsa, pos, scelte, fonte) {
+  const e = corsa.lista[pos];
+  const attese = new Set(e.tecniche);
+  const mie = new Set(scelte);
+  const correct = mie.size === attese.size && [...mie].every((t) => attese.has(t)) ? 1 : 0;
+  return { _t: 't', uid: fonte.uid, item_id: e.id, ts: fonte.ts, correct, ms: fonte.ms,
+    chosen: scelte.join('|'), sim_uid: corsa.simUid, proposti: corsa.proposti, pos };
+}
+
+/** Riepilogo e revisione di un'attivita' del Carteggio: una chiamata, e nessuna riprova. */
+function riepilogoCarteggio(contesto, fonte) {
+  const { id, tipo } = contesto;
+  const banca = tipo === 't' ? fonte.tecniche : fonte.banca;
+  const d = E.dettaglioCarteggio(fonte.righe, banca, id, { tipo, filtro: contesto.filtro });
+  const stato = !d.trovata ? (fonte.letturaFallita ? 'illeggibile' : 'indisponibile') : d.ambigua ? 'ambigua' : 'pronto';
+  const [filtro, campo] = tipo === 't' ? ['non-coincidenti', 'nonCoincidenti'] : ['da-rivedere', 'daRivedere'];
+  const quanti = d.conteggi ? d.conteggi[campo] : 0;
+  return { stato, tipo, id: d.id, confine: d.fonte, mode: d.mode, variante: d.variante, proposti: d.proposti,
+    ordine: d.ordine, motivi: d.motivi, schede: d.schede, mostrate: d.mostrate, filtro: d.filtro,
+    conteggi: d.conteggi, esito: d.esito, mancanti: d.mancanti, rivedi: quanti ? { filtro, quanti } : null };
+}
+
+/* ---- il collegamento con la pagina: letto dal controllo, non eseguito ---- */
+
+function fonteCarteggio(extra = {}) {
+  return { banca: S.cart, specchio: S.cprog, tecniche: S.tec, specchioTecniche: S.tprog, righe: S.archivio,
+    oggi: E.isoLocale().slice(0, 10), adesso: Date.now(), ts: E.isoLocale(), letturaFallita: false, ...extra };
+}
+
+function archivia(r) { S.archivio.push(r); }
+
+function apriCarta(lista, modo, opt) {
+  S.lavoro = opt.lavoro;
+  S.run = { lista, modo, simUid: opt.simUid, motivi: opt.motivi || null };
+}
+
+function apriRiconoscimento(lista, modo, opt) {
+  S.run = { corsa: { simUid: opt.simUid, lista, proposti: opt.proposti }, i: 0, scelte: new Set() };
+}
+
+document.addEventListener('click', (ev) => {
+  const t = ev.target;
+  if (t.dataset.prepara) {
+    S.prep = preparaCarteggio({ attivita: t.dataset.prepara, seme: Date.now() % 100000, nuoviPrima: false }, fonteCarteggio());
+  }
+  if (t.dataset.inizia !== undefined) {
+    avviaCarteggio(S.prep, fonteCarteggio(), S.prep.attivita === 'tecniche' ? apriRiconoscimento : apriCarta);
+  }
+  if (t.dataset.concludi !== undefined) {
+    const { righe } = concludiCarteggio(S.lavoro, fonteCarteggio());
+    righe.forEach(archivia);
+    if (righe.length) S.fine = riepilogoCarteggio({ id: S.lavoro.id, tipo: 'c' }, fonteCarteggio());
+  }
+  if (t.dataset.tecnica !== undefined) {
+    const R = S.run;
+    archivia(rispostaTecnica(R.corsa, R.i, [...R.scelte], fonteCarteggio({ ms: 1000, uid: uid() })));
+  }
+});
+</script>

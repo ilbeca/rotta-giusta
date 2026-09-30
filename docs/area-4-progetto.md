@@ -773,6 +773,159 @@ area 2 §10.1; alla merge chiudere il vecchio. Non rimuovere asserzioni o
 inventare righe per tenere verde la suite. Definire il raccordo estraibile
 e il riconoscimento del regime nel repo prima di scrivere UI.
 
+*Consegnata il 30 settembre 2026 (P-35): il raccordo, e come lo legge il
+controllo.* Scritto qui prima della pagina di riferimento e del banco, come
+`selezioneQuiz()` per l'area 2 (P-06), il ciclo per l'area 3 (P-31) e la mappa
+per l'area 5 (P-44). `tests/test_interfaccia.py` riconosce il regime del
+Carteggio dal **raccordo**: una pagina che dichiara al primo livello una di
+queste cinque funzioni è nel regime progettato, e deve dichiararle tutte.
+
+```js
+preparaCarteggio(scelta, fonte)            // la lista annunciata, dal motore, e che cosa dichiarare prima di Inizia
+avviaCarteggio(preparazione, fonte, avvia) // Inizia: la stessa lista, con un'identità nuova, o niente
+concludiCarteggio(lavoro, fonte)           // le righe finali della carta: E.concludiBozza(), o nessuna
+rispostaTecnica(corsa, pos, scelte, fonte) // la riga di una risposta del riconoscimento
+riepilogoCarteggio(contesto, fonte)        // riepilogo e revisione di un'attività: E.dettaglioCarteggio()
+```
+
+Dipendono solo dai loro argomenti, da `E` e da altre funzioni di primo livello
+(come `uid()`): il controllo le estrae e le esegue senza DOM e senza `S`. Senza
+nessuna delle cinque la pagina è nel regime attuale, e lì non chiama
+`E.provaCarteggio`, `E.attivitaCarteggio`, `E.dettaglioCarteggio`,
+`E.nuovaBozza` né `E.concludiBozza`: sarebbe il carteggio nuovo senza il
+raccordo, un numero con una seconda fonte. E il ciclo di oggi — `componiProva()`,
+`dipingiCorrezione()`, `salvaCart()`, `rivediCarteggio()`, `correggiTec()` —
+resta finché il nuovo non c'è. **Il regime attuale ha una scadenza:** lo toglie
+la regia quando integra P-21.
+
+**`fonte`** è una sola per le cinque, e il controllo la congela: `{ banca,
+specchio, tecniche, specchioTecniche, righe, oggi, adesso, ts, letturaFallita }`.
+`banca` è `carteggio.json` caricata (o `null`), `specchio` lo specchio del
+carteggio ricalcolato con `E.ripiega()` dalle righe dell'account o della pagina
+aperta (§3.1), `tecniche` e `specchioTecniche` lo stesso per il
+riconoscimento, `righe` le righe da cui si legge un riepilogo, `oggi` il giorno,
+`adesso` l'orologio in millisecondi, `ts` l'istante di `E.isoLocale()`,
+`letturaFallita` vero quando le righe non si sono lette (§3.2).
+
+**`preparaCarteggio(scelta, fonte)`**, con `scelta = { attivita, seme,
+nuoviPrima }` e `attivita` `'prova' | 'giro-tecniche' | 'tappeto' |
+'tecniche'`, chiama **una volta** la selezione del §8.1 con i dati della fonte,
+e nessun'altra: `E.provaCarteggio(banca, specchio, oggi, { seme, nuoviPrima })`;
+`E.giroTecniche(banca, specchio)`; `E.tappeto(banca, specchio, 4)`;
+`E.coda(voci, specchioTecniche, oggi, { n: 15 })`, con `voci` le tecniche nella
+forma `{ id, k: 'tec', _e }` di oggi. Restituisce `{ scelta, attivita, stato,
+lista, quanti, carte, motivi, condizioni, assunzione, variante, argomenti,
+mancanti, completamento, riprese }`:
+
+- `lista` sono gli esercizi della banca che la selezione ha dato, gli oggetti
+  della banca e nel suo ordine; `quanti` è la sua lunghezza.
+- Nella prova `condizioni`, `assunzione` (Q-CART4), `variante`, `argomenti`,
+  `mancanti`, `completamento`, `riprese` e `carte` sono quelli del risultato di
+  `provaCarteggio()`, come sono: `riprese` resta `null` nella prova cieca. Negli
+  allenamenti e nel riconoscimento sono `null`, e `carte` sono le carte della
+  lista, distinte, nel suo ordine — `null` nel riconoscimento, che non ne vuole.
+- `motivi` nel giro sono, esercizio per esercizio, le tecniche che porta al giro
+  secondo `giroTecniche()`; altrove `null`.
+- `stato` è `'pronta'`, oppure dice perché non si avvia: `'corta'` (la prova non
+  è `pronta`: §5.1), `'foglio finito'` (il tappeto vuoto su una banca che ha
+  esercizi), `'vuota'` (il giro o il riconoscimento senza selezione), `'senza
+  banca'` (la banca non c'è o non ha esercizi: nessuna chiamata), `'illeggibile'`.
+  **Una fonte che non si legge non diventa uno storico vuoto** (§3.2): con
+  `letturaFallita` il giro, il tappeto, il riconoscimento e la variante «prima i
+  mai provati» non chiamano il motore e dicono `'illeggibile'`; la prova cieca,
+  che non guarda lo storico, si prepara lo stesso.
+
+La pagina scrive le condizioni, le carte e l'assunzione da qui, e non tiene una
+sua `componiProva()`, `argomentiSenzaNuovi()`, né le costanti `PROVA_*` o
+`ARGOMENTI` (D-01). **Il giudizio di chi studia prima dell'avvio** (R-UX-03) non
+è un campo del raccordo, perché è una frase fissa del §4: lo guarda il banco del
+browser, nel testo che si vede del Carteggio prima di Inizia.
+
+**`avviaCarteggio(preparazione, fonte, avvia)`** rifà la preparazione con la
+stessa `scelta` sulla fonte di adesso e, solo se è `'pronta'` con gli stessi
+esercizi nello stesso ordine, chiama **una volta** `avvia(lista, modo, opt)`
+con la lista della preparazione, e restituisce `{ avviata: true, simUid }`;
+altrimenti `{ avviata: false, stato }`, con `'cambiata'` quando la selezione di
+adesso è un'altra — un clic non avvia una pescata che nessuno ha visto (§8.1).
+`modo` è `'simulazione' | 'giro-tecniche' | 'tappeto' | 'tecnica'`; `opt` porta
+`simUid`, **un'identità nuova a ogni avvio**, e `proposti`, il numero della
+lista. Sulla carta `opt.lavoro` è `E.nuovaBozza({ id: simUid, modo, lista: ids,
+inizio: fonte.adesso, variante })`, con la variante della preparazione nella
+prova: **il lavoro del runner ha la forma della bozza in tutti e due gli stati**,
+in memoria; con l'account lo stesso oggetto si scrive in `meta` (§9.4 del
+client), senza account no. Così la scadenza è quella del motore, e le righe
+finali e il loro uid non dipendono dallo stato d'accesso. Nel giro `opt.motivi`
+sono i `motivi` della preparazione.
+
+**`concludiCarteggio(lavoro, fonte)`** chiama **una volta**
+`E.concludiBozza(lavoro, { ts: fonte.ts, quesiti })`, con `quesiti` gli id della
+banca (o `undefined` senza banca), e restituisce `{ righe, motivo }` come sono.
+La pagina scrive quelle righe e nessun'altra: con un giudizio rinviato `righe`
+è vuota, e un ritento della stessa conclusione dà gli stessi uid (D-02, D-03).
+`concludiCarteggio()` non scrive: la scrittura, la coda e la bozza tolta nella
+stessa transazione sono della pagina (§9.4 del client).
+
+**`rispostaTecnica(corsa, pos, scelte, fonte)`** — `corsa = { simUid, lista,
+proposti }` come l'ha data l'avvio, `pos` la posizione nella lista, `scelte` le
+tecniche scelte, e in `fonte` anche `ms` e `uid`, nati una volta alla risposta —
+restituisce la riga `{ _t: 't', uid, item_id, ts, correct, ms, chosen,
+sim_uid, proposti, pos }` dello schema di D-02: `correct` è 1 se e solo se le
+scelte sono **esattamente** le tecniche dell'esercizio, `chosen` le scelte
+unite da `|`. Non scrive.
+
+**`riepilogoCarteggio(contesto, fonte)`**, con `contesto = { id, tipo, filtro }`
+e `tipo` `'c' | 't'`, chiama **una volta** `E.dettaglioCarteggio(righe, banca,
+id, { tipo, filtro })` — la banca del tipo: `banca` per la carta, `tecniche`
+per il riconoscimento — e nessun'altra funzione che conti: né
+`attivitaCarteggio()`, né `sessioni()`, né un filtro sulle righe. Restituisce
+`{ stato, tipo, id, confine, mode, variante, proposti, ordine, motivi, schede,
+mostrate, filtro, conteggi, esito, mancanti, rivedi }`, i campi di
+`dettaglioCarteggio()` come sono (`confine` è la sua `fonte`); `stato` è
+`'pronto'`, `'ambigua'` (con `conteggi` ed `esito` `null`: non «zero da
+rivedere»), `'indisponibile'`, o `'illeggibile'` quando l'attività non si trova
+e la lettura è fallita. `rivedi` è `{ filtro, quanti }` — `'da-rivedere'` con
+`conteggi.daRivedere` sulla carta, `'non-coincidenti'` con
+`conteggi.nonCoincidenti` nel riconoscimento — oppure `null` quando è zero:
+«Rivedi quelli da rivedere ({D})» apre, riaperto con quel filtro, le `mostrate`
+che conta. **Nessuna riprova** (§7.3): il riepilogo non chiama
+`erroriSessione()` e non restituisce un campo `riprova`; il seguito è una
+preparazione nuova. Vale per il riepilogo corrente, dalle righe appena
+concluse, come per la revisione di una prova salvata.
+
+**Il collegamento con la pagina.** Fuori dalle cinque funzioni la pagina non
+chiama `E.provaCarteggio`, `E.giroTecniche`, `E.tappeto`,
+`E.dettaglioCarteggio`, `E.nuovaBozza` né `E.concludiBozza`, non scrive righe
+`_t: 'c'`, `_t: 't'` o `kind: 'carteggio'` da sé, e non filtra le righe per
+tipo per costruire una revisione; e chiama ciascuna delle cinque. Le funzioni
+della bozza che servono all'account — `modificaBozza`, `sostituisciBozza`,
+`riprendiBozza` — restano della pagina. `attivitaCarteggio()` può servire
+all'elenco delle attività salvate. **Q-AMBITO resta aperta:** in tutti e due i
+regimi la pagina non carica `carteggio_e12.json`.
+
+**Che cosa il controllo esegue.** `tests/ciclo_carteggio.mjs` estrae le cinque
+funzioni e le esegue con le banche vere, specchi sintetici e un `E` che
+registra le chiamate e poi esegue il motore, salvo due cose: l'assunzione di
+Q-CART4 e i minuti delle condizioni tornano dal banco con un valore suo, così
+una pagina che li scrive a mano esce rossa invece di passare per coincidenza.
+Prepara le quattro attività, anche su una banca di tre esercizi, una senza un
+argomento, una senza esercizi, con la lettura fallita; fra la preparazione e
+Inizia cambia i dati — un esercizio del tappeto o del giro fatto altrove deve
+fermare Inizia, la banca ricaricata e una risposta ai quiz no —; poi porta il
+lavoro al confronto e ai giudizi con le funzioni vere del motore, conclude,
+rilegge il riepilogo di quelle righe fra altre attività e righe di prima, e fa
+lo stesso con il riconoscimento. La pagina di riferimento
+`tests/pagina-ciclo-carteggio.html` mostra la forma minima che passa; non è un
+disegno. Il controllo gira su di lei e sulle sue rotture a ogni esecuzione.
+
+**Che cosa il controllo non vede**, e resta al collaudo del §10.2: i testi, i
+materiali, la guida e l'esempio, la consegna a due tocchi, il confronto
+affiancato, il giudizio rinviato come stato della pagina, «Valutazione in
+corso», i ritorni e il focus, la geometria a 375 e 1280 px, le tre porte e le
+scorciatoie. Una pagina che scrivesse in schermata numeri presi da un'altra
+parte invece che dal risultato del raccordo passerebbe: del collegamento il
+controllo legge soltanto che il raccordo sia l'unico a chiedere selezioni,
+righe e dettaglio, e che la pagina lo chiami.
+
 Tutte le dipendenze sono di **Claude su `main`**: motore, test, dati di
 contratto e specifica non si scrivono da `ui/main`. Se l'API consegnata differisce,
 allineare questo documento prima del codice. La regia coordina D-01…04 e

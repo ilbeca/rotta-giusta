@@ -116,6 +116,25 @@ RIFERIMENTO_CICLO = RADICE / 'tests' / 'pagina-ciclo-quiz.html'
 BANCO_MAPPA = RADICE / 'tests' / 'mappa_progressi.mjs'
 RIFERIMENTO_MAPPA = RADICE / 'tests' / 'pagina-mappa-progressi.html'
 
+# Il Carteggio ha due regimi, con il meccanismo dei quiz, del ciclo e della mappa.
+#
+# Il regime ATTUALE e' la pagina pubblicata: la prova si compone con la sua
+# `componiProva()` — che test_engine.mjs esegue estratta dal file e confronta con
+# `provaCarteggio()` —, `salvaCart()` scrive le righe senza il legame degli
+# allenamenti, `dipingiCorrezione()` e `rivediCarteggio()` rileggono filtrando le
+# righe da se'. Il regime PROGETTATO e' l'area 4 (docs/area-4-progetto.md):
+# preparazione, avvio, conclusione, riconoscimento e riepilogo passano da cinque
+# funzioni di raccordo, e il §10.1 di quel progetto (D-04) chiede che il
+# controllo le **esegua** con le banche vere e i dati che cambiano fra un clic e
+# l'altro, invece di cercare un nome o un pulsante.
+#
+# Il regime si riconosce dal raccordo: una pagina che dichiara una delle cinque
+# funzioni e' nel progettato, e deve dichiararle tutte. **Il regime attuale ha
+# una scadenza:** la regia lo toglie quando integra P-21.
+RACCORDO_CARTEGGIO = ['preparaCarteggio', 'avviaCarteggio', 'concludiCarteggio', 'rispostaTecnica', 'riepilogoCarteggio']
+BANCO_CARTEGGIO = RADICE / 'tests' / 'ciclo_carteggio.mjs'
+RIFERIMENTO_CARTEGGIO = RADICE / 'tests' / 'pagina-ciclo-carteggio.html'
+
 # Export del motore che la pagina non chiama, e non e' un difetto. Ogni riga ha
 # il motivo e, dove serve, la condizione alla quale sparisce.
 
@@ -848,6 +867,339 @@ def test_mappa_provata_al_contrario():
               'rossi: ' + '; '.join(rossi[:3]))
 
 
+# --- 5b''. il Carteggio: preparazione, righe, riepilogo (area 4, D-04) ------------
+
+def banco_carteggio(testo):
+    """Le verifiche del Carteggio progettato, eseguite sotto Node sulla pagina data.
+
+    Il banco estrae le cinque funzioni di raccordo e le esegue contro il motore
+    e le banche vere: vedi tests/ciclo_carteggio.mjs. Se il banco stesso non
+    parte, e' un rosso.
+    """
+    try:
+        p = subprocess.run(['node', str(BANCO_CARTEGGIO)], input=json.dumps({'pagina': testo}),
+                           capture_output=True, text=True, timeout=120)
+        out = json.loads(p.stdout) if p.returncode == 0 else None
+    except (OSError, ValueError, subprocess.TimeoutExpired) as e:
+        return [{'gruppo': 'raccordo', 'nome': 'il banco del Carteggio parte', 'ok': False, 'extra': str(e)}]
+    if out is None:
+        return [{'gruppo': 'raccordo', 'nome': 'il banco del Carteggio parte', 'ok': False,
+                 'extra': (p.stderr or '').strip()[-400:]}]
+    return out
+
+
+def corpo(js, nome):
+    """Il testo della funzione di primo livello `nome`, fino alla prossima di primo livello; '' se non c'e'."""
+    m = re.search(r'^(?:async\s+)?function %s\(' % nome, js, re.M)
+    if not m:
+        return ''
+    fine = re.search(r'^(?:async\s+)?function \w+\(|^const \w+ = |^let \w+', js[m.end():], re.M)
+    return js[m.start():m.end() + (fine.start() if fine else len(js))]
+
+
+# Le funzioni del ciclo di oggi che chiudono un'attivita' del Carteggio: nel
+# regime attuale non offrono una riprova, e nel progettato nemmeno il raccordo.
+CICLO_CARTEGGIO_DI_OGGI = ['consegnaCart', 'dipingiCorrezione', 'salvaCart', 'rivediCarteggio', 'mostraTec', 'correggiTec']
+
+
+def regime_carteggio(testo):
+    """(regime, verifiche) del Carteggio: 'attuale' o 'progettato'.
+
+    Gruppi: «preparazione», «avvio» e «raccordo» sono di R-SEL-17; «righe» di
+    R-FLU-23; «riepilogo» di R-FLU-24; «riprova» di R-FLU-25; «ambito» di
+    R-UX-07, in tutti e due i regimi.
+    """
+    js = senza_commenti(testo)
+    ambito = [{'gruppo': 'ambito', 'nome': 'la pagina non carica carteggio_e12.json, finche\' Q-AMBITO e\' aperta',
+               'ok': 'carteggio_e12' not in js,
+               'extra': 'i 50 esercizi entro 12 miglia sono nel cassetto: tirarli fuori e\' una decisione dell\'autore '
+                        '(specifica §10, Q-AMBITO), e cambia il pubblico piu\' di ogni scelta di navigazione'}]
+    if any(re.search(r'^function %s\b' % f, js, re.M) for f in RACCORDO_CARTEGGIO):
+        return 'progettato', banco_carteggio(testo) + ambito
+    v = []
+
+    def ibrido(gruppo, funzioni_motore, perche):
+        chiamate = [f for f in funzioni_motore if re.search(r'\bE\.%s\b' % f, js)]
+        v.append({'gruppo': gruppo, 'nome': 'regime attuale: nessuna %s senza il raccordo' % perche, 'ok': not chiamate,
+                  'extra': 'la pagina chiama ' + ', '.join('E.' + f for f in chiamate) + ' senza preparaCarteggio/'
+                           'avviaCarteggio/concludiCarteggio/rispostaTecnica/riepilogoCarteggio: il contratto e\' nel '
+                           '§10.1 di docs/area-4-progetto.md, D-04'})
+
+    # Un ibrido e' la scappatoia che D-04 vieta: il motore nuovo chiamato senza
+    # il raccordo che il controllo esegue. Numero e lista avrebbero due fonti.
+    ibrido('preparazione', ['provaCarteggio'], 'composizione della prova dal motore nuovo')
+    ibrido('righe', ['nuovaBozza', 'concludiBozza'], 'riga dalla bozza')
+    ibrido('riepilogo', ['dettaglioCarteggio', 'attivitaCarteggio'], 'lettura delle attivita\' del Carteggio')
+    v.append({'gruppo': 'preparazione', 'nome': 'regime attuale: la prova si compone con componiProva(), che il motore tiene ferma',
+              'ok': bool(corpo(js, 'componiProva')) and 'E.giroTecniche(' in corpo(js, 'apriGiroTecniche')
+                    and 'E.tappeto(' in corpo(js, 'apriTappeto'),
+              'extra': 'componiProva(), e giro e tappeto dal motore, sono la preparazione di oggi: finche\' il raccordo '
+                       'non c\'e\', non possono sparire (test_engine.mjs pretende che componiProva() dia la prova di '
+                       'provaCarteggio())'})
+    v.append({'gruppo': 'righe', 'nome': 'regime attuale: la carta e il riconoscimento scrivono le loro righe',
+              'ok': re.search(r"_t:\s*'c'", corpo(js, 'salvaCart')) is not None
+                    and re.search(r"_t:\s*'t'", corpo(js, 'correggiTec')) is not None,
+              'extra': 'salvaCart() e correggiTec() sono le sole scritture del Carteggio di oggi'})
+    v.append({'gruppo': 'riepilogo', 'nome': 'regime attuale: la prova si confronta, si giudica e si rivede',
+              'ok': bool(corpo(js, 'dipingiCorrezione')) and bool(corpo(js, 'rivediCarteggio')),
+              'extra': 'il confronto con la risposta ministeriale e la revisione di una prova sono il ciclo di oggi'})
+    riprova = [f for f in CICLO_CARTEGGIO_DI_OGGI if re.search(r'erroriSessione|Riprova', corpo(js, f))]
+    v.append({'gruppo': 'riprova', 'nome': 'regime attuale: il Carteggio non offre una riprova', 'ok': not riprova,
+              'extra': 'la riprova esatta e\' dei quiz (area 4 §7.3), e nel Carteggio compare in ' + ', '.join(riprova)})
+    return 'attuale', v + ambito
+
+
+_CARTEGGIO_APP = None
+_CARTEGGIO_RIF = None
+
+
+def carteggio_app():
+    global _CARTEGGIO_APP
+    if _CARTEGGIO_APP is None:
+        _CARTEGGIO_APP = regime_carteggio(leggi('app.html'))
+    return _CARTEGGIO_APP
+
+
+def carteggio_riferimento():
+    global _CARTEGGIO_RIF
+    if _CARTEGGIO_RIF is None:
+        _CARTEGGIO_RIF = regime_carteggio(RIFERIMENTO_CARTEGGIO.read_text(encoding='utf-8'))
+    return _CARTEGGIO_RIF
+
+
+def registra_carteggio(gruppi):
+    """Le verifiche della pagina vera, e — nel regime progettato — il conto contro la pagina di riferimento.
+
+    Un giro che si ferma a meta' per una strada che il banco non ha previsto
+    avrebbe meno verifiche, e quelle fatte potrebbero essere tutte verdi: e' il
+    verde falso che P-40 ha chiuso per il client e P-44 per la mappa.
+    """
+    regime, v = carteggio_app()
+    etichetta = {'attuale': 'regime attuale', 'progettato': 'regime progettato'}.get(regime, 'regime ignoto')
+    for x in v:
+        if x['gruppo'] in gruppi:
+            check('Carteggio (%s): %s' % (etichetta, x['nome']), x['ok'], x.get('extra', ''))
+    check('Carteggio: il gruppo %s e\' stato controllato' % '/'.join(gruppi), any(x['gruppo'] in gruppi for x in v),
+          'nessuna verifica')
+    if regime == 'progettato':
+        _, rif = carteggio_riferimento()
+        for g in gruppi:
+            n, attese = sum(x['gruppo'] == g for x in v), sum(x['gruppo'] == g for x in rif)
+            check('Carteggio: il gruppo «%s» ha fatto tutte le verifiche' % g, n >= attese,
+                  'troppo poche verifiche (%d su %d): il banco si e\' fermato prima del giro' % (n, attese))
+
+
+def test_carteggio_preparazione():
+    """R-SEL-17: la lista annunciata, e quella che Inizia apre, dal motore."""
+    registra_carteggio(('preparazione', 'avvio', 'raccordo'))
+
+
+def test_carteggio_righe():
+    """R-FLU-23: le righe di carta e tecniche con lo schema di P-33."""
+    registra_carteggio(('righe',))
+
+
+def test_carteggio_riepilogo():
+    """R-FLU-24: riepilogo e revisione di carta e tecniche da dettaglioCarteggio()."""
+    registra_carteggio(('riepilogo',))
+
+
+def test_carteggio_senza_riprova():
+    """R-FLU-25: la riprova esatta resta dei quiz. Un gruppo suo, per tenerla
+    distinta dal riepilogo: i controlli del riepilogo del Carteggio non sono
+    quelli della riprova (R-FLU-10), e non ne prendono il posto."""
+    registra_carteggio(('riprova',))
+
+
+def test_carteggio_ambito():
+    """R-UX-07: finche' Q-AMBITO e' aperta, il carteggio entro 12 miglia resta nel cassetto."""
+    registra_carteggio(('ambito',))
+    # Provato al contrario, senza Node: una pagina che lo carica e' rossa, in
+    # tutti e due i regimi.
+    for nome, testo in (('attuale', leggi('app.html')), ('progettato', RIFERIMENTO_CARTEGGIO.read_text(encoding='utf-8'))):
+        rotta = testo.replace('</script>', "fetch('/dati/carteggio_e12.json');\n</script>", 1)
+        regime, v = regime_carteggio(rotta)
+        check('Carteggio provato al contrario: la pagina %s e\' nel regime %s' % (nome, nome), regime == nome, regime)
+        check('Carteggio provato al contrario (%s): una pagina che carica carteggio_e12.json e\' rossa' % nome,
+              any(x['gruppo'] == 'ambito' and not x['ok'] for x in v))
+
+
+# Il ramo del regime progettato non gira mai sulla pagina pubblicata finche'
+# P-21 non arriva: qui gira a ogni esecuzione su una pagina di riferimento che
+# deve passare e su ciascuna delle sue rotture, che devono fallire nominando il
+# difetto. Ogni rottura e' una lista di sostituzioni, applicate in ordine.
+_PREP_PROVA = ("const r = E.provaCarteggio(banca, fonte.specchio, fonte.oggi, "
+               "{ seme: scelta.seme, nuoviPrima: !!scelta.nuoviPrima });")
+ROTTURE_CARTEGGIO = [
+    # Il raccordo
+    ('il raccordo perde la preparazione',
+     [('function preparaCarteggio(scelta, fonte) {', 'function preparaAttivita(scelta, fonte) {')],
+     'dichiara preparaCarteggio'),
+    ('il raccordo legge S invece della fonte',
+     [('const banca = tec ? fonte.tecniche : fonte.banca;', 'const banca = tec ? S.tec : S.cart;')],
+     'dipendere solo dai suoi argomenti'),
+    ('il raccordo scrive nella fonte',
+     [('const tec = attivita === \'tecniche\';', 'const tec = attivita === \'tecniche\';\n  fonte.ultima = attivita;')],
+     'scrivere nella fonte'),
+    # La preparazione
+    ('la prova ricomposta con estrai()',
+     [(_PREP_PROVA, _PREP_PROVA + '\n    r.lista = E.estrai(banca, fonte.specchio, fonte.oggi, 4, scelta.seme);')],
+     'una sola selezione, E.provaCarteggio()'),
+    ('la variante che non arriva al motore',
+     [('nuoviPrima: !!scelta.nuoviPrima });', 'nuoviPrima: false });')],
+     'una sola selezione, E.provaCarteggio()'),
+    # Copiata parola per parola dal motore: con il testo vero passerebbe, ed e'
+    # il banco a restituirne un altro (tests/ciclo_carteggio.mjs, in testa).
+    ('l\'assunzione di Q-CART4 copiata in pagina',
+     [('assunzione: r.assunzione,', 'assunzione: "Q-CART4: un esercizio per ciascuno dei quattro argomenti è '
+       'un\'assunzione del sito, non una composizione del decreto, che dice soltanto «quattro quesiti indipendenti». '
+       'La carta 42/D non ha esercizi di carburante: una prova così può richiedere più carte.",')],
+     'assunzione'),
+    ('le condizioni della prova scritte a mano',
+     [('condizioni: r.condizioni,', 'condizioni: { esercizi: 4, minuti: 60, soglia: 3, erroriMax: 1 },')],
+     'condizioni'),
+    ('le costanti della prova tenute in pagina',
+     [('function carteDi(lista)', 'const PROVA_MIN = 60;\n\nfunction carteDi(lista)')],
+     'seconda composizione della prova'),
+    ('una prova corta chiamata pronta',
+     [("stato: r.pronta ? 'pronta' : 'corta',", "stato: 'pronta',")],
+     'stato «corta»'),
+    # Nata provando il banco contro se' stesso: senza la banca senza carburante
+    # nessuna rottura aveva bisogno di quel caso, come la scheda intrecciata di
+    # P-31. Il ripiego dichiarato e' una prova pronta (D-01), non una corta.
+    ('la prova completata dal resto bloccata come corta',
+     [("stato: r.pronta ? 'pronta' : 'corta',", "stato: r.pronta && !r.mancanti.length ? 'pronta' : 'corta',")],
+     'banca senza carburante: stato «pronta»'),
+    ('i mancanti taciuti su una banca incompleta',
+     [('mancanti: r.mancanti, completamento: r.completamento,', 'mancanti: [], completamento: [],')],
+     'mancanti'),
+    ('le riprese della prova cieca dette zero',
+     [('riprese: r.riprese };', 'riprese: r.riprese || [] };')],
+     'null, non zero'),
+    ('il giro riordinato in pagina',
+     [('const lista = g.map((x) => x.e);', 'const lista = g.map((x) => x.e).sort((a, b) => a.id.localeCompare(b.id));')],
+     'la lista e\' quella del motore'),
+    ('il tappeto a cinque esercizi',
+     [('E.tappeto(banca, fonte.specchio, 4)', 'E.tappeto(banca, fonte.specchio, 5)')],
+     'fino a 4 esercizi'),
+    ('il riconoscimento senza il tetto di 15',
+     [('{ n: 15 }', '{ n: 20 }')],
+     'fino a 15 testi'),
+    ('la lettura fallita presa per uno storico vuoto',
+     [("if ((attivita !== 'prova' || scelta.nuoviPrima) && fonte.letturaFallita)", 'if (false && fonte.letturaFallita)')],
+     'storico vuoto'),
+    # L'avvio
+    ('Inizia senza rifare la preparazione',
+     [('const ora = preparaCarteggio(preparazione.scelta, fonte);', 'const ora = preparazione;')],
+     'dice «cambiata»'),
+    ('Inizia apre la pescata di adesso',
+     [("  if (ora.lista.length !== ids.length || ora.lista.some((e, i) => e.id !== ids[i])) return { avviata: false, stato: 'cambiata' };\n", ''),
+      ('avvia(preparazione.lista, modo, opt);', 'avvia(ora.lista, modo, opt);')],
+     'dice «cambiata»'),
+    ('un\'identita\' riusata a ogni avvio',
+     [('const simUid = uid();', "const simUid = 'carteggio-' + preparazione.attivita;")],
+     'due identita'),
+    ('il lavoro con l\'orologio della pagina',
+     [('inizio: fonte.adesso,', 'inizio: Date.now(),')],
+     'l\'orologio della fonte'),
+    ('il giro senza le tecniche che porta',
+     [('  if (preparazione.motivi) opt.motivi = preparazione.motivi;\n', '')],
+     'le tecniche di ogni esercizio'),
+    # Le righe
+    ('la conclusione con uid nuovi a ogni ritento',
+     [('  return { righe, motivo };', '  return { righe: righe.map((r) => ({ ...r, uid: uid() })), motivo };')],
+     'riusa gli stessi uid'),
+    ('il giudizio rinviato scritto come «da rivedere»',
+     [('E.concludiBozza(lavoro, { ts: fonte.ts, quesiti });',
+       'E.concludiBozza({ ...lavoro, giudizi: lavoro.giudizi.map((g) => g ?? 0) }, { ts: fonte.ts, quesiti });')],
+     'giudizio rinviato'),
+    ('la conclusione senza gli esercizi della banca',
+     [('E.concludiBozza(lavoro, { ts: fonte.ts, quesiti });', 'E.concludiBozza(lavoro, { ts: fonte.ts });')],
+     'gli id della banca'),
+    ('la risposta del riconoscimento senza legame',
+     [('sim_uid: corsa.simUid,', 'sim_uid: null,')],
+     'un sim_uid nuovo'),
+    ('la risposta del riconoscimento senza posizione',
+     [('sim_uid: corsa.simUid, proposti: corsa.proposti, pos };', 'sim_uid: corsa.simUid };')],
+     'proposti e pos'),
+    ('le scelte giudicate per inclusione',
+     [('mie.size === attese.size && ', '')],
+     'esattamente le tecniche'),
+    # Il riepilogo
+    ('il riepilogo che riconta da se\'',
+     [('const quanti = d.conteggi ? d.conteggi[campo] : 0;',
+       'const quanti = d.conteggi ? E.attivitaCarteggio(fonte.righe, { tipo }).find((a) => a.id === d.id).righe.filter((r) => r.verdict === 0).length : 0;')],
+     'per ricontare'),
+    ('l\'esito dato a un allenamento',
+     [('esito: d.esito,', 'esito: d.esito || (d.conteggi && d.conteggi.coincidenti != null ? { coincidenti: d.conteggi.coincidenti, '
+       'su: d.conteggi.esercizi, soglia: 3, raggiunta: d.conteggi.coincidenti >= 3 } : null),')],
+     'un allenamento non ha soglia'),
+    ('«Rivedi» con il conto di tutte le schede',
+     [('rivedi: quanti ? { filtro, quanti } : null', 'rivedi: quanti ? { filtro, quanti: d.schede.length } : null')],
+     '«Rivedi» porta'),
+    ('la riprova anche nel Carteggio',
+     [('return { stato, tipo, id: d.id,', 'return { riprova: E.erroriSessione(fonte.righe, banca, id), stato, tipo, id: d.id,')],
+     'nessuna riprova'),
+    ('un legame ambiguo preso per pronto',
+     [(": d.ambigua ? 'ambigua' : 'pronto';", ": 'pronto';")],
+     'stato «ambigua»'),
+    ('la lettura fallita presa per un\'attivita\' sparita',
+     [("(fonte.letturaFallita ? 'illeggibile' : 'indisponibile')", "'indisponibile'")],
+     'una lettura fallita'),
+    ('i mancanti detti «nessuno» senza la banca',
+     [('mancanti: d.mancanti, rivedi:', 'mancanti: d.mancanti || [], rivedi:')],
+     'null, non «nessuno»'),
+    # Il collegamento
+    ('una selezione del Carteggio fuori dal raccordo',
+     [('function archivia(r) { S.archivio.push(r); }',
+       'function archivia(r) { S.archivio.push(r); }\n\nfunction giroDiOggi() { return E.giroTecniche(S.cart, S.cprog); }')],
+     'fuori dal raccordo: E.giroTecniche'),
+    ('una riga di prova scritta fuori dal raccordo',
+     [('    righe.forEach(archivia);',
+       "    righe.forEach(archivia);\n    archivia({ _t: 's', uid: S.lavoro.id, kind: 'carteggio', ts: E.isoLocale() });")],
+     'righe scritte fuori dal raccordo'),
+    ('la revisione filtrata in pagina',
+     [('function archivia(r) { S.archivio.push(r); }',
+       "function archivia(r) { S.archivio.push(r); }\n\nfunction righeDi(id) { return S.archivio.filter((r) => r._t === 'c' && r.sim_uid === id); }")],
+     'non filtra le righe per tipo'),
+    ('il riepilogo dichiarato e mai chiamato',
+     [("    if (righe.length) S.fine = riepilogoCarteggio({ id: S.lavoro.id, tipo: 'c' }, fonteCarteggio());\n", '')],
+     'dichiarate e mai chiamate: riepilogoCarteggio'),
+    ('il carteggio entro 12 miglia caricato',
+     [('function archivia(r) { S.archivio.push(r); }',
+       "function archivia(r) { S.archivio.push(r); }\nfetch('/dati/carteggio_e12.json');")],
+     'carteggio_e12'),
+]
+
+
+def test_carteggio_provato_al_contrario():
+    """R-FLU-26: il banco del Carteggio contro se' stesso, a ogni esecuzione."""
+    rif = RIFERIMENTO_CARTEGGIO.read_text(encoding='utf-8')
+    regime, v = carteggio_riferimento()
+    rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in v if not x['ok']]
+    check('la pagina di riferimento del Carteggio e\' nel regime progettato', regime == 'progettato', str(regime))
+    check('la pagina di riferimento del Carteggio passa il controllo', not rossi, '; '.join(rossi[:3]))
+    # Un banco che non esegue niente passerebbe tutto: si pretende che abbia
+    # preparato, avviato, concluso e riletto.
+    check('il banco del Carteggio ha eseguito il giro, non solo letto i nomi', len(v) >= 230,
+          'solo %d verifiche' % len(v))
+    for g in ('preparazione', 'avvio', 'righe', 'riepilogo', 'riprova', 'raccordo', 'ambito'):
+        check('il banco del Carteggio ha verifiche del gruppo «%s»' % g, any(x['gruppo'] == g for x in v))
+    for cosa, sostituzioni, atteso in ROTTURE_CARTEGGIO:
+        rotta = rif
+        for vecchio, nuovo in sostituzioni:
+            check('rottura del Carteggio «%s»: si applica alla pagina di riferimento' % cosa, vecchio in rotta,
+                  'il testo da sostituire non c\'e\' piu\': la rottura non romperebbe niente')
+            rotta = rotta.replace(vecchio, nuovo, 1)
+        if rotta == rif:
+            continue
+        _, vr = regime_carteggio(rotta)
+        rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in vr if not x['ok']]
+        check('rottura del Carteggio «%s»: il controllo diventa rosso' % cosa, bool(rossi), 'e\' passata verde')
+        check('rottura del Carteggio «%s»: e il rosso nomina il difetto' % cosa, any(atteso in r for r in rossi),
+              'rossi: ' + '; '.join(rossi[:3]))
+
+
 # --- 5c. il client degli account, in un browser vero (§12 del progetto del client) --
 #
 # docs/account-client-progetto.md §12 chiede controlli che guardano la pagina
@@ -878,7 +1230,7 @@ GRUPPI_CLIENT = ['C-01', 'C-02', 'C-03', 'C-04', 'C-05', 'C-06', 'C-07', 'C-08',
 # Quante verifiche fa ogni gruppo quando arriva in fondo, sulla pagina di
 # riferimento: meno vuol dire che il giro si e' fermato prima e che una parte
 # dei controlli non e' stata eseguita, cioe' un verde a copertura parziale.
-VERIFICHE_CLIENT = {'C-01': 33, 'C-02': 15, 'C-03': 11, 'C-04': 20, 'C-05': 13, 'C-06': 15, 'C-07': 17, 'C-08': 18,
+VERIFICHE_CLIENT = {'C-01': 34, 'C-02': 15, 'C-03': 11, 'C-04': 20, 'C-05': 13, 'C-06': 15, 'C-07': 17, 'C-08': 18,
                     'C-09': 13, 'C-10': 10, 'C-11': 8, 'C-12': 9, 'C-13': 8, 'C-14': 3, 'C-15': 12, 'C-16': 23, 'C-17': 10,
                     'C-13:scarica': 7, 'C-08:cancella': 8, 'C-15:segnali': 7,
                     'C-19:senza': 4, 'C-19:ricarica': 4, 'C-19:scadenza': 4, 'C-19:guasto': 3, 'C-19:giudizio': 5,
@@ -1025,6 +1377,10 @@ ROTTURE_CLIENT = [
     ('il carteggio senza la risposta ministeriale', ['C-01:attivita'],
      [('<p>Risposta ministeriale: ${esc(e.risposta_ufficiale)}</p>', '<p>Risposta ministeriale: vedi il decreto</p>')],
      'accanto a quella ministeriale'),
+    ('il giudizio di chi studia detto solo dopo l\'avvio', ['C-01:attivita'],
+     [('<p id="c-giudizio">Tu svolgi gli esercizi sulla carta. Sei tu a giudicare: il sito non corregge il carteggio.</p>',
+       '<p id="c-giudizio" hidden>Tu svolgi gli esercizi sulla carta. Sei tu a giudicare: il sito non corregge il carteggio.</p>')],
+     'il giudizio e\' di chi studia'),
     ('il carteggio chiede un account prima della prova', ['C-01:attivita'],
      [("if (t.id === 'c-start') return avviaCart();", "if (t.id === 'c-start') { moduloRegistrazione(); return avviaCart(); }")],
      'Carteggio: si apre un esercizio della banca, senza account'),
@@ -2071,6 +2427,8 @@ def main():
               test_intenzioni_provate_al_contrario,
               test_ciclo_riepilogo, test_ciclo_riprova, test_ciclo_provato_al_contrario,
               test_mappa_righe, test_mappa_azioni, test_mappa_provata_al_contrario,
+              test_carteggio_preparazione, test_carteggio_righe, test_carteggio_riepilogo,
+              test_carteggio_senza_riprova, test_carteggio_ambito, test_carteggio_provato_al_contrario,
               test_client_nella_pagina, test_client_primo_ingresso, test_client_senza_account, test_client_email_registrata,
               test_client_invito_e_viste, test_client_tutte_le_attivita, test_client_registrazione,
               test_client_dispositivo_condiviso, test_client_coda, test_client_uscita,

@@ -1510,6 +1510,107 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   Guardiano e controllo della documentazione verdi. `site/app.html`
   e `docs/prossime-sessioni.md` non sono stati toccati.
 
+### Test — P-35: i controlli del Carteggio conoscono due regimi, e nel nuovo eseguono
+
+- **Il raccordo prima della pagina.** D-04 del §10.1 di
+  `docs/area-4-progetto.md` chiedeva, prima della realizzazione dell'area 4, il
+  meccanismo di P-06, P-31 e P-44: il regime di oggi riconosciuto, e quello
+  nuovo riconosciuto da un raccordo che il controllo esegue. Il contratto è
+  scritto in quel §10.1 prima del banco e della pagina di riferimento: cinque
+  funzioni — `preparaCarteggio`, `avviaCarteggio`, `concludiCarteggio`,
+  `rispostaTecnica`, `riepilogoCarteggio` — con una fonte sola, congelata. Una
+  pagina che ne dichiara una è nel regime progettato e deve averle tutte; senza,
+  è nel regime attuale, dove una chiamata a `E.provaCarteggio`,
+  `E.dettaglioCarteggio`, `E.nuovaBozza` o `E.concludiBozza` è rossa: il motore
+  nuovo senza il raccordo, un numero con una seconda fonte. Il regime attuale ha
+  una scadenza, P-21.
+
+- **Una scelta di contratto, presa qui e scritta:** il lavoro del runner della
+  carta ha la forma della bozza di P-34 **in tutti e due gli stati d'accesso**,
+  in memoria; con l'account lo stesso oggetto si scrive in `meta`, senza no. Così
+  la scadenza viene dal motore, e le righe finali e i loro uid vengono da
+  `concludiBozza()` con e senza account: nessuna riga con un giudizio rinviato,
+  gli stessi uid a un ritento. La bozza senza account non esiste come
+  conservazione, e R-BOZZA-05 continua a pretenderlo.
+
+- **Il banco esegue il giro** (`tests/ciclo_carteggio.mjs`): prepara le quattro
+  attività con le banche vere — anche su una banca di tre esercizi, una senza
+  carburante, una vuota, senza banca, con la lettura fallita —; fra la
+  preparazione e Inizia cambia i dati, e un esercizio del tappeto o del giro
+  fatto altrove deve fermare Inizia mentre la banca ricaricata no; porta il
+  lavoro dell'avvio al confronto e ai giudizi con le funzioni vere del motore,
+  conclude, ritenta, e rilegge il riepilogo di quelle righe fra quiz, una prova
+  di prima di P-32, un giro senza legame, un legame ambiguo e un esercizio che
+  la banca non ha. **Due valori tornano dal banco invece che dal motore**,
+  l'assunzione di Q-CART4 e i minuti della prova: una pagina che li copia a mano
+  esce rossa, come la prova vela da 5 domande di P-06. 240 verifiche in 60 ms.
+
+- **Provato al contrario su trentanove rotture** della pagina di riferimento
+  (`tests/pagina-ciclo-carteggio.html`), ognuna rossa e con il difetto nominato:
+  fra le altre la prova ricomposta con `estrai()`, l'assunzione copiata parola
+  per parola dal motore, le condizioni scritte a mano, le costanti `PROVA_*`
+  tenute in pagina, una prova corta chiamata pronta, le riprese della cieca
+  dette zero, il tappeto a cinque, la lettura fallita presa per uno storico
+  vuoto, Inizia che non rifà la preparazione o apre la pescata di adesso,
+  un'identità riusata, uid nuovi a ogni ritento, il giudizio rinviato scritto
+  come «da rivedere», la risposta del riconoscimento senza legame o giudicata
+  per inclusione, il riepilogo che riconta da sé o dà l'esito a un allenamento,
+  «Rivedi» con il conto di tutte le schede, la riprova anche nel Carteggio, una
+  riga di prova scritta fuori dal raccordo, `carteggio_e12.json` caricato. **E il
+  banco contro sé stesso**, una difesa tolta alla volta: senza i due valori del
+  banco due rotture passano verdi, senza la fonte congelata una, senza i dati
+  che cambiano fra i clic due non nominano più il loro difetto, così come senza
+  il conto delle selezioni e senza il ritento; senza lo storico estraneo le
+  premesse del banco sono rosse. **La banca senza carburante non serviva a
+  nessuna rottura**: è entrata la trentanovesima — una prova completata dal
+  resto, che il motore dà pronta, bloccata come corta —, che senza quel caso
+  passa verde. Alla prima stesura due rotture erano sbagliate per colpa del
+  banco: un tappeto di cinque esercizi lo faceva cadere invece di dare un rosso,
+  perché i giudizi erano scritti per quattro, e l'espressione sui filtri per
+  tipo si fermava alla parentesi di `(r)`, lasciando passare verde una revisione
+  filtrata in pagina. Corretti tutti e due.
+
+- **R-UX-03 prima dell'avvio, nel browser.** C-01 guarda, prima di `#c-start`,
+  che il testo che si vede del Carteggio dica che il giudizio è di chi studia:
+  la frase del progetto («Sei tu a giudicare») o quella della pagina di oggi
+  («e dici quali avevi preso»), che esce con il suo regime. La rottura nasconde
+  la frase con `hidden`, e il gruppo è rosso. C-01 passa da 33 a 34 verifiche.
+
+- **Nella specifica:** R-SEL-17 e R-FLU-23, lasciati scoperti per la pagina da
+  P-32 e P-33, coperti in due regimi; R-FLU-01 rimanda per carta e tecniche a
+  R-FLU-24 (il riepilogo) e R-FLU-25 (la riprova che resta dei quiz, con un
+  controllo suo, distinto); nuovi R-FLU-26 (il banco contro sé stesso) e
+  R-UX-07 (Q-AMBITO: la pagina non carica `carteggio_e12.json`, provato al
+  contrario nei due regimi); R-UX-03 coperto; Q-CART4 e Q-AMBITO dicono il loro
+  controllo; §7.3 e §7.6 dicono che la lista annunciata è quella che parte e che
+  il lavoro ha la forma della bozza nei due stati. **Nel progetto del client:**
+  §4.1 con la prova consegnata senza testo — confronto e giudizi, la riga
+  `_t:'s'` solo alla conclusione — e il giudizio rinviato, che non è un
+  riepilogo e non mostra l'invito; §9.2 con la bozza di D-03 come l'eccezione
+  dichiarata, dell'account; §12 con la verifica nuova di C-01.
+
+- **Un rosso falso del banco del client, in C-10, trovato dai giri sotto
+  carico.** Due giri della suite intera su quattro, con dieci `yes` e load
+  average fino a 18, sono usciti rossi su «importato: le righe valide sul
+  server, il riepilogo unico e gli scarti da scaricare», che non è una parte
+  toccata qui; C-10 da solo, sotto carico, 12 giri su 12 verdi. Il controllo
+  univa tre condizioni in una: diviso, ha detto «righe sì, riepilogo sì,
+  pulsante no». Il pulsante «Scarica le righe non importate» la pagina lo
+  disegna dopo il testo del riepilogo, e il banco lo guardava una volta sola,
+  subito: la famiglia di P-38. Ora lo aspetta come le altre due condizioni, e il
+  rosso dice quale manca; la rottura che toglie il pulsante resta rossa.
+
+  Suite: interfaccia **1.666** (erano 1.517), in 168–172 s senza carico e
+  192–201 s sotto carico; specifica **704** (erano 682); motore 185/187 con i
+  due skip di sempre; dati 242; server 60/60. **Dieci giri della suite
+  dell'interfaccia**: prima della correzione di C-10 sei, di cui due rossi solo
+  lì; dopo, quattro verdi, tre con dieci `yes`. Con la **24.21.0 LTS**, il
+  pacchetto verificato contro `SHASUMS256.txt` riscaricato da nodejs.org:
+  motore 185/187, server 60/60, interfaccia 1.666. Prima di ogni giro la 8620
+  guardata libera, il carico fermato dopo. Guardiano e controllo della
+  documentazione verdi. `site/` e `docs/prossime-sessioni.md` non sono stati
+  toccati.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag

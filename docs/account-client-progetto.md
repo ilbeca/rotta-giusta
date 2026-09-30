@@ -189,6 +189,27 @@ registra viaggia con le altre (§4.3). Un allenamento fermato con zero
 risposte torna all'origine, come sopra. Nei Segnali il blocco dice «salvare i
 punteggi»; non li conta come risposte né come copertura dei quiz.
 
+**Il Carteggio** (allineato da P-35, D-04, ai §§3.1, 6.2 e 6.3 di
+[area 4](area-4-progetto.md)). Una prova di carteggio consegnata o scaduta con
+zero testo non torna all'origine: apre il suo confronto con i campi vuoti
+distinti — «Non hai scritto un risultato» — e chiede comunque i giudizi, come
+la simulazione dei quiz; ma la sua riga `_t:'s'` nasce solo alla conclusione
+della valutazione, con le altre. Un allenamento sulla carta concluso con zero
+testo torna alla preparazione, senza righe. **Un giudizio rinviato non è un
+riepilogo:** finché ne manca uno il confronto resta aperto nella pagina, non
+ci sono righe da salvare, e il blocco «Vuoi conservare le attività di questa
+pagina?» non compare, né nel confronto né nel runner; compare nel riepilogo
+definitivo, dopo «Concludi la valutazione», quando le righe esistono. Senza
+account vale intanto la frase dell'area 4 §3.1, «Il lavoro e i giudizi di
+questa attività restano solo nella pagina aperta. Se la chiudi o la ricarichi
+li perdi.» Chi si registra o entra mentre un giudizio è rinviato porta
+nell'account le attività già concluse della pagina; il lavoro rinviato no —
+un runner cominciato senza account resta senza bozza (§9.4) —, e le sue righe,
+quando la valutazione si conclude, passano dalle porte del §4.3 e del §5.1.
+Le righe le dà `concludiCarteggio()` (area 4 §10.1, D-04), che con un giudizio
+rinviato non ne dà nessuna: non c'è una risposta da inventare per poter
+salvare.
+
 ### 4.2 Modulo di registrazione
 
 Titolo «Crea un account»; testo «Salva le risposte di questa pagina e ritrovale
@@ -519,6 +540,18 @@ continuare ad aggiornare. Restano la cache del sito/banca e la copia vecchia
 da gestire; la cache può essere installata/aggiornata dal service worker,
 ma non contiene risposte o risultati API. Il download volontario è un file
 scelto dalla persona, non una conservazione automatica del sito.
+
+**La bozza del carteggio è l'eccezione dichiarata, ed è dell'account** (D-03,
+§9.4). Con l'account il lavoro in corso sulla carta — testi, posizione,
+consegna, giudizi provvisori — si scrive a ogni input nell'archivio `meta` di
+`rg-account-<chiave_locale>`, alla chiave `bozza-carteggio:<id>`: è l'unico
+dato della persona che la pagina conserva senza che sia una risposta, e non va
+sul server, non entra nell'export e non si riprende su un altro dispositivo.
+Senza account il lavoro ha la stessa forma, ma solo in memoria: la regola di
+sopra vale anche per il testo del carteggio (R-BOZZA-05, R-ACC-09), e dopo una
+ricarica non c'è niente da riprendere. Una bozza che non si scrive dice il
+guasto del §9.4 e non ripiega su `localStorage`, su `pn.archivio` né sulle
+righe.
 
 Se la copia account non si può scrivere, non mostrare «salvato sul dispositivo»
 e non ripiegare su `pn.archivio`. «Non riusciamo a conservare le nuove risposte
@@ -1620,6 +1653,19 @@ Safari, come per il resto del banco (Q-PROVE).
 **Il tempo.** La suite dell'interfaccia passa da circa 149 a 173 s: sulla
 pagina vera le due parti in più girano sulla corsia 0, in fila con gli altri
 gruppi con l'API (Q-SUITE).
+
+### Il Carteggio prima dell'avvio (P-35, 30 settembre 2026)
+
+C-01, nel giro del Carteggio, guarda una cosa in più **prima** di premere
+`#c-start`: che il testo che si vede del Carteggio dica che il giudizio della
+prova è di chi studia (R-UX-03, specifica §7.3). Le frasi riconosciute sono
+quella del progetto dell'area 4 (§4, «Sei tu a giudicare») e quella della
+pagina di oggi («e dici quali avevi preso»), che esce con il regime attuale del
+Carteggio. Si cerca in `innerText`, non nel sorgente: la rottura della pagina
+di riferimento nasconde la frase con `hidden`, e il gruppo è rosso. C-01 passa
+da 33 a 34 verifiche. Il resto del Carteggio progettato — preparazione, avvio,
+righe, riepilogo — non è del browser: lo esegue `tests/ciclo_carteggio.mjs`
+(area 4 §10.1, D-04).
 
 ## 13. Evidenze e limiti di P-13
 

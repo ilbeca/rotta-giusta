@@ -103,6 +103,11 @@ const BANCA = (() => {
 const CARTEGGIO = new Map(JSON.parse(readFileSync(join(SITE, 'dati', 'carteggio.json'), 'utf8'))
   .map((e) => [e.testo.trim(), e]));
 const spazi = (t) => String(t).replace(/\s+/g, ' ').trim();
+// Il giudizio di chi studia, detto nel Carteggio prima dell'avvio (R-UX-03,
+// specifica §7.3). La prima frase e' quella del progetto dell'area 4 (§4), che
+// la realizzazione (P-21) porta; la seconda e' la pagina di oggi, «e dici quali
+// avevi preso», e si toglie con il regime attuale del Carteggio.
+const GIUDIZIO_CARTEGGIO = ['Sei tu a giudicare', 'dici quali avevi preso'];
 // Le risposte del gioco dei Segnali: le schede del motore, non un elenco a mano.
 const SEGNALI = [...new Set(E.SEGNALI.map((x) => x.o))];
 
@@ -362,6 +367,13 @@ async function giroCarteggio(tab, v, g) {
   const porta = await clic(tab, '[data-v="cart"]') && await tab.attendi(visibile('#c-start'), REAZIONE);
   v.push({ gruppo: g, nome: `${p}la prova si avvia dalla sua porta`, ok: porta, extra: 'nessun #c-start visibile nel Carteggio' });
   if (!porta) return;
+  // Prima di Inizia, e nel testo che si vede: una frase nel DOM ma nascosta,
+  // o detta solo alla consegna, non avverte nessuno (P-29, «Il banco»).
+  const giudizio = await tab.valuta(js(`const t = (document.querySelector('#v-cart') || document.body).innerText.replace(/\\s+/g, ' ');
+    return ${q(GIUDIZIO_CARTEGGIO)}.some((f) => t.includes(f));`));
+  v.push({ gruppo: g, nome: `${p}prima dell'avvio la pagina dice che il giudizio e' di chi studia`, ok: !!giudizio,
+    extra: `nel testo visibile del Carteggio, prima di #c-start, nessuna di ${q(GIUDIZIO_CARTEGGIO)} — il giudizio della prova `
+      + 'e\' di chi studia, e va detto prima dell\'avvio, non alla consegna (R-UX-03, specifica §7.3)' });
   const prima = await tab.valuta(passwordVisibile);
   await clic(tab, '#c-start');
   const { ok, valore } = await tab.attendiValore(js(`const t = document.querySelector('#c-testo'); return V(t) ? t.textContent.trim() : null;`),
@@ -1708,9 +1720,21 @@ async function c10file(b, ctx, v, g) {
     v.push({ gruppo: g, nome: 'all\'anteprima niente e\' partito', ok: ctx.righeDi(K.email) === 0, extra: `l'account ha ${ctx.righeDi(K.email)} righe` });
     if (!anteprima) return;
     await clicca(tab, 'Importa nel mio account');
-    const arrivate = await finche(() => ctx.righeDi(K.email) === valide.nuove, REAZIONE) && await tab.attendi(testoVisibile(attesi), REAZIONE) && await tab.valuta(pulsante('Scarica le righe non importate'));
+    // Le tre condizioni si misurano una per una, e il pulsante si aspetta come
+    // le altre due. Fino al 30 settembre 2026 si guardava una volta sola, subito
+    // dopo il testo del riepilogo, che la pagina disegna prima: in due giri
+    // della suite intera sotto carico su quattro (P-35) il rosso e' uscito cosi',
+    // e diviso nelle tre condizioni ha detto «righe sì, riepilogo sì, pulsante
+    // no», con il pulsante comparso poco dopo in uno dei due. Da solo, sotto
+    // carico, C-10 era verde 12 volte su 12. Un rosso falso del banco, come
+    // quelli di P-38: si aspetta uno stato, non un istante.
+    const righeOk = await finche(() => ctx.righeDi(K.email) === valide.nuove, REAZIONE);
+    const riepilogoOk = righeOk && await tab.attendi(testoVisibile(attesi), REAZIONE);
+    const pulsanteOk = riepilogoOk && await tab.attendi(pulsante('Scarica le righe non importate'), REAZIONE);
+    const arrivate = righeOk && riepilogoOk && pulsanteOk;
     v.push({ gruppo: g, nome: 'importato: le righe valide sul server, il riepilogo unico e gli scarti da scaricare', ok: arrivate,
-      extra: `il server ha ${ctx.righeDi(K.email)} righe su ${valide.nuove}; riepilogo e «Scarica le righe non importate» ${await tab.valuta(pulsante('Scarica le righe non importate')) ? '' : 'non '}ci sono` });
+      extra: `in tempo: righe ${righeOk ? 'sì' : 'no'}, riepilogo ${riepilogoOk ? 'sì' : righeOk ? 'no' : '—'}, pulsante ${pulsanteOk ? 'sì' : riepilogoOk ? 'no' : '—'}; `
+        + `alla rilettura il server ha ${ctx.righeDi(K.email)} righe su ${valide.nuove}, e «Scarica le righe non importate» ${await tab.valuta(pulsante('Scarica le righe non importate')) ? '' : 'non '}c'e'` });
     const seg = ctx.segnaliDi(K.email);
     v.push({ gruppo: g, nome: 'i Segnali del file si fondono con il massimo, non si sommano', ok: seg.notturni?.migliore === 9 && seg.notturni?.giocate === 2 && seg.diurni?.migliore === 3 && seg.diurni?.giocate === 9,
       extra: `sul server ${JSON.stringify(seg)}; attesi notturni 9/2 e diurni 3/9` });
