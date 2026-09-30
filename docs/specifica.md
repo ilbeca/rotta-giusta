@@ -402,6 +402,11 @@ dispositivo sta solo in IndexedDB; se non si apre, l'accesso lo dice, e la
 pagina non scrive «salvato sul dispositivo» (`account-client-progetto.md`
 §9.2). Senza account non c'è niente da aprire.
 
+**La bozza del carteggio non è una riga** (§7.6, §9.11): sta nella copia
+dell'account ma fuori dalle righe, non ha `_t`, `uid` né `ts`, e `validaRiga()`
+la rifiuta. Il testo in corso non è una seconda contabilità: diventa righe solo
+alla conclusione.
+
 **Una riga entra solo se `validaRiga()` la accetta** (R-ACC-07), la stessa
 funzione che il server importa dal motore: il browser e il server rifiutano le
 stesse righe per gli stessi motivi. Le righe di tag (`_t: 'g'`) scritte prima
@@ -1110,11 +1115,29 @@ Non era vero, e non lo era dalla 0.5.0: `annotaCart()` tiene il testo solo in
 memoria, e una ricarica durante la prova di un'ora perde tutto. Lo ha trovato il
 progetto dell'area 4 (`docs/area-4-progetto.md` §3.3) e la regia l'ha verificato
 nel codice. **Che cosa vale oggi:** il testo resta finché la pagina è aperta, e
-la pagina lo dice, con la conferma del browser prima di lasciarla (P-36). **Che
-cosa vale dopo:** una bozza legata all'account, separata dalle risposte valutate
-(P-34); senza account non si conserva niente (ADR-004). L'intenzione resta
-quella di allora — un'ora di lavoro non deve dipendere dall'aver premuto un
-pulsante —, e questo paragrafo la chiama con il suo nome finché non è vera.
+la pagina lo dice, con la conferma del browser prima di lasciarla (P-36). Il 30
+settembre 2026 P-34 l'ha dimostrato in un browser vero, con l'account: due testi
+scritti, una ricarica, e niente da riprendere. È R-BOZZA-06, dichiarato come
+difetto aperto finché la pagina non ha la bozza.
+
+**Che cosa vale quando la pagina ha la bozza** — il contratto c'è, nel motore
+(§9.11) e nel §9.4 di `docs/account-client-progetto.md`; la pagina è della
+realizzazione dell'area 4 (P-21). **Senza account non si conserva niente**
+(ADR-004), come oggi. **Con l'account**, a ogni input — testo, esercizio,
+consegna, giudizio — il lavoro diventa una bozza nella copia dell'account su
+questo dispositivo, e la pagina dice «salvato» solo quando la scrittura è
+confermata, «in corso» prima, e un guasto con il modo di uscirne. Dopo una
+ricarica il lavoro si **propone**, non si riapre da solo; riaperto ha la stessa
+lista, la stessa posizione, gli stessi testi e giudizi e **la scadenza di
+prima**; una prova scaduta a pagina chiusa si apre al confronto. Un giudizio
+rinviato resta nella bozza e non diventa una risposta. La bozza non è una
+risposta: non entra in Progressi, nei conteggi né negli invii, non va sul
+server, non si riprende su un altro dispositivo. Si cancella solo con la
+conclusione — le risposte e la bozza tolta nella stessa scrittura — o con uno
+scarto confermato; l'uscita la conta, anche quella di un'altra scheda, e non la
+cancella senza una scelta. L'intenzione di allora — un'ora di lavoro non deve
+dipendere dall'aver premuto un pulsante — diventa vera per chi ha l'account,
+quel giorno; fino ad allora questo paragrafo la chiama con il suo nome.
 
 Il pallino verde sul numero dice «qui ho scritto qualcosa», non «è giusto». La consegna è a due tocchi, in pagina,
 **mai** con `confirm()` nativo. Alla correzione, la risposta ministeriale accanto
@@ -1602,6 +1625,30 @@ R-MAPPA-17 o il collaudo del §9 del progetto: i testi, la barra, il dettaglio,
 il focus e i ritorni, la geometria, gli stati d'accesso, prove, andamento e
 sessioni, il ridisegno dopo una ricezione.
 
+### 9.11 La bozza del carteggio
+
+Nati da D-03 del §10.1 di `area-4-progetto.md` e dal §7.6, il 30 settembre
+2026 (P-34). Il contratto puro è nel motore; il raccordo della pagina è il §9.4
+di `account-client-progetto.md`, e C-19 lo prova in un browser vero. La pagina
+vera non ha ancora la bozza: R-BOZZA-06 è un **difetto aperto dichiarato** in
+`docs/eccezioni-interfaccia.md`, e il suo controllo pretende che resti rosso
+finché lo è — e diventa rosso lui il giorno che la dichiarazione mente.
+
+| ID | Requisito | Controllo |
+|---|---|---|
+| R-BOZZA-01 | La bozza non è una riga: `validaRiga()` la rifiuta, `ripiega()`, `attivitaCarteggio()`, `fondiArchivio()`, la coda e i trasferimenti non la vedono; e una bozza con i campi di una riga non è una bozza | `test_engine.mjs::bozza: non e una riga, e resta fuori da specchio, attivita, import e invii` |
+| R-BOZZA-02 | Scrivendo una bozza non cambiano lista, modalità, variante, inizio né scadenza; il testo consegnato non si riscrive; una revisione vecchia non sovrascrive quella di un'altra scheda, e una bozza conclusa o scartata altrove non si ricrea | `test_engine.mjs::sostituisciBozza: una revisione vecchia non sovrascrive, e una bozza sparita non si ricrea` |
+| R-BOZZA-03 | Riaperta dopo una ricarica, la prova ha la scadenza di prima; scaduta a pagina chiusa si apre al confronto, con i testi e la consegna all'istante della scadenza; un allenamento non scade | `test_engine.mjs::riprendiBozza: la scadenza e quella di prima, e scaduta apre il confronto con il testo scritto` |
+| R-BOZZA-04 | Con un giudizio rinviato nessuna riga; giudicata tutta, le righe finali hanno lo schema di D-02, uid che nascono dalla bozza, e il motore le legge come un'attività sola, registrata, con l'esito dei giudizi | `test_engine.mjs::concludiBozza: con un giudizio rinviato nessuna riga, e le righe finali sono quelle di P-33` |
+| R-BOZZA-05 | Senza account il testo del carteggio non si scrive in nessuno storage né verso l'API, la pagina dice che resta finché è aperta, e dopo una ricarica non c'è niente da riprendere | `test_interfaccia.py::test_client_bozza_senza_account` |
+| R-BOZZA-06 | Con l'account il testo è una bozza nella copia dell'account: regge una ricarica senza tempo nuovo, una prova scaduta si apre al confronto, un guasto non dice «salvato» e offre di copiare, il giudizio rinviato non diventa una riga, la conclusione scrive le righe e toglie la bozza, «Esci» non la cancella senza una scelta e lo scarto chiede conferma, e fra due schede l'uscita la conta, la scheda ferma non ricrea la copia e un altro account non la trova. **Difetto aperto dichiarato sulla pagina vera fino a P-21** | `test_interfaccia.py::test_client_bozza` |
+| R-BOZZA-07 | Il banco della bozza è provato contro sé stesso: la pagina di riferimento passa C-19 intero, e ciascuna delle sue rotture lo fa fallire nominando il difetto | `test_interfaccia.py::test_client_provato_al_contrario` |
+
+**Che cosa questi controlli non vedono**, per esteso nel §12 del progetto del
+client: giro e tappeto nella pagina (la stessa bozza, provata nel motore), la
+conferma del browser, se «Copia i risultati» copia davvero, il pallino di Info,
+un `401` o un azzeramento con una bozza aperta, Safari.
+
 ---
 
 ## 10. Che cosa non è deciso
@@ -2053,3 +2100,10 @@ successo, ed è il motivo per cui questo file esiste.
   realizza P-21. Trentasette rotture del motore, tutte rosse nel loro test; due
   erano rosse per la ragione sbagliata alla prima stesura — un errore di sintassi
   e un crash — e sono state rifatte come rotture di comportamento.
+- **30 settembre 2026 — la bozza del carteggio (P-34).** Il §7.6 dice che cosa
+  la bozza promette quando la pagina l'avrà, e che oggi il difetto è dimostrato
+  in un browser vero. Nuovo §9.11, R-BOZZA-01…07: quattro sul motore, tre sulla
+  pagina, e R-BOZZA-06 è il primo requisito con un **difetto aperto
+  dichiarato** — un controllo che resta rosso sulla pagina vera, tenuto acceso
+  da una tabella in `docs/eccezioni-interfaccia.md` invece che spento. Il §3.2
+  dice che la bozza non è una riga.

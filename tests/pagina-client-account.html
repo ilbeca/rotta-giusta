@@ -3,7 +3,7 @@
   La pagina di riferimento del client degli account:
   docs/account-client-progetto.md §§3.2, 4, 5, 9, 10 e 11.1. Non e' pubblicata
   e non e' un prototipo: e' il minimo che soddisfa il banco del browser
-  (tests/client_account.mjs) per C-01…C-17, e serve a quel banco
+  (tests/client_account.mjs) per C-01…C-17 e C-19, e serve a quel banco
   per provarsi al contrario a ogni esecuzione — questa pagina deve passare, e
   ognuna delle rotture elencate in ROTTURE_CLIENT di tests/test_interfaccia.py
   deve fallire nominando il difetto.
@@ -18,6 +18,11 @@
   Senza account questa pagina non scrive niente: ne' IndexedDB, ne'
   localStorage, ne' sessionStorage, ne' cookie. Tutto sta in S, in memoria. Con
   l'account scrive solo nel suo archivio, e lo cancella all'uscita.
+
+  Da P-34 porta anche la bozza del carteggio del §9.4: il runner della prova con
+  l'account scrive a ogni input in `meta`, alla chiave `bozza-carteggio:<id>`,
+  con le regole del motore. Sulla pagina vera la bozza arriva con P-21; fino ad
+  allora questa e' l'unica pagina che C-19 guida per intero.
 -->
 <html lang="it">
 <meta charset="utf-8">
@@ -35,6 +40,11 @@
   <p id="link-esito" role="status"></p>
   <p id="data-esito" role="status"></p>
 </header>
+
+<section id="bozza" hidden><p id="bozza-txt"></p>
+  <button data-bozza="riapri">Riapri il lavoro</button><button data-bozza="scarta">Scarta la bozza</button>
+  <div id="bozza-conferma" hidden><p>Il testo scritto e i giudizi di questa attività si perdono. Scarti la bozza?</p>
+    <button data-bozza="scarta-si">Sì, scarta la bozza</button><button data-bozza="scarta-no">Annulla</button></div></section>
 
 <section class="view on" id="v-oggi">
   <h1>Il tuo percorso</h1>
@@ -104,9 +114,13 @@
 </div>
 
 <div id="cartrun">
-  <span id="c-pos"></span>
+  <span id="c-pos"></span> <span id="c-time"></span>
   <div id="c-testo"></div>
   <label for="c-input">La tua risposta</label><textarea id="c-input"></textarea>
+  <p id="c-memoria" hidden>Il testo che scrivi resta solo finché questa pagina è aperta. Non ricaricare la pagina e non chiudere la scheda fino alla consegna.</p>
+  <p id="c-stato" role="status"></p>
+  <div id="c-copia" hidden><button data-bozza="copia">Copia i risultati</button><textarea id="c-copia-testo" readonly hidden></textarea></div>
+  <button id="c-prev">Precedente</button><button id="c-next">Successivo</button>
   <button id="c-consegna">Consegna</button>
   <div id="c-fine"></div>
 </div>
@@ -163,7 +177,7 @@ fetch('/dati/quiz.json').then((r) => r.json()).then((b) => {
   S.idQuiz = b.map((q) => q.id);
   document.querySelector('[data-rotta-start]').disabled = false;
 });
-fetch('/dati/carteggio.json').then((r) => r.json()).then((c) => { S.cart = c; }).catch(() => {});
+const CART = fetch('/dati/carteggio.json').then((r) => r.json()).then((c) => { S.cart = c; }).catch(() => {});
 
 $('esame-data').addEventListener('change', (e) => { S.esame = e.target.value; });
 // Con l'account la data sta sul server; senza, solo in memoria (§11.1).
@@ -280,29 +294,293 @@ function correggiTec() {
   $('r-next').hidden = true;
 }
 
+// --- il carteggio e la sua bozza (§9.4 del progetto del client, P-34) -------------
+//
+// Senza account il testo sta solo in S.cprova, e la pagina lo dice (P-36). Con
+// l'account, a ogni input una bozza nella copia dell'account: `meta`, chiave
+// `bozza-carteggio:<id>`, scritta in una transazione che rilegge la bozza
+// presente e chiede a E.sostituisciBozza() se si puo' scrivere. «Salvato» solo
+// su oncomplete, e solo se nel frattempo non c'e' altro testo da scrivere.
+
+const chiaveBozza = (id) => E.BOZZA_CARTEGGIO.chiave + id;
+const TESTI_BOZZA = {
+  attesa: 'Salvataggio del testo in corso…',
+  salvato: 'Il testo in corso è salvato su questo dispositivo per il tuo account. I giudizi si salvano quando concludi la valutazione.',
+  guasto: 'Non riusciamo a conservare il testo in questo dispositivo. Non chiudere o ricaricare la pagina: copia i risultati prima di uscire.',
+};
+let cTick = null;
+const mmss = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+
 function avviaCart() {
   const per = new Map();
   for (const e of S.cart) if (!per.has(e.argomento)) per.set(e.argomento, e);
-  S.cprova = { lista: [...per.values()], i: 0, risp: [] };
-  $('c-pos').textContent = `Esercizio 1 di ${S.cprova.lista.length}`;
-  $('c-testo').textContent = S.cprova.lista[0].testo;
-  $('c-input').value = '';
-  $('c-fine').classList.remove('on');
-  $('c-consegna').textContent = 'Consegna';
-  delete $('c-consegna').dataset.sicuro;
-  $('cartrun').classList.add('on');
+  const lista = [...per.values()], inizio = Date.now();
+  apriCart({ id: uid(), lista, inizio, scadenza: inizio + E.PROVA_CARTEGGIO.minuti * 60000, i: 0,
+    risp: lista.map(() => ''), esiti: lista.map(() => null), fase: 'lavoro', consegna: null,
+    // La bozza nasce con il runner, e solo con l'account (ADR-004).
+    b: S.conto ? { chiave: S.conto.chiave, ciclo: S.ciclo, revisione: 0, stato: null, inVolo: null, ancora: false } : null });
 }
 
-function consegnaCart() {
+function apriCart(P) {
+  S.cprova = P;
+  $('cartrun').classList.add('on');
+  $('c-consegna').textContent = 'Consegna';
+  delete $('c-consegna').dataset.sicuro;
+  clearInterval(cTick);
+  cTick = setInterval(cronoCart, 1000);
+  if (P.fase === 'confronto') return correzioneCart();
+  $('c-fine').classList.remove('on');
+  mostraCart();
+  cronoCart();
+}
+
+function cronoCart() {
+  const P = S.cprova;
+  if (!P || P.fase !== 'lavoro') return clearInterval(cTick);
+  const s = Math.max(0, Math.round((P.scadenza - Date.now()) / 1000));
+  $('c-time').textContent = mmss(s);
+  if (s === 0) consegnaCart(true);
+}
+
+function mostraCart() {
+  const P = S.cprova, e = P.lista[P.i];
+  $('c-pos').textContent = `Esercizio ${P.i + 1} di ${P.lista.length}`;
+  $('c-testo').textContent = e.testo;
+  $('c-input').value = P.risp[P.i];
+  $('c-prev').disabled = P.i === 0;
+  $('c-next').disabled = P.i === P.lista.length - 1;
+  dipingiBozza();
+}
+
+function annotaCart() {
+  const P = S.cprova; if (!P || P.fase !== 'lavoro') return;
+  P.risp[P.i] = $('c-input').value;
+  scriviBozza();
+}
+
+function vaiCart(k) {
+  const P = S.cprova; if (!P || P.fase !== 'lavoro') return;
+  P.i = Math.max(0, Math.min(P.lista.length - 1, k));
+  mostraCart();
+  scriviBozza();
+}
+
+function consegnaCart(tempo = false) {
   const P = S.cprova, b = $('c-consegna');
+  if (!P || P.fase !== 'lavoro') return;
   P.risp[P.i] = $('c-input').value;
   // Due tocchi, in pagina (specifica §7.6).
-  if (!b.dataset.sicuro) { b.dataset.sicuro = '1'; b.textContent = 'Sicuro? Consegna definitivamente'; return; }
-  $('c-fine').innerHTML = P.lista.map((e, k) => `<section><h2>Esercizio ${k + 1} · N. ${esc(e.id)}</h2>
+  if (!tempo && !b.dataset.sicuro) { b.dataset.sicuro = '1'; b.textContent = 'Sicuro? Consegna definitivamente'; return; }
+  P.fase = 'confronto'; P.consegna = tempo ? P.scadenza : Date.now();
+  correzioneCart();
+  scriviBozza();
+}
+
+function correzioneCart(scaduta = false) {
+  const P = S.cprova;
+  clearInterval(cTick);
+  $('c-time').textContent = 'consegnata';
+  const tutti = P.esiti.every((x) => x !== null);
+  $('c-fine').innerHTML = (scaduta ? '<p role="status">Il tempo della prova è scaduto. Confronta i risultati che avevi scritto.</p>' : '')
+    + P.lista.map((e, k) => `<section><h2>Esercizio ${k + 1} · N. ${esc(e.id)}</h2>
     <p>La tua risposta: ${esc(P.risp[k] || 'non hai risposto')}</p>
     <p>Risposta ministeriale: ${esc(e.risposta_ufficiale)}</p>
-    <button data-cs="${k}" data-ok="1">L'avevo presa</button><button data-cs="${k}" data-ok="0">No</button></section>`).join('');
+    <button data-cs="${k}" data-ok="1" class="${P.esiti[k] === 1 ? 'on' : ''}">L'avevo presa</button><button data-cs="${k}" data-ok="0" class="${P.esiti[k] === 0 ? 'on' : ''}">No</button></section>`).join('')
+    + `<button id="c-salva" ${tutti ? '' : 'disabled'}>Salva la prova e chiudi</button>`;
   $('c-fine').classList.add('on');
+  dipingiBozza();
+}
+
+function giudicaCart(k, ok) {
+  const P = S.cprova; if (!P || P.fase !== 'confronto') return;
+  P.esiti[k] = ok ? 1 : 0;
+  correzioneCart(P.scaduta);
+  scriviBozza();
+}
+
+function chiudiCart() {
+  clearInterval(cTick);
+  S.cprova = null;
+  $('cartrun').classList.remove('on');
+  $('c-fine').classList.remove('on');
+  aggiornaUscitaCart();
+}
+
+/** La bozza di questo runner, dalle regole del motore: lista, tempo e modalita' non cambiano. */
+function bozzaDi(P) {
+  let b = E.nuovaBozza({ id: P.id, modo: 'simulazione', lista: P.lista.map((e) => e.id), inizio: P.inizio, variante: 'cieca' });
+  b = E.modificaBozza(b, { posizione: P.i, testi: P.risp });
+  if (P.fase === 'confronto') b = E.modificaBozza(b, { fase: 'confronto', consegna: P.consegna, giudizi: P.esiti });
+  return b;
+}
+
+/** Una catena di scritture per runner: una in volo, e l'ultimo stato dopo. */
+function scriviBozza() {
+  const P = S.cprova;
+  if (!P || !P.b) { dipingiBozza(); return; }   // senza account: niente, e la pagina lo dice
+  const B = P.b;
+  B.ancora = true;
+  if (B.inVolo) { if (B.stato !== 'guasto') statoBozza('attesa'); return; }
+  statoBozza('attesa');
+  B.inVolo = (async () => {
+    while (B.ancora && S.cprova === P) {
+      B.ancora = false;
+      try {
+        const scritta = await nellaCopiaBozza(B, bozzaDi(P));
+        B.revisione = scritta.revisione;
+        if (!B.ancora) statoBozza('salvato');
+      } catch (e) {
+        B.errore = e.message;
+        statoBozza('guasto');
+        break;
+      }
+    }
+    B.inVolo = null;
+  })();
+}
+
+function nellaCopiaBozza(B, proposta) {
+  return new Promise((ok, ko) => {
+    // Solo nella copia dell'account con cui il runner e' cominciato, e solo se
+    // l'accesso e' ancora quello: una scheda ferma non scrive, e non riapre.
+    if (!S.db || !S.conto || S.conto.chiave !== B.chiave || S.ciclo !== B.ciclo) return ko(new Error('accesso cambiato'));
+    let t;
+    try { t = S.db.transaction('meta', 'readwrite'); } catch (e) { return ko(e); }
+    const meta = t.objectStore('meta'), k = chiaveBozza(proposta.id);
+    let scritta = null, motivo = null;
+    const g = meta.get(k);
+    g.onsuccess = () => {
+      const r = E.sostituisciBozza(g.result ?? null, proposta, B.revisione);
+      if (!r.bozza) { motivo = r.motivo; t.abort(); return; }
+      scritta = r.bozza;
+      meta.put(scritta, k);
+    };
+    t.oncomplete = () => ok(scritta);
+    t.onabort = () => ko(new Error(motivo || (t.error && t.error.message) || 'scrittura annullata'));
+  });
+}
+
+function statoBozza(stato) {
+  const P = S.cprova; if (!P || !P.b) return;
+  P.b.stato = stato;
+  dipingiBozza();
+}
+
+function dipingiBozza() {
+  const P = S.cprova;
+  const conTesto = !!P && P.risp.some((x) => x.trim());
+  $('c-memoria').hidden = !(P && !P.b && conTesto);
+  const stato = P && P.b ? P.b.stato : null;
+  $('c-stato').textContent = stato ? TESTI_BOZZA[stato] : '';
+  $('c-copia').hidden = stato !== 'guasto';
+  // Il c-stato sta nel runner; nel confronto lo si ripete accanto ai giudizi.
+  if (P && P.fase === 'confronto' && stato) {
+    let el = $('c-fine').querySelector('.c-stato');
+    if (!el) { el = document.createElement('p'); el.className = 'c-stato'; $('c-fine').prepend(el); }
+    el.textContent = TESTI_BOZZA[stato];
+  }
+  aggiornaUscitaCart();
+}
+
+// La conferma del browser (P-36) resta finche' il testo non e' al sicuro:
+// senza account sempre, con l'account finche' l'ultima scrittura non e' confermata.
+let cUscita = false;
+const fermaUscita = (e) => { e.preventDefault(); e.returnValue = ''; };
+function aggiornaUscitaCart() {
+  const P = S.cprova;
+  const proteggi = !!P && P.risp.some((x) => x.trim()) && (!P.b ? P.fase === 'lavoro' : P.b.stato !== 'salvato');
+  if (proteggi === cUscita) return;
+  cUscita = proteggi;
+  if (proteggi) window.addEventListener('beforeunload', fermaUscita); else window.removeEventListener('beforeunload', fermaUscita);
+}
+
+async function copiaRisultati() {
+  const P = S.cprova; if (!P) return;
+  const testo = P.lista.map((e, k) => `${e.id}: ${P.risp[k]}`).join('\n');
+  try { await navigator.clipboard.writeText(testo); }
+  catch { const a = $('c-copia-testo'); a.value = testo; a.hidden = false; a.select(); }
+}
+
+/** Salva la prova: righe, coda e via la bozza, nella stessa transazione (§9.4). */
+async function salvaCart() {
+  const P = S.cprova; if (!P || P.esiti.some((x) => x === null)) return;
+  const { righe, motivo } = E.concludiBozza(bozzaDi(P), { ts: E.isoLocale() });
+  if (motivo) { $('c-stato').textContent = 'Non riusciamo a salvare la prova: ' + motivo; return; }
+  if (!P.b) { S.righe.push(...righe); return chiudiCart(); }
+  if (P.b.inVolo) await P.b.inVolo;
+  try {
+    await concludiNellaCopia(P.b, P.id, righe);
+  } catch (e) {
+    P.b.errore = e.message; statoBozza('guasto'); return;
+  }
+  chiudiCart();
+  pianifica();
+}
+
+function concludiNellaCopia(B, id, righe) {
+  return new Promise((ok, ko) => {
+    if (!S.db || !S.conto || S.conto.chiave !== B.chiave || S.ciclo !== B.ciclo) return ko(new Error('accesso cambiato'));
+    const t = S.db.transaction(['righe', 'meta'], 'readwrite');
+    const st = t.objectStore('righe'), meta = t.objectStore('meta');
+    let motivo = null;
+    const g = meta.get(chiaveBozza(id)), c = meta.get('coda');
+    c.onsuccess = () => {
+      if (g.result && g.result.revisione !== B.revisione) { motivo = 'bozza cambiata in un\'altra scheda'; t.abort(); return; }
+      let coda = c.result || E.nuovaCoda({ generazione: S.conto.generazione, epocaDb: S.conto.epoca });
+      for (const r of righe) { st.put(r); coda = E.accoda(coda, r.uid); }
+      meta.put(coda, 'coda');
+      meta.delete(chiaveBozza(id));
+    };
+    t.oncomplete = () => ok();
+    t.onabort = () => ko(new Error(motivo || (t.error && t.error.message) || 'scrittura annullata'));
+  });
+}
+
+/** Le bozze nella copia dell'account aperta; una lettura fallita e' un errore, non «nessuna». */
+function bozzeNellaCopia(db) {
+  return new Promise((ok, ko) => {
+    let t;
+    try { t = db.transaction('meta'); } catch (e) { return ko(e); }
+    const pre = E.BOZZA_CARTEGGIO.chiave;
+    const g = t.objectStore('meta').getAll(IDBKeyRange.bound(pre, pre + '￿'));
+    g.onsuccess = () => ok(g.result.filter((b) => E.validaBozza(b) === null));
+    g.onerror = () => ko(g.error);
+  });
+}
+
+async function offriBozze() {
+  $('bozza').hidden = true; $('bozza-conferma').hidden = true;
+  if (!S.db) return;
+  try {
+    const bozze = await bozzeNellaCopia(S.db);
+    S.bozze = bozze.sort((a, b) => b.inizio - a.inizio);
+    if (!bozze.length) return;
+    $('bozza-txt').textContent = 'Hai del lavoro di carteggio in corso su questo dispositivo.';
+  } catch {
+    $('bozza-txt').textContent = 'Non riusciamo a leggere il lavoro di carteggio salvato su questo dispositivo.';
+  }
+  $('bozza').hidden = false;
+}
+
+async function riapriBozza() {
+  const b = S.bozze && S.bozze[0]; if (!b) return;
+  await CART;
+  const per = new Map(S.cart.map((e) => [e.id, e]));
+  const r = E.riprendiBozza(b, Date.now());
+  const x = r.bozza;
+  $('bozza').hidden = true;
+  apriCart({ id: x.id, lista: x.lista.map((id) => per.get(id)), inizio: x.inizio, scadenza: x.scadenza, i: x.posizione,
+    risp: [...x.testi], esiti: [...x.giudizi], fase: x.fase, consegna: x.consegna, scaduta: r.scaduta,
+    b: { chiave: S.conto.chiave, ciclo: S.ciclo, revisione: b.revisione, stato: 'salvato', inVolo: null, ancora: false } });
+  if (r.scaduta) { correzioneCart(true); scriviBozza(); }
+}
+
+function scartaBozza() {
+  const b = S.bozze && S.bozze[0]; if (!b || !S.db) return;
+  const t = S.db.transaction('meta', 'readwrite');
+  const meta = t.objectStore('meta'), g = meta.get(chiaveBozza(b.id));
+  g.onsuccess = () => { if (g.result && g.result.revisione === b.revisione) meta.delete(chiaveBozza(b.id)); };
+  t.oncomplete = () => offriBozze();
 }
 
 function avviaSeg() {
@@ -615,11 +893,17 @@ async function entra(io) {
   if (io.data_esame !== undefined) $('esame-data').value = io.data_esame || '';
   dipingiVerifica();
   await punteggiInSospeso();
+  // Il lavoro di carteggio lasciato su questo dispositivo, per questo account (§9.4).
+  await offriBozze();
 }
 
 /** Ferma questa scheda: niente piu' invii, niente scritture, memoria pulita. */
 function fermaQui() {
   S.ciclo++;
+  // Il runner dell'account si ferma con lui: il suo testo non passa alla prova
+  // anonima ne' a un altro account (area 4 §8.2). Uno cominciato senza account resta.
+  if (S.cprova && S.cprova.b) chiudiCart();
+  $('bozza').hidden = true; S.bozze = null;
   if (S.ac) S.ac.abort();
   clearTimeout(timer);
   if (S.db) S.db.close();
@@ -719,7 +1003,37 @@ async function esci(tutti = false) {
     S.uscitaTutti = tutti;
     return;
   }
+  // Il lavoro di carteggio non concluso, di qualunque scheda: sta nella copia (§9.4).
+  if (!S.scartaBozze) {
+    let bozze = null;
+    try { bozze = await bozzeNellaCopia(S.db); } catch {}
+    const quiInAttesa = S.cprova && S.cprova.b && S.cprova.b.stato !== 'salvato';
+    if (bozze === null || bozze.length || quiInAttesa) {
+      S.uscitaTutti = tutti;
+      esito.innerHTML = USCITA_BOZZA_HTML(bozze === null);
+      return;
+    }
+  }
   return chiudiAccesso(chiave, tutti);
+}
+
+const USCITA_BOZZA_HTML = (illeggibile) => `${illeggibile ? 'Non riusciamo a leggere il lavoro di carteggio salvato qui. ' : ''}Su questo dispositivo c'è del lavoro di carteggio non concluso: uscendo lo perdi. <button data-conto="resta">Resta qui</button> <button data-conto="copia-uscita">Copia i risultati</button> <button data-conto="scarta-esci">Scarta il lavoro ed esci</button>`;
+
+/** Conta le bozze di una copia chiusa, riaprendola solo per leggere: dentro il lucchetto, con le altre schede ferme. */
+function contaBozzeChiuse(chiave) {
+  return new Promise((ok) => {
+    const q = indexedDB.open(nomeDb(chiave));
+    q.onupgradeneeded = () => q.transaction.abort();
+    q.onerror = () => ok(0);
+    q.onsuccess = () => { const db = q.result; bozzeNellaCopia(db).then((b) => { db.close(); ok(b.length); }, () => { db.close(); ok(null); }); };
+  });
+}
+
+async function copiaBozzeUscita() {
+  let bozze = [];
+  try { bozze = await bozzeNellaCopia(S.db); } catch {}
+  const testo = bozze.map((b) => b.lista.map((id, k) => `${id}: ${b.testi[k]}`).join('\n')).join('\n\n');
+  try { await navigator.clipboard.writeText(testo); } catch { $('account-esito').insertAdjacentHTML('beforeend', `<textarea readonly>${esc(testo)}</textarea>`); }
 }
 
 /**
@@ -728,11 +1042,24 @@ async function esci(tutti = false) {
  * lo stesso (§10). Senza rete non si esce per finta.
  */
 async function chiudiAccesso(chiave, tutti) {
+  const scarta = S.scartaBozze; S.scartaBozze = false;
   canale.postMessage({ tipo: 'uscita', chiave });
   const conto = S.conto;
   fermaQui();
   try {
     await navigator.locks.request(nomeDb(chiave), { mode: 'exclusive', signal: AbortSignal.timeout(3000) }, async () => {
+      // Con le altre schede ferme si ricontano le bozze: una scritta dopo il
+      // primo conteggio non si cancella senza la scelta (§9.4).
+      if (!scarta) {
+        const n = await contaBozzeChiuse(chiave);
+        if (n !== 0) {
+          await entra({ email: conto.email, chiave_locale: chiave, generazione: conto.generazione, epoca: conto.epoca, verificata: conto.verificata, scade_se_non_verificata: conto.scade });
+          pannelloConto();
+          $('account-esito').innerHTML = USCITA_BOZZA_HTML(n === null);
+          S.uscitaTutti = tutti;
+          return;
+        }
+      }
       const r = await api('POST', tutti ? '/v1/uscita/ovunque' : '/v1/uscita');
       if (r.codice !== 204 && r.codice !== 401) {
         // Senza rete il server non revoca il cookie: niente falso «sei uscito».
@@ -1125,9 +1452,12 @@ async function risolvi() {
   await catena();
 }
 
+$('c-input').addEventListener('input', annotaCart);
+
 // I pannelli si chiudono con Esc (§12, collaudo).
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('account').hidden) chiudiPannello(); });
 
+const c0 = (t) => t.dataset.conto;
 document.addEventListener('click', (e) => {
   const t = e.target.closest('button');
   if (!t) return;
@@ -1146,6 +1476,19 @@ document.addEventListener('click', (e) => {
   if (t.id === 't-start') return avviaTec();
   if (t.id === 'c-start') return avviaCart();
   if (t.id === 'c-consegna') return consegnaCart();
+  if (t.id === 'c-prev') return vaiCart(S.cprova.i - 1);
+  if (t.id === 'c-next') return vaiCart(S.cprova.i + 1);
+  if (t.dataset.cs !== undefined) return giudicaCart(Number(t.dataset.cs), t.dataset.ok === '1');
+  if (t.id === 'c-salva') return salvaCart();
+  const bz = t.dataset.bozza;
+  if (bz === 'copia') return copiaRisultati();
+  if (bz === 'riapri') return riapriBozza();
+  if (bz === 'scarta') { $('bozza-conferma').hidden = false; return; }
+  if (bz === 'scarta-no') { $('bozza-conferma').hidden = true; return; }
+  if (bz === 'scarta-si') return scartaBozza();
+  if (c0(t) === 'resta') return chiudiPannello();
+  if (c0(t) === 'copia-uscita') return copiaBozzeUscita();
+  if (c0(t) === 'scarta-esci') { S.scartaBozze = true; return esci(S.uscitaTutti); }
   if (t.id === 's-start') return avviaSeg();
   if (t.dataset.si !== undefined) return rispondiSeg(Number(t.dataset.si));
   if (t.id === 'sr-next') { S.seg.i++; return mostraSeg(); }

@@ -1413,6 +1413,103 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   dell'interfaccia la 8620 guardata libera. Guardiano verde. `site/app.html` e
   `docs/prossime-sessioni.md` non sono stati toccati.
 
+### Aggiunto — P-34: la bozza del carteggio, e un difetto dimostrato invece che dichiarato a parole
+
+- **Prima il difetto, in un browser vero.** Il §7.6 prometteva il testo del
+  carteggio «salvato a ogni tasto», e dalla 0.5.0 `annotaCart()` lo tiene solo
+  in memoria. La regia l'aveva letto nel codice; ora lo dice la pagina vera,
+  guidata in Chrome con il server degli account accanto: entrati in un account,
+  due testi in due esercizi della prova, una ricarica, e **nessuna traccia del
+  lavoro** — nessuna offerta di riprenderlo, il testo perso. È la verifica
+  `C-19:ricarica` del banco del client, rossa sulla pagina di oggi. Perché
+  `main` resti verde **senza spegnerla** c'è una tabella nuova in
+  `docs/eccezioni-interfaccia.md`, «Difetti aperti dichiarati»: la suite
+  pretende che la verifica dichiarata giri sulla pagina vera, con i passi prima
+  verdi, e sia **rossa**; il giorno che diventa verde la dichiarazione mente, e
+  la suite è rossa finché chi ha corretto non toglie la riga. Provato sui
+  risultati che il banco ha già: sulla pagina di riferimento, che ha la bozza,
+  la dichiarazione non regge; sulla rottura che toglie l'offerta, sì.
+
+- **Il contratto nel motore, puro.** `nuovaBozza()` congela la lista e prende
+  la scadenza da `PROVA_CARTEGGIO`; `validaBozza()` dice il motivo come
+  `validaRiga()`, e rifiuta anche una bozza con i campi di una riga — `_t`,
+  `uid`, `ts`, `verdict` —, così le due forme non si confondono in nessun verso;
+  `modificaBozza()` cambia posizione, testi, consegna e giudizi, mai lista,
+  tempo, modalità o variante, e non riscrive il testo consegnato;
+  `sostituisciBozza()` è la regola di ogni scrittura dentro la transazione — una
+  revisione vecchia non sovrascrive quella di un'altra scheda, una bozza
+  conclusa o scartata altrove **non si ricrea** —; `riprendiBozza()` tiene la
+  scadenza di prima e manda al confronto una prova scaduta a pagina chiusa,
+  consegnata all'istante della scadenza e non della ricarica;
+  `concludiBozza()` dà le righe finali con lo schema di D-02 (P-33) e uid che
+  nascono dalla bozza, e con un giudizio rinviato **nessuna riga**. Una bozza non
+  entra in `ripiega()`, `attivitaCarteggio()`, `fondiArchivio()`, nella coda né
+  in un trasferimento: un test lo pretende funzione per funzione.
+
+- **Il raccordo della pagina, senza ridisegnare il client**
+  (`docs/account-client-progetto.md` §9.4). La bozza sta in `meta` della copia
+  dell'account, alla chiave `bozza-carteggio:<id>`: nessun archivio nuovo e
+  nessuna versione nuova del database, niente sul server. «Salvato» solo su
+  `oncomplete`; la ripresa proposta e mai automatica; la conclusione in una
+  transazione con righe e coda; lo scarto con la conferma in pagina; l'uscita
+  che conta le bozze di tutte le schede, **e le riconta dentro il lucchetto
+  esclusivo**, prima della richiesta di uscita; una scheda ferma che non
+  riapre il database per nome. L'avviso e la conferma del browser di P-36
+  rivisti: senza account come oggi, con l'account i tre stati del §3.3
+  dell'area 4 e `beforeunload` finché l'ultimo testo non è confermato. **Il
+  trasferimento di chi si identifica durante il lavoro**, che D-03 chiedeva di
+  chiarire: un runner cominciato senza account resta senza bozza fino alla
+  fine, e le sue righe passano dalle porte che il client ha già (§4.3, §5.1).
+
+- **Il banco: C-19, sette parti** (`tests/client_account.mjs`) — senza
+  account, ricarica, scadenza (una scheda con l'orologio sessantun minuti
+  avanti), guasto (una transazione interrotta dopo il `put`, come fallisce
+  IndexedDB), giudizio rinviato e conclusione (le righe sul server lette con
+  `attivitaCarteggio()`: un'attività sola, registrata, con la riga di prova),
+  uscita, e cambio d'account fra due schede. La pagina di riferimento del client
+  ha ora la bozza, e passa C-19 intero; **quattordici rotture**, tutte rosse per
+  il loro motivo. **Una era passata verde alla prima stesura**, i sessanta minuti
+  nuovi alla ripresa: il banco confrontava il tempo prima e dopo la ricarica
+  nella stessa scheda, e tutto il giro stava nel primo secondo della prova —
+  «60:00» prima e dopo. Ora il tempo si legge in una scheda con l'orologio dieci
+  minuti avanti. E una misura del server: C-19 crea sette account, e il limite
+  di cinque registrazioni l'ora per indirizzo l'ha fermato alla sesta, con un
+  `429`; fra una parte e l'altra l'orologio del server avanza, come fa la corsia
+  fra un gruppo e l'altro.
+
+- **Provati al contrario anche nel motore**: diciannove rotture, una alla volta.
+  Una è passata verde — i giudizi durante il lavoro —, perché la regola stava in
+  due posti e toglierne uno lasciava l'altro; tolta la copia in
+  `modificaBozza()`, la regola è una, in `validaBozza()`, e toglierla è rosso.
+
+- **Il tentativo in quarantena** (`~/Software/rotta-giusta-quarantena/p34-2026-09-26/`)
+  è stato letto e non preso. Il suo controllo rosso passava se `annotaCart()`
+  scriveva in `localStorage`, cioè avrebbe dato per corretta una violazione
+  dell'ADR-004; il suo raccordo apriva `rg-account-<chiave>` alla versione 1 con
+  archivi suoi (`bozze`, `accesso`, `coda`), che sulla copia che la pagina vera
+  crea già — versione 1, `righe` e `meta` — non esisterebbero (letto nel codice,
+  non eseguito); e il suo banco era a parte, prima di P-18 e del banco del
+  client. Ne restano le idee che reggevano: una bozza per attività, la revisione
+  nella transazione, il ciclo d'accesso come barriera, l'uscita che chiede.
+
+- **Specifica:** §7.6 dice che cosa la bozza promette quando la pagina l'avrà;
+  §3.2 che la bozza non è una riga; nuovo §9.11, R-BOZZA-01…07. `AGENTS.md`
+  tiene il difetto fra i noti, con i puntatori nuovi: è ancora vero nel prodotto.
+  Area 4, §10.1 D-03: consegnata. Le cinque funzioni nuove fra gli orfani
+  dichiarati fino a P-21, che le consuma, toglie la riga del difetto nello stesso
+  commit e fa girare C-19 intero sulla pagina vera.
+
+  Suite: motore **185/187** con i due skip di sempre (erano 177/179); dati 242;
+  interfaccia **1.517** (erano 1.442), in circa 173 s (erano 150); specifica
+  **682** (erano 654); server 60/60. Con la **24.21.0 LTS**, verificata contro
+  `SHASUMS256.txt` riscaricato da nodejs.org: motore 185/187, server 60/60,
+  interfaccia 1.517. **C-19 ripetuto**: sei giri senza carico e sei con dieci
+  `yes`, la pagina di riferimento verde con le sue 28 verifiche ogni volta, la
+  pagina vera rossa ogni volta sulla sola verifica dichiarata. Prima di ogni
+  giro dell'interfaccia la 8620 guardata libera; il carico fermato dopo.
+  Guardiano e controllo della documentazione verdi. `site/app.html`
+  e `docs/prossime-sessioni.md` non sono stati toccati.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag

@@ -52,6 +52,11 @@ dichiarazione che mente.
 | `fondi` | Fusione di due specchi: serviva alla sincronia col server, tolta nella 0.19.0. Resta esportata e testata perché descrive la semantica della fusione, ma nessuno la chiama. Non ha un'area: è storia |
 | `provaCarteggio` | La composizione della prova di carteggio nel motore (P-32, D-01 del §10.1 di `area-4-progetto.md`): lista, argomenti rappresentati e mancanti, riprese, completamento dichiarato, e le condizioni 4/60/3 in `PROVA_CARTEGGIO`. La pagina compone ancora con la sua `componiProva()`, che un test del motore tiene identica. La consuma la realizzazione dell'area 4 (P-21): allora `componiProva()`, `argomentiSenzaNuovi()` e le tre costanti `PROVA_*` escono dalla pagina, questa riga esce da qui, e se la pagina non chiama più `E.estrai` né `E.estraiNuoviPrima` le loro righe escono dalle chiamate protette, nello stesso commit |
 | `attivitaCarteggio` | Le attività del Carteggio con il confine dell'attività, per `_t:'c'` e `_t:'t'` (P-33, D-02 del §10.1 di `area-4-progetto.md`): intere oltre le pause, ricostruite e dichiarate per le righe senza legame, isolate dai quiz e dall'altro tipo, ambigue con il motivo. La pagina non ha ancora un riepilogo o una revisione di carta e tecniche fuori dalla prova: la consuma la realizzazione dell'area 4 (P-21), e allora questa riga esce da qui |
+| `nuovaBozza` | La bozza del carteggio (P-34, D-03 del §10.1 di `area-4-progetto.md`): una per runner aperto con l'account, lista congelata e scadenza da `PROVA_CARTEGGIO`. La pagina tiene ancora il testo solo in memoria (§7.6 della specifica, difetto aperto qui sotto): la consuma la realizzazione dell'area 4 (P-21) con il contratto del §9.4 di `account-client-progetto.md`, e allora questa riga esce da qui |
+| `modificaBozza` | Il lavoro che cambia in una bozza — posizione, testi, consegna, giudizi — senza cambiare lista, tempo o modalità (P-34). La consuma P-21 insieme a `nuovaBozza` |
+| `sostituisciBozza` | La regola di una scrittura della bozza dentro la transazione: una revisione vecchia non sovrascrive, una bozza conclusa o scartata altrove non si ricrea (P-34). La consuma P-21 insieme a `nuovaBozza` |
+| `riprendiBozza` | La ripresa dopo una ricarica: la scadenza di prima, e una prova scaduta al confronto con il testo scritto (P-34). La consuma P-21 insieme a `nuovaBozza` |
+| `concludiBozza` | Le righe finali di una bozza giudicata tutta, con lo schema di D-02 e gli uid che nascono dalla bozza; con un giudizio rinviato nessuna riga (P-34). La sostituisce, in P-21, la costruzione delle righe in `salvaCart()`, e allora questa riga esce da qui |
 | `dettaglioCarteggio` | Schede, conteggi — coincidenti e da rivedere, scelte non coincidenti, campi vuoti e non registrati, non affrontati — e filtro della revisione di carta e tecniche, dalla stessa fonte (P-33, D-02). Oggi la revisione di una prova di carteggio filtra le righe in `apriRivedi()`; la sostituisce la realizzazione dell'area 4 (P-21), e allora questa riga esce da qui |
 
 ## Chiamate al motore protette
@@ -129,3 +134,18 @@ quelle che esistono ancora, con l'area che le chiude.
 
 | file | espressione | perché è ancora qui |
 |---|---|---|
+
+## Difetti aperti dichiarati
+
+Un controllo che dimostra un difetto del prodotto, e che resta rosso finché il
+difetto c'è. Dichiararlo qui tiene `main` verde senza spegnere il controllo:
+la suite pretende che la verifica nominata **giri sulla pagina vera e sia
+rossa**, con i passi prima di lei verdi — cioè che il difetto sia ancora vero e
+misurato per il motivo giusto. Il giorno che la verifica diventa verde, la riga
+è una dichiarazione che mente, e la suite lo dice: chi corregge il difetto
+toglie la riga nello stesso commit, e il banco esegue il gruppo per intero
+sulla pagina vera.
+
+| parte | verifica | perché è ancora qui |
+|---|---|---|
+| `C-19:ricarica` | `con l'account il testo scritto resta dopo una ricarica` | Il testo del carteggio sta solo in memoria dalla 0.5.0 (`annotaCart()`), e una ricarica durante la prova lo perde: §7.6 della specifica, dimostrato nel browser da P-34. Il contratto della bozza è nel §9.4 di `account-client-progetto.md` e nel motore; la pagina di riferimento del banco lo passa per intero. Lo chiude la realizzazione dell'area 4 (P-21) |

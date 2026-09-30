@@ -1830,6 +1830,233 @@ export function fondiArchivio(presenti, importate, opt = {}) {
   return { righe: [...per.values()], nuove, gia, scartate, motivi };
 }
 
+// --- la bozza del carteggio (P-34) ------------------------------------------------
+//
+// Il testo che si scrive nel runner del carteggio durante un'ora di prova non e'
+// una risposta: e' lavoro in corso, senza giudizio. Fino a P-34 stava solo in
+// memoria (annotaCart(), dalla 0.5.0), e una ricarica lo perdeva, mentre la
+// specifica prometteva «salvato a ogni tasto». D-03 del §10.1 di
+// docs/area-4-progetto.md chiede una **bozza**: legata all'account, separata
+// dalle righe valutate, esclusa da ripiega(), dai conteggi e dagli invii,
+// cancellata solo a conclusione confermata o a scarto esplicito.
+//
+// Qui ci sono le sue regole pure. Dove vive — l'archivio `meta` della copia
+// dell'account, una chiave per attivita' —, come si scrive a ogni input e che
+// cosa dice la pagina stanno nel §9.4 di docs/account-client-progetto.md: lo
+// storage e' della pagina, e C-19 lo prova in un browser vero.
+//
+// **Una bozza non e' una riga, per costruzione:** non ha `_t`, `uid`, `ts` ne'
+// `verdict`, quindi `validaRiga()` la rifiuta, `ripiega()` e
+// `attivitaCarteggio()` non la vedono, e la coda non puo' portarla. E una bozza
+// con uno di quei campi non e' valida: le due forme non si possono confondere
+// in nessuna direzione. Senza account la bozza non esiste (ADR-004): queste
+// funzioni non lo sanno, e non devono — lo decide chi scrive.
+
+/** Le costanti della bozza: la chiave nella copia dell'account e le modalita' del runner. */
+export const BOZZA_CARTEGGIO = Object.freeze({
+  tipo: 'bozza-carteggio',
+  versione: 1,
+  chiave: 'bozza-carteggio:',
+  modi: Object.freeze(['simulazione', 'giro-tecniche', 'tappeto']),
+  // Un uid di riga sta in 64 caratteri (validaRiga): le righe finali sono
+  // `id:pos`, quindi l'id ne lascia quattro.
+  idMax: 60,
+});
+const CAMPI_RIGA = ['_t', 'uid', 'ts', 'verdict', 'item_id', 'sim_uid', 'input_json'];
+// Quello che resta della stessa attivita' per tutta la sua vita: la lista
+// preparata, la modalita', il tempo. Cambiarli scrivendo vorrebbe dire un'altra
+// prova con lo stesso nome — o sessanta minuti nuovi a ogni ricarica.
+const IDENTITA_BOZZA = ['tipo', 'versione', 'id', 'modo', 'lista', 'variante', 'inizio', 'scadenza'];
+const intero = (n) => Number.isInteger(n) && n >= 0;
+const istante = (n) => Number.isFinite(n) && n > 0;
+
+/**
+ * Se una bozza e' ben fatta: `null` se si', altrimenti il motivo, come
+ * `validaRiga()`. La forma:
+ *
+ *   tipo, versione  'bozza-carteggio', 1
+ *   id              l'identita' dell'attivita': diventa `sim_uid` delle righe
+ *                   finali, e nella prova l'uid della riga `_t: 's'` (P-33)
+ *   modo            'simulazione' | 'giro-tecniche' | 'tappeto'
+ *   lista           gli id degli esercizi, congelati all'avvio
+ *   variante        solo nella prova (P-32); altrimenti null
+ *   inizio          l'istante dell'avvio, in millisecondi
+ *   scadenza        inizio + 60 minuti nella prova; null in un allenamento
+ *   posizione       l'esercizio aperto
+ *   fase            'lavoro' | 'confronto' (dopo la consegna)
+ *   consegna        l'istante della consegna, o null finche' si lavora
+ *   testi           uno per esercizio, com'e' scritto
+ *   giudizi         uno per esercizio: 1, 0 o null — rinviato. Solo al confronto
+ *   revisione       quante scritture confermate: la usa sostituisciBozza()
+ */
+export function validaBozza(b) {
+  const B = BOZZA_CARTEGGIO;
+  if (!b || typeof b !== 'object' || Array.isArray(b) || b.tipo !== B.tipo) return "non e' una bozza";
+  if (b.versione !== B.versione) return 'versione sconosciuta';
+  if (CAMPI_RIGA.some((k) => k in b)) return 'campi di una riga';
+  if (typeof b.id !== 'string' || !b.id || b.id.length > B.idMax) return 'id non valido';
+  if (!B.modi.includes(b.modo)) return 'modalità sconosciuta';
+  const n = Array.isArray(b.lista) ? b.lista.length : 0;
+  if (!n || b.lista.some((x) => typeof x !== 'string' || !x) || new Set(b.lista).size !== n) return 'lista non valida';
+  if ((b.modo === 'simulazione') !== (typeof b.variante === 'string' && !!b.variante)) return 'variante non valida';
+  if (!intero(b.posizione) || b.posizione >= n) return 'posizione non valida';
+  if (!istante(b.inizio)) return 'tempo non valido';
+  if (b.modo === 'simulazione' ? !(istante(b.scadenza) && b.scadenza > b.inizio) : b.scadenza !== null) return 'tempo non valido';
+  if (b.fase !== 'lavoro' && b.fase !== 'confronto') return 'fase non valida';
+  if (b.fase === 'lavoro' ? b.consegna !== null : !(istante(b.consegna) && b.consegna >= b.inizio)) return 'consegna non valida';
+  if (!Array.isArray(b.testi) || b.testi.length !== n || b.testi.some((t) => typeof t !== 'string')) return 'testi non validi';
+  if (!Array.isArray(b.giudizi) || b.giudizi.length !== n || b.giudizi.some((g) => g !== null && g !== 0 && g !== 1)) return 'giudizi non validi';
+  if (b.fase === 'lavoro' && b.giudizi.some((g) => g !== null)) return 'giudizi non validi';
+  if (!intero(b.revisione)) return 'revisione non valida';
+  return null;
+}
+
+const copiaBozza = (b) => ({ ...b, lista: [...b.lista], testi: [...b.testi], giudizi: [...b.giudizi] });
+function certa(b, chi) {
+  const motivo = validaBozza(b);
+  if (motivo) throw new Error(`${chi}: bozza non valida (${motivo})`);
+  return b;
+}
+
+/**
+ * Una bozza nuova per un runner che si apre con l'account. La lista e' quella
+ * preparata — si congela qui, e nessuna scrittura la cambia —; la scadenza
+ * della prova viene da `PROVA_CARTEGGIO.minuti`, la sorgente unica, non dal
+ * chiamante. `variante` e' quella di `provaCarteggio()`, obbligatoria nella
+ * prova e assente negli allenamenti.
+ */
+export function nuovaBozza({ id, modo, lista, inizio, variante = null } = {}) {
+  const b = {
+    tipo: BOZZA_CARTEGGIO.tipo, versione: BOZZA_CARTEGGIO.versione, id, modo,
+    lista: Array.isArray(lista) ? [...lista] : lista,
+    variante: modo === 'simulazione' ? variante : null,
+    inizio, scadenza: modo === 'simulazione' && istante(inizio) ? inizio + PROVA_CARTEGGIO.minuti * 60000 : null,
+    posizione: 0, fase: 'lavoro', consegna: null,
+    testi: Array.isArray(lista) ? lista.map(() => '') : [], giudizi: Array.isArray(lista) ? lista.map(() => null) : [],
+    revisione: 0,
+  };
+  const motivo = validaBozza(b);
+  if (motivo) throw new Error(`nuovaBozza: ${motivo === 'variante non valida' ? 'la prova vuole la sua variante (P-32)' : motivo}`);
+  return b;
+}
+
+/**
+ * Il lavoro che cambia: `posizione`, `testi`, `fase` (solo da 'lavoro' a
+ * 'confronto', con `consegna`), `giudizi` (solo al confronto; `null` e' un
+ * giudizio rinviato, non un no). Restituisce una bozza nuova e non modifica
+ * quella che riceve. Cambiare l'identita' — lista, modalita', variante, inizio,
+ * scadenza, id — o la revisione lancia: la revisione la tiene
+ * `sostituisciBozza()`, e un'attivita' diversa e' un'altra bozza. Il testo
+ * consegnato non si riscrive: e' quello che il confronto mette accanto alla
+ * risposta ministeriale.
+ */
+export function modificaBozza(b, cambi = {}) {
+  certa(b, 'modificaBozza');
+  for (const k of Object.keys(cambi)) {
+    if (IDENTITA_BOZZA.includes(k) || k === 'revisione') throw new Error(`modificaBozza: «${k}» non si cambia`);
+    if (!['posizione', 'testi', 'fase', 'consegna', 'giudizi'].includes(k)) throw new Error(`modificaBozza: campo sconosciuto «${k}»`);
+  }
+  if (b.fase === 'confronto' && cambi.fase === 'lavoro') throw new Error('modificaBozza: il confronto non torna al lavoro');
+  if (cambi.fase === 'confronto' && b.fase === 'lavoro' && cambi.consegna === undefined) throw new Error('modificaBozza: la consegna ha il suo istante');
+  if (b.fase === 'confronto' && cambi.testi !== undefined && JSON.stringify(cambi.testi) !== JSON.stringify(b.testi)) {
+    throw new Error('modificaBozza: dopo la consegna il testo resta quello consegnato');
+  }
+  const out = copiaBozza(b);
+  for (const [k, v] of Object.entries(cambi)) out[k] = Array.isArray(v) ? [...v] : v;
+  return certa(out, 'modificaBozza');
+}
+
+const stessaIdentita = (a, b) => IDENTITA_BOZZA.every((k) => JSON.stringify(a[k]) === JSON.stringify(b[k]));
+
+/**
+ * La regola di una scrittura, da applicare **dentro la transazione** che legge
+ * la bozza presente e scrive la nuova. `presente` e' quella che c'e' nella copia
+ * (o null), `proposta` quella da scrivere, `revisione` la revisione confermata
+ * che chi scrive conosce (0 per una bozza mai scritta). Restituisce
+ * `{ bozza, motivo }`: la bozza da scrivere, con la revisione successiva, o
+ * `null` con il motivo per non scriverla:
+ *
+ *   - un'altra scheda ha scritto dopo: la sua versione non si sovrascrive;
+ *   - la bozza non c'e' piu' ma chi scrive l'aveva gia' scritta: e' stata
+ *     conclusa o scartata altrove, e **non si ricrea**;
+ *   - un'attivita' diversa con lo stesso id: lista, tempo o modalita' cambiati.
+ */
+export function sostituisciBozza(presente, proposta, revisione) {
+  const motivo = validaBozza(proposta);
+  if (motivo) return { bozza: null, motivo };
+  if (!intero(revisione)) return { bozza: null, motivo: 'revisione non valida' };
+  if (presente == null) {
+    if (revisione !== 0) return { bozza: null, motivo: "la bozza non c'è più: conclusa o scartata in un'altra scheda" };
+    return { bozza: { ...copiaBozza(proposta), revisione: 1 }, motivo: null };
+  }
+  if (validaBozza(presente)) return { bozza: null, motivo: 'la bozza presente non si legge' };
+  if (!stessaIdentita(presente, proposta)) return { bozza: null, motivo: 'attività diversa con lo stesso id' };
+  if (presente.revisione !== revisione) return { bozza: null, motivo: "la bozza è cambiata in un'altra scheda" };
+  return { bozza: { ...copiaBozza(proposta), revisione: revisione + 1 }, motivo: null };
+}
+
+/**
+ * Riaprire una bozza dopo una ricarica, a `adesso` (millisecondi).
+ * `{ bozza, scaduta, restanteMs }`. La scadenza e' **quella di prima**: mai
+ * sessanta minuti nuovi. Una prova scaduta mentre la pagina era chiusa passa al
+ * confronto, con i testi com'erano e la consegna all'istante della scadenza —
+ * non a quello della ricarica. Un allenamento non ha limite (`restanteMs`
+ * null). Non modifica quella che riceve.
+ */
+export function riprendiBozza(b, adesso) {
+  certa(b, 'riprendiBozza');
+  if (!Number.isFinite(adesso)) throw new Error("riprendiBozza: orologio non valido");
+  const out = copiaBozza(b);
+  if (b.scadenza == null) return { bozza: out, scaduta: false, restanteMs: null };
+  const scaduta = adesso >= b.scadenza;
+  if (scaduta && b.fase === 'lavoro') { out.fase = 'confronto'; out.consegna = b.scadenza; }
+  return { bozza: out, scaduta, restanteMs: Math.max(0, b.scadenza - adesso) };
+}
+
+/**
+ * Le righe finali di una bozza giudicata tutta: `{ righe, motivo }`. Con un
+ * giudizio rinviato, fuori dal confronto o con una riga che `validaRiga()`
+ * rifiuta, `righe` e' vuoto e `motivo` dice perche': la bozza resta, e niente
+ * si scrive a meta'. Nessuna riga ha un `verdict` diverso da 1/0 (D-02).
+ *
+ * Lo schema e' quello di D-02 (P-33): una riga `_t: 'c'` per esercizio con
+ * `sim_uid` = id della bozza, `proposti`, `pos`, `input_json` con il testo
+ * senza gli spazi ai lati (come salvaCart()), `delta: null`, `mode`, e nella
+ * prova `variante`; nella prova anche la riga `_t: 's'` con uid = id, e
+ * `score`, `total`, `passed` dalla soglia di PROVA_CARTEGGIO. Il tempo e'
+ * `consegna - inizio`, diviso per esercizio come faceva salvaCart().
+ *
+ * **Gli uid nascono dalla bozza** (`id:pos`): un ritento della stessa
+ * conclusione — la transazione che scrive righe e coda e toglie la bozza non
+ * e' andata — riusa gli stessi, e l'unione per uid fa il resto. `ts` e' quello
+ * della conclusione, con l'offset (`isoLocale()`).
+ */
+export function concludiBozza(b, { ts, quesiti } = {}) {
+  certa(b, 'concludiBozza');
+  if (typeof ts !== 'string' || !TS_ISO.test(ts) || epoca(ts) == null) throw new Error('concludiBozza: data non valida');
+  if (b.fase !== 'confronto') return { righe: [], motivo: 'si conclude dal confronto, dopo la consegna' };
+  const mancano = b.giudizi.filter((g) => g === null).length;
+  if (mancano) return { righe: [], motivo: `giudizi mancanti: ${mancano}` };
+  const n = b.lista.length, ms = b.consegna - b.inizio, per = Math.round(ms / n);
+  const prova = b.modo === 'simulazione';
+  const righe = b.lista.map((item_id, pos) => ({
+    _t: 'c', uid: `${b.id}:${pos}`, item_id, ts,
+    input_json: JSON.stringify({ risposta: b.testi[pos].trim() }),
+    verdict: b.giudizi[pos], delta: null, ms: per, mode: b.modo,
+    sim_uid: b.id, proposti: n, pos, ...(prova ? { variante: b.variante } : {}),
+  }));
+  if (prova) {
+    const presi = b.giudizi.filter((g) => g === 1).length;
+    righe.push({ _t: 's', uid: b.id, kind: 'carteggio', ts, score: presi, total: n,
+      passed: presi >= PROVA_CARTEGGIO.soglia ? 1 : 0, ms, variante: b.variante });
+  }
+  for (const r of righe) {
+    const motivo = validaRiga(r, { quesiti });
+    if (motivo) return { righe: [], motivo: `${motivo}: ${r.uid}` };
+  }
+  return { righe, motivo: null };
+}
+
 // --- la coda verso il server degli account ---------------------------------------
 //
 // docs/account-progetto.md §1, §2.7, §8, §16.1. Chi ha un account tiene

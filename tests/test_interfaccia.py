@@ -880,11 +880,35 @@ GRUPPI_CLIENT = ['C-01', 'C-02', 'C-03', 'C-04', 'C-05', 'C-06', 'C-07', 'C-08',
 # dei controlli non e' stata eseguita, cioe' un verde a copertura parziale.
 VERIFICHE_CLIENT = {'C-01': 33, 'C-02': 15, 'C-03': 11, 'C-04': 20, 'C-05': 13, 'C-06': 15, 'C-07': 17, 'C-08': 18,
                     'C-09': 13, 'C-10': 10, 'C-11': 8, 'C-12': 9, 'C-13': 8, 'C-14': 3, 'C-15': 12, 'C-16': 23, 'C-17': 10,
-                    'C-13:scarica': 7, 'C-08:cancella': 8, 'C-15:segnali': 7}
+                    'C-13:scarica': 7, 'C-08:cancella': 8, 'C-15:segnali': 7,
+                    'C-19:senza': 4, 'C-19:ricarica': 4, 'C-19:scadenza': 4, 'C-19:guasto': 3, 'C-19:giudizio': 5,
+                    'C-19:uscita': 4, 'C-19:schede': 4}
 # Le tre scelte che fino a P-46 nessun gruppo premeva (R-ACC-63): sono parti dei
 # loro gruppi, e girano con loro, ma le verifiche portano il nome della parte e
 # hanno un controllo ciascuna, cosi' la specifica le nomina una per una.
 SCELTE_CLIENT = ['C-13:scarica', 'C-08:cancella', 'C-15:segnali']
+# C-19, la bozza del carteggio (P-34, §9.4 del progetto del client): le verifiche
+# portano il nome della parte, e ognuna ha il suo conto. Sulla pagina vera la
+# bozza non c'e' ancora: finche' il difetto e' dichiarato in
+# docs/eccezioni-interfaccia.md («Difetti aperti dichiarati») il banco esegue
+# `senza`, che deve essere verde, e la parte che dimostra il difetto; tolta la
+# dichiarazione, tutto il gruppo, verde.
+PARTI_BOZZA = ['C-19:senza', 'C-19:ricarica', 'C-19:scadenza', 'C-19:guasto', 'C-19:giudizio', 'C-19:uscita', 'C-19:schede']
+
+
+def difetti_dichiarati():
+    """[(parte, verifica)] dei difetti aperti dichiarati, o None se la tabella manca."""
+    righe = tabella('Difetti aperti dichiarati', 3)
+    return None if righe is None else [(p, v) for p, v, _ in righe]
+
+
+def gruppi_bozza_app():
+    """Le parti di C-19 da eseguire sulla pagina vera: con un difetto dichiarato,
+    `senza` e le parti che lo dimostrano; senza, il gruppo intero."""
+    dichiarati = [p for p, _ in (difetti_dichiarati() or []) if p.startswith('C-19:')]
+    return ['C-19:senza'] + sorted(set(dichiarati) - {'C-19:senza'}) if dichiarati else ['C-19']
+
+
 # Le verifiche delle attivita' oltre il Percorso, in C-01: R-ACC-04 le chiede tutte.
 ATTIVITA_CLIENT = ['Quiz per argomento: ', 'Simulazione: ', 'Che tecnica serve?: ', 'Carteggio: ', 'Segnali: ']
 
@@ -1407,6 +1431,57 @@ ROTTURE_CLIENT = [
      [('  // Anche i punteggi dei Segnali: uscire con punteggi che il server non ha li perderebbe (§8, P-46).\n  await punteggiInSospeso();\n',
        '  // Anche i punteggi dei Segnali: uscire con punteggi che il server non ha li perderebbe (§8, P-46).\n')],
      'manda i punteggi, poi esce'),
+    # C-19: la bozza del carteggio (P-34, §9.4 del progetto del client)
+    ('la bozza scritta anche senza account', ['C-19:senza'],
+     [("  if (!P || !P.b) { dipingiBozza(); return; }",
+       "  if (!P || !P.b) { dipingiBozza(); if (P) localStorage.setItem('rg-bozza', JSON.stringify(P.risp)); return; }")],
+     'localStorage: rg-bozza'),
+    ('senza account l\'avviso di P-36 non si vede', ['C-19:senza'],
+     [("$('c-memoria').hidden = !(P && !P.b && conTesto);", "$('c-memoria').hidden = true;")],
+     'non si vede con il testo scritto'),
+    ('nessun lavoro offerto dopo la ricarica', ['C-19:ricarica'],
+     [("  await offriBozze();\n}", "}")],
+     'il testo scritto e\' perso'),
+    ('la ripresa da\' sessanta minuti nuovi', ['C-19:ricarica'],
+     [("inizio: x.inizio, scadenza: x.scadenza,", "inizio: x.inizio, scadenza: Date.now() + 3600000,")],
+     'mai 60 minuti nuovi'),
+    ('la bozza scritta fra le righe', ['C-19:ricarica'],
+     [("try { t = S.db.transaction('meta', 'readwrite'); } catch (e) { return ko(e); }\n    const meta",
+       "try { t = S.db.transaction(['meta', 'righe'], 'readwrite'); } catch (e) { return ko(e); }\n    const meta"),
+      ("      meta.put(scritta, k);", "      meta.put(scritta, k); t.objectStore('righe').put({ ...scritta, uid: scritta.id });")],
+     'righe nella copia'),
+    ('«salvato» prima della conferma', ['C-19:guasto'],
+     [("      meta.put(scritta, k);", "      meta.put(scritta, k); ok(scritta);")],
+     'si vede ancora'),
+    ('la scadenza ignorata alla ripresa', ['C-19:scadenza'],
+     [("  const r = E.riprendiBozza(b, Date.now());", "  const r = { bozza: b, scaduta: false };")],
+     'riaperta non mostra'),
+    ('il giudizio rinviato scritto come riga', ['C-19:giudizio'],
+     [("  correzioneCart(P.scaduta);\n  scriviBozza();",
+       "  correzioneCart(P.scaduta);\n  scriviBozza();\n  tx(() => ({ nuove: [{ _t: 'c', uid: P.id + ':' + k, item_id: P.lista[k].id, ts: E.isoLocale(), verdict: P.esiti[k], delta: null, mode: 'simulazione', sim_uid: P.id }] }));")],
+     'il giudizio rinviato e\' diventato una riga'),
+    ('la conclusione non toglie la bozza', ['C-19:giudizio'],
+     [("      meta.delete(chiaveBozza(id));\n", "")],
+     'compare ancora'),
+    ('«Esci» cancella il lavoro senza chiedere', ['C-19:uscita'],
+     [("  if (!S.scartaBozze) {\n    let bozze = null;", "  if (false) {\n    let bozze = null;"),
+      ("      if (!scarta) {\n        const n", "      if (false) {\n        const n")],
+     'non compare'),
+    ('lo scarto senza conferma', ['C-19:uscita'],
+     [("if (bz === 'scarta') { $('bozza-conferma').hidden = false; return; }", "if (bz === 'scarta') return scartaBozza();")],
+     'non chiede'),
+    ('il runner dell\'altra scheda non si ferma', ['C-19:schede'],
+     [("  if (S.cprova && S.cprova.b) chiudiCart();\n", "")],
+     'ancora aperto'),
+    ('la scheda ferma ricrea la copia', ['C-19:schede'],
+     [("  if (S.cprova && S.cprova.b) chiudiCart();\n", ""),
+      ("return ko(new Error('accesso cambiato'));\n    let t;",
+       "return (() => { const q = indexedDB.open(nomeDb(B.chiave), 1); q.onupgradeneeded = () => { q.result.createObjectStore('righe', { keyPath: 'uid' }); q.result.createObjectStore('meta'); }; q.onsuccess = () => { const t = q.result.transaction('meta', 'readwrite'); t.objectStore('meta').put(proposta, chiaveBozza(proposta.id)); t.oncomplete = () => ok(proposta); }; })();\n    let t;")],
+     'ricreato una copia'),
+    ('l\'uscita conta solo il lavoro di questa scheda', ['C-19:schede'],
+     [("    try { bozze = await bozzeNellaCopia(S.db); } catch {}\n    const quiInAttesa", "    bozze = [];\n    const quiInAttesa"),
+      ("        const n = await contaBozzeChiuse(chiave);", "        const n = 0;")],
+     'non compare nella scheda che esce'),
 ]
 
 # Varianti della pagina di riferimento che devono restare **verdi**: il banco
@@ -1432,8 +1507,8 @@ def banco_client():
         return _BANCO_CLIENT
     app = leggi('app.html')
     rif = RIFERIMENTO_CLIENT.read_text(encoding='utf-8')
-    prove = [{'nome': 'app', 'pagina': app, 'gruppi': GRUPPI_CLIENT},
-             {'nome': 'riferimento', 'pagina': rif, 'gruppi': GRUPPI_CLIENT}]
+    prove = [{'nome': 'app', 'pagina': app, 'gruppi': GRUPPI_CLIENT + gruppi_bozza_app()},
+             {'nome': 'riferimento', 'pagina': rif, 'gruppi': GRUPPI_CLIENT + ['C-19']}]
     applicate = {}
     for cosa, gruppi, sostituzioni in VARIANTI_CLIENT:
         variante, ok = rif, True
@@ -1605,6 +1680,69 @@ def test_client_uscita_segnali():
     registra_client('C-15:segnali')
 
 
+def test_client_bozza_senza_account():
+    """R-BOZZA-05: senza account il testo del carteggio non si scrive da nessuna
+    parte, la pagina dice che resta solo finche' e' aperta, e dopo una ricarica
+    non c'e' niente da riprendere (C-19:senza). Vero sulla pagina di oggi."""
+    registra_client('C-19:senza')
+
+
+def test_client_bozza():
+    """R-BOZZA-06: con l'account il testo del carteggio e' una bozza che regge
+    ricarica, scadenza, guasto, giudizio rinviato, uscita e cambio d'account fra
+    schede (C-19). Sulla pagina vera e' un difetto aperto, dichiarato: qui si
+    pretende che la verifica che lo dimostra giri, con i passi prima verdi, e
+    sia rossa — e che diventi rossa la dichiarazione il giorno che non serve
+    piu'. Senza dichiarazioni, il gruppo intero."""
+    dichiarati = difetti_dichiarati()
+    check('client C-19: la tabella dei difetti aperti si legge', dichiarati is not None,
+          'manca «Difetti aperti dichiarati» in docs/eccezioni-interfaccia.md')
+    dichiarati = [(p, x) for p, x in (dichiarati or []) if p.startswith('C-19:')]
+    if not dichiarati:
+        for parte in PARTI_BOZZA[1:]:
+            registra_client(parte)
+        return
+    _, out, _ = banco_client()
+    v = out.get('app', [])
+    for x in v:
+        if x['gruppo'] == 'banco':
+            check('client banco: %s' % x['nome'], x['ok'], x.get('extra', ''))
+    for parte, verifica in dichiarati:
+        for nome, ok, extra in esame_difetto(v, parte, verifica):
+            check('client %s: %s' % (parte, nome), ok, extra)
+    # Provato al contrario, sui risultati che il banco ha gia': sulla pagina di
+    # riferimento, che ha la bozza, la dichiarazione mente e deve essere rossa;
+    # sulla rottura che toglie l'offerta dopo la ricarica deve reggere.
+    rif = out.get('riferimento', [])
+    senza_offerta = out.get('rottura: nessun lavoro offerto dopo la ricarica', [])
+    for parte, verifica in dichiarati:
+        e = esame_difetto(rif, parte, verifica)
+        check('C-19 provato al contrario: sulla pagina di riferimento la dichiarazione «%s» non regge' % verifica,
+              bool(e) and not all(ok for _, ok, _ in e), 'passata verde: la dichiarazione non si accorgerebbe di un difetto chiuso')
+        e = esame_difetto(senza_offerta, parte, verifica)
+        check('C-19 provato al contrario: con l\'offerta tolta la dichiarazione «%s» regge' % verifica,
+              bool(e) and all(ok for _, ok, _ in e), '; '.join(x for _, ok, x in e if not ok) or 'nessuna verifica')
+
+
+def esame_difetto(v, parte, verifica):
+    """Che cosa pretende un difetto dichiarato dai risultati di una pagina:
+    [(nome, ok, extra)]. La verifica c'e', i passi prima sono verdi, e lei e'
+    rossa: il difetto e' ancora vero, e misurato per il motivo giusto."""
+    vp = [x for x in v if x['gruppo'] == parte]
+    nomi = [x['nome'] for x in vp]
+    if verifica not in nomi:
+        return [('la verifica dichiarata «%s» e\' una verifica del banco' % verifica, False,
+                 'il banco non l\'ha eseguita: o si e\' fermato prima, o la dichiarazione nomina una verifica che non esiste. '
+                 'Eseguite: ' + ('; '.join(nomi[:4]) or 'nessuna'))]
+    i = nomi.index(verifica)
+    prima = [x for x in vp[:i] if not x['ok']]
+    return [('prima del difetto dichiarato i passi sono verdi', not prima,
+             'rosso per un altro motivo: ' + '; '.join('%s — %s' % (x['nome'], x.get('extra', '')) for x in prima[:2])),
+            ('il difetto dichiarato e\' ancora vero sulla pagina («%s»)' % verifica, not vp[i]['ok'],
+             'la verifica e\' verde: il difetto e\' chiuso. Togli la riga da «Difetti aperti dichiarati» in '
+             'docs/eccezioni-interfaccia.md nello stesso commit, e il banco esegue C-19 per intero sulla pagina vera')]
+
+
 def test_client_ripristino():
     registra_client('C-14')
 
@@ -1689,7 +1827,7 @@ def test_client_provato_al_contrario():
     v = out.get('riferimento', [])
     rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in v if not x['ok']]
     check('la pagina di riferimento del client passa il banco del browser', not rossi, '; '.join(rossi[:3]))
-    for g in GRUPPI_CLIENT + SCELTE_CLIENT:
+    for g in GRUPPI_CLIENT + SCELTE_CLIENT + PARTI_BOZZA:
         n = sum(1 for x in v if x['gruppo'] == g)
         check('il banco del browser ha eseguito %s sulla pagina di riferimento' % g,
               n >= VERIFICHE_CLIENT[g], 'troppo poche verifiche: il giro non e\' arrivato in fondo (%d su %d)' % (n, VERIFICHE_CLIENT[g]))
@@ -1940,6 +2078,7 @@ def main():
               test_client_limiti, test_client_azzeramento, test_client_ripristino, test_client_data,
               test_client_export, test_client_testi,
               test_client_scarica_dopo_azzeramento, test_client_cancella_dopo_recupero, test_client_conferma_mancante, test_client_uscita_segnali,
+              test_client_bozza_senza_account, test_client_bozza,
               test_client_provato_al_contrario,
               test_motore_senza_orfani, test_chiamate_al_motore_preservate,
               test_letture_che_non_mascherano,

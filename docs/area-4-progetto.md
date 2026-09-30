@@ -729,6 +729,38 @@ ridisegnarne accesso o sincronia. Chiarire il trasferimento della bozza quando
 ci si identifica durante il lavoro; nessun `verdict:null` valido per UI e
 falso nello specchio. Non dichiarare salvato ciò che esiste solo in memoria.
 
+*Consegnata il 30 settembre 2026 (P-34), come contratto nel motore e raccordo
+nel progetto del client.* Il difetto prima, dimostrato in un browser vero: con
+l'account, due testi scritti, una ricarica, e nessuna traccia del lavoro — la
+verifica `C-19:ricarica` di `tests/client_account.mjs`, rossa sulla pagina di
+oggi e dichiarata in `docs/eccezioni-interfaccia.md` («Difetti aperti
+dichiarati»), così `main` resta verde e il controllo non si spegne. Poi il
+contratto. **Nel motore**, puro: `E.nuovaBozza({ id, modo, lista, inizio,
+variante })` — lista congelata, scadenza da `PROVA_CARTEGGIO` nella prova, niente
+nei due allenamenti —; `E.validaBozza()`, che rifiuta anche una bozza con i campi
+di una riga, così le due forme non si confondono in nessun verso;
+`E.modificaBozza()`, che cambia posizione, testi, consegna e giudizi e mai lista,
+tempo, modalità o variante, e non riscrive il testo consegnato;
+`E.sostituisciBozza(presente, proposta, revisione)`, la regola di ogni
+scrittura dentro la transazione — una revisione vecchia non sovrascrive, una
+bozza conclusa o scartata altrove non si ricrea —; `E.riprendiBozza(bozza,
+adesso)`, con la scadenza di prima e la prova scaduta al confronto, consegnata
+all'istante della scadenza; `E.concludiBozza(bozza, { ts })`, le righe finali
+con lo schema di D-02 e gli uid che nascono dalla bozza, e con un giudizio
+rinviato **nessuna riga**. **Nella pagina**, il raccordo del §9.4 di
+`account-client-progetto.md`: la bozza in `meta` della copia dell'account, alla
+chiave `bozza-carteggio:<id>`; «salvato» solo su `oncomplete`; la ripresa
+proposta e mai automatica; la conclusione in una transazione con righe e coda;
+lo scarto con conferma; l'uscita che conta le bozze anche dentro il lucchetto;
+l'avviso e la conferma di P-36 rivisti per i due stati. Il trasferimento chiesto
+qui sopra: **un runner cominciato senza account resta senza bozza fino alla
+fine**, anche se nel frattempo si entra, e le sue righe finali passano dalle
+porte del §4.3 e del §5.1 del progetto del client. Il banco lo prova su una
+pagina di riferimento con quattordici rotture (§12 del progetto del client, «La
+bozza del carteggio»). Requisiti: R-BOZZA-01…07. Le funzioni della bozza sono
+fra gli orfani dichiarati fino a P-21, che le consuma, toglie la dichiarazione
+del difetto nello stesso commit, e fa girare C-19 intero sulla pagina vera.
+
 **D-04 — Controlli e specifica del ciclo.** Fissare R-UX-03 prima dell'avvio,
 Q-CART4, Q-AMBITO, §7.6 e R-FLU-01 per carta/tecniche; distinguere i controlli
 del riepilogo da quelli della riprova solo quiz. Raccordare client §4.1 con

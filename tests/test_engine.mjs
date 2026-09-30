@@ -3359,3 +3359,179 @@ test('dettaglioCarteggio: un ritento con gli stessi uid non conta due volte, e u
   E.attivitaCarteggio(righe, { tipo: 'c' }); E.dettaglioCarteggio(righe, bancaC('5.1.3-1'), 'R', { tipo: 'c', filtro: 'da-rivedere' });
   assert.equal(JSON.stringify(righe), foto);
 });
+
+
+/* --- P-34: la bozza del carteggio ---------------------------------------------- */
+//
+// Il §7.6 della specifica prometteva il testo «salvato a ogni tasto», e non lo
+// era dalla 0.5.0: annotaCart() lo tiene solo in memoria. D-03 del §10.1 di
+// docs/area-4-progetto.md chiede una bozza legata all'account, separata dalle
+// righe valutate, esclusa da ripiega(), dai conteggi e dagli invii, cancellata
+// solo a conclusione confermata o a scarto esplicito. Qui le regole pure della
+// bozza; lo storage per account e' della pagina, e il suo contratto sta nel
+// §9.4 di docs/account-client-progetto.md, provato nel browser da C-19.
+
+const CARTE = JSON.parse(readFileSync(new URL('../site/dati/carteggio.json', import.meta.url), 'utf8'));
+const ID_CARTE = new Set(CARTE.map((e) => e.id));
+const QUATTRO = ['5.1.3-1', '5.2.3-1', '5.3.3-1', '5.4.3-1'].filter((id) => ID_CARTE.has(id));
+const T0 = Date.parse('2026-09-30T10:00:00+02:00');
+const prova = (o = {}) => E.nuovaBozza({ id: 'prova-A', modo: 'simulazione', lista: QUATTRO, inizio: T0, variante: 'cieca', ...o });
+
+test('nuovaBozza: una lista congelata, la scadenza della prova dalla sorgente unica, e niente campi di una riga', () => {
+  assert.equal(QUATTRO.length, 4, 'la banca ha i quattro esercizi del test');
+  const b = prova();
+  assert.equal(E.validaBozza(b), null);
+  assert.equal(b.tipo, E.BOZZA_CARTEGGIO.tipo);
+  assert.deepEqual(b.lista, QUATTRO);
+  assert.equal(b.scadenza, T0 + E.PROVA_CARTEGGIO.minuti * 60000, 'i 60 minuti vengono da PROVA_CARTEGGIO, non dal chiamante');
+  assert.equal(b.fase, 'lavoro'); assert.equal(b.posizione, 0); assert.equal(b.revisione, 0); assert.equal(b.consegna, null);
+  assert.deepEqual(b.testi, ['', '', '', '']); assert.deepEqual(b.giudizi, [null, null, null, null]);
+  for (const k of ['_t', 'uid', 'ts', 'verdict', 'item_id', 'sim_uid']) assert.ok(!(k in b), `la bozza non porta «${k}»`);
+  // Un allenamento non ha scadenza e non ha variante; una prova si' (P-32).
+  const giro = E.nuovaBozza({ id: 'giro-A', modo: 'giro-tecniche', lista: QUATTRO.slice(0, 2), inizio: T0 });
+  assert.equal(giro.scadenza, null); assert.equal(giro.variante, null);
+  assert.throws(() => E.nuovaBozza({ id: 'x', modo: 'simulazione', lista: QUATTRO, inizio: T0 }), /variante/);
+  assert.throws(() => E.nuovaBozza({ id: 'x', modo: 'quiz', lista: QUATTRO, inizio: T0 }), /modalit/);
+  assert.throws(() => E.nuovaBozza({ id: 'x', modo: 'tappeto', lista: ['5.1.3-1', '5.1.3-1'], inizio: T0 }), /lista/);
+  assert.throws(() => E.nuovaBozza({ id: '', modo: 'tappeto', lista: QUATTRO, inizio: T0 }), /id/);
+  assert.throws(() => E.nuovaBozza({ id: 'x'.repeat(61), modo: 'tappeto', lista: QUATTRO, inizio: T0 }), /id/,
+    'un id troppo lungo non lascerebbe posto agli uid delle righe finali');
+});
+
+test('validaBozza: il motivo, come validaRiga, e una bozza con campi di una riga e rifiutata', () => {
+  const b = prova();
+  const casi = [
+    [null, "non e' una bozza"], [{ ...b, tipo: 'riga' }, "non e' una bozza"], [{ ...b, versione: 2 }, 'versione sconosciuta'],
+    [{ ...b, modo: 'quiz' }, 'modalità sconosciuta'], [{ ...b, lista: [] }, 'lista non valida'],
+    [{ ...b, posizione: 4 }, 'posizione non valida'], [{ ...b, scadenza: null }, 'tempo non valido'],
+    [{ ...b, fase: 'finita' }, 'fase non valida'], [{ ...b, testi: ['a'] }, 'testi non validi'],
+    [{ ...b, giudizi: [1, 2, null, null] }, 'giudizi non validi'], [{ ...b, fase: 'lavoro', giudizi: [1, null, null, null] }, 'giudizi non validi'],
+    [{ ...b, revisione: -1 }, 'revisione non valida'], [{ ...b, _t: 'c' }, 'campi di una riga'], [{ ...b, uid: 'u' }, 'campi di una riga'],
+    [{ ...b, fase: 'confronto', consegna: null }, 'consegna non valida'],
+  ];
+  for (const [x, motivo] of casi) assert.equal(E.validaBozza(x), motivo, JSON.stringify(x && { ...x, lista: undefined }));
+});
+
+test('bozza: non e una riga, e resta fuori da specchio, attivita, import e invii', () => {
+  // Se per un errore una bozza finisse fra le righe, nessuno la conterebbe:
+  // e' la «seconda contabilita'» che AGENTS.md vieta, fermata dove si legge.
+  let b = E.modificaBozza(prova(), { testi: ['Lat 42°50,0N', '', '', ''] });
+  b = E.modificaBozza(b, { fase: 'confronto', consegna: T0 + 1000 });
+  b = E.modificaBozza(b, { giudizi: [1, 0, null, null] });
+  assert.notEqual(E.validaRiga(b), null, 'validaRiga la rifiuta');
+  const vera = { _t: 'c', uid: 'c1', item_id: QUATTRO[0], ts: '2026-09-30T10:00:00+02:00', input_json: '{"risposta":"x"}', verdict: 1, delta: null, ms: 1, mode: 'tappeto', sim_uid: 'T' };
+  assert.deepEqual(E.ripiega([b]), E.ripiega([]), 'lo specchio non la vede');
+  assert.deepEqual(E.ripiega([vera, b]), E.ripiega([vera]));
+  assert.deepEqual(E.attivitaCarteggio([vera, b], { tipo: 'c' }).map((a) => a.id), ['T'], 'nessuna attivita da una bozza');
+  const f = E.fondiArchivio([], [b]);
+  assert.equal(f.nuove, 0); assert.equal(f.scartate, 1);
+  const coda = E.accoda(E.nuovaCoda({ righe: [vera] }), b.id);
+  assert.deepEqual(E.lottoDaInviare([vera, b], coda).righe.map((r) => r.uid), ['c1'], 'nessun invio porta una bozza');
+  assert.equal(E.nuovoTrasferimento(E.nuovaCoda(), [b]).trasferimento.rifiutate.length, 1, 'un trasferimento la rifiuta');
+});
+
+test('modificaBozza: il lavoro cambia, lista, tempo e modalita no', () => {
+  const b = prova();
+  const c = E.modificaBozza(b, { posizione: 2, testi: ['a', '', 'c', ''] });
+  assert.equal(c.posizione, 2); assert.deepEqual(c.testi, ['a', '', 'c', '']);
+  assert.deepEqual(b.testi, ['', '', '', ''], 'non modifica quello che riceve');
+  for (const k of ['id', 'modo', 'lista', 'variante', 'inizio', 'scadenza', 'revisione', 'tipo', 'versione']) {
+    assert.throws(() => E.modificaBozza(b, { [k]: k === 'lista' ? [...QUATTRO].reverse() : 'altro' }), /non si cambia/, k);
+  }
+  // I giudizi arrivano solo al confronto, e il confronto non torna al lavoro.
+  assert.throws(() => E.modificaBozza(b, { giudizi: [1, null, null, null] }), /giudizi/);
+  const conf = E.modificaBozza(c, { fase: 'confronto', consegna: T0 + 5000 });
+  assert.throws(() => E.modificaBozza(conf, { fase: 'lavoro' }), /confronto/);
+  assert.throws(() => E.modificaBozza(conf, { testi: ['b', '', 'c', ''] }), /consegna/, 'il testo consegnato resta quello');
+  assert.throws(() => E.modificaBozza(c, { fase: 'confronto' }), /consegna/, 'la consegna ha il suo istante');
+  const g = E.modificaBozza(conf, { giudizi: [1, null, 0, null] });
+  assert.deepEqual(g.giudizi, [1, null, 0, null], 'un giudizio rinviato resta null, non diventa un no');
+});
+
+test('sostituisciBozza: una revisione vecchia non sovrascrive, e una bozza sparita non si ricrea', () => {
+  const b = prova();
+  const primo = E.sostituisciBozza(null, b, 0);
+  assert.equal(primo.motivo, null); assert.equal(primo.bozza.revisione, 1);
+  const dopo = E.sostituisciBozza(primo.bozza, E.modificaBozza(primo.bozza, { testi: ['x', '', '', ''] }), 1);
+  assert.equal(dopo.bozza.revisione, 2); assert.deepEqual(dopo.bozza.testi, ['x', '', '', '']);
+  // Due schede sulla stessa bozza: la seconda scrive sopra una revisione che non ha visto.
+  const vecchia = E.sostituisciBozza(dopo.bozza, E.modificaBozza(primo.bozza, { testi: ['y', '', '', ''] }), 1);
+  assert.equal(vecchia.bozza, null); assert.match(vecchia.motivo, /altra scheda/);
+  // Conclusa o scartata altrove: chi la scriveva non la ricrea.
+  const sparita = E.sostituisciBozza(null, dopo.bozza, 2);
+  assert.equal(sparita.bozza, null); assert.match(sparita.motivo, /non c'è più/);
+  // La stessa attivita' non cambia lista o scadenza al ritento.
+  const altra = E.sostituisciBozza(dopo.bozza, { ...dopo.bozza, scadenza: dopo.bozza.scadenza + 3600000 }, 2);
+  assert.equal(altra.bozza, null); assert.match(altra.motivo, /attività diversa/);
+  const rotta = E.sostituisciBozza(null, { ...b, fase: 'boh' }, 0);
+  assert.equal(rotta.bozza, null); assert.equal(rotta.motivo, 'fase non valida');
+});
+
+test('riprendiBozza: la scadenza e quella di prima, e scaduta apre il confronto con il testo scritto', () => {
+  const b = E.modificaBozza(prova(), { posizione: 1, testi: ['a', 'b', '', ''] });
+  const presto = E.riprendiBozza(b, T0 + 10 * 60000);
+  assert.equal(presto.scaduta, false); assert.equal(presto.restanteMs, 50 * 60000, 'mai 60 minuti nuovi');
+  assert.equal(presto.bozza.scadenza, b.scadenza); assert.equal(presto.bozza.posizione, 1);
+  const tardi = E.riprendiBozza(b, b.scadenza + 1);
+  assert.equal(tardi.scaduta, true); assert.equal(tardi.restanteMs, 0);
+  assert.equal(tardi.bozza.fase, 'confronto'); assert.deepEqual(tardi.bozza.testi, ['a', 'b', '', '']);
+  assert.equal(tardi.bozza.consegna, b.scadenza, 'la prova e finita alla scadenza, non alla ricarica');
+  assert.equal(tardi.bozza.scadenza, b.scadenza);
+  assert.equal(b.fase, 'lavoro', 'non modifica quello che riceve');
+  // Un allenamento non scade mai; un confronto gia' aperto resta com'e'.
+  const giro = E.nuovaBozza({ id: 'g', modo: 'tappeto', lista: QUATTRO, inizio: T0 });
+  const g = E.riprendiBozza(giro, T0 + 400 * 86400000);
+  assert.equal(g.scaduta, false); assert.equal(g.restanteMs, null); assert.equal(g.bozza.fase, 'lavoro');
+  const conf = E.modificaBozza(b, { fase: 'confronto', consegna: T0 + 1000 });
+  assert.equal(E.riprendiBozza(conf, b.scadenza + 5).bozza.consegna, T0 + 1000);
+  assert.throws(() => E.riprendiBozza(b, NaN), /orologio/);
+  assert.throws(() => E.riprendiBozza({ ...b, fase: 'x' }, T0), /bozza/);
+});
+
+test('concludiBozza: con un giudizio rinviato nessuna riga, e le righe finali sono quelle di P-33', () => {
+  let b = E.modificaBozza(prova(), { testi: ['  Lat 42°50,0N ', '', 'Rv 120°', 'x'] });
+  const consegna = T0 + 40 * 60000;
+  b = E.modificaBozza(b, { fase: 'confronto', consegna });
+  const ts = '2026-09-30T10:41:00+02:00';
+  // In lavoro, o con un giudizio mancante, non si conclude: nessuna riga con
+  // verdict diverso da 1/0 (D-02, D-03).
+  assert.match(E.concludiBozza(E.modificaBozza(prova(), {}), { ts }).motivo, /confronto/);
+  const rinviato = E.concludiBozza(E.modificaBozza(b, { giudizi: [1, 0, null, 1] }), { ts });
+  assert.deepEqual(rinviato.righe, []); assert.match(rinviato.motivo, /giudizi/);
+  b = E.modificaBozza(b, { giudizi: [1, 0, 1, 1] });
+  const { righe, motivo } = E.concludiBozza(b, { ts, quesiti: ID_CARTE });
+  assert.equal(motivo, null);
+  const c = righe.filter((r) => r._t === 'c'), s = righe.filter((r) => r._t === 's');
+  assert.equal(c.length, 4); assert.equal(s.length, 1);
+  for (const r of righe) assert.equal(E.validaRiga(r, { quesiti: ID_CARTE }), null, r.uid);
+  assert.deepEqual(c.map((r) => r.item_id), QUATTRO);
+  assert.deepEqual(c.map((r) => r.pos), [0, 1, 2, 3]);
+  assert.ok(c.every((r) => r.sim_uid === b.id && r.proposti === 4 && r.mode === 'simulazione' && r.variante === 'cieca' && r.delta === null && r.ts === ts));
+  assert.deepEqual(c.map((r) => r.verdict), [1, 0, 1, 1]);
+  assert.equal(JSON.parse(c[0].input_json).risposta, 'Lat 42°50,0N', 'il testo com e stato consegnato, senza gli spazi ai lati');
+  assert.equal(s[0].uid, b.id); assert.equal(s[0].kind, 'carteggio'); assert.equal(s[0].score, 3);
+  assert.equal(s[0].total, 4); assert.equal(s[0].passed, 1); assert.equal(s[0].ms, 40 * 60000); assert.equal(s[0].variante, 'cieca');
+  // Gli uid nascono dalla bozza: un ritento della scrittura riusa gli stessi.
+  assert.deepEqual(E.concludiBozza(b, { ts: '2026-09-30T11:00:00+02:00' }).righe.map((r) => r.uid), righe.map((r) => r.uid));
+  assert.equal(new Set(righe.map((r) => r.uid)).size, 5);
+  // E il motore legge le righe come un'attivita' sola, registrata, con l'esito della bozza.
+  const [a] = E.attivitaCarteggio(righe, { tipo: 'c' });
+  assert.equal(a.id, b.id); assert.equal(a.fonte, 'sim_uid'); assert.equal(a.ambigua, false); assert.equal(a.ordine, 'registrato');
+  const d = E.dettaglioCarteggio(righe, CARTE, b.id, { tipo: 'c' });
+  assert.equal(d.conteggi.senzaGiudizio, 0); assert.equal(d.conteggi.daRivedere, 1); assert.equal(d.conteggi.vuoti, 1);
+  assert.deepEqual(d.esito, { coincidenti: 3, su: 4, soglia: E.PROVA_CARTEGGIO.soglia, raggiunta: true });
+  // Un allenamento: nessuna riga di prova, nessuna variante.
+  let t = E.nuovaBozza({ id: 'tap', modo: 'tappeto', lista: QUATTRO.slice(0, 2), inizio: T0 });
+  t = E.modificaBozza(E.modificaBozza(t, { fase: 'confronto', consegna: T0 + 1000 }), { giudizi: [0, 0] });
+  const rt2 = E.concludiBozza(t, { ts }).righe;
+  assert.deepEqual(rt2.map((r) => r._t), ['c', 'c']); assert.ok(rt2.every((r) => !('variante' in r)));
+  assert.equal(E.dettaglioCarteggio(rt2, CARTE, 'tap', { tipo: 'c' }).esito, null);
+});
+
+test('concludiBozza: un testo troppo lungo per una riga non autorizza la conclusione, e lo dice', () => {
+  let b = E.modificaBozza(prova(), { testi: ['x'.repeat(E.RIGA_MAX_BYTE), '', '', ''] });
+  b = E.modificaBozza(E.modificaBozza(b, { fase: 'confronto', consegna: T0 + 1 }), { giudizi: [1, 1, 1, 1] });
+  const r = E.concludiBozza(b, { ts: '2026-09-30T10:41:00+02:00' });
+  assert.deepEqual(r.righe, []); assert.match(r.motivo, /troppo grande/);
+  assert.throws(() => E.concludiBozza(b, { ts: 'ieri' }), /data/);
+});

@@ -603,6 +603,144 @@ rifiutate con la stessa regola. Un trasferimento risolto o abbandonato con una
 scelta esplicita si butta; fino ad allora si conserva con la coda, così una
 ricarica non trasforma «in corso» in «salvato».
 
+### 9.4 La bozza del carteggio (P-34)
+
+**Perché.** Il testo che si scrive nel runner del carteggio stava solo in
+memoria (`annotaCart()`, dalla 0.5.0), e una ricarica durante un'ora di prova lo
+perdeva, mentre la specifica prometteva «salvato a ogni tasto» (§7.6). D-03 del
+§10.1 di `area-4-progetto.md` chiede una bozza **legata all'account, separata
+dalle righe valutate, esclusa da `ripiega()`, dai conteggi e dagli invii,
+cancellata solo a conclusione confermata o a scarto esplicito**. Questo è il
+raccordo: dove sta, quando si scrive, che cosa dice la pagina. Non ridisegna
+accesso, sincronia o uscita: si aggancia a quelli dei §§3, 9.1 e 10. Le regole
+pure sono nel motore — `nuovaBozza`, `validaBozza`, `modificaBozza`,
+`sostituisciBozza`, `riprendiBozza`, `concludiBozza`, `BOZZA_CARTEGGIO` —, e la
+forma della bozza è nel commento di `validaBozza()`. La pagina di riferimento
+del banco (`tests/pagina-client-account.html`, «il carteggio e la sua bozza») è
+la forma eseguibile di questo paragrafo, e C-19 (§12) la prova.
+
+**Dove sta.** Nell'archivio `meta` della copia dell'account,
+`rg-account-<chiave_locale>`, alla chiave `bozza-carteggio:<id>` — una per
+attività, così due schede con due attività non si sovrascrivono. Nessun archivio
+nuovo, nessuna versione nuova del database: `meta` c'è già e tiene coda,
+trasferimento e conflitto. **Mai in `righe`**: una bozza non ha `_t`, `uid`,
+`ts` né `verdict`, e `validaBozza()` rifiuta quella che li ha; quindi
+`validaRiga()` la scarta, `ripiega()` e `attivitaCarteggio()` non la vedono, e la
+coda non può portarla. Non va sul server, non si esporta con «Scarica i tuoi
+progressi», non si riprende su un altro dispositivo: è lavoro in corso di
+questo browser per questo account. Nessuno spazio sul server, quindi nessuna
+decisione nuova di `account-progetto.md`.
+
+**Quando nasce.** Con il runner della prova, del giro o del tappeto aperto
+**con l'account riconosciuto** (§3.1): `E.nuovaBozza({ id, modo, lista, inizio,
+variante })`, con `id` = l'identità dell'attività, che diventa `sim_uid` delle
+righe finali (D-02), la lista preparata congelata, e nella prova la scadenza da
+`PROVA_CARTEGGIO`. **Senza account non nasce** (ADR-004, R-ACC-09): il testo
+resta in memoria, con l'avviso e la conferma del browser di P-36. **Un runner
+cominciato senza account resta senza bozza fino alla fine**, anche se nel
+frattempo si entra: il testo in corso non passa da solo nell'account, e alla
+conclusione le sue righe seguono le porte che il progetto ha già — la
+registrazione alla fine dell'attività (§4.3) o «Vuoi portare…» dopo un accesso
+(§5.1). È la risposta alla domanda di D-03 sul trasferimento di chi si
+identifica durante il lavoro: una porta sola per le risposte che entrano in un
+account, e nessuna seconda domanda a metà di una prova. Un runner dell'account A
+non scrive mai nella copia di B: la bozza porta con sé la chiave e il ciclo
+d'accesso con cui è nata.
+
+**A ogni input** — testo, cambio d'esercizio, consegna, giudizio — la pagina
+calcola la bozza dal runner (`modificaBozza()`) e la scrive: una transazione
+`readwrite` su `meta` che legge la bozza presente e chiede a
+`E.sostituisciBozza(presente, proposta, revisione)` se si può scrivere, con la
+revisione confermata che il runner conosce. Una revisione vecchia — un'altra
+scheda ha scritto dopo — non sovrascrive; una bozza che non c'è più ma che il
+runner aveva già scritto è stata conclusa o scartata altrove, e **non si
+ricrea**; lista, tempo e modalità non cambiano scrivendo. Una scrittura per
+volta per runner, e l'ultimo stato dopo: il ritardo di 500 ms del §10 è
+dell'invio, non di questa scrittura. Prima di aprire la transazione la pagina
+guarda che l'accesso sia ancora quello (`S.conto`, chiave e ciclo): una scheda
+ferma non scrive, e **non riapre il database per nome** — riaperto, ricreerebbe
+la copia che un'uscita ha appena cancellato.
+
+**Che cosa dice la pagina** (i testi del §3.3 di `area-4-progetto.md`),
+accanto al campo e nel confronto:
+
+| Stato | Quando | Testo |
+|---|---|---|
+| attesa | una scrittura in volo, o testo nuovo dopo l'ultima conferma | «Salvataggio del testo in corso…» |
+| salvato | `oncomplete` dell'ultima scrittura, e nessun testo scritto dopo | «Il testo in corso è salvato su questo dispositivo per il tuo account. I giudizi si salvano quando concludi la valutazione.» |
+| guasto | la transazione si interrompe, o `sostituisciBozza()` rifiuta | «Non riusciamo a conservare il testo in questo dispositivo. Non chiudere o ricaricare la pagina: copia i risultati prima di uscire.», con «Copia i risultati» e il testo selezionabile se gli appunti non rispondono; il pallino di Info e la riga dell'errore restano |
+
+«Salvato» **solo su `oncomplete`**, mai su `put.onsuccess` né prima: una conferma
+data prima della transazione è la forma esatta del guasto muto. Un input
+successivo riprova da sé; tornata la scrittura, lo stato torna «salvato».
+
+**La conferma del browser e l'avviso di P-36, rivisti.** Senza account, come
+oggi: l'avviso «Il testo che scrivi resta solo finché questa pagina è aperta…» e
+`beforeunload` finché c'è testo non consegnato. Con l'account l'avviso lascia il
+posto ai tre stati, e `beforeunload` resta **finché l'ultimo testo non è
+confermato** — in attesa o in guasto —, si toglie a «salvato», e torna al
+prossimo input. La consegna resta a due tocchi in pagina.
+
+**La ripresa.** All'apertura dell'account (§3.1: riconosciuto con `GET /v1/io`,
+o dopo un accesso) la pagina legge le chiavi `bozza-carteggio:` della copia. Una
+lettura fallita si dice — «Non riusciamo a leggere il lavoro di carteggio
+salvato su questo dispositivo.» — e non diventa «nessuna bozza». Con una bozza:
+«Hai del lavoro di carteggio in corso su questo dispositivo», con «Riapri il
+lavoro» e «Scarta la bozza». Mai una ripresa o uno scarto da soli. «Riapri il
+lavoro» chiama `E.riprendiBozza(bozza, Date.now())`: stessa lista, stessa
+posizione, stessi testi e giudizi, **la scadenza di prima** — mai sessanta minuti
+nuovi. Una prova scaduta a pagina chiusa si apre al confronto, con la consegna
+all'istante della scadenza e «Il tempo della prova è scaduto. Confronta i
+risultati che avevi scritto»; un allenamento non ha limite. Nessuna pescata
+nuova: una banca che non ha più un esercizio della lista è un guasto da dire,
+non un sostituto da pescare.
+
+**Il giudizio rinviato** resta nella bozza, `null`, e non diventa una riga: nessun
+`verdict` diverso da 1/0 (D-02). Riaperta, la bozza torna al confronto con i
+giudizi dati.
+
+**La conclusione** — «Salva la prova e chiudi» con tutti i giudizi — è **una
+transazione sola** su `righe` e `meta`: si rilegge la bozza, la si trova con la
+revisione nota, si scrivono le righe di `E.concludiBozza(bozza, { ts })`, si
+accodano con `E.accoda()` e si toglie la bozza. Se la transazione non va, niente
+di tutto questo è successo: la bozza resta, e un ritento riusa gli stessi uid,
+che nascono dalla bozza (`<id>:<pos>`). Se `concludiBozza()` rifiuta — un
+giudizio mancante, una riga che `validaRiga()` scarta, per esempio un testo
+oltre i 4 KiB — la bozza resta e la pagina dice il motivo. Poi l'invio come per
+ogni risposta (§9.1, §10): la bozza conclusa è locale, e «salvate nel tuo
+account» resta del §9.3.
+
+**Lo scarto** è un'azione a sé, con la conferma in pagina: «Il testo scritto e i
+giudizi di questa attività si perdono. Scarti la bozza?», «Sì, scarta la
+bozza», «Annulla»; si cancella solo se la revisione è quella mostrata. Chiudere
+il runner, cambiare vista, ricaricare, un errore di rete: **niente di questo
+cancella**. «Chiudi senza salvare» del confronto, con l'account, diventa lo
+scarto con la sua conferma.
+
+**Uscita e altre schede.** «Esci» (§10) conta, oltre alle righe pendenti, **le
+bozze della copia** — di qualunque scheda, perché stanno lì — e il testo non
+ancora confermato di questa scheda. Con del lavoro: «Su questo dispositivo c'è
+del lavoro di carteggio non concluso: uscendo lo perdi.», con «Resta qui»,
+«Copia i risultati» e «Scarta il lavoro ed esci», che è lo scarto esplicito.
+Una lettura fallita delle bozze non vale «nessuna». **Il conteggio si rifà
+dentro il lucchetto esclusivo dell'uscita**, con le altre schede ferme e prima
+della richiesta di uscita: una bozza scritta da un'altra scheda fra il primo
+conteggio e la cancellazione non si perde senza la scelta. Le altre schede,
+all'avviso dell'uscita (§9.1), fermano il runner dell'account — il suo testo
+non passa alla prova anonima né all'account nuovo (area 4 §8.2) —, e un runner
+senza account resta. «Cancella l'account» cancella la copia come l'uscita, e
+conta le bozze allo stesso modo. Un azzeramento (§10, «Generazione diversa») non
+tocca le bozze: la generazione è delle righe, e una bozza non è una riga. Un
+`401` congela la coda, non la bozza, che è locale: rientrando nello stesso
+account la si ritrova, entrando in un altro no.
+
+**Controllo.** C-19 del §12, in un browser vero. Sulla pagina di oggi la bozza non
+c'è: la parte che lo dimostra è dichiarata in `docs/eccezioni-interfaccia.md`,
+«Difetti aperti dichiarati», finché la realizzazione dell'area 4 (P-21) non la
+porta. Chi realizza: le funzioni della bozza escono dagli orfani dichiarati,
+la riga del difetto si toglie nello stesso commit, e C-19 gira intero sulla
+pagina vera.
+
 ## 10. Sincronia, uscita e azzeramenti
 
 Inviare dopo ogni risposta, con ritardo di raccolta **500 ms**, all'apertura,
@@ -1415,6 +1553,73 @@ corsia 0, e la loro somma è la durata della suite. Accorciarla è Q-SUITE.
 dice «0 risposte non sono sul server e ci sono punteggi dei Segnali da
 inviare». È vera, e il banco non la guarda parola per parola; il §10 dà la
 frase solo per le risposte, e quella per i punteggi è da scrivere.
+
+### La bozza del carteggio (P-34, 30 settembre 2026)
+
+Un gruppo nuovo, **C-19**, per il §9.4. Sette parti, e le verifiche portano il
+nome della parte, come quelle di P-46:
+
+- **`C-19:senza`** — senza account la prova si apre, l'avviso di P-36 si vede
+  con il testo scritto, niente si scrive in nessuno storage né verso l'API per
+  tutta la finestra `OSSERVAZIONE`, e dopo una ricarica non c'è niente da
+  riprendere. **Verde sulla pagina di oggi.**
+- **`C-19:ricarica`** — con l'account, due testi in due esercizi, «salvato», una
+  ricarica, «Riapri il lavoro»: stesso esercizio, stessi testi. Poi il tempo, in
+  una seconda scheda con l'orologio dieci minuti avanti: restano circa
+  cinquanta minuti, mai sessanta. Poi niente nell'archivio `righe` e niente sul
+  server. **Rossa sulla pagina di oggi, ed è il controllo che dimostra il
+  difetto**: dopo la ricarica non compare niente, e il testo è perso.
+- **`C-19:scadenza`** — una scheda con l'orologio sessantun minuti avanti riapre
+  la prova al confronto, con «Il tempo della prova è scaduto…» e i testi; nessuna
+  riga scritta da sola.
+- **`C-19:guasto`** — uno script prima della pagina interrompe la transazione
+  dopo il `put`, come fallisce IndexedDB: la pagina dice il guasto, offre «Copia
+  i risultati» e non dice «salvato»; tolto il guasto, il testo si salva.
+- **`C-19:giudizio`** — consegna, due giudizi su quattro, ricarica: il confronto
+  torna con quei due, e nessuna riga è scritta. Giudicata tutta e salvata, le
+  righe arrivano sul server come **un'attività sola, registrata, con la sua
+  riga di prova** (`attivitaCarteggio()` sulle righe del server), e dopo una
+  ricarica la bozza non torna.
+- **`C-19:uscita`** — «Esci» con del lavoro non esce e lo dice, senza
+  `POST /v1/uscita`; il lavoro resta dopo una ricarica; «Scarta la bozza» chiede
+  conferma e senza conferma non cancella; confermata, la bozza non torna.
+- **`C-19:schede`** — la scheda che esce vede il lavoro dell'altra e non esce in
+  silenzio; con «Scarta il lavoro ed esci» la copia sparisce, il runner
+  dell'altra scheda si ferma, e scrivendoci **non ricrea la copia**; entrato B
+  nella stessa finestra, il lavoro di A non c'è.
+
+**Il difetto dichiarato.** Sulla pagina vera il banco esegue `C-19:senza` e
+`C-19:ricarica`; `test_interfaccia.py::test_client_bozza` pretende che la
+verifica dichiarata giri, con i passi prima verdi, e sia **rossa**. Il giorno
+che diventa verde la dichiarazione mente, e la suite lo dice. È provato sui
+risultati che il banco ha già, senza un browser in più: sulla pagina di
+riferimento la dichiarazione non regge, sulla rottura che toglie l'offerta sì.
+
+**Quattordici rotture della pagina di riferimento**, tutte rosse per il loro
+motivo: la bozza scritta senza account, l'avviso di P-36 tolto, nessuna offerta
+dopo la ricarica, sessanta minuti nuovi alla ripresa, la bozza scritta fra le
+righe, «salvato» prima della conferma, la scadenza ignorata, il giudizio
+rinviato scritto come riga, la conclusione che non toglie la bozza, «Esci» che
+cancella senza chiedere, lo scarto senza conferma, il runner dell'altra scheda
+che non si ferma, la scheda ferma che ricrea la copia, l'uscita che conta solo
+il lavoro di questa scheda. **Una era passata verde alla prima stesura**,
+quella dei sessanta minuti: il banco confrontava il tempo prima e dopo la
+ricarica nella stessa scheda, e tutto il giro stava nel primo secondo della
+prova, quindi «60:00» prima e dopo passava per giusto. Ora il tempo si legge in
+una seconda scheda con l'orologio avanti, e la rottura è rossa.
+
+**Che cosa non vede.** Il banco guida solo la prova: giro e tappeto hanno la
+stessa bozza (`modo`), provata nel motore e non nella pagina. La conferma del
+browser: una ricarica comandata dal protocollo, senza un gesto vero, non la
+mostra, e il banco non la guarda. «Copia i risultati» si vede, ma se copia non
+si controlla. Il pallino di Info sul guasto, il `401` durante il lavoro,
+l'azzeramento con una bozza aperta, «Cancella l'account» con una bozza, una
+banca che non ha più un esercizio della lista: scritti nel §9.4, non esercitati.
+Safari, come per il resto del banco (Q-PROVE).
+
+**Il tempo.** La suite dell'interfaccia passa da circa 149 a 173 s: sulla
+pagina vera le due parti in più girano sulla corsia 0, in fila con gli altri
+gruppi con l'API (Q-SUITE).
 
 ## 13. Evidenze e limiti di P-13
 

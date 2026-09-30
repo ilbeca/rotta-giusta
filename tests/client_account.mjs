@@ -26,7 +26,8 @@
 //    Esc; l'archivio dell'account `rg-account-<chiave_locale>`; e l'API in
 //    locale su http://<stesso host>:8620 (account-progetto §7.4 e §16.3).
 //
-// Gruppi realizzati: C-01…C-17 (P-29, P-39, P-43). C-18, la ricerca dei testi,
+// Gruppi realizzati: C-01…C-17 (P-29, P-39, P-43), e C-19, la bozza del
+// carteggio (P-34, §9.4 del progetto). C-18, la ricerca dei testi,
 // non ha bisogno di un browser e sta in tests/test_interfaccia.py. Che cosa
 // ognuno non vede e' scritto nel §12 del progetto. Tre parti — C-13:scarica,
 // C-08:cancella, C-15:segnali (P-46) — girano con il loro gruppo ma portano il
@@ -2310,12 +2311,339 @@ async function c17origine(b, ctx, v, g) {
 
 // --- il giro -------------------------------------------------------------------------
 
+// --- C-19: la bozza del carteggio (P-34, §9.4 del progetto del client) ----------------
+//
+// Il §7.6 della specifica prometteva il testo del carteggio «salvato a ogni
+// tasto», e annotaCart() lo tiene solo in memoria dalla 0.5.0. D-03 del §10.1 di
+// docs/area-4-progetto.md chiede la bozza per account; il suo contratto — dove
+// sta, che cosa dice la pagina, quando si cancella — e' il §9.4 del progetto del
+// client, e le regole pure sono nel motore (nuovaBozza, sostituisciBozza,
+// riprendiBozza, concludiBozza). Qui si guarda la pagina: ricarica, scadenza,
+// errore di scrittura, giudizio rinviato, uscita e cambio d'account fra schede.
+//
+// Sulla pagina vera oggi la bozza non c'e': `C-19:ricarica` e' il controllo che
+// fallisce e lo dimostra, dichiarato come difetto aperto in
+// docs/eccezioni-interfaccia.md finche' P-21 non la porta. Le verifiche portano
+// il nome della parte, e test_interfaccia.py le registra parte per parte.
+
+const MEMORIA = 'Il testo che scrivi resta solo finché questa pagina è aperta.';
+const SALVATO = 'Il testo in corso è salvato su questo dispositivo per il tuo account.';
+const GUASTO_BOZZA = 'Non riusciamo a conservare il testo in questo dispositivo.';
+const OFFERTA = 'Hai del lavoro di carteggio in corso su questo dispositivo';
+const SCADUTO = 'Il tempo della prova è scaduto. Confronta i risultati che avevi scritto';
+const USCITA_BOZZA = 'Su questo dispositivo c\'è del lavoro di carteggio non concluso';
+const SCARTO = 'Scarti la bozza?';
+// Il nome della verifica che dimostra il difetto di oggi: la dichiarazione in
+// docs/eccezioni-interfaccia.md lo cita parola per parola.
+export const DIFETTO_BOZZA = 'con l\'account il testo scritto resta dopo una ricarica';
+
+const esercizioC = js(`const t = document.querySelector('#c-testo'); return V(t) ? t.textContent.trim() : null;`);
+const campoC = js(`const i = document.querySelector('#c-input'); return i && V(i) ? i.value : null;`);
+const scriviC = (tab, testo) => tab.valuta(js(`const i = document.querySelector('#c-input'); if (!i) return false;
+  i.value = ${q(testo)}; i.dispatchEvent(new Event('input', { bubbles: true })); return true;`));
+const tempoC = js(`const t = document.querySelector('#c-time'); return t && V(t) ? t.textContent.trim() : null;`);
+const secondiC = (t) => { const m = /^(\d+):(\d\d)$/.exec(t || ''); return m ? +m[1] * 60 + +m[2] : null; };
+const runnerC = visibile('#cartrun');
+// Un orologio spostato in avanti per la scheda, prima degli script della
+// pagina: e' cosi' che una prova scade senza aspettare un'ora.
+const avanti = (ms) => `(() => { const d = Date.now.bind(Date); Date.now = () => d() + ${ms}; })();`;
+// Una scrittura che fallisce come fallisce IndexedDB: la transazione si
+// interrompe dopo la richiesta, e oncomplete non arriva. Solo con il segno
+// acceso, cosi' l'ingresso nell'account scrive come sempre.
+const GUASTO_IDB = `(() => { const p = IDBObjectStore.prototype.put; IDBObjectStore.prototype.put = function (...a) {
+  const r = p.apply(this, a); if (window.__guasto) { try { this.transaction.abort(); } catch {} } return r; }; })();`;
+
+/** La prova dal Carteggio, fino al primo esercizio della banca: restituisce il suo testo, o null. */
+async function apriProvaC(tab) {
+  if (!await clic(tab, '[data-v="cart"]') || !await tab.attendi(visibile('#c-start'), REAZIONE)) return null;
+  await clic(tab, '#c-start');
+  const { ok, valore } = await tab.attendiValore(esercizioC, (x) => CARTEGGIO.has(x), REAZIONE);
+  return ok ? valore : null;
+}
+
+/** Consegna a due tocchi, in pagina (specifica §7.6), fino alla correzione. */
+async function consegnaC(tab) {
+  for (let i = 0; i < 4; i++) {
+    await clic(tab, '#c-consegna');
+    if (await tab.attendi(visibile('#c-fine'), 400)) return true;
+  }
+  return false;
+}
+
+const giudizioC = (k, ok) => `#c-fine [data-cs="${k}"][data-ok="${ok ? 1 : 0}"]`;
+const premuto = (sel) => js(`const b = document.querySelector(${q(sel)}); return !!b && b.classList.contains('on');`);
+
+/** Nella scheda, con l'account, una prova aperta e due testi scritti e salvati. Restituisce i due testi, o un rosso. */
+async function provaConTesto(tab, v, g, U, etichetta) {
+  if (!await dentro(tab, U)) {
+    v.push({ gruppo: g, nome: `${etichetta}: si entra nell'account`, ok: false, extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+    return null;
+  }
+  const primo = await apriProvaC(tab);
+  v.push({ gruppo: g, nome: `${etichetta}: con l'account la prova si apre`, ok: !!primo, extra: 'nessun esercizio della banca in #c-testo dopo #c-start' });
+  if (!primo) return null;
+  const testi = [`Lat 42°49,9N Long 010°02,3E ${g}`, `Rv 123° ${g}`];
+  await scriviC(tab, testi[0]);
+  await clic(tab, '#c-next');
+  await tab.attendiValore(esercizioC, (x) => CARTEGGIO.has(x) && x !== primo, REAZIONE);
+  await scriviC(tab, testi[1]);
+  return { testi, primo };
+}
+
+async function c19(b, ctx, v, parte) {
+  // Ogni parte crea i suoi account, e il server ne accetta cinque l'ora per
+  // indirizzo (§6.5): fra una parte e l'altra il suo orologio va avanti, come
+  // fa la corsia fra un gruppo e l'altro.
+  const vuole = (x) => { if (parte && parte !== x) return false; ctx.avanza(2 * 3600 * 1000); return true; };
+  if (vuole('senza')) await fermaAlPrimo(v, (w) => c19senza(b, ctx, w, 'C-19:senza'));
+  if (vuole('ricarica')) await fermaAlPrimo(v, (w) => c19ricarica(b, ctx, w, 'C-19:ricarica'));
+  if (vuole('scadenza')) await fermaAlPrimo(v, (w) => c19scadenza(b, ctx, w, 'C-19:scadenza'));
+  if (vuole('guasto')) await fermaAlPrimo(v, (w) => c19guasto(b, ctx, w, 'C-19:guasto'));
+  if (vuole('giudizio')) await fermaAlPrimo(v, (w) => c19giudizio(b, ctx, w, 'C-19:giudizio'));
+  if (vuole('uscita')) await fermaAlPrimo(v, (w) => c19uscita(b, ctx, w, 'C-19:uscita'));
+  if (vuole('schede')) await fermaAlPrimo(v, (w) => c19schede(b, ctx, w, 'C-19:schede'));
+}
+
+/** Senza account il testo non si scrive da nessuna parte, e dopo una ricarica non c'e' niente da riprendere (ADR-004). */
+async function c19senza(b, ctx, v, g) {
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    await tab.attendi(PRONTO, CARICO);
+    const primo = await apriProvaC(tab);
+    v.push({ gruppo: g, nome: 'senza account la prova si apre', ok: !!primo, extra: 'nessun esercizio della banca in #c-testo dopo #c-start' });
+    const testo = 'Lat 42°50,1N senza account';
+    await scriviC(tab, testo);
+    v.push({ gruppo: g, nome: 'senza account la pagina dice che il testo resta solo finché è aperta', ok: await tab.attendi(testoVisibile(MEMORIA), REAZIONE),
+      extra: `«${MEMORIA}» non si vede con il testo scritto (P-36)` });
+    // Un'assenza: si guarda per tutta la finestra.
+    let trovato = [];
+    for (const fine = Date.now() + OSSERVAZIONE; !trovato.length && Date.now() < fine;) {
+      trovato = personale(await c.conservato(ctx.sito, tab), ctx.api);
+      if (!trovato.length) await pausa(50);
+    }
+    const inviate = tab.richieste.filter((r) => r.url.startsWith(ctx.api));
+    v.push({ gruppo: g, nome: 'senza account il testo scritto nel runner non si scrive da nessuna parte', ok: !trovato.length && !inviate.length,
+      extra: trovato.length ? 'trovato ' + trovato.join(' · ') : 'richieste all\'API: ' + inviate.map((r) => `${r.metodo} ${r.url}`).join(', ') });
+    await tab.ricarica();
+    const pronta = await tab.attendi(PRONTO, CARICO);
+    const niente = pronta && await maiPer(async () => await tab.valuta(testoVisibile(OFFERTA)) || await tab.valuta(testoVisibile(testo)), 1000);
+    v.push({ gruppo: g, nome: 'senza account, dopo una ricarica, nessun lavoro da riprendere', ok: !!niente,
+      extra: !pronta ? 'la palestra non torna pronta dopo la ricarica' : `dopo la ricarica si vede «${OFFERTA}» o il testo scritto` });
+  } finally { await c.chiudi(); }
+}
+
+/** Il difetto di oggi: con l'account una ricarica durante la prova perde il testo. */
+async function c19ricarica(b, ctx, v, g) {
+  const U = await nuovoAccount(ctx, 'c19r');
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    const p = await provaConTesto(tab, v, g, U, 'ricarica');
+    if (!p) return;
+    const [t0, t1] = p.testi;
+    // Il testo si ricarica solo dopo che la pagina ha detto che e' conservato:
+    // e' la promessa del §3.3. Una pagina che non lo dice si ricarica lo stesso,
+    // e il rosso dice tutte e due le cose.
+    const detto = await tab.attendi(testoVisibile(SALVATO), REAZIONE);
+    await tab.ricarica();
+    await tab.attendi(PRONTO, CARICO);
+    const offerta = await tab.attendi(testoVisibile(OFFERTA), CARICO);
+    const riaperta = offerta && await clicca(tab, 'Riapri il lavoro') && await tab.attendiValore(campoC, (x) => x === t1, REAZIONE);
+    const secondo = riaperta && riaperta.ok && await tab.valuta(esercizioC);
+    await clic(tab, '#c-prev');
+    const primoTesto = riaperta && riaperta.ok && (await tab.attendiValore(campoC, (x) => x === t0, REAZIONE)).ok;
+    const ok = detto && !!riaperta && riaperta.ok && secondo !== p.primo && primoTesto;
+    v.push({ gruppo: g, nome: DIFETTO_BOZZA, ok,
+      extra: [!detto && `con il testo scritto la pagina non dice «${SALVATO}»`,
+        !offerta && `dopo la ricarica non compare «${OFFERTA}»: il testo scritto e' perso`,
+        offerta && !(riaperta && riaperta.ok) && `«Riapri il lavoro» non riporta il testo del secondo esercizio (in #c-input ${JSON.stringify(riaperta && riaperta.valore)})`,
+        riaperta && riaperta.ok && secondo === p.primo && 'riaperta non torna all\'esercizio in cui eri',
+        riaperta && riaperta.ok && !primoTesto && 'il testo del primo esercizio non c\'e\' piu\''].filter(Boolean).join('; ') });
+    // Il tempo: la stessa bozza riaperta in una scheda con l'orologio dieci
+    // minuti avanti deve avere circa cinquanta minuti, mai sessanta. Leggerlo
+    // prima e dopo la ricarica non bastava: tutto il giro sta nel primo
+    // secondo della prova, e «60:00» prima e dopo passava per giusto.
+    const dieci = await c.apri(null, { prima: avanti(10 * 60000) });
+    await dieci.vai(ctx.sito + '/app');
+    await dieci.attendi(PRONTO, CARICO);
+    const altrove = await dieci.attendi(testoVisibile(OFFERTA), CARICO) && await clicca(dieci, 'Riapri il lavoro');
+    const { valore: resta } = await dieci.attendiValore(tempoC, (x) => secondiC(x) != null, REAZIONE);
+    const s = secondiC(resta);
+    v.push({ gruppo: g, nome: 'la ripresa non da\' tempo nuovo alla prova', ok: !!altrove && s != null && s <= 50 * 60 + 1 && s > 45 * 60,
+      extra: !altrove ? 'nella seconda scheda il lavoro non si riapre' : `dieci minuti dopo l'avvio restano ${resta} (§3.3: mai 60 minuti nuovi)` });
+    const righe = await nellaCopia(c, ctx, tab, U.chiave);
+    const sulServer = await maiPer(() => ctx.righeDi(U.email) > 0, 1500);
+    v.push({ gruppo: g, nome: 'la bozza non e\' una riga: niente nell\'archivio delle risposte, niente sul server', ok: righe === 0 && sulServer,
+      extra: `righe nella copia ${righe}, sul server ${ctx.righeDi(U.email)}` });
+  } finally { await c.chiudi(); }
+}
+
+/** Una prova scaduta mentre la pagina era chiusa si riapre al confronto, con quello che c'era scritto. */
+async function c19scadenza(b, ctx, v, g) {
+  const U = await nuovoAccount(ctx, 'c19s');
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    const p = await provaConTesto(tab, v, g, U, 'scadenza');
+    if (!p) return;
+    v.push({ gruppo: g, nome: 'scadenza: il testo si dice salvato', ok: await tab.attendi(testoVisibile(SALVATO), REAZIONE), extra: `«${SALVATO}» non compare` });
+    // Un'altra scheda con l'orologio sessantuno minuti avanti: la stessa copia, piu' tardi.
+    const tardi = await c.apri(null, { prima: avanti(61 * 60000) });
+    await tardi.vai(ctx.sito + '/app');
+    await tardi.attendi(PRONTO, CARICO);
+    const offerta = await tardi.attendi(testoVisibile(OFFERTA), CARICO) && await clicca(tardi, 'Riapri il lavoro');
+    const confronto = offerta && await tardi.attendi(js(`return V(document.querySelector('#c-fine')) && document.body.innerText.includes(${q(SCADUTO)});`), REAZIONE);
+    const testi = confronto && await tardi.valuta(js(`const t = document.querySelector('#c-fine').innerText; return ${q(p.testi)}.every((x) => t.includes(x));`));
+    v.push({ gruppo: g, nome: 'oltre la scadenza la prova riaperta va al confronto, con il testo scritto', ok: !!(confronto && testi),
+      extra: !offerta ? `con l'orologio oltre la scadenza non compare «${OFFERTA}» con «Riapri il lavoro»`
+        : !confronto ? `riaperta non mostra #c-fine con «${SCADUTO}»: in schermata ${await tardi.valuta(inSchermata)}` : 'il confronto non porta i testi scritti' });
+    v.push({ gruppo: g, nome: 'scadenza: la prova scaduta non scrive righe da sola', ok: await nellaCopia(c, ctx, tardi, U.chiave) === 0, extra: 'righe nella copia prima del giudizio' });
+  } finally { await c.chiudi(); }
+}
+
+/** Una scrittura che fallisce non dice «salvato», e dice come uscirne; tornata, il testo si salva. */
+async function c19guasto(b, ctx, v, g) {
+  const U = await nuovoAccount(ctx, 'c19g');
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(null, { prima: GUASTO_IDB });
+    await tab.vai(ctx.sito + '/app');
+    const p = await provaConTesto(tab, v, g, U, 'guasto');
+    if (!p) return;
+    await tab.attendi(testoVisibile(SALVATO), REAZIONE);
+    await tab.valuta('window.__guasto = true');
+    await scriviC(tab, p.testi[1] + ' e ancora');
+    const guasto = await tab.attendi(testoVisibile(GUASTO_BOZZA), REAZIONE);
+    const falso = await tab.valuta(testoVisibile(SALVATO));
+    const copia = await tab.valuta(pulsante('Copia i risultati'));
+    v.push({ gruppo: g, nome: 'una scrittura fallita non dice «salvato», e offre di copiare i risultati', ok: guasto && !falso && copia,
+      extra: falso ? `con la scrittura fallita si vede ancora «${SALVATO}»` : !guasto ? `con la scrittura fallita «${GUASTO_BOZZA}» non compare` : '«Copia i risultati» non c\'e\'' });
+    await tab.valuta('window.__guasto = false');
+    await scriviC(tab, p.testi[1] + ' e ancora di nuovo');
+    v.push({ gruppo: g, nome: 'tornata la scrittura, il testo si salva', ok: await tab.attendi(testoVisibile(SALVATO), REAZIONE),
+      extra: `dopo il guasto, con la scrittura di nuovo possibile, «${SALVATO}» non torna` });
+  } finally { await c.chiudi(); }
+}
+
+/** Il giudizio rinviato resta nella bozza e non diventa una riga; concluso, le righe entrano e la bozza sparisce. */
+async function c19giudizio(b, ctx, v, g) {
+  const U = await nuovoAccount(ctx, 'c19j');
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    const p = await provaConTesto(tab, v, g, U, 'giudizio');
+    if (!p) return;
+    const consegnata = await consegnaC(tab);
+    v.push({ gruppo: g, nome: 'giudizio: la consegna apre il confronto', ok: consegnata, extra: '#c-fine non si vede dopo due tocchi su #c-consegna' });
+    await clic(tab, giudizioC(0, true));
+    await clic(tab, giudizioC(1, false));
+    await tab.attendi(premuto(giudizioC(1, false)), REAZIONE);
+    const salvato = await tab.attendi(testoVisibile(SALVATO), REAZIONE);
+    await tab.ricarica();
+    await tab.attendi(PRONTO, CARICO);
+    const riaperta = await tab.attendi(testoVisibile(OFFERTA), CARICO) && await clicca(tab, 'Riapri il lavoro')
+      && await tab.attendi(visibile('#c-fine'), REAZIONE);
+    const tenuti = riaperta && await tab.valuta(premuto(giudizioC(0, true))) && await tab.valuta(premuto(giudizioC(1, false)))
+      && !await tab.valuta(premuto(giudizioC(2, true))) && !await tab.valuta(premuto(giudizioC(2, false)));
+    const righe = await nellaCopia(c, ctx, tab, U.chiave);
+    v.push({ gruppo: g, nome: 'giudicata a meta\', la bozza tiene i giudizi dopo una ricarica e nessuna riga si scrive', ok: salvato && !!tenuti && righe === 0 && ctx.righeDi(U.email) === 0,
+      extra: !salvato ? `con due giudizi dati «${SALVATO}» non compare` : !riaperta ? 'dopo la ricarica il confronto non si riapre' : !tenuti ? 'riaperto, i giudizi dati non sono quelli, o quelli rinviati sono segnati'
+        : `righe nella copia ${righe}, sul server ${ctx.righeDi(U.email)}: il giudizio rinviato e' diventato una riga` });
+    const n = await tab.valuta(js(`return document.querySelectorAll('#c-fine [data-cs][data-ok="1"]').length;`));
+    for (let k = 2; k < n; k++) await clic(tab, giudizioC(k, true));
+    await clic(tab, '#c-salva');
+    const arrivate = await finche(() => ctx.righeDi(U.email) === n + 1, CARICO);
+    const [a, ...altre] = arrivate ? E.attivitaCarteggio(ctx.righeServer(U.email), { tipo: 'c' }) : [];
+    const una = !!a && !altre.length && !a.ambigua && a.fonte === 'sim_uid' && !!a.prova && a.n === n;
+    v.push({ gruppo: g, nome: 'giudicata tutta e salvata, le righe arrivano come un\'attivita\' registrata', ok: una,
+      extra: !arrivate ? `sul server ${ctx.righeDi(U.email)} righe, attese ${n + 1}` : JSON.stringify(a && { n: a.n, fonte: a.fonte, ambigua: a.ambigua, motivi: a.motivi, prova: !!a.prova, altre: altre.length }) });
+    await tab.ricarica();
+    await tab.attendi(PRONTO, CARICO);
+    v.push({ gruppo: g, nome: 'conclusa, la bozza non torna dopo una ricarica', ok: await maiPer(() => tab.valuta(testoVisibile(OFFERTA)), 1500),
+      extra: `dopo la conclusione e una ricarica compare ancora «${OFFERTA}»` });
+  } finally { await c.chiudi(); }
+}
+
+/** «Esci» con del lavoro in corso non lo cancella in silenzio; lo scarto chiede conferma. */
+async function c19uscita(b, ctx, v, g) {
+  const U = await nuovoAccount(ctx, 'c19u');
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    const p = await provaConTesto(tab, v, g, U, 'uscita');
+    if (!p) return;
+    await tab.attendi(testoVisibile(SALVATO), REAZIONE);
+    await esciDa(tab);
+    const detto = await tab.attendi(testoVisibile(USCITA_BOZZA), REAZIONE);
+    const cons = await c.conservato(ctx.sito, tab);
+    v.push({ gruppo: g, nome: 'con del lavoro in corso «Esci» non esce, e lo dice', ok: detto && copieAccount(cons).length === 1 && !richiesteA(tab, 'POST', '/v1/uscita').length,
+      extra: !detto ? `«${USCITA_BOZZA}» non compare: in schermata ${await tab.valuta(inSchermata)}` : `copie ${copieAccount(cons).join(', ') || 'nessuna'}, POST /v1/uscita ${richiesteA(tab, 'POST', '/v1/uscita').length}` });
+    await esc(tab);
+    await tab.ricarica();
+    await tab.attendi(PRONTO, CARICO);
+    const ancora = await tab.attendi(testoVisibile(OFFERTA), CARICO);
+    await clicca(tab, 'Scarta la bozza');
+    const chiede = await tab.attendi(testoVisibile(SCARTO), REAZIONE);
+    await tab.ricarica();
+    await tab.attendi(PRONTO, CARICO);
+    const resta = await tab.attendi(testoVisibile(OFFERTA), CARICO);
+    v.push({ gruppo: g, nome: 'lo scarto chiede conferma, e senza conferma il lavoro resta', ok: ancora && chiede && resta,
+      extra: !ancora ? 'dopo «Esci» e una ricarica il lavoro non e\' piu\' offerto' : !chiede ? `«Scarta la bozza» non chiede «${SCARTO}»` : 'senza conferma, dopo una ricarica il lavoro non c\'e\' piu\'' });
+    await clicca(tab, 'Scarta la bozza');
+    await tab.attendi(testoVisibile(SCARTO), REAZIONE);
+    await clicca(tab, 'Sì, scarta la bozza');
+    await tab.ricarica();
+    await tab.attendi(PRONTO, CARICO);
+    v.push({ gruppo: g, nome: 'scartata con conferma, la bozza non torna', ok: await maiPer(() => tab.valuta(testoVisibile(OFFERTA)), 1500),
+      extra: `dopo lo scarto confermato e una ricarica compare ancora «${OFFERTA}»` });
+  } finally { await c.chiudi(); }
+}
+
+/** Il cambio d'account fra schede: chi esce vede il lavoro dell'altra scheda, e niente di A arriva a B. */
+async function c19schede(b, ctx, v, g) {
+  const A = await nuovoAccount(ctx, 'c19a');
+  const B = await nuovoAccount(ctx, 'c19b');
+  const c = await b.nuovoContesto();
+  try {
+    const t1 = await c.apri(ctx.sito + '/app');
+    const p = await provaConTesto(t1, v, g, A, 'schede');
+    if (!p) return;
+    await t1.attendi(testoVisibile(SALVATO), REAZIONE);
+    const t2 = await c.apri(ctx.sito + '/app');
+    await t2.attendi(nellaPagina('Account'), CARICO);
+    await t2.attendi(js(`return ![...document.querySelectorAll('[aria-modal="true"], dialog[open]')].some(V);`), REAZIONE);
+    await esciDa(t2);
+    const vede = await t2.attendi(testoVisibile(USCITA_BOZZA), REAZIONE);
+    v.push({ gruppo: g, nome: 'la scheda che esce conta il lavoro dell\'altra scheda, e non esce in silenzio', ok: vede && !richiesteA(t2, 'POST', '/v1/uscita').length,
+      extra: !vede ? `«${USCITA_BOZZA}» non compare nella scheda che esce: in schermata ${await t2.valuta(inSchermata)}` : 'e\' partita una POST /v1/uscita' });
+    await clicca(t2, 'Scarta il lavoro ed esci');
+    const uscita = await finche(async () => copieAccount(await c.conservato(ctx.sito, t2)).length === 0, USCITA);
+    const fermo = await t1.attendi(`!(${runnerC})`, REAZIONE);
+    await scriviC(t1, 'scritto dopo l\'uscita');
+    const nonRicrea = await maiPer(async () => copieAccount(await c.conservato(ctx.sito, t1)).length > 0, 1500);
+    v.push({ gruppo: g, nome: 'scartato il lavoro ed uscita, la scheda che lo scriveva si ferma e non ricrea la copia', ok: uscita && fermo && nonRicrea,
+      extra: !uscita ? 'la copia dell\'account non e\' stata cancellata' : !nonRicrea ? 'la scheda ferma ha ricreato una copia dell\'account' : 'il runner dell\'altra scheda e\' ancora aperto' });
+    if (!await dentro(t2, B)) {
+      v.push({ gruppo: g, nome: 'schede: si entra nel secondo account', ok: false, extra: `in schermata: ${await t2.valuta(inSchermata)}` });
+      return;
+    }
+    await scriviC(t1, 'scritto con B dentro');
+    await t2.ricarica();
+    await t2.attendi(PRONTO, CARICO);
+    const pulito = await maiPer(async () => await t2.valuta(testoVisibile(OFFERTA)) || await t2.valuta(testoVisibile(p.testi[0])), 1500);
+    const soloB = copieAccount(await c.conservato(ctx.sito, t2));
+    v.push({ gruppo: g, nome: 'un altro account nella stessa finestra non trova il lavoro del primo', ok: pulito && soloB.length === 1 && soloB[0] === 'rg-account-' + B.chiave,
+      extra: !pulito ? `entrato B, compare «${OFFERTA}» o il testo di A` : `copie ${soloB.join(', ')}` });
+  } finally { await c.chiudi(); }
+}
+
 const GRUPPI = { 'C-01': c01, 'C-02': c02, 'C-03': c03, 'C-04': c04, 'C-05': c05, 'C-06': c06, 'C-07': c07, 'C-08': c08, 'C-09': c09,
-  'C-10': c10, 'C-11': c11, 'C-12': c12, 'C-13': c13, 'C-14': c14, 'C-15': c15, 'C-16': c16, 'C-17': c17 };
+  'C-10': c10, 'C-11': c11, 'C-12': c12, 'C-13': c13, 'C-14': c14, 'C-15': c15, 'C-16': c16, 'C-17': c17, 'C-19': c19 };
 // I gruppi che parlano con l'API: il server accetta una sola origine (§7.3),
 // quindi girano uno alla volta sul sito principale. Gli altri girano in
 // parallelo, ognuno con il suo sito e quindi con la sua origine.
-const CON_API = new Set(['C-05', 'C-04', 'C-06', 'C-07', 'C-08', 'C-09', 'C-10', 'C-11', 'C-12', 'C-13', 'C-14', 'C-15', 'C-16', 'C-17']);
+const CON_API = new Set(['C-05', 'C-04', 'C-06', 'C-07', 'C-08', 'C-09', 'C-10', 'C-11', 'C-12', 'C-13', 'C-14', 'C-15', 'C-16', 'C-17', 'C-19']);
 const SOLO_ALTRE = new Set(['C-14']);
 const usaApi = (gr) => CON_API.has(gr.split(':')[0]);
 
