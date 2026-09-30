@@ -964,6 +964,35 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   Guardiano e controllo della documentazione verdi. `site/` e
   `docs/prossime-sessioni.md` non sono stati toccati.
 
+### Realizzato — P-23: Progressi è una mappa per tema
+
+- **La diagnosi a due tabelle e «Cosa studiare adesso» escono.** Progressi usa
+  `quadro()` e `dovePesa()` attraverso il raccordo di P-44: otto temi base in
+  ordine stabile, voci della banca nel dettaglio, tre stati dell'ultima
+  risposta, primo tentativo solo sopra soglia e tre voci vela senza peso.
+  Dove la frase manca — anche per `pari` — la mappa resta e non compare un
+  consiglio sostitutivo. L'anteprima conta la stessa lista che Inizia passa al
+  runner, senza il tetto implicito di 20; se i dati cambiano, ferma l'avvio.
+  Prove, andamento da `serieGruppi()` e sessioni con confine dell'attività
+  sono sezioni distinte. In `docs/eccezioni-interfaccia.md` `consigli()` passa
+  agli orfani perché esce dalla pagina; `quadro()` e `dovePesa()` entrano fra
+  le chiamate protette; `diagnosi()` esce, `serieGruppi()` resta.
+
+- **Collaudo guardato in Chrome a 375 e 1280 px, anonimo e con account.**
+  Con dettaglio aperto e 25 risposte, `scrollWidth` della pagina è 375 su 375
+  e 1265 su 1280; eccedenza massima delle 52 schede: 0 px. Le vecchie tabelle
+  che sforavano di 89 px sono state sostituite da schede verticali. Vista la
+  frase presente, la legenda e «25 su 25 giusti al primo tentativo»; con 25
+  risposte nei COLREG la frase è assente per `pari` e restano 8 temi. Cliccando
+  «Prova 155 mai visti», anteprima e runner aprono 155 quesiti; il ritorno
+  ripristina Progressi e il focus. Nessuna eccezione nella console.
+
+  Suite: motore **167/169** (2 skip previsti), server **60/60** con Node 25.3
+  e Node 24.21.0 LTS (pacchetto già presente, impronta corrispondente a
+  `SHASUMS256.txt`), dati **242**, interfaccia **1.329**, specifica **572**.
+  Guardiano, verifica del carteggio e controllo della documentazione verdi.
+  Nessuna versione modificata; `docs/prossime-sessioni.md` non toccato.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag
