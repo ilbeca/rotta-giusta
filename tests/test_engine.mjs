@@ -1827,6 +1827,130 @@ test('epoca e ordinaRighe: due formati di ts, un ordine solo', () => {
   assert.deepEqual(ordinaRighe(righe).map((r) => r.uid), ['x', 'a', 'b', 'c']);
 });
 
+// --- L'ultimo tag di un tentativo (P-17) -------------------------------------
+//
+// Da P-01 ritaggare N/L/C **aggiunge** una riga `_t:'g'` con la sua data, e non
+// cancella le precedenti: l'archivio resta append-only, e l'unione per `uid`
+// con un'altra copia non puo' far tornare un tag vecchio. Quale tag vale lo
+// decideva `tagPerTentativo()` in app.html, senza un test. Ora la regola sta
+// qui: per istante, i tag storici senza data prima, l'ordine dell'archivio a
+// parita' di istante.
+
+/** Una riga di tag. `ts` omesso = un tag storico, scritto senza data. */
+const tagRiga = (uid, attempt, tag, ts) =>
+  ({ _t: 'g', uid, attempt_uid: attempt, tag, ...(ts === undefined ? {} : { ts }) });
+
+test('tagPerTentativo: un ritag aggiunge una riga, e vale l ultima', () => {
+  const righe = [
+    { _t: 'q', uid: 'r1', item_id: 'base-1', ts: '2026-09-26T10:00:00+02:00', correct: 0, ms: 9000 },
+    tagRiga('g1', 'r1', 'N', '2026-09-26T10:00:05+02:00'),
+    tagRiga('g2', 'r1', 'L', '2026-09-26T10:00:09+02:00'),
+    tagRiga('g3', 'r2', 'N', '2026-09-26T10:01:00+02:00'),
+    tagRiga('g4', 'r1', 'C', '2026-09-26T10:05:00+02:00'),
+  ];
+  const t = E.tagPerTentativo(righe);
+  assert.equal(t.r1, 'C', 'il ritag dal riepilogo vince sui due di prima');
+  assert.equal(t.r2, 'N', 'un altro tentativo non risente del ritag');
+  assert.deepEqual(Object.keys(t).sort(), ['r1', 'r2'], 'solo i tentativi con un tag');
+  // Le righe restano tutte: la funzione legge, non riscrive l'archivio.
+  assert.equal(righe.length, 5);
+  assert.deepEqual({ ...E.tagPerTentativo([]) }, {});
+  assert.deepEqual({ ...E.tagPerTentativo(undefined) }, {});
+});
+
+test('tagPerTentativo: i tag storici senza data vengono prima di quelli datati', () => {
+  // Prima di P-01 i tag nascevano senza `ts`, e ritaggare cancellava la riga
+  // vecchia. Un archivio di allora, unito a uno di adesso, ha il tag storico
+  // **dopo** quello datato nell'ordine dell'archivio: non deve vincere lui.
+  const righe = [
+    tagRiga('g1', 'r1', 'L', '2026-09-26T10:00:00+02:00'),
+    tagRiga('g2', 'r1', 'N'),
+    tagRiga('g3', 'r2', 'N'),
+    tagRiga('g4', 'r2', 'C'),   // due storici: decide l'ordine dell'archivio
+  ];
+  const t = E.tagPerTentativo(righe);
+  assert.equal(t.r1, 'L', 'un tag storico senza data ha scavalcato quello datato');
+  assert.equal(t.r2, 'C', 'fra due tag storici vale l ultimo dell archivio');
+});
+
+test('tagPerTentativo: date miste UTC e offset locale si confrontano per istante', () => {
+  // Fino alla 0.4.5 le righe erano in UTC con la Z, poi con l'offset locale.
+  // Come stringhe «08:30Z» viene prima di «10:00+02:00», come istanti dopo.
+  const righe = [
+    tagRiga('g1', 'r1', 'C', '2026-09-26T08:30:00Z'),        // 10:30 a Roma
+    tagRiga('g2', 'r1', 'N', '2026-09-26T10:00:00+02:00'),   // 08:00Z: prima
+    tagRiga('g3', 'r2', 'N', '2026-09-26T10:00:00.000+02:00'),
+    tagRiga('g4', 'r2', 'L', '2026-09-26T07:59:59Z'),        // 09:59:59 a Roma: prima
+  ];
+  const t = E.tagPerTentativo(righe);
+  assert.equal(t.r1, 'C', 'ordinati come stringhe, non come istanti');
+  assert.equal(t.r2, 'N', 'ordinati come stringhe, non come istanti');
+});
+
+test('tagPerTentativo: allo stesso istante decide l ordine dell archivio', () => {
+  const righe = [
+    tagRiga('g1', 'r1', 'N', '2026-09-26T10:00:00+02:00'),
+    tagRiga('g2', 'r1', 'L', '2026-09-26T08:00:00Z'),   // lo stesso istante
+    tagRiga('g3', 'r2', 'L', '2026-09-26T08:00:00.000Z'),
+    tagRiga('g4', 'r2', 'N', '2026-09-26T10:00:00+02:00'),
+  ];
+  const t = E.tagPerTentativo(righe);
+  assert.equal(t.r1, 'L');
+  assert.equal(t.r2, 'N');
+});
+
+test('tagPerTentativo: una riga che l archivio non accetterebbe non decide un tag', () => {
+  // La regola e' `validaRiga()`, la stessa dell'import: un tag fuori da N/L/C,
+  // senza tentativo o con una data rotta non sovrascrive quello buono, e non
+  // crea una chiave «undefined». Nemmeno le righe di altri tipi contano.
+  const righe = [
+    tagRiga('g1', 'r1', 'L', '2026-09-26T10:00:00+02:00'),
+    tagRiga('g2', 'r1', 'X', '2026-09-26T10:05:00+02:00'),
+    tagRiga('g3', 'r1', 'N', 'boh'),
+    { _t: 'g', uid: 'g4', tag: 'C', ts: '2026-09-26T10:06:00+02:00' },
+    { _t: 'q', uid: 'r1', item_id: 'base-1', attempt_uid: 'r1', tag: 'C', correct: 0, ms: 1,
+      ts: '2026-09-26T10:07:00+02:00' },
+    tagRiga('g5', '__proto__', 'N', '2026-09-26T10:08:00+02:00'),
+  ];
+  const t = E.tagPerTentativo(righe);
+  assert.equal(t.r1, 'L', 'una riga rotta ha sovrascritto il tag buono');
+  assert.ok(!('undefined' in t), 'un tag senza tentativo ha creato una chiave');
+  assert.equal(t.__proto__, 'N', 'un uid qualunque e\' una chiave come le altre');
+  assert.deepEqual(Object.keys(t).sort(), ['__proto__', 'r1']);
+});
+
+test('tagPerTentativo: il motore sceglie lo stesso tag della pagina', (t) => {
+  // Come per `daAllenare()` e `componiProva()`: finche' la copia vive in
+  // app.html la eseguiamo davvero — estratta dal file, non trascritta — e
+  // pretendiamo lo stesso tag per ogni tentativo. Quando la pagina passera' a
+  // `E.tagPerTentativo()` la copia sparira' e il test si mettera' da parte da
+  // solo. Sulle righe che l'archivio accetta: su quelle rotte il motore e' piu'
+  // stretto, di proposito (test qui sopra).
+  const src = readFileSync(new URL('../site/app.html', import.meta.url), 'utf8');
+  const m = src.match(/^function tagPerTentativo\(\) \{[\s\S]*?^\}/m);
+  if (!m) return t.skip('app.html non ha piu una sua tagPerTentativo(): ora chiama il motore');
+  const casi = [
+    [tagRiga('a', 'r1', 'N', '2026-09-26T10:00:05+02:00'), tagRiga('b', 'r1', 'L', '2026-09-26T10:00:09+02:00')],
+    [tagRiga('a', 'r1', 'L', '2026-09-26T10:00:00+02:00'), tagRiga('b', 'r1', 'N'), tagRiga('c', 'r2', 'N'), tagRiga('d', 'r2', 'C')],
+    [tagRiga('a', 'r1', 'C', '2026-09-26T08:30:00Z'), tagRiga('b', 'r1', 'N', '2026-09-26T10:00:00+02:00')],
+    [tagRiga('a', 'r1', 'N', '2026-09-26T10:00:00+02:00'), tagRiga('b', 'r1', 'L', '2026-09-26T08:00:00Z')],
+  ];
+  // e un archivio piu' grande, con righe di quiz in mezzo, in un ordine rimescolato
+  const grande = [];
+  for (let i = 0; i < 120; i++) {
+    const at = `r${i % 17}`, min = String(i % 60).padStart(2, '0');
+    if (i % 5 === 0) grande.push({ _t: 'q', uid: `q${i}`, item_id: 'base-1', correct: 0, ms: 1, ts: `2026-09-26T09:${min}:00+02:00` });
+    else if (i % 7 === 0) grande.push(tagRiga(`g${i}`, at, 'NLC'[i % 3]));
+    else if (i % 2) grande.push(tagRiga(`g${i}`, at, 'NLC'[i % 3], `2026-09-26T0${7 + (i % 2)}:${min}:00Z`));
+    else grande.push(tagRiga(`g${i}`, at, 'NLC'[i % 3], `2026-09-26T10:${min}:00+02:00`));
+  }
+  casi.push(rimescola(grande, 7));
+  for (const [i, archivio] of casi.entries()) {
+    const pagina = new Function('S', 'E', `${m[0]}\nreturn tagPerTentativo;`)({ archivio }, E)();
+    assert.deepEqual({ ...E.tagPerTentativo(archivio) }, { ...pagina }, `caso ${i}: la pagina e il motore scelgono tag diversi`);
+  }
+});
+
 test('ripiega: dalle righe lo stesso specchio che applica() costruisce una alla volta', () => {
   const righe = [
     { _t: 'q', uid: '1', item_id: 'base-1', ts: '2026-08-08T10:00:00+02:00', correct: 0, ms: 9000 },

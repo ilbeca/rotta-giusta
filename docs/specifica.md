@@ -1265,6 +1265,8 @@ colonna: «scoperto, perché …» è una risposta accettabile, «—» no.
 | R-ARCH-10 | Le figure scaricate per l'offline sopravvivono a un rilascio, nella cache nuova e senza un secondo download | `test_engine.mjs::sw.js: le figure scaricate sopravvivono a un rilascio` |
 | R-ARCH-11 | Da un rilascio all'altro passano solo le figure: la banca e le pagine vengono dalla rete | `test_engine.mjs::sw.js: da un rilascio all` |
 | R-ARCH-12 | `strumenti/serve.py` risponde come l'host di produzione misurato: codici, assenza di redirect, 404, `Cache-Control` da `_headers` | `test_dati.py::test_serve` |
+| R-ARCH-13 | Di un tentativo vale l'ultimo tag N/L/C, per istante: i tag storici senza data prima di ogni tag datato, UTC e offset locale confrontati come istanti, l'ordine dell'archivio a parità di istante — e un ritag aggiunge una riga, non cancella quella di prima | `test_engine.mjs::tagPerTentativo: i tag storici senza data vengono prima di quelli datati` |
+| R-ARCH-14 | Una riga di tag che `validaRiga()` rifiuterebbe — tag fuori da N/L/C, senza tentativo, data rotta — non sovrascrive il tag buono di un tentativo | `test_engine.mjs::tagPerTentativo: una riga che l archivio non accetterebbe non decide un tag` |
 
 ### 9.3 La selezione
 
@@ -2317,3 +2319,10 @@ successo, ed è il motivo per cui questo file esiste.
   conta le risposte misurate e non quelle viste: R-TEMPO-05 e 07 tornano veri
   senza cambiare testo, e i nuovi R-TEMPO-09…12 tengono fermo il caso. Il
   `ritmo()` entra nella tabella delle soglie del §4.3, dove mancava.
+- **30 settembre 2026 — l'ultimo tag, nel motore (P-17).** Da P-01 ritaggare
+  aggiunge una riga e la pagina sceglieva l'ultima con una funzione sua,
+  `tagPerTentativo()`, che nessun test esercitava. La regola sta ora nel motore
+  con lo stesso nome, e un test tiene la copia della pagina identica sulle
+  righe che l'archivio accetta finché la pagina non la ricabla; su quelle rotte
+  il motore è più stretto. Entrano R-ARCH-13 e 14, coperti. La funzione è fra
+  gli orfani dichiarati fino a P-52, o alla prossima penna su `app.html`.

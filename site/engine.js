@@ -1259,6 +1259,29 @@ export function ordinaRighe(righe) {
 }
 
 /**
+ * La classificazione N/L/C che vale per ogni tentativo: `{attempt_uid: tag}`,
+ * con i soli tentativi che ne hanno una.
+ *
+ * Ritaggare **aggiunge** una riga `_t:'g'` e non cancella le precedenti (P-01):
+ * l'archivio resta append-only, cosi' l'unione per `uid` con un'altra copia non
+ * puo' far tornare un tag vecchio. Vale l'ultima riga nell'ordine di
+ * `ordinaRighe()`: per istante, quindi UTC e offset locale si confrontano come
+ * istanti e non come stringhe; i tag storici, scritti senza data prima di P-01,
+ * vengono prima di ogni tag datato; a parita' di istante decide l'ordine
+ * dell'archivio.
+ *
+ * Una riga che `validaRiga()` rifiuterebbe non decide niente: un tag fuori da
+ * N/L/C, senza tentativo o con una data rotta non sovrascrive quello buono.
+ * Fino a P-17 la regola stava in `tagPerTentativo()` di app.html, senza test.
+ */
+export function tagPerTentativo(righe) {
+  const tags = Object.create(null);
+  const buone = (righe || []).filter((r) => r && r._t === 'g' && validaRiga(r) === null);
+  for (const r of ordinaRighe(buone)) tags[r.attempt_uid] = r.tag;
+  return tags;
+}
+
+/**
  * Lo specchio dalle righe: `{ quiz, tecnica, carteggio }`, ciascuno
  * `{item_id: {n, c, first, s, lw, k, t, avg}}`.
  *

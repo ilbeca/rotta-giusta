@@ -1941,6 +1941,53 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   lanciato. `site/app.html`, `docs/prossime-sessioni.md` e il worktree `ui` non
   sono stati toccati.
 
+### Spostato — P-17: l'ultimo tag di un tentativo, nel motore
+
+- **Quale classificazione N/L/C vale lo decideva la pagina, senza un test.**
+  Da P-01 ritaggare aggiunge una riga `_t:'g'` con la sua data invece di
+  cancellare la vecchia, e `tagPerTentativo()` in `app.html` sceglieva l'ultima
+  con `E.ordinaRighe()`. Era una regola sulle righe dell'archivio — cioè lavoro
+  del motore — e `tests/` non poteva raggiungerla: i controlli di P-01 erano
+  rimasti nella sessione, fuori dalla suite. Ora `tagPerTentativo(righe)` sta in
+  `site/engine.js`, con lo stesso nome, e restituisce `{attempt_uid: tag}`: per
+  istante, quindi UTC e offset locale confrontati come istanti; i tag storici
+  scritti senza data prima di ogni tag datato; l'ordine dell'archivio a parità
+  di istante.
+
+- **Una differenza, voluta e dichiarata.** Una riga che `validaRiga()`
+  rifiuterebbe — tag fuori da N/L/C, senza tentativo, data rotta — nel motore
+  non decide niente; la copia della pagina la prenderebbe per buona, e un tag
+  «X» arrivato dopo sovrascriverebbe il tag giusto, o un tag senza tentativo
+  creerebbe la chiave `undefined`. Nell'archivio di oggi righe così non entrano
+  — l'import e il server le scartano con la stessa regola —, quindi il
+  comportamento visibile non cambia; ma la regola sola è quella che non dipende
+  da chi ha scritto la riga.
+
+- **La pagina non è stata toccata**, ed è il recinto a volerlo. Finché la sua
+  copia esiste, un test la estrae da `app.html`, la esegue e pretende lo stesso
+  tag del motore su cinque archivi — fra cui 120 righe rimescolate con quiz,
+  storici, UTC e offset —; quando la pagina chiamerà `E.tagPerTentativo()` il
+  test si metterà da parte da solo, come quelli di `daAllenare()` e
+  `componiProva()`. La funzione è fra gli orfani dichiarati in
+  `docs/eccezioni-interfaccia.md`, con chi la ricabla: P-52, o la prossima penna
+  su `app.html`. Tolta quella riga, il controllo sugli orfani è rosso e la nomina.
+
+- **Prima il test che fallisce:** sei test nuovi, rossi uno per uno per la
+  funzione che mancava. **Provati al contrario su otto rotture**, una per volta,
+  tutte rosse nel loro test: l'ordine per stringa invece che per istante,
+  l'ordine dell'archivio, i tag storici in fondo invece che in testa, il primo
+  tag che vince sull'ultimo, il pari istante rovesciato, `validaRiga()` tolta,
+  il filtro sul tipo tolto, un oggetto con il prototipo al posto di uno vuoto.
+  Specifica: R-ARCH-13 e 14, coperti.
+
+  Suite: motore **195/197** con i due skip di sempre (erano 189/191); dati 242;
+  specifica **782** (erano 774); interfaccia **1.876** (erano 1.873: le tre
+  verifiche dell'orfano nuovo), in 188 s; server 60/60. Con la **24.21.0 LTS**,
+  archivio verificato contro `SHASUMS256.txt` riscaricato da nodejs.org: server
+  60/60, motore 195/197. Guardiano verde. Prima del giro dell'interfaccia la
+  8620 guardata libera; nessun carico di prova lanciato. `site/app.html`,
+  `docs/prossime-sessioni.md` e il worktree `ui` non sono stati toccati.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag

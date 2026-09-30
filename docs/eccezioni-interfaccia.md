@@ -58,6 +58,7 @@ dichiarazione che mente.
 | `riprendiBozza` | La ripresa dopo una ricarica: la scadenza di prima, e una prova scaduta al confronto con il testo scritto (P-34). La consuma P-21 insieme a `nuovaBozza` |
 | `concludiBozza` | Le righe finali di una bozza giudicata tutta, con lo schema di D-02 e gli uid che nascono dalla bozza; con un giudizio rinviato nessuna riga (P-34). La sostituisce, in P-21, la costruzione delle righe in `salvaCart()`, e allora questa riga esce da qui |
 | `dettaglioCarteggio` | Schede, conteggi — coincidenti e da rivedere, scelte non coincidenti, campi vuoti e non registrati, non affrontati — e filtro della revisione di carta e tecniche, dalla stessa fonte (P-33, D-02). Oggi la revisione di una prova di carteggio filtra le righe in `apriRivedi()`; la sostituisce la realizzazione dell'area 4 (P-21), e allora questa riga esce da qui |
+| `tagPerTentativo` | L'ultima classificazione N/L/C di ogni tentativo, per istante, con i tag storici senza data prima e le righe rotte ignorate (P-17, R-ARCH-13 e 14). La pagina la calcola ancora con la sua `tagPerTentativo()`, che un test del motore tiene uguale sulle righe che l'archivio accetta. La ricabla P-52, o la prossima penna su `app.html`: la revisione chiama `E.tagPerTentativo(S.archivio)`, la copia esce dalla pagina e questa riga esce da qui, nello stesso commit, con il nome aggiunto alle chiamate protette. `ordinaRighe` resta protetta: la pagina la chiama anche altrove |
 
 ## Chiamate al motore protette
 
