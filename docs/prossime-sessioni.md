@@ -1181,7 +1181,7 @@ docs/prossime-sessioni.md.
 
 ### P-16 — Claude: `ritmo()` dice «orologio» anche senza orologio
 
-**Stato:** **in corso dal 30 settembre 2026**, lanciato dalla regia (punto 8) — pronto: P-30 è chiuso, e ha lasciato un test che P-16 deve tenere verde. **Dove:** Claude Code,
+**Stato:** **chiuso il 30 settembre 2026**, commit `be44fe6` su `main`, lanciato dalla regia (punto 8). Prima era: pronto: P-30 è chiuso, e ha lasciato un test che P-16 deve tenere verde. **Dove:** Claude Code,
 `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** il resoconto
 di P-05.
 
@@ -1211,11 +1211,23 @@ Non toccare docs/prossime-sessioni.md. Suite verdi, voce in fondo a
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `be44fe6`, voce nel CHANGELOG. Elencati prima i chiamanti di
+`ritmo()`, `sessioni()` e `stimaImpegno()`. Nel motore: la `durata` di una
+sessione senza orologio è `null`, non `ms`; `ritmo()` misura solo le sessioni
+che l'orologio misura e dice quante in `misurate`; `MIN_MISURATE` si confronta
+con le risposte misurate. Quattro test scritti prima, cinque rotture rosse; i
+test di P-30 e P-33 restano verdi. `ritmo()` entra nella tabella delle soglie
+del §4.3; nuovi R-TEMPO-09…12. **Trovato:** una seconda metà del difetto —
+anche con l'orologio, `affidabile` contava le risposte viste e non le misurate,
+e il Percorso, che non filtrava, era esposto; R-TEMPO-05 era falso sulle righe
+senza data e il suo controllo non lo vedeva: ora è vero col testo di prima. Il
+filtro sulle date prima di `E.ritmo()` nell'anteprima dei Quiz è ora superfluo:
+va a P-52. Controllato dalla regia: motore 189/191, server 60/60, dati 242,
+specifica 774, guardiano verde, interfaccia 1.873 in 188 s.
 
 ### P-17 — Claude: l'ultimo tag di una risposta, nel motore
 
-**Stato:** delegato alla regia, che lo lancia dopo P-45 (punto 8) — pronto quando la cartella principale è libera. **Dove:** Claude Code,
+**Stato:** **in corso dal 30 settembre 2026**, lanciato dalla regia (punto 8) — pronto quando la cartella principale è libera. **Dove:** Claude Code,
 `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** l'esito di
 P-01, che lo lasciava scritto come difetto di copertura.
 
@@ -2733,7 +2745,9 @@ Nello stesso lavoro, se P-21 non l'ha già fatto, togli il codice morto
 che P-12 e P-47 hanno trovato: il selettore globale «solo mai fatte»
 non ha più un interruttore, quindi S.prep è sempre falso, e sono morti
 dipingiPrep(), quotaPrep(), #c-prep, i rami «S.prep ?» e il CSS .prep
-(voce «Test — P-12» del CHANGELOG); e il CSS di .cons (voce P-47).
+(voce «Test — P-12» del CHANGELOG); il CSS di .cons (voce P-47); e il
+filtro sulle righe con ts prima di E.ritmo() nell'anteprima dei Quiz,
+superfluo da quando il motore se ne difende da sé (voce P-16).
 
 Non toccare docs/prossime-sessioni.md. Tutte le suite verdi, collaudo
 guardato con la rete spenta e con una rete lenta, voce in fondo a
@@ -3096,3 +3110,6 @@ la nota in testa a `docs/filosofia.md`, che lo dice di sé (P-26).
   la prossima penna di ChatGPT su `app.html` dopo P-21.
 - **30 settembre 2026 — P-37 chiuso, P-16 lanciato.** Il ciclo dei quiz ha un
   regime solo. R-UX-06 resta scoperto: nasce il segnaposto P-53, non urgente.
+- **30 settembre 2026 — P-16 chiuso, P-17 lanciato.** `ritmo()` non dice più
+  «orologio» senza orologio, e il difetto aveva una seconda metà, chiusa anche
+  lei. La pulizia del filtro in pagina va a P-52.
