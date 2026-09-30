@@ -200,20 +200,19 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 18 | Il carteggio su `main`: composizione, attività intera, bozza, controlli | Claude | `main`, a mano | niente: P-32 apre la fila | P-32…P-35 |
+| 18 | Il carteggio su `main`: composizione, attività intera, bozza, controlli — **P-32 in corso**, lanciato dalla regia | Claude | `main`, a mano | niente: P-32 apre la fila | P-32…P-35 |
 | 6d, 5b, 12, 13 | Il regime vecchio del ciclo e dei quiz, `ritmo()`, l'ultimo tag | Claude | `main`, a mano | niente: riempiono i buchi | P-37, P-12, P-16, P-17 |
 | 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore | P-15 |
 | 28 | I controlli e la specifica dell'area 6 | Claude | `main`, a mano | in fondo all'ordine | P-45 |
-| 30b | Il controllo di R-ACC-66 sulla pagina vera | Claude | `main`, a mano | niente — **pronto**, prima del traguardo | P-49 |
 | 21b | La realizzazione dell'area 4 | ChatGPT | `ui/main` | P-35 | segnaposto P-21 |
 | 26b | La realizzazione dell'area 6 | ChatGPT | `ui/main` | P-45, P-21, e il §8 dell'area 6 | segnaposto P-25 |
-| 9 | **La versione con gli account** — il traguardo | tutti | `main` | P-15, P-49, e gli adempimenti del §4 | segnaposto P-27 |
+| 9 | **La versione con gli account** — il traguardo | tutti | `main` | P-15, e gli adempimenti del §4 | segnaposto P-27 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**, e si sono incontrate: il client degli
 account è nella pagina (P-18), e Progressi è la mappa (P-23). **Per Claude,
-l'ordine consigliato: P-49** (sta sulla strada del traguardo), **P-32…P-35**
-(sbloccano P-21), P-45, poi i piccoli; P-15 quando l'autore ha il tempo. **Per
+l'ordine consigliato: P-32…P-35** (sbloccano P-21), lanciati dalla regia uno
+dopo l'altro (punto 8), P-45, poi i piccoli; P-15 quando l'autore ha il tempo. **Per
 ChatGPT non c'è niente di pronto** finché P-35 non chiude: poi P-21. I prompt di Claude vanno uno alla volta nella cartella principale, e
 la suite dell'interfaccia di un worktree esclude quella dell'altro, per la porta
 8620. Il numero di una riga è il suo nome, non la sua posizione. Il traguardo,
@@ -1544,7 +1543,7 @@ documento. Controllato dalla regia: territori puliti, merge chiusa da sola.
 
 ### P-32 — Claude: la composizione della prova di carteggio, nel motore
 
-**Stato:** pronto: P-31 e P-29 sono chiusi. Apre la fila del carteggio, P-32 → P-33 → P-34 → P-35. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-20, §10.1 di `docs/area-4-progetto.md`.
+**Stato:** **in corso dal 30 settembre 2026**, lanciato dalla regia (punto 8). Apre la fila del carteggio, P-32 → P-33 → P-34 → P-35. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-20, §10.1 di `docs/area-4-progetto.md`.
 
 ```
 Questo prompt è per Claude Code, nella cartella principale
@@ -1573,7 +1572,7 @@ docs/prossime-sessioni.md.
 
 ### P-33 — Claude: l'attività intera anche per carteggio e tecniche
 
-**Stato:** in attesa di P-32. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-20, §10.1 di `docs/area-4-progetto.md`.
+**Stato:** in attesa di P-32; lo lancia la regia (punto 8). **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-20, §10.1 di `docs/area-4-progetto.md`.
 
 ```
 Questo prompt è per Claude Code, nella cartella principale
@@ -1603,7 +1602,7 @@ docs/prossime-sessioni.md.
 ### P-34 — Claude: la bozza del carteggio, e la promessa «a ogni tasto»
 
 **Stato:** **fermato dall'autore il 26 settembre 2026, da rilanciare in Claude
-dopo P-33.** Era partito fuori ordine in ChatGPT, nella cartella principale.
+dopo P-33**; lo lancia la regia (punto 8). Era partito fuori ordine in ChatGPT, nella cartella principale.
 Il suo lavoro non committato — un controllo rosso del difetto, un raccordo
 IndexedDB di riferimento, un banco che guida Chrome headless senza dipendenze,
 e il raccordo documentale per il progetto del client — l'ha spostato la regia
@@ -1647,7 +1646,7 @@ docs/prossime-sessioni.md.
 
 ### P-35 — Claude: i controlli del carteggio, allineati all'area 4
 
-**Stato:** in attesa di P-34. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-20, §10.1 di `docs/area-4-progetto.md`.
+**Stato:** in attesa di P-34; lo lancia la regia (punto 8). **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-20, §10.1 di `docs/area-4-progetto.md`.
 
 ```
 Questo prompt è per Claude Code, nella cartella principale
@@ -2370,7 +2369,7 @@ CHANGELOG; il controllo di R-ACC-66 sulla pagina vera è P-49.
 
 ### P-49 — Claude: il controllo di R-ACC-66 sulla pagina vera
 
-**Stato:** pronto: P-48 è fuso. Prima del traguardo. **Dove:** Claude Code,
+**Stato:** **chiuso il 30 settembre 2026**, commit `b9face5` su `main`; lanciato dalla regia (punto 8). **Dove:** Claude Code,
 `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** i resoconti
 di P-46 e P-48.
 
@@ -2400,7 +2399,20 @@ verdi su più giri, voce in fondo a [Unreleased], un commit. Chiudi con
 il resoconto di docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `b9face5`, voce nel CHANGELOG. In `C-13:scarica` e
+`C-08:cancella`, dopo il clic senza spunta il banco guarda per 1,5 s che copia
+e server non cambino, poi che la finestra `aria-modal` nomini la casella che
+manca in quello che si vede — nell'`innerText`, più volte che nella sola
+etichetta. Undici rotture nuove della pagina di riferimento, ognuna rossa per il
+suo motivo; nuovo `test_client_conferma_mancante`; R-ACC-66 coperto. La pagina di
+prima di P-48 è rossa sulle due verifiche del messaggio, e solo lì. Il banco è
+stato provato contro sé stesso: con `textContent` passano le rotture nascoste,
+e la difesa «dentro la finestra» non la esercitava nessuna rottura finché non
+ne è entrata una apposta. Non vede la vicinanza alla casella, l'annuncio, il
+contrasto, un testo reso invisibile con `opacity` o col colore del fondo:
+restano a R-ACC-60 e R-A11Y-03 (§12 del progetto del client). Controllato dalla
+regia: motore 160/162, server 60/60, dati 242, specifica 586, guardiano verde,
+interfaccia 1.433 in 149 s; nessun `yes` rimasto vivo.
 
 ---
 
@@ -2436,7 +2448,7 @@ progetto chiuse prima da Claude come P-06, P-31, P-35, P-44.
 
 #### P-27 — la regia, con tutti: il traguardo
 
-**Aspetta:** P-15, P-49, e gli adempimenti del §15.4 di
+**Aspetta:** P-15, e gli adempimenti del §15.4 di
 `account-progetto.md` chiusi dall'autore. **Dove:** `main`. **Dovrà
 contenere:** la merge di tutto; il rilascio come dice `AGENTS.md` — numero nei
 tre posti, voce, tag, push chiesto, «Build now» — **più il server**, aggiornato
@@ -2694,3 +2706,6 @@ la nota in testa a `docs/filosofia.md`, che lo dice di sé (P-26).
 - **30 settembre 2026 — la regia lancia la fila.** L'autore ha delegato alla
   regia P-49 e P-32…P-35, da lanciare come sotto-sessioni una dopo l'altra con
   i passi della regia in mezzo: scritto come punto 8 di «Come si usa».
+- **30 settembre 2026 — P-49 chiuso, P-32 lanciato.** Primo della fila
+  delegata: il resoconto torna con il repo e con le suite. Il traguardo aspetta
+  ora solo P-15 e gli adempimenti.
