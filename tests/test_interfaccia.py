@@ -863,7 +863,12 @@ GRUPPI_CLIENT = ['C-01', 'C-02', 'C-03', 'C-04', 'C-05', 'C-06', 'C-07', 'C-08',
 # riferimento: meno vuol dire che il giro si e' fermato prima e che una parte
 # dei controlli non e' stata eseguita, cioe' un verde a copertura parziale.
 VERIFICHE_CLIENT = {'C-01': 33, 'C-02': 15, 'C-03': 11, 'C-04': 20, 'C-05': 13, 'C-06': 15, 'C-07': 17, 'C-08': 18,
-                    'C-09': 13, 'C-10': 10, 'C-11': 8, 'C-12': 9, 'C-13': 8, 'C-14': 3, 'C-15': 12, 'C-16': 23, 'C-17': 10}
+                    'C-09': 13, 'C-10': 10, 'C-11': 8, 'C-12': 9, 'C-13': 8, 'C-14': 3, 'C-15': 12, 'C-16': 23, 'C-17': 10,
+                    'C-13:scarica': 6, 'C-08:cancella': 7, 'C-15:segnali': 7}
+# Le tre scelte che fino a P-46 nessun gruppo premeva (R-ACC-63): sono parti dei
+# loro gruppi, e girano con loro, ma le verifiche portano il nome della parte e
+# hanno un controllo ciascuna, cosi' la specifica le nomina una per una.
+SCELTE_CLIENT = ['C-13:scarica', 'C-08:cancella', 'C-15:segnali']
 # Le verifiche delle attivita' oltre il Percorso, in C-01: R-ACC-04 le chiede tutte.
 ATTIVITA_CLIENT = ['Quiz per argomento: ', 'Simulazione: ', 'Che tecnica serve?: ', 'Carteggio: ', 'Segnali: ']
 
@@ -1085,7 +1090,7 @@ ROTTURE_CLIENT = [
      'ricarica: la pagina riprende'),
     # C-15 (P-39)
     ('si esce con risposte non inviate', ['C-15:uscite'],
-     [('  if (pendenti) {', '  if (false) {')],
+     [('  if (pendenti || segnali) {', '  if (segnali) {')],
      'con risposte non inviate'),
     ('offline l\'uscita si dichiara fatta', ['C-15:uscite'],
      [('      if (r.codice !== 204 && r.codice !== 401) {', '      if (false) {')],
@@ -1295,6 +1300,52 @@ ROTTURE_CLIENT = [
     ('l\'invito a un account che su quell\'origine non puo\' esistere', ['C-17:origine'],
      [("  const invito = S.conto ? '' : !API ? ", "  const invito = S.conto ? '' : false ? ")],
      'nel riepilogo nessun modulo'),
+    # Le tre scelte che nessun gruppo premeva (P-46, R-ACC-63)
+    ('il file del conflitto senza le risposte non salvate', ['C-13:scarica'],
+     [("{ app: 'rotta-giusta', recupero: true, righe: await pendenti() });\n  // Avviare il download non prova",
+       "{ app: 'rotta-giusta', recupero: true, righe: [] });\n  // Avviare il download non prova")],
+     'il file porta le risposte non salvate'),
+    ('si passa al nuovo archivio appena avviato il download', ['C-13:scarica'],
+     [('  // Avviare il download non prova che il file sia al sicuro: si chiede (§10).\n  pannello(`<h2>Progressi azzerati</h2><p>Il file con le',
+       '  return risolvi();\n  pannello(`<h2>Progressi azzerati</h2><p>Il file con le')],
+     'dopo il download si chiede di confermare'),
+    ('«Carica il nuovo archivio» che non guarda la casella', ['C-13:scarica'],
+     [("    if ($('account').querySelector('[name=conservato]').checked) return risolvi();", '    return risolvi();')],
+     'senza la conferma «Carica il nuovo archivio»'),
+    ('le risposte del file rimandate dopo la conferma', ['C-13:scarica'],
+     [('  await tx((s) => ({ svuota: true, coda: E.risolviConflitto(s.coda, c), trasf: null }));',
+       '  await tx((s) => ({ coda: { ...E.risolviConflitto(s.coda, c), daInviare: s.coda.daInviare }, trasf: null }));')],
+     'le risposte del file non rientrano'),
+    ('le risposte cancellate al primo clic, senza conferma', ['C-08:cancella'],
+     [("  if (a === 'cancella-righe') {\n", "  if (a === 'cancella-righe') {\n    return cancellaRighe();\n")],
+     'chiede una conferma esplicita'),
+    ('la conferma della cancellazione che non guarda la casella', ['C-08:cancella'],
+     [("    if ($('account').querySelector('[name=conferma]').checked) return cancellaRighe();", '    return cancellaRighe();')],
+     'senza la spunta la cancellazione non parte'),
+    ('la cancellazione senza la password appena scelta', ['C-08:cancella'],
+     [("  const r = await api('POST', '/v1/azzera', { password: S.pwNuova });", "  const r = await api('POST', '/v1/azzera', { password: '' });")],
+     'le risposte spariscono dal server'),
+    ('la copia che non segue la cancellazione', ['C-08:cancella'],
+     [('  await tx(() => ({ svuota: true, coda: E.nuovaCoda({ generazione: io.corpo.generazione,',
+       '  await tx(() => ({ coda: E.nuovaCoda({ generazione: io.corpo.generazione,')],
+     'la copia di questo dispositivo le segue'),
+    ('la coda con la generazione di prima della cancellazione', ['C-08:cancella'],
+     [('coda: E.nuovaCoda({ generazione: io.corpo.generazione, epocaDb: io.corpo.epoca }), trasf: null }));',
+       'coda: E.nuovaCoda({ generazione: io.corpo.generazione - 1, epocaDb: io.corpo.epoca }), trasf: null }));')],
+     'una risposta nuova entra'),
+    ('l\'uscita che non guarda i punteggi dei Segnali', ['C-15:segnali'],
+     [('  const segnali = !!(seg && seg.daInviare);', '  const segnali = false;')],
+     'non si esce, e lo si dice'),
+    ('il file di recupero senza i punteggi dei Segnali', ['C-15:segnali'],
+     [('segPunti: seg && seg.daInviare ? seg.punti : {} });', 'segPunti: {} });')],
+     'porta anche i punteggi'),
+    ('«Riprova l\'invio» che esce senza mandare i punteggi', ['C-15:segnali-rete'],
+     [("  if (c === 'riprova-uscita') return esci(S.uscitaTutti);", "  if (c === 'riprova-uscita') return chiudiAccesso(S.conto.chiave, S.uscitaTutti);")],
+     'manda i punteggi, poi esce'),
+    ('«Riprova l\'invio» che non riprova i punteggi', ['C-15:segnali-rete'],
+     [('  // Anche i punteggi dei Segnali: uscire con punteggi che il server non ha li perderebbe (§8, P-46).\n  await punteggiInSospeso();\n',
+       '  // Anche i punteggi dei Segnali: uscire con punteggi che il server non ha li perderebbe (§8, P-46).\n')],
+     'manda i punteggi, poi esce'),
 ]
 
 # Varianti della pagina di riferimento che devono restare **verdi**: il banco
@@ -1460,6 +1511,21 @@ def test_client_azzeramento():
     registra_client('C-13')
 
 
+def test_client_scarica_dopo_azzeramento():
+    """R-ACC-63: «Scarica e passa al nuovo archivio» (C-13:scarica, P-46)."""
+    registra_client('C-13:scarica')
+
+
+def test_client_cancella_dopo_recupero():
+    """R-ACC-63: «Cancella queste risposte» dopo il recupero (C-08:cancella, P-46)."""
+    registra_client('C-08:cancella')
+
+
+def test_client_uscita_segnali():
+    """R-ACC-63: l'uscita con punteggi dei Segnali non accolti (C-15:segnali, P-46)."""
+    registra_client('C-15:segnali')
+
+
 def test_client_ripristino():
     registra_client('C-14')
 
@@ -1544,7 +1610,7 @@ def test_client_provato_al_contrario():
     v = out.get('riferimento', [])
     rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in v if not x['ok']]
     check('la pagina di riferimento del client passa il banco del browser', not rossi, '; '.join(rossi[:3]))
-    for g in GRUPPI_CLIENT:
+    for g in GRUPPI_CLIENT + SCELTE_CLIENT:
         n = sum(1 for x in v if x['gruppo'] == g)
         check('il banco del browser ha eseguito %s sulla pagina di riferimento' % g,
               n >= VERIFICHE_CLIENT[g], 'troppo poche verifiche: il giro non e\' arrivato in fondo (%d su %d)' % (n, VERIFICHE_CLIENT[g]))
@@ -1794,6 +1860,7 @@ def main():
               test_client_verifica, test_client_password, test_client_vecchio_archivio, test_client_file,
               test_client_limiti, test_client_azzeramento, test_client_ripristino, test_client_data,
               test_client_export, test_client_testi,
+              test_client_scarica_dopo_azzeramento, test_client_cancella_dopo_recupero, test_client_uscita_segnali,
               test_client_provato_al_contrario,
               test_motore_senza_orfani, test_chiamate_al_motore_preservate,
               test_letture_che_non_mascherano,

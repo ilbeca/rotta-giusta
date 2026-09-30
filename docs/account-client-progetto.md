@@ -1318,6 +1318,78 @@ il motivo: R-ACC-59 Safari e i sottodomini veri, R-ACC-60 il gesto vero,
 R-ACC-61 la mail vera, R-ACC-62 un archivio di prima vero, R-ACC-63 le scelte
 che nessun gruppo preme.
 
+### Le tre scelte (P-46, 30 settembre 2026)
+
+Tre scelte della pagina che fino a qui nessun gruppo premeva, e che il banco
+reggeva: ora hanno ognuna la sua parte, nel gruppo a cui appartiene, e il suo
+controllo. Le verifiche portano il nome della parte (`C-13:scarica`,
+`C-08:cancella`, `C-15:segnali`), così `test_interfaccia.py` le registra una per
+una e la specifica le nomina come R-ACC-63, 64 e 65.
+
+- **«Scarica e passa al nuovo archivio»** (C-13:scarica, §10). Azzeramento
+  scoperto inviando, come in «invio». Il file porta le risposte non salvate e
+  ogni sua riga passa da `validaRiga()`; dopo il download si chiede di
+  confermare di aver conservato il file, e intanto la copia non cambia;
+  «Carica il nuovo archivio» senza la conferma non la sostituisce; confermato,
+  la copia è quella del server e nessuna risposta del file rientra, e una
+  risposta nuova entra. *Non salvate* sono quelle che il server non ha mai
+  avuto: quelle salvate prima dell'azzeramento l'altro dispositivo le ha tolte
+  apposta. La pagina vera le mette nel file tutte, quella di riferimento solo le
+  non salvate: tutte e due vanno bene.
+- **«Cancella queste risposte»** (C-08:cancella, §5.3). Prima si entra
+  nell'account, e la copia riceve le 2 risposte; poi il link della password
+  nella stessa scheda. Senza questo passo la verifica «la copia le segue» era un
+  verde che non misurava niente: **misurato**, al momento della domanda la copia
+  è vuota su tutte e due le pagine, e la rottura «la copia che non segue la
+  cancellazione» passava verde. Poi: la conferma esplicita, e intanto né il
+  server né la copia cambiano; senza la spunta niente parte; confermata, righe
+  sparite dal server con una generazione nuova, copia vuota, e una risposta
+  nuova entra senza un `409`.
+- **L'uscita con punteggi dei Segnali non accolti** (C-15:segnali, §8, §10). Il
+  PUT del profilo fallisce, la partita dice «Punteggi da inviare», e «Esci» non
+  esce: lo dice, senza `POST /v1/uscita`, con la copia e la sessione al loro
+  posto. Due strade. «Scarica le risposte non salvate» porta `segPunti`, e dopo
+  «Ho conservato il file» si esce senza mandarli a nessun account. Oppure,
+  tornata la rete, «Riprova l'invio» li manda e solo dopo esce.
+
+**Tredici rotture nuove della pagina di riferimento**, tutte rosse per il loro
+motivo: il file senza le risposte non salvate, il passaggio appena avviato il
+download, la casella non guardata, le risposte del file rimandate; la
+cancellazione al primo clic, la casella non guardata, la password sbagliata, la
+copia che non segue, la coda con la generazione di prima; l'uscita che non
+guarda i punteggi, il file senza `segPunti`, «Riprova l'invio» che esce senza
+mandarli o che non li riprova. Per portarle, la pagina di riferimento ora fa le
+tre scelte come la pagina vera: la casella «Ho conservato il file» con «Carica
+il nuovo archivio», la casella «Confermo la cancellazione», e un'uscita che
+guarda anche i punteggi dei Segnali — prima, con punteggi pendenti e nessuna
+risposta in coda, usciva e li perdeva.
+
+**Un difetto della pagina vera, per l'interfaccia (R-ACC-66).** Le tre scelte
+fanno quello che dicono; il modo in cui rifiutano una conferma mancante no.
+Riproduzione, dal banco, con un account e un azzeramento fatto altrove: dopo
+«Scarica e passa al nuovo archivio», premere «Carica il nuovo archivio» senza
+spuntare «Ho conservato il file». La copia non cambia, com'è giusto, ma la
+schermata è identica prima e dopo, e il fuoco resta sul titolo: `azioneAccount()`
+chiama `esitoAccount('Conferma la scelta prima di continuare.')`, e il pannello
+di `scarica-conflitto` non ha un `#account-esito` dove scriverlo. Lo stesso con
+«Cancella queste risposte» senza «Confermo la cancellazione»: `conferma-precedenti`
+fa `return` senza una parola. È un clic che non produce niente (specifica §8).
+La correzione è di `ui/main`: un `#account-esito` in tutti e due i pannelli e
+una frase che dica che cosa manca — la pagina di riferimento ne ha una. Il
+controllo entra con la correzione, sulle parti di P-46.
+
+**Il tempo, misurato con `RG_TEMPI=1`.** La suite dell'interfaccia passa da
+116–119 a 146–154 s. Le parti nuove sulla pagina vera costano circa 34 s —
+C-13:scarica 9 s, C-08:cancella 5 s, le due strade dei Segnali 10 s l'una,
+perché ognuna gioca una partita intera —, e girano in fila: la pagina vera
+parla solo con la 8620, quindi i suoi gruppi con l'API stanno tutti sulla
+corsia 0, e la loro somma è la durata della suite. Accorciarla è Q-SUITE.
+
+**E una frase goffa, non un difetto:** con soli punteggi pendenti l'uscita
+dice «0 risposte non sono sul server e ci sono punteggi dei Segnali da
+inviare». È vera, e il banco non la guarda parola per parola; il §10 dà la
+frase solo per le risposte, e quella per i punteggi è da scrivere.
+
 ## 13. Evidenze e limiti di P-13
 
 Precondizioni: worktree `rotta-giusta-ui`, ramo `ui/main`, albero pulito,

@@ -28,7 +28,10 @@
 //
 // Gruppi realizzati: C-01…C-17 (P-29, P-39, P-43). C-18, la ricerca dei testi,
 // non ha bisogno di un browser e sta in tests/test_interfaccia.py. Che cosa
-// ognuno non vede e' scritto nel §12 del progetto.
+// ognuno non vede e' scritto nel §12 del progetto. Tre parti — C-13:scarica,
+// C-08:cancella, C-15:segnali (P-46) — girano con il loro gruppo ma portano il
+// loro nome nelle verifiche: sono le scelte che prima nessuno premeva, e la
+// specifica le nomina una per una (R-ACC-63…65).
 
 import { createServer } from 'node:http';
 import { readFileSync, writeFileSync, mkdirSync, existsSync, mkdtempSync, rmSync, statSync } from 'node:fs';
@@ -985,6 +988,8 @@ async function c15(b, ctx, v, parte) {
   if (vuole('corsa')) await c15corsa(b, ctx, v, g, U);
   if (vuole('scaduta')) await fermaAlPrimo(v, (w) => c15scaduta(b, ctx, w, g));
   if (vuole('ovunque')) await fermaAlPrimo(v, (w) => c15ovunque(b, ctx, w, g));
+  if (vuole('segnali')) await fermaAlPrimo(v, (w) => c15segnali(b, ctx, w, `${g}:segnali`, false));
+  if (vuole('segnali-rete')) await fermaAlPrimo(v, (w) => c15segnali(b, ctx, w, `${g}:segnali`, true));
 }
 
 async function c15uscite(b, ctx, v, g, U) {
@@ -1173,6 +1178,26 @@ async function scaricato(c, n, ms = REAZIONE) {
 }
 
 const uidDi = (dati) => new Set(((dati && dati.righe) || []).map((r) => String(r.uid)));
+
+/** Una casella da spuntare, dalla sua etichetta: la conferma esplicita di una scelta (§5.3, §10). */
+const spunta = (tab, etichetta) => tab.valuta(js(`const c = ${campo(etichetta)}; if (!c) return false; if (!c.checked) c.click(); return c.checked;`));
+
+/** Gli uid dell'archivio `righe` della copia dell'account, letti dalla pagina; il database si richiude subito. */
+const uidCopia = (tab, chiave) => tab.valuta(`new Promise((ok) => {
+  const q = indexedDB.open(${q('rg-account-' + chiave)});
+  q.onerror = () => ok(null);
+  q.onsuccess = () => {
+    const db = q.result;
+    try {
+      const g = db.transaction('righe').objectStore('righe').getAll();
+      g.onsuccess = () => { db.close(); ok(g.result.map((r) => String(r.uid))); };
+      g.onerror = () => { db.close(); ok(null); };
+    } catch { db.close(); ok(null); }
+  };
+})`);
+
+/** Il testo della finestra aperta, o della pagina: per dire nel rosso che cosa c'era. */
+const inSchermata = js(`const m = M(); return (m === document ? document.body : m).innerText.replace(/\\s+/g, ' ').slice(0, 300);`);
 const stessi = (a, b) => a.size === b.size && [...a].every((x) => b.has(x));
 
 /** Le righe nell'archivio `righe` della copia dell'account, lette da fuori (§12, «Il contratto»). */
@@ -1284,6 +1309,7 @@ async function c08(b, ctx, v, parte) {
   if (vuole('password')) await fermaAlPrimo(v, (w) => c08password(b, ctx, w, g));
   if (vuole('accesso')) await fermaAlPrimo(v, (w) => c08accesso(b, ctx, w, g));
   if (vuole('recupero')) await fermaAlPrimo(v, (w) => c08recupero(b, ctx, w, g));
+  if (vuole('cancella')) await fermaAlPrimo(v, (w) => c08cancella(b, ctx, w, `${g}:cancella`));
 }
 
 /** Il messaggio del server per una password, chiesto dal banco: la pagina deve dire quello (§4.2). */
@@ -1412,6 +1438,61 @@ async function c08recupero(b, ctx, v, g) {
     await imposta(t3, 'Password', 'unaltra rotta per il porto');
     await clicca(t3, 'Salva la nuova password');
     v.push({ gruppo: g, nome: 'un link della password scaduto lo dice', ok: await t3.attendi(testoVisibile(PW_LINK_USATO), REAZIONE), extra: `«${PW_LINK_USATO}» non si vede` });
+  } finally { await c.chiudi(); }
+}
+
+/**
+ * «Cancella queste risposte» dopo il recupero della password (§5.3, P-46): un
+ * account che non era confermato porta risposte che possono essere di chiunque.
+ * Cancellarle chiede una conferma esplicita, toglie le righe dal server con la
+ * password appena scelta, svuota la copia, e l'account resta usabile con la
+ * generazione nuova.
+ */
+async function c08cancella(b, ctx, v, g) {
+  const K = await nuovoAccount(ctx, 'c08c');
+  ctx.aggiungi(K.email, righeDi(`c08c${serie}`, 2));
+  const gen = ctx.conto(K.email).generazione;
+  await fetch(`${ctx.apiInterno}/v1/password/dimenticata`, { method: 'POST', headers: { origin: ctx.sito, 'content-type': 'application/json' }, body: JSON.stringify({ email: K.email }) });
+  await finche(() => !!ctx.gettone(K.email, 'password'), REAZIONE);
+  const c = await b.nuovoContesto();
+  try {
+    // Prima si entra, su questo browser: la copia riceve le 2 risposte. Poi il
+    // link della password nella stessa scheda. Senza, al momento della domanda
+    // la copia e' vuota su tutte e due le pagine (misurato il 30 settembre 2026),
+    // e «la copia le segue» sarebbe stato un verde che non misura niente.
+    const tab = await c.apri(ctx.sito + '/app');
+    if (!await dentro(tab, K)) { v.push({ gruppo: g, nome: 'si entra', ok: false, extra: 'l\'intestazione non dice «Account»' }); return; }
+    const ricevute = await finche(async () => await nellaCopia(c, ctx, tab, K.chiave) === 2, REAZIONE);
+    v.push({ gruppo: g, nome: 'entrando, la copia di questo dispositivo riceve le 2 risposte dell\'account', ok: ricevute, extra: `nella copia ${await nellaCopia(c, ctx, tab, K.chiave)} righe` });
+    // Da /app a /app#password=… cambierebbe solo il frammento, senza caricare la pagina.
+    await tab.vai(`${ctx.sito}/privacy`);
+    await tab.vai(`${ctx.sito}/app#password=${ctx.gettone(K.email, 'password')}`);
+    await tab.attendi(js(`return V(${campo('Password')});`), CARICO);
+    await imposta(tab, 'Password', 'la nuova rotta per il porto');
+    await clicca(tab, 'Salva la nuova password');
+    const domanda = await tab.attendi(testoVisibile('Questo account non era confermato e contiene 2 risposte.'), REAZIONE) && await tab.valuta(pulsante('Cancella queste risposte'));
+    v.push({ gruppo: g, nome: 'dopo il recupero la pagina chiede se tenere le risposte, e offre «Cancella queste risposte»', ok: domanda, extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+    await clicca(tab, 'Cancella queste risposte');
+    const conferma = await tab.attendi(js(`return !!${campo('Confermo la cancellazione')};`), REAZIONE);
+    v.push({ gruppo: g, nome: '«Cancella queste risposte» chiede una conferma esplicita, e intanto niente si cancella', ok: conferma && await maiPer(async () => ctx.righeDi(K.email) !== 2 || await nellaCopia(c, ctx, tab, K.chiave) !== 2, 1500),
+      extra: conferma ? `l'account ha ${ctx.righeDi(K.email)} righe e la copia ${await nellaCopia(c, ctx, tab, K.chiave)}, ne avevano 2` : `nessuna casella «Confermo la cancellazione»; il server ha ${ctx.righeDi(K.email)} righe; in schermata: ${await tab.valuta(inSchermata)}` });
+    await clicca(tab, 'Cancella queste risposte');
+    v.push({ gruppo: g, nome: 'senza la spunta la cancellazione non parte', ok: await maiPer(() => ctx.righeDi(K.email) !== 2, 1500), extra: `l'account ha ${ctx.righeDi(K.email)} righe, ne aveva 2` });
+    await spunta(tab, 'Confermo la cancellazione');
+    await clicca(tab, 'Cancella queste risposte');
+    const cancellate = await finche(() => ctx.righeDi(K.email) === 0 && ctx.conto(K.email).generazione > gen, REAZIONE);
+    v.push({ gruppo: g, nome: 'confermata, le risposte spariscono dal server con una generazione nuova', ok: cancellate,
+      extra: `l'account ha ${ctx.righeDi(K.email)} righe, generazione ${gen} → ${ctx.conto(K.email).generazione}` });
+    v.push({ gruppo: g, nome: 'e la copia di questo dispositivo le segue', ok: await finche(async () => await nellaCopia(c, ctx, tab, K.chiave) === 0, REAZIONE),
+      extra: `nella copia ${await nellaCopia(c, ctx, tab, K.chiave)} righe` });
+    // L'account resta usabile: una risposta nuova entra con la generazione nuova, senza un 409.
+    await tab.attendi(js(`return ![...document.querySelectorAll('[aria-modal="true"], dialog[open]')].some(V);`), REAZIONE);
+    await clic(tab, '[data-v="oggi"]');
+    await tab.attendi(PRONTO, REAZIONE);
+    await clic(tab, '[data-rotta-start]');
+    await rispondiQuiz(tab, [], g, '');
+    v.push({ gruppo: g, nome: 'poi una risposta nuova entra nell\'account', ok: await finche(() => ctx.righeDi(K.email) === 1, REAZIONE) && !await tab.valuta(js(`return new RegExp(${q(AZZERATI.source)}, 'i').test(document.body.innerText);`)),
+      extra: `l'account ha ${ctx.righeDi(K.email)} righe; in schermata: ${await tab.valuta(inSchermata)}` });
   } finally { await c.chiudi(); }
 }
 
@@ -1733,6 +1814,7 @@ async function c13(b, ctx, v, parte) {
   const vuole = (x) => !parte || parte === x;
   if (vuole('invio')) await fermaAlPrimo(v, (w) => c13invio(b, ctx, w, g));
   if (vuole('ricezione')) await fermaAlPrimo(v, (w) => c13ricezione(b, ctx, w, g));
+  if (vuole('scarica')) await fermaAlPrimo(v, (w) => c13scarica(b, ctx, w, `${g}:scarica`));
 }
 
 async function c13invio(b, ctx, v, g) {
@@ -1823,6 +1905,64 @@ async function c13ricezione(b, ctx, v, g) {
     await clicca(tab, 'Sì, scartale e passa al nuovo archivio');
     v.push({ gruppo: g, nome: 'scartate, la copia e\' quella del server', ok: await finche(async () => await nellaCopia(c, ctx, tab, K.chiave) === 0, REAZIONE) && ctx.righeDi(K.email) === 0,
       extra: `nella copia ${await nellaCopia(c, ctx, tab, K.chiave)} righe, sul server ${ctx.righeDi(K.email)}` });
+  } finally { await c.chiudi(); }
+}
+
+/**
+ * «Scarica e passa al nuovo archivio» (§10, P-46): il file porta le risposte che
+ * il nuovo archivio perderebbe, e la copia si sostituisce solo dopo la conferma
+ * di aver conservato il file; poi niente di quel file rientra nell'account.
+ */
+async function c13scarica(b, ctx, v, g) {
+  const K = await nuovoAccount(ctx, 'c13s');
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    // Come in «invio»: l'azzeramento si scopre inviando, non ricevendo.
+    await tab.intercetta(`${ctx.api}/v1/righe?*`, (r) => (r.method === 'GET' ? { fallisci: 'ConnectionReset' } : null));
+    if (!await dentro(tab, K)) { v.push({ gruppo: g, nome: 'si entra', ok: false, extra: 'l\'intestazione non dice «Account»' }); return; }
+    await clic(tab, '[data-rotta-start]');
+    await rispondiQuiz(tab, [], g, '');
+    await finche(() => ctx.righeDi(K.email) === 1, REAZIONE);
+    // Quelle che il server aveva prima dell'azzeramento erano salvate: l'altro
+    // dispositivo le ha tolte apposta, e il file non deve portarle per forza.
+    const salvate = new Set(ctx.righeServer(K.email).map((r) => String(r.uid)));
+    ctx.azzera(K.email);
+    await clic(tab, '#r-next');
+    await tab.attendi(js(`return !document.querySelector('#r-ans .ans.ok');`), REAZIONE);
+    await rispondiQuiz(tab, [], g, '');
+    const offerta = await tab.attendi(pulsante('Scarica e passa al nuovo archivio'), REAZIONE);
+    v.push({ gruppo: g, nome: 'scoperto l\'azzeramento, la pagina offre «Scarica e passa al nuovo archivio»', ok: offerta, extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+    // Le risposte non salvate (§10): quelle della copia che il server non ha mai avuto.
+    const server = new Set(ctx.righeServer(K.email).map((r) => String(r.uid)));
+    const copia = await uidCopia(tab, K.chiave) || [];
+    const perse = copia.filter((u) => !server.has(u) && !salvate.has(u));
+    const n = c.scaricati().length;
+    await clicca(tab, 'Scarica e passa al nuovo archivio');
+    const file = await scaricato(c, n);
+    const nelFile = uidDi(file && file.dati);
+    const valide = !!file && (file.dati?.righe || []).every((r) => E.validaRiga(r, { quesiti: ID_BANCA }) === null);
+    v.push({ gruppo: g, nome: 'il file porta le risposte non salvate, e si ricarica', ok: !!file && perse.length > 0 && perse.every((u) => nelFile.has(u)) && valide,
+      extra: !file ? 'nessun file' : `nella copia ${perse.length} risposte non salvate, nel file ${perse.filter((u) => nelFile.has(u)).length} di queste${valide ? '' : '; e il file ha righe che validaRiga() rifiuta'}` });
+    // Avviare il download non prova che il file sia al sicuro (§10): la copia resta.
+    const chiede = await tab.attendi(pulsante('Carica il nuovo archivio'), REAZIONE) && await tab.valuta(js(`return !!${campo('Ho conservato il file')};`));
+    v.push({ gruppo: g, nome: 'dopo il download si chiede di confermare di aver conservato il file, e la copia non cambia', ok: chiede && await maiPer(async () => await nellaCopia(c, ctx, tab, K.chiave) !== copia.length, 1500),
+      extra: chiede ? `nella copia ${await nellaCopia(c, ctx, tab, K.chiave)} righe, erano ${copia.length}` : `manca «Ho conservato il file» con «Carica il nuovo archivio»; in schermata: ${await tab.valuta(inSchermata)}` });
+    await clicca(tab, 'Carica il nuovo archivio');
+    v.push({ gruppo: g, nome: 'senza la conferma «Carica il nuovo archivio» non sostituisce la copia', ok: await maiPer(async () => await nellaCopia(c, ctx, tab, K.chiave) !== copia.length, 1500),
+      extra: `nella copia ${await nellaCopia(c, ctx, tab, K.chiave)} righe, erano ${copia.length}` });
+    await spunta(tab, 'Ho conservato il file');
+    await clicca(tab, 'Carica il nuovo archivio');
+    const passata = await finche(async () => await nellaCopia(c, ctx, tab, K.chiave) === 0, REAZIONE);
+    v.push({ gruppo: g, nome: 'confermato, la copia e\' quella del server, e le risposte del file non rientrano', ok: passata && await maiPer(() => ctx.righeDi(K.email) > 0, 1500),
+      extra: `nella copia ${await nellaCopia(c, ctx, tab, K.chiave)} righe, sul server ${ctx.righeDi(K.email)}` });
+    await clic(tab, '#r-next');
+    await tab.attendi(js(`return !document.querySelector('#r-ans .ans.ok');`), REAZIONE);
+    await rispondiQuiz(tab, [], g, '');
+    const entrata = await finche(() => ctx.righeDi(K.email) === 1, REAZIONE);
+    const nuova = ctx.righeServer(K.email).map((r) => String(r.uid));
+    v.push({ gruppo: g, nome: 'poi la risposta nuova entra, e nessuna di quelle del file', ok: entrata && nuova.every((u) => !nelFile.has(u)) && await maiPer(() => ctx.righeDi(K.email) !== 1, 1500),
+      extra: `sul server ${ctx.righeDi(K.email)} righe${nuova.some((u) => nelFile.has(u)) ? ', fra cui una del file' : ''}` });
   } finally { await c.chiudi(); }
 }
 
@@ -1928,6 +2068,58 @@ async function c15ovunque(b, ctx, v, g) {
     v.push({ gruppo: g, nome: 'l\'altro dispositivo lo scopre con un 401, e la sua copia resta, congelata', ok: scoperto && copieAccount(await d.conservato(ctx.sito, t2)).length === 1,
       extra: scoperto ? `copie dell'altro dispositivo: ${copieAccount(await d.conservato(ctx.sito, t2)).join(', ') || 'nessuna'}: una pulizia remota inventata` : `«${NON_VALIDO}» non si vede` });
   } finally { await c.chiudi(); await d.chiudi(); }
+}
+
+/**
+ * L'uscita con punteggi dei Segnali che il server non ha ancora accolto (§8,
+ * §10, P-46). Non si esce e lo si dice; «Scarica le risposte non salvate»
+ * porta anche i punteggi; e poi, o si esce dopo aver conservato il file senza
+ * mandarli a nessuno (`rete` falso), o tornata la rete «Riprova l'invio» li
+ * manda e solo dopo esce (`rete` vero).
+ */
+async function c15segnali(b, ctx, v, g, rete) {
+  const p = rete ? 'riprova: ' : 'scarica: ';
+  const U = await nuovoAccount(ctx, 'c15g');
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    let blocca = true;
+    await tab.intercetta(`${ctx.api}/v1/profilo`, (r) => (r.method === 'PUT' && blocca ? { fallisci: 'ConnectionReset' } : null));
+    if (!await dentro(tab, U)) { v.push({ gruppo: g, nome: `${p}si entra`, ok: false, extra: 'l\'intestazione non dice «Account»' }); return; }
+    const giocata = await partitaSegnali(tab, [], g, p);
+    const put = () => richiesteA(tab, 'PUT', '/v1/profilo');
+    const pendente = giocata && await finche(() => put().some((r) => r.finita), REAZIONE) && await tab.attendi(testoVisibile(DA_INVIARE_SEG), REAZIONE);
+    v.push({ gruppo: g, nome: `${p}una partita con il profilo che non passa: «Punteggi da inviare», e il server non li ha`, ok: pendente && !Object.keys(ctx.segnaliDi(U.email)).length,
+      extra: !giocata ? 'la partita non arriva in fondo' : pendente ? `il server ha ${JSON.stringify(ctx.segnaliDi(U.email))}` : `«${DA_INVIARE_SEG}» non si vede, o nessun PUT del profilo e' finito` });
+    const sessioni = ctx.sessioniDi(U.email);
+    await esciDa(tab);
+    const detto = await tab.attendi(js(`return /punteggi dei Segnali/i.test(M().innerText) && [...M().querySelectorAll('button')].some((b) => V(b) && b.textContent.trim() === 'Scarica le risposte non salvate');`), USCITA);
+    const fermo = detto && await maiPer(async () => richiesteA(tab, 'POST', '/v1/uscita').length > 0 || !copieAccount(await c.conservato(ctx.sito, tab)).length, 1500);
+    v.push({ gruppo: g, nome: `${p}con punteggi dei Segnali da inviare non si esce, e lo si dice`, ok: fermo && ctx.sessioniDi(U.email) === sessioni,
+      extra: !detto ? `nessuna frase sui punteggi dei Segnali con «Scarica le risposte non salvate»; in schermata: ${await tab.valuta(inSchermata)}`
+        : `POST /v1/uscita ${richiesteA(tab, 'POST', '/v1/uscita').length}, copie ${copieAccount(await c.conservato(ctx.sito, tab)).join(', ') || 'nessuna'}, sessioni ${sessioni} → ${ctx.sessioniDi(U.email)}` });
+    if (rete) {
+      // Tornata la rete, «Riprova l'invio» manda i punteggi, e solo dopo esce.
+      blocca = false;
+      await clicca(tab, 'Riprova l\'invio');
+      const arrivati = await finche(() => (ctx.segnaliDi(U.email).notturni?.giocate ?? 0) >= 1, USCITA);
+      const fuori = arrivati && await finche(async () => ctx.sessioniDi(U.email) === sessioni - 1 && !copieAccount(await c.conservato(ctx.sito, tab)).length && await tab.valuta(pulsante('Accedi')), USCITA);
+      v.push({ gruppo: g, nome: `${p}«Riprova l'invio» con la rete manda i punteggi, poi esce`, ok: fuori,
+        extra: `sul server ${JSON.stringify(ctx.segnaliDi(U.email))}; sessioni ${sessioni} → ${ctx.sessioniDi(U.email)}; copie ${copieAccount(await c.conservato(ctx.sito, tab)).join(', ') || 'nessuna'}` });
+      return;
+    }
+    const n = c.scaricati().length;
+    await clicca(tab, 'Scarica le risposte non salvate');
+    const file = await scaricato(c, n);
+    const punti = (file && file.dati && file.dati.segPunti) || {};
+    v.push({ gruppo: g, nome: `${p}il file delle risposte non salvate porta anche i punteggi dei Segnali`, ok: (punti.notturni?.giocate ?? 0) >= 1,
+      extra: file ? `nel file segPunti ${JSON.stringify(file.dati && file.dati.segPunti)}` : 'nessun file' });
+    await tab.attendi(pulsante('Ho conservato il file: esci e cancella la copia da questo dispositivo'), REAZIONE);
+    await clicca(tab, 'Ho conservato il file: esci e cancella la copia da questo dispositivo');
+    const fuori = await finche(async () => ctx.sessioniDi(U.email) === sessioni - 1 && !copieAccount(await c.conservato(ctx.sito, tab)).length && await tab.valuta(pulsante('Accedi')), USCITA);
+    v.push({ gruppo: g, nome: `${p}dopo la scelta esplicita si esce, e i punteggi non vanno in nessun account`, ok: fuori && !Object.keys(ctx.segnaliDi(U.email)).length,
+      extra: `sessioni ${sessioni} → ${ctx.sessioniDi(U.email)}; copie ${copieAccount(await c.conservato(ctx.sito, tab)).join(', ') || 'nessuna'}; sul server ${JSON.stringify(ctx.segnaliDi(U.email))}` });
+  } finally { await c.chiudi(); }
 }
 
 // --- C-16: la data d'esame dopo la registrazione -------------------------------------------

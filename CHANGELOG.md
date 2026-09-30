@@ -964,6 +964,72 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   Guardiano e controllo della documentazione verdi. `site/` e
   `docs/prossime-sessioni.md` non sono stati toccati.
 
+### Test — P-46: le tre scelte del client che nessun controllo premeva
+
+- **Tre scelte della pagina vera, e da oggi ognuna ha il suo controllo.**
+  R-ACC-63 le teneva scoperte: nessun gruppo del banco le premeva, e una scelta
+  mai premuta è una promessa che nessuno verifica. Ora sono parti dei gruppi a
+  cui appartengono — `C-13:scarica`, `C-08:cancella`, `C-15:segnali` — e
+  `test_interfaccia.py` le registra una per una, così la specifica le nomina
+  come R-ACC-63, 64 e 65. **Tutte e tre fanno quello che dicono.**
+  «Scarica e passa al nuovo archivio», dopo un azzeramento fatto altrove: il
+  file porta le risposte non salvate e si ricarica, la copia non cambia finché
+  non si conferma di aver conservato il file, poi è quella del server e niente
+  del file rientra. «Cancella queste risposte», dopo il recupero della password
+  di un account non confermato: chiede una conferma esplicita, poi toglie le
+  righe dal server con una generazione nuova, la copia le segue, e l'account
+  resta usabile. L'uscita con punteggi dei Segnali che il server non ha
+  accolto: non esce e lo dice, il file di recupero porta `segPunti`, e poi o si
+  esce dopo averlo conservato, senza mandarli a nessuno, o «Riprova l'invio» li
+  manda e solo dopo esce.
+
+- **Un difetto della pagina, trovato misurando, e lasciato all'interfaccia.**
+  Il modo in cui le due conferme rifiutano una casella non spuntata non fa
+  quello che dice: «Carica il nuovo archivio» senza «Ho conservato il file», e
+  «Cancella queste risposte» senza «Confermo la cancellazione», non fanno niente
+  e non dicono niente — schermata identica prima e dopo il clic. Il primo prova
+  a scrivere «Conferma la scelta prima di continuare.» in un `#account-esito`
+  che il suo pannello non ha. È R-ACC-66, scoperto con la riproduzione nel §12
+  del progetto del client; la correzione è di `ui/main`, e il controllo entra
+  con lei. Segnata accanto, e non come difetto, una frase goffa: con soli
+  punteggi pendenti l'uscita dice «0 risposte non sono sul server e ci sono
+  punteggi dei Segnali da inviare».
+
+- **Un verde che non misurava niente, trovato dalle rotture.** «La copia che
+  non segue la cancellazione» passava verde: misurato, al momento della domanda
+  la copia è vuota su tutte e due le pagine, quindi svuotarla o no era uguale.
+  Ora il banco entra prima nell'account, la copia riceve le 2 risposte, e il
+  link della password si apre nella stessa scheda: la rottura è rossa. E un
+  rosso del banco, non della pagina, trovato prima di scrivere le rotture: il
+  file di «Scarica e passa» doveva portare anche la risposta già salvata prima
+  dell'azzeramento, che l'altro dispositivo aveva tolto apposta; il §10 chiede
+  le non salvate, e il banco ora conta quelle.
+
+- **La pagina di riferimento fa le tre scelte come la pagina vera**, e porta
+  **tredici rotture nuove**, tutte rosse per il loro motivo: fra le altre il
+  file senza le risposte non salvate, il passaggio appena avviato il download,
+  la casella non guardata — in tutte e due le conferme —, la cancellazione al
+  primo clic o senza la password appena scelta, la coda con la generazione di
+  prima, l'uscita che non guarda i punteggi, il file senza `segPunti`, «Riprova
+  l'invio» che esce senza mandarli. Prima, con punteggi pendenti e nessuna
+  risposta in coda, la pagina di riferimento usciva e li perdeva; la rottura
+  vecchia «si esce con risposte non inviate» segue la condizione nuova.
+
+  Suite: interfaccia **1.246** (erano 1.181), specifica **584** (erano 572);
+  motore 167/169 con i due skip di sempre; dati 242; server 60/60. **Sei giri
+  della suite dell'interfaccia intera, tutti verdi**: tre senza carico in
+  149–154 s, uno con la **24.21.0 LTS** nel `PATH` in 146 s, due con dieci
+  `yes` in 173–176 s; prima di ognuno la 8620 guardata libera — al primo
+  tentativo la teneva la suite di `rotta-giusta-ui`, e le rotture si sono
+  provate intanto con `portaApi`. Il primo giro, prima dei sei, era rosso su una
+  verifica sola: la rottura vecchia che non si applicava più, corretta. **La
+  suite è più lunga di 33 s, misurato con `RG_TEMPI=1`:** le parti nuove sulla
+  pagina vera costano circa 34 s e girano in fila sulla corsia della 8620 —
+  scritto in Q-SUITE. Con la LTS, il pacchetto verificato con il
+  `SHASUMS256.txt` riletto da nodejs.org: server 60/60, motore 167/169.
+  Guardiano e controllo della documentazione verdi. `site/` e
+  `docs/prossime-sessioni.md` non sono stati toccati.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag

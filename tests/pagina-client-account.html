@@ -707,10 +707,15 @@ async function esci(tutti = false) {
   // Prima si prova a inviare; con righe che non sono sul server non si esce (§10).
   await catena();
   if (!S.conto) return;
-  const { coda } = await tx(() => null);
+  // Anche i punteggi dei Segnali: uscire con punteggi che il server non ha li perderebbe (§8, P-46).
+  await punteggiInSospeso();
+  if (!S.conto) return;
+  const { coda, seg } = await tx(() => null);
   const pendenti = coda.daInviare.length + Object.keys(coda.scartate).length;
-  if (pendenti) {
-    esito.innerHTML = `${pendenti} ${pendenti === 1 ? 'risposta non è' : 'risposte non sono'} sul server. Collegati alla rete e riprova, oppure scaricale prima di uscire. <button data-conto="scarica-pendenti">Scarica le risposte non salvate</button>`;
+  const segnali = !!(seg && seg.daInviare);
+  if (pendenti || segnali) {
+    const righe = pendenti ? `${pendenti} ${pendenti === 1 ? 'risposta non è' : 'risposte non sono'} sul server. ` : '';
+    esito.innerHTML = `${righe}${segnali ? 'Ci sono punteggi dei Segnali che il server non ha ancora accolto. ' : ''}Collegati alla rete e riprova, oppure scaricale prima di uscire. <button data-conto="riprova-uscita">Riprova l'invio</button> <button data-conto="scarica-pendenti">Scarica le risposte non salvate</button>`;
     S.uscitaTutti = tutti;
     return;
   }
@@ -1053,7 +1058,8 @@ async function pendenti() {
 }
 
 async function scaricaPendenti() {
-  scarica(`rotta-giusta-recupero-${oggi()}.json`, { app: 'rotta-giusta', recupero: true, righe: await pendenti() });
+  const { seg } = await tx(() => null);
+  scarica(`rotta-giusta-recupero-${oggi()}.json`, { app: 'rotta-giusta', recupero: true, righe: await pendenti(), segPunti: seg && seg.daInviare ? seg.punti : {} });
   // Avviare il download non prova che il file sia al sicuro: si chiede (§10).
   $('account-esito').innerHTML += ' <button data-conto="esci-comunque">Ho conservato il file: esci e cancella la copia da questo dispositivo</button>';
 }
@@ -1090,8 +1096,10 @@ function mostraConflitto(c) {
 
 async function scaricaConflitto() {
   scarica(`rotta-giusta-recupero-${oggi()}.json`, { app: 'rotta-giusta', recupero: true, righe: await pendenti() });
+  // Avviare il download non prova che il file sia al sicuro: si chiede (§10).
   pannello(`<h2>Progressi azzerati</h2><p>Il file con le ${S.sospeso.nonSalvate} risposte non salvate è stato scaricato.</p>
-    <button data-conflitto="passa">Ho conservato il file: passa al nuovo archivio</button><button data-conflitto="dopo">Decidi più tardi</button>`);
+    <label><input type="checkbox" name="conservato"> Ho conservato il file</label><p id="account-esito" role="status"></p>
+    <button data-conflitto="passa-scaricato">Carica il nuovo archivio</button><button data-conflitto="dopo">Decidi più tardi</button>`);
 }
 
 /**
@@ -1149,6 +1157,7 @@ document.addEventListener('click', (e) => {
   if (c === 'esci') return esci();
   if (c === 'ovunque') return esci(true);
   if (c === 'scarica-pendenti') return scaricaPendenti();
+  if (c === 'riprova-uscita') return esci(S.uscitaTutti);
   if (c === 'esci-comunque') return chiudiAccesso(S.conto.chiave, S.uscitaTutti);
   if (c === 'riprova') return catena();
   if (c === 'data') return salvaData();
@@ -1169,6 +1178,11 @@ document.addEventListener('click', (e) => {
   if (k === 'scarta') return pannello(`<h2>Progressi azzerati</h2><p>Le ${S.sospeso.nonSalvate} risposte non salvate andranno perse.</p><button data-conflitto="passa">Sì, scartale e passa al nuovo archivio</button><button data-conflitto="dopo">Decidi più tardi</button>`);
   if (k === 'scarica') return scaricaConflitto();
   if (k === 'passa') return risolvi();
+  if (k === 'passa-scaricato') {
+    if ($('account').querySelector('[name=conservato]').checked) return risolvi();
+    $('account-esito').textContent = 'Spunta «Ho conservato il file» prima di caricare il nuovo archivio.';
+    return;
+  }
   if (k === 'carica' || k === 'riapri') return riapriConflitto(k === 'carica');
   if (k === 'dopo') { chiudiPannello(); return dipingiStato(); }
   const a = t.dataset.account;
@@ -1182,7 +1196,16 @@ document.addEventListener('click', (e) => {
   if (a === 'chiedi') return chiediLink();
   if (a === 'nuova') return nuovaPassword();
   if (a === 'tieni') return dopoIngresso(S.conto);
-  if (a === 'cancella-righe') return cancellaRighe();
+  if (a === 'cancella-righe') {
+    return pannello(`<h2>Cancella queste risposte</h2><p>Le risposte già presenti sul server saranno cancellate.</p>
+      <label><input type="checkbox" name="conferma"> Confermo la cancellazione</label><p id="account-esito" role="status"></p>
+      <button data-account="cancella-conferma">Cancella queste risposte</button><button data-account="tieni">Tienile</button>`);
+  }
+  if (a === 'cancella-conferma') {
+    if ($('account').querySelector('[name=conferma]').checked) return cancellaRighe();
+    $('account-esito').textContent = 'Spunta «Confermo la cancellazione» prima di cancellare.';
+    return;
+  }
   if (a === 'torna') return chiudiPannello();
 });
 </script>

@@ -1153,7 +1153,7 @@ Nati dall'ADR-004. Gli account non esistono ancora nel sito pubblicato, ma
 sono nella pagina su `main` dal 29 settembre 2026 (P-18): i requisiti della
 pagina si controllano su quella, in un browser vero, e dal 30 settembre (P-40)
 una pagina senza il client è rossa. Quello che il banco non vede è scritto in
-righe sue, scoperte con il motivo (R-ACC-59…63). Quelli del server hanno il loro
+righe sue, scoperte con il motivo (R-ACC-59…62, R-ACC-66). Quelli del server hanno il loro
 controllo in `test_server.mjs`.
 
 | ID | Requisito | Controllo |
@@ -1218,7 +1218,10 @@ controllo in `test_server.mjs`.
 | R-ACC-60 | I moduli dell'account si usano con il gesto vero: tastiera e fuoco, lettore di schermo, incolla e riempimento del gestore di password, a 375 e 1280 px | scoperto — i clic del banco sono `element.click()` e i campi si scrivono da uno script; è il collaudo della pagina, fatto da P-18 in Chrome e nel dialogo di accesso su Safari |
 | R-ACC-61 | Le mail di conferma, di recupero e d'avviso arrivano nella casella e non nello spam, con i link com'erano | scoperto — il banco ha una posta sua, e il server sa solo che il fornitore l'ha accettata; si vede alla messa in esercizio (P-15) |
 | R-ACC-62 | Un archivio di prima vero, di mesi di risposte, si porta nell'account o si scarica senza perdite, anche su un telefono | scoperto — il banco ne scrive uno sintetico di sei righe (R-ACC-05 è coperto su quello); l'archivio vero è del collaudo del traguardo (P-27) |
-| R-ACC-63 | Le scelte che il banco non preme fanno quello che dicono: «Scarica e passa al nuovo archivio» dopo un azzeramento altrove, «Cancella queste risposte» dopo il recupero, l'uscita con punteggi dei Segnali non ancora accolti | scoperto — nessun gruppo le esercita (§12 del progetto del client, «I gruppi che restavano»); lo stesso banco le reggerebbe, e restano da scrivere |
+| R-ACC-63 | «Scarica e passa al nuovo archivio», dopo un azzeramento fatto altrove, fa quello che dice: il file porta le risposte non salvate e si ricarica; dopo il download si chiede di confermare di aver conservato il file, e senza la conferma la copia non cambia; confermato, la copia è quella del server e nessuna risposta del file rientra, mentre una risposta nuova entra | `test_interfaccia.py::test_client_scarica_dopo_azzeramento` |
+| R-ACC-64 | «Cancella queste risposte», dopo il recupero della password di un account che non era confermato, fa quello che dice: chiede una conferma esplicita e senza la spunta non cancella niente; confermata, le risposte spariscono dal server con una generazione nuova, la copia di questo dispositivo le segue, e l'account resta usabile | `test_interfaccia.py::test_client_cancella_dopo_recupero` |
+| R-ACC-65 | Con punteggi dei Segnali che il server non ha accolto non si esce, e lo si dice; «Scarica le risposte non salvate» porta anche i punteggi, e dopo la scelta esplicita si esce senza mandarli a nessun account; con la rete «Riprova l'invio» li manda, e solo dopo esce | `test_interfaccia.py::test_client_uscita_segnali` |
+| R-ACC-66 | Un pulsante di conferma premuto senza la conferma dice che cosa manca, invece di non fare niente: «Carica il nuovo archivio» senza «Ho conservato il file», «Cancella queste risposte» senza «Confermo la cancellazione» | scoperto — la pagina vera non lo fa: misurato il 30 settembre 2026 (P-46), la schermata è identica prima e dopo il clic, e il primo dei due scrive in un `#account-esito` che il suo pannello non ha; la correzione è dell'interfaccia (§12 del progetto del client, «Le tre scelte»), e il controllo entra con lei |
 
 R-ACC-20 e R-ACC-24 sono i primi requisiti del server con un controllo che si
 esegue, e il giro intero sta in `node server/ripristina.mjs --prova`, che la
@@ -1316,6 +1319,17 @@ che il banco non vede non è più scritto solo in prosa: sono R-ACC-59…63,
 scoperti con il motivo. R-ACC-11 resta sul server e ha la metà della pagina in
 R-ACC-47; R-ACC-30 ha la metà della pagina in R-ACC-41.
 
+**Le tre scelte che nessuno premeva (P-46).** R-ACC-63 le raccoglieva scoperte:
+«Scarica e passa al nuovo archivio», «Cancella queste risposte» dopo il
+recupero, e l'uscita con punteggi dei Segnali non accolti. Ora sono R-ACC-63,
+64 e 65, ognuna con il suo controllo sulla pagina vera — parti dei gruppi C-13,
+C-08 e C-15 che girano con loro e si registrano a parte — e con le sue rotture
+della pagina di riferimento. Tutte e tre fanno quello che dicono. **Non lo fa il
+modo in cui rifiutano una conferma mancante:** senza la spunta, i due pulsanti
+di conferma non fanno niente e non dicono niente. È R-ACC-66, scoperto finché
+l'interfaccia non lo corregge; la riproduzione è nel §12 del progetto del
+client.
+
 ### 9.10 La mappa di Progressi
 
 Nati da Q-DUE (§10), chiusa dall'autore il 29 settembre 2026; il motore è di
@@ -1377,7 +1391,7 @@ Ogni riga dice **chi decide**. Una questione senza un decidente non si chiude ma
 | Q-CART4 | «Un esercizio per ciascuno dei quattro argomenti» è un'assunzione | serve la scuola nautica | La composizione della prova resta non confermata, e la 42/D non ha esercizi di carburante |
 | Q-PROVE | Verifiche con dispositivi reali e con persone — e Safari, che il banco del browser non raggiunge (rimandato dall'autore il 29 settembre 2026) | l'autore fornisce dispositivi e persone | Nessuna prova su hardware Apple vero, e nessuna prova con persone diverse dall'autore. Safari nel banco vorrebbe «Allow remote automation», un'impostazione dell'autore, e anche così WebDriver non legge lo storage (`account-client-progetto.md` §12): il cookie fra `rottagiusta.it` e `api.` su Safari si prova a mano |
 | Q-ONBOARD | Che cosa chiede l'onboarding di chi si registra, oltre alla data d'esame; e se il sito consiglia un piano di studio strutturato | l'autore | Un piano deve reggersi su quello che il motore sa: niente programma d'esame (Q-PROG), niente studio fatto altrove (chiusa l'8 settembre), niente «quanto tempo hai?» (R-TEMPO-03), e senza data niente quota. I pezzi ci sono già — `traccia()`, `quadro()`, `dovePesa()`, `stimaImpegno()` —, e il piano di 17 sessioni del progetto originario è stato tolto nella 0.19.0 con il resto del servizio personale |
-| Q-SUITE | La suite dell'interfaccia vuole Chrome e la porta 8620 libera, da P-29, e dura circa 85 s da P-43 (era un minuto): è il prezzo del browser vero, accettarlo o accorciarlo. La 8620 è una sola anche fra i worktree, e due suite in parallelo — P-18 e P-43 il 29 settembre — si escludono | l'autore, rimandata il 29 settembre 2026 | Accorciarla vuol dire aprire il CORS del server a più origini o accorciare attese che hanno già dato un rosso falso; finché resta aperta, la suite si fa girare intera e un'esecuzione saltata si dice |
+| Q-SUITE | La suite dell'interfaccia vuole Chrome e la porta 8620 libera, da P-29, e dura circa 150 s da P-46 (85 s con P-43, un minuto prima): la pagina vera parla solo con la 8620, quindi i suoi gruppi con l'API girano in fila su una corsia, e quella somma è la durata. È il prezzo del browser vero, accettarlo o accorciarlo. La 8620 è una sola anche fra i worktree, e due suite in parallelo — P-18 e P-43 il 29 settembre — si escludono | l'autore, rimandata il 29 settembre 2026 | Accorciarla vuol dire aprire il CORS del server a più origini o accorciare attese che hanno già dato un rosso falso; finché resta aperta, la suite si fa girare intera e un'esecuzione saltata si dice |
 
 **Chiuse, e non si riaprono senza un motivo nuovo:**
 
@@ -1746,3 +1760,10 @@ successo, ed è il motivo per cui questo file esiste.
   il disegno, scoperto. Ventitré rotture della pagina di riferimento, tutte
   rosse per il loro motivo; il §4.3 porta una misura sul `pari` che il banco ha
   trovato da solo.
+- **30 settembre 2026 — le tre scelte che nessuno premeva (P-46).** R-ACC-63
+  si divide: 63, 64 e 65 coperti, uno per scelta, sulla pagina vera; tredici
+  rotture nuove della pagina di riferimento, tutte rosse per il loro motivo, e
+  un verde del banco che non misurava niente — la copia, al momento della
+  domanda, era vuota su tutte e due le pagine —, corretto. Entra R-ACC-66,
+  scoperto: un difetto della pagina, i pulsanti di conferma muti senza la
+  spunta.
