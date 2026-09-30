@@ -1,18 +1,24 @@
 <!doctype html>
 <!--
-  La pagina di riferimento del ciclo progettato dei quiz: riepilogo, anteprima
-  e avvio della riprova, docs/area-3-progetto.md §§4, 6 e 7. Non e' pubblicata
-  e non e' un prototipo: e' il minimo che soddisfa il controllo di
+  La pagina di riferimento del ciclo dei quiz: riepilogo, anteprima e avvio
+  della riprova, docs/area-3-progetto.md §§4, 6 e 7. Non e' pubblicata e non e'
+  un prototipo: e' il minimo che soddisfa il controllo di
   tests/test_interfaccia.py, e serve a quel controllo per provarsi al contrario
   a ogni esecuzione — questa pagina deve passare, e ognuna delle sue rotture
-  elencate in ROTTURE_CICLO deve fallire.
+  elencate in ROTTURE_CICLO deve fallire. Da P-37 da' anche il numero di
+  verifiche che la pagina vera deve fare, gruppo per gruppo.
+
+  Resta anche dopo P-19, che ha portato il raccordo nella pagina vera: le
+  rotture stanno qui e non su site/app.html, per la ragione di P-40 — una
+  sostituzione di testo in un file dell'interfaccia da 200 KB si spezzerebbe a
+  ogni suo ritocco, e una rottura che non si applica piu' e' un controllo spento.
 
   Mostra anche la forma del contratto a chi realizza l'area 3: che cosa
   ricevono le tre funzioni di raccordo, che cosa restituiscono, e come la
   pagina le collega al runner. Il disegno, i testi e il flusso sono del
   progetto, non di qui. Il contratto per esteso sta nel §10.1 del progetto.
 -->
-<title>Ciclo dei quiz, regime progettato: pagina di riferimento</title>
+<title>Ciclo dei quiz: pagina di riferimento</title>
 <div id="r-fine"></div>
 <script type="module">
 import * as E from '/engine.js';

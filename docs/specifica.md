@@ -1119,9 +1119,10 @@ risposte rivedere, che cosa non è stato affrontato. Dal riepilogo si apre la
 **revisione** di quel tentativo — tutte le risposte o solo gli errori, la tua e
 quella ufficiale — che non scrive niente oltre ai tag, e la **riprova esatta**
 degli errori di quell'attività, con un'anteprima prima dell'avvio. Base e vela
-sono due fasi con due riepiloghi e due riprove. Nel prodotto pubblicato c'è
-ancora il riepilogo di prima, con gli errori del runner e senza riprova:
-arriva con P-19 (`tests/test_interfaccia.py` riconosce i due regimi).
+sono due fasi con due riepiloghi e due riprove. È nella pagina su `main` dal
+26 settembre 2026 (P-19); il sito pubblicato, v0.28.0, ha ancora il riepilogo
+di prima, con gli errori del runner e senza riprova, fino al prossimo rilascio.
+Dal 30 settembre il controllo del ciclo ha un regime solo (P-37, §9.6).
 
 ### 7.6 Il runner del carteggio
 
@@ -1354,7 +1355,7 @@ del progetto di preparazione. Il §4 di `prossima-versione.md` li motiva.
 | R-TEMPO-06 | Il ritmo non dipende dalla lunghezza della sessione | `test_engine.mjs::ritmo: una sessione corta non e` |
 | R-TEMPO-07 | `stimaImpegno()` dichiara quale dei tre tempi sta riportando | `test_engine.mjs::stimaImpegno: con il ritmo misurato usa l` |
 | R-TEMPO-08 | Il ritmo si misura sul confine per pausa, e un'attività ripresa dopo una pausa non lo gonfia | `test_engine.mjs::sessioni: il confine per pausa resta quello di prima, e ritmo lo usa` |
-| R-FLU-01 | Ogni attività si chiude con un passo che propone azioni derivate da quello che è appena successo. **Quiz, coperti:** riepilogo dell'attività intera — risposte, corrette, errate, non affrontate, esito solo per una prova e mai superata con domande senza risposta — e la riprova che offre, pronta o bloccata col suo motivo. **Carteggio e tecniche:** R-FLU-24 per il riepilogo e la revisione, R-FLU-25 per la riprova che non c'è — due controlli distinti, come R-FLU-01 e R-FLU-10 per i quiz; il contratto del motore è R-FLU-12…22. **Segnali, scoperti:** il loro ciclo non è progettato | `test_interfaccia.py::test_ciclo_riepilogo` |
+| R-FLU-01 | Ogni attività si chiude con un passo che propone azioni derivate da quello che è appena successo. **Quiz, coperti:** riepilogo dell'attività intera — risposte, corrette, errate, non affrontate, esito solo per una prova e mai superata con domande senza risposta — e la riprova che offre, pronta o bloccata col suo motivo, eseguiti sulla pagina vera, che fa almeno le verifiche della pagina di riferimento; una pagina senza il raccordo è rossa. **Carteggio e tecniche:** R-FLU-24 per il riepilogo e la revisione, R-FLU-25 per la riprova che non c'è — due controlli distinti, come R-FLU-01 e R-FLU-10 per i quiz; il contratto del motore è R-FLU-12…22. **Segnali, scoperti:** il loro ciclo non è progettato | `test_interfaccia.py::test_ciclo_riepilogo` |
 | R-FLU-02 | Gli errori di una sessione si riaprono come esercizio, senza mescolarli con quelli di sempre: tutti e soltanto gli errori di quell'attività, nell'ordine delle risposte, anche se nel frattempo sono stati corretti altrove | `test_engine.mjs::erroriSessione: apre esattamente gli errori di quella lista` |
 | R-FLU-03 | Il conteggio annunciato e la lista che si apre coincidono anche per gli errori di sessione, nel motore; nella pagina lo tiene R-FLU-10 | `test_engine.mjs::erroriSessione: il conteggio promesso e la lista coincidono` |
 | R-FLU-04 | Un confine di sessione ricostruito si dichiara invece di passare per registrato: il motore lo dice in `fonte`, e il riepilogo e l'istantanea della riprova lo portano fino alla pagina | `test_engine.mjs::erroriSessione: un confine ricostruito si dichiara` |
@@ -1364,7 +1365,7 @@ del progetto di preparazione. Il §4 di `prossima-versione.md` li motiva.
 | R-FLU-08 | Un errore su un quesito che la banca caricata non ha si nomina, invece di sparire dal conteggio | `test_engine.mjs::erroriSessione: un errore su un quesito che la banca non ha si nomina` |
 | R-FLU-09 | Un confine sessione sconosciuto è un errore, non un ritorno silenzioso al predefinito | `test_engine.mjs::sessioni: un confine sconosciuto e un errore, non un ripiego` |
 | R-FLU-10 | «Riprova questi N» apre l'istantanea presa al riepilogo — stesso numero, stessa lista, stesso ordine —, con un'identità nuova, senza timer e senza avanzamento automatico; se fra un clic e l'altro gli errori dell'attività sono cambiati, o l'attività non c'è più o non si legge, l'anteprima lo dice e Inizia non avvia niente. Un tag, un'altra attività o la banca ricaricata non cambiano la lista | `test_interfaccia.py::test_ciclo_riprova` |
-| R-FLU-11 | Il controllo del ciclo progettato gira a ogni esecuzione, anche finché la pagina pubblicata ha il ciclo di prima: una pagina di riferimento lo passa, e ciascuna delle sue rotture dichiarate lo fa fallire nominando il difetto | `test_interfaccia.py::test_ciclo_provato_al_contrario` |
+| R-FLU-11 | Il controllo del ciclo si prova contro sé stesso a ogni esecuzione: una pagina di riferimento lo passa, e ciascuna delle sue rotture dichiarate lo fa fallire nominando il difetto | `test_interfaccia.py::test_ciclo_provato_al_contrario` |
 | R-FLU-12 | Le attività del carteggio e delle tecniche si leggono con un contratto proprio, che nomina il tipo: un tipo mancante, sconosciuto o dei quiz è un errore, e `sessioni()` e `ritmo()` restano dei soli quiz | `test_engine.mjs::attivitaCarteggio: il tipo si sceglie per nome` |
 | R-FLU-13 | Un'attività di carteggio o di tecniche registrata resta intera oltre qualunque pausa, e il suo dettaglio conta tutte le sue righe | `test_engine.mjs::attivitaCarteggio: un attivita registrata resta intera oltre la pausa` |
 | R-FLU-14 | Le attività non si mescolano: fra due intrecciate nel tempo, con i quiz, con l'altro tipo, e ognuna porta soltanto le sue righe; la prova porta la sua riga di prova, un allenamento nessuna | `test_engine.mjs::attivitaCarteggio: le attivita non si mescolano, nemmeno intrecciate` |
@@ -1381,23 +1382,29 @@ del progetto di preparazione. Il §4 di `prossima-versione.md` li motiva.
 | R-FLU-25 | La riprova esatta resta dei quiz: il riepilogo del Carteggio non chiama `erroriSessione()` né offre una lista da riaprire, e il seguito è una preparazione nuova (area 4 §7.3). Un controllo suo, distinto da quello del riepilogo | `test_interfaccia.py::test_carteggio_senza_riprova` |
 | R-FLU-26 | Il controllo del Carteggio progettato gira a ogni esecuzione, anche finché la pagina pubblicata è nel regime attuale: una pagina di riferimento lo passa, e ciascuna delle sue rotture dichiarate lo fa fallire nominando il difetto | `test_interfaccia.py::test_carteggio_provato_al_contrario` |
 
-**I due regimi del ciclo, e che cosa il controllo non vede.** R-FLU-01 e
-R-FLU-10 sono scritti per il passaggio all'area 3 (§10.1 del suo progetto), con
-il meccanismo di R-NAV-04: la pagina pubblicata ha il riepilogo di prima, e
-`main` deve restare verde con lei mentre il nuovo si realizza. Il controllo
-riconosce il regime dal **raccordo** — `riepilogoQuiz()`, `anteprimaRiprova()`,
-`avviaRiprova()` —, non da un pulsante: nel regime attuale pretende che il
-riepilogo e la revisione di oggi ci siano e che nessuna riprova esista senza il
-raccordo; nel progettato estrae le tre funzioni e fa il giro riepilogo →
-anteprima → avvio contro il motore e la banca veri, con uno storico estraneo e
-i dati che cambiano fra un clic e l'altro (`tests/ciclo_quiz.mjs`). R-FLU-02…04
-restano sul motore, dove i loro test li tengono; R-FLU-10 li porta nella colla
-fra pagina e motore. **Non vede**, e resta al collaudo a 375 e 1280 px: i testi
-del riepilogo e dell'anteprima, la gerarchia delle uscite, il focus e i
+**Un regime solo per il ciclo, e che cosa il controllo non vede** (P-31 e
+P-37). R-FLU-01 e R-FLU-10 erano scritti per il passaggio all'area 3 (§10.1 del
+suo progetto), in due regimi, con il meccanismo di R-NAV-04: la pagina di prima
+aveva il riepilogo con gli errori del runner, e `main` doveva restare verde con
+lei mentre il nuovo si realizzava. P-19 è fuso dal 26 settembre 2026, e dal 30
+settembre il regime di prima non c'è più: il banco (`tests/ciclo_quiz.mjs`)
+gira su ogni pagina, ne estrae le tre funzioni di raccordo —
+`riepilogoQuiz()`, `anteprimaRiprova()`, `avviaRiprova()` — e fa il giro
+riepilogo → anteprima → avvio contro il motore e la banca veri, con uno storico
+estraneo e i dati che cambiano fra un clic e l'altro; e la pagina vera deve
+fare almeno le verifiche della pagina di riferimento, gruppo per gruppo — il
+conteggio di P-40, P-47 e P-12. Provato sulla pagina di prima di P-19
+(`4129dfc^1`): prima di P-37 passava con tre verifiche e nessun rosso, ora ha
+sei rossi — le tre funzioni che mancano, e riepilogo e giro a zero verifiche su
+38 e 28. La pagina di riferimento (`tests/pagina-ciclo-quiz.html`) resta, per
+le ventisette rotture. R-FLU-02…04 restano sul motore, dove i loro test li
+tengono; R-FLU-10 li porta nella colla fra pagina e motore. **Non vede**, e
+resta al collaudo a 375 e 1280 px — fatto da P-19, §10.4 del progetto —: i
+testi del riepilogo e dell'anteprima, la gerarchia delle uscite, il focus e i
 ritorni, Esc, la conferma e la consegna idempotente di una simulazione, i tag
 nella revisione, gli avvisi di scrittura e di lettura, le figure, Base e vela
-come flusso. **Il regime attuale ha una scadenza:** lo toglie la regia quando
-integra P-19.
+come flusso. Che un'attività fermata dopo una risposta abbia il suo riepilogo e
+la sua revisione, nel browser, lo tiene R-ACC-01.
 
 **I due regimi del Carteggio, e che cosa il controllo non vede** (D-04, P-35).
 R-SEL-17, R-FLU-23…26 e R-UX-07 sono scritti per il passaggio all'area 4, con
@@ -1426,10 +1433,9 @@ al contrario di R-UX-07 etichettava `app.html` come «attuale», e con il
 raccordo di P-21 sarebbe stato rosso con la pagina giusta: si è fermato così
 P-21. Ora la copia che carica il file dev'essere nel regime in cui è la pagina
 vera, e il controllo gira anche con la pagina di riferimento e con una copia di
-`app.html` con il raccordo innestato al posto della vera. Gli altri banchi a due
-regimi — quiz, ciclo — leggono il regime della pagina vera, la mappa ne ha uno
-solo per decisione, e il client e l'area 6 non riconoscono un regime di pagina:
-nessun altro punto lo fissa. Per misurare una bozza
+`app.html` con il raccordo innestato al posto della vera. Quiz, ciclo e mappa
+hanno un regime solo (P-12, P-37, P-47), e il client e l'area 6 non riconoscono
+un regime di pagina: nessun altro punto lo fissa. Per misurare una bozza
 senza toccare `site/app.html`, `RG_PAGINA=<file>` fa girare la suite
 dell'interfaccia su una copia, e la riga finale lo dice.
 
@@ -1445,7 +1451,7 @@ liste, perché una lista in un prompt è una regola da ricordare.
 | R-A11Y-01 | Nessun testo sotto gli 11 px, salvo eccezioni dichiarate con l'area che le corregge | `test_interfaccia.py::test_testi_leggibili` |
 | R-A11Y-02 | Un'immagine che porta contenuto dichiara che cosa mostra; `alt=""` resta per le decorative | `test_interfaccia.py::test_alt_di_contenuto` |
 | R-A11Y-03 | Contrasto ≥ 4,5:1 sul testo normale, misurato sui colori calcolati; le aree di tocco sono R-RIF-12, e il resto dell'accessibilità il §9.11 | `test_interfaccia.py::test_rifinitura_contrasto` |
-| R-UX-06 | Una breve attività dichiara che cosa è successo, quali rivedere e che cosa non hai toccato: nessuna quarta affermazione, e nessun voto sulla preparazione | scoperto — i numeri delle tre affermazioni vengono dal raccordo e li tiene R-FLU-01; le frasi sono testo di schermata, e si fissano al collaudo di P-19 |
+| R-UX-06 | Una breve attività dichiara che cosa è successo, quali rivedere e che cosa non hai toccato: nessuna quarta affermazione, e nessun voto sulla preparazione | scoperto — i numeri delle tre affermazioni vengono dal raccordo, e sulla pagina vera li tiene R-FLU-01, compreso «Riprova questi N» da `riprova.quanti`; le frasi sono testo di schermata, guardate al collaudo di P-19 (`area-3-progetto.md` §10.4), e nessun controllo le tiene ferme: il banco del ciclo non ha DOM, e quello del client non legge i testi del riepilogo |
 
 ### 9.7 Le decisioni di prodotto
 
@@ -2287,3 +2293,9 @@ successo, ed è il motivo per cui questo file esiste.
   delle verifiche contro la pagina di riferimento, che resta per le rotture.
   §5.3, §5.4 e §7.2 descrivono le cinque intenzioni e i filtri locali al posto
   di Batteria e del selettore globale; il §2.5 lo dice.
+- **30 settembre 2026 — un regime solo per il ciclo (P-37).** Il regime del
+  ciclo di prima di P-19 esce dai controlli: il banco gira su ogni pagina, e la
+  pagina vera fa almeno le verifiche della pagina di riferimento, gruppo per
+  gruppo. La pagina di `4129dfc^1` è rossa, sei rossi dove prima ne aveva zero
+  con tre verifiche. R-FLU-01 e 11, §7.5 e il §9.6 dicono quello che la
+  pagina fa; R-UX-06 resta scoperto per le frasi, con il motivo di oggi.

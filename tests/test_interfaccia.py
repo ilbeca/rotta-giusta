@@ -92,20 +92,18 @@ INTENZIONI = ['mirata', 'argomento', 'sbagliate', 'sim', 'screening']
 BANCO_QUIZ = RADICE / 'tests' / 'quiz_intenzioni.mjs'
 RIFERIMENTO_QUIZ = RADICE / 'tests' / 'pagina-quiz-intenzioni.html'
 
-# Il ciclo dei quiz ha due regimi, con il meccanismo che i quiz hanno avuto fino a P-12.
-#
-# Il regime ATTUALE e' la pagina pubblicata: `fine()` disegna il riepilogo con
-# gli errori del runner, e nessuna riprova delle sole risposte sbagliate di
-# quell'attivita' esiste. Il regime PROGETTATO e' l'area 3
-# (docs/area-3-progetto.md): riepilogo, anteprima e avvio della riprova passano
-# da tre funzioni di raccordo, e il §10.1 di quel progetto chiede che il
-# controllo le **esegua** — riepilogo → anteprima → avvio, con i dati che
+# Il ciclo dei quiz ha un regime solo, dal 30 settembre 2026 (P-37): quello
+# dell'area 3 (docs/area-3-progetto.md). Riepilogo, anteprima e avvio della
+# riprova passano da tre funzioni di raccordo, e il §10.1 di quel progetto chiede
+# che il controllo le **esegua** — riepilogo → anteprima → avvio, con i dati che
 # cambiano fra un clic e l'altro — invece di cercare un nome o un pulsante.
 #
-# Il regime si riconosce dal raccordo: una pagina che dichiara una delle tre
-# funzioni e' nel progettato, e deve dichiararle tutte. **Il regime attuale ha
-# una scadenza:** la regia lo toglie quando integra P-19.
-RACCORDO_CICLO = ['riepilogoQuiz', 'anteprimaRiprova', 'avviaRiprova']
+# Fino a P-37 i regimi erano due, con il meccanismo dei quiz: accanto a questo
+# c'era quello della pagina di prima di P-19, riconosciuto da `fine()` e
+# `rivediQuiz()` senza il raccordo, perche' `main` restasse verde nel passaggio.
+# P-19 e' fuso dal 26 settembre 2026, e con P-37 quel ramo non c'e' piu': una
+# pagina senza il raccordo — misurata su quella di `4129dfc^1`, che passava con
+# 3 verifiche e zero rossi — e' rossa, e il rosso nomina la funzione che manca.
 BANCO_CICLO = RADICE / 'tests' / 'ciclo_quiz.mjs'
 RIFERIMENTO_CICLO = RADICE / 'tests' / 'pagina-ciclo-quiz.html'
 
@@ -453,70 +451,73 @@ def banco_ciclo(testo):
     return out
 
 
-def regime_ciclo(testo):
-    """(regime, verifiche) del ciclo dei quiz: 'attuale' o 'progettato'.
+def verifiche_ciclo(testo):
+    """Le verifiche del ciclo dei quiz sulla pagina data: la lista di esiti {gruppo, nome, ok, extra}.
 
-    Gruppi: «riepilogo» e' di R-FLU-01; «giro» e «raccordo» di R-FLU-10.
+    Gruppi: «riepilogo» e' di R-FLU-01; «giro» e «raccordo» di R-FLU-10. Il banco
+    gira sempre, su qualunque pagina: su una senza il raccordo dice quale delle
+    tre funzioni manca, e non ha un giro da eseguire — per questo le verifiche si
+    contano anche (`conteggio_ciclo`).
     """
-    js = senza_commenti(testo)
-    if any(re.search(r'^function %s\b' % f, js, re.M) for f in RACCORDO_CICLO):
-        return 'progettato', banco_ciclo(testo)
-    v = []
-    # Un ibrido e' la scappatoia che il §10.1 vieta: gli errori dell'attivita'
-    # chiesti al motore, o un pulsante che li promette, senza il raccordo che
-    # il controllo esegue. Numero e lista avrebbero di nuovo due fonti.
-    v.append({'gruppo': 'raccordo', 'nome': 'regime attuale: nessuna riprova senza il raccordo',
-              'ok': not re.search(r'\bE\.erroriSessione\b', js) and not re.search(r'Riprova quest[oi]\b', js),
-              'extra': 'la pagina chiama E.erroriSessione() o promette «Riprova questi N» senza '
-                       'riepilogoQuiz/anteprimaRiprova/avviaRiprova: il contratto e\' nel §10.1 '
-                       'di docs/area-3-progetto.md'})
-    v.append({'gruppo': 'riepilogo', 'nome': 'regime attuale: ogni attivita\' quiz si chiude con un riepilogo',
-              'ok': bool(re.search(r'^function fine\(', js, re.M)) and 'E.esito(' in js,
-              'extra': 'fine() e l\'esito dal motore sono il ciclo di oggi: finche\' il nuovo non c\'e\', '
-                       'non possono sparire'})
-    v.append({'gruppo': 'giro', 'nome': 'regime attuale: una sessione si riapre e si rivede',
-              'ok': bool(re.search(r'^function rivediQuiz\(', js, re.M)) and 'data-auid' in js,
-              'extra': 'la revisione di una sessione e i tag per tentativo sono l\'unica strada, oggi, per '
-                       'rileggere gli errori di un\'attivita\''})
-    return 'attuale', v
+    return banco_ciclo(testo)
 
 
-_REGIME_CICLO = None
+_CICLO_APP = None
 
 
-def regime_ciclo_app():
-    global _REGIME_CICLO
-    if _REGIME_CICLO is None:
-        _REGIME_CICLO = regime_ciclo(leggi('app.html'))
-    return _REGIME_CICLO
+def ciclo_app():
+    global _CICLO_APP
+    if _CICLO_APP is None:
+        _CICLO_APP = verifiche_ciclo(leggi('app.html'))
+    return _CICLO_APP
 
 
-def registra_ciclo(regime, verifiche, gruppi):
-    etichetta = {'attuale': 'regime attuale', 'progettato': 'regime progettato'}
+_CICLO_RIF = None
+
+
+def ciclo_riferimento():
+    global _CICLO_RIF
+    if _CICLO_RIF is None:
+        _CICLO_RIF = verifiche_ciclo(RIFERIMENTO_CICLO.read_text(encoding='utf-8'))
+    return _CICLO_RIF
+
+
+def registra_ciclo(verifiche, gruppi):
     for x in verifiche:
         if x['gruppo'] in gruppi:
-            check('ciclo quiz (%s): %s' % (etichetta.get(regime, 'regime ignoto'), x['nome']),
-                  x['ok'], x.get('extra', ''))
+            check('ciclo quiz: %s' % x['nome'], x['ok'], x.get('extra', ''))
+
+
+def conteggio_ciclo(gruppi):
+    """La pagina vera fa almeno le verifiche che fa la pagina di riferimento, gruppo per gruppo.
+
+    E' il conteggio di P-40, P-47 e P-12: un giro che si ferma a meta' ha meno
+    verifiche, e quelle fatte possono essere tutte verdi. La pagina di prima di
+    P-19, senza il raccordo, passava con una verifica per gruppo e nessun rosso.
+    """
+    app, rif = ciclo_app(), ciclo_riferimento()
+    for g in gruppi:
+        n, attese = sum(x['gruppo'] == g for x in app), sum(x['gruppo'] == g for x in rif)
+        check('ciclo quiz: il gruppo «%s» ha fatto tutte le verifiche' % g, attese > 0 and n >= attese,
+              'troppo poche verifiche (%d su %d): il banco non ha eseguito il giro della pagina' % (n, attese))
 
 
 def test_ciclo_riepilogo():
-    regime, v = regime_ciclo_app()
-    registra_ciclo(regime, v, ('riepilogo',))
-    check('ciclo quiz: il riepilogo e\' stato controllato', any(x['gruppo'] == 'riepilogo' for x in v),
-          'nessuna verifica sul riepilogo')
+    registra_ciclo(ciclo_app(), ('riepilogo',))
+    conteggio_ciclo(('riepilogo',))
 
 
 def test_ciclo_riprova():
-    regime, v = regime_ciclo_app()
-    registra_ciclo(regime, v, ('giro', 'raccordo'))
-    check('ciclo quiz: la riprova e\' stata controllata', any(x['gruppo'] == 'raccordo' for x in v),
-          'nessuna verifica sul raccordo')
+    registra_ciclo(ciclo_app(), ('giro', 'raccordo'))
+    conteggio_ciclo(('giro', 'raccordo'))
 
 
-# Il ramo del regime progettato non gira mai sulla pagina pubblicata finche'
-# P-19 non arriva: qui gira a ogni esecuzione su una pagina di riferimento che
-# deve passare e su ciascuna delle sue rotture, che devono fallire nominando il
-# difetto. Ogni rottura e' una lista di sostituzioni, applicate in ordine.
+# Il banco del ciclo gira anche su una pagina di riferimento, che deve passare,
+# e su ciascuna delle sue rotture, che devono fallire nominando il difetto. Le
+# rotture restano su di lei e non sulla pagina vera, per la ragione di P-40:
+# sostituzioni di testo in un file dell'interfaccia da 200 KB si spezzerebbero a
+# ogni suo ritocco, e una rottura che non si applica piu' e' un controllo spento.
+# Ogni rottura e' una lista di sostituzioni, applicate in ordine.
 ROTTURE_CICLO = [
     ('il raccordo perde il riepilogo',
      [('function riepilogoQuiz(contesto, fonte) {', 'function riepilogoAttivita(contesto, fonte) {')],
@@ -525,7 +526,7 @@ ROTTURE_CICLO = [
      [('function riepilogoQuiz(', 'function riepilogoAttivita('),
       ('function anteprimaRiprova(', 'function anteprimaAttivita('),
       ('function avviaRiprova(', 'function avviaAttivita(')],
-     'nessuna riprova senza il raccordo'),
+     'dichiara riepilogoQuiz'),
     ('la riprova e\' il ripasso di tutto lo storico',
      [('const r = E.erroriSessione(righe, banca, contesto.id);',
        "const l = E.coda(banca, {}, '2026-09-26', { soloSbagliate: true, n: 0 }); "
@@ -617,9 +618,8 @@ ROTTURE_CICLO = [
 
 def test_ciclo_provato_al_contrario():
     rif = RIFERIMENTO_CICLO.read_text(encoding='utf-8')
-    regime, v = regime_ciclo(rif)
+    v = ciclo_riferimento()
     rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in v if not x['ok']]
-    check('la pagina di riferimento del ciclo e\' nel regime progettato', regime == 'progettato', str(regime))
     check('la pagina di riferimento del ciclo passa il controllo', not rossi, '; '.join(rossi[:3]))
     # Un banco che non esegue niente passerebbe tutto: si pretende che abbia
     # fatto il giro intero, dal riepilogo all'avvio.
@@ -635,7 +635,7 @@ def test_ciclo_provato_al_contrario():
             rotta = rotta.replace(vecchio, nuovo, 1)
         if rotta == rif:
             continue
-        _, vr = regime_ciclo(rotta)
+        vr = verifiche_ciclo(rotta)
         rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in vr if not x['ok']]
         check('rottura del ciclo «%s»: il controllo diventa rosso' % cosa, bool(rossi), 'e\' passata verde')
         check('rottura del ciclo «%s»: e il rosso nomina il difetto' % cosa, any(atteso in r for r in rossi),

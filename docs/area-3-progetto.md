@@ -689,6 +689,14 @@ avvisi, le figure, Base e vela come flusso. Se il contratto sta stretto alla
 realizzazione, si dice alla regia: cambiarlo tocca `tests/`, che da `ui/*` non
 si scrive.
 
+**Dal 30 settembre 2026 (P-37) il regime del ciclo di prima non c'è più.**
+P-19 ha portato il raccordo nella pagina vera, e il controllo riconosce un
+regime solo: il banco gira su ogni pagina, e la pagina vera deve fare almeno le
+verifiche della pagina di riferimento, gruppo per gruppo. La pagina di prima
+(`4129dfc^1`, con `fine()` e `rivediQuiz()` senza il raccordo) è rossa: prima di
+P-37 passava con tre verifiche e nessun rosso. La pagina di riferimento resta,
+per le rotture.
+
 ### 10.2 Criteri di accettazione della realizzazione
 
 | Caso | Esito richiesto |

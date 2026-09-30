@@ -1,5 +1,6 @@
-// Il banco del ciclo progettato dei quiz: riepilogo, anteprima, avvio della
-// riprova — l'area 3.
+// Il banco del ciclo dei quiz: riepilogo, anteprima, avvio della riprova —
+// l'area 3. Dal 30 settembre 2026 (P-37) e' l'unico regime del ciclo: gira su
+// ogni pagina, e su una senza il raccordo dice quale funzione manca.
 //
 // Lo chiama tests/test_interfaccia.py, e non gira da solo sotto `node --test`:
 // legge da stdin `{"pagina": "<testo di una pagina>"}` e scrive su stdout la
@@ -490,7 +491,8 @@ const G = 'raccordo';
 check(G, 'la pagina ha uno script', script.length > 0, 'nessun <script type="module">');
 for (const f of RACCORDO) {
   check(G, 'la pagina dichiara ' + f + '()', !!tutte[f],
-    'il ciclo progettato passa da tre funzioni di raccordo: il contratto e\' in docs/area-3-progetto.md §10.1');
+    'il ciclo dei quiz passa da tre funzioni di raccordo: il contratto e\' in docs/area-3-progetto.md §10.1; '
+    + 'una pagina senza, con fine() e rivediQuiz() soltanto, e\' quella di prima di P-19');
 }
 if (RACCORDO.every((f) => tutte[f])) {
   const sel = {};

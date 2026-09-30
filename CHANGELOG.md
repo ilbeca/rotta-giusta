@@ -1830,6 +1830,52 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   ogni giro la 8620 guardata libera; nessun carico di prova lanciato. `site/`,
   `docs/prossime-sessioni.md` e il worktree `ui` non sono stati toccati.
 
+### Test — P-37: il ciclo dei quiz ha un regime solo
+
+- **La pagina di prima di P-19 passava i controlli del ciclo.** Il ramo
+  «attuale», lasciato da P-31 per il passaggio all'area 3, riconosceva il ciclo
+  di prima da `fine()` e `rivediQuiz()` e gli chiedeva tre cose: misurato con
+  `RG_PAGINA` sulla pagina di `4129dfc^1`, **3 verifiche e zero rossi**, contro
+  le 73 della pagina vera. P-19 è fuso dal 26 settembre, e quel ramo teneva
+  verde una pagina che non ha il ciclo che la specifica descrive.
+
+- **Tolti il ramo, `regime_ciclo()` e `RACCORDO_CICLO`**: il banco
+  (`tests/ciclo_quiz.mjs`) gira su ogni pagina, come quelli dei quiz e della
+  mappa dopo P-12 e P-47, e la pagina vera deve fare almeno le verifiche della
+  pagina di riferimento, gruppo per gruppo — riepilogo 38, giro 28, raccordo 7.
+  Sulla pagina di prima ora **sei rossi**: le tre funzioni di raccordo che
+  mancano, e i tre gruppi a 0 su 38, 0 su 28 e 4 su 7. Provato anche su una
+  copia della pagina vera con `anteprimaRiprova` rinominata: quattro rossi,
+  fra cui la funzione nominata. Sulla pagina vera: zero rossi.
+
+- **La pagina di riferimento resta**, per la ragione di P-40: le ventisette
+  rotture stanno su di lei, perché sostituzioni di testo nella pagina vera si
+  spezzerebbero a ogni suo ritocco; e fa da metro al conteggio. La rottura
+  «tutte e tre le funzioni spariscono» ora aspetta il rosso «dichiara
+  riepilogoQuiz» invece di quello del regime di prima, che non esiste più;
+  tutte e ventisette rosse per il loro motivo.
+
+- **Nella specifica** R-FLU-01 dice che il ciclo dei quiz si esegue sulla pagina
+  vera e che una pagina senza raccordo è rossa, R-FLU-11 che il controllo si
+  prova contro sé stesso senza più un «finché»; il §9.6 racconta «Un regime
+  solo per il ciclo», e il paragrafo di P-51 non conta più il ciclo fra i banchi
+  a due regimi. Il §7.5 dice dove sta il ciclo: nella pagina su `main` da P-19,
+  non ancora nel sito pubblicato, che è la v0.28.0. **R-UX-06 resta scoperto**,
+  con il motivo di oggi: i numeri delle tre affermazioni e «Riprova questi N»
+  vengono dal raccordo e li tiene R-FLU-01 sulla pagina vera, ma le frasi sono
+  testo di schermata, guardate al collaudo di P-19, e nessun banco le legge.
+  Nota di chiusura nel §10.1 di `docs/area-3-progetto.md`.
+
+  Suite: interfaccia **1.873**, in 187 s — lo stesso numero, perché le due
+  verifiche «è stato controllato» e quella del regime della pagina di
+  riferimento lasciano il posto alle tre del conteggio —; specifica 758; motore
+  185/187 con i due skip di sempre; dati 242; server 60/60. Con la **24.21.0
+  LTS**, pacchetto verificato con il `SHASUMS256.txt` riscaricato da
+  nodejs.org: motore 185/187, server 60/60, interfaccia 1.873. Guardiano e
+  controllo della documentazione verdi. Prima di ogni giro la 8620 guardata
+  libera; nessun carico di prova lanciato. `site/`, `docs/prossime-sessioni.md`
+  e il worktree `ui` non sono stati toccati.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag
