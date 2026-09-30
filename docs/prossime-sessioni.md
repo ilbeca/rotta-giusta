@@ -189,25 +189,24 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 25 | I controlli della mappa di Progressi — **in corso dal 30 settembre** | Claude | `main`, a mano | niente | P-44 |
-| 18 | Il carteggio su `main`: composizione, attività intera, bozza, controlli | Claude | `main`, a mano | P-44, nell'ordine | P-32…P-35 |
+| 18 | Il carteggio su `main`: composizione, attività intera, bozza, controlli | Claude | `main`, a mano | niente: P-32 apre la fila | P-32…P-35 |
 | 9a | I testi fuori da `site/` nella versione con gli account | Claude | `main`, a mano | niente | P-26 |
 | 6d, 5b, 12, 13 | Il regime vecchio del ciclo e dei quiz, `ritmo()`, l'ultimo tag | Claude | `main`, a mano | niente: riempiono i buchi | P-37, P-12, P-16, P-17 |
 | 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore | P-15 |
 | 27 | Le tre scelte del client che nessun controllo preme | Claude | `main`, a mano | niente, prima del traguardo | P-46 |
 | 28 | I controlli e la specifica dell'area 6 | Claude | `main`, a mano | in fondo all'ordine | P-45 |
-| 23b | La realizzazione dell'area 5 | ChatGPT | `ui/main` | P-44 | segnaposto P-23 |
+| 23b | La realizzazione dell'area 5 | ChatGPT | `ui/main` | niente — **pronto** | P-23 |
+| 23c | Dopo P-23: il regime vecchio di Progressi, e `consigli()` fuori dal motore | Claude | `main`, a mano | la merge di P-23 | segnaposto P-47, P-42 |
 | 21b | La realizzazione dell'area 4 | ChatGPT | `ui/main` | P-35 | segnaposto P-21 |
 | 26b | La realizzazione dell'area 6 | ChatGPT | `ui/main` | P-45, P-21, P-23, e il §8 dell'area 6 | segnaposto P-25 |
 | 9 | **La versione con gli account** — il traguardo | tutti | `main` | P-15, P-26, e gli adempimenti del §4 | segnaposto P-27 |
-| 29 | Fondere la punta di `sessione/p-08` (`35055a4`), con tre conflitti in `account-progetto.md` | la regia | `main` | la cartella principale libera | — |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**, e si sono incontrate: il client degli
-account è nella pagina (P-18). **Per Claude, l'ordine consigliato: P-44**
-(sblocca P-23), **P-26 e P-46** (sono sulla strada del traguardo), **P-32…P-35**
-(sbloccano P-21), P-45, poi i piccoli; P-15 quando l'autore ha il tempo. **Per
-ChatGPT non c'è niente di pronto** finché P-44 non chiude: poi P-23. I prompt di Claude vanno uno alla volta nella cartella principale, e
+account è nella pagina (P-18). **Per Claude, l'ordine consigliato: P-26 e
+P-46** (sono sulla strada del traguardo), **P-32…P-35** (sbloccano P-21), P-45,
+poi i piccoli; P-15 quando l'autore ha il tempo. **Per ChatGPT: P-23**, pronto
+dal 30 settembre. I prompt di Claude vanno uno alla volta nella cartella principale, e
 la suite dell'interfaccia di un worktree esclude quella dell'altro, per la porta
 8620. Il numero di una riga è il suo nome, non la sua posizione. Il traguardo,
 P-27, non aspetta le aree 4–6: aspetta il server in esercizio, i testi e gli
@@ -1970,7 +1969,7 @@ Controllato dalla regia: interfaccia 928 in 86 s, specifica 546, server 60.
 
 ### P-44 — Claude: i controlli della mappa di Progressi
 
-**Stato:** **in corso dal 30 settembre 2026**, nella cartella principale; confermato dall'autore. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce
+**Stato:** **chiuso il 30 settembre 2026**, commit `df037e0` su `main`. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce
 da:** P-22, §10.1 di `docs/area-5-progetto.md`.
 
 ```
@@ -1996,7 +1995,25 @@ fondo a [Unreleased], un commit. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `df037e0`, voce nel CHANGELOG. I controlli di Progressi in
+due regimi, riconosciuti dal raccordo — `mappaProgressi()`,
+`anteprimaProgressi()`, `avviaProgressi()` —, il cui contratto è scritto nel
+§10.1 di `docs/area-5-progetto.md` prima della pagina. Nel regime progettato
+`tests/mappa_progressi.mjs` esegue il raccordo con motore e banca veri e conta
+le chiamate; la pagina di riferimento `tests/pagina-mappa-progressi.html` ha 23
+rotture, tutte rosse per il loro motivo, e il banco è stato provato contro sé
+stesso. R-MAPPA-14 coperto per quello che il banco esegue, R-MAPPA-15 e 16
+nuovi, R-MAPPA-17 scoperto (testi e disegno, al collaudo di P-23). **Trovato:**
+con i pesi del decreto, chi ha visto 20 quesiti o più senza toccare né
+Navigazione né Manovra non ha la frase — `dovePesa()` risponde `pari`
+(4 × 322/322 = 4 × 155/155) —; è la regola confermata il 29 settembre che fa il
+suo lavoro, scritta nel §4.3 della specifica, e non chiede una decisione. Due
+indicazioni per P-23 nel §10.1 del progetto: la riga `diagnosi` delle chiamate
+protette esce con la vecchia diagnosi, `serieGruppi` resta solo se l'andamento
+la chiama. Controllato dalla regia sullo stato fuso con P-08: motore 167/169,
+server 60/60, dati 242, specifica 572, guardiano verde, interfaccia 1.181 in 122 s;
+i luoghi del «Trovato» esistono. La regia **non** ha ripetuto i giri sotto
+carico né quello con la LTS: valgono quelli della sessione.
 
 ### P-40 — Claude: chiudere il regime vecchio dei controlli del client
 
@@ -2171,6 +2188,46 @@ docs/prossime-sessioni.md.
 
 **Esito:** —
 
+### P-23 — ChatGPT: la realizzazione dell'area 5
+
+**Stato:** pronto dal 30 settembre 2026: P-44 è chiuso. **Dove:** app di
+ChatGPT, progetto `~/Software/rotta-giusta-ui`, ramo `ui/main`, modalità Local.
+
+```
+Questo prompt è per ChatGPT, nel worktree ~/Software/rotta-giusta-ui,
+sul ramo ui/main. Se sei un altro agente o sei in un'altra cartella,
+fermati e dillo, senza scrivere niente.
+
+Sessione P-23. Realizza docs/area-5-progetto.md in site/app.html:
+Progressi come mappa per tema. Prima leggi gli esiti di P-41, P-22 e
+P-44 nel §6 di docs/prossime-sessioni.md, il §4.3 e il §9.10 della
+specifica, e per intero il §10.1 del progetto: è il contratto che la
+pagina deve rispettare — le tre funzioni di raccordo mappaProgressi(),
+anteprimaProgressi(), avviaProgressi() — e che la suite ora esegue.
+Nello stesso §10.1 ci sono le due indicazioni di P-44 sulle chiamate
+protette (diagnosi, serieGruppi) e «Che cosa il controllo non vede»,
+che è il tuo collaudo.
+
+Nello stesso commit, in docs/eccezioni-interfaccia.md: consigli() passa
+dalle chiamate protette agli orfani, con il motivo «esce»; quadro e
+dovePesa escono dagli orfani ed entrano fra le chiamate protette. Dove
+dovePesa() non dà la frase — sotto soglia, a pari merito, senza pesi —
+al suo posto non va niente: il caso `pari` che P-44 ha trovato è la
+regola che fa il suo lavoro. La suite dell'interfaccia vuole Chrome e
+la porta 8620 libera (lsof -iTCP:8620 -sTCP:LISTEN), che la cartella
+principale può tenere occupata; se non gira, fermati e dillo, non
+saltarla. Se un contratto o un controllo ti sta stretto, fermati e
+dillo: cambiarlo tocca main.
+
+Non toccare docs/prossime-sessioni.md. Tutte le suite verdi, collaudo
+guardato a 375 e 1280 px nei due stati d'accesso — le tabelle che dalla
+0.3.0 sforano di 89 px non devono più sforare —, voce in fondo a
+[Unreleased], un commit con il trailer, versione non toccata. Chiudi
+con il resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
 ---
 
 ### I segnaposto — i prompt che non si possono ancora scrivere
@@ -2191,15 +2248,15 @@ e specifica che il progetto avrà scritto, chiuse prima da Claude come P-06 e
 P-31; l'eccezione `figura` di `docs/eccezioni-interfaccia.md`, se l'area 3 non
 l'ha chiusa.
 
-#### P-23 — ChatGPT: la realizzazione dell'area 5
+#### P-47 — Claude: chiudere il regime vecchio dei controlli di Progressi
 
-**Aspetta:** P-44 (P-18 è fuso). Non aspetta P-21: chi dei due è pronto prima
-prende la penna su `app.html`, l'altro dopo. **Dove:** `ui/main`. **Dovrà contenere:** realizzare
-`docs/area-5-progetto.md`; togliere la chiamata a `consigli()` e, nello
-stesso commit, spostarla in `docs/eccezioni-interfaccia.md` dalle chiamate
-protette agli orfani, con il motivo «esce»; togliere `quadro` e `dovePesa`
-dagli orfani; le dipendenze del progetto chiuse prima da Claude come P-06, P-31,
-P-35.
+**Aspetta:** la merge di P-23. **Dove:** `main`, a mano. **Dovrà contenere:**
+quello che P-12, P-37 e P-40 hanno fatto per quiz, ciclo e client — in
+`tests/test_interfaccia.py` resta solo il regime della mappa (`regime_mappa`),
+e la pagina con la diagnosi a due tabelle diventa rossa; la pagina di
+riferimento resta se serve alle rotture; R-MAPPA-14…17 dicono coperto quello
+che la pagina vera fa. Si può fare nella stessa sessione di P-42, che aspetta la
+stessa merge.
 
 #### P-42 — Claude: `consigli()` esce dal motore
 
@@ -2444,3 +2501,14 @@ dopo**, la soglia degli allarmi riletta sul registro vero
   passo 3 della regia entra il controllo che l'avrebbe presa: dopo la merge,
   `git log main..<ramo>` vuoto. Corretti gli stati vecchi di P-12 e P-32, e la
   testata.
+- **30 settembre 2026 — P-44 chiuso, P-08 fuso per intero, P-23 pronto.**
+  P-44 dà i controlli di Progressi in due regimi, con il raccordo scritto nel
+  §10.1 dell'area 5 prima della pagina; ha trovato il `pari` di `dovePesa()`
+  senza Navigazione né Manovra, che non chiede decisioni. La punta di
+  `sessione/p-08` è su `main` (`f0c262e`): tre conflitti in
+  `account-progetto.md` risolti a mano — la riga delle 72 ore prende il testo
+  nuovo e tiene gli allarmi «fatti» di P-11 —, e la voce di CHANGELOG
+  rimessa nella sezione di P-08, dove l'unione non l'aveva lasciata;
+  `git log main..sessione/p-08` è vuoto. P-23 scritto per ChatGPT al posto del
+  segnaposto; nasce il segnaposto P-47 per il regime vecchio di Progressi,
+  insieme a P-42 dopo la merge di P-23.
