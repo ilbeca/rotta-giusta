@@ -49,15 +49,10 @@ dichiarazione che mente.
 
 | funzione | perché è ancora qui |
 |---|---|
+| `estrai` | La prova di carteggio la chiama nel motore tramite `provaCarteggio()`; la pagina non la passa più come valore. Resta esportata per il motore e i suoi test, senza chiamanti diretti nella pagina |
+| `estraiNuoviPrima` | La variante di allenamento della prova la chiama nel motore tramite `provaCarteggio()`; la pagina non la passa più come valore |
+| `rimescola` | La composizione della prova è nel motore; la pagina non rimescola più la lista |
 | `fondi` | Fusione di due specchi: serviva alla sincronia col server, tolta nella 0.19.0. Resta esportata e testata perché descrive la semantica della fusione, ma nessuno la chiama. Non ha un'area: è storia |
-| `provaCarteggio` | La composizione della prova di carteggio nel motore (P-32, D-01 del §10.1 di `area-4-progetto.md`): lista, argomenti rappresentati e mancanti, riprese, completamento dichiarato, e le condizioni 4/60/3 in `PROVA_CARTEGGIO`. La pagina compone ancora con la sua `componiProva()`, che un test del motore tiene identica. La consuma la realizzazione dell'area 4 (P-21): allora `componiProva()`, `argomentiSenzaNuovi()` e le tre costanti `PROVA_*` escono dalla pagina, questa riga esce da qui, e se la pagina non chiama più `E.estrai` né `E.estraiNuoviPrima` le loro righe escono dalle chiamate protette, nello stesso commit |
-| `attivitaCarteggio` | Le attività del Carteggio con il confine dell'attività, per `_t:'c'` e `_t:'t'` (P-33, D-02 del §10.1 di `area-4-progetto.md`): intere oltre le pause, ricostruite e dichiarate per le righe senza legame, isolate dai quiz e dall'altro tipo, ambigue con il motivo. La pagina non ha ancora un riepilogo o una revisione di carta e tecniche fuori dalla prova: la consuma la realizzazione dell'area 4 (P-21), e allora questa riga esce da qui |
-| `nuovaBozza` | La bozza del carteggio (P-34, D-03 del §10.1 di `area-4-progetto.md`): una per runner aperto con l'account, lista congelata e scadenza da `PROVA_CARTEGGIO`. La pagina tiene ancora il testo solo in memoria (§7.6 della specifica, difetto aperto qui sotto): la consuma la realizzazione dell'area 4 (P-21) con il contratto del §9.4 di `account-client-progetto.md`, e allora questa riga esce da qui |
-| `modificaBozza` | Il lavoro che cambia in una bozza — posizione, testi, consegna, giudizi — senza cambiare lista, tempo o modalità (P-34). La consuma P-21 insieme a `nuovaBozza` |
-| `sostituisciBozza` | La regola di una scrittura della bozza dentro la transazione: una revisione vecchia non sovrascrive, una bozza conclusa o scartata altrove non si ricrea (P-34). La consuma P-21 insieme a `nuovaBozza` |
-| `riprendiBozza` | La ripresa dopo una ricarica: la scadenza di prima, e una prova scaduta al confronto con il testo scritto (P-34). La consuma P-21 insieme a `nuovaBozza` |
-| `concludiBozza` | Le righe finali di una bozza giudicata tutta, con lo schema di D-02 e gli uid che nascono dalla bozza; con un giudizio rinviato nessuna riga (P-34). La sostituisce, in P-21, la costruzione delle righe in `salvaCart()`, e allora questa riga esce da qui |
-| `dettaglioCarteggio` | Schede, conteggi — coincidenti e da rivedere, scelte non coincidenti, campi vuoti e non registrati, non affrontati — e filtro della revisione di carta e tecniche, dalla stessa fonte (P-33, D-02). Oggi la revisione di una prova di carteggio filtra le righe in `apriRivedi()`; la sostituisce la realizzazione dell'area 4 (P-21), e allora questa riga esce da qui |
 | `tagPerTentativo` | L'ultima classificazione N/L/C di ogni tentativo, per istante, con i tag storici senza data prima e le righe rotte ignorate (P-17, R-ARCH-13 e 14). La pagina la calcola ancora con la sua `tagPerTentativo()`, che un test del motore tiene uguale sulle righe che l'archivio accetta. La ricabla P-52, o la prossima penna su `app.html`: la revisione chiama `E.tagPerTentativo(S.archivio)`, la copia esce dalla pagina e questa riga esce da qui, nello stesso commit, con il nome aggiunto alle chiamate protette. `ordinaRighe` resta protetta: la pagina la chiama anche altrove |
 
 ## Chiamate al motore protette
@@ -74,26 +69,27 @@ nel commit perché: quello che non va bene non è che una chiamata sparisca, è 
 sparisca in silenzio.
 
 L'elenco comprende anche ciò che la pagina consuma **senza chiamarlo**:
-`SEGNALI` è una costante, ed `estrai` ed `estraiNuoviPrima` viaggiano come valore
-dentro `componiProva()`. Cercare `E.nome(` con la parentesi ne perderebbe tre su
-trentatré — misurato scrivendo il controllo.
+`SEGNALI` è una costante. La prova di carteggio usa ora il raccordo con
+`provaCarteggio()`; `estrai` ed `estraiNuoviPrima` restano nel motore, senza una
+seconda composizione nella pagina.
 
 | funzione |
 |---|
 | `accoda` |
+| `attivitaCarteggio` |
 | `addGiorni` |
 | `applica` |
 | `classifica` |
+| `concludiBozza` |
 | `coda` |
 | `daAllenare` |
+| `dettaglioCarteggio` |
 | `domandeSegnali` |
 | `dopoInvio` |
 | `dopoRicezione` |
 | `dovePesa` |
 | `erroriSessione` |
 | `esito` |
-| `estrai` |
-| `estraiNuoviPrima` |
 | `fondiArchivio` |
 | `giorniTra` |
 | `giroTecniche` |
@@ -102,16 +98,19 @@ trentatré — misurato scrivendo il controllo.
 | `lunghezzaPartita` |
 | `lunghezzaScreening` |
 | `mirata` |
+| `modificaBozza` |
 | `nonInviabili` |
 | `nuovaCoda` |
+| `nuovaBozza` |
 | `nuovoTrasferimento` |
 | `ordinaRighe` |
 | `poolSegnali` |
+| `provaCarteggio` |
 | `quadro` |
 | `registraEsito` |
 | `riepilogoTrasferimento` |
-| `rimescola` |
 | `ripiega` |
+| `riprendiBozza` |
 | `risolviConflitto` |
 | `ritmo` |
 | `sbagliato` |
@@ -123,8 +122,10 @@ trentatré — misurato scrivendo il controllo.
 | `simulazioneVela` |
 | `stato` |
 | `stimaImpegno` |
+| `sostituisciBozza` |
 | `tappeto` |
 | `tendenza` |
+| `validaBozza` |
 | `traccia` |
 
 ## Letture che possono mascherare un guasto
@@ -149,7 +150,6 @@ sulla pagina vera.
 
 | parte | verifica | perché è ancora qui |
 |---|---|---|
-| `C-19:ricarica` | `con l'account il testo scritto resta dopo una ricarica` | Il testo del carteggio sta solo in memoria dalla 0.5.0 (`annotaCart()`), e una ricarica durante la prova lo perde: §7.6 della specifica, dimostrato nel browser da P-34. Il contratto della bozza è nel §9.4 di `account-client-progetto.md` e nel motore; la pagina di riferimento del banco lo passa per intero. Lo chiude la realizzazione dell'area 4 (P-21) |
 | `T-02` | `con due risposte che il server non ha, la pagina non dice che sono sul server` | Lo stato dell'invio (`#conto-stato`) si ridipinge solo quando un tentativo d'invio finisce, non quando una risposta entra in coda (`archivia()` chiama `pianificaInvio()` e non `dipingiContoStato()`): con due risposte in coda la pagina dice ancora «Le risposte di questo dispositivo sono confermate sul server». Misurato da P-45 il 30 settembre 2026: offline per circa un secondo, con una rete che non risponde per tutto il tempo della richiesta, fino ai 15 s del timeout di `chiamaApi()`. Lo chiude la realizzazione dell'area 6 (P-25), §3 e §7 del progetto |
 | `T-02` | `mentre l'invio non risponde, il numero da inviare e' quello della coda` | Stessa causa della riga sopra: finche' la richiesta non finisce la pagina non scrive «N risposte da inviare». Lo chiude P-25 con la stessa correzione |
 | `T-05:arresti` | `nel Percorso, a 375 px, nessun arresto di Tab resta coperto o fuori dallo schermo` | Con la tastiera, a 375 × 800 px, «Inizia l'attività», «Scegli un'attività» e la scheda dei Segnali prendono il fuoco sotto la barra fissa in basso: il browser le porta sul bordo dello schermo e la barra le copre (WCAG 2.4.11). Visto in una schermata da P-45. Lo chiude P-25, area 6 §5 («Barre fisse e azioni ancorate lasciano visibili […] il focus») |

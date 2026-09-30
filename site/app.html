@@ -268,8 +268,6 @@ select,input{background:var(--bg3);border:1px solid var(--line);color:var(--fg);
 /* I consigli della Diagnosi riusano la riga delle voci deboli, ma il numero non
    e' un rosso da errore — e' una posizione in classifica — e in coda c'e' il
    costo in minuti, che e' la parte che si guarda per decidere. */
-.cons .n{background:var(--bg3);color:var(--dim)}
-.cons .min{font-variant-numeric:tabular-nums;font-size:13px;color:var(--dim);min-width:34px;text-align:right}
 /* Il selettore e' `.weak .t b.mot` e non `.mot` per una ragione sola: `.weak .t b`
    e' il nome della voce, ed e' un blocco. A specificita' piu' bassa il motivo
    andava a capo da solo — lo stesso modo in cui la 0.7.2 aveva perso il
@@ -548,7 +546,7 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
 .go:active,.ans:active{background:var(--sky-soft)}
 .bar,.mini{background:var(--line-soft)}.bar.stack>i.mai{background:var(--text-faint)}
 .tbl th,.tbl td,.err,.weak{border-color:var(--line-soft)}
-.weak .n,.cons .n{background:var(--danger-soft);color:var(--danger)}.cons .n{background:var(--sky-soft);color:var(--blue)}
+.weak .n{background:var(--danger-soft);color:var(--danger)}
 .ans.ok{background:var(--success-soft);border-color:var(--success)}.ans.ko{background:var(--danger-soft);border-color:var(--danger)}
 .ans.ok .k{background:var(--success);color:var(--surface)}.ans.ko .k{background:var(--danger);color:var(--surface)}
 .nb,.qhead .pill.rich,.pill.crono{background:var(--amber-soft);border-color:var(--amber-dark);color:var(--amber-dark)}
@@ -558,6 +556,20 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
 .ctesto,.crisp textarea,.rvcard{background:var(--surface);border-color:var(--line-soft)}
 .cart-memoria{margin:12px 0;padding:12px 14px;border-radius:10px;background:var(--sky-soft);color:var(--text-soft);font-size:14px;line-height:1.5}
 .cart-memoria[hidden]{display:none}
+.cart-doors{display:grid;gap:10px;margin:18px 0}.cart-doors .go{width:100%;text-align:left}
+.cart-doors .go b,.cart-doors .go span{display:block}
+.cart-actions{margin:14px 0;flex-wrap:wrap}
+#c-preparazione{margin:20px 0;max-width:850px}
+#c-prep summary{min-height:44px;display:flex;align-items:center;cursor:pointer}
+#c-guida textarea{width:100%;min-height:70px;padding:12px;border:1px solid var(--line-soft);border-radius:10px;background:var(--surface);color:var(--text-soft);font:inherit}
+#c-guida .due{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:600px){#c-guida .due{grid-template-columns:1fr}}
+#c-preparazione[hidden],#c-bozze[hidden],#c-storico[hidden],#c-conferma[hidden],#c-scarto[hidden]{display:none}
+#c-conferma{position:fixed;z-index:24;left:50%;bottom:16px;transform:translateX(-50%);width:min(680px,calc(100% - 32px));box-shadow:0 8px 30px var(--shadow)}
+.cart-confirm{position:fixed;z-index:35;left:50%;top:50%;transform:translate(-50%,-50%);width:min(680px,calc(100% - 32px));box-shadow:0 8px 30px var(--shadow)}
+#c-fine .corr{margin:16px 0;padding:14px;border:1px solid var(--line);border-radius:12px}
+#c-fine .due{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:600px){#c-fine .due{grid-template-columns:1fr}}
 
 .eyebrow{margin:0 0 12px;color:var(--blue);font-size:12px;font-weight:750;line-height:1.4;letter-spacing:.5px;text-transform:uppercase}
 .rotta-hero{position:relative;min-height:238px;display:flex;align-items:center}
@@ -933,46 +945,28 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
   <section class="view" id="v-cart">
     <p class="account-warning prova-avviso">Senza account le risposte valgono solo finché questa pagina resta aperta. Se la chiudi o la ricarichi, le perdi. Non salviamo niente, nemmeno le tue preferenze.</p>
     <h1>Carteggio</h1>
-    <p class="sub">La fase 1, quella eliminatoria: <b>4 esercizi in 60 minuti, 3 su 4 per passare</b>.
-      L'app pesca gli esercizi e tiene il tempo; tu li fai sulla carta nautica. Alla fine
-      scrivi i tuoi risultati, li vedi accanto a quelli ministeriali e dici quali avevi preso.</p>
-
-    <div class="colreg-extra">
-      <div><b>Che tecnica serve?</b>
-        <p>Allena l'impostazione dei problemi prima di passare alla carta nautica.</p></div>
-      <button class="btn" data-v="tec">Apri l'allenamento</button>
+    <p class="sub">Tu svolgi gli esercizi sulla carta. Rotta Giusta ti propone una selezione e mostra la risposta ministeriale per confrontare il risultato. <strong>Sei tu a giudicare: il sito non corregge il carteggio.</strong></p>
+    <div class="card"><h2>Prima di cominciare</h2><p>Per la prova e gli esercizi su carta servono le carte nautiche indicate nella selezione, squadrette nautiche, compasso, matita, gomma e fogli per i calcoli. Il sito mostra il problema: il tracciamento si fa sulla carta.</p><p>Verifica con la tua scuola il materiale e le condizioni della prova.</p></div>
+    <div class="row cart-actions"><button class="btn" data-cguida>Come funziona</button><button class="btn" data-cesempio>Vedi un esempio</button><button class="btn" data-cporta="giro-tecniche">Ho carta e strumenti</button><button class="btn" data-cporta="tecniche">Sono senza strumenti</button></div>
+    <div id="c-guida" class="card" hidden></div>
+    <div class="cart-doors" id="c-doors">
+      <button class="go" data-cporta="prova"><b>Prova di carteggio</b><span>Quattro esercizi a tempo, poi confronto e giudizio tuo</span></button>
+      <button class="go" data-cporta="giro-tecniche"><b>Esercizi su carta</b><span>Scegli un giro fra tecniche diverse o prosegui nell'ordine del foglio</span></button>
+      <button class="go" data-cporta="tecniche" data-v="tec"><b>Che tecnica serve?</b><span>Riconosci come impostare il problema, senza carte. Non equivale a svolgerlo</span></button>
     </div>
-
     <div id="c-stat"></div>
-
-    <p class="cart-memoria">Il testo che scrivi resta solo finché questa pagina è aperta.
-      Non ricaricare la pagina e non chiudere la scheda fino alla consegna.</p>
-    <div style="margin-top:16px">
-      <button class="btn primary" id="c-start">Inizia prova d'esame</button>
-    </div>
-    <p class="note" id="c-prep" style="margin:8px 2px 0"></p>
-
-    <div class="card" style="margin-top:12px">
-      <p class="note">Prima di premere: carte <b>5/D</b> e <b>42/D</b>, squadrette, compasso,
-        matita. Il cronometro parte subito e non si ferma — come all'esame.</p>
-    </div>
-
-    <h2>Allenamento <span class="hint">sulla carta, senza limite di tempo</span></h2>
-    <p class="cart-memoria">Il testo che scrivi resta solo finché questa pagina è aperta.
-      Non ricaricare la pagina e non chiudere la scheda fino alla consegna.</p>
-    <div id="c-allena"></div>
-
-    <h2>Le prove che hai fatto</h2>
-    <div class="card" id="c-storico"></div>
+    <section id="c-preparazione" class="card" aria-live="polite"><h2 id="c-prep-title" tabindex="-1">Prova di carteggio</h2><div id="c-prep">Caricamento degli esercizi di carteggio…</div><button class="btn primary" id="c-start" disabled>Inizia la prova</button><button class="btn" data-ctorna>Cambia attività</button></section>
+    <section id="c-bozze" class="card" hidden></section>
+    <section id="c-storico" class="card" hidden></section>
   </section>
 
   <section class="view" id="v-tec">
     <p class="account-warning prova-avviso">Senza account le risposte valgono solo finché questa pagina resta aperta. Se la chiudi o la ricarichi, le perdi. Non salviamo niente, nemmeno le tue preferenze.</p>
     <h1>Che tecnica serve?</h1>
-    <p class="sub">I 135 testi del carteggio senza limiti, senza carte e senza squadrette.
-      All'esame l'errore quasi mai sta nel tracciamento: sta nell'impostazione. Questo allena quella.</p>
+    <p class="sub">Leggi il problema e scegli tutte le tecniche che ritieni necessarie, anche più di una. Il riscontro confronta le scelte con la classificazione di Rotta Giusta: non è un elenco ministeriale di procedimenti. Non svolgi il problema sulla carta e questa attività non conta come esercizio risolto.</p>
+    <div class="card" id="t-prep" aria-live="polite"></div>
     <div id="t-stat"></div>
-    <div style="margin-top:16px"><button class="btn primary" id="t-start">Inizia</button></div>
+    <div style="margin-top:16px"><button class="btn primary" id="t-start">Prepara il riconoscimento</button></div>
 
     <h2>Per tecnica</h2>
     <div class="card" id="t-diag"></div>
@@ -1121,10 +1115,11 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
     <span id="c-pos">Esercizio 1 di 4</span>
     <span class="pill" id="c-carta">5/D</span>
     <span class="pill crono" id="c-time">60:00</span>
-    <button class="x" id="c-close">&times;</button>
+    <button class="x" id="c-close" aria-label="Torna al Carteggio">&times;</button>
   </div>
 
   <div class="cbody">
+    <div class="cap" id="c-mode"></div>
     <div class="cnav" id="c-dots"></div>
     <div class="ctesto" id="c-testo"></div>
     <div class="crisp">
@@ -1133,6 +1128,8 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
                 placeholder="Scrivi qui il risultato che hai trovato sulla carta"></textarea>
       <p class="cart-memoria" id="c-memoria" hidden>Il testo che scrivi resta solo finché questa pagina è aperta.
         Non ricaricare la pagina e non chiudere la scheda fino alla consegna.</p>
+      <p id="c-stato" role="status"></p><button class="btn" id="c-copia" hidden>Copia i risultati</button>
+      <textarea id="c-copia-testo" hidden readonly aria-label="Risultati da copiare"></textarea>
       <p class="note" id="c-eco"></p>
     </div>
   </div>
@@ -1142,9 +1139,11 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
     <button class="btn" id="c-next">Successivo &rsaquo;</button>
     <button class="btn primary" id="c-consegna">Consegna</button>
   </div>
+  <div id="c-conferma" class="card" hidden></div>
 
   <div class="fine" id="c-fine"></div>
 </div>
+<div id="c-scarto" class="card cart-confirm" hidden><p>Il testo scritto e i giudizi di questa attività si perdono. Scarti la bozza?</p><button class="btn primary" data-cscarta-si>Sì, scarta la bozza</button><button class="btn" data-cscarta-no>Annulla</button></div>
 
 <!--
   La revisione di una prova sostenuta: si riapre dall'elenco, in sola lettura.
@@ -1424,7 +1423,8 @@ async function fermaConto() {
 }
 if (CANALE) CANALE.onmessage = (e) => {
   if (e.data?.tipo === 'uscita' && S.conto?.chiave_locale === e.data.chiave) {
-    fermaConto().then(() => { S.archivio = []; S.run = null; S.cprova = null; segPunti = {}; LS.svuota(); ricalcola(); dipingi(); dipingiSeg(); mostraVista('oggi'); });
+    if (S.cprova?.b?.chiave === e.data.chiave) fermaLavoroCart();
+    fermaConto().then(() => { S.archivio = []; S.run = null; segPunti = {}; LS.svuota(); ricalcola(); dipingi(); dipingiSeg(); mostraVista('oggi'); });
   }
 };
 
@@ -1466,6 +1466,7 @@ async function entraConto(io) {
   }
   ricalcola(); dipingi(); dipingiSeg();
   mostraVerifica();
+  await offriBozze();
 }
 
 function mostraVerifica() {
@@ -1833,6 +1834,8 @@ async function nuovaPasswordDaGettone() {
 
 async function azioneAccount(t) {
   const a = t.dataset.account;
+  if (a === 'copia-cart-uscita') return copiaRisultatiCart();
+  if (a === 'scarta-cart-uscita') { S.uscitaBozzeConfermata = true; return uscitaConto(); }
   if (a === 'porta') return S.conto && !S.sessioneScaduta ? pannelloConto() : moduloAccesso();
   if (a === 'registra') return moduloRegistrazione();
   if (a === 'porta-vecchio') {
@@ -2032,6 +2035,14 @@ async function azioneAccount(t) {
 
 async function uscitaConto(dopoDownload = false, giaRevocata = false) {
   if (!S.conto) return;
+  let bozze;
+  try { bozze = await bozzeNellaCopia(S.contoDb); }
+  catch { return esitoAccount('Non riusciamo a leggere il lavoro di carteggio salvato su questo dispositivo. Riprova prima di uscire.'); }
+  if ((bozze.length || (S.cprova?.b && S.cprova.b.stato !== 'salvato')) && !S.uscitaBozzeConfermata) {
+    pannelloAccount(`<h2 id="account-title">Lavoro di carteggio in corso</h2><p>Su questo dispositivo c'è del lavoro di carteggio non concluso: uscendo lo perdi.</p><div class="account-actions"><button class="btn" data-account="torna">Resta qui</button><button class="btn" data-account="copia-cart-uscita">Copia i risultati</button><button class="btn primary" data-account="scarta-cart-uscita">Scarta il lavoro ed esci</button></div>`);
+    return;
+  }
+  S.uscitaBozzeConfermata = false;
   esitoAccount('Uscita in corso…');
   await sincronizza();
   const s = await contoTx();
@@ -4117,20 +4128,6 @@ function tabella(righe, conTema, conEsame) {
 // un altro formato, sulla prova che ti manda a casa. Un'ora di lavoro sulla
 // carta merita un giudice che sa leggere, e quello sei tu.
 
-// I quattro argomenti del carteggio SL, che sono esattamente quanti sono gli
-// esercizi della prova.
-//
-// > **Assunzione dichiarata.** Che l'esame peschi un esercizio per argomento non
-// > l'ho letto nel decreto: e' la composizione piu' probabile visto che gli
-// > argomenti sono quattro e gli esercizi quattro, ed e' comunque la piu' utile
-// > per allenarsi, perche' ti costringe a saperli fare tutti. Da confermare con
-// > la scuola nautica, come la tabella `PESI_ESAME` dei quiz.
-const ARGOMENTI = ['navigazione costiera', 'correnti', 'scarroccio', 'carburante'];
-
-const PROVA_MIN = 60;      // minuti
-const PROVA_N = 4;         // esercizi
-const PROVA_SOGLIA = 3;    // quanti ne devi prendere
-
 /** Il tipo di risposta atteso, dedotto dalla forma di quella ufficiale.
  *
  * Non svela niente: che l'esercizio chieda un punto nave o un'ora sta gia'
@@ -4154,78 +4151,30 @@ function ufficiale(e) { return String((e && e.risposta_ufficiale) || '').trim();
 /* --- la schermata ------------------------------------------------------- */
 
 function dipingiCart() {
-  const stat = document.getElementById('c-stat');
-  const sto = document.getElementById('c-storico');
-  if (!stat) return;
-
-  const tot = S.cart.length;
-  const visti = S.cart.filter(e => S.cprog[e.id]).length;
-  const prove = proveSostenute().filter(x => x.kind === 'carteggio');
-  const passate = prove.filter(x => x.passed).length;
-
-  stat.innerHTML = `<div class="grid g3">
-    <div class="card tile"><div class="lab">Esercizi provati</div>
-      <div class="val">${visti}<small> / ${tot}</small></div></div>
-    <div class="card tile"><div class="lab">Prove sostenute</div>
-      <div class="val">${prove.length}</div></div>
-    <div class="card tile"><div class="lab">Superate</div>
-      <div class="val">${passate}<small> / ${prove.length || 0}</small></div></div></div>`;
-
-  // Il selettore «solo mai fatte» ora vale anche qui, e va dichiarato: una
-  // prova che non pesca piu' come l'esame deve dirlo, e se su un argomento i
-  // mai fatti sono finiti deve dire anche quello — altrimenti il filtro sembra
-  // aver funzionato dove non ha potuto.
-  const prep = document.getElementById('c-prep');
-  if (prep) {
-    if (!S.prep) {
-      prep.textContent = '';
-    } else {
-      const senza = argomentiSenzaNuovi();
-      const nuovi = S.cart.filter(e => !S.cprog[e.id]).length;
-      prep.innerHTML = `<b>«Solo domande mai fatte» è acceso</b>: la prova pesca fra i ${nuovi} `
-        + `esercizi che non hai mai provato, quindi <b>non pesca più come l'esame</b>. `
-        + (senza.length
-            ? `Su ${senza.length === 1 ? 'un argomento' : `${senza.length} argomenti`} `
-              + `(${senza.join(', ')}) i mai fatti sono finiti: lì ripesca fra i già visti, `
-              + `perché la prova non deve mai uscire corta.`
-            : 'Tutti e quattro gli argomenti hanno ancora esercizi nuovi.');
-    }
-  }
-
-  // I due allenamenti, coi numeri veri di adesso: quanti esercizi servono per
-  // il giro delle tecniche (dipende da che cosa hai gia' fatto) e dove sei
-  // arrivato col tappeto. Un pulsante che non dice quanto lavoro apre e' una
-  // sorpresa, non un'opzione.
-  const allena = document.getElementById('c-allena');
-  if (allena) {
-    const giro = E.giroTecniche(S.cart, S.cprog);
-    const tecTot = new Set(S.cart.flatMap(e => e.tecniche || [])).size;
-    const nuoviGiro = giro.filter(x => !S.cprog[x.e.id]).length;
-    const prossimi = E.tappeto(S.cart, S.cprog, TAPPETO_N);
-    allena.innerHTML = `
-      <button class="go" data-cgo="giro" ${giro.length ? '' : 'disabled'}>
-        <div class="t"><b>Giro delle tecniche</b>
-          <span>${giro.length} esercizi che coprono tutte le ${tecTot} tecniche${
-            nuoviGiro ? ` · ${nuoviGiro} mai fatt${nuoviGiro === 1 ? 'o' : 'i'}` : ''} ·
-            alcuni ne coprono più d'una</span></div>
-        <div class="n">${giro.length}</div></button>
-      <button class="go" data-cgo="tappeto" ${prossimi.length ? '' : 'disabled'}>
-        <div class="t"><b>A tappeto</b>
-          <span>${prossimi.length
-            ? `i prossimi ${prossimi.length} mai fatti, nell'ordine del foglio · riprende da dove sei`
-            : 'foglio finito: li hai provati tutti'}</span></div>
-        <div class="n">${tot - visti}</div></button>`;
-  }
-
-  if (!sto) return;
-  if (!prove.length) {
-    sto.innerHTML = `<p class="note">Nessuna prova ancora. Le prove sostenute restano qui
-      con l'esito, così vedi se stai migliorando invece di ricordartelo.</p>`;
+  const stat = document.getElementById('c-stat'); if (!stat) return;
+  if (S.cartStato !== 'pronto' || !S.cart.length) {
+    document.getElementById('c-start').disabled = true;
+    document.getElementById('c-prep').innerHTML = S.cartStato === 'caricamento'
+      ? '<p>Caricamento degli esercizi di carteggio…</p>'
+      : S.cartStato === 'errore'
+        ? '<p role="alert">Non riusciamo a caricare gli esercizi. Riprova con la rete disponibile.</p><button class="btn" data-retry-load>Riprova il caricamento</button><button class="btn" data-info-cart>Apri Info</button>'
+        : '<p>La banca caricata non contiene esercizi di carteggio. Apri Info per controllare.</p><button class="btn" data-info-cart>Apri Info</button>';
     return;
   }
-  sto.innerHTML = prove.slice(0, 12).map(p => rigaProva(p)).join('') +
-    `<p class="note" style="margin:10px 0 0">Tocca una prova per rivederla: esercizi,
-      la tua risposta e quella ministeriale.</p>`;
+  if (!CART.preparazione && S.cart.length) {
+    CART.scelta = { attivita: 'prova', seme: Date.now() % 100000, nuoviPrima: false };
+    CART.preparazione = preparaCarteggio(CART.scelta, fonteCarteggio());
+  }
+  if (CART.preparazione) dipingiPreparazioneCart();
+  const lavoro = S.cprova;
+  stat.innerHTML = lavoro && !lavoro.conclusa ? `<div class="card"><h2>Valutazione in corso</h2><p>Il giudizio non è concluso. Le risposte definitive di questa attività non sono ancora registrate.</p><button class="btn" data-criprendi>${lavoro.lavoro.fase === 'confronto' ? 'Riprendi il confronto' : 'Riprendi il lavoro'}</button><button class="btn" data-cscarta>Scarta il lavoro e prepara un'altra attività</button></div>` : '';
+  const storico = document.getElementById('c-storico');
+  if (ARCH.lettura === 'errore') { storico.hidden = false; storico.textContent = 'Non riusciamo a leggere le attività salvate.'; return; }
+  const attivita = [...E.attivitaCarteggio(S.archivio, { tipo: 'c' }), ...E.attivitaCarteggio(S.archivio, { tipo: 't' })]
+    .sort((a, b) => String(b.fine).localeCompare(String(a.fine)));
+  if (!attivita.length) { storico.hidden = true; return; }
+  storico.hidden = false;
+  storico.innerHTML = `<h2>${S.conto ? 'Esiti autovalutati' : 'Attività di questa pagina'}</h2>` + attivita.slice(0, 20).map(a => `<button class="go" data-catt="${esc(a.id)}" data-ctipo="${a.righe[0]?._t === 't' ? 't' : 'c'}"><b>${a.mode === 'simulazione' ? 'Prova di carteggio' : a.mode === 'tecnica' ? 'Che tecnica serve?' : 'Esercizi su carta'}</b><span>${esc(String(a.fine).slice(0, 16))} · ${a.n} risposte${a.fonte === 'risposte' ? ' · attività ricostruita' : ''}</span></button>`).join('');
 }
 
 /** Le prove sostenute (simulazioni dei quiz e prove di carteggio), dalla piu'
@@ -4368,10 +4317,7 @@ function apriRivedi(id, opt = {}) {
 
   const prova = proveSostenute().find(x => String(x.uid) === String(id));
   if (prova && prova.kind === 'carteggio') {
-    document.getElementById('rv-tit').textContent = `Prova di carteggio · ${giornoIt(String(prova.ts).slice(0, 10))}`;
-    const righe = E.ordinaRighe(S.archivio.filter(r => r._t === 'c' && String(r.sim_uid) === String(id)));
-    if (!righe.length) return metti(`<p class="note">Di questa sessione non e' rimasto il dettaglio delle risposte.</p>`);
-    return metti(rivediCarteggio({ sim: prova, fonte: 'sim_uid', righe }));
+    return apriRivediCarteggio(id, 'c', 'tutti', rvRitorno.origine);
   }
 
   // I quiz: la stessa fonte del riepilogo, cioe' il raccordo. Numeri, righe e
@@ -4531,18 +4477,6 @@ function chiudiRivedi(senzaFuoco = false) {
   origine?.focus();
 }
 
-/** L'intestazione della revisione del carteggio: punteggio, verdetto, minuti.
- *  Il carteggio conserva il suo contratto (area 4): qui i quiz non passano. */
-function rivediTesta(sim) {
-  const min = sim.ms ? Math.round(sim.ms / 60000) : null;
-  const col = sim.passed ? 'ok' : 'ko';
-  return `<div class="esito" style="padding:10px 0 16px">
-    <div class="big" style="color:var(--${col})">${sim.score}<small style="font-size:22px;color:var(--dim)"> / ${sim.total}</small></div>
-    <div class="lab">${giornoIt(String(sim.ts).slice(0, 10))} · ${String(sim.ts).slice(11, 16)}${min != null ? ` · ${min} minuti` : ''}</div>
-    <div class="verdetto ${col}">${sim.passed ? 'Superata' : 'Non superata'}</div>
-  </div>`;
-}
-
 /* --- le figure dei quiz: una funzione sola, nel runner e nella revisione -- */
 
 /**
@@ -4594,29 +4528,6 @@ function sfondoInerte() {
   document.getElementById('quizrun').inert = rv;
 }
 
-function rivediCarteggio(d) {
-  const blocchi = d.righe.map((r, k) => {
-    const e = S.cart.find(x => x.id === r.item_id);
-    let mia = '';
-    try { mia = (JSON.parse(r.input_json || '{}').risposta || '').trim(); } catch {}
-    const presa = r.verdict === 1;
-    const risposta = ufficiale(e);
-    return `<div class="corr ${presa ? 'presa' : 'persa'}">
-      <div class="cap">Esercizio ${k + 1} · n. ${esc(r.item_id)}${e ? ` · ${esc(e.argomento)} · carta ${esc(e.carta)}` : ''}
-        · <b style="color:var(--${presa ? 'ok' : 'ko'})">${presa ? 'presa' : 'persa'}</b></div>
-      ${e ? `<div class="ctesto" style="margin-top:8px">${esc(e.testo)}</div>` : ''}
-      <div class="due">
-        <div><div class="cap" style="margin-top:8px">La tua risposta</div>
-          <div class="mia ${mia ? '' : 'vuota'}">${mia ? esc(mia) : 'non hai risposto'}</div></div>
-        <div><div class="cap" style="margin-top:8px">Risposta ministeriale</div>
-          <div class="uff">${esc(risposta)}</div></div>
-      </div>
-      ${e && e.tecniche && e.tecniche.length ? `<div class="nota">tecnica: ${esc(e.tecniche.join(' + '))}</div>` : ''}
-    </div>`;
-  }).join('');
-  return rivediTesta(d.sim) + blocchi;
-}
-
 /* --- la schermata Info --------------------------------------------------- */
 
 /**
@@ -4640,345 +4551,476 @@ async function dipingiInfo() {
     '<br>Dopo un aggiornamento del sito la prima ricarica serve ancora la copia in cache; la seconda prende la nuova.';
 }
 
-/* --- comporre la prova --------------------------------------------------- */
+function carteDi(lista) { return [...new Set(lista.map((e) => e.carta ?? null))]; }
 
-/** Pesca gli esercizi della prova: uno per argomento.
+/**
+ * La lista annunciata, dal motore, e che cosa dichiarare prima di Inizia.
  *
- * **La pescata e' cieca di proposito**, e non «preferendo i mai visti» come
- * diceva questo commento fino alla 0.18.0 — falso dalla 0.5.1, quando
- * `estrai()` e' stato ridotto a un sorteggio senza storico. La ragione e'
- * quella di CLAUDE.md: la prova d'esame deve pescare come il ministero, che
- * non sa che cosa hai studiato. Una prova che ti serve solo esercizi nuovi
- * misura quanto e' vergine il foglio, non il voto che prenderesti.
- *
- * **A meno che tu non lo chieda.** Col selettore «solo domande mai fatte»
- * acceso si usa `estraiNuoviPrima()`, che pesca fra i mai fatti e attinge ai
- * gia' visti solo quando i nuovi finiscono. Un selettore che dice «solo mai
- * fatte» e poi viene ignorato e' esattamente il guasto muto di casa: se lo
- * accendi vince lui, e la schermata dichiara che la prova non sta piu'
- * pescando come l'esame.
- *
- * In tutti e due i casi l'estrazione e' del motore: non c'e' una seconda
- * logica di selezione scritta qui. */
-function componiProva(seme) {
-  const oggi = S.date.oggi || today();
-  const pesca = S.prep ? E.estraiNuoviPrima : E.estrai;
-  const fuori = [];
-  for (let i = 0; i < ARGOMENTI.length; i++) {
-    const pool = S.cart.filter(e => e.argomento === ARGOMENTI[i]);
-    if (!pool.length) continue;
-    fuori.push(...pesca(pool, S.cprog, oggi, 1, seme + 100 * (i + 1)));
+ * scelta: { attivita, seme, nuoviPrima }
+ *   attivita   'prova' | 'giro-tecniche' | 'tappeto' | 'tecniche'
+ * fonte: { banca, specchio, tecniche, specchioTecniche, righe, oggi, adesso, ts, letturaFallita }
+ */
+function preparaCarteggio(scelta, fonte) {
+  const { attivita } = scelta;
+  const tec = attivita === 'tecniche';
+  const banca = tec ? fonte.tecniche : fonte.banca;
+  const vuota = { scelta, attivita, lista: [], quanti: 0, carte: tec ? null : [], motivi: null, condizioni: null,
+    assunzione: null, variante: null, argomenti: null, mancanti: null, completamento: null, riprese: null };
+  if (!Array.isArray(banca) || !banca.length) return { ...vuota, stato: 'senza banca' };
+  // Una fonte che non si legge non diventa uno storico vuoto (§3.2): solo la
+  // prova cieca, che non lo guarda, si prepara lo stesso.
+  if ((attivita !== 'prova' || scelta.nuoviPrima) && fonte.letturaFallita) return { ...vuota, stato: 'illeggibile' };
+  if (attivita === 'prova') {
+    const r = E.provaCarteggio(banca, fonte.specchio, fonte.oggi, { seme: scelta.seme, nuoviPrima: !!scelta.nuoviPrima });
+    return { ...vuota, stato: r.pronta ? 'pronta' : 'corta', lista: r.lista, quanti: r.lista.length, carte: r.carte,
+      condizioni: r.condizioni, assunzione: r.assunzione, variante: r.variante, argomenti: r.argomenti,
+      mancanti: r.mancanti, completamento: r.completamento, riprese: r.riprese };
   }
-  // Se un argomento mancasse dalla banca, la prova resterebbe corta: la si
-  // completa dal resto invece di somministrare tre esercizi e chiamarla esame.
-  if (fuori.length < PROVA_N) {
-    const presi = new Set(fuori.map(e => e.id));
-    const resto = S.cart.filter(e => !presi.has(e.id));
-    fuori.push(...pesca(resto, S.cprog, oggi, PROVA_N - fuori.length, seme + 900));
+  if (attivita === 'giro-tecniche') {
+    const g = E.giroTecniche(banca, fonte.specchio);
+    const lista = g.map((x) => x.e);
+    return { ...vuota, stato: lista.length ? 'pronta' : 'vuota', lista, quanti: lista.length, carte: carteDi(lista),
+      motivi: g.map((x) => x.tecniche) };
   }
-  return E.rimescola(fuori, seme).slice(0, PROVA_N);
+  if (attivita === 'tappeto') {
+    // Fino a 4 esercizi per attivita' (§5.2).
+    const lista = E.tappeto(banca, fonte.specchio, 4);
+    return { ...vuota, stato: lista.length ? 'pronta' : 'foglio finito', lista, quanti: lista.length, carte: carteDi(lista) };
+  }
+  if (tec) {
+    const voci = banca.map((e) => ({ id: e.id, k: 'tec', t: e.argomento, v: e.carta, d: e.testo, _e: e }));
+    // Fino a 15 testi (§5.3).
+    const lista = E.coda(voci, fonte.specchioTecniche, fonte.oggi, { n: 15 }).map((x) => x._e);
+    return { ...vuota, stato: lista.length ? 'pronta' : 'vuota', lista, quanti: lista.length };
+  }
+  throw new Error('attività sconosciuta: ' + attivita);
 }
 
-/** Quanti argomenti hanno ancora un esercizio mai fatto da cui pescare.
- *
- * Serve a dichiarare il caso in cui il selettore e' acceso ma su un argomento
- * i mai fatti sono finiti: li' `estraiNuoviPrima()` ripiega sui gia' visti, ed
- * e' giusto che lo faccia — la prova non deve mai uscire corta — ma va detto,
- * altrimenti il filtro sembra aver funzionato quando non ha potuto. */
-function argomentiSenzaNuovi() {
-  const senza = [];
-  for (const a of ARGOMENTI) {
-    const pool = S.cart.filter(e => e.argomento === a);
-    if (pool.length && !pool.some(e => !S.cprog[e.id])) senza.push(a);
+/** Inizia: la stessa lista, con un'identita' nuova, o niente. */
+function avviaCarteggio(preparazione, fonte, avvia) {
+  if (preparazione.stato !== 'pronta') return { avviata: false, stato: preparazione.stato };
+  const ora = preparaCarteggio(preparazione.scelta, fonte);
+  if (ora.stato !== 'pronta') return { avviata: false, stato: ora.stato };
+  const ids = preparazione.lista.map((e) => e.id);
+  if (ora.lista.length !== ids.length || ora.lista.some((e, i) => e.id !== ids[i])) return { avviata: false, stato: 'cambiata' };
+  const simUid = uid();
+  const modo = { prova: 'simulazione', 'giro-tecniche': 'giro-tecniche', tappeto: 'tappeto', tecniche: 'tecnica' }[preparazione.attivita];
+  const opt = { simUid, proposti: ids.length };
+  // Il lavoro del runner ha la forma della bozza in tutti e due gli stati: con
+  // l'account si scrive in meta (§9.4 del client), senza resta in memoria.
+  if (modo !== 'tecnica') {
+    opt.lavoro = E.nuovaBozza({ id: simUid, modo, lista: ids, inizio: fonte.adesso,
+      variante: modo === 'simulazione' ? preparazione.variante : null });
   }
-  return senza;
+  if (preparazione.motivi) opt.motivi = preparazione.motivi;
+  avvia(preparazione.lista, modo, opt);
+  return { avviata: true, simUid };
 }
 
-/* --- il runner ----------------------------------------------------------- */
-
-let cTick;
-let cUscitaProtetta = false;
-
-/** Il browser sceglie il testo della conferma: protegge una bozza che vive
- *  solo in memoria. Il listener esiste soltanto finché serve. */
-function confermaUscitaCart(evento) {
-  evento.preventDefault();
-  evento.returnValue = '';
+/** Le righe finali della carta, dal motore: nessuna con un giudizio rinviato, le stesse a un ritento. */
+function concludiCarteggio(lavoro, fonte) {
+  const quesiti = Array.isArray(fonte.banca) ? new Set(fonte.banca.map((e) => e.id)) : undefined;
+  const { righe, motivo } = E.concludiBozza(lavoro, { ts: fonte.ts, quesiti });
+  return { righe, motivo };
 }
 
+/** La riga di una risposta del riconoscimento: le scelte coincidono solo se sono esattamente quelle attese. */
+function rispostaTecnica(corsa, pos, scelte, fonte) {
+  const e = corsa.lista[pos];
+  const attese = new Set(e.tecniche);
+  const mie = new Set(scelte);
+  const correct = mie.size === attese.size && [...mie].every((t) => attese.has(t)) ? 1 : 0;
+  return { _t: 't', uid: fonte.uid, item_id: e.id, ts: fonte.ts, correct, ms: fonte.ms,
+    chosen: scelte.join('|'), sim_uid: corsa.simUid, proposti: corsa.proposti, pos };
+}
+
+/** Riepilogo e revisione di un'attivita' del Carteggio: una chiamata, e nessuna riprova. */
+function riepilogoCarteggio(contesto, fonte) {
+  const { id, tipo } = contesto;
+  const banca = tipo === 't' ? fonte.tecniche : fonte.banca;
+  const d = E.dettaglioCarteggio(fonte.righe, banca, id, { tipo, filtro: contesto.filtro });
+  const stato = !d.trovata ? (fonte.letturaFallita ? 'illeggibile' : 'indisponibile') : d.ambigua ? 'ambigua' : 'pronto';
+  const [filtro, campo] = tipo === 't' ? ['non-coincidenti', 'nonCoincidenti'] : ['da-rivedere', 'daRivedere'];
+  const quanti = d.conteggi ? d.conteggi[campo] : 0;
+  return { stato, tipo, id: d.id, confine: d.fonte, mode: d.mode, variante: d.variante, proposti: d.proposti,
+    ordine: d.ordine, motivi: d.motivi, schede: d.schede, mostrate: d.mostrate, filtro: d.filtro,
+    conteggi: d.conteggi, esito: d.esito, mancanti: d.mancanti, rivedi: quanti ? { filtro, quanti } : null };
+}
+
+
+/* --- Carteggio: preparazione, lavoro sulla carta e bozza ------------------- */
+const CART = { preparazione: null, scelta: null, origine: null, riepilogo: null, filtro: 'tutti', bozze: [], guidaOrigine: null, esempio: null, esempioPasso: 0 };
+const TESTI_BOZZA = {
+  attesa: 'Salvataggio del testo in corso…',
+  salvato: 'Il testo in corso è salvato su questo dispositivo per il tuo account. I giudizi si salvano quando concludi la valutazione.',
+  guasto: 'Non riusciamo a conservare il testo in questo dispositivo. Non chiudere o ricaricare la pagina: copia i risultati prima di uscire.',
+};
+const chiaveBozza = (id) => E.BOZZA_CARTEGGIO.chiave + id;
+let cTick = null, cUscitaProtetta = false;
+function fonteCarteggio(extra = {}) {
+  return { banca: S.cart, specchio: S.cprog, tecniche: S.tec, specchioTecniche: S.tprog,
+    righe: S.archivio, oggi: today(), adesso: Date.now(), ts: E.isoLocale(),
+    letturaFallita: ARCH.lettura === 'errore', ...extra };
+}
+function testoMateriali() {
+  return 'Servono le carte nautiche indicate nella selezione, squadrette nautiche, compasso, matita, gomma e fogli per i calcoli. Verifica con la tua scuola il materiale e le condizioni della prova.';
+}
+function scegliCarteggio(attivita, controllo = null, nuoviPrima = false) {
+  CART.origine = controllo || CART.origine;
+  CART.scelta = { attivita, seme: Date.now() % 100000, nuoviPrima };
+  CART.preparazione = preparaCarteggio(CART.scelta, fonteCarteggio());
+  if (attivita === 'tecniche') {
+    mostraVista('tec');
+    const p = CART.preparazione;
+    document.getElementById('t-prep').innerHTML = `<h2>Prima di iniziare</h2><p>Non servono carte o strumenti. Leggi il problema e scegli tutte le tecniche che ritieni necessarie, anche più di una. Il riscontro usa la classificazione del progetto, non una risposta ministeriale.</p><p>${p.quanti} esercizi da riconoscere</p>${p.stato === 'pronta' ? '' : '<p role="alert">Il riconoscimento non è disponibile con la banca caricata.</p>'}`;
+    document.getElementById('t-start').disabled = p.stato !== 'pronta';
+    document.querySelector('#t-prep h2')?.setAttribute('tabindex', '-1');
+    document.querySelector('#t-prep h2')?.focus();
+    return;
+  }
+  dipingiPreparazioneCart();
+  document.getElementById('c-prep-title').focus();
+}
+function dipingiPreparazioneCart() {
+  const p = CART.preparazione; if (!p) return;
+  const titolo = { prova: 'Prova di carteggio', 'giro-tecniche': 'Esercizi su carta', tappeto: 'Esercizi su carta', tecniche: 'Che tecnica serve?' }[p.attivita];
+  document.getElementById('c-prep-title').textContent = titolo;
+  const parti = [];
+  if (p.attivita === 'prova') {
+    const c = p.condizioni || E.PROVA_CARTEGGIO;
+    parti.push(`<p>${c.esercizi} esercizi indipendenti, ${c.minuti} minuti, soglia di ${c.soglia} risultati corretti su ${c.esercizi}. Il tempo parte solo quando premi Inizia la prova; alla scadenza si apre il confronto con ciò che hai scritto. La risposta ministeriale compare dopo la consegna e il giudizio è tuo.</p>`);
+    parti.push(`<p class="cart-memoria">${esc(p.assunzione || E.PROVA_CARTEGGIO.assunzione)}</p>`);
+    parti.push(`<details><summary>Altre opzioni</summary><label><input id="c-nuovi" type="checkbox" ${p.scelta.nuoviPrima ? 'checked' : ''}> Dai precedenza agli esercizi mai provati ${S.conto ? 'qui' : 'in questa pagina aperta'}</label><p>È una variante di allenamento: la selezione tiene conto delle risposte disponibili qui; può riproporre esercizi già provati quando non ne restano di nuovi in un argomento.</p></details>`);
+    if (p.variante === 'nuoviPrima') parti.push('<p>Variante di allenamento, con precedenza ai mai provati.</p>');
+    if (p.mancanti?.length) parti.push(`<p>Argomenti non rappresentati: ${esc(p.mancanti.join(', '))}. La lista è stata completata con altri esercizi.</p>`);
+    if (p.riprese?.length) parti.push(`<p>Esercizi già provati ripresi: ${esc(p.riprese.map(x => x.argomento).join(', '))}.</p>`);
+  } else if (p.attivita === 'tecniche') {
+    parti.push('<p>Leggi il problema e scegli tutte le tecniche necessarie, anche più di una. Non servono carte o strumenti. Il riscontro è la classificazione del progetto, non una risposta ministeriale.</p>');
+  } else {
+    parti.push('<p>Svolgi gli esercizi sulla carta, senza limite di tempo. Poi confronti i risultati con quelli ministeriali e li valuti tu. Puoi fermarti quando vuoi.</p>');
+    parti.push(`<div class="row"><button class="btn" data-cporta="giro-tecniche">Esercitati su tecniche diverse</button><button class="btn" data-cporta="tappeto">Prosegui nell'ordine del foglio</button></div>`);
+    if (p.attivita === 'giro-tecniche') parti.push('<p>Un giro che incontra tutte le tecniche associate agli esercizi di questa banca. Alcuni esercizi ne comprendono più di una. Non è una selezione delle tue debolezze.</p>');
+    else parti.push(`<p>I prossimi esercizi non ancora valutati ${S.conto ? 'qui' : 'in questa pagina aperta'}, nell'ordine della banca. Una nuova selezione salta quelli già valutati.</p>`);
+    if (!S.conto) parti.push('<p>Senza account non sappiamo quali esercizi hai già fatto nelle aperture precedenti. Il tappeto riparte dall’inizio; il giro può riproporre gli stessi esercizi.</p>');
+  }
+  parti.push(`<p><strong>${p.quanti} ${p.attivita === 'tecniche' ? 'esercizi da riconoscere' : 'esercizi'}</strong>${p.carte?.length ? ` · Carte richieste: ${esc(p.carte.join(', '))}` : ''}</p>`);
+  if (p.attivita !== 'tecniche') parti.push(`<p>${testoMateriali()}</p>`);
+  if (!S.conto) parti.push('<p class="cart-memoria">Il testo che scrivi resta solo finché questa pagina è aperta. Non ricaricare la pagina e non chiudere la scheda fino alla consegna.</p>');
+  if (p.stato !== 'pronta') parti.push(`<p role="alert">${p.stato === 'corta' ? 'Non riusciamo a preparare quattro esercizi. Riprova il caricamento o scegli un allenamento.' : p.stato === 'foglio finito' ? 'Foglio finito: hai già valutato tutti gli esercizi nelle risposte disponibili qui. Puoi rifare un giro delle tecniche o preparare una prova.' : p.stato === 'illeggibile' ? 'Le risposte disponibili non si leggono. Riprova il caricamento.' : 'Non ci sono esercizi disponibili per questa attività.'}</p>`);
+  document.getElementById('c-prep').innerHTML = parti.join('');
+  const start = document.getElementById('c-start');
+  start.textContent = p.attivita === 'prova' ? 'Inizia la prova' : p.attivita === 'tecniche' ? 'Inizia il riconoscimento' : 'Inizia gli esercizi';
+  start.disabled = p.stato !== 'pronta';
+  document.getElementById('c-preparazione').hidden = false;
+}
+function avviaCart() {
+  const p = CART.preparazione; if (!p) return;
+  if (S.cprova && !S.cprova.conclusa) return segnala('Hai una valutazione di carteggio in corso. Riprendi il confronto o scarta il lavoro prima di iniziarne un’altra.', true);
+  const r = avviaCarteggio(p, fonteCarteggio(), (lista, modo, opt) => {
+    if (modo === 'tecnica') return apriRiconoscimento(lista, opt);
+    S.cprova = { coda: lista, lavoro: opt.lavoro, motivi: opt.motivi || null, conclusa: false,
+      b: S.conto ? { chiave: S.conto.chiave_locale, ciclo: S.ciclo, revisione: 0, stato: 'attesa', inVolo: null, ancora: false } : null };
+    document.getElementById('cartrun').classList.add('on');
+    document.getElementById('c-fine').classList.remove('on');
+    mostraCart(); clearInterval(cTick); cTick = setInterval(cronoCart, 1000); cronoCart(); scriviBozza();
+  });
+  if (!r.avviata) { CART.preparazione = preparaCarteggio(CART.scelta, fonteCarteggio()); dipingiPreparazioneCart(); segnala('La selezione è cambiata. Controlla la preparazione aggiornata.', true); }
+}
+function mmssCart(s) { return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; }
+function cronoCart() {
+  const R = S.cprova; if (!R || R.lavoro.fase !== 'lavoro') return clearInterval(cTick);
+  const b = R.lavoro, tempo = document.getElementById('c-time');
+  if (!b.scadenza) { tempo.textContent = mmssCart(Math.floor((Date.now() - b.inizio) / 1000)); return; }
+  const s = Math.max(0, Math.round((b.scadenza - Date.now()) / 1000));
+  tempo.textContent = mmssCart(s);
+  if (s === 0) { clearInterval(cTick); consegnaCart(true); }
+}
+function mostraCart() {
+  const R = S.cprova; if (!R) return;
+  const b = R.lavoro, e = R.coda[b.posizione];
+  document.getElementById('c-mode').textContent = b.modo === 'simulazione' ? `Prova di carteggio${b.variante === 'nuoviPrima' ? ' · prima i mai provati' : ''}` : 'Esercizi su carta';
+  document.getElementById('c-pos').textContent = `Esercizio ${b.posizione + 1} di ${b.lista.length}`;
+  document.getElementById('c-carta').textContent = `n. ${e.id} · carta ${e.carta}`;
+  document.getElementById('c-testo').textContent = e.testo;
+  document.getElementById('c-forma').textContent = formaAttesa(ufficiale(e)) || '';
+  document.getElementById('c-input').value = b.testi[b.posizione];
+  document.getElementById('c-eco').textContent = e.argomento + (R.motivi ? ` · Tecniche che questo esercizio porta al giro: ${(R.motivi[b.posizione] || []).join(', ')} · classificazione del progetto` : '');
+  document.getElementById('c-dots').innerHTML = b.lista.map((_, i) => `<button data-cq="${i}" class="${i === b.posizione ? 'on' : ''}${b.testi[i].trim() ? ' fatto' : ''}" aria-label="Esercizio ${i + 1}${b.testi[i].trim() ? ', risultato scritto' : ''}">${i + 1}</button>`).join('');
+  document.getElementById('c-prev').disabled = b.posizione === 0;
+  document.getElementById('c-next').disabled = b.posizione === b.lista.length - 1;
+  document.getElementById('c-consegna').textContent = b.modo === 'simulazione' ? 'Consegna' : 'Concludi e confronta';
+  document.getElementById('c-conferma').hidden = true;
+  dipingiBozza(); document.getElementById('c-input').focus();
+}
+function cambiaLavoro(cambi) {
+  const R = S.cprova; if (!R) return;
+  R.lavoro = E.modificaBozza(R.lavoro, cambi); scriviBozza();
+}
+function annotaCart() {
+  const R = S.cprova; if (!R || R.lavoro.fase !== 'lavoro') return;
+  const testi = [...R.lavoro.testi]; testi[R.lavoro.posizione] = document.getElementById('c-input').value;
+  cambiaLavoro({ testi });
+  document.getElementById('c-conferma').hidden = true;
+  document.querySelector(`[data-cq="${R.lavoro.posizione}"]`)?.classList.toggle('fatto', !!testi[R.lavoro.posizione].trim());
+}
+function vaiCart(k) {
+  const R = S.cprova; if (!R || R.lavoro.fase !== 'lavoro') return;
+  const pos = Math.max(0, Math.min(R.coda.length - 1, k));
+  cambiaLavoro({ posizione: pos }); mostraCart();
+}
+function consegnaCart(tempo = false) {
+  const R = S.cprova; if (!R || R.lavoro.fase !== 'lavoro') return;
+  if (!tempo && document.getElementById('c-conferma').hidden) {
+    const n = R.lavoro.testi.filter(t => t.trim()).length;
+    document.getElementById('c-conferma').innerHTML = `<p>Hai scritto un risultato per ${n} esercizi su ${R.coda.length}. ${R.coda.length - n} campi sono vuoti. Dopo la consegna non puoi cambiare i risultati di questo tentativo; potrai confrontarli e valutarli.</p><button class="btn primary" data-cconferma>Conferma e confronta</button><button class="btn" data-cannulla>Torna agli esercizi</button>`;
+    document.getElementById('c-conferma').hidden = false;
+    document.querySelector('[data-cconferma]')?.focus(); return;
+  }
+  cambiaLavoro({ fase: 'confronto', consegna: tempo ? R.lavoro.scadenza : Date.now() });
+  clearInterval(cTick); document.getElementById('c-time').textContent = 'consegnata';
+  R.scaduta = tempo; dipingiCorrezione();
+}
+function dipingiCorrezione() {
+  const R = S.cprova; if (!R) return;
+  const b = R.lavoro, n = b.lista.length, g = b.giudizi.filter(x => x !== null).length;
+  const schede = R.coda.map((e, i) => `<section class="corr">
+    <div class="cap">Esercizio ${i + 1} · n. ${esc(e.id)} · ${esc(e.argomento)} · carta ${esc(e.carta)}</div>
+    <details><summary>Leggi il problema</summary><div class="ctesto">${esc(e.testo)}</div></details>
+    <div class="due"><div><div class="cap">La tua risposta</div><div class="mia">${b.testi[i].trim() ? esc(b.testi[i]) : 'Non hai scritto un risultato'}</div></div><div><div class="cap">Risposta ministeriale</div><div class="uff">${esc(ufficiale(e))}</div></div></div>
+    <p>Classificazione del progetto: ${esc((e.tecniche || []).join(', '))}</p>
+    <div class="segna"><button class="si ${b.giudizi[i] === 1 ? 'on' : ''}" data-cs="${i}" data-ok="1">Il risultato coincide</button><button class="no ${b.giudizi[i] === 0 ? 'on' : ''}" data-cs="${i}" data-ok="0">Da rivedere</button></div>
+    <p>${b.giudizi[i] === null ? 'Non ancora valutato' : `Secondo la tua valutazione: ${b.giudizi[i] ? 'il risultato coincide' : 'da rivedere'}`}</p></section>`).join('');
+  document.getElementById('c-fine').innerHTML = `<h1 tabindex="-1">Confronta i risultati</h1>${R.scaduta ? '<p>Il tempo della prova è scaduto. Confronta i risultati che avevi scritto.</p>' : ''}<p>Il sito non corregge il carteggio. Confronta il tuo risultato con la risposta ministeriale e valuta ogni esercizio. Dove la risposta ufficiale indica un intervallo, quello è la tolleranza da considerare. Un risultato coincidente non dimostra da solo che il procedimento sia corretto; se hai dubbi, confrontati con la scuola.</p><p>${g} esercizi valutati su ${n} · ${n - g} ancora da valutare</p>${schede}<p id="c-fine-stato"></p><button class="btn primary" id="c-salva" ${g === n ? '' : 'disabled'}>Concludi la valutazione</button><button class="btn" data-crimanda>Valuterò più tardi</button><button class="btn" data-cscarta>Scarta questo lavoro</button>`;
+  document.getElementById('c-fine').classList.add('on'); dipingiBozza();
+  document.querySelector('#c-fine h1')?.focus();
+}
+function giudicaCart(k, ok) {
+  const R = S.cprova; if (!R || R.lavoro.fase !== 'confronto') return;
+  const giudizi = [...R.lavoro.giudizi]; giudizi[k] = ok;
+  cambiaLavoro({ giudizi }); dipingiCorrezione();
+}
+function chiudiCart() {
+  document.getElementById('cartrun').classList.remove('on');
+  clearInterval(cTick);
+  if (S.cprova && !S.cprova.conclusa) dipingiCart();
+}
+function riprendiCart() {
+  const R = S.cprova; if (!R) return;
+  document.getElementById('cartrun').classList.add('on');
+  if (R.lavoro.fase === 'confronto') dipingiCorrezione(); else { document.getElementById('c-fine').classList.remove('on'); mostraCart(); cTick = setInterval(cronoCart, 1000); cronoCart(); }
+}
+function fermaLavoroCart() {
+  clearInterval(cTick); S.cprova = null; aggiornaProtezioneCart();
+  document.getElementById('cartrun').classList.remove('on'); document.getElementById('c-fine').classList.remove('on'); dipingiCart();
+}
+function confermaUscitaCart(e) { e.preventDefault(); e.returnValue = ''; }
 function aggiornaProtezioneCart() {
-  const R = S.cprova;
-  const proteggi = !!R && !R.consegnata && R.risp.some(testo => testo.trim());
-  document.getElementById('c-memoria').hidden = !proteggi;
-  if (proteggi === cUscitaProtetta) return;
+  const R = S.cprova, b = R?.lavoro;
+  const testo = !!b?.testi.some(t => t.trim());
+  const proteggi = !!R && !R.conclusa && testo && (!R.b ? b.fase === 'lavoro' : R.b.stato !== 'salvato');
+  document.getElementById('c-memoria').hidden = !(R && !R.b && testo);
+  if (cUscitaProtetta === proteggi) return;
   cUscitaProtetta = proteggi;
   if (proteggi) window.addEventListener('beforeunload', confermaUscitaCart);
   else window.removeEventListener('beforeunload', confermaUscitaCart);
 }
-
-// Quanti esercizi per sessione a tappeto: come la prova, circa un'ora di carta.
-const TAPPETO_N = 4;
-
-/**
- * Apre il runner del carteggio su una lista qualsiasi di esercizi.
- *
- * `cfg` decide il carattere della sessione:
- *   minuti    countdown con autoconsegna (la prova d'esame); null = allenamento,
- *             il cronometro sale e nessuno consegna al posto tuo
- *   soglia    quanti presi per "superata"; null = niente verdetto, solo il conto
- *   mode      finisce in carteggio_att.mode: 'simulazione' | 'giro-tecniche' | 'tappeto'
- *   salvaSim  solo la prova d'esame scrive la riga in `sim`: un allenamento non
- *             e' una prova sostenuta, e negli elenchi non deve fingersi tale
- *   eco       (e) => testo extra sotto il campo (il giro dice le tecniche che porta)
- */
-function avviaCart(coda, cfg) {
-  S.cprova = {
-    coda, i: 0,
-    risp: coda.map(() => ''),
-    esiti: coda.map(() => null),        // null = non ancora segnato
-    t0: Date.now(),
-    minuti: cfg.minuti ?? null,
-    scadenza: cfg.minuti ? Date.now() + cfg.minuti * 60000 : null,
-    soglia: cfg.soglia ?? null,
-    mode: cfg.mode,
-    salvaSim: !!cfg.salvaSim,
-    eco: cfg.eco || null,
-    consegnata: false,
-  };
-  document.getElementById('c-fine').classList.remove('on');
-  document.getElementById('cartrun').classList.add('on');
-  resettaConsegna();
-  mostraCart();
-  clearInterval(cTick);
-  cTick = setInterval(cronoCart, 1000);
-  cronoCart();
+function dipingiBozza() {
+  const R = S.cprova;
+  document.getElementById('c-stato').textContent = R?.b?.stato ? TESTI_BOZZA[R.b.stato] : '';
+  document.getElementById('c-copia').hidden = R?.b?.stato !== 'guasto';
+  const fine = document.getElementById('c-fine-stato');
+  if (fine) fine.textContent = R?.b?.stato ? TESTI_BOZZA[R.b.stato] : '';
+  aggiornaProtezioneCart();
 }
-
-function apriCart() {
-  if (!S.cart.length) { segnala('esercizi di carteggio non caricati', true); return; }
-  const coda = componiProva(Date.now() % 100000);
-  if (coda.length < PROVA_N) { segnala('non ci sono abbastanza esercizi', true); return; }
-  avviaCart(coda, { minuti: PROVA_MIN, soglia: PROVA_SOGLIA, mode: 'simulazione', salvaSim: true });
+function scriviBozza() {
+  const R = S.cprova; if (!R?.b) { dipingiBozza(); return; }
+  if (!R.b) return;
+  const B = R.b; B.ancora = true;
+  if (B.inVolo) { if (B.stato !== 'guasto') B.stato = 'attesa'; dipingiBozza(); return; }
+  B.stato = 'attesa'; dipingiBozza();
+  B.inVolo = (async () => {
+    while (B.ancora && S.cprova === R) {
+      B.ancora = false;
+      try { const x = await nellaCopiaBozza(B, R.lavoro); B.revisione = x.revisione; R.lavoro = { ...R.lavoro, revisione: x.revisione }; if (!B.ancora) B.stato = 'salvato'; }
+      catch (e) { B.errore = e.message; B.stato = 'guasto'; ARCH.errore = `Bozza carteggio: ${e.message}`; DIAG.arch = true; aggiornaBadge(); break; }
+      dipingiBozza();
+    }
+    B.inVolo = null; dipingiBozza();
+  })();
 }
-
-/** Il giro delle tecniche: la copertura la calcola il motore (E.giroTecniche). */
-function apriGiroTecniche() {
-  if (!S.cart.length) { segnala('esercizi di carteggio non caricati', true); return; }
-  const giro = E.giroTecniche(S.cart, S.cprog);
-  if (!giro.length) { segnala('nessuna tecnica da coprire', true); return; }
-  const porta = new Map(giro.map(x => [x.e.id, x.tecniche]));
-  avviaCart(giro.map(x => x.e), {
-    mode: 'giro-tecniche',
-    eco: (e) => `porta al giro: ${(porta.get(e.id) || []).join(' + ')}`,
+function nellaCopiaBozza(B, proposta) {
+  return new Promise((ok, ko) => {
+    if (!S.contoDb || !S.conto || S.conto.chiave_locale !== B.chiave || S.ciclo !== B.ciclo) return ko(new Error('accesso cambiato'));
+    let tx; try { tx = S.contoDb.transaction('meta', 'readwrite'); } catch (e) { return ko(e); }
+    const meta = tx.objectStore('meta'), q = meta.get(chiaveBozza(proposta.id));
+    let scritta = null, motivo = null;
+    q.onsuccess = () => { const r = E.sostituisciBozza(q.result ?? null, proposta, B.revisione);
+      if (!r.bozza) { motivo = r.motivo; tx.abort(); return; }
+      scritta = r.bozza; meta.put(scritta, chiaveBozza(proposta.id)); };
+    tx.oncomplete = () => ok(scritta);
+    tx.onabort = () => ko(new Error(motivo || tx.error?.message || 'scrittura annullata'));
   });
 }
-
-function apriTappeto() {
-  if (!S.cart.length) { segnala('esercizi di carteggio non caricati', true); return; }
-  const prossimi = E.tappeto(S.cart, S.cprog, TAPPETO_N);
-  if (!prossimi.length) { segnala('foglio finito: li hai provati tutti'); return; }
-  avviaCart(prossimi, { mode: 'tappeto' });
-}
-
-function cronoCart() {
-  const R = S.cprova; if (!R) return clearInterval(cTick);
-  const el = document.getElementById('c-time');
-  const mmss = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
-  if (R.consegnata) { el.textContent = 'consegnata'; el.className = 'pill'; return; }
-  // Negli allenamenti il cronometro sale e basta: misura, non minaccia.
-  if (!R.scadenza) {
-    el.textContent = mmss(Math.floor((Date.now() - R.t0) / 1000));
-    el.className = 'pill';
-    return;
-  }
-  const s = Math.max(0, Math.round((R.scadenza - Date.now()) / 1000));
-  el.textContent = mmss(s);
-  el.className = 'pill crono' + (s < 300 ? ' rosso' : '');
-  // Allo scadere si consegna e basta, come all'esame: quello che hai scritto
-  // vale, quello che non hai scritto no.
-  if (s === 0) { clearInterval(cTick); segnala('tempo scaduto', true); consegnaCart(); }
-}
-
-function mostraCart() {
-  const R = S.cprova; if (!R) return;
-  const e = R.coda[R.i];
-  document.getElementById('c-pos').textContent = `Esercizio ${R.i + 1} di ${R.coda.length}`;
-  document.getElementById('c-carta').textContent = 'carta ' + e.carta;
-  document.getElementById('c-testo').textContent = e.testo;
-
-  const forma = formaAttesa(ufficiale(e));
-  document.getElementById('c-forma').textContent = forma ? `— ${forma}` : '';
-
-  const inp = document.getElementById('c-input');
-  inp.value = R.risp[R.i] || '';
-  // Il numero e' quello del foglio ministeriale (5.1.3-1): serve a ritrovare
-  // l'esercizio sulla carta e sugli appunti, quindi si scrive dov'e' l'occhio.
-  document.getElementById('c-eco').textContent = `${e.argomento} · esercizio ${e.id}`
-    + (R.eco ? ` · ${R.eco(e)}` : '');
-
-  document.getElementById('c-dots').innerHTML = R.coda.map((_, k) =>
-    `<button data-cq="${k}" class="${k === R.i ? 'on' : ''}${R.risp[k] ? ' fatto' : ''}">${k + 1}</button>`).join('');
-
-  document.getElementById('c-prev').disabled = R.i === 0;
-  document.getElementById('c-next').disabled = R.i === R.coda.length - 1;
-  aggiornaProtezioneCart();
-  inp.focus();
-}
-
-/** Quello che scrivi resta scritto anche se cambi esercizio e torni indietro. */
-function annotaCart() {
-  const R = S.cprova; if (!R) return;
-  R.risp[R.i] = document.getElementById('c-input').value;
-  const d = document.querySelector(`[data-cq="${R.i}"]`);
-  if (d) d.classList.toggle('fatto', !!R.risp[R.i].trim());
-  aggiornaProtezioneCart();
-}
-
-function vaiCart(k) {
-  const R = S.cprova; if (!R) return;
-  resettaConsegna();
-  annotaCart();
-  R.i = Math.max(0, Math.min(R.coda.length - 1, k));
-  mostraCart();
-}
-
-/* --- la correzione, che fai tu ------------------------------------------- */
-
-function consegnaCart() {
-  const R = S.cprova; if (!R || R.consegnata) return;
-  annotaCart();
-  R.consegnata = true;
-  aggiornaProtezioneCart();
-  R.ms = Date.now() - R.t0;
-  clearInterval(cTick);
-  cronoCart();
-  dipingiCorrezione();
-  document.getElementById('c-fine').classList.add('on');
-}
-
-function dipingiCorrezione() {
-  const R = S.cprova; if (!R) return;
-  const segnati = R.esiti.filter(x => x !== null).length;
-  const presi = R.esiti.filter(x => x === true).length;
-  const tutti = segnati === R.coda.length;
-  // Solo la prova d'esame ha una soglia e quindi un verdetto. Un allenamento
-  // dice il conto e i minuti, e basta: "superata" su un giro di tecniche
-  // sarebbe un voto inventato.
-  const conSoglia = R.soglia != null;
-  const passata = conSoglia && presi >= R.soglia;
-
-  const testa = tutti
-    ? `<div class="esito">
-         <div class="big" style="color:var(--${!conSoglia ? 'fg' : passata ? 'ok' : 'ko'})">${presi}<small style="font-size:22px;color:var(--dim)">/${R.coda.length}</small></div>
-         <div class="lab">${conSoglia
-           ? `soglia ${R.soglia} su ${R.coda.length} · ${Math.round(R.ms / 60000)} minuti su ${R.minuti}`
-           : `presi ${presi} su ${R.coda.length} · ${Math.round(R.ms / 60000)} minuti`}</div>
-         ${conSoglia ? `<div class="verdetto ${passata ? 'ok' : 'ko'}">${passata ? 'PROVA SUPERATA' : 'PROVA NON SUPERATA'}</div>` : ''}
-       </div>`
-    : `<div class="esito">
-         <div class="big" style="color:var(--dim)">${segnati}<small style="font-size:22px">/${R.coda.length}</small></div>
-         <div class="lab">segnati</div>
-         <div class="verdetto" style="background:var(--bg3);color:var(--dim)">
-           Segna tutti e ${R.coda.length} gli esercizi</div>
-       </div>`;
-
-  const schede = R.coda.map((e, k) => {
-    const risposta = ufficiale(e);
-    const mia = (R.risp[k] || '').trim();
-    const stato = R.esiti[k] === true ? 'presa' : R.esiti[k] === false ? 'persa' : '';
-    return `<div class="corr ${stato}">
-      <div class="cap">Esercizio ${k + 1} · n. ${esc(e.id)} · ${esc(e.argomento)} · carta ${esc(e.carta)}</div>
-      <div class="due">
-        <div>
-          <div class="cap" style="margin-top:8px">La tua risposta</div>
-          <div class="mia ${mia ? '' : 'vuota'}">${mia ? esc(mia) : 'non hai risposto'}</div>
-        </div>
-        <div>
-          <div class="cap" style="margin-top:8px">Risposta ministeriale</div>
-          <div class="uff">${esc(risposta)}</div>
-        </div>
-      </div>
-      ${e.tecniche && e.tecniche.length
-        ? `<div class="nota">tecnica: ${esc(e.tecniche.join(' + '))}</div>` : ''}
-      <div class="segna">
-        <button class="si ${R.esiti[k] === true ? 'on' : ''}" data-cs="${k}" data-ok="1">L'avevo presa</button>
-        <button class="no ${R.esiti[k] === false ? 'on' : ''}" data-cs="${k}" data-ok="0">No</button>
-      </div>
-    </div>`;
-  }).join('');
-
-  document.getElementById('c-fine').innerHTML = testa +
-    `<p class="note" style="margin:0 0 14px">L'intervallo nella risposta ministeriale <b>è</b> la
-      tolleranza: se il tuo risultato ci cade dentro, l'esercizio è preso.</p>` +
-    schede +
-    `<button class="btn primary" id="c-salva" style="margin-top:6px" ${tutti ? '' : 'disabled'}>
-       ${tutti ? (conSoglia ? 'Salva la prova e chiudi' : 'Salva e chiudi') : 'Segna tutti gli esercizi per salvare'}</button>
-     <button class="btn" id="c-scarta" style="margin-top:8px">Chiudi senza salvare</button>`;
-}
-
-/** Registra la prova: una riga per esercizio, piu' una riga di prova sostenuta.
- *
- * Nell'archivio come tutto il resto, quindi funziona anche senza rete. */
-function salvaCart() {
-  const R = S.cprova; if (!R) return;
-  const ora = E.isoLocale(), giorno = today();
-  const perEsercizio = Math.round(R.ms / R.coda.length);
-  // L'uid della prova e' uno solo e lo portano tutte le righe: e' il legame
-  // che permette di riaprirla dall'elenco (vedi apriRivedi). Gli allenamenti
-  // non hanno una riga di prova, quindi nemmeno il legame.
-  const puid = R.salvaSim ? uid() : null;
-
-  R.coda.forEach((e, k) => {
-    const ok = R.esiti[k] === true;
-    archivia({
-      _t: 'c', uid: uid(), item_id: e.id, ts: ora,
-      input_json: JSON.stringify({ risposta: (R.risp[k] || '').trim() }),
-      verdict: ok ? 1 : 0,
-      // Nessuno scarto: la risposta non viene analizzata, il giudizio e' tuo.
-      delta: null,
-      ms: perEsercizio, mode: R.mode, sim_uid: puid,
-    });
-    E.applica(S.cprog, e.id, ok, perEsercizio, giorno);
+function bozzeNellaCopia(db) {
+  return new Promise((ok, ko) => {
+    let tx; try { tx = db.transaction('meta'); } catch (e) { return ko(e); }
+    const pre = E.BOZZA_CARTEGGIO.chiave;
+    const q = tx.objectStore('meta').getAll(IDBKeyRange.bound(pre, pre + '￿'));
+    q.onsuccess = () => ok(q.result.filter(b => E.validaBozza(b) === null)); q.onerror = () => ko(q.error);
   });
-
-  const presi = R.esiti.filter(x => x === true).length;
-  // Solo la prova d'esame e' una "prova sostenuta": un giro di allenamento non
-  // entra nell'elenco delle prove, ma i suoi esercizi contano nello storico.
-  if (R.salvaSim) {
-    archivia({
-      _t: 's', uid: puid, kind: 'carteggio', ts: ora,
-      score: presi, total: R.coda.length,
-      passed: presi >= R.soglia ? 1 : 0, ms: R.ms,
-    });
+}
+async function offriBozze() {
+  const el = document.getElementById('c-bozze'); el.hidden = true;
+  if (!S.contoDb) return;
+  try { CART.bozze = (await bozzeNellaCopia(S.contoDb)).sort((a, b) => b.inizio - a.inizio); }
+  catch (e) { el.hidden = false; el.textContent = 'Non riusciamo a leggere il lavoro di carteggio salvato su questo dispositivo.'; return; }
+  if (!CART.bozze.length) return;
+  el.hidden = false;
+  el.innerHTML = `<h2 tabindex="-1">Valutazione in corso</h2><p>Hai del lavoro di carteggio in corso su questo dispositivo.</p><button class="btn primary" data-criapri>Riapri il lavoro</button><button class="btn" data-cbozza-scarta>Scarta la bozza</button>`;
+  if (!S.cprova && !document.getElementById('cartrun').classList.contains('on')) {
+    mostraVista('cart');
+    el.scrollIntoView({ block: 'start' });
+    el.querySelector('h2')?.focus({ preventScroll: true });
   }
-  const conSoglia = R.soglia != null;
-  chiudiCart();
-  dipingi();   // ridipinge anche il carteggio
-  segnala(conSoglia
-    ? (presi >= R.soglia ? `prova superata, ${presi}/${R.coda.length}` : `${presi}/${R.coda.length}, non superata`)
-    : `salvato: presi ${presi} su ${R.coda.length}`);
+}
+async function riapriBozza() {
+  const b = CART.bozze[0]; if (!b || !S.conto) return;
+  if (!S.cart.length) { segnala('Gli esercizi di carteggio non sono disponibili. Riprova il caricamento.', true); return; }
+  const m = new Map(S.cart.map(e => [e.id, e]));
+  if (b.lista.some(id => !m.has(id))) { segnala('Un esercizio della bozza non è più nella banca caricata. Riprova il caricamento.', true); return; }
+  const r = E.riprendiBozza(b, Date.now());
+  S.cprova = { coda: r.bozza.lista.map(id => m.get(id)), lavoro: r.bozza, motivi: null, conclusa: false, scaduta: r.scaduta,
+    b: { chiave: S.conto.chiave_locale, ciclo: S.ciclo, revisione: b.revisione, stato: 'salvato', inVolo: null, ancora: false } };
+  document.getElementById('c-bozze').hidden = true; riprendiCart();
+  if (r.scaduta && b.fase === 'lavoro') scriviBozza();
+}
+async function scartaBozza(b) {
+  if (!S.contoDb || !b) return false;
+  return new Promise((ok, ko) => {
+    const tx = S.contoDb.transaction('meta', 'readwrite'), meta = tx.objectStore('meta'), q = meta.get(chiaveBozza(b.id));
+    let valida = false;
+    q.onsuccess = () => { valida = !!q.result && q.result.revisione === b.revisione; if (valida) meta.delete(chiaveBozza(b.id)); };
+    tx.oncomplete = () => ok(valida); tx.onabort = () => ko(tx.error || new Error('scarto non riuscito'));
+  });
+}
+async function copiaRisultatiCart() {
+  const R = S.cprova; if (!R) return;
+  const testo = R.coda.map((e, i) => `${e.id}: ${R.lavoro.testi[i]}`).join('\n');
+  try { await navigator.clipboard.writeText(testo); }
+  catch { const a = document.getElementById('c-copia-testo'); a.value = testo; a.hidden = false; a.select(); }
+}
+function concludiNellaCopia(B, id, righe) {
+  return new Promise((ok, ko) => {
+    if (!S.contoDb || !S.conto || S.conto.chiave_locale !== B.chiave || S.ciclo !== B.ciclo) return ko(new Error('accesso cambiato'));
+    const tx = S.contoDb.transaction(['righe', 'meta'], 'readwrite');
+    const st = tx.objectStore('righe'), meta = tx.objectStore('meta');
+    const q = meta.get(chiaveBozza(id)), c = meta.get('coda'); let motivo = null;
+    c.onsuccess = () => {
+      if (!q.result || q.result.revisione !== B.revisione) { motivo = 'bozza cambiata in un’altra scheda'; tx.abort(); return; }
+      let coda = c.result || E.nuovaCoda({ generazione: S.conto.generazione, epocaDb: S.conto.epoca });
+      for (const r of righe) { st.put(r); coda = E.accoda(coda, r.uid); }
+      meta.put(coda, 'coda'); meta.delete(chiaveBozza(id));
+    };
+    tx.oncomplete = () => ok(); tx.onabort = () => ko(new Error(motivo || tx.error?.message || 'scrittura annullata'));
+  });
+}
+async function salvaCart() {
+  const R = S.cprova; if (!R || R.conclusa) return;
+  if (R.b?.inVolo) await R.b.inVolo;
+  const { righe, motivo } = concludiCarteggio(R.lavoro, fonteCarteggio());
+  if (motivo || !righe.length) { document.getElementById('c-fine-stato').textContent = motivo || 'Nessuna riga da registrare'; return; }
+  try {
+    if (R.b) await concludiNellaCopia(R.b, R.lavoro.id, righe);
+    else if (S.conto) { for (const r of righe) await archivia(r); }
+    S.archivio = E.fondiArchivio(S.archivio, righe, { quesiti: new Set([...S.banca, ...S.cart].map(x => x.id)) }).righe;
+    ricalcola(); if (R.b) pianificaInvio();
+    R.conclusa = true; aggiornaProtezioneCart();
+    CART.riepilogo = riepilogoCarteggio({ id: R.lavoro.id, tipo: 'c', filtro: 'tutti' }, fonteCarteggio());
+    mostraRiepilogoCart(CART.riepilogo);
+    dipingi(); await offriBozze();
+  } catch (e) { ARCH.errore = `Carteggio: ${e.message}`; DIAG.arch = true; aggiornaBadge(); document.getElementById('c-fine-stato').textContent = `Non riusciamo a registrare la valutazione: ${e.message}`; }
+}
+function mostraRiepilogoCart(r) {
+  const R = S.cprova, c = r.conteggi; if (!c) return;
+  const prova = R?.lavoro.modo === 'simulazione';
+  document.getElementById('c-fine').innerHTML = `<h1 tabindex="-1">${prova ? R.scaduta ? 'Tempo della prova scaduto' : 'Prova di carteggio consegnata' : 'Attività conclusa'}</h1><p>${c.proposti ?? 'Quantità non registrata'} esercizi proposti · ${c.scritti} risultati scritti · ${c.vuoti} campi vuoti</p><p>Secondo la tua valutazione: ${c.coincidenti} risultati coincidenti · ${c.daRivedere} da rivedere.</p>${r.esito ? `<p>${r.esito.raggiunta ? 'Soglia raggiunta' : 'Soglia non raggiunta'} secondo la tua valutazione: ${r.esito.coincidenti} su ${r.esito.su}, soglia ${r.esito.soglia}. Questa simulazione usa una composizione assunta dal sito.</p>` : ''}<button class="btn primary" data-crivedi="tutti">Rivedi i risultati</button>${r.rivedi ? `<button class="btn" data-crivedi="${r.rivedi.filtro}">Rivedi quelli da rivedere (${r.rivedi.quanti})</button>` : ''}<button class="btn" data-cnuova>Prepara un'altra attività</button><button class="btn" data-cfine>Torna al Carteggio</button>`;
+  document.getElementById('c-fine').classList.add('on'); document.querySelector('#c-fine h1')?.focus();
 }
 
-let cAnnulla;
-
-/** Riporta il pulsante di consegna al primo passo. */
-function resettaConsegna() {
-  clearTimeout(cAnnulla);
-  const b = document.getElementById('c-consegna');
-  if (!b) return;
-  delete b.dataset.sicuro;
-  b.textContent = 'Consegna';
-  b.classList.remove('conferma');
+function confermaScartoCart(salvata = false) {
+  CART.scarto = salvata ? CART.bozze[0] : S.cprova?.lavoro;
+  if (!CART.scarto) return;
+  document.getElementById('c-scarto').hidden = false;
+  document.querySelector('[data-cscarta-si]')?.focus();
 }
-
-function chiudiCart() {
-  clearTimeout(cAnnulla);
-  clearInterval(cTick);
-  S.cprova = null;
-  aggiornaProtezioneCart();
-  document.getElementById('cartrun').classList.remove('on');
-  document.getElementById('c-fine').classList.remove('on');
-  dipingiCart();
+async function eseguiScartoCart() {
+  const b = CART.scarto; if (!b) return;
+  try {
+    if (S.cprova?.b && S.cprova.lavoro.id === b.id) {
+      if (S.cprova.b.inVolo) await S.cprova.b.inVolo;
+      if (!await scartaBozza({ ...b, revisione: S.cprova.b.revisione })) throw new Error('La bozza è cambiata in un’altra scheda');
+      fermaLavoroCart();
+    } else if (CART.bozze.some(x => x.id === b.id)) {
+      if (!await scartaBozza(b)) throw new Error('La bozza è cambiata in un’altra scheda');
+      await offriBozze();
+    } else fermaLavoroCart();
+    document.getElementById('c-scarto').hidden = true; CART.scarto = null;
+  } catch (e) { segnala(`Non riusciamo a scartare il lavoro: ${e.message}`, true); }
+}
+function apriRivediCarteggio(id, tipo, filtro, origine) {
+  if (!id) return;
+  const r = riepilogoCarteggio({ id, tipo, filtro }, fonteCarteggio());
+  CART.riepilogo = r;
+  rvRitorno = { origine, vista: vistaDi(origine), corrente: !!S.cprova?.conclusa };
+  const box = document.getElementById('rivedi'), body = document.getElementById('rv-body');
+  document.getElementById('rv-tit').textContent = tipo === 't' ? 'Revisione delle tecniche' : 'Revisione del carteggio';
+  box.classList.add('on'); document.documentElement.classList.add('rv-aperta'); sfondoInerte();
+  const filtri = tipo === 't' ? [['tutte', 'Tutte'], ['non-coincidenti', 'Non coincidenti']] : [['tutti', 'Tutti'], ['da-rivedere', 'Da rivedere']];
+  let html = `<h1 tabindex="-1">${tipo === 't' ? 'Rivedi le scelte' : 'Rivedi i risultati'}</h1>`;
+  if (r.stato !== 'pronto') html += `<p role="alert">${r.stato === 'ambigua' ? `L’attività non si può ricostruire con certezza: ${esc(r.motivi.join(', '))}` : r.stato === 'illeggibile' ? 'Non riusciamo a leggere questa attività.' : 'Attività non disponibile.'}</p>`;
+  else {
+    if (r.confine === 'risposte') html += '<p>Questa attività è ricostruita dalle risposte disponibili; il confine potrebbe non coincidere con l’allenamento originale.</p>';
+    if (r.variante) html += `<p>Variante: ${r.variante === 'nuoviPrima' ? 'prima i mai provati' : 'prova cieca'}</p>`;
+    html += `<p>Quantità proposta: ${r.proposti ?? 'non registrata'} · ordine ${esc(r.ordine || 'non registrato')}</p>`;
+    html += `<div class="row">${filtri.map(([k, t]) => `<button class="btn" data-crivedi="${k}" ${k === filtro ? 'aria-current="true"' : ''}>${t}</button>`).join('')}</div>`;
+    if (!r.mostrate.length) html += `<p>${tipo === 't' ? 'In questa attività non ci sono scelte non coincidenti.' : 'In questa attività non hai segnato risultati Da rivedere.'}</p>`;
+    html += r.mostrate.map((x, i) => `<article class="corr"><h2>${x.pos == null ? `Esercizio ${i + 1}` : `Esercizio ${x.pos + 1}`} · n. ${esc(x.item_id)}</h2>${x.esercizio ? `<div class="ctesto">${esc(x.esercizio.testo)}</div>` : '<p>Il testo o la risposta ministeriale di questo esercizio non sono disponibili nella banca caricata.</p>'}${tipo === 'c' ? `<div class="due"><div><h3>La tua risposta</h3><p>${x.risposta == null ? 'Non registrata' : x.risposta.trim() ? esc(x.risposta) : 'Non hai scritto un risultato'}</p></div><div><h3>Risposta ministeriale</h3><p>${x.esercizio ? esc(ufficiale(x.esercizio)) : 'Non disponibile'}</p></div></div><p>Secondo la tua valutazione: ${x.giudizio === null ? 'non registrata' : x.giudizio ? 'il risultato coincide' : 'da rivedere'}</p>` : `<p>Hai scelto: ${x.scelte == null ? 'non registrate' : esc(x.scelte.join(', '))}</p><p>Il progetto associa: ${x.attese == null ? 'non disponibile' : esc(x.attese.join(', '))}</p><p>${x.coincidono === null ? 'Esito non registrato' : x.coincidono ? 'Le scelte coincidono' : 'Le scelte non coincidono'}</p>`}</article>`).join('');
+  }
+  html += '<button class="btn" data-rv-torna>Torna al riepilogo</button>';
+  body.innerHTML = `<div class="rvcol">${html}</div>`; body.scrollTop = 0; body.querySelector('h1')?.focus();
+}
+function mostraGuidaCart(esempio = false, origine = null) {
+  const el = document.getElementById('c-guida');
+  CART.guidaOrigine = origine;
+  if (!esempio) {
+    CART.esempio = null;
+    el.innerHTML = '<h2>Come funziona</h2><p>1. Scegli un’attività e controlla le carte richieste. 2. Svolgi gli esercizi sulla carta e scrivi qui i risultati. 3. Confrontali con la risposta ministeriale e decidi come sono andati.</p><p>Il riconoscimento delle tecniche è un’attività diversa: confronta le tue scelte con una classificazione del progetto, senza svolgere l’esercizio.</p><button class="btn" data-cguida-chiudi>Chiudi la guida</button>';
+  } else {
+    if (!S.cart.length) { segnala('L’esempio non è disponibile: banca non caricata.', true); return; }
+    CART.esempio = preparaCarteggio({ attivita: 'tappeto', seme: 0, nuoviPrima: false },
+      fonteCarteggio({ specchio: {} })).lista[0];
+    if (!CART.esempio) { segnala('L’esempio non è disponibile: nessun esercizio nella banca caricata.', true); return; }
+    CART.esempioPasso = 0;
+    dipingiEsempioCart();
+  }
+  el.hidden = false; el.querySelector('h2')?.setAttribute('tabindex', '-1'); el.querySelector('h2')?.focus();
+}
+function dipingiEsempioCart() {
+  const el = document.getElementById('c-guida'), e = CART.esempio, k = CART.esempioPasso;
+  if (!e) return;
+  const passi = [
+    `<p>n. ${esc(e.id)} · carta ${esc(e.carta)}</p><div class="ctesto">${esc(e.testo)}</div>`,
+    '<p>Il lavoro si fa sulla carta. Qui scrivi il risultato che hai trovato.</p><label for="c-esempio-campo">La tua risposta</label><textarea id="c-esempio-campo" rows="2" disabled placeholder="Qui scriveresti il tuo risultato"></textarea>',
+    `<div class="due"><div><h3>La tua risposta</h3><p>Qui comparirà il tuo risultato</p></div><div><h3>Risposta ministeriale</h3><p>${esc(ufficiale(e))}</p></div></div>`,
+  ];
+  el.innerHTML = `<h2 tabindex="-1">Esempio dimostrativo</h2><p>Questa dimostrazione non registra risposte o giudizi.</p><p>Passo ${k + 1} di 3</p>${passi[k]}<div class="row"><button class="btn" data-cesempio-indietro ${k === 0 ? 'disabled' : ''}>Indietro</button><button class="btn" data-cesempio-avanti ${k === 2 ? 'disabled' : ''}>Avanti</button><button class="btn" data-cguida-chiudi>Chiudi l'esempio</button></div>`;
+  el.querySelector('h2')?.focus();
+}
+function chiudiGuidaCart() {
+  document.getElementById('c-guida').hidden = true;
+  CART.esempio = null;
+  if (CART.guidaOrigine && document.contains(CART.guidaOrigine)) CART.guidaOrigine.focus();
+  CART.guidaOrigine = null;
 }
 
 /* ===================== TECNICHE ========================================= */
@@ -5029,59 +5071,59 @@ function dipingiTec() {
 }
 
 function apriTec() {
-  const oggi = S.date.oggi || today();
-  const items = S.tec.map(e => ({ id: e.id, k: 'tec', t: e.argomento, v: e.carta, d: e.testo, _e: e }));
-  const c = E.coda(items, S.tprog, oggi, { n: 15 });
-  if (!c.length) { segnala('tutte riconosciute'); return; }
-  S.run = { coda: c, i: 0, modo: 'tecnica', tec: true, giuste: 0, sel: new Set() };
-  document.getElementById('quizrun').classList.add('on');
-  mostraTec();
+  const scelta = { attivita: 'tecniche', seme: Date.now() % 100000, nuoviPrima: false };
+  CART.scelta = scelta; CART.preparazione = preparaCarteggio(scelta, fonteCarteggio());
+  if (CART.preparazione.stato !== 'pronta') { segnala('Non ci sono esercizi da riconoscere.', true); return; }
+  avviaCart();
 }
-
+function apriRiconoscimento(lista, opt) {
+  S.run = { coda: lista.map(e => ({ _e: e })), corsa: { simUid: opt.simUid, lista, proposti: opt.proposti },
+    righeTecniche: [], i: 0, modo: 'tecnica', tec: true, sel: new Set(), risposto: false };
+  document.getElementById('quizrun').classList.add('on'); mostraTec();
+}
 function mostraTec() {
   const R = S.run, e = R.coda[R.i]._e;
   R.risposto = false; R.t0 = performance.now(); R.sel = new Set();
   cronometro();
   document.getElementById('r-pos').textContent = `${R.i + 1} / ${R.coda.length}`;
-  const st = E.sbagliato(S.tprog[e.id]) ? 'scaduto' : E.stato(S.tprog[e.id]);
   const pill = document.getElementById('r-stato');
-  pill.textContent = `${e.id} · ${e.carta}`; pill.className = 'pill' + (st === 'scaduto' ? ' rich' : '');
-  document.getElementById('r-num').textContent = '';   // qui il numero e' gia' nella pillola
-  document.getElementById('r-text').innerHTML =
-    `<div style="font-size:15.5px;line-height:1.5;white-space:pre-wrap">${esc(e.testo)}</div>`;
+  pill.textContent = `${e.id} · ${e.carta}`; pill.className = 'pill';
+  document.getElementById('r-num').textContent = '';
+  document.getElementById('r-text').textContent = e.testo;
   document.getElementById('r-fig').innerHTML = '';
-  document.getElementById('r-verdict').innerHTML = '<span>Quali tecniche servono? Anche piu\' di una.</span>';
+  document.getElementById('r-verdict').textContent = 'Quali tecniche servono? Anche più di una.';
   document.getElementById('r-next').style.display = 'block';
-  document.getElementById('r-next').textContent = 'Correggi';
+  document.getElementById('r-next').textContent = 'Confronta le tecniche';
   const tutte = S.meta.tecniche.map(t => t.tecnica);
-  const perFam = FAM.map(([f]) => [f, tutte.filter(t => famiglia(t) === f)]).filter(([, v]) => v.length);
-  document.getElementById('r-ans').innerHTML =
-    `<div style="display:grid;gap:8px">${perFam.map(([f, ts]) => `
-      <div><div style="font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--dim);margin-bottom:5px">${f}</div>
-      <div class="row">${ts.map(t => `<button class="chip" data-tec="${esc(t)}">${esc(t.replace(/^PN (per|da) /, '') || t)}</button>`).join('')}</div></div>`).join('')}</div>`;
+  const nomi = [...new Set([...FAM.map(x => x[0]), 'Altro'])];
+  const perFam = nomi.map(f => [f, tutte.filter(t => famiglia(t) === f)]).filter(([, v]) => v.length);
+  document.getElementById('r-ans').innerHTML = `<div style="display:grid;gap:8px">${perFam.map(([f, ts]) => `<div><div class="cap">${f}</div><div class="row">${ts.map(t => `<button class="chip" data-tec="${esc(t)}" aria-pressed="false">${esc(t)}</button>`).join('')}</div></div>`).join('')}</div>`;
 }
-
-function correggiTec() {
-  const R = S.run, e = R.coda[R.i]._e;
-  if (R.risposto) { if (R.i + 1 < R.coda.length) { R.i++; mostraTec(); } else { segnala(`${R.giuste} / ${R.coda.length}`); chiudi(); } return; }
+async function correggiTec() {
+  const R = S.run; if (!R?.tec) return;
+  if (R.risposto) {
+    if (R.i + 1 < R.coda.length) { R.i++; mostraTec(); }
+    else concludiTec();
+    return;
+  }
+  if (!R.sel.size) { document.getElementById('r-verdict').textContent = 'Scegli almeno una tecnica prima di confrontare.'; return; }
   R.risposto = true; clearInterval(tick);
-  const atteso = new Set(e.tecniche);
-  const ok = R.sel.size === atteso.size && [...R.sel].every(t => atteso.has(t));
-  if (ok) R.giuste++;
-  const ms = Math.round(performance.now() - R.t0);
-  archivia({ _t: 't', uid: uid(), item_id: e.id, ts: E.isoLocale(),
-             correct: ok ? 1 : 0, ms, chosen: [...R.sel].join('|') });
-  E.applica(S.tprog, e.id, ok, ms, today());
-  [...document.querySelectorAll('[data-tec]')].forEach(b => {
-    const t = b.dataset.tec;
-    if (atteso.has(t)) { b.style.background = 'var(--ok)'; b.style.color = 'var(--surface)'; b.style.borderColor = 'var(--ok)'; }
-    else if (R.sel.has(t)) { b.style.background = 'var(--ko)'; b.style.color = 'var(--surface)'; b.style.borderColor = 'var(--ko)'; }
-    else b.style.opacity = .4;
-  });
-  document.getElementById('r-verdict').innerHTML = ok
-    ? `<b class="ok">Impostazione esatta</b> <span>${esc(e.argomento)}</span>`
-    : `<b class="ko">No</b> <span>servono: ${esc(e.tecniche.join(' + '))}</span>`;
-  document.getElementById('r-next').textContent = R.i + 1 < R.coda.length ? 'Avanti' : 'Chiudi';
+  const e = R.coda[R.i]._e;
+  const riga = rispostaTecnica(R.corsa, R.i, [...R.sel], { ...fonteCarteggio(), ms: Math.round(performance.now() - R.t0), uid: uid() });
+  R.righeTecniche.push(riga);
+  await archivia(riga); ricalcola();
+  const attese = e.tecniche || [];
+  document.getElementById('r-verdict').innerHTML = `<p>Hai scelto: ${esc([...R.sel].join(', '))}</p><p>Il progetto associa a questo esercizio: ${esc(attese.join(', '))}</p><p>${riga.correct ? 'Le scelte coincidono' : 'Le scelte non coincidono'}.</p>`;
+  document.getElementById('r-next').textContent = R.i + 1 < R.coda.length ? 'Avanti' : 'Concludi il riconoscimento';
+}
+function concludiTec() {
+  const R = S.run; if (!R?.tec) return;
+  const id = R.corsa.simUid, r = riepilogoCarteggio({ id, tipo: 't', filtro: 'tutte' }, fonteCarteggio());
+  CART.riepilogo = r; R.concluso = true; clearInterval(tick);
+  const c = r.conteggi;
+  document.getElementById('r-fine').innerHTML = c ? `<h1 tabindex="-1">Riconoscimento concluso</h1><p>Hai confrontato ${c.risposte} esercizi su ${c.proposti}. In ${c.coincidenti} le scelte coincidono con la classificazione del progetto; in ${c.nonCoincidenti} non coincidono. ${c.nonAffrontati} esercizi non affrontati.</p><button class="btn" data-crivedi="tutte">Rivedi le scelte</button>${r.rivedi ? `<button class="btn" data-crivedi="non-coincidenti">Rivedi le scelte non coincidenti (${r.rivedi.quanti})</button>` : ''}<button class="btn" data-cporta="giro-tecniche">Esercizi su carta</button><button class="btn" data-cfine>Torna al Carteggio</button>` : '<p>Non riusciamo a leggere il riepilogo.</p>';
+  document.getElementById('r-fine').classList.add('on'); document.querySelector('#r-fine h1')?.focus();
+  dipingiCart();
 }
 
 /* ===================== il gioco dei segnali ============================= */
@@ -5405,6 +5447,11 @@ function chiudiComeFunziona() {
 }
 
 function mostraVista(v) {
+  if (v === 'cart' && CART.preparazione?.attivita === 'tecniche') {
+    CART.scelta = { attivita: 'prova', seme: Date.now() % 100000, nuoviPrima: false };
+    CART.preparazione = preparaCarteggio(CART.scelta, fonteCarteggio());
+    dipingiPreparazioneCart();
+  }
   if (['oggi', 'quiz', 'cart', 'diag'].includes(v)) vistaPrincipale = v;
   document.querySelectorAll('.app-nav button').forEach((b) =>
     b.classList.toggle('on', b.dataset.v === (v === 'tec' ? 'cart' : v === 'seg' ? vistaPrincipale : v)));
@@ -5439,6 +5486,7 @@ document.getElementById('d-mappa').addEventListener('toggle', (ev) => {
 }, true);
 document.addEventListener('change', ev => {
   const t = ev.target;
+  if (t.id === 'c-nuovi') return scegliCarteggio('prova', t, t.checked);
   if (t.name === 'rv-filtro') { RV.filtro = t.value; return applicaFiltroRevisione(); }
   if (t.dataset.quizCheck) {
     const f = QUIZ.bozza, k = t.dataset.quizCheck;
@@ -5467,6 +5515,15 @@ document.addEventListener('click', (ev) => {
 
   const t = ev.target.closest('button'); if (!t) return;
   if (t.dataset.account) return azioneAccount(t);
+  if (t.dataset.cporta) return scegliCarteggio(t.dataset.cporta, t);
+  if (t.dataset.cguida !== undefined) return mostraGuidaCart(false, t);
+  if (t.dataset.cesempio !== undefined) return mostraGuidaCart(true, t);
+  if (t.dataset.cesempioIndietro !== undefined || t.dataset.cesempioAvanti !== undefined) {
+    CART.esempioPasso += t.dataset.cesempioAvanti !== undefined ? 1 : -1;
+    return dipingiEsempioCart();
+  }
+  if (t.dataset.cguidaChiudi !== undefined) return chiudiGuidaCart();
+  if (t.dataset.infoCart !== undefined) return vaiInfo('difetti');
 
   if (t.dataset.rottaStart !== undefined) {
     if (!S.rotta || !S.rotta.lista.length) return;
@@ -5601,57 +5658,44 @@ document.addEventListener('click', (ev) => {
     segnala(S.auto ? 'avanzamento automatico sulle esatte' : 'avanzamento manuale');
     return;
   }
-  if (t.id === 'r-close') return S.run && S.run.tec ? chiudi() : terminaAttivita();
+  if (t.id === 'r-close') return S.run && S.run.tec ? (S.run.concluso || !S.run.righeTecniche.length ? chiudi() : concludiTec()) : terminaAttivita();
   if (t.id === 'r-next') return S.run && S.run.tec ? correggiTec() : avanti();
-  if (t.id === 't-start') return apriTec();
-  if (t.id === 'c-start') return apriCart();
-  if (t.dataset.cgo) return t.dataset.cgo === 'giro' ? apriGiroTecniche() : apriTappeto();
-  if (t.id === 'c-prev') return vaiCart(S.cprova.i - 1);
-  if (t.id === 'c-next') return vaiCart(S.cprova.i + 1);
-  if (t.id === 'c-close') return chiudiCart();
-  if (t.id === 'c-scarta') return chiudiCart();
-  if (t.id === 'c-salva') return salvaCart();
-  if (t.id === 'c-consegna') {
-    // Consegnare e' l'unica azione irreversibile della prova: il cronometro si
-    // ferma e non si torna sulla carta. Quindi si chiede conferma — ma **in
-    // pagina**, non con `confirm()`.
-    //
-    // Un `confirm()` nativo dentro una schermata a tutto schermo blocca il
-    // rendering finche' non lo chiudi, non si puo' impaginare, e su iOS in
-    // modalita' standalone mostra l'indirizzo del sito sopra la domanda. In
-    // piu' non e' verificabile: provando la prova in un browser pilotato, la
-    // finestra nativa ha bloccato tutto e la verifica si e' fermata li'. Una
-    // conferma che non si riesce a collaudare, su una prova da un'ora, e' un
-    // rischio che non serve correre.
-    const R = S.cprova; if (!R) return;
-    annotaCart();
-    if (!t.dataset.sicuro) {
-      const vuoti = R.risp.filter(x => !x.trim()).length;
-      t.dataset.sicuro = '1';
-      t.textContent = vuoti
-        ? `${vuoti} senza risposta — consegna comunque`
-        : 'Sicuro? Consegna definitivamente';
-      t.classList.add('conferma');
-      // Se ci ripensi e torni a scrivere, il pulsante torna quello di prima.
-      clearTimeout(cAnnulla);
-      cAnnulla = setTimeout(resettaConsegna, 6000);
-      return;
-    }
-    resettaConsegna();
-    return consegnaCart();
+  if (t.id === 't-start') return CART.preparazione?.attivita === 'tecniche' ? avviaCart() : apriTec();
+  if (t.dataset.ctorna !== undefined) {
+    document.getElementById('c-doors').scrollIntoView();
+    return (CART.origine && document.contains(CART.origine) ? CART.origine : document.querySelector('#c-doors button'))?.focus();
   }
+  if (t.id === 'c-start') return avviaCart();
+  if (t.id === 'c-prev') return vaiCart(S.cprova.lavoro.posizione - 1);
+  if (t.id === 'c-next') return vaiCart(S.cprova.lavoro.posizione + 1);
+  if (t.id === 'c-close') return chiudiCart();
+  if (t.dataset.criprendi !== undefined) return riprendiCart();
+  if (t.dataset.crimanda !== undefined) return chiudiCart();
+  if (t.dataset.criapri !== undefined) return riapriBozza();
+  if (t.dataset.cscarta !== undefined || t.dataset.cbozzaScarta !== undefined) return confermaScartoCart(t.dataset.cbozzaScarta !== undefined);
+  if (t.dataset.cscartaSi !== undefined) return eseguiScartoCart();
+  if (t.dataset.cscartaNo !== undefined) { document.getElementById('c-scarto').hidden = true; return; }
+  if (t.id === 'c-copia' || t.dataset.ccopia !== undefined) return copiaRisultatiCart();
+  if (t.dataset.cnuova !== undefined || t.dataset.cfine !== undefined) {
+    if (t.closest('#quizrun')) chiudi(); else fermaLavoroCart();
+    mostraVista('cart'); return;
+  }
+  if (t.dataset.crivedi !== undefined) return apriRivediCarteggio(CART.riepilogo?.id, CART.riepilogo?.tipo || 'c', t.dataset.crivedi, t);
+  if (t.dataset.catt !== undefined) return apriRivediCarteggio(t.dataset.catt, t.dataset.ctipo, t.dataset.ctipo === 't' ? 'tutte' : 'tutti', t);
+  if (t.id === 'c-salva') return salvaCart();
+  if (t.id === 'c-consegna') return consegnaCart();
+  if (t.dataset.cconferma !== undefined) return consegnaCart();
+  if (t.dataset.cannulla !== undefined) { document.getElementById('c-conferma').hidden = true; return; }
   if (t.dataset.cq !== undefined) return vaiCart(+t.dataset.cq);
   if (t.dataset.cs !== undefined) {
-    const R = S.cprova; if (!R) return;
-    R.esiti[+t.dataset.cs] = t.dataset.ok === '1';
-    return dipingiCorrezione();
+    return giudicaCart(+t.dataset.cs, t.dataset.ok === '1' ? 1 : 0);
   }
   if (t.dataset.i !== undefined) return rispondi(+t.dataset.i);
   if (t.dataset.tec !== undefined) {
     if (S.run.risposto) return;
     const x = t.dataset.tec;
     S.run.sel.has(x) ? S.run.sel.delete(x) : S.run.sel.add(x);
-    t.classList.toggle('on'); return;
+    t.classList.toggle('on'); t.setAttribute('aria-pressed', String(t.classList.contains('on'))); return;
   }
   if (t.dataset.tag) {
     // La classificazione N/L/C va nell'archivio come le risposte.
@@ -5683,10 +5727,7 @@ document.addEventListener('click', (ev) => {
 // secondo tocco annullava la conferma appena data e la rimetteva subito dopo.
 // Il pulsante lampeggiava fra i due stati e la prova non si consegnava mai.
 // Trovato guidando la schermata vera, non leggendo il codice.
-document.getElementById('c-input').addEventListener('input', () => {
-  resettaConsegna();
-  annotaCart();
-});
+document.getElementById('c-input').addEventListener('input', annotaCart);
 
 document.getElementById('importa-file').addEventListener('change', (e) => {
   const f = e.target.files && e.target.files[0];
@@ -5745,6 +5786,14 @@ addEventListener('keydown', (e) => {
     if (e.key === 'Escape') { e.preventDefault(); chiudiComeFunziona(); }
     return;
   }
+  if (!document.getElementById('c-scarto').hidden) {
+    if (e.key === 'Escape') { e.preventDefault(); document.getElementById('c-scarto').hidden = true; }
+    return;
+  }
+  if (!document.getElementById('c-guida').hidden && document.getElementById('v-cart').classList.contains('on')) {
+    if (e.key === 'Escape') { e.preventDefault(); chiudiGuidaCart(); }
+    return;
+  }
   // La revisione di una prova e' sola lettura: Escape la chiude e basta.
   if (document.getElementById('rivedi').classList.contains('on')) {
     if (e.key === 'Escape') { e.preventDefault(); chiudiRivedi(); }
@@ -5762,9 +5811,17 @@ addEventListener('keydown', (e) => {
   }
   // La prova di carteggio ha le sue: si scrive dentro una <textarea>, quindi i
   // numeri servono a scrivere la risposta e non a rispondere.
-  if (S.cprova) {
-    if (e.key === 'Escape') { e.preventDefault(); document.getElementById('c-input').blur(); return; }
-    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); return vaiCart(S.cprova.i + 1); }
+  if (S.cprova && document.getElementById('cartrun').classList.contains('on')) {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      if (!document.getElementById('c-conferma').hidden) {
+        document.getElementById('c-conferma').hidden = true;
+        document.getElementById('c-consegna').focus();
+      } else if (S.cprova.lavoro.fase === 'lavoro') consegnaCart();
+      else chiudiCart();
+      return;
+    }
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); return vaiCart(S.cprova.lavoro.posizione + 1); }
     return;
   }
   if (!S.run || S.run.tec) return;

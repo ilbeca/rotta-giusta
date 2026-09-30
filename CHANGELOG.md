@@ -1988,6 +1988,33 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   8620 guardata libera; nessun carico di prova lanciato. `site/app.html`,
   `docs/prossime-sessioni.md` e il worktree `ui` non sono stati toccati.
 
+### Realizzato — P-21: il Carteggio chiude il ciclo sulla pagina
+
+- **Tre porte, una selezione del motore.** Prova a tempo, esercizi su carta e
+  riconoscimento delle tecniche hanno preparazione, carte e materiali, guida ed
+  esempio, confronto con la risposta ministeriale e giudizio di chi studia.
+  «Sei tu a giudicare» è visibile prima di Inizia. La pagina usa
+  `provaCarteggio()`, `attivitaCarteggio()` e `dettaglioCarteggio()` attraverso
+  il raccordo di D-01…D-04: tolte la composizione, le costanti e i conteggi
+  paralleli, così il numero promesso e gli esercizi aperti vengono dalla stessa
+  lista. Il riconoscimento conserva la sua vista `#v-tec` e la porta la apre
+  anche con `data-v="tec"`.
+- **La prova con account riprende davvero.** Il testo e i giudizi provvisori
+  vivono nella bozza della copia locale dell'account, con revisione controllata
+  e stato di scrittura visibile; una ricarica offre la ripresa con gli stessi
+  testi, esercizio e scadenza. La conclusione scrive le righe definitive e
+  toglie la bozza nella stessa transazione. Senza account il testo resta solo
+  nella pagina aperta. Le eccezioni del motore sono aggiornate e la riga C-19
+  del difetto dichiarato è chiusa; rimosso il CSS inutilizzato di `.cons`.
+- **Verificato nella pagina vera:** C-01 esegue tutte le 34 verifiche; le sette
+  parti di C-19 sono verdi (28 verifiche). T-07, T-08 e T-09 entrano anche in
+  «Che tecnica serve?»; restano soltanto i difetti dell'area 6 già dichiarati
+  per P-25. Interfaccia 2.138 verifiche, motore 194/197 con tre skip previsti,
+  server 60/60 anche con Node 24 LTS, dati 242, specifica 782, guardiano verde.
+  In Chrome guardati 375 e 1280 px senza e con account, inclusa la ricarica a
+  metà prova e la ripresa del secondo testo; console senza errori. Versione
+  invariata.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag
