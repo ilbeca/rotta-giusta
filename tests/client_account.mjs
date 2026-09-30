@@ -31,7 +31,9 @@
 // ognuno non vede e' scritto nel §12 del progetto. Tre parti — C-13:scarica,
 // C-08:cancella, C-15:segnali (P-46) — girano con il loro gruppo ma portano il
 // loro nome nelle verifiche: sono le scelte che prima nessuno premeva, e la
-// specifica le nomina una per una (R-ACC-63…65).
+// specifica le nomina una per una (R-ACC-63…65). Le prime due tengono anche
+// R-ACC-66 (P-49): il pulsante di conferma premuto senza la spunta dice che
+// cosa manca, e non cambia niente.
 
 import { createServer } from 'node:http';
 import { readFileSync, writeFileSync, mkdirSync, existsSync, mkdtempSync, rmSync, statSync } from 'node:fs';
@@ -1198,6 +1200,19 @@ const uidCopia = (tab, chiave) => tab.valuta(`new Promise((ok) => {
 
 /** Il testo della finestra aperta, o della pagina: per dire nel rosso che cosa c'era. */
 const inSchermata = js(`const m = M(); return (m === document ? document.body : m).innerText.replace(/\\s+/g, ' ').slice(0, 300);`);
+
+// R-ACC-66 (P-49): un pulsante di conferma premuto senza la sua casella dice che
+// cosa manca, in quello che si vede. Si contano le volte che il nome della
+// casella compare nel testo visibile della finestra: prima c'e' solo
+// l'etichetta, dopo il clic anche il messaggio. Un messaggio scritto in un
+// elemento che non c'e', o nascosto, non entra in innerText; uno generico —
+// «Conferma la scelta prima di continuare.», la frase di prima di P-48 — non
+// nomina la casella. Tutti e tre restano a uno.
+const quanteVolte = (frase) => js(`const m = M(); return (m === document ? document.body : m).innerText.split(${q(frase)}).length - 1;`);
+async function diceCheManca(tab, casella, prima) {
+  const { ok, valore } = await tab.attendiValore(quanteVolte(casella), (n) => n > prima, REAZIONE);
+  return { ok, extra: `premuto senza la spunta, la finestra non nomina «${casella}» oltre la sua etichetta (${valore} volte, erano ${prima}); in schermata: ${await tab.valuta(inSchermata)}` };
+}
 const stessi = (a, b) => a.size === b.size && [...a].every((x) => b.has(x));
 
 /** Le righe nell'archivio `righe` della copia dell'account, lette da fuori (§12, «Il contratto»). */
@@ -1476,8 +1491,16 @@ async function c08cancella(b, ctx, v, g) {
     const conferma = await tab.attendi(js(`return !!${campo('Confermo la cancellazione')};`), REAZIONE);
     v.push({ gruppo: g, nome: '«Cancella queste risposte» chiede una conferma esplicita, e intanto niente si cancella', ok: conferma && await maiPer(async () => ctx.righeDi(K.email) !== 2 || await nellaCopia(c, ctx, tab, K.chiave) !== 2, 1500),
       extra: conferma ? `l'account ha ${ctx.righeDi(K.email)} righe e la copia ${await nellaCopia(c, ctx, tab, K.chiave)}, ne avevano 2` : `nessuna casella «Confermo la cancellazione»; il server ha ${ctx.righeDi(K.email)} righe; in schermata: ${await tab.valuta(inSchermata)}` });
+    // Senza la spunta: niente cambia, e la finestra dice che cosa manca (R-ACC-66,
+    // P-49). Prima il server e la copia, poi il messaggio, come in C-13:scarica.
+    const casella = 'Confermo la cancellazione';
+    const primaMsg = await tab.valuta(quanteVolte(casella));
     await clicca(tab, 'Cancella queste risposte');
-    v.push({ gruppo: g, nome: 'senza la spunta la cancellazione non parte', ok: await maiPer(() => ctx.righeDi(K.email) !== 2, 1500), extra: `l'account ha ${ctx.righeDi(K.email)} righe, ne aveva 2` });
+    v.push({ gruppo: g, nome: 'senza la spunta la cancellazione non parte: il server e la copia non cambiano',
+      ok: await maiPer(async () => ctx.righeDi(K.email) !== 2 || ctx.conto(K.email).generazione !== gen || await nellaCopia(c, ctx, tab, K.chiave) !== 2, 1500),
+      extra: `l'account ha ${ctx.righeDi(K.email)} righe, ne aveva 2, generazione ${gen} → ${ctx.conto(K.email).generazione}; la copia ${await nellaCopia(c, ctx, tab, K.chiave)}` });
+    const manca = await diceCheManca(tab, casella, primaMsg);
+    v.push({ gruppo: g, nome: 'senza la spunta dice che manca «Confermo la cancellazione», in quello che si vede', ...manca });
     await spunta(tab, 'Confermo la cancellazione');
     await clicca(tab, 'Cancella queste risposte');
     const cancellate = await finche(() => ctx.righeDi(K.email) === 0 && ctx.conto(K.email).generazione > gen, REAZIONE);
@@ -1948,9 +1971,18 @@ async function c13scarica(b, ctx, v, g) {
     const chiede = await tab.attendi(pulsante('Carica il nuovo archivio'), REAZIONE) && await tab.valuta(js(`return !!${campo('Ho conservato il file')};`));
     v.push({ gruppo: g, nome: 'dopo il download si chiede di confermare di aver conservato il file, e la copia non cambia', ok: chiede && await maiPer(async () => await nellaCopia(c, ctx, tab, K.chiave) !== copia.length, 1500),
       extra: chiede ? `nella copia ${await nellaCopia(c, ctx, tab, K.chiave)} righe, erano ${copia.length}` : `manca «Ho conservato il file» con «Carica il nuovo archivio»; in schermata: ${await tab.valuta(inSchermata)}` });
+    // Senza la spunta: niente cambia, e la finestra dice che cosa manca (R-ACC-66,
+    // P-49). Prima la copia e il server, poi il messaggio: il giro si ferma al
+    // primo rosso, e una rottura che carica lo stesso dev'essere rossa per quello.
+    const casella = 'Ho conservato il file';
+    const primaMsg = await tab.valuta(quanteVolte(casella));
+    const sulServer = ctx.righeDi(K.email), genServer = ctx.conto(K.email).generazione;
     await clicca(tab, 'Carica il nuovo archivio');
-    v.push({ gruppo: g, nome: 'senza la conferma «Carica il nuovo archivio» non sostituisce la copia', ok: await maiPer(async () => await nellaCopia(c, ctx, tab, K.chiave) !== copia.length, 1500),
-      extra: `nella copia ${await nellaCopia(c, ctx, tab, K.chiave)} righe, erano ${copia.length}` });
+    v.push({ gruppo: g, nome: 'senza la conferma «Carica il nuovo archivio» non sostituisce la copia, e il server non cambia',
+      ok: await maiPer(async () => await nellaCopia(c, ctx, tab, K.chiave) !== copia.length || ctx.righeDi(K.email) !== sulServer || ctx.conto(K.email).generazione !== genServer, 1500),
+      extra: `nella copia ${await nellaCopia(c, ctx, tab, K.chiave)} righe, erano ${copia.length}; sul server ${ctx.righeDi(K.email)} righe, erano ${sulServer}, generazione ${genServer} → ${ctx.conto(K.email).generazione}` });
+    const manca = await diceCheManca(tab, casella, primaMsg);
+    v.push({ gruppo: g, nome: 'senza la conferma «Carica il nuovo archivio» dice che manca «Ho conservato il file», in quello che si vede', ...manca });
     await spunta(tab, 'Ho conservato il file');
     await clicca(tab, 'Carica il nuovo archivio');
     const passata = await finche(async () => await nellaCopia(c, ctx, tab, K.chiave) === 0, REAZIONE);

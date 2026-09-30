@@ -1195,6 +1195,68 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   in Chrome a 375 e 1280 px, senza overflow orizzontale. Versione e test
   invariati; `docs/prossime-sessioni.md` non toccato.
 
+### Test — P-49: il controllo di R-ACC-66 sulla pagina vera
+
+- **Un pulsante di conferma premuto senza la sua casella dice che cosa manca, e
+  ora c'è un controllo che lo pretende.** P-48 ha corretto la pagina; qui il
+  controllo entra nelle due parti di P-46 che portavano già la scelta,
+  `C-13:scarica` e `C-08:cancella`. Premuto «Carica il nuovo archivio» o
+  «Cancella queste risposte» senza la spunta, il banco guarda per un secondo e
+  mezzo che né la copia né il server cambino — le righe e la generazione; in
+  C-13 prima si guardava solo la copia, in C-08 solo il server — e poi che la
+  finestra nomini la casella che manca. **L'ordine è voluto:** il giro si ferma
+  al primo rosso, e una pagina che carica o cancella lo stesso deve essere rossa
+  per quello; così le rotture di P-46 restano rosse per il loro motivo.
+
+- **Come si riconosce il messaggio.** Si conta quante volte il nome della
+  casella compare nell'`innerText` della finestra (`aria-modal`): prima c'è solo
+  l'etichetta, dopo il clic dev'esserci anche il messaggio. Non si cerca la
+  frase della pagina, che è dell'interfaccia e cambierà; si pretende che dica
+  *quale* casella manca, che è il requisito. Un messaggio scritto in un elemento
+  che non c'è — il difetto di prima, `esitoAccount()` senza `#account-esito` —
+  non si scrive; uno nascosto non entra in `innerText`; uno fuori dalla
+  finestra non si conta; «Conferma la scelta prima di continuare.», la frase di
+  prima di P-48, non nomina niente.
+
+- **Provato al contrario.** Undici rotture nuove della pagina di riferimento,
+  tutte rosse per il loro motivo: per ciascuno dei due pulsanti il silenzio, il
+  messaggio in un elemento che non c'è, nascosto (`hidden` in una,
+  `visibility: hidden` nell'altra), generico, e l'azione fatta lo stesso con il
+  messaggio giusto accanto; per «Carica il nuovo archivio» anche il messaggio
+  scritto nella pagina sotto la finestra. **Il banco contro sé stesso**, una
+  difesa tolta alla volta: con `textContent` al posto di `innerText` le due
+  rotture del messaggio nascosto passano verdi; con «basta che il nome
+  compaia» passano verdi tutte e otto quelle del messaggio, perché l'etichetta
+  lo contiene già; cercando in tutta la pagina e non nella finestra, alla prima
+  prova **non passava verde niente**, cioè nessuna rottura esercitava quella
+  difesa — è entrata l'undicesima, il messaggio fuori dalla finestra, che senza
+  la difesa passa verde e con lei è rossa.
+
+- **La pagina di prima di P-48**, `site/app.html` di `9ae8359`, guidata nelle
+  due parti: rossa sulle due verifiche del messaggio, e **solo lì** — copia e
+  server restavano fermi anche allora, come P-46 aveva misurato. Il rosso dice
+  che cosa c'era: «la finestra non nomina «Ho conservato il file» oltre la sua
+  etichetta (1 volte, erano 1)», con il pannello in schermata.
+
+- **Nella specifica** R-ACC-66 passa a coperto, con
+  `test_client_conferma_mancante`, che pretende le due verifiche sulla pagina
+  vera; il §9.9 e il registro lo dicono. **Che cosa il banco non vede**, nel §12
+  del progetto del client: che il messaggio stia accanto alla casella, che un
+  lettore di schermo lo annunci, colore e contrasto, e un testo reso invisibile
+  con `opacity` o con il colore del fondo — sono di R-ACC-60 e R-A11Y-03,
+  scoperti, e del collaudo di P-48.
+
+  Suite: interfaccia **1.433** (erano 1.396: tre controlli per ciascuna delle
+  undici rotture, le due verifiche nuove sulla pagina vera e i due di
+  `test_client_conferma_mancante`); specifica **586** (erano 584); motore
+  160/162 con i due skip di sempre; dati 242; server 60/60. **Quattro giri della
+  suite dell'interfaccia intera, tutti verdi**: due senza carico in 150–152 s,
+  uno con la **24.21.0 LTS** nel `PATH` in 147 s, uno con dieci `yes` in 170 s.
+  Con la LTS, il pacchetto verificato contro il `SHASUMS256.txt` riscaricato da
+  nodejs.org: motore 160/162, server 60/60, interfaccia 1.433. Prima di ogni
+  giro la 8620 guardata libera. Guardiano verde. `site/` e
+  `docs/prossime-sessioni.md` non sono stati toccati.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag

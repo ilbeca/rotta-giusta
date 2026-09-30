@@ -1317,7 +1317,7 @@ Nati dall'ADR-004. Gli account non esistono ancora nel sito pubblicato, ma
 sono nella pagina su `main` dal 29 settembre 2026 (P-18): i requisiti della
 pagina si controllano su quella, in un browser vero, e dal 30 settembre (P-40)
 una pagina senza il client è rossa. Quello che il banco non vede è scritto in
-righe sue, scoperte con il motivo (R-ACC-59…62, R-ACC-66). Quelli del server hanno il loro
+righe sue, scoperte con il motivo (R-ACC-59…62). Quelli del server hanno il loro
 controllo in `test_server.mjs`.
 
 | ID | Requisito | Controllo |
@@ -1385,7 +1385,7 @@ controllo in `test_server.mjs`.
 | R-ACC-63 | «Scarica e passa al nuovo archivio», dopo un azzeramento fatto altrove, fa quello che dice: il file porta le risposte non salvate e si ricarica; dopo il download si chiede di confermare di aver conservato il file, e senza la conferma la copia non cambia; confermato, la copia è quella del server e nessuna risposta del file rientra, mentre una risposta nuova entra | `test_interfaccia.py::test_client_scarica_dopo_azzeramento` |
 | R-ACC-64 | «Cancella queste risposte», dopo il recupero della password di un account che non era confermato, fa quello che dice: chiede una conferma esplicita e senza la spunta non cancella niente; confermata, le risposte spariscono dal server con una generazione nuova, la copia di questo dispositivo le segue, e l'account resta usabile | `test_interfaccia.py::test_client_cancella_dopo_recupero` |
 | R-ACC-65 | Con punteggi dei Segnali che il server non ha accolto non si esce, e lo si dice; «Scarica le risposte non salvate» porta anche i punteggi, e dopo la scelta esplicita si esce senza mandarli a nessun account; con la rete «Riprova l'invio» li manda, e solo dopo esce | `test_interfaccia.py::test_client_uscita_segnali` |
-| R-ACC-66 | Un pulsante di conferma premuto senza la conferma dice che cosa manca, invece di non fare niente: «Carica il nuovo archivio» senza «Ho conservato il file», «Cancella queste risposte» senza «Confermo la cancellazione» | scoperto — la pagina vera non lo fa: misurato il 30 settembre 2026 (P-46), la schermata è identica prima e dopo il clic, e il primo dei due scrive in un `#account-esito` che il suo pannello non ha; la correzione è dell'interfaccia (§12 del progetto del client, «Le tre scelte»), e il controllo entra con lei |
+| R-ACC-66 | Un pulsante di conferma premuto senza la conferma dice che cosa manca, invece di non fare niente: «Carica il nuovo archivio» senza «Ho conservato il file», «Cancella queste risposte» senza «Confermo la cancellazione». Il messaggio sta nella finestra, in testo che si vede, e nomina la casella; intanto né la copia né il server cambiano. Quello che il banco non vede — che il lettore di schermo lo annunci, il colore e il contrasto — è di R-ACC-60 e di R-A11Y-03 | `test_interfaccia.py::test_client_conferma_mancante` |
 
 R-ACC-20 e R-ACC-24 sono i primi requisiti del server con un controllo che si
 esegue, e il giro intero sta in `node server/ripristina.mjs --prova`, che la
@@ -1488,10 +1488,16 @@ R-ACC-47; R-ACC-30 ha la metà della pagina in R-ACC-41.
 recupero, e l'uscita con punteggi dei Segnali non accolti. Ora sono R-ACC-63,
 64 e 65, ognuna con il suo controllo sulla pagina vera — parti dei gruppi C-13,
 C-08 e C-15 che girano con loro e si registrano a parte — e con le sue rotture
-della pagina di riferimento. Tutte e tre fanno quello che dicono. **Non lo fa il
+della pagina di riferimento. Tutte e tre fanno quello che dicono. **Non lo faceva il
 modo in cui rifiutano una conferma mancante:** senza la spunta, i due pulsanti
-di conferma non fanno niente e non dicono niente. È R-ACC-66, scoperto finché
-l'interfaccia non lo corregge; la riproduzione è nel §12 del progetto del
+di conferma non facevano niente e non dicevano niente. È R-ACC-66: l'ha
+corretto l'interfaccia (P-48), e da P-49 lo tiene un controllo sulle stesse
+due parti, C-13:scarica e C-08:cancella. Il banco conta quante volte il nome
+della casella compare nel testo visibile della finestra: prima solo
+l'etichetta, dopo il clic anche il messaggio. Un messaggio in un elemento che
+non c'è, nascosto, fuori dalla finestra, o che non nomina la casella non
+passa, e la pagina di prima di P-48 è rossa proprio lì. La riproduzione del
+difetto e che cosa il controllo non vede sono nel §12 del progetto del
 client.
 
 ### 9.10 La mappa di Progressi
@@ -1959,3 +1965,13 @@ successo, ed è il motivo per cui questo file esiste.
   motore con `CONSIGLIO_MIN_VISTI` e i suoi sette test, dopo che P-23 ne aveva
   tolto l'ultima chiamata: §4.3 e §5.4. Il §7.4 chiude il difetto delle tabelle
   che sforavano dalla 0.3.0, sulla misura del collaudo di P-23.
+- **30 settembre 2026 — R-ACC-66 coperto (P-49).** P-48 ha corretto i due
+  pulsanti di conferma muti, e il controllo entra sulle parti di P-46:
+  C-13:scarica e C-08:cancella, premuto il pulsante senza la spunta, guardano
+  prima che né la copia né il server cambino, poi che la finestra nomini la
+  casella che manca in testo che si vede. Nuovo
+  `test_client_conferma_mancante`. Undici rotture nuove della pagina di
+  riferimento — il silenzio, il messaggio in un elemento che non c'è, nascosto,
+  fuori dalla finestra, generico, e l'azione fatta lo stesso —, tutte rosse per
+  il loro motivo; il banco contro sé stesso su tre difese. La pagina di prima
+  di P-48 (`9ae8359`) è rossa sulle due verifiche nuove, e solo lì.

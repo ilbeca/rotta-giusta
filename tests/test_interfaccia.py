@@ -880,7 +880,7 @@ GRUPPI_CLIENT = ['C-01', 'C-02', 'C-03', 'C-04', 'C-05', 'C-06', 'C-07', 'C-08',
 # dei controlli non e' stata eseguita, cioe' un verde a copertura parziale.
 VERIFICHE_CLIENT = {'C-01': 33, 'C-02': 15, 'C-03': 11, 'C-04': 20, 'C-05': 13, 'C-06': 15, 'C-07': 17, 'C-08': 18,
                     'C-09': 13, 'C-10': 10, 'C-11': 8, 'C-12': 9, 'C-13': 8, 'C-14': 3, 'C-15': 12, 'C-16': 23, 'C-17': 10,
-                    'C-13:scarica': 6, 'C-08:cancella': 7, 'C-15:segnali': 7}
+                    'C-13:scarica': 7, 'C-08:cancella': 8, 'C-15:segnali': 7}
 # Le tre scelte che fino a P-46 nessun gruppo premeva (R-ACC-63): sono parti dei
 # loro gruppi, e girano con loro, ma le verifiche portano il nome della parte e
 # hanno un controllo ciascuna, cosi' la specifica le nomina una per una.
@@ -1349,6 +1349,51 @@ ROTTURE_CLIENT = [
      [('coda: E.nuovaCoda({ generazione: io.corpo.generazione, epocaDb: io.corpo.epoca }), trasf: null }));',
        'coda: E.nuovaCoda({ generazione: io.corpo.generazione - 1, epocaDb: io.corpo.epoca }), trasf: null }));')],
      'una risposta nuova entra'),
+    # R-ACC-66 (P-49): i due pulsanti di conferma premuti senza la casella. Le
+    # rotture che non guardano la casella stanno qui sopra (P-46); queste
+    # tengono ferma la parola: il silenzio di prima di P-48, il messaggio in un
+    # elemento che non c'e' o nascosto, una frase che non dice che cosa manca, e
+    # l'azione fatta lo stesso, con il messaggio giusto accanto.
+    ('«Carica il nuovo archivio» senza la spunta, in silenzio', ['C-13:scarica'],
+     [("    $('account-esito').textContent = 'Spunta «Ho conservato il file» prima di caricare il nuovo archivio.';\n    return;",
+       '    return;')],
+     'dice che manca «Ho conservato il file»'),
+    ('il messaggio di «Carica il nuovo archivio» in un elemento che non c\'e\'', ['C-13:scarica'],
+     [("    $('account-esito').textContent = 'Spunta «Ho conservato il file»",
+       "    ($('account-esito-assente') || {}).textContent = 'Spunta «Ho conservato il file»")],
+     'dice che manca «Ho conservato il file»'),
+    ('il messaggio di «Carica il nuovo archivio» nascosto', ['C-13:scarica'],
+     [('Ho conservato il file</label><p id="account-esito" role="status"></p>',
+       'Ho conservato il file</label><p id="account-esito" role="status" hidden></p>')],
+     'dice che manca «Ho conservato il file»'),
+    ('il messaggio di «Carica il nuovo archivio» fuori dalla finestra', ['C-13:scarica'],
+     [("    $('account-esito').textContent = 'Spunta «Ho conservato il file» prima di caricare il nuovo archivio.';",
+       "    document.body.insertAdjacentHTML('beforeend', '<p>Spunta «Ho conservato il file» prima di caricare il nuovo archivio.</p>');")],
+     'dice che manca «Ho conservato il file»'),
+    ('il messaggio di «Carica il nuovo archivio» che non dice che cosa manca', ['C-13:scarica'],
+     [("'Spunta «Ho conservato il file» prima di caricare il nuovo archivio.'", "'Conferma la scelta prima di continuare.'")],
+     'dice che manca «Ho conservato il file»'),
+    ('«Carica il nuovo archivio» senza la spunta lo dice, e carica lo stesso', ['C-13:scarica'],
+     [("prima di caricare il nuovo archivio.';\n    return;", "prima di caricare il nuovo archivio.';\n    return risolvi();")],
+     'non sostituisce la copia'),
+    ('«Cancella queste risposte» senza la spunta, in silenzio', ['C-08:cancella'],
+     [("    $('account-esito').textContent = 'Spunta «Confermo la cancellazione» prima di cancellare.';\n    return;",
+       '    return;')],
+     'dice che manca «Confermo la cancellazione»'),
+    ('il messaggio di «Cancella queste risposte» in un elemento che non c\'e\'', ['C-08:cancella'],
+     [("    $('account-esito').textContent = 'Spunta «Confermo la cancellazione»",
+       "    ($('account-esito-assente') || {}).textContent = 'Spunta «Confermo la cancellazione»")],
+     'dice che manca «Confermo la cancellazione»'),
+    ('il messaggio di «Cancella queste risposte» invisibile', ['C-08:cancella'],
+     [('Confermo la cancellazione</label><p id="account-esito" role="status"></p>',
+       'Confermo la cancellazione</label><p id="account-esito" role="status" style="visibility:hidden"></p>')],
+     'dice che manca «Confermo la cancellazione»'),
+    ('il messaggio di «Cancella queste risposte» che non dice che cosa manca', ['C-08:cancella'],
+     [("'Spunta «Confermo la cancellazione» prima di cancellare.'", "'Conferma la scelta prima di continuare.'")],
+     'dice che manca «Confermo la cancellazione»'),
+    ('«Cancella queste risposte» senza la spunta lo dice, e cancella lo stesso', ['C-08:cancella'],
+     [("prima di cancellare.';\n    return;", "prima di cancellare.';\n    return cancellaRighe();")],
+     'la cancellazione non parte'),
     ('l\'uscita che non guarda i punteggi dei Segnali', ['C-15:segnali'],
      [('  const segnali = !!(seg && seg.daInviare);', '  const segnali = false;')],
      'non si esce, e lo si dice'),
@@ -1535,6 +1580,24 @@ def test_client_scarica_dopo_azzeramento():
 def test_client_cancella_dopo_recupero():
     """R-ACC-63: «Cancella queste risposte» dopo il recupero (C-08:cancella, P-46)."""
     registra_client('C-08:cancella')
+
+
+def test_client_conferma_mancante():
+    """R-ACC-66 (P-49): i due pulsanti di conferma premuti senza la loro casella
+    dicono che cosa manca, nella finestra e in quello che si vede, e non
+    cambiano ne' la copia ne' il server. Le verifiche stanno in C-13:scarica e
+    in C-08:cancella, che le registrano con il resto; qui si pretende che sulla
+    pagina vera ci siano e siano verdi, perche' un giro fermato prima le
+    salterebbe. Che cosa il banco non vede: §12 del progetto del client, «Le
+    tre scelte»."""
+    _, out, _ = banco_client()
+    v = out.get('app', [])
+    for parte, pulsante, casella in (('C-13:scarica', 'Carica il nuovo archivio', 'Ho conservato il file'),
+                                     ('C-08:cancella', 'Cancella queste risposte', 'Confermo la cancellazione')):
+        xs = [x for x in v if x['gruppo'] == parte and ('dice che manca «%s»' % casella) in x['nome']]
+        check('client R-ACC-66: «%s» senza la spunta dice che manca «%s»' % (pulsante, casella),
+              bool(xs) and all(x['ok'] for x in xs),
+              xs[0].get('extra', '') if xs else 'la verifica non e\' stata eseguita: il giro di %s si e\' fermato prima' % parte)
 
 
 def test_client_uscita_segnali():
@@ -1876,7 +1939,7 @@ def main():
               test_client_verifica, test_client_password, test_client_vecchio_archivio, test_client_file,
               test_client_limiti, test_client_azzeramento, test_client_ripristino, test_client_data,
               test_client_export, test_client_testi,
-              test_client_scarica_dopo_azzeramento, test_client_cancella_dopo_recupero, test_client_uscita_segnali,
+              test_client_scarica_dopo_azzeramento, test_client_cancella_dopo_recupero, test_client_conferma_mancante, test_client_uscita_segnali,
               test_client_provato_al_contrario,
               test_motore_senza_orfani, test_chiamate_al_motore_preservate,
               test_letture_che_non_mascherano,

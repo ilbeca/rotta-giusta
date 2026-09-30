@@ -1378,6 +1378,32 @@ La correzione è di `ui/main`: un `#account-esito` in tutti e due i pannelli e
 una frase che dica che cosa manca — la pagina di riferimento ne ha una. Il
 controllo entra con la correzione, sulle parti di P-46.
 
+**Corretto da P-48, e controllato da P-49.** Nelle stesse due parti, premuto
+il pulsante senza la spunta, il banco guarda per un secondo e mezzo che né la
+copia né il server cambino — righe e generazione —, poi conta quante volte il
+nome della casella compare nell'`innerText` della finestra (`aria-modal`):
+prima c'è solo l'etichetta, dopo il clic dev'esserci anche il messaggio.
+L'ordine è voluto: il giro si ferma al primo rosso, e una pagina che carica o
+cancella lo stesso deve essere rossa per quello, non per il messaggio. Un
+messaggio in un elemento che non c'è non si scrive; uno nascosto, con `hidden`
+o con `visibility: hidden`, non entra in `innerText`; uno fuori dalla finestra
+non si conta; uno generico — «Conferma la scelta prima di continuare.», la
+frase di prima di P-48 — non nomina la casella. Sono undici rotture della
+pagina di riferimento, e il banco è provato contro sé stesso: con
+`textContent` al posto di `innerText` le due rotture del messaggio nascosto
+passano verdi; con «basta che il nome compaia» passano verdi tutte e otto
+quelle del messaggio, perché c'è l'etichetta; cercando in tutta la pagina
+invece che nella finestra passa verde quella del messaggio fuori. La pagina di
+`9ae8359`, prima di P-48, è rossa sulle due verifiche del messaggio, e solo lì:
+copia e server restavano fermi anche allora.
+
+**Che cosa non vede:** che il messaggio stia accanto alla casella e non
+altrove nella finestra; che un lettore di schermo lo annunci — la pagina lo
+scrive in un `role="status"` con `aria-live`, ma il banco non ascolta —; colore,
+contrasto e un testo reso invisibile con `opacity` o con il colore del fondo,
+che `innerText` conta. Sono di R-ACC-60 e di R-A11Y-03, scoperti, e del collaudo
+di P-48 a 375 e 1280 px.
+
 **Il tempo, misurato con `RG_TEMPI=1`.** La suite dell'interfaccia passa da
 116–119 a 146–154 s. Le parti nuove sulla pagina vera costano circa 34 s —
 C-13:scarica 9 s, C-08:cancella 5 s, le due strade dei Segnali 10 s l'una,
