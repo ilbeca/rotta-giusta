@@ -201,20 +201,19 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
 | 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore | P-15 |
-| 21b | La realizzazione dell'area 4 — **da riprendere**, dalla bozza non committata nel worktree `ui` | ChatGPT | `ui/main` | niente: il blocco «Ripresa» di P-21 | P-21 |
-| 32 | Lo stato dell'invio che dice «sul server» con righe in coda (T-02) | ChatGPT | `ui/main` | P-21 (la penna su `app.html`) | P-52 |
-| 21c | Dopo P-21: il regime vecchio del Carteggio, e la riga fra i difetti noti di `AGENTS.md` | Claude | `main`, a mano | la merge di P-21 | segnaposto P-50 |
-| 26b | La realizzazione dell'area 6 | ChatGPT | `ui/main` | P-45, P-21, e il §8 dell'area 6 | segnaposto P-25 |
+| 32 | Lo stato dell'invio che dice «sul server» con righe in coda (T-02), e le pulizie della pagina | ChatGPT | `ui/main` | niente — **pronto**, prima del traguardo | P-52 |
+| 21c | Dopo P-21: il regime vecchio del Carteggio, e la riga fra i difetti noti di `AGENTS.md` | Claude | `main`, a mano | niente — **pronto** | P-50 |
+| 26b | La realizzazione dell'area 6 | ChatGPT | `ui/main` | il §8 dell'area 6 (l'autore), e P-52 per la penna | segnaposto P-25 |
 | 9 | **La versione con gli account** — il traguardo | tutti | `main` | P-15, P-52, e gli adempimenti del §4 | segnaposto P-27 |
-| 33 | Le frasi del riepilogo dei quiz nel banco (R-UX-06) | Claude | `main`, a mano | dopo P-21, non urgente | segnaposto P-53 |
+| 33 | Le frasi del riepilogo dei quiz nel banco (R-UX-06) | Claude | `main`, a mano | niente, non urgente | P-53 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**, e si sono incontrate: il client degli
 account è nella pagina (P-18), Progressi è la mappa (P-23), e il carteggio ha
 i suoi contratti e controlli su `main` (P-32…P-35). **Per Claude, l'ordine
-consigliato:** P-15, la messa in esercizio, quando
-l'autore ha il tempo; P-50 e P-53 dopo la merge di P-21. **Per ChatGPT: P-21 riprende**, dalla sua bozza, con il
-blocco «Ripresa» del suo prompt; poi P-52, prima del traguardo. I prompt di Claude vanno uno alla volta nella cartella principale, e
+consigliato:** P-50, poi P-53; P-15, la messa in
+esercizio, quando l'autore ha il tempo. **Per ChatGPT: P-52**, prima del traguardo; poi P-25,
+quando l'autore ha deciso il §8 dell'area 6. I prompt di Claude vanno uno alla volta nella cartella principale, e
 la suite dell'interfaccia di un worktree esclude quella dell'altro, per la porta
 8620. Il numero di una riga è il suo nome, non la sua posizione. Il traguardo,
 P-27, non aspetta le aree 4–6: aspetta il server in esercizio, i testi e gli
@@ -2584,7 +2583,7 @@ interfaccia 1.433 in 149 s; nessun `yes` rimasto vivo.
 
 ### P-21 — ChatGPT: la realizzazione dell'area 4
 
-**Stato:** **fermato il 30 settembre 2026; da riprendere con il blocco «Ripresa» qui sotto**, P-51 è chiuso. Lanciato
+**Stato:** **chiuso il 30 settembre 2026**, merge `1bb916a`. Si era fermato una volta, sul controllo che P-51 ha corretto, e ha ripreso con il blocco «Ripresa». Prima era: fermato. Lanciato
 dall'autore; la sessione si è fermata da sé, come il prompt chiede, perché
 `test_carteggio_ambito` pretende che `app.html` sia nel regime attuale — un
 difetto del controllo di P-35, non della pagina, che chiude P-51. La modifica di
@@ -2664,7 +2663,21 @@ falso, perché non misurava i tag. Il resto del prompt di P-21 vale
 com'era.
 ```
 
-**Esito:** —
+**Esito:** commit `129649a` su `ui/main`, merge `1bb916a`, voce nel CHANGELOG. Il
+Carteggio nella pagina: tre porte, preparazioni, guida ed esempio, confronto e
+giudizio, riepilogo e revisione, con il raccordo del motore; la bozza
+dell'account riprende testo, posizione e scadenza dopo una ricarica. In
+`docs/eccezioni-interfaccia.md` le chiamate aggiornate e la riga di C-19 tolta;
+tolto il CSS di `.cons`. La porta del Carteggio porta `data-v="tec"`. **Trovato**,
+dalla sessione: C-01 fa 34 verifiche su 34, C-19 è verde in tutte e sette le
+parti, T-07, T-08 e T-09 entrano nella vista delle tecniche. Controllato dalla
+regia: territori puliti, trailer, `git log main..ui/main` vuoto, CHANGELOG già
+con la sua riga vuota; sullo stato fuso motore 194/197 — il terzo test saltato
+è il confronto con `componiProva()`, che si è ritirato da solo come previsto —,
+server 60/60, dati 242, specifica 782, guardiano verde, interfaccia 2.138 in 246
+s. La regia **non** ha ripetuto il collaudo nel browser. `tagPerTentativo()` è
+ancora la copia della pagina: resta a P-52. Il resoconto dice «3 skip previsti»,
+ed è esatto.
 
 ### P-51 — Claude: il controllo del Carteggio che fissa il regime della pagina vera
 
@@ -2722,8 +2735,7 @@ nel blocco «Ripresa» di P-21. Controllato dalla regia: motore 185/187, server
 
 ### P-52 — ChatGPT: lo stato dell'invio che dice «sul server» con righe in coda, e il codice morto
 
-**Stato:** in attesa di P-21, perché la penna su `app.html` è una; **prima del
-traguardo**. **Dove:** app di ChatGPT, progetto `~/Software/rotta-giusta-ui`,
+**Stato:** pronto dal 30 settembre 2026, P-21 è fuso; **prima del traguardo**. **Dove:** app di ChatGPT, progetto `~/Software/rotta-giusta-ui`,
 ramo `ui/main`, modalità Local. **Nasce da:** P-45, T-02.
 
 ```
@@ -2754,7 +2766,7 @@ Nello stesso lavoro, se P-21 non l'ha già fatto, togli il codice morto
 che P-12 e P-47 hanno trovato: il selettore globale «solo mai fatte»
 non ha più un interruttore, quindi S.prep è sempre falso, e sono morti
 dipingiPrep(), quotaPrep(), #c-prep, i rami «S.prep ?» e il CSS .prep
-(voce «Test — P-12» del CHANGELOG); il CSS di .cons (voce P-47); e il
+(voce «Test — P-12» del CHANGELOG); e il
 filtro sulle righe con ts prima di E.ritmo() nell'anteprima dei Quiz,
 superfluo da quando il motore se ne difende da sé (voce P-16). E
 sostituisci la copia di tagPerTentativo() con E.tagPerTentativo(S.archivio):
@@ -2765,6 +2777,72 @@ Non toccare docs/prossime-sessioni.md. Tutte le suite verdi, collaudo
 guardato con la rete spenta e con una rete lenta, voce in fondo a
 [Unreleased], un commit con il trailer, versione non toccata. Chiudi
 con il resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-50 — Claude: chiudere il regime vecchio dei controlli del Carteggio
+
+**Stato:** pronto dal 30 settembre 2026: P-21 è fuso. **Dove:** Claude Code,
+`~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** i resoconti
+di P-35 e P-21.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-50, su main. P-21 ha portato il Carteggio nella pagina vera
+e la regia l'ha fuso: leggi gli esiti di P-35, P-51 e P-21 nel §6 di
+docs/prossime-sessioni.md, e il §10.1 di docs/area-4-progetto.md.
+
+Chiudi il regime vecchio del Carteggio come P-12 e P-37 hanno fatto per
+quiz e ciclo: in tests/test_interfaccia.py resta solo il regime del
+raccordo, la pagina vera fa tante verifiche quante quella di
+riferimento, gruppo per gruppo, e la pagina di prima di P-21 — provata
+con RG_PAGINA — ora è rossa. Decidi che cosa resta di
+tests/pagina-ciclo-carteggio.html. Togli la frase di oggi «dici quali
+avevi preso» da GIUDIZIO_CARTEGGIO in tests/client_account.mjs. La
+bozza c'è: la riga del carteggio fra i «Difetti noti» di AGENTS.md si
+toglie, e R-BOZZA-06, il §7.6 e le righe del Carteggio nella specifica
+dicono il presente.
+
+Prima di lanciare la suite dell'interfaccia guarda che la porta 8620
+sia libera (AGENTS.md). Non toccare docs/prossime-sessioni.md né
+site/. Suite verdi su più giri, voce in fondo a [Unreleased], un
+commit. Chiudi con il resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-53 — Claude: le frasi del riepilogo dei quiz, nel banco del client
+
+**Stato:** pronto dal 30 settembre 2026, non urgente. **Dove:** Claude Code,
+`~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** l'esito di
+P-37.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-53, su main. Leggi l'esito di P-37 nel §6 di
+docs/prossime-sessioni.md, R-UX-06 nel §9.8 della specifica, e il
+§4 di docs/area-3-progetto.md sui testi del riepilogo.
+
+R-UX-06 è scoperto: i numeri del riepilogo di una breve attività li
+tiene R-FLU-01, le frasi no. Aggiungi al banco del client un gruppo che
+legge nel testo che si vede del riepilogo dei quiz le tre affermazioni
+— che cosa è successo, quali rivedere, che cosa non hai toccato — e
+nessun voto sulla preparazione, sulla pagina vera e sulla pagina di
+riferimento del client allineata, con le rotture: una quarta
+affermazione, un voto, un numero che non viene dal raccordo, una frase
+nascosta. R-UX-06 dice coperto quello che il banco vede.
+
+Prima di lanciare la suite dell'interfaccia guarda che la porta 8620
+sia libera (AGENTS.md). Non toccare docs/prossime-sessioni.md né
+site/. Suite verdi su più giri, voce in fondo a [Unreleased], un
+commit. Chiudi con il resoconto di docs/prossime-sessioni.md.
 ```
 
 **Esito:** —
@@ -2784,27 +2862,6 @@ segnaposto**.
 
 Il secondo tempo di `consigli()` si fa nella stessa sessione di P-47, che
 aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
-
-#### P-50 — Claude: chiudere il regime vecchio dei controlli del Carteggio
-
-**Aspetta:** la merge di P-21. **Dove:** `main`, a mano. **Dovrà contenere:**
-quello che P-47 ha fatto per Progressi — in `tests/test_interfaccia.py` resta
-solo il regime del carteggio progettato (`regime_carteggio`), e la pagina di
-prima di P-21 diventa rossa; la frase di oggi «dici quali avevi preso» esce da
-`GIUDIZIO_CARTEGGIO` in `tests/client_account.mjs`; il test di
-`test_engine.mjs` che confronta `componiProva()` con `provaCarteggio()` si
-ritira, se non l'ha già fatto da solo; la riga del carteggio fra i «Difetti
-noti» di `AGENTS.md` si toglie, e R-BOZZA-06 e il §7.6 dicono il presente.
-
-#### P-53 — Claude: le frasi del riepilogo dei quiz, nel banco del client
-
-**Aspetta:** niente, ma non è urgente; dopo P-21, per non cambiare la pagina di
-riferimento del client mentre ChatGPT ne rispetta il contratto. **Dove:**
-`main`, a mano. **Dovrà contenere:** quello che l'esito di P-37 lascia —
-R-UX-06, le tre affermazioni di una breve attività e nessun voto sulla
-preparazione, lette nel testo che si vede del riepilogo con un gruppo del banco
-del client, con la sua pagina di riferimento allineata e le rotture (una quarta
-affermazione, un voto, un numero che non viene dal raccordo).
 
 #### P-25 — ChatGPT: la realizzazione dell'area 6
 
@@ -3131,3 +3188,7 @@ la nota in testa a `docs/filosofia.md`, che lo dice di sé (P-26).
   dopo P-21 P-50 e P-53; per ChatGPT P-21, poi P-52, che raccoglie T-02 e le
   pulizie della pagina trovate oggi. `ui/main` allineato con un avanzamento
   veloce che non tocca la bozza di P-21.
+- **30 settembre 2026 — P-21 chiuso: il Carteggio è nella pagina.** Merge
+  `1bb916a`; la bozza dell'account riprende dopo una ricarica, e C-19 è verde
+  sulla pagina vera. P-50 e P-53 scritti per intero; P-52 pronto per ChatGPT,
+  senza il CSS di `.cons` che P-21 ha già tolto.
