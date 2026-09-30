@@ -1114,6 +1114,28 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   Guardiano, verifica del carteggio e controllo della documentazione verdi.
   Nessuna versione modificata; `docs/prossime-sessioni.md` non toccato.
 
+### Corretto — P-48: le conferme mancanti si vedono
+
+- **R-ACC-66:** «Carica il nuovo archivio» senza «Ho conservato il file» e
+  «Cancella queste risposte» senza «Confermo la cancellazione» ora indicano
+  quale casella spuntare, nel pannello accanto alla casella stessa. Prima il
+  primo messaggio finiva in un `#account-esito` assente e il secondo clic
+  terminava senza risposta; in entrambi i casi la copia e il server restano
+  invariati finché manca la conferma. Il controllo dedicato sulla pagina vera
+  resta a P-49, dopo la merge.
+- **Con soli punteggi dei Segnali da inviare**, l'uscita nomina quei punteggi
+  senza parlare di «0 risposte». Rimossa la promessa di un «archivio
+  alternativo»: `ARCH.lettura` non assume più i valori `ripiego_*`, quindi
+  quell'avviso non poteva comparire. Restano visibili gli errori di scrittura
+  e lettura e il pallino su Info.
+- **Verificato:** motore 167/169 (2 skip previsti), server 60/60 con Node
+  25.3.0 e Node 24.21.0 LTS (archivio conforme al manifesto SHA-256), dati
+  242, interfaccia 1.394, specifica 584; guardiano verde. Le suite che aprono
+  server locali sono state rieseguite con il permesso di ascolto, dopo il
+  blocco `EPERM` della sandbox. Pannello Account e messaggio di stato guardati
+  in Chrome a 375 e 1280 px, senza overflow orizzontale. Versione e test
+  invariati; `docs/prossime-sessioni.md` non toccato.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag
