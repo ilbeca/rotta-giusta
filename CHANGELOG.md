@@ -1475,6 +1475,21 @@ soltanto da un tag pubblicato (`docs/account-progetto.md` §2.7).
   come una scrittura di credenziali, e non è stata aggirata. La STARDUST1-S si
   crea alla messa in esercizio, per non pagarla ferma.
 
+- **I registri del titolare si tengono aggiornati da soli, fino alla decisione.**
+  Un'attività programmata nell'app dell'autore, due volte al giorno, legge la
+  casella in sola lettura — privacy@, gli avvisi di sicurezza dei fornitori, e
+  gli allarmi che il server manderà da `posta.` — e apre le righe nei registri
+  delle richieste e delle violazioni con le loro scadenze: un mese per
+  rispondere, 72 ore per notificare. Per ogni possibile violazione prepara la
+  bozza della notifica. **La notifica al Garante non è una mail**: dal 2021 si fa
+  solo dal modulo online, e la bozza ne ricalca le sezioni A–O, lette sul
+  facsimile ufficiale. L'attività non spedisce e non notifica niente. Perché
+  esiste: una richiesta o un avviso di Scaleway letti tardi sono il guasto muto
+  di questa parte del progetto, e la scadenza delle 72 ore non aspetta che
+  qualcuno apra la posta giusta. Ricerche provate sulla casella vera: la prova
+  dell'inoltro trovata, zero allarmi com'è giusto, e i codici di login di IONOS
+  esclusi apposta. §15.4.
+
 ### Test — P-06: i controlli dei quiz conoscono due regimi, e nel nuovo eseguono
 
 - **`test_modalita_quiz` e `test_selettori` riconoscono il regime della pagina**
