@@ -1030,7 +1030,7 @@ dati 242, interfaccia 295, specifica 370, `ripristina --prova` 20 su 20.
 
 ### P-12 — Claude: chiudere il regime vecchio dei controlli dei quiz
 
-**Stato:** **in corso dal 30 settembre 2026**, lanciato dalla regia (punto 8) — pronto: P-11 è chiuso, e P-05 è fuso. Il README ha già le cinque intenzioni (P-26); restano le righe del §5 della specifica. **Dove:**
+**Stato:** **chiuso il 30 settembre 2026**, commit `fd67e7d` su `main`, lanciato dalla regia (punto 8). Prima era: pronto: P-11 è chiuso, e P-05 è fuso. Il README ha già le cinque intenzioni (P-26); restano le righe del §5 della specifica. **Dove:**
 Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano.
 
 ```
@@ -1055,7 +1055,19 @@ Non toccare docs/prossime-sessioni.md. Suite verdi, voce in fondo a
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `fd67e7d`, voce nel CHANGELOG. I quiz hanno un regime solo:
+tolti `MODI_SEI`, il ramo a sei ingressi e `regime_quiz()`; il banco gira su
+qualunque pagina, pretende le cinque intenzioni in `MODI`, e la pagina vera fa
+tante verifiche quante quella di riferimento, gruppo per gruppo. Provato al
+contrario con `RG_PAGINA` sulla pagina di `ccd98f0^1`: prima passava i controlli
+dei quiz con 5 verifiche e zero rossi, ora ha 7 rossi, ognuno col suo difetto.
+La pagina di riferimento resta per le 16 rotture. Specifica §2.5, §5.3, §5.4,
+§7.2, R-NAV-04/05/07, «Un regime solo per i quiz» nel §9.4; nota di chiusura
+nel §10.1 dell'area 2. **Trovato:** del selettore globale «solo mai fatte»
+resta il codice ma non l'interruttore — `S.prep` è sempre falso, e
+`dipingiPrep()`, `quotaPrep()`, `#c-prep`, i rami «`S.prep ?`» e il CSS `.prep`
+sono codice morto —; va a P-52. Controllato dalla regia: motore 185/187, server
+60/60, dati 242, specifica 758, guardiano verde, interfaccia 1.873 in 189 s.
 
 ### P-13 — ChatGPT: il progetto del client degli account
 
@@ -1814,7 +1826,7 @@ verdi sullo stato fuso — interfaccia compresa, in quel giro.
 
 ### P-37 — Claude: chiudere il regime vecchio dei controlli del ciclo
 
-**Stato:** delegato alla regia, che lo lancia dopo P-45 (punto 8) — pronto quando la cartella principale è libera: P-19 è fuso. **Dove:**
+**Stato:** **in corso dal 30 settembre 2026**, lanciato dalla regia (punto 8) — pronto quando la cartella principale è libera: P-19 è fuso. **Dove:**
 Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:**
 il resoconto di P-31 — è per il ciclo quello che P-12 è per i quiz.
 
@@ -2674,7 +2686,7 @@ vista resta, e la porta del Carteggio porta l'aggancio `data-v="tec"` — scritt
 nel blocco «Ripresa» di P-21. Controllato dalla regia: motore 185/187, server
 60/60, dati 242, specifica 758, guardiano verde, interfaccia 1.872 in 190 s.
 
-### P-52 — ChatGPT: lo stato dell'invio che dice «sul server» con righe in coda
+### P-52 — ChatGPT: lo stato dell'invio che dice «sul server» con righe in coda, e il codice morto
 
 **Stato:** in attesa di P-21, perché la penna su `app.html` è una; **prima del
 traguardo**. **Dove:** app di ChatGPT, progetto `~/Software/rotta-giusta-ui`,
@@ -2703,6 +2715,12 @@ P-25: non toccarle. La suite dell'interfaccia vuole Chrome, la porta
 8620 libera e il permesso per le connessioni locali; se non gira,
 fermati e dillo. Se un controllo ti sta stretto, fermati e dillo:
 cambiarlo tocca main.
+
+Nello stesso lavoro, se P-21 non l'ha già fatto, togli il codice morto
+che P-12 e P-47 hanno trovato: il selettore globale «solo mai fatte»
+non ha più un interruttore, quindi S.prep è sempre falso, e sono morti
+dipingiPrep(), quotaPrep(), #c-prep, i rami «S.prep ?» e il CSS .prep
+(voce «Test — P-12» del CHANGELOG); e il CSS di .cons (voce P-47).
 
 Non toccare docs/prossime-sessioni.md. Tutte le suite verdi, collaudo
 guardato con la rete spenta e con una rete lenta, voce in fondo a
@@ -3050,3 +3068,6 @@ la nota in testa a `docs/filosofia.md`, che lo dice di sé (P-26).
   `data-v="tec"`, e l'ha scritto nel blocco «Ripresa» di P-21. `ui/main`
   allineato con un avanzamento veloce che non tocca `app.html`, con la bozza
   ancora non committata. Lanciato P-12.
+- **30 settembre 2026 — P-12 chiuso, P-37 lanciato.** I quiz hanno un regime
+  solo; il codice morto del selettore globale che P-12 ha trovato va in P-52,
+  la prossima penna di ChatGPT su `app.html` dopo P-21.
