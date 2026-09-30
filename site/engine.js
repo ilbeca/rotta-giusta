@@ -1305,6 +1305,11 @@ export const PAUSA_SESSIONE_MS = 20 * 60000;
  * una seconda ricerca; `prova` e' la riga di prova sostenuta (`_t: 's'`) con
  * lo stesso uid, che solo le simulazioni hanno. Due tempi: `ms` e' la somma
  * dei tempi di risposta, `durata` e' da capo a coda — a schermo va la seconda.
+ * **`durata` e' `null` quando l'orologio non la misura**: basta una riga del
+ * gruppo senza un `ts` che sia una data. Fino al 30 settembre 2026 ripiegava su
+ * `ms`, cioe' su un cronometro con il nome di un orologio, e `ritmo()` lo
+ * prendeva per buono (P-16). Chi vuole mostrare comunque un tempo sceglie da
+ * se' `ms`, e sa che cosa sta mostrando.
  *
  * **Due confini, e si sceglie per nome** (`opt.confine`):
  *
@@ -1356,8 +1361,11 @@ export function sessioni(righe, opt = {}) {
     g.righe.push(r);
   }
   const out = (confine === 'attivita' ? cuciAttivita(gruppi) : gruppi).map(({ _visti, _ultimo, ...s }) => {
+    // Da capo a coda solo se ogni riga ha la sua ora. Basta guardare il capo:
+    // ordinaRighe() mette in testa ogni riga senza data, e cuciAttivita() tiene
+    // quell'ordine, quindi se una manca manca anche `inizio`.
     const a = epoca(s.inizio), b = epoca(s.fine);
-    s.durata = a != null && b != null && b >= a ? b - a : s.ms;
+    s.durata = a != null && b != null && b >= a ? b - a : null;
     s.prova = prove.get(String(s.sim_uid || '')) || null;
     return s;
   });
@@ -1416,14 +1424,29 @@ function cuciAttivita(gruppi) {
  *
  * Restituisce `msPerDomanda: null` quando non c'e' niente da misurare: non si
  * inventa un numero.
+ *
+ * **Solo l'orologio misura il ritmo** (P-16). Una sessione conta se ha almeno
+ * due risposte e una `durata` da capo a coda, cioe' se ogni sua riga ha un `ts`
+ * che e' una data: senza, `sessioni()` da' `durata: null`, e la sessione non
+ * entra. Fino al 30 settembre 2026 la durata ripiegava sulla somma dei tempi di
+ * risposta, e trenta righe senza data uscivano `affidabile` con `fonte:
+ * 'orologio'` — un cronometro dichiarato orologio (docs/area-2-collaudo-ux.md).
+ * Per lo stesso motivo la soglia `minRisposte` si confronta con `misurate`, le
+ * risposte delle sessioni che hanno dato un intervallo, e non con `risposte`,
+ * tutte quelle viste: una risposta senza data, o sola nella sua lista, non ha
+ * un intervallo da misurare. Il chiamante passa l'archivio com'e', senza
+ * filtrarlo.
  */
 export function ritmo(righe, opt = {}) {
   const { minRisposte = MIN_MISURATE } = opt;
   const passi = [];
-  let risposte = 0;
+  let risposte = 0, misurate = 0;
   for (const s of sessioni(righe)) {
     risposte += s.n;
-    if (s.n >= 2 && s.durata > 0) passi.push(s.durata / (s.n - 1));
+    if (s.n >= 2 && s.durata > 0) {             // null non e' > 0
+      passi.push(s.durata / (s.n - 1));
+      misurate += s.n;
+    }
   }
   passi.sort((a, b) => a - b);
   const m = passi.length;
@@ -1433,7 +1456,8 @@ export function ritmo(righe, opt = {}) {
     msPerDomanda: mediana == null ? null : Math.round(mediana),
     sessioni: m,
     risposte,
-    affidabile: m > 0 && risposte >= minRisposte,
+    misurate,
+    affidabile: m > 0 && misurate >= minRisposte,
     fonte: 'orologio',
   };
 }

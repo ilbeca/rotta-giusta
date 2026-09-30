@@ -1876,6 +1876,71 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   libera; nessun carico di prova lanciato. `site/`, `docs/prossime-sessioni.md`
   e il worktree `ui` non sono stati toccati.
 
+### Corretto — P-16: il ritmo non dice «orologio» senza un orologio
+
+- **Trenta righe senza data davano una durata «misurata all'orologio».** Il
+  caso trovato dal collaudo di P-05 (`docs/area-2-collaudo-ux.md`, «Trovato e
+  contatto con la regia»), riprodotto prima di toccare il motore: trenta righe
+  con `sim_uid` e `ms` e senza `ts` davano `affidabile: true`, `fonte:
+  'orologio'` e 12,4 s a domanda. `sessioni()` ripiegava sulla somma dei tempi
+  di risposta quando non poteva misurare da capo a coda, e `ritmo()` la
+  prendeva per l'intervallo fra due risposte: un cronometro con il nome di un
+  orologio, cioè la stima che `ritmo()` era nato per sostituire. E non solo da
+  sole: accanto a quaranta righe vere a 30 s di passo, quelle trenta tiravano la
+  mediana a 21,2 s. Il Quiz se ne difendeva filtrando le righe con una data; il
+  Percorso no.
+
+- **I chiamanti, uno per uno, prima di cambiare.** `ritmo()`: il Percorso
+  (`app.html`, la durata della proposta, righe quiz base senza filtro) e
+  l'anteprima dei Quiz (con il filtro sulle date), e i test; non lo chiama
+  nessun altro, né il server. Per il Percorso cambia il risultato su un archivio
+  con righe senza data o con liste di una risposta sola: dove prima annunciava
+  una durata ora non la annuncia, ed è la correzione. Per il Quiz non cambia
+  niente, e il suo filtro diventa superfluo — è in `site/app.html`, quindi lo
+  toglie chi lavora su `ui/*`. `sessioni()`: `ritmo()` nel motore, tre chiamate
+  in pagina — l'ultima attività del Percorso e `riepilogoQuiz()`, che non
+  leggono `durata`, e l'elenco delle sessioni in Progressi, che scrive `s.durata
+  ?? s.ms` e quindi mostra quello che mostrava —, `erroriSessione()`, che non
+  legge `durata`, e i banchi, che non la leggono. `stimaImpegno()`: gli stessi
+  due punti della pagina, che le passano il ritmo solo se è affidabile; la
+  funzione non cambia, perché dichiarava già la fonte di quello che riceveva.
+
+- **La correzione sta nel motore, così che nessuno debba filtrare prima.** La
+  `durata` di una sessione senza orologio è `null`, non `ms`: basta una riga
+  senza un `ts` che sia una data, e siccome `ordinaRighe()` le mette in testa se
+  ne manca una manca anche l'inizio. `ritmo()` misura solo le sessioni che
+  l'orologio misura, e restituisce anche `misurate`, le risposte di quelle
+  sessioni: la soglia di `MIN_MISURATE` si confronta con quelle e non con tutte
+  le risposte viste. È la seconda metà dello stesso difetto: due risposte
+  all'orologio non diventano affidabili perché accanto ce ne sono ventinove
+  senza data, né trenta risposte ognuna sola nella sua lista, che un intervallo
+  non ce l'hanno. Il confine per pausa non cambia, e il test di P-30 che lo
+  pretende è verde; `sessioni()` e `ritmo()` restano dei soli quiz, e anche il
+  test di P-33 lo è.
+
+- **Prima il test che fallisce:** quattro test nuovi, rossi uno per uno per la
+  ragione misurata — `affidabile` vero, la mediana a 21,2 s invece di 30,
+  `misurate` che non esisteva, la `durata` a 360.000 ms di cronometro.
+  **Provati al contrario su cinque rotture**, una per volta, tutte rosse: il
+  ripiego su `ms` rimesso (quattro rossi), la soglia sulle risposte viste,
+  `misurate` che conta tutte, una durata zero invece di `null`, `misurate` che
+  conta gli intervalli invece delle risposte. **Due controlli sono stati tolti
+  perché nessuna rottura li vedeva**: il conto esplicito delle righe senza data
+  in ogni sessione, equivalente a guardare l'inizio per via dell'ordinamento, e
+  lo stesso conto riportato da un gruppo all'altro in `cuciAttivita()`, che non
+  si può raggiungere. Specifica: `ritmo()` entra nella tabella delle soglie del
+  §4.3, dove mancava; R-TEMPO-09…12 nuovi e coperti; R-TEMPO-05 e 07 restano
+  com'erano, e il registro dice perché — il primo era falso su righe senza data
+  e il suo controllo non lo vedeva, il secondo era vero alla lettera.
+
+  Suite: motore **189/191** con i due skip di sempre (erano 185/187); dati 242;
+  specifica **774** (erano 758); interfaccia 1.873, in 187 s; server 60/60. Con
+  la **24.21.0 LTS**, scaricata da nodejs.org e verificata con
+  `SHASUMS256.txt`: server 60/60, motore 189/191. Guardiano verde. Prima del
+  giro dell'interfaccia la 8620 guardata libera; nessun carico di prova
+  lanciato. `site/app.html`, `docs/prossime-sessioni.md` e il worktree `ui` non
+  sono stati toccati.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag

@@ -604,6 +604,7 @@ giorno, stessa lista.
 | `traccia()` | copertura nei tre stati, rimanenti, quota, giorni, semaforo | **senza data d'esame `quota` e `giorni` sono `null` e il semaforo è `attesa`** |
 | `semaforo()` | verde/giallo/rosso sull'atteso lineare | l'inizio è **il giorno della prima risposta**, non «oggi» |
 | `stimaImpegno()` | ore e minuti al giorno | sotto `MIN_MISURATE = 30` usa `RIPIEGO_MS = 15000` **e lo dichiara** |
+| `ritmo()` | il tempo per domanda **all'orologio**, mediana fra sessioni | `affidabile` solo con almeno `MIN_MISURATE = 30` risposte **misurate**: in sessioni di almeno due risposte, tutte con un `ts` che è una data. Senza orologio `msPerDomanda` è `null`, e il cronometro non lo sostituisce (P-16) |
 | `tendenza()` | la freccia ↑ → ↓ | almeno **2 giorni** e **10 risposte** |
 | `lunghezzaPartita()` | quante domande ha una partita dei Segnali | `min(10, pool)` |
 | `lunghezzaScreening()` | quante domande apre uno screening a *n* per voce | somma dei `min(n, quesiti della voce)`: **non** `n × 44` |
@@ -1355,6 +1356,10 @@ del progetto di preparazione. Il §4 di `prossima-versione.md` li motiva.
 | R-TEMPO-06 | Il ritmo non dipende dalla lunghezza della sessione | `test_engine.mjs::ritmo: una sessione corta non e` |
 | R-TEMPO-07 | `stimaImpegno()` dichiara quale dei tre tempi sta riportando | `test_engine.mjs::stimaImpegno: con il ritmo misurato usa l` |
 | R-TEMPO-08 | Il ritmo si misura sul confine per pausa, e un'attività ripresa dopo una pausa non lo gonfia | `test_engine.mjs::sessioni: il confine per pausa resta quello di prima, e ritmo lo usa` |
+| R-TEMPO-09 | Senza orologio non c'è ritmo: righe senza un `ts` che sia una data non danno un ritmo `affidabile` né un numero, anche quando portano `sim_uid` e `ms` | `test_engine.mjs::ritmo: senza orologio non dice orologio` |
+| R-TEMPO-10 | Il chiamante passa l'archivio com'è: le righe senza data non spostano il ritmo misurato sulle altre, e filtrarle prima non cambia niente | `test_engine.mjs::ritmo: il chiamante non deve filtrare le righe senza data` |
+| R-TEMPO-11 | La soglia del ritmo conta le risposte misurate all'orologio, non quelle viste: né le risposte senza data né quelle sole nella loro lista la raggiungono | `test_engine.mjs::ritmo: la soglia conta le risposte misurate, non quelle viste` |
+| R-TEMPO-12 | Una sessione senza orologio non ha una `durata`: è `null`, non la somma dei tempi di risposta | `test_engine.mjs::sessioni: senza orologio la durata non si inventa` |
 | R-FLU-01 | Ogni attività si chiude con un passo che propone azioni derivate da quello che è appena successo. **Quiz, coperti:** riepilogo dell'attività intera — risposte, corrette, errate, non affrontate, esito solo per una prova e mai superata con domande senza risposta — e la riprova che offre, pronta o bloccata col suo motivo, eseguiti sulla pagina vera, che fa almeno le verifiche della pagina di riferimento; una pagina senza il raccordo è rossa. **Carteggio e tecniche:** R-FLU-24 per il riepilogo e la revisione, R-FLU-25 per la riprova che non c'è — due controlli distinti, come R-FLU-01 e R-FLU-10 per i quiz; il contratto del motore è R-FLU-12…22. **Segnali, scoperti:** il loro ciclo non è progettato | `test_interfaccia.py::test_ciclo_riepilogo` |
 | R-FLU-02 | Gli errori di una sessione si riaprono come esercizio, senza mescolarli con quelli di sempre: tutti e soltanto gli errori di quell'attività, nell'ordine delle risposte, anche se nel frattempo sono stati corretti altrove | `test_engine.mjs::erroriSessione: apre esattamente gli errori di quella lista` |
 | R-FLU-03 | Il conteggio annunciato e la lista che si apre coincidono anche per gli errori di sessione, nel motore; nella pagina lo tiene R-FLU-10 | `test_engine.mjs::erroriSessione: il conteggio promesso e la lista coincidono` |
@@ -2299,3 +2304,16 @@ successo, ed è il motivo per cui questo file esiste.
   gruppo. La pagina di `4129dfc^1` è rossa, sei rossi dove prima ne aveva zero
   con tre verifiche. R-FLU-01 e 11, §7.5 e il §9.6 dicono quello che la
   pagina fa; R-UX-06 resta scoperto per le frasi, con il motivo di oggi.
+- **30 settembre 2026 — l'orologio che non c'è (P-16).** Il collaudo di P-05
+  aveva riprodotto trenta righe con `sim_uid` e `ms` ma senza `ts` per cui
+  `ritmo()` dava `affidabile: true` e `fonte: 'orologio'`: `sessioni()`
+  ripiegava sulla somma dei tempi di risposta quando non poteva misurare da capo
+  a coda, e `ritmo()` la prendeva per un orologio. **R-TEMPO-05 era falso su
+  quelle righe**, e il suo controllo non lo vedeva perché le sue righe hanno
+  tutte la data; **R-TEMPO-07 era vero alla lettera** — `stimaImpegno()`
+  dichiarava la fonte di quello che riceveva — ma riceveva un cronometro con il
+  nome sbagliato. Ora la `durata` di una sessione senza orologio è `null`, il
+  ritmo si misura solo sulle sessioni che l'orologio misura, e la sua soglia
+  conta le risposte misurate e non quelle viste: R-TEMPO-05 e 07 tornano veri
+  senza cambiare testo, e i nuovi R-TEMPO-09…12 tengono fermo il caso. Il
+  `ritmo()` entra nella tabella delle soglie del §4.3, dove mancava.

@@ -2387,6 +2387,83 @@ test('sessioni: il confine per pausa resta quello di prima, e ritmo lo usa', () 
   assert.equal(ritmo(righe).sessioni, 1);
 });
 
+// --- P-16: l'orologio che non c'e' -------------------------------------------
+//
+// Il collaudo di P-05 (docs/area-2-collaudo-ux.md, «Trovato e contatto con la
+// regia») ha riprodotto trenta righe con `sim_uid` e `ms` ma senza `ts` per cui
+// `ritmo()` diceva `affidabile: true` e `fonte: 'orologio'`: `sessioni()`
+// ripiegava sulla somma dei tempi di risposta quando non poteva misurare da
+// capo a coda, e `ritmo()` prendeva quel cronometro per un orologio. Il Quiz se
+// ne difendeva filtrando le righe con `ts`; il Percorso no.
+
+/** n righe della stessa lista, con i tempi di risposta e senza data. */
+function senzaOrologio(uid, n, ts) {
+  return Array.from({ length: n }, (_, i) => ({
+    _t: 'q', uid: `${uid}-${i}`, item_id: `base-${uid}-${i}`, kind: 'base',
+    mode: 'argomento', sim_uid: uid, correct: 1, ms: 12000,
+    ...(ts === undefined ? {} : { ts }),
+  }));
+}
+
+test('ritmo: senza orologio non dice orologio', () => {
+  for (const [caso, ts] of [['senza ts', undefined], ['ts che non e una data', 'boh'], ['ts vuoto', '']]) {
+    const r = ritmo(senzaOrologio('p05', 30, ts));
+    assert.equal(r.affidabile, false, `${caso}: trenta tempi di risposta non sono un orologio`);
+    assert.equal(r.msPerDomanda, null, `${caso}: niente da misurare, niente numero`);
+    assert.equal(r.sessioni, 0, `${caso}: nessuna sessione misurata all'orologio`);
+    assert.equal(r.misurate, 0, `${caso}: nessuna risposta misurata`);
+    assert.equal(r.risposte, 30, `${caso}: le risposte viste restano contate`);
+  }
+});
+
+test('ritmo: il chiamante non deve filtrare le righe senza data', () => {
+  // La difesa del Quiz in pagina (solo righe con ts leggibile) diventa inutile:
+  // con o senza, il motore da' lo stesso ritmo.
+  const tutte = [...sessioneFinta('a', 40, 30), ...senzaOrologio('p05', 30)];
+  const conData = tutte.filter((r) => Number.isFinite(Date.parse(r.ts)));
+  const a = ritmo(tutte), b = ritmo(conData);
+  assert.equal(a.msPerDomanda, b.msPerDomanda);
+  assert.equal(a.affidabile, b.affidabile);
+  assert.equal(a.sessioni, b.sessioni);
+  assert.equal(a.misurate, b.misurate);
+  assert.equal(Math.round(a.msPerDomanda / 1000), 30, 'il passo vero, non i 12 s del cronometro');
+});
+
+test('ritmo: la soglia conta le risposte misurate, non quelle viste', () => {
+  // Due risposte all'orologio non diventano affidabili perche' accanto ce ne
+  // sono ventinove senza data, ne' trenta risposte da sole in trenta liste:
+  // una risposta sola non ha un intervallo.
+  const poche = [...sessioneFinta('a', 2, 30), ...senzaOrologio('p05', 29)];
+  const r = ritmo(poche);
+  assert.equal(r.misurate, 2);
+  assert.equal(r.risposte, 31);
+  assert.equal(r.affidabile, false, '2 risposte misurate non bastano, anche se ne ho viste 31');
+  const sole = Array.from({ length: 30 }, (_, i) =>
+    sessioneFinta('s' + i, 1, 30, `2026-09-1${i % 9}T${String(8 + (i % 12)).padStart(2, '0')}:00:00+02:00`)).flat();
+  const s = ritmo([...sole, ...sessioneFinta('b', 2, 30, '2026-09-20T10:00:00+02:00')]);
+  assert.equal(s.sessioni, 1);
+  assert.equal(s.misurate, 2);
+  assert.equal(s.affidabile, false, 'trenta risposte isolate non misurano un passo');
+  assert.equal(ritmo(sessioneFinta('c', 30, 20)).affidabile, true, 'trenta risposte di seguito si');
+});
+
+test('sessioni: senza orologio la durata non si inventa', () => {
+  const [s] = sessioni(senzaOrologio('p05', 30));
+  assert.equal(s.n, 30);
+  assert.equal(s.ms, 360000, 'la somma dei tempi di risposta resta in ms');
+  assert.equal(s.durata, null, 'da capo a coda non si sa: non e\' la somma dei tempi');
+  // Un gruppo con righe senza data in testa e righe datate dopo: da capo a
+  // coda non si misura nemmeno qui, perche' il capo non ha un'ora.
+  const misto = [...senzaOrologio('m', 3), ...sessioneFinta('m', 3, 30)]
+    .map((r, i) => ({ ...r, uid: 'm' + i, item_id: 'base-m' + i, sim_uid: null, mode: 'argomento' }));
+  const gruppi = sessioni(misto);
+  assert.equal(gruppi.length, 1, JSON.stringify(gruppi.map((g) => g.n)));
+  assert.equal(gruppi[0].durata, null);
+  assert.equal(sessioni(misto, { confine: 'attivita' })[0].durata, null);
+  // Con l'orologio, come prima.
+  assert.equal(sessioni(sessioneFinta('a', 5, 20))[0].durata, 80000);
+});
+
 test('sessioni: con confine attivita ogni id e unico e le attivita non si mescolano', () => {
   // Due attivita' intrecciate nel tempo (due schede aperte), poi una riprova
   // degli errori della prima con un'identita' nuova, come fa il runner.
