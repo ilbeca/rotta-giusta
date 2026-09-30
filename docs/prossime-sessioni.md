@@ -200,7 +200,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 18 | Il carteggio su `main`: composizione, attività intera, bozza, controlli — **P-33 in corso**, lanciato dalla regia | Claude | `main`, a mano | niente: P-32 apre la fila | P-32…P-35 |
+| 18 | Il carteggio su `main`: composizione, attività intera, bozza, controlli — **P-34 in corso**, lanciato dalla regia | Claude | `main`, a mano | niente: P-32 apre la fila | P-32…P-35 |
 | 6d, 5b, 12, 13 | Il regime vecchio del ciclo e dei quiz, `ritmo()`, l'ultimo tag | Claude | `main`, a mano | niente: riempiono i buchi | P-37, P-12, P-16, P-17 |
 | 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore | P-15 |
 | 28 | I controlli e la specifica dell'area 6 | Claude | `main`, a mano | in fondo all'ordine | P-45 |
@@ -1590,7 +1590,7 @@ server 60/60, dati 242, specifica 608, guardiano verde, interfaccia 1.436 in
 
 ### P-33 — Claude: l'attività intera anche per carteggio e tecniche
 
-**Stato:** **in corso dal 30 settembre 2026**, lanciato dalla regia (punto 8). P-32 gli lascia una nota: le righe della prova portano `variante` (§10.1 di `area-4-progetto.md`), e se D-02 cambia lo schema quel paragrafo si riallinea. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-20, §10.1 di `docs/area-4-progetto.md`.
+**Stato:** **chiuso il 30 settembre 2026**, commit `e7dd417` su `main`; lanciato dalla regia (punto 8). **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-20, §10.1 di `docs/area-4-progetto.md`.
 
 ```
 Questo prompt è per Claude Code, nella cartella principale
@@ -1615,12 +1615,28 @@ Non toccare docs/prossime-sessioni.md. Suite verdi, voce in fondo a
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `e7dd417`, voce nel CHANGELOG. D-02 consegnata come contratto
+puro: `E.attivitaCarteggio(righe, { tipo })` tiene insieme le righe di un
+`sim_uid` di carta (`'c'`) o tecniche (`'t'`) oltre ogni pausa e ricostruisce,
+dichiarandolo, quelle senza legame; `E.dettaglioCarteggio(righe, banca, id, …)`
+dà schede, conteggi e filtro dalla stessa chiamata, senza fare di un giudizio
+mancante un «da rivedere». `sessioni()`, `erroriSessione()` e `ritmo()` restano
+dei soli quiz, e un test lo pretende. Lo schema delle righe nuove e la
+compatibilità con le vecchie sono nel §10.1 D-02 dell'area 4 e nel §3.2 della
+specifica, prima della pagina. R-FLU-12…22 coperti, R-FLU-23 (la pagina)
+scoperto; le due funzioni fra gli orfani fino a P-21. **Trovato:** `salvaCart()`
+scrive tutte le righe di un salvataggio con un solo `ts` dalla 0.5.0, quindi il
+carteggio si ricostruisce per istante e modalità e non con le regole dei quiz,
+che avrebbero fuso due giri salvati a un minuto l'uno dall'altro; la quantità
+proposta di una prova vecchia sta nel `total` della sua `_t:'s'`; l'ordine
+delle righe vecchie è «non registrato». Lo schema della `variante` di P-32 non
+cambia. Controllato dalla regia: motore 177/179, server 60/60, dati 242,
+specifica 654, guardiano verde, interfaccia 1.442 in 150 s.
 
 ### P-34 — Claude: la bozza del carteggio, e la promessa «a ogni tasto»
 
 **Stato:** **fermato dall'autore il 26 settembre 2026, da rilanciare in Claude
-dopo P-33**; lo lancia la regia (punto 8). Era partito fuori ordine in ChatGPT, nella cartella principale.
+dopo P-33**; **in corso dal 30 settembre 2026**, lanciato dalla regia (punto 8). Era partito fuori ordine in ChatGPT, nella cartella principale.
 Il suo lavoro non committato — un controllo rosso del difetto, un raccordo
 IndexedDB di riferimento, un banco che guida Chrome headless senza dipendenze,
 e il raccordo documentale per il progetto del client — l'ha spostato la regia
@@ -2730,3 +2746,6 @@ la nota in testa a `docs/filosofia.md`, che lo dice di sé (P-26).
 - **30 settembre 2026 — P-32 chiuso, P-33 lanciato.** La composizione della
   prova di carteggio è nel motore, con il suo contratto per P-21; il resoconto
   torna con il repo e con le suite.
+- **30 settembre 2026 — P-33 chiuso, P-34 lanciato.** L'attività intera anche
+  per carteggio e tecniche, nel motore; il resoconto torna con il repo e con le
+  suite.
