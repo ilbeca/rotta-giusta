@@ -202,17 +202,16 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 |---|---|---|---|---|---|
 | 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore | P-15 |
 | 32 | Lo stato dell'invio che dice «sul server» con righe in coda (T-02), e le pulizie della pagina | ChatGPT | `ui/main` | niente — **pronto**, prima del traguardo | P-52 |
-| 21c | Dopo P-21: il regime vecchio del Carteggio, e la riga fra i difetti noti di `AGENTS.md` — **in corso**, lanciato dalla regia | Claude | `main`, a mano | niente | P-50 |
 | 26b | La realizzazione dell'area 6 | ChatGPT | `ui/main` | il §8 dell'area 6 (l'autore), e P-52 per la penna | segnaposto P-25 |
 | 9 | **La versione con gli account** — il traguardo | tutti | `main` | P-15, P-52, e gli adempimenti del §4 | segnaposto P-27 |
-| 33 | Le frasi del riepilogo dei quiz nel banco (R-UX-06) | Claude | `main`, a mano | niente, non urgente | P-53 |
+| 33 | Le frasi del riepilogo dei quiz nel banco (R-UX-06) — **in corso**, lanciato dalla regia | Claude | `main`, a mano | niente | P-53 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**, e si sono incontrate: il client degli
 account è nella pagina (P-18), Progressi è la mappa (P-23), e il carteggio ha
 i suoi contratti e controlli su `main` (P-32…P-35). **Per Claude, l'ordine
-consigliato:** P-50, poi P-53; P-15, la messa in
-esercizio, quando l'autore ha il tempo. **Per ChatGPT: P-52**, prima del traguardo; poi P-25,
+consigliato:** P-53, lanciato dalla regia; P-15, la
+messa in esercizio, quando l'autore ha il tempo. **Per ChatGPT: P-52**, prima del traguardo; poi P-25,
 quando l'autore ha deciso il §8 dell'area 6. I prompt di Claude vanno uno alla volta nella cartella principale, e
 la suite dell'interfaccia di un worktree esclude quella dell'altro, per la porta
 8620. Il numero di una riga è il suo nome, non la sua posizione. Il traguardo,
@@ -535,6 +534,14 @@ consuma, non si riprogetta.
      storage. §10.1 D-04 dell'area 4 e §7.6 della specifica.
   E Q-SUITE cresce ancora: con C-19 la suite dell'interfaccia dura circa 170 s.
   P-21 le porta nella pagina.
+- **Il sito pubblicato perde il testo del carteggio senza dirlo** (trovato da
+  P-50 il 1° ottobre 2026, verificato dalla regia sul tag): la v0.28.0 non ha
+  l'avviso e la conferma del browser di P-36, che sono su `main` dal 26
+  settembre ma non sono mai usciti. Due strade: aspettare il traguardo, che
+  porta la bozza vera; oppure un rilascio di correzione da un ramo che parte da
+  `v0.28.0`, con il solo P-36, come dice la prima riga di questo §4. **Decide
+  l'autore.** Il difetto è scritto nel §7.6 della specifica e nella voce P-50
+  del CHANGELOG.
 - **Gli adempimenti rimasti**, sei punti, tutti nel §15.4 di
   `account-progetto.md` e bloccano il punto 9: l'indirizzo postale del titolare,
   la base giuridica del registro di sicurezza (da far confermare), l'inoltro di
@@ -2783,7 +2790,7 @@ con il resoconto di docs/prossime-sessioni.md.
 
 ### P-50 — Claude: chiudere il regime vecchio dei controlli del Carteggio
 
-**Stato:** **in corso dal 1° ottobre 2026**, lanciato dalla regia (punto 8). **Dove:** Claude Code,
+**Stato:** **chiuso il 1° ottobre 2026**, commit `4e601a0` su `main`; lanciato dalla regia (punto 8). **Dove:** Claude Code,
 `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** i resoconti
 di P-35 e P-21.
 
@@ -2813,11 +2820,28 @@ site/. Suite verdi su più giri, voce in fondo a [Unreleased], un
 commit. Chiudi con il resoconto di docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `4e601a0`, voce nel CHANGELOG. Il Carteggio ha un regime
+solo: tolti il ramo «attuale», `regime_carteggio()`, `riconosci_carteggio()` e
+l'innesto di P-51; la pagina vera fa, gruppo per gruppo, le verifiche della
+pagina di riferimento. La pagina di prima di P-21, con `RG_PAGINA`: prima 8
+verifiche e zero rossi, ora 11 rossi nel Carteggio. La pagina di riferimento
+resta per le 39 rotture. Tolta da `GIUDIZIO_CARTEGGIO` la frase di prima e da
+`AGENTS.md` la riga fra i «Difetti noti»; la specifica dice il presente di
+`main` — §3.2, §5.3, §7.3, §7.6, R-SEL-17, R-FLU-23/24/26, R-UX-03/07, §9.6,
+§9.11, R-BOZZA-06 —, e che il sito pubblicato lo prende al traguardo. **Nessun
+banco riconosce più un regime di pagina.** **Trovato:** la v0.28.0 pubblicata non
+ha nemmeno l'avviso e la conferma del browser di P-36 — il testo del carteggio
+si perde con una ricarica senza che la pagina lo dica —; la regia l'ha
+verificato sul tag, e sta nel §4 come decisione dell'autore. E un errore della
+sessione sulla porta, senza danni: un lancio con la 8620 occupata dalla suite di
+P-52, che il banco ha rifiutato da solo; poi ogni giro ha aspettato 90 s di
+quiete. Controllato dalla regia: motore 194/197, server 60/60, dati 242,
+specifica 782, guardiano verde, interfaccia 2.121 in 242 s — meno di 2.138
+perché con il regime vecchio sono uscite anche le sue verifiche.
 
 ### P-53 — Claude: le frasi del riepilogo dei quiz, nel banco del client
 
-**Stato:** pronto dal 30 settembre 2026, non urgente; delegato alla regia, che lo lancia dopo P-50 (punto 8). **Dove:** Claude Code,
+**Stato:** **in corso dal 1° ottobre 2026**, lanciato dalla regia (punto 8). **Dove:** Claude Code,
 `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** l'esito di
 P-37.
 
@@ -3194,3 +3218,7 @@ la nota in testa a `docs/filosofia.md`, che lo dice di sé (P-26).
   senza il CSS di `.cons` che P-21 ha già tolto.
 - **1° ottobre 2026 — una terza fila delegata.** L'autore ha delegato alla
   regia P-50 e P-53, nell'ordine; P-50 lanciato.
+- **1° ottobre 2026 — P-50 chiuso, P-53 lanciato.** Il Carteggio ha un regime
+  solo, e nessun banco riconosce più un regime di pagina. Nel §4 una decisione
+  nuova: la v0.28.0 pubblicata non ha l'avviso di P-36. P-52 ha un commit su
+  `ui/main` (`0ed6e3a`); la regia lo fonde quando arriva il resoconto.
