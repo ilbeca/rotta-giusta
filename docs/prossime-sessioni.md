@@ -202,8 +202,8 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 |---|---|---|---|---|---|
 | 6d, 5b, 12, 13 | Il regime vecchio del ciclo e dei quiz, `ritmo()`, l'ultimo tag | Claude | `main`, a mano | niente: riempiono i buchi | P-37, P-12, P-16, P-17 |
 | 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore | P-15 |
-| 28 | I controlli e la specifica dell'area 6 | Claude | `main`, a mano | in fondo all'ordine | P-45 |
-| 21b | La realizzazione dell'area 4 | ChatGPT | `ui/main` | la tua conferma delle cose di P-34 e P-35 nel §4 | P-21 |
+| 28 | I controlli e la specifica dell'area 6 — **in corso**, lanciato dalla regia | Claude | `main`, a mano | niente | P-45 |
+| 21b | La realizzazione dell'area 4 | ChatGPT | `ui/main` | niente — **pronto** | P-21 |
 | 21c | Dopo P-21: il regime vecchio del Carteggio, e la riga fra i difetti noti di `AGENTS.md` | Claude | `main`, a mano | la merge di P-21 | segnaposto P-50 |
 | 26b | La realizzazione dell'area 6 | ChatGPT | `ui/main` | P-45, P-21, e il §8 dell'area 6 | segnaposto P-25 |
 | 9 | **La versione con gli account** — il traguardo | tutti | `main` | P-15, e gli adempimenti del §4 | segnaposto P-27 |
@@ -212,9 +212,9 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 **Le due colonne corrono in parallelo**, e si sono incontrate: il client degli
 account è nella pagina (P-18), Progressi è la mappa (P-23), e il carteggio ha
 i suoi contratti e controlli su `main` (P-32…P-35). **Per Claude, l'ordine
-consigliato: P-45**, poi i piccoli — P-12, P-37, P-16, P-17 —; P-15 quando
-l'autore ha il tempo. **Per ChatGPT: P-21**, appena l'autore conferma le cose
-di P-34 e P-35 nel §4. I prompt di Claude vanno uno alla volta nella cartella principale, e
+consigliato: P-45**, poi i piccoli — P-12, P-37, P-16, P-17 —, lanciati dalla
+regia uno dopo l'altro (punto 8); P-15 quando l'autore ha il tempo. **Per
+ChatGPT: P-21**, pronto. I prompt di Claude vanno uno alla volta nella cartella principale, e
 la suite dell'interfaccia di un worktree esclude quella dell'altro, per la porta
 8620. Il numero di una riga è il suo nome, non la sua posizione. Il traguardo,
 P-27, non aspetta le aree 4–6: aspetta il server in esercizio, i testi e gli
@@ -516,8 +516,9 @@ consuma, non si riprogetta.
   (`~/.Trash/rotta-giusta-area5-esplorazione-2026-09-29/`), non cancellati:
   si recuperano finché il Cestino non si svuota. Il worktree `ui` è pulito e
   `ui/main` è allineato.
-- **Tre cose da P-34 e P-35** (30 settembre 2026), da confermare prima di
-  P-21, che le realizza:
+- ~~Tre cose da P-34 e P-35~~ — **confermate dall'autore il 30 settembre
+  2026**, tutte e tre, e scritte come confermate nel §9.4 del progetto del
+  client e in D-03 e D-04 dell'area 4. P-21 è pronto. Il testo di prima:
   1. **Una scelta presa su delega di D-03**: un'attività di carteggio
      cominciata senza account resta senza bozza fino alla fine, anche se
      intanto entri; le sue righe passano nell'account dalle solite porte, alla
@@ -534,7 +535,7 @@ consuma, non si riprogetta.
      da `concludiBozza()` in tutti e due, e senza account niente arriva in uno
      storage. §10.1 D-04 dell'area 4 e §7.6 della specifica.
   E Q-SUITE cresce ancora: con C-19 la suite dell'interfaccia dura circa 170 s.
-  **P-21 aspetta questa conferma**, perché li porta nella pagina.
+  P-21 le porta nella pagina.
 - **Gli adempimenti rimasti**, sei punti, tutti nel §15.4 di
   `account-progetto.md` e bloccano il punto 9: l'indirizzo postale del titolare,
   la base giuridica del registro di sicurezza (da far confermare), l'inoltro di
@@ -1028,7 +1029,7 @@ dati 242, interfaccia 295, specifica 370, `ripristina --prova` 20 su 20.
 
 ### P-12 — Claude: chiudere il regime vecchio dei controlli dei quiz
 
-**Stato:** pronto: P-11 è chiuso, e P-05 è fuso. Il README ha già le cinque intenzioni (P-26); restano le righe del §5 della specifica. **Dove:**
+**Stato:** delegato alla regia, che lo lancia dopo P-45 (punto 8) — pronto: P-11 è chiuso, e P-05 è fuso. Il README ha già le cinque intenzioni (P-26); restano le righe del §5 della specifica. **Dove:**
 Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano.
 
 ```
@@ -1166,7 +1167,7 @@ docs/prossime-sessioni.md.
 
 ### P-16 — Claude: `ritmo()` dice «orologio» anche senza orologio
 
-**Stato:** pronto: P-30 è chiuso, e ha lasciato un test che P-16 deve tenere verde. **Dove:** Claude Code,
+**Stato:** delegato alla regia, che lo lancia dopo P-45 (punto 8) — pronto: P-30 è chiuso, e ha lasciato un test che P-16 deve tenere verde. **Dove:** Claude Code,
 `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** il resoconto
 di P-05.
 
@@ -1200,7 +1201,7 @@ docs/prossime-sessioni.md.
 
 ### P-17 — Claude: l'ultimo tag di una risposta, nel motore
 
-**Stato:** pronto quando la cartella principale è libera. **Dove:** Claude Code,
+**Stato:** delegato alla regia, che lo lancia dopo P-45 (punto 8) — pronto quando la cartella principale è libera. **Dove:** Claude Code,
 `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** l'esito di
 P-01, che lo lasciava scritto come difetto di copertura.
 
@@ -1812,7 +1813,7 @@ verdi sullo stato fuso — interfaccia compresa, in quel giro.
 
 ### P-37 — Claude: chiudere il regime vecchio dei controlli del ciclo
 
-**Stato:** pronto quando la cartella principale è libera: P-19 è fuso. **Dove:**
+**Stato:** delegato alla regia, che lo lancia dopo P-45 (punto 8) — pronto quando la cartella principale è libera: P-19 è fuso. **Dove:**
 Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:**
 il resoconto di P-31 — è per il ciclo quello che P-12 è per i quiz.
 
@@ -2236,7 +2237,7 @@ diventano P-45. Controllato dalla regia: territori puliti, merge chiusa da sola.
 
 ### P-45 — Claude: i controlli e la specifica dell'area 6
 
-**Stato:** pronto, in fondo all'ordine di Claude: P-25 aspetta anche P-21 e
+**Stato:** **in corso dal 30 settembre 2026**, lanciato dalla regia (punto 8); P-25 aspetta anche P-21 e il §8 dell'area 6. Prima era: pronto, in fondo all'ordine di Claude: P-25 aspetta anche P-21 e
 P-23. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-24, §10.1 di `docs/area-6-progetto.md`.
 
 ```
@@ -2513,9 +2514,8 @@ interfaccia 1.433 in 149 s; nessun `yes` rimasto vivo.
 
 ### P-21 — ChatGPT: la realizzazione dell'area 4
 
-**Stato:** pronto sul lato di Claude dal 30 settembre 2026: P-32…P-35 sono
-chiusi. **Parte dopo la conferma dell'autore** delle tre cose di P-34 e P-35 nel
-§4. **Dove:** app di ChatGPT, progetto `~/Software/rotta-giusta-ui`, ramo
+**Stato:** pronto dal 30 settembre 2026: P-32…P-35 sono chiusi, e l'autore ha
+confermato le tre cose di P-34 e P-35 (§4). **Dove:** app di ChatGPT, progetto `~/Software/rotta-giusta-ui`, ramo
 `ui/main`, modalità Local.
 
 ```
@@ -2527,7 +2527,7 @@ Sessione P-21. Realizza docs/area-4-progetto.md in site/app.html: il
 Carteggio con le tre porte, i materiali, il confronto, il giudizio di
 chi studia e il ciclo completo. Prima leggi gli esiti di P-20, P-32,
 P-33, P-34 e P-35 nel §6 di docs/prossime-sessioni.md, e le tre cose
-del §4 che l'autore ha confermato. Il contratto che la pagina deve
+di P-34 e P-35 che l'autore ha confermato nel §4. Il contratto che la pagina deve
 rispettare è il §10.1 del progetto, D-01…D-04 — il raccordo delle
 cinque funzioni che la suite ora esegue —, più il §9.4 di
 docs/account-client-progetto.md per la bozza con l'account: la pagina
@@ -2870,3 +2870,7 @@ la nota in testa a `docs/filosofia.md`, che lo dice di sé (P-26).
   ChatGPT, e parte quando l'autore conferma le tre cose di P-34 e P-35 nel §4;
   nasce il segnaposto P-50 per il regime vecchio del Carteggio dopo la sua
   merge.
+- **30 settembre 2026 — le tre cose confermate, e una seconda fila delegata.**
+  L'autore ha confermato le tre scelte di P-34 e P-35, scritte come confermate
+  dove si decidono; P-21 è pronto per ChatGPT. Ha delegato alla regia P-45 e i
+  piccoli — P-12, P-37, P-16, P-17 —, nell'ordine; P-45 lanciato.

@@ -755,7 +755,8 @@ lo scarto con conferma; l'uscita che conta le bozze anche dentro il lucchetto;
 l'avviso e la conferma di P-36 rivisti per i due stati. Il trasferimento chiesto
 qui sopra: **un runner cominciato senza account resta senza bozza fino alla
 fine**, anche se nel frattempo si entra, e le sue righe finali passano dalle
-porte del §4.3 e del §5.1 del progetto del client. Il banco lo prova su una
+porte del §4.3 e del §5.1 del progetto del client; Confermato dall'autore il 30 settembre 2026., con i testi
+dell'uscita e dello scarto. Il banco lo prova su una
 pagina di riferimento con quattordici rotture (§12 del progetto del client, «La
 bozza del carteggio»). Requisiti: R-BOZZA-01…07. Le funzioni della bozza sono
 fra gli orfani dichiarati fino a P-21, che le consuma, toglie la dichiarazione
@@ -854,7 +855,7 @@ inizio: fonte.adesso, variante })`, con la variante della preparazione nella
 prova: **il lavoro del runner ha la forma della bozza in tutti e due gli stati**,
 in memoria; con l'account lo stesso oggetto si scrive in `meta` (§9.4 del
 client), senza account no. Così la scadenza è quella del motore, e le righe
-finali e il loro uid non dipendono dallo stato d'accesso. Nel giro `opt.motivi`
+finali e il loro uid non dipendono dallo stato d'accesso. **Confermato dall'autore il 30 settembre 2026.** Nel giro `opt.motivi`
 sono i `motivi` della preparazione.
 
 **`concludiCarteggio(lavoro, fonte)`** chiama **una volta**

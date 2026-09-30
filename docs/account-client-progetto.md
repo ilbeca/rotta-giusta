@@ -676,7 +676,7 @@ conclusione le sue righe seguono le porte che il progetto ha già — la
 registrazione alla fine dell'attività (§4.3) o «Vuoi portare…» dopo un accesso
 (§5.1). È la risposta alla domanda di D-03 sul trasferimento di chi si
 identifica durante il lavoro: una porta sola per le risposte che entrano in un
-account, e nessuna seconda domanda a metà di una prova. Un runner dell'account A
+account, e nessuna seconda domanda a metà di una prova. **Confermato dall'autore il 30 settembre 2026.** Un runner dell'account A
 non scrive mai nella copia di B: la bozza porta con sé la chiave e il ciclo
 d'accesso con cui è nata.
 
