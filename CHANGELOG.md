@@ -1172,6 +1172,7 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   interfaccia 1.396. Prima di ogni giro la 8620 guardata libera. Guardiano e
   controllo della documentazione verdi. `site/` fuori dal motore e
   `docs/prossime-sessioni.md` non sono stati toccati.
+
 ### Corretto — P-48: le conferme mancanti si vedono
 
 - **R-ACC-66:** «Carica il nuovo archivio» senza «Ho conservato il file» e
