@@ -485,7 +485,7 @@ Senza account → invito del client dopo il riscontro, continuazione libera
 |---|---|---|
 | Giro su carta | `E.giroTecniche(banca, cprog)` | Lista di `e`, tecniche portate da ogni elemento; N dalla lista, carte da `e.carta` |
 | Tappeto | `E.tappeto(banca, cprog, 4)` | Esattamente i prossimi esercizi; N e carte dalla lista |
-| Prova | Composizione pura da consegnare su `main` (§10.1), con `estrai` cieca o `estraiNuoviPrima` nella variante | Lista unica, carte, copertura degli argomenti, eventuali riprese dichiarate; N deve essere 4 |
+| Prova | `E.provaCarteggio(banca, cprog, oggi, { seme, nuoviPrima })`, consegnata da P-32 (§10.1, D-01): `estrai` cieca, `estraiNuoviPrima` nella variante | Lista unica, `carte`, `rappresentati`/`mancanti`, `completamento`, `riprese` dall'esito; avvio solo se `pronta` |
 | Riconoscimento | `E.coda(itemsTecniche, tprog, oggi, {n:15})`, adattamento esistente degli esercizi a `k:'tec'` | Lista e referenza `_e` per testo/attese, N reale |
 
 Snapshot include origine, controllo per il focus, configurazione locale, regime
@@ -587,6 +587,39 @@ La variante deve essere distinguibile anche nella revisione di nuove prove;
 per righe precedenti il dato è sconosciuto, non default inventato. Sorgente
 unica delle condizioni 4/60/3 e conto delle tecniche/carte da fissare insieme
 al contratto; nessun dato della banca cambiato per far tornare una prova.
+
+*Consegnata il 30 settembre 2026 (P-32), come contratto puro nel motore.*
+`E.provaCarteggio(banca, specchio, oggi, { seme, nuoviPrima })`, con banca SL
+intera (`S.cart`) e specchio del carteggio (`S.cprog`), restituisce dalla
+stessa chiamata: `lista` (al più 4, rimescolata); `pronta` (`lista.length === 4`:
+se no, avvio bloccato come nel §5.1); `variante` (`'cieca'` o `'nuoviPrima'`);
+`argomenti`, uno per argomento nell'ordine fisso, `{ argomento, esercizi, nuovi,
+preso, ripresa }`; `rappresentati` e `mancanti`; `completamento`, gli esercizi
+presi dal resto della banca al posto di un argomento che non ha esercizi,
+`[{ id, argomento }]`; `riprese`, `[{ id, argomento }]` della lista già provati;
+`carte`, distinte nell'ordine della lista; `condizioni` `{ esercizi: 4, minuti:
+60, soglia: 3, erroriMax: 1 }`; `assunzione`, il testo di Q-CART4. Nella prova
+cieca `riprese`, `nuovi` e `ripresa` sono `null`: non misurati, non zero, e il
+risultato intero non dipende dallo specchio. Le condizioni e il testo
+dell'assunzione stanno in `E.PROVA_CARTEGGIO`, con la fonte (DM 323/2021, art.
+6 c. 6): la pagina non ne tiene una copia. Il ripiego su una banca incompleta
+è quello di prima, **dichiarato**: si completa dal resto, `mancanti` nomina
+l'argomento assente e `completamento` l'esercizio che lo sostituisce; la
+pagina non lo presenta come un argomento coperto. Le riprese della variante
+prima dell'avvio si leggono da `argomenti` (`nuovi === 0` dove la variante
+ripesca; `ripresa` sull'esercizio preso) e da `riprese`, che conta anche un
+completamento già provato. La variante si scrive nelle righe `_t:'c'` e
+`_t:'s'` della prova nuova come campo `variante`, con il valore dell'uscita;
+nelle righe di prima manca, ed è sconosciuta, non `'cieca'` — il resto della
+lettura storica è D-02. Niente tecniche nell'uscita: il §5.1 non le rivela
+prima dell'avvio. Stessa prova della pagina a parità di seme: finché
+`componiProva()` vive in `app.html`, un test del motore la esegue e pretende
+la stessa lista; alla realizzazione escono `componiProva()`,
+`argomentiSenzaNuovi()` e le costanti `PROVA_*`, e `provaCarteggio` esce dagli
+orfani di `docs/eccezioni-interfaccia.md`. `estrai()` resta cieca ed
+`estraiNuoviPrima()` invariata; i loro chiamanti — `simulazione()`,
+`simulazioneVela()`, `screening()`, e ora `provaCarteggio()` — non cambiano.
+Requisiti: R-SEL-12…16, coperti, e R-SEL-17 per la pagina, scoperto.
 
 **D-02 — Attività intera, riepilogo e revisione di carta/tecniche.** Nella base
 le funzioni `sessioni()`/`erroriSessione()` considerano soltanto `_t:'q'`,

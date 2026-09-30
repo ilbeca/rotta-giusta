@@ -50,6 +50,7 @@ dichiarazione che mente.
 | funzione | perché è ancora qui |
 |---|---|
 | `fondi` | Fusione di due specchi: serviva alla sincronia col server, tolta nella 0.19.0. Resta esportata e testata perché descrive la semantica della fusione, ma nessuno la chiama. Non ha un'area: è storia |
+| `provaCarteggio` | La composizione della prova di carteggio nel motore (P-32, D-01 del §10.1 di `area-4-progetto.md`): lista, argomenti rappresentati e mancanti, riprese, completamento dichiarato, e le condizioni 4/60/3 in `PROVA_CARTEGGIO`. La pagina compone ancora con la sua `componiProva()`, che un test del motore tiene identica. La consuma la realizzazione dell'area 4 (P-21): allora `componiProva()`, `argomentiSenzaNuovi()` e le tre costanti `PROVA_*` escono dalla pagina, questa riga esce da qui, e se la pagina non chiama più `E.estrai` né `E.estraiNuoviPrima` le loro righe escono dalle chiamate protette, nello stesso commit |
 
 ## Chiamate al motore protette
 

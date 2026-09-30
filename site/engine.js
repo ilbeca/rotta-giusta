@@ -285,8 +285,9 @@ export function rimescola(a, seme = Date.now()) {
  * Chiamanti, e che cosa si aspettano (elencarli e' la regola di CLAUDE.md nata
  * proprio da questa funzione):
  *   - `simulazione()` / `simulazioneVela()`: pescata cieca, come il ministero;
- *   - `componiProva()` (carteggio, in palestra.html): pescata cieca, e' una
- *     simulazione d'esame anche lei;
+ *   - `provaCarteggio()`: pescata cieca per argomento, e' una simulazione
+ *     d'esame anche lei (fino a P-32 era `componiProva()` in app.html, che la
+ *     chiama ancora come valore finche' l'area 4 non passa al motore);
  *   - lo screening NON passa piu' di qui: usa `estraiNuoviPrima`, perche'
  *     esplora terreno nuovo e riproporgli roba gia' fatta e' sprecarlo.
  */
@@ -304,6 +305,9 @@ export function estrai(pool, progress, oggi, n, seme = 1) {
  * quindi riproporti un quesito gia' fatto e' una domanda sprecata. Nella 0.5.1
  * la semplificazione di `estrai()` ha appiattito anche lui su una pescata
  * cieca: questa funzione e' la separazione dei due comportamenti.
+ *
+ * Chiamanti: `screening()`, e `provaCarteggio()` nella variante «prima i mai
+ * provati» (fino a P-32 `componiProva()` in app.html, col selettore acceso).
  */
 export function estraiNuoviPrima(pool, progress, oggi, n, seme = 1) {
   const nuovi = [], visti = [];
@@ -413,6 +417,125 @@ export function lunghezzaScreening(items, perVoce = 1, kind = 'base') {
 export function esito(risposte, erroriMax) {
   const errori = risposte.filter((r) => !r).length;
   return { totale: risposte.length, esatte: risposte.length - errori, errori, errori_max: erroriMax, superata: errori <= erroriMax };
+}
+
+// --- carteggio: la prova ---------------------------------------------------------
+//
+// Fino a P-32 la composizione stava in `componiProva()` di app.html, con 4, 60
+// e 3 scritti accanto in tre costanti della pagina, e l'unico test la
+// verificava in una copia trascritta. Ora e' un contratto del motore: la lista
+// e, dalla stessa chiamata, che cosa rappresenta e che cosa no — cosi' la
+// pagina non deve ricontare gli argomenti per dichiarare un ripiego, e non puo'
+// prendere un argomento assente per coperto (D-01, §10.1 di
+// docs/area-4-progetto.md).
+
+const ESERCIZI_PROVA = 4;
+const SOGLIA_PROVA = 3;
+
+/**
+ * Le condizioni della prova di carteggio, in un posto solo.
+ *
+ * I numeri sono del decreto: DM 323/2021, art. 6 c. 6 — quattro quesiti
+ * indipendenti, 60 minuti, superata con almeno 3 su 4 (docs/ricerca-programma-
+ * esame.md §5). **La composizione no**: «un esercizio per ciascuno dei quattro
+ * argomenti» e' un'assunzione del sito, Q-CART4 nella specifica, e viaggia con
+ * il contratto invece di stare in un commento che nessuno legge. Non stanno in
+ * `meta.json` accanto a base e vela perche' la composizione, che non e' un
+ * dato del decreto, deve restare accanto ai numeri che la usano.
+ */
+export const PROVA_CARTEGGIO = Object.freeze({
+  esercizi: ESERCIZI_PROVA,
+  minuti: 60,
+  soglia: SOGLIA_PROVA,
+  erroriMax: ESERCIZI_PROVA - SOGLIA_PROVA,
+  argomenti: Object.freeze(['navigazione costiera', 'correnti', 'scarroccio', 'carburante']),
+  fonte: 'DM 323/2021, art. 6 c. 6: quattro quesiti indipendenti, 60 minuti, almeno 3 su 4.',
+  assunzione: "Q-CART4: un esercizio per ciascuno dei quattro argomenti è un'assunzione del sito, "
+    + 'non una composizione del decreto, che dice soltanto «quattro quesiti indipendenti». '
+    + 'La carta 42/D non ha esercizi di carburante: una prova così può richiedere più carte.',
+});
+
+/**
+ * Compone la prova di carteggio: un esercizio per argomento, poi il resto se
+ * un argomento manca.
+ *
+ * **La pescata e' cieca di proposito** (`estrai`): la prova simula l'esame, e
+ * l'esame non sa che cosa hai studiato. Con `nuoviPrima` diventa la variante
+ * di allenamento «prima i mai provati» (`estraiNuoviPrima`), che attinge ai
+ * gia' provati solo quando in un argomento i nuovi sono finiti: la prova non
+ * deve mai uscire corta, e ogni ripresa si dichiara.
+ *
+ * Restituisce, tutto dalla stessa chiamata:
+ *   lista          gli esercizi, nell'ordine della prova (al piu' `esercizi`)
+ *   pronta         la lista ha `esercizi` elementi; se no, chi la consuma
+ *                  non avvia una prova corta chiamandola esame
+ *   variante       'cieca' | 'nuoviPrima' — da scrivere nelle righe della prova
+ *                  nuova (`variante`); in una riga di prima manca, ed e'
+ *                  sconosciuta, non 'cieca'
+ *   argomenti      per ognuno dei quattro, nell'ordine di PROVA_CARTEGGIO:
+ *                  { argomento, esercizi, nuovi, preso, ripresa }
+ *   rappresentati  gli argomenti che hanno un esercizio nella lista
+ *   mancanti       quelli che non ce l'hanno, perche' la banca non ne ha
+ *   completamento  [{ id, argomento }] presi dal resto al posto dei mancanti
+ *   riprese        [{ id, argomento }] della lista gia' provati — solo nella
+ *                  variante; nella cieca `null`, e `nuovi`/`ripresa` pure:
+ *                  la cieca non guarda lo storico, e «0 riprese» con tutta la
+ *                  banca gia' fatta sarebbe falso
+ *   carte          le carte della lista, distinte, nell'ordine in cui compaiono
+ *   condizioni     { esercizi, minuti, soglia, erroriMax }
+ *   assunzione     il testo di Q-CART4
+ *
+ * Niente filtro per carta: la 42/D non ha carburante. Niente tecniche: la
+ * schermata di preparazione non le rivela (§5.1 del progetto), e un campo che
+ * esiste e' un campo che qualcuno scrive. `oggi` non serve alla scelta, e sta
+ * nella firma come per le altre estrazioni. Deterministica col seme, e — senza
+ * `nuoviPrima` — indipendente dallo storico, risultato intero compreso.
+ */
+export function provaCarteggio(banca, progress, oggi, { seme = 1, nuoviPrima = false } = {}) {
+  const P = PROVA_CARTEGGIO;
+  const prog = progress || {};
+  const pesca = nuoviPrima ? estraiNuoviPrima : estrai;
+  const nuovo = (e) => stato(prog[e.id]) === 'nuovo';
+  const presi = [];
+  const argomenti = P.argomenti.map((argomento, i) => {
+    const pool = banca.filter((e) => e.argomento === argomento);
+    // I semi sono quelli di `componiProva()` fino a P-32: stessa prova, stesso
+    // seme, anche dopo il passaggio della pagina al motore.
+    const [preso] = pool.length ? pesca(pool, prog, oggi, 1, seme + 100 * (i + 1)) : [];
+    if (preso) presi.push(preso);
+    return {
+      argomento,
+      esercizi: pool.length,
+      nuovi: nuoviPrima ? pool.filter(nuovo).length : null,
+      preso: preso ? preso.id : null,
+      ripresa: nuoviPrima && preso ? !nuovo(preso) : null,
+    };
+  });
+  // Un argomento senza esercizi lascerebbe la prova corta: la si completa dal
+  // resto della banca, e lo si dice — `mancanti` e `completamento` — invece di
+  // somministrare tre esercizi, o quattro fingendo quattro argomenti.
+  let completamento = [];
+  if (presi.length < P.esercizi) {
+    const ids = new Set(presi.map((e) => e.id));
+    const aggiunti = pesca(banca.filter((e) => !ids.has(e.id)), prog, oggi, P.esercizi - presi.length, seme + 900);
+    presi.push(...aggiunti);
+    completamento = aggiunti.map((e) => ({ id: e.id, argomento: e.argomento ?? null }));
+  }
+  const lista = rimescola(presi, seme).slice(0, P.esercizi);
+  const rappresentati = P.argomenti.filter((a) => lista.some((e) => e.argomento === a));
+  return {
+    lista,
+    pronta: lista.length === P.esercizi,
+    variante: nuoviPrima ? 'nuoviPrima' : 'cieca',
+    argomenti,
+    rappresentati,
+    mancanti: P.argomenti.filter((a) => !rappresentati.includes(a)),
+    completamento,
+    riprese: nuoviPrima ? lista.filter((e) => !nuovo(e)).map((e) => ({ id: e.id, argomento: e.argomento ?? null })) : null,
+    carte: [...new Set(lista.map((e) => e.carta ?? null))],
+    condizioni: { esercizi: P.esercizi, minuti: P.minuti, soglia: P.soglia, erroriMax: P.erroriMax },
+    assunzione: P.assunzione,
+  };
 }
 
 // --- carteggio: i due allenamenti ------------------------------------------------

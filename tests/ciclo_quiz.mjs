@@ -40,7 +40,7 @@ const RACCORDO = ['riepilogoQuiz', 'anteprimaRiprova', 'avviaRiprova'];
 // erroriSessione(), ha un posto nel ciclo. «Riprova questi N» non e' il ripasso
 // di tutto lo storico (coda con soloSbagliate) ne' una selezione nuova.
 const SELEZIONI = ['mirata', 'daAllenare', 'coda', 'screening', 'lunghezzaScreening',
-  'simulazione', 'simulazioneVela', 'estrai', 'estraiNuoviPrima', 'giroTecniche', 'tappeto'];
+  'simulazione', 'simulazioneVela', 'estrai', 'estraiNuoviPrima', 'giroTecniche', 'tappeto', 'provaCarteggio'];
 const REGISTRATE = [...SELEZIONI, 'erroriSessione', 'sessioni', 'esito'];
 
 const verifiche = [];

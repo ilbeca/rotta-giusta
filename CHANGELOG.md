@@ -1257,6 +1257,79 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   giro la 8620 guardata libera. Guardiano verde. `site/` e
   `docs/prossime-sessioni.md` non sono stati toccati.
 
+### Aggiunto — P-32: la prova di carteggio nel motore
+
+- **La composizione della prova stava nella pagina, e con lei le sue
+  condizioni.** `componiProva()` in `app.html` pescava un esercizio per
+  argomento e completava dal resto se un argomento mancava; accanto, tre
+  costanti — 4 esercizi, 60 minuti, soglia 3 — e `argomentiSenzaNuovi()`, un
+  secondo conto per dire dove la variante ripesca. L'unico test del motore
+  sulla prova ne verificava una **copia trascritta** nel test stesso. E il
+  ripiego su una banca incompleta era muto: la prova usciva con quattro
+  esercizi, e niente diceva che un argomento non c'era. D-01 del §10.1 di
+  `docs/area-4-progetto.md` chiedeva il contratto prima della realizzazione.
+
+- **`provaCarteggio(banca, specchio, oggi, { seme, nuoviPrima })`** restituisce
+  dalla stessa chiamata la lista e quello che rappresenta: `pronta`, gli
+  `argomenti` uno per uno con quanti esercizi, quanti mai provati e quale è
+  stato preso, `rappresentati` e `mancanti`, il `completamento` dichiarato, le
+  `riprese` della variante, le `carte` distinte della lista, le `condizioni` e
+  l'`assunzione`. **La prova cieca non conta riprese, e lo dice con `null`**:
+  il suo risultato intero non dipende dallo storico, e «0 riprese» con tutta la
+  banca già fatta sarebbe falso. Niente tecniche nell'uscita, perché la
+  preparazione non le rivela; niente filtro per carta, perché la 42/D non ha
+  carburante. Il ripiego resta quello di prima — completare dal resto invece
+  di uscire corta — ma si nomina, e una lista corta non si dice `pronta`.
+
+- **Una sorgente sola per 4, 60 e 3:** `PROVA_CARTEGGIO`, congelata, con la
+  fonte (DM 323/2021, art. 6 c. 6) e il testo di **Q-CART4**, che resta
+  un'assunzione e ora viaggia con il contratto. `erroriMax` discende dalla
+  soglia, e il test di R-SEL-10 lo usa invece di un 1 scritto a mano. Non in
+  `meta.json`: la composizione non è un dato del decreto, e deve stare accanto
+  ai numeri che la usano; `site/dati/` non è stato toccato.
+
+- **I chiamanti delle due estrazioni, elencati prima:** `estrai()` —
+  `simulazione()`, `simulazioneVela()`, `componiProva()` come valore —;
+  `estraiNuoviPrima()` — `screening()`, `componiProva()` col selettore acceso.
+  Nessuna delle due cambia; `provaCarteggio()` le chiama nello stesso modo, con
+  gli stessi semi. **Stessa prova della pagina a parità di seme**: un test
+  estrae `componiProva()` e `argomentiSenzaNuovi()` da `app.html`, le esegue
+  su 200 semi, con banca intera e senza carburante, storico vuoto e a un
+  terzo, variante spenta e accesa, e pretende la stessa lista e le stesse
+  costanti; si ritira da solo quando la pagina passa al motore.
+
+- **La pagina non è stata toccata**: è dell'interfaccia. Il passaggio è della
+  realizzazione dell'area 4 (P-21), scritto come contratto nel §10.1 del
+  progetto — che cosa esce dalla pagina, il campo `variante` nelle righe della
+  prova nuova, sconosciuto in quelle di prima. Fino ad allora `provaCarteggio`
+  è fra gli orfani dichiarati, ed è fra le selezioni che i banchi dei quiz, del
+  ciclo e della mappa registrano: un'intenzione dei quiz che la chiamasse
+  sarebbe una seconda fonte.
+
+- **Prima il test che fallisce:** sei test nuovi e due riscritti, otto rossi
+  uno per uno per la funzione che mancava. **Provati al contrario su diciotto
+  rotture**, una per volta, tutte rosse: la variante ignorata, la cieca che
+  conta i nuovi o dichiara zero riprese, niente completamento o completamento
+  taciuto, i mancanti mai detti, gli argomenti della lista presi per
+  rappresentati, una lista corta detta pronta, un filtro per carta, le carte
+  ridotte a una, le riprese senza il completamento, i semi diversi dalla
+  pagina, la lista non rimescolata, la soglia a 2, la costante riscrivibile,
+  l'assunzione taciuta, la ripresa per argomento mai detta, il completamento
+  da un argomento solo. **Due le vedeva soltanto il test di compatibilità**,
+  che si ritirerà: per la lista non rimescolata c'è ora un'asserzione che
+  resta — ogni argomento può aprire la prova —; i semi contano solo finché
+  c'è una pagina da eguagliare. Specifica: §4.2, §4.6, §5.3, Q-CART4, nuovi
+  R-SEL-12…16 coperti e R-SEL-17, la pagina, scoperto.
+
+  Suite: motore **166/168** con i due skip di sempre (erano 160/162);
+  specifica **608** (erano 586); dati 242; server 60/60; interfaccia
+  **1.436** (erano 1.433: i tre controlli del nuovo orfano dichiarato). Con la **24.21.0 LTS**, pacchetto confrontato con il
+  `SHASUMS256.txt` riscaricato da nodejs.org: motore 166/168, server 60/60,
+  interfaccia 1.436. Due giri dell'interfaccia intera, tutti e due verdi, in
+  150 e 147 s; prima di ognuno la 8620 guardata libera. Guardiano e controllo della
+  documentazione verdi. `site/app.html` e `docs/prossime-sessioni.md` non sono
+  stati toccati.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag

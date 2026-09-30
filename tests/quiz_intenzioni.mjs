@@ -34,7 +34,7 @@ const INTENZIONI = ['mirata', 'argomento', 'sbagliate', 'sim', 'screening'];
 // e' libera di usarle e non decidono che cosa si apre.
 const SELEZIONI = ['mirata', 'daAllenare', 'coda', 'screening', 'lunghezzaScreening',
   'simulazione', 'simulazioneVela', 'estrai', 'estraiNuoviPrima', 'giroTecniche',
-  'tappeto', 'erroriSessione'];
+  'tappeto', 'provaCarteggio', 'erroriSessione'];
 
 const verifiche = [];
 function check(gruppo, nome, ok, extra = '') {

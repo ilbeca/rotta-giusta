@@ -1319,16 +1319,14 @@ test('il GUSCIO di sw.js e quello di app.html sono la stessa lista', async () =>
 });
 
 test('la prova di carteggio: uno per argomento, pescati a caso', () => {
-  // Riproduce `componiProva`: quattro pool per argomento, `estrai` su ciascuno.
-  const ARG = ['navigazione costiera', 'correnti', 'scarroccio', 'carburante'];
+  // Fino a P-32 questo test riproduceva `componiProva()` di app.html con
+  // `estrai`, cioe' verificava una copia della pagina scritta nel test. Ora la
+  // composizione e' nel motore, e il test la esegue.
+  const ARG = E.PROVA_CARTEGGIO.argomenti;
   const banca = [];
-  for (const a of ARG) for (let i = 1; i <= 8; i++) banca.push({ id: `${a}-${i}`, k: 'c', argomento: a });
+  for (const a of ARG) for (let i = 1; i <= 8; i++) banca.push({ id: `${a}-${i}`, k: 'c', argomento: a, carta: '5/D' });
 
-  const componi = (prog, seme) => {
-    const out = [];
-    ARG.forEach((a, i) => out.push(...estrai(banca.filter((e) => e.argomento === a), prog, OGGI, 1, seme + 100 * (i + 1))));
-    return out;
-  };
+  const componi = (prog, seme) => E.provaCarteggio(banca, prog, OGGI, { seme }).lista;
 
   const prova = componi({}, 7);
   assert.equal(prova.length, 4, 'quattro esercizi, come la prova vera');
@@ -1349,10 +1347,14 @@ test('la prova di carteggio: uno per argomento, pescati a caso', () => {
 });
 
 test('la soglia della prova di carteggio e 3 su 4, ed e eliminatoria', () => {
-  assert.equal(esito([true, true, true, false], 1).superata, true, '3 su 4 passa');
-  assert.equal(esito([true, true, false, false], 1).superata, false, '2 su 4 no');
-  assert.equal(esito([true, true, true, true], 1).superata, true);
-  assert.equal(esito([false, false, false, false], 1).errori, 4);
+  // Il numero di errori ammessi viene dalla sorgente sola delle condizioni
+  // (P-32), non da un 1 scritto qui: e' 4 esercizi meno 3 da prendere.
+  const max = E.PROVA_CARTEGGIO.erroriMax;
+  assert.equal(max, 1);
+  assert.equal(esito([true, true, true, false], max).superata, true, '3 su 4 passa');
+  assert.equal(esito([true, true, false, false], max).superata, false, '2 su 4 no');
+  assert.equal(esito([true, true, true, true], max).superata, true);
+  assert.equal(esito([false, false, false, false], max).errori, 4);
 });
 
 // --- il gioco dei segnali -------------------------------------------------------
@@ -1565,6 +1567,230 @@ test('tappeto: si riprende da dove si era rimasti, e a foglio finito lo dice', (
   assert.deepEqual(tappeto(banca, prog, 4), [], 'foglio finito: lista vuota, e la schermata lo dice');
 });
 
+
+/* --- P-32: la prova di carteggio nel motore --------------------------------- */
+//
+// Fino a P-32 la composizione stava in `componiProva()` di app.html, con i suoi
+// 4/60/3 scritti accanto, e il test qui sopra ne verificava una copia. D-01 del
+// §10.1 di docs/area-4-progetto.md chiede il contratto nel motore: la lista,
+// gli argomenti rappresentati e mancanti, le riprese per argomento, e il
+// ripiego su una banca incompleta dichiarato invece che taciuto.
+
+function bancaCarteggioVera() {
+  return JSON.parse(readFileSync(new URL('../site/dati/carteggio.json', import.meta.url), 'utf8'));
+}
+const VISTO = { n: 1, c: 1, first: 1, s: 1, lw: null, k: 0, t: OGGI };
+
+test('provaCarteggio: le condizioni della prova hanno una sorgente sola, e l assunzione si dice', () => {
+  const P = E.PROVA_CARTEGGIO;
+  assert.ok(Object.isFrozen(P) && Object.isFrozen(P.argomenti), 'una costante che si puo riscrivere non e una sorgente');
+  assert.equal(P.esercizi, 4);
+  assert.equal(P.minuti, 60);
+  assert.equal(P.soglia, 3);
+  assert.equal(P.erroriMax, P.esercizi - P.soglia, 'gli errori ammessi discendono dalla soglia');
+  assert.deepEqual([...P.argomenti], ['navigazione costiera', 'correnti', 'scarroccio', 'carburante']);
+  assert.match(P.fonte, /DM 323\/2021/, 'i numeri hanno la loro fonte');
+  assert.match(P.fonte, /art\. 6 c\. 6/);
+  // Q-CART4: «uno per argomento» e' un'assunzione, e chi consuma il contratto
+  // la riceve insieme alla lista, non la deve ricordare.
+  assert.match(P.assunzione, /Q-CART4/);
+  assert.match(P.assunzione, /assunzione/);
+  assert.match(P.assunzione, /42\/D/, 'la carta senza esercizi di carburante si nomina');
+  const out = E.provaCarteggio(bancaCarteggioVera(), {}, OGGI, { seme: 5 });
+  assert.deepEqual(out.condizioni, { esercizi: 4, minuti: 60, soglia: 3, erroriMax: 1 });
+  assert.equal(out.assunzione, P.assunzione);
+});
+
+test('provaCarteggio: quattro esercizi distinti, uno per argomento, sulla banca vera', () => {
+  const banca = bancaCarteggioVera();
+  const carteViste = new Set();
+  const primi = new Set();
+  let dueCarte = 0;
+  for (let seme = 1; seme <= 300; seme++) {
+    const out = E.provaCarteggio(banca, {}, OGGI, { seme });
+    primi.add(out.lista[0].argomento);
+    assert.equal(out.lista.length, 4, `seme ${seme}: quattro esercizi`);
+    assert.equal(out.pronta, true, `seme ${seme}: pronta`);
+    assert.equal(new Set(out.lista.map((e) => e.id)).size, 4, `seme ${seme}: distinti`);
+    assert.deepEqual(out.lista.map((e) => e.argomento).sort(), [...E.PROVA_CARTEGGIO.argomenti].sort(),
+      `seme ${seme}: uno per argomento`);
+    assert.deepEqual(out.rappresentati, [...E.PROVA_CARTEGGIO.argomenti]);
+    assert.deepEqual(out.mancanti, []);
+    assert.deepEqual(out.completamento, []);
+    // le carte si ricavano dalla lista: distinte, nell'ordine in cui compaiono
+    assert.deepEqual(out.carte, [...new Set(out.lista.map((e) => e.carta))], `seme ${seme}: carte dalla lista`);
+    // ogni argomento dice quale esercizio ha dato
+    for (const a of out.argomenti) {
+      const e = out.lista.find((x) => x.argomento === a.argomento);
+      assert.equal(a.preso, e.id, `seme ${seme}: ${a.argomento}`);
+      assert.equal(a.esercizi, banca.filter((x) => x.argomento === a.argomento).length);
+    }
+    for (const c of out.carte) carteViste.add(c);
+    if (out.carte.length > 1) dueCarte++;
+  }
+  // Niente filtro per carta: la prova pesca da tutta la banca, e la 42/D non
+  // ha carburante, quindi una prova su una carta sola non e' la regola.
+  assert.deepEqual([...carteViste].sort(), ['42/D', '5/D']);
+  assert.ok(dueCarte > 0, 'alcune prove chiedono tutte e due le carte');
+  // e l'ordine della prova non e' quello degli argomenti: la lista si rimescola
+  assert.equal(primi.size, 4, 'ogni argomento puo aprire la prova');
+  // e la variante porta un campo che la riga puo' tenere: la revisione di una
+  // prova nuova la distingue, una riga di prima non ce l'ha ed e' sconosciuta
+  const riga = { _t: 'c', uid: 'x1', item_id: '5.1.3-1', ts: '2026-09-30T10:00:00+02:00', verdict: 1,
+    delta: null, mode: 'simulazione', variante: 'cieca' };
+  assert.equal(validaRiga(riga), null);
+});
+
+test('provaCarteggio: la prova cieca non guarda lo storico, e non finge di averlo guardato', () => {
+  const banca = bancaCarteggioVera();
+  const tutto = Object.fromEntries(banca.map((e) => [e.id, VISTO]));
+  const meta = Object.fromEntries(banca.filter((_, i) => i % 2).map((e) => [e.id, VISTO]));
+  for (const seme of [1, 17, 404]) {
+    const vuoto = E.provaCarteggio(banca, {}, OGGI, { seme });
+    assert.deepEqual(E.provaCarteggio(banca, tutto, OGGI, { seme }), vuoto, `seme ${seme}: lo storico non cambia niente`);
+    assert.deepEqual(E.provaCarteggio(banca, meta, OGGI, { seme }), vuoto, `seme ${seme}: nemmeno a meta`);
+    assert.equal(vuoto.variante, 'cieca');
+    // Non misurato non e' zero: una prova cieca che dicesse «0 riprese» con
+    // tutta la banca gia' fatta direbbe il falso.
+    assert.equal(vuoto.riprese, null, 'le riprese non si contano, e si dice');
+    assert.ok(vuoto.argomenti.every((a) => a.nuovi === null && a.ripresa === null));
+  }
+  assert.notDeepEqual(E.provaCarteggio(banca, {}, OGGI, { seme: 1 }).lista.map((e) => e.id),
+    E.provaCarteggio(banca, {}, OGGI, { seme: 2 }).lista.map((e) => e.id), 'semi diversi, prove diverse');
+});
+
+test('provaCarteggio: con la precedenza ai mai provati le riprese si dicono per argomento', () => {
+  const ARG = E.PROVA_CARTEGGIO.argomenti;
+  const banca = [];
+  for (const a of ARG) for (let i = 1; i <= 3; i++) banca.push({ id: `${a}-${i}`, argomento: a, carta: '5/D' });
+  // carburante tutto gia' fatto; correnti: due su tre
+  const prog = { 'carburante-1': VISTO, 'carburante-2': VISTO, 'carburante-3': VISTO,
+    'correnti-1': VISTO, 'correnti-2': VISTO };
+  for (let seme = 1; seme <= 50; seme++) {
+    const out = E.provaCarteggio(banca, prog, OGGI, { seme, nuoviPrima: true });
+    assert.equal(out.variante, 'nuoviPrima');
+    assert.equal(out.lista.length, 4, 'la prova non esce mai corta');
+    const per = Object.fromEntries(out.argomenti.map((a) => [a.argomento, a]));
+    assert.equal(per.correnti.preso, 'correnti-3', `seme ${seme}: il solo mai provato di correnti`);
+    assert.equal(per.correnti.nuovi, 1);
+    assert.equal(per.correnti.ripresa, false);
+    assert.equal(per.carburante.nuovi, 0, 'i mai provati di carburante sono finiti');
+    assert.equal(per.carburante.ripresa, true, 'e la ripresa si dichiara');
+    assert.equal(per['navigazione costiera'].nuovi, 3);
+    const car = out.lista.find((e) => e.argomento === 'carburante');
+    assert.deepEqual(out.riprese, [{ id: car.id, argomento: 'carburante' }], `seme ${seme}: una ripresa sola, nominata`);
+  }
+  // Sulla banca vera, con 36 esercizi gia' provati (la misura della 0.18.0):
+  // accesa, nessuna prova ripesca un esercizio fatto, e nessuna ripresa si
+  // dichiara; spenta, ne ripesca, come l'esame che non sa niente di te.
+  const vera = bancaCarteggioVera();
+  const fatti = Object.fromEntries(vera.filter((_, i) => i % 3 === 0).slice(0, 36).map((e) => [e.id, VISTO]));
+  assert.equal(Object.keys(fatti).length, 36);
+  let cieche = 0;
+  for (let seme = 1; seme <= 300; seme++) {
+    const acc = E.provaCarteggio(vera, fatti, OGGI, { seme, nuoviPrima: true });
+    assert.ok(acc.lista.every((e) => !fatti[e.id]), `seme ${seme}: un esercizio gia fatto con la precedenza accesa`);
+    assert.deepEqual(acc.riprese, []);
+    if (E.provaCarteggio(vera, fatti, OGGI, { seme }).lista.some((e) => fatti[e.id])) cieche++;
+  }
+  assert.ok(cieche > 0, 'la cieca ripesca i gia fatti');
+});
+
+test('provaCarteggio: su una banca incompleta i mancanti si nominano e il ripiego si dichiara', () => {
+  const ARG = E.PROVA_CARTEGGIO.argomenti;
+  const banca = [];
+  for (const a of ARG.filter((x) => x !== 'carburante'))
+    for (let i = 1; i <= 3; i++) banca.push({ id: `${a}-${i}`, argomento: a, carta: '42/D' });
+  // la 42/D da sola: niente carburante, come nella banca vera
+  for (let seme = 1; seme <= 50; seme++) {
+    const out = E.provaCarteggio(banca, {}, OGGI, { seme });
+    assert.deepEqual(out.mancanti, ['carburante'], 'l argomento assente si nomina');
+    assert.deepEqual(out.rappresentati, ['navigazione costiera', 'correnti', 'scarroccio'],
+      'e non conta fra i rappresentati');
+    const car = out.argomenti.find((a) => a.argomento === 'carburante');
+    assert.equal(car.esercizi, 0);
+    assert.equal(car.preso, null);
+    assert.equal(out.lista.length, 4, 'la prova si completa dal resto invece di uscire corta');
+    assert.equal(out.completamento.length, 1, 'e il completamento si dichiara');
+    const [c] = out.completamento;
+    assert.ok(out.lista.some((e) => e.id === c.id));
+    assert.notEqual(c.argomento, 'carburante', 'il completamento non finge l argomento che manca');
+    assert.equal(new Set(out.lista.map((e) => e.id)).size, 4, 'nessun esercizio due volte');
+  }
+  // Troppo pochi esercizi: la lista resta corta e non si dichiara pronta. Chi
+  // la consuma blocca l'avvio (§5.1 del progetto dell'area 4).
+  const due = E.provaCarteggio(banca.slice(0, 2), {}, OGGI, { seme: 3 });
+  assert.equal(due.lista.length, 2);
+  assert.equal(due.pronta, false);
+  const vuota = E.provaCarteggio([], {}, OGGI, { seme: 3 });
+  assert.deepEqual(vuota.lista, []);
+  assert.equal(vuota.pronta, false);
+  assert.deepEqual(vuota.mancanti, [...ARG]);
+  assert.deepEqual(vuota.carte, []);
+  // un esercizio di un argomento che la prova non conosce completa, ma non
+  // diventa un argomento rappresentato
+  const strana = [...banca, { id: 'x-1', argomento: 'meteo', carta: '5/D' }];
+  const tutti = new Set();
+  for (let seme = 1; seme <= 80; seme++) {
+    const out = E.provaCarteggio(strana, {}, OGGI, { seme });
+    assert.ok(!out.rappresentati.includes('meteo'));
+    for (const c of out.completamento) tutti.add(c.argomento);
+  }
+  assert.ok(tutti.has('meteo'), 'il completamento pesca dal resto intero, come la pagina di prima');
+  // con la precedenza, anche il completamento preferisce i mai provati
+  const prog = Object.fromEntries(banca.filter((e) => !e.id.endsWith('-3')).map((e) => [e.id, VISTO]));
+  // (i mai provati sono solo i «-3», uno per argomento: il completamento non
+  // ne trova altri, e la sua ripresa si dichiara come le altre)
+  for (let seme = 1; seme <= 30; seme++) {
+    const out = E.provaCarteggio(banca, prog, OGGI, { seme, nuoviPrima: true });
+    assert.equal(out.lista.filter((e) => e.id.endsWith('-3')).length, 3, `seme ${seme}: i tre mai provati entrano`);
+    const [c] = out.completamento;
+    assert.deepEqual(out.riprese, [{ id: c.id, argomento: c.argomento }], `seme ${seme}: il completamento e una ripresa`);
+  }
+});
+
+test('provaCarteggio: il motore compone la stessa prova della pagina', (t) => {
+  // Come per `daAllenare()` e `totScreening()`: finche' `componiProva()` vive
+  // in app.html la eseguiamo davvero — estratta dal file, non trascritta — e
+  // pretendiamo la stessa lista, con le stesse condizioni. Quando la pagina
+  // passera' a `E.provaCarteggio()` (area 4, P-21) la copia sparira' e questo
+  // test si mettera' da parte da solo.
+  const src = readFileSync(new URL('../site/app.html', import.meta.url), 'utf8');
+  const m = src.match(/^function componiProva\(seme\) \{[\s\S]*?^\}/m);
+  if (!m) return t.skip('app.html non ha piu una sua componiProva(): ora chiama il motore');
+  const cost = (nome) => {
+    const c = src.match(new RegExp(`^const ${nome} = (.+?);`, 'm'));
+    assert.ok(c, `${nome} non si legge in app.html`);
+    return JSON.parse(c[1].replace(/'/g, '"').replace(/\s*\/\/.*$/, ''));
+  };
+  const P = E.PROVA_CARTEGGIO;
+  assert.deepEqual(cost('ARGOMENTI'), [...P.argomenti], 'gli argomenti della pagina e del motore');
+  assert.equal(cost('PROVA_N'), P.esercizi);
+  assert.equal(cost('PROVA_MIN'), P.minuti);
+  assert.equal(cost('PROVA_SOGLIA'), P.soglia);
+
+  const banca = bancaCarteggioVera();
+  const fatti = Object.fromEntries(banca.filter((_, i) => i % 3 === 0).map((e) => [e.id, VISTO]));
+  // la stessa banca senza carburante, per il completamento
+  const monca = banca.filter((e) => e.argomento !== 'carburante');
+  for (const cart of [banca, monca]) for (const cprog of [{}, fatti]) for (const prep of [false, true]) {
+    const S = { date: { oggi: OGGI }, prep, cart, cprog };
+    const pagina = new Function('S', 'E', 'today', 'ARGOMENTI', 'PROVA_N', `${m[0]}\nreturn componiProva;`)(
+      S, E, () => OGGI, cost('ARGOMENTI'), cost('PROVA_N'));
+    for (let seme = 0; seme < 200; seme++)
+      assert.deepEqual(E.provaCarteggio(cart, cprog, OGGI, { seme, nuoviPrima: prep }).lista.map((e) => e.id),
+        pagina(seme).map((e) => e.id), `seme ${seme}, prep ${prep}: la pagina e il motore compongono prove diverse`);
+  }
+  // E il secondo conto della pagina: `argomentiSenzaNuovi()` dichiara dove la
+  // variante ripesca. Il contratto lo da' in `argomenti[].nuovi`.
+  const s = src.match(/^function argomentiSenzaNuovi\(\) \{[\s\S]*?^\}/m);
+  if (s) for (const cprog of [{}, fatti, Object.fromEntries(banca.filter((e) => e.argomento !== 'correnti').map((e) => [e.id, VISTO]))]) {
+    const senza = new Function('S', 'ARGOMENTI', `${s[0]}\nreturn argomentiSenzaNuovi;`)({ cart: banca, cprog }, cost('ARGOMENTI'))();
+    const out = E.provaCarteggio(banca, cprog, OGGI, { seme: 1, nuoviPrima: true });
+    assert.deepEqual(out.argomenti.filter((a) => a.nuovi === 0).map((a) => a.argomento), senza,
+      'la pagina e il motore dicono diversamente dove i mai provati sono finiti');
+  }
+});
 
 /* --- 0.19.0: sito statico — l'archivio nel browser ------------------------ */
 

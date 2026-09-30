@@ -47,7 +47,7 @@ const RACCORDO = ['mappaProgressi', 'anteprimaProgressi', 'avviaProgressi'];
 // controllo del collegamento lo dice prima, per nome.
 const REGISTRATE = ['quadro', 'dovePesa', 'diagnosi', 'coda', 'classifica', 'stato', 'sbagliato',
   'daAllenare', 'mirata', 'screening', 'simulazione', 'simulazioneVela', 'estrai', 'estraiNuoviPrima',
-  'giroTecniche', 'tappeto', 'erroriSessione', 'serieGruppi'];
+  'giroTecniche', 'tappeto', 'provaCarteggio', 'erroriSessione', 'serieGruppi'];
 
 const verifiche = [];
 function check(gruppo, nome, ok, extra = '') {

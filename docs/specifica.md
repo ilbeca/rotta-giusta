@@ -542,6 +542,7 @@ avanzamento usa i tre, non la percentuale sola.**
 | `simulazione()` / `simulazioneVela()` | composizione ministeriale, **esclusi i 37 oscurati** | no |
 | `screening()` | n quesiti da **ognuna** delle 44 voci | sì |
 | `mirata()` | sessione consigliata: richiami, esplorazione pesata sulla resa, conferme | sì |
+| `provaCarteggio()` | la prova di carteggio: un esercizio per argomento, il completamento dichiarato su una banca che ne manca uno, argomenti rappresentati e mancanti, carte, e le condizioni di `PROVA_CARTEGGIO` | **no, di proposito**; sì nella variante «prima i mai provati», che dichiara le riprese per argomento |
 | `giroTecniche()` | copertura greedy delle 12 tecniche di carteggio | sì (a parità preferisce i mai fatti) |
 | `tappeto()` | i prossimi n esercizi mai fatti, nell'ordine del foglio | sì |
 | `daAllenare()` | che cosa mi manca sotto una restrizione qualunque: la lista **e** l'arretrato, dalla stessa fonte | sì |
@@ -728,8 +729,11 @@ v0.28.0 stavano in `localStorage`.
 - **Non ha il programma d'esame.** Ha la tassonomia della banca (8 temi, 44 voci)
   e `pesi_esame`. Una mappa del programma richiede un dataset che non esiste nel
   repo.
-- **Non conosce l'ordine delle prove d'esame**, né i parametri della prova di
-  carteggio: `meta.prove` conosce solo base e vela.
+- **Non conosce l'ordine delle prove d'esame.** I parametri della prova di
+  carteggio — 4 esercizi, 60 minuti, 3 su 4, DM 323/2021 art. 6 c. 6 — li porta
+  `PROVA_CARTEGGIO` dal 30 settembre 2026 (P-32), insieme alla composizione per
+  argomento, che resta un'assunzione (Q-CART4); `meta.prove` conosce solo base e
+  vela.
 - **Non sa niente degli altri utenti.** Nessuna calibrazione, nessuna media,
   nessun confronto: la difficoltà di un quesito è solo la tua. Con gli account
   il **server** ha le righe di tutti i registrati, e il titolare le legge per le
@@ -813,7 +817,7 @@ vanno nella copia del dispositivo e sul server (§3.2).
 | Simulazione d'esame (base, vela, completa) | Quiz | `simulazione()`, `simulazioneVela()` | sì, più una riga `_t:'s'` |
 | Screening completo | Quiz | `screening()` | sì |
 | Batteria | Quiz | `daAllenare()` | sì |
-| Prova di carteggio | Carteggio | `estraiNuoviPrima()` per argomento | sì, `_t:'c'` |
+| Prova di carteggio | Carteggio | `provaCarteggio()`, cieca, o «prima i mai provati» come variante; la pagina compone ancora con `componiProva()`, identica per test, fino alla realizzazione dell'area 4 | sì, `_t:'c'` |
 | Giro delle tecniche | Carteggio | `giroTecniche()` | sì |
 | A tappeto | Carteggio | `tappeto()` | sì |
 | Che tecnica serve? | schermata propria | selezione per tecnica | sì, `_t:'t'` |
@@ -1193,6 +1197,12 @@ colonna: «scoperto, perché …» è una risposta accettabile, «—» no.
 | R-SEL-09 | La banca vela si restringe per voce, non per tema | `test_engine.mjs::la banca vela si restringe per voce` |
 | R-SEL-10 | La prova di carteggio: uno per argomento, soglia 3 su 4 | `test_engine.mjs::la soglia della prova di carteggio e 3 su 4` |
 | R-SEL-11 | Lo screening apre esattamente le domande che promette, e il numero lo da' il motore contando la banca | `test_engine.mjs::lunghezzaScreening: il numero promesso e la lista che si apre coincidono` |
+| R-SEL-12 | Le condizioni della prova di carteggio — 4 esercizi, 60 minuti, 3 su 4 — hanno una sorgente sola nel motore, con la loro fonte, e l'assunzione Q-CART4 viaggia con il contratto invece di stare in un commento | `test_engine.mjs::provaCarteggio: le condizioni della prova hanno una sorgente sola` |
+| R-SEL-13 | La prova di carteggio apre quattro esercizi distinti, uno per argomento, rimescolati, senza filtro per carta, e le carte richieste vengono dalla lista | `test_engine.mjs::provaCarteggio: quattro esercizi distinti, uno per argomento, sulla banca vera` |
+| R-SEL-14 | La prova cieca non guarda lo storico, risultato intero compreso, e le sue riprese non si contano: `null`, non zero | `test_engine.mjs::provaCarteggio: la prova cieca non guarda lo storico` |
+| R-SEL-15 | Con la precedenza ai mai provati le riprese effettive si dichiarano per argomento e per esercizio, prima dell'avvio, e la prova non esce mai corta | `test_engine.mjs::provaCarteggio: con la precedenza ai mai provati le riprese si dicono per argomento` |
+| R-SEL-16 | Su una banca incompleta gli argomenti mancanti si nominano e non contano come rappresentati, il completamento dal resto si dichiara, e una lista corta non si dice pronta | `test_engine.mjs::provaCarteggio: su una banca incompleta i mancanti si nominano` |
+| R-SEL-17 | La pagina compone la prova e ne scrive le condizioni da `provaCarteggio()` e `PROVA_CARTEGGIO`, senza un secondo algoritmo né un secondo conto degli argomenti | scoperto — la pagina compone ancora con la sua `componiProva()` e le sue costanti `PROVA_*`: finché ci sono, `test_engine.mjs` le esegue estratte dal file e pretende la stessa prova, e il test si ritira con la copia. Il passaggio è la realizzazione dell'area 4 (P-21), il controllo che lo tiene fermo è D-04 |
 
 ### 9.4 La navigazione e la reperibilità
 
@@ -1559,7 +1569,7 @@ Ogni riga dice **chi decide**. Una questione senza un decidente non si chiude ma
 | Q-TEMA | Il tema scuro: opzione futura o requisito | l'autore | Il tema chiaro va comunque misurato da solo (appendice A) |
 | Q-PROG | Il programma d'esame come dataset | serve una fonte, poi l'autore | Nessuna mappa del programma è possibile: nel repo non c'è (§4.6) |
 | Q-AMBITO | Se `carteggio_e12.json` esce dal cassetto | l'autore | 50 esercizi pubblicati e non usati; cambia il pubblico più di ogni scelta di navigazione |
-| Q-CART4 | «Un esercizio per ciascuno dei quattro argomenti» è un'assunzione | serve la scuola nautica | La composizione della prova resta non confermata, e la 42/D non ha esercizi di carburante |
+| Q-CART4 | «Un esercizio per ciascuno dei quattro argomenti» è un'assunzione | serve la scuola nautica | La composizione della prova resta non confermata, e la 42/D non ha esercizi di carburante. Dal 30 settembre 2026 l'assunzione viaggia con il contratto, `PROVA_CARTEGGIO.assunzione`, e chi compone la prova la riceve con la lista (R-SEL-12) |
 | Q-PROVE | Verifiche con dispositivi reali e con persone — e Safari, che il banco del browser non raggiunge (rimandato dall'autore il 29 settembre 2026) | l'autore fornisce dispositivi e persone | Nessuna prova su hardware Apple vero, e nessuna prova con persone diverse dall'autore. Safari nel banco vorrebbe «Allow remote automation», un'impostazione dell'autore, e anche così WebDriver non legge lo storage (`account-client-progetto.md` §12): il cookie fra `rottagiusta.it` e `api.` su Safari si prova a mano |
 | Q-ONBOARD | Che cosa chiede l'onboarding di chi si registra, oltre alla data d'esame; e se il sito consiglia un piano di studio strutturato | l'autore | Un piano deve reggersi su quello che il motore sa: niente programma d'esame (Q-PROG), niente studio fatto altrove (chiusa l'8 settembre), niente «quanto tempo hai?» (R-TEMPO-03), e senza data niente quota. I pezzi ci sono già — `traccia()`, `quadro()`, `dovePesa()`, `stimaImpegno()` —, e il piano di 17 sessioni del progetto originario è stato tolto nella 0.19.0 con il resto del servizio personale |
 | Q-SUITE | La suite dell'interfaccia vuole Chrome e la porta 8620 libera, da P-29, e dura circa 150 s da P-46 (85 s con P-43, un minuto prima): la pagina vera parla solo con la 8620, quindi i suoi gruppi con l'API girano in fila su una corsia, e quella somma è la durata. È il prezzo del browser vero, accettarlo o accorciarlo. La 8620 è una sola anche fra i worktree, e due suite in parallelo — P-18 e P-43 il 29 settembre — si escludono | l'autore, rimandata il 29 settembre 2026 | Accorciarla vuol dire aprire il CORS del server a più origini o accorciare attese che hanno già dato un rosso falso; finché resta aperta, la suite si fa girare intera e un'esecuzione saltata si dice |
@@ -1975,3 +1985,15 @@ successo, ed è il motivo per cui questo file esiste.
   fuori dalla finestra, generico, e l'azione fatta lo stesso —, tutte rosse per
   il loro motivo; il banco contro sé stesso su tre difese. La pagina di prima
   di P-48 (`9ae8359`) è rossa sulle due verifiche nuove, e solo lì.
+- **30 settembre 2026 — la prova di carteggio nel motore (P-32).** D-01 del
+  §10.1 di `area-4-progetto.md`: la composizione che stava in `componiProva()`
+  della pagina è ora `provaCarteggio()`, con le condizioni 4/60/3 in
+  `PROVA_CARTEGGIO` accanto alla loro fonte e all'assunzione Q-CART4. Dalla
+  stessa chiamata la lista, gli argomenti rappresentati e mancanti, il
+  completamento su una banca incompleta, le riprese della variante e le carte;
+  la prova cieca non conta riprese, e lo dice con `null`. `estrai()` resta
+  cieca, `estraiNuoviPrima()` com'era: i loro chiamanti, elencati prima, non
+  cambiano. Nuovi R-SEL-12…16, coperti, e R-SEL-17, la pagina, scoperto finché
+  non la realizza P-21. Diciotto rotture del motore, tutte rosse; due le vedeva
+  solo il test che si ritirerà con la copia della pagina, e per una c'è ora
+  un'asserzione che resta.
