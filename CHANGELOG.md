@@ -1114,6 +1114,65 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   Guardiano, verifica del carteggio e controllo della documentazione verdi.
   Nessuna versione modificata; `docs/prossime-sessioni.md` non toccato.
 
+### Test — P-47: Progressi ha un regime solo, e `consigli()` esce dal motore
+
+- **La pagina con la diagnosi a due tabelle non passa più.** P-23 ha portato la
+  mappa nella pagina vera, e da qui il banco di P-44 gira su ogni pagina come su
+  una pagina con il raccordo: tolto il regime di prima — nessuna mappa, nessuna
+  frase e nessun «Rifai N errori» senza raccordo, la diagnosi ancora al suo
+  posto —, una pagina senza `mappaProgressi()`, `anteprimaProgressi()` e
+  `avviaProgressi()` è rossa e dice quale manca. **Provato sulla pagina di
+  prima**, il `site/app.html` di `c053e03`, primo genitore della merge di P-23:
+  otto verifiche rosse della mappa — le tre funzioni che mancano, i quattro
+  gruppi senza le loro verifiche, e le tabelle con `E.diagnosi()` ancora lì —,
+  più cinque rossi di orfani e chiamate protette, che su quella pagina trovano
+  `E.diagnosi()` ed `E.consigli()` al posto di `E.quadro()` ed `E.dovePesa()`.
+
+- **Due controlli nuovi, perché il regime solo non lasci un buco.** Uno guarda
+  che le tabelle `d-temi` e `d-voci`, e la chiamata a `E.diagnosi()`, non
+  tornino accanto alla mappa: il raccordo passerebbe, e la seconda classifica
+  che Q-DUE ha tolto si vedrebbe solo guardando la schermata. È la
+  ventiquattresima rottura della pagina di riferimento, rossa per il suo motivo.
+  L'altro è il conteggio che P-40 ha messo al client: la pagina vera deve fare,
+  gruppo per gruppo, tante verifiche quante la pagina di riferimento. Provato al
+  contrario togliendo dieci verifiche delle azioni, tutte verdi: «troppo poche
+  verifiche (46 su 56)».
+
+- **La pagina di riferimento della mappa resta**, per la ragione di quella del
+  client: porta le rotture, e sulla pagina vera, dell'interfaccia, le
+  sostituzioni si spezzerebbero a ogni ritocco. Il commento in testa lo dice.
+  Nella specifica R-MAPPA-14 e 16 perdono i due regimi e dicono quello che la
+  pagina vera fa; R-MAPPA-17 resta scoperto, con il motivo di oggi — i testi e il
+  disegno li ha guardati il collaudo di P-23, nessun controllo li ripete. Il §7.4
+  chiude il difetto delle tabelle che sforavano di 89 px dalla 0.3.0, sulla
+  misura di quel collaudo, e l'Appendice A lo segue.
+
+- **`consigli()` esce dal motore, il secondo tempo scritto da P-41.** Prima i
+  chiamanti: nessuno in `site/` — P-23 aveva tolto l'ultimo —, nessuno in
+  `server/`, soltanto i suoi sette test e tre commenti del motore. Tolti la
+  funzione, `CONSIGLIO_MIN_VISTI`, i sette test e la riga fra gli orfani di
+  `docs/eccezioni-interfaccia.md`, che senza la funzione il controllo degli
+  orfani avrebbe dato rossa. Il suo liscio resta nella `debolezza` di
+  `diagnosi()`, che la Mirata usa, e il test del liscio lo tiene. Il §4.3 lo
+  dice dove diceva «esce in due tempi», e il §5.4 descrive la mappa al posto di
+  «Cosa studiare adesso».
+
+- **Trovato, e lasciato dove sta:** in `site/app.html` restano le regole CSS di
+  `.cons` (righe 268–272 e 551), con il commento «I consigli della Diagnosi
+  riusano la riga delle voci deboli»: nessun elemento ha più quella classe. È
+  interfaccia, quindi di `ui/*`.
+
+  Suite: motore **160/162** con i due skip di sempre (erano 167/169: i sette
+  test di `consigli()`); interfaccia **1.396** (erano 1.394); server 60/60; dati
+  242; specifica 584. **Sei giri della suite dell'interfaccia intera, tutti
+  verdi**: tre senza carico in 149–154 s, uno con la LTS nel `PATH` in 147 s,
+  due con dieci `yes` in 166–167 s; l'ultimo sul codice finale, dopo due
+  ritocchi di soli commenti e messaggi. Con la **24.21.0 LTS**, il pacchetto verificato con il
+  `SHASUMS256.txt` riletto da nodejs.org: motore 160/162, server 60/60,
+  interfaccia 1.396. Prima di ogni giro la 8620 guardata libera. Guardiano e
+  controllo della documentazione verdi. `site/` fuori dal motore e
+  `docs/prossime-sessioni.md` non sono stati toccati.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag

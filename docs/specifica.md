@@ -581,7 +581,6 @@ giorno, stessa lista.
 | `diagnosi()` | per tema e per voce: visti, esatte **alla prima risposta**, sbagliati, **aperti**, tempo medio, copertura, costo in domande d'esame | — |
 | `quadro()` | la mappa di Progressi: per tema e per voce giusti, da rifare, mai visti, visti, e «X su Y giusti al primo tentativo»; la selezione di «Rifai N errori» | `primo` è `null` sotto `PRIMA_MIN_VISTI = 5` quesiti distinti visti nella riga |
 | `dovePesa()` | la frase in cima a Progressi: un tema, il motivo, i pulsanti con le loro selezioni — oppure niente, e perché | almeno `FRASE_MIN_VISTI = 20` quesiti distinti visti, le domande di una prova base; e mai sulla vela |
-| `consigli()` | che cosa studiare adesso, con il perché e i minuti — **esce** con la realizzazione dell'area 5 | `CONSIGLIO_MIN_VISTI = 5` |
 | `traccia()` | copertura nei tre stati, rimanenti, quota, giorni, semaforo | **senza data d'esame `quota` e `giorni` sono `null` e il semaforo è `attesa`** |
 | `semaforo()` | verde/giallo/rosso sull'atteso lineare | l'inizio è **il giorno della prima risposta**, non «oggi» |
 | `stimaImpegno()` | ore e minuti al giorno | sotto `MIN_MISURATE = 30` usa `RIPIEGO_MS = 15000` **e lo dichiara** |
@@ -613,7 +612,7 @@ tema, *in ballo* = domande d'esame × (da rifare + mai visti) / quesiti del
 tema: quanta parte del tema non hai preso giusta all'ultima risposta, pesata
 da quanto vale all'esame. **Non è una previsione** di quante ne sbaglierai, e
 per questo non presta alla parte mai vista una debolezza che non si è misurata,
-come faceva `consigli()`. Vince il valore più alto, confrontato in interi. Il
+come faceva `consigli()`, uscita dal motore. Vince il valore più alto, confrontato in interi. Il
 motivo è la parte più grossa — «da rifare» se gli errori sono almeno quanti i
 mai visti, altrimenti «mai visti» —; i pulsanti sono prima quello del motivo,
 poi l'altro, mai uno da zero, e ciascuno porta `quanti` e la selezione che
@@ -647,14 +646,17 @@ suoi test e il commento di `consigli()`. Non serve alla frase: conta gli errori
 alla **prima** risposta, che ripassando non calano, mentre la mappa legge
 l'ultima. **È uscita dal motore**, con i suoi due test e la riga fra gli
 orfani; il test del liscio della diagnosi è rimasto, senza di lei.
-`consigli()` ha un chiamante, «Cosa studiare adesso» in Progressi, e con lei
-`CONSIGLIO_MIN_VISTI`. Non serve alla frase — presta una debolezza alla parte
-mai vista, e calcola minuti — e Q-DUE toglie la sua lista dalla pagina.
-**Esce anche lei, in due tempi**: la realizzazione dell'area 5 (P-23) toglie la
-chiamata e nello stesso commit la sposta dalle «Chiamate al motore protette»
-agli orfani dichiarati di `docs/eccezioni-interfaccia.md`, con il motivo
-«esce»; poi una sessione di Claude su `main` la toglie dal motore con i suoi
-test e con `CONSIGLIO_MIN_VISTI`. Fino ad allora vale com'era.
+`consigli()` aveva un chiamante, «Cosa studiare adesso» in Progressi, e con
+lei `CONSIGLIO_MIN_VISTI`. Non serve alla frase — presta una debolezza alla
+parte mai vista, e calcola minuti — e Q-DUE ha tolto la sua lista dalla pagina.
+**È uscita anche lei, in due tempi**: la realizzazione dell'area 5 (P-23, 30
+settembre 2026) ha tolto la chiamata e l'ha spostata fra gli orfani dichiarati
+di `docs/eccezioni-interfaccia.md`, con il motivo «esce»; lo stesso giorno P-47
+ha contato i chiamanti rimasti — nessuno in `site/`, nessuno in `server/`,
+soltanto i suoi sette test — e l'ha tolta dal motore, con `CONSIGLIO_MIN_VISTI`,
+i sette test e la riga fra gli orfani. Il suo liscio, `(errori + 1) / (visti +
+3)`, resta nella `debolezza` di `diagnosi()`, che la Mirata usa; lo tiene il
+test del liscio, come per `peggiori()`.
 
 ### 4.4 Le sessioni sono derivate, non registrate
 
@@ -827,7 +829,7 @@ vanno nella copia del dispositivo e sul server (§3.2).
 | Banca base / vela, quante | Quiz | |
 | Data d'esame | Rotta | Facoltativa. Senza, `quota` e `giorni` sono `null` e il semaforo è `attesa`. Senza account vale per la pagina aperta; con l'account sta nel profilo sul server, e dopo la registrazione si propone senza salvarla da sola (R-ACC-55) |
 | Tessere di copertura a tre stati | Rotta, con l'account | La barra è impilata: il buco sta *dentro* la barra. Senza account nessuna copertura cumulativa: non c'è uno storico da coprire |
-| «Cosa studiare adesso» | Progressi | `consigli()` — esce con l'area 5 (§4.3): al suo posto la mappa di `quadro()` e la frase di `dovePesa()`. «Le tue voci più deboli», `peggiori()`, non c'è più, e dal 29 settembre 2026 nemmeno nel motore |
+| La mappa per tema, e «Dove pesa di più adesso» | Progressi, con l'account | `quadro()` e `dovePesa()`, attraverso il raccordo del §10.1 di `area-5-progetto.md`: una riga per tema con la barra a tre stati, le voci al tocco, «Rifai N errori», e in cima la frase solo quando il motore la dà (R-MAPPA-14…17). Al suo posto c'erano «Cosa studiare adesso», `consigli()`, e le due tabelle *Per tema* e *Per voce*: uscite dalla pagina con P-23, e `consigli()` dal motore con P-47. «Le tue voci più deboli», `peggiori()`, era uscita il 29 settembre 2026 |
 | Barrette dell'andamento | Progressi | `serieGruppi()`, `tendenza()` |
 | «Le sessioni che hai fatto» | Progressi | `sessioni()`; ogni riga si riapre. Progressi è dei soli registrati (§7.4) |
 | «Che cosa non torna, e lo diciamo» | Rotta | I numeri si contano dalla banca caricata |
@@ -1021,8 +1023,11 @@ prima una tessera.
 l'app **non sa perché** si sbaglia: si usano descrizioni come «poche domande
 viste qui» ed «errori nelle risposte», mai una diagnosi sulle cause.
 
-**Difetto noto, aperto.** Le tabelle *Per tema* e *Per voce* sforano di 89 px a
-375 px. C'è dalla 0.3.0.
+**Difetto chiuso, dalla 0.3.0 al 30 settembre 2026.** Le tabelle *Per tema* e
+*Per voce* sforavano di 89 px a 375 px. P-23 le ha tolte, con la mappa a schede
+al loro posto, e il suo collaudo misura 0 px di sbordamento a 375 px (voce nel
+CHANGELOG). Che le tabelle non tornino lo tiene R-MAPPA-14; lo sbordamento
+della mappa non lo ripete nessun controllo, ed è R-MAPPA-17.
 
 ### 7.5 Il runner dei quiz
 
@@ -1492,9 +1497,8 @@ client.
 ### 9.10 La mappa di Progressi
 
 Nati da Q-DUE (§10), chiusa dall'autore il 29 settembre 2026; il motore è di
-P-41. La pagina non li consuma ancora: `quadro()` e `dovePesa()` sono fra gli
-orfani dichiarati fino alla realizzazione dell'area 5. I controlli della pagina
-ci sono da P-44, in due regimi (sotto la tabella).
+P-41, i controlli della pagina di P-44, la pagina di P-23. Dal 30 settembre
+2026 (P-47) i controlli hanno un regime solo: la mappa (sotto la tabella).
 
 | ID | Requisito | Controllo |
 |---|---|---|
@@ -1511,27 +1515,29 @@ ci sono da P-44, in due regimi (sotto la tabella).
 | R-MAPPA-11 | A pari merito in testa la frase non c'è: non si sceglie per ordine d'elenco | `test_engine.mjs::dovePesa: a pari merito nessuna frase` |
 | R-MAPPA-12 | Con niente da fare la frase non c'è | `test_engine.mjs::dovePesa: con niente da fare nessuna frase` |
 | R-MAPPA-13 | Sulla vela, e senza pesi d'esame, la frase non c'è | `test_engine.mjs::dovePesa: sulla vela nessuna frase, perche un peso per voce non esiste` |
-| R-MAPPA-14 | La pagina prende i numeri della mappa e la frase da `quadro()` e `dovePesa()` attraverso il raccordo, senza rifarli: una chiamata a `quadro()` con i dati e i pesi della richiesta e `dovePesa()` sullo stesso oggetto; i temi e le voci nel loro ordine; giusti, da rifare, mai visti e visti del motore; `primo` nullo sotto soglia; nessun peso sulle voci né sulla vela; nessuna frase dove `dovePesa()` non ne dà, e nessun'altra funzione che conti. **Regime attuale:** nessuna mappa, frase o «Rifai N errori» senza il raccordo, e la diagnosi di oggi ancora al suo posto | `test_interfaccia.py::test_mappa_righe` |
+| R-MAPPA-14 | La pagina prende i numeri della mappa e la frase da `quadro()` e `dovePesa()` attraverso il raccordo, senza rifarli: una chiamata a `quadro()` con i dati e i pesi della richiesta e `dovePesa()` sullo stesso oggetto; i temi e le voci nel loro ordine; giusti, da rifare, mai visti e visti del motore; `primo` nullo sotto soglia; nessun peso sulle voci né sulla vela; nessuna frase dove `dovePesa()` non ne dà, e nessun'altra funzione che conti. Una pagina senza il raccordo è rossa, e anche una che tiene le tabelle *Per tema* e *Per voce* o chiama `E.diagnosi()` accanto alla mappa: sarebbero la seconda classifica che Q-DUE ha tolto. La pagina vera fa tante verifiche quante la pagina di riferimento, gruppo per gruppo | `test_interfaccia.py::test_mappa_righe` |
 | R-MAPPA-15 | Dalla pagina, «Rifai N errori» di un tema, di una voce e i pulsanti della frase aprono esattamente la selezione del motore: N è `daRifare`, la lista è `coda()` con `soloDaRifare` e senza tetto — tutti i 35, non 20, e non i 38 di `soloSbagliate` —; mai un pulsante da zero; se fra un clic e l'altro gli errori della riga sono cambiati, l'anteprima dice «cambiata» e Inizia non avvia niente, mentre una risposta altrove o la banca ricaricata non cambiano niente | `test_interfaccia.py::test_mappa_azioni` |
-| R-MAPPA-16 | Il controllo della mappa progettata gira a ogni esecuzione, anche finché la pagina pubblicata ha la diagnosi di oggi: una pagina di riferimento lo passa, e ciascuna delle sue rotture dichiarate lo fa fallire nominando il difetto | `test_interfaccia.py::test_mappa_provata_al_contrario` |
-| R-MAPPA-17 | La schermata scrive quello che il raccordo restituisce e niente altro: «N domande nella prova» solo con un peso, «Visti Y su N», «X su Y giusti al primo tentativo» o «Troppo poche risposte per dire come va», «Rifai N errori» o «Nessun errore da rifare qui», la frase con il suo titolo, e nessun riquadro dove la frase manca | scoperto — sono testi e disegno, e il banco della mappa non guarda il DOM: un disegno che prendesse i numeri da un'altra parte passerebbe. Si fissa al collaudo della realizzazione dell'area 5 (P-23), a 375 e 1280 px |
+| R-MAPPA-16 | Il banco della mappa è provato contro sé stesso a ogni esecuzione: una pagina di riferimento lo passa, e ciascuna delle sue rotture dichiarate lo fa fallire nominando il difetto | `test_interfaccia.py::test_mappa_provata_al_contrario` |
+| R-MAPPA-17 | La schermata scrive quello che il raccordo restituisce e niente altro: «N domande nella prova» solo con un peso, «Visti Y su N», «X su Y giusti al primo tentativo» o «Troppo poche risposte per dire come va», «Rifai N errori» o «Nessun errore da rifare qui», la frase con il suo titolo, e nessun riquadro dove la frase manca | scoperto — sono testi e disegno, e il banco della mappa esegue il raccordo sotto Node, senza DOM: un disegno che prendesse i numeri da un'altra parte passerebbe. Il collaudo di P-23 li ha guardati in Chrome a 375 e 1280 px, con e senza account, e lo sbordamento a 0 px; nessun controllo lo ripete. Il banco del client guida già la pagina vera in Chrome con un account, ed è da lì che un controllo potrebbe leggerli |
 
-**I due regimi di Progressi, e che cosa il controllo non vede** (P-44, 30
-settembre 2026). R-MAPPA-14 e R-MAPPA-15 sono scritti per il passaggio all'area
-5, con il meccanismo di R-NAV-04 e R-FLU-01: la pagina pubblicata ha la diagnosi
-a due tabelle e «Cosa studiare adesso», e `main` deve restare verde con lei
-mentre la mappa si realizza. Il controllo riconosce il regime dal **raccordo** —
-`mappaProgressi()`, `anteprimaProgressi()`, `avviaProgressi()`, contratto nel
-§10.1 di `area-5-progetto.md` —: nel regime attuale pretende che non ci siano
-una mappa, una frase o un «Rifai N errori» senza il raccordo, e che la diagnosi
-di oggi resti; nel progettato estrae le tre funzioni e le esegue contro il motore
-e la banca veri, su sei storici e con i dati che cambiano fra un clic e l'altro
-(`tests/mappa_progressi.mjs`). R-MAPPA-01…13 restano sul motore, dove i loro
-test li tengono; R-MAPPA-14 e 15 li portano nella colla fra pagina e motore.
-**Non vede**, ed è R-MAPPA-17 o il collaudo del §9 del progetto: i testi, la
-barra, il dettaglio, il focus e i ritorni, la geometria, gli stati d'accesso,
-prove, andamento e sessioni, il ridisegno dopo una ricezione. **Il regime
-attuale ha una scadenza:** lo toglie la regia quando integra P-23.
+**Un regime solo, e che cosa il controllo non vede** (P-44 e P-47, 30
+settembre 2026). R-MAPPA-14 e R-MAPPA-15 erano nati per il passaggio all'area 5,
+con il meccanismo di R-NAV-04 e R-FLU-01: finché la pagina aveva la diagnosi a
+due tabelle e «Cosa studiare adesso», il controllo riconosceva il regime dal
+**raccordo** — `mappaProgressi()`, `anteprimaProgressi()`, `avviaProgressi()`,
+contratto nel §10.1 di `area-5-progetto.md` — e `main` restava verde con lei.
+P-23 ha portato la mappa nella pagina vera, e P-47 ha tolto il regime di
+prima: il banco estrae le tre funzioni da ogni pagina e le esegue contro il
+motore e la banca veri, su sei storici e con i dati che cambiano fra un clic e
+l'altro (`tests/mappa_progressi.mjs`). La pagina di prima di P-23 è rossa —
+provato: le tre funzioni mancano, i gruppi non hanno righe da confrontare, e le
+tabelle e `E.diagnosi()` sono ancora lì. La pagina di riferimento resta, per le
+sue ventiquattro rotture, per la ragione di quella del client (§9.9, «Un regime
+solo»). R-MAPPA-01…13 restano sul motore, dove i loro test li tengono;
+R-MAPPA-14 e 15 li portano nella colla fra pagina e motore. **Non vede**, ed è
+R-MAPPA-17 o il collaudo del §9 del progetto: i testi, la barra, il dettaglio,
+il focus e i ritorni, la geometria, gli stati d'accesso, prove, andamento e
+sessioni, il ridisegno dopo una ricezione.
 
 ---
 
@@ -1706,7 +1712,7 @@ non c'è scorciatoia:
 | Contrasto testo grande | ≥ 3:1 | da rifare |
 | Contrasto di elementi non testuali (bordi, stati) | ≥ 3:1 | da rifare |
 | Aree di tocco | ≥ 44 px sul telefono | misurato a 58 px sul prodotto attuale |
-| Sbordamento orizzontale a 375 px | 0 | oggi 89 px nelle due tabelle della Diagnosi, difetto aperto dalla 0.3.0 |
+| Sbordamento orizzontale a 375 px | 0 | 0 in Progressi nel collaudo di P-23 (30 settembre 2026), dove la mappa ha sostituito le due tabelle che sforavano di 89 px dalla 0.3.0; non lo ripete un controllo |
 | Reflow senza scorrimento orizzontale | fino a 320 px | mai verificato |
 | Ingrandimento del testo | fino al 200 % | mai verificato |
 | Fuoco da tastiera visibile ovunque | sì | mai verificato per intero |
@@ -1942,3 +1948,14 @@ successo, ed è il motivo per cui questo file esiste.
   su `main` e non ancora in quello pubblicato; il §2.5 dice che cosa è
   cambiato. Nessun requisito nuovo: quelli che tengono le frasi nuove ci sono
   già, e sono citati accanto a ognuna.
+- **30 settembre 2026 — un regime solo per Progressi, e `consigli()` fuori
+  dal motore (P-47).** P-23 ha portato la mappa nella pagina vera, e il banco
+  di P-44 gira ora su ogni pagina come su una pagina con la mappa: senza il
+  raccordo è rossa, e anche con le tabelle di prima accanto alla mappa — una
+  rottura nuova, la ventiquattresima, lo prova —, e la pagina vera deve fare
+  tante verifiche quante la pagina di riferimento. Provato sulla pagina di
+  prima di P-23: otto verifiche rosse della mappa. R-MAPPA-14 e 16 senza i due
+  regimi, R-MAPPA-17 scoperto con il motivo di oggi. `consigli()` esce dal
+  motore con `CONSIGLIO_MIN_VISTI` e i suoi sette test, dopo che P-23 ne aveva
+  tolto l'ultima chiamata: §4.3 e §5.4. Il §7.4 chiude il difetto delle tabelle
+  che sforavano dalla 0.3.0, sulla misura del collaudo di P-23.

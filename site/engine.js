@@ -551,99 +551,13 @@ export function diagnosi(items, progress, oggi, kind = 'base', pesi = null) {
   };
 }
 
-/**
- * Che cosa conviene studiare adesso, in ordine, e quanto costa in minuti.
- *
- * **Esce dal motore, e lo dice** (P-41, 29 settembre 2026). Q-DUE ha tolto le
- * due classifiche dalla pagina: al suo posto c'e' la mappa per tema di
- * `quadro()`, e in cima la frase di `dovePesa()`, che non la usa — la sua
- * parte mai vista e' una debolezza presa in prestito dal tema, e i minuti sono
- * esclusi dal punto 7. La pagina la chiama ancora in «Cosa studiare adesso»
- * finche' l'area 5 non e' realizzata (P-23); quella realizzazione toglie la
- * chiamata, e una sessione su `main` toglie la funzione con i suoi test.
- * Fino ad allora vale com'era.
- *
- * Nasceva contro la sua gemella, `peggiori()` — «dove sbaglio», solo voci gia'
- * viste, errori alla prima risposta che ripassando non calano —, tolta dal
- * motore nella stessa sessione: all'ultima settimana la parte di banca mai
- * aperta e' il rischio piu' grosso, e per costruzione non compare in nessuna
- * classifica di errori, perche' errori non ne ha.
- *
- * Qui le due cose stanno nella stessa unita' di misura, domande d'esame attese
- * in meno, e si sommano:
- *
- *   peso     = domande d'esame del tema x quota della voce dentro il tema
- *   recupero = peso x (quota gia' vista)  x debolezza misurata della voce
- *   rischio  = peso x (quota mai vista)   x debolezza del tema (o globale)
- *
- * `rischio` e' una stima e lo dichiara: sulla parte mai vista la debolezza non
- * si puo' misurare, quindi si presta quella del tema — e se il tema non ha
- * ancora dati, quella di tutta la banca. E' grossolano di proposito: serve a
- * mettere in fila delle voci, non a predire un voto.
- *
- * Non compare una voce che non ha niente da fare: sarebbe un consiglio che non
- * si puo' seguire. «Niente da fare» vuol dire niente mai visti e **nessun
- * errore ancora aperto** — dalla 0.16.0 si contano gli `aperti` e non i
- * `sbagliati`, che non calano mai. Contando quelli, una voce interamente
- * ripassata restava in elenco e i minuti dichiarati comprendevano lavoro gia'
- * fatto: sull'archivio del 2 settembre 175 quesiti invece dei 76 veri.
- */
-/** Sotto questa soglia una percentuale di esatte non e' un dato, e la schermata
- *  la usa per non scrivere «100% su 1 vista». Esce con `consigli()`; la mappa
- *  ha la sua, `PRIMA_MIN_VISTI`, con lo stesso valore. */
-export const CONSIGLIO_MIN_VISTI = 5;
-
-export function consigli(d, opt = {}) {
-  const pesi = opt.pesi || {};
-  const msMedio = opt.msMedio || RIPIEGO_MS;
-  const quante = opt.quante ?? 6;
-
-  const dimTema = Object.fromEntries(d.temi.map((t) => [t.nome, t.n]));
-  const debTema = Object.fromEntries(d.temi.map((t) => [t.nome, t.visti ? t.debolezza : null]));
-  let visti = 0, esatte1 = 0;
-  for (const t of d.temi) { visti += t.visti; esatte1 += t.esatte1; }
-  const debGlobale = (visti - esatte1 + 1) / (visti + 3);
-
-  const righe = [];
-  for (const v of d.voci) {
-    const daFare = v.nuovi + v.aperti;
-    if (!daFare || !v.n) continue;
-    const quotaTema = dimTema[v.tema] ? v.n / dimTema[v.tema] : 0;
-    const peso = (pesi[v.tema] || 0) * quotaTema;
-    const stimata = debTema[v.tema] ?? debGlobale;
-    const recupero = peso * (v.visti / v.n) * v.debolezza;
-    const rischio = peso * (v.nuovi / v.n) * stimata;
-    righe.push({
-      nome: v.nome, tema: v.tema, n: v.n, visti: v.visti, nuovi: v.nuovi,
-      sbagliati: v.sbagliati, aperti: v.aperti, acc1: v.acc1, debolezza: v.debolezza,
-      peso, recupero, rischio, priorita: recupero + rischio,
-      daFare, minuti: Math.max(1, Math.round(daFare * msMedio / 60000)),
-      // Perche' e' li'. Stessa regola della Mirata: un selettore che non si
-      // spiega e' indistinguibile da uno rotto.
-      motivo: v.visti === 0 ? 'mai aperta'
-            : recupero >= rischio ? 'ci sbagli'
-            : 'quasi tutta da vedere',
-    });
-  }
-  righe.sort((a, b) => b.priorita - a.priorita || b.daFare - a.daFare);
-  const scelte = righe.slice(0, quante);
-  return {
-    voci: scelte,
-    minuti: scelte.reduce((s, r) => s + r.minuti, 0),
-    daFare: scelte.reduce((s, r) => s + r.daFare, 0),
-    // Quanti punti d'esame stanno in ballo nelle voci proposte: e' il numero
-    // che dice se vale la pena, non solo in che ordine.
-    punti: scelte.reduce((s, r) => s + r.priorita, 0),
-    restanti: Math.max(0, righe.length - scelte.length),
-  };
-}
-
 // --- la mappa di Progressi ----------------------------------------------------
 //
 // Q-DUE, chiusa dall'autore il 29 settembre 2026 (`docs/specifica.md` §10):
 // Progressi non e' piu' due classifiche — `peggiori()` in Rotta, `consigli()`
 // in Progressi —, che su quattro storici sintetici davano le stesse prime voci
-// fino a cinque volte su cinque. E' una mappa: una riga per tema, in ordine
+// fino a cinque volte su cinque. Tutte e due sono uscite dal motore: la prima
+// con P-41, la seconda con P-47, dopo che P-23 ne aveva tolto l'ultima chiamata. E' una mappa: una riga per tema, in ordine
 // fisso di peso d'esame, con una barra a tre stati e, toccando il tema, le sue
 // voci in ordine di banca. In cima, al massimo una frase.
 //
@@ -661,7 +575,7 @@ export function consigli(d, opt = {}) {
 /** Quante risposte servono in una riga per scrivere «X su Y giusti al primo
  *  tentativo». Sotto, `primo` e' null e la schermata scrive «troppo poche
  *  risposte per dire come va» (punto 5). E' il valore delle soglie che c'erano
- *  gia' su questa misura, `CONSIGLIO_MIN_VISTI` e la vecchia `peggiori()`. */
+ *  gia' su questa misura, in `consigli()` e `peggiori()`, uscite tutte e due. */
 export const PRIMA_MIN_VISTI = 5;
 
 /** Quanti quesiti distinti visti servono perche' la frase in cima compaia: le
@@ -746,8 +660,9 @@ export function quadro(items, progress, oggi, kind = 'base', pesi = null) {
  *
  * cioe' quanta parte del tema non hai preso giusta all'ultima risposta, pesata
  * da quanto vale all'esame. **Non** e' una previsione di quante domande
- * sbaglierai: sulla parte mai vista non si sa niente, e `consigli()` ci
- * metteva una debolezza presa in prestito; qui non si presta niente. Vince il
+ * sbaglierai: sulla parte mai vista non si sa niente, e `consigli()`, uscita
+ * dal motore, ci metteva una debolezza presa in prestito; qui non si presta
+ * niente. Vince il
  * tema con il valore piu' alto, confrontato in interi, senza arrotondamenti.
  *
  * `motivo` e' la parte piu' grossa: «da rifare» se gli errori sono almeno

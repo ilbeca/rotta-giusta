@@ -348,6 +348,11 @@ La pagina di riferimento `tests/pagina-mappa-progressi.html` mostra la forma
 minima che passa; non è un disegno. Il controllo gira su di lei e su 23 sue
 rotture a ogni esecuzione — le otto del paragrafo qui sopra, in dieci rotture,
 e tredici nate provandolo —, finché la pagina pubblicata è nel regime attuale.
+**Dal 30 settembre 2026 (P-47) il regime attuale non c'è più:** P-23 ha portato
+la mappa nella pagina vera, il banco gira su ogni pagina come su una pagina con
+il raccordo, e una pagina senza di lui — o con le tabelle `d-temi` e `d-voci`
+accanto alla mappa, la ventiquattresima rottura — è rossa. La pagina di
+riferimento resta, per le rotture.
 
 **Che cosa il controllo non vede**, e resta al collaudo del §9: i testi
 («Visti Y su N», «X su Y giusti al primo tentativo», «Troppo poche risposte per

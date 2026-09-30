@@ -50,7 +50,6 @@ dichiarazione che mente.
 | funzione | perché è ancora qui |
 |---|---|
 | `fondi` | Fusione di due specchi: serviva alla sincronia col server, tolta nella 0.19.0. Resta esportata e testata perché descrive la semantica della fusione, ma nessuno la chiama. Non ha un'area: è storia |
-| `consigli` | Esce con P-23: la lista «Cosa studiare adesso» e i minuti non appartengono alla mappa. Nessun chiamante resta in pagina; P-42 lo toglierà dal motore con i suoi test |
 
 ## Chiamate al motore protette
 

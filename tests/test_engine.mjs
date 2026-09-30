@@ -8,7 +8,7 @@ import {
   addGiorni, giorniTra, stato, sbagliato, classifica, coda, diagnosi,
   traccia, semaforo, applica, rimescola, semeGiorno,
   estrai, estraiNuoviPrima, simulazione, simulazioneVela, screening, lunghezzaScreening, esito,
-  fondi, isoLocale, stimaImpegno, mirata, consigli, oscurato, RIPIEGO_MS,
+  fondi, isoLocale, stimaImpegno, mirata, oscurato, RIPIEGO_MS,
   serieGruppi, tendenza, TENDENZA_MIN_GIORNI, TENDENZA_MIN_RISPOSTE,
   SEGNALI, SEGNALI_MODI, poolSegnali, domandeSegnali, lunghezzaPartita,
   giroTecniche, tappeto, daAllenare, quadro, dovePesa, FRASE_MIN_VISTI, PRIMA_MIN_VISTI,
@@ -311,9 +311,9 @@ test('la diagnosi conta visti, risposte e copertura per tema', () => {
 });
 
 test('col liscio, una voce vista una volta sola non pesa piu di una misurata', () => {
-  // Il liscio (errori+1)/(visti+3) regge il `costo` della diagnosi e i
-  // `consigli()`. Fino alla 0.28.0 lo teneva fermo anche la classifica dei
-  // punti deboli, `peggiori()`, uscita dal motore con Q-DUE (P-41).
+  // Il liscio (errori+1)/(visti+3) regge il `costo` della diagnosi. Fino alla
+  // 0.28.0 lo tenevano fermo anche le due classifiche uscite con Q-DUE: i punti
+  // deboli di `peggiori()` (P-41) e «Cosa studiare adesso» di `consigli()` (P-47).
   const items = [
     ...banca(1, 'T', 'minuscola'),
     ...banca(40, 'T', 'grossa').map((q, i) => ({ ...q, id: `base-g${i}` })),
@@ -326,73 +326,6 @@ test('col liscio, una voce vista una volta sola non pesa piu di una misurata', (
   const min = d.voci.find((v) => v.nome === 'minuscola');
   const gro = d.voci.find((v) => v.nome === 'grossa');
   assert.ok(gro.debolezza > min.debolezza, 'col liscio, 12/20 pesa piu di 1/1');
-});
-
-// --- che cosa studiare adesso -------------------------------------------------------
-
-test('i consigli vedono la voce mai aperta, che una classifica di errori non puo vedere', () => {
-  // Due voci dello stesso tema e della stessa dimensione: una la sai al 100%,
-  // l'altra non l'hai mai aperta. Una classifica di errori non avrebbe niente
-  // da dire, e il consiglio invece deve nominare quella intatta.
-  const items = [
-    ...banca(20, 'T', 'saputa'),
-    ...banca(20, 'T', 'intatta').map((q, i) => ({ ...q, id: `base-i${i}` })),
-  ];
-  const progress = {};
-  for (let i = 1; i <= 20; i++) applica(progress, `base-${i}`, true, 10000, OGGI);
-
-  const d = diagnosi(items, progress, OGGI, 'base', { T: 4 });
-
-  const c = consigli(d, { pesi: { T: 4 } });
-  assert.equal(c.voci.length, 1, 'la voce gia chiusa non ha niente da fare e non compare');
-  assert.equal(c.voci[0].nome, 'intatta');
-  assert.equal(c.voci[0].motivo, 'mai aperta');
-  assert.equal(c.voci[0].daFare, 20);
-});
-
-test('a parita di quesiti da fare vince la voce che vale piu domande d esame', () => {
-  const items = [
-    ...banca(20, 'MANOVRA E CONDOTTA', 'manovra'),
-    ...banca(20, 'MOTORI', 'motori').map((q, i) => ({ ...q, id: `base-x${i}` })),
-  ];
-  const d = diagnosi(items, {}, OGGI, 'base', PESI);
-  const c = consigli(d, { pesi: PESI });
-  assert.equal(c.voci[0].nome, 'manovra', 'Manovra porta 4 domande, Motori 1');
-  assert.ok(c.voci[0].priorita > c.voci[1].priorita * 3, 'e il rapporto e quello dei pesi');
-});
-
-test('i minuti dei consigli seguono il tempo medio misurato', () => {
-  const items = banca(20, 'T', 'unica');
-  const d = diagnosi(items, {}, OGGI, 'base', { T: 4 });
-  const lento = consigli(d, { pesi: { T: 4 }, msMedio: 30000 });
-  const svelto = consigli(d, { pesi: { T: 4 }, msMedio: 10000 });
-  assert.equal(lento.voci[0].minuti, 10, '20 quesiti a 30 s sono 10 minuti');
-  assert.equal(svelto.voci[0].minuti, 3, 'a 10 s sono 3 minuti e mezzo, arrotondati');
-  assert.equal(lento.minuti, 10, 'il totale e la somma delle voci proposte');
-});
-
-test('una banca tutta chiusa e senza sbagliate non produce consigli', () => {
-  const items = banca(12, 'T', 'finita');
-  const progress = {};
-  for (let i = 1; i <= 12; i++) applica(progress, `base-${i}`, true, 10000, OGGI);
-  const d = diagnosi(items, progress, OGGI, 'base', { T: 4 });
-  const c = consigli(d, { pesi: { T: 4 } });
-  assert.deepEqual(c.voci, [], 'un consiglio che non si puo seguire non e un consiglio');
-  assert.equal(c.minuti, 0);
-});
-
-test('lo sbagliato torna nei consigli, e col motivo giusto', () => {
-  const items = banca(30, 'T', 'zoppa');
-  const progress = {};
-  // 20 viste, 12 sbagliate: la parte misurata pesa piu delle 10 mai viste
-  for (let i = 1; i <= 20; i++) applica(progress, `base-${i}`, i > 12, 10000, OGGI);
-  const d = diagnosi(items, progress, OGGI, 'base', { T: 4 });
-  const v = consigli(d, { pesi: { T: 4 } }).voci[0];
-  assert.equal(v.motivo, 'ci sbagli');
-  assert.equal(v.sbagliati, 12);
-  assert.equal(v.nuovi, 10);
-  assert.equal(v.daFare, 22, 'le sbagliate da riprendere piu i mai visti');
-  assert.ok(v.recupero > v.rischio, 'la debolezza misurata batte quella stimata');
 });
 
 test('0.16.0 — la diagnosi conta anche le sbagliate ancora APERTE', () => {
@@ -415,31 +348,6 @@ test('0.16.0 — la diagnosi conta anche le sbagliate ancora APERTE', () => {
   const dopo = diagnosi(items, progress, OGGI, 'base', { T: 4 }).voci[0];
   assert.equal(dopo.sbagliati, 2);
   assert.equal(dopo.aperti, 0);
-});
-
-test('0.16.0 — «cosa studiare adesso» non propone lavoro gia fatto', () => {
-  // `daFare` contava i `sbagliati`, che comprendono i gia' ripresi: una voce
-  // interamente ripassata restava in elenco e i minuti dichiarati includevano
-  // lavoro fatto. Ora conta gli `aperti`.
-  const items = banca(6, 'T', 'v');
-  const progress = {};
-  for (const it of items) { applica(progress, it.id, false, 60000, '2026-08-01'); }
-  const prima = consigli(diagnosi(items, progress, OGGI, 'base', { T: 4 }), { pesi: { T: 4 }, msMedio: 60000 });
-  assert.equal(prima.voci[0].daFare, 6, 'sei aperte, sei da fare');
-
-  // le riprendo tutte: non resta niente da fare, quindi la voce non compare
-  for (const it of items) applica(progress, it.id, true, 60000, OGGI);
-  const dopo = consigli(diagnosi(items, progress, OGGI, 'base', { T: 4 }), { pesi: { T: 4 }, msMedio: 60000 });
-  assert.equal(dopo.voci.length, 0, 'niente mai visti e nessun errore aperto: niente da consigliare');
-  assert.equal(dopo.minuti, 0, 'e zero minuti, non sei quesiti di lavoro gia fatto');
-});
-
-test('i consigli funzionano anche sulla vela, che non sta in PESI_ESAME', () => {
-  const items = banca(50, 'VELA', 'MANOVRE').map((q) => ({ ...q, k: 'vela' }));
-  const d = diagnosi(items, {}, OGGI, 'vela', { VELA: 5 });
-  const c = consigli(d, { pesi: { VELA: 5 } });
-  assert.equal(c.voci.length, 1);
-  assert.ok(Math.abs(c.voci[0].peso - 5) < 1e-9, 'una voce sola si prende tutte e 5 le domande');
 });
 
 // --- la mappa di Progressi (Q-DUE, 29 settembre 2026) --------------------------

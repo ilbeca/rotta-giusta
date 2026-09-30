@@ -99,20 +99,20 @@ RACCORDO_CICLO = ['riepilogoQuiz', 'anteprimaRiprova', 'avviaRiprova']
 BANCO_CICLO = RADICE / 'tests' / 'ciclo_quiz.mjs'
 RIFERIMENTO_CICLO = RADICE / 'tests' / 'pagina-ciclo-quiz.html'
 
-# La mappa di Progressi ha anch'essa due regimi, con lo stesso meccanismo.
+# La mappa di Progressi ha un regime solo, dal 30 settembre 2026 (P-47).
 #
-# Il regime ATTUALE e' la pagina pubblicata: la diagnosi a due tabelle ordinate
-# per «Punti persi», da `E.diagnosi()`, e la lista «Cosa studiare adesso» da
-# `E.consigli()`. Il regime PROGETTATO e' l'area 5 (docs/area-5-progetto.md):
-# la mappa per tema di Q-DUE, da `E.quadro()` e `E.dovePesa()`, attraverso tre
+# Fino a P-23 erano due, con il meccanismo dei quiz e del ciclo: la diagnosi a
+# due tabelle ordinate per «Punti persi», da `E.diagnosi()`, con la lista «Cosa
+# studiare adesso» da `E.consigli()`; e la mappa per tema di Q-DUE
+# (docs/area-5-progetto.md), da `E.quadro()` e `E.dovePesa()` attraverso tre
 # funzioni di raccordo che il §10.1 di quel progetto chiede di **eseguire** —
-# righe, frase e selezioni contro il motore vero, con i dati che cambiano fra un
-# clic e l'altro — invece di cercare un nome o un pulsante.
+# righe, frase e selezioni contro il motore vero, con i dati che cambiano fra
+# un clic e l'altro — invece di cercare un nome o un pulsante.
 #
-# Il regime si riconosce dal raccordo: una pagina che dichiara una delle tre
-# funzioni e' nel progettato, e deve dichiararle tutte. **Il regime attuale ha
-# una scadenza:** la regia lo toglie quando integra P-23.
-RACCORDO_MAPPA = ['mappaProgressi', 'anteprimaProgressi', 'avviaProgressi']
+# P-23 ha portato la mappa nella pagina vera. Da qui il banco gira su ogni
+# pagina come su una pagina con la mappa: una pagina senza il raccordo e' rossa
+# — quella di prima di P-23 lo e', provato —, e anche una che tiene la diagnosi
+# di prima accanto alla mappa, perche' sarebbero due classifiche.
 BANCO_MAPPA = RADICE / 'tests' / 'mappa_progressi.mjs'
 RIFERIMENTO_MAPPA = RADICE / 'tests' / 'pagina-mappa-progressi.html'
 
@@ -622,7 +622,7 @@ def test_ciclo_provato_al_contrario():
 # --- 5b'. la mappa di Progressi (R-MAPPA-14…16) ---------------------------------
 
 def banco_mappa(testo):
-    """Le verifiche della mappa progettata, eseguite sotto Node sulla pagina data.
+    """Le verifiche della mappa, eseguite sotto Node sulla pagina data.
 
     Il banco estrae le tre funzioni di raccordo e le esegue contro il motore e
     la banca veri: vedi tests/mappa_progressi.mjs. Se il banco stesso non
@@ -640,78 +640,89 @@ def banco_mappa(testo):
     return out
 
 
-def regime_mappa(testo):
-    """(regime, verifiche) di Progressi: 'attuale' o 'progettato'.
+# Le tabelle e la chiamata della diagnosi di prima di P-23. Accanto alla mappa
+# sarebbero la seconda classifica che Q-DUE ha tolto: l'ordine per «Punti
+# persi» e' un'altra risposta a «dove lavoro adesso».
+DIAGNOSI_DI_PRIMA = ['id="d-temi"', 'id="d-voci"']
+
+
+def verifiche_mappa(testo):
+    """Le verifiche di Progressi sulla pagina data: il banco, e la diagnosi di prima che non c'e' piu'.
 
     Gruppi: «righe» e «frase» sono di R-MAPPA-14; «azioni» e «raccordo» di
-    R-MAPPA-15.
+    R-MAPPA-15. Il banco gira sempre: su una pagina senza il raccordo dice quale
+    delle tre funzioni manca, e non ha righe da confrontare.
     """
     js = senza_commenti(testo)
-    if any(re.search(r'^function %s\b' % f, js, re.M) for f in RACCORDO_MAPPA):
-        return 'progettato', banco_mappa(testo)
-    v = []
-    # Un ibrido e' la scappatoia che il §10.1 vieta: la mappa chiesta al
-    # motore, o un pulsante che promette gli errori da rifare, senza il raccordo
-    # che il controllo esegue. Numero e lista avrebbero di nuovo due fonti.
-    v.append({'gruppo': 'righe', 'nome': 'regime attuale: nessuna mappa senza il raccordo',
-              'ok': not re.search(r'\bE\.quadro\b', js),
-              'extra': 'la pagina chiama E.quadro() senza mappaProgressi/anteprimaProgressi/avviaProgressi: '
-                       'il contratto e\' nel §10.1 di docs/area-5-progetto.md'})
-    v.append({'gruppo': 'frase', 'nome': 'regime attuale: nessuna frase «Dove pesa di più» senza il raccordo',
-              'ok': not re.search(r'\bE\.dovePesa\b', js) and 'Dove pesa di pi' not in js,
-              'extra': 'la frase in cima la decide E.dovePesa() attraverso mappaProgressi(): altrove e\' una '
-                       'seconda fonte, o una frase inventata'})
-    v.append({'gruppo': 'azioni', 'nome': 'regime attuale: nessun «Rifai N errori» senza il raccordo',
-              'ok': 'soloDaRifare' not in js and not re.search(r'Rifai\s*(\d|\$\{)', js),
-              'extra': '«Rifai N errori» apre la selezione rifai di quadro() attraverso anteprimaProgressi(): '
-                       'altrove il numero e la lista hanno due fonti'})
-    v.append({'gruppo': 'raccordo', 'nome': 'regime attuale: la diagnosi di oggi c\'e\' ancora',
-              'ok': bool(re.search(r'^function dipingiDiag\(', js, re.M)) and 'E.diagnosi(' in js
-                    and 'id="d-temi"' in testo and 'id="d-voci"' in testo,
-              'extra': 'le due tabelle da E.diagnosi() sono Progressi di oggi: finche\' la mappa non c\'e\', '
-                       'non possono sparire'})
-    return 'attuale', v
+    v = banco_mappa(testo)
+    rimasti = [x for x in DIAGNOSI_DI_PRIMA if x in testo] + (['E.diagnosi('] if 'E.diagnosi(' in js else [])
+    v.append({'gruppo': 'righe', 'nome': 'la diagnosi a due tabelle non c\'e\' piu\'', 'ok': not rimasti,
+              'extra': 'la pagina ha ancora ' + ', '.join(rimasti) + ': le tabelle ordinate per punti persi sono '
+                       'la seconda classifica che Q-DUE ha tolto, e con la mappa sono uscite (P-23)'})
+    return v
 
 
-_REGIME_MAPPA = None
+_MAPPA_APP = None
 
 
-def regime_mappa_app():
-    global _REGIME_MAPPA
-    if _REGIME_MAPPA is None:
-        _REGIME_MAPPA = regime_mappa(leggi('app.html'))
-    return _REGIME_MAPPA
+def mappa_app():
+    global _MAPPA_APP
+    if _MAPPA_APP is None:
+        _MAPPA_APP = verifiche_mappa(leggi('app.html'))
+    return _MAPPA_APP
 
 
-def registra_mappa(regime, verifiche, gruppi):
-    etichetta = {'attuale': 'regime attuale', 'progettato': 'regime progettato'}
+_MAPPA_RIF = None
+
+
+def mappa_riferimento():
+    global _MAPPA_RIF
+    if _MAPPA_RIF is None:
+        _MAPPA_RIF = verifiche_mappa(RIFERIMENTO_MAPPA.read_text(encoding='utf-8'))
+    return _MAPPA_RIF
+
+
+def registra_mappa(verifiche, gruppi):
     for x in verifiche:
         if x['gruppo'] in gruppi:
-            check('mappa di Progressi (%s): %s' % (etichetta.get(regime, 'regime ignoto'), x['nome']),
-                  x['ok'], x.get('extra', ''))
+            check('mappa di Progressi: %s' % x['nome'], x['ok'], x.get('extra', ''))
+
+
+def conteggio_mappa(gruppi):
+    """La pagina vera fa almeno le verifiche che fa la pagina di riferimento, gruppo per gruppo.
+
+    Un giro che si ferma a meta' per una strada che il banco non ha previsto
+    avrebbe meno verifiche, e quelle fatte potrebbero essere tutte verdi: e' il
+    verde falso che P-40 ha chiuso per il client con `VERIFICHE_CLIENT`. Il
+    conteggio lo dice anche quando nessuna verifica e' rossa.
+    """
+    app, rif = mappa_app(), mappa_riferimento()
+    for g in gruppi:
+        n, attese = sum(x['gruppo'] == g for x in app), sum(x['gruppo'] == g for x in rif)
+        check('mappa di Progressi: il gruppo «%s» ha fatto tutte le verifiche' % g, attese > 0 and n >= attese,
+              'troppo poche verifiche (%d su %d): il banco si e\' fermato prima del giro' % (n, attese))
 
 
 def test_mappa_righe():
-    regime, v = regime_mappa_app()
-    registra_mappa(regime, v, ('righe', 'frase'))
-    check('mappa di Progressi: righe e frase sono state controllate',
-          any(x['gruppo'] == 'righe' for x in v) and any(x['gruppo'] == 'frase' for x in v),
-          'nessuna verifica sulle righe o sulla frase')
+    v = mappa_app()
+    registra_mappa(v, ('righe', 'frase'))
+    conteggio_mappa(('righe', 'frase'))
 
 
 def test_mappa_azioni():
-    regime, v = regime_mappa_app()
-    registra_mappa(regime, v, ('azioni', 'raccordo'))
-    check('mappa di Progressi: le azioni sono state controllate', any(x['gruppo'] == 'azioni' for x in v),
-          'nessuna verifica sulle azioni')
+    v = mappa_app()
+    registra_mappa(v, ('azioni', 'raccordo'))
+    conteggio_mappa(('azioni', 'raccordo'))
 
 
-# Il ramo del regime progettato non gira mai sulla pagina pubblicata finche'
-# P-23 non arriva: qui gira a ogni esecuzione su una pagina di riferimento che
-# deve passare e su ciascuna delle sue rotture, che devono fallire nominando il
-# difetto. Le prime dieci sono le otto che il §10.1 del progetto elenca — il
-# tetto di 20 e l'ordine in due punti ciascuno —; le altre sono nate provando
-# il banco contro se' stesso.
+# Il banco della mappa si prova contro se' stesso a ogni esecuzione, sulla
+# pagina di riferimento: lei deve passare, e ciascuna delle sue rotture deve
+# fallire nominando il difetto. Le rotture restano su di lei e non sulla pagina
+# vera, per la ragione di P-40: sostituzioni di testo in un file
+# dell'interfaccia da 200 KB si spezzerebbero a ogni suo ritocco, e una rottura
+# che non si applica piu' e' un controllo spento. Le prime dieci sono le otto
+# che il §10.1 del progetto elenca — il tetto di 20 e l'ordine in due punti
+# ciascuno —; le altre sono nate provando il banco contro se' stesso.
 ROTTURE_MAPPA = [
     ('il numero del pulsante non e\' la lista',
      [('quanti: r.daRifare, selezione: r.rifai', 'quanti: r.visti, selezione: r.rifai')],
@@ -757,7 +768,7 @@ ROTTURE_MAPPA = [
      [('function mappaProgressi(', 'function mappaAttivita('),
       ('function anteprimaProgressi(', 'function anteprimaAttivita('),
       ('function avviaProgressi(', 'function avviaAttivita(')],
-     'nessuna mappa senza il raccordo'),
+     'dichiara mappaProgressi'),
     ('un pulsante da zero',
      [('azione: r.daRifare > 0 ? { azione: \'rifai\', quanti: r.daRifare, selezione: r.rifai } : null',
        'azione: { azione: \'rifai\', quanti: r.daRifare, selezione: r.rifai }')],
@@ -802,14 +813,19 @@ ROTTURE_MAPPA = [
     ('il raccordo dichiarato e mai chiamato',
      [('S.mappa.vista = mappaProgressi(S.mappa.richiesta);', 'S.mappa.vista = null;')],
      'disegna la mappa da mappaProgressi'),
+    # Dal regime solo (P-47): la mappa c'e', e accanto restano le tabelle di
+    # prima. Il raccordo passa tutto, e la seconda classifica si vedrebbe solo
+    # guardando la schermata.
+    ('la diagnosi di prima accanto alla mappa',
+     [('<div id="d-mappa"></div>', '<div id="d-mappa"></div>\n<table id="d-temi"></table>\n<table id="d-voci"></table>')],
+     'la diagnosi a due tabelle non c\'e\' piu\''),
 ]
 
 
 def test_mappa_provata_al_contrario():
     rif = RIFERIMENTO_MAPPA.read_text(encoding='utf-8')
-    regime, v = regime_mappa(rif)
+    v = mappa_riferimento()
     rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in v if not x['ok']]
-    check('la pagina di riferimento della mappa e\' nel regime progettato', regime == 'progettato', str(regime))
     check('la pagina di riferimento della mappa passa il controllo', not rossi, '; '.join(rossi[:3]))
     # Un banco che non esegue niente passerebbe tutto: si pretende che abbia
     # confrontato le righe e fatto il giro delle azioni.
@@ -825,7 +841,7 @@ def test_mappa_provata_al_contrario():
             rotta = rotta.replace(vecchio, nuovo, 1)
         if rotta == rif:
             continue
-        _, vr = regime_mappa(rotta)
+        vr = verifiche_mappa(rotta)
         rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in vr if not x['ok']]
         check('rottura della mappa «%s»: il controllo diventa rosso' % cosa, bool(rossi), 'e\' passata verde')
         check('rottura della mappa «%s»: e il rosso nomina il difetto' % cosa, any(atteso in r for r in rossi),

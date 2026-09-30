@@ -1,4 +1,4 @@
-// Il banco della mappa di Progressi progettata — l'area 5.
+// Il banco della mappa di Progressi — l'area 5, nella pagina vera da P-23.
 //
 // Lo chiama tests/test_interfaccia.py, e non gira da solo sotto `node --test`:
 // legge da stdin `{"pagina": "<testo di una pagina>"}` e scrive su stdout la
@@ -41,9 +41,11 @@ const RADICE = new URL('..', import.meta.url);
 const RACCORDO = ['mappaProgressi', 'anteprimaProgressi', 'avviaProgressi'];
 // Le funzioni del motore che contano o scelgono. Nel raccordo della mappa ci
 // sono solo `quadro()` e `dovePesa()`; nell'anteprima `coda()`. Le altre sono
-// una seconda fonte: `diagnosi()` per rifare l'ordine, `consigli()` per la
-// lista che esce, `classifica()` per ricontare i tre stati.
-const REGISTRATE = ['quadro', 'dovePesa', 'diagnosi', 'consigli', 'coda', 'classifica', 'stato', 'sbagliato',
+// una seconda fonte: `diagnosi()` per rifare l'ordine, `classifica()` per
+// ricontare i tre stati. `consigli()`, la lista uscita con la mappa, non c'e'
+// piu' nemmeno nel motore (P-47): una pagina che la chiamasse lancerebbe, e il
+// controllo del collegamento lo dice prima, per nome.
+const REGISTRATE = ['quadro', 'dovePesa', 'diagnosi', 'coda', 'classifica', 'stato', 'sbagliato',
   'daAllenare', 'mirata', 'screening', 'simulazione', 'simulazioneVela', 'estrai', 'estraiNuoviPrima',
   'giroTecniche', 'tappeto', 'erroriSessione', 'serieGruppi'];
 
@@ -238,7 +240,7 @@ function confrontaMappa(nome, rich, attesa) {
     dc.length + ' chiamate a dovePesa' + (dc[0] && qc[0] && dc[0].args[0] !== qc[0].r ? ', su un quadro rifatto' : ''));
   check('righe', nome + ': nessun\'altra funzione che conti o scelga', !altre.length,
     'chiamate: ' + nomi(altre) + ' — la mappa non ha una seconda fonte: niente diagnosi() per l\'ordine, '
-      + 'niente consigli(), niente classifica() per ricontare');
+      + 'niente classifica() per ricontare');
 
   // Le righe, campo per campo.
   const out = { ordine: [], stati: [], primo: [], peso: [], altro: [], azione: [], zero: [] };
@@ -410,8 +412,8 @@ function collegamento(script, tutte) {
     'la pagina chiede la mappa anche fuori da mappaProgressi/anteprimaProgressi/avviaProgressi: una seconda fonte '
     + 'per gli stessi numeri');
   check(G, 'E.consigli non si chiama piu\'', !/\bE\.consigli\b/.test(script),
-    'la lista «Cosa studiare adesso» esce con la mappa (Q-DUE; area 5, §8): la sua chiamata sparisce nello stesso '
-    + 'commit, e consigli() passa agli orfani dichiarati');
+    'la lista «Cosa studiare adesso» e\' uscita con la mappa (Q-DUE; area 5, §8), e consigli() non esiste piu\' '
+    + 'nel motore (P-47): una chiamata lancia');
   const usi = (f) => [...resto.matchAll(new RegExp('\\b' + f + '\\s*\\(', 'g'))].map((m) => m.index)
     .filter((i) => !/function\s+$/.test(resto.slice(Math.max(0, i - 12), i)));
   check(G, 'la pagina disegna la mappa da mappaProgressi()', usi('mappaProgressi').length > 0,
@@ -432,7 +434,7 @@ let mappaProgressi, anteprimaProgressi, avviaProgressi;
 check(G, 'la pagina ha uno script', script.length > 0, 'nessun <script type="module">');
 for (const f of RACCORDO) {
   check(G, 'la pagina dichiara ' + f + '()', !!tutte[f],
-    'la mappa progettata passa da tre funzioni di raccordo: il contratto e\' in docs/area-5-progetto.md §10.1');
+    'la mappa passa da tre funzioni di raccordo: il contratto e\' in docs/area-5-progetto.md §10.1');
 }
 if (RACCORDO.every((f) => tutte[f])) {
   const sel = {};
