@@ -202,7 +202,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 |---|---|---|---|---|---|
 | 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore | P-15 |
 | 32 | Lo stato dell'invio che dice «sul server» con righe in coda (T-02), e le pulizie della pagina | ChatGPT | `ui/main` | niente — **pronto**, prima del traguardo | P-52 |
-| 21c | Dopo P-21: il regime vecchio del Carteggio, e la riga fra i difetti noti di `AGENTS.md` | Claude | `main`, a mano | niente — **pronto** | P-50 |
+| 21c | Dopo P-21: il regime vecchio del Carteggio, e la riga fra i difetti noti di `AGENTS.md` — **in corso**, lanciato dalla regia | Claude | `main`, a mano | niente | P-50 |
 | 26b | La realizzazione dell'area 6 | ChatGPT | `ui/main` | il §8 dell'area 6 (l'autore), e P-52 per la penna | segnaposto P-25 |
 | 9 | **La versione con gli account** — il traguardo | tutti | `main` | P-15, P-52, e gli adempimenti del §4 | segnaposto P-27 |
 | 33 | Le frasi del riepilogo dei quiz nel banco (R-UX-06) | Claude | `main`, a mano | niente, non urgente | P-53 |
@@ -2783,7 +2783,7 @@ con il resoconto di docs/prossime-sessioni.md.
 
 ### P-50 — Claude: chiudere il regime vecchio dei controlli del Carteggio
 
-**Stato:** pronto dal 30 settembre 2026: P-21 è fuso. **Dove:** Claude Code,
+**Stato:** **in corso dal 1° ottobre 2026**, lanciato dalla regia (punto 8). **Dove:** Claude Code,
 `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** i resoconti
 di P-35 e P-21.
 
@@ -2817,7 +2817,7 @@ commit. Chiudi con il resoconto di docs/prossime-sessioni.md.
 
 ### P-53 — Claude: le frasi del riepilogo dei quiz, nel banco del client
 
-**Stato:** pronto dal 30 settembre 2026, non urgente. **Dove:** Claude Code,
+**Stato:** pronto dal 30 settembre 2026, non urgente; delegato alla regia, che lo lancia dopo P-50 (punto 8). **Dove:** Claude Code,
 `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** l'esito di
 P-37.
 
@@ -3192,3 +3192,5 @@ la nota in testa a `docs/filosofia.md`, che lo dice di sé (P-26).
   `1bb916a`; la bozza dell'account riprende dopo una ricarica, e C-19 è verde
   sulla pagina vera. P-50 e P-53 scritti per intero; P-52 pronto per ChatGPT,
   senza il CSS di `.cons` che P-21 ha già tolto.
+- **1° ottobre 2026 — una terza fila delegata.** L'autore ha delegato alla
+  regia P-50 e P-53, nell'ordine; P-50 lanciato.
