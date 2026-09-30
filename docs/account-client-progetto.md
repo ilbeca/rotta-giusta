@@ -1658,10 +1658,10 @@ gruppi con l'API (Q-SUITE).
 
 C-01, nel giro del Carteggio, guarda una cosa in più **prima** di premere
 `#c-start`: che il testo che si vede del Carteggio dica che il giudizio della
-prova è di chi studia (R-UX-03, specifica §7.3). Le frasi riconosciute sono
-quella del progetto dell'area 4 (§4, «Sei tu a giudicare») e quella della
-pagina di oggi («e dici quali avevi preso»), che esce con il regime attuale del
-Carteggio. Si cerca in `innerText`, non nel sorgente: la rottura della pagina
+prova è di chi studia (R-UX-03, specifica §7.3). La frase riconosciuta è
+quella del progetto dell'area 4 (§4, «Sei tu a giudicare»); fino a P-50 valeva
+anche quella della pagina di prima di P-21, «e dici quali avevi preso», uscita
+con il regime vecchio del Carteggio il 1° ottobre 2026. Si cerca in `innerText`, non nel sorgente: la rottura della pagina
 di riferimento nasconde la frase con `hidden`, e il gruppo è rosso. C-01 passa
 da 33 a 34 verifiche. Il resto del Carteggio progettato — preparazione, avvio,
 righe, riepilogo — non è del browser: lo esegue `tests/ciclo_carteggio.mjs`

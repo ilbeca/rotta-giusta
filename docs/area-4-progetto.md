@@ -934,6 +934,15 @@ il loro arrivo insieme a client e area 3; P-20 non scrive prompt né modifica
 la coda. Il documento è consegnabile oggi, la realizzazione richiede questi
 contratti e gli allineamenti della sessione successiva.
 
+**Dal 1° ottobre 2026 (P-50) il regime del Carteggio di prima non c'è più.**
+P-21 ha portato il raccordo nella pagina vera, e il controllo riconosce un
+regime solo: il banco gira su ogni pagina, e la pagina vera deve fare almeno le
+verifiche della pagina di riferimento, gruppo per gruppo. La pagina di prima
+(`1bb916a^1`, con `componiProva()`, `salvaCart()` e `rivediCarteggio()` senza il
+raccordo) è rossa: prima di P-50 passava con otto verifiche e nessun rosso. La
+pagina di riferimento resta, per le rotture. Il giudizio di chi studia prima
+dell'avvio (R-UX-03) si riconosce solo dalla frase del §4, «Sei tu a giudicare».
+
 ### 10.2 Criteri di accettazione della realizzazione
 
 | Caso | Passa soltanto se |

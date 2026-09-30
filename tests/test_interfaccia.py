@@ -124,22 +124,22 @@ RIFERIMENTO_CICLO = RADICE / 'tests' / 'pagina-ciclo-quiz.html'
 BANCO_MAPPA = RADICE / 'tests' / 'mappa_progressi.mjs'
 RIFERIMENTO_MAPPA = RADICE / 'tests' / 'pagina-mappa-progressi.html'
 
-# Il Carteggio ha due regimi, con il meccanismo dei quiz, del ciclo e della mappa.
+# Il Carteggio ha un regime solo, dal 1° ottobre 2026 (P-50): quello dell'area 4
+# (docs/area-4-progetto.md). Preparazione, avvio, conclusione, riconoscimento e
+# riepilogo passano da cinque funzioni di raccordo, e il §10.1 di quel progetto
+# (D-04) chiede che il controllo le **esegua** con le banche vere e i dati che
+# cambiano fra un clic e l'altro, invece di cercare un nome o un pulsante.
 #
-# Il regime ATTUALE e' la pagina pubblicata: la prova si compone con la sua
-# `componiProva()` — che test_engine.mjs esegue estratta dal file e confronta con
-# `provaCarteggio()` —, `salvaCart()` scrive le righe senza il legame degli
-# allenamenti, `dipingiCorrezione()` e `rivediCarteggio()` rileggono filtrando le
-# righe da se'. Il regime PROGETTATO e' l'area 4 (docs/area-4-progetto.md):
-# preparazione, avvio, conclusione, riconoscimento e riepilogo passano da cinque
-# funzioni di raccordo, e il §10.1 di quel progetto (D-04) chiede che il
-# controllo le **esegua** con le banche vere e i dati che cambiano fra un clic e
-# l'altro, invece di cercare un nome o un pulsante.
-#
-# Il regime si riconosce dal raccordo: una pagina che dichiara una delle cinque
-# funzioni e' nel progettato, e deve dichiararle tutte. **Il regime attuale ha
-# una scadenza:** la regia lo toglie quando integra P-21.
-RACCORDO_CARTEGGIO = ['preparaCarteggio', 'avviaCarteggio', 'concludiCarteggio', 'rispostaTecnica', 'riepilogoCarteggio']
+# Fino a P-50 i regimi erano due, con il meccanismo dei quiz, del ciclo e della
+# mappa: accanto a questo c'era quello della pagina di prima di P-21, che
+# componeva la prova con la sua `componiProva()`, scriveva le righe con
+# `salvaCart()` e `correggiTec()` e rileggeva con `dipingiCorrezione()` e
+# `rivediCarteggio()`. P-21 e' fuso dal 30 settembre 2026, e con P-50 quel ramo
+# non c'e' piu': una pagina senza il raccordo — misurata su quella di
+# `1bb916a^1`, che passava con 8 verifiche e zero rossi — e' rossa, e il rosso
+# nomina la funzione che manca. Con il ramo sono usciti anche il riconoscimento
+# del regime (`riconosci_carteggio()`, P-51) e l'innesto del raccordo che lo
+# provava: con un regime solo non c'e' niente da riconoscere.
 BANCO_CARTEGGIO = RADICE / 'tests' / 'ciclo_carteggio.mjs'
 RIFERIMENTO_CARTEGGIO = RADICE / 'tests' / 'pagina-ciclo-carteggio.html'
 
@@ -892,71 +892,21 @@ def banco_carteggio(testo):
     return out
 
 
-def corpo(js, nome):
-    """Il testo della funzione di primo livello `nome`, fino alla prossima di primo livello; '' se non c'e'."""
-    m = re.search(r'^(?:async\s+)?function %s\(' % nome, js, re.M)
-    if not m:
-        return ''
-    fine = re.search(r'^(?:async\s+)?function \w+\(|^const \w+ = |^let \w+', js[m.end():], re.M)
-    return js[m.start():m.end() + (fine.start() if fine else len(js))]
-
-
-# Le funzioni del ciclo di oggi che chiudono un'attivita' del Carteggio: nel
-# regime attuale non offrono una riprova, e nel progettato nemmeno il raccordo.
-CICLO_CARTEGGIO_DI_OGGI = ['consegnaCart', 'dipingiCorrezione', 'salvaCart', 'rivediCarteggio', 'mostraTec', 'correggiTec']
-
-
-def riconosci_carteggio(testo):
-    """'progettato' se la pagina dichiara una delle cinque funzioni di raccordo, altrimenti 'attuale'."""
-    js = senza_commenti(testo)
-    return 'progettato' if any(re.search(r'^function %s\b' % f, js, re.M) for f in RACCORDO_CARTEGGIO) else 'attuale'
-
-
-def regime_carteggio(testo):
-    """(regime, verifiche) del Carteggio: 'attuale' o 'progettato'.
+def verifiche_carteggio(testo):
+    """Le verifiche del Carteggio sulla pagina data: la lista di esiti {gruppo, nome, ok, extra}.
 
     Gruppi: «preparazione», «avvio» e «raccordo» sono di R-SEL-17; «righe» di
     R-FLU-23; «riepilogo» di R-FLU-24; «riprova» di R-FLU-25; «ambito» di
-    R-UX-07, in tutti e due i regimi.
+    R-UX-07. Il banco gira sempre, su qualunque pagina: su una senza il
+    raccordo dice quale delle cinque funzioni manca, e non ha un giro da
+    eseguire — per questo le verifiche si contano anche (`registra_carteggio`).
     """
     js = senza_commenti(testo)
     ambito = [{'gruppo': 'ambito', 'nome': 'la pagina non carica carteggio_e12.json, finche\' Q-AMBITO e\' aperta',
                'ok': 'carteggio_e12' not in js,
                'extra': 'i 50 esercizi entro 12 miglia sono nel cassetto: tirarli fuori e\' una decisione dell\'autore '
                         '(specifica §10, Q-AMBITO), e cambia il pubblico piu\' di ogni scelta di navigazione'}]
-    if riconosci_carteggio(testo) == 'progettato':
-        return 'progettato', banco_carteggio(testo) + ambito
-    v = []
-
-    def ibrido(gruppo, funzioni_motore, perche):
-        chiamate = [f for f in funzioni_motore if re.search(r'\bE\.%s\b' % f, js)]
-        v.append({'gruppo': gruppo, 'nome': 'regime attuale: nessuna %s senza il raccordo' % perche, 'ok': not chiamate,
-                  'extra': 'la pagina chiama ' + ', '.join('E.' + f for f in chiamate) + ' senza preparaCarteggio/'
-                           'avviaCarteggio/concludiCarteggio/rispostaTecnica/riepilogoCarteggio: il contratto e\' nel '
-                           '§10.1 di docs/area-4-progetto.md, D-04'})
-
-    # Un ibrido e' la scappatoia che D-04 vieta: il motore nuovo chiamato senza
-    # il raccordo che il controllo esegue. Numero e lista avrebbero due fonti.
-    ibrido('preparazione', ['provaCarteggio'], 'composizione della prova dal motore nuovo')
-    ibrido('righe', ['nuovaBozza', 'concludiBozza'], 'riga dalla bozza')
-    ibrido('riepilogo', ['dettaglioCarteggio', 'attivitaCarteggio'], 'lettura delle attivita\' del Carteggio')
-    v.append({'gruppo': 'preparazione', 'nome': 'regime attuale: la prova si compone con componiProva(), che il motore tiene ferma',
-              'ok': bool(corpo(js, 'componiProva')) and 'E.giroTecniche(' in corpo(js, 'apriGiroTecniche')
-                    and 'E.tappeto(' in corpo(js, 'apriTappeto'),
-              'extra': 'componiProva(), e giro e tappeto dal motore, sono la preparazione di oggi: finche\' il raccordo '
-                       'non c\'e\', non possono sparire (test_engine.mjs pretende che componiProva() dia la prova di '
-                       'provaCarteggio())'})
-    v.append({'gruppo': 'righe', 'nome': 'regime attuale: la carta e il riconoscimento scrivono le loro righe',
-              'ok': re.search(r"_t:\s*'c'", corpo(js, 'salvaCart')) is not None
-                    and re.search(r"_t:\s*'t'", corpo(js, 'correggiTec')) is not None,
-              'extra': 'salvaCart() e correggiTec() sono le sole scritture del Carteggio di oggi'})
-    v.append({'gruppo': 'riepilogo', 'nome': 'regime attuale: la prova si confronta, si giudica e si rivede',
-              'ok': bool(corpo(js, 'dipingiCorrezione')) and bool(corpo(js, 'rivediCarteggio')),
-              'extra': 'il confronto con la risposta ministeriale e la revisione di una prova sono il ciclo di oggi'})
-    riprova = [f for f in CICLO_CARTEGGIO_DI_OGGI if re.search(r'erroriSessione|Riprova', corpo(js, f))]
-    v.append({'gruppo': 'riprova', 'nome': 'regime attuale: il Carteggio non offre una riprova', 'ok': not riprova,
-              'extra': 'la riprova esatta e\' dei quiz (area 4 §7.3), e nel Carteggio compare in ' + ', '.join(riprova)})
-    return 'attuale', v + ambito
+    return banco_carteggio(testo) + ambito
 
 
 _CARTEGGIO_APP = None
@@ -966,37 +916,33 @@ _CARTEGGIO_RIF = None
 def carteggio_app():
     global _CARTEGGIO_APP
     if _CARTEGGIO_APP is None:
-        _CARTEGGIO_APP = regime_carteggio(leggi('app.html'))
+        _CARTEGGIO_APP = verifiche_carteggio(leggi('app.html'))
     return _CARTEGGIO_APP
 
 
 def carteggio_riferimento():
     global _CARTEGGIO_RIF
     if _CARTEGGIO_RIF is None:
-        _CARTEGGIO_RIF = regime_carteggio(RIFERIMENTO_CARTEGGIO.read_text(encoding='utf-8'))
+        _CARTEGGIO_RIF = verifiche_carteggio(RIFERIMENTO_CARTEGGIO.read_text(encoding='utf-8'))
     return _CARTEGGIO_RIF
 
 
 def registra_carteggio(gruppi):
-    """Le verifiche della pagina vera, e — nel regime progettato — il conto contro la pagina di riferimento.
+    """Le verifiche della pagina vera, e il conto contro la pagina di riferimento, gruppo per gruppo.
 
-    Un giro che si ferma a meta' per una strada che il banco non ha previsto
-    avrebbe meno verifiche, e quelle fatte potrebbero essere tutte verdi: e' il
-    verde falso che P-40 ha chiuso per il client e P-44 per la mappa.
+    E' il conteggio di P-40, P-47, P-12 e P-37: un giro che si ferma a meta' ha
+    meno verifiche, e quelle fatte possono essere tutte verdi. La pagina di prima
+    di P-21, senza il raccordo, passava con una o due verifiche per gruppo e
+    nessun rosso.
     """
-    regime, v = carteggio_app()
-    etichetta = {'attuale': 'regime attuale', 'progettato': 'regime progettato'}.get(regime, 'regime ignoto')
+    v, rif = carteggio_app(), carteggio_riferimento()
     for x in v:
         if x['gruppo'] in gruppi:
-            check('Carteggio (%s): %s' % (etichetta, x['nome']), x['ok'], x.get('extra', ''))
-    check('Carteggio: il gruppo %s e\' stato controllato' % '/'.join(gruppi), any(x['gruppo'] in gruppi for x in v),
-          'nessuna verifica')
-    if regime == 'progettato':
-        _, rif = carteggio_riferimento()
-        for g in gruppi:
-            n, attese = sum(x['gruppo'] == g for x in v), sum(x['gruppo'] == g for x in rif)
-            check('Carteggio: il gruppo «%s» ha fatto tutte le verifiche' % g, n >= attese,
-                  'troppo poche verifiche (%d su %d): il banco si e\' fermato prima del giro' % (n, attese))
+            check('Carteggio: %s' % x['nome'], x['ok'], x.get('extra', ''))
+    for g in gruppi:
+        n, attese = sum(x['gruppo'] == g for x in v), sum(x['gruppo'] == g for x in rif)
+        check('Carteggio: il gruppo «%s» ha fatto tutte le verifiche' % g, attese > 0 and n >= attese,
+              'troppo poche verifiche (%d su %d): il banco non ha eseguito il giro della pagina' % (n, attese))
 
 
 def test_carteggio_preparazione():
@@ -1021,65 +967,29 @@ def test_carteggio_senza_riprova():
     registra_carteggio(('riprova',))
 
 
-def ambito_al_contrario(vera):
-    """[(nome, ok, extra)]: una copia di `vera`, e una della pagina di riferimento, che caricano il file sono rosse.
-
-    Il regime della pagina vera si **riconosce**, non si fissa (P-51): la sua
-    copia rotta dev'essere nel regime in cui e' lei, qualunque sia — cosi'
-    l'iniezione non sposta il riconoscimento, e il rosso e' quello del regime
-    giusto. La pagina di riferimento e' nel progettato per costruzione, e
-    test_carteggio_provato_al_contrario lo pretende.
-    """
-    out = []
-    for nome, testo, atteso in (('vera', vera, riconosci_carteggio(vera)),
-                                ('di riferimento', RIFERIMENTO_CARTEGGIO.read_text(encoding='utf-8'), 'progettato')):
-        rotta = testo.replace('</script>', "fetch('/dati/carteggio_e12.json');\n</script>", 1)
-        regime, v = regime_carteggio(rotta)
-        out.append(('Carteggio provato al contrario: la copia della pagina %s resta nel regime %s' % (nome, atteso),
-                    regime == atteso, 'la copia e\' nel regime %s' % regime))
-        out.append(('Carteggio provato al contrario (pagina %s, regime %s): una pagina che carica carteggio_e12.json e\' rossa'
-                    % (nome, atteso), any(x['gruppo'] == 'ambito' and not x['ok'] for x in v), ''))
-    return out
-
-
 def test_carteggio_ambito():
     """R-UX-07: finche' Q-AMBITO e' aperta, il carteggio entro 12 miglia resta nel cassetto.
 
-    Provato al contrario: una copia della pagina che carica il file e' rossa, in
-    tutti e due i regimi. E il regime della pagina vera si riconosce invece di
-    fissarlo (P-51): fino a P-51 il controllo etichettava app.html come
-    «attuale», e il giorno che la pagina vera passava al raccordo (P-21) era
-    rosso con la pagina giusta. Per questo gira anche con due pagine nel regime
-    progettato al posto della vera — la pagina di riferimento, e una copia di
-    app.html con il raccordo innestato — e dev'essere verde con tutte e tre.
+    Provato al contrario: una copia della pagina vera, e una della pagina di
+    riferimento, che caricano il file sono rosse. Fino a P-50 la prova passava
+    anche per il riconoscimento del regime della pagina vera (P-51): con un
+    regime solo non c'e' piu' niente da riconoscere.
     """
     registra_carteggio(('ambito',))
-    for nome, ok, extra in ambito_al_contrario(leggi('app.html')):
-        check(nome, ok, extra)
-    rif = RIFERIMENTO_CARTEGGIO.read_text(encoding='utf-8')
-    innestata = innesta_raccordo(leggi('app.html'), rif)
-    check('una copia di app.html con il raccordo innestato e\' riconosciuta nel regime progettato',
-          riconosci_carteggio(innestata) == 'progettato', riconosci_carteggio(innestata))
-    for chi, pagina in (('la pagina di riferimento', rif), ('app.html con il raccordo innestato', innestata)):
-        for nome, ok, extra in ambito_al_contrario(pagina):
-            check('con %s al posto della pagina vera — %s' % (chi, nome), ok, extra)
+    for nome, testo in (('vera', leggi('app.html')),
+                        ('di riferimento', RIFERIMENTO_CARTEGGIO.read_text(encoding='utf-8'))):
+        rotta = testo.replace('</script>', "fetch('/dati/carteggio_e12.json');\n</script>", 1)
+        v = verifiche_carteggio(rotta)
+        check('Carteggio provato al contrario (pagina %s): una pagina che carica carteggio_e12.json e\' rossa' % nome,
+              any(x['gruppo'] == 'ambito' and not x['ok'] for x in v), '')
 
 
-def innesta_raccordo(pagina, riferimento):
-    """Una copia di `pagina` con le cinque funzioni di raccordo del Carteggio prese dal riferimento.
-
-    Non e' una pagina che funziona: e' la pagina vera come la vedra' il
-    riconoscimento del regime il giorno che P-21 porta il raccordo.
-    """
-    js = senza_commenti(riferimento)
-    raccordo = '\n'.join(corpo(js, f) for f in RACCORDO_CARTEGGIO)
-    return pagina.replace('</script>', raccordo + '\n</script>', 1)
-
-
-# Il ramo del regime progettato non gira mai sulla pagina pubblicata finche'
-# P-21 non arriva: qui gira a ogni esecuzione su una pagina di riferimento che
-# deve passare e su ciascuna delle sue rotture, che devono fallire nominando il
-# difetto. Ogni rottura e' una lista di sostituzioni, applicate in ordine.
+# Il banco del Carteggio gira anche su una pagina di riferimento, che deve
+# passare, e su ciascuna delle sue rotture, che devono fallire nominando il
+# difetto. Le rotture restano su di lei e non sulla pagina vera, per la ragione
+# di P-40: sostituzioni di testo in un file dell'interfaccia da 200 KB si
+# spezzerebbero a ogni suo ritocco, e una rottura che non si applica piu' e' un
+# controllo spento. Ogni rottura e' una lista di sostituzioni, applicate in ordine.
 _PREP_PROVA = ("const r = E.provaCarteggio(banca, fonte.specchio, fonte.oggi, "
                "{ seme: scelta.seme, nuoviPrima: !!scelta.nuoviPrima });")
 ROTTURE_CARTEGGIO = [
@@ -1227,9 +1137,8 @@ ROTTURE_CARTEGGIO = [
 def test_carteggio_provato_al_contrario():
     """R-FLU-26: il banco del Carteggio contro se' stesso, a ogni esecuzione."""
     rif = RIFERIMENTO_CARTEGGIO.read_text(encoding='utf-8')
-    regime, v = carteggio_riferimento()
+    v = carteggio_riferimento()
     rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in v if not x['ok']]
-    check('la pagina di riferimento del Carteggio e\' nel regime progettato', regime == 'progettato', str(regime))
     check('la pagina di riferimento del Carteggio passa il controllo', not rossi, '; '.join(rossi[:3]))
     # Un banco che non esegue niente passerebbe tutto: si pretende che abbia
     # preparato, avviato, concluso e riletto.
@@ -1245,7 +1154,7 @@ def test_carteggio_provato_al_contrario():
             rotta = rotta.replace(vecchio, nuovo, 1)
         if rotta == rif:
             continue
-        _, vr = regime_carteggio(rotta)
+        vr = verifiche_carteggio(rotta)
         rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in vr if not x['ok']]
         check('rottura del Carteggio «%s»: il controllo diventa rosso' % cosa, bool(rossi), 'e\' passata verde')
         check('rottura del Carteggio «%s»: e il rosso nomina il difetto' % cosa, any(atteso in r for r in rossi),
@@ -2099,10 +2008,12 @@ def test_client_bozza_senza_account():
 def test_client_bozza():
     """R-BOZZA-06: con l'account il testo del carteggio e' una bozza che regge
     ricarica, scadenza, guasto, giudizio rinviato, uscita e cambio d'account fra
-    schede (C-19). Sulla pagina vera e' un difetto aperto, dichiarato: qui si
-    pretende che la verifica che lo dimostra giri, con i passi prima verdi, e
-    sia rossa — e che diventi rossa la dichiarazione il giorno che non serve
-    piu'. Senza dichiarazioni, il gruppo intero."""
+    schede (C-19). La pagina vera ha la bozza da P-21, e senza dichiarazioni il
+    gruppo gira intero. Fino ad allora era un difetto aperto, dichiarato in
+    docs/eccezioni-interfaccia.md: il ramo sotto resta per una dichiarazione
+    futura, e pretende che la verifica che lo dimostra giri, con i passi prima
+    verdi, e sia rossa — e che diventi rossa la dichiarazione il giorno che non
+    serve piu'."""
     dichiarati = difetti_dichiarati()
     check('client C-19: la tabella dei difetti aperti si legge', dichiarati is not None,
           'manca «Difetti aperti dichiarati» in docs/eccezioni-interfaccia.md')

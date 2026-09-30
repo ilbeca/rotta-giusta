@@ -2015,6 +2015,76 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   metà prova e la ripresa del secondo testo; console senza errori. Versione
   invariata.
 
+### Test — P-50: il Carteggio ha un regime solo
+
+- **La pagina di prima di P-21 passava i controlli del Carteggio.** Il ramo
+  «attuale», lasciato da P-35 per il passaggio all'area 4, riconosceva il
+  Carteggio di prima da `componiProva()`, `salvaCart()` e `rivediCarteggio()` e
+  gli chiedeva poco: misurato con `RG_PAGINA` sulla pagina di `1bb916a^1`,
+  **8 verifiche e zero rossi**, contro le 241 della pagina vera. P-21 è fuso dal
+  30 settembre, e quel ramo teneva verde una pagina che non ha il Carteggio che
+  la specifica descrive.
+
+- **Tolti il ramo, `regime_carteggio()`, `riconosci_carteggio()`,
+  `CICLO_CARTEGGIO_DI_OGGI`, `RACCORDO_CARTEGGIO`, `corpo()` e l'innesto del
+  raccordo di P-51**, che serviva a provare il riconoscimento: con un regime
+  solo non c'è niente da riconoscere. Il banco (`tests/ciclo_carteggio.mjs`)
+  gira su ogni pagina, come quelli di quiz, ciclo e mappa dopo P-12, P-37 e
+  P-47, e la pagina vera deve fare almeno le verifiche della pagina di
+  riferimento, gruppo per gruppo — preparazione 51, avvio 41, raccordo 11, righe
+  26, riepilogo 93, riprova 18, ambito 1. Sulla pagina di prima ora **undici
+  rossi**: le cinque funzioni di raccordo che mancano, e sei gruppi sotto il
+  conto, a zero su 51, 41, 26, 93 e 18 e a sei su 11. Provato anche su una
+  copia della pagina vera con `avviaCarteggio` rinominata: sette rossi, fra cui
+  la funzione nominata. Sulla pagina vera: zero rossi. La prova al contrario di
+  R-UX-07 gira su una copia della pagina vera e su una della pagina di
+  riferimento, e tutte e due sono rosse.
+
+- **La pagina di riferimento resta**, per la ragione di P-40: le trentanove
+  rotture stanno su di lei, e fa da metro al conteggio. Il commento in testa lo
+  dice; il titolo perde «regime progettato». Tutte e trentanove rosse per il
+  loro motivo.
+
+- **«dici quali avevi preso» esce da `GIUDIZIO_CARTEGGIO`** in
+  `tests/client_account.mjs`: R-UX-03 riconosce solo «Sei tu a giudicare», la
+  frase del §4 dell'area 4 che la pagina ha da P-21. La suite intera sulla pagina
+  di prima, con `RG_PAGINA`, è rossa in **45 verifiche**: gli undici del
+  Carteggio, due di C-01 per il giudizio che la frase vecchia teneva verde, e
+  trentadue che lo erano già dalla merge di P-21 — le chiamate al motore e gli
+  orfani di `docs/eccezioni-interfaccia.md`, e C-19 senza la sua dichiarazione.
+
+- **La bozza c'è, e i documenti lo dicono.** Via la riga del carteggio fra i
+  «Difetti noti» di `AGENTS.md`. Nella specifica il §7.6 dice il presente — con
+  l'account il testo regge una ricarica, senza resta finché la pagina è aperta
+  e la pagina lo dice —, con la storia in un paragrafo suo; R-BOZZA-06 e il
+  §9.11 non parlano più di un difetto aperto; il §7.3 e il §7.6 dicono che tutto
+  questo è nella pagina su `main` e non nel sito pubblicato, la v0.28.0, che
+  **non ha nemmeno l'avviso di P-36**: verificato sul tag, lì il testo sta solo
+  in memoria e una ricarica lo perde senza che la pagina lo dica, fino al
+  rilascio (P-27). R-SEL-17, R-FLU-23, 24 e 26, R-UX-03 e 07 perdono i due
+  regimi; il §9.6 racconta «Un regime solo per il Carteggio», e il paragrafo di
+  P-51 dice che nessun banco riconosce più un regime di pagina; il §5.3 e il
+  §3.2 non descrivono più `componiProva()` e le righe di prima come se fossero
+  nella pagina. Nota di chiusura nel §10.1 di `docs/area-4-progetto.md`, e il
+  §12 di `docs/account-client-progetto.md` allineato. Il test del motore che
+  confrontava `componiProva()` con `provaCarteggio()` si era già ritirato da
+  solo alla merge di P-21 (lo skip in più), e resta come i due di prima.
+
+  Suite: interfaccia **2.121** (erano 2.138: via le verifiche del regime
+  vecchio, del riconoscimento e «è stato controllato», e il conteggio contro la
+  pagina di riferimento è acceso sempre), **tre giri verdi** in 239–242 s, uno
+  con la **24.21.0 LTS** nel `PATH`; specifica 782; motore 194/197 con i tre skip
+  previsti; dati 242; server 60/60. Con la LTS, archivio verificato contro il
+  `SHASUMS256.txt` riscaricato da nodejs.org ed estratto di nuovo: motore
+  194/197, server 60/60, interfaccia 2.121. Guardiano e controllo della
+  documentazione verdi. **La 8620 era della suite di P-52 in `rotta-giusta-ui`**
+  alla prima prova: il primo lancio di questa sessione è partito senza aspettare
+  — il controllo della porta era concatenato con `;` — e il banco si è rifiutato
+  da solo di partire, senza avviare niente; da lì ogni giro ha aspettato 90 s di porta
+  libera e nessun banco di `rotta-giusta-ui` in corso. Nessun carico di prova
+  lanciato. `site/`, `docs/prossime-sessioni.md` e il worktree `ui` non sono
+  stati toccati.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag

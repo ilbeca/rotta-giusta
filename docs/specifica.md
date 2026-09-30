@@ -358,12 +358,13 @@ variante 'cieca' | 'nuoviPrima', solo nella prova di carteggio (da P-32)
 di `area-4-progetto.md`, dove sta per esteso). Ogni attività su carta — prova,
 giro, tappeto — e ogni riconoscimento delle tecniche scrive un `sim_uid` nuovo
 a ogni avvio, lo stesso su tutte le sue righe, con `proposti` e `pos`; la prova
-anche `variante`, e resta la sola con una riga `_t:'s'`. Fino alla
-realizzazione dell'area 4 (P-21) la pagina scrive ancora le righe di prima —
+anche `variante`, e resta la sola con una riga `_t:'s'`. La pagina su `main`
+le scrive così dal 30 settembre 2026 (P-21). Prima scriveva le righe di prima —
 giro e tappeto con `sim_uid: null`, le tecniche senza legame, nessuna con
-`proposti` o `pos` —, e il motore le legge per come sono: ricostruite e
-dichiarate, con quantità, ordine e variante «non registrati», mai dedotti
-(§4.4).
+`proposti` o `pos` —, e le scrive ancora il sito pubblicato, la v0.28.0, fino al
+rilascio che porta l'area 4; il motore legge quelle righe per come sono:
+ricostruite e dichiarate, con quantità, ordine e variante «non registrati», mai
+dedotti (§4.4).
 
 È **append-only**: non si corregge una riga, se ne aggiunge un'altra.
 
@@ -857,10 +858,10 @@ vanno nella copia del dispositivo e sul server (§3.2).
 | Ripassa gli errori | Quiz | `coda({soloSbagliate})` | sì |
 | Simula la prova (base, vela, base e vela) | Quiz | `simulazione()`, `simulazioneVela()` | sì, più una riga `_t:'s'` per prova |
 | Un giro tra gli argomenti | Quiz, dietro «Altri modi di esercitarti» | `screening()`, con il numero da `lunghezzaScreening()` | sì |
-| Prova di carteggio | Carteggio | `provaCarteggio()`, cieca, o «prima i mai provati» come variante; la pagina compone ancora con `componiProva()`, identica per test, fino alla realizzazione dell'area 4 | sì, `_t:'c'` |
-| Giro delle tecniche | Carteggio | `giroTecniche()` | sì |
-| A tappeto | Carteggio | `tappeto()` | sì |
-| Che tecnica serve? | schermata propria | selezione per tecnica | sì, `_t:'t'` |
+| Prova di carteggio | Carteggio | `provaCarteggio()`, cieca, o «prima i mai provati» come variante, da `preparaCarteggio()`; la `componiProva()` della pagina è uscita con P-21 | sì, `_t:'c'` e una riga `_t:'s'`, da `concludiCarteggio()` |
+| Giro delle tecniche | Carteggio | `giroTecniche()`, da `preparaCarteggio()` | sì, da `concludiCarteggio()` |
+| A tappeto | Carteggio | `tappeto()`, da `preparaCarteggio()` | sì, da `concludiCarteggio()` |
+| Che tecnica serve? | Carteggio, dalla terza porta | `coda()` sulle tecniche, da `preparaCarteggio()` | sì, `_t:'t'`, da `rispostaTecnica()` |
 | Gioco dei Segnali (4 modalità) | schermata propria | `domandeSegnali()` | **no**, e §4.5 dice perché |
 
 Le cinque righe dei Quiz sono le **intenzioni** dell'area 2
@@ -1048,6 +1049,12 @@ carte, condizioni, assunzione di Q-CART4 e riprese si scrivono dalla
 preparazione, che le prende dal motore; Inizia apre la stessa lista, con
 un'identità nuova, oppure non avvia niente e lo dice. R-SEL-17.
 
+**Dove c'è.** Le tre porte, le preparazioni, la guida e l'esempio, il confronto,
+il giudizio, il riepilogo e la revisione sono nella pagina su `main` dal 30
+settembre 2026 (P-21), con il raccordo del §10.1 dell'area 4; dal 1° ottobre il
+controllo ha un regime solo (P-50, §9.6). Il sito pubblicato, la v0.28.0, ha
+ancora il Carteggio di prima, fino al rilascio che porta gli account (P-27).
+
 **Stati.** *Foglio finito* nel tappeto: dirlo, non spegnere il pulsante in
 silenzio.
 
@@ -1127,35 +1134,42 @@ Dal 30 settembre il controllo del ciclo ha un regime solo (P-37, §9.6).
 
 ### 7.6 Il runner del carteggio
 
-**Difetto aperto, dichiarato il 26 settembre 2026.** Fino a quel giorno qui
-c'era scritto, come Vincolo, che quello che scrivi è salvato **a ogni tasto**.
-Non era vero, e non lo era dalla 0.5.0: `annotaCart()` tiene il testo solo in
-memoria, e una ricarica durante la prova di un'ora perde tutto. Lo ha trovato il
-progetto dell'area 4 (`docs/area-4-progetto.md` §3.3) e la regia l'ha verificato
-nel codice. **Che cosa vale oggi:** il testo resta finché la pagina è aperta, e
-la pagina lo dice, con la conferma del browser prima di lasciarla (P-36). Il 30
-settembre 2026 P-34 l'ha dimostrato in un browser vero, con l'account: due testi
-scritti, una ricarica, e niente da riprendere. È R-BOZZA-06, dichiarato come
-difetto aperto finché la pagina non ha la bozza.
+**Con l'account il testo regge una ricarica; senza, resta finché la pagina è
+aperta, e la pagina lo dice.** È così nella pagina su `main` dal 30 settembre
+2026 (P-21). Il sito pubblicato, la v0.28.0, non ha né la bozza né gli account,
+e nemmeno l'avviso e la conferma del browser di P-36, che sono su `main`: lì il
+testo sta solo in memoria e una ricarica lo perde senza che la pagina lo dica,
+fino al rilascio che porta tutti e tre (P-27).
 
-**Che cosa vale quando la pagina ha la bozza** — il contratto c'è, nel motore
-(§9.11) e nel §9.4 di `docs/account-client-progetto.md`; la pagina è della
-realizzazione dell'area 4 (P-21). **Senza account non si conserva niente**
-(ADR-004), come oggi. **Con l'account**, a ogni input — testo, esercizio,
-consegna, giudizio — il lavoro diventa una bozza nella copia dell'account su
-questo dispositivo, e la pagina dice «salvato» solo quando la scrittura è
-confermata, «in corso» prima, e un guasto con il modo di uscirne. Dopo una
-ricarica il lavoro si **propone**, non si riapre da solo; riaperto ha la stessa
-lista, la stessa posizione, gli stessi testi e giudizi e **la scadenza di
-prima**; una prova scaduta a pagina chiusa si apre al confronto. Un giudizio
-rinviato resta nella bozza e non diventa una risposta. La bozza non è una
-risposta: non entra in Progressi, nei conteggi né negli invii, non va sul
-server, non si riprende su un altro dispositivo. Si cancella solo con la
-conclusione — le risposte e la bozza tolta nella stessa scrittura — o con uno
-scarto confermato; l'uscita la conta, anche quella di un'altra scheda, e non la
-cancella senza una scelta. L'intenzione di allora — un'ora di lavoro non deve
-dipendere dall'aver premuto un pulsante — diventa vera per chi ha l'account,
-quel giorno; fino ad allora questo paragrafo la chiama con il suo nome.
+**La storia, perché non si ripeta.** Fino al 26 settembre 2026 qui c'era
+scritto, come Vincolo, che quello che scrivi è salvato **a ogni tasto**. Non era
+vero, e non lo era dalla 0.5.0: `annotaCart()` teneva il testo solo in memoria,
+e una ricarica durante la prova di un'ora perdeva tutto. Lo ha trovato il
+progetto dell'area 4 (`docs/area-4-progetto.md` §3.3) e la regia l'ha
+verificato nel codice; P-36 l'ha dichiarato in pagina; il 30 settembre P-34
+l'ha dimostrato in un browser vero, con l'account — due testi scritti, una
+ricarica, e niente da riprendere —, e R-BOZZA-06 è stato un difetto aperto
+dichiarato finché P-21 non ha portato la bozza. Da lì il suo controllo gira
+intero sulla pagina vera.
+
+**Che cosa vale.** Il contratto è nel motore (§9.11) e nel §9.4 di
+`docs/account-client-progetto.md`. **Senza account non si conserva niente**
+(ADR-004): il testo resta finché la pagina è aperta, la pagina lo dice prima e
+durante, e la conferma del browser protegge un'uscita per sbaglio (R-BOZZA-05).
+**Con l'account**, a ogni input — testo, esercizio, consegna, giudizio — il
+lavoro diventa una bozza nella copia dell'account su questo dispositivo, e la
+pagina dice «salvato» solo quando la scrittura è confermata, «in corso» prima,
+e un guasto con il modo di uscirne. Dopo una ricarica il lavoro si **propone**,
+non si riapre da solo; riaperto ha la stessa lista, la stessa posizione, gli
+stessi testi e giudizi e **la scadenza di prima**; una prova scaduta a pagina
+chiusa si apre al confronto. Un giudizio rinviato resta nella bozza e non
+diventa una risposta. La bozza non è una risposta: non entra in Progressi, nei
+conteggi né negli invii, non va sul server, non si riprende su un altro
+dispositivo. Si cancella solo con la conclusione — le risposte e la bozza tolta
+nella stessa scrittura — o con uno scarto confermato; l'uscita la conta, anche
+quella di un'altra scheda, e non la cancella senza una scelta (R-BOZZA-06).
+L'intenzione di allora — un'ora di lavoro non deve dipendere dall'aver premuto
+un pulsante — è vera per chi ha l'account.
 
 **Il lavoro ha la stessa forma nei due stati** (D-04, P-35). Dall'avvio il
 runner della carta tiene il suo lavoro come una bozza di `nuovaBozza()`, **in
@@ -1288,7 +1302,7 @@ colonna: «scoperto, perché …» è una risposta accettabile, «—» no.
 | R-SEL-14 | La prova cieca non guarda lo storico, risultato intero compreso, e le sue riprese non si contano: `null`, non zero | `test_engine.mjs::provaCarteggio: la prova cieca non guarda lo storico` |
 | R-SEL-15 | Con la precedenza ai mai provati le riprese effettive si dichiarano per argomento e per esercizio, prima dell'avvio, e la prova non esce mai corta | `test_engine.mjs::provaCarteggio: con la precedenza ai mai provati le riprese si dicono per argomento` |
 | R-SEL-16 | Su una banca incompleta gli argomenti mancanti si nominano e non contano come rappresentati, il completamento dal resto si dichiara, e una lista corta non si dice pronta | `test_engine.mjs::provaCarteggio: su una banca incompleta i mancanti si nominano` |
-| R-SEL-17 | La pagina compone la prova e ne scrive le condizioni da `provaCarteggio()` e `PROVA_CARTEGGIO`, senza un secondo algoritmo né un secondo conto degli argomenti. **Attuale:** la sua `componiProva()` resta, e `test_engine.mjs` la esegue estratta dal file e pretende la stessa prova; nessuna chiamata al motore nuovo senza il raccordo. **Progettato** (area 4, D-04): la lista annunciata del giro, del tappeto, della prova e del riconoscimento viene da una sola selezione del motore, con condizioni, carte, assunzione di Q-CART4, mancanti e riprese com'erano, e Inizia apre quella lista, con un'identità nuova, solo se la selezione di adesso è la stessa — eseguiti, non letti | `test_interfaccia.py::test_carteggio_preparazione` |
+| R-SEL-17 | La pagina compone la prova e ne scrive le condizioni da `provaCarteggio()` e `PROVA_CARTEGGIO`, senza un secondo algoritmo né un secondo conto degli argomenti (area 4, D-04): la lista annunciata del giro, del tappeto, della prova e del riconoscimento viene da una sola selezione del motore, con condizioni, carte, assunzione di Q-CART4, mancanti e riprese com'erano, e Inizia apre quella lista, con un'identità nuova, solo se la selezione di adesso è la stessa — eseguiti sulla pagina vera, che fa almeno le verifiche della pagina di riferimento; una pagina senza il raccordo, o con una sua `componiProva()` e le costanti `PROVA_*`, è rossa | `test_interfaccia.py::test_carteggio_preparazione` |
 
 ### 9.4 La navigazione e la reperibilità
 
@@ -1384,10 +1398,10 @@ del progetto di preparazione. Il §4 di `prossima-versione.md` li motiva.
 | R-FLU-20 | Le righe di prima non inventano niente: quantità proposta, non affrontati, variante e ordine sono «non registrati» quando mancano, e la quantità di una prova vecchia viene dalla sua riga di prova | `test_engine.mjs::dettaglioCarteggio: le righe vecchie non inventano quantita, variante ne ordine` |
 | R-FLU-21 | Un esercizio che la banca caricata non ha si nomina e conserva il risultato proprio; senza la banca i mancanti non si dicono «nessuno», e i conteggi restano quelli delle righe | `test_engine.mjs::dettaglioCarteggio: un esercizio che la banca non ha si nomina` |
 | R-FLU-22 | Un ritento della scrittura con gli stessi uid non conta due volte, uno con uid nuovi è un esercizio ripetuto, e un id che non c'è non è un'attività vuota | `test_engine.mjs::dettaglioCarteggio: un ritento con gli stessi uid non conta due volte` |
-| R-FLU-23 | La pagina scrive le righe di carta e tecniche con lo schema di P-33 — un `sim_uid` nuovo a ogni attività, anche per giro, tappeto e tecniche, `proposti` e `pos`, gli stessi uid al ritento — e ne legge riepilogo e revisione da `attivitaCarteggio()` e `dettaglioCarteggio()`, senza filtrare le righe da sé. **Attuale:** `salvaCart()` e `correggiTec()` scrivono le righe di prima, e nessuna riga viene dalla bozza senza il raccordo. **Progettato:** le righe della carta sono quelle di `concludiBozza()` sul lavoro dell'avvio, nessuna con un giudizio rinviato e le stesse a un ritento; quelle del riconoscimento hanno il legame e l'esito esatto; fuori dal raccordo la pagina non scrive righe del Carteggio e non le filtra per tipo | `test_interfaccia.py::test_carteggio_righe` |
-| R-FLU-24 | Carta e riconoscimento si chiudono con un riepilogo e una revisione dell'attività intera, da una sola chiamata a `dettaglioCarteggio()`: conteggi, schede ed esito come il motore li dà — l'esito solo per una prova con tutti i giudizi —, «Rivedi quelli da rivedere (D)» con D uguale alle schede che apre, un legame ambiguo senza numeri, una lettura fallita distinta da un'attività che non c'è, i mancanti `null` senza la banca; anche per le prove di prima, i giri ricostruiti e fra attività estranee. **Attuale:** il confronto e la revisione di oggi | `test_interfaccia.py::test_carteggio_riepilogo` |
+| R-FLU-23 | La pagina scrive le righe di carta e tecniche con lo schema di P-33 — un `sim_uid` nuovo a ogni attività, anche per giro, tappeto e tecniche, `proposti` e `pos`, gli stessi uid al ritento — e ne legge riepilogo e revisione da `attivitaCarteggio()` e `dettaglioCarteggio()`, senza filtrare le righe da sé: le righe della carta sono quelle di `concludiBozza()` sul lavoro dell'avvio, nessuna con un giudizio rinviato e le stesse a un ritento; quelle del riconoscimento hanno il legame e l'esito esatto; fuori dal raccordo la pagina non scrive righe del Carteggio e non le filtra per tipo. Eseguito sulla pagina vera, che fa almeno le verifiche della pagina di riferimento; le righe di prima di `salvaCart()` e `correggiTec()` sono uscite con P-21 | `test_interfaccia.py::test_carteggio_righe` |
+| R-FLU-24 | Carta e riconoscimento si chiudono con un riepilogo e una revisione dell'attività intera, da una sola chiamata a `dettaglioCarteggio()`: conteggi, schede ed esito come il motore li dà — l'esito solo per una prova con tutti i giudizi —, «Rivedi quelli da rivedere (D)» con D uguale alle schede che apre, un legame ambiguo senza numeri, una lettura fallita distinta da un'attività che non c'è, i mancanti `null` senza la banca; anche per le prove di prima, i giri ricostruiti e fra attività estranee. Eseguito sulla pagina vera, che fa almeno le verifiche della pagina di riferimento | `test_interfaccia.py::test_carteggio_riepilogo` |
 | R-FLU-25 | La riprova esatta resta dei quiz: il riepilogo del Carteggio non chiama `erroriSessione()` né offre una lista da riaprire, e il seguito è una preparazione nuova (area 4 §7.3). Un controllo suo, distinto da quello del riepilogo | `test_interfaccia.py::test_carteggio_senza_riprova` |
-| R-FLU-26 | Il controllo del Carteggio progettato gira a ogni esecuzione, anche finché la pagina pubblicata è nel regime attuale: una pagina di riferimento lo passa, e ciascuna delle sue rotture dichiarate lo fa fallire nominando il difetto | `test_interfaccia.py::test_carteggio_provato_al_contrario` |
+| R-FLU-26 | Il controllo del Carteggio si prova contro sé stesso a ogni esecuzione: una pagina di riferimento lo passa, e ciascuna delle sue rotture dichiarate lo fa fallire nominando il difetto | `test_interfaccia.py::test_carteggio_provato_al_contrario` |
 
 **Un regime solo per il ciclo, e che cosa il controllo non vede** (P-31 e
 P-37). R-FLU-01 e R-FLU-10 erano scritti per il passaggio all'area 3 (§10.1 del
@@ -1413,38 +1427,45 @@ nella revisione, gli avvisi di scrittura e di lettura, le figure, Base e vela
 come flusso. Che un'attività fermata dopo una risposta abbia il suo riepilogo e
 la sua revisione, nel browser, lo tiene R-ACC-01.
 
-**I due regimi del Carteggio, e che cosa il controllo non vede** (D-04, P-35).
-R-SEL-17, R-FLU-23…26 e R-UX-07 sono scritti per il passaggio all'area 4, con
-il meccanismo di R-NAV-04 e R-FLU-01: la pagina pubblicata compone la prova con
-la sua `componiProva()`, e `main` deve restare verde con lei mentre il nuovo si
-realizza. Il controllo riconosce il regime dal **raccordo** —
-`preparaCarteggio()`, `avviaCarteggio()`, `concludiCarteggio()`,
+**Un regime solo per il Carteggio, e che cosa il controllo non vede** (D-04,
+P-35, P-50). R-SEL-17, R-FLU-23…26 e R-UX-07 erano scritti per il passaggio
+all'area 4, in due regimi, con il meccanismo di R-NAV-04 e R-FLU-01: la pagina
+di prima componeva la prova con la sua `componiProva()`, e `main` doveva restare
+verde con lei mentre il nuovo si realizzava. P-21 è fuso dal 30 settembre 2026,
+e dal 1° ottobre il regime di prima non c'è più: il banco
+(`tests/ciclo_carteggio.mjs`) gira su ogni pagina, ne estrae le cinque funzioni
+di raccordo — `preparaCarteggio()`, `avviaCarteggio()`, `concludiCarteggio()`,
 `rispostaTecnica()`, `riepilogoCarteggio()`, il cui contratto è nel §10.1 di
-`area-4-progetto.md` —: nel regime attuale pretende che il ciclo di oggi ci
-sia e che il motore nuovo non sia chiamato senza il raccordo; nel progettato
-estrae le cinque funzioni e fa il giro preparazione → avvio → conclusione →
+`area-4-progetto.md` — e fa il giro preparazione → avvio → conclusione →
 riepilogo contro il motore e le banche vere, con i dati che cambiano fra un clic
-e l'altro (`tests/ciclo_carteggio.mjs`). L'assunzione di Q-CART4 e i minuti
-della prova tornano dal banco con un valore suo, così una pagina che li copia
-dal motore a mano esce rossa. **Il lavoro del runner ha la forma della bozza in
+e l'altro; e la pagina vera deve fare almeno le verifiche della pagina di
+riferimento, gruppo per gruppo — il conteggio di P-40, P-47, P-12 e P-37.
+Provato sulla pagina di prima di P-21 (`1bb916a^1`): prima di P-50 passava con
+otto verifiche e nessun rosso, ora ha undici rossi — le cinque funzioni che
+mancano, e sei gruppi sotto il conto, preparazione a zero su 51, riepilogo a
+zero su 93. La pagina di riferimento (`tests/pagina-ciclo-carteggio.html`)
+resta, per le sue trentanove rotture. L'assunzione di Q-CART4 e i minuti della
+prova tornano dal banco con un valore suo, così una pagina che li copia dal
+motore a mano esce rossa. **Il lavoro del runner ha la forma della bozza in
 tutti e due gli stati d'accesso**, in memoria: le righe finali e i loro uid
 vengono da `concludiBozza()` con e senza account, e con l'account lo stesso
-oggetto si scrive come bozza (§7.6, §9.11). **Non vede**, e resta al collaudo di
-P-21 a 375 e 1280 px: i testi, i materiali, la guida e l'esempio, la consegna a
-due tocchi, il confronto affiancato, il giudizio rinviato come stato della
-pagina, «Valutazione in corso», i ritorni e il focus, le tre porte. **Il regime
-attuale ha una scadenza:** lo toglie la regia quando integra P-21.
+oggetto si scrive come bozza (§7.6, §9.11). **Non vede**, e resta al collaudo a
+375 e 1280 px — fatto da P-21 nei due stati d'accesso —: i testi, i materiali,
+la guida e l'esempio, la consegna a due tocchi, il confronto affiancato, il
+giudizio rinviato come stato della pagina, «Valutazione in corso», i ritorni e
+il focus, le tre porte. Che il giudizio sia detto prima dell'avvio lo guarda
+R-UX-03, nel browser.
 
-**Il regime della pagina vera si riconosce, non si fissa** (P-51). Il controllo
+**Nessun banco riconosce più un regime di pagina** (P-51, P-50). Il controllo
 al contrario di R-UX-07 etichettava `app.html` come «attuale», e con il
 raccordo di P-21 sarebbe stato rosso con la pagina giusta: si è fermato così
-P-21. Ora la copia che carica il file dev'essere nel regime in cui è la pagina
-vera, e il controllo gira anche con la pagina di riferimento e con una copia di
-`app.html` con il raccordo innestato al posto della vera. Quiz, ciclo e mappa
-hanno un regime solo (P-12, P-37, P-47), e il client e l'area 6 non riconoscono
-un regime di pagina: nessun altro punto lo fissa. Per misurare una bozza
-senza toccare `site/app.html`, `RG_PAGINA=<file>` fa girare la suite
-dell'interfaccia su una copia, e la riga finale lo dice.
+P-21. P-51 gli ha fatto riconoscere il regime invece di fissarlo; con P-50 il
+riconoscimento è uscito con il regime vecchio, e la prova al contrario di
+R-UX-07 gira su una copia della pagina vera e su una della pagina di
+riferimento. Quiz, ciclo, mappa e Carteggio hanno un regime solo (P-12, P-37,
+P-47, P-50), e il client e l'area 6 non riconoscono un regime di pagina. Per
+misurare una bozza senza toccare `site/app.html`, `RG_PAGINA=<file>` fa girare
+la suite dell'interfaccia su una copia, e la riga finale lo dice.
 
 ### 9.8 Che cosa non deve sparire, e che cosa si deve leggere
 
@@ -1466,10 +1487,10 @@ liste, perché una lista in un prompt è una regola da ricordare.
 |---|---|---|
 | R-UX-01 | Il Carteggio è un ambiente proprio, raggiungibile senza cercarlo fra i quiz | `test_interfaccia.py::test_ogni_vista_ha_una_porta` |
 | R-UX-02 | Il gioco dei Segnali non scrive nell'archivio delle risposte | scoperto — richiede di giocare e contare le righe; verificato a mano nella 0.19.2, quattro partite e archivio fermo a 101 righe |
-| R-UX-03 | La prova di carteggio dichiara **prima dell'avvio** che il giudizio è di chi studia, nel testo che si vede del Carteggio e non alla consegna: guidata in un browser vero senza account, prima di Inizia. Le frasi riconosciute sono quella del progetto dell'area 4 (§4, «Sei tu a giudicare») e quella della pagina di oggi, che esce con il suo regime | `test_interfaccia.py::test_client_tutte_le_attivita` |
+| R-UX-03 | La prova di carteggio dichiara **prima dell'avvio** che il giudizio è di chi studia, nel testo che si vede del Carteggio e non alla consegna: guidata in un browser vero senza account, prima di Inizia. La frase riconosciuta è quella del progetto dell'area 4 (§4, «Sei tu a giudicare»), che la pagina ha da P-21; quella di prima, «e dici quali avevi preso», è uscita con il regime vecchio del Carteggio (P-50) | `test_interfaccia.py::test_client_tutte_le_attivita` |
 | R-UX-04 | Gli extra non compaiono dentro la mappa della copertura | scoperto — dipende dalla struttura della Rotta, ancora aperta (§10) |
 | R-UX-05 | Il carico di un'attività si annuncia in minuti, non solo in domande | scoperto — decisione aperta (§10) |
-| R-UX-07 | Finché Q-AMBITO è aperta, la pagina non carica `carteggio_e12.json`, in nessuno dei due regimi del Carteggio | `test_interfaccia.py::test_carteggio_ambito` |
+| R-UX-07 | Finché Q-AMBITO è aperta, la pagina non carica `carteggio_e12.json`: provato al contrario su una copia della pagina vera e su una della pagina di riferimento | `test_interfaccia.py::test_carteggio_ambito` |
 
 ### 9.9 L'accesso
 
@@ -1710,9 +1731,12 @@ sessioni, il ridisegno dopo una ricezione.
 Nati da D-03 del §10.1 di `area-4-progetto.md` e dal §7.6, il 30 settembre
 2026 (P-34). Il contratto puro è nel motore; il raccordo della pagina è il §9.4
 di `account-client-progetto.md`, e C-19 lo prova in un browser vero. La pagina
-vera non ha ancora la bozza: R-BOZZA-06 è un **difetto aperto dichiarato** in
-`docs/eccezioni-interfaccia.md`, e il suo controllo pretende che resti rosso
-finché lo è — e diventa rosso lui il giorno che la dichiarazione mente.
+vera ha la bozza dal 30 settembre 2026 (P-21), e C-19 gira intero su di lei. Fino
+ad allora R-BOZZA-06 era un **difetto aperto dichiarato** in
+`docs/eccezioni-interfaccia.md`, e il suo controllo pretendeva che restasse rosso
+finché lo era; P-21 ha tolto la dichiarazione nello stesso commit. Il sito
+pubblicato, la v0.28.0, la bozza non ce l'ha: arriva con il rilascio degli
+account (P-27).
 
 | ID | Requisito | Controllo |
 |---|---|---|
@@ -1721,7 +1745,7 @@ finché lo è — e diventa rosso lui il giorno che la dichiarazione mente.
 | R-BOZZA-03 | Riaperta dopo una ricarica, la prova ha la scadenza di prima; scaduta a pagina chiusa si apre al confronto, con i testi e la consegna all'istante della scadenza; un allenamento non scade | `test_engine.mjs::riprendiBozza: la scadenza e quella di prima, e scaduta apre il confronto con il testo scritto` |
 | R-BOZZA-04 | Con un giudizio rinviato nessuna riga; giudicata tutta, le righe finali hanno lo schema di D-02, uid che nascono dalla bozza, e il motore le legge come un'attività sola, registrata, con l'esito dei giudizi | `test_engine.mjs::concludiBozza: con un giudizio rinviato nessuna riga, e le righe finali sono quelle di P-33` |
 | R-BOZZA-05 | Senza account il testo del carteggio non si scrive in nessuno storage né verso l'API, la pagina dice che resta finché è aperta, e dopo una ricarica non c'è niente da riprendere | `test_interfaccia.py::test_client_bozza_senza_account` |
-| R-BOZZA-06 | Con l'account il testo è una bozza nella copia dell'account: regge una ricarica senza tempo nuovo, una prova scaduta si apre al confronto, un guasto non dice «salvato» e offre di copiare, il giudizio rinviato non diventa una riga, la conclusione scrive le righe e toglie la bozza, «Esci» non la cancella senza una scelta e lo scarto chiede conferma, e fra due schede l'uscita la conta, la scheda ferma non ricrea la copia e un altro account non la trova. **Difetto aperto dichiarato sulla pagina vera fino a P-21** | `test_interfaccia.py::test_client_bozza` |
+| R-BOZZA-06 | Con l'account il testo è una bozza nella copia dell'account: regge una ricarica senza tempo nuovo, una prova scaduta si apre al confronto, un guasto non dice «salvato» e offre di copiare, il giudizio rinviato non diventa una riga, la conclusione scrive le righe e toglie la bozza, «Esci» non la cancella senza una scelta e lo scarto chiede conferma, e fra due schede l'uscita la conta, la scheda ferma non ricrea la copia e un altro account non la trova. Sulla pagina vera, C-19 intero, dal 30 settembre 2026 (P-21); fino ad allora difetto aperto dichiarato | `test_interfaccia.py::test_client_bozza` |
 | R-BOZZA-07 | Il banco della bozza è provato contro sé stesso: la pagina di riferimento passa C-19 intero, e ciascuna delle sue rotture lo fa fallire nominando il difetto | `test_interfaccia.py::test_client_provato_al_contrario` |
 
 **Che cosa questi controlli non vedono**, per esteso nel §12 del progetto del
@@ -2326,3 +2350,12 @@ successo, ed è il motivo per cui questo file esiste.
   righe che l'archivio accetta finché la pagina non la ricabla; su quelle rotte
   il motore è più stretto. Entrano R-ARCH-13 e 14, coperti. La funzione è fra
   gli orfani dichiarati fino a P-52, o alla prossima penna su `app.html`.
+- **1° ottobre 2026 — un regime solo per il Carteggio (P-50).** Il regime del
+  Carteggio di prima di P-21 esce dai controlli: il banco gira su ogni pagina, e
+  la pagina vera fa almeno le verifiche della pagina di riferimento, gruppo per
+  gruppo. La pagina di `1bb916a^1` è rossa, undici rossi dove prima ne aveva
+  zero con otto verifiche. R-SEL-17, R-FLU-23, 24 e 26, R-UX-03 e 07, il §9.6 e
+  il §9.11 dicono quello che la pagina fa; il §7.6 e R-BOZZA-06 dicono il
+  presente, con la bozza nella pagina su `main` e non ancora nel sito
+  pubblicato; il §5.3 e il §3.2 non descrivono più la `componiProva()` e le
+  righe di prima come se fossero nella pagina.

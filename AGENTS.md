@@ -294,11 +294,3 @@ non una spiegazione.
   copia non si apre l'accesso lo dice («Non riusciamo ad aprire la copia di
   questo account»). Non verificato su un dispositivo Apple reale (R-ACC-59,
   Q-PROVE).
-- Il testo scritto nel carteggio sta solo in memoria: una ricarica durante la
-  prova lo perde. È così dalla 0.5.0, e la specifica diceva il contrario fino
-  al 26 settembre 2026 (§7.6). La pagina lo dichiara (P-36). Il contratto della
-  bozza con l'account c'è dal 30 settembre (P-34): nel motore, nel §9.4 di
-  `docs/account-client-progetto.md`, e in C-19, che lo dimostra rosso sulla
-  pagina vera — dichiarato in `docs/eccezioni-interfaccia.md`, «Difetti aperti
-  dichiarati». Lo chiude la realizzazione dell'area 4 (P-21), che toglie questa
-  riga e la dichiarazione nello stesso commit.

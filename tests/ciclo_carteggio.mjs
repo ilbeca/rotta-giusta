@@ -1,4 +1,5 @@
-// Il banco del Carteggio — l'area 4, per la sua realizzazione (P-21).
+// Il banco del Carteggio — l'area 4, nella pagina vera da P-21, e dal 1° ottobre
+// 2026 (P-50) con un regime solo: ogni pagina passa da qui.
 //
 // Lo chiama tests/test_interfaccia.py, e non gira da solo sotto `node --test`:
 // legge da stdin `{"pagina": "<testo di una pagina>"}` e scrive su stdout la

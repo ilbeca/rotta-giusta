@@ -112,10 +112,10 @@ const CARTEGGIO = new Map(JSON.parse(readFileSync(join(SITE, 'dati', 'carteggio.
   .map((e) => [e.testo.trim(), e]));
 const spazi = (t) => String(t).replace(/\s+/g, ' ').trim();
 // Il giudizio di chi studia, detto nel Carteggio prima dell'avvio (R-UX-03,
-// specifica §7.3). La prima frase e' quella del progetto dell'area 4 (§4), che
-// la realizzazione (P-21) porta; la seconda e' la pagina di oggi, «e dici quali
-// avevi preso», e si toglie con il regime attuale del Carteggio.
-const GIUDIZIO_CARTEGGIO = ['Sei tu a giudicare', 'dici quali avevi preso'];
+// specifica §7.3): la frase del progetto dell'area 4 (§4), che la pagina ha da
+// P-21. Fino a P-50 valeva anche quella della pagina di prima, «e dici quali
+// avevi preso», uscita con il regime vecchio del Carteggio.
+const GIUDIZIO_CARTEGGIO = ['Sei tu a giudicare'];
 // Le risposte del gioco dei Segnali: le schede del motore, non un elenco a mano.
 const SEGNALI = [...new Set(E.SEGNALI.map((x) => x.o))];
 
