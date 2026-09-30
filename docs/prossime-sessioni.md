@@ -202,8 +202,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 |---|---|---|---|---|---|
 | 6d, 5b, 12, 13 | Il regime vecchio del ciclo e dei quiz, `ritmo()`, l'ultimo tag | Claude | `main`, a mano | niente: riempiono i buchi | P-37, P-12, P-16, P-17 |
 | 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore | P-15 |
-| 21b | La realizzazione dell'area 4 — **fermato**, bozza non committata nel worktree `ui` | ChatGPT | `ui/main` | P-51 | P-21 |
-| 31 | Un controllo del Carteggio che fissa il regime della pagina vera — **in corso**, lanciato dalla regia | Claude | `main`, a mano | niente | P-51 |
+| 21b | La realizzazione dell'area 4 — **da riprendere**, dalla bozza non committata nel worktree `ui` | ChatGPT | `ui/main` | niente: il blocco «Ripresa» di P-21 | P-21 |
 | 32 | Lo stato dell'invio che dice «sul server» con righe in coda (T-02) | ChatGPT | `ui/main` | P-21 (la penna su `app.html`) | P-52 |
 | 21c | Dopo P-21: il regime vecchio del Carteggio, e la riga fra i difetti noti di `AGENTS.md` | Claude | `main`, a mano | la merge di P-21 | segnaposto P-50 |
 | 26b | La realizzazione dell'area 6 | ChatGPT | `ui/main` | P-45, P-21, e il §8 dell'area 6 | segnaposto P-25 |
@@ -213,10 +212,10 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 **Le due colonne corrono in parallelo**, e si sono incontrate: il client degli
 account è nella pagina (P-18), Progressi è la mappa (P-23), e il carteggio ha
 i suoi contratti e controlli su `main` (P-32…P-35). **Per Claude, l'ordine
-consigliato: P-51** (sblocca P-21), poi i piccoli — P-12, P-37,
+consigliato:** i piccoli — P-12, P-37,
 P-16, P-17 —, lanciati dalla regia uno dopo l'altro (punto 8); P-15 quando
-l'autore ha il tempo. **Per ChatGPT: P-21 riprende dopo P-51**, dalla sua bozza; poi
-P-52, prima del traguardo. I prompt di Claude vanno uno alla volta nella cartella principale, e
+l'autore ha il tempo. **Per ChatGPT: P-21 riprende**, dalla sua bozza, con il
+blocco «Ripresa» del suo prompt; poi P-52, prima del traguardo. I prompt di Claude vanno uno alla volta nella cartella principale, e
 la suite dell'interfaccia di un worktree esclude quella dell'altro, per la porta
 8620. Il numero di una riga è il suo nome, non la sua posizione. Il traguardo,
 P-27, non aspetta le aree 4–6: aspetta il server in esercizio, i testi e gli
@@ -1031,7 +1030,7 @@ dati 242, interfaccia 295, specifica 370, `ripristina --prova` 20 su 20.
 
 ### P-12 — Claude: chiudere il regime vecchio dei controlli dei quiz
 
-**Stato:** delegato alla regia, che lo lancia dopo P-45 (punto 8) — pronto: P-11 è chiuso, e P-05 è fuso. Il README ha già le cinque intenzioni (P-26); restano le righe del §5 della specifica. **Dove:**
+**Stato:** **in corso dal 30 settembre 2026**, lanciato dalla regia (punto 8) — pronto: P-11 è chiuso, e P-05 è fuso. Il README ha già le cinque intenzioni (P-26); restano le righe del §5 della specifica. **Dove:**
 Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano.
 
 ```
@@ -2539,7 +2538,7 @@ interfaccia 1.433 in 149 s; nessun `yes` rimasto vivo.
 
 ### P-21 — ChatGPT: la realizzazione dell'area 4
 
-**Stato:** **fermato il 30 settembre 2026, da riprendere dopo P-51.** Lanciato
+**Stato:** **fermato il 30 settembre 2026; da riprendere con il blocco «Ripresa» qui sotto**, P-51 è chiuso. Lanciato
 dall'autore; la sessione si è fermata da sé, come il prompt chiede, perché
 `test_carteggio_ambito` pretende che `app.html` sia nel regime attuale — un
 difetto del controllo di P-35, non della pagina, che chiude P-51. La modifica di
@@ -2590,12 +2589,40 @@ il trailer, versione non toccata. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
 ```
 
+**Ripresa** — da incollare nella stessa sessione di ChatGPT se è ancora aperta,
+altrimenti dopo il prompt qui sopra in una nuova. Prima, nell'app di ChatGPT, il
+permesso per le connessioni locali: senza, la suite dell'interfaccia non parte.
+
+```
+Questo prompt è per ChatGPT, nel worktree ~/Software/rotta-giusta-ui,
+sul ramo ui/main. Se sei un altro agente o sei in un'altra cartella,
+fermati e dillo, senza scrivere niente.
+
+Ripresa di P-21. Il controllo che ti aveva fermato è corretto su main
+(P-51) e ui/main è stato allineato senza toccare la tua bozza di
+site/app.html: leggi l'esito di P-51 nel §6 di
+docs/prossime-sessioni.md. P-51 ha fatto girare la suite sulla tua
+bozza: 21 rossi, nessuno di regime. Dodici sono le righe di
+docs/eccezioni-interfaccia.md che il prompt già ti chiede di
+aggiornare. Gli altri nove hanno una causa sola: «Che tecnica serve?»
+si apre da data-cporta="tecniche" e nessun elemento ha più
+data-v="tec", quindi #v-tec risulta senza ingresso e il banco del
+client non ci entra. La regia ha deciso: la vista resta, e la porta
+del Carteggio che la apre porta anche data-v="tec". Se questo non si
+può fare senza cambiare il disegno del progetto, fermati e dillo.
+
+Prima di dire che la suite è verde, guarda che C-01 faccia tutte le sue
+verifiche e che T-07, T-08 e T-09 entrino davvero nella vista delle
+tecniche: sulla bozza di prima T-09 risultava «chiuso» per un verde
+falso, perché non misurava i tag. Il resto del prompt di P-21 vale
+com'era.
+```
+
 **Esito:** —
 
 ### P-51 — Claude: il controllo del Carteggio che fissa il regime della pagina vera
 
-**Stato:** **in corso dal 30 settembre 2026**, lanciato dalla regia (punto 8),
-**prima** dei piccoli, perché sblocca P-21. **Dove:** Claude Code,
+**Stato:** **chiuso il 30 settembre 2026**, commit `14b194d` su `main`; lanciato dalla regia (punto 8). **Dove:** Claude Code,
 `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-21, fermato.
 
 ```
@@ -2628,7 +2655,24 @@ site/app.html. Suite verdi, voce in fondo a [Unreleased], un commit.
 Chiudi con il resoconto di docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `14b194d`, voce nel CHANGELOG. `test_carteggio_ambito`
+riconosce il regime della pagina vera con `riconosci_carteggio()` — la regola di
+`regime_carteggio()` estratta, non cambiata —, e la pagina di riferimento resta
+fissata a «progettato». Il test prima rosso gira su due pagine nel regime
+progettato, fra cui una copia di `app.html` con il raccordo innestato: 2 rossi
+con la regola di prima, 0 dopo. Nessun altro punto dei banchi fissa il regime
+della pagina vera. **Nuovo `RG_PAGINA=<file>`**: tutta la suite dell'interfaccia
+su una copia della palestra, e la riga finale lo dice; in `AGENTS.md`, nel §9.6
+della specifica e nel CHANGELOG. **Trovato**, facendo girare la suite sulla bozza
+di P-21 copiata nello scratchpad: 21 rossi su 2.110, nessuno di regime — 12 sono
+le righe di `docs/eccezioni-interfaccia.md` che P-21 deve già aggiornare, 9 hanno
+una causa sola: nella bozza «Che tecnica serve?» si apre da
+`data-cporta="tecniche"` e nessun elemento ha più `data-v="tec"`, quindi `#v-tec`
+risulta senza ingresso (R-NAV-01), il banco del client non ci entra, e il
+difetto T-09 risulterebbe chiuso per un verde falso. **Deciso dalla regia**: la
+vista resta, e la porta del Carteggio porta l'aggancio `data-v="tec"` — scritto
+nel blocco «Ripresa» di P-21. Controllato dalla regia: motore 185/187, server
+60/60, dati 242, specifica 758, guardiano verde, interfaccia 1.872 in 190 s.
 
 ### P-52 — ChatGPT: lo stato dell'invio che dice «sul server» con righe in coda
 
@@ -2999,3 +3043,10 @@ la nota in testa a `docs/filosofia.md`, che lo dice di sé (P-26).
   vera, dichiarati. Uno — lo stato dell'invio che dice «sul server» con righe
   in coda — non può aspettare P-25 e le decisioni dell'area 6: diventa P-52,
   e il traguardo lo aspetta.
+- **30 settembre 2026 — P-51 chiuso, P-21 riprende.** Il controllo del
+  Carteggio riconosce il regime della pagina vera, e `RG_PAGINA` fa girare la
+  suite su una copia: provata sulla bozza di P-21, ha trovato l'aggancio di
+  `#v-tec` perso. La regia ha deciso che la vista resta con il suo
+  `data-v="tec"`, e l'ha scritto nel blocco «Ripresa» di P-21. `ui/main`
+  allineato con un avanzamento veloce che non tocca `app.html`, con la bozza
+  ancora non committata. Lanciato P-12.
