@@ -1418,7 +1418,7 @@ liste, perché una lista in un prompt è una regola da ricordare.
 | R-PRES-01 | Una funzione del motore che la pagina consuma non smette di essere consumata in silenzio | `test_interfaccia.py::test_chiamate_al_motore_preservate` |
 | R-A11Y-01 | Nessun testo sotto gli 11 px, salvo eccezioni dichiarate con l'area che le corregge | `test_interfaccia.py::test_testi_leggibili` |
 | R-A11Y-02 | Un'immagine che porta contenuto dichiara che cosa mostra; `alt=""` resta per le decorative | `test_interfaccia.py::test_alt_di_contenuto` |
-| R-A11Y-03 | Contrasto ≥ 4,5:1 sul testo normale e aree di tocco ≥ 44 px | scoperto — serve il rendering, e si verifica guardando a 375 e 1280 px |
+| R-A11Y-03 | Contrasto ≥ 4,5:1 sul testo normale, misurato sui colori calcolati; le aree di tocco sono R-RIF-12, e il resto dell'accessibilità il §9.11 | `test_interfaccia.py::test_rifinitura_contrasto` |
 | R-UX-06 | Una breve attività dichiara che cosa è successo, quali rivedere e che cosa non hai toccato: nessuna quarta affermazione, e nessun voto sulla preparazione | scoperto — i numeri delle tre affermazioni vengono dal raccordo e li tiene R-FLU-01; le frasi sono testo di schermata, e si fissano al collaudo di P-19 |
 
 ### 9.7 Le decisioni di prodotto
@@ -1690,6 +1690,77 @@ client: giro e tappeto nella pagina (la stessa bozza, provata nel motore), la
 conferma del browser, se «Copia i risultati» copia davvero, il pallino di Info,
 un `401` o un azzeramento con una bozza aperta, Safari.
 
+### 9.11 La rifinitura trasversale
+
+Nati dal §10.1 di `docs/area-6-progetto.md` (P-24), fissati da P-45 il 30
+settembre 2026. Quelli coperti li esegue il banco del client in Chrome — gruppi
+T-01…T-09 di `tests/client_account.mjs` — sulla pagina vera e sulla pagina di
+riferimento con le sue rotture, e **misurano**: la geometria dal rettangolo che
+il browser dà, il fuoco con i tasti veri del protocollo, i colori calcolati,
+l'avviso nell'albero di accessibilità del browser. Il contratto — gli agganci,
+le frasi, dove sta la fonte di ogni numero — è nel §10.1 di quel progetto.
+
+**I due regimi, qui, sono quelli d'accesso**: la prova senza account e
+l'account, e ogni requisito dice in quale si prova. **Il passaggio all'area 6
+non ha invece un raccordo da riconoscere**, come le aree 2–5: queste garanzie
+valgono per la pagina di oggi come per quella di P-25. Quello che la pagina di
+oggi non rispetta — misurato, e sono difetti veri — sta fra i «Difetti aperti
+dichiarati» di `docs/eccezioni-interfaccia.md`, sette righe `T-*`, e la suite
+pretende che sia ancora vero; il giorno che non lo è, la riga diventa rossa lei.
+**Alla merge di P-25 quelle righe non ci devono più essere**: è lì che si esige
+il regime nuovo.
+
+| ID | Requisito | Controllo |
+|---|---|---|
+| R-RIF-01 | Senza account nessuna frase dice che le risposte sono conservate — «N risposte salvate», «nel tuo account», «confermate sul server», «su questo dispositivo», «salvato» da solo, «riprendi domani» —: nel Percorso, nel runner dopo una risposta, nel riepilogo, in Progressi e in Info | `test_interfaccia.py::test_rifinitura_senza_account` |
+| R-RIF-02 | Con l'account la pagina dice che le risposte sono sul server solo quando il server le ha: con la rete che non risponde, e poi senza rete, con due risposte in coda non lo dice, e dice quante sono da inviare. **Difetto aperto dichiarato sulla pagina vera**: lo stato si ridipinge solo a invio finito | `test_interfaccia.py::test_rifinitura_invio` |
+| R-RIF-03 | I numeri di Info e dell'invio vengono dalla loro fonte, letta dal banco e non dalla schermata: senza account le risposte della pagina aperta, con l'account le righe della copia `rg-account-<chiave>` e la sua coda | `test_interfaccia.py::test_rifinitura_invio` |
+| R-RIF-04 | Una scrittura nella copia che fallisce si annuncia in una regione viva che il browser espone, si vede davvero con il runner aperto, nel riepilogo e nel Percorso, e la porta di Info la segnala in ogni vista anche dopo una scrittura riuscita | `test_interfaccia.py::test_rifinitura_guasto` |
+| R-RIF-05 | Dopo un `401` durante il lavoro la pagina offre di nuovo «Accedi»; chi entra dalla stessa scheda vede in Info le sue righe e nessuna dell'identità di prima, e la risposta rimasta nel dispositivo non va a nessun account | `test_interfaccia.py::test_rifinitura_identita` |
+| R-RIF-06 | Una finestra modale aperta da tastiera prende il fuoco, lo tiene con Tab e Maiusc+Tab, si chiude con Esc e lo restituisce a chi l'ha aperta; il browser la espone come dialogo modale con un nome. Provato sulla finestra «Accedi» | `test_interfaccia.py::test_rifinitura_finestra` |
+| R-RIF-07 | Nel Percorso a 375 px ogni arresto di Tab cambia aspetto quando prende il fuoco, e il suo centro sta nello schermo senza niente sopra (WCAG 2.4.7 e 2.4.11). **Difetto aperto dichiarato sulla pagina vera**: la barra fissa copre tre arresti | `test_interfaccia.py::test_rifinitura_fuoco` |
+| R-RIF-08 | Un avviso si vede davvero, non solo nel DOM: occupa spazio, portato al centro sta nello schermo, non è trasparente, non ha niente sopra, il suo testo ha il contrasto minimo, e l'albero di accessibilità non lo ignora. Provato sugli avvisi della prova e su quello del guasto | `test_interfaccia.py::test_rifinitura_avvisi` |
+| R-RIF-09 | Reflow: a 1280, 640, 375 e 320 px nessuna vista della prova, né il runner, il riepilogo o la finestra «Accedi», scorre di lato, esce dallo schermo, scorre di lato dentro un contenitore o taglia un testo, e la pagina si dispone alla larghezza dello schermo; con l'account lo stesso a 375 e 320 px per Percorso, Progressi, Info e il pannello. **Difetto aperto dichiarato sulla pagina vera a 320 px**, nei due regimi | `test_interfaccia.py::test_rifinitura_larghezze` |
+| R-RIF-10 | Con lo zoom del browser al 200 % e con il solo testo ingrandito al 200 %, e con la spaziatura del testo di WCAG 1.4.12, nessuna risposta, nota, azione o stato diventa irraggiungibile, nei due regimi | scoperto — il banco guida Chrome headless con una larghezza emulata, che non è lo zoom: 640 px sono la larghezza CSS di 1280 px al 200 %, e R-RIF-09 misura solo quella. Lo zoom nativo e il testo ingrandito si provano a mano, con la procedura qui sotto |
+| R-RIF-11 | Contrasto del tema chiaro: ogni testo che si vede ha almeno 4,5:1 sul suo fondo, 3:1 se grande, dai colori calcolati, in ogni vista della prova, nel runner, nel riepilogo e nella finestra «Accedi», a 375 px. **Difetto aperto dichiarato sulla pagina vera**: quattro testi fra 4,09 e 4,26:1 (appendice A) | `test_interfaccia.py::test_rifinitura_contrasto` |
+| R-RIF-12 | Bersagli: nelle stesse superfici ogni controllo che si vede misura almeno 24 × 24 px, il minimo AA, e 44 × 44, l'obiettivo del progetto; un link dentro una frase è escluso (WCAG 2.5.8), una casella si misura con la sua etichetta. **Difetto aperto dichiarato sulla pagina vera** per i 44 px | `test_interfaccia.py::test_rifinitura_bersagli` |
+| R-RIF-13 | Contrasto degli elementi non testuali — bordi dei campi, stati, indicatore del fuoco — almeno 3:1, e nessun significato affidato al solo colore | scoperto — il banco confronta testo e fondo, non un bordo col suo intorno né un significato col colore che lo porta: serve guardare, con la procedura qui sotto |
+| R-RIF-14 | I percorsi completi solo con la tastiera, nei due regimi: primo quiz, configurazione e filtri, runner e riepilogo, revisione e riprova, Carteggio, Progressi, Info e Account, accesso, verifica, import e export, conflitto, azzeramento; le scorciatoie dei quiz spente mentre si scrive in un campo | scoperto — il banco prova la finestra «Accedi» e gli arresti di Tab del Percorso (R-RIF-06, 07), non un percorso intero: i suoi gruppi del client premono con `element.click()` |
+| R-RIF-15 | Un lettore di schermo reale annuncia titoli e gruppi, etichette, la domanda nuova, il riscontro, la scrittura fallita, lo stato dell'invio, il timer senza un annuncio al secondo, i dialoghi e il ritorno del fuoco; le figure dei quiz hanno il limite dichiarato del §6 del progetto | scoperto — l'albero di accessibilità dice che cosa il browser espone (R-RIF-04, 06, 08), non che cosa un lettore dice: la prova è manuale, con la procedura qui sotto |
+| R-RIF-16 | Contrasto, bersagli, fuoco e avvisi anche con l'account e sugli stati del client — verifica dell'email, conflitto, import parziale, uscita con righe pendenti, `401` | scoperto — il banco li misura sulle superfici della prova e sulla finestra «Accedi»; con l'account misura lo sbordo (R-RIF-09) e l'avviso del guasto (R-RIF-04). Estenderlo agli stati del client è lavoro dopo P-25, sullo stesso banco |
+
+**Che cosa questi controlli non vedono.** L'altezza del testo quando la famiglia
+di caratteri di sistema cambia; un contrasto sopra un'immagine o una
+trasparenza, che la misura conta e dichiara «non misurabile» invece di
+indovinare; un avviso che il browser espone e che un lettore poi non dice; il
+gesto vero e il tocco; Safari, che il banco non guida (Q-PROVE). E un difetto
+che P-25 introduca in una superficie che il banco non visita: le superfici sono
+elencate nel §10.1 del progetto, e una nuova si aggiunge lì.
+
+**Le prove manuali**, per R-RIF-10, 13, 14 e 15. Si registrano nell'appendice A
+con data, browser e versione, sistema, strumento e che cosa si è fatto e
+sentito; una prova non eseguita resta «non fatta», mai «da considerarsi
+conforme».
+
+- *Zoom (R-RIF-10).* Chrome e Safari desktop a 1280 × 800: zoom del browser al
+  200 % (⌘+ fino a 200), poi in Safari «Ingrandisci solo il testo» al 200 %,
+  poi il bookmarklet della spaziatura di WCAG 1.4.12 (interlinea 1,5, spazio fra
+  paragrafi 2, fra lettere 0,12, fra parole 0,16). Per ognuno, nei due regimi:
+  Percorso, un quiz fino al riepilogo, la revisione, il Carteggio, Progressi
+  con l'account, Info, la finestra «Accedi» e il pannello dell'account. Esito:
+  che cosa non si raggiunge, dove, con una schermata.
+- *Non testuali (R-RIF-13).* Alle stesse superfici, a 375 e 1280 px: i bordi di
+  campi, caselle e schede contro il loro fondo, l'indicatore del fuoco, e ogni
+  stato detto da un colore — semaforo, giusti/da rifare/mai visti, esatta ed
+  errata — letto in scala di grigi.
+- *Tastiera (R-RIF-14).* Senza mouse, i percorsi della riga, prima senza
+  account e poi con l'account di prova: ordine di Tab, fuoco sempre visibile,
+  Esc e ritorno, e i tasti 1 2 3 che non rispondono mentre si scrive.
+- *Lettore di schermo (R-RIF-15).* VoiceOver con Safari su macOS, e se c'è un
+  iPhone VoiceOver su iOS: gli stessi percorsi, annotando che cosa si sente a
+  ogni passo, e per le figure un campione di riconoscimento, di carteggio e la
+  figura mancante di base-59.
+
 ---
 
 ## 10. Che cosa non è deciso
@@ -1851,24 +1922,31 @@ per una decisione.
 - **Progressive disclosure** già applicata: le spiegazioni `?` accanto ai numeri
   derivati, e funzionano al tocco oltre che in hover.
 
-### Le misure da rifare sul tema chiaro
+### Le misure del tema chiaro
 
 La tavolozza scura è stata misurata voce per voce nella 0.21.0, con due valori
-alzati perché non passavano. **Il tema chiaro va misurato allo stesso modo,** e
-non c'è scorciatoia:
+alzati perché non passavano. **Il tema chiaro l'ha misurato P-45, il 30
+settembre 2026**, sulla pagina di `main` di quel giorno: Chrome 154 headless, a
+375 × 800 px, 1280, 640 e 320 dove è detto, senza account salvo dove è detto, sui
+colori e sui rettangoli che il browser calcola, non sui nomi dei token. Le
+misure che il banco ripete a ogni esecuzione sono i requisiti del §9.11; quelle
+che il banco non sa fare sono scritte «non fatto», con il requisito che le
+aspetta. **Non è una dichiarazione di conformità a WCAG 2.2 AA**: una parte dei
+criteri non si è misurata, e quattro misure non passano.
 
-| Criterio | Soglia | Stato |
+| Criterio | Soglia | Stato al 30 settembre 2026 |
 |---|---|---|
-| Contrasto testo normale | ≥ 4,5:1 (WCAG AA) | da rifare sul chiaro |
-| Contrasto testo grande | ≥ 3:1 | da rifare |
-| Contrasto di elementi non testuali (bordi, stati) | ≥ 3:1 | da rifare |
-| Aree di tocco | ≥ 44 px sul telefono | misurato a 58 px sul prodotto attuale |
-| Sbordamento orizzontale a 375 px | 0 | 0 in Progressi nel collaudo di P-23 (30 settembre 2026), dove la mappa ha sostituito le due tabelle che sforavano di 89 px dalla 0.3.0; non lo ripete un controllo |
-| Reflow senza scorrimento orizzontale | fino a 320 px | mai verificato |
-| Ingrandimento del testo | fino al 200 % | mai verificato |
-| Fuoco da tastiera visibile ovunque | sì | mai verificato per intero |
-| Nessun significato affidato al **solo** colore | sì | il semaforo ha tre stati e usa anche la parola: da riverificare sul chiaro |
-| Lettore di schermo sui percorsi principali | sì | mai verificato |
+| Contrasto testo normale | ≥ 4,5:1 (WCAG AA) | misurato: 33 coppie di colori di testo su fondo nelle sette viste e nel runner, tutte fra 4,56 e 17,77:1, tranne `rgb(96, 120, 135)` su `rgb(243, 246, 246)` — piè di pagina, versione, indicazioni `.hint` del Carteggio — a **4,26:1**, e sull'azzurro `rgb(230, 243, 247)` dei Segnali a **4,09:1**. Lo stesso grigio sul bianco delle schede fa 4,63: passa sulla scheda e non sul fondo della pagina. Il riepilogo e la finestra «Accedi», che R-RIF-11 misura anche, non ne aggiungono altri. Difetto dichiarato, R-RIF-11 |
+| Contrasto testo grande | ≥ 3:1 | misurato: il più basso è 9,78:1 |
+| Contrasto di elementi non testuali (bordi, stati, fuoco) | ≥ 3:1 | **non fatto**: R-RIF-13, a mano |
+| Aree di tocco | ≥ 24 px (AA), ≥ 44 px (progetto) | misurato a 375 px: nessun controllo sotto i 24 px; sotto i 44 i tag N/L/C del runner e del riepilogo, 31 × 29, e il sommario «La banca è del 2022…» di Info, alto 41. Le «58 px» scritte qui il 9 settembre erano del tema scuro. Difetto dichiarato, R-RIF-12 |
+| Sbordamento orizzontale a 375 px | 0 | misurato: 0 in ogni vista della prova, nel runner, nel riepilogo, nella finestra «Accedi», e con l'account in Percorso, Progressi, Info e nel pannello. Le due tabelle che dalla 0.3.0 sforavano di 89 px in Progressi non ci sono più (P-23); ora lo tiene R-RIF-09 |
+| Reflow senza scorrimento orizzontale | fino a 320 px | misurato e guardato in una schermata: la pagina scorre di **16 px** in ogni vista senza account e di **23** con l'account, perché l'intestazione non ci sta e «Accedi» esce dallo schermo; di **49** in «Che tecnica serve?», dove escono una tessera e la tabella; il toast `#sync` esce di 6 px. Difetto dichiarato, R-RIF-09 |
+| Reflow equivalente allo zoom al 200 % | 640 px | misurato: 0 in ogni vista. **Non è lo zoom**: è la larghezza CSS che 1280 px hanno al 200 % |
+| Ingrandimento del testo, zoom del browser | fino al 200 % | **non fatto**: R-RIF-10, a mano |
+| Fuoco da tastiera visibile ovunque | sì | misurato nel Percorso a 375 px, con i tasti veri: ogni arresto cambia aspetto (un contorno di 3 px), ma «Inizia l'attività», «Scegli un'attività» e la scheda dei Segnali prendono il fuoco **sotto la barra fissa in basso** (WCAG 2.4.11), visto in una schermata. Difetto dichiarato, R-RIF-07. La finestra «Accedi» prende, tiene e restituisce il fuoco (R-RIF-06). Il resto dei percorsi: R-RIF-14 |
+| Nessun significato affidato al **solo** colore | sì | **non fatto**: R-RIF-13. Il semaforo ha tre stati e usa anche la parola |
+| Lettore di schermo sui percorsi principali | sì | **non fatto**: R-RIF-15. Il browser espone la finestra «Accedi» come dialogo modale con il suo nome, e l'avviso di una scrittura fallita in una regione viva: è quello che un lettore riceve, non quello che dice |
 
 **Un argomento misurabile a favore del tema chiaro**, che le bozze non hanno
 usato: le figure del decreto sono servite su fondo bianco, quindi oggi c'è una
@@ -1891,7 +1969,10 @@ chiara sparisce.
 
 ### Il limite di questa appendice
 
-Nessuna di queste righe è stata verificata con una persona diversa dall'autore.
+Le misure del tema chiaro sono di un browser, non di una persona: dicono che
+cosa il browser disegna e che cosa espone, non che cosa si legge al sole su un
+telefono né che cosa un lettore di schermo dice. Nessuna di queste righe è
+stata verificata con una persona diversa dall'autore.
 Una preferenza estetica non dimostra usabilità; una prova di usabilità non
 dimostra efficacia didattica. Le prove con persone sono Q-PROVE.
 
@@ -2160,3 +2241,10 @@ successo, ed è il motivo per cui questo file esiste.
   lista annunciata è quella che parte e che il lavoro ha la forma della bozza in
   tutti e due gli stati. Trentanove rotture della pagina di riferimento, tutte
   rosse per il loro motivo; una è nata provando il banco contro sé stesso.
+- **30 settembre 2026 — la rifinitura trasversale (P-45).** I controlli che il
+  §10.1 dell'area 6 chiedeva, nel banco del client e misurando nel browser:
+  nuovo §9.11 con R-RIF-01…16, undici coperti e cinque scoperti con la
+  procedura della prova manuale; R-A11Y-03 coperto. I due regimi sono quelli
+  d'accesso; il passaggio a P-25 non ha un raccordo, e quello che la pagina di
+  oggi non rispetta sono sette difetti aperti dichiarati, misurati. L'appendice
+  A ha le misure del tema chiaro, e dice «non fatto» dove non si è misurato.

@@ -297,3 +297,74 @@ contratto e limiti dichiarati in P-20, ma non un collaudo visivo della UI
 progettata; l'area 5 è anch'essa un progetto in attesa di realizzazione. I
 loro flussi si collaudano dopo P-21 e P-23. Non si dichiara qui un audit
 visivo o una conformità già conseguita.
+
+### 10.3 Il contratto dei controlli — consegnato da P-45, 30 settembre 2026
+
+Questo paragrafo l'ha scritto Claude su `main` (P-45), dopo il progetto: è quello
+che il §10.1 chiedeva. I controlli sono i gruppi **T-01…T-09** del banco del
+client (`tests/client_account.mjs`), registrati in `tests/test_interfaccia.py`
+come `test_rifinitura_*`; i requisiti sono R-RIF-01…16 nel §9.11 della
+specifica, e l'appendice A ha le misure del 30 settembre.
+
+**I due regimi sono quelli d'accesso.** Ogni gruppo dice in quale gira: T-01,
+T-05, T-06, T-07:prova, T-08 e T-09 nella prova senza account; T-02, T-03, T-04
+e T-07:conto con un account vero sul server del banco. **Il passaggio a P-25
+non ha un raccordo da riconoscere**: le garanzie valgono per la pagina di oggi
+come per quella nuova. Quello che la pagina di oggi non rispetta sta fra i
+«Difetti aperti dichiarati» di `docs/eccezioni-interfaccia.md` — sette righe
+`T-*` —, con la verifica che lo dimostra: la suite pretende che sia ancora
+rossa. **P-25 chiude i sette difetti e toglie le righe nello stesso commit**;
+una riga che resta con il difetto chiuso fa diventare rossa la suite, e alla
+merge la regia controlla che non ne resti nessuna.
+
+**Che cosa la pagina deve avere**, oltre agli agganci del §12 del progetto del
+client (`[data-rotta-start]`, `#r-text`, `#r-ans .ans`, `#r-close`, `#r-fine.on`,
+`[data-ciclo="ritorno"]`, l'archivio `rg-account-<chiave>` con `righe` e la coda
+in `meta`):
+
+- le porte `[data-v="oggi|quiz|cart|diag|tec|seg|info"]` e le viste
+  `#v-<nome>`: sono le **superfici** che T-07, T-08 e T-09 visitano, insieme al
+  runner con una risposta, al riepilogo e alla finestra «Accedi». Una superficie
+  nuova entra nel banco da `main`, nella lista `VISTE_RIF`;
+- `<meta name="viewport" content="width=device-width, initial-scale=1">`: senza,
+  il telefono dispone la pagina a 980 px, e il banco lo dice;
+- `#conto-porta` nell'intestazione: «Accedi» senza account e dopo un `401`,
+  «Account» dentro; apre una finestra `[aria-modal="true"]` con un nome, che
+  prende il fuoco, lo tiene con Tab, si chiude con Esc e lo restituisce;
+- in Info, «risposte ai quiz N», con N contato dalla fonte: le risposte della
+  pagina aperta senza account, le righe `_t:'q'` della copia con l'account;
+- con l'account e righe in coda, «N risposte da inviare», con N la lunghezza di
+  `coda.daInviare`; le frasi che dicono il server — «confermate sul server»,
+  «risposte salvate nel tuo account», «N risposte salvate» — solo quando il
+  server ha le righe. Senza account nessuna frase di conservazione
+  (`FRASI_SALVATO` nel banco, l'elenco è lì);
+- dopo una scrittura fallita nella copia: «Le ultime risposte potrebbero non
+  essere salvate.» che si vede davvero con il runner aperto, nel riepilogo e nel
+  Percorso; una regione viva (`role="alert"`, `status`, o `aria-live`) che dice
+  «non … salvat…»; e la porta `[data-v="info"]` che dice «Salvataggio da
+  controllare» in ogni vista, anche dopo una scrittura riuscita.
+
+**Che cosa si misura, e come.** Un avviso «si vede davvero» se occupa spazio,
+portato al centro sta nello schermo, non è trasparente, non ha niente sopra al
+centro della sua prima riga, ha il contrasto minimo, e l'albero di
+accessibilità del browser non lo ignora. Il fuoco si muove con i tasti del
+protocollo, non con `focus()`; un indicatore c'è se l'aspetto dell'elemento
+cambia quando lo prende. Lo sbordo guarda la pagina che scorre di lato, un
+elemento che esce in parte dallo schermo, un contenitore che scorre di lato al
+suo interno — `overflow-x:auto` non è una correzione — e un testo o un
+controllo tagliato da un antenato che nasconde. Contrasto e bersagli si
+misurano sui colori e sui rettangoli calcolati; un fondo con un'immagine o una
+trasparenza è «non misurabile», e si conta.
+
+**Il banco provato contro sé stesso.** La pagina di riferimento
+(`tests/pagina-client-account.html`) passa tutti i gruppi, e 31 rotture sue
+sono rosse ognuna per il suo motivo. Sei difese del banco tolte una alla volta
+— che cosa sta sopra un avviso, l'albero di accessibilità, l'opacità, il
+confronto dell'aspetto al fuoco, i contenitori che scorrono, i testi tagliati —
+fanno passare verde la rottura che le riguarda.
+
+**Che cosa non vede**, e resta alle prove manuali del §9.11 della specifica:
+lo zoom nativo e il testo ingrandito, il contrasto non testuale e il colore da
+solo, i percorsi interi a tastiera, il lettore di schermo, Safari, e gli stati
+del client oltre a quelli elencati (verifica, conflitto, import parziale,
+uscita), dove contrasto e bersagli non sono ancora misurati (R-RIF-16).

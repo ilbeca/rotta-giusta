@@ -255,6 +255,53 @@ export async function avviaChrome({ attesaMs = 15000, nomi = [] } = {}) {
         await cmd('Network.emulateNetworkConditions', { offline: si, latency: 0, downloadThroughput: -1, uploadThroughput: -1 }, sessionId);
       },
       /**
+       * La larghezza della finestra in pixel CSS, come la vede la pagina (area 6,
+       * §5): `innerWidth` diventa `larghezza`, e le media query rispondono. Non e'
+       * lo zoom del browser, che cambia anche i caratteri e i pixel del
+       * dispositivo: a 1280 px con lo zoom al 200 % la larghezza CSS e' 640, e
+       * questo ne e' soltanto l'equivalente (P-05). Senza argomenti torna com'era.
+       */
+      async dimensioni(larghezza, altezza = 800) {
+        if (!larghezza) return cmd('Emulation.clearDeviceMetricsOverride', {}, sessionId);
+        await cmd('Emulation.setDeviceMetricsOverride', { width: larghezza, height: altezza, deviceScaleFactor: 1, mobile: larghezza < 768 }, sessionId);
+      },
+      /** Quello che la scheda mostra, in PNG: per guardare, non per confrontare pixel. */
+      async schermata() {
+        const { data } = await cmd('Page.captureScreenshot', { format: 'png' }, sessionId);
+        return Buffer.from(data, 'base64');
+      },
+      /**
+       * Un tasto premuto davvero, come dalla tastiera: l'evento e' del browser,
+       * non uno `dispatchEvent` della pagina, quindi Tab sposta il fuoco ed Esc
+       * arriva a chi ce l'ha. `maiuscolo` e' Shift tenuto premuto.
+       */
+      async tasto(nome, { maiuscolo = false } = {}) {
+        const codici = { Tab: 9, Escape: 27, Enter: 13, ' ': 32 };
+        const base = { key: nome, code: nome === ' ' ? 'Space' : nome, windowsVirtualKeyCode: codici[nome] ?? 0, modifiers: maiuscolo ? 8 : 0 };
+        await cmd('Input.dispatchKeyEvent', { type: 'rawKeyDown', ...base }, sessionId);
+        if (nome === ' ' || nome === 'Enter') await cmd('Input.dispatchKeyEvent', { type: 'char', text: nome === 'Enter' ? '\r' : ' ', ...base }, sessionId);
+        await cmd('Input.dispatchKeyEvent', { type: 'keyUp', ...base }, sessionId);
+      },
+      /**
+       * Come l'albero di accessibilita' del browser espone un elemento — quello
+       * che un lettore di schermo riceve, non quello che dice: un nodo
+       * ignorato non si legge, un `aria-live` nel DOM non prova l'annuncio
+       * (area 6, §6). Restituisce `{ ignorato, ruolo, nome, vivo }` per il primo
+       * elemento che combacia con `selettore`, o null se non c'e'.
+       */
+      async accessibile(selettore) {
+        const { root } = await cmd('DOM.getDocument', { depth: 0 }, sessionId);
+        const { nodeId } = await cmd('DOM.querySelector', { nodeId: root.nodeId, selector: selettore }, sessionId);
+        if (!nodeId) return null;
+        const { node } = await cmd('DOM.describeNode', { nodeId }, sessionId);
+        const { nodes } = await cmd('Accessibility.getPartialAXTree', { backendNodeId: node.backendNodeId, fetchRelatives: false }, sessionId);
+        const io = nodes.find((x) => x.backendDOMNodeId === node.backendNodeId) || nodes[0];
+        if (!io) return null;
+        const prop = (p) => (io.properties || []).find((x) => x.name === p)?.value?.value;
+        return { ignorato: !!io.ignored, ruolo: io.role?.value ?? null, nome: io.name?.value ?? '',
+          vivo: prop('live') ?? null, modale: prop('modal') ?? null };
+      },
+      /**
        * Risposte finte, trattenute o fallite per un percorso: il banco decide.
        * `gestore(request, params)` restituisce `null` per lasciar passare,
        * `{ codice, corpo, intestazioni }` per una risposta finta, `{ fallisci }`

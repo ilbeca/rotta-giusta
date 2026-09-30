@@ -1611,6 +1611,105 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   documentazione verdi. `site/` e `docs/prossime-sessioni.md` non sono stati
   toccati.
 
+### Test — P-45: la rifinitura trasversale misurata nel browser, e sette difetti veri
+
+- **I controlli che il §10.1 dell'area 6 chiede, misurando invece di cercare
+  stringhe.** Nove gruppi nuovi del banco del client, T-01…T-09 in
+  `tests/client_account.mjs`, nello stesso Chrome e con lo stesso server degli
+  account: la prova senza account che dice «salvato»; l'account che dice «sul
+  server» mentre le risposte sono in coda, e il numero da inviare che non viene
+  dalla coda; una scrittura fallita che si annuncia, si vede e non spegne Info
+  nemmeno dopo una scrittura riuscita; un `401` durante il lavoro dopo il quale
+  chi entra vede le righe di chi c'era; la finestra «Accedi» che deve prendere,
+  tenere e rendere il fuoco; ogni arresto di Tab con un indicatore e non
+  coperto; un avviso nel DOM ma nascosto; lo sbordo a 1280, 640, 375 e 320 px
+  nei due regimi d'accesso; il contrasto di ogni testo e i bersagli di tocco.
+  Il banco ha imparato tre cose nuove, in `tests/browser.mjs`: la larghezza
+  della finestra, i tasti veri del protocollo — Tab sposta il fuoco, Esc arriva
+  a chi ce l'ha —, e l'albero di accessibilità del browser, che dice se un
+  elemento è esposto o ignorato. Le misure che girano nella pagina sono
+  funzioni vere, serializzate, e il contratto — agganci, frasi, fonti dei
+  numeri, superfici — è nel nuovo §10.3 di `docs/area-6-progetto.md`, prima di
+  P-25.
+
+- **Due regimi, ma non quelli delle aree 2–5.** Qui sono i regimi d'accesso, e
+  ogni gruppo dice in quale gira. Il passaggio a P-25 non ha un raccordo da
+  riconoscere: le garanzie valgono per la pagina di oggi come per quella nuova,
+  e quello che la pagina di oggi non rispetta sta fra i «Difetti aperti
+  dichiarati» di `docs/eccezioni-interfaccia.md`, con la verifica che lo
+  dimostra. La suite pretende che ogni riga sia ancora vera, e che una rottura
+  della pagina di riferimento faccia diventare rossa la stessa verifica: una
+  dichiarazione che non ha mai visto il suo difetto non dichiara niente. Alla
+  merge di P-25 le righe `T-*` non ci devono più essere.
+
+- **Sette difetti della pagina vera, misurati e — dove si vedono — guardati in
+  una schermata.** (1–2) Lo stato dell'invio non si ridipinge quando una
+  risposta entra in coda, solo quando un tentativo finisce: con due risposte
+  che il server non ha la pagina dice ancora «Le risposte di questo dispositivo
+  sono confermate sul server», e non «2 risposte da inviare». Offline dura circa
+  un secondo, misurato; con una rete che non risponde dura quanto la richiesta,
+  fino ai 15 s del timeout — il banco la tiene ferma, ed è per questo che il
+  controllo è deterministico. (3) A 375 × 800 px «Inizia l'attività»,
+  «Scegli un'attività» e la scheda dei Segnali prendono il fuoco sotto la
+  barra fissa in basso (WCAG 2.4.11). (4–5) A 320 px la pagina scorre di lato di
+  16 px senza account e di 23 con l'account — l'intestazione, e «Accedi» esce
+  dallo schermo —, di 49 in «Che tecnica serve?». (6) Il grigio `rgb(96, 120,
+  135)` passa sul bianco (4,63:1) e non sul fondo della pagina (4,26:1) né
+  sull'azzurro dei Segnali (4,09:1): piè di pagina, versione, indicazioni.
+  (7) I tag N/L/C misurano 31 × 29 px, sotto l'obiettivo di 44 e sopra il
+  minimo AA di 24. Li chiude P-25; la correzione di (1–2) è una riga.
+
+- **Quello che la pagina vera fa già bene, ora tenuto fermo:** senza account
+  nessuna frase di conservazione in cinque superfici, e Info conta le risposte
+  della pagina; con l'account Info conta le righe della copia; il guasto si
+  annuncia in una regione viva e resta su Info in ogni vista; dopo un `401` la
+  porta torna «Accedi» e B non vede niente di A; la finestra «Accedi» tiene il
+  fuoco, si chiude con Esc e lo restituisce, ed è un dialogo modale con il suo
+  nome; nessuno sbordo a 1280, 640 e 375 px, nemmeno con l'account in
+  Progressi, dove le due tabelle da +89 px della 0.3.0 non ci sono più.
+
+- **La pagina di riferimento del client impara l'area 6**: un `meta viewport`,
+  bersagli da 44 px, la scrittura fallita detta e mai spenta, lo stato
+  ridipinto quando una risposta entra in coda, Info che legge la copia, il `401`
+  che riporta «Accedi» e un accesso che ferma prima la copia di chi c'era, la
+  finestra con il fuoco. **31 rotture nuove**, ognuna rossa per il suo motivo;
+  due rotture del client di prima sono state adeguate al testo nuovo della
+  pagina, senza cambiare che cosa rompono.
+
+- **Il banco provato contro sé stesso.** Senza `meta viewport` il telefono
+  disponeva la pagina di riferimento a 980 px, e la «misura a 375» ne misurava
+  980 senza dirlo: ora il banco controlla la larghezza vera e lo dice. Sei
+  difese tolte una alla volta — che cosa sta sopra un avviso, l'albero di
+  accessibilità, l'opacità, il confronto dell'aspetto al fuoco, i contenitori
+  che scorrono, i testi tagliati — fanno passare verde la loro rottura; due
+  rotture restavano rosse per un sintomo diverso, ed ora stanno in contenitori
+  più stretti dello schermo. Un rosso falso trovato facendo girare il banco: un
+  avviso ripetuto nel Percorso sotto il runner veniva misurato al posto di
+  quello del runner; e il Percorso ridisegna i suoi avvisi mentre il banco li
+  interroga, quindi misura e domanda al browser si ripetono insieme.
+
+- **Nella specifica**, nuovo §9.11 con R-RIF-01…16: undici coperti dal banco,
+  cinque scoperti con il motivo — zoom nativo e testo al 200 %, contrasto non
+  testuale e colore da solo, percorsi interi a tastiera, lettore di schermo,
+  ciascuno con la procedura della prova manuale, e R-RIF-16 per gli stati del
+  client dove contrasto e bersagli non sono ancora misurati. R-A11Y-03 passa a
+  coperto. **L'appendice A ha le misure del 30 settembre**, con browser e
+  larghezze, e dice «non fatto» dove non si è misurato: non dichiara
+  «conforme AA».
+
+  Suite: interfaccia **1.863** (erano 1.666), in 186–188 s senza carico e 215
+  s con dieci `yes`; specifica **758** (erano 703); motore 185/187 con i due
+  skip di sempre; dati 242; server 60/60 con Node 25.3 e con la **24.21.0
+  LTS**, il pacchetto verificato contro il suo `SHASUMS256.txt`. **Quattro
+  giri della suite dell'interfaccia**: il primo con due rossi, le due rotture
+  del client che non si applicavano più alla pagina di riferimento, adeguate;
+  poi tre verdi, uno senza carico, uno con dieci `yes`, uno con la LTS nel
+  `PATH`, con cui anche il motore dà 185/187. Il banco dell'area 6 da solo
+  altre tre volte sotto carico, load average fino a 13: 197 verifiche verdi
+  ogni volta. Prima di ogni giro la 8620 guardata libera; il carico fermato
+  dopo. Guardiano verde. `site/` e `docs/prossime-sessioni.md` non sono stati
+  toccati.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag

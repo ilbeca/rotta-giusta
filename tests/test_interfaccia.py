@@ -1477,9 +1477,9 @@ ROTTURE_CLIENT = [
     # un secondo in mezzo, e passava verde: il timer della scheda in secondo
     # piano scattava dopo 1,76 s, quando l'altra aveva gia' inviato (misurato).
     ('la coda tenuta in memoria da ogni scheda e scritta intera', ['C-11:volo'],
-     [('  await tx((s) => ({ nuove: [riga], coda: E.accoda(s.coda, riga.uid) }));',
+     [('  try { await tx((s) => ({ nuove: [riga], coda: E.accoda(s.coda, riga.uid) })); }',
        '  S.codaMia = E.accoda(S.codaMia || E.nuovaCoda({ generazione: S.conto.generazione, epocaDb: S.conto.epoca }), riga.uid);\n'
-       '  await tx(() => ({ nuove: [riga], coda: S.codaMia }));')],
+       '  try { await tx(() => ({ nuove: [riga], coda: S.codaMia })); }')],
      'due schede che rispondono insieme'),
     ('dopo la ricarica l\'invio non riprende', ['C-11:ricarica'],
      [('  await entra(io.corpo);\n  await dipingiStato();\n  await catena();', '  await entra(io.corpo);\n  await dipingiStato();')],
@@ -1499,7 +1499,8 @@ ROTTURE_CLIENT = [
      'dopo l\'uscita niente dell\'account resta'),
     ('la risposta tardiva scritta dopo l\'uscita', ['C-15:corsa'],
      [('async function invia(mio) {\n  for (;;) {', 'async function invia(mio) {\n  const conto = S.conto;\n  for (;;) {'),
-      ('    if (mio !== S.ciclo || risposta.annullata) return false;\n    // La coda si rilegge', '    // La coda si rilegge'),
+      ('    if (mio !== S.ciclo || risposta.annullata) return false;\n    if (risposta.codice === 401) { scaduto(); return false; }\n    // La coda si rilegge',
+       '    if (risposta.codice === 401) { scaduto(); return false; }\n    // La coda si rilegge'),
       ('  if (S.ac) S.ac.abort();\n', ''),
       ('    let esito;\n    await tx((s) => {\n      esito = E.dopoInvio(',
        '    let esito;\n    if (!S.db) { S.conto = conto; S.db = await apriDb(conto.chiave); }\n    await tx((s) => {\n      esito = E.dopoInvio(')],
@@ -1863,8 +1864,8 @@ def banco_client():
         return _BANCO_CLIENT
     app = leggi('app.html')
     rif = RIFERIMENTO_CLIENT.read_text(encoding='utf-8')
-    prove = [{'nome': 'app', 'pagina': app, 'gruppi': GRUPPI_CLIENT + gruppi_bozza_app()},
-             {'nome': 'riferimento', 'pagina': rif, 'gruppi': GRUPPI_CLIENT + ['C-19']}]
+    prove = [{'nome': 'app', 'pagina': app, 'gruppi': GRUPPI_CLIENT + gruppi_bozza_app() + GRUPPI_RIFINITURA},
+             {'nome': 'riferimento', 'pagina': rif, 'gruppi': GRUPPI_CLIENT + ['C-19'] + GRUPPI_RIFINITURA}]
     applicate = {}
     for cosa, gruppi, sostituzioni in VARIANTI_CLIENT:
         variante, ok = rif, True
@@ -1874,7 +1875,7 @@ def banco_client():
         applicate['variante: ' + cosa] = ok
         if ok:
             prove.append({'nome': 'variante: ' + cosa, 'pagina': variante, 'gruppi': gruppi})
-    for cosa, gruppi, sostituzioni, _ in ROTTURE_CLIENT:
+    for cosa, gruppi, sostituzioni, _ in ROTTURE_CLIENT + ROTTURE_RIFINITURA:
         rotta, ok = rif, True
         for vecchio, nuovo in sostituzioni:
             ok = ok and vecchio in rotta
@@ -2206,6 +2207,264 @@ def test_client_provato_al_contrario():
               'rossi: ' + '; '.join(rossi[:3]))
 
 
+# --- 5-bis. l'area 6: la rifinitura trasversale (P-45) ---------------------------------
+#
+# docs/area-6-progetto.md §10.1 chiede controlli nei due regimi d'accesso — la
+# prova senza account e l'account — su quello che il sorgente non dice: che cosa
+# la pagina dice di conservare, se un numero viene dalla sua fonte, se un guasto
+# resta segnalato, dove sta il fuoco, se un avviso si vede davvero, se la pagina
+# sborda, il contrasto e i bersagli. Li esegue il banco del client, nello stesso
+# Chrome e con lo stesso server (gruppi T-01…T-09 in tests/client_account.mjs);
+# il contratto e' nel §10.1 del progetto.
+#
+# **Il passaggio all'area 6** non ha un raccordo da riconoscere, come le aree
+# 2–5: le garanzie valgono per la pagina di oggi come per quella di P-25.
+# Quello che la pagina di oggi non rispetta ancora — misurato, e sono difetti
+# veri — sta fra i «Difetti aperti dichiarati» di docs/eccezioni-interfaccia.md,
+# con la parte e la verifica: la suite pretende che la verifica giri e sia
+# rossa, e diventa rossa lei il giorno che il difetto e' chiuso e la riga no.
+# Alla merge di P-25 la tabella non deve avere piu' righe `T-*`: e' li' che si
+# esige il regime nuovo, senza un segno da cercare nella pagina.
+GRUPPI_RIFINITURA = ['T-01', 'T-02', 'T-03', 'T-04', 'T-05:finestra', 'T-05:arresti', 'T-06', 'T-07:prova', 'T-07:conto',
+                     'T-08', 'T-09']
+VERIFICHE_RIFINITURA = {'T-01': 9, 'T-02': 9, 'T-03': 11, 'T-04': 6, 'T-05:finestra': 5, 'T-05:arresti': 2, 'T-06': 3,
+                        'T-07:prova': 5, 'T-07:conto': 3, 'T-08': 2, 'T-09': 2}
+
+# Rotture della pagina di riferimento per l'area 6: (che cosa, parti da
+# eseguire, sostituzioni, parola che il rosso deve contenere). Ognuna e' un
+# modo in cui una pagina puo' sembrare a posto e non esserlo.
+_STILE = 'a.da-solo, label {display:inline-block}'
+_TEC = '<section class="view" id="v-tec">\n  <h1>Che tecnica serve?</h1>'
+_PRIMA = '<p id="avviso-prova">'
+_INFO = ("  const righe = S.conto && S.db ? (await tx(() => null)).righe : S.righe.concat(S.prova || []);\n"
+         "  $('info-conta').textContent = `risposte ai quiz ${righe.filter((r) => r._t === 'q').length}`;")
+ROTTURE_RIFINITURA = [
+    # T-01: senza account nessuna frase dice che le risposte sono conservate
+    ('senza account il riepilogo dice «Risposte salvate»', ['T-01'],
+     [('<p>Hai risposto a ${u.esiti.length} su ${u.n}.', '<p>Risposte salvate: ${u.esiti.length}.</p><p>Hai risposto a ${u.esiti.length} su ${u.n}.')],
+     'il riepilogo non dice'),
+    ('senza account il Percorso dice che le risposte sono salvate su questo dispositivo', ['T-01'],
+     [(_PRIMA + 'Senza account', _PRIMA + 'Le tue risposte sono salvate su questo dispositivo. Senza account')],
+     'il Percorso non dice'),
+    # T-02: con l'account, da inviare e non sul server; i numeri dalla coda
+    ('lo stato dell\'invio non si ridipinge quando una risposta entra in coda', ['T-02'],
+     [("  catch (e) { guasto(e); return; }\n  // Lo stato si ridipinge adesso: la risposta e' in coda, e finche' il server\n"
+       "  // non l'ha nominata la pagina non dice che e' sul server (R-RIF-02).\n  await dipingiStato();\n",
+       "  catch (e) { guasto(e); return; }\n")],
+     'non dice che sono sul server'),
+    ('«confermate sul server» senza guardare la coda', ['T-02'],
+     [("coda.daInviare.length ? `${coda.daInviare.length} risposte da inviare.${guasto}` : 'Le risposte di questo dispositivo sono confermate sul server'",
+       "'Le risposte di questo dispositivo sono confermate sul server'")],
+     'non dice che sono sul server'),
+    ('il numero da inviare conta le righe della copia, non la coda', ['T-02'],
+     [('`${coda.daInviare.length} risposte da inviare.${guasto}`', '`${righe.length} risposte da inviare.${guasto}`')],
+     'il numero da inviare'),
+    # T-03: la scrittura fallita
+    ('una scrittura riuscita spegne il segnale del guasto', ['T-03'],
+     [("  catch (e) { guasto(e); return; }\n",
+       "  catch (e) { guasto(e); return; }\n  S.guasto = null; $('info-segnale').hidden = true; $('guasto').hidden = true;\n")],
+     'Info segnala ancora il guasto'),
+    ('il guasto non arriva alla porta di Info', ['T-03'],
+     [("  $('info-segnale').hidden = false;\n}", '}')],
+     'la porta di Info segnala'),
+    ('la scrittura fallita non si annuncia', ['T-03'],
+     [('<p id="guasto" role="alert" hidden>', '<p id="guasto" hidden>'), ('<p data-save-warning role="alert" hidden>', '<p data-save-warning hidden>')],
+     'si annuncia'),
+    # T-04: dopo un 401, chi entra non vede le righe di prima
+    ('dopo il 401 l\'accesso di B tiene la copia di A', ['T-04'],
+     [('  if (S.conto) fermaQui();\n  await entra(r.corpo);', '  await entra(r.corpo);'),
+      ('  S.db = await apriDb(S.conto.chiave);', '  S.db = S.db || await apriDb(S.conto.chiave);')],
+     'nessuna di A'),
+    ('Info conta da un contatore suo', ['T-04'],
+     [(_INFO, "  $('info-conta').textContent = `risposte ai quiz ${S.date || 0}`;"),
+      ('  const giusta = j === it.x;', '  const giusta = j === it.x;\n  S.date = (S.date || 0) + 1;')],
+     'Info conta'),
+    ('dopo il 401 la porta resta «Account»', ['T-04'],
+     [("function scaduto() {\n  S.scaduto = true;\n  $('conto-porta').textContent = 'Accedi';", 'function scaduto() {\n  S.scaduto = true;')],
+     'offre di nuovo «Accedi»'),
+    # T-05: il fuoco
+    ('la finestra non prende il fuoco', ['T-05:finestra'],
+     [("h.tabIndex = -1; a.setAttribute('aria-labelledby', 'account-titolo'); h.focus(); }", "a.setAttribute('aria-labelledby', 'account-titolo'); }")],
+     'prende il fuoco'),
+    ('la finestra non ha un nome', ['T-05:finestra'],
+     [("a.setAttribute('aria-labelledby', 'account-titolo'); h.focus();", 'h.focus();')],
+     'con un nome'),
+    ('Tab esce dalla finestra', ['T-05:finestra'],
+     [("  if (e.key !== 'Tab') return;", '  return;')],
+     'restano dentro'),
+    ('chiusa la finestra, il fuoco non torna a chi l\'ha aperta', ['T-05:finestra'],
+     [('  if (da && da.isConnected) da.focus();', '')],
+     'torna ad «Accedi»'),
+    ('un arresto di Tab senza indicatore', ['T-05:arresti'],
+     [(_STILE, _STILE + '\nbutton:focus {outline:none}')],
+     'indicatore'),
+    ('un\'intestazione fissa copre il fuoco', ['T-05:arresti'],
+     [('<body>\n<header>', '<body>\n<div style="position:fixed;top:0;left:0;right:0;height:150px;background:#fff"></div>\n<header>')],
+     'coperto'),
+    # T-06: un avviso nel DOM ma occultato
+    ('l\'avviso e\' trasparente', ['T-06'], [(_PRIMA, '<p id="avviso-prova" style="opacity:0">')], 'trasparente'),
+    ('l\'avviso e\' nascosto ai lettori di schermo', ['T-06'], [(_PRIMA, '<p id="avviso-prova" aria-hidden="true">')], 'ignora'),
+    ('l\'avviso e\' fuori dallo schermo', ['T-06'], [(_PRIMA, '<p id="avviso-prova" style="position:absolute;left:-9999px">')], 'fuori dallo schermo'),
+    ('l\'avviso ha il colore del fondo', ['T-06'], [(_PRIMA, '<p id="avviso-prova" style="color:#fff">')], 'contrasto'),
+    ('l\'avviso e\' coperto', ['T-06'],
+     [(_PRIMA, '<div style="position:absolute;top:0;left:0;right:0;height:900px;background:#fff"></div>' + _PRIMA)],
+     'ha sopra'),
+    # T-07: sbordi
+    ('l\'intestazione sborda a 320 px', ['T-07:prova'], [('<header>', '<header style="min-width:340px">')], 'a 320 px'),
+    ('una tabella sborda a 375 px', ['T-07:prova'],
+     [(_TEC, _TEC + '\n  <table style="width:420px"><tr><td>Tecnica</td><td>Fatti</td></tr></table>')],
+     'a 375 px nessuna vista'),
+    # Le due qui sotto stanno in un contenitore piu' stretto di 320 px: niente
+    # esce dallo schermo, e le prende solo il loro controllo (provato togliendolo).
+    ('una tabella che scorre dentro il suo contenitore', ['T-07:prova'],
+     [(_TEC, _TEC + '\n  <div style="overflow-x:auto;width:200px"><table style="width:300px"><tr><td>Tecnica</td><td>Fatti</td></tr></table></div>')],
+     'scorre di lato al suo interno'),
+    ('un testo tagliato da un contenitore', ['T-07:prova'],
+     [('<h1>Il tuo percorso</h1>', '<div style="overflow:hidden;width:120px"><span style="white-space:nowrap">'
+       'Il tuo percorso di studio</span></div><h1>Il tuo percorso</h1>')],
+     'tagliato'),
+    ('la pagina senza meta viewport', ['T-07:prova'],
+     [('<meta name="viewport" content="width=device-width, initial-scale=1">', '')],
+     'meta viewport'),
+    ('con l\'account il pannello sborda', ['T-07:conto'],
+     [('function pannelloConto() {\n  pannello(`<h2>Il tuo account</h2>',
+       'function pannelloConto() {\n  pannello(`<h2 style="white-space:nowrap">Il tuo account, con le sue risposte e i suoi punteggi</h2>')],
+     'il pannello dell\'account'),
+    # T-08 e T-09
+    ('un titolo grigio chiaro', ['T-08'], [(_STILE, _STILE + '\nh1 {color:#aaa}')], 'contrasto minimo'),
+    ('un pulsante di 20 px', ['T-09'], [(_STILE, _STILE + '\n#c-start {min-height:0; height:20px}')], '24 × 24'),
+    ('un pulsante di 36 px', ['T-09'], [(_STILE, _STILE + '\n#c-start {min-height:0; height:36px}')], '44 × 44'),
+]
+
+
+def dichiarati_rifinitura(parte=None):
+    """[(parte, verifica)] dei difetti dichiarati dell'area 6, o di una parte sola."""
+    return [(p, x) for p, x in (difetti_dichiarati() or []) if p.startswith('T-') and (parte is None or p == parte)]
+
+
+def esame_rifinitura(v, parte):
+    """[(nome, ok, extra)] di una parte sulla pagina vera: ogni verifica verde,
+    tranne quelle dichiarate, che devono esserci ed essere rosse — il difetto
+    ancora vero, misurato per il suo motivo."""
+    dichiarate = [x for _, x in dichiarati_rifinitura(parte)]
+    vp = [x for x in v if x['gruppo'] == parte]
+    nomi = [x['nome'] for x in vp]
+    out = []
+    for d in dichiarate:
+        if d not in nomi:
+            out.append(('la verifica dichiarata «%s» e\' una verifica del banco' % d, False,
+                        'il banco non l\'ha eseguita, o la dichiarazione nomina una verifica che non esiste. Eseguite: '
+                        + ('; '.join(nomi[:4]) or 'nessuna')))
+            continue
+        x = vp[nomi.index(d)]
+        out.append(('il difetto dichiarato e\' ancora vero sulla pagina («%s»)' % d, not x['ok'],
+                    'la verifica e\' verde: il difetto e\' chiuso. Togli la riga da «Difetti aperti dichiarati» in '
+                    'docs/eccezioni-interfaccia.md nello stesso commit'))
+    for x in vp:
+        if x['nome'] not in dichiarate:
+            out.append((x['nome'], x['ok'], x.get('extra', '')))
+    return out
+
+
+def registra_rifinitura(parte):
+    _, out, _ = banco_client()
+    v = out.get('app', [])
+    for x in v:
+        if x['gruppo'] == 'banco':
+            check('rifinitura banco: %s' % x['nome'], x['ok'], x.get('extra', ''))
+    for nome, ok, extra in esame_rifinitura(v, parte):
+        check('rifinitura %s: %s' % (parte, nome), ok, extra)
+    n = sum(1 for x in v if x['gruppo'] == parte)
+    check('rifinitura %s: il giro sulla pagina vera e\' arrivato in fondo' % parte, n >= VERIFICHE_RIFINITURA[parte],
+          'troppo poche verifiche (%d su %d): il banco non l\'ha eseguito per intero' % (n, VERIFICHE_RIFINITURA[parte]))
+
+
+def test_rifinitura_senza_account():
+    """R-RIF-01 e R-RIF-03 senza account: nessuna frase di conservazione nella
+    prova, e il numero di Info dalle risposte della pagina (T-01)."""
+    registra_rifinitura('T-01')
+
+
+def test_rifinitura_invio():
+    """R-RIF-02 e R-RIF-03 con l'account: con la rete che tace o assente, da
+    inviare e non sul server, e i numeri dalla coda e dalla copia (T-02)."""
+    registra_rifinitura('T-02')
+
+
+def test_rifinitura_guasto():
+    """R-RIF-04: una scrittura fallita si vede, si annuncia, e Info non si spegne (T-03)."""
+    registra_rifinitura('T-03')
+
+
+def test_rifinitura_identita():
+    """R-RIF-05: dopo un 401 chi entra non vede le righe di chi c'era (T-04)."""
+    registra_rifinitura('T-04')
+
+
+def test_rifinitura_finestra():
+    """R-RIF-06: la finestra prende, tiene e rende il fuoco, ed e' esposta con un nome (T-05:finestra)."""
+    registra_rifinitura('T-05:finestra')
+
+
+def test_rifinitura_fuoco():
+    """R-RIF-07: ogni arresto di Tab ha un indicatore, e non resta coperto (T-05:arresti)."""
+    registra_rifinitura('T-05:arresti')
+
+
+def test_rifinitura_avvisi():
+    """R-RIF-08: un avviso si vede davvero e si legge, non solo nel DOM (T-06)."""
+    registra_rifinitura('T-06')
+
+
+def test_rifinitura_larghezze():
+    """R-RIF-09: a 1280, 640, 375 e 320 px nessuna superficie sborda, nei due regimi (T-07)."""
+    registra_rifinitura('T-07:prova')
+    registra_rifinitura('T-07:conto')
+
+
+def test_rifinitura_contrasto():
+    """R-RIF-11: il contrasto di ogni testo che si vede, dai colori calcolati (T-08)."""
+    registra_rifinitura('T-08')
+
+
+def test_rifinitura_bersagli():
+    """R-RIF-12: i bersagli di tocco, 24 px il minimo AA e 44 l'obiettivo (T-09)."""
+    registra_rifinitura('T-09')
+
+
+def test_rifinitura_provata_al_contrario():
+    """Il banco dell'area 6 contro sé stesso: la pagina di riferimento passa
+    ogni parte per intero, ogni rottura e' rossa per il suo motivo, e ogni
+    difetto dichiarato della pagina vera nomina una verifica che la pagina di
+    riferimento passa e che una rottura fa diventare rossa."""
+    _, out, applicate = banco_client()
+    rif = out.get('riferimento', [])
+    for g in GRUPPI_RIFINITURA:
+        vg = [x for x in rif if x['gruppo'] == g]
+        rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in vg if not x['ok']]
+        check('rifinitura %s: la pagina di riferimento la passa' % g, not rossi, '; '.join(rossi[:3]))
+        check('rifinitura %s: il giro sulla pagina di riferimento e\' arrivato in fondo' % g, len(vg) >= VERIFICHE_RIFINITURA[g],
+              'troppo poche verifiche (%d su %d)' % (len(vg), VERIFICHE_RIFINITURA[g]))
+    for cosa, gruppi, _, atteso in ROTTURE_RIFINITURA:
+        check('rottura della rifinitura «%s»: si applica alla pagina di riferimento' % cosa, applicate.get(cosa),
+              'il testo da sostituire non c\'e\' piu\': la rottura non romperebbe niente')
+        vr = out.get('rottura: ' + cosa)
+        if vr is None:
+            continue
+        rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in vr if not x['ok']]
+        check('rottura della rifinitura «%s»: il banco diventa rosso' % cosa, bool(rossi), 'e\' passata verde')
+        check('rottura della rifinitura «%s»: e il rosso nomina il difetto' % cosa, any(atteso in r for r in rossi),
+              'rossi: ' + '; '.join(rossi[:3]))
+    for parte, verifica in dichiarati_rifinitura():
+        x = [y for y in rif if y['gruppo'] == parte and y['nome'] == verifica]
+        check('difetto dichiarato %s «%s»: sulla pagina di riferimento la verifica c\'e\' ed e\' verde' % (parte, verifica),
+              bool(x) and x[0]['ok'], 'la dichiarazione nomina una verifica che il banco non fa, o che non si puo\' passare')
+        rossa = any(y['gruppo'] == parte and y['nome'] == verifica and not y['ok']
+                    for cosa, _, _, _ in ROTTURE_RIFINITURA for y in out.get('rottura: ' + cosa, []))
+        check('difetto dichiarato %s «%s»: una rottura la fa diventare rossa' % (parte, verifica), rossa,
+              'nessuna rottura della pagina di riferimento la fa fallire: la verifica dichiarata non ha mai mostrato di saper vedere il difetto')
+
+
 # --- 6. il motore non ha funzioni orfane (R-NAV-02) --------------------------------
 
 def orfani_dichiarati():
@@ -2438,6 +2697,9 @@ def main():
               test_client_scarica_dopo_azzeramento, test_client_cancella_dopo_recupero, test_client_conferma_mancante, test_client_uscita_segnali,
               test_client_bozza_senza_account, test_client_bozza,
               test_client_provato_al_contrario,
+              test_rifinitura_senza_account, test_rifinitura_invio, test_rifinitura_guasto, test_rifinitura_identita,
+              test_rifinitura_finestra, test_rifinitura_fuoco, test_rifinitura_avvisi, test_rifinitura_larghezze,
+              test_rifinitura_contrasto, test_rifinitura_bersagli, test_rifinitura_provata_al_contrario,
               test_motore_senza_orfani, test_chiamate_al_motore_preservate,
               test_letture_che_non_mascherano,
               test_testi_leggibili, test_alt_di_contenuto, test_trasloco):

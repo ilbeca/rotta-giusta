@@ -35,6 +35,14 @@
 // specifica le nomina una per una (R-ACC-63…65). Le prime due tengono anche
 // R-ACC-66 (P-49): il pulsante di conferma premuto senza la spunta dice che
 // cosa manca, e non cambia niente.
+//
+// E da P-45 i gruppi T-01…T-09 dell'area 6, la rifinitura trasversale
+// (docs/area-6-progetto.md §10.3): quello che la pagina dice di conservare nei
+// due regimi d'accesso, i numeri dalla loro fonte, il guasto che resta
+// segnalato, il fuoco, gli avvisi che si vedono davvero, lo sbordo da 1280 a
+// 320 px, il contrasto e i bersagli. Misurano con il browser — rettangoli,
+// colori calcolati, tasti veri, albero di accessibilita' — e non cercano
+// stringhe nel sorgente.
 
 import { createServer } from 'node:http';
 import { readFileSync, writeFileSync, mkdirSync, existsSync, mkdtempSync, rmSync, statSync } from 'node:fs';
@@ -2662,14 +2670,754 @@ async function c19schede(b, ctx, v, g) {
   } finally { await c.chiudi(); }
 }
 
+// --- L'area 6: la rifinitura trasversale (P-45) ----------------------------------------
+//
+// docs/area-6-progetto.md §10.1 chiede controlli su quello che una lettura del
+// sorgente non vede: che cosa la pagina dice di conservare nei due regimi
+// d'accesso, se un numero viene dalla sua fonte, se un guasto resta segnalato,
+// se una finestra tiene il fuoco, se un avviso si vede davvero, se la pagina
+// sborda. Il contratto per esteso sta li'; qui le misure.
+//
+// Le misure che girano nella pagina sono funzioni vere, serializzate con
+// `toString()`: niente escape a mano, e il codice si legge. `kitPagina()` porta
+// quello che servono tutte — visibilita', nome leggibile, colori, opacita'.
+
+function kitPagina() {
+  const V = (e) => !!e && e.getClientRects().length > 0 && getComputedStyle(e).visibility !== 'hidden';
+  const nome = (e) => {
+    const t = (e.textContent || e.value || '').trim().replace(/\s+/g, ' ');
+    return (e.id ? '#' + e.id : e.tagName.toLowerCase() + (e.classList.length ? '.' + [...e.classList].join('.') : ''))
+      + (t ? ' «' + t.slice(0, 28) + '»' : '');
+  };
+  const rgba = (t) => {
+    const m = String(t).match(/rgba?\(([^)]+)\)/);
+    if (!m) return [0, 0, 0, 0];
+    const p = m[1].split(/[\s,/]+/).filter(Boolean).map(Number);
+    return [p[0], p[1], p[2], p.length > 3 ? p[3] : 1];
+  };
+  const sopra = (a, b) => [0, 1, 2].map((i) => a[i] * a[3] + b[i] * (1 - a[3])).concat(1);
+  const lum = (c) => {
+    const f = (x) => { x /= 255; return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4; };
+    return 0.2126 * f(c[0]) + 0.7152 * f(c[1]) + 0.0722 * f(c[2]);
+  };
+  const opacita = (e) => { let o = 1; for (let p = e; p; p = p.parentElement) o *= Number(getComputedStyle(p).opacity); return o; };
+  // Il fondo dietro un elemento: i colori degli antenati composti fino al primo
+  // opaco, sopra il bianco del documento. Un'immagine o una trasparenza di
+  // gruppo lungo la strada lo rendono non misurabile: null, e si dice.
+  const fondo = (e) => {
+    const strati = [];
+    for (let p = e; p; p = p.parentElement) {
+      const cs = getComputedStyle(p);
+      if (cs.backgroundImage !== 'none' || Number(cs.opacity) < 1) return null;
+      const c = rgba(cs.backgroundColor);
+      if (c[3] > 0) { strati.push(c); if (c[3] >= 1) break; }
+    }
+    return strati.reverse().reduce((x, c) => sopra(c, x), [255, 255, 255, 1]);
+  };
+  // WCAG 1.4.3: 4,5:1, e 3:1 per il testo grande (24 px, o 18,66 px in grassetto).
+  const contrasto = (e) => {
+    const cs = getComputedStyle(e), bg = fondo(e);
+    if (!bg) return null;
+    const fg = sopra(rgba(cs.color), bg);
+    const a = lum(fg), b = lum(bg);
+    const px = parseFloat(cs.fontSize), grande = px >= 24 || (px >= 18.66 && Number(cs.fontWeight) >= 700);
+    return { r: (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05), soglia: grande ? 3 : 4.5, fg: cs.color,
+      bg: `rgb(${bg.slice(0, 3).map(Math.round).join(', ')})` };
+  };
+  const haTesto = (e) => [...e.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
+  return { V, nome, opacita, fondo, contrasto, haTesto };
+}
+
+/** Un'espressione che esegue `f(kit, ...argomenti)` nella pagina. */
+const inPagina = (f, ...a) => `(${f})((${kitPagina})()${a.map((x) => ', ' + JSON.stringify(x)).join('')})`;
+
+/**
+ * Che cosa sborda (area 6 §5): la pagina che scorre di lato, un contenitore
+ * che scorre di lato al suo interno — `overflow-x:auto` non e' da solo una
+ * correzione —, un elemento che esce in parte dallo schermo, un testo o un
+ * controllo tagliato da un antenato che nasconde. Un elemento tutto fuori
+ * dallo schermo non sborda: e' messo li' apposta, e se e' un avviso lo prende
+ * T-06.
+ */
+function sbordi(K, larghezza) {
+  const W = document.documentElement.clientWidth, out = [];
+  // Senza `<meta name="viewport">` un telefono dispone la pagina a 980 px e la
+  // rimpicciolisce: non sborda, ma non e' nemmeno a quella larghezza. Misurato
+  // il 30 settembre 2026 sulla pagina di riferimento, che non l'aveva: la
+  // «misura a 375 px» misurava 980. La barra di scorrimento del desktop ne
+  // toglie 15.
+  if (larghezza && Math.abs(W - larghezza) > 20) return [`la pagina e' disposta a ${W} px invece di ${larghezza}: il browser non la adatta allo schermo (meta viewport)`];
+  const sw = document.scrollingElement.scrollWidth;
+  if (sw > W) out.push(`la pagina scorre di lato di ${sw - W} px`);
+  const conta = (e) => e.matches('button, a, input, select, textarea, summary, label') || K.haTesto(e);
+  for (const e of document.querySelectorAll('body *')) {
+    if (!K.V(e)) continue;
+    const cs = getComputedStyle(e);
+    if ((cs.overflowX === 'auto' || cs.overflowX === 'scroll') && e.scrollWidth > e.clientWidth + 1) {
+      out.push(`${K.nome(e)} scorre di lato al suo interno di ${e.scrollWidth - e.clientWidth} px`);
+    }
+    const r = e.getBoundingClientRect();
+    if (r.width < 1 || r.height < 1) continue;
+    if ((r.right > W + 1 && r.left < W) || (r.left < -1 && r.right > 0)) {
+      out.push(`${K.nome(e)} esce dallo schermo di ${Math.round(Math.max(r.right - W, -r.left))} px`);
+      continue;
+    }
+    if (!conta(e)) continue;
+    for (let p = e.parentElement; p && p !== document.body; p = p.parentElement) {
+      const o = getComputedStyle(p).overflowX;
+      if (o !== 'hidden' && o !== 'clip') continue;
+      const q = p.getBoundingClientRect();
+      if (r.right > q.right + 1 || r.left < q.left - 1) { out.push(`${K.nome(e)} e' tagliato da ${K.nome(p)}`); break; }
+    }
+  }
+  return [...new Set(out)];
+}
+
+/**
+ * Il contrasto di ogni testo che si vede (area 6 §4, appendice A): il colore
+ * calcolato del testo sul fondo calcolato, non il nome di un token. Restano
+ * fuori, e si contano, i testi su un fondo che non si misura (immagine,
+ * trasparenza di gruppo); e quelli dei controlli disabilitati, che WCAG 1.4.3
+ * esclude.
+ */
+function contrasti(K) {
+  const bassi = [], nonMisurabili = new Set();
+  let n = 0;
+  for (const e of document.querySelectorAll('body *')) {
+    if (!K.V(e) || !K.haTesto(e) || K.opacita(e) === 0) continue;
+    const r = e.getBoundingClientRect();
+    if (r.width <= 1 || r.height <= 1) continue;
+    if (e.closest('[disabled], [aria-disabled="true"]')) continue;
+    const c = K.contrasto(e);
+    if (!c) { nonMisurabili.add(K.nome(e)); continue; }
+    n++;
+    if (c.r < c.soglia) bassi.push(`${K.nome(e)} ${c.r.toFixed(2)}:1 (${c.fg} su ${c.bg}, soglia ${c.soglia})`);
+  }
+  return { n, bassi: [...new Set(bassi)], nonMisurabili: [...nonMisurabili] };
+}
+
+/**
+ * I bersagli di tocco (area 6 §6, appendice A): ogni controllo che si vede e
+ * si puo' usare, con il rettangolo che il browser gli da'. Una casella o un
+ * pallino si misurano con la loro etichetta, che e' il bersaglio vero; un link
+ * dentro una frase no, ed e' l'eccezione di WCAG 2.5.8. Il minimo AA e' 24 px,
+ * l'obiettivo del progetto 44.
+ */
+function bersagli(K) {
+  const piccoli = [], sotto24 = [];
+  let n = 0;
+  const inFrase = (a) => a.tagName === 'A' && [...a.parentElement.childNodes].some((x) => x !== a && x.nodeType === 3 && x.textContent.trim());
+  for (const e of document.querySelectorAll('button, a[href], summary, select, textarea, input:not([type=hidden]), [role=button], [role=tab], [role=link]')) {
+    if (!K.V(e) || e.disabled || K.opacita(e) === 0 || inFrase(e)) continue;
+    let r = e.getBoundingClientRect();
+    if (e.matches('input[type=checkbox], input[type=radio]')) {
+      const l = e.closest('label') || (e.labels && e.labels[0]);
+      if (l) r = l.getBoundingClientRect();
+    }
+    if (r.width < 2 || r.height < 2) continue;
+    n++;
+    const s = `${K.nome(e)} ${Math.round(r.width)}×${Math.round(r.height)}`;
+    if (r.width < 24 || r.height < 24) sotto24.push(s);
+    else if (r.width < 44 || r.height < 44) piccoli.push(s);
+  }
+  return { n, piccoli, sotto24 };
+}
+
+/**
+ * Un avviso si vede davvero (area 6 §7 e §10.1, «un avviso presente nel DOM ma
+ * occultato»): la frase c'e', occupa spazio, portata al centro sta dentro lo
+ * schermo, non e' trasparente, non ha niente sopra, e il suo testo ha il
+ * contrasto minimo. Se passa, l'elemento riceve un segno, e il banco chiede al
+ * browser come lo espone ai lettori di schermo.
+ */
+function avviso(K, frase, segno) {
+  const dentro = (x) => x.textContent.includes(frase);
+  const tutti = [...document.querySelectorAll('body *')].filter((x) => dentro(x) && ![...x.children].some(dentro));
+  if (!tutti.length) return { ok: false, perche: 'la frase non c\'e\' nel DOM' };
+  // La stessa frase puo' stare in piu' punti — nel Percorso e nel runner che
+  // gli sta sopra —: basta che una copia si veda davvero, e si dice perche'
+  // non si vede la prima che ci prova.
+  const visibili = tutti.filter(K.V);
+  if (!visibili.length) return { ok: false, perche: `e' nel DOM ma non occupa spazio o e' visibility:hidden (${K.nome(tutti[0])})` };
+  let primo = null;
+  for (const e of visibili) {
+    const perche = misuraAvviso(K, e);
+    if (!perche) { e.setAttribute('data-banco-avviso', segno); return { ok: true }; }
+    primo = primo || perche;
+  }
+  return { ok: false, perche: primo };
+  function misuraAvviso(K, e) {
+    e.scrollIntoView({ block: 'center', inline: 'nearest' });
+    // La prima riga del testo: il rettangolo d'insieme di un testo su due righe
+    // comprende pezzi di pagina che non sono suoi.
+    const r = e.getClientRects()[0];
+    if (!r || r.width < 2 || r.height < 2) return `misura ${r ? Math.round(r.width) + '×' + Math.round(r.height) : '0×0'} px`;
+    const cx = r.left + Math.min(r.width / 2, 20), cy = r.top + r.height / 2;
+    if (cx < 0 || cx > innerWidth || cy < 0 || cy > innerHeight) return `sta fuori dallo schermo (${Math.round(r.left)}, ${Math.round(r.top)})`;
+    const o = K.opacita(e);
+    if (o < 0.95) return `e' trasparente (opacita' ${o.toFixed(2)})`;
+    const t = document.elementFromPoint(cx, cy);
+    if (!t || !(e.contains(t) || t.contains(e))) return `ha sopra ${t ? K.nome(t) : 'niente'}`;
+    const c = K.contrasto(e);
+    if (c && c.r < c.soglia) return `ha un contrasto di ${c.r.toFixed(2)}:1 (${c.fg} su ${c.bg})`;
+    return null;
+  }
+}
+
+/** Le regioni vive che dicono `re`: segnate, perche' il banco chieda al browser se le espone. */
+function vive(K, re, segno) {
+  const r = new RegExp(re, 'i');
+  const tutte = [...document.querySelectorAll('[role=alert], [role=status], [role=log], [aria-live]:not([aria-live=off])')].filter((x) => r.test(x.textContent));
+  tutte.forEach((x, i) => x.setAttribute('data-banco-vivo', segno + '-' + i));
+  return tutte.map((x, i) => ({ segno: segno + '-' + i, nome: K.nome(x) }));
+}
+
+/**
+ * Un arresto di Tab (area 6 §6): chi ha il fuoco, se il suo centro si vede e
+ * non ha niente sopra, e — al passo dopo, quando l'ha perso — se il suo aspetto
+ * cambiava: un indicatore che non cambia niente non indica il fuoco.
+ */
+function passoFuoco(K) {
+  const firma = (e) => { const s = getComputedStyle(e); return [s.outlineStyle, s.outlineWidth, s.outlineColor, s.boxShadow, s.borderColor, s.backgroundColor, s.color, s.textDecorationLine].join('|'); };
+  const st = window.__bancoFuoco || (window.__bancoFuoco = { prec: null, esiti: [] });
+  if (st.prec && st.prec.el !== document.activeElement) {
+    const x = st.prec;
+    st.esiti.push({ nome: x.nome, cambia: firma(x.el) !== x.firma, coperto: x.coperto });
+  }
+  const a = document.activeElement;
+  if (!a || a === document.body || a === document.documentElement) { st.prec = null; return { giro: false, niente: true }; }
+  const giro = a.hasAttribute('data-banco-fuoco');
+  a.setAttribute('data-banco-fuoco', '');
+  const r = a.getBoundingClientRect();
+  const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  let coperto = null;
+  if (cx < 0 || cx > innerWidth || cy < 0 || cy > innerHeight) coperto = 'fuori dallo schermo';
+  else {
+    const t = document.elementFromPoint(cx, cy);
+    if (!t || !(a.contains(t) || t.contains(a))) coperto = 'sotto ' + (t ? K.nome(t) : 'niente');
+  }
+  st.prec = { el: a, nome: K.nome(a), firma: firma(a), coperto };
+  return { giro, n: st.esiti.length };
+}
+
+/** Il fuoco rispetto alla finestra modale che si vede. */
+function fuocoModale(K) {
+  const m = [...document.querySelectorAll('[aria-modal="true"]')].find(K.V);
+  const a = document.activeElement;
+  if (m) m.setAttribute('data-banco-modale', '');
+  return { modale: !!m, dentro: !!m && !!a && m.contains(a), chi: a ? K.nome(a) : 'niente',
+    focusabili: m ? [...m.querySelectorAll('button, a[href], input, select, textarea, summary, [tabindex]:not([tabindex="-1"])')].filter(K.V).length : 0 };
+}
+
+const VISTE_RIF = ['oggi', 'quiz', 'cart', 'diag', 'tec', 'seg', 'info'];
+const NOMI_VISTE = { oggi: 'Percorso', quiz: 'Quiz', cart: 'Carteggio', diag: 'Progressi', tec: 'Che tecnica serve?', seg: 'Segnali', info: 'Info' };
+
+/**
+ * Una vista, dalla sua porta. Senza account Progressi non ha una porta
+ * visibile nella barra (ADR-004): la vista si apre lo stesso, dalla porta nel
+ * DOM, perche' anche la spiegazione che la sostituisce deve stare nello schermo.
+ */
+async function apriVista(tab, v) {
+  const ok = await tab.valuta(js(`const e = [...document.querySelectorAll('[data-v="${v}"]')].find(V) || document.querySelector('[data-v="${v}"]');
+    if (!e) return false; e.click(); return true;`));
+  return ok && tab.attendi(js(`return V(document.getElementById('v-${v}'));`), REAZIONE);
+}
+
+/**
+ * Le superfici della prova senza account, una per una: le viste, poi il
+ * runner con una risposta, il riepilogo, e la finestra «Accedi». Su ognuna
+ * `misura(dove)`; restituisce false se una non si apre.
+ */
+async function superfici(tab, misura) {
+  for (const v of VISTE_RIF) {
+    if (!await apriVista(tab, v)) return `la vista ${NOMI_VISTE[v]} non si apre`;
+    await misura(NOMI_VISTE[v]);
+  }
+  if (!await apriVista(tab, 'oggi') || !await clic(tab, '[data-rotta-start]')) return 'l\'attivita\' del Percorso non parte';
+  if (!await rispondiQuiz(tab, [], 'T', '')) return 'il runner non mostra un quesito della banca';
+  await misura('il runner');
+  if (!await chiudiQuiz(tab, [], 'T', '')) return 'il riepilogo non si apre';
+  await misura('il riepilogo');
+  if (!await alPercorso(tab)) return 'dal riepilogo non si torna al Percorso';
+  if (!await apriAccedi(tab)) return 'la finestra «Accedi» non si apre';
+  await misura('la finestra «Accedi»');
+  await tab.tasto('Escape');
+  await tab.attendi(`!(${modaleVisibile})`, REAZIONE);
+  return null;
+}
+
+/** La pagina si dispone davvero a `larghezza` (vedi sbordi): senza, una misura «a 375 px» ne misura 980. */
+const disposta = (tab, larghezza) => tab.valuta(`Math.abs(document.documentElement.clientWidth - ${larghezza}) <= 20 ? null : document.documentElement.clientWidth`);
+
+/** «Accedi» nell'intestazione, con il fuoco e Invio come da tastiera, fino alla finestra. */
+async function apriAccedi(tab) {
+  if (!await tab.valuta(js(`const b = document.getElementById('conto-porta'); if (!V(b)) return false; b.focus(); return document.activeElement === b;`))) return false;
+  await tab.tasto('Enter');
+  return tab.attendi(modaleVisibile, REAZIONE);
+}
+
+/** Come il browser espone un elemento; null se nel frattempo la pagina l'ha ridisegnato. */
+async function esposto(tab, selettore) {
+  try { return await tab.accessibile(selettore); } catch { return null; }
+}
+
+/**
+ * Un avviso misurato, poi chiesto all'albero di accessibilita': { ok, extra }.
+ * Misura e domanda si ripetono insieme: una pagina che ridisegna i suoi avvisi
+ * (il Percorso lo fa a ogni aggiornamento dello stato) toglie il nodo segnato
+ * fra l'una e l'altra.
+ */
+async function avvisoVisibile(tab, frase) {
+  let ultimo = 'la misura non gira';
+  for (const fine = Date.now() + REAZIONE; ;) {
+    const segno = `a${++serie}`;
+    const m = await tab.valuta(inPagina(avviso, frase, segno)).catch(() => null);
+    if (m && m.ok) {
+      const ax = await esposto(tab, `[data-banco-avviso="${segno}"]`);
+      if (ax && !ax.ignorato) return { ok: true, extra: '' };
+      if (ax) ultimo = 'si vede, ma l\'albero di accessibilita\' lo ignora: un lettore di schermo non lo legge';
+    } else if (m) ultimo = m.perche;
+    if (Date.now() > fine) return { ok: false, extra: `«${frase}» non si vede davvero: ${ultimo}` };
+    await pausa(80);
+  }
+}
+
+/** Una regione viva che dice `re`, esposta ai lettori di schermo: { ok, extra }. */
+async function annunciato(tab, re) {
+  let visti = [];
+  for (const fine = Date.now() + REAZIONE; ;) {
+    const segno = `v${++serie}`;
+    visti = (await tab.valuta(inPagina(vive, re.source, segno)).catch(() => null)) || [];
+    for (const x of visti) {
+      const ax = await esposto(tab, `[data-banco-vivo="${x.segno}"]`);
+      if (ax && !ax.ignorato) return { ok: true, extra: '' };
+    }
+    if (Date.now() > fine) break;
+    await pausa(80);
+  }
+  return { ok: false, extra: visti.length ? `le regioni vive che lo dicono sono ignorate dall'albero di accessibilita': ${visti.map((x) => x.nome).join('; ')}`
+    : `nessuna regione viva (role alert o status, aria-live) dice ${re}` };
+}
+
+const lista = (xs, n = 6) => xs.slice(0, n).join('; ') + (xs.length > n ? ` … e altri ${xs.length - n}` : '');
+/** «superficie: difetto» raggruppati per difetto: lo stesso sbordo in sette viste e' un difetto solo, detto con le sue viste. */
+const perDifetto = (xs, n = 6) => {
+  const m = new Map();
+  for (const x of xs) { const i = x.indexOf(': '); const k = x.slice(i + 2); if (!m.has(k)) m.set(k, []); m.get(k).push(x.slice(0, i)); }
+  return lista([...m].map(([k, d]) => `${k} (${d.join(', ')})`), n);
+};
+
+// Le frasi con cui l'account dice che le risposte sono conservate — nel tuo
+// account, sul server, su questo dispositivo —, e le due che il §3 del progetto
+// vieta alla prova: «salvato» da solo e «riprendi domani». Senza account non
+// devono mai comparire (R-RIF-01): nessuna delle due pagine le usa in forma
+// negativa o al futuro, che sono le forme della prova («non salviamo niente»,
+// «con l'account si salvano sul server»), e che qui non combaciano.
+const FRASI_SALVATO = [/\d+ rispost[ae] salvat[ae]/i, /rispost[ae] salvat[ae]\s*:/i, /rispost[ae] salvat[ae] nel tuo account/i,
+  /confermat[aeio] (sul|dal) server/i, /salvat[oaie] su questo dispositivo/i, /^\s*salvat[oaie][.!]?\s*$/im, /riprend[ei] domani/i];
+// Quelle che, con l'account, dicono che le righe sono sul server (R-RIF-02).
+const FRASI_SERVER = [/confermat[aeio] (sul|dal) server/i, /rispost[ae] salvat[ae] nel tuo account/i, /\d+ rispost[ae] salvat[ae]/i];
+const fraseVista = (frasi) => `(() => { const t = document.body.innerText; for (const r of [${frasi.map(String).join(', ')}]) { const m = t.match(r); if (m) return m[0]; } return null; })()`;
+// Il numero di Info: «risposte ai quiz N» (R-RIF-03).
+const QUIZ_IN_INFO = `(() => { const m = document.body.innerText.match(/risposte ai quiz (\\d+)/); return m ? Number(m[1]) : null; })()`;
+const DA_INVIARE = `(() => { const m = document.body.innerText.match(/(\\d+) rispost[ae] da inviare/); return m ? Number(m[1]) : null; })()`;
+// Il segnale del guasto sulla porta di Info, da qualunque vista (specifica §8).
+const SEGNALE_INFO = 'Salvataggio da controllare';
+const segnaleInInfo = js(`return [...document.querySelectorAll('[data-v="info"]')].filter(V).some((b) => b.innerText.includes(${q(SEGNALE_INFO)}));`);
+const AVVISO_GUASTO = 'Le ultime risposte potrebbero non essere salvate.';
+
+/** La copia dell'account letta dalla pagina: risposte ai quiz e coda da inviare, dalla fonte e non dalla schermata. */
+const copiaConto = (chiave) => `(async () => {
+  if (!(await indexedDB.databases()).some((d) => d.name === ${q('rg-account-' + chiave)})) return null;
+  return new Promise((ok) => {
+    const q = indexedDB.open(${q('rg-account-' + chiave)});
+    q.onerror = () => ok(null);
+    q.onsuccess = () => {
+      const db = q.result;
+      try {
+        const t = db.transaction(['righe', 'meta']);
+        const r = t.objectStore('righe').getAll(), c = t.objectStore('meta').get('coda');
+        t.oncomplete = () => { db.close(); ok({ quiz: r.result.filter((x) => x._t === 'q').length, daInviare: c.result ? c.result.daInviare.length : 0 }); };
+        t.onerror = () => { db.close(); ok(null); };
+      } catch { db.close(); ok(null); }
+    };
+  });
+})()`;
+
+/** Info e il suo numero, aspettato finche' combacia con `atteso(n)`. */
+async function numeroInInfo(tab, atteso) {
+  if (!await apriVista(tab, 'info')) return { ok: false, valore: 'Info non si apre' };
+  return tab.attendiValore(QUIZ_IN_INFO, atteso, REAZIONE);
+}
+
+// --- T-01: senza account nessuna frase dice che le risposte sono conservate --------------
+
+async function t01(b, ctx, v) {
+  const g = 'T-01';
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    await fermaAlPrimo(v, async (w) => {
+      const pronto = await tab.attendi(PRONTO, CARICO);
+      const niente = async (dove) => {
+        const f = await tab.valuta(fraseVista(FRASI_SALVATO));
+        w.push({ gruppo: g, nome: `senza account ${dove} non dice che le risposte sono conservate`, ok: !f, extra: `si legge «${f}»` });
+      };
+      w.push({ gruppo: g, nome: 'la palestra si apre senza account', ok: pronto, extra: 'nessun [data-rotta-start] abilitato' });
+      await niente('il Percorso');
+      await clic(tab, '[data-rotta-start]');
+      w.push({ gruppo: g, nome: 'una risposta senza account', ok: !!await rispondiQuiz(tab, [], g, ''), extra: 'il runner non mostra un quesito della banca' });
+      await niente('il runner, dopo una risposta,');
+      w.push({ gruppo: g, nome: 'il riepilogo si apre', ok: await chiudiQuiz(tab, [], g, ''), extra: 'nessun riepilogo' });
+      await niente('il riepilogo');
+      await alPercorso(tab);
+      for (const x of ['diag', 'info']) { await apriVista(tab, x); await niente(NOMI_VISTE[x]); }
+      // Il numero di Info viene dalle risposte della pagina, non da un contatore suo.
+      const { ok, valore } = await numeroInInfo(tab, (n) => n === 1);
+      w.push({ gruppo: g, nome: 'senza account Info conta le risposte della pagina aperta', ok, extra: `dopo una risposta Info dice «risposte ai quiz ${valore}»` });
+    });
+  } finally { await c.chiudi(); }
+}
+
+// --- T-02: con l'account e offline, da inviare e non sul server; i numeri dalla loro fonte ----
+
+async function t02(b, ctx, v) {
+  const g = 'T-02';
+  const U = await nuovoAccount(ctx, 't02');
+  const c = await b.nuovoContesto();
+  // La rete che non risponde: ogni richiesta all'API resta ferma finche' il
+  // banco non la lascia, e allora fallisce come senza rete. E' la forma
+  // deterministica dell'offline: con l'emulazione della scheda un fetch fallisce
+  // subito, e la finestra in cui la pagina dice ancora la frase di prima dura
+  // quanto il suo timer — misurato il 30 settembre 2026 sulla pagina vera, circa
+  // un secondo; con una rete che tace dura fino al timeout della pagina.
+  let tieni = false, lascia;
+  const via = new Promise((r) => { lascia = r; });
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    await tab.intercetta(ctx.api + '/*', async () => { if (!tieni) return null; await via; return { fallisci: 'InternetDisconnected' }; });
+    let avanti = false;
+    await fermaAlPrimo(v, async (w) => {
+      w.push({ gruppo: g, nome: 'si entra nell\'account', ok: await dentro(tab, U), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+      await clic(tab, '[data-rotta-start]');
+      const r1 = await rispondiQuiz(tab, [], g, '') && await chiudiQuiz(tab, [], g, '');
+      const sul = r1 && await finche(() => ctx.righeDi(U.email) === 1, CARICO);
+      const detto = sul && await tab.attendi(fraseVista(FRASI_SERVER), REAZIONE);
+      w.push({ gruppo: g, nome: 'con la rete, quando il server ha la risposta, la pagina lo dice', ok: !!detto,
+        extra: !sul ? `il server ha ${ctx.righeDi(U.email)} righe` : `in schermata nessuna frase del server: ${await tab.valuta(inSchermata)}` });
+      tieni = true;
+      for (let i = 0; i < 2; i++) {
+        const ok = await unaDalPercorso(tab, g) && await chiudiQuiz(tab, [], g, '');
+        w.push({ gruppo: g, nome: `con la rete che non risponde, la risposta ${i + 2} si da'`, ok: !!ok, extra: 'il runner o il riepilogo non si aprono' });
+      }
+      avanti = true;
+    });
+    if (!avanti) return;
+    // Da qui ogni verifica gira anche dopo un rosso: un difetto dichiarato della
+    // pagina vera non deve nascondere le verifiche dopo di lui (esame_difetto).
+    const vista = async () => ctx.righeDi(U.email) !== 1 ? `il server ha ${ctx.righeDi(U.email)} righe` : await tab.valuta(fraseVista(FRASI_SERVER));
+    let detta = null;
+    const pulita = await maiPer(async () => { detta = await vista(); return !!detta; });
+    v.push({ gruppo: g, nome: 'con due risposte che il server non ha, la pagina non dice che sono sul server', ok: pulita,
+      extra: `con la rete che non risponde e due risposte in coda si legge «${detta}»` });
+    const fonte0 = await tab.valuta(copiaConto(U.chiave));
+    const n0 = await tab.attendiValore(DA_INVIARE, (n) => fonte0 && n === fonte0.daInviare && n === 2, REAZIONE);
+    v.push({ gruppo: g, nome: 'mentre l\'invio non risponde, il numero da inviare e\' quello della coda', ok: n0.ok,
+      extra: `la pagina dice «${n0.valore} risposte da inviare», la coda nella copia ne ha ${fonte0 ? fonte0.daInviare : '— (copia illeggibile)'}` });
+    await tab.offline(true);
+    lascia();
+    try {
+      const fonte = await tab.valuta(copiaConto(U.chiave));
+      const { ok, valore } = await tab.attendiValore(DA_INVIARE, (n) => fonte && n === fonte.daInviare && n === 2, CARICO);
+      v.push({ gruppo: g, nome: 'offline, il numero da inviare e\' quello della coda', ok,
+        extra: `la pagina dice «${valore} risposte da inviare», la coda nella copia ne ha ${fonte ? fonte.daInviare : '— (copia illeggibile)'}` });
+      const falso = await tab.valuta(fraseVista(FRASI_SERVER));
+      v.push({ gruppo: g, nome: 'offline la pagina non dice che le risposte sono sul server', ok: !falso && ctx.righeDi(U.email) === 1, extra: `si legge «${falso}»` });
+      const info = await numeroInInfo(tab, (n) => fonte && n === fonte.quiz);
+      v.push({ gruppo: g, nome: 'Info conta le risposte della copia dell\'account', ok: info.ok && fonte.quiz === 3,
+        extra: `Info dice «risposte ai quiz ${info.valore}», la copia ne ha ${fonte ? fonte.quiz : '—'}` });
+    } finally { await tab.offline(false); }
+  } finally { lascia(); await c.chiudi(); }
+}
+
+// --- T-03: una scrittura fallita si vede, si annuncia, e il segnale non si spegne ---------
+
+async function t03(b, ctx, v) {
+  const g = 'T-03';
+  const U = await nuovoAccount(ctx, 't03');
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(null, { prima: GUASTO_IDB });
+    await tab.vai(ctx.sito + '/app');
+    await fermaAlPrimo(v, async (w) => {
+      w.push({ gruppo: g, nome: 'si entra nell\'account', ok: await dentro(tab, U), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+      w.push({ gruppo: g, nome: 'prima del guasto Info non segnala niente', ok: !await tab.valuta(segnaleInInfo), extra: `la porta di Info dice gia' «${SEGNALE_INFO}»` });
+      await tab.valuta('window.__guasto = true');
+      await clic(tab, '[data-rotta-start]');
+      w.push({ gruppo: g, nome: 'con la scrittura che fallisce, una risposta', ok: !!await rispondiQuiz(tab, [], g, ''), extra: 'il runner non mostra un quesito della banca' });
+      const a = await annunciato(tab, /non (sono |è |essere )?(ancora )?salvat/);
+      w.push({ gruppo: g, nome: 'la scrittura fallita si annuncia in una regione viva esposta', ...a });
+      const r = await avvisoVisibile(tab, AVVISO_GUASTO);
+      w.push({ gruppo: g, nome: 'con il runner aperto, l\'avviso del guasto si vede davvero', ...r });
+      w.push({ gruppo: g, nome: 'la porta di Info segnala il guasto', ok: await tab.attendi(segnaleInInfo, REAZIONE), extra: `nessuna porta di Info visibile dice «${SEGNALE_INFO}»` });
+      w.push({ gruppo: g, nome: 'il riepilogo si apre', ok: await chiudiQuiz(tab, [], g, ''), extra: 'nessun riepilogo' });
+      const rr = await avvisoVisibile(tab, AVVISO_GUASTO);
+      w.push({ gruppo: g, nome: 'nel riepilogo l\'avviso del guasto si vede davvero', ...rr });
+      // Tornata la scrittura, una risposta che si scrive davvero: il guasto di
+      // prima resta segnalato (AGENTS.md: non spegnerlo mai «per pulizia»).
+      await tab.valuta('window.__guasto = false');
+      const ok = await unaDalPercorso(tab, g) && await chiudiQuiz(tab, [], g, '');
+      const scritta = ok && await tab.attendiValore(copiaConto(U.chiave), (x) => x && x.quiz >= 1, REAZIONE);
+      w.push({ gruppo: g, nome: 'tornata la scrittura, una risposta entra nella copia', ok: !!(scritta && scritta.ok), extra: 'la copia dell\'account non ha la risposta nuova' });
+      let spento = null;
+      for (const x of VISTE_RIF) { await apriVista(tab, x); if (!await tab.valuta(segnaleInInfo)) { spento = NOMI_VISTE[x]; break; } }
+      w.push({ gruppo: g, nome: 'dopo una scrittura riuscita, in ogni vista Info segnala ancora il guasto', ok: !spento, extra: `in ${spento} la porta di Info non dice piu' «${SEGNALE_INFO}»` });
+      await apriVista(tab, 'oggi');
+      const p = await avvisoVisibile(tab, AVVISO_GUASTO);
+      w.push({ gruppo: g, nome: 'nel Percorso l\'avviso del guasto si vede davvero', ...p });
+    });
+  } finally { await c.chiudi(); }
+}
+
+// --- T-04: dopo un 401, chi entra non vede le righe dell'identita' di prima --------------
+
+async function t04(b, ctx, v) {
+  const g = 'T-04';
+  const A = await nuovoAccount(ctx, 't04a'), B = await nuovoAccount(ctx, 't04b');
+  ctx.aggiungi(A.email, righeDi(`t04-${serie}`, 3));
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    await fermaAlPrimo(v, async (w) => {
+      w.push({ gruppo: g, nome: 'A entra', ok: await dentro(tab, A), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+      const a = await numeroInInfo(tab, (n) => n === 3);
+      w.push({ gruppo: g, nome: 'Info conta le tre risposte di A', ok: a.ok, extra: `Info dice «risposte ai quiz ${a.valore}»` });
+      ctx.revoca(A.email);
+      const ok = await unaDalPercorso(tab, g) && await chiudiQuiz(tab, [], g, '');
+      const scaduto = ok && await tab.attendi(js(`return [...document.querySelectorAll('button, a')].some((b) => V(b) && b.textContent.trim() === 'Accedi');`), CARICO);
+      w.push({ gruppo: g, nome: 'la risposta dopo la revoca incontra il 401, e la pagina offre di nuovo «Accedi»', ok: !!scaduto, extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+      const primaA = ctx.righeDi(A.email);
+      await entraCome(tab, B);
+      const dentroB = await tab.attendi(nellaPagina('Account'), REAZIONE)
+        && await tab.attendi(js(`return ![...document.querySelectorAll('[aria-modal="true"], dialog[open]')].some(V);`), REAZIONE);
+      w.push({ gruppo: g, nome: 'B entra dalla stessa scheda', ok: !!dentroB, extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+      const fonte = await tab.valuta(copiaConto(B.chiave));
+      const b4 = await numeroInInfo(tab, (n) => n === 0);
+      w.push({ gruppo: g, nome: 'entrato B, Info conta le risposte di B e nessuna di A', ok: b4.ok && !!fonte && fonte.quiz === 0,
+        extra: `Info dice «risposte ai quiz ${b4.valore}», la copia di B ne ha ${fonte ? fonte.quiz : '— (non c\'e\')'}; A ne aveva 4` });
+      const isolati = await maiPer(() => ctx.righeDi(B.email) !== 0 || ctx.righeDi(A.email) !== primaA);
+      w.push({ gruppo: g, nome: 'la risposta di A rimasta nel dispositivo non va a nessuno', ok: isolati, extra: `righe di B ${ctx.righeDi(B.email)}, di A ${primaA} → ${ctx.righeDi(A.email)}` });
+    });
+  } finally { await c.chiudi(); }
+}
+
+// --- T-05: il fuoco, nella finestra e in ogni arresto di Tab ------------------------------------
+
+async function t05(b, ctx, v, parte) {
+  if (!parte || parte === 'finestra') await t05finestra(b, ctx, v, 'T-05:finestra');
+  if (!parte || parte === 'arresti') await t05arresti(b, ctx, v, 'T-05:arresti');
+}
+
+async function t05finestra(b, ctx, v, g) {
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    await tab.dimensioni(375, 800);
+    await fermaAlPrimo(v, async (w) => {
+      await tab.attendi(PRONTO, CARICO);
+      const aperta = await apriAccedi(tab);
+      const f = await tab.attendiValore(inPagina(fuocoModale), (x) => x && x.dentro, REAZIONE);
+      w.push({ gruppo: g, nome: 'aperta da tastiera, la finestra «Accedi» prende il fuoco', ok: aperta && f.ok, extra: !aperta ? 'Invio su «Accedi» non apre una finestra aria-modal' : `il fuoco e' su ${f.valore && f.valore.chi}, fuori dalla finestra` });
+      const ax = await esposto(tab, '[data-banco-modale]');
+      w.push({ gruppo: g, nome: 'la finestra e\' esposta come dialogo modale con un nome', ok: !!ax && !ax.ignorato && /dialog/.test(ax.ruolo) && ax.modale === true && !!ax.nome.trim(),
+        extra: `albero di accessibilita': ${JSON.stringify(ax)}` });
+      let uscito = null;
+      const giri = f.valore.focusabili + 3;
+      for (let i = 0; i < giri + 3 && !uscito; i++) {
+        await tab.tasto('Tab', { maiuscolo: i >= giri });
+        const x = await tab.valuta(inPagina(fuocoModale));
+        if (!x.dentro) uscito = x.chi;
+      }
+      w.push({ gruppo: g, nome: 'Tab e Maiusc+Tab restano dentro la finestra', ok: !uscito, extra: `il fuoco e' uscito su ${uscito}` });
+      await tab.tasto('Escape');
+      const chiusa = await tab.attendi(`!(${modaleVisibile})`, REAZIONE);
+      w.push({ gruppo: g, nome: 'Esc chiude la finestra', ok: chiusa, extra: 'la finestra aria-modal e\' ancora aperta' });
+      const torna = await tab.attendiValore(js(`return document.activeElement === document.getElementById('conto-porta') ? true : (document.activeElement ? document.activeElement.outerHTML.slice(0, 80) : 'niente');`), (x) => x === true, REAZIONE);
+      w.push({ gruppo: g, nome: 'chiusa, il fuoco torna ad «Accedi»', ok: torna.ok, extra: `il fuoco e' su ${torna.valore}` });
+    });
+  } finally { await c.chiudi(); }
+}
+
+async function t05arresti(b, ctx, v, g) {
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    await tab.dimensioni(375, 800);
+    await tab.attendi(PRONTO, CARICO);
+    const largo = await disposta(tab, 375);
+    let giro = !!largo;
+    for (let i = 0; i < 80 && !giro; i++) {
+      await tab.tasto('Tab');
+      giro = (await tab.valuta(inPagina(passoFuoco))).giro;
+    }
+    const esiti = await tab.valuta('window.__bancoFuoco ? window.__bancoFuoco.esiti : []');
+    const senza = esiti.filter((x) => !x.cambia).map((x) => x.nome);
+    const coperti = esiti.filter((x) => x.coperto).map((x) => `${x.nome} (${x.coperto})`);
+    v.push({ gruppo: g, nome: 'nel Percorso, a 375 px, ogni arresto di Tab ha un indicatore del fuoco', ok: esiti.length >= 5 && !senza.length,
+      extra: largo ? `a 375 px la pagina e' disposta a ${largo} px (meta viewport)` : esiti.length < 5 ? `solo ${esiti.length} arresti di Tab` : `senza un indicatore che cambi: ${lista(senza)}` });
+    v.push({ gruppo: g, nome: 'nel Percorso, a 375 px, nessun arresto di Tab resta coperto o fuori dallo schermo', ok: esiti.length >= 5 && !coperti.length,
+      extra: `coperti: ${lista(coperti)}` });
+  } finally { await c.chiudi(); }
+}
+
+// --- T-06: un avviso si vede davvero, non solo nel DOM ----------------------------------------
+
+async function t06(b, ctx, v) {
+  const g = 'T-06';
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    await tab.dimensioni(375, 800);
+    await fermaAlPrimo(v, async (w) => {
+      await tab.attendi(PRONTO, CARICO);
+      w.push({ gruppo: g, nome: 'senza account, nel Percorso l\'avviso di prima si vede davvero', ...await avvisoVisibile(tab, PRIMA) });
+      await clic(tab, '[data-rotta-start]');
+      const ok = await rispondiQuiz(tab, [], g, '') && await chiudiQuiz(tab, [], g, '');
+      w.push({ gruppo: g, nome: 'il riepilogo si apre', ok: !!ok, extra: 'nessun riepilogo' });
+      w.push({ gruppo: g, nome: 'senza account, nel riepilogo l\'invito si vede davvero', ...await avvisoVisibile(tab, DOPO) });
+    });
+  } finally { await c.chiudi(); }
+}
+
+// --- T-07: nessuna vista sborda — 1280, 640, 375, 320 ----------------------------------------
+
+async function t07(b, ctx, v, parte) {
+  if (!parte || parte === 'prova') await t07prova(b, ctx, v, 'T-07:prova');
+  if (!parte || parte === 'conto') await t07conto(b, ctx, v, 'T-07:conto');
+}
+
+/** Gli sbordi di una superficie, a una larghezza: `dove` li precede nel rosso. */
+async function sbordaA(tab, larghezza, dove, out) {
+  await tab.dimensioni(larghezza, larghezza >= 1000 ? 900 : larghezza === 640 ? 500 : 800);
+  await pausa(60);
+  for (const x of await tab.valuta(inPagina(sbordi, larghezza))) out.push(`${dove}: ${x}`);
+}
+
+async function t07prova(b, ctx, v, g) {
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    await tab.attendi(PRONTO, CARICO);
+    const per = { 1280: [], 640: [], 375: [], 320: [] }, altre = { 375: [], 320: [] };
+    for (const L of [1280, 640, 375, 320]) {
+      await tab.dimensioni(L, 800);
+      for (const x of VISTE_RIF) { await apriVista(tab, x); await sbordaA(tab, L, NOMI_VISTE[x], per[L]); }
+    }
+    // Il runner, il riepilogo e la finestra: misurati a 375 e a 320 senza richiuderli.
+    await tab.dimensioni(375, 800);
+    const intoppo = await superfici(tab, async (dove) => {
+      if (VISTE_RIF.some((x) => NOMI_VISTE[x] === dove)) return;
+      for (const L of [375, 320]) await sbordaA(tab, L, dove, altre[L]);
+      await tab.dimensioni(375, 800);
+    });
+    const nome = { 1280: 'a 1280 px nessuna vista scorre di lato o esce dallo schermo', 640: 'a 640 px — la larghezza CSS di 1280 px con lo zoom al 200 %, non lo zoom — nessuna vista sborda',
+      375: 'a 375 px nessuna vista sborda' };
+    for (const L of [1280, 640, 375]) v.push({ gruppo: g, nome: nome[L], ok: !per[L].length, extra: perDifetto(per[L]) });
+    v.push({ gruppo: g, nome: 'a 375 px il runner, il riepilogo e la finestra «Accedi» non sbordano', ok: !intoppo && !altre[375].length, extra: intoppo || perDifetto(altre[375]) });
+    v.push({ gruppo: g, nome: 'a 320 px nessuna vista, ne\' il runner, il riepilogo o la finestra «Accedi», sborda', ok: !intoppo && !per[320].length && !altre[320].length,
+      extra: intoppo || perDifetto([...per[320], ...altre[320]]) });
+  } finally { await c.chiudi(); }
+}
+
+async function t07conto(b, ctx, v, g) {
+  // Con l'account: una copia con risposte vere, perche' Progressi mostri la mappa (area 5).
+  const U = await nuovoAccount(ctx, 't07');
+  ctx.aggiungi(U.email, righeDi(`t07-${serie}`, 40));
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    await tab.dimensioni(375, 800);
+    if (!await dentro(tab, U)) { v.push({ gruppo: g, nome: 'si entra nell\'account', ok: false, extra: `in schermata: ${await tab.valuta(inSchermata)}` }); return; }
+    const n = await numeroInInfo(tab, (x) => x === 40);
+    v.push({ gruppo: g, nome: 'la copia dell\'account ha le sue risposte', ok: n.ok, extra: `Info dice «risposte ai quiz ${n.valore}»` });
+    const per = { 375: [], 320: [] };
+    for (const L of [375, 320]) {
+      for (const x of ['oggi', 'diag', 'info']) { await tab.dimensioni(L, 800); await apriVista(tab, x); await sbordaA(tab, L, NOMI_VISTE[x], per[L]); }
+      await tab.dimensioni(L, 800);
+      await clic(tab, '#conto-porta');
+      if (await tab.attendi(modaleVisibile, REAZIONE)) await sbordaA(tab, L, 'il pannello dell\'account', per[L]);
+      else per[L].push('il pannello dell\'account non si apre');
+      await tab.tasto('Escape');
+      await tab.attendi(`!(${modaleVisibile})`, REAZIONE);
+    }
+    v.push({ gruppo: g, nome: 'con l\'account, a 375 px Percorso, Progressi, Info e il pannello dell\'account non sbordano', ok: !per[375].length, extra: perDifetto(per[375]) });
+    v.push({ gruppo: g, nome: 'con l\'account, a 320 px Percorso, Progressi, Info e il pannello dell\'account non sbordano', ok: !per[320].length, extra: perDifetto(per[320]) });
+  } finally { await c.chiudi(); }
+}
+
+// --- T-08 e T-09: contrasto e bersagli, su ogni superficie della prova, a 375 px -------------
+
+async function t08(b, ctx, v) {
+  const g = 'T-08';
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    await tab.dimensioni(375, 800);
+    await tab.attendi(PRONTO, CARICO);
+    const bassi = [], vuote = [], nonMisurabili = [];
+    let n = 0;
+    const largo = await disposta(tab, 375);
+    const intoppo = largo ? `a 375 px la pagina e' disposta a ${largo} px (meta viewport)` : await superfici(tab, async (dove) => {
+      await pausa(60);
+      const m = await tab.valuta(inPagina(contrasti));
+      n += m.n;
+      if (!m.n) vuote.push(dove);
+      for (const x of m.bassi) bassi.push(`${dove}: ${x}`);
+      for (const x of m.nonMisurabili) nonMisurabili.push(`${dove}: ${x}`);
+    });
+    v.push({ gruppo: g, nome: 'a 375 px la misura trova testi su ogni superficie della prova', ok: !intoppo && !vuote.length && n > 50,
+      extra: intoppo || `nessun testo misurato in ${vuote.join(', ')} (${n} in tutto)` });
+    v.push({ gruppo: g, nome: 'a 375 px ogni testo che si vede ha il contrasto minimo sul suo fondo', ok: !bassi.length,
+      extra: `${perDifetto(bassi, 8)}${nonMisurabili.length ? ` — non misurabili: ${nonMisurabili.length}` : ''}` });
+  } finally { await c.chiudi(); }
+}
+
+async function t09(b, ctx, v) {
+  const g = 'T-09';
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    await tab.dimensioni(375, 800);
+    await tab.attendi(PRONTO, CARICO);
+    const piccoli = [], sotto = [];
+    let n = 0;
+    const largo = await disposta(tab, 375);
+    const intoppo = largo ? `a 375 px la pagina e' disposta a ${largo} px (meta viewport)` : await superfici(tab, async (dove) => {
+      await pausa(60);
+      const m = await tab.valuta(inPagina(bersagli));
+      n += m.n;
+      for (const x of m.sotto24) sotto.push(`${dove}: ${x}`);
+      for (const x of m.piccoli) piccoli.push(`${dove}: ${x}`);
+    });
+    v.push({ gruppo: g, nome: 'a 375 px ogni controllo misura almeno 24 × 24 px, il minimo AA', ok: !intoppo && n > 20 && !sotto.length,
+      extra: intoppo || (n <= 20 ? `solo ${n} controlli misurati` : perDifetto(sotto, 8)) });
+    v.push({ gruppo: g, nome: 'a 375 px ogni controllo misura almeno 44 × 44 px, l\'obiettivo del progetto', ok: !piccoli.length, extra: perDifetto(piccoli, 8) });
+  } finally { await c.chiudi(); }
+}
+
 const GRUPPI = { 'C-01': c01, 'C-02': c02, 'C-03': c03, 'C-04': c04, 'C-05': c05, 'C-06': c06, 'C-07': c07, 'C-08': c08, 'C-09': c09,
-  'C-10': c10, 'C-11': c11, 'C-12': c12, 'C-13': c13, 'C-14': c14, 'C-15': c15, 'C-16': c16, 'C-17': c17, 'C-19': c19 };
+  'C-10': c10, 'C-11': c11, 'C-12': c12, 'C-13': c13, 'C-14': c14, 'C-15': c15, 'C-16': c16, 'C-17': c17, 'C-19': c19,
+  // L'area 6 (P-45): la rifinitura trasversale.
+  'T-01': t01, 'T-02': t02, 'T-03': t03, 'T-04': t04, 'T-05': t05, 'T-06': t06, 'T-07': t07, 'T-08': t08, 'T-09': t09 };
 // I gruppi che parlano con l'API: il server accetta una sola origine (§7.3),
 // quindi girano uno alla volta sul sito principale. Gli altri girano in
 // parallelo, ognuno con il suo sito e quindi con la sua origine.
-const CON_API = new Set(['C-05', 'C-04', 'C-06', 'C-07', 'C-08', 'C-09', 'C-10', 'C-11', 'C-12', 'C-13', 'C-14', 'C-15', 'C-16', 'C-17', 'C-19']);
+const CON_API = new Set(['C-05', 'C-04', 'C-06', 'C-07', 'C-08', 'C-09', 'C-10', 'C-11', 'C-12', 'C-13', 'C-14', 'C-15', 'C-16', 'C-17', 'C-19',
+  'T-02', 'T-03', 'T-04', 'T-07:conto']);
 const SOLO_ALTRE = new Set(['C-14']);
-const usaApi = (gr) => CON_API.has(gr.split(':')[0]);
+// Una parte puo' parlare con l'API anche se il suo gruppo no: T-07:conto entra
+// in un account, T-07:prova no, e gira dove c'e' posto.
+const usaApi = (gr) => CON_API.has(gr) || CON_API.has(gr.split(':')[0]);
 
 async function servi(corrente) {
   const s = sito(corrente);
