@@ -1260,7 +1260,7 @@ function segnala(t, err) {
 // passano dall'archivio rg-account-<chiave_locale>; la copia precedente si
 // legge in leggiVecchio() e non si modifica implicitamente.
 const ARCH = {
-  modo: 'memoria', lettura: 'in_corso', nota: null, erroreLettura: null,
+  modo: 'memoria', lettura: 'in_corso', erroreLettura: null,
   errore: null, ultimaScrittura: null,
   async stima() {
     try {
@@ -1932,14 +1932,14 @@ async function azioneAccount(t) {
   if (a === 'scarica-conflitto') {
     const s = await contoTx();
     scaricaJson({ app: 'rotta-giusta', righe: s.righe }, `rotta-giusta-copia-prima-azzeramento-${today()}.json`);
-    return pannelloAccount('<h2 id="account-title">Passa al nuovo archivio</h2><p>Il download è stato avviato. Controlla di avere conservato il file prima di cancellare questa copia.</p><label><input type="checkbox" name="conferma"> Ho conservato il file</label><button class="btn primary" data-account="risolvi-conflitto">Carica il nuovo archivio</button><button class="btn" data-account="torna">Decidi più tardi</button>');
+    return pannelloAccount('<h2 id="account-title">Passa al nuovo archivio</h2><p>Il download è stato avviato. Controlla di avere conservato il file prima di cancellare questa copia.</p><label><input type="checkbox" name="conferma"> Ho conservato il file</label><p id="account-esito" role="status" aria-live="polite"></p><button class="btn primary" data-account="risolvi-conflitto">Carica il nuovo archivio</button><button class="btn" data-account="torna">Decidi più tardi</button>');
   }
   if (a === 'scarta-conflitto') return pannelloAccount('<h2 id="account-title">Scarta la copia precedente</h2><p>Le risposte di questa copia andranno perse su questo dispositivo.</p><button class="btn primary" data-account="risolvi-conflitto">Sì, scartale e passa al nuovo archivio</button><button class="btn" data-account="torna">Decidi più tardi</button>');
   if (a === 'risolvi-conflitto') {
     const s = await contoTx();
     if (!s.conflitto) return;
     const conflitto = E.dopoInvio(s.coda, null, { codice: 409, corpo: { generazione: s.conflitto.generazione, epoca: s.conflitto.epocaDb } }, s.righe).conflitto;
-    if (conflitto.nonSalvate && t.textContent !== 'Sì, scartale e passa al nuovo archivio' && !document.querySelector('#account [name=conferma]')?.checked) return esitoAccount('Conferma la scelta prima di continuare.');
+    if (conflitto.nonSalvate && t.textContent !== 'Sì, scartale e passa al nuovo archivio' && !document.querySelector('#account [name=conferma]')?.checked) return esitoAccount('Spunta «Ho conservato il file» prima di caricare il nuovo archivio.');
     await contoTx((attuale) => ({ svuota: true, coda: E.risolviConflitto(attuale.coda, attuale.conflitto), trasferimento: null, conflitto: null }));
     S.conto = { ...S.conto, generazione: s.conflitto.generazione, epoca: s.conflitto.epocaDb };
     S.archivio = []; ricalcola(); dipingi(); chiudiAccount(); return sincronizza();
@@ -2018,11 +2018,11 @@ async function azioneAccount(t) {
   if (a === 'nuova-password') return nuovaPasswordDaGettone();
   if (a === 'tieni-precedenti') { S.passwordNuova = null; if (S.prova.length) return domandaRigheDellaPagina(S.prova); chiudiAccount(); return sincronizza(); }
   if (a === 'cancella-precedenti') {
-    pannelloAccount(`<h2 id="account-title">Cancella queste risposte</h2><p>Le risposte già presenti sul server saranno cancellate. Quelle della pagina aperta restano separate.</p><label><input type="checkbox" name="conferma"> Confermo la cancellazione</label><button class="btn primary" data-account="conferma-precedenti">Cancella queste risposte</button><button class="btn" data-account="tieni-precedenti">Tienile</button>`);
+    pannelloAccount(`<h2 id="account-title">Cancella queste risposte</h2><p>Le risposte già presenti sul server saranno cancellate. Quelle della pagina aperta restano separate.</p><label><input type="checkbox" name="conferma"> Confermo la cancellazione</label><p id="account-esito" role="status" aria-live="polite"></p><button class="btn primary" data-account="conferma-precedenti">Cancella queste risposte</button><button class="btn" data-account="tieni-precedenti">Tienile</button>`);
     return;
   }
   if (a === 'conferma-precedenti') {
-    if (!document.querySelector('#account [name=conferma]')?.checked) return;
+    if (!document.querySelector('#account [name=conferma]')?.checked) return esitoAccount('Spunta «Confermo la cancellazione» prima di cancellare queste risposte.');
     const r = await chiamaApi('POST', '/v1/azzera', { password: S.passwordNuova });
     if (r.codice !== 200) return pannelloAccount(`<h2 id="account-title">Cancellazione non riuscita</h2><p>${esc(r.corpo?.messaggio || 'Riprova con la rete.')}</p><button class="btn" data-account="tieni-precedenti">Tienile</button>`);
     await contoTx((s) => ({ svuota: true, coda: E.risolviConflitto(s.coda, { generazione: r.corpo.generazione, epocaDb: r.corpo.epoca }), trasferimento: null }));
@@ -2037,7 +2037,7 @@ async function uscitaConto(dopoDownload = false, giaRevocata = false) {
   const s = await contoTx();
   const n = s.coda.daInviare.length + Object.keys(s.coda.scartate).length;
   if ((n || s.segnaliPendenti) && !dopoDownload) {
-    pannelloAccount(`<h2 id="account-title">Risposte non salvate</h2><p>${n} risposte non sono sul server${s.segnaliPendenti ? ' e ci sono punteggi dei Segnali da inviare' : ''}. Collegati alla rete e riprova, oppure scaricale prima di uscire.</p>
+    pannelloAccount(`<h2 id="account-title">${n ? 'Risposte non salvate' : 'Punteggi dei Segnali da inviare'}</h2><p>${n ? `${n} ${n === 1 ? 'risposta non è' : 'risposte non sono'} sul server${s.segnaliPendenti ? ' e ci sono punteggi dei Segnali da inviare' : ''}` : 'I punteggi dei Segnali non sono sul server'}. Collegati alla rete e riprova, oppure scarica una copia prima di uscire.</p>
       <div class="account-actions"><button class="btn" data-account="riprova-uscita">Riprova l'invio</button><button class="btn" data-account="scarica-uscita">Scarica le risposte non salvate</button><button class="btn" data-account="torna">Resta qui</button></div>`);
     return;
   }
@@ -2193,7 +2193,7 @@ async function archivia(riga) {
       + (quota ? 'spazio esaurito' : (e && e.message) || String(e));
     segnala('RISPOSTA NON SALVATA: ' + (quota ? 'spazio esaurito, scarica i progressi' : ARCH.errore), true);
   }
-  DIAG.arch = !!ARCH.errore || ['ripiego_assente', 'ripiego_letto', 'errore'].includes(ARCH.lettura); aggiornaBadge();
+  DIAG.arch = !!ARCH.errore || ARCH.lettura === 'errore'; aggiornaBadge();
 }
 
 // Una classificazione visibile per tentativo, senza perdere le precedenti.
@@ -2400,7 +2400,6 @@ function statoArchivio() {
     `risposte ai quiz <b style="color:var(--fg)">${n('q')}</b> · tecniche <b style="color:var(--fg)">${n('t')}</b> · ` +
     `carteggio <b style="color:var(--fg)">${n('c')}</b> · prove <b style="color:var(--fg)">${n('s')}</b> · ` +
     `${S.conto ? 'ultima scrittura locale' : 'nessun salvataggio automatico'} <b style="color:var(--fg)">${S.conto ? ul : ''}</b> · archivio in ${dove}` +
-    (ARCH.nota ? `<br><b style="color:var(--warn)">${esc(ARCH.nota)}</b>` : '') +
     (ARCH.erroreLettura ? `<br><b style="color:var(--ko)">Lettura fallita (${esc(ARCH.erroreLettura)}). Questo non significa che i progressi siano stati cancellati.</b>` : '') +
     (ARCH.errore
       ? `<br><b style="color:var(--ko)">Ultima scrittura fallita (${esc(ARCH.errore)}).</b> Le risposte date da ` +
@@ -2412,7 +2411,7 @@ function statoArchivio() {
     el.innerHTML += ` · spazio usato dal sito <b style="color:var(--fg)">${mb(s.usage)} MB</b> su ${mb(s.quota)} disponibili`;
   });
 
-  DIAG.arch = !!ARCH.errore || ['ripiego_assente', 'ripiego_letto', 'errore'].includes(ARCH.lettura);
+  DIAG.arch = !!ARCH.errore || ARCH.lettura === 'errore';
   aggiornaBadge();
   verificaOffline();
 }
@@ -2466,9 +2465,6 @@ function dipingiStatoRotta() {
   if (!S.caricamento && ARCH.lettura === 'errore') righe.push(alert(
     '<strong>Non riusciamo a leggere i progressi in questo browser. Questo non significa che siano stati cancellati.</strong>',
     '<button class="text-btn" data-retry-load>Riprova</button><button class="text-btn" data-info-section="importa">Controlla l\'archivio</button>', true));
-  if (!S.caricamento && (ARCH.lettura === 'ripiego_assente' || ARCH.lettura === 'ripiego_letto')) righe.push(alert(
-    '<strong>Non riusciamo ad accedere all\'archivio principale.</strong><span>Stiamo usando un archivio alternativo in questo browser: potresti non vedere tutte le risposte precedenti.</span>',
-    '<button class="text-btn" data-info-section="importa">Controlla l\'archivio</button>'));
   if (DIAG.off) righe.push(alert(
     '<strong>Il sito non è ancora pronto per l\'uso senza rete.</strong>',
     '<button class="text-btn" data-info-section="offline">Controlla l\'offline</button>'));
@@ -3255,7 +3251,7 @@ function anteprima() {
   document.getElementById('quiz-storage').innerHTML = ARCH.errore
     ? 'Le ultime risposte potrebbero non essere salvate. Apri Info e scarica i progressi adesso. <button class="text-btn" data-info-section="importa">Apri Info</button>'
     : ARCH.lettura === 'errore' ? 'Non riusciamo a leggere le risposte. Apri Info per controllare l’archivio. <button class="text-btn" data-info-section="importa">Apri Info</button>'
-    : ARCH.nota ? 'Stiamo usando un archivio alternativo: potresti non vedere tutte le risposte precedenti.' : S.conto ? 'Puoi fermarti quando vuoi. Le risposte vengono inviate al tuo account; la lista corrente non si riprende dopo una ricarica.' : avvisoProva;
+    : S.conto ? 'Puoi fermarti quando vuoi. Le risposte vengono inviate al tuo account; la lista corrente non si riprende dopo una ricarica.' : avvisoProva;
   document.getElementById('quiz-offline').textContent = (!navigator.onLine ? 'Sei offline. Puoi usare i quiz disponibili su questo dispositivo. ' : '') + (DIAG.figureMancanti ? 'Alcune figure potrebbero non essere disponibili offline. Apri Info per controllarle.' : '');
   if (S.caricamento) { el.textContent = 'Caricamento dei quiz…'; return; }
   if (S.bancaErrore || !S.banca.length) { el.textContent = 'Non riusciamo a caricare i quiz. Controlla la connessione e riprova.'; vide.innerHTML = '<button class="btn" data-retry-load>Riprova</button>'; return; }
@@ -3688,9 +3684,7 @@ function testoConservazione() {
 
 /** Gli avvisi del ciclo, prima di tutto il resto (§3). */
 function avvisiCiclo() {
-  const alt = ARCH.lettura === 'ripiego_assente' || ARCH.lettura === 'ripiego_letto'
-    ? '<div class="route-alert" role="alert"><div>Stiamo usando un archivio alternativo: potresti non vedere tutte le risposte precedenti.</div></div>' : '';
-  return '<div class="route-alert error" data-fine-save-warning role="alert" hidden></div>' + alt;
+  return '<div class="route-alert error" data-fine-save-warning role="alert" hidden></div>';
 }
 
 const plurDomande = (n) => (n === 1 ? '1 domanda' : `${n} domande`);
