@@ -200,7 +200,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 18 | Il carteggio su `main`: composizione, attività intera, bozza, controlli — **P-32 in corso**, lanciato dalla regia | Claude | `main`, a mano | niente: P-32 apre la fila | P-32…P-35 |
+| 18 | Il carteggio su `main`: composizione, attività intera, bozza, controlli — **P-33 in corso**, lanciato dalla regia | Claude | `main`, a mano | niente: P-32 apre la fila | P-32…P-35 |
 | 6d, 5b, 12, 13 | Il regime vecchio del ciclo e dei quiz, `ritmo()`, l'ultimo tag | Claude | `main`, a mano | niente: riempiono i buchi | P-37, P-12, P-16, P-17 |
 | 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore | P-15 |
 | 28 | I controlli e la specifica dell'area 6 | Claude | `main`, a mano | in fondo all'ordine | P-45 |
@@ -1543,7 +1543,7 @@ documento. Controllato dalla regia: territori puliti, merge chiusa da sola.
 
 ### P-32 — Claude: la composizione della prova di carteggio, nel motore
 
-**Stato:** **in corso dal 30 settembre 2026**, lanciato dalla regia (punto 8). Apre la fila del carteggio, P-32 → P-33 → P-34 → P-35. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-20, §10.1 di `docs/area-4-progetto.md`.
+**Stato:** **chiuso il 30 settembre 2026**, commit `f14681a` su `main`; lanciato dalla regia (punto 8). Apre la fila del carteggio, P-32 → P-33 → P-34 → P-35. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-20, §10.1 di `docs/area-4-progetto.md`.
 
 ```
 Questo prompt è per Claude Code, nella cartella principale
@@ -1568,11 +1568,29 @@ Non toccare docs/prossime-sessioni.md. Suite verdi, voce in fondo a
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `f14681a`, voce nel CHANGELOG. D-01 consegnata come contratto
+puro: `E.provaCarteggio(banca, specchio, oggi, { seme, nuoviPrima })` dà da una
+chiamata lista, argomenti rappresentati e mancanti, riprese — `null` nella prova
+cieca, non zero —, il completamento dichiarato su una banca incompleta, e le
+condizioni; `E.PROVA_CARTEGGIO` è la sorgente unica di 4, 60 e 3 su 4, con
+Q-CART4 scritta accanto. `estrai()` ed `estraiNuoviPrima()` non cambiano, e i
+loro chiamanti sono elencati. Un test estrae `componiProva()` dalla pagina e
+pretende la stessa lista; si ritira quando la copia sparisce. R-SEL-12…16
+coperti, R-SEL-17 (la pagina) scoperto; `provaCarteggio` fra gli orfani fino a
+P-21. **Trovato:** il ripiego su una banca incompleta era muto, e ora nomina
+l'argomento mancante; il vecchio test «uno per argomento» verificava una copia
+trascritta nel test, non il codice; il §5.3 della specifica diceva
+`estraiNuoviPrima()` per la prova predefinita, che è cieca. **Per la coda:** il
+contratto per P-21 è nel §10.1 di `area-4-progetto.md` — escono dalla pagina
+`componiProva()`, `argomentiSenzaNuovi()` e le `PROVA_*`, le righe della prova
+portano `variante`, si avvia solo se `pronta` —; se P-33 cambia lo schema della
+variante, riallinea quel paragrafo. Controllato dalla regia: motore 166/168,
+server 60/60, dati 242, specifica 608, guardiano verde, interfaccia 1.436 in
+149 s.
 
 ### P-33 — Claude: l'attività intera anche per carteggio e tecniche
 
-**Stato:** in attesa di P-32; lo lancia la regia (punto 8). **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-20, §10.1 di `docs/area-4-progetto.md`.
+**Stato:** **in corso dal 30 settembre 2026**, lanciato dalla regia (punto 8). P-32 gli lascia una nota: le righe della prova portano `variante` (§10.1 di `area-4-progetto.md`), e se D-02 cambia lo schema quel paragrafo si riallinea. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-20, §10.1 di `docs/area-4-progetto.md`.
 
 ```
 Questo prompt è per Claude Code, nella cartella principale
@@ -2709,3 +2727,6 @@ la nota in testa a `docs/filosofia.md`, che lo dice di sé (P-26).
 - **30 settembre 2026 — P-49 chiuso, P-32 lanciato.** Primo della fila
   delegata: il resoconto torna con il repo e con le suite. Il traguardo aspetta
   ora solo P-15 e gli adempimenti.
+- **30 settembre 2026 — P-32 chiuso, P-33 lanciato.** La composizione della
+  prova di carteggio è nel motore, con il suo contratto per P-21; il resoconto
+  torna con il repo e con le suite.
