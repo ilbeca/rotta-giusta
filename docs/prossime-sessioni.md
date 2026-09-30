@@ -207,6 +207,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 21c | Dopo P-21: il regime vecchio del Carteggio, e la riga fra i difetti noti di `AGENTS.md` | Claude | `main`, a mano | la merge di P-21 | segnaposto P-50 |
 | 26b | La realizzazione dell'area 6 | ChatGPT | `ui/main` | P-45, P-21, e il §8 dell'area 6 | segnaposto P-25 |
 | 9 | **La versione con gli account** — il traguardo | tutti | `main` | P-15, P-52, e gli adempimenti del §4 | segnaposto P-27 |
+| 33 | Le frasi del riepilogo dei quiz nel banco (R-UX-06) | Claude | `main`, a mano | dopo P-21, non urgente | segnaposto P-53 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**, e si sono incontrate: il client degli
@@ -1180,7 +1181,7 @@ docs/prossime-sessioni.md.
 
 ### P-16 — Claude: `ritmo()` dice «orologio» anche senza orologio
 
-**Stato:** delegato alla regia, che lo lancia dopo P-45 (punto 8) — pronto: P-30 è chiuso, e ha lasciato un test che P-16 deve tenere verde. **Dove:** Claude Code,
+**Stato:** **in corso dal 30 settembre 2026**, lanciato dalla regia (punto 8) — pronto: P-30 è chiuso, e ha lasciato un test che P-16 deve tenere verde. **Dove:** Claude Code,
 `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** il resoconto
 di P-05.
 
@@ -1826,7 +1827,7 @@ verdi sullo stato fuso — interfaccia compresa, in quel giro.
 
 ### P-37 — Claude: chiudere il regime vecchio dei controlli del ciclo
 
-**Stato:** **in corso dal 30 settembre 2026**, lanciato dalla regia (punto 8) — pronto quando la cartella principale è libera: P-19 è fuso. **Dove:**
+**Stato:** **chiuso il 30 settembre 2026**, commit `237de28` su `main`, lanciato dalla regia (punto 8). Prima era: pronto quando la cartella principale è libera: P-19 è fuso. **Dove:**
 Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:**
 il resoconto di P-31 — è per il ciclo quello che P-12 è per i quiz.
 
@@ -1851,7 +1852,19 @@ Non toccare docs/prossime-sessioni.md. Suite verdi, voce in fondo a
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `237de28`, voce nel CHANGELOG. Il ciclo dei quiz ha un regime
+solo: via `regime_ciclo()`, il ramo «attuale» e `RACCORDO_CICLO`; il banco gira
+su ogni pagina e `conteggio_ciclo()` pretende dalla pagina vera le verifiche
+della pagina di riferimento, gruppo per gruppo. Provato con `RG_PAGINA` sulla
+pagina di `4129dfc^1`: prima 3 verifiche e zero rossi, ora 6 rossi. La pagina di
+riferimento resta per le 27 rotture. Specifica: R-FLU-01, R-FLU-11, §7.5, «Un
+regime solo per il ciclo» nel §9.6; nota nel §10.1 dell'area 3. **Non fatto:**
+R-UX-06, le frasi del riepilogo, resta scoperto — il banco del ciclo non ha DOM
+e quello del client non legge quei testi —: segnaposto P-53. **Trovato:** il
+sito pubblicato è anteriore a P-19, e il §7.5 ora lo dice. Quiz, ciclo, mappa e
+client hanno un regime solo; restano in due il Carteggio, fino a P-21, e gli
+stati d'accesso dell'area 6. Controllato dalla regia: motore 185/187, server
+60/60, dati 242, specifica 758, guardiano verde, interfaccia 1.873 in 187 s.
 
 ### P-38 — Claude: il banco del browser, stabile
 
@@ -2757,6 +2770,16 @@ prima di P-21 diventa rossa; la frase di oggi «dici quali avevi preso» esce da
 ritira, se non l'ha già fatto da solo; la riga del carteggio fra i «Difetti
 noti» di `AGENTS.md` si toglie, e R-BOZZA-06 e il §7.6 dicono il presente.
 
+#### P-53 — Claude: le frasi del riepilogo dei quiz, nel banco del client
+
+**Aspetta:** niente, ma non è urgente; dopo P-21, per non cambiare la pagina di
+riferimento del client mentre ChatGPT ne rispetta il contratto. **Dove:**
+`main`, a mano. **Dovrà contenere:** quello che l'esito di P-37 lascia —
+R-UX-06, le tre affermazioni di una breve attività e nessun voto sulla
+preparazione, lette nel testo che si vede del riepilogo con un gruppo del banco
+del client, con la sua pagina di riferimento allineata e le rotture (una quarta
+affermazione, un voto, un numero che non viene dal raccordo).
+
 #### P-25 — ChatGPT: la realizzazione dell'area 6
 
 **Aspetta:** l'area 4 realizzata (P-21; l'area 5 lo è, P-23; P-45 è chiuso), e le decisioni dell'autore sul §8 di `area-6-progetto.md`. **Dove:** `ui/main`.
@@ -3071,3 +3094,5 @@ la nota in testa a `docs/filosofia.md`, che lo dice di sé (P-26).
 - **30 settembre 2026 — P-12 chiuso, P-37 lanciato.** I quiz hanno un regime
   solo; il codice morto del selettore globale che P-12 ha trovato va in P-52,
   la prossima penna di ChatGPT su `app.html` dopo P-21.
+- **30 settembre 2026 — P-37 chiuso, P-16 lanciato.** Il ciclo dei quiz ha un
+  regime solo. R-UX-06 resta scoperto: nasce il segnaposto P-53, non urgente.
