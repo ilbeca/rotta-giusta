@@ -1084,6 +1084,7 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   **242**; interfaccia **1.246**, in 153 s, con la 8620 guardata libera prima;
   specifica **584**. Guardiano e controllo della documentazione verdi. `site/`,
   `tests/` e `docs/prossime-sessioni.md` non sono stati toccati.
+
 ### Realizzato — P-23: Progressi è una mappa per tema
 
 - **La diagnosi a due tabelle e «Cosa studiare adesso» escono.** Progressi usa

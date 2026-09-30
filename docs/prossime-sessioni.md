@@ -190,23 +190,22 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
 | 18 | Il carteggio su `main`: composizione, attività intera, bozza, controlli | Claude | `main`, a mano | niente: P-32 apre la fila | P-32…P-35 |
-| 9a | I testi fuori da `site/` nella versione con gli account | Claude | `main`, a mano | niente | P-26 |
 | 6d, 5b, 12, 13 | Il regime vecchio del ciclo e dei quiz, `ritmo()`, l'ultimo tag | Claude | `main`, a mano | niente: riempiono i buchi | P-37, P-12, P-16, P-17 |
 | 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore | P-15 |
-| 27 | Le tre scelte del client che nessun controllo preme | Claude | `main`, a mano | niente, prima del traguardo | P-46 |
 | 28 | I controlli e la specifica dell'area 6 | Claude | `main`, a mano | in fondo all'ordine | P-45 |
-| 23b | La realizzazione dell'area 5 | ChatGPT | `ui/main` | niente — **pronto** | P-23 |
-| 23c | Dopo P-23: il regime vecchio di Progressi, e `consigli()` fuori dal motore | Claude | `main`, a mano | la merge di P-23 | segnaposto P-47, P-42 |
+| 23c | Dopo P-23: il regime vecchio di Progressi, e `consigli()` fuori dal motore | Claude | `main`, a mano | niente — **pronto** | P-47 (con P-42) |
+| 30 | I due pulsanti di conferma che non dicono niente (R-ACC-66) | ChatGPT | `ui/main` | niente — **pronto** | P-48 |
+| 30b | Il controllo di R-ACC-66 sulla pagina vera | Claude | `main`, a mano | la merge di P-48 | segnaposto P-49 |
 | 21b | La realizzazione dell'area 4 | ChatGPT | `ui/main` | P-35 | segnaposto P-21 |
-| 26b | La realizzazione dell'area 6 | ChatGPT | `ui/main` | P-45, P-21, P-23, e il §8 dell'area 6 | segnaposto P-25 |
-| 9 | **La versione con gli account** — il traguardo | tutti | `main` | P-15, P-26, e gli adempimenti del §4 | segnaposto P-27 |
+| 26b | La realizzazione dell'area 6 | ChatGPT | `ui/main` | P-45, P-21, e il §8 dell'area 6 | segnaposto P-25 |
+| 9 | **La versione con gli account** — il traguardo | tutti | `main` | P-15, P-49, e gli adempimenti del §4 | segnaposto P-27 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**, e si sono incontrate: il client degli
-account è nella pagina (P-18). **Per Claude, l'ordine consigliato: P-26 e
-P-46** (sono sulla strada del traguardo), **P-32…P-35** (sbloccano P-21), P-45,
-poi i piccoli; P-15 quando l'autore ha il tempo. **Per ChatGPT: P-23**, pronto
-dal 30 settembre. I prompt di Claude vanno uno alla volta nella cartella principale, e
+account è nella pagina (P-18), e Progressi è la mappa (P-23). **Per Claude,
+l'ordine consigliato: P-47**, che chiude quello che P-23 ha aperto, **P-32…P-35**
+(sbloccano P-21), P-45, poi i piccoli; P-49 quando P-48 è fuso; P-15 quando
+l'autore ha il tempo. **Per ChatGPT: P-48**, pronto dal 30 settembre. I prompt di Claude vanno uno alla volta nella cartella principale, e
 la suite dell'interfaccia di un worktree esclude quella dell'altro, per la porta
 8620. Il numero di una riga è il suo nome, non la sua posizione. Il traguardo,
 P-27, non aspetta le aree 4–6: aspetta il server in esercizio, i testi e gli
@@ -491,9 +490,11 @@ consuma, non si riprogetta.
 - ~~Q-DUE~~ — **chiusa il 29 settembre 2026**: Progressi diventa una mappa per
   tema. I sette punti sono nel §10 della specifica, fra le chiuse; da lì P-41 e
   P-22.
-- **La suite che dura un minuto, e Safari** — rimandati dall'autore il 29
-  settembre, e scritti come punti aperti nel §10 della specifica: Q-SUITE, e
-  Safari dentro Q-PROVE.
+- **La suite che dura, e Safari** — rimandati dall'autore il 29 settembre, e
+  scritti come punti aperti nel §10 della specifica: Q-SUITE, e Safari dentro
+  Q-PROVE. **Q-SUITE è cresciuta:** dal 30 settembre la suite dell'interfaccia
+  dura circa 150 s (erano 117), per le parti di P-46 che girano in fila sulla
+  corsia della 8620; misura e motivo nel §10 della specifica. Resta tua.
 - ~~Tre scelte di P-41 da confermare~~ — **confermate dall'autore il 29
   settembre**, e il §4.3 della specifica lo dice. Il testo di prima: La vela non ha
   la frase «Dove pesa di più adesso», perché un peso per voce non esiste; la
@@ -999,7 +1000,7 @@ dati 242, interfaccia 295, specifica 370, `ripristina --prova` 20 su 20.
 
 ### P-12 — Claude: chiudere il regime vecchio dei controlli dei quiz
 
-**Stato:** pronto: P-11 è chiuso, e P-05 è fuso. **Dove:**
+**Stato:** pronto: P-11 è chiuso, e P-05 è fuso. Il README ha già le cinque intenzioni (P-26); restano le righe del §5 della specifica. **Dove:**
 Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano.
 
 ```
@@ -2056,7 +2057,7 @@ in 117 s, specifica 560, le altre invariate.
 
 ### P-26 — Claude: i testi fuori da `site/`, nella versione con gli account
 
-**Stato:** pronto: P-18 è fuso. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano.
+**Stato:** **chiuso il 30 settembre 2026**, commit `c053e03` su `main`. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano.
 
 ```
 Questo prompt è per Claude Code, nella cartella principale
@@ -2082,7 +2083,16 @@ Suite verdi, voce in fondo a [Unreleased], un commit. Chiudi con il
 resoconto di docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `c053e03`, voce nel CHANGELOG. README, la skill e
+`AGENTS.md` descrivono i due stati e il server su `api.rottagiusta.it`, con la
+chiusura di un rilascio che aggiorna anche il server. Nella specifica il §2.5
+dice ora che cosa è cambiato, e §3, §4.6, §5.3, §5.4, §7.1, §7.4, §7.8 e
+l'appendice A sono riscritti per i due stati; **trovati falsi anche §4.5 e §8**,
+fuori dall'elenco, e corretti. La nota in testa a `docs/filosofia.md` resta e
+dice che si toglie nel commit del rilascio: è in P-27. Le righe del §5 sulle sei
+modalità restano a P-12. **Trovato** nella pagina: l'avviso «archivio
+alternativo» (`ARCH.lettura` `ripiego_*`) non può più comparire, perché nessuno
+assegna quei valori — scritto nella voce di CHANGELOG, e va a P-48.
 
 ### P-24 — ChatGPT: il progetto dell'area 6, la rifinitura trasversale
 
@@ -2157,7 +2167,7 @@ docs/prossime-sessioni.md.
 
 ### P-46 — Claude: le tre scelte del client che nessun controllo preme
 
-**Stato:** pronto, prima del traguardo. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** il resoconto di
+**Stato:** **chiuso il 30 settembre 2026**, commit `9af5200` su `main`. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** il resoconto di
 P-40, R-ACC-63.
 
 ```
@@ -2186,11 +2196,24 @@ fondo a [Unreleased], un commit. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `9af5200`, voce nel CHANGELOG. Le tre scelte hanno una parte
+ciascuna nel loro gruppo — `C-13:scarica`, `C-08:cancella`, `C-15:segnali` — e
+un controllo sulla pagina vera; fanno tutte e tre quello che dicono. R-ACC-63,
+che le raccoglieva, è diviso in **R-ACC-63, 64 e 65**, coperti: il «R-ACC-63»
+del prompt qui sopra ora indica solo la prima. La pagina di riferimento fa le
+tre scelte come la pagina vera, con 13 rotture nuove, e prima perdeva i
+punteggi dei Segnali uscendo. **Trovato:** un difetto della pagina vera — i
+pulsanti «Carica il nuovo archivio» e «Cancella queste risposte», premuti
+senza la loro spunta, non fanno e non dicono niente — scritto come **R-ACC-66**,
+scoperto, con la riproduzione nel §12 di `account-client-progetto.md`, «Le tre
+scelte»: diventa P-48 per ChatGPT e P-49 per il controllo. Un verde del banco
+che non misurava niente, corretto; una frase goffa dell'uscita con soli
+punteggi (§12); la suite più lunga di 33 s, in Q-SUITE. Controllato dalla
+regia sullo stato fuso con P-26 e P-23: vedi il registro del 30 settembre.
 
 ### P-23 — ChatGPT: la realizzazione dell'area 5
 
-**Stato:** pronto dal 30 settembre 2026: P-44 è chiuso. **Dove:** app di
+**Stato:** **chiuso il 30 settembre 2026**, merge `ee54b69`. **Dove:** app di
 ChatGPT, progetto `~/Software/rotta-giusta-ui`, ramo `ui/main`, modalità Local.
 
 ```
@@ -2226,6 +2249,93 @@ guardato a 375 e 1280 px nei due stati d'accesso — le tabelle che dalla
 con il resoconto di docs/prossime-sessioni.md.
 ```
 
+**Esito:** commit `530e5b5` su `ui/main`, merge `ee54b69`. Progressi è la
+mappa per tema, con azioni e anteprima dal raccordo di P-44; prove, andamento e
+sessioni stanno separati; «Cosa studiare adesso» e le due tabelle escono. In
+`docs/eccezioni-interfaccia.md` `consigli()` passa agli orfani con il motivo
+«esce», `quadro()` e `dovePesa()` entrano fra le chiamate protette,
+`diagnosi()` esce e `serieGruppi()` resta. Collaudo della sessione, scritto
+nella voce di CHANGELOG: a 375 px nessuno sbordamento della pagina né delle 52
+schede, e nel caso `pari` gli otto temi restano senza frase. Controllato dalla
+regia: territori puliti, trailer, merge chiusa da sola, `git log main..ui/main`
+vuoto, la riga vuota mancante nel CHANGELOG aggiunta. Il collaudo nel browser
+**non** l'ha ripetuto la regia.
+
+### P-47 — Claude: dopo P-23 — il regime vecchio di Progressi, e `consigli()` fuori dal motore
+
+**Stato:** pronto: P-23 è fuso. Assorbe P-42. **Dove:** Claude Code,
+`~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** i resoconti
+di P-41, P-44 e P-23.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-47, su main. P-23 ha portato la mappa di Progressi nella
+pagina vera, e la regia l'ha fusa: leggi gli esiti di P-41, P-44 e P-23
+nel §6 di docs/prossime-sessioni.md, il §4.3 e il §9.10 della
+specifica, e il §10.1 di docs/area-5-progetto.md.
+
+Due lavori, in quest'ordine.
+1. Chiudi il regime vecchio di Progressi come P-40 ha fatto per il
+   client: in tests/test_interfaccia.py resta solo il regime della
+   mappa, e la pagina con la diagnosi a due tabelle ora dev'essere
+   rossa — provato su quella di prima di P-23. Decidi che cosa resta
+   di tests/pagina-mappa-progressi.html: se serve alle rotture, resta.
+   R-MAPPA-14…17 dicono coperto quello che la pagina vera fa, e
+   scoperto con il motivo quello che il banco non vede.
+2. consigli() esce dal motore, il secondo tempo che P-41 ha scritto
+   nel §4.3: prima elenca chi la chiama ancora — non dev'essere
+   nessuno —, poi togli la funzione, CONSIGLIO_MIN_VISTI e i loro
+   test, e la riga fra gli orfani di docs/eccezioni-interfaccia.md.
+   La specifica lo dice dove oggi dice «esce in due tempi».
+
+Prima di lanciare la suite dell'interfaccia guarda che la porta 8620
+sia libera (AGENTS.md): ChatGPT può averla. Non toccare
+docs/prossime-sessioni.md. Suite verdi su più giri, voce in fondo a
+[Unreleased], un commit. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-48 — ChatGPT: i pulsanti di conferma che non dicono niente
+
+**Stato:** pronto dal 30 settembre 2026. **Dove:** app di ChatGPT, progetto
+`~/Software/rotta-giusta-ui`, ramo `ui/main`, modalità Local. **Nasce da:** i
+resoconti di P-46 e P-26.
+
+```
+Questo prompt è per ChatGPT, nel worktree ~/Software/rotta-giusta-ui,
+sul ramo ui/main. Se sei un altro agente o sei in un'altra cartella,
+fermati e dillo, senza scrivere niente.
+
+Sessione P-48. Leggi gli esiti di P-46 e P-26 nel §6 di
+docs/prossime-sessioni.md, R-ACC-66 nel §9.9 della specifica, e nel
+§12 di docs/account-client-progetto.md la sezione «Le tre scelte».
+
+Il difetto è R-ACC-66: «Carica il nuovo archivio» senza «Ho conservato
+il file» e «Cancella queste risposte» senza «Confermo la
+cancellazione» non fanno niente e non dicono niente — il primo scrive
+in un #account-esito che il suo pannello non ha. Premuti senza la
+spunta, devono dire che cosa manca, dove chi studia lo vede, e non fare
+altro. La riproduzione è nel §12. Nella stessa sezione c'è la frase
+dell'uscita con soli punteggi dei Segnali, «0 risposte non sono sul
+server…»: rendila giusta. E l'avviso «archivio alternativo»
+(ARCH.lettura ripiego_*) che P-26 ha trovato impossibile da accendere,
+nella sua voce di CHANGELOG: toglilo, o scrivi perché resta.
+
+Il controllo di R-ACC-66 sulla pagina vera lo aggiunge Claude su main
+dopo la merge (P-49): non toccare tests/. La suite dell'interfaccia
+vuole Chrome e la porta 8620 libera (lsof -iTCP:8620 -sTCP:LISTEN), che
+la cartella principale può tenere occupata; se non gira, fermati e
+dillo. Non toccare docs/prossime-sessioni.md. Tutte le suite verdi,
+collaudo guardato a 375 e 1280 px, voce in fondo a [Unreleased], un
+commit con il trailer, versione non toccata. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
 **Esito:** —
 
 ---
@@ -2248,32 +2358,28 @@ e specifica che il progetto avrà scritto, chiuse prima da Claude come P-06 e
 P-31; l'eccezione `figura` di `docs/eccezioni-interfaccia.md`, se l'area 3 non
 l'ha chiusa.
 
-#### P-47 — Claude: chiudere il regime vecchio dei controlli di Progressi
+#### P-42 — assorbito in P-47
 
-**Aspetta:** la merge di P-23. **Dove:** `main`, a mano. **Dovrà contenere:**
-quello che P-12, P-37 e P-40 hanno fatto per quiz, ciclo e client — in
-`tests/test_interfaccia.py` resta solo il regime della mappa (`regime_mappa`),
-e la pagina con la diagnosi a due tabelle diventa rossa; la pagina di
-riferimento resta se serve alle rotture; R-MAPPA-14…17 dicono coperto quello
-che la pagina vera fa. Si può fare nella stessa sessione di P-42, che aspetta la
-stessa merge.
+Il secondo tempo di `consigli()` si fa nella stessa sessione di P-47, che
+aspettava la stessa merge: il prompt è lì.
 
-#### P-42 — Claude: `consigli()` esce dal motore
+#### P-49 — Claude: il controllo di R-ACC-66 sulla pagina vera
 
-**Aspetta:** la merge di P-23. **Dove:** `main`, a mano. **Dovrà contenere:** il
-secondo tempo che P-41 ha lasciato scritto — togliere `consigli()` e
-`CONSIGLIO_MIN_VISTI` con i loro test, e la riga degli orfani; prima elencare
-chi li usa ancora, che a quel punto non dev'essere nessuno.
+**Aspetta:** la merge di P-48. **Dove:** `main`, a mano. **Dovrà contenere:**
+quello che il resoconto di P-46 ha lasciato — aggiungere il controllo di
+R-ACC-66 alle parti `C-13:scarica` e `C-08:cancella`, con le rotture della
+pagina di riferimento rosse per il loro motivo, e togliere «scoperto» dalla
+specifica. Viene prima del traguardo.
 
 #### P-25 — ChatGPT: la realizzazione dell'area 6
 
-**Aspetta:** P-45, le aree 4 e 5 realizzate (P-21, P-23), e le decisioni dell'autore sul §8 di `area-6-progetto.md`. **Dove:** `ui/main`.
+**Aspetta:** P-45, l'area 4 realizzata (P-21; l'area 5 lo è, P-23), e le decisioni dell'autore sul §8 di `area-6-progetto.md`. **Dove:** `ui/main`.
 **Dovrà contenere:** realizzare `docs/area-6-progetto.md`; le dipendenze del
 progetto chiuse prima da Claude come P-06, P-31, P-35, P-44.
 
 #### P-27 — la regia, con tutti: il traguardo
 
-**Aspetta:** P-15, P-18, P-26, e gli adempimenti del §15.4 di
+**Aspetta:** P-15, P-49, e gli adempimenti del §15.4 di
 `account-progetto.md` chiusi dall'autore. **Dove:** `main`. **Dovrà
 contenere:** la merge di tutto; il rilascio come dice `AGENTS.md` — numero nei
 tre posti, voce, tag, push chiesto, «Build now» — **più il server**, aggiornato
@@ -2282,7 +2388,8 @@ fare: un archivio vero nel browser che passa nell'account senza perdere una riga
 (R-ACC-05), e il cookie fra `rottagiusta.it` e `api.` su un Safari vero
 (Q-PROVE). Il §5 di questo file è la lista di controllo. **Trenta giorni
 dopo**, la soglia degli allarmi riletta sul registro vero
-(`account-progetto.md` §15.4).
+(`account-progetto.md` §15.4). **Nello stesso commit del rilascio** si toglie
+la nota in testa a `docs/filosofia.md`, che lo dice di sé (P-26).
 
 ---
 
@@ -2512,3 +2619,11 @@ dopo**, la soglia degli allarmi riletta sul registro vero
   `git log main..sessione/p-08` è vuoto. P-23 scritto per ChatGPT al posto del
   segnaposto; nasce il segnaposto P-47 per il regime vecchio di Progressi,
   insieme a P-42 dopo la merge di P-23.
+- **30 settembre 2026 — P-46, P-26 e P-23 chiusi.** Tre resoconti insieme.
+  P-23 fuso (`ee54b69`), con la riga vuota che mancava nel CHANGELOG; sullo
+  stato fuso motore 167/169, server 60/60, dati 242, specifica 584, guardiano
+  verde, interfaccia 1.394 in 150 s — i 1.246 di P-46 più i 148 di P-23. P-46 ha trovato un difetto della pagina,
+  R-ACC-66: nascono P-48 per ChatGPT e il segnaposto P-49 per il controllo, che
+  il traguardo ora aspetta al posto di P-26. P-47 scritto per intero, e assorbe
+  P-42. Nel §4 Q-SUITE cresciuta a circa 150 s; in P-27 la nota di
+  `filosofia.md` da togliere nel commit del rilascio.
