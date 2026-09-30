@@ -506,6 +506,13 @@ ogni run insieme a sedici rotture che devono fallire (R-NAV-07). Se il
 contratto sta stretto alla realizzazione, si dice alla regia: cambiarlo tocca
 `tests/`, che da `ui/*` non si scrive.
 
+**Dal 30 settembre 2026 (P-12) il regime a sei ingressi non c'è più.** P-05 ha
+portato le cinque intenzioni nella pagina vera, e il controllo riconosce un
+regime solo: il banco gira su ogni pagina, e la pagina vera deve fare almeno le
+verifiche della pagina di riferimento, gruppo per gruppo. La pagina di prima
+(`ccd98f0^1`, con Batteria e il selettore globale) è rossa: prima di P-12
+passava con cinque verifiche. La pagina di riferimento resta, per le rotture.
+
 ### 10.2 Casi obbligatori per la realizzazione
 
 Sono controlli da eseguire, **non risultati della schermata nuova**.

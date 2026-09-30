@@ -77,24 +77,22 @@ VISTE = {
 # che sembra vivo.
 PORTE_FUORI_DAL_DOM = {}
 
-# I quiz hanno due regimi riconosciuti, e il controllo sa in quale si trova.
+# I quiz hanno un regime solo: le cinque intenzioni dell'area 2
+# (docs/area-2-progetto.md). Batteria non e' piu' un ingresso — il suo mestiere
+# resta in «Scegli un argomento» —, i filtri sono locali all'attivita', e il
+# §10.1 di quel progetto chiede che si eserciti la selezione — funzioni e
+# parametri — e non la presenza dei nomi.
 #
-# Il regime ATTUALE, a sei ingressi, e' la pagina pubblicata: sei mestieri, e la
-# specifica (§4.2) dice perche' non si accorpano. Il regime PROGETTATO, a cinque,
-# e' l'area 2 (docs/area-2-progetto.md): Batteria sparisce come ingresso e il suo
-# mestiere resta in «Scegli un argomento», i filtri diventano locali. Il §10.1 di
-# quel progetto chiede che nel regime nuovo si eserciti la selezione — funzioni e
-# parametri — e non la presenza dei nomi, e che `main` resti verde nel passaggio.
-#
-# **Il regime attuale ha una scadenza:** la regia lo toglie quando integra P-05.
-# Da quel commit `MODI_SEI` e il ramo che la usa spariscono, e una pagina a sei
-# ingressi torna a essere rossa.
-MODI_SEI = ['mirata', 'argomento', 'sbagliate', 'sim', 'screening', 'batteria']
-MODI_CINQUE = ['mirata', 'argomento', 'sbagliate', 'sim', 'screening']
+# Fino a P-12 i regimi riconosciuti erano due: accanto a questo c'era quello a
+# sei ingressi della pagina di prima di P-05, perche' `main` restasse verde nel
+# passaggio. P-05 e' fuso dal 26 settembre 2026, e con P-12 quel ramo non c'e'
+# piu': una pagina a sei ingressi — misurata su quella di `ccd98f0^1` — e' rossa,
+# e il rosso nomina Batteria e la selezione che manca.
+INTENZIONI = ['mirata', 'argomento', 'sbagliate', 'sim', 'screening']
 BANCO_QUIZ = RADICE / 'tests' / 'quiz_intenzioni.mjs'
 RIFERIMENTO_QUIZ = RADICE / 'tests' / 'pagina-quiz-intenzioni.html'
 
-# Il ciclo dei quiz ha anch'esso due regimi, con lo stesso meccanismo.
+# Il ciclo dei quiz ha due regimi, con il meccanismo che i quiz hanno avuto fino a P-12.
 #
 # Il regime ATTUALE e' la pagina pubblicata: `fine()` disegna il riepilogo con
 # gli errori del runner, e nessuna riprova delle sole risposte sbagliate di
@@ -296,89 +294,84 @@ def banco_quiz(testo):
     return out
 
 
-def regime_quiz(testo):
-    """(regime, verifiche): 'attuale', 'progettato' o None, e la lista di esiti.
+def verifiche_quiz(testo):
+    """Le verifiche dei quiz sulla pagina data: la lista di esiti {gruppo, nome, ok, extra}.
 
-    Ogni verifica e' {gruppo, nome, ok, extra}; il gruppo «intenzioni» e' di
-    R-NAV-04, il gruppo «filtri» di R-NAV-05.
+    Il gruppo «intenzioni» e' di R-NAV-04, il gruppo «filtri» di R-NAV-05. Il
+    banco gira sempre, su qualunque pagina: su una senza `selezioneQuiz()`, o con
+    Batteria fra gli ingressi, dice che cosa manca e che cosa e' di troppo, e non
+    ha selezioni da eseguire — per questo le verifiche si contano anche
+    (`conteggio_quiz`).
     """
     chiavi = chiavi_modi(testo)
-    js = senza_commenti(testo)
     if chiavi is None:
-        return None, [{'gruppo': 'intenzioni', 'nome': 'la pagina dichiara l\'elenco MODI', 'ok': False,
-                       'extra': 'senza elenco non si sa quali ingressi abbiano i quiz'}]
-    if set(chiavi) == set(MODI_SEI) and len(chiavi) == 6:
-        v = []
-        # Un ibrido e' la scappatoia che il §10.1 vieta: il contratto nuovo
-        # scritto, e la sesta modalita' tenuta in piedi perche' passi il vecchio.
-        v.append({'gruppo': 'intenzioni', 'nome': 'regime attuale: non e\' un ibrido con quello progettato',
-                  'ok': not re.search(r'^function selezioneQuiz\b', js, re.M),
-                  'extra': 'la pagina ha gia\' selezioneQuiz() ma tiene Batteria fra i MODI: una sesta '
-                           'modalita\' fittizia fa passare il controllo vecchio (area 2, §10.1)'})
-        v.append({'gruppo': 'filtri', 'nome': 'regime attuale: esiste il selettore «solo domande mai fatte»',
-                  'ok': 'mai fatte' in js and 'S.prep' in js,
-                  'extra': 'e\' il filtro che vale su piu\' modalita\': se sparisce, spariscono '
-                           'anche le frasi che dichiarano dove NON vale'})
-        v.append({'gruppo': 'filtri', 'nome': 'regime attuale: esiste il filtro «solo quesiti con figura»',
-                  'ok': 'soloFigura' in js,
-                  'extra': 'all\'esame 119 quesiti mostrano un disegno: e\' l\'unico modo di vederli tutti'})
-        return 'attuale', v
-    # Senza Batteria e dentro le cinque, e' il regime progettato anche se ne
-    # manca una: e' proprio il caso che deve diventare rosso, e il banco dice
-    # quale manca invece di un generico «regime non riconosciuto».
-    if chiavi and 'batteria' not in chiavi and set(chiavi) <= set(MODI_CINQUE):
-        v = banco_quiz(testo)
-        if set(chiavi) != set(MODI_CINQUE) or len(chiavi) != 5:
-            v.append({'gruppo': 'intenzioni', 'nome': 'regime progettato: cinque intenzioni, una volta ciascuna',
-                      'ok': False, 'extra': 'MODI dichiara ' + ', '.join(chiavi)})
-        return 'progettato', v
-    return None, [{'gruppo': 'intenzioni', 'nome': 'i quiz sono in un regime riconosciuto', 'ok': False,
-                   'extra': 'MODI dichiara %s: non sono le sei modalita\' di oggi ne\' le cinque '
-                            'intenzioni dell\'area 2' % ', '.join(chiavi)}]
+        return [{'gruppo': 'intenzioni', 'nome': 'la pagina dichiara l\'elenco MODI', 'ok': False,
+                 'extra': 'senza elenco non si sa quali ingressi abbiano i quiz'}]
+    v = banco_quiz(testo)
+    v.append({'gruppo': 'intenzioni', 'nome': 'cinque intenzioni, una volta ciascuna, e nient\'altro',
+              'ok': sorted(chiavi) == sorted(INTENZIONI),
+              'extra': 'MODI dichiara %s: i quiz hanno le cinque intenzioni dell\'area 2 (%s), e una pagina '
+                       'a sei ingressi, con Batteria, e\' quella di prima di P-05' % (', '.join(chiavi), ', '.join(INTENZIONI))})
+    return v
 
 
-_REGIME_APP = None
+_QUIZ_APP = None
 
 
-def regime_app():
-    global _REGIME_APP
-    if _REGIME_APP is None:
-        _REGIME_APP = regime_quiz(leggi('app.html'))
-    return _REGIME_APP
+def quiz_app():
+    global _QUIZ_APP
+    if _QUIZ_APP is None:
+        _QUIZ_APP = verifiche_quiz(leggi('app.html'))
+    return _QUIZ_APP
 
 
-def registra(regime, verifiche, gruppo):
-    etichetta = {'attuale': 'regime attuale, a sei', 'progettato': 'regime progettato, a cinque'}
+_QUIZ_RIF = None
+
+
+def quiz_riferimento():
+    global _QUIZ_RIF
+    if _QUIZ_RIF is None:
+        _QUIZ_RIF = verifiche_quiz(RIFERIMENTO_QUIZ.read_text(encoding='utf-8'))
+    return _QUIZ_RIF
+
+
+def registra(verifiche, gruppo):
     for x in verifiche:
         if x['gruppo'] == gruppo:
-            check('quiz (%s): %s' % (etichetta.get(regime, 'regime ignoto'), x['nome']),
-                  x['ok'], x.get('extra', ''))
+            check('quiz: %s' % x['nome'], x['ok'], x.get('extra', ''))
+
+
+def conteggio_quiz(gruppo):
+    """La pagina vera fa almeno le verifiche che fa la pagina di riferimento, in quel gruppo.
+
+    E' il conteggio di P-40 (`VERIFICHE_CLIENT`) e di P-47 (`conteggio_mappa`):
+    un giro che si ferma a meta' ha meno verifiche, e quelle fatte possono essere
+    tutte verdi. La pagina a sei ingressi, prima di P-12, passava con 5 verifiche
+    e zero rossi, contro le 100 della pagina vera.
+    """
+    n = sum(x['gruppo'] == gruppo for x in quiz_app())
+    attese = sum(x['gruppo'] == gruppo for x in quiz_riferimento())
+    check('quiz: il gruppo «%s» ha fatto tutte le verifiche' % gruppo, attese > 0 and n >= attese,
+          'troppo poche verifiche (%d su %d): il banco non ha eseguito la selezione della pagina' % (n, attese))
 
 
 def test_modalita_quiz():
-    regime, v = regime_app()
-    if regime == 'attuale':
-        # Le sei chiavi ci sono tutte: lo ha gia' stabilito regime_quiz(), che
-        # riconosce il regime solo se l'insieme e' esattamente quello.
-        check('quiz (regime attuale, a sei): le sei modalita\' ci sono tutte', True)
-    registra(regime, v, 'intenzioni')
+    registra(quiz_app(), 'intenzioni')
+    conteggio_quiz('intenzioni')
 
 
 def test_selettori():
-    regime, v = regime_app()
-    registra(regime, v, 'filtri')
-    check('quiz: i filtri sono stati controllati', any(x['gruppo'] == 'filtri' for x in v),
-          'nessuna verifica sui filtri: «solo mai fatte» e «solo con figura» sono '
-          'spariti senza che nessuno lo dica')
+    registra(quiz_app(), 'filtri')
+    conteggio_quiz('filtri')
 
 
-# --- 5. il controllo del regime progettato si prova al contrario ----------------
+# --- 5. il banco dei quiz si prova al contrario --------------------------------
 #
-# Finche' la pagina pubblicata e' a sei ingressi, il ramo del regime progettato
-# non gira mai su di lei: sarebbe un controllo scritto e mai eseguito, che e' la
-# forma del semaforo verde a copertura zero. Quindi gira qui, a ogni esecuzione,
-# su una pagina di riferimento che deve passare e su ciascuna delle sue rotture,
-# che devono fallire nominando il difetto.
+# Il banco gira anche su una pagina di riferimento, che deve passare, e su
+# ciascuna delle sue rotture, che devono fallire nominando il difetto. Le
+# rotture restano su di lei e non sulla pagina vera, per la ragione di P-40:
+# sostituzioni di testo in un file dell'interfaccia da 200 KB si spezzerebbero a
+# ogni suo ritocco, e una rottura che non si applica piu' e' un controllo spento.
 
 ROTTURE = [
     # (che cosa si rompe, testo da sostituire, sostituzione, frammento atteso fra i rossi)
@@ -387,7 +380,7 @@ ROTTURE = [
     ('perde una porta', '<button data-modo="sbagliate">Ripassa gli errori</button>', '',
      'ha una porta'),
     ('tiene Batteria come sesto ingresso', "  ['sim', 'Simula la prova'],\n",
-     "  ['sim', 'Simula la prova'],\n  ['batteria', 'Batteria'],\n", 'regime attuale: non e\' un ibrido'),
+     "  ['sim', 'Simula la prova'],\n  ['batteria', 'Batteria'],\n", 'Batteria non e\' piu\' un ingresso'),
     ('la Mirata apre 20 quiz invece di 25', 'n: 25, kind', 'n: 20, kind', 'fino a 25 quiz base'),
     ('la Mirata eredita la banca di un\'altra attivita\'', "n: 25, kind: 'base'", 'n: 25, kind: conf.kind',
      'fino a 25 quiz base'),
@@ -418,9 +411,8 @@ ROTTURE = [
 
 def test_intenzioni_provate_al_contrario():
     rif = RIFERIMENTO_QUIZ.read_text(encoding='utf-8')
-    regime, v = regime_quiz(rif)
+    v = quiz_riferimento()
     rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in v if not x['ok']]
-    check('la pagina di riferimento e\' nel regime progettato', regime == 'progettato', str(regime))
     check('la pagina di riferimento passa il controllo', not rossi, '; '.join(rossi[:3]))
     # Un banco che non esegue niente passerebbe tutto: si pretende che abbia
     # esercitato ogni intenzione e i due filtri.
@@ -433,7 +425,7 @@ def test_intenzioni_provate_al_contrario():
               'il testo da sostituire non c\'e\' piu\': la rottura non romperebbe niente')
         if vecchio not in rif:
             continue
-        _, vr = regime_quiz(rif.replace(vecchio, nuovo, 1))
+        vr = verifiche_quiz(rif.replace(vecchio, nuovo, 1))
         rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in vr if not x['ok']]
         check('rottura «%s»: il controllo diventa rosso' % cosa, bool(rossi), 'e\' passata verde')
         check('rottura «%s»: e il rosso nomina il difetto' % cosa, any(atteso in r for r in rossi),

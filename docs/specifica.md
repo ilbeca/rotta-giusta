@@ -274,9 +274,9 @@ pagina), e P-26 ha riscritto le parti per i due stati. Che cosa è cambiato:
 - **Appendice A**: «nessun dark pattern possibile, non c'è un imbuto» — c'è,
   per salvare, e l'appendice dice quali promesse lo tengono onesto.
 
-Restano com'erano, e non sono di questo lavoro, le righe del §5 che descrivono
-le sei modalità dei Quiz e il selettore globale: le toglie P-12 con il regime
-vecchio dei controlli.
+Le righe del §5 che descrivevano le sei modalità dei Quiz e il selettore
+globale le ha riscritte P-12, il 30 settembre 2026, con il regime vecchio dei
+controlli (§9.4).
 
 E una cosa che c'è e resta: **il sito dichiara i propri difetti**, quesito per
 quesito. È l'unica cosa che nessun concorrente può copiare, ed è il motivo per
@@ -851,24 +851,31 @@ vanno nella copia del dispositivo e sul server (§3.2).
 
 | Attività | Dove | Motore | Scrive righe |
 |---|---|---|---|
-| Mirata | Quiz | `mirata()` | sì, `mode` proprio |
-| Per argomento | Quiz | `daAllenare()` + `coda()` | sì |
-| Solo sbagliate | Quiz | `coda({soloSbagliate})` | sì |
-| Simulazione d'esame (base, vela, completa) | Quiz | `simulazione()`, `simulazioneVela()` | sì, più una riga `_t:'s'` |
-| Screening completo | Quiz | `screening()` | sì |
-| Batteria | Quiz | `daAllenare()` | sì |
+| Allenamento consigliato (la Mirata) | Quiz | `mirata()`, fino a 25 quiz base | sì, `mode` proprio |
+| Scegli un argomento | Quiz | `daAllenare()`; con «solo domande mai fatte» `coda({stati: ['nuovo']})` | sì |
+| Ripassa gli errori | Quiz | `coda({soloSbagliate})` | sì |
+| Simula la prova (base, vela, base e vela) | Quiz | `simulazione()`, `simulazioneVela()` | sì, più una riga `_t:'s'` per prova |
+| Un giro tra gli argomenti | Quiz, dietro «Altri modi di esercitarti» | `screening()`, con il numero da `lunghezzaScreening()` | sì |
 | Prova di carteggio | Carteggio | `provaCarteggio()`, cieca, o «prima i mai provati» come variante; la pagina compone ancora con `componiProva()`, identica per test, fino alla realizzazione dell'area 4 | sì, `_t:'c'` |
 | Giro delle tecniche | Carteggio | `giroTecniche()` | sì |
 | A tappeto | Carteggio | `tappeto()` | sì |
 | Che tecnica serve? | schermata propria | selezione per tecnica | sì, `_t:'t'` |
 | Gioco dei Segnali (4 modalità) | schermata propria | `domandeSegnali()` | **no**, e §4.5 dice perché |
 
+Le cinque righe dei Quiz sono le **intenzioni** dell'area 2
+(`docs/area-2-progetto.md`), dal 26 settembre 2026 (P-05). Fino ad allora erano
+sei modalità: la sesta, **Batteria**, non è più un ingresso, e il suo mestiere —
+tutta la banca, i mai visti per primi — sta in «Scegli un argomento» senza
+filtri; le sue righe storiche restano leggibili come «Batteria (attività
+precedente)». La selezione di ogni intenzione passa da `selezioneQuiz()`, che
+il controllo esegue (R-NAV-04).
+
 ### 5.4 I controlli e i riscontri
 
 | Cosa | Dove | Nota |
 |---|---|---|
-| Selettore «solo domande mai fatte» | in cima a Quiz | Ignorato da simulazione e screening, **e lo dichiara** |
-| Filtro «solo quesiti con figura» | Quiz → Per argomento | Si spegne da solo su una banca che non ne ha, col perché scritto |
+| Filtro «solo domande mai fatte» | Quiz → Scegli un argomento | Locale a quell'attività: chiede al motore `stati: ['nuovo']`, e nessun'altra intenzione lo riceve (R-NAV-05). Fino al 26 settembre 2026 era un selettore globale in cima a Quiz, che valeva anche per la prova di carteggio |
+| Filtro «solo quesiti con figura» | Quiz → Scegli un argomento | Locale come l'altro. Si spegne da solo su una banca che non ne ha, col perché scritto |
 | Spunte argomenti, spunte voci | Quiz | Più voci insieme; per la vela le spunte viaggiano come `voci`, non `temi` |
 | Banca base / vela, quante | Quiz | |
 | Data d'esame | Rotta | Facoltativa. Senza, `quota` e `giorni` sono `null` e il semaforo è `attesa`. Senza account vale per la pagina aperta; con l'account sta nel profilo sul server, e dopo la registrazione si propone senza salvarla da sola (R-ACC-55) |
@@ -1008,8 +1015,10 @@ questa schermata decide se una persona resta.
 
 **Scopo.** Allenarsi sui 1.722 quesiti, scegliendo l'ambito.
 
-**Cosa si vede.** Le sei modalità (§5.3), i controlli di ambito e quantità, e
-**prima di Inizia** quanti quesiti apre la selezione corrente.
+**Cosa si vede.** Le cinque intenzioni (§5.3) — quattro in vista, il giro fra
+gli argomenti dietro «Altri modi di esercitarti» —, i controlli di ambito e
+quantità dell'intenzione scelta, e **prima di Inizia** quanti quesiti apre la
+selezione corrente. I filtri valgono solo per l'attività in cui li scegli.
 
 **Stati.** *Selezione vuota*: spiegare il motivo e offrire di modificarla — mai
 un pulsante che non produce niente. *Filtro che azzera*: il conteggio lo dice
@@ -1287,10 +1296,10 @@ ragione per cui questo documento è stato scritto.
 | R-NAV-01 | Ogni schermata dichiarata nel §5.2 ha **almeno un ingresso** nella pagina | `test_interfaccia.py::test_ogni_vista_ha_una_porta` |
 | R-NAV-02 | Ogni funzione esportata dal motore è chiamata dalla pagina, o sta nell'elenco dichiarato delle eccezioni | `test_interfaccia.py::test_motore_senza_orfani` |
 | R-NAV-03 | Ogni voce della barra porta a una vista dichiarata e ha un'etichetta di testo, non la sola icona | `test_interfaccia.py::test_voci_barra` |
-| R-NAV-04 | I quiz sono in uno dei due regimi riconosciuti. **Attuale:** le sei modalità esistono tutte, e nessuna pagina tiene Batteria accanto al contratto nuovo. **Progettato** (area 2): cinque intenzioni con una porta ciascuna, nessun ingresso Batteria, e ognuna apre la selezione del §6 di `area-2-progetto.md` — funzione del motore, parametri e lista eseguiti, non letti | `test_interfaccia.py::test_modalita_quiz` |
-| R-NAV-05 | «Solo mai fatte» e «solo con figura» esistono: globali nel regime attuale; nel progettato solo nella scelta per argomento, dove chiedono al motore `stati: ['nuovo']` e `soloFigura`, e nessun'altra intenzione li riceve | `test_interfaccia.py::test_selettori` |
+| R-NAV-04 | I quiz hanno le cinque intenzioni dell'area 2, ognuna con una porta, nessun ingresso Batteria, e ognuna apre la selezione del §6 di `area-2-progetto.md` — funzione del motore, parametri e lista eseguiti, non letti. Una pagina a sei ingressi, o che fa meno verifiche della pagina di riferimento, è rossa | `test_interfaccia.py::test_modalita_quiz` |
+| R-NAV-05 | «Solo mai fatte» e «solo con figura» esistono solo nella scelta per argomento, dove chiedono al motore `stati: ['nuovo']` e `soloFigura`, e nessun'altra intenzione li riceve | `test_interfaccia.py::test_selettori` |
 | R-NAV-06 | L'elenco delle schermate del §5.2 è esattamente quello che sta nel file: nessuna aggiunta e nessuna sparizione in silenzio | `test_interfaccia.py::test_viste_dichiarate` |
-| R-NAV-07 | Il controllo del regime progettato gira a ogni esecuzione, anche finché la pagina pubblicata è a sei ingressi: una pagina di riferimento lo passa, e ciascuna delle sue rotture dichiarate lo fa fallire nominando il difetto | `test_interfaccia.py::test_intenzioni_provate_al_contrario` |
+| R-NAV-07 | Il controllo dei quiz è provato contro sé stesso a ogni esecuzione: una pagina di riferimento lo passa, e ciascuna delle sue rotture dichiarate lo fa fallire nominando il difetto | `test_interfaccia.py::test_intenzioni_provate_al_contrario` |
 
 **Che cosa questi controlli non fanno.** Non fissano la composizione della
 barra: quante voci abbia e come si chiamino è Q-NAV, e decide l'autore (§10). Un
@@ -1299,17 +1308,22 @@ gli invarianti che valgono con quattro destinazioni, con sette e con qualunque
 altra scelta — e R-UX-01 dice che il Carteggio ha una sua stanza, non che debba
 stare nella barra.
 
-**I due regimi dei quiz, e quando ne resta uno.** R-NAV-04 e R-NAV-05 sono
-scritti per il passaggio all'area 2 (`area-2-progetto.md` §10.1): la pagina
-pubblicata ha sei modalità, quella progettata cinque intenzioni, e `main` deve
-restare verde con la prima mentre la seconda si realizza. Il controllo riconosce
-il regime da `MODI`; nel progettato estrae `selezioneQuiz()` e la esegue contro
-il motore vero con una spia sulle chiamate (`tests/quiz_intenzioni.mjs`). Il
-contratto che la pagina deve rispettare è nel §10.1 di quel progetto. **Il
-regime attuale ha una scadenza:** lo toglie la regia quando integra P-05, e da
-quel momento i due requisiti tornano ad avere un regime solo. Che cosa il
-controllo non vede — la gerarchia, il giro dietro un disclosure, i testi, il
-focus, i ritorni, «Base e vela» come due fasi — resta collaudo a 375 e 1280 px.
+**Un regime solo per i quiz (P-12).** R-NAV-04 e R-NAV-05 erano scritti per
+il passaggio all'area 2 (`area-2-progetto.md` §10.1), in due regimi: la pagina
+pubblicata a sei modalità e quella progettata a cinque intenzioni, perché
+`main` restasse verde mentre la seconda si realizzava. P-05 è fuso dal 26
+settembre 2026, e dal 30 settembre il regime a sei ingressi non c'è più: il
+banco (`tests/quiz_intenzioni.mjs`) gira su ogni pagina, ne estrae
+`selezioneQuiz()` e la esegue contro il motore vero con una spia sulle
+chiamate, e la pagina vera deve fare almeno le verifiche della pagina di
+riferimento, gruppo per gruppo — il conteggio di P-40 e P-47. Provato sulla
+pagina di prima di P-05 (`ccd98f0^1`): prima di P-12 passava con 5 verifiche e
+nessun rosso, ora ha 7 rossi, fra cui Batteria, `selezioneQuiz()` che manca e
+le verifiche dei filtri a 0 su 16. La pagina di riferimento
+(`tests/pagina-quiz-intenzioni.html`) resta, per le rotture. Il contratto che la
+pagina deve rispettare è nel §10.1 di quel progetto. Che cosa il controllo non
+vede — la gerarchia, il giro dietro un disclosure, i testi, il focus, i
+ritorni, «Base e vela» come due fasi — resta collaudo a 375 e 1280 px.
 
 ### 9.5 Gli stati
 
@@ -2267,3 +2281,9 @@ successo, ed è il motivo per cui questo file esiste.
   altri punti nei banchi dei quiz, del ciclo, della mappa, del Carteggio, del
   client e dell'area 6: nessun altro fissa il regime, e il §9.6 lo dice.
   `RG_PAGINA` fa girare la suite su una copia della palestra.
+- **30 settembre 2026 — un regime solo per i quiz (P-12).** Il regime a sei
+  ingressi esce dai controlli: R-NAV-04, 05 e 07 dicono quello che la pagina fa,
+  e la pagina a sei ingressi di prima di P-05 è rossa, anche per il conteggio
+  delle verifiche contro la pagina di riferimento, che resta per le rotture.
+  §5.3, §5.4 e §7.2 descrivono le cinque intenzioni e i filtri locali al posto
+  di Batteria e del selettore globale; il §2.5 lo dice.

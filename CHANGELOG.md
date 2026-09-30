@@ -1774,6 +1774,62 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   libera; nessun carico di prova lanciato. `site/` e
   `docs/prossime-sessioni.md` non sono stati toccati, e nemmeno il worktree `ui`.
 
+### Test — P-12: i quiz hanno un regime solo
+
+- **La pagina a sei ingressi passava ancora, e con cinque verifiche.** P-06
+  aveva scritto i controlli dei quiz in due regimi perché `main` restasse verde
+  mentre P-05 realizzava l'area 2; P-05 è fuso dal 26 settembre, e il ramo a sei
+  era rimasto. Misurato prima di toglierlo, con `RG_PAGINA` sulla pagina di
+  `ccd98f0^1` — Batteria fra i `MODI`, il selettore globale, nessuna
+  `selezioneQuiz()` —: `test_modalita_quiz` e `test_selettori` le davano
+  **5 verifiche e zero rossi**, contro le 100 della pagina vera. Un controllo
+  che accetta la pagina di prima non tiene fermo niente.
+
+- **Un regime solo, e il conteggio di P-40 e P-47.** Tolti `MODI_SEI`, il ramo a
+  sei e `regime_quiz()`: `verifiche_quiz()` fa girare il banco
+  (`tests/quiz_intenzioni.mjs`) su qualunque pagina, pretende in `MODI` le cinque
+  intenzioni e nient'altro, e la pagina vera deve fare almeno le verifiche della
+  pagina di riferimento, gruppo per gruppo. Sulla pagina di prima ora i rossi
+  sono **7**, ognuno con il suo difetto: Batteria come ingresso, un'intenzione
+  non progettata, `totScreening()`, `selezioneQuiz()` che manca, le cinque
+  intenzioni, e le verifiche a **16 su 84** per le intenzioni e **0 su 16** per
+  i filtri. Ciascuna delle tre difese — i rossi del banco, l'elenco dei `MODI`,
+  il conteggio — da sola la fa rossa; il conteggio è l'unica che non dipende dal
+  banco che nomina il difetto. Sulla pagina vera: 154 verifiche dei quiz, zero
+  rossi.
+
+- **La pagina di riferimento resta**, per la ragione di P-40: le sedici rotture
+  stanno su di lei, perché sostituzioni di testo nella pagina vera si
+  spezzerebbero a ogni suo ritocco; e fa da metro al conteggio. La rottura
+  «tiene Batteria come sesto ingresso» ora aspetta il rosso «Batteria non è più
+  un ingresso» invece di quello dell'ibrido, che non esiste più; tutte e sedici
+  rosse per il loro motivo.
+
+- **Nella specifica** il §5.3 elenca le cinque intenzioni con le loro funzioni del
+  motore e dice dove è finito il mestiere di Batteria, il §5.4 i due filtri
+  locali a «Scegli un argomento», il §7.2 le cinque intenzioni con il giro dietro
+  «Altri modi di esercitarti»; R-NAV-04, 05 e 07 dicono quello che la pagina fa,
+  il paragrafo sotto la tabella del §9.4 racconta «Un regime solo», e il §2.5 non
+  rimanda più a P-12. Nota di chiusura nel §10.1 di `docs/area-2-progetto.md`.
+  Il selettore globale è uscito dalla pagina con P-05 (`0645970`): verificato sul
+  sorgente prima e dopo.
+
+- **Trovato, ed è dell'interfaccia:** del selettore globale resta il codice senza
+  l'interruttore. Nessun punto di `site/app.html` scrive più `prep` fra le
+  preferenze e nessun elemento ha `id="prep"`, quindi `S.prep` è sempre falso, e
+  `dipingiPrep()`, `quotaPrep()`, il paragrafo `#c-prep` del Carteggio, i rami
+  `S.prep ?` della Rotta e della prova di carteggio e il CSS `.prep` sono codice
+  morto che sembra vivo — fra l'altro l'avviso «“Solo domande mai fatte” è
+  acceso» della prova di carteggio, in un ramo che non si accende più. Non è un
+  guasto visibile oggi. Da togliere su `ui/*`, quando la penna su `app.html` è libera.
+
+  Suite: interfaccia **1.873** (erano 1.872), in 188 s; specifica 758; motore
+  185/187 con i due skip di sempre; dati 242; server 60/60. Con la **24.21.0
+  LTS**, pacchetto verificato con `SHASUMS256.txt`: server 60/60, motore
+  185/187, e l'interfaccia intera nel secondo giro. Guardiano verde. Prima di
+  ogni giro la 8620 guardata libera; nessun carico di prova lanciato. `site/`,
+  `docs/prossime-sessioni.md` e il worktree `ui` non sono stati toccati.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag

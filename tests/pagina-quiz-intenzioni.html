@@ -1,16 +1,22 @@
 <!doctype html>
 <!--
-  La pagina di riferimento del regime progettato dei quiz: cinque intenzioni,
-  docs/area-2-progetto.md §6. Non e' pubblicata e non e' un prototipo: e' il
-  minimo che soddisfa il controllo di tests/test_interfaccia.py, e serve a
-  quel controllo per provarsi al contrario a ogni esecuzione — questa pagina
-  deve passare, e ognuna delle sue rotture elencate in ROTTURE deve fallire.
+  La pagina di riferimento dei quiz: cinque intenzioni, docs/area-2-progetto.md
+  §6. Non e' pubblicata e non e' un prototipo: e' il minimo che soddisfa il
+  controllo di tests/test_interfaccia.py, e serve a quel controllo per provarsi
+  al contrario a ogni esecuzione — questa pagina deve passare, e ognuna delle
+  sue rotture elencate in ROTTURE deve fallire. Fa anche da metro: la pagina
+  vera deve fare almeno le verifiche che fa lei, gruppo per gruppo.
+
+  Resta anche ora che il regime a sei ingressi non c'e' piu' (P-12, 30
+  settembre 2026), per la ragione di P-40: le rotture stanno su di lei e non
+  sulla pagina vera, perche' sostituzioni di testo in un file dell'interfaccia
+  da 200 KB si spezzerebbero a ogni suo ritocco.
 
   Mostra anche la forma del contratto a chi realizza l'area 2: che cosa riceve
   selezioneQuiz(), che cosa restituisce. Il disegno, i testi e il flusso sono
   del progetto, non di qui.
 -->
-<title>Quiz, regime progettato: pagina di riferimento</title>
+<title>Quiz, cinque intenzioni: pagina di riferimento</title>
 <button data-modo="mirata">Apri l'allenamento consigliato</button>
 <button data-modo="argomento">Scegli un argomento</button>
 <button data-modo="sbagliate">Ripassa gli errori</button>

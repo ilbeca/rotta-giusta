@@ -1,4 +1,4 @@
-// Il banco del regime progettato dei quiz: le cinque intenzioni dell'area 2.
+// Il banco dei quiz: le cinque intenzioni dell'area 2, l'unico regime da P-12.
 //
 // Lo chiama tests/test_interfaccia.py, e non gira da solo sotto `node --test`:
 // legge da stdin `{"pagina": "<testo di una pagina>"}` e scrive su stdout la
