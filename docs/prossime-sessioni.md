@@ -202,20 +202,21 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 |---|---|---|---|---|---|
 | 6d, 5b, 12, 13 | Il regime vecchio del ciclo e dei quiz, `ritmo()`, l'ultimo tag | Claude | `main`, a mano | niente: riempiono i buchi | P-37, P-12, P-16, P-17 |
 | 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore | P-15 |
-| 28 | I controlli e la specifica dell'area 6 — **in corso**, lanciato dalla regia | Claude | `main`, a mano | niente | P-45 |
 | 21b | La realizzazione dell'area 4 — **fermato**, bozza non committata nel worktree `ui` | ChatGPT | `ui/main` | P-51 | P-21 |
-| 31 | Un controllo del Carteggio che fissa il regime della pagina vera | Claude | `main`, a mano | P-45 (la cartella principale), poi **per primo** | P-51 |
+| 31 | Un controllo del Carteggio che fissa il regime della pagina vera — **in corso**, lanciato dalla regia | Claude | `main`, a mano | niente | P-51 |
+| 32 | Lo stato dell'invio che dice «sul server» con righe in coda (T-02) | ChatGPT | `ui/main` | P-21 (la penna su `app.html`) | P-52 |
 | 21c | Dopo P-21: il regime vecchio del Carteggio, e la riga fra i difetti noti di `AGENTS.md` | Claude | `main`, a mano | la merge di P-21 | segnaposto P-50 |
 | 26b | La realizzazione dell'area 6 | ChatGPT | `ui/main` | P-45, P-21, e il §8 dell'area 6 | segnaposto P-25 |
-| 9 | **La versione con gli account** — il traguardo | tutti | `main` | P-15, e gli adempimenti del §4 | segnaposto P-27 |
+| 9 | **La versione con gli account** — il traguardo | tutti | `main` | P-15, P-52, e gli adempimenti del §4 | segnaposto P-27 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**, e si sono incontrate: il client degli
 account è nella pagina (P-18), Progressi è la mappa (P-23), e il carteggio ha
 i suoi contratti e controlli su `main` (P-32…P-35). **Per Claude, l'ordine
-consigliato: P-45**, poi **P-51** (sblocca P-21), poi i piccoli — P-12, P-37,
+consigliato: P-51** (sblocca P-21), poi i piccoli — P-12, P-37,
 P-16, P-17 —, lanciati dalla regia uno dopo l'altro (punto 8); P-15 quando
-l'autore ha il tempo. **Per ChatGPT: P-21 riprende dopo P-51**, dalla sua bozza. I prompt di Claude vanno uno alla volta nella cartella principale, e
+l'autore ha il tempo. **Per ChatGPT: P-21 riprende dopo P-51**, dalla sua bozza; poi
+P-52, prima del traguardo. I prompt di Claude vanno uno alla volta nella cartella principale, e
 la suite dell'interfaccia di un worktree esclude quella dell'altro, per la porta
 8620. Il numero di una riga è il suo nome, non la sua posizione. Il traguardo,
 P-27, non aspetta le aree 4–6: aspetta il server in esercizio, i testi e gli
@@ -2238,8 +2239,7 @@ diventano P-45. Controllato dalla regia: territori puliti, merge chiusa da sola.
 
 ### P-45 — Claude: i controlli e la specifica dell'area 6
 
-**Stato:** **in corso dal 30 settembre 2026**, lanciato dalla regia (punto 8); P-25 aspetta anche P-21 e il §8 dell'area 6. Prima era: pronto, in fondo all'ordine di Claude: P-25 aspetta anche P-21 e
-P-23. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-24, §10.1 di `docs/area-6-progetto.md`.
+**Stato:** **chiuso il 30 settembre 2026**, commit `cb4cea1` su `main`; lanciato dalla regia (punto 8). **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-24, §10.1 di `docs/area-6-progetto.md`.
 
 ```
 Questo prompt è per Claude Code, nella cartella principale
@@ -2270,7 +2270,31 @@ fondo a [Unreleased], un commit. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `cb4cea1`, voce nel CHANGELOG. Nove gruppi nuovi nel banco del
+client, T-01…T-09 (`test_rifinitura_*`), nei due regimi d'accesso: il banco
+misura nel browser — larghezza emulata, tasti veri, colori e rettangoli
+calcolati, albero di accessibilità — invece di cercare stringhe;
+`tests/browser.mjs` ha `dimensioni()`, `tasto()`, `accessibile()`,
+`schermata()`. La pagina di riferimento ha 31 rotture nuove, e il banco è provato
+contro sé stesso. Contratto nel §10.3 dell'area 6; nella specifica il §9.11 con
+R-RIF-01…16, undici coperti e cinque scoperti con la prova manuale scritta —
+zoom e testo al 200 %, contrasto non testuale, percorsi solo da tastiera,
+lettore di schermo, e gli stati con l'account —; R-A11Y-03 coperto; appendice A
+con le misure del 30 settembre, senza «conforme AA». **Trovati sette difetti
+della pagina vera**, dichiarati con la verifica che li dimostra fra i «Difetti
+aperti dichiarati» di `docs/eccezioni-interfaccia.md` (righe T-*): lo stato
+dell'invio che dice «confermate sul server» con righe in coda (T-02, due righe),
+il fuoco sotto la barra fissa a 375 px (T-05), lo scorrimento laterale a 320 px
+(T-07, due righe), un grigio a 4,26:1 (T-08), i tag N/L/C a 31×29 px (T-09).
+Tengono già, e ora sono protetti: il guasto annunciato su Info, il 401 senza le
+righe di A per B, il fuoco della finestra «Accedi», nessuno sbordo a 375 px. Un
+buco del banco chiuso: la pagina di riferimento senza meta viewport misurava a
+980 px. **Per la coda:** T-02 va a P-52, prima del traguardo; gli altri sei a
+P-25, che toglie le righe T-* nello stesso commit. La suite dura ~186 s
+(Q-SUITE). Controllato dalla regia: motore 185/187, server 60/60, dati 242,
+specifica 758, guardiano verde, interfaccia 1.863 in 189 s. Il resoconto dice
+«erano 703» per la specifica, la regia ne aveva misurati 704 dopo P-35: la
+differenza non cambia niente, e non è stata indagata.
 
 ### P-46 — Claude: le tre scelte del client che nessun controllo preme
 
@@ -2570,8 +2594,8 @@ docs/prossime-sessioni.md.
 
 ### P-51 — Claude: il controllo del Carteggio che fissa il regime della pagina vera
 
-**Stato:** pronto appena P-45 lascia la cartella principale; lo lancia la regia
-(punto 8), **prima** dei piccoli, perché sblocca P-21. **Dove:** Claude Code,
+**Stato:** **in corso dal 30 settembre 2026**, lanciato dalla regia (punto 8),
+**prima** dei piccoli, perché sblocca P-21. **Dove:** Claude Code,
 `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-21, fermato.
 
 ```
@@ -2606,6 +2630,44 @@ Chiudi con il resoconto di docs/prossime-sessioni.md.
 
 **Esito:** —
 
+### P-52 — ChatGPT: lo stato dell'invio che dice «sul server» con righe in coda
+
+**Stato:** in attesa di P-21, perché la penna su `app.html` è una; **prima del
+traguardo**. **Dove:** app di ChatGPT, progetto `~/Software/rotta-giusta-ui`,
+ramo `ui/main`, modalità Local. **Nasce da:** P-45, T-02.
+
+```
+Questo prompt è per ChatGPT, nel worktree ~/Software/rotta-giusta-ui,
+sul ramo ui/main. Se sei un altro agente o sei in un'altra cartella,
+fermati e dillo, senza scrivere niente.
+
+Sessione P-52. Leggi l'esito di P-45 nel §6 di
+docs/prossime-sessioni.md e le due righe T-02 fra i «Difetti aperti
+dichiarati» di docs/eccezioni-interfaccia.md. Con due risposte in coda
+la pagina dice ancora «Le risposte di questo dispositivo sono
+confermate sul server»: lo stato dell'invio si ridipinge solo quando un
+tentativo d'invio finisce, quindi per un secondo offline, e fino ai 15 s
+del timeout con una rete che non risponde, la pagina afferma una cosa
+falsa. Il numero da inviare deve essere quello della coda dal momento
+in cui una risposta ci entra. P-45 indica una causa — archivia() non
+chiama dipingiContoStato() —: verificala prima di fidarti.
+
+Nello stesso commit togli le due righe T-02 da
+docs/eccezioni-interfaccia.md: da lì i controlli T-02 girano verdi
+sulla pagina vera, e la suite lo pretende. Le altre righe T-* sono di
+P-25: non toccarle. La suite dell'interfaccia vuole Chrome, la porta
+8620 libera e il permesso per le connessioni locali; se non gira,
+fermati e dillo. Se un controllo ti sta stretto, fermati e dillo:
+cambiarlo tocca main.
+
+Non toccare docs/prossime-sessioni.md. Tutte le suite verdi, collaudo
+guardato con la rete spenta e con una rete lenta, voce in fondo a
+[Unreleased], un commit con il trailer, versione non toccata. Chiudi
+con il resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
 ---
 
 ### I segnaposto — i prompt che non si possono ancora scrivere
@@ -2635,13 +2697,17 @@ noti» di `AGENTS.md` si toglie, e R-BOZZA-06 e il §7.6 dicono il presente.
 
 #### P-25 — ChatGPT: la realizzazione dell'area 6
 
-**Aspetta:** P-45, l'area 4 realizzata (P-21; l'area 5 lo è, P-23), e le decisioni dell'autore sul §8 di `area-6-progetto.md`. **Dove:** `ui/main`.
-**Dovrà contenere:** realizzare `docs/area-6-progetto.md`; le dipendenze del
-progetto chiuse prima da Claude come P-06, P-31, P-35, P-44.
+**Aspetta:** l'area 4 realizzata (P-21; l'area 5 lo è, P-23; P-45 è chiuso), e le decisioni dell'autore sul §8 di `area-6-progetto.md`. **Dove:** `ui/main`.
+**Dovrà contenere:** realizzare `docs/area-6-progetto.md`; il contratto dei
+controlli è il §10.3 del progetto e il §9.11 della specifica (P-45); chiudere i
+sei difetti T-05, T-07, T-08, T-09 e togliere le loro righe T-* da
+`docs/eccezioni-interfaccia.md` nello stesso commit — alla merge la regia
+guarda che non ne resti nessuna —; una superficie nuova entra nel banco da
+`main`, in `VISTE_RIF`.
 
 #### P-27 — la regia, con tutti: il traguardo
 
-**Aspetta:** P-15, e gli adempimenti del §15.4 di
+**Aspetta:** P-15, P-52, e gli adempimenti del §15.4 di
 `account-progetto.md` chiusi dall'autore. **Dove:** `main`. **Dovrà
 contenere:** la merge di tutto; il rilascio come dice `AGENTS.md` — numero nei
 tre posti, voce, tag, push chiesto, «Build now» — **più il server**, aggiornato
@@ -2928,3 +2994,8 @@ la nota in testa a `docs/filosofia.md`, che lo dice di sé (P-26).
   Né la sessione P-35 né la regia l'avevano visto, perché con la pagina di oggi
   il controllo è verde. P-51 lo corregge e cerca gli altri casi, subito dopo
   P-45, che occupa la cartella principale; poi P-21 riprende dalla sua bozza.
+- **30 settembre 2026 — P-45 chiuso, P-51 lanciato, nasce P-52.** I controlli
+  dell'area 6 misurano nel browser, e hanno trovato sette difetti della pagina
+  vera, dichiarati. Uno — lo stato dell'invio che dice «sul server» con righe
+  in coda — non può aspettare P-25 e le decisioni dell'area 6: diventa P-52,
+  e il traguardo lo aspetta.
