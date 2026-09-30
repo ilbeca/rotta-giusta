@@ -200,7 +200,6 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 6d, 5b, 12, 13 | Il regime vecchio del ciclo e dei quiz, `ritmo()`, l'ultimo tag | Claude | `main`, a mano | niente: riempiono i buchi | P-37, P-12, P-16, P-17 |
 | 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore | P-15 |
 | 21b | La realizzazione dell'area 4 — **da riprendere**, dalla bozza non committata nel worktree `ui` | ChatGPT | `ui/main` | niente: il blocco «Ripresa» di P-21 | P-21 |
 | 32 | Lo stato dell'invio che dice «sul server» con righe in coda (T-02) | ChatGPT | `ui/main` | P-21 (la penna su `app.html`) | P-52 |
@@ -213,9 +212,8 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 **Le due colonne corrono in parallelo**, e si sono incontrate: il client degli
 account è nella pagina (P-18), Progressi è la mappa (P-23), e il carteggio ha
 i suoi contratti e controlli su `main` (P-32…P-35). **Per Claude, l'ordine
-consigliato:** i piccoli — P-12, P-37,
-P-16, P-17 —, lanciati dalla regia uno dopo l'altro (punto 8); P-15 quando
-l'autore ha il tempo. **Per ChatGPT: P-21 riprende**, dalla sua bozza, con il
+consigliato:** P-15, la messa in esercizio, quando
+l'autore ha il tempo; P-50 e P-53 dopo la merge di P-21. **Per ChatGPT: P-21 riprende**, dalla sua bozza, con il
 blocco «Ripresa» del suo prompt; poi P-52, prima del traguardo. I prompt di Claude vanno uno alla volta nella cartella principale, e
 la suite dell'interfaccia di un worktree esclude quella dell'altro, per la porta
 8620. Il numero di una riga è il suo nome, non la sua posizione. Il traguardo,
@@ -1227,7 +1225,7 @@ specifica 774, guardiano verde, interfaccia 1.873 in 188 s.
 
 ### P-17 — Claude: l'ultimo tag di una risposta, nel motore
 
-**Stato:** **in corso dal 30 settembre 2026**, lanciato dalla regia (punto 8) — pronto quando la cartella principale è libera. **Dove:** Claude Code,
+**Stato:** **chiuso il 30 settembre 2026**, commit `059d717` su `main`, lanciato dalla regia (punto 8). Prima era: pronto quando la cartella principale è libera. **Dove:** Claude Code,
 `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** l'esito di
 P-01, che lo lasciava scritto come difetto di copertura.
 
@@ -1253,7 +1251,18 @@ Non toccare docs/prossime-sessioni.md. Suite verdi, voce in fondo a
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `059d717`, voce nel CHANGELOG. `E.tagPerTentativo(righe)`
+nel motore, con lo stesso nome della funzione della pagina: vale l'ultima riga
+`_t:'g'` nell'ordine di `ordinaRighe()`, con le date confrontate come istanti e
+i tag storici senza data prima di ogni tag datato. Sei test scritti prima, fra
+cui il confronto con la copia della pagina su cinque archivi, che si ritira da
+solo quando la copia esce; otto rotture rosse. Fra gli orfani dichiarati, con
+«P-52, o la prossima penna su app.html»; R-ARCH-13 e 14. **Trovato:** una
+differenza voluta — nel motore una riga di tag che `validaRiga()` rifiuterebbe
+non decide niente, nella copia della pagina sì —; oggi non si vede, perché
+import e server quelle righe le scartano. Controllato dalla regia: motore
+195/197, server 60/60, dati 242, specifica 782, guardiano verde, interfaccia
+1.876 in 188 s.
 
 ### P-28 — Claude: i contratti del motore che il client chiede
 
@@ -2747,7 +2756,10 @@ non ha più un interruttore, quindi S.prep è sempre falso, e sono morti
 dipingiPrep(), quotaPrep(), #c-prep, i rami «S.prep ?» e il CSS .prep
 (voce «Test — P-12» del CHANGELOG); il CSS di .cons (voce P-47); e il
 filtro sulle righe con ts prima di E.ritmo() nell'anteprima dei Quiz,
-superfluo da quando il motore se ne difende da sé (voce P-16).
+superfluo da quando il motore se ne difende da sé (voce P-16). E
+sostituisci la copia di tagPerTentativo() con E.tagPerTentativo(S.archivio):
+nello stesso commit la sua riga esce dagli orfani ed entra fra le chiamate
+protette di docs/eccezioni-interfaccia.md (voce P-17).
 
 Non toccare docs/prossime-sessioni.md. Tutte le suite verdi, collaudo
 guardato con la rete spenta e con una rete lenta, voce in fondo a
@@ -3113,3 +3125,9 @@ la nota in testa a `docs/filosofia.md`, che lo dice di sé (P-26).
 - **30 settembre 2026 — P-16 chiuso, P-17 lanciato.** `ritmo()` non dice più
   «orologio» senza orologio, e il difetto aveva una seconda metà, chiusa anche
   lei. La pulizia del filtro in pagina va a P-52.
+- **30 settembre 2026 — P-17 chiuso: la seconda fila delegata è finita.**
+  P-45, P-51, P-12, P-37, P-16 e P-17 chiusi, uno dopo l'altro con i passi della
+  regia in mezzo; nessuna suite rossa. Per Claude resta P-15, con l'autore, e
+  dopo P-21 P-50 e P-53; per ChatGPT P-21, poi P-52, che raccoglie T-02 e le
+  pulizie della pagina trovate oggi. `ui/main` allineato con un avanzamento
+  veloce che non tocca la bozza di P-21.
