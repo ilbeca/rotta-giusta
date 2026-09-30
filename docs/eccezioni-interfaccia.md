@@ -53,7 +53,6 @@ dichiarazione che mente.
 | `estraiNuoviPrima` | La variante di allenamento della prova la chiama nel motore tramite `provaCarteggio()`; la pagina non la passa più come valore |
 | `rimescola` | La composizione della prova è nel motore; la pagina non rimescola più la lista |
 | `fondi` | Fusione di due specchi: serviva alla sincronia col server, tolta nella 0.19.0. Resta esportata e testata perché descrive la semantica della fusione, ma nessuno la chiama. Non ha un'area: è storia |
-| `tagPerTentativo` | L'ultima classificazione N/L/C di ogni tentativo, per istante, con i tag storici senza data prima e le righe rotte ignorate (P-17, R-ARCH-13 e 14). La pagina la calcola ancora con la sua `tagPerTentativo()`, che un test del motore tiene uguale sulle righe che l'archivio accetta. La ricabla P-52, o la prossima penna su `app.html`: la revisione chiama `E.tagPerTentativo(S.archivio)`, la copia esce dalla pagina e questa riga esce da qui, nello stesso commit, con il nome aggiunto alle chiamate protette. `ordinaRighe` resta protetta: la pagina la chiama anche altrove |
 
 ## Chiamate al motore protette
 
@@ -123,6 +122,7 @@ seconda composizione nella pagina.
 | `stato` |
 | `stimaImpegno` |
 | `sostituisciBozza` |
+| `tagPerTentativo` |
 | `tappeto` |
 | `tendenza` |
 | `validaBozza` |
@@ -150,8 +150,6 @@ sulla pagina vera.
 
 | parte | verifica | perché è ancora qui |
 |---|---|---|
-| `T-02` | `con due risposte che il server non ha, la pagina non dice che sono sul server` | Lo stato dell'invio (`#conto-stato`) si ridipinge solo quando un tentativo d'invio finisce, non quando una risposta entra in coda (`archivia()` chiama `pianificaInvio()` e non `dipingiContoStato()`): con due risposte in coda la pagina dice ancora «Le risposte di questo dispositivo sono confermate sul server». Misurato da P-45 il 30 settembre 2026: offline per circa un secondo, con una rete che non risponde per tutto il tempo della richiesta, fino ai 15 s del timeout di `chiamaApi()`. Lo chiude la realizzazione dell'area 6 (P-25), §3 e §7 del progetto |
-| `T-02` | `mentre l'invio non risponde, il numero da inviare e' quello della coda` | Stessa causa della riga sopra: finche' la richiesta non finisce la pagina non scrive «N risposte da inviare». Lo chiude P-25 con la stessa correzione |
 | `T-05:arresti` | `nel Percorso, a 375 px, nessun arresto di Tab resta coperto o fuori dallo schermo` | Con la tastiera, a 375 × 800 px, «Inizia l'attività», «Scegli un'attività» e la scheda dei Segnali prendono il fuoco sotto la barra fissa in basso: il browser le porta sul bordo dello schermo e la barra le copre (WCAG 2.4.11). Visto in una schermata da P-45. Lo chiude P-25, area 6 §5 («Barre fisse e azioni ancorate lasciano visibili […] il focus») |
 | `T-07:prova` | `a 320 px nessuna vista, ne' il runner, il riepilogo o la finestra «Accedi», sborda` | A 320 px l'intestazione e' larga 336 px in ogni vista, e «Accedi» esce dallo schermo; in «Che tecnica serve?» le tessere e la tabella escono di 49 px; il toast `#sync` di 6 px. Misurato e guardato in una schermata da P-45. Lo chiude P-25, area 6 §5 («Partire da 320 CSS px») |
 | `T-07:conto` | `con l'account, a 320 px Percorso, Progressi, Info e il pannello dell'account non sbordano` | Con l'account la barra ha anche Progressi, e a 320 px l'intestazione sborda di 23 px. Stessa causa della riga sopra, e la chiude P-25 |

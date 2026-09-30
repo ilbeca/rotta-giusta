@@ -2015,6 +2015,30 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   metà prova e la ripresa del secondo testo; console senza errori. Versione
   invariata.
 
+### Corretto — P-52: la coda si vede appena cambia
+
+- **Con l'account, una risposta in attesa non è confermata sul server.** Prima
+  della correzione, il controllo T-02 in Chrome mostrava ancora «confermate sul
+  server» con due risposte nella coda locale e una sola sul server; il numero
+  «2 risposte da inviare» compariva solo alla fine della richiesta. Ora
+  `archivia()` ridipinge lo stato dopo la transazione che salva riga e coda,
+  prima di pianificare l'invio. T-02 è verde sia con la richiesta che non
+  risponde sia offline: 9 verifiche, con il numero 2 letto dalla coda e visto
+  in schermata nei due stati. Le due eccezioni T-02 sono state tolte; le altre
+  T-* restano dichiarate.
+- **Rimossi i resti del selettore globale «solo mai fatte».** Non esiste più
+  il suo interruttore: tolti `S.prep`, `dipingiPrep()`, `quotaPrep()`, i suoi
+  rami e il CSS `.prep`/`.sw`. Il `#c-prep` di P-21 resta: contiene la
+  preparazione attiva del Carteggio. L'anteprima dei Quiz passa a `E.ritmo()`
+  le righe quiz senza rifiltrare le date, come il motore già prevede; la
+  revisione usa `E.tagPerTentativo(S.archivio)` al posto della copia locale,
+  e la chiamata è ora protetta fra quelle del motore.
+- **Verificato:** interfaccia 2.133 verifiche sulla pagina vera; motore 193/197
+  con quattro skip, server 60/60 con Node 25 e con Node 24 LTS, dati 242,
+  specifica 782, guardiano verde. In Chrome guardate le schermate del Percorso
+  con rete che tace e con rete spenta: entrambe mostrano «2 risposte da inviare».
+  Versione invariata.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag
