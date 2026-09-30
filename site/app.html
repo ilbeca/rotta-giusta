@@ -580,7 +580,32 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
 .extra-panel{display:grid;grid-template-columns:.8fr 1.2fr;align-items:center;gap:26px;margin-top:24px;padding:24px;border:1px solid var(--line-soft);border-radius:16px;background:var(--sky-soft)}.extra-panel h2{margin:0;color:var(--navy);font-size:22px;text-transform:none;letter-spacing:-.4px}.extra-panel>div>p:last-child{margin:6px 0 0;color:var(--text-soft);font-size:12px}.extra-card{background:var(--surface)}.extra-card .direction-icon{background:var(--night);color:var(--surface)}
 .rotta-options{display:grid;grid-template-columns:1fr 1.2fr;align-items:start;gap:18px;margin-top:24px;padding-top:20px;border-top:1px solid var(--line-soft)}.rotta-options .esame{margin:0;box-shadow:none}.rotta-options input{max-width:165px}.archive-note{display:flex;align-items:flex-start;gap:10px;padding:12px;color:var(--text-soft);font-size:12px}.archive-note .ico{width:18px;height:18px}.archive-note p{margin:0}.archive-note button{padding:0;color:var(--blue);text-decoration:underline}
 .colreg-extra{display:flex;align-items:center;gap:14px;margin-top:14px;padding:16px;border:1px solid var(--line-soft);border-radius:14px;background:var(--sky-soft)}.colreg-extra[hidden]{display:none}.colreg-extra div{flex:1}.colreg-extra p{margin:3px 0 0;color:var(--text-soft);font-size:12px}.colreg-extra .btn{width:auto;min-width:140px}
-#d-temi,#d-voci{max-width:100%;overflow-x:auto}
+/* Progressi: le tre parti della barra restano proporzionali, ma ogni numero
+   ha anche una parola. Le schede non hanno una larghezza minima da tabella. */
+.progress-map{display:grid;gap:14px;min-width:0}
+.progress-theme,.progress-voice{min-width:0;padding:18px;border:1px solid var(--line-soft);border-radius:14px;background:var(--surface);overflow-wrap:anywhere}
+.progress-theme>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;justify-content:flex-start;gap:12px;font-size:18px;font-weight:650;color:var(--navy)}
+.progress-theme>summary::before{content:'▸';font-size:18px;color:var(--blue);flex:none}.progress-theme[open]>summary::before{content:'▾'}
+.progress-theme>summary:focus-visible,.progress-map button:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+.progress-theme>summary .progress-weight{margin-left:auto;font-size:13px;font-weight:500;color:var(--text-soft);text-align:right}
+.progress-voices{display:grid;gap:10px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line-soft)}
+.progress-voice{padding:14px;background:var(--bg)}
+.progress-voice h3{margin:0 0 9px;font-size:16px}
+.progress-bar{display:flex;width:100%;height:16px;overflow:hidden;border-radius:8px;background:var(--bg3)}
+.progress-bar span{display:block;height:100%;min-width:0}
+.progress-bar .good{background:var(--success)}.progress-bar .retry{background:var(--danger)}.progress-bar .new{background:var(--line)}
+.progress-legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin:10px 0 0;padding:0;list-style:none;font-size:13px}
+.progress-legend li{display:flex;align-items:center;gap:6px}.progress-legend i{width:10px;height:10px;border-radius:2px;flex:none}
+.progress-legend .good{background:var(--success)}.progress-legend .retry{background:var(--danger)}.progress-legend .new{background:var(--line)}
+.progress-facts{margin:10px 0 0;color:var(--text-soft);font-size:14px;line-height:1.5}
+.progress-action{margin-top:10px}.progress-action .btn{min-height:44px}
+.progress-help{margin-top:8px;font-size:13px}.progress-help summary{cursor:pointer;min-height:44px;display:inline-flex;align-items:center;color:var(--blue)}
+.progress-help p{margin:0 0 8px;line-height:1.5}
+.progress-hint{margin-bottom:18px}.progress-hint h2{margin-top:0}.progress-hint p{line-height:1.5}
+.progress-preview[hidden]{display:none}.progress-preview{margin-top:14px}
+.progress-history{margin-top:30px}.progress-history h2{margin-bottom:5px}.progress-history .sub{margin-top:0}
+.progress-chart{display:flex;align-items:flex-end;gap:4px;height:52px;margin:12px 0;max-width:520px}.progress-chart i{display:block;flex:1;min-width:3px;max-width:20px;background:var(--blue);border-radius:3px 3px 0 0}
+@media(max-width:650px){.progress-theme>summary{display:block}.progress-theme>summary .progress-weight{display:block;text-align:left;margin-top:4px}.progress-theme,.progress-voice{padding:14px}}
 
 /* Area 1: Percorso. L'ordine nel DOM resta anche l'ordine di lettura su ogni
    larghezza; la griglia cambia soltanto la disposizione delle schede. */
@@ -871,38 +896,35 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
 
   </section>
 
-  <!-- ====================== DIAGNOSI ====================== -->
+  <!-- ====================== PROGRESSI ====================== -->
   <section class="view" id="v-diag">
     <div id="progressi-porta" hidden><h1>Progressi</h1><p>I Progressi descrivono le attività salvate nel tuo account. Senza account puoi fare tutte le attività e rivedere quelle della pagina aperta.</p><div class="row"><button class="btn" data-v="oggi">Vai al Percorso</button><button class="btn primary" data-account="accedi">Accedi</button></div></div>
     <div id="progressi-contenuto" hidden>
-    <h1>Progressi</h1>
-    <p class="sub">L'accuratezza e' calcolata sulla <b>prima</b> risposta a ogni quesito:
-      e' l'unica che misura quanto sai, non quanto ricordi del drill.</p>
-    <div class="row" id="d-kind" style="margin-bottom:10px"></div>
-    <div class="row" id="d-ordine"></div>
-    <p class="note" id="d-nota" style="margin-top:9px"></p>
-
-    <h2>Cosa studiare adesso</h2>
-    <p class="sub" id="d-cons-sub"></p>
-    <div class="card" id="d-cons"></div>
-
-    <h2>Per tema</h2>
-    <div class="card" id="d-temi"></div>
-    <h2>Per voce</h2>
-    <div class="card" id="d-voci"></div>
-
-    <!-- Sta in Diagnosi e non in Allena perché è diagnostica: è il registro di
-         che cosa hai fatto e com'è andata, accanto alle tabelle che dicono dove
-         sei debole. In Allena c'è la roba con cui si decide la prossima
-         sessione, qui quella con cui si guarda indietro.
-         NON segue i selettori Base/Vela qui sopra — le sessioni sono sessioni,
-         e un elenco che si dimezza senza dirlo è la trappola di casa: c'è
-         scritto sotto il titolo. -->
-    <h2 style="margin-top:26px">Le sessioni che hai fatto</h2>
-    <p class="sub">Tutte, non solo le simulazioni: batterie, screening, Mirata, per argomento.
-      Questo elenco <b>non segue</b> i selettori qui sopra. Sono ritagliate dal tuo archivio,
-      che si conserva nel tuo account.</p>
-    <div class="card" id="sessioni"></div>
+      <h1>Progressi</h1>
+      <p class="sub">Una mappa delle risposte ai quiz. Giusti e da rifare seguono l'ultima risposta; il primo tentativo resta distinto.</p>
+      <div id="progressi-stato" role="status" aria-live="polite"></div>
+      <div id="progressi-mappa-contenuto">
+        <div id="progressi-frase"></div>
+        <div class="row" id="d-kind" aria-label="Tipo di quiz"></div>
+        <p class="note" id="d-totale"></p>
+        <div class="progress-map" id="d-mappa"></div>
+        <div class="card progress-preview" id="d-anteprima" hidden aria-live="polite"></div>
+        <div class="progress-history">
+          <h2>Prove sostenute</h2>
+          <p class="sub">Quiz base, vela e carteggio consegnati. La prova di carteggio è autovalutata.</p>
+          <div class="card" id="progressi-prove"></div>
+        </div>
+        <div class="progress-history">
+          <h2>Andamento</h2>
+          <p class="sub">Risposte ai quiz nel tempo, base e vela. Le date e i numeri restano leggibili senza il grafico.</p>
+          <div class="card" id="progressi-andamento"></div>
+        </div>
+        <div class="progress-history">
+          <h2>Sessioni</h2>
+          <p class="sub">Tutte le attività quiz registrate, base e vela. Questo elenco non segue il selettore della mappa.</p>
+          <div class="card" id="sessioni"></div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -2235,7 +2257,7 @@ async function jget_cache(u) { const r = await fetch(u); if (!r.ok) throw new Er
 
 /* ===================== avvio ============================================ */
 
-async function avvia() {
+async function avviaApp() {
   if (S.avvioInCorso) return;
   S.avvioInCorso = true;
   S.caricamento = true;
@@ -2663,6 +2685,7 @@ function dipingi() {
   document.getElementById('rotta-titolo').textContent = 'Il tuo percorso';
   if (S.caricamento || S.bancaErrore || !S.meta || !S.banca.length || ARCH.lettura === 'in_corso' || ARCH.lettura === 'errore') {
     dipingiPercorsoNonPronto();
+    dipingiDiag();
     return;
   }
 
@@ -2764,7 +2787,7 @@ function dipingi() {
 
   dipingiDataPercorso(tb);
   dipingiStatoRotta();
-  dipingiDiag(); dipingiTec(); dipingiCart(); dipingiSessioni();
+  dipingiDiag(); dipingiTec(); dipingiCart();
 }
 
 /**
@@ -3918,100 +3941,126 @@ function avviaSim(fase, resto = [], opt = {}) {
 /* ===================== DIAGNOSI ========================================= */
 
 let diagKind = 'base';
-// Due letture della stessa realtà, e servono entrambe. "Punti persi" dice dove
-// perdi l'esame; "tasso d'errore" dice dove non sai le cose. La prima ordina il
-// tempo residuo, la seconda impedisce di trascurare un argomento solo perché
-// pesa poco — che è il modo tipico di farsi male con una metrica pesata.
-let diagOrdine = LS.get('diagOrdine', 'costo');
+const MAPPA = { vista: null, azioni: [], aperti: new Set(), anteprima: null };
+
+/** La riga mantiene tutti i campi del motore e aggiunge solo l'azione. */
+function rigaProgressi(r) {
+  const out = { ...r, azione: r.daRifare > 0 ? { azione: 'rifai', quanti: r.daRifare, selezione: r.rifai } : null };
+  if (r.voci) out.voci = r.voci.map(rigaProgressi);
+  return out;
+}
+
+function mappaProgressi(richiesta) {
+  const { banca, progress, oggi, kind, pesi } = richiesta;
+  const q = E.quadro(banca, progress, oggi, kind, pesi);
+  const d = kind === 'base' ? E.dovePesa(q) : { indicazione: null, assente: 'senza pesi' };
+  return { kind, righe: q.righe.map(rigaProgressi), totale: q.totale,
+    indicazione: d.indicazione, assente: d.assente };
+}
+
+function anteprimaProgressi(azione, richiesta) {
+  const { banca, progress, oggi } = richiesta;
+  const lista = E.coda(banca, progress, oggi, azione.selezione);
+  if (!azione.quanti || lista.length !== azione.quanti) return { stato: 'cambiata', quanti: null, lista: [] };
+  return { stato: 'pronta', quanti: lista.length, lista };
+}
+
+function avviaProgressi(azione, richiesta, avvia) {
+  const a = anteprimaProgressi(azione, richiesta);
+  if (a.stato !== 'pronta') return { avviata: false, stato: a.stato };
+  avvia(a.lista, azione.azione === 'mai visti' ? 'argomento' : 'sbagliate', { origine: 'diag' });
+  return { avviata: true, quanti: a.quanti };
+}
 
 function classe(x) { return x == null ? '' : x >= .9 ? 'hi' : x >= .75 ? 'mid' : 'lo'; }
 
-function dipingiDiag() {
-  document.getElementById('d-kind').innerHTML =
-    [['base', 'Base'], ['vela', 'Vela']].map(([k, l]) =>
-      `<button class="chip ${diagKind === k ? 'on' : ''}" data-dk="${k}">${l}</button>`).join('');
-  const pesi = diagKind === 'base' ? S.meta.pesi_esame : null;
-  document.getElementById('d-ordine').innerHTML = !pesi ? '' :
-    [['costo', 'Punti persi'], ['errore', "Tasso d'errore"]].map(([k, l]) =>
-      `<button class="chip ${diagOrdine === k ? 'on' : ''}" data-do="${k}">${l}</button>`).join('');
-  document.getElementById('d-nota').textContent = !pesi ? '' : diagOrdine === 'costo'
-    ? "Ordinate per quante domande d'esame ti aspetti di sbagliare: tiene conto anche di quanto quel tema pesa all'esame."
-    : "Ordinate per quanto sbagli e basta, senza guardare il peso d'esame. Serve a non trascurare un argomento solo perché vale poco.";
-
-  const d = E.diagnosi(S.banca, S.prog, S.date.oggi || today(), diagKind, pesi);
-  const voci = pesi
-    ? [...d.voci].sort((a, b) => (diagOrdine === 'errore' ? b.debolezza - a.debolezza : (b.costo ?? 0) - (a.costo ?? 0)))
-    : d.voci;
-  // L'andamento nel tempo: le righe dell'archivio aggregate per giorno, per
-  // tema e per voce dal motore. La tabella piegata dice dove sei debole; le
-  // barrette dicono se ci stai lavorando con profitto.
-  const sg = E.serieGruppi(S.banca, {}, S.archivio.filter((r) => r._t === 'q'), diagKind);
-  for (const t of d.temi) t.spark = spark(sg.temi[t.nome]);
-  for (const v of d.voci) v.spark = spark(sg.voci[v.tema + ' › ' + v.nome]);
-  document.getElementById('d-temi').innerHTML = tabella(d.temi, false, !!pesi);
-  document.getElementById('d-voci').innerHTML = tabella(voci, true, !!pesi);
-  dipingiConsigli(d);
+function richiestaProgressi() {
+  return { banca: S.banca, progress: S.prog, oggi: S.date.oggi || today(),
+    kind: diagKind, pesi: S.meta?.pesi_esame || null };
 }
 
-/**
- * «Cosa studiare adesso»: le voci in ordine di punti d'esame in ballo, col
- * perche' scritto accanto e i minuti che costano.
- *
- * Non duplica «Le tue voci piu' deboli» di Oggi: quella e' una classifica di
- * errori e per costruzione non puo' nominare una voce che non hai mai aperto —
- * che a tre giorni dall'esame e' il rischio piu' grosso in circolazione. Qui il
- * mai visto e lo sbagliato stanno nella stessa unita' di misura e si sommano.
- *
- * I pesi della vela non stanno in PESI_ESAME (li' ci sono gli 8 temi del quiz
- * base): la prova vela e' 5 affermazioni su 250, quindi il peso del suo unico
- * "tema" e' il numero di domande della prova, che arriva dal seed in `prove`.
- */
-function dipingiConsigli(d) {
-  const box = document.getElementById('d-cons');
-  const sub = document.getElementById('d-cons-sub');
-  if (!box) return;
-  const pesi = diagKind === 'base'
-    ? S.meta.pesi_esame
-    : { VELA: ((S.meta.prove || {}).vela || {}).n || 5 };
-  const st = E.stimaImpegno(S.prog, 0, 1);
-  const c = E.consigli(d, { pesi, msMedio: st.mediaMs, quante: 6 });
+function registraAzioneProgressi(azione) {
+  if (!azione) return '';
+  const i = MAPPA.azioni.push(azione) - 1;
+  const testo = azione.azione === 'mai visti' ? `Prova ${azione.quanti} mai visti` : `Rifai ${azione.quanti} errori`;
+  return `<button class="btn" data-progressi-azione="${i}">${testo}</button>`;
+}
 
-  sub.innerHTML = 'In ordine di <b>domande d\'esame in ballo</b>: quelle che stai già '
-    + 'sbagliando più quelle che non hai ancora aperto, che una classifica di errori non '
-    + 'può vedere. I minuti sono stimati '
-    + (st.affidabile ? `sul tuo tempo medio misurato (${(st.mediaMs / 1000).toFixed(1).replace('.', ',')} s a risposta).`
-                     : `su ${Math.round(E.RIPIEGO_MS / 1000)} s a risposta: ancora poche misure per una media tua.`);
+function corpoRigaProgressi(r) {
+  const larghezza = (n) => r.n ? (100 * n / r.n) + '%' : '0%';
+  return `<div class="progress-bar" role="img" aria-label="${r.giusti} giusti, ${r.daRifare} da rifare, ${r.maiVisti} mai visti">
+    <span class="good" style="width:${larghezza(r.giusti)}"></span><span class="retry" style="width:${larghezza(r.daRifare)}"></span><span class="new" style="width:${larghezza(r.maiVisti)}"></span></div>
+    <ul class="progress-legend"><li><i class="good" aria-hidden="true"></i>Giusti ${r.giusti}</li><li><i class="retry" aria-hidden="true"></i>Da rifare ${r.daRifare}</li><li><i class="new" aria-hidden="true"></i>Mai visti ${r.maiVisti}</li></ul>
+    <p class="progress-facts">Visti ${r.visti} su ${r.n}<br>${r.primo ? `${r.primo.esatte} su ${r.primo.su} giusti al primo tentativo` : 'Troppo poche risposte per dire come va'}</p>
+    <div class="progress-action">${r.azione ? registraAzioneProgressi(r.azione) : '<span>Nessun errore da rifare qui</span>'}</div>`;
+}
 
-  if (!c.voci.length) {
-    box.innerHTML = '<p class="note">Niente da consigliare: su questa banca non restano '
-      + 'né quesiti mai visti né sbagliate da riprendere.</p>';
+function dipingiMappa() {
+  const richiesta = richiestaProgressi();
+  MAPPA.vista = mappaProgressi(richiesta);
+  MAPPA.azioni = [];
+  MAPPA.anteprima = null;
+  document.getElementById('d-anteprima').hidden = true;
+  document.getElementById('d-kind').innerHTML = [['base', 'Quiz base'], ['vela', 'Vela']].map(([k, l]) =>
+    `<button class="chip ${diagKind === k ? 'on' : ''}" data-dk="${k}" aria-pressed="${diagKind === k}">${l}</button>`).join('');
+  const m = MAPPA.vista;
+  document.getElementById('d-totale').textContent = `${m.totale.visti} visti su ${m.totale.n} quesiti. In base all'ultima risposta.`;
+  const frase = document.getElementById('progressi-frase');
+  frase.innerHTML = m.indicazione ? `<div class="card progress-hint"><h2>Dove pesa di più adesso</h2>
+    <p>In <b>${esc(m.indicazione.tema)}</b> ${m.indicazione.motivo === 'da rifare'
+      ? `hai ${m.indicazione.daRifare} risposte da rifare` : `ci sono ${m.indicazione.maiVisti} quesiti mai visti`}. È il tema con più domande d'esame ancora in ballo in questa mappa.</p>
+    <div class="row">${m.indicazione.pulsanti.map(registraAzioneProgressi).join('')}</div></div>` : '';
+  document.getElementById('d-mappa').innerHTML = m.righe.map((r) => diagKind === 'base'
+    ? `<details class="progress-theme" data-progressi-tema="${esc(r.nome)}" ${MAPPA.aperti.has(r.nome) ? 'open' : ''}>
+        <summary><span>${esc(r.nome)}</span>${r.peso != null ? `<span class="progress-weight">${r.peso} domande nella prova</span>` : ''}</summary>
+        ${corpoRigaProgressi(r)}<details class="progress-help"><summary>Che cosa significano questi stati?</summary><p>Giusti e da rifare seguono l'ultima risposta a ciascun quesito. Mai visti non hanno risposte.</p></details>
+        <div class="progress-voices">${r.voci.map((v) => `<section class="progress-voice"><h3>${esc(v.nome)}</h3>${corpoRigaProgressi(v)}</section>`).join('')}</div></details>`
+    : `<section class="progress-voice"><h2>${esc(r.nome)}</h2>${corpoRigaProgressi(r)}<details class="progress-help"><summary>Che cosa significano questi stati?</summary><p>Giusti e da rifare seguono l'ultima risposta a ciascun quesito. Mai visti non hanno risposte.</p></details></section>`).join('');
+  if (!m.totale.visti) document.getElementById('d-totale').textContent += ' Non hai ancora risposto ai quiz con questo account.';
+}
+
+function dipingiAndamentoProgressi() {
+  const el = document.getElementById('progressi-andamento');
+  const quiz = S.archivio.filter((r) => r._t === 'q');
+  const serie = ['base', 'vela'].map((kind) => {
+    const gruppi = E.serieGruppi(S.banca, {}, quiz, kind);
+    const giorni = {};
+    for (const perTema of Object.values(gruppi.temi)) for (const [g, [c, n]] of Object.entries(perTema)) {
+      const v = giorni[g] || (giorni[g] = [0, 0]); v[0] += c; v[1] += n;
+    }
+    return { kind, t: E.tendenza(giorni) };
+  });
+  if (serie.every((s) => !s.t.punti.length)) { el.innerHTML = '<p class="note">Ancora nessuna risposta da mostrare nel tempo.</p>'; return; }
+  el.innerHTML = serie.map(({ kind, t }) => `<section><h3>Quiz ${kind}</h3>${t.punti.length
+    ? `<p>${t.risposte} risposte in ${t.punti.length} giorni${t.verdetto ? ` · ${ { su: '↑ in miglioramento', giu: '↓ in peggioramento', stabile: '→ stabile' }[t.verdetto] }` : ''}</p>
+       <div class="progress-chart" aria-hidden="true">${t.punti.slice(-20).map((p) => `<i style="height:${Math.max(5, Math.round(p.acc * 100))}%"></i>`).join('')}</div>
+       <ol>${t.punti.map((p) => `<li>${giornoIt(p.g)}: ${p.c} esatte su ${p.n} risposte</li>`).join('')}</ol>`
+    : '<p>Ancora nessuna risposta per questa banca.</p>'}</section>`).join('');
+}
+
+function dipingiProveProgressi() {
+  const el = document.getElementById('progressi-prove');
+  const prove = proveSostenute();
+  el.innerHTML = prove.length ? prove.map((p) => rigaProva(p,
+    p.kind === 'carteggio' ? 'Carteggio · autovalutata' : `Quiz ${p.kind || 'base'}`)).join('')
+    : '<p class="note">Nessuna prova sostenuta ancora.</p>';
+}
+
+function dipingiDiag() {
+  const pronto = S.conto && !S.caricamento && !S.bancaErrore && S.banca.length && S.meta
+    && ARCH.lettura !== 'in_corso' && ARCH.lettura !== 'errore';
+  const stato = document.getElementById('progressi-stato');
+  const contenuto = document.getElementById('progressi-mappa-contenuto');
+  if (!S.conto) { contenuto.hidden = true; stato.textContent = ''; return; }
+  if (!pronto) {
+    contenuto.hidden = true;
+    stato.innerHTML = S.caricamento || ARCH.lettura === 'in_corso' ? '<p>Verifica dell’accesso in corso…</p>'
+      : '<p>Non riesco a leggere i progressi o la banca dei quiz.</p><button class="btn" data-progressi-riprova>Riprova</button>';
     return;
   }
-  const MOTIVO = { 'mai aperta': 'mai', 'ci sbagli': 'err', 'quasi tutta da vedere': 'nuovi' };
-  // La percentuale si scrive solo sopra le 5 viste, la stessa soglia con cui
-  // `peggiori()` ammette una voce fra i punti deboli: «100% su 1 vista» non e'
-  // un dato, e messo accanto a numeri veri sembra tale.
-  const acc = (v) => v.visti >= E.CONSIGLIO_MIN_VISTI
-    ? `${pct(v.acc1)} esatte al primo colpo su ${v.visti} viste`
-    : null;
-  box.innerHTML = c.voci.map((v, i) => `<div class="weak cons">
-      <div class="n">${i + 1}</div>
-      <div class="t"><b>${esc(v.nome)}</b>
-        <span>${/* sulla vela il "tema" e' VELA per tutte: ripeterlo non aggiunge niente */
-          diagKind === 'vela' ? '' : esc(v.tema) + ' · '}<b class="mot ${MOTIVO[v.motivo]}">${v.motivo}</b>${
-          acc(v) ? ` · ${acc(v)}` : ''} · ${
-          v.nuovi ? plur(v.nuovi, 'mai visto', 'mai visti') : 'nessun mai visto'}${
-          v.aperti ? ` · ${plur(v.aperti, 'sbagliata aperta', 'sbagliate aperte')}` : ''
-        // Il numero in coda e' quanto ti costa **oggi**, non quanto pesa la voce
-        // all'esame: sono due numeri diversi e vicini, e mostrarli tutti e due
-        // sulla stessa riga li rende indistinguibili. Il totale in fondo somma
-        // questo, quindi le due cifre si spiegano a vicenda.
-        } · ti costa ${dec(v.priorita)} domande d'esame</span></div>
-      <div class="min">${v.minuti}′</div>
-      <button class="chip" data-voce="${esc(v.nome)}" data-vk="${diagKind}">Allena</button></div>`).join('')
-    + `<p class="note" style="margin-top:10px">Le ${c.voci.length} insieme sono <b>${c.daFare} quesiti</b>, circa
-       <b>${c.minuti} minuti</b>, e valgono <b>${dec(c.punti, 1)} domande d'esame</b> di quelle che
-       oggi ti aspetti di perdere.${c.restanti ? ` Sotto ce ne sono altre ${c.restanti}.` : ''}</p>`;
+  stato.textContent = '';
+  contenuto.hidden = false;
+  dipingiMappa(); dipingiProveProgressi(); dipingiAndamentoProgressi(); dipingiSessioni();
 }
 
 /**
@@ -4247,18 +4296,18 @@ function rigaSessione(s) {
   </button>`;
 }
 
-/** L'elenco delle sessioni di quiz, in fondo alla Diagnosi. */
+/** L'elenco delle sessioni di quiz, in fondo a Progressi. */
 function dipingiSessioni() {
   const el = document.getElementById('sessioni');
   if (!el) return;
   const tutte = sessioniTutte();
   if (!tutte.length) {
-    el.innerHTML = `<p class="note">Nessuna sessione ancora. Ogni batteria, screening, Mirata o
+    el.innerHTML = `<p class="note">Nessuna sessione salvata ancora. Ogni batteria, screening, Mirata o
           simulazione resta qui e si può riaprire per rivedere domande e risposte.</p>`;
     return;
   }
   const ric = tutte.filter(s => s.fonte === 'risposte').length;
-  el.innerHTML = tutte.slice(0, 25).map(rigaSessione).join('')
+  el.innerHTML = tutte.map(rigaSessione).join('')
     + `<p class="note" style="margin:10px 0 0">Tocca una sessione per rivederla: le domande di
         quella volta, con la tua risposta accanto a quella esatta.${ric ? ` <b>${ric}</b> non
         hanno un identificativo di sessione (righe importate da un altro archivio): il loro
@@ -5370,6 +5419,7 @@ function mostraVista(v) {
   if (v === 'quiz') costruisciFiltri();
   if (v === 'seg') dipingiSeg();
   if (v === 'oggi' && !S.caricamento) dipingi();
+  if (v === 'diag') dipingiDiag();
   scrollTo(0, 0);
 }
 
@@ -5387,6 +5437,12 @@ document.getElementById('quiz-panel').addEventListener('keydown', ev => {
   if (ev.shiftKey && (attivo === primo || attivo.id === 'quiz-panel-title')) { ev.preventDefault(); ultimo?.focus(); }
   else if (!ev.shiftKey && attivo === ultimo) { ev.preventDefault(); primo?.focus(); }
 });
+document.getElementById('d-mappa').addEventListener('toggle', (ev) => {
+  const tema = ev.target.closest('details[data-progressi-tema]');
+  if (!tema || tema !== ev.target) return;
+  if (tema.open) MAPPA.aperti.add(tema.dataset.progressiTema);
+  else MAPPA.aperti.delete(tema.dataset.progressiTema);
+}, true);
 document.addEventListener('change', ev => {
   const t = ev.target;
   if (t.name === 'rv-filtro') { RV.filtro = t.value; return applicaFiltroRevisione(); }
@@ -5428,7 +5484,7 @@ document.addEventListener('click', (ev) => {
   if (t.id === 'come-close') return chiudiComeFunziona();
   if (t.dataset.routeExport !== undefined) return esporta();
   if (t.dataset.infoSection) return vaiInfo(t.dataset.infoSection);
-  if (t.dataset.retryLoad !== undefined) return avvia();
+  if (t.dataset.retryLoad !== undefined) return avviaApp();
   if (t.id === 'esame-rimuovi') {
     if (S.conto) return salvaDataConto(null);
     LS.set('esame', null); ricalcola(); dipingi(); costruisciFiltri();
@@ -5495,8 +5551,36 @@ document.addEventListener('click', (ev) => {
     const p = S.run.fasi[0], resto = S.run.fasi.slice(1), base = S.run.simUid;
     chiudiSoft(); return avviaSim(p, resto, { basePrecedente: base });
   }
-  if (t.dataset.dk) { diagKind = t.dataset.dk; return dipingiDiag(); }
-  if (t.dataset.do) { diagOrdine = t.dataset.do; LS.set('diagOrdine', diagOrdine); return dipingiDiag(); }
+  if (t.dataset.dk) { diagKind = t.dataset.dk; MAPPA.aperti.clear(); return dipingiDiag(); }
+  if (t.dataset.progressiAzione !== undefined) {
+    const azione = MAPPA.azioni[Number(t.dataset.progressiAzione)];
+    if (!azione) return;
+    const anteprima = anteprimaProgressi(azione, richiestaProgressi());
+    if (anteprima.stato !== 'pronta') { dipingiDiag(); document.getElementById('progressi-stato').textContent = 'La selezione è cambiata. Controlla la mappa aggiornata.'; return; }
+    MAPPA.anteprima = { azione, controllo: t };
+    const box = document.getElementById('d-anteprima');
+    box.hidden = false;
+    box.innerHTML = `<h2>Prima di iniziare</h2><p>Questa attività apre ${anteprima.quanti} quesiti.</p>
+      <div class="row"><button class="btn primary" data-progressi-inizia>Inizia</button><button class="btn" data-progressi-annulla>Annulla</button></div>`;
+    box.scrollIntoView({ block: 'nearest' }); box.querySelector('[data-progressi-inizia]').focus();
+    return;
+  }
+  if (t.dataset.progressiAnnulla !== undefined) {
+    document.getElementById('d-anteprima').hidden = true;
+    MAPPA.anteprima?.controllo?.focus(); MAPPA.anteprima = null; return;
+  }
+  if (t.dataset.progressiInizia !== undefined) {
+    const scelta = MAPPA.anteprima;
+    if (!scelta || S.run) return;
+    const esito = avviaProgressi(scelta.azione, richiestaProgressi(), (lista, modo, opt) =>
+      apri(lista, modo, { ...opt, origine: { vista: 'diag', controllo: scelta.controllo }, quiz: true }));
+    if (!esito.avviata) {
+      dipingiDiag();
+      document.getElementById('progressi-stato').textContent = 'La selezione è cambiata. Controlla la mappa aggiornata.';
+    }
+    return;
+  }
+  if (t.dataset.progressiRiprova !== undefined) return avviaApp();
   if (t.id === 'start') return avviaQuizSnapshot();
   if (t.id === 'dl') return scaricaTutto();
   if (t.id === 'esporta') return esporta();
@@ -5730,7 +5814,7 @@ document.getElementById('fig-zoom').addEventListener('close', () => {
 addEventListener('online', () => { if (QUIZ.modo) anteprima(); if (S.conto) void sincronizza(); });
 document.addEventListener('visibilitychange', () => { if (!document.hidden && S.conto) void sincronizza(); });
 addEventListener('offline', () => { if (QUIZ.modo) anteprima(); });
-avvia();
+avviaApp();
 </script>
 </body>
 </html>

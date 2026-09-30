@@ -50,8 +50,7 @@ dichiarazione che mente.
 | funzione | perché è ancora qui |
 |---|---|
 | `fondi` | Fusione di due specchi: serviva alla sincronia col server, tolta nella 0.19.0. Resta esportata e testata perché descrive la semantica della fusione, ma nessuno la chiama. Non ha un'area: è storia |
-| `quadro` | La mappa di Progressi (29 settembre 2026, P-41): una riga per tema a tre stati — giusti, da rifare, mai visti — con «X su Y giusti al primo tentativo» e la selezione di «Rifai N errori»; in cima, al massimo la frase «Dove pesa di più adesso». È Q-DUE in `docs/specifica.md` §10, R-MAPPA-01…14 nel §9.10. La chiamerà l'area 5 in `app.html` — **il progetto P-22, poi la sua realizzazione P-23, su `ui/*`** |
-| `dovePesa` | La mappa di Progressi (29 settembre 2026, P-41): una riga per tema a tre stati — giusti, da rifare, mai visti — con «X su Y giusti al primo tentativo» e la selezione di «Rifai N errori»; in cima, al massimo la frase «Dove pesa di più adesso». È Q-DUE in `docs/specifica.md` §10, R-MAPPA-01…14 nel §9.10. La chiamerà l'area 5 in `app.html` — **il progetto P-22, poi la sua realizzazione P-23, su `ui/*`** |
+| `consigli` | Esce con P-23: la lista «Cosa studiare adesso» e i minuti non appartengono alla mappa. Nessun chiamante resta in pagina; P-42 lo toglierà dal motore con i suoi test |
 
 ## Chiamate al motore protette
 
@@ -78,12 +77,11 @@ trentatré — misurato scrivendo il controllo.
 | `applica` |
 | `classifica` |
 | `coda` |
-| `consigli` |
 | `daAllenare` |
-| `diagnosi` |
 | `domandeSegnali` |
 | `dopoInvio` |
 | `dopoRicezione` |
+| `dovePesa` |
 | `erroriSessione` |
 | `esito` |
 | `estrai` |
@@ -101,6 +99,7 @@ trentatré — misurato scrivendo il controllo.
 | `nuovoTrasferimento` |
 | `ordinaRighe` |
 | `poolSegnali` |
+| `quadro` |
 | `registraEsito` |
 | `riepilogoTrasferimento` |
 | `rimescola` |
