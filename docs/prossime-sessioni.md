@@ -203,7 +203,8 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 6d, 5b, 12, 13 | Il regime vecchio del ciclo e dei quiz, `ritmo()`, l'ultimo tag | Claude | `main`, a mano | niente: riempiono i buchi | P-37, P-12, P-16, P-17 |
 | 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore | P-15 |
 | 28 | I controlli e la specifica dell'area 6 — **in corso**, lanciato dalla regia | Claude | `main`, a mano | niente | P-45 |
-| 21b | La realizzazione dell'area 4 | ChatGPT | `ui/main` | niente — **pronto** | P-21 |
+| 21b | La realizzazione dell'area 4 — **fermato**, bozza non committata nel worktree `ui` | ChatGPT | `ui/main` | P-51 | P-21 |
+| 31 | Un controllo del Carteggio che fissa il regime della pagina vera | Claude | `main`, a mano | P-45 (la cartella principale), poi **per primo** | P-51 |
 | 21c | Dopo P-21: il regime vecchio del Carteggio, e la riga fra i difetti noti di `AGENTS.md` | Claude | `main`, a mano | la merge di P-21 | segnaposto P-50 |
 | 26b | La realizzazione dell'area 6 | ChatGPT | `ui/main` | P-45, P-21, e il §8 dell'area 6 | segnaposto P-25 |
 | 9 | **La versione con gli account** — il traguardo | tutti | `main` | P-15, e gli adempimenti del §4 | segnaposto P-27 |
@@ -212,9 +213,9 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 **Le due colonne corrono in parallelo**, e si sono incontrate: il client degli
 account è nella pagina (P-18), Progressi è la mappa (P-23), e il carteggio ha
 i suoi contratti e controlli su `main` (P-32…P-35). **Per Claude, l'ordine
-consigliato: P-45**, poi i piccoli — P-12, P-37, P-16, P-17 —, lanciati dalla
-regia uno dopo l'altro (punto 8); P-15 quando l'autore ha il tempo. **Per
-ChatGPT: P-21**, pronto. I prompt di Claude vanno uno alla volta nella cartella principale, e
+consigliato: P-45**, poi **P-51** (sblocca P-21), poi i piccoli — P-12, P-37,
+P-16, P-17 —, lanciati dalla regia uno dopo l'altro (punto 8); P-15 quando
+l'autore ha il tempo. **Per ChatGPT: P-21 riprende dopo P-51**, dalla sua bozza. I prompt di Claude vanno uno alla volta nella cartella principale, e
 la suite dell'interfaccia di un worktree esclude quella dell'altro, per la porta
 8620. Il numero di una riga è il suo nome, non la sua posizione. Il traguardo,
 P-27, non aspetta le aree 4–6: aspetta il server in esercizio, i testi e gli
@@ -2514,8 +2515,17 @@ interfaccia 1.433 in 149 s; nessun `yes` rimasto vivo.
 
 ### P-21 — ChatGPT: la realizzazione dell'area 4
 
-**Stato:** pronto dal 30 settembre 2026: P-32…P-35 sono chiusi, e l'autore ha
-confermato le tre cose di P-34 e P-35 (§4). **Dove:** app di ChatGPT, progetto `~/Software/rotta-giusta-ui`, ramo
+**Stato:** **fermato il 30 settembre 2026, da riprendere dopo P-51.** Lanciato
+dall'autore; la sessione si è fermata da sé, come il prompt chiede, perché
+`test_carteggio_ambito` pretende che `app.html` sia nel regime attuale — un
+difetto del controllo di P-35, non della pagina, che chiude P-51. La modifica di
+`app.html` resta **non committata** nel worktree `ui`: il raccordo D-04 passava
+le 240 verifiche del banco del carteggio, la suite del browser non è stata
+completata, e al primo avvio i server locali hanno risposto `EPERM` dalla
+sandbox di ChatGPT — come per P-13 e P-48, si rilancia dando all'app il
+permesso per le connessioni locali. La dichiarazione di C-19 è stata rimessa
+com'era. Il worktree `ui` **non si allinea** finché la bozza non è committata,
+salvo un avanzamento veloce che non tocca `app.html`. **Dove:** app di ChatGPT, progetto `~/Software/rotta-giusta-ui`, ramo
 `ui/main`, modalità Local.
 
 ```
@@ -2554,6 +2564,44 @@ guardato a 375 e 1280 px nei due stati d'accesso, compresa una ricarica
 a metà prova con l'account, voce in fondo a [Unreleased], un commit con
 il trailer, versione non toccata. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-51 — Claude: il controllo del Carteggio che fissa il regime della pagina vera
+
+**Stato:** pronto appena P-45 lascia la cartella principale; lo lancia la regia
+(punto 8), **prima** dei piccoli, perché sblocca P-21. **Dove:** Claude Code,
+`~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** P-21, fermato.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-51, su main. P-21 si è fermato: leggi il suo stato e
+l'esito di P-35 nel §6 di docs/prossime-sessioni.md. In
+tests/test_interfaccia.py, test_carteggio_ambito prova «al contrario»
+che una pagina che carica carteggio_e12.json è rossa, e per farlo
+etichetta app.html come regime 'attuale' e pretende regime == nome: il
+giorno che la pagina vera passa al regime progettato, il controllo è
+rosso anche se la pagina è giusta. È l'unico punto che fissa il regime
+della pagina vera invece di riconoscerlo, e va corretto così: la pagina
+vera si riconosce, in qualunque regime, e una sua copia che carica il
+file è rossa lo stesso; la pagina di riferimento resta 'progettato'.
+
+Prima il test che lo dimostra: una copia di app.html con il raccordo di
+tests/pagina-ciclo-carteggio.html, o la pagina di riferimento al posto
+della vera, dev'essere verde su quel controllo, e oggi non lo è. Poi
+cerca nei banchi dei quattro regimi — quiz, ciclo, mappa, carteggio —
+ogni altro punto che dia per scontato il regime della pagina vera invece
+di leggerlo, e dillo anche se non ne trovi. Main resta verde con la
+pagina di oggi.
+
+Prima di lanciare la suite dell'interfaccia guarda che la porta 8620
+sia libera (AGENTS.md). Non toccare docs/prossime-sessioni.md né
+site/app.html. Suite verdi, voce in fondo a [Unreleased], un commit.
+Chiudi con il resoconto di docs/prossime-sessioni.md.
 ```
 
 **Esito:** —
@@ -2874,3 +2922,9 @@ la nota in testa a `docs/filosofia.md`, che lo dice di sé (P-26).
   L'autore ha confermato le tre scelte di P-34 e P-35, scritte come confermate
   dove si decidono; P-21 è pronto per ChatGPT. Ha delegato alla regia P-45 e i
   piccoli — P-12, P-37, P-16, P-17 —, nell'ordine; P-45 lanciato.
+- **30 settembre 2026 — P-21 fermato, nasce P-51.** ChatGPT si è fermato da sé
+  su un controllo di P-35 che fissa il regime della pagina vera invece di
+  riconoscerlo: `test_carteggio_ambito` etichetta `app.html` come «attuale».
+  Né la sessione P-35 né la regia l'avevano visto, perché con la pagina di oggi
+  il controllo è verde. P-51 lo corregge e cerca gli altri casi, subito dopo
+  P-45, che occupa la cartella principale; poi P-21 riprende dalla sua bozza.
