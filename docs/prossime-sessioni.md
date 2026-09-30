@@ -204,14 +204,13 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 32 | Lo stato dell'invio che dice «sul server» con righe in coda (T-02), e le pulizie della pagina | ChatGPT | `ui/main` | niente — **pronto**, prima del traguardo | P-52 |
 | 26b | La realizzazione dell'area 6 | ChatGPT | `ui/main` | il §8 dell'area 6 (l'autore), e P-52 per la penna | segnaposto P-25 |
 | 9 | **La versione con gli account** — il traguardo | tutti | `main` | P-15, P-52, e gli adempimenti del §4 | segnaposto P-27 |
-| 33 | Le frasi del riepilogo dei quiz nel banco (R-UX-06) — **in corso**, lanciato dalla regia | Claude | `main`, a mano | niente | P-53 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**, e si sono incontrate: il client degli
 account è nella pagina (P-18), Progressi è la mappa (P-23), e il carteggio ha
 i suoi contratti e controlli su `main` (P-32…P-35). **Per Claude, l'ordine
-consigliato:** P-53, lanciato dalla regia; P-15, la
-messa in esercizio, quando l'autore ha il tempo. **Per ChatGPT: P-52**, prima del traguardo; poi P-25,
+consigliato:** P-15, la messa in esercizio, quando
+l'autore ha il tempo; per il resto, niente di pronto. **Per ChatGPT: P-52**, prima del traguardo; poi P-25,
 quando l'autore ha deciso il §8 dell'area 6. I prompt di Claude vanno uno alla volta nella cartella principale, e
 la suite dell'interfaccia di un worktree esclude quella dell'altro, per la porta
 8620. Il numero di una riga è il suo nome, non la sua posizione. Il traguardo,
@@ -2841,7 +2840,7 @@ perché con il regime vecchio sono uscite anche le sue verifiche.
 
 ### P-53 — Claude: le frasi del riepilogo dei quiz, nel banco del client
 
-**Stato:** **in corso dal 1° ottobre 2026**, lanciato dalla regia (punto 8). **Dove:** Claude Code,
+**Stato:** **chiuso il 1° ottobre 2026**, commit `616d048` su `main`; lanciato dalla regia (punto 8). **Dove:** Claude Code,
 `~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** l'esito di
 P-37.
 
@@ -2869,7 +2868,23 @@ site/. Suite verdi su più giri, voce in fondo a [Unreleased], un
 commit. Chiudi con il resoconto di docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `616d048`, voce nel CHANGELOG. Nuovo gruppo F-01 nel banco del
+client (`test_riepilogo_frasi`): sulla pagina vera senza account, due attività
+di fila, e in ciascun riepilogo l'`innerText` di `#r-fine` deve portare le tre
+affermazioni del §4.2 dell'area 3 con i numeri di quello che il banco ha fatto,
+nessuna quarta affermazione (elenco chiuso) e nessun voto (elenco di parole).
+La pagina di riferimento del client ha ora il suo `riepilogoQuiz()`; nove
+rotture nuove, rosse per il loro motivo, e il banco provato contro sé stesso
+cinque volte. R-UX-06 coperto per quello che il banco vede; non vede l'ordine
+delle frasi, un testo reso invisibile con `opacity`, il riepilogo di una
+simulazione e quello con l'account (§10.4 dell'area 3). **Trovato:** otto coppie
+di quesiti base con testo e risposte identici e l'esatta diversa — cambia solo
+la figura —, che davano al banco un rosso falso una volta ogni ~200 quesiti:
+ora l'esito si legge dal riscontro, e una variante pesca quei gemelli per primi.
+**Per chi tocca i testi** del riepilogo su `ui/*` (P-52, P-25): una frase nuova è
+rossa finché non entra in `FRASI_RIEPILOGO` / `USCITE_RIEPILOGO`, e quell'elenco
+è di `main`. Controllato dalla regia: motore 194/197, server 60/60, dati 242,
+specifica 784, guardiano verde, interfaccia 2.173 in 240 s.
 
 ---
 
@@ -2895,7 +2910,8 @@ controlli è il §10.3 del progetto e il §9.11 della specifica (P-45); chiudere
 sei difetti T-05, T-07, T-08, T-09 e togliere le loro righe T-* da
 `docs/eccezioni-interfaccia.md` nello stesso commit — alla merge la regia
 guarda che non ne resti nessuna —; una superficie nuova entra nel banco da
-`main`, in `VISTE_RIF`.
+`main`, in `VISTE_RIF`, e una frase nuova del riepilogo dei quiz in
+`FRASI_RIEPILOGO` (P-53).
 
 #### P-27 — la regia, con tutti: il traguardo
 
@@ -3222,3 +3238,7 @@ la nota in testa a `docs/filosofia.md`, che lo dice di sé (P-26).
   solo, e nessun banco riconosce più un regime di pagina. Nel §4 una decisione
   nuova: la v0.28.0 pubblicata non ha l'avviso di P-36. P-52 ha un commit su
   `ui/main` (`0ed6e3a`); la regia lo fonde quando arriva il resoconto.
+- **1° ottobre 2026 — P-53 chiuso: la terza fila delegata è finita.** Le frasi
+  del riepilogo dei quiz hanno un controllo. Per Claude non resta niente di
+  pronto oltre a P-15, con l'autore; per ChatGPT P-52, il cui commit è su
+  `ui/main` e aspetta il resoconto.
