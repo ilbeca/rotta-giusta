@@ -29,6 +29,7 @@ node --test tests/test_engine.mjs                 # il motore, e le tre versioni
 node --test tests/test_server.mjs                 # il server degli account, e il ripristino provato
 python3 tests/test_dati.py                        # dati, invarianti, e il guardiano
 python3 tests/test_interfaccia.py                 # le viste, le porte, le modalità, e la pagina in Chrome headless
+RG_PAGINA=<file> python3 tests/test_interfaccia.py  # la stessa suite su una copia della palestra, non su site/app.html
 python3 tests/test_specifica.py                   # ogni requisito ha il suo controllo
 python3 strumenti/controlla.py                    # il guardiano da solo
 python3 fonte/verifica.py                         # i testi del carteggio contro il PDF (serve pypdf)

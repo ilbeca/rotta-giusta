@@ -1710,6 +1710,70 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   dopo. Guardiano verde. `site/` e `docs/prossime-sessioni.md` non sono stati
   toccati.
 
+### Test — P-51: il controllo del Carteggio riconosce il regime della pagina vera
+
+- **Un controllo fissava il regime della pagina vera, e ha fermato P-21 con la
+  pagina giusta.** `test_carteggio_ambito` prova al contrario che una pagina che
+  carica `carteggio_e12.json` è rossa (R-UX-07), e per farlo etichettava
+  `app.html` come «attuale» e pretendeva che la sua copia rotta lo fosse. Il
+  giorno che la pagina porta il raccordo il controllo diventa rosso, e il rosso
+  non dice niente di sbagliato nella pagina. **Riprodotto sulla bozza vera di
+  P-21**, letta dal worktree `ui` e copiata nello scratchpad, senza toccarla: il
+  controllo di prima dà proprio quel rosso, «la pagina attuale e' nel regime
+  attuale — progettato», e con la pagina di oggi è verde, che è il motivo per
+  cui né P-35 né la regia l'avevano visto.
+
+- **Ora il regime della pagina vera si riconosce**, con la stessa regola del
+  banco (`riconosci_carteggio()`, estratta da `regime_carteggio()` senza
+  cambiarla): la copia rotta dev'essere nel regime in cui è la pagina, qualunque
+  sia, e rossa per `carteggio_e12`; la pagina di riferimento resta fissata al
+  progettato. **Prima il rosso:** il controllo gira anche con due pagine nel
+  regime progettato al posto della vera — la pagina di riferimento, e una copia
+  di `app.html` con le cinque funzioni del raccordo innestate — e con la regola
+  di prima dà due rossi, uno per pagina, per la ragione misurata; con la
+  correzione nessuno. Provato al contrario anche togliendo l'iniezione del file:
+  sei rossi. È un controllo solo, perché R-UX-07 nomina `test_carteggio_ambito`.
+
+- **Cercati gli altri punti, e non ce ne sono.** Quiz e ciclo leggono il regime
+  della pagina vera (`regime_app()`, `regime_ciclo_app()`), e fissano il
+  progettato solo alle loro pagine di riferimento; la mappa ha un regime solo
+  per decisione (P-47); nel Carteggio `registra_carteggio()` legge. I test del
+  motore che confrontano copie della pagina — `componiProva()`, `totScreening()`,
+  `daAllenare()` — si ritirano da soli quando la copia sparisce. Il banco del
+  client accetta tutte e due le frasi del giudizio (la vecchia esce con P-50),
+  C-19 e le righe T-* di P-45 sono difetti dichiarati a due versi, e i gruppi
+  T-01…T-09 guardano le viste senza riconoscere un regime di pagina. **Con la
+  bozza di P-21 al posto della pagina vera** i controlli statici dei quattro
+  regimi sono tutti verdi; restano rossi solo quelli che P-21 deve aggiornare
+  per prompt — orfani e chiamate protette in `docs/eccezioni-interfaccia.md` —
+  e uno che non è un controllo sbagliato: nella bozza `#v-tec` non ha più un
+  ingresso, perché «Che tecnica serve?» parte dalla porta del Carteggio, e il
+  progetto dell'area 4 non dice che fine fa quella vista. **La suite intera sulla
+  bozza**, browser compreso, dà 21 rossi su 2.110, nessuno da un regime: dodici
+  sono quegli aggiornamenti, gli altri nove vengono dallo stesso fatto — il banco
+  del client entra in «Che tecnica serve?» da `[data-v="tec"]`, un aggancio del
+  contratto del §12 del progetto del client, e la bozza non l'ha più: C-01 si
+  ferma a 32 verifiche su 34, T-07, T-08 e T-09 non aprono la vista, e il
+  difetto dichiarato di T-09 risulta chiuso perché i tag N/L/C non vengono
+  misurati. Il rosso di C-19 sulla ricarica, dichiarato, resta rosso anche sulla
+  bozza. Per la regia: o P-21 tiene l'aggancio, o si decide su `main` dove va.
+
+- **`RG_PAGINA=<file>`** fa girare la suite dell'interfaccia su una copia della
+  palestra al posto di `site/app.html`, anche nel browser, perché ogni controllo
+  e il banco del client la prendono da `leggi()`: serve a misurare una bozza di
+  un altro worktree senza toccarla. La riga finale dice su quale pagina si è
+  misurato, verde o rossa, così un verde su una copia non passa per un verde di
+  `main`. In `AGENTS.md` fra i comandi, e nel §9.6 della specifica con il
+  registro.
+
+  Suite: interfaccia **1.872** (erano 1.863), in 190 s, due giri verdi; specifica 758; motore
+  185/187 con i due skip di sempre; dati 242; server 60/60 con Node 25.3 e con
+  la **24.21.0 LTS** — la cartella estratta da una sessione precedente della
+  regia, il cui pacchetto non c'era più per riverificarne l'impronta; il server
+  non è stato toccato. Guardiano verde. Prima di ogni giro la 8620 guardata
+  libera; nessun carico di prova lanciato. `site/` e
+  `docs/prossime-sessioni.md` non sono stati toccati, e nemmeno il worktree `ui`.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag

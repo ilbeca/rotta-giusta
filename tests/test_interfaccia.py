@@ -21,6 +21,7 @@ valgono con quattro destinazioni, con sette e con qualunque altra scelta.
 """
 
 import json
+import os
 import re
 import subprocess
 import sys
@@ -40,7 +41,18 @@ def check(nome, cond, extra=''):
         falliti.append(nome + (' — ' + extra if extra else ''))
 
 
+# RG_PAGINA=<file> fa girare la suite su una copia della palestra al posto di
+# site/app.html (P-51): serve a misurare una bozza — quella di un altro
+# worktree, o una copia con una modifica — senza toccare la pagina vera, anche
+# nel browser, perche' il banco del client prende la pagina da qui. Il resto del
+# sito resta quello del repo. La riga finale lo dice, verde o rossa: un verde su
+# una copia non e' un verde di main.
+PAGINA = os.environ.get('RG_PAGINA')
+
+
 def leggi(p):
+    if p == 'app.html' and PAGINA:
+        return Path(PAGINA).read_text(encoding='utf-8')
     return (SITE / p).read_text(encoding='utf-8')
 
 
@@ -902,6 +914,12 @@ def corpo(js, nome):
 CICLO_CARTEGGIO_DI_OGGI = ['consegnaCart', 'dipingiCorrezione', 'salvaCart', 'rivediCarteggio', 'mostraTec', 'correggiTec']
 
 
+def riconosci_carteggio(testo):
+    """'progettato' se la pagina dichiara una delle cinque funzioni di raccordo, altrimenti 'attuale'."""
+    js = senza_commenti(testo)
+    return 'progettato' if any(re.search(r'^function %s\b' % f, js, re.M) for f in RACCORDO_CARTEGGIO) else 'attuale'
+
+
 def regime_carteggio(testo):
     """(regime, verifiche) del Carteggio: 'attuale' o 'progettato'.
 
@@ -914,7 +932,7 @@ def regime_carteggio(testo):
                'ok': 'carteggio_e12' not in js,
                'extra': 'i 50 esercizi entro 12 miglia sono nel cassetto: tirarli fuori e\' una decisione dell\'autore '
                         '(specifica §10, Q-AMBITO), e cambia il pubblico piu\' di ogni scelta di navigazione'}]
-    if any(re.search(r'^function %s\b' % f, js, re.M) for f in RACCORDO_CARTEGGIO):
+    if riconosci_carteggio(testo) == 'progettato':
         return 'progettato', banco_carteggio(testo) + ambito
     v = []
 
@@ -1011,17 +1029,59 @@ def test_carteggio_senza_riprova():
     registra_carteggio(('riprova',))
 
 
-def test_carteggio_ambito():
-    """R-UX-07: finche' Q-AMBITO e' aperta, il carteggio entro 12 miglia resta nel cassetto."""
-    registra_carteggio(('ambito',))
-    # Provato al contrario, senza Node: una pagina che lo carica e' rossa, in
-    # tutti e due i regimi.
-    for nome, testo in (('attuale', leggi('app.html')), ('progettato', RIFERIMENTO_CARTEGGIO.read_text(encoding='utf-8'))):
+def ambito_al_contrario(vera):
+    """[(nome, ok, extra)]: una copia di `vera`, e una della pagina di riferimento, che caricano il file sono rosse.
+
+    Il regime della pagina vera si **riconosce**, non si fissa (P-51): la sua
+    copia rotta dev'essere nel regime in cui e' lei, qualunque sia — cosi'
+    l'iniezione non sposta il riconoscimento, e il rosso e' quello del regime
+    giusto. La pagina di riferimento e' nel progettato per costruzione, e
+    test_carteggio_provato_al_contrario lo pretende.
+    """
+    out = []
+    for nome, testo, atteso in (('vera', vera, riconosci_carteggio(vera)),
+                                ('di riferimento', RIFERIMENTO_CARTEGGIO.read_text(encoding='utf-8'), 'progettato')):
         rotta = testo.replace('</script>', "fetch('/dati/carteggio_e12.json');\n</script>", 1)
         regime, v = regime_carteggio(rotta)
-        check('Carteggio provato al contrario: la pagina %s e\' nel regime %s' % (nome, nome), regime == nome, regime)
-        check('Carteggio provato al contrario (%s): una pagina che carica carteggio_e12.json e\' rossa' % nome,
-              any(x['gruppo'] == 'ambito' and not x['ok'] for x in v))
+        out.append(('Carteggio provato al contrario: la copia della pagina %s resta nel regime %s' % (nome, atteso),
+                    regime == atteso, 'la copia e\' nel regime %s' % regime))
+        out.append(('Carteggio provato al contrario (pagina %s, regime %s): una pagina che carica carteggio_e12.json e\' rossa'
+                    % (nome, atteso), any(x['gruppo'] == 'ambito' and not x['ok'] for x in v), ''))
+    return out
+
+
+def test_carteggio_ambito():
+    """R-UX-07: finche' Q-AMBITO e' aperta, il carteggio entro 12 miglia resta nel cassetto.
+
+    Provato al contrario: una copia della pagina che carica il file e' rossa, in
+    tutti e due i regimi. E il regime della pagina vera si riconosce invece di
+    fissarlo (P-51): fino a P-51 il controllo etichettava app.html come
+    «attuale», e il giorno che la pagina vera passava al raccordo (P-21) era
+    rosso con la pagina giusta. Per questo gira anche con due pagine nel regime
+    progettato al posto della vera — la pagina di riferimento, e una copia di
+    app.html con il raccordo innestato — e dev'essere verde con tutte e tre.
+    """
+    registra_carteggio(('ambito',))
+    for nome, ok, extra in ambito_al_contrario(leggi('app.html')):
+        check(nome, ok, extra)
+    rif = RIFERIMENTO_CARTEGGIO.read_text(encoding='utf-8')
+    innestata = innesta_raccordo(leggi('app.html'), rif)
+    check('una copia di app.html con il raccordo innestato e\' riconosciuta nel regime progettato',
+          riconosci_carteggio(innestata) == 'progettato', riconosci_carteggio(innestata))
+    for chi, pagina in (('la pagina di riferimento', rif), ('app.html con il raccordo innestato', innestata)):
+        for nome, ok, extra in ambito_al_contrario(pagina):
+            check('con %s al posto della pagina vera — %s' % (chi, nome), ok, extra)
+
+
+def innesta_raccordo(pagina, riferimento):
+    """Una copia di `pagina` con le cinque funzioni di raccordo del Carteggio prese dal riferimento.
+
+    Non e' una pagina che funziona: e' la pagina vera come la vedra' il
+    riconoscimento del regime il giorno che P-21 porta il raccordo.
+    """
+    js = senza_commenti(riferimento)
+    raccordo = '\n'.join(corpo(js, f) for f in RACCORDO_CARTEGGIO)
+    return pagina.replace('</script>', raccordo + '\n</script>', 1)
 
 
 # Il ramo del regime progettato non gira mai sulla pagina pubblicata finche'
@@ -2704,12 +2764,15 @@ def main():
               test_letture_che_non_mascherano,
               test_testi_leggibili, test_alt_di_contenuto, test_trasloco):
         t()
+    su = (' — sulla copia %s, NON su site/app.html' % PAGINA) if PAGINA else ''
     if falliti:
-        print('%d verifiche FALLITE su %d:\n' % (len(falliti), fatti))
+        print('%d verifiche FALLITE su %d%s:\n' % (len(falliti), fatti, su))
         for f in falliti:
             print('  ✗ ' + f)
+        if su:
+            print('\n' + su.lstrip(' —'))
         sys.exit(1)
-    print('%d verifiche passate' % fatti)
+    print('%d verifiche passate%s' % (fatti, su))
 
 
 if __name__ == '__main__':

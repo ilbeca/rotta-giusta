@@ -1407,6 +1407,18 @@ due tocchi, il confronto affiancato, il giudizio rinviato come stato della
 pagina, «Valutazione in corso», i ritorni e il focus, le tre porte. **Il regime
 attuale ha una scadenza:** lo toglie la regia quando integra P-21.
 
+**Il regime della pagina vera si riconosce, non si fissa** (P-51). Il controllo
+al contrario di R-UX-07 etichettava `app.html` come «attuale», e con il
+raccordo di P-21 sarebbe stato rosso con la pagina giusta: si è fermato così
+P-21. Ora la copia che carica il file dev'essere nel regime in cui è la pagina
+vera, e il controllo gira anche con la pagina di riferimento e con una copia di
+`app.html` con il raccordo innestato al posto della vera. Gli altri banchi a due
+regimi — quiz, ciclo — leggono il regime della pagina vera, la mappa ne ha uno
+solo per decisione, e il client e l'area 6 non riconoscono un regime di pagina:
+nessun altro punto lo fissa. Per misurare una bozza
+senza toccare `site/app.html`, `RG_PAGINA=<file>` fa girare la suite
+dell'interfaccia su una copia, e la riga finale lo dice.
+
 ### 9.8 Che cosa non deve sparire, e che cosa si deve leggere
 
 Nati dall'audit del 12 settembre 2026 e dalla richiesta di ChatGPT di registrare,
@@ -2248,3 +2260,10 @@ successo, ed è il motivo per cui questo file esiste.
   d'accesso; il passaggio a P-25 non ha un raccordo, e quello che la pagina di
   oggi non rispetta sono sette difetti aperti dichiarati, misurati. L'appendice
   A ha le misure del tema chiaro, e dice «non fatto» dove non si è misurato.
+- **30 settembre 2026 — il regime della pagina vera si riconosce (P-51).** Il
+  controllo al contrario di R-UX-07 fissava `app.html` nel regime attuale, e ha
+  fermato P-21 con la pagina giusta; ora legge il regime della pagina vera, e
+  gira anche con due pagine nel progettato al posto della vera. Cercati gli
+  altri punti nei banchi dei quiz, del ciclo, della mappa, del Carteggio, del
+  client e dell'area 6: nessun altro fissa il regime, e il §9.6 lo dice.
+  `RG_PAGINA` fa girare la suite su una copia della palestra.
