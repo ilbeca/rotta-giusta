@@ -1421,7 +1421,8 @@ sei rossi — le tre funzioni che mancano, e riepilogo e giro a zero verifiche s
 le ventisette rotture. R-FLU-02…04 restano sul motore, dove i loro test li
 tengono; R-FLU-10 li porta nella colla fra pagina e motore. **Non vede**, e
 resta al collaudo a 375 e 1280 px — fatto da P-19, §10.4 del progetto —: i
-testi del riepilogo e dell'anteprima, la gerarchia delle uscite, il focus e i
+testi dell'anteprima — quelli del riepilogo, dal 1° ottobre 2026, li legge
+R-UX-06 nel banco del client —, la gerarchia delle uscite, il focus e i
 ritorni, Esc, la conferma e la consegna idempotente di una simulazione, i tag
 nella revisione, gli avvisi di scrittura e di lettura, le figure, Base e vela
 come flusso. Che un'attività fermata dopo una risposta abbia il suo riepilogo e
@@ -1479,7 +1480,7 @@ liste, perché una lista in un prompt è una regola da ricordare.
 | R-A11Y-01 | Nessun testo sotto gli 11 px, salvo eccezioni dichiarate con l'area che le corregge | `test_interfaccia.py::test_testi_leggibili` |
 | R-A11Y-02 | Un'immagine che porta contenuto dichiara che cosa mostra; `alt=""` resta per le decorative | `test_interfaccia.py::test_alt_di_contenuto` |
 | R-A11Y-03 | Contrasto ≥ 4,5:1 sul testo normale, misurato sui colori calcolati; le aree di tocco sono R-RIF-12, e il resto dell'accessibilità il §9.11 | `test_interfaccia.py::test_rifinitura_contrasto` |
-| R-UX-06 | Una breve attività dichiara che cosa è successo, quali rivedere e che cosa non hai toccato: nessuna quarta affermazione, e nessun voto sulla preparazione | scoperto — i numeri delle tre affermazioni vengono dal raccordo, e sulla pagina vera li tiene R-FLU-01, compreso «Riprova questi N» da `riprova.quanti`; le frasi sono testo di schermata, guardate al collaudo di P-19 (`area-3-progetto.md` §10.4), e nessun controllo le tiene ferme: il banco del ciclo non ha DOM, e quello del client non legge i testi del riepilogo |
+| R-UX-06 | Una breve attività dichiara che cosa è successo, quali rivedere e che cosa non hai toccato: nessuna quarta affermazione, e nessun voto sulla preparazione. **Coperto, per quello che il banco vede** (P-53): sulla pagina vera, senza account e in un browser vero, il riepilogo dei quiz dice nel testo che si vede — l'`innerText` di `#r-fine`, che non contiene quello che è nascosto — i numeri di quello che il banco ha fatto in due attività della stessa pagina: risposte su totale, corrette, errate; con errori la frase del §4.2 di `area-3-progetto.md`, «Rivedi gli errori» e «Riprova» con N uguale alle errate, senza errori la frase «tutte corrette» e nessuna riprova; le non affrontate con la loro frase. Ogni riga e ogni uscita sta in un elenco chiuso di frasi ammesse — il §4.2, la conservazione del §3, l'invito del client §4.1 —, e nessuna parola da voto: percentuali, «pronto», «migliorato», «livello», «debole». Non vede l'ordine delle frasi, un testo reso invisibile con `opacity` o col colore del fondo, il riepilogo di una simulazione (§4.3, che un esito ce l'ha) e quello con l'account, dove cambia solo la frase della conservazione; i numeri del raccordo contro il motore restano a R-FLU-01 | `test_interfaccia.py::test_riepilogo_frasi` |
 
 ### 9.7 Le decisioni di prodotto
 
@@ -2359,3 +2360,16 @@ successo, ed è il motivo per cui questo file esiste.
   presente, con la bozza nella pagina su `main` e non ancora nel sito
   pubblicato; il §5.3 e il §3.2 non descrivono più la `componiProva()` e le
   righe di prima come se fossero nella pagina.
+- **1° ottobre 2026 — le frasi del riepilogo dei quiz, nel banco (P-53).**
+  R-UX-06 passa da scoperto a coperto per quello che il banco vede: il gruppo
+  F-01 del banco del client guida la pagina vera senza account, dà una risposta
+  giusta e una sbagliata sapendo dalla banca qual è quale, poi una seconda
+  attività con una sola risposta giusta, e legge nel testo che si vede del
+  riepilogo le tre affermazioni con quei numeri, un elenco chiuso di frasi e di
+  uscite, e nessuna parola da voto. La pagina di riferimento del client prende
+  i numeri del riepilogo da un raccordo sulle righe dell'attività, come quella
+  vera, e porta nove rotture nuove, tutte rosse per il loro motivo, e una
+  variante che deve restare verde: otto coppie di quesiti base hanno testo e
+  risposte identici e l'esatta diversa, e il banco lì legge l'esito dal
+  riscontro invece di darlo per rosso. Il §9.6 non
+  mette più i testi del riepilogo fra quelli che nessun controllo legge.

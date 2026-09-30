@@ -786,3 +786,23 @@ lettore di schermo sui percorsi del ciclo, prova con persone (Q-PROVE). Il
 regime senza account e l'invito alla registrazione del §3 sono del client
 (P-18): oggi il testo di conservazione è quello del prodotto attuale. Il
 controllo del regime vecchio del ciclo è ora senza oggetto, e lo chiude P-37.
+
+**Le frasi del riepilogo, nel banco (P-53, 1° ottobre 2026).** Il §4.2 aveva
+un collaudo e nessun controllo: il banco del ciclo esegue il raccordo senza DOM,
+e quello del client non leggeva i testi del riepilogo. Ora li legge il gruppo
+F-01 di `tests/client_account.mjs`, sulla pagina vera senza account: una
+risposta giusta e una sbagliata — il banco sa dalla banca qual è quale —, poi
+«Termina»; poi, nella stessa pagina, una seconda attività con una sola risposta
+giusta. In ciascuno dei due riepiloghi pretende, nel testo che si vede, le tre
+affermazioni con i numeri di quello che ha fatto; che ogni riga sia una delle
+frasi ammesse da questo §4.2, dalla conservazione del §3 e dall'invito del
+client §4.1, e ogni pulsante una delle uscite del §6.1; e nessuna parola da
+voto. **Una frase nuova nel riepilogo è rossa** finché non entra nell'elenco del
+banco: è la decisione che il §4.2 chiede di prendere prima di scriverla.
+Etichetta e numero, che la pagina mette nella stessa riga di un flex, per
+l'`innerText` sono due righe, e il banco le ricuce. Otto coppie di quesiti base hanno
+testo e risposte identici e l'esatta diversa — cambia solo la figura —: lì il
+banco non sa dalla banca quale sia giusta, risponde e prende l'esito dal
+riscontro, e una variante della pagina di riferimento li pesca per primi. Non vede l'ordine delle
+frasi, un testo invisibile per `opacity` o per colore, il riepilogo di una
+simulazione (§4.3) e quello con l'account. R-UX-06 nella specifica.

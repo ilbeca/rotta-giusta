@@ -2085,6 +2085,85 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   lanciato. `site/`, `docs/prossime-sessioni.md` e il worktree `ui` non sono
   stati toccati.
 
+### Test — P-53: le frasi del riepilogo dei quiz, nel banco del client
+
+- **R-UX-06 aveva un collaudo e nessun controllo.** I numeri del riepilogo di
+  una breve attività li teneva R-FLU-01, ma il banco del ciclo esegue il
+  raccordo senza DOM e quello del client non leggeva i testi del riepilogo:
+  una quarta frase, un «Sei pronto», una frase nascosta passavano la suite.
+  Ora c'è il gruppo **F-01** in `tests/client_account.mjs`, e
+  `test_riepilogo_frasi` lo registra.
+
+- **Che cosa fa.** Sulla pagina vera, senza account, dà una risposta giusta e
+  una sbagliata — sa dalla banca qual è quale —, poi «Termina»; poi, nella
+  stessa pagina, una seconda attività con una sola risposta giusta. In ciascun
+  riepilogo legge l'`innerText` di `#r-fine`, che non contiene quello che è
+  nascosto, e pretende le tre affermazioni del §4.2 di
+  `docs/area-3-progetto.md` con i numeri di quello che ha fatto: risposte su
+  totale, corrette, errate; con errori la frase, «Rivedi gli errori» e
+  «Riprova» con N uguale alle errate, senza errori «tutte corrette» e nessuna
+  riprova; le non affrontate con la loro frase. **Nessuna quarta
+  affermazione** è un elenco chiuso: ogni riga del riepilogo, tolti i
+  pulsanti, dev'essere una frase ammessa dal §4.2, dalla conservazione del §3
+  o dall'invito del client §4.1, e ogni pulsante un'uscita del §6.1; una frase
+  nuova è rossa finché qualcuno non decide che è ammessa. **Nessun voto** è
+  un elenco di parole: percentuali, «pronto», «migliorato», «livello»,
+  «debole», «punteggio». La seconda attività è quella che vede un numero preso
+  dalle righe di tutta la pagina invece che da quelle dell'attività, come fa il
+  raccordo.
+
+- **La pagina di riferimento del client, allineata.** Il suo riepilogo diceva
+  risposte, corrette ed errate in una frase sola, dagli esiti del runner; ora
+  prende i numeri da un `riepilogoQuiz()` sulle righe dell'attività, per
+  `sim_uid`, come la pagina vera, e fa le tre affermazioni con i testi del
+  §4.2, con «Rivedi gli errori» e la riprova. La rottura di T-01 che toccava
+  la riga di prima segue la riga nuova, ed è rossa come prima.
+
+- **Nove rotture nuove, tutte rosse per il loro motivo:** una quarta
+  affermazione, un'uscita in più, un «Sei pronto per l'esame», una
+  percentuale di esatte, i numeri dalle righe di tutta la pagina, le errate
+  contate dagli errori di tutta la pagina, i numeri nascosti, la frase su
+  quali rivedere con `visibility:hidden`, quella su che cosa non hai toccato
+  con `hidden`. **Il banco contro sé stesso**, una difesa tolta alla volta:
+  con `textContent` al posto di `innerText` le due frasi nascoste non sono più
+  prese per il loro motivo, e la pagina di riferimento stessa diventa rossa
+  perché le righe si fondono; senza la seconda attività le due rotture del
+  raccordo passano verdi; senza l'elenco delle frasi, dei voti o delle uscite
+  la rottura corrispondente non è più rossa per il suo motivo, e quella
+  dell'uscita passa verde.
+
+- **Un rosso falso del banco, trovato facendolo girare e non nella suite.** In
+  un giro degli indebolimenti la pagina di riferimento è uscita rossa su «il
+  quesito si riconosce dalla banca». Misurato sulla banca intera: **otto coppie
+  di quesiti base** — base-181…183, base-564/565 e altre, 16 quesiti su
+  1.472 — hanno testo e risposte identici e l'esatta diversa, e cambia solo la
+  figura; dal testo il banco non può sapere quale sia giusta, circa un quesito
+  pescato su 200. Ora lì risponde e prende l'esito dal riscontro, e nella
+  prima attività va avanti finché ha una giusta e una sbagliata; i numeri
+  attesi sono sempre quelli di quello che è successo. Una variante della
+  pagina di riferimento, che deve restare verde, pesca per primi quattro di
+  quei gemelli e tiene fermo il caso a ogni esecuzione.
+
+- **Che cosa non vede**, scritto in R-UX-06 e nel §10.4 del progetto
+  dell'area 3: l'ordine delle frasi, un testo invisibile per `opacity` o per
+  colore, il riepilogo di una simulazione (§4.3, che un esito ce l'ha) e
+  quello con l'account, dove cambia solo la frase della conservazione. Nella
+  pagina vera etichetta e numero stanno nella stessa riga di un flex, e per
+  l'`innerText` sono due righe: il banco le ricuce, e lo dice. Specifica:
+  R-UX-06 coperto per quello che il banco vede; il §9.6 non mette più i testi
+  del riepilogo fra quelli che nessun controllo legge.
+
+  Suite: interfaccia **2.173** (erano 2.121: 22 di F-01 sulla pagina vera col
+  suo conteggio, uno sul riferimento, due della variante, 27 delle rotture),
+  **tre giri verdi** in 238–241 s, il terzo con la 24.21.0 nel `PATH`; specifica **784** (erano 782); motore 194/197 con i tre skip previsti;
+  dati 242; server 60/60. Con la **24.21.0 LTS**, archivio verificato contro
+  il `SHASUMS256.txt` di nodejs.org che P-50 aveva scaricato stanotte — non
+  riscaricato —: motore 194/197, server 60/60, interfaccia 2.173. Guardiano e controllo
+  della documentazione verdi. Ogni giro del banco ha aspettato 90 s di porta
+  8620 libera e nessun banco di `rotta-giusta-ui` in corso. Nessun carico di
+  prova lanciato. `site/`, `docs/prossime-sessioni.md` e il worktree `ui` non
+  sono stati toccati.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag

@@ -43,6 +43,10 @@
 // 320 px, il contrasto e i bersagli. Misurano con il browser — rettangoli,
 // colori calcolati, tasti veri, albero di accessibilita' — e non cercano
 // stringhe nel sorgente.
+//
+// E da P-53 il gruppo F-01, le frasi del riepilogo dei quiz (R-UX-06,
+// docs/area-3-progetto.md §4.2): tre affermazioni lette in quello che si vede,
+// con i numeri di quello che il banco ha fatto, nessuna quarta e nessun voto.
 
 import { createServer } from 'node:http';
 import { readFileSync, writeFileSync, mkdirSync, existsSync, mkdtempSync, rmSync, statSync } from 'node:fs';
@@ -3405,10 +3409,219 @@ async function t09(b, ctx, v) {
   } finally { await c.chiudi(); }
 }
 
+// --- F-01: le frasi del riepilogo dei quiz (R-UX-06, P-53) -----------------------
+//
+// docs/area-3-progetto.md §4.2: il riepilogo di una breve attivita' fa tre
+// affermazioni — che cosa e' successo, quali risposte rivedere, che cosa non hai
+// toccato — e nessuna quarta, e nessun voto sulla preparazione. R-FLU-01 tiene i
+// numeri del raccordo (tests/ciclo_quiz.mjs, senza DOM); qui si legge quello che
+// si vede, nell'innerText di #r-fine, che non contiene un elemento nascosto
+// (display o visibility): con textContent una frase nascosta passerebbe (P-49).
+//
+// Il banco sa da se' che cosa deve leggere, perche' e' lui a rispondere: dalla
+// banca conosce la risposta esatta di quasi ogni quesito, e ne da' una giusta e
+// una sbagliata, poi si ferma; dove la banca non basta (i gemelli di
+// `esattaDi`) prende l'esito dal riscontro, e i numeri attesi sono comunque
+// quelli di quello che e' successo. Poi una seconda attivita' nella stessa pagina, con
+// una sola risposta giusta: se un numero viene dalle righe di tutta la pagina
+// invece che da quelle dell'attivita' — il raccordo le prende per id —, qui si
+// vede. Il totale lo legge da #r-pos, come chi studia.
+//
+// «Nessuna quarta» e' un elenco chiuso: ogni riga del riepilogo, tolti i testi
+// dei pulsanti, deve essere una delle frasi ammesse dal §4.2 (piu' la
+// conservazione del §3 e l'invito del client §4.1), e ogni pulsante una delle
+// uscite del §6.1. Una frase nuova e' rossa finche' non entra qui, cioe'
+// finche' qualcuno non ha deciso che e' ammessa. Non vede: l'ordine delle
+// frasi, un testo reso invisibile con opacity o col colore del fondo, il
+// riepilogo della simulazione (§4.3, che un esito ce l'ha), e l'account, dove
+// cambia solo la frase di conservazione.
+
+const QUIZ_X = (() => {
+  const m = new Map();
+  for (const it of JSON.parse(readFileSync(join(SITE, 'dati', 'quiz.json'), 'utf8'))) {
+    const d = it.d.trim();
+    if (!m.has(d)) m.set(d, []);
+    m.get(d).push({ r: it.r.map(spazi), x: it.x });
+  }
+  return m;
+})();
+const RISPOSTE_VISTE = js(`return [...document.querySelectorAll('#r-ans .ans')].filter(V).map((b) => b.textContent.replace(/\\s+/g, ' ').trim());`);
+const POSIZIONE = js(`const p = document.querySelector('#r-pos'); return p && V(p) ? p.textContent.trim() : null;`);
+/**
+ * L'indice della risposta esatta, dalla banca: testo e risposte in schermata.
+ * `undefined` se il quesito non c'e'; `null` se la banca non basta a dirlo:
+ * otto coppie di quesiti base — base-181…183, base-564/565 e altri — hanno testo
+ * e risposte identici e l'esatta diversa, e cambia solo la figura. Misurato il
+ * 1° ottobre 2026: 16 quesiti su 1.472, cioe' circa un quesito pescato su 200.
+ */
+function esattaDi(testo, viste) {
+  const xs = (QUIZ_X.get(testo) || []).filter((it) => it.r.length === viste.length && it.r.every((r, j) => viste[j].endsWith(r)));
+  if (!xs.length) return undefined;
+  const x = new Set(xs.map((it) => it.x));
+  return x.size === 1 ? [...x][0] : null;
+}
+
+/**
+ * Una risposta voluta — giusta o sbagliata — e il suo riscontro. Restituisce
+ * l'esito vero, letto dal riscontro (true, false), o null se non c'e' stato.
+ * Quando la banca non sa dire l'esatta (`esattaDi` null) il banco risponde la
+ * prima e prende l'esito dal riscontro: i numeri attesi sono sempre quelli di
+ * quello che e' successo, non di quello che voleva.
+ */
+async function rispondiCosi(tab, v, g, prefisso, giusta) {
+  const { ok, valore: visto } = await tab.attendiValore(QUESITO, quesitoDellaBanca, REAZIONE);
+  const viste = ok ? await tab.valuta(RISPOSTE_VISTE) : [];
+  const x = ok ? esattaDi(visto.testo, viste) : undefined;
+  v.push({ gruppo: g, nome: `${prefisso}il quesito e le sue risposte si riconoscono dalla banca`, ok: x !== undefined,
+    extra: `in schermata ${JSON.stringify(visto)}, risposte ${JSON.stringify(viste)}` });
+  if (x === undefined) return null;
+  const j = x === null ? 0 : giusta ? x : (x + 1) % viste.length;
+  let fatto = false;
+  for (let i = 0; i < 20 && !fatto; i++) {
+    await clic(tab, `#r-ans .ans[data-i="${j}"]`);
+    fatto = await tab.attendi(js(`return !!document.querySelector('#r-ans .ans.ok') && V(document.querySelector('#r-verdict'));`), 250);
+  }
+  const esito = fatto ? await tab.valuta(js(`return document.querySelector('#r-ans .ans[data-i="${j}"]').classList.contains('ok');`)) : null;
+  v.push({ gruppo: g, nome: `${prefisso}la risposta ha il riscontro che la banca dice`, ok: fatto && (x === null || esito === giusta),
+    extra: fatto ? `la risposta ${j} ${esito ? 'si accende' : 'non si accende'} come esatta, e la banca dice il contrario` : 'nessuna risposta si accende come esatta (.ans.ok)' });
+  return fatto ? esito : null;
+}
+
+async function avantiQuiz(tab) {
+  const prima = await tab.valuta(POSIZIONE);
+  for (let i = 0; i < 20; i++) {
+    await clic(tab, '#r-next');
+    if (await tab.attendi(js(`const p = document.querySelector('#r-pos'); return !!p && p.textContent.trim() !== ${q(prima)};`), 250)) return true;
+  }
+  return false;
+}
+
+// Le frasi ammesse (area-3 §4.2, §3, §8; client §4.1), riga per riga.
+const FRASI_RIEPILOGO = [
+  /^(Attività conclusa|Ti sei fermato qui)$/,
+  /^(Allenamento consigliato|Quiz per argomento|Ripasso degli errori|Un giro tra gli argomenti|Batteria|Riprova degli errori|Quiz) · Quiz (base|vela)$/,
+  /^Hai risposto a (1 domanda|\d+ domande) su \d+\.$/,
+  /^Risposte corrette: \d+$/, /^Risposte errate: \d+$/, /^Domande non affrontate: \d+$/,
+  /^Puoi rivedere la tua risposta e quella ufficiale, poi riprovare questi quesiti\.$/,
+  /^Tutte le risposte date in questa attività sono corrette\.$/,
+  /^Le domande non affrontate non sono conteggiate come errori\.$/,
+  /^Il raggruppamento di questa attività è ricostruito dalle risposte: inizio e fine non erano registrati\.$/,
+  /^Quiz base mai incontrati qui: \d+\.$/,
+  /^Non possiamo riaprire tutti i quesiti errati: alcuni non sono disponibili nella banca caricata\. Riprova a caricare i quiz\.$/,
+  /^Non possiamo verificare l'elenco degli errori di questa attività\. Puoi rivedere le risposte disponibili o tornare ai Quiz\.$/,
+  /^Questa attività non è più disponibile\.$/,
+  /^Non riusciamo a leggere le risposte di questa attività\. Apri Info per controllare l'archivio\.$/,
+  /^Le ultime risposte potrebbero non essere salvate\./,
+  /^Senza account le risposte valgono solo finché questa pagina resta aperta\. Se la chiudi o la ricarichi, le perdi\. Non salviamo niente, nemmeno le tue preferenze\.$/,
+  /^Le risposte si conservano nel tuo account e in questo dispositivo per l’offline\. Controlla lo stato dell’invio in Info\.$/,
+  /^Vuoi conservare le attività di questa pagina\?$/,
+  /^Senza account, chiudendo o ricaricando la pagina perdi le risposte e le preferenze\. Crea un account per salvare le risposte, ritrovarle su un altro dispositivo e vedere i Progressi quando ci sono abbastanza dati\.$/,
+  /^Le risposte saranno legate alla tua email e conservate sul nostro server, in chiaro\. Il titolare può leggerle per supporto e statistiche\.$/,
+  /^Puoi concludere qui\.$/,
+];
+// Le uscite ammesse (§6.1) e i pulsanti dell'invito (client §4.1).
+const USCITE_RIEPILOGO = [
+  /^Riprova (questo quesito|questi \d+ quesiti)$/, /^Rivedi gli errori$/, /^Rivedi le risposte$/, /^Rivedi il quiz base$/,
+  /^Torna (al Percorso|ai Progressi|alla configurazione Quiz|ai Quiz)$/, /^Scegli un'altra attività$/,
+  /^Crea un account e salva$/, /^Continua senza account$/, /^Hai già un account\? Accedi$/, /^Come trattiamo i dati$/,
+];
+// Un voto sulla preparazione, in qualunque punto del riepilogo: una
+// percentuale, un giudizio, un livello, un confronto (§4.2: nessun «Sei
+// migliorato», «Sei pronto», «livello iniziale», tema debole).
+const VOTI = [/\d+\s*%/, /\bpront[oaie]\b/i, /\bmiglior/i, /\bpeggior/i, /\blivell[oi]\b/i, /\bpreparat[oaie]\b/i,
+  /\bpreparazione\b/i, /\bvot[oi]\b/i, /\bpunteggi/i, /\bbrav[oaie]\b/i, /\bottim[oaie]\b/i, /\bdebol[ei]\b/i,
+  /\bsufficient/i, /\bpromoss|\bbocciat/i, /\bpadronanza\b/i, /\bforte\b|\bforti\b/i];
+const RIEPILOGO_VISTO = js(`const f = document.querySelector('#r-fine');
+  return { testo: f.innerText, uscite: [...f.querySelectorAll('button, a')].filter(V).map((b) => b.innerText.replace(/\\s+/g, ' ').trim()).filter(Boolean) };`);
+
+/** Le tre affermazioni, lette in quello che si vede, contro quello che il banco ha fatto. */
+async function frasiRiepilogo(tab, v, g, prefisso, atteso) {
+  const { testo, uscite } = await tab.valuta(RIEPILOGO_VISTO);
+  // Nella pagina vera etichetta e numero stanno sulla stessa riga, in un flex
+  // (`.ciclo-valori li`), e innerText li separa: per chi guarda sono
+  // un'affermazione sola, e qui si ricuciono.
+  const righe = [];
+  for (const r of testo.split('\n').map(spazi).filter(Boolean)) {
+    if (/^\d+$/.test(r) && righe.length && righe[righe.length - 1].endsWith(':')) righe[righe.length - 1] += ' ' + r;
+    else righe.push(r);
+  }
+  const ha = (r) => righe.includes(r);
+  const { risposte: R, totale: T, corrette: C } = atteso, E = R - C, M = T - R;
+  const breve = righe.join(' | ').slice(0, 400);
+  v.push({ gruppo: g, nome: `${prefisso}il riepilogo dice che cosa e' successo: ${R} su ${T}, ${C} corrette, ${E} errate`,
+    ok: ha(`Hai risposto a ${R === 1 ? '1 domanda' : `${R} domande`} su ${T}.`) && ha(`Risposte corrette: ${C}`) && ha(`Risposte errate: ${E}`),
+    extra: `in schermata: ${breve}` });
+  const riprova = E === 1 ? 'Riprova questo quesito' : `Riprova questi ${E} quesiti`;
+  const rivedere = E
+    ? ha('Puoi rivedere la tua risposta e quella ufficiale, poi riprovare questi quesiti.') && uscite.includes('Rivedi gli errori') && uscite.includes(riprova)
+    : ha('Tutte le risposte date in questa attività sono corrette.') && !uscite.includes('Rivedi gli errori') && !uscite.some((u) => u.startsWith('Riprova'));
+  v.push({ gruppo: g, nome: `${prefisso}il riepilogo dice quali rivedere: ${E ? `«${riprova}» e «Rivedi gli errori»` : 'nessuna, tutte corrette'}`,
+    ok: rivedere, extra: `in schermata: ${breve}; uscite: ${uscite.join(', ')}` });
+  v.push({ gruppo: g, nome: `${prefisso}il riepilogo dice che cosa non hai toccato: ${M} domande non affrontate`,
+    ok: ha(`Domande non affrontate: ${M}`) && (!M || ha('Le domande non affrontate non sono conteggiate come errori.')),
+    extra: `in schermata: ${breve}` });
+  const voti = VOTI.map((re) => testo.match(re)).filter(Boolean).map((m) => m[0]);
+  v.push({ gruppo: g, nome: `${prefisso}nessun voto sulla preparazione`, ok: !voti.length, extra: `in schermata: ${voti.join(', ')}` });
+  const fuori = [];
+  for (const u of uscite) if (!USCITE_RIEPILOGO.some((re) => re.test(u))) fuori.push(`«${u}»`);
+  const lunghe = [...uscite].sort((a, b) => b.length - a.length);
+  for (let r of righe) {
+    for (const u of lunghe) r = r.split(u).join('\n');
+    for (const pezzo of r.split('\n').map(spazi).filter(Boolean)) if (!FRASI_RIEPILOGO.some((re) => re.test(pezzo))) fuori.push(`«${pezzo}»`);
+  }
+  v.push({ gruppo: g, nome: `${prefisso}nessuna quarta affermazione`, ok: !fuori.length, extra: `frasi che il §4.2 non ammette: ${fuori.join('; ')}` });
+}
+
+async function f01(b, ctx, v) {
+  const g = 'F-01';
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    const pronto = await tab.attendi(PRONTO, CARICO);
+    v.push({ gruppo: g, nome: 'la palestra si apre e la prima attivita\' si puo\' avviare', ok: pronto,
+      extra: `nessun [data-rotta-start] abilitato entro ${CARICO / 1000} s` + (tab.errori.length ? ': ' + tab.errori[0] : '') });
+    if (!pronto) return;
+    // Prima attivita': una giusta e una sbagliata, poi «Termina». Con un
+    // quesito che la banca non distingue si va avanti finche' ci sono tutte e
+    // due, lasciando almeno una domanda non affrontata.
+    await clic(tab, '[data-rotta-start]');
+    const esiti = [];
+    let T1 = null;
+    while (!(esiti.includes(true) && esiti.includes(false))) {
+      if (esiti.length) {
+        const avanti = T1 - esiti.length >= 2 && await avantiQuiz(tab);
+        v.push({ gruppo: g, nome: 'prima attivita\': «Avanti» porta al quesito dopo', ok: avanti,
+          extra: T1 - esiti.length >= 2 ? '#r-pos non cambia dopo #r-next' : `#r-pos dice ${T1} domande: non bastano` });
+        if (!avanti) return;
+      }
+      const e = await rispondiCosi(tab, v, g, 'prima attivita\': ', !esiti.includes(true));
+      if (e === null) return;
+      esiti.push(e);
+      T1 = T1 ?? Number(((await tab.valuta(POSIZIONE)) || '').split('/')[1]);
+    }
+    if (!await chiudiQuiz(tab, v, g, 'prima attivita\': ')) return;
+    await frasiRiepilogo(tab, v, g, 'prima attivita\': ', { risposte: esiti.length, corrette: esiti.filter(Boolean).length, totale: T1 });
+    // Seconda attivita', nella stessa pagina: una sola risposta, giusta.
+    await clic(tab, '[data-ciclo="ritorno"]');
+    const pronto2 = await tab.attendi(js(`return !V(document.querySelector('#r-fine'));`), REAZIONE) && await tab.attendi(PRONTO, REAZIONE);
+    v.push({ gruppo: g, nome: 'dal riepilogo si torna al Percorso, e un\'altra attivita\' si puo\' avviare', ok: pronto2,
+      extra: '[data-ciclo="ritorno"] non chiude il riepilogo, o [data-rotta-start] non torna abilitato' });
+    if (!pronto2) return;
+    await clic(tab, '[data-rotta-start]');
+    const e2 = await rispondiCosi(tab, v, g, 'seconda attivita\': ', true);
+    if (e2 === null) return;
+    const T2 = Number(((await tab.valuta(POSIZIONE)) || '').split('/')[1]);
+    if (!await chiudiQuiz(tab, v, g, 'seconda attivita\': ')) return;
+    await frasiRiepilogo(tab, v, g, 'seconda attivita\': ', { risposte: 1, corrette: e2 ? 1 : 0, totale: T2 });
+  } finally { await c.chiudi(); }
+}
+
 const GRUPPI = { 'C-01': c01, 'C-02': c02, 'C-03': c03, 'C-04': c04, 'C-05': c05, 'C-06': c06, 'C-07': c07, 'C-08': c08, 'C-09': c09,
   'C-10': c10, 'C-11': c11, 'C-12': c12, 'C-13': c13, 'C-14': c14, 'C-15': c15, 'C-16': c16, 'C-17': c17, 'C-19': c19,
   // L'area 6 (P-45): la rifinitura trasversale.
-  'T-01': t01, 'T-02': t02, 'T-03': t03, 'T-04': t04, 'T-05': t05, 'T-06': t06, 'T-07': t07, 'T-08': t08, 'T-09': t09 };
+  'T-01': t01, 'T-02': t02, 'T-03': t03, 'T-04': t04, 'T-05': t05, 'T-06': t06, 'T-07': t07, 'T-08': t08, 'T-09': t09,
+  // Le frasi del riepilogo dei quiz (P-53, R-UX-06).
+  'F-01': f01 };
 // I gruppi che parlano con l'API: il server accetta una sola origine (§7.3),
 // quindi girano uno alla volta sul sito principale. Gli altri girano in
 // parallelo, ognuno con il suo sito e quindi con la sua origine.

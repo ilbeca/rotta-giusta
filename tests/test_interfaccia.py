@@ -1187,7 +1187,7 @@ def test_carteggio_provato_al_contrario():
 BANCO_CLIENT = RADICE / 'tests' / 'client_account.mjs'
 RIFERIMENTO_CLIENT = RADICE / 'tests' / 'pagina-client-account.html'
 GRUPPI_CLIENT = ['C-01', 'C-02', 'C-03', 'C-04', 'C-05', 'C-06', 'C-07', 'C-08', 'C-09', 'C-10', 'C-11', 'C-12',
-                 'C-13', 'C-14', 'C-15', 'C-16', 'C-17']
+                 'C-13', 'C-14', 'C-15', 'C-16', 'C-17', 'F-01']
 # Quante verifiche fa ogni gruppo quando arriva in fondo, sulla pagina di
 # riferimento: meno vuol dire che il giro si e' fermato prima e che una parte
 # dei controlli non e' stata eseguita, cioe' un verde a copertura parziale.
@@ -1195,7 +1195,7 @@ VERIFICHE_CLIENT = {'C-01': 34, 'C-02': 15, 'C-03': 11, 'C-04': 20, 'C-05': 13, 
                     'C-09': 13, 'C-10': 10, 'C-11': 8, 'C-12': 9, 'C-13': 8, 'C-14': 3, 'C-15': 12, 'C-16': 23, 'C-17': 10,
                     'C-13:scarica': 7, 'C-08:cancella': 8, 'C-15:segnali': 7,
                     'C-19:senza': 4, 'C-19:ricarica': 4, 'C-19:scadenza': 4, 'C-19:guasto': 3, 'C-19:giudizio': 5,
-                    'C-19:uscita': 4, 'C-19:schede': 4}
+                    'C-19:uscita': 4, 'C-19:schede': 4, 'F-01': 21}
 # Le tre scelte che fino a P-46 nessun gruppo premeva (R-ACC-63): sono parti dei
 # loro gruppi, e girano con loro, ma le verifiche portano il nome della parte e
 # hanno un controllo ciascuna, cosi' la specifica le nomina una per una.
@@ -1800,6 +1800,38 @@ ROTTURE_CLIENT = [
      [("    try { bozze = await bozzeNellaCopia(S.db); } catch {}\n    const quiInAttesa", "    bozze = [];\n    const quiInAttesa"),
       ("        const n = await contaBozzeChiuse(chiave);", "        const n = 0;")],
      'non compare nella scheda che esce'),
+    # F-01: le frasi del riepilogo dei quiz (R-UX-06, P-53). Tre affermazioni —
+    # che cosa e' successo, quali rivedere, che cosa non hai toccato — e nessuna
+    # quarta, nessun voto; i numeri dal raccordo, cioe' dalle righe
+    # dell'attivita', e ogni frase in quello che si vede.
+    ('una quarta affermazione nel riepilogo', ['F-01'],
+     [('<p>Puoi concludere qui.</p>`;', '<p>Hai lavorato soprattutto sulla Navigazione.</p><p>Puoi concludere qui.</p>`;')],
+     'nessuna quarta affermazione'),
+    ('un voto sulla preparazione nel riepilogo', ['F-01'],
+     [('<p>Puoi concludere qui.</p>`;', '<p>Sei pronto per l\'esame.</p><p>Puoi concludere qui.</p>`;')],
+     'nessun voto sulla preparazione'),
+    ('una percentuale di esatte come voto', ['F-01'],
+     [('<p>Puoi concludere qui.</p>`;', '<p>${Math.round(100 * r.corrette / r.risposte)} % di risposte esatte.</p><p>Puoi concludere qui.</p>`;')],
+     'nessun voto sulla preparazione'),
+    ('i numeri dalle righe di tutta la pagina, non dell\'attivita\'', ['F-01'],
+     [("S.fatte.filter((r) => r._t === 'q' && r.sim_uid === id)", "S.fatte.filter((r) => r._t === 'q')")],
+     'seconda attivita\': il riepilogo dice che cosa e\' successo'),
+    ('le errate contate dagli errori di tutta la pagina', ['F-01'],
+     [('errate: proprie.length - corrette,', "errate: S.fatte.filter((r) => r._t === 'q' && !r.correct).length,")],
+     'seconda attivita\': il riepilogo dice che cosa e\' successo'),
+    ('i numeri del riepilogo nascosti', ['F-01'],
+     [('<ul><li>Risposte corrette:', '<ul hidden><li>Risposte corrette:')],
+     'il riepilogo dice che cosa e\' successo'),
+    ('la frase su quali rivedere invisibile', ['F-01'],
+     [("'<p>Puoi rivedere la tua risposta", "'<p style=\"visibility:hidden\">Puoi rivedere la tua risposta")],
+     'il riepilogo dice quali rivedere'),
+    ('un\'uscita in piu\' nel riepilogo', ['F-01'],
+     [('    <button data-ciclo="ritorno">Torna al Percorso</button>\n    ${invito}',
+       '    <button data-ciclo="ritorno">Torna al Percorso</button><button data-v="quiz">Allenati sulla Navigazione</button>\n    ${invito}')],
+     'nessuna quarta affermazione'),
+    ('la frase su che cosa non hai toccato nascosta', ['F-01'],
+     [("'<p>Le domande non affrontate non sono conteggiate come errori.</p>'", "'<p hidden>Le domande non affrontate non sono conteggiate come errori.</p>'")],
+     'il riepilogo dice che cosa non hai toccato'),
 ]
 
 # Varianti della pagina di riferimento che devono restare **verdi**: il banco
@@ -1812,6 +1844,13 @@ VARIANTI_CLIENT = [
     ('il primo quesito e\' il piu\' corto della banca', ['C-01'],
      [('E.estrai(S.banca, {}, E.isoLocale().slice(0, 10), 10, Date.now() % 997)',
        'S.banca.slice().sort((a, b) => a.d.trim().length - b.d.trim().length).slice(0, 10)')]),
+    # F-01 (P-53): otto coppie di quesiti base hanno testo e risposte identici e
+    # l'esatta diversa — cambia solo la figura —, e dalla banca il banco non sa
+    # quale sia giusta. Qui la pesca comincia da due gemelli di ogni coppia, e il
+    # banco deve leggere l'esito dal riscontro invece di dare un rosso falso.
+    ('i primi quesiti hanno un gemello con l\'esatta diversa', ['F-01'],
+     [('E.estrai(S.banca, {}, E.isoLocale().slice(0, 10), 10, Date.now() % 997)',
+       "S.banca.filter((q) => ['base-181', 'base-182', 'base-564', 'base-565'].includes(q.id)).concat(S.banca.slice(0, 6))")]),
 ]
 
 _BANCO_CLIENT = None
@@ -1927,6 +1966,16 @@ def test_client_tutte_le_attivita():
 
 def test_client_registrazione():
     registra_client('C-04')
+
+
+def test_riepilogo_frasi():
+    """R-UX-06 (P-53): il riepilogo di una breve attivita' dei quiz dice, in
+    quello che si vede, che cosa e' successo, quali risposte rivedere e che cosa
+    non hai toccato — con i numeri di quello che il banco ha fatto, in due
+    attivita' della stessa pagina —, nessuna quarta affermazione fuori
+    dall'elenco chiuso del §4.2 di docs/area-3-progetto.md, e nessun voto sulla
+    preparazione (F-01 in tests/client_account.mjs)."""
+    registra_client('F-01')
 
 
 def test_client_dispositivo_condiviso():
@@ -2204,7 +2253,7 @@ _INFO = ("  const righe = S.conto && S.db ? (await tx(() => null)).righe : S.rig
 ROTTURE_RIFINITURA = [
     # T-01: senza account nessuna frase dice che le risposte sono conservate
     ('senza account il riepilogo dice «Risposte salvate»', ['T-01'],
-     [('<p>Hai risposto a ${u.esiti.length} su ${u.n}.', '<p>Risposte salvate: ${u.esiti.length}.</p><p>Hai risposto a ${u.esiti.length} su ${u.n}.')],
+     [('<p>Hai risposto a ${plur(r.risposte)} su ${u.n}.', '<p>Risposte salvate: ${r.risposte}.</p><p>Hai risposto a ${plur(r.risposte)} su ${u.n}.')],
      'il riepilogo non dice'),
     ('senza account il Percorso dice che le risposte sono salvate su questo dispositivo', ['T-01'],
      [(_PRIMA + 'Senza account', _PRIMA + 'Le tue risposte sono salvate su questo dispositivo. Senza account')],
@@ -2652,7 +2701,7 @@ def main():
               test_carteggio_preparazione, test_carteggio_righe, test_carteggio_riepilogo,
               test_carteggio_senza_riprova, test_carteggio_ambito, test_carteggio_provato_al_contrario,
               test_client_nella_pagina, test_client_primo_ingresso, test_client_senza_account, test_client_email_registrata,
-              test_client_invito_e_viste, test_client_tutte_le_attivita, test_client_registrazione,
+              test_client_invito_e_viste, test_client_tutte_le_attivita, test_client_registrazione, test_riepilogo_frasi,
               test_client_dispositivo_condiviso, test_client_coda, test_client_uscita,
               test_client_verifica, test_client_password, test_client_vecchio_archivio, test_client_file,
               test_client_limiti, test_client_azzeramento, test_client_ripristino, test_client_data,

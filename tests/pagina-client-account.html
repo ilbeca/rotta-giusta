@@ -181,7 +181,7 @@ const LINK = (() => {
 const S = { banca: [], cart: [], righe: [], run: null, esame: '', auto: false, ultima: null,
   guasto: null, scaduto: false, apertoDa: null,
   conto: null, db: null, ciclo: 0, ac: null, inVolo: null, ancora: false, rilascia: null, trasf: null, onboarding: false,
-  idQuiz: [], vecchio: null, vecchioDopo: false, portaVecchio: false, file: null, sospeso: null, erroreInvio: null, postaFallita: false };
+  fatte: [], idQuiz: [], vecchio: null, vecchioDopo: false, portaVecchio: false, file: null, sospeso: null, erroreInvio: null, postaFallita: false };
 const $ = (id) => document.getElementById(id);
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
@@ -252,6 +252,8 @@ function rispondi(j) {
   const giusta = j === it.x;
   R.esiti.push(giusta);
   S.righe.push({ _t: 'q', uid: uid(), item_id: it.id, ts: E.isoLocale(), ms: 5000, mode: R.mode, kind: 'base', sim_uid: R.id, correct: giusta ? 1 : 0 });
+  // Il raccordo del riepilogo le legge tutte, anche quelle passate all'account.
+  S.fatte.push(S.righe[S.righe.length - 1]);
   // Con l'account la risposta va nel suo archivio, insieme alla coda (§9.1).
   if (S.conto) archivia(S.righe.splice(-1, 1)[0]);
   if (R.sim) {
@@ -280,8 +282,24 @@ function termina() {
   riepilogo();
 }
 
+// Il raccordo del riepilogo (area-3 §7.1, R-UX-06): i numeri vengono dalle
+// righe di questa attivita', per sim_uid — come riepilogoQuiz() della pagina
+// vera —, non dagli esiti del runner. S.fatte tiene le righe dei quiz date in
+// questa pagina, anche quelle gia' passate alla copia dell'account.
+function riepilogoQuiz(id, totale) {
+  const proprie = S.fatte.filter((r) => r._t === 'q' && r.sim_uid === id);
+  const corrette = proprie.filter((r) => r.correct).length;
+  return { risposte: proprie.length, corrette, errate: proprie.length - corrette, nonAffrontate: totale - proprie.length,
+           errori: proprie.filter((r) => !r.correct).map((r) => r.item_id) };
+}
+
+const plur = (n) => (n === 1 ? '1 domanda' : `${n} domande`);
+
+// Tre affermazioni e nessuna quarta (area-3 §4.2): che cosa e' successo, quali
+// risposte rivedere, che cosa non hai toccato. Nessun voto sulla preparazione.
 function riepilogo() {
-  const u = S.ultima, esatte = u.esiti.filter(Boolean).length;
+  const u = S.ultima, r = riepilogoQuiz(u.id, u.n), M = r.nonAffrontate;
+  S.ultima.errori = r.errori;
   // L'invito solo senza account: con l'account le risposte si salvano da sole.
   const invito = S.conto ? '' : !API ? `<p>Su questo indirizzo non si può creare un account. Per salvare le risposte vai su <a href="https://rottagiusta.it/app">rottagiusta.it/app</a>.</p>` : `<section class="invito">
       <h2>Vuoi conservare le attività di questa pagina?</h2>
@@ -291,18 +309,24 @@ function riepilogo() {
       <button data-account="continua">Continua senza account</button>
       <a class="da-solo" href="/privacy">Come trattiamo i dati</a>
     </section>`;
+  const riprova = r.errate === 1 ? 'Riprova questo quesito' : `Riprova questi ${r.errate} quesiti`;
   $('r-fine').innerHTML = `<h1 tabindex="-1">${u.sim ? 'Simulazione conclusa' : 'Ti sei fermato qui'}</h1>
-    <p>Hai risposto a ${u.esiti.length} su ${u.n}. Risposte corrette: ${esatte}. Risposte errate: ${u.esiti.length - esatte}.</p>
+    <p>Hai risposto a ${plur(r.risposte)} su ${u.n}.</p>
+    <ul><li>Risposte corrette: ${r.corrette}</li><li>Risposte errate: ${r.errate}</li><li>Domande non affrontate: ${M}</li></ul>
+    ${r.errate ? '<p>Puoi rivedere la tua risposta e quella ufficiale, poi riprovare questi quesiti.</p>' : r.risposte ? '<p>Tutte le risposte date in questa attività sono corrette.</p>' : ''}
+    ${M ? '<p>Le domande non affrontate non sono conteggiate come errori.</p>' : ''}
+    ${r.errate ? `<button data-ciclo="riprova">${riprova}</button><button data-ciclo="errori">Rivedi gli errori</button>` : ''}
     <button data-ciclo="risposte">Rivedi le risposte</button>
     <button data-ciclo="ritorno">Torna al Percorso</button>
-    ${invito}`;
+    ${invito}
+    <p>Puoi concludere qui.</p>`;
   $('r-fine').classList.add('on');
 }
 
-function rivedi() {
+function rivedi(soloErrori = false) {
   const u = S.ultima;
   $('rv-body').innerHTML = `<h1>Rivedi le risposte</h1>` + u.lista.map((it, k) =>
-    `<p>${esc(it.d)} — ${u.esiti[k] ? 'esatta' : 'errata'}; risposta ufficiale: ${esc(it.r[it.x])}</p>`).join('');
+    soloErrori && u.esiti[k] ? '' : `<p>${esc(it.d)} — ${u.esiti[k] ? 'esatta' : 'errata'}; risposta ufficiale: ${esc(it.r[it.x])}</p>`).join('');
   $('rivedi').classList.add('on');
 }
 
@@ -1544,6 +1568,8 @@ document.addEventListener('click', (e) => {
   if (t.id === 'r-close') return S.run && S.run.sim ? ($('r-consegna').hidden = false) : termina();
   if (t.dataset.consegna) { $('r-consegna').hidden = true; if (t.dataset.consegna === 'si') termina(); return; }
   if (t.dataset.ciclo === 'risposte') return rivedi();
+  if (t.dataset.ciclo === 'errori') return rivedi(true);
+  if (t.dataset.ciclo === 'riprova') return apriRun(S.banca.filter((q) => S.ultima.errori.includes(q.id)), 'sbagliate');
   if (t.dataset.ciclo === 'ritorno') { $('quizrun').classList.remove('on'); S.run = null; return vista('oggi'); }
   if (t.id === 'rv-close') return $('rivedi').classList.remove('on');
   if (t.dataset.v) return vista(t.dataset.v);
