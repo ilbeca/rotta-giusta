@@ -91,6 +91,17 @@ chat.
    prompt per Claude, è partito in ChatGPT nella cartella principale, e nessuno
    dei due aveva modo di accorgersene. La riga la legge l'agente, non l'autore.
 
+8. **Quando l'autore glielo delega, la regia lancia lei le sessioni di Claude**,
+   come sotto-sessioni in background nella cartella principale, su `main`, una
+   alla volta. Deciso dall'autore il 30 settembre 2026, per la fila P-49,
+   P-32…P-35, perché non poteva stare al computer. Il prompt è quello del §6,
+   parola per parola; il resoconto arriva alla regia invece che all'autore, e
+   la regia fa i suoi passi — commit, suite sullo stato vero, esito, commit
+   della coda — **prima** di lanciare la successiva. La fila si ferma, e aspetta
+   l'autore, a una suite rossa o che non torna con il resoconto, a una
+   decisione per l'autore che blocca il passo dopo, o a una sessione che si
+   ferma da sola. ChatGPT non si lancia così: ha la sua app.
+
 ### Che cosa fa la regia, passo per passo
 
 Scritto il 30 settembre 2026 perché la regia possa passare da una sessione
@@ -2680,3 +2691,6 @@ la nota in testa a `docs/filosofia.md`, che lo dice di sé (P-26).
   anche P-42. P-49 scritto per intero: è l'ultimo prompt di Claude che il
   traguardo aspetta, oltre a P-15. Il CSS morto di `.cons` va a P-21. Per
   ChatGPT non c'è niente di pronto fino a P-35.
+- **30 settembre 2026 — la regia lancia la fila.** L'autore ha delegato alla
+  regia P-49 e P-32…P-35, da lanciare come sotto-sessioni una dopo l'altra con
+  i passi della regia in mezzo: scritto come punto 8 di «Come si usa».
