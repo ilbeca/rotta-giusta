@@ -12,9 +12,10 @@ import { DatabaseSync } from 'node:sqlite';
 import { existsSync, rmSync, renameSync, statSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
-  SCHEMA, apri, versioneSchema, leggiEpoca, rigeneraEpoca, creaAccount, aggiungiRighe, righeDopo,
-  cancellaAccount, azzera, leggiCancellazioni, riapplicaCancellazioni,
+  SCHEMA, apri, migra, versioneSchema, leggiEpoca, rigeneraEpoca, creaAccount, aggiungiRighe, righeDopo,
+  cancellaAccount, azzera, opponi, leggiCancellazioni, riapplicaCancellazioni,
 } from './db.mjs';
+import { statistica, esclusi } from './statistiche.mjs';
 
 const citato = (p) => `'${String(p).replaceAll("'", "''")}'`;
 
@@ -115,7 +116,11 @@ function annotaCopia(percorsoDb, esito) {
  *   che vede cambiare l'epoca azzera il suo e rimanda tutte le righe che ha, e
  *   l'unione per `uid` riporta sul server quelle accolte dopo la copia;
  * - **rilegge il file delle cancellazioni**, che sta fuori dal database: gli
- *   account cancellati e i progressi azzerati dopo la copia restano tali.
+ *   account cancellati e i progressi azzerati dopo la copia restano tali, e
+ *   chi si e' opposto alle statistiche dopo la copia resta fuori dai conteggi
+ *   (§15.2). Per questo la copia si porta prima allo schema del codice: puo'
+ *   essere di prima del segno, come quella che `rg-aggiorna` fa prima di
+ *   aggiornare, e il servizio la migrerebbe comunque al primo avvio.
  */
 export function ripristina(copiaPath, percorsoDb, { cancellazioni } = {}) {
   if (!existsSync(copiaPath)) throw new Error(`${copiaPath}: la copia non c'e'`);
@@ -139,10 +144,11 @@ export function ripristina(copiaPath, percorsoDb, { cancellazioni } = {}) {
       db.exec('PRAGMA secure_delete = ON');
       const epocaPrima = leggiEpoca(db);
       const epoca = rigeneraEpoca(db);
+      const schemaDellaCopia = migra(db, { log: () => {} });
       const riletto = riapplicaCancellazioni(db, cancellazioni);
       const ok = integrita(db);
       if (ok !== 'ok') throw new Error(`il database ripristinato non passa integrity_check (${ok})`);
-      esito = { ...conta(db), schema: versioneSchema(db), epocaPrima, epoca, ...riletto };
+      esito = { ...conta(db), schema: versioneSchema(db), schemaDellaCopia, epocaPrima, epoca, ...riletto };
     } finally {
       db.close();
     }
@@ -210,6 +216,8 @@ export function prova({ cartella }) {
   cancellaAccount(db, b, { cancellazioni: f });
   azzera(db, c, { cancellazioni: f });
   aggiungiRighe(db, c, serie(2500, 3));
+  // E chi ha il telefono scrive al titolare: si oppone alle statistiche (§15.2).
+  opponi(db, a, { cancellazioni: f, motivo: 'la prova del ripristino' });
   db.close();
   k("cancellazioni: il file c'e' e non ha email", existsSync(f) && !readFileSync(f, 'utf8').includes('@'));
 
@@ -224,6 +232,7 @@ export function prova({ cartella }) {
   k('cancellazioni: ricancellato chi si era cancellato dopo la copia', r.ricancellati.length === 1 && r.ricancellati[0] === b, r.ricancellati);
   k('cancellazioni: riazzerato chi aveva azzerato dopo la copia', r.riazzerati.length === 1 && r.riazzerati[0] === c, r.riazzerati);
   k('cancellazioni: nessuna riga del file illeggibile', r.illeggibili === 0, r.illeggibili);
+  k('statistiche: chi si era opposto dopo la copia torna fuori dai conteggi', r.riesclusi.length === 1 && r.riesclusi[0] === a, r.riesclusi);
 
   // Confronta.
   db = apri(p, { log: () => {} });
@@ -237,6 +246,8 @@ export function prova({ cartella }) {
   const gc = db.prepare('SELECT generazione g FROM account WHERE id = ?').get(c)?.g;
   k("cancellazioni: l'azzeramento resta, con la sua generazione", gc === 2 && righeDopo(db, c, 0).righe.length === 0, `generazione ${gc}`);
   k('righe: le cinque accolte dopo la copia mancano dal server, come previsto', righeDopo(db, a, 0).righe.length === 40);
+  const contate = statistica(db, 'SELECT count(*) n FROM risposte')[0].n;
+  k('statistiche: le sue quaranta risposte restano nel suo account, e nessun conteggio le vede', esclusi(db) === 1 && contate === 0, `${contate} contate`);
 
   // L'epoca al lavoro. Il telefono risponde ancora: la riga nuova prende un
   // numero che il portatile ha gia' superato.

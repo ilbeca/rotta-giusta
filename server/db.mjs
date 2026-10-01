@@ -3,8 +3,9 @@
 // docs/account-progetto.md §2.2, §2.3, §2.7, §3. Qui c'e' quello che serve
 // perche' il database nasca giusto e perche' la copia di sicurezza si possa
 // ripristinare davvero: lo schema con il suo numero, l'epoca, le righe con il
-// loro cursore, e le due operazioni che tolgono — cancellare un account e
-// azzerarne i progressi —, scritte anche nel file delle cancellazioni.
+// loro cursore, le due operazioni che tolgono — cancellare un account e
+// azzerarne i progressi — e il segno di chi si oppone alle statistiche (§15.2),
+// tutte scritte anche nel file delle cancellazioni.
 //
 // Niente HTTP qui dentro: copia e ripristino sono strumenti della macchina e
 // girano a servizio fermo (server/copie.mjs).
@@ -20,11 +21,12 @@ import { validaRiga } from '../site/engine.js';
  * e tabelle nuove, mai tolte ne' rinominate, cosi' il rilascio precedente gira
  * sul database di quello nuovo e tornare indietro resta di un secondo.
  */
-export const SCHEMA = 3;
+export const SCHEMA = 4;
 
 // Lo schema del §3, un pezzo per volta. Le tabelle arrivano con i pezzi che le
 // usano, e ognuno e' una migrazione additiva: la 1 e' di P-03 (le righe e la
-// copia), la 2 di P-09 (l'account), la 3 di P-11 (i punteggi dei Segnali).
+// copia), la 2 di P-09 (l'account), la 3 di P-11 (i punteggi dei Segnali), la 4
+// di P-54 (il segno di chi si oppone alle statistiche).
 const SCHEMA_1 = `
   CREATE TABLE impianto (
     id            INTEGER PRIMARY KEY CHECK (id = 1),
@@ -108,12 +110,20 @@ const SCHEMA_3 = `
   ) WITHOUT ROWID;
 `;
 
+// Il segno di chi si oppone al trattamento per le statistiche (§15.2, art. 21
+// del GDPR): la data da cui e' fuori da ogni conteggio, o NULL. Una colonna
+// sola e non una tabella, perche' e' un fatto dell'account e se ne va con lui.
+// Chi c'era prima del segno resta NULL: nessuno si era opposto.
+const SCHEMA_4 = `
+  ALTER TABLE account ADD COLUMN fuori_statistiche_dal TEXT;
+`;
+
 /**
  * Le migrazioni, in ordine: la n-esima porta il database da n-1 a n. Un
  * database nuovo le esegue tutte, cosi' nuovo e migrato sono lo stesso schema
  * e c'e' una strada sola da provare.
  */
-export const MIGRAZIONI = [SCHEMA_1, SCHEMA_2, SCHEMA_3];
+export const MIGRAZIONI = [SCHEMA_1, SCHEMA_2, SCHEMA_3, SCHEMA_4];
 
 const adesso = () => new Date().toISOString();
 const nuovaEpoca = () => randomBytes(16).toString('hex');
@@ -158,7 +168,22 @@ export function apri(percorso, { log = (m) => console.error(m) } = {}) {
     });
   } else if (v > SCHEMA) {
     log(`schema del database ${v}, del codice ${SCHEMA}: si e' tornati a un rilascio precedente; parto, le migrazioni sono additive`);
-  } else if (v < SCHEMA) {
+  } else {
+    migra(db, { log });
+  }
+  return db;
+}
+
+/**
+ * Porta allo schema del codice un database che ne ha uno piu' basso, e dice da
+ * quale partiva. La chiama `apri()`, e il ripristino sulla copia appena
+ * ripristinata (server/copie.mjs): una copia puo' essere di prima di una
+ * migrazione, e quello che il ripristino rilegge dal file puo' volere una
+ * colonna che la copia non ha.
+ */
+export function migra(db, { log = (m) => console.error(m) } = {}) {
+  const v = versioneSchema(db);
+  if (v >= 1 && v < SCHEMA) {
     // Una transazione sola: o tutte le migrazioni che mancano, o nessuna.
     transazione(db, () => {
       for (const m of MIGRAZIONI.slice(v)) db.exec(m);
@@ -166,7 +191,7 @@ export function apri(percorso, { log = (m) => console.error(m) } = {}) {
     });
     log(`schema del database portato da ${v} a ${SCHEMA}`);
   }
-  return db;
+  return v;
 }
 
 /** Esegue `fn` in una transazione che scrive; la annulla se `fn` lancia. */
@@ -287,6 +312,12 @@ export function righeDopo(db, accountId, dopo = 0, { quante = Infinity } = {}) {
 // un account nuovo puo' prendere l'`id` di uno cancellato dopo la copia.
 // Rileggendo il solo `id`, il ripristino successivo cancellerebbe lui.
 //
+// Dal P-54 il file porta anche le opposizioni alle statistiche e i loro ritiri
+// (§15.2), per la stessa ragione: il segno sta sull'account, e l'account di una
+// copia e' quello di ieri. Non tolgono righe, e per questo `leggiCancellazioni`
+// le restituisce a parte: chi legge `voci` per spiegare un calo di righe
+// (server/copie.mjs) non deve ricordarsi di scartarle.
+//
 // Il file si scrive **prima** del database, e con `fsync`. Se il processo cade
 // fra i due, il file dice «cancellato» e il database no: il ripristino
 // successivo cancella un account che l'aveva chiesto. Nell'ordine opposto un
@@ -305,7 +336,7 @@ function annota(percorso, voce) {
 }
 
 function account(db, id) {
-  const a = db.prepare('SELECT id, chiave_locale, generazione FROM account WHERE id = ?').get(id);
+  const a = db.prepare('SELECT * FROM account WHERE id = ?').get(id);
   if (!a) throw new Error(`account ${id} inesistente`);
   return a;
 }
@@ -347,35 +378,79 @@ function applicaAzzeramento(db, id, generazione, il) {
   db.prepare('UPDATE account SET generazione = ?, azzerato_il = ? WHERE id = ?').run(generazione, il, id);
 }
 
+// Nel registro e nel file, i nomi dei due eventi dell'opposizione.
+const OPPOSIZIONE = { true: ['opposizione alle statistiche', 'opposizione'], false: ['opposizione alle statistiche ritirata', 'opposizione ritirata'] };
+const UNA_MAIL = /[^\s@]+@[^\s@]+\.[^\s@]+/;
+
+/**
+ * Mette (`opposto: true`) o toglie il segno di chi si oppone al trattamento
+ * per le statistiche (§15.2). Lo fa il titolare, dalla macchina
+ * (server/opposizione.mjs), quando arriva la richiesta; ogni cambio va nel
+ * registro con il suo `motivo` e nel file che il ripristino rilegge.
+ *
+ * Le righe restano dove sono, e l'account non si accorge di niente: cambia
+ * soltanto che cosa vede `server/statistiche.mjs`. Rimettere un segno che c'e'
+ * gia' non scrive niente, e lo dice con `cambiato: false`.
+ *
+ * Il motivo non porta email: il registro vive un anno (§15.3) e sopravvive
+ * alla cancellazione dell'account, che nel registro e' un numero.
+ */
+export function opponi(db, id, { cancellazioni, opposto = true, motivo, il = adesso() }) {
+  if (typeof motivo !== 'string' || !motivo.trim()) throw new Error("manca il motivo: da dove arriva la richiesta, e quando");
+  if (UNA_MAIL.test(motivo)) throw new Error("il motivo non porta email: nel registro l'account e' un numero, e resta li' un anno");
+  opposto = Boolean(opposto);
+  const a = account(db, id);
+  // Prima di scrivere nel file: su un database di prima del segno non c'e'
+  // dove metterlo, e una voce nel file senza il segno nel database mentirebbe.
+  if (!('fuori_statistiche_dal' in a)) throw new Error(`schema ${versioneSchema(db)}: questo database non ha ancora il segno, va aperto con apri()`);
+  if (Boolean(a.fuori_statistiche_dal) === opposto) return { cambiato: false, fuori_dal: a.fuori_statistiche_dal };
+  const [nelRegistro, nelFile] = OPPOSIZIONE[opposto];
+  const fuori_dal = opposto ? il : null;
+  annota(cancellazioni, { evento: nelFile, account: a.id, chiave: a.chiave_locale, il });
+  transazione(db, () => {
+    db.prepare('UPDATE account SET fuori_statistiche_dal = ? WHERE id = ?').run(fuori_dal, a.id);
+    db.prepare('INSERT INTO registro (quando, evento, account_id, dettaglio) VALUES (?, ?, ?, ?)').run(il, nelRegistro, a.id, motivo.trim());
+  });
+  return { cambiato: true, fuori_dal };
+}
+
 /**
  * Legge il file. Una riga che non si legge — l'ultima, se il processo e' caduto
  * mentre la scriveva — si conta e non si salta in silenzio.
  */
 export function leggiCancellazioni(percorso) {
-  if (!percorso || !existsSync(percorso)) return { voci: [], illeggibili: 0 };
-  const voci = [];
+  if (!percorso || !existsSync(percorso)) return { voci: [], opposizioni: [], illeggibili: 0 };
+  const voci = [], opposizioni = [];
   let illeggibili = 0;
   for (const testo of readFileSync(percorso, 'utf8').split('\n')) {
     if (!testo.trim()) continue;
     try {
       const v = JSON.parse(testo);
-      if ((v.evento === 'cancellazione' || (v.evento === 'azzeramento' && Number.isInteger(v.generazione)))
-          && Number.isInteger(v.account) && typeof v.chiave === 'string' && typeof v.il === 'string') voci.push(v);
+      const intera = Number.isInteger(v.account) && typeof v.chiave === 'string' && typeof v.il === 'string';
+      if (intera && (v.evento === 'cancellazione' || (v.evento === 'azzeramento' && Number.isInteger(v.generazione)))) voci.push(v);
+      else if (intera && (v.evento === 'opposizione' || v.evento === 'opposizione ritirata')) opposizioni.push(v);
       else illeggibili++;
     } catch {
       illeggibili++;
     }
   }
-  return { voci, illeggibili };
+  return { voci, opposizioni, illeggibili };
 }
 
 /**
  * Rilegge il file sul database appena ripristinato. Idempotente: un account
  * gia' cancellato non c'e', una generazione gia' raggiunta non si rialza.
+ *
+ * Per le opposizioni alle statistiche vale l'ultima voce di ogni account: chi
+ * si e' opposto dopo la copia torna fuori dai conteggi, chi ha ritirato dopo
+ * la copia ci rientra. Il registro della copia non sa di un'opposizione venuta
+ * dopo, quindi qui la si annota di nuovo. Vuole lo schema del codice
+ * (`migra()`): una copia di prima del segno non ha la colonna.
  */
 export function riapplicaCancellazioni(db, percorso) {
-  const { voci, illeggibili } = leggiCancellazioni(percorso);
+  const { voci, opposizioni, illeggibili } = leggiCancellazioni(percorso);
   const ricancellati = [], riazzerati = [];
+  let riesclusi = [], riammessi = [];
   transazione(db, () => {
     for (const v of voci) {
       const a = db.prepare('SELECT id, generazione FROM account WHERE id = ? AND chiave_locale = ?').get(v.account, v.chiave);
@@ -388,6 +463,46 @@ export function riapplicaCancellazioni(db, percorso) {
         riazzerati.push(a.id);
       }
     }
+    // Dopo le cancellazioni: chi non c'e' piu' non ha un segno da rimettere.
+    ({ riesclusi, riammessi } = riallinea(db, opposizioni, 'dopo il ripristino di una copia'));
   });
-  return { ricancellati, riazzerati, illeggibili };
+  return { ricancellati, riazzerati, riesclusi, riammessi, illeggibili };
+}
+
+// Porta il segno di ogni account a quello che dice l'ultima voce del file. Per
+// `id` **e** chiave, come le cancellazioni: un id riusato non eredita
+// l'opposizione di chi l'aveva prima. Dentro una transazione di chi chiama.
+function riallinea(db, opposizioni, quando) {
+  const riesclusi = [], riammessi = [];
+  const ultima = new Map();
+  for (const v of opposizioni) ultima.set(`${v.account} ${v.chiave}`, v);
+  const ora = adesso();
+  for (const v of ultima.values()) {
+    const a = db.prepare('SELECT id, fuori_statistiche_dal FROM account WHERE id = ? AND chiave_locale = ?').get(v.account, v.chiave);
+    if (!a) continue;
+    const opposto = v.evento === 'opposizione';
+    if (Boolean(a.fuori_statistiche_dal) === opposto) continue;
+    db.prepare('UPDATE account SET fuori_statistiche_dal = ? WHERE id = ?').run(opposto ? v.il : null, a.id);
+    db.prepare('INSERT INTO registro (quando, evento, account_id, dettaglio) VALUES (?, ?, ?, ?)')
+      .run(ora, OPPOSIZIONE[opposto][0], a.id, `riletta dal file ${quando}; era del ${v.il}`);
+    (opposto ? riesclusi : riammessi).push(a.id);
+  }
+  return { riesclusi, riammessi };
+}
+
+/**
+ * All'avvio del server: se il file dice che un account si e' opposto e il
+ * database no — o il contrario —, vale il file, e lo si annota.
+ *
+ * Serve per un caso misurato (P-54): il ripristino del rilascio di prima,
+ * `v0.28.0`, non conosce le opposizioni — le conta fra le righe illeggibili —
+ * e lascia nei conteggi chi si era opposto dopo la copia. Con questo, al primo
+ * avvio del rilascio che sa contare il segno e' di nuovo al suo posto, prima
+ * che una statistica possa girare. Copre anche il processo caduto fra la
+ * scrittura del file e quella del database.
+ */
+export function rileggiOpposizioni(db, percorso) {
+  const { opposizioni } = leggiCancellazioni(percorso);
+  if (!opposizioni.length) return { riesclusi: [], riammessi: [] };
+  return transazione(db, () => riallinea(db, opposizioni, "all'avvio: il database non la aveva"));
 }

@@ -43,9 +43,11 @@ if (values.prova) {
   console.log(`prova superata: ${esito.controlli.length} controlli su ${cartella} (rimossa)`);
 } else if (positionals.length === 1) {
   const r = ripristina(positionals[0], values.db, { cancellazioni: values.cancellazioni });
-  console.log(`ripristinato ${values.db} da ${positionals[0]}: ${r.righe} righe, ${r.account} account, schema ${r.schema}`);
+  console.log(`ripristinato ${values.db} da ${positionals[0]}: ${r.righe} righe, ${r.account} account, schema ${r.schema}`
+    + (r.schemaDellaCopia < r.schema ? ` (la copia era allo schema ${r.schemaDellaCopia}: portata a quello del codice)` : ''));
   console.log(`epoca ${r.epocaPrima} → ${r.epoca}: i client rimanderanno le loro righe`);
-  console.log(`dal file delle cancellazioni: ${r.ricancellati.length} account ricancellati, ${r.riazzerati.length} riazzerati`
+  console.log(`dal file delle cancellazioni: ${r.ricancellati.length} account ricancellati, ${r.riazzerati.length} riazzerati, `
+    + `${r.riesclusi.length} di nuovo fuori dalle statistiche, ${r.riammessi.length} rientrati`
     + (r.illeggibili ? `, ${r.illeggibili} righe ILLEGGIBILI — guardale prima di riaprire` : ''));
 } else {
   console.error('uso: node server/ripristina.mjs --prova | <copia.db> [--db …] [--cancellazioni …]');

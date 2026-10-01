@@ -2402,6 +2402,111 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   perché OVHcloud dice solo «in Europa». Verificato con una mail vera arrivata
   nella casella. Guardiano verde, controllo dei testi di C-18 verde.
 
+### Aggiunto — P-54: chi si oppone alle statistiche esce da ogni conteggio
+
+- **La promessa dell'informativa non era ancora falsa solo perché nessuna
+  statistica si calcola.** La privacy dice che le statistiche stanno sotto il
+  legittimo interesse e che chi si oppone resta con le sue risposte nel suo
+  account ed esce dai conteggi (§15.4 di `docs/account-progetto.md`, punto 8):
+  il giorno della prima query scritta senza pensarci sarebbe diventata falsa, e
+  niente lo avrebbe detto. Ora il segno c'è prima della prima query.
+
+- **Il segno, e chi lo mette.** Una colonna sull'account,
+  `fuori_statistiche_dal`, con lo schema 4: una migrazione additiva, e chi
+  c'era prima resta nei conteggi perché nessuno si era opposto. Lo mette e lo
+  toglie il titolare dalla macchina, con il servizio acceso —
+  `node server/opposizione.mjs --email … --metti --motivo "…"` —, e ogni cambio
+  è una riga del registro con il numero dell'account e il motivo. Il motivo è
+  obbligatorio e non porta email: il registro vive un anno e sopravvive
+  all'account. Un percorso del database sbagliato si rifiuta, invece di creare
+  un database vuoto e dire «nessun account».
+
+- **Un posto solo, non una regola da ricordare.** `server/statistiche.mjs`: una
+  statistica non vede le tabelle ma tre fonti già filtrate — `iscritti`,
+  `risposte`, `punteggi` —, e il segno si legge in un punto solo. Una query che
+  nomina una tabella vera è rifiutata prima di girare; l'email non è in nessuna
+  fonte; il numero dell'account e le righe intere non escono. La lancia
+  `node server/statistica.mjs "SELECT …"`, in sola lettura, che dice anche
+  quanti account sono fuori dai conteggi. E un controllo nella suite è rosso se
+  in `server/` o in `strumenti/macchina/`, fuori da quel file, una riga usa una
+  funzione di aggregazione o un `GROUP BY`, o legge la tabella `riga` senza
+  fermarsi a un account. Le undici query di oggi che aggregano e non sono
+  statistiche sono dichiarate una per una con il motivo — fra queste la copia
+  di sicurezza, che conta **tutte** le righe, anche di chi si è opposto, perché
+  è il controllo che una copia sia intera —, e una dichiarazione che non serve
+  più è rossa anche lei.
+
+- **Due cose trovate, tutte e due sul ripristino, che il prompt non nominava.**
+  Il segno sta nel database, e il database di una copia è quello di ieri: un
+  ripristino avrebbe rimesso nei conteggi chi si era opposto stamattina, senza
+  un errore. È la trappola del §2.7 per le cancellazioni, e ha la stessa cura:
+  opposizioni e ritiri si scrivono anche nel file delle cancellazioni, prima
+  del database, e il ripristino li rilegge — l'ultima voce di ogni account, per
+  `id` e chiave, così un id riusato non eredita l'opposizione di un altro. Una
+  copia di prima dello schema 4, quella che `rg-aggiorna` fa prima di
+  aggiornare, non ha la colonna: il ripristino la porta allo schema del codice
+  invece di fermarsi. E le opposizioni stanno a parte dalle voci che tolgono
+  righe, altrimenti la prima opposizione avrebbe «spiegato» un calo di righe e
+  spento l'allarme delle copie.
+
+  **La seconda è misurata con il codice del tag.** Il `ripristina.mjs` di
+  `v0.28.0` non conosce quelle voci: su un file con un'opposizione dice «1
+  righe ILLEGGIBILI — guardale prima di riaprire» e lascia nei conteggi chi si
+  era opposto dopo la copia (5 risposte contate invece di 2). Per questo il
+  server, a ogni avvio, rilegge le opposizioni dal file, rimette il segno dove
+  il database non lo ha, e lo scrive nel registro e nel log. Rifatto con il
+  ripristino nuovo sulla stessa copia: «1 di nuovo fuori dalle statistiche», 2
+  risposte contate.
+
+- **Il rilascio di prima gira sul database di dopo: misurato, non dedotto.** Il
+  server di `v0.28.0`, estratto dal tag in una cartella a parte, su un database
+  a schema 4 con un account segnato: parte, scrive «schema del database 4, del
+  codice 3», la salute dice `{ codice: 3, database: 4 }`; accesso, invio di una
+  riga, ricezione, export e registrazione funzionano, e il segno resta dov'era.
+
+- **Tre scelte scritte nel §15.2.** Il segno **non viaggia nell'export**, né in
+  `GET /v1/io`: il file si ricarica in qualunque account, e un segno lì dentro
+  sarebbe o ignorato o modificabile con un editor di testo. L'opposizione
+  **vale per l'account**: un azzeramento e un cambio d'indirizzo la tengono, la
+  cancellazione la porta via, e chi si riscrive deve chiederla di nuovo —
+  tenerla oltre vorrebbe dire conservare l'email di chi ha chiesto di
+  cancellarla; è un punto per il parere, nel §20. E il controllo dei nomi è sul
+  testo: prende lo sbaglio, non un alias né una query scritta a mano in
+  `sqlite3` sulla macchina.
+
+- **Prima il test che fallisce:** sei test nuovi, e con i moduli vuoti sette
+  rossi uno per uno — i cinque che eseguono, la migrazione e la prova del
+  ripristino; il controllo statico era verde da subito, perché fotografa lo
+  stato di oggi. **Provati al contrario su quarantatré rotture**, una per
+  volta, tutte rosse: la prima è il conteggio che il prompt chiedeva — il
+  filtro tolto, 5 risposte contate invece di 2 —, poi fra le altre le righe o i
+  punteggi che non passano dagli iscritti, il registro o il file non scritti,
+  un azzeramento che toglie il segno, il ripristino che non rilegge, che prende
+  la prima voce invece dell'ultima, che riconosce l'account dal solo id, che
+  non migra la copia; una statistica che nomina una tabella vera, l'email fra
+  le colonne, il segno nell'export; una statistica scritta in `conti.mjs`, le
+  righe di tutti lette in `righe.mjs`; il controllo statico senza i `GROUP BY`
+  o senza le righe di tutti. **Una è passata verde** — `opponi()` su un
+  database di prima del segno scriveva nel file e poi falliva sul database —,
+  e ora ha la sua asserzione; **una era rossa per un errore di sintassi**
+  invece che per il suo motivo, ed è stata rifatta. Specifica: R-ACC-67…70 nel
+  §9.9, con che cosa i controlli non vedono; §2.1 e §3.7.
+
+- **Non fatto:** la macchina non è stata toccata. Gira `v0.28.0`, e questo
+  codice ci arriva con il traguardo; il comando del titolare è provato in
+  locale, con il servizio acceso e attraverso un collegamento, non con l'utente
+  `rg` e i permessi di `/var/lib/rg`.
+
+  Suite: server **68/68** (erano 62) con Node 25.3 e con la **24.21.0 LTS** —
+  l'archivio scaricato il 29 settembre, la sua impronta confrontata con il
+  `SHASUMS256.txt` che aveva accanto e con quello pubblicato oggi da
+  nodejs.org, ed estratto di nuovo —; `ripristina --prova` **22** controlli
+  (erano 20); motore 193/197 con i quattro skip previsti, anche con la LTS;
+  dati 263; interfaccia 2.158, in 244 s, con la 8620 guardata libera prima;
+  specifica **800** (erano 784). Guardiano e controllo della documentazione
+  verdi. `site/`, `docs/prossime-sessioni.md` e la macchina non sono stati
+  toccati.
+
 ## [0.28.1] — 2026-10-01
 
 Un rilascio di correzione, da un ramo che parte da `v0.28.0`, con una cosa

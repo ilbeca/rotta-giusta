@@ -17,7 +17,7 @@ import { createServer } from 'node:http';
 import { readFileSync, realpathSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { SCHEMA, apri, versioneSchema, leggiEpoca } from './db.mjs';
+import { SCHEMA, apri, versioneSchema, leggiEpoca, rileggiOpposizioni } from './db.mjs';
 import { hashPassword, calcolati, PARAMETRI } from './password.mjs';
 import { creaConti, COOKIE } from './conti.mjs';
 import { creaRighe, CORPO_RIGHE } from './righe.mjs';
@@ -93,6 +93,13 @@ export async function avvia({
   if (!cancellazioni) throw new Error('manca il percorso del file delle cancellazioni (RG_CANCELLAZIONI)');
   const parametri = argon2 ?? PARAMETRI;
   const db = apri(percorsoDb, { log });
+  // Il segno di chi si oppone alle statistiche (§15.2) vale come lo dice il
+  // file: un ripristino fatto con il rilascio di prima non lo rimette.
+  const riletto = rileggiOpposizioni(db, cancellazioni);
+  if (riletto.riesclusi.length || riletto.riammessi.length) {
+    log(`opposizioni alle statistiche rilette dal file: ${riletto.riesclusi.length} account rimessi fuori dai conteggi, ${riletto.riammessi.length} rientrati. `
+      + "Il database non le aveva: un ripristino fatto con un rilascio di prima, o un processo caduto a metà.");
+  }
   // L'hash con cui si controlla la password di un'email che non esiste (§5.3):
   // una volta, adesso, con i parametri veri, cosi' costa quanto uno vero.
   const fittizia = await hashPassword(randomBytes(24).toString('base64'), parametri);

@@ -152,7 +152,7 @@ toccano.
 | **Nessuna correzione automatica del carteggio** | §4.5. |
 | **Nessun build step, nessun bundler, nessuna dipendenza nella pagina** | `index.html` e `app.html` importano solo `/engine.js`. Quello che è nel repo è quello che gira. Che esista un server non autorizza un bundler nella pagina. |
 | **Nessuna modifica alla banca per convinzione** | §3.1. È l'Allegato A al DD 131/2022: si annota e si cita la fonte. |
-| **Nessun analytics** | L'ADR-003 chiede statistiche, e si fanno **leggendo le righe delle risposte** che il server già conserva. Non autorizzano script di terzi, né il tracciamento della navigazione. |
+| **Nessun analytics** | L'ADR-003 chiede statistiche, e si fanno **leggendo le righe delle risposte** che il server già conserva. Non autorizzano script di terzi, né il tracciamento della navigazione. Chi si oppone esce da ogni conteggio, e le sue risposte restano nel suo account (R-ACC-67, §3.7). |
 
 ### 2.2 Che cosa cade — Deciso il 25 settembre 2026 (ADR-003 e ADR-004)
 
@@ -514,6 +514,12 @@ vero anche quando l'implementazione cambia.
   profilo — data d'esame e punteggi dei Segnali —, e un registro di sicurezza.
   Il titolare le legge per il supporto e per le statistiche; niente esce verso
   script di terzi (§2.1).
+- **Le statistiche passano da un posto solo**, `server/statistiche.mjs`, che
+  legge fonti già filtrate: chi si è opposto al trattamento — un segno
+  sull'account, che il titolare mette e toglie dalla macchina, annotato nel
+  registro — non entra in nessun conteggio, e le sue risposte restano nel suo
+  account. L'email non è in nessuna fonte. Oggi nessuna statistica si calcola,
+  e nessuna rotta ne espone una (R-ACC-67…70; `account-progetto.md` §15.2).
 - **Che cosa non fa.** Non seleziona quesiti, non calcola misure, non ha uno
   specchio. Accoglie righe che `validaRiga()` — **importata da
   `site/engine.js`** — accetta, e le restituisce com'erano. Una seconda copia
@@ -1568,6 +1574,10 @@ controllo in `test_server.mjs`.
 | R-ACC-64 | «Cancella queste risposte», dopo il recupero della password di un account che non era confermato, fa quello che dice: chiede una conferma esplicita e senza la spunta non cancella niente; confermata, le risposte spariscono dal server con una generazione nuova, la copia di questo dispositivo le segue, e l'account resta usabile | `test_interfaccia.py::test_client_cancella_dopo_recupero` |
 | R-ACC-65 | Con punteggi dei Segnali che il server non ha accolto non si esce, e lo si dice; «Scarica le risposte non salvate» porta anche i punteggi, e dopo la scelta esplicita si esce senza mandarli a nessun account; con la rete «Riprova l'invio» li manda, e solo dopo esce | `test_interfaccia.py::test_client_uscita_segnali` |
 | R-ACC-66 | Un pulsante di conferma premuto senza la conferma dice che cosa manca, invece di non fare niente: «Carica il nuovo archivio» senza «Ho conservato il file», «Cancella queste risposte» senza «Confermo la cancellazione». Il messaggio sta nella finestra, in testo che si vede, e nomina la casella; intanto né la copia né il server cambiano. Quello che il banco non vede — che il lettore di schermo lo annunci, il colore e il contrasto — è di R-ACC-60 e di R-A11Y-03 | `test_interfaccia.py::test_client_conferma_mancante` |
+| R-ACC-67 | Chi si è opposto al trattamento per le statistiche è fuori da ogni conteggio — sulle righe, sugli account e sui punteggi dei Segnali, semplice, per gruppo o di persone distinte —, e nel suo account non cambia niente: le risposte, l'export, la descrizione. Il segno sta nel database: regge un riavvio e un azzeramento, e si toglie. L'export non lo porta | `test_server.mjs::statistiche: chi si e opposto esce da ogni conteggio, e le sue risposte restano nel suo account` |
+| R-ACC-68 | Il segno lo mette e lo toglie il titolare dalla macchina, con il servizio acceso, e ogni cambio è una riga del registro con il numero dell'account e un motivo obbligatorio, che non porta email; rimetterlo non scrive niente, e un database o un account che non ci sono non producono un database vuoto né un «fatto» | `test_server.mjs::statistiche: il titolare mette e toglie il segno dalla riga di comando, con il servizio acceso, e il registro lo annota` |
+| R-ACC-69 | Ogni statistica passa da `server/statistiche.mjs`: fuori di lì una query che aggrega, o che legge le righe di tutti, è rossa se non è dichiarata con il motivo per cui non è una statistica; e una statistica che nomina una tabella vera, o che fa uscire chi ha risposto, le righe intere o un'email, è rifiutata. Su un database di prima del segno non si conta | `test_server.mjs::statistiche: una query aggregata o su tutte le righe fuori da server/statistiche.mjs e rossa, se non e dichiarata` |
+| R-ACC-70 | Il ripristino di una copia non rimette nei conteggi chi si è opposto dopo la copia, e non tiene fuori chi ha ritirato: il segno si rilegge dal file delle cancellazioni, per `id` e chiave, anche da una copia di prima dello schema 4 e anche se il ripristino l'ha fatto il rilascio di prima, perché il server lo rilegge a ogni avvio. Un'opposizione non spiega un calo di righe fra due copie | `test_server.mjs::ripristino: chi si e opposto dopo la copia resta fuori dai conteggi, anche da una copia di prima del segno` |
 
 R-ACC-20 e R-ACC-24 sono i primi requisiti del server con un controllo che si
 esegue, e il giro intero sta in `node server/ripristina.mjs --prova`, che la
@@ -1681,6 +1691,22 @@ non c'è, nascosto, fuori dalla finestra, o che non nomina la casella non
 passa, e la pagina di prima di P-48 è rossa proprio lì. La riproduzione del
 difetto e che cosa il controllo non vede sono nel §12 del progetto del
 client.
+
+**L'esclusione dalle statistiche (P-54).** R-ACC-67…70 nascono da una promessa
+dell'informativa — chi si oppone resta con le sue risposte ed esce dai conteggi
+— che oggi non è falsa solo perché nessuna statistica si calcola. I controlli
+si eseguono contro il server vero e contro i due strumenti della macchina,
+lanciati come processi. R-ACC-69 ha due metà, e la riga nomina quella statica:
+quella che esegue le query rifiutate è `statistiche: una statistica legge solo
+le fonti filtrate`, e il caso del calo di righe di R-ACC-70 è `copia: un
+opposizione non spiega un calo di righe`. **Che cosa non vedono:** una query
+scritta a mano in `sqlite3` sulla macchina; SQL costruito a pezzi, o un
+conteggio fatto in JavaScript su righe lette da una query dichiarata; un alias
+che fa uscire il numero dell'account; che il titolare lanci davvero lo
+strumento quando arriva una richiesta, e in quanto tempo; e la macchina, dove
+questo codice arriva con il traguardo. Il controllo statico guarda `server/` e
+`strumenti/macchina/`, riga per riga: prende lo sbaglio, non chi lo vuole
+aggirare.
 
 ### 9.10 La mappa di Progressi
 
@@ -2389,3 +2415,12 @@ successo, ed è il motivo per cui questo file esiste.
 - **1° ottobre 2026 — Q-TEMA, Q-ONBOARD e Q-SUITE chiuse.** Decise
   dall'autore con le quattro proposte del §8 dell'area 6, e scritte dalla regia
   fra le chiuse del §10; le tre righe escono dalla tabella delle aperte.
+- **1° ottobre 2026 — l'esclusione dalle statistiche (P-54).** Il punto 8 del
+  §15.4 del progetto degli account: un segno sull'account, messo e tolto dal
+  titolare, e `server/statistiche.mjs` come posto solo da cui passa ogni
+  conteggio. Entrano R-ACC-67…70, coperti; il §2.1 e il §3.7 lo dicono. Due
+  cose trovate sul ripristino, che il prompt non nominava: una copia di prima
+  avrebbe rimesso nei conteggi chi si era opposto dopo, e il ripristino del
+  rilascio di prima non conosce quelle voci. Quarantatré rotture, tutte rosse;
+  una era passata verde alla prima stesura, e una era rossa per un errore di
+  sintassi invece che per il suo motivo.

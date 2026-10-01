@@ -8,7 +8,8 @@
 // sessione, verifica dell'email, password —, alle righe (P-10): invio,
 // ricezione, export, azzeramento; e a quello che chiude le sue rotte (P-11):
 // cambio d'indirizzo, profilo, cancellazione, i due anni di inattivita' e gli
-// allarmi al titolare. L'altra meta' di questo file e' la
+// allarmi al titolare; e le statistiche, con chi si oppone fuori da ogni
+// conteggio (P-54). L'altra meta' di questo file e' la
 // copia di sicurezza con il ripristino provato — *un backup mai ripristinato
 // non e' un backup, e' un file* (0.4.6) — con l'epoca del database e il file
 // delle cancellazioni del §2.7.
@@ -29,9 +30,10 @@ import { DatabaseSync } from 'node:sqlite';
 import { avvia } from '../server/server.mjs';
 import {
   SCHEMA, MIGRAZIONI, apri, leggiEpoca, creaAccount, aggiungiRighe, righeDopo,
-  cancellaAccount, azzera, leggiCancellazioni,
+  cancellaAccount, azzera, leggiCancellazioni, opponi,
 } from '../server/db.mjs';
 import { copia, ripristina, prova } from '../server/copie.mjs';
+import { statistica, esclusi, FONTI } from '../server/statistiche.mjs';
 import { hashPassword } from '../server/password.mjs';
 import * as E from '../site/engine.js';
 
@@ -471,7 +473,7 @@ test('ripristina --prova: il giro intero, su un istanza sacrificabile', (t) => {
   const falliti = esito.controlli.filter((k) => !k.ok).map((k) => k.nome);
   assert.deepEqual(falliti, []);
   assert.ok(esito.controlli.length >= 10, `solo ${esito.controlli.length} controlli`);
-  for (const nome of ['schema', 'epoca', 'cancellazioni', 'righe']) {
+  for (const nome of ['schema', 'epoca', 'cancellazioni', 'righe', 'statistiche']) {
     assert.ok(esito.controlli.some((k) => k.nome.includes(nome)), `nessun controllo su ${nome}`);
   }
 });
@@ -1070,8 +1072,9 @@ test('database: uno schema 1 si porta all ultimo aggiungendo, senza togliere nie
   const db = apri(p); t.after(() => db.close());
   assert.equal(SCHEMA, MIGRAZIONI.length);
   assert.equal(db.prepare('PRAGMA user_version').get().user_version, SCHEMA);
-  const a = db.prepare('SELECT email, accessi_falliti, password_disattivata_il FROM account').get();
-  assert.deepEqual({ ...a }, { email: 'a@esempio.it', accessi_falliti: 0, password_disattivata_il: null });
+  const a = db.prepare('SELECT email, accessi_falliti, password_disattivata_il, fuori_statistiche_dal FROM account').get();
+  assert.deepEqual({ ...a }, { email: 'a@esempio.it', accessi_falliti: 0, password_disattivata_il: null, fuori_statistiche_dal: null },
+    'e chi c era prima del segno resta nei conteggi: nessuno si e opposto');
   const tabelle = db.prepare("SELECT name FROM sqlite_schema WHERE type = 'table'").all().map((r) => r.name);
   for (const nome of ['sessione', 'gettone', 'registro', 'segnali']) assert.ok(tabelle.includes(nome), nome);
 
@@ -1895,4 +1898,465 @@ test('avvio: lanciati attraverso un collegamento, come sulla macchina, il server
   const r = spawnSync(process.execPath, [join(dir, 'attuale', 'strumenti', 'macchina', 'carica-copia.mjs')], { encoding: 'utf8' });
   assert.equal(r.status, 2, `il caricatore e' uscito con ${r.status}: ${r.stderr}`);
   assert.match(r.stderr, /uso:/);
+});
+
+// --- le statistiche, e chi si oppone (P-54) ------------------------------------------
+//
+// docs/account-progetto.md §15.2 e §15.4, punto 8. L'informativa dice che chi
+// si oppone al trattamento per le statistiche resta con le sue risposte nel
+// suo account ed esce dai conteggi. Il segno sta sull'account, lo mette e lo
+// toglie il titolare dalla macchina, e ogni statistica passa da un posto solo,
+// `server/statistiche.mjs`, che legge fonti gia' filtrate: non una regola che
+// ogni query futura deve ricordare. Un controllo qui sotto e' rosso se una
+// query aggregata, o su tutte le righe, nasce fuori di li'.
+
+const RICHIESTA = 'opposizione arrivata a privacy@ il 3 ottobre 2026';
+const CHI_SI_OPPONE = 'si.oppone@esempio.it';
+const CHI_RESTA = 'resta.nei.conti@esempio.it';
+
+/** A, che si opporra', con tre risposte e nove partite; B con due risposte e due partite. */
+async function dueStudenti(k) {
+  const a = await confermato(k, CHI_SI_OPPONE);
+  const b = await confermato(k, CHI_RESTA);
+  for (const [cookie, righe, giocate] of [[a, [riga(1), riga(2), riga(3)], 9], [b, [riga(11), riga(12)], 2]]) {
+    assert.equal((await k.chiama('POST', '/v1/righe', { generazione: 1, righe }, { cookie })).status, 200);
+    assert.equal((await k.chiama('PUT', '/v1/profilo', { segnali: { nebbia: { migliore: 3, giocate } } }, { cookie })).status, 200);
+  }
+  return { a, b, idA: idDi(k, CHI_SI_OPPONE), idB: idDi(k, CHI_RESTA) };
+}
+
+/** Sei conteggi diversi, tutti dal posto solo: righe, account, punteggi, per gruppo e distinti. */
+const conteggi = (db) => ({
+  risposte: statistica(db, 'SELECT count(*) n FROM risposte')[0].n,
+  sbagliate: statistica(db, "SELECT count(*) n FROM risposte WHERE json_extract(dati, '$.correct') = 0")[0].n,
+  quesiti: statistica(db, 'SELECT item_id, count(*) n FROM risposte GROUP BY item_id ORDER BY item_id').length,
+  iscritti: statistica(db, 'SELECT count(*) n FROM iscritti')[0].n,
+  attivi: statistica(db, 'SELECT count(DISTINCT chi) n FROM risposte')[0].n,
+  partite: statistica(db, 'SELECT COALESCE(sum(giocate), 0) n FROM punteggi')[0].n,
+});
+
+test('statistiche: chi si e opposto esce da ogni conteggio, e le sue risposte restano nel suo account', async (t) => {
+  // R-ACC-67. Un account con il segno, le sue righe, e i conteggi che le
+  // conterebbero: sulle righe, sugli account e sui punteggi, semplici, per
+  // gruppo e distinti. Il segno vive nel database, quindi regge un riavvio e
+  // un azzeramento; e si toglie, perche' un'opposizione si puo' ritirare.
+  const k = await conti(t);
+  const { a, idA, idB } = await dueStudenti(k);
+  const f = k.opzioni.cancellazioni;
+  const esportato = async () => {
+    const r = await k.chiama('GET', '/v1/esporta', undefined, { cookie: a });
+    assert.equal(r.status, 200);
+    const { esportato: _quando, ...resto } = r.corpo;
+    return resto;
+  };
+  const registro = () => k.s.db.prepare("SELECT evento, account_id, ip, dettaglio FROM registro WHERE evento LIKE 'opposizione%' ORDER BY id")
+    .all().map((r) => ({ ...r }));
+
+  const tutti = { risposte: 5, sbagliate: 2, quesiti: 5, iscritti: 2, attivi: 2, partite: 11 };
+  assert.deepEqual(conteggi(k.s.db), tutti, 'prima: tutti e due nei conteggi');
+  assert.equal(esclusi(k.s.db), 0);
+  const filePrima = await esportato();
+  const ioPrima = (await k.chiama('GET', '/v1/io', undefined, { cookie: a })).corpo;
+
+  k.avanza(ORA);
+  const il = new Date(k.orologio.t).toISOString();
+  assert.deepEqual(opponi(k.s.db, idA, { cancellazioni: f, motivo: RICHIESTA, il }), { cambiato: true, fuori_dal: il });
+
+  // Le righe ci sono ancora: un conteggio scritto sulla tabella le conterebbe.
+  assert.equal(k.s.db.prepare('SELECT count(*) n FROM riga').get().n, 5, 'le righe di chi si oppone restano dove sono');
+  const senzaA = { risposte: 2, sbagliate: 1, quesiti: 2, iscritti: 1, attivi: 1, partite: 2 };
+  assert.deepEqual(conteggi(k.s.db), senzaA, 'chi si e opposto e fuori da ogni conteggio');
+  assert.equal(esclusi(k.s.db), 1, 'e quanti sono fuori si sa, senza dire chi');
+
+  // Nel suo account non cambia niente: le risposte, l'export, la descrizione.
+  const ric = await k.chiama('GET', '/v1/righe?dopo=0', undefined, { cookie: a });
+  assert.deepEqual(ric.corpo.righe.map((r) => r.uid), ['u000001', 'u000002', 'u000003']);
+  assert.deepEqual(await esportato(), filePrima, 'l export non cambia, e il segno non ci viaggia');
+  assert.deepEqual(Object.keys(filePrima).sort(), ['app', 'righe', 'segPunti', 'versione']);
+  assert.deepEqual((await k.chiama('GET', '/v1/io', undefined, { cookie: a })).corpo, ioPrima);
+
+  // Annotato nel registro, con l'id interno e il motivo, senza email; e nel
+  // file che il ripristino rilegge, senza email nemmeno li'.
+  assert.deepEqual(registro(), [{ evento: 'opposizione alle statistiche', account_id: idA, ip: null, dettaglio: RICHIESTA }]);
+  const chiave = k.s.db.prepare('SELECT chiave_locale c FROM account WHERE id = ?').get(idA).c;
+  assert.deepEqual(leggiCancellazioni(f), { voci: [], opposizioni: [{ evento: 'opposizione', account: idA, chiave, il }], illeggibili: 0 });
+  assert.ok(!readFileSync(f, 'utf8').includes('esempio.it'), 'nessuna email nel file');
+
+  // Rimetterlo non cambia niente e non scrive niente.
+  assert.deepEqual(opponi(k.s.db, idA, { cancellazioni: f, motivo: 'di nuovo', il: new Date(k.orologio.t + 1000).toISOString() }),
+    { cambiato: false, fuori_dal: il });
+  assert.equal(registro().length, 1);
+  assert.equal(leggiCancellazioni(f).opposizioni.length, 1);
+
+  // Senza un motivo, o con un'email nel motivo, non si scrive niente: il
+  // registro vive un anno, e un'email li' dentro sopravviverebbe all'account.
+  assert.throws(() => opponi(k.s.db, idB, { cancellazioni: f, motivo: '  ' }), /motivo/);
+  assert.throws(() => opponi(k.s.db, idB, { cancellazioni: f, motivo: `lo chiede ${CHI_RESTA}` }), /email/);
+  assert.throws(() => opponi(k.s.db, 9999, { cancellazioni: f, motivo: RICHIESTA }), /inesistente/);
+  assert.equal(esclusi(k.s.db), 1);
+  assert.equal(leggiCancellazioni(f).opposizioni.length, 1);
+
+  // Il segno sta nel database: un riavvio non lo perde.
+  await k.riavvia();
+  assert.deepEqual(conteggi(k.s.db), senzaA, 'dopo un riavvio');
+
+  // Un azzeramento toglie le righe, non l'opposizione; e le risposte nuove
+  // restano fuori dai conteggi.
+  assert.equal((await k.chiama('POST', '/v1/azzera', { password: BUONA }, { cookie: a })).status, 200);
+  assert.equal((await k.chiama('POST', '/v1/righe', { generazione: 2, righe: [riga(21)] }, { cookie: a })).status, 200);
+  assert.deepEqual(conteggi(k.s.db), senzaA, 'dopo un azzeramento e una risposta nuova');
+  assert.equal(k.s.db.prepare('SELECT fuori_statistiche_dal d FROM account WHERE id = ?').get(idA).d, il);
+
+  // Un'opposizione si ritira: da li' in poi si conta quello che c'e'.
+  k.avanza(ORA);
+  const ritirata = new Date(k.orologio.t).toISOString();
+  assert.deepEqual(opponi(k.s.db, idA, { cancellazioni: f, opposto: false, motivo: 'ha scritto che vuole rientrare', il: ritirata }),
+    { cambiato: true, fuori_dal: null });
+  assert.deepEqual(conteggi(k.s.db), { risposte: 3, sbagliate: 2, quesiti: 3, iscritti: 2, attivi: 2, partite: 11 });
+  assert.deepEqual(registro().map((r) => [r.evento, r.account_id]),
+    [['opposizione alle statistiche', idA], ['opposizione alle statistiche ritirata', idA]]);
+  assert.deepEqual(leggiCancellazioni(f).opposizioni.map((v) => [v.evento, v.il]), [['opposizione', il], ['opposizione ritirata', ritirata]]);
+});
+
+test('statistiche: una statistica legge solo le fonti filtrate, e non porta fuori ne email ne identificativi', async (t) => {
+  // R-ACC-69, la meta' che si esegue. Il posto solo non e' una convenzione:
+  // una query che nomina una tabella vera, o che fa uscire chi ha risposto o
+  // le righe intere, e' rifiutata prima di girare. L'email non e' in nessuna
+  // fonte, quindi non puo' uscire nemmeno per sbaglio (§15.2).
+  const k = await conti(t);
+  const { idA } = await dueStudenti(k);
+  const db = k.s.db;
+  opponi(db, idA, { cancellazioni: k.opzioni.cancellazioni, motivo: RICHIESTA });
+
+  for (const [sql, perche] of [
+    ['SELECT count(*) n FROM riga', /«riga»/],
+    ['select COUNT(*) n from RIGA', /«riga»/i],
+    ['SELECT count(*) n FROM risposte r JOIN account a ON a.id = r.chi', /«account»/],
+    ['SELECT count(*) n FROM segnali', /«segnali»/],
+    ['SELECT count(*) n FROM registro', /«registro»/],
+    ['SELECT count(*) n FROM sessione', /«sessione»/],
+    ['SELECT count(*) n FROM risposte; SELECT count(*) n FROM riga', /una sola/],
+    ['WITH tutte AS (SELECT * FROM riga) SELECT count(*) n FROM tutte', /SELECT/],
+    ['DELETE FROM risposte', /SELECT/],
+    ['', /SELECT/],
+    ['SELECT email FROM iscritti', /email/],
+    ['SELECT chi, count(*) n FROM risposte GROUP BY chi', /«chi»/],
+    ['SELECT dati FROM risposte', /«dati»/],
+    ['SELECT * FROM iscritti', /«chi»/],
+  ]) {
+    assert.throws(() => statistica(db, sql), perche, sql);
+  }
+  assert.throws(() => statistica(db, null), /SELECT/);
+
+  // Quello che si puo' fare: contare, con dei parametri, su colonne senza nomi.
+  assert.deepEqual(statistica(db, 'SELECT tipo, count(*) n FROM risposte WHERE tipo = ? GROUP BY tipo', ['q']), [{ tipo: 'q', n: 2 }]);
+  assert.deepEqual(statistica(db, 'SELECT count(*) n FROM iscritti WHERE confermato'), [{ n: 1 }]);
+  assert.deepEqual(Object.keys(FONTI), ['iscritti', 'risposte', 'punteggi']);
+  for (const [fonte, colonne] of Object.entries(FONTI)) {
+    for (const c of colonne) assert.ok(!/email|password|chiave|^id$|account_id|^ip$/.test(c), `${fonte}.${c}`);
+    assert.deepEqual(statistica(db, `SELECT count(${colonne.join(') a, count(')}) z FROM ${fonte}`).length, 1, `le colonne dichiarate di ${fonte} esistono`);
+  }
+
+  // Su un database di prima del segno non si conta: e' la «prima query senza
+  // il segno» del §15.4, e deve fermarsi con un errore che si legge.
+  const p = join(k.c, 'di-prima.db');
+  const diPrima = new DatabaseSync(p);
+  t.after(() => diPrima.close());
+  for (const m of MIGRAZIONI.slice(0, 3)) diPrima.exec(m);
+  diPrima.exec('PRAGMA user_version = 3');
+  assert.throws(() => statistica(diPrima, 'SELECT count(*) n FROM risposte'), /schema 3/);
+  assert.throws(() => esclusi(diPrima), /schema 3/);
+  // E il segno non si mette dove non c'e' la colonna: una voce nel file senza
+  // il segno nel database direbbe «fatto» di una cosa non fatta.
+  const altroFile = join(k.c, 'cancellazioni-di-prima');
+  const vecchioAccount = creaAccount(diPrima, { email: 'di.prima@esempio.it', password: PHC });
+  assert.throws(() => opponi(diPrima, vecchioAccount, { cancellazioni: altroFile, motivo: RICHIESTA }), /schema 3/);
+  assert.equal(existsSync(altroFile), false, 'e nel file non e finito niente');
+});
+
+// Che cosa conta come «una statistica nata fuori posto», riga per riga, tolti i
+// commenti: una funzione di aggregazione di SQL o un GROUP BY, oppure una
+// lettura della tabella `riga` che non si ferma a un account. Una riga che
+// chiama `statistica(` passa dal posto solo, e non conta.
+const AGGREGATO = /(?<![.\w])(count|sum|avg|total|group_concat|min|max)\s*\(|\bgroup\s+by\b/i;
+const TUTTE_LE_RIGHE = /\b(from|join)\s+riga\b/i;
+const DI_UN_ACCOUNT = /\baccount_id\s*=\s*\?/;
+
+function queryFuoriPosto(file) {
+  const trovate = [];
+  for (const { nome, testo } of file) {
+    testo.split('\n').forEach((riga_, i) => {
+      const t_ = riga_.trim();
+      if (t_.startsWith('//') || t_.startsWith('*') || t_.startsWith('/*') || t_.startsWith('#')) return;
+      const codice = riga_.replace(/(^|\s)\/\/.*$/, '');
+      if (/\bstatistica\(/.test(codice)) return;
+      const perche = [];
+      if (AGGREGATO.test(codice)) perche.push('aggrega');
+      if (TUTTE_LE_RIGHE.test(codice) && !DI_UN_ACCOUNT.test(codice)) perche.push('legge le righe di tutti');
+      if (perche.length) trovate.push({ nome, riga: i + 1, testo: codice.trim(), perche: perche.join(', ') });
+    });
+  }
+  return trovate;
+}
+
+// Le query che aggregano, o leggono le righe di tutti, e **non sono
+// statistiche**: ognuna con il suo motivo. Una riga nuova qui e' una
+// decisione, non una formalita'; una che non serve piu' e' rossa anche lei.
+const NON_STATISTICHE = [
+  { file: 'server/allarmi.mjs', contiene: "FROM registro WHERE evento = 'mail spedita'", perche: 'le mail del mese, per la soglia delle 300 comprese (§9.3): un conto del registro, non di chi studia' },
+  { file: 'server/allarmi.mjs', contiene: 'count(DISTINCT ip) indirizzi', perche: 'gli accessi falliti delle ultime 24 ore, per l allarme di sicurezza (§15.4)' },
+  { file: 'server/allarmi.mjs', contiene: "evento = 'password disattivata'", perche: 'le password disattivate, per lo stesso allarme' },
+  { file: 'server/conti.mjs', contiene: 'COALESCE(MAX(seq), 0) s FROM riga WHERE account_id = ?', perche: 'quante righe ha un account, detto a lui solo in GET /v1/io' },
+  { file: 'server/conti.mjs', contiene: 'MAX(migliore, excluded.migliore)', perche: 'il massimo fra due valori dello stesso account, non un aggregato (§13.2)' },
+  { file: 'server/db.mjs', contiene: 'FROM sqlite_schema', perche: 'quante tabelle ha un file, per riconoscere un database che non e di questo server' },
+  { file: 'server/db.mjs', contiene: 'COALESCE(MAX(seq), 0) s FROM riga WHERE account_id = ?', perche: 'il cursore di un account (§2.3)' },
+  { file: 'server/copie.mjs', contiene: "righe: db.prepare('SELECT count(*) n FROM riga')", perche: 'l integrita di una copia: le righe si contano tutte, anche di chi si e opposto, perche un calo e un allarme (§2.5). Non e una statistica sull uso' },
+  { file: 'server/copie.mjs', contiene: "account: db.prepare('SELECT count(*) n FROM account')", perche: 'lo stesso, per gli account' },
+  { file: 'server/copie.mjs', contiene: 'SELECT account_id, uid, seq, dati FROM riga ORDER BY seq', perche: 'la prova del ripristino, su un istanza sacrificabile con righe finte' },
+  { file: 'server/copie.mjs', contiene: 'SELECT count(*) n FROM riga WHERE account_id = ?', perche: 'la prova del ripristino: le righe di un account cancellato sono zero' },
+];
+
+test('statistiche: una query aggregata o su tutte le righe fuori da server/statistiche.mjs e rossa, se non e dichiarata', () => {
+  // R-ACC-69, la meta' statica. Una promessa dell'informativa non puo'
+  // dipendere dal fatto che chi scrive la prossima query si ricordi del segno:
+  // la query nasce in server/statistiche.mjs, dove il segno e' gia' applicato,
+  // oppure questo controllo la nomina.
+  const leggi = (dir) => readdirSync(join(RADICE, dir), { withFileTypes: true }).filter((d) => d.isFile())
+    .map((d) => ({ nome: `${dir}/${d.name}`, testo: readFileSync(join(RADICE, dir, d.name), 'utf8') }));
+  const file = [...leggi('server').filter((x) => x.nome.endsWith('.mjs') && x.nome !== 'server/statistiche.mjs'), ...leggi('strumenti/macchina')];
+  assert.ok(file.length >= 12, `letti solo ${file.length} file`);
+  assert.ok(existsSync(join(RADICE, 'server', 'statistiche.mjs')), 'il posto solo c e');
+
+  const trovate = queryFuoriPosto(file);
+  const dichiarata = (q) => NON_STATISTICHE.some((e) => e.file === q.nome && q.testo.includes(e.contiene));
+  assert.deepEqual(trovate.filter((q) => !dichiarata(q)).map((q) => `${q.nome}:${q.riga} (${q.perche}) ${q.testo}`), [],
+    'una statistica si scrive in server/statistiche.mjs, o passa da statistica(); se questa query non e una statistica, '
+    + 'si dichiara in NON_STATISTICHE con il motivo');
+  for (const e of NON_STATISTICHE) {
+    assert.ok(e.perche.length > 20, `${e.contiene}: senza un motivo`);
+    assert.ok(trovate.some((q) => q.nome === e.file && q.testo.includes(e.contiene)),
+      `dichiarazione che non serve piu, da togliere: ${e.file} — ${e.contiene}`);
+  }
+
+  // Il controllo contro se' stesso: quello che deve prendere, e quello che no.
+  const su = (testo) => queryFuoriPosto([{ nome: 'server/nuovo.mjs', testo }]).map((q) => q.perche);
+  for (const [testo, attese] of [
+    ["db.prepare('SELECT item_id, count(*) n FROM riga GROUP BY item_id').all()", ['aggrega, legge le righe di tutti']],
+    ["db.prepare(\"SELECT avg(json_extract(dati, '$.ms')) m FROM riga WHERE tipo = 'q'\").get()", ['aggrega, legge le righe di tutti']],
+    ["db.prepare('SELECT dati FROM riga').all()", ['legge le righe di tutti']],
+    ["db.prepare('SELECT r.dati FROM account a JOIN riga r ON r.account_id = a.id').all()", ['legge le righe di tutti']],
+    ["db.prepare('SELECT count(*) n FROM account WHERE ultimo_accesso_il > ?').get(da)", ['aggrega']],
+    ["db.prepare('SELECT modo, SUM (giocate) g FROM segnali group  by modo').all()", ['aggrega']],
+    ['db.prepare(`SELECT tipo,\n    COUNT(*) n\n  FROM riga`).all()', ['aggrega', 'legge le righe di tutti']],
+    ["const n = db.prepare('SELECT total(ms) t FROM x').get(); // un commento", ['aggrega']],
+    ["db.prepare('SELECT dati FROM riga WHERE account_id = ? ORDER BY seq').all(id)", []],
+    ["const m = Math.max(0, ...numeri); const c = elenco.count(); // non da MAX(seq), ne' count(*)", []],
+    ['// db.prepare(\'SELECT count(*) n FROM riga\')', []],
+    [" * Il cursore non viene da MAX(seq) FROM riga", []],
+    ["const r = statistica(db, 'SELECT item_id, count(*) n FROM risposte GROUP BY item_id');", []],
+  ]) {
+    assert.deepEqual(su(testo), attese, testo);
+  }
+});
+
+test('statistiche: il titolare mette e toglie il segno dalla riga di comando, con il servizio acceso, e il registro lo annota', async (t) => {
+  // R-ACC-68, §15.1: nessuna pagina di amministrazione. Il titolare lavora
+  // sulla macchina, con il servizio che gira, e ogni cambio lascia una riga nel
+  // registro con il suo motivo. Uno strumento che sbaglia database non deve
+  // crearne uno vuoto e dire «nessun account».
+  const k = await conti(t);
+  const { idA } = await dueStudenti(k);
+  const f = k.opzioni.cancellazioni;
+  const cli = (file, ...args) => spawnSync(process.execPath, [join(RADICE, 'server', file), ...args], { encoding: 'utf8' });
+  const opposizione = (...args) => cli('opposizione.mjs', '--db', k.opzioni.db, '--cancellazioni', f, ...args);
+  const conta = (sql = 'SELECT count(*) risposte FROM risposte') => cli('statistica.mjs', '--db', k.opzioni.db, sql);
+  const segno = () => k.s.db.prepare('SELECT fuori_statistiche_dal d FROM account WHERE id = ?').get(idA).d;
+  const registro = () => k.s.db.prepare("SELECT evento, account_id, dettaglio FROM registro WHERE evento LIKE 'opposizione%' ORDER BY id")
+    .all().map((r) => ({ ...r }));
+
+  let r = conta();
+  assert.equal(r.status, 0, r.stderr);
+  assert.deepEqual(JSON.parse(r.stdout), [{ risposte: 5 }]);
+  assert.match(r.stderr, /fuori dai conteggi per opposizione: 0 account/);
+
+  // Quello che non deve scrivere niente.
+  for (const [args, codice, dice] of [
+    [['--email', CHI_SI_OPPONE, '--metti'], 2, /motivo/],
+    [['--email', CHI_SI_OPPONE, '--metti', '--togli', '--motivo', RICHIESTA], 2, /uso:/],
+    [['--metti', '--motivo', RICHIESTA], 2, /uso:/],
+    [['--email', CHI_SI_OPPONE, '--metti', '--motivo', `lo chiede ${CHI_SI_OPPONE}`], 1, /email/],
+    [['--email', 'nessuno@esempio.it', '--metti', '--motivo', RICHIESTA], 1, /nessun account/],
+  ]) {
+    r = opposizione(...args);
+    assert.equal(r.status, codice, `${args.join(' ')}: ${r.stdout}${r.stderr}`);
+    assert.match(r.stderr, dice);
+  }
+  const altrove = join(k.c, 'non-esiste.db');
+  r = cli('opposizione.mjs', '--db', altrove, '--cancellazioni', f, '--email', CHI_SI_OPPONE, '--metti', '--motivo', RICHIESTA);
+  assert.equal(r.status, 1);
+  assert.match(r.stderr, /non c'e'/);
+  r = cli('statistica.mjs', '--db', altrove, 'SELECT count(*) n FROM risposte');
+  assert.equal(r.status, 1);
+  assert.equal(existsSync(altrove), false, 'un percorso sbagliato non crea un database vuoto');
+  assert.equal(segno(), null);
+  assert.deepEqual(registro(), []);
+  assert.equal(existsSync(f), false, 'e niente e finito nel file');
+
+  // Lo stato, senza cambiare niente.
+  r = opposizione('--email', CHI_SI_OPPONE);
+  assert.equal(r.status, 0, r.stderr);
+  assert.match(r.stdout, /nei conteggi/);
+
+  // Mette il segno, con il servizio acceso.
+  r = opposizione('--email', ` ${CHI_SI_OPPONE.toUpperCase()} `, '--metti', '--motivo', RICHIESTA);
+  assert.equal(r.status, 0, r.stdout + r.stderr);
+  assert.match(r.stdout, /fuori dalle statistiche dal \d{4}-\d{2}-\d{2}T/);
+  assert.match(segno(), /^\d{4}-\d{2}-\d{2}T[\d:.]+Z$/);
+  assert.deepEqual(registro(), [{ evento: 'opposizione alle statistiche', account_id: idA, dettaglio: RICHIESTA }]);
+  assert.equal(leggiCancellazioni(f).opposizioni.length, 1);
+  assert.equal(esclusi(k.s.db), 1, 'il server che gira lo vede subito');
+  r = conta();
+  assert.deepEqual(JSON.parse(r.stdout), [{ risposte: 2 }]);
+  assert.match(r.stderr, /fuori dai conteggi per opposizione: 1 account/);
+  r = conta('SELECT count(*) n FROM riga');
+  assert.equal(r.status, 1, 'una query sulla tabella vera e rifiutata anche da qui');
+  assert.match(r.stderr, /«riga»/);
+
+  // Rimetterlo lo dice e non scrive; lo stato lo dice.
+  r = opposizione('--email', CHI_SI_OPPONE, '--metti', '--motivo', 'una seconda volta');
+  assert.equal(r.status, 0);
+  assert.match(r.stdout, /era già fuori/);
+  assert.equal(registro().length, 1);
+  assert.match(opposizione('--email', CHI_SI_OPPONE).stdout, /fuori dalle statistiche dal/);
+
+  // Lo toglie.
+  r = opposizione('--email', CHI_SI_OPPONE, '--togli', '--motivo', 'ha ritirato l opposizione');
+  assert.equal(r.status, 0, r.stdout + r.stderr);
+  assert.match(r.stdout, /di nuovo nei conteggi/);
+  assert.equal(segno(), null);
+  assert.deepEqual(registro().map((x) => x.evento), ['opposizione alle statistiche', 'opposizione alle statistiche ritirata']);
+  assert.deepEqual(JSON.parse(conta().stdout), [{ risposte: 5 }]);
+  // E il servizio, intanto, non ha smesso di rispondere.
+  assert.equal((await k.chiama('GET', '/v1/salute')).status, 200);
+});
+
+test('ripristino: chi si e opposto dopo la copia resta fuori dai conteggi, anche da una copia di prima del segno', async (t) => {
+  // R-ACC-70, §2.7. Il segno sta nel database, e il database di una copia e'
+  // quello di ieri: senza il file, un ripristino rimetterebbe nei conteggi chi
+  // si e' opposto stamattina, e nessuno lo saprebbe. E la copia puo' essere di
+  // prima del segno — quella che rg-aggiorna fa prima di aggiornare —: il
+  // ripristino la porta allo schema del codice, invece di fermarsi.
+  const c = cartella(t);
+  const p = join(c, 'conti.db');
+  const f = join(c, 'cancellazioni');
+  const risposte = (db) => statistica(db, 'SELECT count(*) n FROM risposte')[0].n;
+  const segni = (db) => Object.fromEntries(db.prepare('SELECT id, fuori_statistiche_dal d FROM account ORDER BY id').all().map((x) => [x.id, x.d]));
+
+  // Un database com'e' in esercizio da v0.28.0: schema 3.
+  let db = new DatabaseSync(p);
+  for (const m of MIGRAZIONI.slice(0, 3)) db.exec(m);
+  db.exec(`INSERT INTO impianto VALUES (1, '${'e'.repeat(32)}', 'x', 'x', 0); PRAGMA user_version = 3;`);
+  const a = creaAccount(db, { email: 'a@esempio.it', password: PHC });
+  const d = creaAccount(db, { email: 'd@esempio.it', password: PHC });
+  const b = creaAccount(db, { email: 'b@esempio.it', password: PHC });
+  aggiungiRighe(db, a, [riga(1), riga(2), riga(3)]);
+  aggiungiRighe(db, d, [riga(4)]);
+  aggiungiRighe(db, b, [riga(5), riga(6)]);
+  db.close();
+  assert.equal(copia(p, join(c, 'copia-schema-3.db')).schema, 3);
+
+  // Il codice nuovo lo porta a 4. A si oppone; una copia; poi B si oppone e A ritira.
+  db = apri(p, { log: () => {} });
+  opponi(db, a, { cancellazioni: f, motivo: RICHIESTA, il: '2026-10-03T08:00:00.000Z' });
+  assert.equal(risposte(db), 3);
+  db.close();
+  assert.equal(copia(p, join(c, 'copia-schema-4.db')).schema, SCHEMA);
+  db = apri(p);
+  opponi(db, b, { cancellazioni: f, motivo: RICHIESTA, il: '2026-10-04T08:00:00.000Z' });
+  opponi(db, a, { cancellazioni: f, opposto: false, motivo: 'ritirata', il: '2026-10-05T08:00:00.000Z' });
+  assert.deepEqual(segni(db), { [a]: null, [d]: null, [b]: '2026-10-04T08:00:00.000Z' });
+  assert.equal(risposte(db), 4);
+  db.close();
+
+  // Dalla copia di prima del segno: nessuno era segnato, B torna fuori.
+  let r = ripristina(join(c, 'copia-schema-3.db'), p, { cancellazioni: f });
+  assert.equal(r.schema, SCHEMA, 'la copia di prima del segno si porta allo schema del codice');
+  assert.deepEqual([r.riesclusi, r.riammessi, r.illeggibili], [[b], [], 0]);
+  db = apri(p);
+  assert.deepEqual(segni(db), { [a]: null, [d]: null, [b]: '2026-10-04T08:00:00.000Z' });
+  assert.equal(risposte(db), 4, 'le due risposte di B non si contano');
+  const annotato = db.prepare("SELECT account_id, dettaglio FROM registro WHERE evento = 'opposizione alle statistiche'").all().map((x) => ({ ...x }));
+  assert.equal(annotato.length, 1, 'il registro della copia non la conosceva: il ripristino la annota');
+  assert.equal(annotato[0].account_id, b);
+  assert.match(annotato[0].dettaglio, /ripristino/);
+  db.close();
+
+  // Dalla copia con A segnato: A aveva ritirato dopo, e rientra; B torna fuori.
+  r = ripristina(join(c, 'copia-schema-4.db'), p, { cancellazioni: f });
+  assert.deepEqual([r.riesclusi, r.riammessi], [[b], [a]]);
+  db = apri(p);
+  assert.deepEqual(segni(db), { [a]: null, [d]: null, [b]: '2026-10-04T08:00:00.000Z' });
+  assert.equal(risposte(db), 4);
+
+  // Un id riusato non eredita l'opposizione di chi l'aveva prima: B si
+  // cancella, E prende il suo numero, e un ripristino non segna E.
+  cancellaAccount(db, b, { cancellazioni: f });
+  const e = creaAccount(db, { email: 'e@esempio.it', password: PHC });
+  assert.equal(e, b, 'l id si riusa davvero');
+  aggiungiRighe(db, e, [riga(7)]);
+  db.close();
+  copia(p, join(c, 'copia-dopo.db'));
+  r = ripristina(join(c, 'copia-dopo.db'), p, { cancellazioni: f });
+  assert.deepEqual([r.riesclusi, r.riammessi, r.ricancellati], [[], [], []]);
+  db = apri(p);
+  assert.deepEqual(segni(db), { [a]: null, [d]: null, [e]: null });
+  assert.equal(risposte(db), 5);
+
+  // E il ripristino fatto con il rilascio di prima. Misurato con il
+  // ripristina.mjs di v0.28.0: non conosce le opposizioni, le conta fra le
+  // righe illeggibili, e lascia il database com'era nella copia. Qui lo stesso
+  // stato, scritto a mano: D si e' opposto e il database non lo sa, A ha
+  // ritirato e il database lo tiene fuori. Al primo avvio del server vale il file.
+  opponi(db, d, { cancellazioni: f, motivo: RICHIESTA, il: '2026-10-06T08:00:00.000Z' });
+  db.exec(`UPDATE account SET fuori_statistiche_dal = NULL WHERE id = ${d};
+    UPDATE account SET fuori_statistiche_dal = '2026-10-03T08:00:00.000Z' WHERE id = ${a};
+    DELETE FROM registro;`);
+  assert.equal(risposte(db), 2, 'cosi com e, D sarebbe contato e A no');
+  db.close();
+  const scritto = [];
+  const s = await avvia({ db: p, cancellazioni: f, porta: 0, argon2: ECONOMICO, log: (m) => scritto.push(m) });
+  let acceso = s;
+  t.after(() => acceso.chiudi());
+  assert.deepEqual(segni(s.db), { [a]: null, [d]: '2026-10-06T08:00:00.000Z', [e]: null });
+  assert.equal(risposte(s.db), 4, 'le tre di A e quella di E; quella di D no');
+  assert.ok(scritto.some((m) => /opposizioni alle statistiche rilette dal file: 1 account rimessi fuori dai conteggi, 1 rientrati/.test(m)), scritto.join(' | '));
+  assert.deepEqual(s.db.prepare("SELECT evento, account_id FROM registro WHERE evento LIKE 'opposizione%' ORDER BY account_id").all().map((x) => ({ ...x })),
+    [{ evento: 'opposizione alle statistiche ritirata', account_id: a }, { evento: 'opposizione alle statistiche', account_id: d }]);
+  // Un secondo avvio non trova niente da rimettere, e non lo dice.
+  await s.chiudi();
+  scritto.length = 0;
+  acceso = await avvia({ db: p, cancellazioni: f, porta: 0, argon2: ECONOMICO, log: (m) => scritto.push(m) });
+  assert.deepEqual(scritto.filter((m) => /opposizioni/.test(m)), []);
+  assert.deepEqual(segni(acceso.db), { [a]: null, [d]: '2026-10-06T08:00:00.000Z', [e]: null });
+});
+
+test('copia: un opposizione non spiega un calo di righe', (t) => {
+  // Il file che il ripristino rilegge porta anche le opposizioni, che non
+  // tolgono righe: se contassero come una cancellazione, la prima opposizione
+  // spegnerebbe l'allarme delle copie (§2.5) per tutto quel giro.
+  const c = cartella(t);
+  const p = join(c, 'conti.db');
+  const f = join(c, 'cancellazioni');
+  const db = apri(p); t.after(() => db.close());
+  const a = creaAccount(db, { email: 'a@esempio.it', password: PHC });
+  aggiungiRighe(db, a, Array.from({ length: 10 }, (_, i) => riga(i)));
+  copia(p, join(c, 'copia-1.db'), { cancellazioni: f });
+  const unOraFa = new Date(Date.now() - 3600e3);
+  utimesSync(join(c, 'copia-1.db'), unOraFa, unOraFa);
+
+  opponi(db, a, { cancellazioni: f, motivo: RICHIESTA });
+  db.exec("DELETE FROM riga WHERE uid IN ('u000001', 'u000002')");
+  const c2 = copia(p, join(c, 'copia-2.db'), { precedente: join(c, 'copia-1.db'), cancellazioni: f });
+  assert.deepEqual(c2.calo, { prima: 10, dopo: 8, spiegato: false });
+  assert.equal(c2.allarme, true);
 });

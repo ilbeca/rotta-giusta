@@ -384,6 +384,13 @@ scrivendolo, ognuna con il suo test in `tests/test_server.mjs`:
   nuova sta prima del cursore. Il contatore sta in `impianto`, con l'epoca, e
   il ripristino lo riporta indietro con la copia: è il caso che l'epoca copre.
 
+*(1° ottobre 2026, P-54: il file porta anche le opposizioni alle statistiche e
+i loro ritiri, per la stessa ragione — il segno sta sull'account, e l'account
+di una copia è quello di ieri. `leggiCancellazioni()` le restituisce a parte,
+così non spiegano un calo di righe; il ripristino porta la copia allo schema
+del codice prima di rileggerle; e il `ripristina.mjs` di `v0.28.0` le conta fra
+le righe illeggibili. §15.2.)*
+
 **Non fatto, e resta della macchina:** il trasporto delle copie verso `nl-ams`,
 che vuole la chiave del §19, e i due giri al giorno. `node server/copia.mjs`
 fa la copia, la verifica e il confronto con la precedente, ed esce 1 su un calo
@@ -538,7 +545,8 @@ account (
   data_esame             TEXT,                  -- facoltativa, specifica §2.4
   chiave_locale          TEXT NOT NULL UNIQUE,  -- casuale: il nome dell'archivio nel browser (§8.1)
   accessi_falliti        INTEGER NOT NULL DEFAULT 0,   -- di fila; al centesimo la password si disattiva (§6.5)
-  password_disattivata_il TEXT                  -- NULL finché non si arriva a cento; la toglie la reimpostazione
+  password_disattivata_il TEXT,                 -- NULL finché non si arriva a cento; la toglie la reimpostazione
+  fuori_statistiche_dal  TEXT                   -- NULL, o da quando si è opposto alle statistiche (§15.2)
 )
 
 riga (
@@ -1683,6 +1691,118 @@ rompe il §4.6 della specifica, «il motore non sa niente degli altri utenti», 
 richiede soglie e decisioni che qui non ci sono: **Aperto — decide l'autore, in
 un documento suo.** Questo progetto si ferma al titolare.
 
+**Chi si oppone esce da ogni conteggio — fatto il 1° ottobre 2026 (P-54).**
+L'informativa mette le statistiche sotto il legittimo interesse (art. 6.1.f) e
+dice che chi si oppone scrivendo a `privacy@` resta con le sue risposte nel suo
+account ed esce dai conteggi (§15.4, primo parere, punto 4). Oggi nessuna
+statistica si calcola; il giorno della prima, la promessa deve essere già vera.
+Com'è fatto:
+
+- **Il segno.** Una colonna sull'account, `fuori_statistiche_dal`: `NULL`, o la
+  data da cui l'account è fuori. Schema 4, una migrazione additiva: chi c'era
+  prima resta `NULL`, perché nessuno si era opposto.
+- **Chi lo mette e lo toglie.** Il titolare, dalla macchina, con il servizio
+  acceso — nessuna pagina di amministrazione, come nel §15.1:
+
+  ```
+  sudo -u rg /opt/node/bin/node /srv/rg/attuale/server/opposizione.mjs \
+       --email chi@esempio.it --metti --motivo "richiesta a privacy@ del 3 ottobre"
+  ```
+
+  `--togli` lo toglie, perché un'opposizione si può ritirare; senza nessuno dei
+  due dice lo stato e non scrive niente. **Il comando qui sopra non è stato
+  provato sulla macchina**, che gira `v0.28.0` e non si tocca da una sessione
+  di sviluppo: in locale lo strumento è provato con il servizio acceso e
+  lanciato attraverso un collegamento, come `/srv/rg/attuale`; l'utente `rg` e
+  i permessi di `/var/lib/rg` si provano al traguardo (P-27). Ogni cambio è una riga del `registro` —
+  `opposizione alle statistiche`, o `… ritirata` — con il numero dell'account e
+  il motivo. **Il motivo è obbligatorio e non porta email**: il registro vive un
+  anno e sopravvive alla cancellazione dell'account, che lì dentro è un numero.
+  Rimettere un segno che c'è già non scrive niente, e lo dice. Un percorso del
+  database sbagliato si rifiuta: non crea un database vuoto per poi dire
+  «nessun account».
+- **Il posto solo.** `server/statistiche.mjs`. Una statistica non vede le
+  tabelle: vede tre **fonti** già filtrate — `iscritti`, gli account che non si
+  sono opposti; `risposte`, le loro righe; `punteggi`, i loro punteggi dei
+  Segnali —, e il segno si legge in un punto solo, la definizione di
+  `iscritti`, da cui le altre due passano. `statistica(db, sql, parametri)`
+  esegue una `SELECT` sulle fonti e **rifiuta, prima di eseguirla, una query
+  che nomina una tabella vera**. L'email, la password e la chiave dell'account
+  non sono in nessuna fonte, quindi non possono uscire; `chi`, il numero
+  interno che serve a contare le persone distinte, e `dati`, la riga intera,
+  non possono stare fra le colonne del risultato. Il titolare la lancia con
+  `node server/statistica.mjs "SELECT …"`, che apre il database **in sola
+  lettura** e dice quanti account sono fuori dai conteggi, senza dire chi.
+  Nessuna rotta HTTP espone una statistica.
+- **Il controllo.** `tests/test_server.mjs` legge ogni file di `server/` e di
+  `strumenti/macchina/` ed è rosso se, fuori da `server/statistiche.mjs`, una
+  riga usa una funzione di aggregazione di SQL o un `GROUP BY`, o legge la
+  tabella `riga` senza fermarsi a un account (`account_id = ?`); una riga che
+  chiama `statistica(` passa dal posto solo, e non conta. Le undici query di
+  oggi che aggregano e **non sono statistiche** sono dichiarate lì una per una,
+  con il motivo, e una dichiarazione che non serve più è rossa anche lei.
+  Tre meritano di essere dette: **la copia di sicurezza conta tutte le righe e
+  tutti gli account**, anche di chi si è opposto, e scrive i due numeri nel
+  registro (`copia fatta`): non è una statistica sull'uso, è il controllo che
+  una copia sia intera, e senza chi si è opposto un'opposizione sembrerebbe un
+  calo di righe; **gli allarmi contano gli accessi falliti e le mail** nel
+  registro di sicurezza, che ha la sua base e la sua opposizione (§15.3); e
+  `GET /v1/io` dice a ognuno quante righe ha lui.
+- **Un ripristino non lo perde.** Il segno sta nel database, e il database di
+  una copia è quello di ieri: come per le cancellazioni (§2.7), ogni
+  opposizione e ogni ritiro si scrivono **anche** nel file delle cancellazioni,
+  prima del database e con `fsync` — numero dell'account, chiave casuale, data,
+  nessuna email —, e il ripristino li rilegge: vale l'ultima voce di ogni
+  account, per `id` **e** chiave, e il `registro` ripristinato, che non sapeva
+  dell'opposizione, la annota di nuovo. Una copia di prima dello schema 4 —
+  quella che `rg-aggiorna` fa prima di aggiornare — si porta allo schema del
+  codice prima di rileggere il file, invece di fermare il ripristino.
+  Un'opposizione **non spiega un calo di righe** nel confronto fra due copie:
+  `leggiCancellazioni()` la restituisce a parte.
+
+**Tre scelte, con il loro perché.**
+
+1. **Il segno non viaggia nell'export**, e nemmeno in `GET /v1/io`. Il file dei
+   progressi è righe e punteggi, e si ricarica con `importa()` in qualunque
+   account, anche in quello di un'altra persona: un segno nel file sarebbe o
+   ignorato all'import, e allora non serve, o applicato, e allora chiunque
+   cambierebbe con un editor di testo l'annotazione che il titolare tiene di una
+   richiesta, e la porterebbe sull'account di un altro. L'opposizione riguarda
+   il rapporto fra una persona e il titolare, non le risposte; la conferma che è
+   stata accolta è la risposta alla sua mail. E il file resta quello di
+   `esporta()`, byte per byte nella forma (R-ACC-18). Che la pagina mostri
+   «sei fuori dalle statistiche dal …» sarebbe un campo in più in `/v1/io` e un
+   testo dell'interfaccia: non è stato chiesto, ed è dell'autore.
+2. **L'opposizione vale per l'account, non per la persona.** Un azzeramento e un
+   cambio d'indirizzo la tengono; la cancellazione dell'account la porta via,
+   perché non resta niente da contare. Chi cancella e si riscrive è un account
+   nuovo, nei conteggi, e deve opporsi di nuovo: tenere l'elenco di chi si è
+   opposto oltre la cancellazione vorrebbe dire conservare l'email di chi ha
+   chiesto di cancellarla. **È un punto per il parere** (§15.4): se la risposta
+   alla richiesta lo debba dire.
+3. **Il controllo dei nomi è sul testo, e prende lo sbaglio, non la malizia.**
+   Un alias fa uscire `chi`; una query scritta a mano in `sqlite3` sulla
+   macchina, fuori dal repo, non la vede nessun controllo. Chi lancia una
+   statistica è il titolare: il posto solo esiste perché una query scritta di
+   fretta non conti chi ha chiesto di non essere contato, non per difendersi
+   da lui. Nella procedura del titolare va scritto: **le statistiche si
+   lanciano con `statistica.mjs`, mai con `sqlite3`**.
+
+**Misurato, non dedotto: il rilascio di prima sul database di dopo** (§2.7,
+regola 3). Il server di `v0.28.0`, estratto dal tag, su un database a schema 4
+con un account segnato: parte, scrive nel log «schema del database 4, del
+codice 3», la salute dice `{ codice: 3, database: 4 }`, e accesso, invio,
+ricezione, export e registrazione funzionano; il segno resta dov'era. **Il suo
+`ripristina.mjs` invece non conosce le opposizioni**: le conta fra le righe
+illeggibili del file — «1 righe ILLEGGIBILI — guardale prima di riaprire» — e
+lascia nei conteggi chi si era opposto dopo la copia. Per questo il server, a
+ogni avvio, rilegge le opposizioni dal file e rimette il segno dove il database
+non lo ha, annotandolo nel registro e nel log: dopo un ripristino fatto con il
+rilascio di prima, al primo avvio del rilascio che sa contare il segno è di
+nuovo al suo posto, prima che una statistica possa girare — `statistiche.mjs`
+in `v0.28.0` non c'è. Lo stesso passo chiude il caso del processo caduto fra la
+scrittura del file e quella del database.
+
 ### 15.3 Il registro, e gli indirizzi IP
 
 L'ADR-003: una violazione si notifica entro 72 ore, e accorgersene richiede log.
@@ -1898,11 +2018,17 @@ per traverso, e corretta: l'avvertenza diceva ancora che la composizione delle
 
 Del codice:
 
-8. **l'esclusione dalle statistiche**, su `main`: un segno sull'account che il
-   titolare mette quando qualcuno si oppone, rispettato da ogni conteggio, con
-   il suo test. Oggi nessuna statistica si calcola (§15.2), quindi la promessa
-   dell'informativa non è ancora falsa: lo diventerebbe il giorno della prima
-   query senza il segno;
+8. ~~**l'esclusione dalle statistiche**~~ — **fatta il 1° ottobre 2026 (P-54)**,
+   su `main`: il segno sull'account, `server/opposizione.mjs` con cui il
+   titolare lo mette e lo toglie, `server/statistiche.mjs` come posto solo, e
+   il controllo che è rosso se una query aggregata nasce fuori di lì (§15.2,
+   R-ACC-67…70). **Arriva sulla macchina con il traguardo** (P-27): il server in
+   esercizio è `v0.28.0`, che non ha né il segno né una statistica. Restano
+   dell'autore, nella sua procedura fuori dal repo: il comando da lanciare
+   quando arriva un'opposizione, e la regola che le statistiche si lanciano con
+   `statistica.mjs` e non con `sqlite3`; e, per il parere, il punto 2 del
+   §15.2 — l'opposizione vale per l'account, e chi si cancella e si riscrive
+   deve chiederla di nuovo;
 9. ~~**Manrope servito da `site/`**~~ — **fatto il 1° ottobre 2026**
    (`dbb27c4`, `6a44aee`): il file in `site/caratteri/` con la sua licenza OFL,
    la provenienza nel README, nessuna richiesta a un altro host misurata nel
@@ -2012,6 +2138,14 @@ allarmi in un modulo nuovo, `server/allarmi.mjs`, che il server chiama ogni
 ora mentre il lavoro quotidiano resta quotidiano. Lo schema passa a 3 con la
 tabella `segnali`, additiva. Tutte le tabelle del §3 ci sono.)*
 
+*(1° ottobre 2026, P-54: le statistiche e chi si oppone. Lo schema passa a 4
+con una colonna, `fuori_statistiche_dal`, additiva. Un modulo nuovo,
+`server/statistiche.mjs`, è il posto solo da cui passa ogni conteggio, e due
+strumenti della macchina lo usano: `server/statistica.mjs`, che lancia una
+statistica in sola lettura, e `server/opposizione.mjs`, che mette e toglie il
+segno. `opponi()`, `migra()` e `rileggiOpposizioni()` stanno in `db.mjs`.
+Nessuna rotta nuova. §15.2.)*
+
 ### 16.3 In locale
 
 `strumenti/serve.py` serve il sito come oggi; il server gira accanto su un'altra
@@ -2058,6 +2192,12 @@ R-ACC-19 e R-ACC-30**, e cinque nuovi: R-ACC-34, il cambio d'indirizzo;
 R-ACC-35, il profilo con i punteggi dei Segnali; R-ACC-36, i due anni;
 R-ACC-37, gli allarmi al titolare; R-ACC-38, il conto delle 300 mail. Il loro
 testo sta nel §9.9 della specifica.
+
+**Con l'esclusione dalle statistiche (P-54, 1° ottobre 2026) sono entrati
+R-ACC-67…70**: chi si è opposto fuori da ogni conteggio; il segno messo e tolto
+dal titolare, con il registro; il posto solo, con il controllo sulle query
+aggregate; il segno che regge un ripristino. Il loro testo sta nel §9.9 della
+specifica.
 
 Gli altri sono **proposti** ed entrano nella specifica con il codice che li
 controlla. Con il server nella suite, la maggior parte smette di essere
@@ -2167,6 +2307,8 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
 | ~~IP nel registro di sicurezza~~ | — | **deciso** su delega: 6 mesi l'IP, un anno l'evento, dalla CNIL (§15.3) |
 | ~~Il riavvio della macchina dopo un aggiornamento del kernel~~ | — | **deciso dall'autore il 1° ottobre 2026: sì, alle 03:30 UTC.** `unattended-upgrades` con `Automatic-Reboot` e `Automatic-Reboot-Time "03:30"`, in `/etc/apt/apt.conf.d/52rg-riavvio` (da `strumenti/macchina/`). Costa circa 32 s di servizio fermo, misurati, e il server riparte da solo (§2.8) |
 | Statistiche mostrate a chi studia | l'autore, in un documento suo | fuori da qui (§15.2) |
+| L'opposizione alle statistiche vale per l'account: chi si cancella e si riscrive deve chiederla di nuovo | l'autore, con il parere | tenerla così, e dirlo nella risposta a chi si oppone: l'alternativa è conservare l'email di chi ha chiesto di cancellarla (§15.2, scelta 2) |
+| La pagina mostra a chi si è opposto che è fuori dalle statistiche | l'autore | no, per ora: la conferma è la risposta alla sua mail; servirebbero un campo in `GET /v1/io` e un testo dell'interfaccia (§15.2, scelta 1) |
 | Cosa chiede l'onboarding oltre alla data | l'autore | Q-ONBOARD, specifica §10 |
 | ~~Chiudere il difetto dei tag che resta (§4.2)~~ | — | **chiuso** da P-01 il 26 settembre (merge `6e07525`): i tag nascono con la data, ritaggare aggiunge |
 | ~~La registrazione dice chi è iscritto (§5.3)~~ | — | **deciso dall'autore il 26 settembre 2026**: si dice apertamente, «Questa email è già registrata», con `409` e senza mail; accesso e password dimenticata restano come sono (§5.3). Il server lo fa con P-11 |
@@ -2310,3 +2452,15 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
   gruppo di sicurezza tutto aperto, e il server di `v0.28.0` che, lanciato dal
   collegamento del §2.7, usciva con 0 senza partire. Una decisione nuova per
   l'autore nel §20: il riavvio automatico dopo un kernel di sicurezza.
+- **1° ottobre 2026 — l'esclusione dalle statistiche (P-54).** Il punto 8 del
+  §15.4: schema 4 con `fuori_statistiche_dal`, `opponi()` e lo strumento del
+  titolare, `server/statistiche.mjs` come posto solo con le sue tre fonti, e un
+  controllo rosso se una query aggregata nasce fuori di lì (§15.2). Due cose
+  trovate, tutte e due sul ripristino: **una copia di prima rimetterebbe nei
+  conteggi chi si è opposto dopo**, quindi il segno va anche nel file delle
+  cancellazioni, e una copia di prima dello schema 4 si migra prima di
+  rileggerlo; e, misurato con il codice del tag, **il `ripristina.mjs` di
+  `v0.28.0` non conosce quelle voci**, le dice illeggibili e perde il segno —
+  per questo il server lo rilegge dal file a ogni avvio. Il rilascio di prima
+  gira sul database di dopo: misurato. Quattro requisiti con il loro test,
+  quarantatré rotture, tutte rosse; una era passata verde.
