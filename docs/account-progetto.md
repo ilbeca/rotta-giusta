@@ -1804,7 +1804,7 @@ cambiato il testo. Gli esiti e le decisioni dell'autore dello stesso giorno:
 | 2 | Titolare con nome ed email, senza indirizzo postale | regge | una **PEC** nell'informativa, quando l'autore la dà |
 | 3 | Registro di sicurezza sul 6.1.f, IP 6 mesi, evento 1 anno | regge con correzioni | testo dell'opposizione corretto; serve una LIA di una pagina |
 | 4 | Statistiche sotto il 6.1.b | **non regge** | 6.1.f con opposizione, e **un'esclusione dai conteggi sul server** |
-| 5 | `privacy@` su un Gmail personale | trasferimento sì; **ruolo no**: Google è un responsabile senza art. 28 | **casella OVH Zimbra Starter**, da verificare; intanto il testo nomina Google Ireland |
+| 5 | `privacy@` su un Gmail personale | trasferimento sì; **ruolo no**: Google è un responsabile senza art. 28 | **chiuso:** casella OVH Zimbra Starter, in esercizio dal 1° ottobre 2026 (sotto) |
 | 6 | statichost.eu | responsabile; l'informativa è falsa finché il DPA non è firmato, e il sito lo usa dal 25 settembre | firmare subito; sub-responsabili nominati |
 | 7 | Richieste evase, due anni | regge con correzioni | base scritta (6.1.c e 6.1.f) |
 | 8 | Registro art. 30 | va tenuto | un quarto trattamento: l'erogazione del sito |
@@ -1827,7 +1827,8 @@ per traverso, e corretta: l'avvertenza diceva ancora che la composizione delle
 
 1. firmare e spedire il DPA di statichost.eu, **subito**: il trattamento c'è dal
    25 settembre, e tenere la copia firmata accanto al registro;
-2. la casella di `privacy@` su OVH Zimbra Starter. **Verificata il 1° ottobre
+2. ~~la casella di `privacy@` su OVH Zimbra Starter~~ — **in esercizio dal 1°
+   ottobre 2026**, il resoconto in fondo al punto. **Verificata il 1° ottobre
    2026 sui contratti e le guide ufficiali OVHcloud:** si vende a privati
    (0,37 €/mese IVA inclusa, rinnovo automatico, recesso di 14 giorni); accetta
    un dominio registrato altrove, convalidato con un CNAME; il DPA art. 28 fa
@@ -1856,7 +1857,28 @@ per traverso, e corretta: l'avvertenza diceva ancora che la composizione delle
    nell'estate 2027, verificando quella clausola. E il server resta su
    Scaleway: OVH VPS-1 a Varsavia costa 4,49 € + IVA senza impegno (3,81 € con
    12 mesi anticipati), cioè 8–18 € l'anno in meno, che non pagano il rifare
-   P-15; è il ripiego se la STARDUST1-S mancasse. Con la casella nuova l'attività
+   P-15; è il ripiego se la STARDUST1-S mancasse.
+   **Fatto, la sera stessa:** ordine convalidato; organizzazione «Rotta
+   Giusta», dominio `rottagiusta.it` aggiunto come esterno e convalidato con il
+   CNAME `ovh-zimbra-2w0pg9ds → ovh.com`; casella `privacy@` creata (nome
+   visualizzato «Privacy Rotta Giusta», password dell'autore) — la prima
+   creazione, fatta prima della convalida, non era partita, e si è rifatta.
+   Su IONOS, con il sì dell'autore: i due CNAME del DKIM
+   (`ovhmo-selector-1/2._domainkey`), l'SRV `_autodiscover._tcp 0 0 443
+   zimbra1.mail.ovh.net`, i quattro MX che la diagnostica di Zimbra chiede —
+   `mx0`…`mx3` con priorità 1, 5, 50, 100, non cinque come diceva la guida —
+   e l'SPF `v=spf1 include:mx.ovh.com ~all`. Al primo MX esterno IONOS ha
+   **disattivato in blocco** i record del suo servizio di posta: i due MX, il
+   vecchio SPF, `autodiscover`, i DKIM `s1/s2-ionos` e il `_dmarc` verso
+   `dmarc.ionos.it`. Verificato con `dig` sui quattro nameserver IONOS e su
+   1.1.1.1 e 8.8.8.8; il sito e `api.` rispondono 200, i record di `posta.`
+   sono intatti; una mail vera da Gmail è arrivata nella casella. La webmail di
+   Zimbra Starter è `https://zimbra1.mail.ovh.net/`: `webmail.mail.ovh.net`,
+   che il pannello indica, rifiuta l'indirizzo con «Please verify your email
+   address». La privacy dice OVHcloud al posto di Gmail (`8120d4b`).
+   **Restano, ognuna con il sì dell'autore:** togliere l'inoltro IONOS verso
+   Gmail, dopo un'ora dal cambio degli MX; un DMARC sull'apice al posto di
+   quello di IONOS sparito; e l'attività programmata. Con la casella nuova l'attività
    programmata non legge più le mail degli interessati: va decisa che cosa
    legge, perché un'attività che legge `privacy@` con un piano senza DPA
    ripete il problema del punto 5;

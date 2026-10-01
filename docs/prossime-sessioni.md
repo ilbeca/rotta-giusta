@@ -572,7 +572,8 @@ consuma, non si riprogetta.
 - **Gli adempimenti, dopo il primo parere** (1° ottobre 2026). Le decisioni e
   l'esito punto per punto sono nel §15.4 di `account-progetto.md`, con
   l'elenco di che cosa resta: il DPA di statichost.eu da firmare **subito**, la
-  casella `privacy@` su OVH, la PEC, le due LIA e la nota sulla DPIA, il
+  casella `privacy@` su OVH (fatta il 1° ottobre: restano l'inoltro IONOS, il
+  DMARC e l'attività programmata), la PEC, le due LIA e la nota sulla DPIA, il
   registro con quattro trattamenti, il PDF del DPA di Scaleway, un parere
   firmato se lo vuoi. E due pezzi di codice: l'esclusione dalle statistiche, su
   `main`, e Manrope servito da `site/`, su `ui/main`. I due fattori sono fatti.
