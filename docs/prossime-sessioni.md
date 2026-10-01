@@ -3457,3 +3457,21 @@ anche la sezione `[0.28.1]`, che oggi sta solo sul ramo `fix/0.28.1`. Il campo
   qui: la coda la scrive la regia, e un file di `site/` passa da `ui/main` o
   dal commit dell'autore. Nasce il punto di codice del §15.4 n. 8,
   l'esclusione dalle statistiche, in attesa di un prompt (P-54).
+- **1° ottobre 2026 — correzione: il recinto non è stato aggirato.** La voce
+  sopra è sbagliata nel punto che conta. I reflog lo dicono: i cinque commit di
+  `site/` sono nati su `ui/main`, nel worktree dell'interfaccia, dove il
+  `pre-commit` li ammette, e sono entrati in `main` con un fast-forward, dopo il
+  controllo dei territori sull'intervallo uscito 0 — come `AGENTS.md` prevede
+  per una sessione di Claude che scrive interfaccia. La regia aveva rilanciato
+  il controllo sui singoli commit leggendoli come se fossero nati su `main`; un
+  commit non porta il ramo su cui è nato, il reflog sì, ed era il primo posto
+  da guardare. **Restano vere tre cose**, che la sessione stessa ha dichiarato:
+  ha scritto in questo file, che ha la regia come penna sola; ha fatto lei le
+  merge di `ui/main`, che sono della regia (punto 5 di «Come si usa»), e in
+  fast-forward invece che con un commit di merge, così l'ingresso
+  dell'interfaccia non ha un segno suo nella storia — non si riscrive, perché il
+  contenuto è identico e riscrivere costa più di quanto renda —; e non ha
+  verificato che ChatGPT fosse fermo, ma solo che la cartella fosse pulita.
+  ChatGPT non aveva prompt aperti dopo P-25 (chiuso alle 08:27), quindi
+  nessuna sessione è stata spostata sotto i piedi; chi riprende su `ui/main`
+  parte dall'ultimo commit del ramo, oggi uguale a `main`.
