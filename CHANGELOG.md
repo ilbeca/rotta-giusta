@@ -2333,6 +2333,17 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 - Verificato: guardiano verde con il nome nella privacy, dati 250, controllo
   dei testi di C-18 verde. La geometria si guarda dopo la merge.
 
+### Corretto — `privacy@` resta su Gmail, e l'informativa lo dice
+
+- **Deciso dall'autore il 1° ottobre 2026: l'inoltro di `privacy@` verso Gmail
+  resta.** La casella IONOS costa 6 €/mese (Mail Business, una licenza,
+  misurato nel pannello), e i dati fuori dall'UE non sono vietati: il GDPR
+  chiede una base per il trasferimento e che l'informativa lo dica (art. 13.1.f).
+  La frase «i dati non escono dall'Unione europea» esce; al suo posto le mail a
+  `privacy@` arrivano nella casella Gmail del titolare, con il trasferimento
+  negli Stati Uniti sulla decisione di adeguatezza del Data Privacy Framework.
+  Resta aperto, per il parere: un Gmail personale non ha un accordo art. 28.
+
 ## [0.28.1] — 2026-10-01
 
 Un rilascio di correzione, da un ramo che parte da `v0.28.0`, con una cosa
