@@ -2392,6 +2392,16 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
   Suite: dati **263** (erano 250); guardiano verde.
 
+### Corretto — `privacy@` ha una casella nell'UE
+
+- **Dal 1° ottobre 2026 `privacy@rottagiusta.it` è una casella OVHcloud**
+  (Zimbra Starter, 0,37 €/mese), con il DPA art. 28 nelle condizioni generali:
+  il punto 5 del primo parere, Gmail personale senza accordo, è chiuso. La
+  privacy non parla più di Google né di trasferimenti, e torna a dire che i dati
+  non escono dall'Unione europea; il Paese delle caselle OVHcloud non lo nomina,
+  perché OVHcloud dice solo «in Europa». Verificato con una mail vera arrivata
+  nella casella. Guardiano verde, controllo dei testi di C-18 verde.
+
 ## [0.28.1] — 2026-10-01
 
 Un rilascio di correzione, da un ramo che parte da `v0.28.0`, con una cosa
