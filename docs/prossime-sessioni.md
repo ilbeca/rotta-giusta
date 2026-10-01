@@ -201,7 +201,9 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
 | 8 | La messa in esercizio del server su Scaleway, con l'autore — **in corso** | Claude e l'autore | `main`, a mano, e pannelli | niente | P-15 |
-| 26b | La realizzazione dell'area 6 | ChatGPT | `ui/main` | il §8 dell'area 6 (l'autore) | segnaposto P-25 |
+| 26b | La realizzazione dell'area 6 — la rifinitura dei cinque difetti T-* | ChatGPT | `ui/main` | niente — **pronto** | P-25 |
+| 34 | Scrivere le decisioni del 1° ottobre nel §8 dell'area 6 e nel §10 della specifica | la regia | `main` | P-15 (la cartella principale) | §4 |
+| 35 | Il rilascio di correzione 0.28.1, con il solo P-36 | la regia e l'autore | worktree `../rotta-giusta-fix`, ramo `fix/0.28.1` | il commit con `TERRITORI_OK=1` e il push, dell'autore | §4 |
 | 9 | **La versione con gli account** — il traguardo | tutti | `main` | P-15, e gli adempimenti del §4 | segnaposto P-27 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
@@ -210,7 +212,7 @@ account è nella pagina (P-18), Progressi è la mappa (P-23), e il carteggio ha
 i suoi contratti e controlli su `main` (P-32…P-35). **Per Claude, l'ordine
 consigliato:** P-15, la messa in esercizio, quando
 l'autore ha il tempo; per il resto, niente di pronto. **Per ChatGPT: P-25**,
-quando l'autore ha deciso il §8 dell'area 6. I prompt di Claude vanno uno alla volta nella cartella principale, e
+pronto dal 1° ottobre. I prompt di Claude vanno uno alla volta nella cartella principale, e
 la suite dell'interfaccia di un worktree esclude quella dell'altro, per la porta
 8620. Il numero di una riga è il suo nome, non la sua posizione. Il traguardo,
 P-27, non aspetta le aree 4–6: aspetta il server in esercizio, i testi e gli
@@ -532,14 +534,48 @@ consuma, non si riprogetta.
      storage. §10.1 D-04 dell'area 4 e §7.6 della specifica.
   E Q-SUITE cresce ancora: con C-19 la suite dell'interfaccia dura circa 170 s.
   P-21 le porta nella pagina.
+- **Decise dall'autore il 1° ottobre 2026**, su una proposta che la regia ha
+  verificato prima di chiedere:
+  1. **Le quattro proposte del §8 dell'area 6: «no, per ora», tutte e quattro.**
+     Nessun cambio di gerarchia; nessun ingresso rinominato o spostato prima di
+     prove con persone (Q-PROVE); le figure tengono l'alt di oggi, con il limite
+     dichiarato; il tema scuro (Q-TEMA) è un'opzione futura, non un requisito.
+     P-25 diventa rifinitura: i cinque difetti T-* misurati.
+  2. **Q-ONBOARD: solo la data**, facoltativa (R-ACC-55), e nessun piano di
+     studio per il traguardo: si riapre se l'uso lo chiede.
+  3. **Q-SUITE: accettata**, circa 240 s. Le alternative toccano sicurezza o
+     affidabilità; durante il lavoro si fa girare un gruppo, la suite intera
+     prima del commit.
+  4. **Zoom nativo al 200 % e lettore di schermo vero** (R-RIF-10, 13, 14, 15)
+     restano prove dell'autore, fuori dalla merge di P-25 e dal traguardo.
+  5. **Il rilascio di correzione 0.28.1, con il solo P-36**: sì (punto sotto).
+  Da scrivere dove si decidono — §8 dell'area 6, §10 della specifica — **dalla
+  regia quando P-15 lascia la cartella principale**: è la riga 34 della coda.
 - **Il sito pubblicato perde il testo del carteggio senza dirlo** (trovato da
   P-50 il 1° ottobre 2026, verificato dalla regia sul tag): la v0.28.0 non ha
   l'avviso e la conferma del browser di P-36, che sono su `main` dal 26
   settembre ma non sono mai usciti. Due strade: aspettare il traguardo, che
   porta la bozza vera; oppure un rilascio di correzione da un ramo che parte da
-  `v0.28.0`, con il solo P-36, come dice la prima riga di questo §4. **Decide
-  l'autore.** Il difetto è scritto nel §7.6 della specifica e nella voce P-50
-  del CHANGELOG.
+  `v0.28.0`, con il solo P-36, come dice la prima riga di questo §4. **Deciso
+  dall'autore il 1° ottobre: il rilascio di correzione, 0.28.1.** Due cose che
+  il §4 non diceva, verificate dalla regia: **statichost.eu costruisce da
+  `main`** (`migrazione-hosting.md`, «Un push non arriva a statichost.eu»),
+  quindi l'autore porta nel pannello il ramo di build su `fix/0.28.1`, preme
+  «Build now», e **al traguardo rimette `main`** — lo intercetta il `curl` di
+  `sw.js` del traguardo, che mostrerebbe `rg-0.28.1`; e **il `pre-commit` non
+  lascia a nessun ramo toccare `app.html`, `VERSION` e `meta.json` insieme**,
+  quindi la regia prepara tutto in un worktree, `../rotta-giusta-fix`, e il
+  commit lo lancia l'autore con `TERRITORI_OK=1`, che è suo. P-36 si applica a
+  `v0.28.0` senza conflitti (provato in memoria). `.pages.dev` resta alla 0.28.0
+  fino al redirect del 16 ottobre. Il traguardo diventa la 0.29.0.
+- **Gli adempimenti: proposte, non decisioni** (1° ottobre 2026), per i punti
+  del §15.4 di `account-progetto.md`: l'indirizzo postale — casa o un
+  domicilio, sceglie l'autore —; la base giuridica del registro di sicurezza,
+  legittimo interesse (art. 6.1.f, considerando 49), **da far confermare**;
+  `privacy@` su una casella nell'UE invece dell'inoltro a Gmail, o dichiarato
+  nell'informativa; due anni per le richieste evase; il DPA di statichost.eu da
+  chiedere e firmare. Da fare, senza niente da decidere: i due fattori su Gmail,
+  Scaleway e IONOS, il PDF del DPA di Scaleway, «Secure your account».
 - **Gli adempimenti rimasti**, sei punti, tutti nel §15.4 di
   `account-progetto.md` e bloccano il punto 9: l'indirizzo postale del titolare,
   la base giuridica del registro di sicurezza (da far confermare), l'inoltro di
@@ -2903,6 +2939,59 @@ rossa finché non entra in `FRASI_RIEPILOGO` / `USCITE_RIEPILOGO`, e quell'elenc
 è di `main`. Controllato dalla regia: motore 194/197, server 60/60, dati 242,
 specifica 784, guardiano verde, interfaccia 2.173 in 240 s.
 
+### P-25 — ChatGPT: la realizzazione dell'area 6, la rifinitura
+
+**Stato:** pronto dal 1° ottobre 2026: P-45 e P-21 sono chiusi, e l'autore ha
+deciso le quattro proposte del §8 (§4). **Dove:** app di ChatGPT, progetto
+`~/Software/rotta-giusta-ui`, ramo `ui/main`, modalità Local. **Nasce da:**
+P-24 e P-45; il testo viene da una proposta che la regia ha verificato — le
+righe T-* aperte sono cinque, non sei come diceva il segnaposto.
+
+```
+Questo prompt è per ChatGPT, nel worktree ~/Software/rotta-giusta-ui,
+sul ramo ui/main. Se sei un altro agente o sei in un'altra cartella,
+fermati e dillo, senza scrivere niente.
+
+Sessione P-25: la realizzazione di docs/area-6-progetto.md. Leggi il
+progetto, il §9.11 e l'appendice A della specifica, il §10.3 del
+progetto (il contratto dei controlli, consegnato da P-45) e gli esiti
+di P-45, P-21 e P-52 nel §6 di docs/prossime-sessioni.md.
+
+Le quattro proposte del §8 sono decise dall'autore il 1° ottobre 2026,
+tutte e quattro «no, per ora»: nessun cambio di gerarchia nelle viste,
+nessun ingresso rinominato o spostato prima di prove con persone, le
+figure tengono l'alt di oggi con il limite dichiarato, il tema scuro è
+un'opzione futura e non un requisito. Questa sessione è quindi
+rifinitura, non ridisegno: nessuna selezione, conteggio, giudizio,
+ritorno o persistenza cambia (§9, «Regressioni»).
+
+Il §7 del progetto è più vecchio della pagina: la bozza del Carteggio
+con l'account c'è da P-21. Verificala, non rifarla.
+
+Chiudi i cinque difetti dichiarati in docs/eccezioni-interfaccia.md —
+T-05:arresti, T-07:prova, T-07:conto, T-08, T-09 — e togli le loro
+righe nello stesso commit: da lì i controlli girano sulla pagina vera e
+la suite pretende che siano verdi. Prima di correggerne uno riproducilo
+e guardalo; dopo, rimisura sui valori calcolati e guarda la schermata.
+Se una superficie nuova o una frase nuova del riepilogo dei quiz serve
+davvero, fermati e dillo: entra nel banco da main (VISTE_RIF,
+FRASI_RIEPILOGO). Se un controllo ti sta stretto, fermati e dillo.
+
+Zoom nativo al 200 % e lettore di schermo reale non li puoi fare dal
+browser integrato: scrivi nel resoconto «non fatto», con il requisito
+che li aspetta (R-RIF-10, 13, 14, 15). Non darli per fatti con il
+reflow equivalente.
+
+La suite dell'interfaccia vuole Chrome, la porta 8620 libera e il
+permesso per le connessioni locali; guarda la porta prima di lanciarla.
+Non toccare docs/prossime-sessioni.md. Tutte le suite verdi, collaudo
+guardato a 320, 375 e 1280 px nei due stati d'accesso, voce in fondo a
+[Unreleased], un commit con il trailer, versione non toccata. Chiudi
+con il resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
 ---
 
 ### I segnaposto — i prompt che non si possono ancora scrivere
@@ -2919,17 +3008,6 @@ segnaposto**.
 Il secondo tempo di `consigli()` si fa nella stessa sessione di P-47, che
 aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
 
-#### P-25 — ChatGPT: la realizzazione dell'area 6
-
-**Aspetta:** l'area 4 realizzata (P-21; l'area 5 lo è, P-23; P-45 è chiuso), e le decisioni dell'autore sul §8 di `area-6-progetto.md`. **Dove:** `ui/main`.
-**Dovrà contenere:** realizzare `docs/area-6-progetto.md`; il contratto dei
-controlli è il §10.3 del progetto e il §9.11 della specifica (P-45); chiudere i
-sei difetti T-05, T-07, T-08, T-09 e togliere le loro righe T-* da
-`docs/eccezioni-interfaccia.md` nello stesso commit — alla merge la regia
-guarda che non ne resti nessuna —; una superficie nuova entra nel banco da
-`main`, in `VISTE_RIF`, e una frase nuova del riepilogo dei quiz in
-`FRASI_RIEPILOGO` (P-53).
-
 #### P-27 — la regia, con tutti: il traguardo
 
 **Aspetta:** P-15, P-52, e gli adempimenti del §15.4 di
@@ -2942,7 +3020,11 @@ fare: un archivio vero nel browser che passa nell'account senza perdere una riga
 (Q-PROVE). Il §5 di questo file è la lista di controllo. **Trenta giorni
 dopo**, la soglia degli allarmi riletta sul registro vero
 (`account-progetto.md` §15.4). **Nello stesso commit del rilascio** si toglie
-la nota in testa a `docs/filosofia.md`, che lo dice di sé (P-26).
+la nota in testa a `docs/filosofia.md`, che lo dice di sé (P-26). **E il ramo
+di build di statichost.eu torna a `main`**, se il rilascio 0.28.1 l'ha portato
+su `fix/0.28.1`: il `curl` di `sw.js` deve mostrare il numero nuovo, non
+`rg-0.28.1`. Il numero del traguardo è 0.29.0. Il CHANGELOG di `main` porta
+anche la sezione `[0.28.1]`.
 
 ---
 
@@ -3272,3 +3354,13 @@ la nota in testa a `docs/filosofia.md`, che lo dice di sé (P-26).
   P-08, perché si fa insieme e il resoconto passa dalla regia. Nel prompt la
   regia ha aggiunto che il tag da avviare è `v0.28.0`, senza R-ACC-49: basta per
   la messa in esercizio, e il traguardo lo aggiorna.
+- **1° ottobre 2026 — le decisioni dell'autore, P-25 pronto, il rilascio
+  0.28.1.** Su una proposta che la regia ha verificato — il ramo di build di
+  statichost.eu, P-36 pulito su `v0.28.0`, cinque righe T-* e non sei, il §7
+  dell'area 6 rimasto indietro, lo zoom che P-05 aveva già misurato —, l'autore
+  ha deciso i quattro «no» del §8 dell'area 6, Q-ONBOARD, Q-SUITE, le prove a
+  mano sue, e il rilascio di correzione. Scritte nel §4; nei documenti dove si
+  decidono quando P-15 lascia la cartella principale (riga 34). P-25 scritto per
+  intero. Il rilascio 0.28.1 si prepara in un worktree, perché il `pre-commit`
+  non lo lascerebbe fare a nessun ramo: il commit è dell'autore, con
+  `TERRITORI_OK=1`.
