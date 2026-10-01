@@ -231,15 +231,17 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 9 | **La versione con gli account** — il traguardo | tutti | `main` | le suite verdi su `main` e il via dell'autore; il cancello degli adempimenti è chiuso dalla sua decisione del 2 ottobre (§4) | P-27, la lista scritta |
+| 10 | Lo strumento che annota le letture del titolare | Claude | `main` | il sì dell'autore: lo strumento, o togliere le due frasi dalla privacy | P-55 |
+| 11 | Le condizioni per l'account e i 18 anni nel modulo di registrazione | ChatGPT | `ui/main` | — **pronto** | P-56 |
+| 12 | Il controllo di quella frase | Claude | `main` | la merge di P-56 | P-57 |
+| 9 | **La versione con gli account** — il traguardo | tutti | `main` | le righe 10–12, poi le suite verdi su `main` e il via dell'autore; il cancello degli adempimenti è chiuso dalla sua decisione del 2 ottobre (§4) | P-27, la lista scritta |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**, e si sono incontrate: il client degli
 account è nella pagina (P-18), Progressi è la mappa (P-23), e il carteggio ha
 i suoi contratti e controlli su `main` (P-32…P-35). **Per Claude, l'ordine
-consigliato:** niente di pronto — il ridisegno, il
-server in esercizio e l'esclusione dalle statistiche sono fatti. **Per ChatGPT:** niente di pronto. Il traguardo
-aspetta soltanto i suoi cancelli (P-27) e il via dell'autore. I prompt di Claude vanno uno alla volta nella cartella principale, e
+consigliato:** P-55, quando l'autore dice sì; poi P-57, dopo la merge di P-56. **Per ChatGPT:** P-56, pronto. Il traguardo
+aspetta queste tre righe, poi i suoi cancelli (P-27) e il via dell'autore. I prompt di Claude vanno uno alla volta nella cartella principale, e
 la suite dell'interfaccia di un worktree esclude quella dell'altro, per la porta
 8620. Il numero di una riga è il suo nome, non la sua posizione. Il traguardo,
 P-27, non aspetta le aree 4–6: aspetta il server in esercizio, i testi e gli
@@ -3229,6 +3231,136 @@ comandi come utente `rg`, con i permessi di `/var/lib/rg` — al traguardo.
 Controllato dalla regia: motore 193/197, server 68/68, `ripristina --prova` 22
 controlli, dati 263, specifica 800, guardiano verde, interfaccia 2.158.
 
+### P-55 — Claude: lo strumento che annota le letture del titolare
+
+**Stato:** pronto, **in attesa del sì dell'autore**: il 2 ottobre 2026 la regia
+ha consigliato lo strumento al posto di togliere le due frasi
+dall'informativa, e l'autore non ha ancora detto quale delle due. **Dove:**
+Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano o lanciato dalla
+regia (punto 8). **Nasce da:** il controllo del 2 ottobre (§4).
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-55, su main. Leggi il §15.1 e il §15.3 di
+docs/account-progetto.md, in site/privacy.html le due frasi sulle
+letture del titolare — «ogni lettura è annotata nel registro di
+sicurezza», e l'elenco di quello che il server annota —, e l'esito di
+P-54 nel §6 di docs/prossime-sessioni.md: server/opposizione.mjs è il
+modello.
+
+L'informativa promette che ogni lettura di un account da parte del
+titolare è annotata. Lo strumento del §15.1 non è mai stato scritto:
+oggi il titolare potrebbe leggere solo con sqlite3, senza traccia.
+Scrivilo: uno strumento a riga di comando, a servizio acceso, che dato
+un'email e un motivo obbligatorio mostra l'account e le sue attività
+con le funzioni del motore, non cambia niente dell'account, e scrive
+nel registro quando, quale account e perché — il motivo senza email,
+come per l'opposizione. Un database o un account che non ci sono non
+producono un database vuoto né un «fatto», e senza motivo non si legge.
+Prima il test che fallisce: una lettura, e la sua riga nel registro.
+Un requisito nuovo nel §9.9 della specifica con il suo controllo, e che
+cosa il controllo non vede: una lettura fatta con sqlite3 resta fuori,
+ed è della procedura del titolare. Il §15.1 passa da «Proposto» a
+quello che c'è; quanto vive quella riga lo dice il §15.3, o scrivi
+perché no. Se lo strumento legge le righe di un account fuori da
+server/statistiche.mjs, il controllo di R-ACC-69 lo vede: dichiaralo
+con il motivo, non aggirarlo.
+
+Il server in esercizio gira da v0.28.0: questo codice arriva sulla
+macchina con il traguardo. Non toccare la macchina,
+docs/prossime-sessioni.md né site/. Prima di lanciare la suite
+dell'interfaccia guarda che la porta 8620 sia libera: ChatGPT può
+averla (P-56). Suite verdi, quella del server anche con la LTS 24, voce
+in fondo a [Unreleased], un commit. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-56 — ChatGPT: le condizioni per l'account e i 18 anni, nel modulo di registrazione
+
+**Stato:** **pronto**; deciso dall'autore il 2 ottobre 2026 che lo fa ChatGPT.
+La forma — una frase con il link, non una casella da spuntare — è quella che la
+regia ha consigliato e l'autore non ha cambiato: se vuole la casella, lo dice
+prima di lanciarlo, ed è una riga di questo prompt. **Dove:** app di ChatGPT,
+progetto `~/Software/rotta-giusta-ui`, ramo `ui/main`, modalità Local. **Nasce
+da:** il controllo del 2 ottobre (§4).
+
+```
+Questo prompt è per ChatGPT, nel worktree ~/Software/rotta-giusta-ui,
+sul ramo ui/main. Se sei un altro agente o sei in un'altra cartella,
+fermati e dillo, senza scrivere niente.
+
+Sessione P-56. Leggi in site/avvertenza.html la sezione «Le condizioni
+per l'account» (id condizioni), in site/privacy.html il paragrafo «Con
+un account: quali dati e perché», e in site/app.html
+moduloRegistrazione() e invitoAccount().
+
+L'informativa poggia il salvataggio sull'esecuzione del contratto, cioè
+sulle condizioni per l'account, e dice che l'account è per chi ha
+compiuto 18 anni. Il modulo di registrazione non nomina né le une né
+gli altri: rimanda solo a /privacy, e chi si registra non le incontra.
+Nel modulo, prima di «Crea l'account e salva», una frase che si vede:
+creando l'account accetti le condizioni per l'account, con il link a
+/avvertenza#condizioni — l'indirizzo pulito, senza .html —, e l'account
+è per chi ha compiuto 18 anni. Una frase, nel tono di
+docs/filosofia.md: niente casella da spuntare, niente finestra in più,
+niente blocco del pulsante. Il resto del flusso — registrazione,
+accesso, invito, riepiloghi, testi — resta com'era.
+
+Il controllo di questa frase sulla pagina vera lo aggiunge Claude su
+main dopo la merge (P-57): non toccare tests/. La suite
+dell'interfaccia vuole Chrome, la porta 8620 libera
+(lsof -iTCP:8620 -sTCP:LISTEN) e il permesso per le connessioni locali,
+e dura circa quattro minuti; la cartella principale può tenere la porta
+(P-55): se non gira, fermati e dillo, non saltarla. Se un controllo ti
+sta stretto — un elenco chiuso di frasi, una misura di T-08 o T-09 sul
+pannello —, fermati e dillo: cambiarlo tocca main.
+
+Non toccare docs/prossime-sessioni.md. Tutte le suite verdi, collaudo
+guardato a 320, 375 e 1280 px, voce in fondo a [Unreleased], un commit
+con il trailer, versione non toccata. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-57 — Claude: il controllo delle condizioni nel modulo di registrazione
+
+**Stato:** in attesa della merge di P-56. **Dove:** Claude Code,
+`~/Software/rotta-giusta`, ramo **`main`**, a mano o lanciato dalla regia
+(punto 8). **Nasce da:** P-56 — è per lei quello che P-49 è stato per P-48.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-57, su main. Leggi gli esiti di P-56 e di P-49 nel §6 di
+docs/prossime-sessioni.md, e il §12 di docs/account-client-progetto.md.
+
+P-56 ha messo nel modulo di registrazione la frase sulle condizioni per
+l'account e sui 18 anni. Aggiungi il suo controllo al banco del client:
+sulla pagina vera, nel modulo «Crea un account» e in testo che si vede,
+prima del pulsante che crea l'account, ci sono il link a
+/avvertenza#condizioni e i 18 anni; e in site/avvertenza.html l'ancora
+esiste. Con le rotture della pagina di riferimento — la frase che
+manca, nascosta, il link all'indirizzo sbagliato o a un'ancora che non
+c'è — rosse per il loro motivo, e la pagina di prima di P-56 rossa. Un
+requisito nuovo nel §9.9 della specifica, coperto per quello che il
+banco vede.
+
+Prima di lanciare la suite dell'interfaccia guarda che la porta 8620
+sia libera (AGENTS.md). Non toccare docs/prossime-sessioni.md né site/.
+Suite verdi su più giri, voce in fondo a [Unreleased], un commit.
+Chiudi con il resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
 ### P-27 — la regia, con l'autore: il traguardo, la 0.29.0
 
 **Stato:** in attesa dei cancelli qui sotto; la lista è scritta il 2 ottobre
@@ -3250,7 +3382,7 @@ ordine; ogni passo dice chi lo fa e come si vede che è fatto.
   ottobre»): due promesse dell'informativa non hanno ancora il loro pezzo — lo
   strumento che annota le letture del titolare, e le condizioni per l'account
   nel modulo di registrazione. Si chiude quando l'autore decide per ciascuna:
-  farla prima, o cambiare la frase che la promette;
+  farla prima, o cambiare la frase che la promette. Sono P-55, P-56 e P-57;
 - le suite verdi sullo stato di `main`, quella del server anche con la LTS 24.
 
 **I passi, in quest'ordine:**
@@ -3797,3 +3929,9 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   stessi numeri —, dati 263, specifica 800, interfaccia 2.158, `ripristina
   --prova` verde, guardiano verde. Il cancello delle suite è chiuso su questo
   stato, e si riapre a ogni commit che tocca codice.
+- **2 ottobre 2026 — P-55, P-56 e P-57 scritti.** L'autore ha deciso che le
+  condizioni nel modulo di registrazione le fa ChatGPT: P-56, pronto, con la
+  forma consigliata dalla regia, una frase con il link. P-57 è il suo
+  controllo, dopo la merge. P-55, lo strumento delle letture, aspetta ancora il
+  suo sì. Il meccanismo torna quello di prima: un prompt con il numero, un
+  resoconto, la merge della regia.
