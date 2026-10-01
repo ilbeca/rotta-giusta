@@ -200,7 +200,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 9 | **La versione con gli account** — il traguardo | tutti | `main` | gli adempimenti del §4, dell'autore | segnaposto P-27 |
+| 9 | **La versione con gli account** — il traguardo | tutti | `main` | gli adempimenti del §4, dell'autore | P-27, la lista scritta |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**, e si sono incontrate: il client degli
@@ -3097,6 +3097,69 @@ comandi come utente `rg`, con i permessi di `/var/lib/rg` — al traguardo.
 Controllato dalla regia: motore 193/197, server 68/68, `ripristina --prova` 22
 controlli, dati 263, specifica 800, guardiano verde, interfaccia 2.158.
 
+### P-27 — la regia, con l'autore: il traguardo, la 0.29.0
+
+**Stato:** in attesa dei cancelli qui sotto; la lista è scritta il 2 ottobre
+2026, perché quel giorno non si inventi niente. **Dove:** la sessione di regia,
+su `main`, con l'autore ai pannelli. **È la lista di controllo del §5**, in
+ordine; ogni passo dice chi lo fa e come si vede che è fatto.
+
+**I cancelli — tutti chiusi prima del passo 1:**
+
+- gli adempimenti del §15.4 di `account-progetto.md`, e la privacy che smette
+  di dire «Bozza per la versione con gli account» — o l'autore che decide di
+  pubblicarla così, per scritto nel §4;
+- la coda vuota per Claude e per ChatGPT: nessun ramo con lavoro non fuso
+  (`git log main..ui/main` vuoto, nessun worktree sporco);
+- le suite verdi sullo stato di `main`, quella del server anche con la LTS 24.
+
+**I passi, in quest'ordine:**
+
+1. **Il commit di rilascio** (regia): `VERSION`, `CACHE` in `site/sw.js` e
+   `versione` in `site/dati/meta.json` a **0.29.0**; `[Unreleased]` del
+   CHANGELOG diventa `[0.29.0]` con una testa che dice che cosa cambia per chi
+   studia; nello stesso commit si toglie la nota in testa a
+   `docs/filosofia.md` (P-26). Il commit tocca regole, motore e interfaccia
+   insieme: come per la 0.28.1, lo lancia l'autore con `TERRITORI_OK=1`. Poi il
+   tag annotato `v0.29.0`.
+2. **Il push** (regia, con il sì dell'autore): `main` e `v0.29.0`. Da qui
+   `.pages.dev` costruisce da sé la 0.29.0: lì la pagina non mostra moduli
+   d'account e manda a `rottagiusta.it/app` (R-ACC-56, R-STA-09).
+   `rottagiusta.it` resta alla 0.28.1 finché non si preme «Build now».
+3. **Il server** (autore sulla macchina, regia che legge):
+   `git rev-parse v0.29.0^{commit}` sul Mac, poi `sudo rg-aggiorna v0.29.0
+   <commit>` sulla macchina. Gli strumenti di `strumenti/macchina/` non sono
+   cambiati da P-15 (verificato il 2 ottobre: si riverifica con `git diff
+   4d530e6..v0.29.0 -- strumenti/macchina/`), quindi non si ricopia niente.
+   Si vede fatto quando `curl https://api.rottagiusta.it/v1/salute` dice
+   `versione 0.29.0` e schema 4. Prima del passo 4, perché la pagina nuova
+   chiede al server R-ACC-49 e la correzione di P-15, e il server nuovo regge la
+   pagina vecchia, che non lo chiama.
+4. **La pagina** (autore nel pannello di statichost.eu): «Source & build» →
+   «Repository» → «Branch» da `fix/0.28.1` a **`main`**, «Save», poi
+   «Builds» → «Build now». Si vede fatto quando `curl
+   https://rottagiusta.it/sw.js` dice `rg-0.29.0` — non `rg-0.28.1`.
+5. **Le verifiche che solo quel giorno può fare** (autore, regia che guida):
+   un archivio vero nel browser, di prima degli account, che passa
+   nell'account senza perdere una riga (R-ACC-05, R-ACC-62); il cookie fra
+   `rottagiusta.it` e `api.` su un Safari vero (R-ACC-59, Q-PROVE); una
+   registrazione vera con la mail che arriva (R-ACC-61); sulla macchina,
+   `opposizione.mjs` e `statistica.mjs` lanciati come utente `rg` (P-54).
+6. **La chiusura** (regia): esito qui, il registro, il ramo `fix/0.28.1` che
+   si può togliere da GitHub, e `ui/main` e `ui/vetrina` allineati.
+
+**Se qualcosa va storto:** la pagina torna indietro rimettendo «Branch» su
+`fix/0.28.1` e premendo «Build now»; il server con `sudo rg-torna` (§2.7 di
+`account-progetto.md`), e il database a schema 4 regge il server della 0.28.0
+(misurato da P-54). Il push di `main` non si annulla, ma su `.pages.dev` non
+apre niente che possa fallire.
+
+**Dopo:** **trenta giorni dopo**, la soglia degli allarmi riletta sul registro
+vero (§15.4); **dal 16 ottobre**, il redirect di `.pages.dev` (fase D2 di
+`docs/migrazione-hosting.md`), dell'autore.
+
+**Esito:** —
+
 ---
 
 ### I segnaposto — i prompt che non si possono ancora scrivere
@@ -3112,29 +3175,6 @@ segnaposto**.
 
 Il secondo tempo di `consigli()` si fa nella stessa sessione di P-47, che
 aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
-
-#### P-27 — la regia, con tutti: il traguardo
-
-**Aspetta:** gli adempimenti del §15.4 di
-`account-progetto.md` chiusi dall'autore. **Dove:** `main`. **Dovrà
-contenere:** la merge di tutto; il rilascio come dice `AGENTS.md` — numero nei
-tre posti, voce, tag, push chiesto, «Build now» — **più il server**, aggiornato
-con `rg-aggiorna <tag> <commit>` allo stesso tag, che porta R-ACC-49 e la
-correzione del modulo principale di P-15, e con gli strumenti di
-`strumenti/macchina/` riportati sulla macchina se sono cambiati dopo P-15; poi le due verifiche che solo quel giorno può
-fare: un archivio vero nel browser che passa nell'account senza perdere una riga
-(R-ACC-05), e il cookie fra `rottagiusta.it` e `api.` su un Safari vero
-(Q-PROVE). E sulla macchina, dopo `rg-aggiorna`: lo schema passato a 4 al
-primo avvio, e `opposizione.mjs` e `statistica.mjs` lanciati come utente `rg`
-(P-54). Il §5 di questo file è la lista di controllo. **Trenta giorni
-dopo**, la soglia degli allarmi riletta sul registro vero
-(`account-progetto.md` §15.4). **Nello stesso commit del rilascio** si toglie
-la nota in testa a `docs/filosofia.md`, che lo dice di sé (P-26). **E il ramo
-di build di statichost.eu torna a `main`**, se il rilascio 0.28.1 l'ha portato
-su `fix/0.28.1`: il `curl` di `sw.js` deve mostrare il numero nuovo, non
-`rg-0.28.1`. Il numero del traguardo è 0.29.0. Il CHANGELOG di `main` porta
-anche la sezione `[0.28.1]`, che oggi sta solo sul ramo `fix/0.28.1`. Il campo
-è in «Source & build» → «Repository» → «Branch».
 
 ---
 
@@ -3557,3 +3597,10 @@ anche la sezione `[0.28.1]`, che oggi sta solo sul ramo `fix/0.28.1`. Il campo
   conteggio, e un controllo è rosso se un conteggio nasce fuori dal posto che lo
   garantisce. Il traguardo prova i due comandi sulla macchina. Nel §4 due
   domande per l'autore e due righe per la sua procedura.
+- **2 ottobre 2026 — la lista del traguardo.** P-27 non è più un segnaposto:
+  i cancelli, sei passi in ordine con chi li fa e come si vede che sono fatti,
+  e come si torna indietro. Verificati per scriverla: gli strumenti della
+  macchina invariati da P-15; la privacy che dice ancora «Bozza», quindi un
+  cancello; `.pages.dev` che costruisce `main` al push ma lì non mostra
+  l'account; `rg-aggiorna` che legge il tag da GitHub, quindi il server dopo il
+  push e prima di «Build now».
