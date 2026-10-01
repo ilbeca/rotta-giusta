@@ -589,8 +589,12 @@ consuma, non si riprogetta.
   P-08: creare la STARDUST1-S, la chiave API di sola scrittura sul bucket, una
   chiave SSH nuova, la chiave API di Transactional Email, e il record di `api.`.
   Le chiavi si mettono sulla macchina, mai nel repo.
-- **I worktree `~/Software/rotta-giusta-p07` e `-p08`** con i loro rami, già
-  fusi in `main`: si tolgono quando le due sessioni sono chiuse.
+- ~~I worktree `rotta-giusta-p07` e `-p08`~~ — **tolti il 1° ottobre 2026**,
+  con i loro rami già fusi, insieme a `rotta-giusta-fix`. Il ramo `fix/0.28.1`
+  resta, locale e su GitHub: statichost.eu costruisce da lì fino al traguardo,
+  e **il campo «Branch» del pannello non va rimesso a `main` prima**, perché il
+  `main` di GitHub è la 0.28.0 senza P-36, e una build qualunque lo
+  ripubblicherebbe.
 
 ## 5 · Il traguardo: la versione con gli account
 
@@ -3439,3 +3443,7 @@ anche la sezione `[0.28.1]`, che oggi sta solo sul ramo `fix/0.28.1`. Il campo
   ottobre nel §8 dell'area 6 e nel §10 della specifica, e portato in `main` la
   sezione `[0.28.1]` del CHANGELOG, solo aggiungendo righe. Il traguardo aspetta
   ora soltanto gli adempimenti dell'autore.
+- **1° ottobre 2026 — tolti tre worktree.** `rotta-giusta-p07`, `-p08` e
+  `-fix`, puliti, e i rami `sessione/p-07` e `sessione/p-08`, già in `main`.
+  `fix/0.28.1` resta: il pannello di statichost.eu costruisce da lì fino al
+  traguardo.
