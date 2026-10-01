@@ -1757,24 +1757,49 @@ mese** raggiunte (§9.3). Scelte, con il loro perché:
   registro vero: quanti fallimenti fa un giorno normale. È nella coda, dentro il
   traguardo (P-27), per non restare un'intenzione.
 
-**Aperto, decide l'autore** — i punti che la bozza del registro lascia in
-sospeso. Nessuno blocca il server; bloccano la versione con gli account, perché
-finiscono nell'informativa:
+**Deciso dall'autore il 1° ottobre 2026** — i punti che la bozza del registro
+lasciava in sospeso. Sono nella privacy di `ui/main` (`ee4753a`), che resta
+**bozza** finché le tre cose da fare qui sotto non sono fatte:
 
-- **un indirizzo postale del titolare**, che l'informativa deve dare (art. 13.1.a);
-- **la base giuridica del registro di sicurezza** — obbligo di legge (6.1.c) o
-  legittimo interesse (6.1.f). È un giudizio giuridico, come il paragrafo «Cosa
-  non c'è» della privacy (`migrazione-hosting.md`), da far confermare a chi può
-  darlo;
-- **l'inoltro di privacy@ finisce in una casella Gmail**, cioè da Google, che
-  può trasferire dati fuori dall'UE (Data Privacy Framework). O l'informativa lo
-  dice, o l'inoltro va verso una casella nell'UE;
-- **per quanto si conservano le richieste evase** — proposta: 2 anni;
-- **il DPA di statichost.eu**, già aperto in `migrazione-hosting.md`: le pagine
-  non trattano account, ma l'IP di chi visita è un dato personale;
-- **l'autenticazione a due fattori** sulla casella del titolare, su Scaleway e
-  su IONOS. La dashboard di Scaleway, il 26 settembre 2026, aveva ancora «Secure
-  your account» fra i passi da fare.
+- **Il titolare si nomina nell'informativa, con nome e cognome**, persona
+  fisica, e `privacy@` come recapito. **Nessun indirizzo postale**: l'autore è
+  un privato senza partita IVA, e l'art. 13.1.a chiede «l'identità e i dati di
+  contatto», che l'email può dare — da far confermare con il punto sotto. Il
+  nome entra nel repo solo in `site/privacy.html`: il guardiano lo ammette lì e
+  in nessun altro file (`strumenti/controlla.py`, `test_titolare`, `2a040fd`).
+- **La base giuridica del registro di sicurezza: legittimo interesse** (art.
+  6.1.f, considerando 49), con il diritto di opporsi detto nell'informativa.
+  **Da far confermare** a chi può dare un parere, insieme a tre cose che lo
+  stesso parere copre: il recapito senza indirizzo postale; le statistiche,
+  che l'informativa mette sotto l'esecuzione del contratto (6.1.b) ma
+  somigliano più a un legittimo interesse; e il paragrafo su statichost.eu.
+- **`privacy@` passa a una casella nell'UE**, al posto dell'inoltro verso Gmail.
+  L'informativa scrive già «i dati non escono dall'Unione europea»: **è vero
+  solo dopo il cambio**, quindi il cambio viene prima del rilascio. La procedura
+  per le violazioni e l'attività programmata che legge la casella (sopra)
+  vanno puntate sulla casella nuova.
+- **Le richieste evase si tengono due anni dalla chiusura**, per dimostrare come
+  sono state trattate. Scritto nell'informativa.
+- **Il DPA di statichost.eu si firma.** Misurato il 1° ottobre 2026 su
+  `statichost.eu/dpa/`: è un modulo da stampare, compilare (nome, qualifica,
+  firma, luogo e data) e mandare firmato a `eric@statichost.eu`, che rimanda la
+  copia firmata da tutte e due le parti. Sub-responsabili: Hetzner (Germania) e
+  BunnyWay (Slovenia), tutti nell'UE. L'informativa dice già «responsabile del
+  trattamento con un accordo scritto»: **vero solo dopo la firma**.
+
+**Da fare, prima del rilascio (P-27)** — nessuno lo può fare al posto
+dell'autore:
+
+1. firmare e spedire il DPA di statichost.eu, e tenere la copia firmata accanto
+   al registro;
+2. creare la casella di `privacy@` nell'UE, togliere l'inoltro verso Gmail,
+   e riprovare con una mail;
+3. il parere sui quattro punti qui sopra; se cambia qualcosa, la privacy si
+   corregge su `ui/main`, e la parola «Bozza» si toglie solo dopo;
+4. i due fattori sulla casella del titolare, su Scaleway («Secure your
+   account») e su IONOS, e il PDF del DPA di Scaleway accanto al registro;
+5. rileggere il registro dei trattamenti contro la privacy nuova: tempi,
+   base giuridica, fornitori.
 
 ---
 

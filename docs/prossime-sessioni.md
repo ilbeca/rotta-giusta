@@ -449,8 +449,9 @@ consuma, non si riprogetta.
   cambiare il nome o il posto di un ingresso già deciso, come descrivere le
   figure a chi usa un lettore di schermo senza svelare la risposta, e Q-TEMA,
   il tema scuro. Non bloccano niente prima di P-25.
-- **La privacy scritta da P-18 è una bozza**, da completare e verificare da te
-  prima del rilascio, con i punti del §15.4 di `account-progetto.md`.
+- ~~**La privacy scritta da P-18 è una bozza**~~ — **completata il 1° ottobre
+  2026** con le tue decisioni; resta «bozza» fino al parere e alle cose da fare
+  del §15.4 di `account-progetto.md`.
 - Q-ONBOARD (specifica §10): che cosa chiede l'onboarding oltre alla data, e se
   il sito consiglia un piano di studio strutturato.
 - Il push di `main`, quando lo si vuole. Ricorda che su `rottagiusta.it` il push
@@ -568,23 +569,17 @@ consuma, non si riprogetta.
   commit lo lancia l'autore con `TERRITORI_OK=1`, che è suo. P-36 si applica a
   `v0.28.0` senza conflitti (provato in memoria). `.pages.dev` resta alla 0.28.0
   fino al redirect del 16 ottobre. Il traguardo diventa la 0.29.0.
-- **Gli adempimenti: proposte, non decisioni** (1° ottobre 2026), per i punti
-  del §15.4 di `account-progetto.md`: l'indirizzo postale — casa o un
-  domicilio, sceglie l'autore —; la base giuridica del registro di sicurezza,
-  legittimo interesse (art. 6.1.f, considerando 49), **da far confermare**;
-  `privacy@` su una casella nell'UE invece dell'inoltro a Gmail, o dichiarato
-  nell'informativa; due anni per le richieste evase; il DPA di statichost.eu da
-  chiedere e firmare. Da fare, senza niente da decidere: i due fattori su Gmail,
-  Scaleway e IONOS, il PDF del DPA di Scaleway, «Secure your account».
-- **Gli adempimenti rimasti**, sei punti, tutti nel §15.4 di
-  `account-progetto.md` e bloccano il punto 9: l'indirizzo postale del titolare,
-  la base giuridica del registro di sicurezza (da far confermare), l'inoltro di
-  `privacy@` verso Gmail (un possibile trasferimento fuori dall'UE), per quanto
-  si tengono le richieste evase, il DPA di statichost.eu, i due fattori su
-  Gmail, Scaleway e IONOS. In più: scaricare il PDF del DPA di Scaleway e
-  tenerlo accanto al registro, e «Secure your account» nella console di
-  Scaleway. Il registro dei trattamenti e la procedura per le violazioni sono
-  bozze tue, fuori dal repo.
+- **Gli adempimenti: decisi dall'autore il 1° ottobre 2026**, e la privacy
+  completata su `ui/main` (`ee4753a`, fusa): il titolare con nome e cognome,
+  `privacy@` come recapito e nessun indirizzo postale; legittimo interesse per
+  il registro di sicurezza; `privacy@` su una casella nell'UE; due anni per le
+  richieste evase; il DPA di statichost.eu da firmare. Il nome entra nel repo
+  solo nella privacy, e il guardiano lo tiene lì (`2a040fd`). **Restano cinque
+  cose da fare, tutte tue**, nell'elenco in fondo al §15.4 di
+  `account-progetto.md`: il DPA firmato e spedito, la casella UE, il parere
+  giuridico, i due fattori e il PDF del DPA di Scaleway, il registro dei
+  trattamenti riletto. Bloccano il traguardo: la privacy scrive già «accordo
+  scritto» e «i dati non escono dall'UE», che diventano veri solo dopo.
 - **Alla messa in esercizio** (punto 8), con una sessione che ti accompagna come
   P-08: creare la STARDUST1-S, la chiave API di sola scrittura sul bucket, una
   chiave SSH nuova, la chiave API di Transactional Email, e il record di `api.`.
