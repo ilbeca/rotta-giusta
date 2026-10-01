@@ -2619,6 +2619,29 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   aspettato che fosse libera —; specifica **816** (erano 800). Guardiano e
   controllo della documentazione verdi. `site/`,
   `docs/prossime-sessioni.md` e la macchina non sono stati toccati.
+### Corretto — P-56: le condizioni per l'account prima di registrarsi
+
+- **Il modulo rimandava solo alla privacy**, che fonda il salvataggio sulle
+  condizioni per l'account e riserva l'account a chi ha compiuto 18 anni:
+  chi si registrava non incontrava né le condizioni né il limite d'età.
+  Ora, prima di «Crea l'account e salva», una frase visibile dice che creando
+  l'account si accettano le condizioni, con il link pulito
+  `/avvertenza#condizioni`, e che l'account è per chi ha compiuto 18 anni.
+  Nessuna casella, finestra o nuova condizione per abilitare il pulsante;
+  registrazione, accesso, invito e riepiloghi restano com'erano.
+
+- **Riprodotto prima, guardato dopo in Chrome a 320, 375 e 1280 px:** frase
+  leggibile prima del pulsante, nessuno sbordo orizzontale, pulsante abilitato,
+  nessuna casella aggiunta; il link raggiunge la sezione «Le condizioni per
+  l'account» a tutte e tre le larghezze, senza errori JavaScript.
+  Il controllo permanente della frase resta a P-57, su `main` dopo la merge:
+  `tests/` e `docs/prossime-sessioni.md` non sono stati toccati.
+
+  Suite: motore **193/197**, con i quattro skip previsti; dati **263**;
+  interfaccia **2.158**, completa con Chrome e la 8620 libera prima dell'avvio;
+  specifica **800**; server **68/68** su Node **25.3.0** e **24.21.0 LTS**,
+  pacchetto separato con impronta verificata contro `SHASUMS256.txt`.
+  Guardiano e controllo della documentazione verdi. Versione non toccata.
 
 ## [0.28.1] — 2026-10-01
 
