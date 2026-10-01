@@ -230,6 +230,17 @@ trasformare una proposta in decisione.
 | Descrizioni didattiche delle figure | L'alt attuale non rende equivalente ogni immagine. | L'autore, con fonte e revisione didattica, sceglie una strada che non sveli la risposta; P-25 registra il limite senza riscrivere la banca. |
 | Tema scuro | Q-TEMA nella specifica canonica resta aperta. | L'autore decide se la variante sia requisito futuro. La misura del chiaro procede comunque. |
 
+**Decise dall'autore il 1° ottobre 2026: tutte e quattro «no, per ora».**
+Nessun cambio di gerarchia nelle viste, perché le aree 1–5 hanno già scelto
+ordine e azioni e i controlli le tengono ferme; nessun ingresso rinominato o
+spostato prima di prove con persone (Q-PROVE), perché un nome non provato è
+un'opinione contro un'altra; le figure tengono l'alt di oggi, «Figura del
+quesito n: domanda», con il limite dichiarato — 119 descrizioni da scrivere e
+far rivedere rischierebbero di svelare la risposta —; il tema scuro è
+un'opzione futura, non un requisito (Q-TEMA, chiusa nel §10 della
+specifica). P-25 è stato quindi rifinitura: i cinque difetti T-* misurati da
+P-45. Le prove con zoom nativo e lettore di schermo restano dell'autore.
+
 Anche Q-PROVE resta dell'autore: servono dispositivi e persone per un collaudo
 esterno e per Safari reale, in particolare il cookie fra i due sottodomini.
 Una prova su Safari installato a 375/1280 px di P-18 non è prova su hardware

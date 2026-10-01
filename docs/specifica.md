@@ -1836,16 +1836,29 @@ Ogni riga dice **chi decide**. Una questione senza un decidente non si chiude ma
 | Q-NAV | Le destinazioni della barra: quattro, cinque, quali etichette | l'autore | Il codice decide al posto suo, come è già successo (§6.2) |
 | Q-EXTRA | Nome, forma e collocazione del riquadro degli extra | l'autore | I Segnali restano dove capita |
 | Q-DIM | La dimensione della prima attività per chi comincia | l'autore, dopo un confronto fra due varianti | Restano i 25 quesiti attuali, mai verificati su chi inizia |
-| Q-TEMA | Il tema scuro: opzione futura o requisito | l'autore | Il tema chiaro va comunque misurato da solo (appendice A) |
 | Q-PROG | Il programma d'esame come dataset | serve una fonte, poi l'autore | Nessuna mappa del programma è possibile: nel repo non c'è (§4.6) |
 | Q-AMBITO | Se `carteggio_e12.json` esce dal cassetto | l'autore | 50 esercizi pubblicati e non usati; cambia il pubblico più di ogni scelta di navigazione. Finché resta aperta, un controllo pretende che la pagina non li carichi (R-UX-07): tirarli fuori è una decisione, non un ritocco |
 | Q-CART4 | «Un esercizio per ciascuno dei quattro argomenti» è un'assunzione | serve la scuola nautica | La composizione della prova resta non confermata, e la 42/D non ha esercizi di carburante. Dal 30 settembre 2026 l'assunzione viaggia con il contratto, `PROVA_CARTEGGIO.assunzione`, e chi compone la prova la riceve con la lista (R-SEL-12). Dal 30 settembre 2026 (P-35) arriva anche alla preparazione della pagina, che la dichiara prima dell'avvio come la dà il motore, e un controllo la segue fino lì (R-SEL-17) |
 | Q-PROVE | Verifiche con dispositivi reali e con persone — e Safari, che il banco del browser non raggiunge (rimandato dall'autore il 29 settembre 2026) | l'autore fornisce dispositivi e persone | Nessuna prova su hardware Apple vero, e nessuna prova con persone diverse dall'autore. Safari nel banco vorrebbe «Allow remote automation», un'impostazione dell'autore, e anche così WebDriver non legge lo storage (`account-client-progetto.md` §12): il cookie fra `rottagiusta.it` e `api.` su Safari si prova a mano |
-| Q-ONBOARD | Che cosa chiede l'onboarding di chi si registra, oltre alla data d'esame; e se il sito consiglia un piano di studio strutturato | l'autore | Un piano deve reggersi su quello che il motore sa: niente programma d'esame (Q-PROG), niente studio fatto altrove (chiusa l'8 settembre), niente «quanto tempo hai?» (R-TEMPO-03), e senza data niente quota. I pezzi ci sono già — `traccia()`, `quadro()`, `dovePesa()`, `stimaImpegno()` —, e il piano di 17 sessioni del progetto originario è stato tolto nella 0.19.0 con il resto del servizio personale |
-| Q-SUITE | La suite dell'interfaccia vuole Chrome e la porta 8620 libera, da P-29, e dura circa 150 s da P-46 (85 s con P-43, un minuto prima): la pagina vera parla solo con la 8620, quindi i suoi gruppi con l'API girano in fila su una corsia, e quella somma è la durata. È il prezzo del browser vero, accettarlo o accorciarlo. La 8620 è una sola anche fra i worktree, e due suite in parallelo — P-18 e P-43 il 29 settembre — si escludono | l'autore, rimandata il 29 settembre 2026 | Accorciarla vuol dire aprire il CORS del server a più origini o accorciare attese che hanno già dato un rosso falso; finché resta aperta, la suite si fa girare intera e un'esecuzione saltata si dice |
 
 **Chiuse, e non si riaprono senza un motivo nuovo:**
 
+- **Q-TEMA, Q-ONBOARD e Q-SUITE** (1° ottobre 2026, l'autore, su una proposta
+  verificata dalla regia). **Q-TEMA:** il tema scuro è un'opzione futura, non
+  un requisito; il tema chiaro si misura da solo (appendice A). **Q-ONBOARD:**
+  l'onboarding chiede soltanto la data d'esame, facoltativa (R-ACC-55), e il
+  sito non consiglia un piano di studio: un piano dovrebbe reggersi su quello
+  che il motore non sa — il programma d'esame (Q-PROG), lo studio fatto altrove,
+  quanto tempo hai (R-TEMPO-03). Si riapre se l'uso lo chiede. **Q-SUITE:** la
+  suite dell'interfaccia resta com'è, circa 240 s con Chrome e la porta 8620:
+  accorciarla vorrebbe dire aprire il CORS del server a più origini o accorciare
+  attese che hanno già dato rossi falsi, cioè pagare in sicurezza o affidabilità
+  due minuti. Mentre si lavora si fa girare un gruppo solo; la suite intera
+  prima del commit, e un'esecuzione saltata si dice.
+- **Le quattro proposte del §8 dell'area 6** (1° ottobre 2026, l'autore): «no,
+  per ora». Il dettaglio è nel §8 di `docs/area-6-progetto.md`. Le prove con
+  zoom nativo al 200 % e con un lettore di schermo vero (R-RIF-10, 13, 14, 15)
+  restano dell'autore, fuori dalla merge di P-25 e dal traguardo.
 - **Q-DUE: Progressi diventa una mappa per tema** (29 settembre 2026, l'autore,
   dopo un confronto con Claude e ChatGPT). Nessuna delle due classifiche —
   `peggiori()` in Rotta, `consigli()` in Progressi — resta come lista. Il
@@ -2373,3 +2386,6 @@ successo, ed è il motivo per cui questo file esiste.
   risposte identici e l'esatta diversa, e il banco lì legge l'esito dal
   riscontro invece di darlo per rosso. Il §9.6 non
   mette più i testi del riepilogo fra quelli che nessun controllo legge.
+- **1° ottobre 2026 — Q-TEMA, Q-ONBOARD e Q-SUITE chiuse.** Decise
+  dall'autore con le quattro proposte del §8 dell'area 6, e scritte dalla regia
+  fra le chiuse del §10; le tre righe escono dalla tabella delle aperte.

@@ -200,18 +200,15 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 8 | La messa in esercizio del server su Scaleway, con l'autore — **in corso** | Claude e l'autore | `main`, a mano, e pannelli | niente | P-15 |
-| 26b | La realizzazione dell'area 6 — la rifinitura dei cinque difetti T-* | ChatGPT | `ui/main` | niente — **pronto** | P-25 |
-| 34 | Scrivere le decisioni del 1° ottobre nel §8 dell'area 6 e nel §10 della specifica | la regia | `main` | P-15 (la cartella principale) | §4 |
-| 9 | **La versione con gli account** — il traguardo | tutti | `main` | P-15, e gli adempimenti del §4 | segnaposto P-27 |
+| 9 | **La versione con gli account** — il traguardo | tutti | `main` | gli adempimenti del §4, dell'autore | segnaposto P-27 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**, e si sono incontrate: il client degli
 account è nella pagina (P-18), Progressi è la mappa (P-23), e il carteggio ha
 i suoi contratti e controlli su `main` (P-32…P-35). **Per Claude, l'ordine
-consigliato:** P-15, la messa in esercizio, quando
-l'autore ha il tempo; per il resto, niente di pronto. **Per ChatGPT: P-25**,
-pronto dal 1° ottobre. I prompt di Claude vanno uno alla volta nella cartella principale, e
+consigliato:** niente di pronto — il ridisegno e il
+server in esercizio sono fatti. **Per ChatGPT:** niente di pronto. Il traguardo
+aspetta soltanto gli adempimenti dell'autore. I prompt di Claude vanno uno alla volta nella cartella principale, e
 la suite dell'interfaccia di un worktree esclude quella dell'altro, per la porta
 8620. Il numero di una riga è il suo nome, non la sua posizione. Il traguardo,
 P-27, non aspetta le aree 4–6: aspetta il server in esercizio, i testi e gli
@@ -548,8 +545,8 @@ consuma, non si riprogetta.
   4. **Zoom nativo al 200 % e lettore di schermo vero** (R-RIF-10, 13, 14, 15)
      restano prove dell'autore, fuori dalla merge di P-25 e dal traguardo.
   5. **Il rilascio di correzione 0.28.1, con il solo P-36**: sì (punto sotto).
-  Da scrivere dove si decidono — §8 dell'area 6, §10 della specifica — **dalla
-  regia quando P-15 lascia la cartella principale**: è la riga 34 della coda.
+  **Scritte il 1° ottobre** nel §8 dell'area 6 e fra le chiuse del §10 della
+  specifica, da cui escono Q-TEMA, Q-ONBOARD e Q-SUITE.
 - **Il sito pubblicato perde il testo del carteggio senza dirlo** (trovato da
   P-50 il 1° ottobre 2026, verificato dalla regia sul tag): la v0.28.0 non ha
   l'avviso e la conferma del browser di P-36, che sono su `main` dal 26
@@ -1180,7 +1177,7 @@ puliti, il diff tocca il progetto e il CHANGELOG, merge chiusa da sola.
 
 ### P-15 — Claude con l'autore: la messa in esercizio su Scaleway
 
-**Stato:** **in corso dal 1° ottobre 2026**, in una sessione di Claude Code aperta dall'autore. Il tag `v0.28.0` contiene il server, senza R-ACC-49 (P-43): il prompt lo dice. **Dove:** Claude Code, `~/Software/rotta-giusta`,
+**Stato:** **chiuso il 1° ottobre 2026**, commit `4d530e6` su `main`, in una sessione di Claude Code aperta dall'autore. Il tag `v0.28.0` contiene il server, senza R-ACC-49 (P-43): il prompt lo dice. **Dove:** Claude Code, `~/Software/rotta-giusta`,
 ramo **`main`**, a mano: gli strumenti della macchina stanno nel repo. È una
 sessione che si fa **insieme**, come P-08.
 
@@ -1223,7 +1220,33 @@ Non toccare docs/prossime-sessioni.md. Suite verdi, voce in fondo a
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `4d530e6` — un commit solo: la sessione ha corretto con
+`--amend` il suo `3771d33` per aggiungere il riavvio, e su quello non si
+appoggiava niente —, voce nel CHANGELOG, §2.8 nuovo e §19 di
+`account-progetto.md`. **Il server è in esercizio**: STARDUST1-S `rg-api` a
+`pl-waw-2` con una chiave SSH nuova; la macchina come il §2.7, con gli
+strumenti in `strumenti/macchina/`; il gruppo di sicurezza chiuso prima di
+aprire la 443; `api.` su IONOS con un certificato Let's Encrypt da Caddy; due
+applicazioni IAM con policy minime e le loro chiavi messe sulla macchina
+dall'autore; `RG_TITOLARE`; le copie due volte al giorno verso `nl-ams`; il
+server avviato da `v0.28.0`; il riavvio automatico dopo un kernel di sicurezza
+alle 03:30 UTC, deciso dall'autore nella sessione (§20). **Le misure del §19**:
+una mail vera con i link intatti e DKIM/SPF/DMARC che passano, una copia
+scaricata da `nl-ams` e ripristinata, un riavvio dopo il kernel in 32,5 s con
+tutto ripartito, Argon2id 148 ms di mediana. **Non fatto**: le regole IPv6 da
+fuori, le istantanee del disco, un ripristino con righe da confrontare.
+**Trovato**: il gruppo di sicurezza creato dalla console era tutto aperto; il
+server di `v0.28.0` avviato dal collegamento `/srv/rg/attuale` usciva con 0
+senza log — `server.mjs` su `main` corretto con un test rosso prima, e l'unità
+risolve il collegamento —; il kernel trattenuto dagli aggiornamenti graduali;
+Ubuntu che non riavvia da solo (§2.8). **Per la coda**: il primo tag dopo
+`v0.28.0` porta R-ACC-49 e la correzione del modulo principale, e si installa
+con `rg-aggiorna <tag> <commit>`; un cambio a `strumenti/macchina/` va portato
+a mano sulla macchina, perché `main` non si pusha. Controllato dalla regia:
+motore 193/197, server **62/62**, dati 242, specifica 784, guardiano verde,
+interfaccia 2.168; `https://api.rottagiusta.it/v1/salute` risponde 200 con
+`versione 0.28.0`, schema 3 e un'epoca. La regia **non** è entrata nella
+macchina.
 
 ### P-16 — Claude: `ritmo()` dice «orologio» anche senza orologio
 
@@ -2944,8 +2967,7 @@ specifica 784, guardiano verde, interfaccia 2.173 in 240 s.
 
 ### P-25 — ChatGPT: la realizzazione dell'area 6, la rifinitura
 
-**Stato:** pronto dal 1° ottobre 2026: P-45 e P-21 sono chiusi, e l'autore ha
-deciso le quattro proposte del §8 (§4). **Dove:** app di ChatGPT, progetto
+**Stato:** **chiuso il 1° ottobre 2026**, merge `511aa6d`. **Dove:** app di ChatGPT, progetto
 `~/Software/rotta-giusta-ui`, ramo `ui/main`, modalità Local. **Nasce da:**
 P-24 e P-45; il testo viene da una proposta che la regia ha verificato — le
 righe T-* aperte sono cinque, non sei come diceva il segnaposto.
@@ -2993,7 +3015,19 @@ guardato a 320, 375 e 1280 px nei due stati d'accesso, voce in fondo a
 con il resoconto di docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `85f3022` su `ui/main`, merge `511aa6d`, voce nel CHANGELOG e
+`docs/area-6-collaudo-ux.md`. I cinque difetti — T-05, le due righe di T-07,
+T-08, T-09 — riprodotti, guardati, corretti e rimisurati, e le loro righe tolte:
+nessuna riga T-* resta fra i «Difetti aperti dichiarati». A 320, 375 e 1280 px
+nei due regimi d'accesso nessuno sbordo, contrasto almeno 4,65:1 sui fondi
+interessati, tag a 44 × 44 px; la bozza del Carteggio verificata dopo una
+ricarica. **Non fatto**, come deciso: zoom e testo al 200 %, il controllo dei
+contrasti non testuali, i percorsi interi da tastiera e un lettore di schermo
+vero (R-RIF-10, 13, 14, 15) — prove dell'autore. Controllato dalla regia:
+territori puliti, trailer, `git log main..ui/main` vuoto, CHANGELOG con la sua
+riga vuota; sullo stato fuso motore 193/197, server 62/62, dati 242,
+specifica 784, guardiano verde, interfaccia **2.158** — dieci verifiche in meno,
+quelle delle cinque dichiarazioni uscite.
 
 ---
 
@@ -3013,11 +3047,13 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
 
 #### P-27 — la regia, con tutti: il traguardo
 
-**Aspetta:** P-15, P-52, e gli adempimenti del §15.4 di
+**Aspetta:** gli adempimenti del §15.4 di
 `account-progetto.md` chiusi dall'autore. **Dove:** `main`. **Dovrà
 contenere:** la merge di tutto; il rilascio come dice `AGENTS.md` — numero nei
 tre posti, voce, tag, push chiesto, «Build now» — **più il server**, aggiornato
-con `rg-aggiorna` allo stesso tag; poi le due verifiche che solo quel giorno può
+con `rg-aggiorna <tag> <commit>` allo stesso tag, che porta R-ACC-49 e la
+correzione del modulo principale di P-15, e con gli strumenti di
+`strumenti/macchina/` riportati sulla macchina se sono cambiati dopo P-15; poi le due verifiche che solo quel giorno può
 fare: un archivio vero nel browser che passa nell'account senza perdere una riga
 (R-ACC-05), e il cookie fra `rottagiusta.it` e `api.` su un Safari vero
 (Q-PROVE). Il §5 di questo file è la lista di controllo. **Trenta giorni
@@ -3395,3 +3431,11 @@ anche la sezione `[0.28.1]`, che oggi sta solo sul ramo `fix/0.28.1`. Il campo
   pannello è scritto nel §4 e in P-27, perché al traguardo torni `main`. La
   sezione `[0.28.1]` del CHANGELOG entra in `main` quando P-15 lascia la
   cartella principale, insieme alla riga 34.
+- **1° ottobre 2026 — P-15 e P-25 chiusi: il ridisegno è finito, e il server è
+  in esercizio.** P-25 fuso (`511aa6d`): nessun difetto T-* resta dichiarato.
+  P-15 ha messo il server su `api.rottagiusta.it`, con le copie verso
+  `nl-ams` e il riavvio automatico delle 03:30 che l'autore ha deciso nella
+  sessione. Nella cartella libera la regia ha scritto le decisioni del 1°
+  ottobre nel §8 dell'area 6 e nel §10 della specifica, e portato in `main` la
+  sezione `[0.28.1]` del CHANGELOG, solo aggiungendo righe. Il traguardo aspetta
+  ora soltanto gli adempimenti dell'autore.
