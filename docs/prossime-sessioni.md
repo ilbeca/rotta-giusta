@@ -569,21 +569,13 @@ consuma, non si riprogetta.
   commit lo lancia l'autore con `TERRITORI_OK=1`, che è suo. P-36 si applica a
   `v0.28.0` senza conflitti (provato in memoria). `.pages.dev` resta alla 0.28.0
   fino al redirect del 16 ottobre. Il traguardo diventa la 0.29.0.
-- **Gli adempimenti: decisi dall'autore il 1° ottobre 2026**, e la privacy
-  completata su `ui/main` (`ee4753a`, fusa): il titolare con nome e cognome,
-  `privacy@` come recapito e nessun indirizzo postale; legittimo interesse per
-  il registro di sicurezza; `privacy@` resta su Gmail, dichiarato
-  nell'informativa (la casella IONOS costava 6 €/mese); due anni per le
-  richieste evase; il DPA di statichost.eu da firmare. Il nome entra nel repo
-  solo nella privacy, e il guardiano lo tiene lì (`2a040fd`). **Restano quattro
-  cose da fare, tutte tue**, nell'elenco in fondo al §15.4 di
-  `account-progetto.md`: il DPA firmato e spedito, il parere giuridico, il PDF
-  del DPA di Scaleway, il registro dei trattamenti riletto. I due fattori su
-  Gmail, Scaleway e IONOS sono fatti, verificati nei pannelli il 1° ottobre.
-  Bloccano il traguardo: la privacy scrive già «accordo scritto» per
-  statichost.eu, che diventa vero solo dopo. Un confronto dei costi dello stack
-  (Scaleway più statichost.eu, contro alternative con una casella UE) è stato
-  chiesto il 1° ottobre: se cambia qualcosa, cambia anche `privacy@`.
+- **Gli adempimenti, dopo il primo parere** (1° ottobre 2026). Le decisioni e
+  l'esito punto per punto sono nel §15.4 di `account-progetto.md`, con
+  l'elenco di che cosa resta: il DPA di statichost.eu da firmare **subito**, la
+  casella `privacy@` su OVH, la PEC, le due LIA e la nota sulla DPIA, il
+  registro con quattro trattamenti, il PDF del DPA di Scaleway, un parere
+  firmato se lo vuoi. E due pezzi di codice: l'esclusione dalle statistiche, su
+  `main`, e Manrope servito da `site/`, su `ui/main`. I due fattori sono fatti.
 - **Alla messa in esercizio** (punto 8), con una sessione che ti accompagna come
   P-08: creare la STARDUST1-S, la chiave API di sola scrittura sul bucket, una
   chiave SSH nuova, la chiave API di Transactional Email, e il record di `api.`.

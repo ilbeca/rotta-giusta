@@ -1794,14 +1794,50 @@ lasciava in sospeso. Sono nella privacy di `ui/main` (`ee4753a`), che resta
   BunnyWay (Slovenia), tutti nell'UE. L'informativa dice già «responsabile del
   trattamento con un accordo scritto»: **vero solo dopo la firma**.
 
-**Da fare, prima del rilascio (P-27)** — nessuno lo può fare al posto
-dell'autore:
+**Il primo parere — 1° ottobre 2026.** Chiesto con un prompt su undici punti e
+ottenuto da un modello, **non firmato**: non chiude il «da far confermare», ma ha
+cambiato il testo. Gli esiti e le decisioni dell'autore dello stesso giorno:
 
-1. firmare e spedire il DPA di statichost.eu, e tenere la copia firmata accanto
-   al registro;
-2. il parere sui cinque punti qui sopra; se cambia qualcosa, la privacy si
-   corregge su `ui/main`, e la parola «Bozza» si toglie solo dopo;
-3. ~~i due fattori sulla casella del titolare, su Scaleway e su IONOS~~ —
+| # | Punto | Esito | Deciso |
+|---|---|---|---|
+| 1 | Il GDPR si applica a un privato con un sito pubblico | regge (*Lindqvist*, *Ryneš*) | — |
+| 2 | Titolare con nome ed email, senza indirizzo postale | regge | una **PEC** nell'informativa, quando l'autore la dà |
+| 3 | Registro di sicurezza sul 6.1.f, IP 6 mesi, evento 1 anno | regge con correzioni | testo dell'opposizione corretto; serve una LIA di una pagina |
+| 4 | Statistiche sotto il 6.1.b | **non regge** | 6.1.f con opposizione, e **un'esclusione dai conteggi sul server** |
+| 5 | `privacy@` su un Gmail personale | trasferimento sì; **ruolo no**: Google è un responsabile senza art. 28 | **casella OVH Zimbra Starter**, da verificare; intanto il testo nomina Google Ireland |
+| 6 | statichost.eu | responsabile; l'informativa è falsa finché il DPA non è firmato, e il sito lo usa dal 25 settembre | firmare subito; sub-responsabili nominati |
+| 7 | Richieste evase, due anni | regge con correzioni | base scritta (6.1.c e 6.1.f) |
+| 8 | Registro art. 30 | va tenuto | un quarto trattamento: l'erogazione del sito |
+| 9 | Cookie tecnico senza banner | regge | «dura al massimo trenta giorni», non «di sessione» |
+| 10 | Lettura in chiaro | regge con correzioni | lettura limitata a un problema chiesto o di sicurezza |
+| 11 | Altro | due cose serie | **Google Fonts** nella vetrina; l'attività programmata che legge `privacy@` |
+
+Verificati nel repo i fatti che il parere non aveva visto: `site/index.html`
+carica Manrope da `fonts.googleapis.com` (vero: ogni visita alla vetrina manda
+l'IP a Google); un accesso fallito con un'email che non esiste si registra
+senza l'email, solo con l'IP (`server/conti.mjs`, il dubbio non regge); il
+cookie ha `Max-Age` di trenta giorni; le copie verso `nl-ams` partono senza una
+cifratura nostra. In testo, su `ui/main` (`7d90d7d`): le basi divise, l'art.
+13.2.e, i 18 anni, la proroga dell'art. 12.3, e le **condizioni per l'account**
+nell'avvertenza (`/avvertenza#condizioni`), su cui poggia il 6.1.b. Trovata
+per traverso, e corretta: l'avvertenza diceva ancora che la composizione delle
+20 domande «non è nel decreto».
+
+**Da fare, prima del rilascio (P-27).** Dell'autore:
+
+1. firmare e spedire il DPA di statichost.eu, **subito**: il trattamento c'è dal
+   25 settembre, e tenere la copia firmata accanto al registro;
+2. la casella di `privacy@` su OVH Zimbra Starter (verifica in corso: dominio
+   esterno, Paese, DPA, durata), poi MX e SPF dell'apice da IONOS a OVH, via
+   l'inoltro, e la privacy che nomina OVH. Con la casella nuova l'attività
+   programmata non legge più le mail degli interessati: va decisa che cosa
+   legge, perché un'attività che legge `privacy@` con un piano senza DPA
+   ripete il problema del punto 5;
+3. la PEC, se si mette: l'indirizzo all'informativa;
+4. le due LIA (registro di sicurezza, statistiche) e la nota che la DPIA non
+   è dovuta, ognuna di una pagina, accanto al registro;
+5. il registro dei trattamenti con quattro trattamenti, contro la privacy nuova;
+6. ~~i due fattori sulla casella del titolare, su Scaleway e su IONOS~~ —
    **fatti, verificati nei tre pannelli il 1° ottobre 2026**: Gmail con la
    verifica in due passaggi (due passkey, richiesta sui dispositivi, codici di
    backup); Scaleway con una passkey abilitata come secondo fattore, dal 26
@@ -1809,8 +1845,18 @@ dell'autore:
    eviterebbe di dipendere dal solo telefono; IONOS con l'app Authenticator,
    attivata quel giorno. Resta il PDF del DPA di Scaleway, da scaricare e
    tenere accanto al registro;
-4. rileggere il registro dei trattamenti contro la privacy nuova: tempi,
-   base giuridica, fornitori.
+7. un parere firmato, se lo si vuole, prima di togliere «Bozza».
+
+Del codice:
+
+8. **l'esclusione dalle statistiche**, su `main`: un segno sull'account che il
+   titolare mette quando qualcuno si oppone, rispettato da ogni conteggio, con
+   il suo test. Oggi nessuna statistica si calcola (§15.2), quindi la promessa
+   dell'informativa non è ancora falsa: lo diventerebbe il giorno della prima
+   query senza il segno;
+9. **Manrope servito da `site/`**, su `ui/main`, al posto di Google Fonts —
+   deciso dall'autore; il file si scarica col suo permesso, e la provenienza
+   (OFL) si dichiara nel README.
 
 ---
 
