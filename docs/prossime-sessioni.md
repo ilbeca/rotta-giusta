@@ -232,7 +232,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
 | 10 | Lo strumento che annota le letture del titolare | Claude | `main` | — **in corso**, lanciato dalla regia | P-55 |
-| 11 | Le condizioni per l'account e i 18 anni nel modulo di registrazione | ChatGPT | `ui/main` | — **pronto** | P-56 |
+| 11 | Le condizioni per l'account e i 18 anni nel modulo di registrazione | ChatGPT | `ui/main` | fatto su `ui/main` (`bfc3191`); **la merge** aspetta che P-55 liberi la cartella principale | P-56 |
 | 12 | Il controllo di quella frase | Claude | `main` | la merge di P-56 | P-57 |
 | 9 | **La versione con gli account** — il traguardo | tutti | `main` | le righe 10–12, poi le suite verdi su `main` e il via dell'autore; il cancello degli adempimenti è chiuso dalla sua decisione del 2 ottobre (§4) | P-27, la lista scritta |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
@@ -3282,7 +3282,12 @@ docs/prossime-sessioni.md.
 
 ### P-56 — ChatGPT: le condizioni per l'account e i 18 anni, nel modulo di registrazione
 
-**Stato:** **pronto**; deciso dall'autore il 2 ottobre 2026 che lo fa ChatGPT.
+**Stato:** **resoconto arrivato il 2 ottobre 2026, commit `bfc3191` su
+`ui/main`; la merge aspetta che P-55 liberi la cartella principale**, dove ha
+modifiche non committate. Controllato intanto dalla regia, senza toccare
+`main`: territori puliti sull'intervallo, trailer presente, il diff tocca solo
+`site/app.html` (una riga) e `CHANGELOG.md`, il worktree `ui` è pulito. Prima
+era: pronto; deciso dall'autore il 2 ottobre 2026 che lo fa ChatGPT.
 La forma — una frase con il link, non una casella da spuntare — è quella che la
 regia ha consigliato e l'autore non ha cambiato: se vuole la casella, lo dice
 prima di lanciarlo, ed è una riga di questo prompt. **Dove:** app di ChatGPT,
