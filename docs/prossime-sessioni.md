@@ -665,6 +665,42 @@ consuma, non si riprogetta.
   §15.4 su `privacy@` corretta. Deciso dall'autore: **niente copia di
   `privacy@` su Gmail** — riaprirebbe il punto 5 del parere e renderebbe falsa
   la privacy —; la casella OVH va nell'app Mail.
+- **Trovato dal controllo del 2 ottobre 2026** — l'autore ha chiesto alla regia
+  di verificare che l'ultima parte, fatta fuori dai prompt, non avesse lasciato
+  indietro niente. La regia ha riletto l'informativa frase per frase contro il
+  codice, cercato nel repo le frasi che il rilascio rende false, e guardato le
+  ultime righe delle sessioni «Adempimenti progetto account» e della regia
+  precedente. **Due cose bloccano il traguardo finché l'autore non decide:**
+  1. **L'informativa promette che ogni lettura del titolare è annotata, e lo
+     strumento che la annota non esiste.** `site/privacy.html` dice «ogni
+     lettura è annotata nel registro di sicurezza» e mette «le letture fatte
+     dal titolare» fra le cose che il server annota. Il §15.1 di
+     `account-progetto.md` descrive lo strumento — `leggi --email … --motivo`
+     — come «Proposto», e nessun prompt l'ha mai fatto: in `server/` non c'è, e
+     il registro non conosce un evento di lettura. È la stessa forma di P-54:
+     una promessa che non è falsa solo finché nessuno legge. Due strade: lo
+     strumento, sul modello di `server/opposizione.mjs`, prima del traguardo
+     (consigliata: arriva sulla macchina con lo stesso tag); oppure togliere le
+     due frasi dall'informativa.
+  2. **Il modulo di registrazione non nomina le condizioni per l'account né i
+     18 anni.** L'informativa poggia il salvataggio sull'esecuzione del
+     contratto, «cioè delle condizioni per l'account», e dice che l'account è
+     per chi ha compiuto 18 anni; le condizioni stanno in
+     `/avvertenza#condizioni`, scritte il 1° ottobre. `moduloRegistrazione()`
+     in `site/app.html` rimanda solo a `/privacy`: chi si registra non le
+     incontra. Da decidere la forma — una frase con il link prima di «Crea
+     l'account e salva», o una casella da spuntare —, poi è un lavoro piccolo
+     su `ui/main`.
+  **Non bloccano, e restano scritte:** i due fattori sull'account OVHcloud, che
+  le sue condizioni chiedono e che il §15.4 non dice fatti (punto 6: Gmail,
+  Scaleway, IONOS); la data di spedizione del DPA di statichost.eu;
+  `dkim=pass` da guardare in una mail vera di `privacy@`; la cartella
+  `~/Software/rotta-giusta-quarantena/p34-2026-09-26/`, che non serve più da
+  P-34; la sessione «Donazioni PayPal e tassazione» del 25 settembre, di cui
+  nel repo non c'è traccia — se conteneva una decisione, vive solo lì. E una
+  cosa già falsa oggi nella specifica, che il passo 1 di P-27 corregge con le
+  altre: dice «v0.28.0» dove il sito pubblicato è la 0.28.1, con l'avviso di
+  P-36.
 - **Da P-54, per l'autore** (1° ottobre 2026), nel §20 di
   `account-progetto.md`: l'opposizione alle statistiche vale per l'account —
   chi si cancella e si riscrive la chiede di nuovo —, da portare al parere; e
@@ -3209,7 +3245,12 @@ ordine; ogni passo dice chi lo fa e come si vede che è fatto.
   pubblica senza parere firmato, senza PEC e senza aspettare la copia
   controfirmata del DPA di statichost.eu; «Bozza» esce nel passo 1;
 - la coda vuota per Claude e per ChatGPT: nessun ramo con lavoro non fuso
-  (`git log main..ui/main` vuoto, nessun worktree sporco);
+  (`git log main..ui/main` vuoto, nessun worktree sporco). **Riaperto il 2
+  ottobre 2026 dal controllo della regia** (§4, «Trovato dal controllo del 2
+  ottobre»): due promesse dell'informativa non hanno ancora il loro pezzo — lo
+  strumento che annota le letture del titolare, e le condizioni per l'account
+  nel modulo di registrazione. Si chiude quando l'autore decide per ciascuna:
+  farla prima, o cambiare la frase che la promette;
 - le suite verdi sullo stato di `main`, quella del server anche con la LTS 24.
 
 **I passi, in quest'ordine:**
@@ -3220,7 +3261,18 @@ ordine; ogni passo dice chi lo fa e come si vede che è fatto.
    studia; nello stesso commit si toglie la nota in testa a
    `docs/filosofia.md` (P-26), e in `site/privacy.html` la riga della data
    smette di dire «Bozza per la versione con gli account» e prende la data del
-   rilascio (deciso dall'autore il 2 ottobre 2026). Il commit tocca regole, motore e interfaccia
+   rilascio (deciso dall'autore il 2 ottobre 2026). **Nello stesso commit, tre
+   cose che il controllo del 2 ottobre ha trovato fuori dalla lista:** in
+   `site/privacy.html` esce il commento HTML «Gate dell'autore prima del
+   rilascio…» (riga 73), che altrimenti si pubblica; in `docs/specifica.md` le
+   frasi che dicono che il sito pubblicato è la v0.28.0 senza account
+   diventano il presente — il capoverso «La decisione è nel prodotto su
+   `main`, non ancora in quello pubblicato» del §2, il §3.2 («le scrive ancora
+   il sito pubblicato»), il §7.3, il §7.5, il §7.6 e l'apertura del §9.9
+   («Gli account non esistono ancora nel sito pubblicato») —, cercate di nuovo
+   quel giorno con `grep -n -i "sito pubblicato\|non ancora" docs/specifica.md`
+   e non prese da questo elenco; e si rilegge che `README.md`, `AGENTS.md` e la
+   skill non dicano «non ancora pubblicato» (il 2 ottobre non lo dicevano). Il commit tocca regole, motore e interfaccia
    insieme: come per la 0.28.1, lo lancia l'autore con `TERRITORI_OK=1`. Poi il
    tag annotato `v0.29.0`.
 2. **Il push** (regia, con il sì dell'autore): `main` e `v0.29.0`. Da qui
@@ -3731,3 +3783,17 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   dell'autore, dal pannello OVHcloud; la diagnostica è tutta «Configurazione
   OK» e le chiavi rispondono sul DNS. Degli adempimenti resta la copia
   controfirmata del DPA di statichost.eu, che il traguardo non aspetta.
+- **2 ottobre 2026 — il controllo prima del traguardo.** L'autore ha notato che
+  l'ultima parte era andata avanti fuori dai prompt, e ha chiesto di verificare
+  che non si fosse dimenticato niente prima di P-27. Trovate due promesse
+  dell'informativa senza il loro pezzo — le letture del titolare annotate, le
+  condizioni per l'account alla registrazione — e tre cose che la lista di
+  P-27 non aveva: il commento «Gate dell'autore» nella privacy e le frasi
+  della specifica sul sito «non ancora pubblicato». Il cancello della coda
+  vuota è riaperto; P-27 non parte finché l'autore non decide sulle prime due.
+  Suite su `main` (`80209be`) quel giorno, tutte verdi: motore 193/197 con i
+  quattro skip previsti, server 68/68 — anche con la 24.21.0 LTS, il pacchetto
+  confrontato con il `SHASUMS256.txt` di nodejs.org, e con lei il motore dà gli
+  stessi numeri —, dati 263, specifica 800, interfaccia 2.158, `ripristina
+  --prova` verde, guardiano verde. Il cancello delle suite è chiuso su questo
+  stato, e si riapre a ogni commit che tocca codice.
