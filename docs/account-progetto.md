@@ -1801,8 +1801,14 @@ dell'autore:
    al registro;
 2. il parere sui cinque punti qui sopra; se cambia qualcosa, la privacy si
    corregge su `ui/main`, e la parola «Bozza» si toglie solo dopo;
-3. i due fattori sulla casella del titolare, su Scaleway («Secure your
-   account») e su IONOS, e il PDF del DPA di Scaleway accanto al registro;
+3. ~~i due fattori sulla casella del titolare, su Scaleway e su IONOS~~ —
+   **fatti, verificati nei tre pannelli il 1° ottobre 2026**: Gmail con la
+   verifica in due passaggi (due passkey, richiesta sui dispositivi, codici di
+   backup); Scaleway con una passkey abilitata come secondo fattore, dal 26
+   settembre, e senza TOTP — un secondo metodo, TOTP o una passkey sul Mac,
+   eviterebbe di dipendere dal solo telefono; IONOS con l'app Authenticator,
+   attivata quel giorno. Resta il PDF del DPA di Scaleway, da scaricare e
+   tenere accanto al registro;
 4. rileggere il registro dei trattamenti contro la privacy nuova: tempi,
    base giuridica, fornitori.
 

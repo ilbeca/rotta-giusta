@@ -577,8 +577,9 @@ consuma, non si riprogetta.
   richieste evase; il DPA di statichost.eu da firmare. Il nome entra nel repo
   solo nella privacy, e il guardiano lo tiene lì (`2a040fd`). **Restano quattro
   cose da fare, tutte tue**, nell'elenco in fondo al §15.4 di
-  `account-progetto.md`: il DPA firmato e spedito, il parere giuridico, i due
-  fattori e il PDF del DPA di Scaleway, il registro dei trattamenti riletto.
+  `account-progetto.md`: il DPA firmato e spedito, il parere giuridico, il PDF
+  del DPA di Scaleway, il registro dei trattamenti riletto. I due fattori su
+  Gmail, Scaleway e IONOS sono fatti, verificati nei pannelli il 1° ottobre.
   Bloccano il traguardo: la privacy scrive già «accordo scritto» per
   statichost.eu, che diventa vero solo dopo. Un confronto dei costi dello stack
   (Scaleway più statichost.eu, contro alternative con una casella UE) è stato
