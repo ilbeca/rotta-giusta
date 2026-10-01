@@ -203,7 +203,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 8 | La messa in esercizio del server su Scaleway, con l'autore — **in corso** | Claude e l'autore | `main`, a mano, e pannelli | niente | P-15 |
 | 26b | La realizzazione dell'area 6 — la rifinitura dei cinque difetti T-* | ChatGPT | `ui/main` | niente — **pronto** | P-25 |
 | 34 | Scrivere le decisioni del 1° ottobre nel §8 dell'area 6 e nel §10 della specifica | la regia | `main` | P-15 (la cartella principale) | §4 |
-| 35 | Il rilascio di correzione 0.28.1, con il solo P-36 — commit `affc37d` dell'autore e tag `v0.28.1` | la regia e l'autore | worktree `../rotta-giusta-fix`, ramo `fix/0.28.1` | il controllo a occhio della regia (quando P-15 lascia la cartella), poi il sì al push del ramo e del tag, «Build now» dal ramo `fix/0.28.1` | §4 |
+| 35 | Il rilascio di correzione 0.28.1, con il solo P-36 — commit `affc37d` dell'autore e tag `v0.28.1` | la regia e l'autore | worktree `../rotta-giusta-fix`, ramo `fix/0.28.1` | **pushato** il 1° ottobre; «Build now» dal ramo `fix/0.28.1` nel pannello di statichost.eu, dell'autore, poi il `curl` della regia | §4 |
 | 9 | **La versione con gli account** — il traguardo | tutti | `main` | P-15, e gli adempimenti del §4 | segnaposto P-27 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
@@ -3372,3 +3372,14 @@ anche la sezione `[0.28.1]`.
   `v0.28.0` più la sola sezione `[0.28.1]`: la cherry-pick aveva portato con sé,
   per l'unione, le voci di `main` scritte dopo il tag, e la regia l'ha
   ricostruito. Mancano il controllo a occhio, il push e «Build now».
+- **1° ottobre 2026 — il rilascio 0.28.1 guardato e pushato.** Servito in
+  locale dal worktree del rilascio, con una voce temporanea in
+  `.claude/launch.json` tolta subito dopo — P-15 lavorava nella cartella
+  principale e non ne è stato toccato niente —: versione e cache `rg-0.28.1`,
+  l'avviso sopra «Inizia prova d'esame» e sopra gli allenamenti, e nel runner
+  quando c'è testo; con testo scritto un `beforeunload` è annullato, con il
+  campo vuoto no e l'avviso sparisce; console senza errori. Una navigazione
+  dello strumento era passata senza conferma: lo strumento naviga da fuori e
+  salta `beforeunload`, e la prova sull'evento ha distinto i due casi. Con il
+  sì dell'autore pushati soltanto `fix/0.28.1` e `v0.28.1`; `main` sul remoto
+  resta a `51d9485`, la 0.28.0.
