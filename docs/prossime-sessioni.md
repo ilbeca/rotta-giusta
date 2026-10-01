@@ -203,7 +203,6 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 8 | La messa in esercizio del server su Scaleway, con l'autore — **in corso** | Claude e l'autore | `main`, a mano, e pannelli | niente | P-15 |
 | 26b | La realizzazione dell'area 6 — la rifinitura dei cinque difetti T-* | ChatGPT | `ui/main` | niente — **pronto** | P-25 |
 | 34 | Scrivere le decisioni del 1° ottobre nel §8 dell'area 6 e nel §10 della specifica | la regia | `main` | P-15 (la cartella principale) | §4 |
-| 35 | Il rilascio di correzione 0.28.1, con il solo P-36 — commit `affc37d` dell'autore e tag `v0.28.1` | la regia e l'autore | worktree `../rotta-giusta-fix`, ramo `fix/0.28.1` | **pushato** il 1° ottobre; «Build now» dal ramo `fix/0.28.1` nel pannello di statichost.eu, dell'autore, poi il `curl` della regia | §4 |
 | 9 | **La versione con gli account** — il traguardo | tutti | `main` | P-15, e gli adempimenti del §4 | segnaposto P-27 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
@@ -557,7 +556,11 @@ consuma, non si riprogetta.
   settembre ma non sono mai usciti. Due strade: aspettare il traguardo, che
   porta la bozza vera; oppure un rilascio di correzione da un ramo che parte da
   `v0.28.0`, con il solo P-36, come dice la prima riga di questo §4. **Deciso
-  dall'autore il 1° ottobre: il rilascio di correzione, 0.28.1.** Due cose che
+  dall'autore il 1° ottobre: il rilascio di correzione, 0.28.1 — pubblicato lo
+  stesso giorno**, vedi sotto e il registro. **Il ramo di build di statichost.eu
+  è ora `fix/0.28.1`**: nel pannello, sito rotta-giusta → «Source & build» →
+  riquadro «Repository» → campo «Branch», poi «Save» sotto quel riquadro e
+  «Build now» in «Builds». Al traguardo, lo stesso campo torna `main` (P-27). Due cose che
   il §4 non diceva, verificate dalla regia: **statichost.eu costruisce da
   `main`** (`migrazione-hosting.md`, «Un push non arriva a statichost.eu»),
   quindi l'autore porta nel pannello il ramo di build su `fix/0.28.1`, preme
@@ -3024,7 +3027,8 @@ la nota in testa a `docs/filosofia.md`, che lo dice di sé (P-26). **E il ramo
 di build di statichost.eu torna a `main`**, se il rilascio 0.28.1 l'ha portato
 su `fix/0.28.1`: il `curl` di `sw.js` deve mostrare il numero nuovo, non
 `rg-0.28.1`. Il numero del traguardo è 0.29.0. Il CHANGELOG di `main` porta
-anche la sezione `[0.28.1]`.
+anche la sezione `[0.28.1]`, che oggi sta solo sul ramo `fix/0.28.1`. Il campo
+è in «Source & build» → «Repository» → «Branch».
 
 ---
 
@@ -3383,3 +3387,11 @@ anche la sezione `[0.28.1]`.
   salta `beforeunload`, e la prova sull'evento ha distinto i due casi. Con il
   sì dell'autore pushati soltanto `fix/0.28.1` e `v0.28.1`; `main` sul remoto
   resta a `51d9485`, la 0.28.0.
+- **1° ottobre 2026 — la 0.28.1 è su `rottagiusta.it`.** L'autore ha portato
+  il ramo di build su `fix/0.28.1` e premuto «Build now»; la build delle 03:22
+  UTC nel pannello è «release: v0.28.1». Misurato con `curl`: `CACHE =
+  'rg-0.28.1'`, `versione: 0.28.1`, `/app` 200 con l'avviso nella pagina.
+  `.pages.dev` resta alla 0.28.0, `main` sul remoto anche. Il campo del
+  pannello è scritto nel §4 e in P-27, perché al traguardo torni `main`. La
+  sezione `[0.28.1]` del CHANGELOG entra in `main` quando P-15 lascia la
+  cartella principale, insieme alla riga 34.
