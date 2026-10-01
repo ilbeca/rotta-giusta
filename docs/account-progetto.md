@@ -1894,7 +1894,7 @@ lasciava in sospeso. Sono nella privacy di `ui/main` (`ee4753a`), che resta
   Gmail personale, senza accordo art. 28; le statistiche,
   che l'informativa mette sotto l'esecuzione del contratto (6.1.b) ma
   somigliano più a un legittimo interesse; e il paragrafo su statichost.eu.
-- **`privacy@` resta un inoltro verso Gmail**, e l'informativa lo dichiara: le
+- ~~**`privacy@` resta un inoltro verso Gmail**~~ — **superato lo stesso giorno**: dopo il primo parere (punto 5) `privacy@` è una casella OVHcloud nell'UE, e l'informativa lo dice (`8120d4b`); l'inoltro IONOS è stato eliminato il 2 ottobre 2026. Il testo di prima, per la storia: le
   mail a `privacy@` possono essere trattate negli Stati Uniti, sulla decisione
   di adeguatezza del Data Privacy Framework (art. 45), a cui Google aderisce
   (`793ddc6`). La prima scelta era una casella nell'UE; misurata nel pannello
@@ -1996,16 +1996,21 @@ per traverso, e corretta: l'avvertenza diceva ancora che la composizione delle
    Zimbra Starter è `https://zimbra1.mail.ovh.net/`: `webmail.mail.ovh.net`,
    che il pannello indica, rifiuta l'indirizzo con «Please verify your email
    address». La privacy dice OVHcloud al posto di Gmail (`8120d4b`).
-   **Restano, ognuna con il sì dell'autore:** togliere l'inoltro IONOS verso
-   Gmail, dopo un'ora dal cambio degli MX; un DMARC sull'apice al posto di
-   quello di IONOS sparito; e l'attività programmata. Con la casella nuova l'attività
+   **Fatte, con il sì dell'autore:** il DMARC sull'apice (`p=none`), il 1°
+   ottobre; l'attività programmata riscritta per non leggere `privacy@`, il 1°
+   ottobre; **l'inoltro IONOS eliminato il 2 ottobre 2026**, dalla regia,
+   verificato nel pannello (nessun indirizzo resta) e sul DNS (MX e SPF ancora
+   su OVH, sui quattro nameserver). Annotato: gli MX sono quattro, `mx0`…`mx3`,
+   non i cinque fino a `mx4` scritti sopra — da confrontare con la guida OVH. Con la casella nuova l'attività
    programmata non legge più le mail degli interessati: va decisa che cosa
    legge, perché un'attività che legge `privacy@` con un piano senza DPA
    ripete il problema del punto 5;
 3. la PEC, se si mette: l'indirizzo all'informativa;
-4. le due LIA (registro di sicurezza, statistiche) e la nota che la DPIA non
-   è dovuta, ognuna di una pagina, accanto al registro;
-5. il registro dei trattamenti con quattro trattamenti, contro la privacy nuova;
+4. ~~le due LIA e la nota sulla DPIA~~ — **scritte il 2 ottobre 2026**, con
+   la regia, nella cartella del titolare: `lia-registro-sicurezza.md`,
+   `lia-statistiche.md`, `nota-dpia.md`, ognuna con i punti da far
+   confermare;
+5. ~~il registro dei trattamenti~~ — **riletto il 2 ottobre 2026** contro la privacy nuova: **cinque** trattamenti, non quattro — le statistiche hanno una base loro (6.1.f) oltre all'erogazione del sito chiesta dal parere —; il PDF del DPA di Scaleway accanto; la stesura del 26 settembre in «RottaGiusta Privacy» marcata superata;
 6. ~~i due fattori sulla casella del titolare, su Scaleway e su IONOS~~ —
    **fatti, verificati nei tre pannelli il 1° ottobre 2026**: Gmail con la
    verifica in due passaggi (due passkey, richiesta sui dispositivi, codici di

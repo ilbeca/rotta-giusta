@@ -569,6 +569,30 @@ consuma, non si riprogetta.
   commit lo lancia l'autore con `TERRITORI_OK=1`, che è suo. P-36 si applica a
   `v0.28.0` senza conflitti (provato in memoria). `.pages.dev` resta alla 0.28.0
   fino al redirect del 16 ottobre. Il traguardo diventa la 0.29.0.
+- **Aperto il 2 ottobre 2026, per l'autore — da riprendere per primo:**
+  1. **L'attività «Registro privacy» è ferma dal 26 settembre.** Due passaggi
+     in tutto: il 26 «riuscito» in zero secondi, il 29 settembre «in corso» da
+     allora, fermo alla sua prima chiamata `Bash` — un'autorizzazione che nella
+     sessione programmata nessuno può dare. Il diario e `stato-scansione.json`
+     sono fermi al 26. Rimedio da fare con l'autore presente: fermare la
+     sessione bloccata («Registro privacy — Rotta Giusta», avviata il 29
+     settembre), lanciare l'attività a mano con «Run now» e approvare in modo
+     permanente i comandi che chiede (lettura della cartella, `git log`), poi
+     guardare che il diario prenda una riga. Il `LEGGIMI.md` della cartella dice
+     ora come si vede che gira.
+  2. **La copia firmata del DPA di statichost.eu**, quando torna: accanto al
+     registro, e la riga del registro aggiornata.
+  3. **Gli MX sono quattro** (`mx0`…`mx3`): il §15.4 ne scriveva cinque, fino a
+     `mx4`. Da confrontare con la guida OVH; la posta arriva.
+  4. **«Bozza» nella privacy**: parere firmato o decisione scritta, primo
+     cancello di P-27.
+  **Fatti il 2 ottobre** con la regia, nella cartella del titolare: il registro
+  dei trattamenti riletto (cinque trattamenti), le due LIA, la nota sulla DPIA,
+  il PDF di Scaleway accanto, il `LEGGIMI.md` allineato a OVH; l'inoltro IONOS
+  eliminato con il sì dell'autore (DNS verificato intatto); l'incoerenza del
+  §15.4 su `privacy@` corretta. Deciso dall'autore: **niente copia di
+  `privacy@` su Gmail** — riaprirebbe il punto 5 del parere e renderebbe falsa
+  la privacy —; la casella OVH va nell'app Mail.
 - **Da P-54, per l'autore** (1° ottobre 2026), nel §20 di
   `account-progetto.md`: l'opposizione alle statistiche vale per l'account —
   chi si cancella e si riscrive la chiede di nuovo —, da portare al parere; e
@@ -3604,3 +3628,10 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   cancello; `.pages.dev` che costruisce `main` al push ma lì non mostra
   l'account; `rg-aggiorna` che legge il tag da GitHub, quindi il server dopo il
   push e prima di «Build now».
+- **2 ottobre 2026 — gli adempimenti fatti con la regia, e la regia si passa di
+  mano.** Il registro dei trattamenti, le due LIA, la nota sulla DPIA e il PDF
+  di Scaleway sono nella cartella del titolare; l'inoltro IONOS è eliminato;
+  il §15.4 non si contraddice più su `privacy@`. Trovato: l'attività «Registro
+  privacy» ferma dal 26 settembre, il primo punto aperto del §4. Il contesto
+  di questa sessione di regia è finito: si riprende con il prompt di «Come si
+  riprende la regia in una sessione nuova».
