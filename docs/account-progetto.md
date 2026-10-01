@@ -1827,9 +1827,20 @@ per traverso, e corretta: l'avvertenza diceva ancora che la composizione delle
 
 1. firmare e spedire il DPA di statichost.eu, **subito**: il trattamento c'è dal
    25 settembre, e tenere la copia firmata accanto al registro;
-2. la casella di `privacy@` su OVH Zimbra Starter (verifica in corso: dominio
-   esterno, Paese, DPA, durata), poi MX e SPF dell'apice da IONOS a OVH, via
-   l'inoltro, e la privacy che nomina OVH. Con la casella nuova l'attività
+2. la casella di `privacy@` su OVH Zimbra Starter. **Verificata il 1° ottobre
+   2026 sui contratti e le guide ufficiali OVHcloud:** si vende a privati
+   (0,37 €/mese IVA inclusa, rinnovo automatico, recesso di 14 giorni); accetta
+   un dominio registrato altrove, convalidato con un CNAME; il DPA art. 28 fa
+   parte delle condizioni generali, senza firma a parte; IMAP e SMTP per Mail
+   di Apple. **Non verificati:** il Paese delle caselle — la pagina dice «in
+   Europa», la Francia è scritta solo per le migrazioni da MX Plan —, i
+   sub-responsabili, la durata minima, i limiti d'invio. Le condizioni
+   chiedono i due fattori sull'account OVHcloud. Poi, su IONOS: MX dell'apice a
+   `mx0`…`mx4.mail.ovh.net` (priorità 1, 5, 50, 100, 200), l'SPF dell'apice
+   **sostituito** con `v=spf1 include:mx.ovh.com ~all` (un solo record), i due
+   CNAME del DKIM che il pannello Zimbra mostra; i record di `posta.` non si
+   toccano, e l'inoltro IONOS smette di servire. La privacy nomina OVH e il
+   Paese che l'assistenza conferma, o «Unione europea». Con la casella nuova l'attività
    programmata non legge più le mail degli interessati: va decisa che cosa
    legge, perché un'attività che legge `privacy@` con un piano senza DPA
    ripete il problema del punto 5;
@@ -1854,9 +1865,10 @@ Del codice:
    il suo test. Oggi nessuna statistica si calcola (§15.2), quindi la promessa
    dell'informativa non è ancora falsa: lo diventerebbe il giorno della prima
    query senza il segno;
-9. **Manrope servito da `site/`**, su `ui/main`, al posto di Google Fonts —
-   deciso dall'autore; il file si scarica col suo permesso, e la provenienza
-   (OFL) si dichiara nel README.
+9. ~~**Manrope servito da `site/`**~~ — **fatto il 1° ottobre 2026**
+   (`dbb27c4`, `6a44aee`): il file in `site/caratteri/` con la sua licenza OFL,
+   la provenienza nel README, nessuna richiesta a un altro host misurata nel
+   browser, e `test_nessuna_risorsa_di_terzi` che lo tiene fermo.
 
 ---
 
