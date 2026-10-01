@@ -572,14 +572,17 @@ consuma, non si riprogetta.
 - **Gli adempimenti: decisi dall'autore il 1° ottobre 2026**, e la privacy
   completata su `ui/main` (`ee4753a`, fusa): il titolare con nome e cognome,
   `privacy@` come recapito e nessun indirizzo postale; legittimo interesse per
-  il registro di sicurezza; `privacy@` su una casella nell'UE; due anni per le
+  il registro di sicurezza; `privacy@` resta su Gmail, dichiarato
+  nell'informativa (la casella IONOS costava 6 €/mese); due anni per le
   richieste evase; il DPA di statichost.eu da firmare. Il nome entra nel repo
-  solo nella privacy, e il guardiano lo tiene lì (`2a040fd`). **Restano cinque
+  solo nella privacy, e il guardiano lo tiene lì (`2a040fd`). **Restano quattro
   cose da fare, tutte tue**, nell'elenco in fondo al §15.4 di
-  `account-progetto.md`: il DPA firmato e spedito, la casella UE, il parere
-  giuridico, i due fattori e il PDF del DPA di Scaleway, il registro dei
-  trattamenti riletto. Bloccano il traguardo: la privacy scrive già «accordo
-  scritto» e «i dati non escono dall'UE», che diventano veri solo dopo.
+  `account-progetto.md`: il DPA firmato e spedito, il parere giuridico, i due
+  fattori e il PDF del DPA di Scaleway, il registro dei trattamenti riletto.
+  Bloccano il traguardo: la privacy scrive già «accordo scritto» per
+  statichost.eu, che diventa vero solo dopo. Un confronto dei costi dello stack
+  (Scaleway più statichost.eu, contro alternative con una casella UE) è stato
+  chiesto il 1° ottobre: se cambia qualcosa, cambia anche `privacy@`.
 - **Alla messa in esercizio** (punto 8), con una sessione che ti accompagna come
   P-08: creare la STARDUST1-S, la chiave API di sola scrittura sul bucket, una
   chiave SSH nuova, la chiave API di Transactional Email, e il record di `api.`.

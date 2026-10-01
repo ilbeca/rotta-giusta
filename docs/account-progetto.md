@@ -1770,14 +1770,21 @@ lasciava in sospeso. Sono nella privacy di `ui/main` (`ee4753a`), che resta
 - **La base giuridica del registro di sicurezza: legittimo interesse** (art.
   6.1.f, considerando 49), con il diritto di opporsi detto nell'informativa.
   **Da far confermare** a chi può dare un parere, insieme a tre cose che lo
-  stesso parere copre: il recapito senza indirizzo postale; le statistiche,
+  stesso parere copre: il recapito senza indirizzo postale; `privacy@` su un
+  Gmail personale, senza accordo art. 28; le statistiche,
   che l'informativa mette sotto l'esecuzione del contratto (6.1.b) ma
   somigliano più a un legittimo interesse; e il paragrafo su statichost.eu.
-- **`privacy@` passa a una casella nell'UE**, al posto dell'inoltro verso Gmail.
-  L'informativa scrive già «i dati non escono dall'Unione europea»: **è vero
-  solo dopo il cambio**, quindi il cambio viene prima del rilascio. La procedura
-  per le violazioni e l'attività programmata che legge la casella (sopra)
-  vanno puntate sulla casella nuova.
+- **`privacy@` resta un inoltro verso Gmail**, e l'informativa lo dichiara: le
+  mail a `privacy@` possono essere trattate negli Stati Uniti, sulla decisione
+  di adeguatezza del Data Privacy Framework (art. 45), a cui Google aderisce
+  (`793ddc6`). La prima scelta era una casella nell'UE; misurata nel pannello
+  IONOS il 1° ottobre 2026, costa 6 €/mese (Mail Business, una licenza, minimo
+  un mese), e l'autore ha tenuto Gmail. Il trasferimento non è vietato: il GDPR
+  chiede una base e che l'informativa lo dica (art. 13.1.f). **Resta un punto
+  per il parere:** un Gmail personale non ha un accordo art. 28 con Google, che
+  lo offre solo con Workspace. L'attività programmata che legge Gmail resta
+  com'è. Se il confronto dei costi chiesto lo stesso giorno indica uno stack
+  che comprende una casella UE, si riapre.
 - **Le richieste evase si tengono due anni dalla chiusura**, per dimostrare come
   sono state trattate. Scritto nell'informativa.
 - **Il DPA di statichost.eu si firma.** Misurato il 1° ottobre 2026 su
@@ -1792,13 +1799,11 @@ dell'autore:
 
 1. firmare e spedire il DPA di statichost.eu, e tenere la copia firmata accanto
    al registro;
-2. creare la casella di `privacy@` nell'UE, togliere l'inoltro verso Gmail,
-   e riprovare con una mail;
-3. il parere sui quattro punti qui sopra; se cambia qualcosa, la privacy si
+2. il parere sui cinque punti qui sopra; se cambia qualcosa, la privacy si
    corregge su `ui/main`, e la parola «Bozza» si toglie solo dopo;
-4. i due fattori sulla casella del titolare, su Scaleway («Secure your
+3. i due fattori sulla casella del titolare, su Scaleway («Secure your
    account») e su IONOS, e il PDF del DPA di Scaleway accanto al registro;
-5. rileggere il registro dei trattamenti contro la privacy nuova: tempi,
+4. rileggere il registro dei trattamenti contro la privacy nuova: tempi,
    base giuridica, fornitori.
 
 ---
