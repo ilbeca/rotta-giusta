@@ -1,6 +1,6 @@
 # Prossime sessioni — la coda, con i prompt
 
-**Aggiornato il 30 settembre 2026.** Territorio neutro. **Penna: la sessione di regia** (sotto, «Come si usa»).
+**Aggiornato il 2 ottobre 2026.** Territorio neutro. **Penna: la sessione di regia** (sotto, «Come si usa»).
 
 > **Questo file invecchia.** È una coda, non una verità: quando un lavoro è
 > fatto, il suo prompt si chiude con l'esito e resta, la riga della coda si
@@ -163,15 +163,46 @@ regia precedente: quello che non c'è scritto non lo sai, e non lo
 inventi.
 
 Poi controlla lo stato vero — git log, git status nella cartella
-principale e in ../rotta-giusta-ui, i rami non fusi — e dimmi in poche
-righe dove siamo, che cosa è in corso, che cosa è pronto da lanciare e
-che cosa aspetta una mia decisione. Non lanciare niente e non scrivere
-niente finché non te lo chiedo: da lì ti incollerò i resoconti.
+principale e in ../rotta-giusta-ui, i rami non fusi, i worktree — e
+dimmi in poche righe dove siamo, che cosa è in corso, che cosa è pronto
+e che cosa aspetta una mia decisione.
+
+Dove siamo, perché tu lo verifichi e non lo prenda per buono: il
+ridisegno è finito, il server degli account è in esercizio su
+api.rottagiusta.it da v0.28.0, rottagiusta.it serve la 0.28.1 costruita
+dal ramo fix/0.28.1, main non è pushato. Per Claude e per ChatGPT non
+c'è nessun prompt pronto: resta il traguardo, P-27, la 0.29.0.
+
+I prossimi passi, in quest'ordine:
+1. Le cose aperte per l'autore in cima al §4, nel punto «Aperto il 2
+   ottobre 2026»: quello che resta dopo la sessione di quel giorno. La
+   cartella del titolare non si tocca senza dirmelo.
+2. Il traguardo: P-27 nel §6 è la lista, con i cancelli prima del passo
+   1. Si fa qui, con me, passo per passo: il commit di rilascio lo
+   lancio io con TERRITORI_OK=1, il push si chiede, rg-aggiorna lo
+   faccio io sulla macchina, il ramo di build di statichost.eu lo
+   rimetto io su main. Prima di partire controlli ogni cancello e mi
+   dici quali sono chiusi.
+
+Non lanciare niente e non scrivere niente finché non te lo chiedo: da
+lì ti incollerò i resoconti.
 ```
+
+**I due paragrafi «Dove siamo» e «I prossimi passi» li riscrive la regia
+uscente**, nel suo ultimo commit: sono l'unica parte del prompt che invecchia.
+Il 2 ottobre 2026 la sessione nuova è partita dal prompt corto, e l'ordine dei
+passi è arrivato dall'autore in chat: un'informazione che viveva fuori dal file.
 
 La prima risposta della sessione nuova è anche la prova che questo file basta:
 se dice qualcosa di sbagliato o le manca qualcosa, il difetto è qui, e va
 scritto qui.
+
+**Tre cose che la regia non può fare da sé, misurate il 2 ottobre 2026:**
+fermare la sessione di un'altra attività, lanciare «Run now» di un'attività
+programmata, e aprire sullo schermo una sessione che non ha avviato lei — il
+controllo dei permessi dell'app le nega, e non si aggira. Le fa l'autore; la
+regia legge l'esito. E il passaggio di una routine non è una riga della barra
+laterale: sta sotto la sua routine, nel pannello dei passaggi.
 
 ### Il resoconto
 
@@ -200,7 +231,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 9 | **La versione con gli account** — il traguardo | tutti | `main` | gli adempimenti del §4, dell'autore | P-27, la lista scritta |
+| 9 | **La versione con gli account** — il traguardo | tutti | `main` | le suite verdi su `main` e il via dell'autore; il cancello degli adempimenti è chiuso dalla sua decisione del 2 ottobre (§4) | P-27, la lista scritta |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**, e si sono incontrate: il client degli
@@ -208,7 +239,7 @@ account è nella pagina (P-18), Progressi è la mappa (P-23), e il carteggio ha
 i suoi contratti e controlli su `main` (P-32…P-35). **Per Claude, l'ordine
 consigliato:** niente di pronto — il ridisegno, il
 server in esercizio e l'esclusione dalle statistiche sono fatti. **Per ChatGPT:** niente di pronto. Il traguardo
-aspetta soltanto gli adempimenti dell'autore. I prompt di Claude vanno uno alla volta nella cartella principale, e
+aspetta soltanto i suoi cancelli (P-27) e il via dell'autore. I prompt di Claude vanno uno alla volta nella cartella principale, e
 la suite dell'interfaccia di un worktree esclude quella dell'altro, per la porta
 8620. Il numero di una riga è il suo nome, non la sua posizione. Il traguardo,
 P-27, non aspetta le aree 4–6: aspetta il server in esercizio, i testi e gli
@@ -444,18 +475,17 @@ consuma, non si riprogetta.
   correzione urgente —, si fa da un ramo che parte dal tag `v0.28.0`, non da
   `main`. Il redirect di `.pages.dev` (fase D2, dal 16 ottobre) toglie la
   metà automatica del rischio, non l'altra.
-- **Quattro proposte di P-24 da decidere prima di P-25**, nel §8 di
-  `docs/area-6-progetto.md`: se cambiare la gerarchia di una vista, se
-  cambiare il nome o il posto di un ingresso già deciso, come descrivere le
-  figure a chi usa un lettore di schermo senza svelare la risposta, e Q-TEMA,
-  il tema scuro. Non bloccano niente prima di P-25.
+- ~~**Quattro proposte di P-24 da decidere prima di P-25**~~ — **decise il 1°
+  ottobre 2026**, tutte «no, per ora» (più sotto, «Decise dall'autore il 1°
+  ottobre»). Erano nel §8 di `docs/area-6-progetto.md`.
 - ~~**La privacy scritta da P-18 è una bozza**~~ — **completata il 1° ottobre
   2026** con le tue decisioni; resta «bozza» fino al parere e alle cose da fare
   del §15.4 di `account-progetto.md`.
-- Q-ONBOARD (specifica §10): che cosa chiede l'onboarding oltre alla data, e se
-  il sito consiglia un piano di studio strutturato.
-- Il push di `main`, quando lo si vuole. Ricorda che su `rottagiusta.it` il push
-  non pubblica niente da solo: serve «Build now» su statichost.eu.
+- ~~Q-ONBOARD~~ — **chiusa il 1° ottobre 2026**: solo la data, facoltativa
+  (più sotto).
+- ~~Il push di `main`, quando lo si vuole~~ — **superato dalla prima riga di
+  questo §4**: `main` si pusha al traguardo, passo 2 di P-27. Resta vero che su
+  `rottagiusta.it` il push non pubblica niente da solo: serve «Build now».
 - **Dal 16 ottobre 2026**, non prima: il redirect da `.pages.dev` (fase D2 di
   `docs/migrazione-hosting.md`).
 - Le altre questioni aperte stanno dove si decidono: specifica §10,
@@ -494,7 +524,9 @@ consuma, non si riprogetta.
 - ~~Q-DUE~~ — **chiusa il 29 settembre 2026**: Progressi diventa una mappa per
   tema. I sette punti sono nel §10 della specifica, fra le chiuse; da lì P-41 e
   P-22.
-- **La suite che dura, e Safari** — rimandati dall'autore il 29 settembre, e
+- **La suite che dura, e Safari** — *Q-SUITE è chiusa dal 1° ottobre 2026,
+  accettata a circa 240 s (più sotto); Safari resta dentro Q-PROVE.* Il testo
+  di prima: rimandati dall'autore il 29 settembre, e
   scritti come punti aperti nel §10 della specifica: Q-SUITE, e Safari dentro
   Q-PROVE. **Q-SUITE è cresciuta:** dal 30 settembre la suite dell'interfaccia
   dura circa 150 s (erano 117), per le parti di P-46 che girano in fila sulla
@@ -569,23 +601,59 @@ consuma, non si riprogetta.
   commit lo lancia l'autore con `TERRITORI_OK=1`, che è suo. P-36 si applica a
   `v0.28.0` senza conflitti (provato in memoria). `.pages.dev` resta alla 0.28.0
   fino al redirect del 16 ottobre. Il traguardo diventa la 0.29.0.
-- **Aperto il 2 ottobre 2026, per l'autore — da riprendere per primo:**
-  1. **L'attività «Registro privacy» è ferma dal 26 settembre.** Due passaggi
-     in tutto: il 26 «riuscito» in zero secondi, il 29 settembre «in corso» da
-     allora, fermo alla sua prima chiamata `Bash` — un'autorizzazione che nella
-     sessione programmata nessuno può dare. Il diario e `stato-scansione.json`
-     sono fermi al 26. Rimedio da fare con l'autore presente: fermare la
-     sessione bloccata («Registro privacy — Rotta Giusta», avviata il 29
-     settembre), lanciare l'attività a mano con «Run now» e approvare in modo
-     permanente i comandi che chiede (lettura della cartella, `git log`), poi
-     guardare che il diario prenda una riga. Il `LEGGIMI.md` della cartella dice
-     ora come si vede che gira.
-  2. **La copia firmata del DPA di statichost.eu**, quando torna: accanto al
-     registro, e la riga del registro aggiornata.
-  3. **Gli MX sono quattro** (`mx0`…`mx3`): il §15.4 ne scriveva cinque, fino a
-     `mx4`. Da confrontare con la guida OVH; la posta arriva.
-  4. **«Bozza» nella privacy**: parere firmato o decisione scritta, primo
-     cancello di P-27.
+- **Aperto il 2 ottobre 2026, per l'autore — che cosa resta dopo la sessione
+  di quel giorno:**
+  1. **L'attività «Registro privacy»: gira di nuovo, manca la prova senza
+     nessuno davanti.** Era ferma dal 26 settembre sulla sua prima chiamata
+     `Bash`. Il 2 ottobre, con l'autore: la sessione del 29 settembre non è
+     stata fermata ma lasciata passare, e ha chiuso con il prompt di prima di
+     OVH (riga del diario delle 21:52 del 1° ottobre, ora di Roma: tre messaggi,
+     due prove e una pubblicità, nessuna richiesta né violazione); un passaggio
+     partito subito dopo è stato interrotto a mano e non ha scritto niente; il
+     «Run now» dell'autore ha chiuso in 48 secondi con il prompt nuovo (riga
+     delle 21:55). `stato-scansione.json` è aggiornato, con
+     `repo_ultimo_commit_letto` a `1f9601f`. **Si considera sbloccata quando un
+     passaggio programmato chiude da solo**: il primo è alle 08:12 dell'orologio
+     del Mac del 2 ottobre, e si vede dalla riga nuova in `diario-scansioni.md`.
+     Tre cose trovate: l'elenco dei passaggi segna «succeeded» anche quello
+     interrotto, quindi fa fede il diario; due mail nel cestino l'attività non
+     è riuscita ad aprirle con `get_thread` («permesso negato») e le ha
+     classificate da mittente, oggetto e anteprima — non si sa se il rifiuto
+     vale solo per il cestino, e un avviso vero di un fornitore andrebbe letto
+     per intero —; l'orologio del Mac è a +05:00, quindi «alle 8 e alle 20»
+     sono le 5 e le 17 di Roma.
+  2. **Il DPA di statichost.eu: firmato e spedito dall'autore, la copia
+     controfirmata è attesa.** Detto dall'autore alla regia il 2 ottobre 2026;
+     la data di spedizione non è scritta. Quando torna: accanto al registro, e
+     la riga del registro aggiornata. **Il traguardo non la aspetta** (sotto).
+  3. ~~**Gli MX sono quattro**~~ — **sono cinque dal 2 ottobre 2026.** La guida
+     OVHcloud elenca `mx0`…`mx4` (priorità 1, 5, 50, 100, 200) per tutte le
+     offerte, Zimbra compresa; la diagnostica di Zimbra dà «Configurazione OK»
+     anche con quattro. La regia ha aggiunto su IONOS, con il sì dell'autore e
+     nella sua sessione di Chrome, `MX @ mx4.mail.ovh.net` priorità 200, TTL
+     un'ora; verificato con `dig` sui quattro nameserver IONOS, su 1.1.1.1 e
+     8.8.8.8; SPF, DMARC e i record di `posta.` intatti, sito e `api.` a 200.
+  4. ~~**«Bozza» nella privacy**~~ — **deciso dall'autore il 2 ottobre 2026: si
+     pubblica.** Niente parere firmato: vale il primo parere del 1° ottobre,
+     non firmato. Niente PEC nell'informativa. E il traguardo **non aspetta**
+     la copia controfirmata del DPA di statichost.eu: la privacy esce dicendo
+     «responsabile del trattamento con un accordo scritto» con la firma
+     dell'autore spedita e quella di statichost.eu attesa. La parola «Bozza»
+     esce da `site/privacy.html` nel commit di rilascio, con la data del
+     rilascio (passo 1 di P-27). **Il cancello degli adempimenti di P-27 è
+     chiuso da questa decisione.**
+  5. **La firma DKIM di `privacy@` non è attiva** (trovato il 2 ottobre 2026,
+     guardando la diagnostica di Zimbra su richiesta dell'autore, che aveva
+     visto «Configurazione SPF anomala»). Nella diagnostica MX, SRV e **SPF
+     sono «Configurazione OK»** — l'SPF dell'apice è quello della guida OVH,
+     `v=spf1 include:mx.ovh.com ~all`, uno solo —; la scheda DKIM dice «La
+     firma DKIM non è attiva», con il pulsante «Attivare la firma DKIM». Sul
+     DNS i due CNAME `ovhmo-selector-1/2._domainkey` ci sono, ma le loro
+     destinazioni su `om.dkim.mail.ovh.net` rispondono `NXDOMAIN`: le chiavi non
+     esistono. Conta solo per la posta **spedita da** `privacy@`, cioè le
+     risposte agli interessati; le mail del sito partono da `posta.`, con il
+     DKIM di Scaleway, e non c'entrano. Si attiva dal pannello, con il sì
+     dell'autore; non blocca il traguardo.
   **Fatti il 2 ottobre** con la regia, nella cartella del titolare: il registro
   dei trattamenti riletto (cinque trattamenti), le due LIA, la nota sulla DPIA,
   il PDF di Scaleway accanto, il `LEGGIMI.md` allineato a OVH; l'inoltro IONOS
@@ -600,7 +668,10 @@ consuma, non si riprogetta.
   titolare, fuori dal repo: quando arriva una richiesta,
   `server/opposizione.mjs`; e le statistiche si lanciano con
   `server/statistica.mjs`, mai con `sqlite3`.
-- **Gli adempimenti, dopo il primo parere** (1° ottobre 2026). Le decisioni e
+- **Gli adempimenti, dopo il primo parere** (1° ottobre 2026) — *lo stato di
+  oggi è nel punto «Aperto il 2 ottobre 2026» qui sopra e nel §15.4: restano la
+  copia controfirmata del DPA e la firma DKIM; PEC e parere firmato sono decisi
+  «no».* Il testo di prima: Le decisioni e
   l'esito punto per punto sono nel §15.4 di `account-progetto.md`, con
   l'elenco di che cosa resta: il DPA di statichost.eu da firmare **subito**, la
   casella `privacy@` su OVH (fatta il 1° ottobre: restano l'inoltro IONOS, il
@@ -608,10 +679,8 @@ consuma, non si riprogetta.
   registro con quattro trattamenti, il PDF del DPA di Scaleway, un parere
   firmato se lo vuoi. E due pezzi di codice: l'esclusione dalle statistiche, su
   `main`, e Manrope servito da `site/`, su `ui/main`. I due fattori sono fatti.
-- **Alla messa in esercizio** (punto 8), con una sessione che ti accompagna come
-  P-08: creare la STARDUST1-S, la chiave API di sola scrittura sul bucket, una
-  chiave SSH nuova, la chiave API di Transactional Email, e il record di `api.`.
-  Le chiavi si mettono sulla macchina, mai nel repo.
+- ~~**Alla messa in esercizio**~~ — **fatta il 1° ottobre 2026 con P-15**: la
+  STARDUST1-S, le chiavi sulla macchina, il record di `api.`. Esito nel §6.
 - ~~I worktree `rotta-giusta-p07` e `-p08`~~ — **tolti il 1° ottobre 2026**,
   con i loro rami già fusi, insieme a `rotta-giusta-fix`. Il ramo `fix/0.28.1`
   resta, locale e su GitHub: statichost.eu costruisce da lì fino al traguardo,
@@ -3132,7 +3201,10 @@ ordine; ogni passo dice chi lo fa e come si vede che è fatto.
 
 - gli adempimenti del §15.4 di `account-progetto.md`, e la privacy che smette
   di dire «Bozza per la versione con gli account» — o l'autore che decide di
-  pubblicarla così, per scritto nel §4;
+  pubblicarla così, per scritto nel §4. **Chiuso il 2 ottobre 2026 dalla
+  decisione dell'autore** (§4, punto 4 delle cose aperte quel giorno): si
+  pubblica senza parere firmato, senza PEC e senza aspettare la copia
+  controfirmata del DPA di statichost.eu; «Bozza» esce nel passo 1;
 - la coda vuota per Claude e per ChatGPT: nessun ramo con lavoro non fuso
   (`git log main..ui/main` vuoto, nessun worktree sporco);
 - le suite verdi sullo stato di `main`, quella del server anche con la LTS 24.
@@ -3143,7 +3215,9 @@ ordine; ogni passo dice chi lo fa e come si vede che è fatto.
    `versione` in `site/dati/meta.json` a **0.29.0**; `[Unreleased]` del
    CHANGELOG diventa `[0.29.0]` con una testa che dice che cosa cambia per chi
    studia; nello stesso commit si toglie la nota in testa a
-   `docs/filosofia.md` (P-26). Il commit tocca regole, motore e interfaccia
+   `docs/filosofia.md` (P-26), e in `site/privacy.html` la riga della data
+   smette di dire «Bozza per la versione con gli account» e prende la data del
+   rilascio (deciso dall'autore il 2 ottobre 2026). Il commit tocca regole, motore e interfaccia
    insieme: come per la 0.28.1, lo lancia l'autore con `TERRITORI_OK=1`. Poi il
    tag annotato `v0.29.0`.
 2. **Il push** (regia, con il sì dell'autore): `main` e `v0.29.0`. Da qui
@@ -3635,3 +3709,18 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   privacy» ferma dal 26 settembre, il primo punto aperto del §4. Il contesto
   di questa sessione di regia è finito: si riprende con il prompt di «Come si
   riprende la regia in una sessione nuova».
+- **2 ottobre 2026 — la regia nuova: il Registro privacy, il quinto MX, e la
+  decisione che chiude il cancello degli adempimenti.** La sessione nuova è
+  partita dal prompt corto, e la sua prima risposta ha trovato quello che al
+  file mancava: la testata ferma al 30 settembre, cinque voci del §4 superate e
+  non barrate, il DPA di statichost.eu di cui non si capiva se fosse partito,
+  e l'ordine dei passi che l'autore ha poi dato in chat. Tutto è scritto ora:
+  le voci barrate, e il prompt di ripresa con «Dove siamo» e «I prossimi
+  passi», che la regia uscente riscrive. Con l'autore: l'attività «Registro
+  privacy» gira di nuovo — due righe nuove nel diario, lette dalla regia con
+  il suo sì —, e resta la prova del primo passaggio programmato; il quinto MX
+  è su IONOS, verificato; il DPA è firmato e spedito. **Deciso dall'autore:**
+  niente PEC, niente parere firmato, si pubblica senza aspettare la copia
+  controfirmata; «Bozza» esce dalla privacy nel commit di rilascio. Trovato
+  guardando Zimbra: l'SPF è a posto, **la firma DKIM di `privacy@` non è
+  attiva**. Il traguardo aspetta le suite su `main` e il via dell'autore.

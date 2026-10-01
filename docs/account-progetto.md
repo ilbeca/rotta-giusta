@@ -1842,7 +1842,7 @@ scrive che cosa è fatto, quando e dove.
 | Adempimento | Stato | Dove |
 |---|---|---|
 | **Accordo con Scaleway come responsabile** (art. 28) | **Fatto.** Il DPA di Scaleway, versione del 1° giugno 2024, dice di sé che *«forms an integral part of the contract»*: si accetta insieme alle condizioni generali, e non si firma a parte. Verificato nella console il 26 settembre 2026: fra i contratti dell'organizzazione `rottagiusta` c'è il «Data Processing Agreement» 10/2024. Il DPA copre l'avviso scritto al cliente in caso di violazione (art. 9), la cancellazione a fine contratto (art. 13) e i sub-responsabili con autorizzazione generale (art. 7). | Console Scaleway, Organization → Settings → Organization contracts. Una copia in PDF la scarica l'autore e la tiene accanto al registro |
-| **Contatto del titolare**, che non sia un canale pubblico | **Fatto il 26 settembre 2026:** `privacy@rottagiusta.it`, un inoltro IONOS verso la casella personale del titolare, provato con una mail arrivata. **Da quell'indirizzo non si spedisce**, e IONOS non filtra lo spam dell'inoltro. | L'informativa (§18) lo scriverà |
+| **Contatto del titolare**, che non sia un canale pubblico | **Dal 1° ottobre 2026 `privacy@rottagiusta.it` è una casella OVHcloud** (Zimbra Starter), e l'informativa lo dice; l'inoltro IONOS verso la casella personale del titolare, che c'era dal 26 settembre, è eliminato dal 2 ottobre (sotto, punto 2). La firma DKIM della casella non è ancora attiva (sotto, punto 10). | `site/privacy.html` |
 | **Registro dei trattamenti** (art. 30) | **Bozza del 26 settembre 2026**, con tre trattamenti: account e salvataggio, registro di sicurezza, richieste a privacy@. Descrive il prodotto deciso: va riletto il giorno in cui il server risponde ai visitatori. | Documento dell'autore, fuori dal repo |
 | **Tenere i registri aggiornati** | **Un'attività programmata dal 26 settembre 2026**, «Registro privacy — Rotta Giusta», nell'app Claude dell'autore: due volte al giorno (8 e 20) legge la casella in **sola lettura** — le mail a privacy@, gli avvisi di sicurezza di Scaleway, IONOS e statichost.eu, e gli allarmi del server da `posta.` quando ci saranno —; apre le righe nel registro delle richieste (scadenza a un mese, art. 12.3) e in quello delle violazioni (T0 e scadenza a 72 ore), prepara per ogni possibile violazione una bozza della notifica al Garante e ricalcola le scadenze aperte. Non spedisce, non risponde e non notifica: la decisione resta dell'autore. Segnala anche quando un commit su questo documento o sugli ADR rende da rileggere il registro dei trattamenti. **Gira solo con l'app aperta**; alla prima apertura recupera i passaggi saltati. | La cartella «Rotta Giusta - titolare» in iCloud Drive, con un `LEGGIMI.md` |
 | **Accorgersi di una violazione, e notificarla entro 72 ore** (art. 33) | **Procedura scritta** nella stessa cartella: le 72 ore partono da quando ce se ne accorge; la notifica si fa **solo** con la procedura telematica del Garante (`servizi.gpdp.it/databreach`, dal 1° luglio 2021: non per email né per PEC), e c'è una bozza che ricalca il modulo, sezioni A–O della versione V.2021-04, con già scritto quello che vale per ogni caso (titolare, responsabile, sistemi e regioni, misure in essere, categorie di dati); si documenta ogni violazione (art. 33.5), anche quelle non notificate. Gli allarmi del server sono **fatti** (P-11, `server/allarmi.mjs`), vedi sotto. | Bozza dell'autore; gli allarmi in `server/allarmi.mjs` |
@@ -1946,7 +1946,12 @@ per traverso, e corretta: l'avvertenza diceva ancora che la composizione delle
 **Da fare, prima del rilascio (P-27).** Dell'autore:
 
 1. firmare e spedire il DPA di statichost.eu, **subito**: il trattamento c'è dal
-   25 settembre, e tenere la copia firmata accanto al registro;
+   25 settembre, e tenere la copia firmata accanto al registro. **Firmato e
+   spedito dall'autore**, detto alla regia il 2 ottobre 2026 (la data di
+   spedizione non è scritta); **la copia controfirmata è attesa**. Deciso
+   dall'autore lo stesso giorno: il rilascio non la aspetta, e l'informativa
+   esce dicendo «con un accordo scritto» con la sola sua firma spedita. Quando
+   la copia torna: accanto al registro, e questa riga si chiude;
 2. ~~la casella di `privacy@` su OVH Zimbra Starter~~ — **in esercizio dal 1°
    ottobre 2026**, il resoconto in fondo al punto. **Verificata il 1° ottobre
    2026 sui contratti e le guide ufficiali OVHcloud:** si vende a privati
@@ -2001,11 +2006,20 @@ per traverso, e corretta: l'avvertenza diceva ancora che la composizione delle
    ottobre; **l'inoltro IONOS eliminato il 2 ottobre 2026**, dalla regia,
    verificato nel pannello (nessun indirizzo resta) e sul DNS (MX e SPF ancora
    su OVH, sui quattro nameserver). Annotato: gli MX sono quattro, `mx0`…`mx3`,
-   non i cinque fino a `mx4` scritti sopra — da confrontare con la guida OVH. Con la casella nuova l'attività
+   non i cinque fino a `mx4` scritti sopra — da confrontare con la guida OVH.
+   **Confrontato il 2 ottobre 2026, e portati a cinque:** la guida OVHcloud
+   «Configure an MX record» elenca `mx0`…`mx4` con priorità 1, 5, 50, 100 e
+   200, «comuni a tutte le soluzioni», Zimbra compresa; la diagnostica di
+   Zimbra dà «Configurazione OK» anche con quattro. `mx4.mail.ovh.net` risolve
+   e risponde sulla porta 25. Aggiunto su IONOS dalla regia, con il sì
+   dell'autore: `MX @ mx4.mail.ovh.net`, priorità 200, TTL un'ora; verificato
+   con `dig` sui quattro nameserver IONOS e su 1.1.1.1 e 8.8.8.8, con SPF,
+   DMARC e i record di `posta.` intatti. Con la casella nuova l'attività
    programmata non legge più le mail degli interessati: va decisa che cosa
    legge, perché un'attività che legge `privacy@` con un piano senza DPA
    ripete il problema del punto 5;
-3. la PEC, se si mette: l'indirizzo all'informativa;
+3. ~~la PEC, se si mette: l'indirizzo all'informativa~~ — **deciso dall'autore
+   il 2 ottobre 2026: niente PEC**;
 4. ~~le due LIA e la nota sulla DPIA~~ — **scritte il 2 ottobre 2026**, con
    la regia, nella cartella del titolare: `lia-registro-sicurezza.md`,
    `lia-statistiche.md`, `nota-dpia.md`, ognuna con i punti da far
@@ -2019,7 +2033,12 @@ per traverso, e corretta: l'avvertenza diceva ancora che la composizione delle
    eviterebbe di dipendere dal solo telefono; IONOS con l'app Authenticator,
    attivata quel giorno. Resta il PDF del DPA di Scaleway, da scaricare e
    tenere accanto al registro;
-7. un parere firmato, se lo si vuole, prima di togliere «Bozza».
+7. ~~un parere firmato, se lo si vuole, prima di togliere «Bozza»~~ —
+   **deciso dall'autore il 2 ottobre 2026: niente parere firmato, si
+   pubblica** sul primo parere del 1° ottobre, non firmato. «Bozza» esce da
+   `site/privacy.html` nel commit di rilascio, con la data del rilascio
+   (P-27, passo 1). I punti «da far confermare» qui sopra restano non
+   confermati da un professionista: è il prezzo che l'autore accetta.
 
 Del codice:
 
@@ -2038,6 +2057,21 @@ Del codice:
    (`dbb27c4`, `6a44aee`): il file in `site/caratteri/` con la sua licenza OFL,
    la provenienza nel README, nessuna richiesta a un altro host misurata nel
    browser, e `test_nessuna_risorsa_di_terzi` che lo tiene fermo.
+
+Trovato il 2 ottobre 2026, dell'autore:
+
+10. **la firma DKIM di `privacy@` non è attiva.** Nella diagnostica di Zimbra
+    del dominio, MX, SRV e SPF sono «Configurazione OK»; la scheda DKIM dice
+    «La firma DKIM non è attiva e potrebbero quindi verificarsi problemi di
+    consegna per alcune delle tue email», con il pulsante «Attivare la firma
+    DKIM». Sul DNS i due CNAME `ovhmo-selector-1/2._domainkey` messi il 1°
+    ottobre ci sono, ma le destinazioni
+    (`…4951182.om.dkim.mail.ovh.net`, `…4951183…`) rispondono `NXDOMAIN`: le
+    chiavi non sono mai state generate. Riguarda la posta **spedita da**
+    `privacy@`, cioè le risposte agli interessati: senza firma, con il DMARC a
+    `p=none`, passano per il solo SPF. Le mail del sito partono da `posta.`
+    con il DKIM di Scaleway e non c'entrano. Si attiva dal pannello OVHcloud,
+    e poi si riguarda che i CNAME siano quelli che il pannello chiede.
 
 ---
 
@@ -2300,7 +2334,7 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
 |---|---|---|
 | ~~Macchina con SQLite, o container con PostgreSQL gestito~~ | — | **deciso** su delega: macchina, SQLite, Node senza dipendenze (§2.2) |
 | ~~Quale macchina~~ | — | **deciso dall'autore il 26 settembre 2026: STARDUST1-S a `pl-waw-2`**, 5,04 € al mese. Il prezzo che si accetta: i dati stanno a Varsavia (UE), e dopo un guasto la macchina potrebbe non essere ricreabile subito perché le scorte sono incerte. Le copie restano a `nl-ams` (§2.6). L'informativa dirà Polonia. **Si crea alla messa in esercizio, non prima** (dall'autore, il 26 settembre 2026): accesa da subito costerebbe 5,04 € al mese per settimane senza niente sopra, e andrebbe comunque tenuta aggiornata. Il prezzo che si accetta è di trovarla esaurita quel giorno; allora si sceglie fra la DEV1-S a `fr-par` e un'altra zona |
-| Gli adempimenti rimasti del titolare: indirizzo postale, base giuridica del registro di sicurezza, inoltro verso Gmail, conservazione delle richieste, DPA di statichost.eu, due fattori | l'autore | §15.4 |
+| ~~Gli adempimenti rimasti del titolare: indirizzo postale, base giuridica del registro di sicurezza, inoltro verso Gmail, conservazione delle richieste, DPA di statichost.eu, due fattori~~ | — | **decisi fra il 1° e il 2 ottobre 2026** (§15.4): nessun indirizzo postale e nessuna PEC, legittimo interesse, `privacy@` su OVHcloud, due anni, DPA firmato e spedito, due fattori fatti; niente parere firmato. Restano la copia controfirmata del DPA e la firma DKIM (§15.4, punti 1 e 10) |
 | ~~Parametri di Argon2id~~ | — | **deciso su delega il 26 settembre 2026, dalla regia**: `m=65536, t=2, p=1`, la proposta di P-02, misurata sotto i 250 ms su tutte e due le macchine (§5.1). Con 1 GB di memoria sulla STARDUST, 64 MiB per verifica reggono i limiti di frequenza del §6.5; va rimisurato sulla macchina di produzione |
 | ~~Il tetto delle 300 mail~~ | — | **deciso dall'autore il 26 settembre 2026: 300 al mese, per il momento.** Oltre non si blocca: si paga 0,25 € ogni 1.000, e il titolare riceve un avviso, non chi si registra un `503` (§9.3) |
 | ~~Lunghezza minima della password~~ | — | **deciso**: 15, come NIST (§5.2) |
@@ -2314,7 +2348,7 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
 | Statistiche mostrate a chi studia | l'autore, in un documento suo | fuori da qui (§15.2) |
 | L'opposizione alle statistiche vale per l'account: chi si cancella e si riscrive deve chiederla di nuovo | l'autore, con il parere | tenerla così, e dirlo nella risposta a chi si oppone: l'alternativa è conservare l'email di chi ha chiesto di cancellarla (§15.2, scelta 2) |
 | La pagina mostra a chi si è opposto che è fuori dalle statistiche | l'autore | no, per ora: la conferma è la risposta alla sua mail; servirebbero un campo in `GET /v1/io` e un testo dell'interfaccia (§15.2, scelta 1) |
-| Cosa chiede l'onboarding oltre alla data | l'autore | Q-ONBOARD, specifica §10 |
+| ~~Cosa chiede l'onboarding oltre alla data~~ | — | **deciso dall'autore il 1° ottobre 2026**: solo la data, facoltativa; Q-ONBOARD è fra le chiuse del §10 della specifica |
 | ~~Chiudere il difetto dei tag che resta (§4.2)~~ | — | **chiuso** da P-01 il 26 settembre (merge `6e07525`): i tag nascono con la data, ritaggare aggiunge |
 | ~~La registrazione dice chi è iscritto (§5.3)~~ | — | **deciso dall'autore il 26 settembre 2026**: si dice apertamente, «Questa email è già registrata», con `409` e senza mail; accesso e password dimenticata restano come sono (§5.3). Il server lo fa con P-11 |
 
