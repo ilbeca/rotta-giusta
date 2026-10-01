@@ -200,14 +200,16 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
+| 36 | L'esclusione dalle statistiche, sul server (§15.4 n. 8) | Claude | `main`, a mano, in una sessione aperta dall'autore | niente — **pronto**; prima della prima statistica | P-54 |
 | 9 | **La versione con gli account** — il traguardo | tutti | `main` | gli adempimenti del §4, dell'autore | segnaposto P-27 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**, e si sono incontrate: il client degli
 account è nella pagina (P-18), Progressi è la mappa (P-23), e il carteggio ha
 i suoi contratti e controlli su `main` (P-32…P-35). **Per Claude, l'ordine
-consigliato:** niente di pronto — il ridisegno e il
-server in esercizio sono fatti. **Per ChatGPT:** niente di pronto. Il traguardo
+consigliato:** P-54, l'esclusione dalle statistiche,
+in una sessione che l'autore apre; il ridisegno e il server in esercizio sono
+fatti. **Per ChatGPT:** niente di pronto. Il traguardo
 aspetta soltanto gli adempimenti dell'autore. I prompt di Claude vanno uno alla volta nella cartella principale, e
 la suite dell'interfaccia di un worktree esclude quella dell'altro, per la porta
 8620. Il numero di una riga è il suo nome, non la sua posizione. Il traguardo,
@@ -3025,6 +3027,48 @@ riga vuota; sullo stato fuso motore 193/197, server 62/62, dati 242,
 specifica 784, guardiano verde, interfaccia **2.158** — dieci verifiche in meno,
 quelle delle cinque dichiarazioni uscite.
 
+### P-54 — Claude: l'esclusione dalle statistiche, sul server
+
+**Stato:** pronto dal 1° ottobre 2026; l'autore lo apre in una sessione sua.
+Non blocca il traguardo, perché oggi nessuna statistica si calcola (§15.2 di
+`account-progetto.md`), ma va fatto **prima della prima query**: da quel giorno
+la promessa dell'informativa diventerebbe falsa. **Dove:** Claude Code,
+`~/Software/rotta-giusta`, ramo **`main`**, a mano. **Nasce da:** §15.4, punto 8,
+scritto dalla sessione degli adempimenti.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-54, su main. Leggi il §15 di docs/account-progetto.md per
+intero — il §15.2 sulle statistiche e il punto 8 del §15.4 —, il
+paragrafo dei diritti in site/privacy.html, e gli esiti di P-09, P-10,
+P-11 e P-15 nel §6 di docs/prossime-sessioni.md.
+
+Chi si oppone al trattamento per le statistiche dev'essere escluso da
+ogni conteggio. Sul server: un segno sull'account, con una migrazione
+solo additiva come le altre (§2.7: il codice di prima deve girare sul
+database di dopo); il modo in cui il titolare lo mette e lo toglie,
+annotato nel registro; e un posto solo da cui passa ogni statistica,
+che lo rispetta — non una regola che ogni query futura deve ricordare,
+ma una funzione che le query usano e un controllo che fallisce se una
+query aggregata sulle righe nasce fuori di lì. Prima il test che
+fallisce: un account con il segno, le sue righe, e un conteggio che le
+conterebbe. Un requisito nuovo nel §9.9 della specifica, con il suo
+controllo. L'export e la cancellazione non cambiano; se il segno debba
+viaggiare nell'export, decidilo e scrivi perché.
+
+Il server in esercizio gira da v0.28.0 e main non si pusha: questo
+codice arriva sulla macchina con il traguardo (P-27), che lo installa
+con rg-aggiorna. Non toccare la macchina. Non toccare
+docs/prossime-sessioni.md né site/. Suite verdi, con quella del server
+anche con la LTS 24, voce in fondo a [Unreleased], un commit. Chiudi
+con il resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
 ---
 
 ### I segnaposto — i prompt che non si possono ancora scrivere
@@ -3475,3 +3519,7 @@ anche la sezione `[0.28.1]`, che oggi sta solo sul ramo `fix/0.28.1`. Il campo
   ChatGPT non aveva prompt aperti dopo P-25 (chiuso alle 08:27), quindi
   nessuna sessione è stata spostata sotto i piedi; chi riprende su `ui/main`
   parte dall'ultimo commit del ramo, oggi uguale a `main`.
+- **1° ottobre 2026 — P-54 scritto.** Il punto 8 del §15.4 diventa un prompt:
+  l'esclusione dalle statistiche sul server, con un posto solo da cui passa
+  ogni conteggio. L'autore lo lancia in una sessione separata; il resoconto
+  torna alla regia.
