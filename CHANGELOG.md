@@ -2507,6 +2507,119 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   verdi. `site/`, `docs/prossime-sessioni.md` e la macchina non sono stati
   toccati.
 
+### Aggiunto — P-55: lo strumento con cui il titolare legge un account, e la riga che ogni lettura lascia
+
+- **L'informativa prometteva una riga che nessuno poteva scrivere.**
+  `site/privacy.html` dice che il titolare legge le risposte di un singolo
+  account solo per un problema che gli viene chiesto o per la sicurezza, e che
+  «ogni lettura è annotata nel registro di sicurezza»; e mette «le letture
+  fatte dal titolare» fra le cose che il server annota. Lo strumento del §15.1
+  di `docs/account-progetto.md` era «Proposto» dal 25 settembre e nessun prompt
+  l'aveva mai fatto: il titolare avrebbe potuto leggere solo con `sqlite3`,
+  senza traccia. Come per le statistiche di P-54, la promessa non era falsa
+  solo perché nessuno aveva ancora letto. L'ha trovato il controllo della regia
+  del 2 ottobre; l'autore ha scelto lo strumento, non di togliere le due frasi.
+
+- **`server/leggi.mjs`, dalla macchina e a servizio acceso.**
+  `node server/leggi.mjs --email … --motivo "…"` mostra l'account — conferma,
+  date, generazione, stato della password, sessioni aperte, statistiche,
+  Segnali — e le sue attività **con le funzioni del motore**, le stesse della
+  pagina: `sessioni()` con il confine dell'attività, `attivitaCarteggio()` e
+  `dettaglioCarteggio()`, `traccia()` sullo specchio di `ripiega()`,
+  `tagPerTentativo()`. Chi aiuta vede quello che vede chi chiede aiuto, non una
+  seconda contabilità. In fondo, gli eventi di quell'account nel registro,
+  comprese le letture di prima: è da lì che una lettura si rendiconta.
+  `--attivita <id>` aggiunge le righe di una attività, com'erano; `--json` dà
+  tutto, righe comprese, così non resta una domanda di supporto per cui serva
+  `sqlite3`. Non escono mai la password, la chiave della copia locale, le
+  impronte di sessioni e gettoni. Nessuna rotta nuova, nessuna migrazione.
+
+- **Leggere e annotare sono una transazione sola, e la riga si scrive prima**
+  (`leggiAccount()` in `server/letture.mjs`). La riga è l'evento `lettura del
+  titolare`, con quando, il numero dell'account e il motivo, senza IP. **Il
+  motivo è obbligatorio e non porta email**, con la stessa funzione
+  dell'opposizione, `motivoPerIlRegistro()`. **Ogni lettura è una riga**, anche
+  la seconda con lo stesso motivo. Se la riga non si può scrivere — un database
+  in sola lettura, o di prima del registro — non esce niente; se la lettura si
+  rompe a metà non resta la traccia di una lettura che non c'è stata. Un
+  percorso che non esiste, un file vuoto, un file che non è un database e
+  un'email che nessun account ha escono con 1, muti, senza annotare; lo
+  strumento apre in scrittura ma senza `apri()`: non crea e non migra niente.
+
+- **Non cambia niente dell'account.** Un test confronta ogni tabella tranne il
+  registro prima e dopo tre letture: identiche, «ultimo accesso» compreso — una
+  lettura del titolare non deve rimandare la cancellazione per inattività.
+  Niente nel file delle cancellazioni. **Quanto vive la riga lo dice il
+  §15.3**, che lo diceva già: un anno, come ogni evento senza indirizzo. Nasce
+  senza IP e senza un vincolo sull'account: c'è a 364 giorni, non c'è a 366, e
+  la cancellazione dell'account non la tocca.
+
+- **Il controllo delle statistiche non vede la lettura di un account, ed è
+  misurato.** Il prompt chiedeva di dichiararla in R-ACC-69 se quel controllo
+  la vedeva: non la vede, per costruzione — lascia passare una query che si
+  ferma a un account, `account_id = ?` —, e `letture.mjs` non aggrega niente
+  in SQL, quindi non c'è niente da dichiarare lì e niente è stato aggirato. Ma
+  vuol dire che un **secondo** strumento che leggesse un account senza annotare
+  non lo vedrebbe nessuno. Per questo c'è un elenco nuovo (R-ACC-74): i file di
+  `server/` e di `strumenti/macchina/` che leggono le righe di un account,
+  dichiarati uno per uno con il motivo; solo `leggi.mjs` importa `letture.mjs`;
+  lo strumento non ha query sue.
+
+- **Trovato, e corretto: `opposizione.mjs` su un file vuoto ne faceva un
+  database.** Misurato provando lo stesso caso su tutti e tre gli strumenti:
+  un file che esiste ed è vuoto passava il controllo «il database c'è»,
+  `apri()` ne faceva un database di 69.632 byte, e la risposta era «nessun
+  account» — la stessa di un indirizzo sbagliato. Ora lo rifiuta; prima il
+  test, rosso per quella ragione.
+
+- **Trovato, e lasciato all'autore: un ripristino perde le letture annotate
+  dopo la copia.** Misurato: una lettura prima della copia e una dopo, e dopo
+  il ripristino nel registro c'è solo la prima. Vale per ogni evento del
+  registro, che sta nel database; la finestra è di dodici ore al più. Non è
+  stato portato nel file delle cancellazioni come le opposizioni: è una
+  traccia, non uno stato da rimettere, e dopo un ripristino il titolare la
+  rifà rilanciando lo strumento con un motivo che lo dica. Nel §20 di
+  `account-progetto.md`, con l'alternativa.
+
+- **Prima il test che fallisce:** quattro test nuovi — il primo è quello
+  chiesto, una lettura e la sua riga nel registro —, rossi uno per uno con due
+  moduli segnaposto, uno strumento che usciva senza leggere e una funzione che
+  lanciava; gli altri 68 verdi. **Provati al contrario su quaranta rotture**, una
+  per volta, tutte rosse: fra le altre nessuna riga, la riga tentata e la
+  lettura fatta lo stesso, la riga scritta fuori dalla transazione, il motivo
+  facoltativo nella funzione o nello strumento, un'email nel motivo o nel
+  dettaglio, un account che non c'è annotato lo stesso, il confine per pausa,
+  le righe di tutti, la password o la chiave locale fra i dati, la copertura a
+  due stati, lo strumento che apre con `apri()` o in sola lettura, una seconda
+  lettura non annotata, le letture che non scadono o scadono a sei mesi, una
+  rotta del server che conosce la lettura, un secondo strumento che legge le
+  righe. **Una era passata verde**: la lettura che aggiorna «ultimo accesso».
+  È una data senza ora, e il giorno della corsa coincideva con quello
+  dell'account del test; ora il test la mette a una data che oggi non può
+  essere. **E una corsa intera non valeva**: corretto quel test, le rotture
+  erano tutte rosse perché era diventato rosso lui — la richiesta di chi
+  studia aggiorna «ultimo accesso» dopo la fotografia. Rifatte tutte, con il
+  test verde da solo. Quattro rotture erano scritte male — una non si
+  applicava, una era rossa per un errore di sintassi, due rompevano altro — e
+  sono state rifatte perché rompessero solo quello che dicono. Specifica: R-ACC-71…74 nel §9.9,
+  con che cosa i controlli non vedono — per prima la lettura fatta con
+  `sqlite3`, che è della procedura del titolare —, e il §3.7.
+
+- **Non fatto:** la macchina non è stata toccata. Gira `v0.28.0`, e questo
+  codice ci arriva con il traguardo; il comando è provato in locale, con il
+  servizio acceso e attraverso un collegamento come `/srv/rg/attuale`, non con
+  l'utente `rg` e i permessi di `/var/lib/rg`.
+
+  Suite: server **72/72** (erano 68) con Node 25.3 e con la **24.21.0 LTS** —
+  l'archivio del 29 settembre, la sua impronta confrontata con il
+  `SHASUMS256.txt` riscaricato oggi da nodejs.org, ed estratto di nuovo —;
+  `ripristina --prova` 22 controlli; motore 193/197 con i quattro skip
+  previsti, anche con la LTS; dati 263; interfaccia 2.158, in 240 s — alla
+  prima occhiata la 8620 era della suite di `rotta-giusta-ui`, e si è
+  aspettato che fosse libera —; specifica **816** (erano 800). Guardiano e
+  controllo della documentazione verdi. `site/`,
+  `docs/prossime-sessioni.md` e la macchina non sono stati toccati.
+
 ## [0.28.1] — 2026-10-01
 
 Un rilascio di correzione, da un ramo che parte da `v0.28.0`, con una cosa

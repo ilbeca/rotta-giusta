@@ -514,6 +514,11 @@ vero anche quando l'implementazione cambia.
   profilo — data d'esame e punteggi dei Segnali —, e un registro di sicurezza.
   Il titolare le legge per il supporto e per le statistiche; niente esce verso
   script di terzi (§2.1).
+- **Il titolare legge un account da un posto solo**, `server/leggi.mjs`, dalla
+  macchina e mai dal web: un'email e un motivo obbligatorio, l'account e le sue
+  attività con le funzioni del motore, e una riga nel registro per ogni
+  lettura, scritta nella stessa transazione e per prima. Non cambia niente
+  dell'account (R-ACC-71…74; `account-progetto.md` §15.1).
 - **Le statistiche passano da un posto solo**, `server/statistiche.mjs`, che
   legge fonti già filtrate: chi si è opposto al trattamento — un segno
   sull'account, che il titolare mette e toglie dalla macchina, annotato nel
@@ -1575,9 +1580,13 @@ controllo in `test_server.mjs`.
 | R-ACC-65 | Con punteggi dei Segnali che il server non ha accolto non si esce, e lo si dice; «Scarica le risposte non salvate» porta anche i punteggi, e dopo la scelta esplicita si esce senza mandarli a nessun account; con la rete «Riprova l'invio» li manda, e solo dopo esce | `test_interfaccia.py::test_client_uscita_segnali` |
 | R-ACC-66 | Un pulsante di conferma premuto senza la conferma dice che cosa manca, invece di non fare niente: «Carica il nuovo archivio» senza «Ho conservato il file», «Cancella queste risposte» senza «Confermo la cancellazione». Il messaggio sta nella finestra, in testo che si vede, e nomina la casella; intanto né la copia né il server cambiano. Quello che il banco non vede — che il lettore di schermo lo annunci, il colore e il contrasto — è di R-ACC-60 e di R-A11Y-03 | `test_interfaccia.py::test_client_conferma_mancante` |
 | R-ACC-67 | Chi si è opposto al trattamento per le statistiche è fuori da ogni conteggio — sulle righe, sugli account e sui punteggi dei Segnali, semplice, per gruppo o di persone distinte —, e nel suo account non cambia niente: le risposte, l'export, la descrizione. Il segno sta nel database: regge un riavvio e un azzeramento, e si toglie. L'export non lo porta | `test_server.mjs::statistiche: chi si e opposto esce da ogni conteggio, e le sue risposte restano nel suo account` |
-| R-ACC-68 | Il segno lo mette e lo toglie il titolare dalla macchina, con il servizio acceso, e ogni cambio è una riga del registro con il numero dell'account e un motivo obbligatorio, che non porta email; rimetterlo non scrive niente, e un database o un account che non ci sono non producono un database vuoto né un «fatto» | `test_server.mjs::statistiche: il titolare mette e toglie il segno dalla riga di comando, con il servizio acceso, e il registro lo annota` |
+| R-ACC-68 | Il segno lo mette e lo toglie il titolare dalla macchina, con il servizio acceso, e ogni cambio è una riga del registro con il numero dell'account e un motivo obbligatorio, che non porta email; rimetterlo non scrive niente, e un database o un account che non ci sono — o un file vuoto al posto del database — non producono un database vuoto né un «fatto» | `test_server.mjs::statistiche: il titolare mette e toglie il segno dalla riga di comando, con il servizio acceso, e il registro lo annota` |
 | R-ACC-69 | Ogni statistica passa da `server/statistiche.mjs`: fuori di lì una query che aggrega, o che legge le righe di tutti, è rossa se non è dichiarata con il motivo per cui non è una statistica; e una statistica che nomina una tabella vera, o che fa uscire chi ha risposto, le righe intere o un'email, è rifiutata. Su un database di prima del segno non si conta | `test_server.mjs::statistiche: una query aggregata o su tutte le righe fuori da server/statistiche.mjs e rossa, se non e dichiarata` |
 | R-ACC-70 | Il ripristino di una copia non rimette nei conteggi chi si è opposto dopo la copia, e non tiene fuori chi ha ritirato: il segno si rilegge dal file delle cancellazioni, per `id` e chiave, anche da una copia di prima dello schema 4 e anche se il ripristino l'ha fatto il rilascio di prima, perché il server lo rilegge a ogni avvio. Un'opposizione non spiega un calo di righe fra due copie | `test_server.mjs::ripristino: chi si e opposto dopo la copia resta fuori dai conteggi, anche da una copia di prima del segno` |
+| R-ACC-71 | Il titolare legge un account dalla macchina, con il servizio acceso, con `server/leggi.mjs`: un'email e un motivo, e lo strumento mostra l'account — senza password, chiave della copia locale né impronte — e le sue attività con le funzioni del motore, le stesse della pagina: le righe com'erano, `sessioni()` con il confine dell'attività, `attivitaCarteggio()` e `dettaglioCarteggio()`, `traccia()`, `tagPerTentativo()`. Ogni lettura è una riga del registro, `lettura del titolare`, con quando, il numero dell'account e il motivo, senza IP; anche la seconda con lo stesso motivo. Niente di un altro account esce | `test_server.mjs::letture: il titolare legge un account dalla riga di comando, con il servizio acceso, e ogni lettura e una riga del registro` |
+| R-ACC-72 | Senza la riga nel registro non si legge: senza motivo, con un'email nel motivo, senza email, con un account o un database che non ci sono, con un file vuoto o che non è un database di questo server, su un database di prima del registro o che non si può scrivere, e se la lettura si rompe a metà, lo strumento non mostra niente, non annota niente, non dice «fatto», e non crea né migra un database | `test_server.mjs::letture: senza motivo, senza account, senza database o senza poter scrivere il registro non si legge niente` |
+| R-ACC-73 | Una lettura non cambia niente dell'account: ogni tabella tranne il registro resta com'era — nemmeno «ultimo accesso» —, niente va nel file delle cancellazioni, e chi studia non vede niente di diverso. La riga della lettura sopravvive alla cancellazione dell'account, con il suo numero e senza email, e dura un anno come gli altri eventi del registro | `test_server.mjs::letture: una lettura non cambia niente dell account, e la sua riga sopravvive alla cancellazione e dura un anno` |
+| R-ACC-74 | Il titolare ha una strada sola per leggere, e fuori dal web: i file di `server/` e di `strumenti/macchina/` che leggono le righe di un account sono dichiarati uno per uno con il motivo, e un file nuovo è rosso finché non lo è; solo `server/leggi.mjs` importa `server/letture.mjs`; lo strumento non ha query sue, non apre in sola lettura e non migra | `test_server.mjs::letture: chi legge le righe di un account e dichiarato, e il titolare ha una strada sola, fuori dal web` |
 
 R-ACC-20 e R-ACC-24 sono i primi requisiti del server con un controllo che si
 esegue, e il giro intero sta in `node server/ripristina.mjs --prova`, che la
@@ -1707,6 +1716,26 @@ strumento quando arriva una richiesta, e in quanto tempo; e la macchina, dove
 questo codice arriva con il traguardo. Il controllo statico guarda `server/` e
 `strumenti/macchina/`, riga per riga: prende lo sbaglio, non chi lo vuole
 aggirare.
+
+**Le letture del titolare (P-55).** R-ACC-71…74 nascono da un'altra promessa
+dell'informativa — «ogni lettura è annotata nel registro di sicurezza» — che
+il 2 ottobre 2026 non era falsa solo perché nessuno aveva ancora letto: lo
+strumento del §15.1 di `account-progetto.md` era «Proposto». I controlli
+lanciano `server/leggi.mjs` come processo contro il database di un server
+acceso, e chiamano `leggiAccount()` dove serve l'orologio del test. **La
+lettura di un account passa il controllo di R-ACC-69 senza una dichiarazione**,
+misurato: quel controllo lascia passare per costruzione una query che si ferma
+a un account. Per questo R-ACC-74 ha un elenco suo: un secondo strumento che
+leggesse un account senza annotare non lo vedrebbe nessun altro controllo.
+**Che cosa non vedono:** una lettura fatta con `sqlite3` sulla macchina, che
+non lascia traccia ed è della procedura del titolare, fuori dal repo — gli
+account si leggono con `leggi.mjs`; chi ha lanciato il comando, perché il
+titolare è uno e la riga dice «il titolare»; che cosa, dell'account, è stato
+guardato a schermo; che il motivo scritto sia quello vero; le letture annotate
+dopo una copia, che un ripristino perde come ogni evento del registro
+(misurato: §15.1 di `account-progetto.md`, e §20 per l'autore); un file che
+leggesse le righe con SQL costruito a pezzi, perché l'elenco di R-ACC-74 è sul
+testo; e la macchina, dove questo codice arriva con il traguardo.
 
 ### 9.10 La mappa di Progressi
 
@@ -2424,3 +2453,12 @@ successo, ed è il motivo per cui questo file esiste.
   rilascio di prima non conosce quelle voci. Quarantatré rotture, tutte rosse;
   una era passata verde alla prima stesura, e una era rossa per un errore di
   sintassi invece che per il suo motivo.
+- **2 ottobre 2026 — le letture del titolare (P-55).** L'informativa promette
+  che ogni lettura di un account è annotata nel registro, e lo strumento non
+  c'era: ora è `server/leggi.mjs`, con `leggiAccount()` che legge con le
+  funzioni del motore e annota nella stessa transazione. Entrano R-ACC-71…74,
+  coperti; il §3.7 lo dice. R-ACC-68 dice anche il file vuoto, che
+  `opposizione.mjs` trasformava in un database. Quaranta rotture, tutte rosse;
+  una era passata verde alla prima corsa — la lettura che aggiorna «ultimo
+  accesso», invisibile nel giorno in cui la data di oggi coincide con quella
+  dell'account —, e il test che la prende è stato corretto.

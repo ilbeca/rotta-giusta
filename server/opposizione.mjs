@@ -18,7 +18,7 @@
 // Esce 0 se ha fatto, o se non c'era niente da fare; 1 se l'account o il
 // database non ci sono; 2 se e' stato chiamato male.
 
-import { existsSync } from 'node:fs';
+import { existsSync, statSync } from 'node:fs';
 import { parseArgs } from 'node:util';
 import { apri, opponi } from './db.mjs';
 
@@ -53,6 +53,12 @@ if ((values.metti || values.togli) && !values.motivo?.trim()) {
 // Un percorso sbagliato non deve creare un database vuoto e dire «nessun account».
 if (!existsSync(values.db)) {
   console.error(`${values.db}: il database non c'e'`);
+  process.exit(1);
+}
+// Nemmeno un file che c'e' ed e' vuoto: `apri()` ne farebbe un database nuovo,
+// senza account, e la risposta sarebbe la stessa di un indirizzo sbagliato.
+if (statSync(values.db).size === 0) {
+  console.error(`${values.db}: e' un file vuoto, non il database degli account`);
   process.exit(1);
 }
 

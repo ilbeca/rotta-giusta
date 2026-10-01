@@ -9,7 +9,8 @@
 // ricezione, export, azzeramento; e a quello che chiude le sue rotte (P-11):
 // cambio d'indirizzo, profilo, cancellazione, i due anni di inattivita' e gli
 // allarmi al titolare; e le statistiche, con chi si oppone fuori da ogni
-// conteggio (P-54). L'altra meta' di questo file e' la
+// conteggio (P-54); e le letture del titolare, ognuna annotata nel registro
+// (P-55). L'altra meta' di questo file e' la
 // copia di sicurezza con il ripristino provato — *un backup mai ripristinato
 // non e' un backup, e' un file* (0.4.6) — con l'epoca del database e il file
 // delle cancellazioni del §2.7.
@@ -19,7 +20,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, rmSync, readFileSync, writeFileSync, existsSync, readdirSync, utimesSync } from 'node:fs';
+import { mkdtempSync, rmSync, readFileSync, writeFileSync, existsSync, readdirSync, utimesSync, statSync, chmodSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -34,6 +35,7 @@ import {
 } from '../server/db.mjs';
 import { copia, ripristina, prova } from '../server/copie.mjs';
 import { statistica, esclusi, FONTI } from '../server/statistiche.mjs';
+import { leggiAccount, EVENTO_LETTURA } from '../server/letture.mjs';
 import { hashPassword } from '../server/password.mjs';
 import * as E from '../site/engine.js';
 
@@ -2198,6 +2200,14 @@ test('statistiche: il titolare mette e toglie il segno dalla riga di comando, co
   r = cli('statistica.mjs', '--db', altrove, 'SELECT count(*) n FROM risposte');
   assert.equal(r.status, 1);
   assert.equal(existsSync(altrove), false, 'un percorso sbagliato non crea un database vuoto');
+  // Nemmeno su un file che esiste ed e' vuoto — un `touch`, o quel che resta di
+  // un comando sbagliato (misurato in P-55: `apri()` ne faceva un database).
+  const vuoto = join(k.c, 'vuoto.db');
+  writeFileSync(vuoto, '');
+  r = cli('opposizione.mjs', '--db', vuoto, '--cancellazioni', f, '--email', CHI_SI_OPPONE);
+  assert.equal(r.status, 1, r.stdout + r.stderr);
+  assert.match(r.stderr, /vuoto/);
+  assert.equal(statSync(vuoto).size, 0, 'un file vuoto resta vuoto, e non diventa un database senza account');
   assert.equal(segno(), null);
   assert.deepEqual(registro(), []);
   assert.equal(existsSync(f), false, 'e niente e finito nel file');
@@ -2359,4 +2369,382 @@ test('copia: un opposizione non spiega un calo di righe', (t) => {
   const c2 = copia(p, join(c, 'copia-2.db'), { precedente: join(c, 'copia-1.db'), cancellazioni: f });
   assert.deepEqual(c2.calo, { prima: 10, dopo: 8, spiegato: false });
   assert.equal(c2.allarme, true);
+});
+
+// --- le letture del titolare (P-55) --------------------------------------------------
+//
+// docs/account-progetto.md §15.1 e §15.3. L'informativa dice che il titolare
+// legge le risposte di un singolo account solo per un problema che gli viene
+// chiesto o per la sicurezza, e che «ogni lettura è annotata nel registro di
+// sicurezza». Lo strumento e' `server/leggi.mjs`, dalla macchina e a servizio
+// acceso: un'email e un motivo obbligatorio, l'account e le sue attivita' con
+// le funzioni del motore, e una riga nel registro — scritta nella stessa
+// transazione che legge, e prima che qualcosa esca. Senza la riga non si legge.
+
+const MOTIVO_LETTURA = 'richiesta di supporto a privacy@ del 2 ottobre 2026: i numeri di Progressi non tornano';
+const CHI_SCRIVE = 'chiede.aiuto@esempio.it';
+const UN_ALTRO = 'un.altro@esempio.it';
+
+// Le righe di chi chiede aiuto: una lista di quiz con un errore, una lista
+// ripresa dopo 25 minuti (una attivita' sola, col confine dell'attivita'), una
+// simulazione con la sua riga di prova, un giro sulla carta, un riconoscimento
+// delle tecniche, un tag.
+const ATT_QUIZ = [0, 1, 2].map((i) => riga(101 + i, { sim_uid: 'att-quiz-1', mode: 'argomento', ts: `2026-09-28T10:0${i}:00+02:00`, correct: i === 1 ? 0 : 1 }));
+const ATT_RIPRESA = [0, 25].map((min, i) => riga(111 + i, { sim_uid: 'att-quiz-2', mode: 'mirata', ts: `2026-09-29T09:${String(min).padStart(2, '0')}:00+02:00`, correct: 1 - i }));
+const ATT_PROVA = [
+  riga(121, { sim_uid: 'att-prova', mode: 'simulazione', ts: '2026-09-30T08:00:00+02:00', correct: 1 }),
+  riga(122, { sim_uid: 'att-prova', mode: 'simulazione', ts: '2026-09-30T08:01:00+02:00', correct: 1 }),
+  { _t: 's', uid: 'att-prova', kind: 'base', ts: '2026-09-30T08:02:00+02:00', score: 2, total: 20, passed: 0, ms: 1800000 },
+];
+const ATT_CARTA = [0, 1].map((pos) => ({
+  _t: 'c', uid: `att-carta:${pos}`, item_id: `5.1.3-${pos + 1}`, ts: '2026-09-30T18:00:00+02:00',
+  input_json: JSON.stringify({ risposta: pos ? '' : 'Lat. 42°50′N' }), verdict: pos ? 0 : 1, delta: null, ms: 600000,
+  mode: 'giro-tecniche', sim_uid: 'att-carta', proposti: 2, pos,
+}));
+const ATT_TECNICHE = [{ _t: 't', uid: 'att-tec:0', item_id: '5.1.3-1', ts: '2026-09-30T19:00:00+02:00', chosen: 'una|altra',
+  correct: 0, ms: 9000, mode: 'tecniche', sim_uid: 'att-tec', proposti: 1, pos: 0 }];
+const UN_TAG = [{ _t: 'g', uid: 'tag-letture-1', attempt_uid: ATT_QUIZ[1].uid, tag: 'L', ts: '2026-09-28T10:05:00+02:00' }];
+const RIGHE_DI_CHI_SCRIVE = [...ATT_QUIZ, ...ATT_RIPRESA, ...ATT_PROVA, ...ATT_CARTA, ...ATT_TECNICHE, ...UN_TAG];
+const RIGHE_DI_UN_ALTRO = [riga(201), riga(202)];
+
+/** Chi chiede aiuto, con le sue attivita', la data d'esame e i Segnali; e un altro, che nessuno deve vedere. */
+async function chiChiedeAiuto(k) {
+  const a = await confermato(k, CHI_SCRIVE);
+  const b = await confermato(k, UN_ALTRO);
+  let r = await k.chiama('POST', '/v1/righe', { generazione: 1, righe: RIGHE_DI_CHI_SCRIVE }, { cookie: a });
+  assert.deepEqual([r.status, r.corpo.nuove?.length, r.corpo.scartate], [200, RIGHE_DI_CHI_SCRIVE.length, []], JSON.stringify(r.corpo));
+  assert.equal((await k.chiama('PUT', '/v1/profilo', { data_esame: '2026-11-20', segnali: { nebbia: { migliore: 7, giocate: 4 } } }, { cookie: a })).status, 200);
+  r = await k.chiama('POST', '/v1/righe', { generazione: 1, righe: RIGHE_DI_UN_ALTRO }, { cookie: b });
+  assert.equal(r.status, 200);
+  return { a, b, idA: idDi(k, CHI_SCRIVE), idB: idDi(k, UN_ALTRO) };
+}
+
+const leggiDa = (db) => (...args) => spawnSync(process.execPath, [join(RADICE, 'server', 'leggi.mjs'), '--db', db, ...args], { encoding: 'utf8' });
+const lettureNel = (db) => db.prepare('SELECT quando, evento, account_id, ip, dettaglio FROM registro WHERE evento = ? ORDER BY id')
+  .all(EVENTO_LETTURA).map((r) => ({ ...r }));
+const comeJson = (x) => JSON.parse(JSON.stringify(x));
+
+test('letture: il titolare legge un account dalla riga di comando, con il servizio acceso, e ogni lettura e una riga del registro', async (t) => {
+  // R-ACC-71. Una lettura, e la sua riga nel registro: quando, quale account —
+  // un numero, non un'email — e perche'. Quello che lo strumento mostra viene
+  // dalle funzioni del motore, le stesse della pagina: chi aiuta vede le
+  // attivita' che vede chi chiede aiuto, non una seconda contabilita'.
+  const k = await conti(t);
+  const { a, idA } = await chiChiedeAiuto(k);
+  const leggi = leggiDa(k.opzioni.db);
+  const letture = () => lettureNel(k.s.db);
+  assert.equal(EVENTO_LETTURA, 'lettura del titolare');
+  assert.deepEqual(letture(), []);
+
+  const prima = Date.now();
+  let r = leggi('--email', ` ${CHI_SCRIVE.toUpperCase()} `, '--motivo', `  ${MOTIVO_LETTURA} `, '--json');
+  assert.equal(r.status, 0, r.stdout + r.stderr);
+  const letto = JSON.parse(r.stdout);
+
+  // La riga nel registro, che il server acceso vede subito.
+  assert.equal(letture().length, 1);
+  const { quando, ...annotata } = letture()[0];
+  assert.deepEqual(annotata, { evento: 'lettura del titolare', account_id: idA, ip: null, dettaglio: MOTIVO_LETTURA });
+  assert.match(quando, /^\d{4}-\d{2}-\d{2}T[\d:.]+Z$/);
+  assert.ok(Date.parse(quando) >= prima - 1000 && Date.parse(quando) <= Date.now() + 1000, quando);
+  assert.deepEqual(letto.lettura, { quando, account: idA, motivo: MOTIVO_LETTURA }, 'e lo strumento dice che cosa ha annotato');
+  assert.match(r.stderr, /annotata nel registro/);
+
+  // L'account: quello che serve a chi aiuta, e nessun segreto.
+  const sue = (await k.chiama('GET', '/v1/righe?dopo=0', undefined, { cookie: a })).corpo.righe;
+  assert.equal(sue.length, RIGHE_DI_CHI_SCRIVE.length);
+  const acc = k.s.db.prepare('SELECT * FROM account WHERE id = ?').get(idA);
+  assert.deepEqual(letto.account, {
+    id: idA, email: CHI_SCRIVE, creato_il: acc.creato_il, email_verificata_il: acc.email_verificata_il, scade_se_non_verificata: null,
+    ultimo_accesso_il: acc.ultimo_accesso_il, avviso_inattivita_il: null, data_esame: '2026-11-20',
+    generazione: 1, azzerato_il: null, accessi_falliti: 0, password_disattivata_il: null, fuori_statistiche_dal: null,
+    sessioni: k.s.db.prepare('SELECT creata_il, scade_il FROM sessione WHERE account_id = ? ORDER BY creata_il').all(idA).map((x) => ({ ...x })),
+    segnali: { nebbia: { migliore: 7, giocate: 4 } },
+  });
+  assert.equal(letto.account.sessioni.length, 1);
+  for (const [nome, segreto] of [['la password', acc.password], ['argon2', 'argon2'], ['il cookie', a.split('=')[1]], ['la chiave della copia locale', acc.chiave_locale]]) {
+    assert.ok(segreto.length > 5 && !r.stdout.includes(segreto) && !r.stderr.includes(segreto), `${nome} non esce`);
+  }
+
+  // Le righe com'erano, e le attivita' con le funzioni del motore.
+  assert.deepEqual(letto.righe, sue, 'le righe che riceve lui, byte per byte');
+  assert.deepEqual(letto.conteggi, { righe: 12, quiz: 7, carteggio: 2, tecniche: 1, tag: 1, prove: 1 });
+  assert.deepEqual(letto.quiz, comeJson(E.sessioni(sue, { confine: 'attivita' })), 'sessioni() del motore, col confine dell attivita');
+  assert.deepEqual(letto.quiz.map((s) => [s.id, s.mode, s.n, s.esatte, s.fonte, Boolean(s.prova)]), [
+    ['att-prova', 'simulazione', 2, 2, 'sim_uid', true],
+    ['att-quiz-2', 'mirata', 2, 1, 'sim_uid', false],
+    ['att-quiz-1', 'argomento', 3, 2, 'sim_uid', false],
+  ], 'la lista ripresa dopo 25 minuti e una attivita sola');
+  const carta = JSON.parse(readFileSync(join(RADICE, 'site/dati/carteggio.json'), 'utf8'));
+  const tecniche = JSON.parse(readFileSync(join(RADICE, 'site/dati/tecniche.json'), 'utf8'));
+  for (const [tipo, banca, nome, id, conteggi] of [
+    ['c', carta, 'carteggio', 'att-carta', { proposti: 2, esercizi: 2, scritti: 1, vuoti: 1, nonRegistrati: 0, coincidenti: 1, daRivedere: 1, senzaGiudizio: 0, nonAffrontati: 0 }],
+    ['t', tecniche, 'tecniche', 'att-tec', { proposti: 1, risposte: 1, coincidenti: 0, nonCoincidenti: 1, senzaEsito: 0, nonAffrontati: 0 }],
+  ]) {
+    const attese = E.attivitaCarteggio(sue, { tipo }).map((x) => {
+      const d = E.dettaglioCarteggio(sue, banca, x.id, { tipo });
+      return { ...x, conteggi: d.conteggi, esito: d.esito, mancanti: d.mancanti };
+    });
+    assert.deepEqual(letto[nome], comeJson(attese), `${nome}: attivitaCarteggio() e dettaglioCarteggio() del motore`);
+    assert.deepEqual(letto[nome].map((x) => [x.id, x.conteggi]), [[id, conteggi]]);
+  }
+  const quesiti = JSON.parse(readFileSync(join(RADICE, 'site/dati/quiz.json'), 'utf8'));
+  const specchio = E.ripiega(sue);
+  for (const kind of ['base', 'vela']) {
+    const tr = E.traccia(quesiti, specchio.quiz, '2026-10-02', kind, null);
+    assert.deepEqual(letto.copertura[kind], { totale: tr.totale, coperti: tr.coperti, da_ripassare: tr.da_ripassare, mai_visti: tr.mai_visti, risposte: tr.risposte }, kind);
+  }
+  assert.deepEqual(letto.copertura.base, { totale: 1472, coperti: 5, da_ripassare: 2, mai_visti: 1465, risposte: 7 });
+  assert.deepEqual(letto.tag, { [ATT_QUIZ[1].uid]: 'L' }, 'tagPerTentativo() del motore');
+  assert.ok(letto.registro.some((e) => e.evento === 'registrazione' && e.ip === '192.0.2.1'), 'gli eventi dell account nel registro');
+  assert.deepEqual(letto.registro.at(-1), { quando, evento: 'lettura del titolare', ip: null, dettaglio: MOTIVO_LETTURA }, 'compresa questa lettura');
+
+  // Niente di un altro account.
+  for (const altrui of [UN_ALTRO, ...RIGHE_DI_UN_ALTRO.map((x) => x.uid)]) assert.ok(!r.stdout.includes(altrui), altrui);
+
+  // In chiaro, per chi legge a schermo: lo stesso account, le stesse attivita'.
+  // Ogni lettura e' una riga, anche la seconda con lo stesso motivo.
+  r = leggi('--email', CHI_SCRIVE, '--motivo', MOTIVO_LETTURA);
+  assert.equal(r.status, 0, r.stdout + r.stderr);
+  for (const atteso of ['annotata nel registro', `account ${idA}`, CHI_SCRIVE, '2026-11-20', 'att-quiz-1', 'att-quiz-2', 'att-prova', 'att-carta', 'att-tec',
+    '12 righe', '2/3 esatte', 'coperti 5', 'da ripassare 2', 'mai visti 1465', 'nebbia']) {
+    assert.ok(r.stdout.includes(atteso), `nel testo manca «${atteso}»:\n${r.stdout}`);
+  }
+  assert.ok(!r.stdout.includes(ATT_QUIZ[0].uid), 'senza --attivita le righe non si elencano');
+  assert.ok(!r.stdout.includes(UN_ALTRO) && !r.stdout.includes('argon2'));
+  assert.equal(letture().length, 2);
+
+  // Una attivita' sola, con le sue righe com'erano.
+  r = leggi('--email', CHI_SCRIVE, '--motivo', 'la lista del 28 settembre, su sua richiesta', '--attivita', 'att-quiz-1');
+  assert.equal(r.status, 0, r.stdout + r.stderr);
+  for (const x of ATT_QUIZ) assert.ok(r.stdout.includes(JSON.stringify(x)), `manca la riga ${x.uid}`);
+  for (const x of [...ATT_RIPRESA, ...ATT_CARTA]) assert.ok(!r.stdout.includes(JSON.stringify(x)), `${x.uid} e di un altra attivita`);
+  assert.equal(letture().length, 3);
+  assert.equal(letture()[2].dettaglio, 'la lista del 28 settembre, su sua richiesta');
+
+  // Un'attivita' che non c'e' si dice; l'account e' stato letto lo stesso, e annotato.
+  r = leggi('--email', CHI_SCRIVE, '--motivo', MOTIVO_LETTURA, '--attivita', 'non-esiste');
+  assert.equal(r.status, 0, r.stdout + r.stderr);
+  assert.match(r.stderr, /nessuna attività «non-esiste»/);
+  assert.equal(letture().length, 4);
+  assert.ok(letture().every((x) => x.account_id === idA && x.ip === null));
+
+  // E il servizio, intanto, non ha smesso di rispondere.
+  assert.equal((await k.chiama('GET', '/v1/salute')).status, 200);
+  assert.equal((await k.chiama('GET', '/v1/io', undefined, { cookie: a })).status, 200);
+});
+
+test('letture: senza motivo, senza account, senza database o senza poter scrivere il registro non si legge niente', async (t) => {
+  // R-ACC-72. Una lettura che non lascia traccia non deve poter esistere: se la
+  // riga non si puo' scrivere, non esce niente. E uno strumento chiamato male,
+  // o sul database sbagliato, non dice «fatto» e non crea un database vuoto.
+  const k = await conti(t);
+  await chiChiedeAiuto(k);
+  const leggi = leggiDa(k.opzioni.db);
+  const muto = (r, codice, dice, come) => {
+    assert.equal(r.status, codice, `${come}: ${r.stdout}${r.stderr}`);
+    assert.match(r.stderr, dice, come);
+    assert.equal(r.stdout, '', `${come}: non esce niente`);
+  };
+
+  for (const [args, codice, dice] of [
+    [['--email', CHI_SCRIVE], 2, /manca il motivo/],
+    [['--email', CHI_SCRIVE, '--motivo', '   '], 2, /manca il motivo/],
+    [['--email', CHI_SCRIVE, '--motivo', MOTIVO_LETTURA, '--json', '--attivita'], 2, /uso:/],
+    [['--email', CHI_SCRIVE, '--motivo', MOTIVO_LETTURA, '--json', '--attivita', 'att-quiz-1'], 2, /uso:/],
+    [['--motivo', MOTIVO_LETTURA], 2, /uso:/],
+    [['--email', CHI_SCRIVE, '--motivo', MOTIVO_LETTURA, '--metti'], 2, /uso:/],
+    [['--email', CHI_SCRIVE, '--motivo', `me lo chiede ${CHI_SCRIVE}`], 2, /non porta email/],
+    [['--email', 'nessuno@esempio.it', '--motivo', MOTIVO_LETTURA], 1, /nessun account/],
+    [['--email', 'nessuno@esempio.it', '--motivo', MOTIVO_LETTURA, '--json'], 1, /nessun account/],
+  ]) {
+    muto(leggi(...args), codice, dice, args.join(' '));
+  }
+
+  // Il database sbagliato: non c'e', e' vuoto, non e' un database.
+  const dove = (nome) => join(k.c, nome);
+  muto(leggiDa(dove('non-esiste.db'))('--email', CHI_SCRIVE, '--motivo', MOTIVO_LETTURA), 1, /non c'e'/, 'un percorso che non esiste');
+  assert.equal(existsSync(dove('non-esiste.db')), false, 'un percorso sbagliato non crea un database');
+  writeFileSync(dove('vuoto.db'), '');
+  muto(leggiDa(dove('vuoto.db'))('--email', CHI_SCRIVE, '--motivo', MOTIVO_LETTURA), 1, /non e' un database di questo server/, 'un file vuoto');
+  assert.equal(statSync(dove('vuoto.db')).size, 0, 'e il file vuoto resta vuoto');
+  writeFileSync(dove('appunti.db'), 'questo non e un database\n'.repeat(200));
+  muto(leggiDa(dove('appunti.db'))('--email', CHI_SCRIVE, '--motivo', MOTIVO_LETTURA), 1, /non letto/, 'un file che non e un database');
+
+  // Un database di prima del registro (schema 1): non c'e' dove annotare,
+  // quindi non si legge — e lo strumento non lo migra per conto suo.
+  const vecchio = new DatabaseSync(dove('schema-1.db'));
+  vecchio.exec(MIGRAZIONI[0]);
+  vecchio.exec(`INSERT INTO impianto VALUES (1, 'e', 'x', 'x', 0); PRAGMA user_version = 1;`);
+  const idVecchio = creaAccount(vecchio, { email: CHI_SCRIVE, password: PHC });
+  aggiungiRighe(vecchio, idVecchio, [riga(1)]);
+  vecchio.close();
+  muto(leggiDa(dove('schema-1.db'))('--email', CHI_SCRIVE, '--motivo', MOTIVO_LETTURA), 1, /non ha il registro/, 'schema 1');
+  const ancora = new DatabaseSync(dove('schema-1.db'));
+  assert.equal(ancora.prepare('PRAGMA user_version').get().user_version, 1, 'non migrato');
+  ancora.close();
+
+  // Il registro non si puo' scrivere: la funzione lancia, e non restituisce niente.
+  const solaLettura = new DatabaseSync(k.opzioni.db, { readOnly: true });
+  t.after(() => solaLettura.close());
+  assert.equal(solaLettura.prepare('SELECT count(*) n FROM riga').get().n, 14, 'le righe ci sono, e si potrebbero leggere');
+  assert.throws(() => leggiAccount(solaLettura, CHI_SCRIVE, { motivo: MOTIVO_LETTURA }), /readonly/i);
+  // E dalla riga di comando, con il file che non si puo' scrivere.
+  chmodSync(k.opzioni.db, 0o444);
+  try {
+    muto(leggi('--email', CHI_SCRIVE, '--motivo', MOTIVO_LETTURA, '--json'), 1, /non letto/, 'il database in sola lettura');
+  } finally {
+    chmodSync(k.opzioni.db, 0o644);
+  }
+
+  // Una lettura che si rompe a meta' — qui una riga che non e' JSON, messa a
+  // mano — non mostra niente e non lascia una traccia di una lettura che non
+  // c'e' stata: la riga del registro e la lettura stanno nella stessa transazione.
+  const rotto = creaAccount(k.s.db, { email: 'riga.rotta@esempio.it', password: PHC });
+  k.s.db.prepare("INSERT INTO riga (account_id, uid, seq, tipo, ricevuta_il, dati) VALUES (?, 'rotta', 9999, 'q', 'x', '{non e json')").run(rotto);
+  muto(leggi('--email', 'riga.rotta@esempio.it', '--motivo', MOTIVO_LETTURA), 1, /non letto, e niente annotato/, 'una riga che non si legge');
+  assert.throws(() => leggiAccount(k.s.db, 'riga.rotta@esempio.it', { motivo: MOTIVO_LETTURA }), SyntaxError);
+  k.s.db.prepare('DELETE FROM account WHERE id = ?').run(rotto);
+
+  // La funzione, chiamata da un altro strumento: le stesse regole.
+  assert.throws(() => leggiAccount(k.s.db, CHI_SCRIVE, {}), /manca il motivo/);
+  assert.throws(() => leggiAccount(k.s.db, CHI_SCRIVE, { motivo: ' ' }), /manca il motivo/);
+  assert.throws(() => leggiAccount(k.s.db, CHI_SCRIVE, { motivo: `scrive ${UN_ALTRO}` }), /non porta email/);
+  assert.equal(leggiAccount(k.s.db, 'nessuno@esempio.it', { motivo: MOTIVO_LETTURA }), null);
+
+  // E dopo tutto questo nel registro non c'e' nessuna lettura, perche' nessuno ha letto.
+  assert.deepEqual(lettureNel(k.s.db), []);
+  // Con il motivo, la stessa chiamata legge e annota: il controllo qui sopra non era vuoto.
+  assert.equal(leggi('--email', CHI_SCRIVE, '--motivo', MOTIVO_LETTURA).status, 0);
+  assert.equal(lettureNel(k.s.db).length, 1);
+  assert.equal((await k.chiama('GET', '/v1/salute')).status, 200);
+});
+
+test('letture: una lettura non cambia niente dell account, e la sua riga sopravvive alla cancellazione e dura un anno', async (t) => {
+  // R-ACC-73. Leggere non e' usare: l'account, le righe, le sessioni, il
+  // cursore, il file delle cancellazioni restano com'erano — nemmeno «ultimo
+  // accesso», che rimanderebbe la cancellazione per inattivita'. La riga della
+  // lettura sta nel registro come ogni evento: senza indirizzo, per un anno
+  // (§15.3), anche se intanto l'account si cancella.
+  const k = await conti(t);
+  const { a, idA } = await chiChiedeAiuto(k);
+  const leggi = leggiDa(k.opzioni.db);
+  const tutto = () => Object.fromEntries(['impianto', 'account', 'riga', 'sessione', 'gettone', 'segnali']
+    .map((tabella) => [tabella, k.s.db.prepare(`SELECT * FROM ${tabella} ORDER BY 1, 2`).all().map((x) => ({ ...x }))]));
+  const delRegistro = () => k.s.db.prepare('SELECT * FROM registro ORDER BY id').all().map((x) => ({ ...x }));
+  const visto = async () => ({
+    io: (await k.chiama('GET', '/v1/io', undefined, { cookie: a })).corpo,
+    righe: (await k.chiama('GET', '/v1/righe?dopo=0', undefined, { cookie: a })).corpo,
+  });
+
+  const vistoPrima = await visto();
+  // «Ultimo accesso» e' una data senza ora, e ogni richiesta di chi studia la
+  // porta a oggi: perche' una lettura che la toccasse si veda in qualunque
+  // giorno giri la suite, qui e' una data che oggi non puo' essere.
+  k.s.db.prepare("UPDATE account SET ultimo_accesso_il = '2025-01-15' WHERE id = ?").run(idA);
+  const prima = tutto(), registroPrima = delRegistro();
+  assert.equal(prima.riga.length, 14);
+  for (const args of [['--json'], [], ['--attivita', 'att-carta']]) {
+    assert.equal(leggi('--email', CHI_SCRIVE, '--motivo', MOTIVO_LETTURA, ...args).status, 0);
+  }
+  assert.deepEqual(tutto(), prima, 'ogni tabella tranne il registro e com era');
+  assert.deepEqual(await visto(), vistoPrima, 'e chi studia non vede niente di diverso');
+  const registroDopo = delRegistro();
+  assert.deepEqual(registroDopo.slice(0, registroPrima.length), registroPrima, 'le righe di prima del registro non si toccano');
+  assert.deepEqual(registroDopo.slice(registroPrima.length).map((x) => [x.evento, x.account_id, x.ip, x.dettaglio]),
+    Array(3).fill(['lettura del titolare', idA, null, MOTIVO_LETTURA]), 'il registro ha tre righe in piu, e solo quelle');
+  assert.equal(existsSync(k.opzioni.cancellazioni), false, 'niente nel file delle cancellazioni');
+  k.s.db.prepare('DELETE FROM registro WHERE evento = ?').run(EVENTO_LETTURA);
+
+  // Una lettura con l'orologio del test, per contare l'anno.
+  k.avanza(GIORNO);
+  const il = new Date(k.orologio.t).toISOString();
+  const letto = leggiAccount(k.s.db, CHI_SCRIVE, { motivo: 'indagine su un accesso sospetto del 2 ottobre', il });
+  assert.deepEqual(letto.lettura, { quando: il, account: idA, motivo: 'indagine su un accesso sospetto del 2 ottobre' });
+  assert.equal(letto.righe.length, 12);
+  const sua = [{ quando: il, evento: 'lettura del titolare', account_id: idA, ip: null, dettaglio: 'indagine su un accesso sospetto del 2 ottobre' }];
+  assert.deepEqual(lettureNel(k.s.db), sua);
+
+  // L'account si cancella: la riga resta, con il suo numero e senza email.
+  assert.equal((await k.chiama('DELETE', '/v1/account', { password: BUONA }, { cookie: a })).status, 204);
+  assert.equal(idDi(k, CHI_SCRIVE), undefined);
+  assert.deepEqual(lettureNel(k.s.db), sua, 'la lettura si puo ancora rendicontare');
+  assert.ok(!JSON.stringify(lettureNel(k.s.db)).includes('esempio.it'));
+  const r = leggi('--email', CHI_SCRIVE, '--motivo', MOTIVO_LETTURA);
+  assert.deepEqual([r.status, r.stdout], [1, ''], 'e di un account cancellato non c e piu niente da leggere');
+  assert.match(r.stderr, /nessun account/);
+
+  // Undici mesi dopo c'e' ancora; oltre l'anno no.
+  k.orologio.t = Date.parse(il) + 364 * GIORNO;
+  await k.s.manutenzione();
+  assert.deepEqual(lettureNel(k.s.db), sua, 'a 364 giorni');
+  k.orologio.t = Date.parse(il) + 366 * GIORNO;
+  await k.s.manutenzione();
+  assert.deepEqual(lettureNel(k.s.db), [], 'oltre l anno');
+});
+
+// Chi legge le righe di un account, file per file. La promessa «ogni lettura
+// e' annotata» regge finche' il titolare ha una strada sola: uno strumento
+// nuovo che leggesse le righe per conto suo passerebbe il controllo delle
+// statistiche — legge un account solo — e non annoterebbe niente. Un file
+// nuovo qui e' una decisione, con il suo motivo.
+const LEGGE_LE_RIGHE = /\b(from|join)\s+riga\b|\brigheDopo\s*\(|\bleggiAccount\s*\(/i;
+const CHI_LEGGE_LE_RIGHE = [
+  { file: 'server/db.mjs', perche: 'il database: aggiunge, conta il cursore e restituisce le righe di un account a chi le chiede con la sua sessione (righeDopo)' },
+  { file: 'server/righe.mjs', perche: 'la ricezione e l export: a chi e entrato, le sue righe (§7.2)' },
+  { file: 'server/conti.mjs', perche: 'quante righe ha un account, dette a lui solo in GET /v1/io' },
+  { file: 'server/copie.mjs', perche: 'la copia conta le righe per sapere se e intera, e la prova del ripristino gira su righe finte' },
+  { file: 'server/statistiche.mjs', perche: 'le fonti delle statistiche, che non fanno uscire ne chi ha risposto ne le righe intere (R-ACC-69)' },
+  { file: 'server/letture.mjs', perche: 'il titolare: legge un account e lo annota nel registro nella stessa transazione (R-ACC-71)' },
+  { file: 'server/leggi.mjs', perche: 'lo strumento del titolare: chiama leggiAccount(), e nient altro' },
+];
+
+/** Le righe di codice di un file, tolti i commenti: come nel controllo delle statistiche. */
+function soloCodice(testo) {
+  return testo.split('\n').filter((riga_) => {
+    const t_ = riga_.trim();
+    return !(t_.startsWith('//') || t_.startsWith('*') || t_.startsWith('/*') || t_.startsWith('#'));
+  }).map((riga_) => riga_.replace(/(^|\s)\/\/.*$/, ''));
+}
+
+function chiLeggeLeRighe(file) {
+  return file.filter(({ testo }) => soloCodice(testo).some((riga_) => LEGGE_LE_RIGHE.test(riga_))).map((x) => x.nome);
+}
+
+test('letture: chi legge le righe di un account e dichiarato, e il titolare ha una strada sola, fuori dal web', () => {
+  // R-ACC-74. Statico, come il controllo delle statistiche: prende lo
+  // sbaglio — un secondo strumento che legge senza annotare, una rotta che
+  // espone la lettura —, non chi apre sqlite3 sulla macchina.
+  const leggi = (dir) => readdirSync(join(RADICE, dir), { withFileTypes: true }).filter((d) => d.isFile())
+    .map((d) => ({ nome: `${dir}/${d.name}`, testo: readFileSync(join(RADICE, dir, d.name), 'utf8') }));
+  const file = [...leggi('server').filter((x) => x.nome.endsWith('.mjs')), ...leggi('strumenti/macchina')];
+  assert.ok(file.length >= 13, `letti solo ${file.length} file`);
+
+  assert.deepEqual(chiLeggeLeRighe(file).sort(), CHI_LEGGE_LE_RIGHE.map((x) => x.file).sort(),
+    'un file che legge le righe di un account si dichiara in CHI_LEGGE_LE_RIGHE con il motivo; se e uno strumento del titolare, passa da leggiAccount()');
+  for (const x of CHI_LEGGE_LE_RIGHE) assert.ok(x.perche.length > 20, `${x.file}: senza un motivo`);
+
+  // Nessuna pagina di amministrazione: la lettura la importa solo lo strumento
+  // della riga di comando, e il server che risponde al web non la conosce.
+  const importa = file.filter((x) => /from\s+'\.\/letture\.mjs'/.test(x.testo)).map((x) => x.nome);
+  assert.deepEqual(importa, ['server/leggi.mjs']);
+  const strumento = soloCodice(file.find((x) => x.nome === 'server/leggi.mjs').testo).join('\n');
+  assert.match(strumento, /leggiAccount\(db, email, \{ motivo \}\)/);
+  assert.ok(!/\b(from|join)\s+(riga|account|registro)\b/i.test(strumento), 'lo strumento non ha query sue: passa da leggiAccount()');
+  assert.ok(!/readOnly/.test(strumento) && !/\bapri\s*\(/.test(strumento), 'non apre in sola lettura — non potrebbe annotare — e non migra');
+
+  // Il controllo contro se' stesso.
+  const su = (testo) => chiLeggeLeRighe([{ nome: 'server/nuovo.mjs', testo }]);
+  for (const [testo, atteso] of [
+    ["const r = db.prepare('SELECT dati FROM riga WHERE account_id = ? ORDER BY seq').all(id);", true],
+    ['const { righe } = righeDopo(db, id, 0);', true],
+    ["const tutto = leggiAccount(db, email, { motivo: 'x' });", true],
+    ["db.prepare('SELECT r.dati FROM account a JOIN  riga r ON r.account_id = a.id WHERE a.email = ?').get(e)", true],
+    ["// db.prepare('SELECT dati FROM riga WHERE account_id = ?')", false],
+    [' * le righe arrivano da righeDopo(), in ordine', false],
+    ["const riga = { from: 'riga 12' }; // from riga", false],
+    ["db.prepare('SELECT quando FROM registro WHERE account_id = ?').all(id)", false],
+  ]) {
+    assert.equal(su(testo).length === 1, atteso, testo);
+  }
 });

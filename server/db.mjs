@@ -383,6 +383,20 @@ const OPPOSIZIONE = { true: ['opposizione alle statistiche', 'opposizione'], fal
 const UNA_MAIL = /[^\s@]+@[^\s@]+\.[^\s@]+/;
 
 /**
+ * Il motivo con cui il titolare annota nel registro quello che fa su un
+ * account — un'opposizione (qui sotto), una lettura (server/letture.mjs):
+ * obbligatorio, e senza email. Il registro vive un anno (§15.3) e sopravvive
+ * alla cancellazione dell'account, che li' dentro e' un numero: un'email nel
+ * motivo resterebbe dopo che chi l'aveva ha chiesto di cancellarla.
+ * Restituisce il motivo ripulito dagli spazi, o lancia dicendo che cosa manca.
+ */
+export function motivoPerIlRegistro(motivo, checosa) {
+  if (typeof motivo !== 'string' || !motivo.trim()) throw new Error(`manca il motivo: ${checosa}`);
+  if (UNA_MAIL.test(motivo)) throw new Error("il motivo non porta email: nel registro l'account e' un numero, e resta li' un anno");
+  return motivo.trim();
+}
+
+/**
  * Mette (`opposto: true`) o toglie il segno di chi si oppone al trattamento
  * per le statistiche (§15.2). Lo fa il titolare, dalla macchina
  * (server/opposizione.mjs), quando arriva la richiesta; ogni cambio va nel
@@ -396,8 +410,7 @@ const UNA_MAIL = /[^\s@]+@[^\s@]+\.[^\s@]+/;
  * alla cancellazione dell'account, che nel registro e' un numero.
  */
 export function opponi(db, id, { cancellazioni, opposto = true, motivo, il = adesso() }) {
-  if (typeof motivo !== 'string' || !motivo.trim()) throw new Error("manca il motivo: da dove arriva la richiesta, e quando");
-  if (UNA_MAIL.test(motivo)) throw new Error("il motivo non porta email: nel registro l'account e' un numero, e resta li' un anno");
+  motivo = motivoPerIlRegistro(motivo, 'da dove arriva la richiesta, e quando');
   opposto = Boolean(opposto);
   const a = account(db, id);
   // Prima di scrivere nel file: su un database di prima del segno non c'e'
@@ -409,7 +422,7 @@ export function opponi(db, id, { cancellazioni, opposto = true, motivo, il = ade
   annota(cancellazioni, { evento: nelFile, account: a.id, chiave: a.chiave_locale, il });
   transazione(db, () => {
     db.prepare('UPDATE account SET fuori_statistiche_dal = ? WHERE id = ?').run(fuori_dal, a.id);
-    db.prepare('INSERT INTO registro (quando, evento, account_id, dettaglio) VALUES (?, ?, ?, ?)').run(il, nelRegistro, a.id, motivo.trim());
+    db.prepare('INSERT INTO registro (quando, evento, account_id, dettaglio) VALUES (?, ?, ?, ?)').run(il, nelRegistro, a.id, motivo);
   });
   return { cambiato: true, fuori_dal };
 }

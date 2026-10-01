@@ -1675,12 +1675,97 @@ statistiche. Leggerli è quindi una funzione del prodotto, e ha le sue regole.
 
 ### 15.1 Il supporto
 
-**Proposto:** nessuna pagina di amministrazione sul web. Il titolare legge sulla
-macchina, con uno strumento a riga di comando — `leggi --email … --motivo "…"` —
-che mostra l'account e le sue sessioni ricostruite (`sessioni()` del motore, la
-stessa funzione della pagina) e **scrive nel registro** chi ha letto, quando,
-quale account e perché. Una lettura che non lascia traccia è una lettura che
-nessuno potrà mai rendicontare.
+Nessuna pagina di amministrazione sul web. Il titolare legge sulla macchina,
+con uno strumento a riga di comando che mostra l'account e le sue attività e
+**scrive nel registro** quando, quale account e perché. Una lettura che non
+lascia traccia è una lettura che nessuno potrà mai rendicontare.
+
+**Fatto il 2 ottobre 2026 (P-55).** Fino a quel giorno questa sezione era
+«Proposto», e l'informativa prometteva già che «ogni lettura è annotata nel
+registro di sicurezza»: lo strumento non c'era, e il titolare avrebbe potuto
+leggere solo con `sqlite3`, senza traccia. Com'è fatto:
+
+- **Lo strumento.** `server/leggi.mjs`, con il servizio acceso:
+
+  ```
+  sudo -u rg /opt/node/bin/node /srv/rg/attuale/server/leggi.mjs \
+       --email chi@esempio.it --motivo "richiesta di supporto a privacy@ del 3 ottobre"
+  ```
+
+  A schermo: l'account — email e conferma, date, generazione, stato della
+  password, sessioni aperte, se è fuori dalle statistiche, punteggi dei Segnali
+  —, quante righe ha per tipo, la copertura nei tre stati, le attività dei quiz,
+  del carteggio e delle tecniche, e gli eventi di quell'account nel registro,
+  comprese le letture di prima. `--attivita <id>` aggiunge le righe di una
+  attività, com'erano; `--json` dà tutto in JSON, righe comprese, così non c'è
+  una domanda di supporto per cui serva `sqlite3`. **Non mostra mai** la
+  password, la chiave della copia locale, le impronte di sessioni e gettoni.
+  **Il comando qui sopra non è stato provato sulla macchina**, che gira
+  `v0.28.0` e non si tocca da una sessione di sviluppo: in locale è provato con
+  il servizio acceso e lanciato attraverso un collegamento, come
+  `/srv/rg/attuale`; l'utente `rg` e i permessi di `/var/lib/rg` si provano al
+  traguardo (P-27), con `opposizione.mjs` e `statistica.mjs`.
+- **Le funzioni del motore, non una seconda contabilità.** Le attività dei quiz
+  sono `sessioni()` con il confine dell'attività; carta e tecniche
+  `attivitaCarteggio()` e `dettaglioCarteggio()`; la copertura `traccia()` sullo
+  specchio di `ripiega()`; i tag `tagPerTentativo()`. Chi aiuta vede quello che
+  vede chi chiede aiuto, calcolato dalla stessa funzione, sulla banca di questo
+  rilascio. Il codice sta in `server/letture.mjs`, `leggiAccount()`.
+- **La riga nel registro.** Evento `lettura del titolare`, il numero
+  dell'account, nessun indirizzo IP — il titolare è sulla macchina —, e il
+  motivo. **Il motivo è obbligatorio e non porta email**, come per
+  l'opposizione (§15.2) e per la stessa ragione, con la stessa funzione,
+  `motivoPerIlRegistro()`: il registro vive un anno e sopravvive all'account.
+  **Ogni lettura è una riga**, anche la seconda dello stesso account con lo
+  stesso motivo: qui «niente è cambiato» non esiste.
+- **Leggere e annotare sono una transazione sola**, e la riga si scrive prima.
+  Quello che si è letto esce solo dopo che la riga è al sicuro; se il registro
+  non si può scrivere — un database in sola lettura, o di prima dello schema 2
+  — non si legge niente; se la lettura si rompe a metà non resta la traccia di
+  una lettura che non c'è stata. Lo strumento apre il database in scrittura,
+  ma senza `apri()`: **non crea e non migra niente**. Un percorso che non
+  esiste, un file vuoto, un file che non è un database di questo server e
+  un'email che nessun account ha escono con 1, senza mostrare niente e senza
+  annotare niente.
+- **Non cambia niente dell'account.** Nessuna colonna e nessuna riga, nemmeno
+  «ultimo accesso»: una lettura del titolare non è attività di chi studia, e
+  non deve rimandare la cancellazione dopo due anni (§14.2). Niente nel file
+  delle cancellazioni. Chi studia non vede niente di diverso: la conferma che
+  il suo account è stato letto è la risposta alla sua richiesta, e le letture si
+  rendicontano dal registro.
+- **I controlli.** R-ACC-71…74 nel §9.9 della specifica. L'ultimo è statico: i
+  file di `server/` e di `strumenti/macchina/` che leggono le righe di un
+  account sono dichiarati uno per uno con il motivo, solo `leggi.mjs` importa
+  `letture.mjs`, e lo strumento non ha query sue. La lettura di un account
+  passa il controllo delle statistiche (R-ACC-69) **senza una dichiarazione**,
+  ed è misurato, non aggirato: quel controllo lascia passare per costruzione
+  una query che si ferma a un account (`account_id = ?`), e `letture.mjs` non
+  aggrega niente in SQL. Per questo un secondo strumento che leggesse un
+  account senza annotare non lo vedrebbe lui: lo vede l'elenco di R-ACC-74.
+
+**Che cosa non regge, e lo si dice.**
+
+1. **Una lettura fatta con `sqlite3` sulla macchina non lascia traccia**, e
+   nessun controllo del repo la vede. È della procedura del titolare, fuori dal
+   repo: **gli account si leggono con `leggi.mjs`, mai con `sqlite3`** — come
+   le statistiche con `statistica.mjs` (§15.2).
+2. **Il ripristino di una copia perde le letture annotate dopo la copia**,
+   misurato: una lettura prima della copia e una dopo, e dopo il ripristino nel
+   registro c'è solo la prima. Vale per ogni evento del registro, che sta nel
+   database (§2.7); le copie sono due al giorno, quindi la finestra è di dodici
+   ore al più. A differenza dell'opposizione, la lettura **non** va nel file
+   delle cancellazioni: non è uno stato da rimettere, è una traccia. Dopo un
+   ripristino il titolare rilancia lo strumento per le letture fatte in quella
+   finestra, con un motivo che lo dica — «rifatta dopo il ripristino del …:
+   lettura del …» —, e la traccia torna. Se debba invece sopravvivere da sola
+   è nel §20.
+3. **Chi legge è «il titolare», non una persona.** Il titolare è uno solo, e
+   la riga non dice chi ha lanciato il comando. Con un secondo amministratore
+   non basterebbe.
+4. **La riga dice che l'account è stato letto, non che cosa è stato guardato.**
+   Lo strumento carica comunque tutte le righe dell'account, per ricostruirne
+   le attività: ogni lettura è, per il registro, una lettura dell'account
+   intero.
 
 ### 15.2 Le statistiche
 
@@ -1720,7 +1805,9 @@ Com'è fatto:
   anno e sopravvive alla cancellazione dell'account, che lì dentro è un numero.
   Rimettere un segno che c'è già non scrive niente, e lo dice. Un percorso del
   database sbagliato si rifiuta: non crea un database vuoto per poi dire
-  «nessun account».
+  «nessun account». *(Fino al 2 ottobre 2026 non era vero per un file che
+  esiste ed è vuoto: misurato da P-55, `apri()` ne faceva un database di
+  69.632 byte e lo strumento rispondeva «nessun account». Ora lo rifiuta.)*
 - **Il posto solo.** `server/statistiche.mjs`. Una statistica non vede le
   tabelle: vede tre **fonti** già filtrate — `iscritti`, gli account che non si
   sono opposti; `risposte`, le loro righe; `punteggi`, i loro punteggi dei
@@ -1824,6 +1911,13 @@ cominciano da quando te ne accorgi: trenta giorni di storia non bastano a capire
 da quando qualcuno provava. Le letture del titolare stanno nello stesso registro,
 per un anno: il provvedimento del Garante del 27 novembre 2008 sugli amministratori di
 sistema chiede di conservarne gli accessi «non meno di sei mesi».
+
+*(2 ottobre 2026, P-55: la riga c'è, ed è l'evento `lettura del titolare` del
+§15.1. Nasce senza indirizzo IP, quindi dei due tempi le tocca solo il secondo:
+il lavoro quotidiano la toglie dopo un anno, con gli altri eventi, senza una
+regola sua. Non ha un vincolo sull'account, e resta — con il numero, senza
+email — anche se l'account intanto si cancella. Un test lo tiene fermo: c'è a
+364 giorni, non c'è a 366, e la cancellazione dell'account non la tocca.)*
 
 `recupero-progetto.md` proponeva di non tenere affatto gli IP. Lì non c'erano
 identità da proteggere da tentativi di accesso; qui ci sono, e senza IP un
@@ -2082,6 +2176,18 @@ Trovato il 2 ottobre 2026, dell'autore:
     `privacy@` e guardata nel sorgente (`dkim=pass`); la spedisce l'autore
     dalla webmail, alla prima occasione.
 
+Trovato dal controllo del 2 ottobre 2026, del codice:
+
+11. ~~**lo strumento che annota le letture del titolare**~~ — **fatto il 2
+    ottobre 2026 (P-55)**, su `main`. L'informativa diceva già «ogni lettura è
+    annotata nel registro di sicurezza», e il §15.1 era ancora «Proposto»: ora
+    c'è `server/leggi.mjs`, che legge e annota nella stessa transazione
+    (§15.1, R-ACC-71…74). **Arriva sulla macchina con il traguardo** (P-27):
+    il server in esercizio è `v0.28.0`, che non ce l'ha. Resta dell'autore,
+    nella sua procedura fuori dal repo: gli account si leggono con `leggi.mjs`,
+    mai con `sqlite3`; e, nel §20, se le letture debbano sopravvivere da sole
+    al ripristino di una copia.
+
 ---
 
 ## 16. Dove vive il codice
@@ -2193,6 +2299,13 @@ strumenti della macchina lo usano: `server/statistica.mjs`, che lancia una
 statistica in sola lettura, e `server/opposizione.mjs`, che mette e toglie il
 segno. `opponi()`, `migra()` e `rileggiOpposizioni()` stanno in `db.mjs`.
 Nessuna rotta nuova. §15.2.)*
+
+*(2 ottobre 2026, P-55: le letture del titolare. Nessuna migrazione: il
+`registro` c'è dallo schema 2. Un modulo nuovo, `server/letture.mjs`, con
+`leggiAccount()`, che legge un account e lo annota nella stessa transazione, e
+lo strumento della macchina che lo chiama, `server/leggi.mjs`.
+`motivoPerIlRegistro()` sta in `db.mjs`, e la usa anche `opponi()`. Nessuna
+rotta nuova. §15.1.)*
 
 ### 16.3 In locale
 
@@ -2357,6 +2470,8 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
 | Statistiche mostrate a chi studia | l'autore, in un documento suo | fuori da qui (§15.2) |
 | L'opposizione alle statistiche vale per l'account: chi si cancella e si riscrive deve chiederla di nuovo | l'autore, con il parere | tenerla così, e dirlo nella risposta a chi si oppone: l'alternativa è conservare l'email di chi ha chiesto di cancellarla (§15.2, scelta 2) |
 | La pagina mostra a chi si è opposto che è fuori dalle statistiche | l'autore | no, per ora: la conferma è la risposta alla sua mail; servirebbero un campo in `GET /v1/io` e un testo dell'interfaccia (§15.2, scelta 1) |
+| Le letture del titolare annotate dopo una copia si perdono con un ripristino, come ogni evento del registro (§15.1, misurato da P-55) | l'autore | tenerla così: dopo un ripristino il titolare rilancia `leggi.mjs` per le letture di quella finestra, al più dodici ore, con un motivo che lo dica. L'alternativa è scriverle anche nel file delle cancellazioni e farle rileggere al ripristino, come le opposizioni: più meccanismo, e il `ripristina.mjs` di `v0.28.0` le direbbe illeggibili |
+| Nella procedura del titolare, fuori dal repo: gli account si leggono con `server/leggi.mjs`, mai con `sqlite3` | l'autore | scriverla accanto a quella delle statistiche (§15.1, punto 1): è la sola cosa che tiene vera «ogni lettura è annotata» sulla macchina |
 | ~~Cosa chiede l'onboarding oltre alla data~~ | — | **deciso dall'autore il 1° ottobre 2026**: solo la data, facoltativa; Q-ONBOARD è fra le chiuse del §10 della specifica |
 | ~~Chiudere il difetto dei tag che resta (§4.2)~~ | — | **chiuso** da P-01 il 26 settembre (merge `6e07525`): i tag nascono con la data, ritaggare aggiunge |
 | ~~La registrazione dice chi è iscritto (§5.3)~~ | — | **deciso dall'autore il 26 settembre 2026**: si dice apertamente, «Questa email è già registrata», con `409` e senza mail; accesso e password dimenticata restano come sono (§5.3). Il server lo fa con P-11 |
@@ -2512,3 +2627,16 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
   per questo il server lo rilegge dal file a ogni avvio. Il rilascio di prima
   gira sul database di dopo: misurato. Quattro requisiti con il loro test,
   quarantatré rotture, tutte rosse; una era passata verde.
+- **2 ottobre 2026 — le letture del titolare (P-55).** Il §15.1 passa da
+  «Proposto» a quello che c'è: `server/leggi.mjs` e `leggiAccount()` in
+  `server/letture.mjs`, che legge un account con le funzioni del motore e lo
+  annota nel registro nella stessa transazione, la riga per prima. Nessuna
+  migrazione. Il §15.3 dice quanto vive la riga: un anno, senza IP, oltre la
+  cancellazione dell'account. Tre cose trovate: **il controllo delle
+  statistiche non vede la lettura di un account**, per costruzione, e serve un
+  elenco suo di chi legge le righe (R-ACC-74); **un ripristino perde le letture
+  annotate dopo la copia**, misurato, ed è nel §20 per l'autore; e
+  **`opposizione.mjs` su un file vuoto ne faceva un database** e rispondeva
+  «nessun account», corretto con il suo test. Quattro requisiti, quaranta
+  rotture, tutte rosse; una era passata verde per una coincidenza di date, e
+  il test che non la vedeva è stato corretto.
