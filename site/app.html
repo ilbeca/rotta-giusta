@@ -478,7 +478,7 @@ nav button.on{color:var(--acc)}
 :root{
   --navy:#0B1F33;--blue:#123E63;--sky:#087EAE;--sky-soft:#E6F3F7;
   --paper:#F3F6F6;--surface:#FFFFFF;--sand:#F7F4EC;--line-soft:#D4E0E4;
-  --text-soft:#526B7B;--text-faint:#607887;--shadow:#102D4314;
+  --text-soft:#526B7B;--text-faint:#576F7E;--shadow:#102D4314;
   --success:#126832;--success-soft:#E5F4E9;--danger:#A4261D;--danger-soft:#FBEAE8;
   --amber-dark:#765000;--amber-soft:#FFF3D5;--night:#07192A;
   --night-eyebrow:#ABDDEF;--night-muted:#C2D0D9;--night-link:#C6E8F4;
@@ -488,6 +488,9 @@ nav button.on{color:var(--acc)}
   --r:14px;--tap:52px;
 }
 body{background:var(--paper);color:var(--navy);font-family:"Avenir Next",Avenir,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overscroll-behavior:auto}
+/* Lo scorrimento del fuoco deve lasciare spazio alle barre fisse, anche
+   quando Tab porta un controllo sul bordo inferiore dello schermo. */
+html{scroll-padding-top:100px}
 button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
 .icon-library{position:absolute;width:0;height:0;overflow:hidden}
 svg.ico{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
@@ -504,6 +507,7 @@ svg.ico{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.6;st
 .app-info .ico{width:20px;height:20px}.app-info .ndot{top:4px;left:6px;right:auto;background:var(--amber-dark);box-shadow:0 0 0 2px var(--surface)}
 .header-statuses{display:grid;gap:1px;text-align:left;line-height:1.2}.header-statuses span[hidden]{display:none}
 .sync{top:98px;z-index:60;background:var(--navy);border-color:var(--navy);color:var(--surface)}
+.sync{overflow-wrap:anywhere}
 .sync.err{background:var(--danger);border-color:var(--danger);color:var(--surface)}
 #quizrun,#cartrun,#segrun{z-index:80}#rivedi{z-index:82}.fine{z-index:84}
 main{max-width:1160px;margin:0 auto;padding:0 28px 44px}
@@ -612,6 +616,7 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
 @media(hover:hover) and (pointer:fine){.app-nav button:hover,.app-info:hover,.direction-card:hover,.extra-card:hover{color:var(--blue)}.direction-card:hover,.extra-card:hover{transform:translateY(-2px);box-shadow:0 5px 18px var(--shadow)}}
 @media(max-width:900px){.app-header-inner{gap:14px}.brand-name{font-size:17px}.app-nav{gap:0}.app-nav button{padding:0 9px}.app-nav .ico{display:none}.rotta-scene{width:410px;opacity:.8}.rotta-intro{width:60%}.rotta-intro h1{font-size:36px}.rotta-topgrid{grid-template-columns:1fr;gap:16px}.recommend-card,.cart-route-card{padding:24px}.cart-route-card>img{width:165px;right:-25px;opacity:.45}.progress-strip{grid-template-columns:1fr}.progress-data{padding:15px 0 0;border-left:0;border-top:1px solid var(--line-soft)}}
 @media(max-width:650px){
+  html{scroll-padding-top:82px;scroll-padding-bottom:calc(86px + var(--safe-b))}
   .app-header{height:70px;position:sticky}.app-header-inner{gap:4px;padding:0 8px}.app-brand{gap:6px}.app-brand img{width:30px;height:34px}.brand-name{font-size:15px;letter-spacing:.5px}.brand-tag{font-size:11px;line-height:1.35;letter-spacing:.5px}.app-info{max-width:155px;padding:6px 7px;font-size:11px;border-radius:18px}.app-info .ico{width:16px;height:16px}.header-statuses span:not(#nav-info-label){position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
   .app-nav{position:fixed;z-index:45;left:0;right:0;bottom:0;height:calc(70px + var(--safe-b));padding:0 0 var(--safe-b);display:grid;grid-template-columns:repeat(4,1fr);background:color-mix(in srgb,var(--surface) 96%,transparent);border-top:1px solid var(--line-soft);backdrop-filter:blur(12px)}
   .app-nav button{display:flex;flex-direction:column;justify-content:center;gap:3px;min-height:60px;padding:8px 0;font-size:11px}.app-nav .ico{display:block;width:21px;height:21px}.app-nav button.on::after{top:0;bottom:auto;left:29%;right:29%}
@@ -624,6 +629,19 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
   .section-heading{margin:28px 0 14px}.section-heading h2{font-size:21px}.section-heading p{font-size:12px}.section-heading>.text-btn{display:none}.direction-grid{grid-template-columns:1fr;gap:10px}.direction-card,.extra-card{min-height:0;padding:16px}.direction-card b,.extra-card b{font-size:15px}
   .extra-panel{grid-template-columns:1fr;gap:14px;padding:20px}.extra-panel h2{font-size:21px}.rotta-options{grid-template-columns:1fr;gap:8px}.rotta-options .esame{align-items:flex-start}.rotta-options input{max-width:none}.archive-note{padding:10px 2px}.colreg-extra{align-items:flex-start;flex-wrap:wrap}.colreg-extra .btn{width:100%}
   h1{font-size:28px}.view:not(.rotta-view)>h1{margin-top:0}
+}
+/* A 320 px restano interi marchio, Info e accesso, nello stesso ordine.
+   Le tecniche mantengono le tre misure e tutte le colonne della tabella. */
+@media(max-width:360px){
+  .app-brand{padding:0;gap:4px}.brand-tag{letter-spacing:0}
+  #t-stat .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  #t-stat .tile{padding:10px;min-width:0}
+  #t-stat .lab{letter-spacing:0;overflow-wrap:anywhere}
+  #t-stat .val{font-size:22px}
+  #t-diag .tbl{table-layout:fixed}
+  #t-diag .tbl th,#t-diag .tbl td{padding-left:4px;overflow-wrap:anywhere}
+  #t-diag .tbl th:first-child,#t-diag .tbl td:first-child{width:32%;padding-left:0;padding-right:4px}
+  #t-diag .mini{width:100%}
 }
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 
@@ -697,6 +715,9 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
 .ciclo .rv-tags{flex-wrap:wrap;margin:8px 0 0}
 .ciclo .rv-tags button{min-height:44px;padding:8px 14px;font-size:15px;color:var(--navy)}
 .ciclo .rv-tags button.on{color:var(--surface)}
+/* Il tag resta una scelta sul tentativo: cresce il bersaglio, non il testo. */
+.tags button{min-width:44px;min-height:44px}
+details.card summary{min-height:44px}
 .account-panel{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:16px;background:color-mix(in srgb,var(--navy) 60%,transparent)}
 .account-panel[hidden]{display:none}
 .account-card{width:min(560px,100%);max-height:calc(100vh - 32px);overflow:auto;padding:24px;border-radius:18px;background:var(--surface);box-shadow:0 20px 60px #0004}

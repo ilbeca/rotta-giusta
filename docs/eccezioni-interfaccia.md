@@ -150,8 +150,5 @@ sulla pagina vera.
 
 | parte | verifica | perché è ancora qui |
 |---|---|---|
-| `T-05:arresti` | `nel Percorso, a 375 px, nessun arresto di Tab resta coperto o fuori dallo schermo` | Con la tastiera, a 375 × 800 px, «Inizia l'attività», «Scegli un'attività» e la scheda dei Segnali prendono il fuoco sotto la barra fissa in basso: il browser le porta sul bordo dello schermo e la barra le copre (WCAG 2.4.11). Visto in una schermata da P-45. Lo chiude P-25, area 6 §5 («Barre fisse e azioni ancorate lasciano visibili […] il focus») |
-| `T-07:prova` | `a 320 px nessuna vista, ne' il runner, il riepilogo o la finestra «Accedi», sborda` | A 320 px l'intestazione e' larga 336 px in ogni vista, e «Accedi» esce dallo schermo; in «Che tecnica serve?» le tessere e la tabella escono di 49 px; il toast `#sync` di 6 px. Misurato e guardato in una schermata da P-45. Lo chiude P-25, area 6 §5 («Partire da 320 CSS px») |
-| `T-07:conto` | `con l'account, a 320 px Percorso, Progressi, Info e il pannello dell'account non sbordano` | Con l'account la barra ha anche Progressi, e a 320 px l'intestazione sborda di 23 px. Stessa causa della riga sopra, e la chiude P-25 |
-| `T-08` | `a 375 px ogni testo che si vede ha il contrasto minimo sul suo fondo` | Sul tema chiaro il colore `rgb(96, 120, 135)` su `rgb(243, 246, 246)` misura 4,26:1 (pie' di pagina, versione, indicazioni `.hint`) e 4,09:1 sul fondo azzurro dei Segnali, contro 4,5:1: misurato da P-45 sui colori calcolati, appendice A della specifica. Lo chiude P-25, area 6 §4 |
-| `T-09` | `a 375 px ogni controllo misura almeno 44 × 44 px, l'obiettivo del progetto` | I tag N/L/C del runner e del riepilogo misurano 31 × 29 px, e il sommario «La banca è del 2022…» di Info e' alto 41 px: sopra il minimo AA di 24 px, sotto l'obiettivo di 44 dell'appendice A. Misurato da P-45. Lo chiude P-25, area 6 §6 |
+
+*Nessuno, al momento: P-25 ha chiuso i cinque difetti di fuoco, reflow, contrasto e bersagli; i gruppi T-* girano per intero sulla pagina vera.*
