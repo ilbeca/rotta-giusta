@@ -99,24 +99,6 @@ h2{font-size:13px;text-transform:uppercase;letter-spacing:.09em;color:var(--dim)
 .dot{width:8px;height:8px;border-radius:99px;display:inline-block;margin-right:6px;vertical-align:1px}
 .dot.verde{background:var(--ok)}.dot.giallo{background:var(--warn)}.dot.rosso{background:var(--ko)}.dot.attesa{background:var(--faint)}
 
-/* --- selettore "solo mai fatte", in cima e sempre visibile --------------- */
-.prep{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;
-      background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);
-      padding:11px 13px;margin:0 0 14px;
-      -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
-.prep.on{border-color:var(--acc);background:var(--sky-soft)}
-.prep .t{flex:1;min-width:0}
-.prep .t b{display:block;font-size:15px;font-weight:600}
-.prep .t span{display:block;font-size:12px;color:var(--dim);margin-top:1px}
-.sw{position:relative;flex:0 0 auto;width:50px;height:30px;display:block}
-.sw input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer;z-index:2}
-.sw .k{position:absolute;inset:0;background:var(--bg3);border:1px solid var(--line);
-       border-radius:99px;transition:background .15s,border-color .15s}
-.sw .k::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;
-              border-radius:99px;background:var(--faint);transition:transform .15s,background .15s}
-.sw input:checked + .k{background:var(--acc);border-color:var(--acc)}
-.sw input:checked + .k::after{transform:translateX(20px);background:var(--navy)}
-
 /* --- azioni ------------------------------------------------------------- */
 .go{display:flex;align-items:center;gap:12px;width:100%;min-height:var(--tap);
     background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);
@@ -460,9 +442,6 @@ nav button.on{color:var(--acc)}
   nav button.on{border-bottom-color:var(--acc)}
   nav button:hover{color:var(--fg)}
 
-  /* Il selettore resta appiccicato, ma sotto la barra, non dietro. */
-  .prep{top:56px}
-
   h1{font-size:26px;margin-bottom:4px}
   h2{font-size:12px;margin:30px 0 12px}
   .sub{font-size:14px}
@@ -474,8 +453,6 @@ nav button.on{color:var(--acc)}
   .go .t span{font-size:14px}
   .go .n{font-size:26px}
   .go:hover{background:var(--bg3)}
-  .prep .t b{font-size:16px}
-  .prep .t span{font-size:13px}
   .btn:hover{background:var(--line)}
   .tbl{font-size:14px}
 }
@@ -538,9 +515,6 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
 .btn.primary{background:var(--blue);border-color:var(--blue);color:var(--surface)}
 .chip,.checks .check .bx,select,input,textarea{background:var(--surface);border-color:var(--line-soft);color:var(--navy)}
 .chip.on,.check.on .bx{background:var(--sky);border-color:var(--sky);color:var(--surface)}
-.prep{position:relative;top:auto;background:var(--surface);border-color:var(--line-soft);box-shadow:none}
-.prep.on{background:var(--sky-soft);border-color:var(--sky)}.sw .k{background:var(--line-soft);border-color:var(--line-soft)}
-.sw .k::after{background:var(--surface)}.sw input:checked+.k{background:var(--sky);border-color:var(--sky)}.sw input:checked+.k::after{background:var(--surface)}
 .modi button,.go,.ans,.cnav button{background:var(--surface);border-color:var(--line-soft)}
 .modi button.on{background:var(--sky-soft);border-color:var(--sky)}.modi button.on b{color:var(--blue)}
 .go:active,.ans:active{background:var(--sky-soft)}
@@ -1232,9 +1206,6 @@ const S = {
   invio: null, invioAncora: false, vecchio: [], vecchioFonti: [], vecchioConflitti: [], vecchioErrore: null, vecchioMigrato: null,
   accountOrigine: null, trasferimento: null, onboarding: false, dataProposta: null,
   prog: {}, tprog: {}, cprog: {},      // derivati dall'archivio, mai salvati
-  // Modalita' copertura: pesca **solo** i quesiti mai risposti, per arrivare
-  // all'esame avendo visto almeno una volta tutta la banca.
-  prep: LS.get('prep', false),
   date: { oggi: null, esame: null, chiusura_quiz: null, inizio_quiz: null },
   filtro: { modo: 'argomento', kind: 'base', temi: [], voci: [], soloNuovi: false, soloFigura: false, n: 20, perVoce: 1, prova: 'base' },
   auto: LS.get('auto', true),
@@ -1450,7 +1421,6 @@ async function entraConto(io) {
   const locale = await contoTx();
   S.archivio = locale.righe;
   LS.valori = { ...(locale.preferenze || {}), esame: io.data_esame || null };
-  S.prep = LS.get('prep', false);
   S.auto = LS.get('auto', true);
   if (LS.get('filtro', null)) S.filtro = LS.get('filtro', null);
   segModo = LS.get('segModo', 'notturni');
@@ -2197,6 +2167,7 @@ async function archivia(riga) {
   if (!S.conto) { ricalcola(); return; }
   try {
     await contoTx((st) => ({ nuove: [riga], coda: E.accoda(st.coda, riga.uid) }));
+    await dipingiContoStato();
     pianificaInvio();
   } catch (e) {
     const quota = e && (e.name === 'QuotaExceededError' || /quota/i.test(String(e.message)));
@@ -2205,15 +2176,6 @@ async function archivia(riga) {
     segnala('RISPOSTA NON SALVATA: ' + (quota ? 'spazio esaurito, scarica i progressi' : ARCH.errore), true);
   }
   DIAG.arch = !!ARCH.errore || ARCH.lettura === 'errore'; aggiornaBadge();
-}
-
-// Una classificazione visibile per tentativo, senza perdere le precedenti.
-// L'ordine viene dal motore: vecchi tag senza data prima, poi istanti reali
-// (UTC e offset locale), ordine dell'archivio a parita' di istante.
-function tagPerTentativo() {
-  const tags = Object.create(null);
-  for (const r of E.ordinaRighe(S.archivio.filter(r => r._t === 'g'))) tags[r.attempt_uid] = r.tag;
-  return tags;
 }
 
 /** Lo specchio e le date, dall'archivio. Si chiama all'avvio e dopo ogni
@@ -2701,7 +2663,6 @@ function dipingi() {
   dipingiDifetti();
   const tb = E.traccia(S.banca, S.prog, oggi, 'base', S.date.chiusura_quiz, S.date.inizio_quiz);
   const tv = E.traccia(S.banca, S.prog, oggi, 'vela', S.date.chiusura_quiz, S.date.inizio_quiz);
-  dipingiPrep(tb, tv);
 
   const primaBase = tb.risposte === 0;
   const haAttivita = S.archivio.some((r) => ['q', 't', 'c', 's'].includes(r._t));
@@ -2980,32 +2941,6 @@ function giornoIt(iso) {
   return `${g} ${MESI[m - 1]}`;
 }
 
-/**
- * La quota della modalita' copertura: **mai visti** diviso i giorni che restano.
- *
- * Da quando la scala dei richiami non c'e' piu', "non chiuso" e "mai visto"
- * coincidono, quindi questa e' la stessa cosa di `t.quota`. Resta perche' il
- * significato e' diverso: qui si dichiara che si conta la **copertura**, e se un
- * domani tornasse una nozione di ripasso automatico questa non dovrebbe seguirla.
- */
-function quotaPrep(t) { return t.giorni ? Math.ceil(t.nuovi / t.giorni) : null; }
-
-/** Il selettore in cima: acceso o spento, e che cosa comporta adesso. */
-function dipingiPrep(tb, tv) {
-  const el = document.getElementById('prep'), sub = document.getElementById('prep-sub');
-  const box = document.getElementById('prep-on');
-  if (!el || !sub) return;
-  el.classList.toggle('on', !!S.prep);
-  if (box) box.checked = !!S.prep;
-  const nuovi = (tb ? tb.nuovi : 0) + (tv ? tv.nuovi : 0);
-  const tot = (tb ? tb.totale : 0) + (tv ? tv.totale : 0);
-  const viste = tot - nuovi;
-  sub.innerHTML = S.prep
-    ? `Batterie, argomenti e prova di carteggio pescano solo fra i ${nuovi} `
-      + `${sp('maiaperte', 'mai visti')}. Simulazione dei quiz e screening no.`
-    : `${viste} su ${tot} già viste almeno una volta · ne restano ${sp('maiaperte', `${nuovi} mai aperte`)}.`;
-}
-
 /** Quanti quesiti distinti hai gia' toccato oggi, contati sullo specchio locale. */
 function fattiOggi(kind, oggi) {
   let n = 0;
@@ -3034,8 +2969,8 @@ function azione(go, nome, t, fatti) {
   const oggi = S.date.oggi || today();
   const senzaData = !S.date.chiusura_quiz;
   const scaduto = !senzaData && oggi > S.date.chiusura_quiz;
-  const quota = S.prep ? quotaPrep(t) : t.quota;
-  const restano = S.prep ? t.nuovi : t.rimanenti;
+  const quota = t.quota;
+  const restano = t.rimanenti;
 
   // Senza data d'esame non c'e' una quota: si scrive quanto resta, e basta.
   // Un «NaN al giorno» qui e' esattamente il numero falso che non deve uscire.
@@ -3049,13 +2984,10 @@ function azione(go, nome, t, fatti) {
     ritmo,
     // Da ripassare = sbagliato e non ancora ripreso: e' l'ambra della barra.
     // (t.sbagliati conterebbe anche i gia' ripresi, che qui sarebbero rumore.)
-    S.prep ? 'solo mai fatte' : (t.da_ripassare
-      ? sp('daripassare', `${t.da_ripassare} da ripassare`, true) : null),
+    t.da_ripassare ? sp('daripassare', `${t.da_ripassare} da ripassare`, true) : null,
   ].filter(Boolean).join(' · ');
 
-  const finito = S.prep
-    ? 'le hai viste tutte almeno una volta'
-    : 'banca chiusa, complimenti';
+  const finito = 'banca chiusa, complimenti';
   return `<button class="go" data-go="${go}" ${restano ? '' : 'disabled'}>
     <span class="dot ${t.semaforo}"></span>
     <div class="t"><b>${nome}</b><span>${restano ? r : finito}</span></div>
@@ -3283,10 +3215,7 @@ function anteprima() {
   if (!n) vide.innerHTML = m === 'argomento' || (m === 'sbagliate' && restringe) ? '<button class="btn" data-quiz-panel="argomenti">Modifica i filtri</button><button class="btn" data-quiz-clear>Rimuovi tutti i filtri</button>' : '<button class="btn" data-modo="argomento">Scegli un argomento</button><button class="btn" data-modo="sim">Simula la prova</button>';
   if (n && m !== 'sim') {
     const kind = m === 'mirata' ? 'base' : f.kind;
-    // Un tempo di risposta non è un intervallo all'orologio: escludiamo
-    // righe senza timestamp leggibile prima di chiedere il ritmo al motore.
-    const ritmo = E.ritmo(S.archivio.filter(r => r._t === 'q' && r.kind === kind
-      && typeof r.ts === 'string' && Number.isFinite(Date.parse(r.ts))));
+    const ritmo = E.ritmo(S.archivio.filter(r => r._t === 'q' && r.kind === kind));
     const stima = E.stimaImpegno(S.prog,n,1,ritmo.affidabile ? {msPerDomanda:ritmo.msPerDomanda} : {});
     if (stima.fonte === 'orologio') document.getElementById('quiz-durata').textContent = stima.minutiTotali === 0 ? 'Durata stimata: meno di un minuto' : `Durata stimata: circa ${stima.minutiTotali} ${stima.minutiTotali === 1 ? 'minuto' : 'minuti'}`;
   }
@@ -4358,7 +4287,7 @@ function apriRivedi(id, opt = {}) {
     ${M ? `<p class="note">${sim ? 'Domande senza risposta' : 'Domande non affrontate'}: ${M}. Non sono errori, e qui non compaiono.</p>` : ''}`;
 
   const byId = new Map(S.banca.map(q => [q.id, q]));
-  const tags = tagPerTentativo();
+  const tags = E.tagPerTentativo(S.archivio);
   // La posizione e' quella della lista originale, quando la si conosce: «Solo
   // errori» non rinumera, perche' non e' una lista nuova.
   const pos = corrente ? new Map(corrente.lista.map((it, i) => [it.id, i + 1])) : null;
