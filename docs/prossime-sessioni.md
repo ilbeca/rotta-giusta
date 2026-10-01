@@ -642,7 +642,11 @@ consuma, non si riprogetta.
      esce da `site/privacy.html` nel commit di rilascio, con la data del
      rilascio (passo 1 di P-27). **Il cancello degli adempimenti di P-27 è
      chiuso da questa decisione.**
-  5. **La firma DKIM di `privacy@` non è attiva** (trovato il 2 ottobre 2026,
+  5. ~~**La firma DKIM di `privacy@` non è attiva**~~ — **attivata il 2 ottobre
+     2026**, dalla regia con il sì dell'autore: la diagnostica di Zimbra dice
+     «Configurazione OK» anche per il DKIM, e sul DNS le due chiavi rispondono.
+     Resta da guardare `dkim=pass` nel sorgente di una mail vera spedita da
+     `privacy@`: la manda l'autore. Il testo di prima: (trovato il 2 ottobre 2026,
      guardando la diagnostica di Zimbra su richiesta dell'autore, che aveva
      visto «Configurazione SPF anomala»). Nella diagnostica MX, SRV e **SPF
      sono «Configurazione OK»** — l'SPF dell'apice è quello della guida OVH,
@@ -669,9 +673,8 @@ consuma, non si riprogetta.
   `server/opposizione.mjs`; e le statistiche si lanciano con
   `server/statistica.mjs`, mai con `sqlite3`.
 - **Gli adempimenti, dopo il primo parere** (1° ottobre 2026) — *lo stato di
-  oggi è nel punto «Aperto il 2 ottobre 2026» qui sopra e nel §15.4: restano la
-  copia controfirmata del DPA e la firma DKIM; PEC e parere firmato sono decisi
-  «no».* Il testo di prima: Le decisioni e
+  oggi è nel punto «Aperto il 2 ottobre 2026» qui sopra e nel §15.4: resta la
+  copia controfirmata del DPA; PEC e parere firmato sono decisi «no».* Il testo di prima: Le decisioni e
   l'esito punto per punto sono nel §15.4 di `account-progetto.md`, con
   l'elenco di che cosa resta: il DPA di statichost.eu da firmare **subito**, la
   casella `privacy@` su OVH (fatta il 1° ottobre: restano l'inoltro IONOS, il
@@ -3724,3 +3727,7 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   controfirmata; «Bozza» esce dalla privacy nel commit di rilascio. Trovato
   guardando Zimbra: l'SPF è a posto, **la firma DKIM di `privacy@` non è
   attiva**. Il traguardo aspetta le suite su `main` e il via dell'autore.
+- **2 ottobre 2026 — la firma DKIM di `privacy@` attivata.** Con il sì
+  dell'autore, dal pannello OVHcloud; la diagnostica è tutta «Configurazione
+  OK» e le chiavi rispondono sul DNS. Degli adempimenti resta la copia
+  controfirmata del DPA di statichost.eu, che il traguardo non aspetta.
