@@ -11,6 +11,51 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+## [0.28.1] — 2026-10-01
+
+Un rilascio di correzione, da un ramo che parte da `v0.28.0`, con una cosa
+sola: **la prova di carteggio dice che il testo resta solo nella pagina aperta,
+e il browser chiede conferma prima di lasciarla con del testo scritto.** Nella
+0.28.0 una ricarica a metà prova perdeva fino a un'ora di lavoro senza che la
+pagina lo dicesse. La correzione è quella di P-36, scritta e collaudata il 26
+settembre su `main`, dove però resta insieme alla versione con gli account, che
+non è ancora pubblicabile: per questo esce da qui. La bozza vera, che il testo
+lo conserva, arriva con la versione con gli account.
+
+**Per pubblicarla su `rottagiusta.it`** il ramo di build di statichost.eu va
+portato su `fix/0.28.1` prima di «Build now», perché costruisce da `main`; al
+rilascio successivo torna su `main`.
+
+### Corretto — il testo del carteggio resta nella pagina aperta, e si dice prima
+
+- **Una ricarica perdeva il testo senza che la pagina lo dicesse.** Prima
+  della prova e degli allenamenti sulla carta, e nel runner quando c'è testo
+  non vuoto, si legge: «Il testo che scrivi resta solo finché questa pagina è
+  aperta. Non ricaricare la pagina e non chiudere la scheda fino alla
+  consegna.» Un'informazione con l'azione per proteggere il lavoro, senza
+  promettere una bozza salvata. Corretto anche il commento che prometteva
+  erroneamente un salvataggio a ogni tasto.
+- **La conferma del browser protegge l'uscita accidentale.** Il listener
+  `beforeunload` si registra soltanto con testo in almeno un esercizio e
+  attività non consegnata; si rimuove quando tutto il testo è cancellato,
+  alla consegna (anche per scadenza) e alla chiusura del runner. La consegna
+  conserva i due tocchi in pagina. Nessun nuovo salvataggio: la bozza per
+  account resta P-34, come `docs/area-4-progetto.md` §3.3 richiede.
+- **Collaudo in Chromium, guardato a 375 e 1280 px:** prova, giro delle
+  tecniche e tappeto, sei casi. Avvisi leggibili a 14 px; vuoto e soli spazi
+  non attivano la protezione; testo in un altro esercizio la mantiene;
+  navigazione e ricarica annullata conservano i risultati. Primo tocco di
+  consegna ancora protetto, scrittura che annulla la conferma, secondo tocco
+  che rimuove la protezione; scadenza e chiusura la rimuovono, una nuova
+  attività vuota non la eredita. Ricarica dopo consegna e dopo chiusura senza
+  conferma. Zero scritture della bozza in localStorage, sessionStorage o
+  IndexedDB durante scrittura, navigazione e consegna; zero errori JavaScript.
+
+  Suite del rilascio, sul ramo `fix/0.28.1`: motore **141/143**, con i due
+  skip di sempre; server **58/58**; dati **242**; interfaccia **295**;
+  specifica **370**; guardiano verde. Sono le suite di `v0.28.0`, senza il
+  banco del browser, che è nato dopo.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag
