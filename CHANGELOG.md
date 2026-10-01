@@ -2188,6 +2188,32 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   con rete che tace e con rete spenta: entrambe mostrano «2 risposte da inviare».
   Versione invariata.
 
+
+### Corretto — P-25: la rifinitura che lascia leggibili fuoco e controlli
+
+- **Cinque difetti riprodotti e guardati prima della correzione:** la barra
+  copriva tre arresti di Tab; a 320 px la pagina sbordava di 16 px senza
+  account, 23 con account e 49 nelle tecniche; il grigio scendeva a 4,09:1;
+  i tag N/L/C misuravano 28–31 × 29 px e il sommario Info era alto 41 px.
+  Ora il fuoco ha spazio fra le barre, l'intestazione e le tecniche rientrano
+  senza nascondere contenuto, il grigio passa a 4,65:1 sull'azzurro e 4,85:1
+  sulla pagina, i tag sono 44 × 44 px e il sommario almeno 44 px.
+- **Le cinque righe T-* tolte da `docs/eccezioni-interfaccia.md`:** i gruppi
+  girano interi e verdi sulla pagina vera. Solo CSS, con gerarchie, ingressi,
+  figure e tema conservati secondo i quattro «no, per ora» dell'autore;
+  nessuna selezione, conteggio, giudizio, ritorno o persistenza cambia.
+  La bozza del Carteggio di P-21 verificata, anche dopo ricarica, senza rifarla.
+- **Collaudo guardato a 320, 375 e 1280 px nei due regimi**, comprese viste,
+  Account, runner, riepilogo e revisione: zero sbordo nei campioni; misure,
+  inventario dei testi e limiti in `docs/area-6-collaudo-ux.md`. Zoom nativo,
+  testo al 200 %, audit non testuale, percorsi completi da tastiera e lettore
+  reale **non fatti** (R-RIF-10, 13, 14, 15); il reflow a 640 px non è zoom.
+- Suite complete: motore **193/197** con quattro confronti ritirati previsti,
+  server **60/60** su Node 25.3 e **60/60** su LTS 24.21.0 (pacchetto verificato
+  contro SHASUMS256), dati **242**, interfaccia **2.158**, specifica **784**;
+  guardiano e controllo documentazione verdi. Versione invariata.
+
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag
