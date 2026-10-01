@@ -2293,6 +2293,26 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   guardiano e controllo documentazione verdi. Versione invariata.
 
 
+### Regole — il titolare si nomina nell'informativa, e solo lì
+
+- **L'informativa deve dire chi è il titolare, e il guardiano rifiutava il suo
+  nome.** L'art. 13.1.a del GDPR chiede l'identità del titolare; la bozza di
+  P-18 diceva «l'autore di Rotta Giusta», e `strumenti/controlla.py` boccia ogni
+  file con il nome di battesimo dell'autore. Deciso dall'autore il 1° ottobre
+  2026: nome e cognome compaiono in `site/privacy.html`, e in nessun altro file.
+  Il guardiano lo ammette lì e solo per quelle due impronte: un identificatore
+  delle macchine nella privacy resta un guaio. Il cognome, che il guardiano non
+  cercava, entra fra le impronte, così il nome intero non scappa altrove ora che
+  sta in un file del repo.
+- **Prima il test che fallisce:** `test_titolare` in `tests/test_dati.py`, rosso
+  su tre verifiche finché la regola non c'era. Il nome vero non sta nel test:
+  le impronte si sostituiscono con quelle di un nome finto. **Provato al
+  contrario tre volte**: l'eccezione valida in ogni file → 4 rossi, uno per file;
+  l'eccezione tolta → 1; l'eccezione estesa a una macchina → 1.
+
+  Suite: dati **250** (erano 242); motore 193/197 con i quattro skip previsti;
+  specifica 784; guardiano verde.
+
 ## [0.28.1] — 2026-10-01
 
 Un rilascio di correzione, da un ramo che parte da `v0.28.0`, con una cosa

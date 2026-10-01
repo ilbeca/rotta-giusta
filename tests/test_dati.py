@@ -53,6 +53,38 @@ def test_controlla():
           ' | '.join(righe[-12:]) + (esito.stderr.strip() and ' | ' + esito.stderr.strip()))
 
 
+def test_titolare():
+    """Il nome del titolare sta nell'informativa, e in nessun altro file.
+
+    L'art. 13.1.a del GDPR chiede l'identita' del titolare, e il guardiano
+    rifiuta il nome dell'autore: l'eccezione e' una sola, site/privacy.html,
+    e vale solo per il nome, mai per gli identificatori delle macchine
+    (account-progetto.md §15.4). Il nome vero non si scrive qui — farebbe
+    fallire il guardiano —: le impronte si sostituiscono con quelle di un nome
+    finto, e si prova il meccanismo."""
+    check('controlla.py dichiara il file dell\'informativa',
+          getattr(controlla, 'TITOLARE_FILE', None) == 'site/privacy.html')
+    check('controlla.py cerca anche il cognome', len(controlla.IMPRONTE) >= 7)
+    if not hasattr(controlla, 'TITOLARE_K'):
+        check('controlla.py dichiara quali impronte sono del titolare', False)
+        return
+    vere = dict(controlla.IMPRONTA_K)
+    finte = {controlla.impronta('pinco'): 6, controlla.impronta('pallino'): 7,
+             controlla.impronta('macchinetta'): 2}
+    controlla.IMPRONTA_K.clear(); controlla.IMPRONTA_K.update(finte)
+    try:
+        nome = '<p>Il titolare e\' Pinco Pallino.</p>'
+        check('il nome del titolare passa nell\'informativa',
+              controlla_testo('site/privacy.html', nome) == [], controlla_testo('site/privacy.html', nome))
+        for altrove in ('README.md', 'site/app.html', 'site/avvertenza.html', 'docs/account-progetto.md'):
+            check('il nome del titolare non passa in %s' % altrove,
+                  len(controlla_testo(altrove, nome)) == 2, controlla_testo(altrove, nome))
+        check('nell\'informativa una macchina resta un identificatore privato',
+              any('#2' in g for g in controlla_testo('site/privacy.html', 'host macchinetta')))
+    finally:
+        controlla.IMPRONTA_K.clear(); controlla.IMPRONTA_K.update(vere)
+
+
 def test_segreti():
     """Il guardiano guarda anche il server, e riconosce una chiave di Scaleway.
 
@@ -628,7 +660,7 @@ def test_serve():
 
 
 def main():
-    for t in (test_controlla, test_segreti, test_materiale_dichiarato, test_quiz, test_meta, test_figure, test_invarianti,
+    for t in (test_controlla, test_titolare, test_segreti, test_materiale_dichiarato, test_quiz, test_meta, test_figure, test_invarianti,
               test_carteggio, test_sw, test_rinomino, test_prefisso_cache, test_manifest_icone, test_indirizzi,
               test_serve):
         t()

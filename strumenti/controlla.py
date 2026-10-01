@@ -21,8 +21,12 @@ README o un CHANGELOG ripubblicano esattamente come un dataset — e controlla:
      ricopiato, e' loro anche quando li si cita come fonte di un foglio che qui
      non c'e' piu';
   5. nessun identificatore delle macchine private dell'autore (hostname, rete,
-     indirizzo, nome di battesimo). Le stringhe cercate NON compaiono in
-     chiaro nemmeno qui: si confrontano impronte SHA-256, vedi IMPRONTE;
+     indirizzo, nome e cognome). Le stringhe cercate NON compaiono in
+     chiaro nemmeno qui: si confrontano impronte SHA-256, vedi IMPRONTE.
+     Un'eccezione sola: nome e cognome nell'informativa, site/privacy.html,
+     perche' l'art. 13.1.a del GDPR chiede l'identita' del titolare
+     (account-progetto.md §15.4). Gli identificatori delle macchine no,
+     nemmeno li';
   6. nessuna chiave dell'API di Scaleway: i segreti del server stanno sulla
      macchina, mai nel repo (docs/account-progetto.md §16.2). Vale per ogni
      file, server/ compreso, e si riporta per riga, mai per valore;
@@ -83,7 +87,8 @@ VIETATI = ['Banca-dati-patente-nautica.xlsx']
 # non stringhe perche' il controllo e' pubblico quanto il repo: scrivere qui
 # «cerca questo hostname» lo pubblicherebbe. Ordine: 1 hostname della macchina,
 # 2-4 la rete privata (il nome corto, il dominio, il nome completo della
-# macchina), 5 l'indirizzo IP, 6 il nome di battesimo dell'autore.
+# macchina), 5 l'indirizzo IP, 6 il nome di battesimo dell'autore, 7 il suo
+# cognome.
 # Per rigenerarne una (o aggiungerne):
 #   python3 -c "import hashlib; print(hashlib.sha256(b'<token minuscolo>').hexdigest())"
 IMPRONTE = [
@@ -93,8 +98,15 @@ IMPRONTE = [
     '7ec635dc62e23b8277b7f7e107a32dab88ea08e954fbaf8fcf82cbfa099686e0',
     'd39d42586f9727fc869598e0ef806e476a4ba0261e048e5b6dbcd3a4052ee48e',
     'a2cab1deca58c8353168310f520c3bb7e45466e6722d771bed19126077b58703',
+    '158e053b9077b0cd632a00f84a1a284785aeaa9bf45d6a564c1984c55e00faf5',
 ]
 IMPRONTA_K = {h: k + 1 for k, h in enumerate(IMPRONTE)}
+
+# Il titolare del trattamento si nomina nell'informativa, e solo li': e' la
+# risposta all'art. 13.1.a, decisa dall'autore il 1° ottobre 2026. Nome e
+# cognome, non le macchine: un hostname nella privacy resta un guaio.
+TITOLARE_FILE = 'site/privacy.html'
+TITOLARE_K = {6, 7}
 
 # Un token e' una parola con dentro punti, trattini e underscore: cosi' un IP
 # dentro `http://1.2.3.4:8610` esce intero (i `:` e `/` lo delimitano) e un
@@ -163,6 +175,8 @@ def controlla_testo(rel, testo):
             pezzi = [tok] + (tok.split('.') if '.' in tok else [])
             for pz in pezzi:
                 k = IMPRONTA_K.get(impronta(pz))
+                if k in TITOLARE_K and rel == TITOLARE_FILE:
+                    continue
                 if k and k not in visti:
                     visti.add(k)
                     guai.append('identificatore privato #%d in %s:%d' % (k, rel, n))
