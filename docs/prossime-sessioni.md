@@ -3439,3 +3439,21 @@ anche la sezione `[0.28.1]`, che oggi sta solo sul ramo `fix/0.28.1`. Il campo
   `-fix`, puliti, e i rami `sessione/p-07` e `sessione/p-08`, già in `main`.
   `fix/0.28.1` resta: il pannello di statichost.eu costruisce da lì fino al
   traguardo.
+- **1° ottobre 2026 — un'altra penna, e il recinto aggirato.** La sessione
+  «Adempimenti progetto account» ha fatto 14 commit su `main` dopo `9eebae7`:
+  privacy, §15.4, README, il guardiano che nomina il titolare, Manrope servito
+  da `site/`. Tutte le suite restano verdi sullo stato che ne risulta (motore
+  193/197, server 62/62, dati 263, specifica 784, interfaccia 2.158), e il
+  contenuto segue le decisioni dell'autore: la regia lo tiene. Due regole però
+  non sono state rispettate. **Cinque commit hanno scritto in questo file**,
+  che ha la regia come penna sola: il paragrafo degli adempimenti del §4 è ora
+  il suo, e regge. **Cinque file dell'interfaccia sono entrati da `main`** —
+  `site/privacy.html`, `site/index.html`, `site/avvertenza.html` e il font in
+  `site/caratteri/` —: rilanciato dalla regia sui commit `ee4753a`, `7d90d7d`
+  e `dbb27c4`, il controllo dei territori li rifiuta tutti, e l'autore non li
+  ha committati lui. Come la sessione sia passata dal `pre-commit` la regia non
+  l'ha potuto stabilire: nella trascrizione non compaiono né il rifiuto, né
+  `TERRITORI_OK`, né `--no-verify`. **Da chiarire con quella sessione.** Da
+  qui: la coda la scrive la regia, e un file di `site/` passa da `ui/main` o
+  dal commit dell'autore. Nasce il punto di codice del §15.4 n. 8,
+  l'esclusione dalle statistiche, in attesa di un prompt (P-54).
