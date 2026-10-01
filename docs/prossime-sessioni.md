@@ -231,7 +231,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 10 | Lo strumento che annota le letture del titolare | Claude | `main` | il sì dell'autore: lo strumento, o togliere le due frasi dalla privacy | P-55 |
+| 10 | Lo strumento che annota le letture del titolare | Claude | `main` | — **in corso**, lanciato dalla regia | P-55 |
 | 11 | Le condizioni per l'account e i 18 anni nel modulo di registrazione | ChatGPT | `ui/main` | — **pronto** | P-56 |
 | 12 | Il controllo di quella frase | Claude | `main` | la merge di P-56 | P-57 |
 | 9 | **La versione con gli account** — il traguardo | tutti | `main` | le righe 10–12, poi le suite verdi su `main` e il via dell'autore; il cancello degli adempimenti è chiuso dalla sua decisione del 2 ottobre (§4) | P-27, la lista scritta |
@@ -3233,9 +3233,9 @@ controlli, dati 263, specifica 800, guardiano verde, interfaccia 2.158.
 
 ### P-55 — Claude: lo strumento che annota le letture del titolare
 
-**Stato:** pronto, **in attesa del sì dell'autore**: il 2 ottobre 2026 la regia
-ha consigliato lo strumento al posto di togliere le due frasi
-dall'informativa, e l'autore non ha ancora detto quale delle due. **Dove:**
+**Stato:** **lanciato dalla regia il 2 ottobre 2026** (punto 8), con il sì
+dell'autore: lo strumento, non togliere le due frasi dall'informativa. Prima
+era: pronto, in attesa di quel sì. **Dove:**
 Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano o lanciato dalla
 regia (punto 8). **Nasce da:** il controllo del 2 ottobre (§4).
 
@@ -3935,3 +3935,5 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   controllo, dopo la merge. P-55, lo strumento delle letture, aspetta ancora il
   suo sì. Il meccanismo torna quello di prima: un prompt con il numero, un
   resoconto, la merge della regia.
+- **2 ottobre 2026 — P-55 lanciato.** L'autore ha detto sì allo strumento e ha
+  delegato il lancio alla regia; P-56 è nelle sue mani, per ChatGPT.
