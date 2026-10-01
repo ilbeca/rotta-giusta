@@ -200,7 +200,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore | P-15 |
+| 8 | La messa in esercizio del server su Scaleway, con l'autore — **in corso** | Claude e l'autore | `main`, a mano, e pannelli | niente | P-15 |
 | 26b | La realizzazione dell'area 6 | ChatGPT | `ui/main` | il §8 dell'area 6 (l'autore) | segnaposto P-25 |
 | 9 | **La versione con gli account** — il traguardo | tutti | `main` | P-15, e gli adempimenti del §4 | segnaposto P-27 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
@@ -1141,7 +1141,7 @@ puliti, il diff tocca il progetto e il CHANGELOG, merge chiusa da sola.
 
 ### P-15 — Claude con l'autore: la messa in esercizio su Scaleway
 
-**Stato:** pronto: il tag `v0.28.0` contiene il server. Parte quando l'autore ha il tempo. **Dove:** Claude Code, `~/Software/rotta-giusta`,
+**Stato:** **in corso dal 1° ottobre 2026**, in una sessione di Claude Code aperta dall'autore. Il tag `v0.28.0` contiene il server, senza R-ACC-49 (P-43): il prompt lo dice. **Dove:** Claude Code, `~/Software/rotta-giusta`,
 ramo **`main`**, a mano: gli strumenti della macchina stanno nel repo. È una
 sessione che si fa **insieme**, come P-08.
 
@@ -1170,7 +1170,12 @@ che il §19 lascia a questo giorno: il sorgente di una mail vera, una
 copia arrivata a nl-ams e ripristinata, il riavvio dopo un
 aggiornamento del kernel, Argon2id sulla macchina vera.
 
-Se serve un tag che non c'è, fermati: il rilascio lo fa la regia. Il
+Il tag da avviare è v0.28.0, l'unico pubblicato. Ha il server di
+prima di P-43 — gli manca R-ACC-49, il Retry-After esposto dal CORS — e
+un motore più vecchio di quello su main: per mettere in esercizio la
+macchina basta, perché nessuna pagina la chiama, e al traguardo
+rg-aggiorna la porta al tag nuovo. Scrivilo nel resoconto. Se serve
+un altro tag, fermati: il rilascio lo fa la regia. Il
 server in esercizio non riceve ancora nessuno, perché la pagina non lo
 chiama fino alla versione con gli account. Non inserisci credenziali e
 non accetti condizioni al posto dell'autore; nessun segreto nel repo.
@@ -3263,3 +3268,7 @@ la nota in testa a `docs/filosofia.md`, che lo dice di sé (P-26).
   lo stesso. Non è stato riscritto, perché `ui/main` era già allineato a lui;
   la chiusura vera è il commit che segue. D'ora in poi la regia controlla
   l'esito dello script prima di mettere in stage.
+- **1° ottobre 2026 — P-15 parte.** L'autore lo apre in una sessione sua, come
+  P-08, perché si fa insieme e il resoconto passa dalla regia. Nel prompt la
+  regia ha aggiunto che il tag da avviare è `v0.28.0`, senza R-ACC-49: basta per
+  la messa in esercizio, e il traguardo lo aggiorna.
