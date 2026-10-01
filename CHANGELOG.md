@@ -2344,6 +2344,33 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   negli Stati Uniti sulla decisione di adeguatezza del Data Privacy Framework.
   Resta aperto, per il parere: un Gmail personale non ha un accordo art. 28.
 
+### Corretto — la privacy e l'avvertenza dopo il primo parere
+
+- **Un primo parere sui punti del §15.4 (non firmato, da un modello) ha
+  trovato tre cose che non reggevano**, e l'autore ha deciso il 1° ottobre 2026:
+  - **le statistiche** non stanno nell'esecuzione del contratto (6.1.b): ora sono
+    legittimo interesse (6.1.f), con il diritto di opporsi e di uscire dai
+    conteggi. L'esclusione va ancora fatta sul server (`account-progetto.md`
+    §15.4); oggi nessuna statistica si calcola;
+  - **`privacy@` su un Gmail personale**: Google è un responsabile senza
+    accordo art. 28. Si passa a una casella OVH con DPA, da verificare;
+    intanto il testo nomina Google Ireland e il trasferimento a Google LLC;
+  - **statichost.eu** è responsabile, e il DPA va firmato subito: il sito lo
+    usa dal 25 settembre. L'informativa nomina ora i suoi sub-responsabili.
+- **Le correzioni di testo del parere**: la proroga dei tempi di risposta (art.
+  12.3); l'email necessaria e la data facoltativa (art. 13.2.e); l'account dai
+  18 anni; la lettura in chiaro limitata a un problema chiesto o di sicurezza;
+  l'opposizione al registro di sicurezza, che di norma non lo ferma; la base
+  delle richieste conservate; il cookie che dura trenta giorni, non «di
+  sessione».
+- **L'avvertenza ha le condizioni per l'account**, su cui poggia il 6.1.b:
+  gratis e così com'è, dai 18 anni, risposte scaricabili e account cancellabile,
+  uso corretto, 30 giorni di preavviso se il servizio chiude, legge italiana e
+  foro del consumatore. **E una frase falsa dalla 0.23.0 esce**: diceva che la
+  composizione delle 20 domande «non è nel decreto» e viene da tre scuole
+  nautiche; è l'Allegato C al DM 323/2021, come dice il README.
+- Verificato: guardiano verde, dati 250, controllo dei testi di C-18 verde.
+
 ## [0.28.1] — 2026-10-01
 
 Un rilascio di correzione, da un ramo che parte da `v0.28.0`, con una cosa
