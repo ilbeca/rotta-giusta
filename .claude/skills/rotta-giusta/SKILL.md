@@ -61,7 +61,8 @@ Due cose pubblicate, in due modi:
 5. **Niente push senza chiedere.** E dopo il push di un rilascio, «Build now» su
    statichost.eu: senza, `rottagiusta.it` resta alla versione di prima. Il
    server degli account si aggiorna a parte, sulla sua macchina, allo stesso
-   tag (`rg-aggiorna <tag>`): nessuno dei due passi fa l'altro.
+   tag (`rg-aggiorna <tag> <commit>`, con il commit letto sul Mac da
+   `git rev-parse <tag>^{commit}`): nessuno dei due passi fa l'altro.
 6. **Su questo repo lavorano due agenti, e il confine lo fa rispettare git.**
    ChatGPT sta nel worktree `~/Software/rotta-giusta-ui` sul ramo `ui/main` e
    tiene l'interfaccia; Claude sta nel checkout principale su `main` e tiene

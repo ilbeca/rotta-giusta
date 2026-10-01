@@ -1,0 +1,19 @@
+# Una copia del database, verificata, portata a nl-ams (§2.5, §2.8).
+# Gira come rg: copia.mjs scrive il suo esito nel registro del database vivo.
+[Unit]
+Description=Rotta Giusta, copia del database verso nl-ams
+After=network-online.target rg-api.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=rg
+Group=rg
+# La chiave di sola scrittura sul bucket: /etc/rg/copie, 0600 root.
+EnvironmentFile=/etc/rg/copie
+ExecStart=/usr/local/sbin/rg-copia
+ProtectSystem=strict
+ReadWritePaths=/var/lib/rg
+ProtectHome=yes
+PrivateTmp=yes
+NoNewPrivileges=yes

@@ -1,0 +1,35 @@
+#!/bin/bash
+# Una copia del database: fatta e verificata da server/copia.mjs del rilascio
+# in uso, che ne scrive l'esito nel registro; poi compressa e portata a nl-ams
+# da carica-copia.mjs, che la dice arrivata solo se il bucket conferma l'MD5.
+# Lo lancia rg-copia.timer, come rg. docs/account-progetto.md §2.5 e §2.8.
+set -euo pipefail
+
+DIR=/var/lib/rg/copie
+NODE=/opt/node/bin/node
+ora=$(date -u +%Y%m%dT%H%M%SZ)
+nome="conti-$ora.db"
+
+mkdir -p "$DIR"
+# La precedente e' l'ultima copia buona: le scartate hanno un altro nome.
+precedente=$(ls -1 "$DIR"/conti-*.db 2>/dev/null | tail -n 1 || true)
+args=()
+[ -n "$precedente" ] && args=(--precedente "$precedente")
+
+rilascio=$(readlink -f /srv/rg/attuale)
+if ! "$NODE" "$rilascio/server/copia.mjs" "$DIR/$nome" "${args[@]}"; then
+  # Un calo non spiegato o una copia che non passa integrity_check: l'esito e'
+  # gia' nel registro, e gli allarmi lo leggono. La copia non diventa la
+  # precedente della prossima, e non parte: l'unita' resta «failed».
+  [ -f "$DIR/$nome" ] && mv "$DIR/$nome" "$DIR/scartata-$ora.db"
+  echo "copia $nome NON portata a nl-ams: vedi il registro" >&2
+  exit 1
+fi
+
+gzip -9 -c "$DIR/$nome" > "$DIR/$nome.gz"
+"$NODE" /usr/local/lib/rg/carica-copia.mjs "$DIR/$nome.gz" "$nome.gz"
+rm -f "$DIR/$nome.gz"
+
+# Sulla macchina restano tre giorni: una copia e' anche un posto in cui un dato
+# cancellato sopravvive (§14.4). A nl-ams le tiene 30 giorni la regola del bucket.
+find "$DIR" -maxdepth 1 \( -name 'conti-*.db' -o -name 'scartata-*.db' \) -mtime +2 -delete

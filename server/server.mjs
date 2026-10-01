@@ -14,7 +14,7 @@
 // HTTPS: per questo ascolta su 127.0.0.1 se non gli si dice altro.
 
 import { createServer } from 'node:http';
-import { readFileSync } from 'node:fs';
+import { readFileSync, realpathSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { SCHEMA, apri, versioneSchema, leggiEpoca } from './db.mjs';
@@ -234,7 +234,9 @@ export async function avvia({
   };
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+// Il percorso si risolve: sulla macchina si parte da /srv/rg/attuale, un
+// collegamento, e Node mette in import.meta.url il percorso vero (P-15).
+if (process.argv[1] && realpathSync(process.argv[1]) === fileURLToPath(import.meta.url)) {
   // La chiave di Scaleway sta nell'ambiente della macchina, mai nel repo. Senza,
   // il server parte e ogni mail e' rifiutata — cioe' ogni registrazione
   // risponde 503, dichiarato — invece di dire «ti abbiamo scritto» (§9.3).

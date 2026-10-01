@@ -1,0 +1,23 @@
+# Il proxy che fa HTTPS davanti a rg-api (docs/account-progetto.md §2.8).
+# Certificato Let's Encrypt preso e rinnovato da Caddy, con la sola sfida
+# TLS-ALPN sulla 443: la 80 e' chiusa nel gruppo di sicurezza, e la sfida HTTP
+# fallirebbe a ogni rinnovo (misurato il 1° ottobre 2026). Nessun log di
+# accesso: Caddy non ne scrive senza la direttiva `log`, e gli IP stanno solo
+# nel registro del server, con le sue scadenze (§15.3).
+# Solo HTTP/1.1 e HTTP/2: HTTP/3 viaggia su UDP 443, che il gruppo di sicurezza
+# non apre, e annunciarlo con alt-svc sarebbe una promessa che non si mantiene.
+{
+	servers {
+		protocols h1 h2
+	}
+}
+
+api.rottagiusta.it {
+	tls {
+		issuer acme {
+			disable_http_challenge
+		}
+	}
+	reverse_proxy 127.0.0.1:8620
+	header -Server
+}

@@ -1,0 +1,42 @@
+# Il server degli account (docs/account-progetto.md §2.7, §2.8).
+# Gira il rilascio di /srv/rg/attuale, risolto all'avvio: cambiare il
+# collegamento non tocca il processo che gira, conta al riavvio.
+[Unit]
+Description=Rotta Giusta, server degli account
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=rg
+Group=rg
+# I segreti (RG_SCW_CHIAVE, RG_SCW_PROGETTO, RG_TITOLARE) li mette l'autore
+# in /etc/rg/ambiente, 0600 root: systemd lo legge prima di passare a rg.
+EnvironmentFile=/etc/rg/ambiente
+Environment=RG_DB=/var/lib/rg/conti.db
+Environment=RG_CANCELLAZIONI=/var/lib/rg/cancellazioni
+Environment=RG_HOST=127.0.0.1
+Environment=RG_PORTA=8620
+Environment=RG_PROXY=1
+# Il collegamento si risolve qui, una volta: a Node arriva il percorso vero del
+# rilascio. Lanciato attraverso il collegamento, il server di v0.28.0 esce con
+# 0 senza partire — il suo controllo `process.argv[1] === import.meta.url`
+# confronta il collegamento con il percorso risolto (P-15, §2.8).
+ExecStart=/bin/sh -c 'exec /opt/node/bin/node "$(readlink -f /srv/rg/attuale)/server/server.mjs"'
+Restart=on-failure
+RestartSec=2
+
+ProtectSystem=strict
+ReadWritePaths=/var/lib/rg
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+NoNewPrivileges=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+
+[Install]
+WantedBy=multi-user.target

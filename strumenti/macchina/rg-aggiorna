@@ -1,0 +1,63 @@
+#!/bin/bash
+# rg-aggiorna <tag> <commit-atteso> — porta il server a un tag pubblicato.
+# docs/account-progetto.md §2.7. Il commit atteso si legge sul Mac con
+#   git rev-parse <tag>^{commit}
+# e se non coincide con quello che il repo pubblico dice per il tag, ci si ferma.
+set -euo pipefail
+
+[ $# -eq 2 ] || { echo "uso: rg-aggiorna <tag> <commit-atteso>" >&2; exit 2; }
+tag=$1; atteso=$2
+REPO=/srv/rg/repo.git
+RILASCI=/srv/rg/rilasci
+NODE=/opt/node/bin/node
+
+[ "$(id -u)" -eq 0 ] || { echo "rg-aggiorna va lanciato con sudo" >&2; exit 2; }
+
+# 1. il tag, e il suo commit
+git -C "$REPO" fetch --quiet --tags --force origin
+commit=$(git -C "$REPO" rev-parse --verify "$tag^{commit}")
+echo "tag $tag -> commit $commit"
+if [ "$commit" != "$atteso" ]; then
+  echo "il commit non e' quello atteso ($atteso): mi fermo" >&2
+  exit 1
+fi
+
+# 2. il rilascio, estratto altrove e rinominato solo a estrazione finita
+dest="$RILASCI/$tag"
+if [ ! -d "$dest" ]; then
+  tmp=$(mktemp -d "$RILASCI/.estrazione.XXXXXX")
+  git -C "$REPO" archive "$tag" | tar -x -C "$tmp"
+  chmod -R a+rX "$tmp"
+  mv -T "$tmp" "$dest"
+fi
+versione=$(cat "$dest/VERSION")
+
+# 3. una copia del database prima di cambiare codice, verificata
+if [ -e /srv/rg/attuale ] && [ -f /var/lib/rg/conti.db ]; then
+  mkdir -p /var/lib/rg/copie
+  copia="/var/lib/rg/copie/aggiorna-$(date -u +%Y%m%dT%H%M%SZ).db"
+  runuser -u rg -- "$NODE" "$(readlink -f /srv/rg/attuale)/server/copia.mjs" "$copia" \
+    || { echo "la copia prima dell'aggiornamento non passa: mi fermo" >&2; exit 1; }
+  chown rg:rg "$copia"
+  ls -1t /var/lib/rg/copie/aggiorna-*.db | tail -n +6 | xargs -r rm -f
+fi
+
+# 4. il rilascio in uso diventa il precedente
+if [ -e /srv/rg/attuale ]; then
+  basename "$(readlink -f /srv/rg/attuale)" > /var/lib/rg/precedente
+fi
+
+# 5. il collegamento, in modo atomico, e il riavvio
+ln -sfn "$dest" /srv/rg/attuale.nuovo
+mv -T /srv/rg/attuale.nuovo /srv/rg/attuale
+systemctl restart rg-api
+
+for _ in $(seq 1 50); do
+  if curl -fsS http://127.0.0.1:8620/v1/salute 2>/dev/null | grep -q "\"versione\":\"$versione\""; then
+    echo "rg-api risponde con la versione $versione"
+    exit 0
+  fi
+  sleep 0.2
+done
+echo "rg-api non risponde con la versione $versione: journalctl -u rg-api, e rg-torna" >&2
+exit 1

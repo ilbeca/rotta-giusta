@@ -1809,3 +1809,90 @@ test('mail del mese: oltre le 300 la mail parte lo stesso, e il titolare riceve 
   assert.equal(r.mail_del_mese, 0);
   assert.deepEqual(r.nuovi, []);
 });
+
+// --- il trasporto delle copie verso nl-ams (P-15) ----------------------------------
+
+test('copie a nl-ams: la firma SigV4 coincide con gli esempi di AWS, e una copia si dice arrivata solo se il bucket conferma l MD5', async (t) => {
+  const { firma, carica } = await import('../strumenti/macchina/carica-copia.mjs');
+  const { createServer } = await import('node:http');
+  // I due esempi della documentazione S3 di AWS («Signature Calculations for the
+  // Authorization Header»): la chiave e' quella d'esempio pubblicata da AWS.
+  const base = { quando: new Date('2013-05-24T00:00:00Z'), regione: 'us-east-1', accesso: 'AKIAIOSFODNN7EXAMPLE', segreto: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY' };
+  const vuoto = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
+  assert.match(firma({ ...base, metodo: 'GET', percorso: '/test.txt', hashCorpo: vuoto,
+    intestazioni: { host: 'examplebucket.s3.amazonaws.com', range: 'bytes=0-9', 'x-amz-content-sha256': vuoto, 'x-amz-date': '20130524T000000Z' } }),
+  /Signature=f0e8bdb87c964420e857bd35b5d6ed310bd44f0170aba48dd91039c6036bdb41$/);
+  const h = createHash('sha256').update('Welcome to Amazon S3.').digest('hex');
+  assert.match(firma({ ...base, metodo: 'PUT', percorso: '/test$file.text', hashCorpo: h,
+    intestazioni: { host: 'examplebucket.s3.amazonaws.com', date: 'Fri, 24 May 2013 00:00:00 GMT', 'x-amz-content-sha256': h, 'x-amz-date': '20130524T000000Z', 'x-amz-storage-class': 'REDUCED_REDUNDANCY' } }),
+  /Signature=98ad721746da40c64f1a55b78f14c238d841ea1380cd77a1b5971af0ece108bd$/);
+
+  // Un bucket finto: riceve, e risponde come gli si dice.
+  const dir = mkdtempSync(join(tmpdir(), 'rg-carica-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const file = join(dir, 'conti.db.gz');
+  writeFileSync(file, Buffer.from('una copia, per finta'));
+  const md5 = createHash('md5').update(readFileSync(file)).digest('hex');
+  let risposta = { status: 200, etag: md5 };
+  const ricevute = [];
+  const srv = createServer((req, res) => {
+    const pezzi = [];
+    req.on('data', (c) => pezzi.push(c));
+    req.on('end', () => {
+      ricevute.push({ metodo: req.method, url: req.url, corpo: Buffer.concat(pezzi), auth: req.headers.authorization });
+      res.writeHead(risposta.status, risposta.etag ? { etag: `"${risposta.etag}"` } : {});
+      res.end(risposta.status === 200 ? '' : '<Error><Code>AccessDenied</Code></Error>');
+    });
+  });
+  await new Promise((ok) => srv.listen(0, '127.0.0.1', ok));
+  t.after(() => srv.close());
+  const opz = { accesso: 'SCWPROVA', segreto: 'segreto-di-prova', regione: 'nl-ams', bucket: 'rottagiusta-copie', indirizzo: `http://127.0.0.1:${srv.address().port}` };
+
+  const c = await carica(file, 'copie/conti.db.gz', opz);
+  assert.equal(c.md5, md5);
+  assert.equal(ricevute[0].metodo, 'PUT');
+  assert.equal(ricevute[0].url, '/rottagiusta-copie/copie/conti.db.gz');
+  assert.deepEqual(ricevute[0].corpo, readFileSync(file));
+  assert.match(ricevute[0].auth, /^AWS4-HMAC-SHA256 Credential=SCWPROVA\/\d{8}\/nl-ams\/s3\/aws4_request, SignedHeaders=host;x-amz-content-sha256;x-amz-date, Signature=[0-9a-f]{64}$/);
+
+  // Un 200 con un ETag che non e' quello della copia non e' una copia arrivata.
+  risposta = { status: 200, etag: 'ffffffffffffffffffffffffffffffff' };
+  await assert.rejects(carica(file, 'copie/x.gz', opz), /non e' l'MD5/);
+  risposta = { status: 200, etag: null };
+  await assert.rejects(carica(file, 'copie/x.gz', opz), /nessuno/);
+  // Un rifiuto si dice, con quello che il bucket ha risposto.
+  risposta = { status: 403, etag: null };
+  await assert.rejects(carica(file, 'copie/x.gz', opz), /403.*AccessDenied/);
+  // Senza la chiave non parte niente.
+  await assert.rejects(carica(file, 'copie/x.gz', { ...opz, segreto: undefined }), /manca la chiave/);
+  assert.equal(ricevute.length, 4);
+});
+
+test('avvio: lanciati attraverso un collegamento, come sulla macchina, il server e il caricatore partono invece di uscire muti', async (t) => {
+  // Sulla macchina il rilascio in uso e' /srv/rg/attuale, un collegamento
+  // (§2.7). Node mette in import.meta.url il percorso risolto e lascia
+  // process.argv[1] com'era: il controllo «sono il modulo principale?» falliva,
+  // e il server di v0.28.0 usciva con 0 senza una riga di log (P-15).
+  const { spawn } = await import('node:child_process');
+  const { symlinkSync } = await import('node:fs');
+  const dir = mkdtempSync(join(tmpdir(), 'rg-collegamento-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  symlinkSync(RADICE, join(dir, 'attuale'));
+
+  const figlio = spawn(process.execPath, [join(dir, 'attuale', 'server', 'server.mjs')], {
+    env: { ...process.env, RG_DB: join(dir, 'conti.db'), RG_CANCELLAZIONI: join(dir, 'cancellazioni'), RG_PORTA: '0' },
+  });
+  t.after(() => figlio.kill('SIGKILL'));
+  const esito = await new Promise((ok) => {
+    let err = '';
+    const basta = setTimeout(() => ok({ err, uscito: null }), 15000);
+    figlio.stderr.on('data', (d) => { err += d; if (/rg-api \S+ su http/.test(err)) { clearTimeout(basta); ok({ err, uscito: null }); } });
+    figlio.on('exit', (c) => { clearTimeout(basta); ok({ err, uscito: c }); });
+  });
+  assert.equal(esito.uscito, null, `il server e' uscito con ${esito.uscito} senza partire: ${esito.err}`);
+  assert.match(esito.err, /rg-api \S+ su http:\/\/127\.0\.0\.1:\d+/);
+
+  const r = spawnSync(process.execPath, [join(dir, 'attuale', 'strumenti', 'macchina', 'carica-copia.mjs')], { encoding: 'utf8' });
+  assert.equal(r.status, 2, `il caricatore e' uscito con ${r.status}: ${r.stderr}`);
+  assert.match(r.stderr, /uso:/);
+});

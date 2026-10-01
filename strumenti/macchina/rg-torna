@@ -1,0 +1,26 @@
+#!/bin/bash
+# rg-torna — rimette il rilascio precedente. Il database non si tocca: codice e
+# dati tornano indietro separatamente (docs/account-progetto.md §2.7, regola 2).
+set -euo pipefail
+[ "$(id -u)" -eq 0 ] || { echo "rg-torna va lanciato con sudo" >&2; exit 2; }
+[ -s /var/lib/rg/precedente ] || { echo "nessun rilascio precedente in /var/lib/rg/precedente" >&2; exit 1; }
+
+prima=$(cat /var/lib/rg/precedente)
+dest="/srv/rg/rilasci/$prima"
+[ -d "$dest" ] || { echo "il rilascio $prima non c'e' in /srv/rg/rilasci" >&2; exit 1; }
+versione=$(cat "$dest/VERSION")
+
+basename "$(readlink -f /srv/rg/attuale)" > /var/lib/rg/precedente
+ln -sfn "$dest" /srv/rg/attuale.nuovo
+mv -T /srv/rg/attuale.nuovo /srv/rg/attuale
+systemctl restart rg-api
+
+for _ in $(seq 1 50); do
+  if curl -fsS http://127.0.0.1:8620/v1/salute 2>/dev/null | grep -q "\"versione\":\"$versione\""; then
+    echo "rg-api di nuovo su $prima ($versione)"
+    exit 0
+  fi
+  sleep 0.2
+done
+echo "rg-api non risponde con la versione $versione: journalctl -u rg-api" >&2
+exit 1

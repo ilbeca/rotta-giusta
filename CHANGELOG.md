@@ -2188,6 +2188,86 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   con rete che tace e con rete spenta: entrambe mostrano «2 risposte da inviare».
   Versione invariata.
 
+### In esercizio — P-15: il server degli account su Scaleway
+
+- **`https://api.rottagiusta.it/v1/salute` risponde, da `v0.28.0`.** La
+  macchina è la STARDUST1-S `rg-api` a `pl-waw-2`, decisa dall'autore il 26
+  settembre, creata oggi con lui: Ubuntu 26.04.1, Node 24.21.0 LTS verificato
+  con `SHASUMS256.txt`, Caddy davanti con il certificato Let's Encrypt, il
+  server estratto dal tag con `rg-aggiorna`, che si ferma se il commit del tag
+  non è quello letto sul Mac (`51d94858…`, coincide). Il server in esercizio non
+  riceve nessuno: la pagina non lo chiama fino alla versione con gli account, e
+  al traguardo `rg-aggiorna` lo porta al tag nuovo, che ha R-ACC-49 — il
+  `Retry-After` esposto dal CORS, assente in `v0.28.0` — e la correzione qui
+  sotto. Tutto in `docs/account-progetto.md` §2.8.
+
+- **Gli strumenti della macchina sono nel repo**, in `strumenti/macchina/`:
+  l'unità `rg-api.service` con i segreti in `/etc/rg/ambiente`, `rg-aggiorna` e
+  `rg-torna` come li ha provati P-02, `installa` e `installa-node`, il giro
+  delle copie (`rg-copia` con il suo timer alle 04 e alle 16 UTC) e il
+  `Caddyfile`. Sulla macchina sono arrivati con `scp`, perché `main` non si
+  pusha; il codice del server no, quello viene solo dal tag.
+
+- **Un guasto muto, trovato avviando il server.** Lanciato dal collegamento
+  `/srv/rg/attuale`, come lo lancia l'unità del §2.7, il server di `v0.28.0`
+  usciva con 0 senza una riga di log, e systemd scriveva «Deactivated
+  successfully». Node mette in `import.meta.url` il percorso risolto e lascia
+  `process.argv[1]` com'era, quindi il controllo «sono il modulo principale?»
+  era falso. Il banco di P-02 aveva un server finto, e non poteva vederlo.
+  Sulla macchina l'unità risolve il collegamento prima di avviare Node — un
+  rilascio risolto una volta, la semantica del §2.7 —; su `main` il controllo
+  di `server/server.mjs` confronta il percorso risolto. **Prima il test che
+  fallisce:** lancia il server e il caricatore delle copie da un collegamento,
+  ed è rosso con il controllo di prima, per tutti e due.
+
+- **Il gruppo di sicurezza era tutto aperto**: la console lo crea con la
+  politica in entrata «Accept» e nessuna regola. Ora in entrata è Drop, con
+  22, 443 e ICMP aperti su IPv4 e IPv6; aggiunte le regole prima del Drop, per
+  non chiudersi fuori. Misurato dal Mac: un processo in ascolto sulla 8080 non
+  risponde da fuori, la 22 sì, la 80 no. Le regole IPv6 non sono provate da
+  fuori: il Mac non ha IPv6. La 80 resta chiusa: il certificato si prende con
+  la sfida TLS-ALPN, e il Caddyfile spegne la sfida HTTP e l'annuncio di
+  HTTP/3, che viaggerebbe su una UDP 443 chiusa.
+
+- **Le copie, verso `nl-ams`, con una chiave che scrive e basta.**
+  `carica-copia.mjs` fa una `PUT` firmata SigV4 senza dipendenze — rclone e
+  s3cmd provano a leggere il bucket prima di scrivere, e con una chiave di sola
+  scrittura falliscono — e dice arrivata una copia solo se l'ETag del bucket è
+  l'MD5 di quello che ha mandato. La firma coincide con i due esempi pubblicati
+  da AWS, e un test nuovo lo tiene fermo insieme al caso di un 200 con l'ETag
+  sbagliato, di un `403` e della chiave che manca; provato al contrario
+  rompendo la firma e il controllo dell'MD5, rosso tutte e due le volte. Le
+  chiavi stanno in due applicazioni IAM create con l'autore, ciascuna con la
+  sua policy — `TransactionalEmailEmailApiCreate` per la posta,
+  `ObjectStorageObjectsWrite` per le copie —, generate e scritte sulla macchina
+  dall'autore. Misurato, non dedotto: con la chiave delle copie leggere,
+  elencare e cancellare rispondono `403 AccessDenied`.
+
+- **Le misure che il §19 lasciava a questo giorno.** Argon2id con i parametri
+  del §20: mediana 148 ms, due calcoli insieme 292 ms. Il riavvio dopo il kernel
+  `7.0.0-34`, che gli aggiornamenti graduali di Ubuntu avevano trattenuto: 32,5
+  s, e `rg-api`, `caddy` e il timer ripartono da soli. Una copia arrivata a
+  `nl-ams`, scaricata dall'autore, MD5 uguale, ripristinata con `ripristina.mjs`
+  di `v0.28.0` con l'epoca rigenerata — su un database ancora vuoto, quindi
+  senza righe da confrontare, e lo si dice. E il sorgente di una mail vera,
+  spedita dalla macchina a `privacy@rottagiusta.it` con il testo di
+  `mailVerifica()` e un link finto, senza creare un account: arrivata in 2 s in
+  Posta in arrivo, DKIM, SPF e DMARC che passano, link non riscritti, nessun
+  pixel. **Per l'autore**, nel §20: Ubuntu non riavvia da solo dopo un kernel
+  di sicurezza; la proposta è il riavvio automatico alle 03:30 UTC.
+
+  Suite: motore 193/197 con i quattro skip previsti; server **62/62** (erano
+  60), con Node 25.3 e con la **24.21.0 LTS**, scaricata da nodejs.org e
+  verificata con `SHASUMS256.txt`, con cui anche il motore dà 193/197; dati 242;
+  interfaccia 2.168, con la 8620 guardata libera prima; specifica 784.
+  Guardiano verde. `site/` e `docs/prossime-sessioni.md` non
+  sono stati toccati.
+
+- **Il riavvio automatico alle 03:30 UTC**, deciso dall'autore dopo il
+  resoconto: `strumenti/macchina/52rg-riavvio` per `unattended-upgrades`,
+  installato da `installa`, e letto dalla macchina (`apt-config dump`). Un
+  kernel di sicurezza è in uso al più tardi il giorno dopo, alle 03:30.
+
 ## [0.28.0] — 2026-09-26
 
 Chi studia vede **i Quiz ridisegnati in cinque intenzioni** (area 2) e i tag

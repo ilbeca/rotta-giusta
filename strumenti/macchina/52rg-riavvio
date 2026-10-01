@@ -1,0 +1,8 @@
+// Il riavvio dopo un aggiornamento che lo chiede, di solito un kernel di
+// sicurezza: deciso dall'autore il 1° ottobre 2026 (docs/account-progetto.md
+// §20). Senza, il kernel nuovo resta installato e non in uso, e niente lo dice.
+// Alle 03:30 UTC, quando nessuno studia: misurati 32,5 s di servizio fermo, e
+// rg-api, caddy e il timer delle copie ripartono da soli (§2.8).
+Unattended-Upgrade::Automatic-Reboot "true";
+Unattended-Upgrade::Automatic-Reboot-WithUsers "true";
+Unattended-Upgrade::Automatic-Reboot-Time "03:30";

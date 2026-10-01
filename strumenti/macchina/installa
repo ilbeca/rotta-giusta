@@ -1,0 +1,26 @@
+#!/bin/bash
+# installa — prepara la macchina come dice docs/account-progetto.md §2.7 e §2.8.
+# Si lancia con sudo dalla cartella in cui sono stati copiati questi file; si
+# puo' rilanciare: ogni passo guarda prima che cosa c'e'. Node e i segreti no:
+# installa-node, e i due file in /etc/rg li scrive l'autore.
+set -euo pipefail
+[ "$(id -u)" -eq 0 ] || { echo "va lanciato con sudo" >&2; exit 2; }
+qui=$(cd "$(dirname "$0")" && pwd)
+
+id rg >/dev/null 2>&1 || useradd --system --home-dir /var/lib/rg --no-create-home --shell /usr/sbin/nologin rg
+
+install -d -o root -g root -m 0755 /srv/rg /srv/rg/rilasci /usr/local/lib/rg
+install -d -o rg -g rg -m 0700 /var/lib/rg /var/lib/rg/copie
+install -d -o root -g root -m 0700 /etc/rg
+for f in ambiente copie; do
+  [ -e "/etc/rg/$f" ] || install -o root -g root -m 0600 /dev/null "/etc/rg/$f"
+done
+
+[ -d /srv/rg/repo.git ] || git clone --quiet --bare https://github.com/ilbeca/rotta-giusta.git /srv/rg/repo.git
+
+install -o root -g root -m 0755 "$qui/rg-aggiorna" "$qui/rg-torna" "$qui/rg-copia" "$qui/installa-node" /usr/local/sbin/
+install -o root -g root -m 0644 "$qui/carica-copia.mjs" /usr/local/lib/rg/
+install -o root -g root -m 0644 "$qui/52rg-riavvio" /etc/apt/apt.conf.d/
+install -o root -g root -m 0644 "$qui/rg-api.service" "$qui/rg-copia.service" "$qui/rg-copia.timer" /etc/systemd/system/
+systemctl daemon-reload
+echo "installato. Restano: installa-node, i segreti in /etc/rg, rg-aggiorna, Caddy."

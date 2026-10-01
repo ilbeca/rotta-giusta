@@ -267,7 +267,7 @@ la merge, e lo fa chi la merge la fa: bump di `VERSION`, di `CACHE` in `sw.js` e
 di `versione` in `meta.json` → voce di CHANGELOG con lo stesso numero → tag
 annotato `vX.Y.Z` → chiedere prima del push → dopo il push, «Build now» su
 statichost.eu, e `curl https://rottagiusta.it/sw.js` per vedere il `CACHE` nuovo
-→ sulla macchina degli account `rg-aggiorna <tag>`, e `GET /v1/salute` per
+→ sulla macchina degli account `rg-aggiorna <tag> <commit>`, e `GET /v1/salute` per
 vedere la versione nuova (`docs/account-progetto.md` §2.7). Un passo non fa
 l'altro: un rilascio fermato a metà lascia la pagina e il server su due numeri.
 

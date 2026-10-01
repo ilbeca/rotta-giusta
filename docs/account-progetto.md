@@ -388,11 +388,134 @@ scrivendolo, ognuna con il suo test in `tests/test_server.mjs`:
 che vuole la chiave del §19, e i due giri al giorno. `node server/copia.mjs`
 fa la copia, la verifica e il confronto con la precedente, ed esce 1 su un calo
 che il file delle cancellazioni non spiega: è il pezzo che il giro chiamerà.
+*(1° ottobre 2026, P-15: fatto, §2.8.)*
 
 **Non provato**, e resta per la messa in esercizio: le istantanee del disco di
 Scaleway come ritorno indietro del sistema intero, e il gruppo di sicurezza
 della macchina, che la console crea da sola e che va guardato prima di aprire la
-443.
+443. *(1° ottobre 2026, P-15: il gruppo di sicurezza è guardato e chiuso, §2.8.
+Le istantanee del disco restano non provate.)*
+
+### 2.8 In esercizio — 1° ottobre 2026 (P-15)
+
+La macchina c'è, e risponde su `https://api.rottagiusta.it`. Gli strumenti che
+la preparano stanno in `strumenti/macchina/`, non in `server/`: servono prima
+che esista un rilascio, e `main` non si pusha fino al traguardo, quindi sulla
+macchina sono arrivati con `scp` dal checkout, e le loro impronte SHA-256 sono
+quelle del commit di P-15. **Il codice del server invece arriva solo dal tag**
+(regola 1 del §2.7): `rg-aggiorna` lo estrae dalla copia nuda del repo pubblico.
+
+| | |
+|---|---|
+| Macchina | STARDUST1-S `rg-api`, `pl-waw-2`, Ubuntu 26.04.1, disco 10 GB, 5,04 € al mese |
+| Indirizzi | `151.115.74.77`, `2001:bc8:1d90:2cd4:dc00:ff:fe78:573a` (record `A` e `AAAA` di `api.` su IONOS, TTL 1 ora) |
+| Chiave d'accesso | `rg-produzione` (ed25519), l'unica del progetto; sul Mac in `~/.ssh/rg-produzione`, con la passphrase nel portachiavi |
+| Impronta della macchina | `SHA256:WB77SvOkaSGD+lJIi1B8JQD8ddmNxTohEySMTXa8os4` (ed25519): una sessione che entra la confronta |
+| Node | 24.21.0 LTS da nodejs.org, verificato con `SHASUMS256.txt` (`installa-node`) |
+| Server | `v0.28.0`, commit `51d94858103032f50168e04b71eb769e5bb25b6c`, uguale sul Mac e sul repo pubblico |
+| Proxy | Caddy 2.6.2 dai pacchetti di Ubuntu, certificato Let's Encrypt (YE2), rinnovo suo |
+
+**Il gruppo di sicurezza era tutto aperto.** La console lo crea con la politica
+in entrata «Accept» e nessuna regola: ogni porta su cui un processo ascolta è
+raggiungibile. Ora in entrata è **Drop**, con «Accept» per TCP 22, TCP 443 e
+ICMP, su `0.0.0.0/0` e `::/0`; in uscita resta «Accept», con l'SMTP bloccato da
+Scaleway. Le regole si sono aggiunte **prima** del Drop, per non chiudere fuori
+la 22. Misurato dal Mac: un processo in ascolto sulla 8080 della macchina non
+risponde da fuori e risponde da dentro, la 22 sì, la 80 no. **Solo in IPv4**: il
+Mac non ha IPv6, e le regole `::/0` non sono provate da fuori.
+
+**La 80 resta chiusa, e il certificato si prende sulla 443.** Il primo
+certificato è arrivato al secondo tentativo: la sfida HTTP-01 è fallita, com'era
+ovvio, poi la TLS-ALPN-01 è passata. Il Caddyfile spegne la sfida HTTP, così un
+rinnovo non spreca un tentativo; e spegne HTTP/3, che Caddy annunciava con
+`alt-svc` su una UDP 443 che il gruppo di sicurezza non apre. I browser
+arrivano su `api.` in HTTPS comunque, per l'HSTS dell'apice (§2.1). Caddy non
+scrive log di accesso, quindi gli IP stanno solo nel registro del §15.3.
+
+**Un guasto muto, trovato avviando il server.** Lanciato come lo lancia l'unità
+del §2.7 — `node /srv/rg/attuale/server/server.mjs`, attraverso il collegamento
+— il server di `v0.28.0` usciva con 0, senza una riga di log, e systemd scriveva
+«Deactivated successfully». Node mette in `import.meta.url` il percorso
+**risolto** e lascia `process.argv[1]` com'era, quindi il controllo
+`process.argv[1] === fileURLToPath(import.meta.url)` è falso e il modulo non fa
+niente. Il banco di P-02 non l'aveva visto perché usava un server finto.
+Due correzioni: **sulla macchina** l'unità risolve il collegamento all'avvio
+(`readlink -f`) e passa a Node il percorso vero, che è proprio la semantica del
+§2.7 — un rilascio risolto una volta —; **su `main`** il controllo confronta il
+percorso risolto (`realpathSync`), con un test che lancia il server e il
+caricatore delle copie da un collegamento ed è rosso con il controllo di prima.
+Il tag che lo porta è il primo dopo `v0.28.0`.
+
+**Le copie, verso `nl-ams`.** `rg-copia.timer` alle 04:00 e alle 16:00 UTC (più
+fino a dieci minuti a caso, e un giro saltato a macchina spenta si recupera):
+`server/copia.mjs` del rilascio in uso fa la copia, la verifica e scrive
+l'esito nel registro; poi `gzip` e `carica-copia.mjs`, una `PUT` firmata SigV4
+senza dipendenze, che dice arrivata una copia solo se l'ETag del bucket è l'MD5
+di quello che ha mandato. Una copia che non passa resta sulla macchina come
+`scartata-…`, non parte, e l'unità resta «failed». Sulla macchina se ne tengono
+tre giorni. La firma coincide con i due esempi pubblicati da AWS, e un test lo
+tiene fermo. Prime due copie: 1.569 e 1.746 byte, MD5 confermati; nel registro
+del database vivo due righe «copia fatta».
+
+**Le due chiavi API hanno ciascuna un'applicazione IAM sua**, creata da Claude
+nella console con l'autore, e la chiave generata dall'autore, che l'ha scritta
+sulla macchina: nessun segreto è passato da una sessione.
+
+| Applicazione | Policy | Permesso | Dove sta la chiave |
+|---|---|---|---|
+| `rg-api-posta` | `rg-api-posta (solo invio mail)` | `TransactionalEmailEmailApiCreate`, progetto Rotta Giusta | `/etc/rg/ambiente`, `0600 root` |
+| `rg-copie` | `rg-copie (solo scrittura sul bucket delle copie)` | `ObjectStorageObjectsWrite`, progetto Rotta Giusta | `/etc/rg/copie`, `0600 root` |
+
+Che la chiave delle copie **non** legga e **non** cancelli è misurato, non
+dedotto: con lei leggere un oggetto, elencare il bucket e cancellare rispondono
+`403 AccessDenied`. Il prezzo che resta: `ObjectsWrite` permette anche di
+riscrivere un oggetto con lo stesso nome, quindi chi prende la macchina potrebbe
+sovrascrivere le copie; i nomi hanno l'ora, e chi prende la macchina ha già il
+database. Le condizioni per singola risorsa di IAM non sono state usate: la
+documentazione non dice se valgano per Object Storage, e il progetto ha un
+bucket solo.
+
+**L'ambiente di `rg-api`**: `RG_DB`, `RG_CANCELLAZIONI`, `RG_HOST=127.0.0.1`,
+`RG_PORTA=8620`, `RG_PROXY=1` nell'unità; in `/etc/rg/ambiente`
+`RG_SCW_CHIAVE`, `RG_SCW_PROGETTO`, `RG_SCW_REGIONE=fr-par` e
+`RG_TITOLARE=privacy@rottagiusta.it`. All'avvio il server non stampa più
+«posta non configurata» né «titolare non configurato».
+
+**Misurato sulla macchina vera.**
+
+- **Argon2id** con i parametri del §20 (`m=65536, t=2, p=1`): mediana 148 ms,
+  p95 152 ms su 15 calcoli, due calcoli insieme 292 ms; con `m=19456` 34 ms.
+  Gli stessi numeri della STARDUST di P-02. Un accesso con un'email che non
+  esiste, da fuori, risponde `401` in circa 0,5 s, contro 0,34 s di una
+  `salute`: la differenza è Argon2id.
+- **Il riavvio dopo un aggiornamento del kernel.** Il kernel `7.0.0-34` era
+  trattenuto dagli aggiornamenti graduali di Ubuntu («11 updates can be applied
+  immediately» dopo un `apt upgrade` completo): installato, la macchina ha
+  chiesto il riavvio. Dal comando a SSH e `GET /v1/salute` di nuovo in piedi:
+  **32,5 s**, di cui 20,7 di avvio. `rg-api`, `caddy`, il timer delle copie e
+  `unattended-upgrades` sono ripartiti da soli, e l'epoca è rimasta quella: un
+  riavvio non è un ripristino. **Ubuntu però non riavvia da solo**: un kernel
+  di sicurezza resta in attesa finché qualcuno non lo fa, e niente lo dice.
+  *Deciso dall'autore lo stesso giorno (§20):* riavvio automatico alle 03:30
+  UTC, con `strumenti/macchina/52rg-riavvio`. Gli aggiornamenti li installa
+  `apt-daily-upgrade.timer` verso le 06 UTC, quindi un kernel nuovo è in uso al
+  più tardi il giorno dopo, alle 03:30.
+- **Una copia arrivata a `nl-ams` e ripristinata.** Scaricata dalla console
+  dall'autore — la chiave della macchina non legge —, MD5 uguale a quello che il
+  bucket aveva confermato, ripristinata sul Mac con `server/ripristina.mjs` di
+  `v0.28.0` su un database di prova: `integrity_check` ok, schema 3, l'epoca
+  della copia era quella della macchina (`278fd81e…`) ed è stata rigenerata, e
+  un server di `v0.28.0` parte sul database ripristinato. **Il database era
+  vuoto**, quindi la prova dimostra il giro e non confronta righe: il confronto
+  riga per riga lo fa `ripristina --prova` nella suite.
+- **Il sorgente di una mail vera**, §9.5.
+
+**Resta da fare, e non è di questa sessione:** il server in esercizio non riceve
+nessuno, perché la pagina non lo chiama fino alla versione con gli account; al
+traguardo `rg-aggiorna` lo porta al tag nuovo, che ha anche R-ACC-49 — il
+`Retry-After` esposto dal CORS — e il controllo del modulo principale corretto.
+Le istantanee del disco come ritorno indietro del sistema intero non sono
+provate.
 
 ---
 
@@ -1259,7 +1382,15 @@ verificato leggendo il sorgente della mail arrivata. *(26 settembre 2026: il
 servizio non lo offre. Le impostazioni del dominio non hanno nessuna opzione di
 tracciamento, e la documentazione di Anymail sul fornitore dice che aperture e
 clic non sono supportati. Il sorgente di una mail vera resta da leggere, e si
-può solo dopo i record del §9.4.)* Nessuna mail contiene dati
+può solo dopo i record del §9.4.)* *(1° ottobre 2026, P-15: letto. Una mail di
+conferma composta con `mailVerifica()` di `v0.28.0`, spedita dalla macchina con
+la chiave vera a `privacy@rottagiusta.it`, con l'oggetto preceduto da «[prova
+P-15]» e un link finto: arrivata in Gmail attraverso l'inoltro in 2 secondi, in
+Posta in arrivo e non nello spam; `dkim=pass` per `@posta.rottagiusta.it`,
+`spf=pass` riscritto con SRS da IONOS, `dmarc=pass`. Il link, nel testo e
+nell'HTML, è quello scritto, senza redirect; l'HTML è un `<pre>` con due `<a>`,
+nessun `<img>`. Scaleway aggiunge solo `X-Scw-Tem-Message-Id`. Nessun account
+creato per spedirla.)* Nessuna mail contiene dati
 di studio. Ogni mail dice perché è arrivata e che cosa fare se non l'hai chiesta.
 
 La schermata dopo l'invio nomina il mittente e dice di guardare nello spam dopo
@@ -1613,6 +1744,8 @@ mese** raggiunte (§9.3). Scelte, con il loro perché:
   dettaglio sta nel registro, sulla macchina, dove si legge.
 - **Dove va:** `RG_TITOLARE` nell'ambiente della macchina. Senza, l'allarme resta
   nel registro e nel log con la parola `ALLARME`, e il server lo dice all'avvio.
+  *(1° ottobre 2026, P-15: `RG_TITOLARE=privacy@rottagiusta.it`, scelto
+  dall'autore, in `/etc/rg/ambiente`; §2.8.)*
 - **Una mail al titolare rifiutata non è un allarme**, ha un evento suo: se lo
   fosse, l'allarme per la mail rifiutata rifiuterebbe la sua mail a ogni giro.
   Resta il log.
@@ -1856,18 +1989,20 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
 - ~~**Tutto ciò che è di Scaleway**, perché l'account non c'è ancora~~ —
   **misurato il 26 settembre 2026** (§2.6, §2.7, §9.4): il tempo di Argon2id su
   due macchine, i record DNS di `posta.`, l'assenza di tracciamento nelle
-  impostazioni, il giro di aggiornamento e ritorno. **Resta, e aspetta un passo
-  dell'autore:**
-  - il sorgente di una mail vera, per vedere con gli occhi che i link non siano
-    riscritti (§9.5). I record DNS del §9.4 ci sono dal 26 settembre 2026 e il
-    dominio è «Verified»; manca una mail spedita davvero, cioè una chiave API di
-    Transactional Email, che è un segreto e si crea con il server;
-  - il certificato per `api.rottagiusta.it` — dopo il record `A`/`AAAA` di
-    `api.`, che punta alla macchina di produzione, che non esiste ancora;
-  - la copia verso `nl-ams` — dopo la chiave API col solo permesso di scrivere
-    su `rottagiusta-copie`, che l'autore crea e mette sulla macchina;
-  - il riavvio della macchina dopo un aggiornamento del kernel, e il gruppo di
-    sicurezza (§2.7).
+  impostazioni, il giro di aggiornamento e ritorno. ~~**Resta, e aspetta un passo
+  dell'autore:**~~ — **misurato il 1° ottobre 2026, alla messa in esercizio
+  (P-15, §2.8):**
+  - ~~il sorgente di una mail vera~~ — letto: link non riscritti, nessun pixel,
+    DKIM, SPF e DMARC che passano (§9.5);
+  - ~~il certificato per `api.rottagiusta.it`~~ — Let's Encrypt, preso da Caddy
+    con la sfida TLS-ALPN sulla 443;
+  - ~~la copia verso `nl-ams`~~ — due copie arrivate con l'MD5 confermato, una
+    scaricata e ripristinata; la chiave non legge e non cancella;
+  - ~~il riavvio della macchina dopo un aggiornamento del kernel, e il gruppo di
+    sicurezza~~ — 32,5 s, e tutto riparte da solo; il gruppo era tutto aperto,
+    ora in entrata passano solo 22, 443 e ICMP.
+  - **Resta:** le regole `::/0` del gruppo di sicurezza provate da una rete
+    IPv6, e le istantanee del disco come ritorno indietro del sistema (§2.7).
 - **Le regole di `validaRiga()` su archivi diversi da quello dell'autore.**
   Misurate su uno solo (§4.1): 2.341 righe su 2.341. Un archivio che ha
   attraversato versioni diverse, o importato da altrove, può avere forme che
@@ -1898,6 +2033,7 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
 | ~~Account non confermato: quanto vive~~ | — | **deciso**: sette giorni, funzionante — Mastodon 7, Discourse 14, nessuno standard (§9.6) |
 | ~~Preferenze dell'interfaccia senza account~~ | — | **deciso**: non si conservano nemmeno quelle (§13.3) |
 | ~~IP nel registro di sicurezza~~ | — | **deciso** su delega: 6 mesi l'IP, un anno l'evento, dalla CNIL (§15.3) |
+| ~~Il riavvio della macchina dopo un aggiornamento del kernel~~ | — | **deciso dall'autore il 1° ottobre 2026: sì, alle 03:30 UTC.** `unattended-upgrades` con `Automatic-Reboot` e `Automatic-Reboot-Time "03:30"`, in `/etc/apt/apt.conf.d/52rg-riavvio` (da `strumenti/macchina/`). Costa circa 32 s di servizio fermo, misurati, e il server riparte da solo (§2.8) |
 | Statistiche mostrate a chi studia | l'autore, in un documento suo | fuori da qui (§15.2) |
 | Cosa chiede l'onboarding oltre alla data | l'autore | Q-ONBOARD, specifica §10 |
 | ~~Chiudere il difetto dei tag che resta (§4.2)~~ | — | **chiuso** da P-01 il 26 settembre (merge `6e07525`): i tag nascono con la data, ritaggare aggiunge |
@@ -2035,3 +2171,10 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
 - **26 settembre 2026 — la soglia degli allarmi.** La regia, su delega
   dell'autore, tiene 100 accessi falliti in 24 ore e la fa rileggere dopo trenta
   giorni di esercizio.
+- **1° ottobre 2026 — in esercizio (P-15).** Nuovo §2.8: la STARDUST1-S a
+  `pl-waw-2`, `api.rottagiusta.it` in HTTPS dietro Caddy, il server da
+  `v0.28.0`, le copie due volte al giorno verso `nl-ams` con una chiave che
+  scrive e basta, e le misure che il §19 lasciava a questo giorno. Trovati: il
+  gruppo di sicurezza tutto aperto, e il server di `v0.28.0` che, lanciato dal
+  collegamento del §2.7, usciva con 0 senza partire. Una decisione nuova per
+  l'autore nel §20: il riavvio automatico dopo un kernel di sicurezza.
