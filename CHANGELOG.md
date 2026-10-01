@@ -2619,6 +2619,7 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   aspettato che fosse libera —; specifica **816** (erano 800). Guardiano e
   controllo della documentazione verdi. `site/`,
   `docs/prossime-sessioni.md` e la macchina non sono stati toccati.
+
 ### Corretto — P-56: le condizioni per l'account prima di registrarsi
 
 - **Il modulo rimandava solo alla privacy**, che fonda il salvataggio sulle

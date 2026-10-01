@@ -231,17 +231,15 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 10 | Lo strumento che annota le letture del titolare | Claude | `main` | — **in corso**, lanciato dalla regia | P-55 |
-| 11 | Le condizioni per l'account e i 18 anni nel modulo di registrazione | ChatGPT | `ui/main` | fatto su `ui/main` (`bfc3191`); **la merge** aspetta che P-55 liberi la cartella principale | P-56 |
-| 12 | Il controllo di quella frase | Claude | `main` | la merge di P-56 | P-57 |
-| 9 | **La versione con gli account** — il traguardo | tutti | `main` | le righe 10–12, poi le suite verdi su `main` e il via dell'autore; il cancello degli adempimenti è chiuso dalla sua decisione del 2 ottobre (§4) | P-27, la lista scritta |
+| 12 | Il controllo della frase sulle condizioni nel modulo di registrazione | Claude | `main` | — **in corso**, lanciato dalla regia | P-57 |
+| 9 | **La versione con gli account** — il traguardo | tutti | `main` | la riga 12, poi le suite verdi su `main` e il via dell'autore; il cancello degli adempimenti è chiuso dalla sua decisione del 2 ottobre (§4) | P-27, la lista scritta |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**, e si sono incontrate: il client degli
 account è nella pagina (P-18), Progressi è la mappa (P-23), e il carteggio ha
 i suoi contratti e controlli su `main` (P-32…P-35). **Per Claude, l'ordine
-consigliato:** P-55, quando l'autore dice sì; poi P-57, dopo la merge di P-56. **Per ChatGPT:** P-56, pronto. Il traguardo
-aspetta queste tre righe, poi i suoi cancelli (P-27) e il via dell'autore. I prompt di Claude vanno uno alla volta nella cartella principale, e
+consigliato:** P-57, in corso. **Per ChatGPT:** niente di pronto. Il traguardo
+aspetta P-57, poi i suoi cancelli (P-27) e il via dell'autore. I prompt di Claude vanno uno alla volta nella cartella principale, e
 la suite dell'interfaccia di un worktree esclude quella dell'altro, per la porta
 8620. Il numero di una riga è il suo nome, non la sua posizione. Il traguardo,
 P-27, non aspetta le aree 4–6: aspetta il server in esercizio, i testi e gli
@@ -672,7 +670,13 @@ consuma, non si riprogetta.
   indietro niente. La regia ha riletto l'informativa frase per frase contro il
   codice, cercato nel repo le frasi che il rilascio rende false, e guardato le
   ultime righe delle sessioni «Adempimenti progetto account» e della regia
-  precedente. **Due cose bloccano il traguardo finché l'autore non decide:**
+  precedente. **Due cose bloccavano il traguardo, e sono fatte lo stesso
+  giorno:** la prima con P-55 (`server/leggi.mjs`), la seconda con P-56 (la
+  frase nel modulo, fusa); resta P-57, il controllo della seconda. **Da P-55,
+  per l'autore**, nel §20 di `account-progetto.md`: nella procedura del
+  titolare gli account si leggono con `leggi.mjs`, mai con `sqlite3`; e se le
+  letture annotate debbano sopravvivere a un ripristino (proposta: tenerla
+  così). Il testo di prima: **Due cose bloccano il traguardo finché l'autore non decide:**
   1. **L'informativa promette che ogni lettura del titolare è annotata, e lo
      strumento che la annota non esiste.** `site/privacy.html` dice «ogni
      lettura è annotata nel registro di sicurezza» e mette «le letture fatte
@@ -3233,9 +3237,9 @@ controlli, dati 263, specifica 800, guardiano verde, interfaccia 2.158.
 
 ### P-55 — Claude: lo strumento che annota le letture del titolare
 
-**Stato:** **lanciato dalla regia il 2 ottobre 2026** (punto 8), con il sì
-dell'autore: lo strumento, non togliere le due frasi dall'informativa. Prima
-era: pronto, in attesa di quel sì. **Dove:**
+**Stato:** **chiuso il 2 ottobre 2026**, commit `18322ef` su `main`; lanciato
+dalla regia (punto 8), con il sì dell'autore: lo strumento, non togliere le due
+frasi dall'informativa. **Dove:**
 Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano o lanciato dalla
 regia (punto 8). **Nasce da:** il controllo del 2 ottobre (§4).
 
@@ -3278,19 +3282,35 @@ in fondo a [Unreleased], un commit. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `18322ef`, voce nel CHANGELOG. `server/leggi.mjs`, dalla
+macchina e a servizio acceso: con `--email` e un `--motivo` obbligatorio mostra
+l'account — senza password, chiave locale né impronte — e le sue attività con
+le funzioni del motore; `server/letture.mjs` scrive la riga «lettura del
+titolare» nella stessa transazione della lettura, e per prima: se il registro
+non si può scrivere non si legge. Non cambia niente dell'account, nemmeno
+«ultimo accesso»; non crea e non migra un database; nessuna rotta, nessuna
+migrazione. La riga vive un anno, senza IP, anche oltre la cancellazione
+dell'account (§15.3). R-ACC-71…74 nel §9.9; il §15.1 di `account-progetto.md`
+passa da «Proposto» a quello che c'è. Quattro test scritti prima, quaranta
+rotture rosse. **Trovato:** il controllo di R-ACC-69 non vede la lettura di un
+account, quindi R-ACC-74 ha un elenco suo di chi legge le righe
+(`CHI_LEGGE_LE_RIGHE`); un ripristino perde le letture annotate dopo la copia,
+come ogni evento del registro; `opposizione.mjs` su un file vuoto ne faceva un
+database, corretto con il test prima rosso; una rottura passata verde alla
+prima stesura, e il test corretto. **Per l'autore**, nel §20 di
+`account-progetto.md`: gli account si leggono con `leggi.mjs`, mai con
+`sqlite3`, da scrivere nella procedura del titolare; e se le letture debbano
+sopravvivere a un ripristino — proposta: tenerla così. **Per la coda:**
+`leggi.mjs` entra fra le prove sulla macchina del passo 5 di P-27.
+Controllato dalla regia sullo stato di P-55: motore 193/197, server 72/72 anche
+con la 24.21.0 LTS, dati 263, specifica 816, `ripristina --prova` 22 controlli,
+guardiano verde; la coda non toccata; i luoghi del «Trovato» esistono.
 
 ### P-56 — ChatGPT: le condizioni per l'account e i 18 anni, nel modulo di registrazione
 
-**Stato:** **resoconto arrivato il 2 ottobre 2026, commit `bfc3191` su
-`ui/main`; la merge aspetta che P-55 liberi la cartella principale**, dove ha
-modifiche non committate. Controllato intanto dalla regia, senza toccare
-`main`: territori puliti sull'intervallo, trailer presente, il diff tocca solo
-`site/app.html` (una riga) e `CHANGELOG.md`, il worktree `ui` è pulito. Prima
-era: pronto; deciso dall'autore il 2 ottobre 2026 che lo fa ChatGPT.
-La forma — una frase con il link, non una casella da spuntare — è quella che la
-regia ha consigliato e l'autore non ha cambiato: se vuole la casella, lo dice
-prima di lanciarlo, ed è una riga di questo prompt. **Dove:** app di ChatGPT,
+**Stato:** **chiuso il 2 ottobre 2026**, merge `1540158`. La forma — una frase
+con il link, non una casella — è quella consigliata dalla regia, che l'autore
+non ha cambiato. **Dove:** app di ChatGPT,
 progetto `~/Software/rotta-giusta-ui`, ramo `ui/main`, modalità Local. **Nasce
 da:** il controllo del 2 ottobre (§4).
 
@@ -3331,13 +3351,22 @@ con il trailer, versione non toccata. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `bfc3191` su `ui/main`, merge `1540158`, voce nel CHANGELOG.
+Nel modulo «Crea un account», sopra il pulsante: «Creando l'account accetti le
+condizioni per l'account; l'account è per chi ha compiuto 18 anni.», con il
+link a `/avvertenza#condizioni`. Nessuna casella, nessun'altra modifica al
+flusso. Collaudo della sessione a 320, 375 e 1280 px. Controllato dalla regia:
+territori puliti, trailer, il diff tocca una riga di `site/app.html` e il
+CHANGELOG, `git log main..ui/main` vuoto, la riga vuota mancante nel CHANGELOG
+aggiunta; **sullo stato fuso con P-55** motore 193/197, server 72/72 anche con
+la 24.21.0 LTS, dati 263, specifica 816, interfaccia 2.158. La regia **non** ha
+ripetuto il collaudo nel browser. Il controllo permanente della frase è P-57.
 
 ### P-57 — Claude: il controllo delle condizioni nel modulo di registrazione
 
-**Stato:** in attesa della merge di P-56. **Dove:** Claude Code,
-`~/Software/rotta-giusta`, ramo **`main`**, a mano o lanciato dalla regia
-(punto 8). **Nasce da:** P-56 — è per lei quello che P-49 è stato per P-48.
+**Stato:** **lanciato dalla regia il 2 ottobre 2026** (punto 8), su delega
+dell'autore, dopo la merge di P-56. **Dove:** Claude Code,
+`~/Software/rotta-giusta`, ramo **`main`**. **Nasce da:** P-56 — è per lei quello che P-49 è stato per P-48.
 
 ```
 Questo prompt è per Claude Code, nella cartella principale
@@ -3387,7 +3416,8 @@ ordine; ogni passo dice chi lo fa e come si vede che è fatto.
   ottobre»): due promesse dell'informativa non hanno ancora il loro pezzo — lo
   strumento che annota le letture del titolare, e le condizioni per l'account
   nel modulo di registrazione. Si chiude quando l'autore decide per ciascuna:
-  farla prima, o cambiare la frase che la promette. Sono P-55, P-56 e P-57;
+  farla prima, o cambiare la frase che la promette. Sono P-55, P-56 e P-57:
+  i primi due chiusi il 2 ottobre, il terzo in corso;
 - le suite verdi sullo stato di `main`, quella del server anche con la LTS 24.
 
 **I passi, in quest'ordine:**
@@ -3434,7 +3464,9 @@ ordine; ogni passo dice chi lo fa e come si vede che è fatto.
    nell'account senza perdere una riga (R-ACC-05, R-ACC-62); il cookie fra
    `rottagiusta.it` e `api.` su un Safari vero (R-ACC-59, Q-PROVE); una
    registrazione vera con la mail che arriva (R-ACC-61); sulla macchina,
-   `opposizione.mjs` e `statistica.mjs` lanciati come utente `rg` (P-54).
+   `opposizione.mjs`, `statistica.mjs` e `leggi.mjs` lanciati come utente `rg`
+   (P-54, P-55) — la lettura di prova con un motivo che lo dica, perché lascia
+   la sua riga nel registro vero.
 6. **La chiusura** (regia): esito qui, il registro, il ramo `fix/0.28.1` che
    si può togliere da GitHub, e `ui/main` e `ui/vetrina` allineati.
 
@@ -3942,3 +3974,10 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   resoconto, la merge della regia.
 - **2 ottobre 2026 — P-55 lanciato.** L'autore ha detto sì allo strumento e ha
   delegato il lancio alla regia; P-56 è nelle sue mani, per ChatGPT.
+- **2 ottobre 2026 — P-55 e P-56 chiusi, P-57 lanciato.** Lo strumento delle
+  letture del titolare è su `main`, con i suoi quattro requisiti; la frase
+  sulle condizioni è nel modulo di registrazione, fusa (`1540158`). Sullo stato
+  fuso tutte le suite verdi: motore 193/197, server 72/72 anche con la LTS,
+  dati 263, specifica 816, interfaccia 2.158. L'autore ha delegato alla regia
+  anche P-57, lanciato dopo la merge. Due domande nuove per lui nel §20, da
+  P-55; nel passo 5 di P-27 entra `leggi.mjs`.
