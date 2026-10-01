@@ -201,16 +201,15 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
 | 8 | La messa in esercizio del server su Scaleway, con l'autore | Claude e l'autore | `main`, a mano, e pannelli | il tempo dell'autore | P-15 |
-| 32 | Lo stato dell'invio che dice «sul server» con righe in coda (T-02), e le pulizie della pagina | ChatGPT | `ui/main` | niente — **pronto**, prima del traguardo | P-52 |
-| 26b | La realizzazione dell'area 6 | ChatGPT | `ui/main` | il §8 dell'area 6 (l'autore), e P-52 per la penna | segnaposto P-25 |
-| 9 | **La versione con gli account** — il traguardo | tutti | `main` | P-15, P-52, e gli adempimenti del §4 | segnaposto P-27 |
+| 26b | La realizzazione dell'area 6 | ChatGPT | `ui/main` | il §8 dell'area 6 (l'autore) | segnaposto P-25 |
+| 9 | **La versione con gli account** — il traguardo | tutti | `main` | P-15, e gli adempimenti del §4 | segnaposto P-27 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**, e si sono incontrate: il client degli
 account è nella pagina (P-18), Progressi è la mappa (P-23), e il carteggio ha
 i suoi contratti e controlli su `main` (P-32…P-35). **Per Claude, l'ordine
 consigliato:** P-15, la messa in esercizio, quando
-l'autore ha il tempo; per il resto, niente di pronto. **Per ChatGPT: P-52**, prima del traguardo; poi P-25,
+l'autore ha il tempo; per il resto, niente di pronto. **Per ChatGPT: P-25**,
 quando l'autore ha deciso il §8 dell'area 6. I prompt di Claude vanno uno alla volta nella cartella principale, e
 la suite dell'interfaccia di un worktree esclude quella dell'altro, per la porta
 8620. Il numero di una riga è il suo nome, non la sua posizione. Il traguardo,
@@ -2741,7 +2740,7 @@ nel blocco «Ripresa» di P-21. Controllato dalla regia: motore 185/187, server
 
 ### P-52 — ChatGPT: lo stato dell'invio che dice «sul server» con righe in coda, e il codice morto
 
-**Stato:** pronto dal 30 settembre 2026, P-21 è fuso; **prima del traguardo**. **Dove:** app di ChatGPT, progetto `~/Software/rotta-giusta-ui`,
+**Stato:** **chiuso il 1° ottobre 2026**, merge `bd57daf`. **Dove:** app di ChatGPT, progetto `~/Software/rotta-giusta-ui`,
 ramo `ui/main`, modalità Local. **Nasce da:** P-45, T-02.
 
 ```
@@ -2785,7 +2784,20 @@ guardato con la rete spenta e con una rete lenta, voce in fondo a
 con il resoconto di docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `0ed6e3a` su `ui/main`, merge `bd57daf`, voce nel CHANGELOG.
+T-02 riprodotto prima della correzione; ora `archivia()` ridipinge lo stato
+appena la transazione locale accoda, e con la rete che non risponde e offline
+la pagina dice «2 risposte da inviare» (schermate della sessione, fuori dal
+repo). Tolte le due righe T-02 da `docs/eccezioni-interfaccia.md`, il codice
+morto del selettore globale e il filtro superfluo prima di `E.ritmo()`; la
+revisione chiama `E.tagPerTentativo(S.archivio)`. `#c-prep` resta, perché P-21
+lo usa nella preparazione del Carteggio. **Il resoconto non era nella forma
+fissa**: c'era tutto, e la regia l'ha letto contro il diff. Controllato dalla
+regia: territori puliti, trailer, `git log main..ui/main` vuoto, riga vuota
+aggiunta nel CHANGELOG; sullo stato fuso con P-53 motore 193/197 — il quarto
+test saltato è il confronto con la copia di `tagPerTentativo()`, ritirato da
+solo —, server 60/60, dati 242, specifica 784, guardiano verde, interfaccia
+2.168 in 243 s, compreso il controllo nuovo delle frasi del riepilogo.
 
 ### P-50 — Claude: chiudere il regime vecchio dei controlli del Carteggio
 
@@ -3242,3 +3254,12 @@ la nota in testa a `docs/filosofia.md`, che lo dice di sé (P-26).
   del riepilogo dei quiz hanno un controllo. Per Claude non resta niente di
   pronto oltre a P-15, con l'autore; per ChatGPT P-52, il cui commit è su
   `ui/main` e aspetta il resoconto.
+- **1° ottobre 2026 — P-52 chiuso.** La pagina non dice più «sul server» con
+  righe in coda. Il traguardo aspetta ora soltanto P-15 e gli adempimenti
+  dell'autore; per ChatGPT resta P-25, dopo le decisioni del §8 dell'area 6.
+  **Un errore della regia:** il commit `fc2bf2d` porta il messaggio di questa
+  chiusura ma contiene solo la riga vuota del CHANGELOG, perché la modifica di
+  questo file era fallita su una frase che non combaciava e il commit è partito
+  lo stesso. Non è stato riscritto, perché `ui/main` era già allineato a lui;
+  la chiusura vera è il commit che segue. D'ora in poi la regia controlla
+  l'esito dello script prima di mettere in stage.
