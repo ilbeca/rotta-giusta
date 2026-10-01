@@ -12,10 +12,17 @@
 <meta property="og:description" content="1.722 quesiti e 135 esercizi di carteggio dall'elenco unico nazionale. Prova senza account; crea un account per salvare i progressi.">
 <meta property="og:image" content="/og-card.png">
 <meta property="og:locale" content="it_IT">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
+<link rel="preload" href="/caratteri/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+/* Manrope servito da qui, non da Google Fonts: ogni visita alla vetrina
+   mandava l'IP a Google, e l'informativa non lo diceva (account-progetto.md
+   §15.4, il primo parere). Un file variabile, i soli caratteri latini, licenza
+   OFL in /caratteri/OFL.txt; la provenienza e' nel README. */
+@font-face{
+  font-family:Manrope;font-style:normal;font-display:swap;font-weight:200 800;
+  src:url(/caratteri/manrope-latin-wght-normal.woff2) format("woff2");
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
 /* ===========================================================================
    I sei colori della tavola del marchio, e due grigi di servizio.
    Ogni colore ha un mestiere, ed e' misurato:

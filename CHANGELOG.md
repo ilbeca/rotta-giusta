@@ -2371,6 +2371,15 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   nautiche; è l'Allegato C al DM 323/2021, come dice il README.
 - Verificato: guardiano verde, dati 250, controllo dei testi di C-18 verde.
 
+### Corretto — la vetrina non chiama più Google Fonts
+
+- **Ogni visita alla vetrina mandava l'IP a Google**, per caricare Manrope da
+  `fonts.googleapis.com`, e l'informativa non lo diceva: trovato dal primo
+  parere, verificato in `site/index.html`. Ora il carattere sta in
+  `site/caratteri/`: un solo file variabile, i pesi da 200 a 800, i soli
+  caratteri latini (24.836 byte), dal pacchetto `@fontsource-variable/manrope`
+  5.2.8, con la licenza OFL accanto. Scaricato col permesso dell'autore.
+
 ## [0.28.1] — 2026-10-01
 
 Un rilascio di correzione, da un ramo che parte da `v0.28.0`, con una cosa
