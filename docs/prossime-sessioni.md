@@ -200,16 +200,14 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 36 | L'esclusione dalle statistiche, sul server (§15.4 n. 8) | Claude | `main`, a mano, in una sessione aperta dall'autore | niente — **pronto**; prima della prima statistica | P-54 |
 | 9 | **La versione con gli account** — il traguardo | tutti | `main` | gli adempimenti del §4, dell'autore | segnaposto P-27 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**, e si sono incontrate: il client degli
 account è nella pagina (P-18), Progressi è la mappa (P-23), e il carteggio ha
 i suoi contratti e controlli su `main` (P-32…P-35). **Per Claude, l'ordine
-consigliato:** P-54, l'esclusione dalle statistiche,
-in una sessione che l'autore apre; il ridisegno e il server in esercizio sono
-fatti. **Per ChatGPT:** niente di pronto. Il traguardo
+consigliato:** niente di pronto — il ridisegno, il
+server in esercizio e l'esclusione dalle statistiche sono fatti. **Per ChatGPT:** niente di pronto. Il traguardo
 aspetta soltanto gli adempimenti dell'autore. I prompt di Claude vanno uno alla volta nella cartella principale, e
 la suite dell'interfaccia di un worktree esclude quella dell'altro, per la porta
 8620. Il numero di una riga è il suo nome, non la sua posizione. Il traguardo,
@@ -571,6 +569,13 @@ consuma, non si riprogetta.
   commit lo lancia l'autore con `TERRITORI_OK=1`, che è suo. P-36 si applica a
   `v0.28.0` senza conflitti (provato in memoria). `.pages.dev` resta alla 0.28.0
   fino al redirect del 16 ottobre. Il traguardo diventa la 0.29.0.
+- **Da P-54, per l'autore** (1° ottobre 2026), nel §20 di
+  `account-progetto.md`: l'opposizione alle statistiche vale per l'account —
+  chi si cancella e si riscrive la chiede di nuovo —, da portare al parere; e
+  se la pagina debba dire «sei fuori dalle statistiche». Nella procedura del
+  titolare, fuori dal repo: quando arriva una richiesta,
+  `server/opposizione.mjs`; e le statistiche si lanciano con
+  `server/statistica.mjs`, mai con `sqlite3`.
 - **Gli adempimenti, dopo il primo parere** (1° ottobre 2026). Le decisioni e
   l'esito punto per punto sono nel §15.4 di `account-progetto.md`, con
   l'elenco di che cosa resta: il DPA di statichost.eu da firmare **subito**, la
@@ -3029,7 +3034,7 @@ quelle delle cinque dichiarazioni uscite.
 
 ### P-54 — Claude: l'esclusione dalle statistiche, sul server
 
-**Stato:** pronto dal 1° ottobre 2026; l'autore lo apre in una sessione sua.
+**Stato:** **chiuso il 1° ottobre 2026**, commit `a0f0c01` su `main`, in una sessione aperta dall'autore.
 Non blocca il traguardo, perché oggi nessuna statistica si calcola (§15.2 di
 `account-progetto.md`), ma va fatto **prima della prima query**: da quel giorno
 la promessa dell'informativa diventerebbe falsa. **Dove:** Claude Code,
@@ -3067,7 +3072,30 @@ anche con la LTS 24, voce in fondo a [Unreleased], un commit. Chiudi
 con il resoconto di docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `a0f0c01`, voce nel CHANGELOG, §15.2 e §15.4 di
+`account-progetto.md`. Schema 4, solo additivo: `account.fuori_statistiche_dal`.
+Il titolare mette e toglie il segno con `server/opposizione.mjs`, a servizio
+acceso, con una riga nel registro e un motivo obbligatorio senza email.
+`server/statistiche.mjs` è il posto solo: tre fonti già filtrate — iscritti,
+risposte, punteggi —, e una query che nomina una tabella vera è rifiutata;
+`server/statistica.mjs` la lancia in sola lettura. Un controllo è rosso se in
+`server/` o `strumenti/macchina/` una riga aggrega o legge le righe di tutti
+fuori di lì senza essere dichiarata (11 dichiarate, ciascuna con il motivo).
+R-ACC-67…70. Prima 7 test rossi, poi 43 rotture, tutte rosse. Il segno **non**
+viaggia nell'export né in `GET /v1/io` (§15.2, scelta 1). **Trovato:** una copia
+di prima avrebbe rimesso nei conteggi chi si era opposto dopo — il segno va
+anche nel file delle cancellazioni, e il ripristino lo rilegge —; il
+`ripristina.mjs` di `v0.28.0` perde quel segno, quindi il server lo rilegge dal
+file a ogni avvio; il server di `v0.28.0` gira sul database a schema 4; la copia
+di sicurezza conta anche chi si è opposto, ed è dichiarata come
+non-statistica. **Per l'autore**, nel §20: l'opposizione vale per l'account, e
+chi si riscrive la chiede di nuovo — punto per il parere —; se la pagina debba
+dire «sei fuori dalle statistiche»; e nella procedura del titolare, fuori dal
+repo, il comando di `opposizione.mjs` e la regola «le statistiche si lanciano
+con `statistica.mjs`, mai con `sqlite3`». **Non provato sulla macchina**: i due
+comandi come utente `rg`, con i permessi di `/var/lib/rg` — al traguardo.
+Controllato dalla regia: motore 193/197, server 68/68, `ripristina --prova` 22
+controlli, dati 263, specifica 800, guardiano verde, interfaccia 2.158.
 
 ---
 
@@ -3096,7 +3124,9 @@ correzione del modulo principale di P-15, e con gli strumenti di
 `strumenti/macchina/` riportati sulla macchina se sono cambiati dopo P-15; poi le due verifiche che solo quel giorno può
 fare: un archivio vero nel browser che passa nell'account senza perdere una riga
 (R-ACC-05), e il cookie fra `rottagiusta.it` e `api.` su un Safari vero
-(Q-PROVE). Il §5 di questo file è la lista di controllo. **Trenta giorni
+(Q-PROVE). E sulla macchina, dopo `rg-aggiorna`: lo schema passato a 4 al
+primo avvio, e `opposizione.mjs` e `statistica.mjs` lanciati come utente `rg`
+(P-54). Il §5 di questo file è la lista di controllo. **Trenta giorni
 dopo**, la soglia degli allarmi riletta sul registro vero
 (`account-progetto.md` §15.4). **Nello stesso commit del rilascio** si toglie
 la nota in testa a `docs/filosofia.md`, che lo dice di sé (P-26). **E il ramo
@@ -3523,3 +3553,7 @@ anche la sezione `[0.28.1]`, che oggi sta solo sul ramo `fix/0.28.1`. Il campo
   l'esclusione dalle statistiche sul server, con un posto solo da cui passa
   ogni conteggio. L'autore lo lancia in una sessione separata; il resoconto
   torna alla regia.
+- **2 ottobre 2026 — P-54 chiuso.** Chi si oppone alle statistiche esce da ogni
+  conteggio, e un controllo è rosso se un conteggio nasce fuori dal posto che lo
+  garantisce. Il traguardo prova i due comandi sulla macchina. Nel §4 due
+  domande per l'autore e due righe per la sua procedura.
