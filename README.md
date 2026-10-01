@@ -166,6 +166,21 @@ una password più corta la rifiuta già la lunghezza.
   SOFTWARE.
   ```
 
+### Il carattere della vetrina
+
+`site/caratteri/manrope-latin-wght-normal.woff2` è **Manrope**, di The Manrope
+Project Authors ([sharanda/manrope](https://github.com/sharanda/manrope)), con
+licenza **SIL Open Font License 1.1**, il cui testo sta accanto, in
+`site/caratteri/OFL.txt`. È la versione variabile, pesi da 200 a 800, dei soli
+caratteri latini, presa dal pacchetto `@fontsource-variable/manrope` 5.2.8 il
+1° ottobre 2026: 24.836 byte, SHA-256
+`a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972`.
+
+Si serve da qui e non da Google Fonts perché ogni richiesta a un altro host
+manda l'IP di chi visita a un terzo; fino a quel giorno la vetrina lo faceva
+senza che l'informativa lo dicesse. Un test lo tiene fermo: nessuna pagina di
+`site/` carica risorse da un altro host.
+
 ## Come funziona
 
 - **Le pagine sono statiche.** L'hosting è

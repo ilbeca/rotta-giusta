@@ -576,6 +576,42 @@ def test_manifest_icone():
 # ritrova sulla pagina di presentazione invece che sui suoi quiz — e non c'e'
 # nessun errore che lo dica.
 
+TERZI_NELLE_PAGINE = re.compile(
+    r'<(?:link|script|img|iframe)\b[^>]*\b(?:href|src)\s*=\s*["\']?(?:https?:)?//'
+    r'|url\(\s*["\']?(?:https?:)?//'
+    r'|@import\s+(?:url\()?\s*["\']?(?:https?:)?//', re.I)
+
+
+def risorse_di_terzi(testo):
+    """Le risorse che una pagina caricherebbe da un altro host: [(riga, testo)]."""
+    return [(n, r.strip()[:90]) for n, r in enumerate(testo.split('\n'), 1)
+            if TERZI_NELLE_PAGINE.search(r)]
+
+
+def test_nessuna_risorsa_di_terzi():
+    """Le pagine non caricano niente da un altro host: ogni richiesta del genere
+    manda l'IP di chi visita a un terzo che l'informativa non nomina. Google
+    Fonts nella vetrina l'ha fatto fino al 1° ottobre 2026 senza che niente lo
+    dicesse (account-progetto.md §15.4, il primo parere). I collegamenti <a>
+    non contano: li apre chi li tocca. L'API degli account la chiama lo script,
+    non un tag, e l'informativa la nomina."""
+    for f in sorted(SITE.glob('*.html')):
+        trovate = risorse_di_terzi(f.read_text(encoding='utf-8'))
+        check('%s non carica risorse da altri host' % f.name, not trovate, trovate[:3])
+    # Provato al contrario: le forme che deve vedere, e quelle che non deve.
+    for riga in ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope">',
+                 '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>',
+                 '<script src="//cdn.esempio.net/x.js"></script>',
+                 '<img src="https://esempio.net/pixel.gif">',
+                 'body{background:url("https://esempio.net/a.png")}',
+                 '@import url(https://esempio.net/a.css);'):
+        check('una risorsa di terzi si vede: %s' % riga[:40], bool(risorse_di_terzi(riga)))
+    for riga in ('<a href="https://github.com/ilbeca/rotta-giusta">codice</a>',
+                 '<link rel="preload" href="/caratteri/manrope-latin-wght-normal.woff2" as="font">',
+                 'src:url(/caratteri/manrope-latin-wght-normal.woff2) format("woff2");'):
+        check('una risorsa di casa non e\' di terzi: %s' % riga[:40], not risorse_di_terzi(riga))
+
+
 def test_indirizzi():
     man = json.loads((SITE / 'manifest.json').read_text(encoding='utf-8'))
     sw = (SITE / 'sw.js').read_text(encoding='utf-8')
@@ -661,7 +697,7 @@ def test_serve():
 
 def main():
     for t in (test_controlla, test_titolare, test_segreti, test_materiale_dichiarato, test_quiz, test_meta, test_figure, test_invarianti,
-              test_carteggio, test_sw, test_rinomino, test_prefisso_cache, test_manifest_icone, test_indirizzi,
+              test_carteggio, test_sw, test_nessuna_risorsa_di_terzi, test_rinomino, test_prefisso_cache, test_manifest_icone, test_indirizzi,
               test_serve):
         t()
     if falliti:

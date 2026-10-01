@@ -2380,6 +2380,18 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   caratteri latini (24.836 byte), dal pacchetto `@fontsource-variable/manrope`
   5.2.8, con la licenza OFL accanto. Scaricato col permesso dell'autore.
 
+### Test — nessuna pagina carica risorse da un altro host
+
+- **Un controllo, perché Google Fonts non torni in silenzio.**
+  `test_nessuna_risorsa_di_terzi` in `tests/test_dati.py` guarda ogni pagina di
+  `site/`: un `<link>`, `<script>`, `<img>` o `<iframe>` verso un altro host, un
+  `url()` o un `@import` esterno sono rossi; i collegamenti `<a>` no. Provato
+  sulla vetrina di prima (`dbb27c4^`): rosso, con le tre righe di Google
+  nominate. Il README dichiara la provenienza di Manrope, con licenza e
+  impronta.
+
+  Suite: dati **263** (erano 250); guardiano verde.
+
 ## [0.28.1] — 2026-10-01
 
 Un rilascio di correzione, da un ramo che parte da `v0.28.0`, con una cosa
