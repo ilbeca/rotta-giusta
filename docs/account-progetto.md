@@ -1840,7 +1840,23 @@ per traverso, e corretta: l'avvertenza diceva ancora che la composizione delle
    **sostituito** con `v=spf1 include:mx.ovh.com ~all` (un solo record), i due
    CNAME del DKIM che il pannello Zimbra mostra; i record di `posta.` non si
    toccano, e l'inoltro IONOS smette di servire. La privacy nomina OVH e il
-   Paese che l'assistenza conferma, o «Unione europea». Con la casella nuova l'attività
+   Paese che l'assistenza conferma, o «Unione europea».
+   **Ordinata il 1° ottobre 2026** (ordine OVHcloud 259758983, Zimbra Starter,
+   «Utilizza il tuo dominio», senza impegno: 0,30 € + IVA al mese, lo stesso
+   prezzo che con 12 mesi); alla sera era ancora «in convalida» da OVHcloud.
+   L'ordine dei passi, perché nessuna mail vada persa: il dominio nel pannello
+   Zimbra e il suo CNAME su IONOS; la casella `privacy@`, con la password
+   dell'autore; i due CNAME del DKIM; **solo allora** MX e SPF dell'apice, e
+   via l'inoltro. Due cose viste nel pannello, per dopo: il dominio a OVH
+   costerebbe 6,99 € + IVA il primo anno e 8,99 € + IVA dopo, contro i 10 € +
+   IVA di IONOS dal rinnovo di settembre 2027 (il primo anno IONOS è stato
+   1,22 €); e la pagina d'ordine dice che la casella «è gratuita finché il
+   dominio resta registrato in OVHcloud». **Deciso:** il dominio resta su
+   IONOS fino al traguardo; il trasferimento si rivaluta prima del rinnovo,
+   nell'estate 2027, verificando quella clausola. E il server resta su
+   Scaleway: OVH VPS-1 a Varsavia costa 4,49 € + IVA senza impegno (3,81 € con
+   12 mesi anticipati), cioè 8–18 € l'anno in meno, che non pagano il rifare
+   P-15; è il ripiego se la STARDUST1-S mancasse. Con la casella nuova l'attività
    programmata non legge più le mail degli interessati: va decisa che cosa
    legge, perché un'attività che legge `privacy@` con un piano senza DPA
    ripete il problema del punto 5;
