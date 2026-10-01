@@ -203,7 +203,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 8 | La messa in esercizio del server su Scaleway, con l'autore — **in corso** | Claude e l'autore | `main`, a mano, e pannelli | niente | P-15 |
 | 26b | La realizzazione dell'area 6 — la rifinitura dei cinque difetti T-* | ChatGPT | `ui/main` | niente — **pronto** | P-25 |
 | 34 | Scrivere le decisioni del 1° ottobre nel §8 dell'area 6 e nel §10 della specifica | la regia | `main` | P-15 (la cartella principale) | §4 |
-| 35 | Il rilascio di correzione 0.28.1, con il solo P-36 | la regia e l'autore | worktree `../rotta-giusta-fix`, ramo `fix/0.28.1` | il commit con `TERRITORI_OK=1` e il push, dell'autore | §4 |
+| 35 | Il rilascio di correzione 0.28.1, con il solo P-36 — commit `affc37d` dell'autore e tag `v0.28.1` | la regia e l'autore | worktree `../rotta-giusta-fix`, ramo `fix/0.28.1` | il controllo a occhio della regia (quando P-15 lascia la cartella), poi il sì al push del ramo e del tag, «Build now» dal ramo `fix/0.28.1` | §4 |
 | 9 | **La versione con gli account** — il traguardo | tutti | `main` | P-15, e gli adempimenti del §4 | segnaposto P-27 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
@@ -3364,3 +3364,11 @@ anche la sezione `[0.28.1]`.
   intero. Il rilascio 0.28.1 si prepara in un worktree, perché il `pre-commit`
   non lo lascerebbe fare a nessun ramo: il commit è dell'autore, con
   `TERRITORI_OK=1`.
+- **1° ottobre 2026 — il rilascio 0.28.1 committato.** L'autore ha fatto il
+  commit `affc37d` sul ramo `fix/0.28.1` con `TERRITORI_OK=1`, dopo che la
+  regia aveva provato che il `pre-commit` lo rifiutava nominando i tre file;
+  tag annotato `v0.28.1`. Suite del ramo verdi (motore 141/143, server 58/58,
+  dati 242, interfaccia 295, specifica 370). Il CHANGELOG del ramo è quello di
+  `v0.28.0` più la sola sezione `[0.28.1]`: la cherry-pick aveva portato con sé,
+  per l'unione, le voci di `main` scritte dopo il tag, e la regia l'ha
+  ricostruito. Mancano il controllo a occhio, il push e «Build now».
