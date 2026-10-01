@@ -2163,6 +2163,7 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   8620 libera e nessun banco di `rotta-giusta-ui` in corso. Nessun carico di
   prova lanciato. `site/`, `docs/prossime-sessioni.md` e il worktree `ui` non
   sono stati toccati.
+
 ### Corretto — P-52: la coda si vede appena cambia
 
 - **Con l'account, una risposta in attesa non è confermata sul server.** Prima
