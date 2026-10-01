@@ -2313,6 +2313,26 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   Suite: dati **250** (erano 242); motore 193/197 con i quattro skip previsti;
   specifica 784; guardiano verde.
 
+### Riscritto — l'informativa completa, da far confermare
+
+- **La privacy di P-18 non diceva chi è il titolare, né per quanto si tengono i
+  dati.** Ora nomina il titolare — persona fisica, con `privacy@` come recapito
+  e senza indirizzo postale, per scelta dell'autore — e ha due sezioni nuove: il
+  registro di sicurezza, con la base giuridica proposta (legittimo interesse,
+  art. 6.1.f e considerando 49) e il diritto di opporsi; e i tempi di
+  conservazione, presi da `account-progetto.md` (§14, §15.3): l'IP per sei mesi,
+  l'evento per un anno, le copie entro 30 giorni, le richieste evase per due
+  anni. statichost.eu diventa responsabile con un accordo scritto, la posta di
+  Scaleway è detta in Francia, e i diritti aggiungono limitazione, opposizione e
+  il reclamo al Garante. Corretta una frase falsa da P-21: il testo del
+  carteggio con l'account sta nella bozza del dispositivo, non solo in memoria.
+- **Resta una bozza**, e la data lo dice: tre affermazioni valgono solo quando
+  l'autore avrà fatto la sua parte — il DPA di statichost.eu firmato,
+  `privacy@` su una casella nell'UE («i dati non escono dall'Unione europea»),
+  e il parere su base giuridica e recapito (`account-progetto.md` §15.4).
+- Verificato: guardiano verde con il nome nella privacy, dati 250, controllo
+  dei testi di C-18 verde. La geometria si guarda dopo la merge.
+
 ## [0.28.1] — 2026-10-01
 
 Un rilascio di correzione, da un ramo che parte da `v0.28.0`, con una cosa
