@@ -47,6 +47,11 @@
 // E da P-53 il gruppo F-01, le frasi del riepilogo dei quiz (R-UX-06,
 // docs/area-3-progetto.md §4.2): tre affermazioni lette in quello che si vede,
 // con i numeri di quello che il banco ha fatto, nessuna quarta e nessun voto.
+//
+// E da P-57 il gruppo C-20, le condizioni per l'account nel modulo di
+// registrazione (R-ACC-75): il link a /avvertenza#condizioni e i 18 anni nella
+// finestra, in quello che si vede, prima del pulsante, e l'ancora seguita. La
+// sua ultima verifica chiede se la finestra si vede davvero (R-ACC-76).
 
 import { createServer } from 'node:http';
 import { readFileSync, writeFileSync, mkdirSync, existsSync, mkdtempSync, rmSync, statSync } from 'node:fs';
@@ -145,6 +150,13 @@ function sito(corrente) {
     if (p === '/app') {
       res.writeHead(200, { 'Content-Type': TIPI['.html'], 'Cache-Control': 'no-cache' });
       return res.end(corrente.pagina);
+    }
+    // Una prova puo' portare una pagina del sito diversa da quella di site/
+    // (`sito: { '/avvertenza': '<html>…' }`): e' cosi' che C-20 rompe l'ancora
+    // delle condizioni senza toccare site/ (P-57).
+    if (corrente.sito && Object.hasOwn(corrente.sito, p)) {
+      res.writeHead(200, { 'Content-Type': TIPI['.html'], 'Cache-Control': 'no-cache' });
+      return res.end(corrente.sito[p]);
     }
     let f = normalize(join(SITE, p === '/' ? 'index.html' : p));
     if (!f.startsWith(SITE)) { res.writeHead(404); return res.end(); }
@@ -3616,12 +3628,177 @@ async function f01(b, ctx, v) {
   } finally { await c.chiudi(); }
 }
 
+// --- C-20: le condizioni per l'account e i 18 anni, nel modulo di registrazione ---
+//
+// P-56 ha messo nel modulo «Crea un account» la frase su cui l'informativa
+// poggia il salvataggio: creando l'account si accettano le condizioni, con il
+// link, e l'account e' per chi ha compiuto 18 anni. Qui la si cerca dove la
+// trova chi si registra alla fine di un'attivita' (R-ACC-75, §12 del progetto
+// del client, «Le condizioni nel modulo»): dentro la finestra, in quello che
+// si vede, **prima** del pulsante che crea l'account; e il link si segue,
+// perche' un indirizzo giusto verso un'ancora che non c'e' porta in cima a una
+// pagina che parla d'altro.
+//
+// Non si cerca la frase parola per parola, che e' dell'interfaccia: si
+// pretende il link con la sua destinazione e i 18 anni. A 375 px, il telefono.
+// Senza API: il modulo si apre da solo, e il gruppo gira dove c'e' posto.
+//
+// L'ultima verifica e' un'altra domanda (R-ACC-76): la finestra si vede
+// davvero? `V` e `innerText` dicono che un testo non e' nascosto, non che
+// niente gli stia sopra. Misurato il 2 ottobre 2026 sulla pagina vera: aperto
+// dal riepilogo, il modulo sta **sotto** il riepilogo — la schermata prima e
+// dopo il clic e' la stessa, byte per byte — e tutte le altre verifiche erano
+// verdi. Sta in una verifica sua, cosi' la frase resta controllata anche
+// finche' quel difetto e' aperto.
+
+const CREA = 'Crea l\'account e salva';
+const CONDIZIONI = { percorso: '/avvertenza', ancora: '#condizioni' };
+const DICIOTTO = /\b18\s+anni\b/;
+export const MODULO_VISTO = 'e la finestra si vede davvero: niente copre il titolo, la frase e il pulsante';
+
+// Il modulo com'e' in schermata: il testo che si vede prima del pulsante, e
+// ogni link della pagina — dentro o fuori dalla finestra, visto o no, prima o
+// dopo il pulsante — con l'indirizzo a cui porta davvero. «Prima» e' nel
+// documento e sullo schermo: un link che il CSS sposta sotto il pulsante viene dopo.
+const MODULO_REGISTRAZIONE = js(`const m = M(); if (m === document) return null;
+  const b = [...m.querySelectorAll('button')].find((x) => V(x) && x.textContent.trim() === ${q(CREA)});
+  if (!b) return null;
+  const piatto = (t) => t.replace(/\\s+/g, ' ').trim();
+  const t = m.innerText, i = t.indexOf(${q(CREA)}), rb = b.getBoundingClientRect();
+  return { titolo: t.includes('Crea un account'), prima: piatto(i < 0 ? t : t.slice(0, i)),
+    link: [...document.querySelectorAll('a[href]')].map((a) => {
+      let u = null; try { u = new URL(a.getAttribute('href'), location.href); } catch {}
+      return { href: a.getAttribute('href'), url: u ? u.href : null, stessa: !!u && u.origin === location.origin,
+        percorso: u ? u.pathname : null, ancora: u ? u.hash : null, testo: piatto(a.innerText),
+        dentro: m.contains(a), visto: V(a) && piatto(a.innerText) !== '',
+        prima: !!(b.compareDocumentPosition(a) & Node.DOCUMENT_POSITION_PRECEDING) && a.getBoundingClientRect().top <= rb.top };
+    }) };`);
+
+// Dove porta il link, nella pagina che il sito serve: l'elemento dell'ancora,
+// se c'e', se si vede, e che cosa dice.
+const ANCORA = js(`const id = decodeURIComponent(location.hash.slice(1)), e = id ? document.getElementById(id) : null;
+  return { percorso: location.pathname, id, trovata: !!e, vista: V(e), bersaglio: !!e && document.querySelector(':target') === e,
+    testo: e ? e.innerText.replace(/\\s+/g, ' ').trim().slice(0, 80) : null };`);
+
+/**
+ * La finestra si vede davvero: il titolo, il link alle condizioni, la frase
+ * sui 18 anni e il pulsante, ognuno portato al centro, stanno nello schermo,
+ * non sono trasparenti, non hanno niente sopra, e il loro testo ha il
+ * contrasto minimo. Sono le misure di un avviso dell'area 6 (`avviso`), su
+ * quattro elementi. Il link e la frase si misurano se ci sono: che ci siano
+ * lo dicono le verifiche prima.
+ */
+function moduloVisto(K, crea, percorso, ancora, diciotto) {
+  const m = [...document.querySelectorAll('[aria-modal="true"]')].find(K.V);
+  if (!m) return { misurati: [], difetti: ['nessuna finestra aperta'] };
+  const re = new RegExp(diciotto);
+  const giusto = (a) => { try { const u = new URL(a.getAttribute('href'), location.href); return u.origin === location.origin && u.pathname === percorso && u.hash === ancora; } catch { return false; } };
+  const cose = [
+    ['il titolo', [...m.querySelectorAll('h1, h2, h3')].find(K.V)],
+    ['il link alle condizioni', [...m.querySelectorAll('a[href]')].find((a) => K.V(a) && giusto(a))],
+    ['la frase sui 18 anni', [...m.querySelectorAll('*')].find((x) => K.V(x) && re.test(x.textContent) && ![...x.children].some((y) => re.test(y.textContent)))],
+    ['il pulsante «' + crea + '»', [...m.querySelectorAll('button')].find((x) => K.V(x) && x.textContent.trim() === crea)],
+  ];
+  const misura = (e) => {
+    e.scrollIntoView({ block: 'center', inline: 'nearest' });
+    // La prima riga: il rettangolo d'insieme di un link su due righe comprende
+    // pezzi di frase che non sono suoi.
+    const r = e.getClientRects()[0];
+    if (!r || r.width < 2 || r.height < 2) return `misura ${r ? Math.round(r.width) + '×' + Math.round(r.height) : '0×0'} px`;
+    const cx = r.left + Math.min(r.width / 2, 20), cy = r.top + r.height / 2;
+    if (cx < 0 || cx > innerWidth || cy < 0 || cy > innerHeight) return `sta fuori dallo schermo (${Math.round(r.left)}, ${Math.round(r.top)})`;
+    const o = K.opacita(e);
+    if (o < 0.95) return `e' trasparente (opacita' ${o.toFixed(2)})`;
+    const t = document.elementFromPoint(cx, cy);
+    if (!t || !(e.contains(t) || t.contains(e))) return `ha sopra ${t ? K.nome(t) : 'niente'}`;
+    const c = K.contrasto(e);
+    if (c && c.r < c.soglia) return `ha un contrasto di ${c.r.toFixed(2)}:1 (${c.fg} su ${c.bg})`;
+    return null;
+  };
+  const difetti = [];
+  for (const [nome, e] of cose) {
+    if (!e) { if (nome === 'il titolo' || nome.startsWith('il pulsante')) difetti.push(nome + ' non c\'e\''); continue; }
+    const perche = misura(e);
+    if (perche) difetti.push(`${nome} ${perche}`);
+  }
+  return { misurati: cose.filter((x) => x[1]).map((x) => x[0]), difetti };
+}
+
+async function c20(b, ctx, v) {
+  const g = 'C-20';
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri();
+    await tab.dimensioni(375);
+    await tab.vai(ctx.sito + '/app');
+    // Il giro fino al riepilogo lo controllano C-01 e C-05: qui, se non arriva
+    // in fondo, lo si dice, invece di saltare in silenzio le verifiche.
+    const giro = [];
+    const arrivato = await unaRisposta(tab, giro, g);
+    const invito = !!arrivato && await clicca(tab, 'Crea un account e salva');
+    const { ok: aperto, valore: modulo } = invito
+      ? await tab.attendiValore(MODULO_REGISTRAZIONE, (x) => !!x && x.titolo, REAZIONE) : { ok: false, valore: null };
+    v.push({ gruppo: g, nome: 'dal riepilogo si apre il modulo «Crea un account», con il pulsante che crea l\'account', ok: aperto,
+      extra: !arrivato ? 'il giro non arriva al riepilogo: ' + giro.filter((x) => !x.ok).map((x) => x.extra).join('; ')
+        : !invito ? 'nel riepilogo non c\'e\' «Crea un account e salva» (§4.1)'
+        : `nessuna finestra con il titolo «Crea un account» e il pulsante «${CREA}» (§4.2)` });
+    if (!aperto) return;
+
+    // Il link: nella finestra, visto, prima del pulsante, verso l'indirizzo
+    // pulito e l'ancora. Il rosso dice quale di queste cose manca.
+    const destinazione = CONDIZIONI.percorso + CONDIZIONI.ancora;
+    const dove = (l) => `«${l.testo || l.href}» porta a ${l.href}`;
+    const giusto = (l) => l.stessa && l.percorso === CONDIZIONI.percorso && l.ancora === CONDIZIONI.ancora;
+    const dentro = modulo.link.filter((l) => l.dentro);
+    const giusti = dentro.filter(giusto);
+    const buono = giusti.find((l) => l.visto && l.prima);
+    // Un link che parla delle condizioni o va verso l'avvertenza, ma non e' quello.
+    const quasi = dentro.find((l) => !giusto(l) && (/condizioni/i.test(l.testo) || /avvertenza|condizioni/i.test(l.href || '')));
+    const fuori = modulo.link.find((l) => !l.dentro && giusto(l));
+    v.push({ gruppo: g, nome: `nel modulo, prima del pulsante, si vede un link a ${destinazione}`, ok: !!buono,
+      extra: giusti.length && !giusti.some((l) => l.visto) ? `il link a ${destinazione} c'e' ma non si vede`
+        : giusti.length ? `il link a ${destinazione} c'e', ma dopo il pulsante «${CREA}»`
+        : quasi ? `${dove(quasi)}, non a ${destinazione}`
+        : fuori ? `il link a ${destinazione} e' fuori dal modulo, nella pagina sotto la finestra`
+        : `nel modulo nessun link verso ${destinazione}: ${dentro.map(dove).join('; ') || 'nessun link'}` });
+
+    v.push({ gruppo: g, nome: 'e dice, prima del pulsante, che l\'account e\' per chi ha compiuto 18 anni', ok: DICIOTTO.test(modulo.prima),
+      extra: `«18 anni» non si vede nel modulo prima del pulsante «${CREA}»; si vede: ${modulo.prima.slice(-240)}` });
+
+    // Il link si segue, com'e' nella pagina: quello giusto se c'e', altrimenti
+    // quello che gli somiglia. Solo dentro il sito: un link che esce non si
+    // apre. In un'altra scheda: la pagina con le risposte resta dov'e'.
+    const seguito = buono || giusti.find((l) => l.visto) || (quasi && quasi.visto ? quasi : null);
+    let arrivo = null;
+    if (seguito && seguito.stessa) {
+      // `apri` aspetta il carico: la pagina e' disposta, e una lettura basta.
+      try { arrivo = await (await c.apri(seguito.url)).valuta(ANCORA); } catch { arrivo = null; }
+    }
+    v.push({ gruppo: g, nome: 'seguito il link, l\'ancora c\'e\' e si vede: la sezione delle condizioni per l\'account',
+      ok: !!arrivo && arrivo.trovata && arrivo.vista && arrivo.bersaglio && /condizioni/i.test(arrivo.testo || ''),
+      extra: !seguito ? 'nel modulo nessun link visibile verso le condizioni da seguire'
+        : !seguito.stessa ? `il link porta fuori dal sito (${seguito.href}): non seguito`
+        : !arrivo ? 'la pagina del link non si apre'
+        : !arrivo.id ? `il link non ha un'ancora: porta in cima a ${arrivo.percorso}`
+        : !arrivo.trovata ? `l'ancora «${arrivo.id}» non c'e' in ${arrivo.percorso}`
+        : !arrivo.vista ? `l'ancora «${arrivo.id}» c'e' in ${arrivo.percorso}, ma non si vede`
+        : `l'ancora «${arrivo.id}» di ${arrivo.percorso} non e' la sezione delle condizioni: dice «${arrivo.testo}»` });
+
+    // E si vede davvero? (R-ACC-76.) Per ultima: le misure scorrono la finestra.
+    const visto = await tab.valuta(inPagina(moduloVisto, CREA, CONDIZIONI.percorso, CONDIZIONI.ancora, DICIOTTO.source));
+    v.push({ gruppo: g, nome: MODULO_VISTO, ok: !visto.difetti.length,
+      extra: `aperto dal riepilogo a 375 px: ${visto.difetti.join('; ')}` });
+  } finally { await c.chiudi(); }
+}
+
 const GRUPPI = { 'C-01': c01, 'C-02': c02, 'C-03': c03, 'C-04': c04, 'C-05': c05, 'C-06': c06, 'C-07': c07, 'C-08': c08, 'C-09': c09,
   'C-10': c10, 'C-11': c11, 'C-12': c12, 'C-13': c13, 'C-14': c14, 'C-15': c15, 'C-16': c16, 'C-17': c17, 'C-19': c19,
   // L'area 6 (P-45): la rifinitura trasversale.
   'T-01': t01, 'T-02': t02, 'T-03': t03, 'T-04': t04, 'T-05': t05, 'T-06': t06, 'T-07': t07, 'T-08': t08, 'T-09': t09,
   // Le frasi del riepilogo dei quiz (P-53, R-UX-06).
-  'F-01': f01 };
+  'F-01': f01,
+  // Le condizioni per l'account nel modulo di registrazione (P-57, R-ACC-75).
+  'C-20': c20 };
 // I gruppi che parlano con l'API: il server accetta una sola origine (§7.3),
 // quindi girano uno alla volta sul sito principale. Gli altri girano in
 // parallelo, ognuno con il suo sito e quindi con la sua origine.
@@ -3756,6 +3933,7 @@ async function corsia(k, cartella, portaApi = PORTA_API) {
     k, ctx,
     async esegui(b, p, g) {
       corrente.pagina = porta !== PORTA_API ? p.pagina.replaceAll(':8620', `:${porta}`) : p.pagina;
+      corrente.sito = p.sito;
       orologio.t += 2 * 3600 * 1000;
       return gruppo(b, ctx, g);
     },
@@ -3789,7 +3967,7 @@ export async function esegui(prove, { portaApi = PORTA_API } = {}) {
     const lavora = async () => {
       for (let x; (x = libere.shift());) {
         const inizio = performance.now();
-        const proprio = { pagina: x.p.pagina };
+        const proprio = { pagina: x.p.pagina, sito: x.p.sito };
         const sv = await servi(proprio);
         try {
           // La pagina di questi gruppi non e' riscritta: parla con la 8620, e il

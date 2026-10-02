@@ -1187,7 +1187,7 @@ def test_carteggio_provato_al_contrario():
 BANCO_CLIENT = RADICE / 'tests' / 'client_account.mjs'
 RIFERIMENTO_CLIENT = RADICE / 'tests' / 'pagina-client-account.html'
 GRUPPI_CLIENT = ['C-01', 'C-02', 'C-03', 'C-04', 'C-05', 'C-06', 'C-07', 'C-08', 'C-09', 'C-10', 'C-11', 'C-12',
-                 'C-13', 'C-14', 'C-15', 'C-16', 'C-17', 'F-01']
+                 'C-13', 'C-14', 'C-15', 'C-16', 'C-17', 'F-01', 'C-20']
 # Quante verifiche fa ogni gruppo quando arriva in fondo, sulla pagina di
 # riferimento: meno vuol dire che il giro si e' fermato prima e che una parte
 # dei controlli non e' stata eseguita, cioe' un verde a copertura parziale.
@@ -1195,7 +1195,7 @@ VERIFICHE_CLIENT = {'C-01': 34, 'C-02': 15, 'C-03': 11, 'C-04': 20, 'C-05': 13, 
                     'C-09': 13, 'C-10': 10, 'C-11': 8, 'C-12': 9, 'C-13': 8, 'C-14': 3, 'C-15': 12, 'C-16': 23, 'C-17': 10,
                     'C-13:scarica': 7, 'C-08:cancella': 8, 'C-15:segnali': 7,
                     'C-19:senza': 4, 'C-19:ricarica': 4, 'C-19:scadenza': 4, 'C-19:guasto': 3, 'C-19:giudizio': 5,
-                    'C-19:uscita': 4, 'C-19:schede': 4, 'F-01': 21}
+                    'C-19:uscita': 4, 'C-19:schede': 4, 'F-01': 21, 'C-20': 5}
 # Le tre scelte che fino a P-46 nessun gruppo premeva (R-ACC-63): sono parti dei
 # loro gruppi, e girano con loro, ma le verifiche portano il nome della parte e
 # hanno un controllo ciascuna, cosi' la specifica le nomina una per una.
@@ -1230,6 +1230,15 @@ def ha_il_client(testo):
     """La pagina dichiara indirizzoApi() fuori dai commenti: e' il segno del client."""
     return bool(re.search(r'^function indirizzoApi\(', senza_commenti(testo), re.M))
 
+
+# La frase di P-56 nel modulo «Crea un account» della pagina di riferimento, il
+# suo link e il pulsante: le rotture di C-20 le tolgono, le nascondono e le spostano.
+_FRASE_CONDIZIONI = ("    <p>Creando l'account accetti le <a href=\"/avvertenza#condizioni\">condizioni per l'account</a>; "
+                     "l'account è per chi ha compiuto 18 anni.</p>\n")
+_LINK_CONDIZIONI = '<a href="/avvertenza#condizioni">condizioni per l\'account</a>'
+_CREA = "    <button data-account=\"crea\">Crea l'account e salva</button>\n"
+# La verifica di R-ACC-76, con il nome che ha nel banco (MODULO_VISTO).
+MODULO_VISTO = 'e la finestra si vede davvero: niente copre il titolo, la frase e il pulsante'
 
 # Rotture della pagina di riferimento: (che cosa, gruppi da eseguire,
 # sostituzioni, parola che il rosso deve contenere).
@@ -1832,6 +1841,89 @@ ROTTURE_CLIENT = [
     ('la frase su che cosa non hai toccato nascosta', ['F-01'],
      [("'<p>Le domande non affrontate non sono conteggiate come errori.</p>'", "'<p hidden>Le domande non affrontate non sono conteggiate come errori.</p>'")],
      'il riepilogo dice che cosa non hai toccato'),
+    # C-20: le condizioni per l'account e i 18 anni nel modulo di registrazione
+    # (R-ACC-75, P-57). La frase di P-56 sta nella finestra, in quello che si
+    # vede, prima del pulsante, e il link porta a /avvertenza#condizioni, dove
+    # l'ancora c'e'. Ogni rottura e' rossa per il suo motivo, che il rosso dice.
+    ('la frase sulle condizioni tolta dal modulo', ['C-20'],
+     [(_FRASE_CONDIZIONI, '')],
+     'nel modulo nessun link verso /avvertenza#condizioni'),
+    ('la frase sulle condizioni nascosta', ['C-20'],
+     [(_FRASE_CONDIZIONI, _FRASE_CONDIZIONI.replace('<p>', '<p hidden>'))],
+     'c\'e\' ma non si vede'),
+    ('la frase sulle condizioni invisibile', ['C-20'],
+     [(_FRASE_CONDIZIONI, _FRASE_CONDIZIONI.replace('<p>', '<p style="visibility:hidden">'))],
+     'c\'e\' ma non si vede'),
+    ('il link alle condizioni senza testo', ['C-20'],
+     [(_LINK_CONDIZIONI, 'condizioni per l\'account<a href="/avvertenza#condizioni"></a>')],
+     'c\'e\' ma non si vede'),
+    ('il link alle condizioni con l\'estensione', ['C-20'],
+     [('href="/avvertenza#condizioni"', 'href="/avvertenza.html#condizioni"')],
+     'porta a /avvertenza.html#condizioni'),
+    ('il link alle condizioni verso un\'altra pagina', ['C-20'],
+     [('href="/avvertenza#condizioni"', 'href="/privacy#condizioni"')],
+     'porta a /privacy#condizioni'),
+    ('il link alle condizioni senza l\'ancora', ['C-20'],
+     [('href="/avvertenza#condizioni"', 'href="/avvertenza"')],
+     'il link non ha un\'ancora'),
+    ('il link a un\'ancora che non c\'e\'', ['C-20'],
+     [('href="/avvertenza#condizioni"', 'href="/avvertenza#condizioni-account"')],
+     'l\'ancora «condizioni-account» non c\'e\' in /avvertenza'),
+    ('il link alle condizioni che esce dal sito', ['C-20'],
+     [('href="/avvertenza#condizioni"', 'href="https://rottagiusta.it/avvertenza#condizioni"')],
+     'porta fuori dal sito'),
+    ('la frase sulle condizioni senza i 18 anni', ['C-20'],
+     [('</a>; l\'account è per chi ha compiuto 18 anni.</p>', '</a>.</p>')],
+     'per chi ha compiuto 18 anni'),
+    ('i 18 anni scritti e nascosti', ['C-20'],
+     [('</a>; l\'account è per chi ha compiuto 18 anni.</p>', '</a><span hidden>; l\'account è per chi ha compiuto 18 anni.</span></p>')],
+     'per chi ha compiuto 18 anni'),
+    ('la frase sulle condizioni dopo il pulsante', ['C-20'],
+     [(_FRASE_CONDIZIONI, ''),
+      (_CREA, _CREA + _FRASE_CONDIZIONI)],
+     'dopo il pulsante'),
+    ('la frase sulle condizioni dopo il pulsante nel documento, e sopra sullo schermo', ['C-20'],
+     [(_FRASE_CONDIZIONI, ''),
+      (_CREA, _CREA + _FRASE_CONDIZIONI.replace('<p>', '<p style="position:relative;top:-120px">'))],
+     'dopo il pulsante'),
+    ('la frase sulle condizioni spostata sotto il pulsante dal CSS', ['C-20'],
+     [(_FRASE_CONDIZIONI, _FRASE_CONDIZIONI.replace('<p>', '<p style="position:relative;top:400px">'))],
+     'dopo il pulsante'),
+    ('la frase sulle condizioni nel riepilogo, fuori dalla finestra', ['C-20'],
+     [(_FRASE_CONDIZIONI, ''),
+      ('Il titolare può leggerle per supporto e statistiche.</p>',
+       'Il titolare può leggerle per supporto e statistiche.</p>' + _FRASE_CONDIZIONI.strip())],
+     'fuori dal modulo'),
+    # R-ACC-76: la finestra si vede davvero. La prima e' il difetto della pagina
+    # vera, rifatto qui: il modulo aperto sotto il riepilogo.
+    ('il modulo aperto sotto il riepilogo', ['C-20'],
+     [('<style>[hidden]{display:none!important}',
+       '<style>[hidden]{display:none!important}\n#quizrun.on{position:fixed;inset:0;z-index:80;background:#fff;overflow:auto} '
+       '#account{position:fixed;inset:0;z-index:30;background:#fff;overflow:auto}')],
+     'ha sopra'),
+    ('la frase sulle condizioni trasparente', ['C-20'],
+     [(_FRASE_CONDIZIONI, _FRASE_CONDIZIONI.replace('<p>', '<p style="opacity:0">'))],
+     'trasparente'),
+    ('la frase sulle condizioni del colore del fondo', ['C-20'],
+     [(_FRASE_CONDIZIONI, _FRASE_CONDIZIONI.replace('<p>', '<p style="color:#fff">').replace('<a href', '<a style="color:#fff" href'))],
+     'ha un contrasto di'),
+]
+
+# Rotture del **sito**, non della pagina: (che cosa, gruppi, percorso servito,
+# file di site/, sostituzioni, parola che il rosso deve contenere). La pagina e'
+# quella di riferimento, intatta; il banco serve al posto del file di site/ la
+# sua copia rotta (P-57). E' cosi' che si prova che C-20 segue il link fino
+# all'ancora: con il link giusto e l'ancora tolta, il rosso viene solo da li'.
+ROTTURE_SITO_CLIENT = [
+    ('l\'ancora delle condizioni tolta dall\'avvertenza', ['C-20'], '/avvertenza', 'avvertenza.html',
+     [('<h2 id="condizioni">', '<h2>')],
+     'l\'ancora «condizioni» non c\'e\' in /avvertenza'),
+    ('l\'ancora delle condizioni su un\'altra sezione', ['C-20'], '/avvertenza', 'avvertenza.html',
+     [('<h2 id="condizioni">', '<h2>'), ('<h2>Segnalare un errore</h2>', '<h2 id="condizioni">Segnalare un errore</h2>')],
+     'non e\' la sezione delle condizioni'),
+    ('la sezione delle condizioni nascosta', ['C-20'], '/avvertenza', 'avvertenza.html',
+     [('<h2 id="condizioni">', '<h2 id="condizioni" hidden>')],
+     'ma non si vede'),
 ]
 
 # Varianti della pagina di riferimento che devono restare **verdi**: il banco
@@ -1883,6 +1975,15 @@ def banco_client():
         applicate[cosa] = ok
         if ok and rotta != rif:
             prove.append({'nome': 'rottura: ' + cosa, 'pagina': rotta, 'gruppi': gruppi})
+    for cosa, gruppi, percorso, file, sostituzioni, _ in ROTTURE_SITO_CLIENT:
+        vero = (SITE / file).read_text(encoding='utf-8')
+        rotto, ok = vero, True
+        for vecchio, nuovo in sostituzioni:
+            ok = ok and vecchio in rotto
+            rotto = rotto.replace(vecchio, nuovo, 1)
+        applicate[cosa] = ok
+        if ok and rotto != vero:
+            prove.append({'nome': 'rottura: ' + cosa, 'pagina': rif, 'gruppi': gruppi, 'sito': {percorso: rotto}})
     try:
         p = subprocess.run(['node', str(BANCO_CLIENT)], input=json.dumps({'prove': prove}),
                            capture_output=True, text=True, timeout=600)
@@ -2045,6 +2146,124 @@ def test_client_conferma_mancante():
 def test_client_uscita_segnali():
     """R-ACC-63: l'uscita con punteggi dei Segnali non accolti (C-15:segnali, P-46)."""
     registra_client('C-15:segnali')
+
+
+def difetti_ancora(avvertenza):
+    """Che cosa manca in avvertenza.html perche' il link del modulo di
+    registrazione arrivi alle condizioni per l'account: [che cosa]."""
+    testo = re.sub(r'<!--.*?-->', '', avvertenza, flags=re.S)
+    ancore = re.findall(r'<(\w+)\b[^>]*\bid="condizioni"[^>]*>(.*?)</\1>', testo, re.S)
+    quante = len(re.findall(r'\bid="condizioni"', testo))
+    if quante != 1:
+        return ['l\'ancora id="condizioni" c\'e\' %d volte, non una' % quante]
+    difetti = []
+    if not ancore or not re.fullmatch(r'h[1-6]', ancore[0][0]) or 'condizioni' not in ancore[0][1].lower():
+        difetti.append('l\'ancora «condizioni» non sta sul titolo della sezione delle condizioni')
+    sezione = re.split(r'<h2\b', testo.split('id="condizioni"', 1)[1], 1)[0]
+    if not re.search(r'\b18\s+anni\b', sezione):
+        difetti.append('la sezione delle condizioni non dice «18 anni», che il modulo di registrazione dice')
+    return difetti
+
+
+def dichiarati_condizioni():
+    """Le verifiche di C-20 dichiarate fra i difetti aperti."""
+    return [x for p, x in (difetti_dichiarati() or []) if p == 'C-20']
+
+
+def test_client_condizioni():
+    """R-ACC-75 (P-57): nel modulo «Crea un account», aperto dal riepilogo di
+    un'attivita', la frase di P-56 sta nella finestra e in quello che si vede,
+    prima del pulsante che crea l'account — il link a /avvertenza#condizioni e i
+    18 anni —, e seguito il link l'ancora c'e'. Sulla pagina vera, C-20; e
+    l'ancora anche in site/avvertenza.html, letta. La verifica «si vede
+    davvero» e' di R-ACC-76, e la registra test_client_modulo_visto. Che cosa
+    il banco non vede: §12 del progetto del client, «Le condizioni nel modulo»."""
+    _, out, applicate = banco_client()
+    v = out.get('app', [])
+    for x in v:
+        if x['gruppo'] == 'banco' or (x['gruppo'] == 'C-20' and x['nome'] != MODULO_VISTO):
+            check('client %s: %s' % (x['gruppo'], x['nome']), x['ok'], x.get('extra', ''))
+    n = sum(1 for x in v if x['gruppo'] == 'C-20')
+    check('client C-20: il giro sulla pagina vera e\' arrivato in fondo', n >= VERIFICHE_CLIENT['C-20'],
+          'troppo poche verifiche (%d su %d): il banco non l\'ha eseguito per intero' % (n, VERIFICHE_CLIENT['C-20']))
+    # L'ancora, nel file: il banco la trova seguendo il link, ma un giro fermato
+    # prima non ci arriva. E le condizioni dicono la stessa eta' del modulo.
+    avvertenza = leggi('avvertenza.html')
+    difetti = difetti_ancora(avvertenza)
+    check('client C-20: site/avvertenza.html ha l\'ancora «condizioni», sul titolo delle condizioni per l\'account',
+          not difetti, '; '.join(difetti))
+    # Provato al contrario, sul file vero.
+    for cosa, vecchio, nuovo in (
+            ('l\'ancora tolta', '<h2 id="condizioni">', '<h2>'),
+            ('l\'ancora ripetuta', '<h2>Segnalare un errore</h2>', '<h2 id="condizioni">Segnalare un errore</h2>'),
+            ('l\'ancora in un commento', '<h2 id="condizioni">', '<!-- <h2 id="condizioni"> --><h2>'),
+            ('l\'ancora su un paragrafo', '<h2 id="condizioni">Le condizioni per l\'account</h2>',
+             '<h2>Le condizioni per l\'account</h2><p id="condizioni">Senza account.</p>'),
+            ('un\'altra eta\' nelle condizioni', 'Dai 18 anni.</b> L\'account è per chi ha compiuto 18 anni', 'Dai 16 anni.</b> L\'account è per chi ha compiuto 16 anni')):
+        check('C-20 provato al contrario: %s in avvertenza.html si puo\' provare' % cosa, vecchio in avvertenza,
+              'il testo da sostituire non c\'e\' piu\': la prova non proverebbe niente')
+        check('C-20 provato al contrario: %s in avvertenza.html si vede' % cosa,
+              bool(difetti_ancora(avvertenza.replace(vecchio, nuovo, 1))), 'passata verde')
+    # Le rotture del sito: la pagina di riferimento intatta, l'avvertenza rotta.
+    for cosa, _, _, _, _, atteso in ROTTURE_SITO_CLIENT:
+        check('rottura del sito «%s»: si applica a site/' % cosa, applicate.get(cosa),
+              'il testo da sostituire non c\'e\' piu\': la rottura non romperebbe niente')
+        vr = out.get('rottura: ' + cosa)
+        if vr is None:
+            continue
+        rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in vr if not x['ok']]
+        check('rottura del sito «%s»: il banco diventa rosso' % cosa, bool(rossi), 'e\' passata verde')
+        check('rottura del sito «%s»: e il rosso nomina il difetto' % cosa, any(atteso in r for r in rossi),
+              'rossi: ' + '; '.join(rossi[:3]))
+        # Il link e' giusto: il rosso viene solo dall'ancora seguita.
+        check('rottura del sito «%s»: rossa solo dove il link viene seguito' % cosa,
+              all('seguito il link' in r for r in rossi), 'rossi: ' + '; '.join(rossi[:3]))
+
+
+def test_client_modulo_visto():
+    """R-ACC-76 (P-57): il modulo «Crea un account» aperto dal riepilogo si vede
+    davvero — titolo, frase e pulsante nello schermo, opachi, con niente sopra e
+    con il contrasto minimo. E' l'ultima verifica di C-20.
+
+    Sulla pagina vera e' un **difetto aperto dichiarato** (docs/eccezioni-
+    interfaccia.md): la finestra si apre sotto il riepilogo. Finche' la riga
+    c'e', si pretende che la verifica giri, con le altre di C-20 verdi, e sia
+    rossa; tolta la riga, che sia verde."""
+    _, out, _ = banco_client()
+    v = out.get('app', [])
+    check('client C-20: la tabella dei difetti aperti si legge', difetti_dichiarati() is not None,
+          'manca «Difetti aperti dichiarati» in docs/eccezioni-interfaccia.md')
+    dichiarate = dichiarati_condizioni()
+    for d in dichiarate:
+        check('client C-20: la dichiarazione «%s» nomina la verifica che si puo\' dichiarare' % d, d == MODULO_VISTO,
+              'di C-20 si dichiara solo «%s»: le altre verifiche devono essere verdi' % MODULO_VISTO)
+    vg = [x for x in v if x['gruppo'] == 'C-20']
+    xs = [x for x in vg if x['nome'] == MODULO_VISTO]
+    if not xs:
+        check('client C-20: %s' % MODULO_VISTO, False,
+              'la verifica non e\' stata eseguita: il giro di C-20 si e\' fermato prima. Eseguite: '
+              + ('; '.join(x['nome'] for x in vg[:4]) or 'nessuna'))
+    elif MODULO_VISTO in dichiarate:
+        prima = [x for x in vg if x['nome'] != MODULO_VISTO and not x['ok']]
+        check('client C-20: prima del difetto dichiarato i passi sono verdi', not prima,
+              'rosso per un altro motivo: ' + '; '.join('%s — %s' % (x['nome'], x.get('extra', '')) for x in prima[:2]))
+        check('client C-20: il difetto dichiarato e\' ancora vero sulla pagina («%s»)' % MODULO_VISTO, not xs[0]['ok'],
+              'la verifica e\' verde: il difetto e\' chiuso. Togli la riga da «Difetti aperti dichiarati» in '
+              'docs/eccezioni-interfaccia.md nello stesso commit')
+        check('client C-20: e il rosso dice che cosa copre la finestra', 'ha sopra' in xs[0].get('extra', ''),
+              'rosso per un altro motivo: ' + xs[0].get('extra', ''))
+    else:
+        check('client C-20: %s' % MODULO_VISTO, xs[0]['ok'], xs[0].get('extra', ''))
+    # Provato al contrario, sui risultati che il banco ha gia': la pagina di
+    # riferimento la passa, e la rottura che rifa' il difetto della pagina vera
+    # la fa diventare rossa, lei sola.
+    rif = [x for x in out.get('riferimento', []) if x['gruppo'] == 'C-20' and x['nome'] == MODULO_VISTO]
+    check('C-20 provato al contrario: sulla pagina di riferimento la finestra si vede', bool(rif) and rif[0]['ok'],
+          rif[0].get('extra', '') if rif else 'la verifica non e\' stata eseguita')
+    sotto = [x for x in out.get('rottura: il modulo aperto sotto il riepilogo', []) if x['gruppo'] == 'C-20']
+    check('C-20 provato al contrario: con il modulo sotto il riepilogo la finestra non si vede, e il resto e\' verde',
+          bool(sotto) and [x['nome'] for x in sotto if not x['ok']] == [MODULO_VISTO],
+          'rossi: ' + ('; '.join(x['nome'] for x in sotto if not x['ok']) or 'nessuno'))
 
 
 def test_client_bozza_senza_account():
@@ -2707,6 +2926,7 @@ def main():
               test_client_limiti, test_client_azzeramento, test_client_ripristino, test_client_data,
               test_client_export, test_client_testi,
               test_client_scarica_dopo_azzeramento, test_client_cancella_dopo_recupero, test_client_conferma_mancante, test_client_uscita_segnali,
+              test_client_condizioni, test_client_modulo_visto,
               test_client_bozza_senza_account, test_client_bozza,
               test_client_provato_al_contrario,
               test_rifinitura_senza_account, test_rifinitura_invio, test_rifinitura_guasto, test_rifinitura_identita,

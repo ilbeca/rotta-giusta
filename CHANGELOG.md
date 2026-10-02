@@ -2644,6 +2644,96 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   pacchetto separato con impronta verificata contro `SHASUMS256.txt`.
   Guardiano e controllo della documentazione verdi. Versione non toccata.
 
+### Test — P-57: le condizioni nel modulo di registrazione, e un modulo che non si vede
+
+- **La frase di P-56 ha il suo controllo: C-20, nel banco del client
+  (R-ACC-75).** L'informativa poggia il salvataggio sulle condizioni per
+  l'account e riserva l'account a chi ha compiuto 18 anni; P-56 le ha fatte
+  incontrare a chi si registra, e niente le teneva lì. Il gruppo nuovo apre il
+  modulo «Crea un account» dal riepilogo di un'attività, senza account e a 375
+  px, e cerca **nella finestra**, in quello che si vede e **prima** del pulsante
+  «Crea l'account e salva», il link a `/avvertenza#condizioni` — dentro il
+  sito, con l'indirizzo pulito e l'ancora — e i 18 anni; poi **segue il link**
+  in un'altra scheda, e pretende che l'ancora ci sia, si veda e sia il titolo
+  delle condizioni. La frase non si cerca parola per parola: è
+  dell'interfaccia. L'ancora si guarda anche in `site/avvertenza.html`, una
+  sola, sul titolo di una sezione che dice gli stessi 18 anni. Senza API: gira
+  sulle corsie libere, e non allunga la fila della 8620.
+
+- **Prima il rosso.** Sulla pagina di riferimento senza la frase, e sulla
+  pagina di prima di P-56 (`site/app.html` di `1540158^1`, con `RG_PAGINA`):
+  rosse sul link — «nel modulo nessun link verso /avvertenza#condizioni:
+  «Come trattiamo i dati» porta a /privacy» —, sui 18 anni e sul link da
+  seguire, e solo lì; il quarto rosso è la dichiarazione del difetto qui
+  sotto, che vuole verdi i passi prima. Poi la frase è entrata nella pagina di
+  riferimento.
+
+- **Un difetto della pagina vera, trovato misurando: dal riepilogo il modulo
+  si apre sotto il riepilogo (R-ACC-76).** Le quattro verifiche della frase
+  erano verdi, e in una schermata il modulo non c'era. `innerText` e i
+  rettangoli dicono che un testo non è nascosto, non che niente gli stia
+  sopra. Riprodotto a 375 e a 1280 px: una risposta, «Termina», «Crea un
+  account e salva» — la schermata prima e dopo il clic è la stessa, **byte
+  per byte**, il fuoco va su un titolo che non si vede, e `elementFromPoint`
+  sul titolo, sul link e sul pulsante restituisce pezzi del riepilogo.
+  `.account-panel` ha `z-index:30`; `#quizrun`, `#cartrun` e `#segrun` 80,
+  `.fine` 84: le due regole convivono dal commit di P-18. È la strada
+  dell'ADR-004 — registrarsi alla fine di un'attività —, e nessun controllo la
+  vedeva, perché il banco preme con `element.click()`: C-04 e C-05 fanno una
+  registrazione intera dentro una finestra coperta. Dall'intestazione, senza un
+  runner aperto, il modulo si vede, con la frase sopra il pulsante: è quello
+  che i collaudi hanno guardato.
+
+  C-20 ha quindi una quinta verifica, con le misure degli avvisi dell'area 6 —
+  nello schermo, opaco, niente sopra, contrasto — su titolo, link, frase e
+  pulsante. Sulla pagina vera è un **difetto aperto dichiarato** in
+  `docs/eccezioni-interfaccia.md`: la suite pretende che sia rossa, per quello
+  che sta sopra la finestra, con le altre quattro verdi, e diventa rossa lei il
+  giorno che il difetto è chiuso e la riga no. È una verifica a parte apposta:
+  la frase resta controllata anche finché la finestra è coperta. **`site/` non
+  è stato toccato:** lo chiude `ui/*`, portando la finestra sopra i runner.
+
+- **E una cosa misurata e non controllata:** il link si apre nella stessa
+  scheda. Con «indietro», in Chrome, la pagina torna com'era; con «← torna
+  alla palestra», che l'avvertenza offre in cima, `/app` si ricarica e le
+  risposte da salvare non ci sono più. Vale anche per «Come trattiamo i dati»,
+  lì da P-18. Scritto nel §12 del progetto del client, per l'interfaccia e
+  per l'autore.
+
+- **Ventuno rotture, tutte rosse per il loro motivo.** Diciotto della pagina
+  di riferimento — la frase tolta, nascosta, invisibile, il link senza testo;
+  il link con l'estensione, verso un'altra pagina, senza l'ancora, verso
+  un'ancora che non c'è, fuori dal sito; i 18 anni tolti, o scritti e
+  nascosti; la frase dopo il pulsante, dopo nel documento e sopra sullo
+  schermo, sotto il pulsante per il CSS, nel riepilogo invece che nella
+  finestra; il modulo sotto il riepilogo, la frase trasparente, la frase del
+  colore del fondo — e tre del **sito**: l'ancora tolta dall'avvertenza, messa
+  su un'altra sezione, nascosta. Per queste il banco sa ora servire, al posto
+  di un file di `site/`, la copia rotta che la prova porta con sé; la pagina
+  di riferimento resta intatta, e il rosso viene solo da dove il link è
+  seguito. **Il banco contro sé stesso**, tredici difese tolte una alla volta:
+  dodici fanno passare verde, o rossa per un altro motivo, la loro rottura;
+  una — l'ancora esatta nel link — non la esercita nessuna rottura da sola,
+  perché si copre con il link seguito, e restano tutte e due. Tolto «che cosa
+  sta sopra», sulla pagina vera la quinta verifica è verde: schermo, opacità e
+  contrasto passano già.
+
+- **Nella specifica** R-ACC-75 e R-ACC-76 nel §9.9, con che cosa non vedono —
+  le altre due porte del modulo, le altre finestre dell'account sopra un
+  runner, lette nel CSS e non riprodotte —, e il registro. Nel progetto del
+  client il §4.2 dice la frase di P-56, e il §12 ha «Le condizioni nel modulo».
+
+  Suite: interfaccia **2.248** (erano 2.158), **tre giri verdi** in 242 s
+  l'uno, il secondo con la 24.21.0 nel `PATH`; e un quarto sulla pagina di
+  prima di P-56, con 4 rossi su 2.248, tutti di C-20. Specifica **824** (erano
+  816); motore 193/197 con i quattro skip previsti; dati 263; server 72/72.
+  Con la **24.21.0 LTS** — una cartella già estratta, e l'archivio di una
+  sessione precedente con l'impronta uguale a quella del `SHASUMS256.txt` che
+  ha accanto: niente riscaricato —: motore 193/197, server 72/72. Guardiano e
+  controllo della documentazione verdi. Prima di ogni giro la 8620 guardata
+  libera; nessun carico di prova lanciato. `site/` e
+  `docs/prossime-sessioni.md` non sono stati toccati.
+
 ## [0.28.1] — 2026-10-01
 
 Un rilascio di correzione, da un ramo che parte da `v0.28.0`, con una cosa

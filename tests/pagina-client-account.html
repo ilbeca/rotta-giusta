@@ -31,6 +31,11 @@
   il 401 che riporta «Accedi» e un accesso che ferma prima la copia di prima, la
   finestra che prende, tiene e rende il fuoco. Il resto dell'aspetto e' quello
   del browser, apposta: e' lui che rende questa pagina un riferimento neutro.
+
+  Da P-57 il modulo «Crea un account» porta la frase di P-56 — le condizioni per
+  l'account, con il link a /avvertenza#condizioni, e i 18 anni —, prima del
+  pulsante: e' quello che C-20 cerca, e le sue rotture la tolgono, la nascondono,
+  la spostano e ne cambiano l'indirizzo.
 -->
 <html lang="it">
 <meta charset="utf-8">
@@ -704,6 +709,7 @@ function moduloRegistrazione(email = '') {
     <label>Email <input type="email" name="email" autocomplete="username" value="${esc(email)}"></label>
     <label>Password <input type="password" name="password" autocomplete="new-password"></label>
     <p>Almeno 15 caratteri, al massimo 256. Puoi usare una frase di tre o quattro parole.</p>
+    <p>Creando l'account accetti le <a href="/avvertenza#condizioni">condizioni per l'account</a>; l'account è per chi ha compiuto 18 anni.</p>
     <p id="account-esito" role="status"></p>
     <button data-account="crea">Crea l'account e salva</button>
     <button data-account="torna">Torna al riepilogo</button>`);

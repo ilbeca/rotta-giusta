@@ -1587,6 +1587,8 @@ controllo in `test_server.mjs`.
 | R-ACC-72 | Senza la riga nel registro non si legge: senza motivo, con un'email nel motivo, senza email, con un account o un database che non ci sono, con un file vuoto o che non è un database di questo server, su un database di prima del registro o che non si può scrivere, e se la lettura si rompe a metà, lo strumento non mostra niente, non annota niente, non dice «fatto», e non crea né migra un database | `test_server.mjs::letture: senza motivo, senza account, senza database o senza poter scrivere il registro non si legge niente` |
 | R-ACC-73 | Una lettura non cambia niente dell'account: ogni tabella tranne il registro resta com'era — nemmeno «ultimo accesso» —, niente va nel file delle cancellazioni, e chi studia non vede niente di diverso. La riga della lettura sopravvive alla cancellazione dell'account, con il suo numero e senza email, e dura un anno come gli altri eventi del registro | `test_server.mjs::letture: una lettura non cambia niente dell account, e la sua riga sopravvive alla cancellazione e dura un anno` |
 | R-ACC-74 | Il titolare ha una strada sola per leggere, e fuori dal web: i file di `server/` e di `strumenti/macchina/` che leggono le righe di un account sono dichiarati uno per uno con il motivo, e un file nuovo è rosso finché non lo è; solo `server/leggi.mjs` importa `server/letture.mjs`; lo strumento non ha query sue, non apre in sola lettura e non migra | `test_server.mjs::letture: chi legge le righe di un account e dichiarato, e il titolare ha una strada sola, fuori dal web` |
+| R-ACC-75 | Chi si registra incontra le condizioni per l'account e l'età prima di creare l'account: nel modulo «Crea un account» aperto dal riepilogo di un'attività, dentro la finestra e in testo che si vede, prima del pulsante «Crea l'account e salva» — nel documento e sullo schermo —, c'è un link a `/avvertenza#condizioni`, l'indirizzo pulito e dentro il sito, e la frase dice i 18 anni; seguito il link, l'ancora c'è nella pagina che il sito serve, si vede, ed è il titolo delle condizioni per l'account; e in `site/avvertenza.html` l'ancora è una sola, su quel titolo, in una sezione che dice gli stessi 18 anni. Coperto per quello che il banco vede: non la frase parola per parola, non le altre due porte del modulo; che la finestra non sia coperta è R-ACC-76 | `test_interfaccia.py::test_client_condizioni` |
+| R-ACC-76 | Il modulo «Crea un account» aperto dal riepilogo di un'attività si vede davvero: a 375 px il titolo, il link alle condizioni, la frase sui 18 anni e il pulsante che crea l'account, portati al centro, stanno nello schermo, non sono trasparenti, non hanno niente sopra e hanno il contrasto minimo. **Difetto aperto dichiarato sulla pagina vera**: la finestra si apre sotto il riepilogo — `.account-panel` ha `z-index` 30, i runner 80 —, e dopo «Crea un account e salva» la schermata è la stessa di prima | `test_interfaccia.py::test_client_modulo_visto` |
 
 R-ACC-20 e R-ACC-24 sono i primi requisiti del server con un controllo che si
 esegue, e il giro intero sta in `node server/ripristina.mjs --prova`, che la
@@ -1736,6 +1738,40 @@ dopo una copia, che un ripristino perde come ogni evento del registro
 (misurato: §15.1 di `account-progetto.md`, e §20 per l'autore); un file che
 leggesse le righe con SQL costruito a pezzi, perché l'elenco di R-ACC-74 è sul
 testo; e la macchina, dove questo codice arriva con il traguardo.
+
+**Le condizioni nel modulo di registrazione (P-57).** L'informativa poggia il
+salvataggio sull'esecuzione del contratto, cioè sulle condizioni per l'account,
+e dice che l'account è per chi ha compiuto 18 anni; P-56 ha messo nel modulo
+«Crea un account» la frase che le fa incontrare a chi si registra. R-ACC-75 la
+tiene lì: un gruppo nuovo del banco del client, C-20, apre il modulo dal
+riepilogo di un'attività, a 375 px e senza account, e cerca nella finestra — non
+nella pagina sotto —, nel testo che si vede e prima del pulsante, il link con
+la sua destinazione esatta e i 18 anni; poi segue il link, in un'altra scheda,
+fino all'ancora. La frase non si cerca parola per parola: è dell'interfaccia.
+L'ancora si guarda anche nel file, dove un giro fermato prima non arriva, e le
+tre rotture del **sito** — l'ancora tolta, su un'altra sezione, nascosta —
+girano con la pagina di riferimento intatta e l'avvertenza rotta, servita dal
+banco al posto di quella di `site/`.
+
+**R-ACC-76 è nato misurando R-ACC-75, ed è un difetto della pagina vera.**
+`innerText` e i rettangoli dicono che un testo non è nascosto, non che niente
+gli stia sopra: sulla pagina vera le quattro verifiche della frase erano verdi
+mentre il modulo, aperto dal riepilogo, stava **sotto** il riepilogo — la
+schermata prima e dopo il clic è la stessa, byte per byte, a 375 e a 1280 px.
+Per questo C-20 ha una quinta verifica, con le misure degli avvisi dell'area 6
+su titolo, link, frase e pulsante, e sulla pagina vera è un difetto aperto
+dichiarato in `docs/eccezioni-interfaccia.md`: la suite pretende che sia ancora
+rossa, per quello che sta sopra la finestra, con le altre quattro verdi. È
+separata apposta: la frase resta controllata anche finché la finestra è
+coperta. La riproduzione, da quando c'è e che cosa lo chiude sono nel §12 del
+progetto del client, «Le condizioni nel modulo». **Che cosa non vedono:** le
+altre due porte del modulo sulla pagina vera, «Crea un account» dalla finestra
+di accesso e dall'import di un file, che passano dalla stessa funzione; le
+altre finestre dell'account aperte sopra un runner, che stanno allo stesso
+livello di questa; che chi si registra legga la frase, e che cosa le condizioni
+dicano — il loro contenuto è del gate dell'autore —; che cosa succede alle
+risposte della pagina quando il link si apre nella stessa scheda, misurato e
+scritto nello stesso §12; un lettore di schermo; Safari.
 
 ### 9.10 La mappa di Progressi
 
@@ -2462,3 +2498,12 @@ successo, ed è il motivo per cui questo file esiste.
   una era passata verde alla prima corsa — la lettura che aggiorna «ultimo
   accesso», invisibile nel giorno in cui la data di oggi coincide con quella
   dell'account —, e il test che la prende è stato corretto.
+- **2 ottobre 2026 — le condizioni nel modulo di registrazione (P-57).** P-56
+  ha messo nel modulo «Crea un account» la frase sulle condizioni per l'account
+  e sui 18 anni; il suo controllo è il gruppo C-20 del banco del client, e
+  R-ACC-75. Misurandolo è uscito un difetto della pagina vera che nessun
+  controllo vedeva, perché il banco preme con `element.click()`: dal riepilogo
+  di un'attività il modulo si apre sotto il riepilogo, da P-18. È R-ACC-76, con
+  una verifica sua e una riga fra i difetti aperti dichiarati; lo chiude
+  `ui/*`. Ventuno rotture — diciotto della pagina di riferimento e tre del
+  sito —, tutte rosse per il loro motivo.

@@ -150,5 +150,6 @@ sulla pagina vera.
 
 | parte | verifica | perché è ancora qui |
 |---|---|---|
+| C-20 | e la finestra si vede davvero: niente copre il titolo, la frase e il pulsante | Misurato da P-57 il 2 ottobre 2026: «Crea un account e salva», nel riepilogo di un'attività, apre il modulo **sotto** il riepilogo. `.account-panel` ha `z-index:30`, i runner `#quizrun`, `#cartrun` e `#segrun` 80, `#rivedi` 82 e `.fine` 84, dal commit di P-18: la schermata prima e dopo il clic è la stessa, byte per byte, a 375 e a 1280 px, e il fuoco va su un titolo che non si vede. Dall'intestazione, senza un runner aperto, la finestra si vede. Lo chiude `ui/*`, portando la finestra sopra i runner; R-ACC-76 |
 
-*Nessuno, al momento: P-25 ha chiuso i cinque difetti di fuoco, reflow, contrasto e bersagli; i gruppi T-* girano per intero sulla pagina vera.*
+*P-25 ha chiuso i cinque difetti di fuoco, reflow, contrasto e bersagli: i gruppi T-* girano per intero sulla pagina vera.*

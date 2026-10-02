@@ -230,6 +230,13 @@ cancellarli.» Link `/privacy`. Nessuna casella di consenso marketing o
 accettazione obbligatoria dell'informativa. La revisione legale resta il gate
 del rilascio, indicato in `prossime-sessioni.md` §4.
 
+Dal 2 ottobre 2026 (P-56), sotto, una frase con le condizioni e l'età:
+«Creando l'account accetti le condizioni per l'account; l'account è per chi ha
+compiuto 18 anni.», con il link a `/avvertenza#condizioni`. Nessuna casella e
+nessun blocco del pulsante: l'informativa poggia il salvataggio sulle
+condizioni, e chi si registra deve incontrarle prima dell'azione. La tiene
+R-ACC-75, con il gruppo C-20 del banco (§12, «Le condizioni nel modulo»).
+
 Azioni «Crea l'account e salva» e «Torna al riepilogo» (oppure «Torna al
 Percorso» per ingresso volontario). Durante la richiesta: «Creazione
 dell'account in corso…», invio disabilitato contro il doppio click; i campi e
@@ -1666,6 +1673,114 @@ di riferimento nasconde la frase con `hidden`, e il gruppo è rosso. C-01 passa
 da 33 a 34 verifiche. Il resto del Carteggio progettato — preparazione, avvio,
 righe, riepilogo — non è del browser: lo esegue `tests/ciclo_carteggio.mjs`
 (area 4 §10.1, D-04).
+
+### Le condizioni nel modulo (P-57, 2 ottobre 2026)
+
+Un gruppo nuovo, **C-20**, per la frase che P-56 ha messo nel modulo «Crea un
+account» (§4.2): R-ACC-75, e la sua ultima verifica R-ACC-76. Senza account e
+senza API: gira dove c'è posto, a 375 px.
+
+**Che cosa fa.** Una risposta, «Termina», e dal riepilogo «Crea un account e
+salva»: la strada dell'ADR-004, e l'unica che la pagina di riferimento ha. Poi,
+nella finestra `aria-modal` e non nella pagina sotto:
+
+1. il modulo c'è, con il titolo «Crea un account» e il pulsante «Crea l'account
+   e salva»;
+2. **prima del pulsante si vede un link a `/avvertenza#condizioni`**: dentro la
+   finestra, con un testo, non nascosto, prima del pulsante nel documento e
+   non più in basso sullo schermo, e l'indirizzo risolto è dentro il sito, con
+   il percorso pulito — `/avvertenza`, non `/avvertenza.html` — e l'ancora
+   `#condizioni`. Il rosso dice quale di queste cose manca;
+3. **prima del pulsante si vedono i 18 anni**: `18 anni` nell'`innerText` della
+   finestra fino all'etichetta del pulsante;
+4. **seguito il link, l'ancora c'è**: il link com'è nella pagina si apre in
+   un'altra scheda dello stesso contesto — solo se resta nel sito —, e
+   l'elemento dell'ancora c'è, si vede, è il `:target`, e nomina le condizioni;
+5. **la finestra si vede davvero** (R-ACC-76): titolo, link, frase sui 18 anni
+   e pulsante, ognuno portato al centro, stanno nello schermo, non sono
+   trasparenti, non hanno niente sopra (`elementFromPoint`) e hanno il
+   contrasto minimo. Sono le misure degli avvisi dell'area 6.
+
+La frase non si cerca parola per parola: è dell'interfaccia e cambierà. Si
+pretendono il link con la sua destinazione e i 18 anni. In
+`tests/test_interfaccia.py` l'ancora si guarda anche nel file — una sola
+`id="condizioni"`, sul titolo della sezione, che dice gli stessi 18 anni —,
+perché un giro fermato prima non ci arriva.
+
+**Un difetto della pagina vera, per l'interfaccia (R-ACC-76).** Le prime
+quattro verifiche sulla pagina vera sono verdi; la quinta è nata perché erano
+verdi mentre **il modulo non si vedeva**. Riproduzione, a 375 e a 1280 px, senza
+account: Percorso, «Inizia l'attività», una risposta, «Termina l'attività», e
+nel riepilogo «Crea un account e salva». La schermata prima e dopo il clic è
+la stessa, **byte per byte**; il fuoco va sul titolo «Crea un account», che non
+si vede; `elementFromPoint` al centro del titolo, del link e del pulsante
+restituisce elementi di `#r-fine`. La causa è nel CSS: `.account-panel` ha
+`position:fixed; z-index:30`, e `#quizrun`, `#cartrun`, `#segrun` hanno
+`z-index:80`, `#rivedi` 82, `.fine` 84. Le due regole convivono dal commit di
+P-18 (`abbd564`) — letto nel sorgente di quel commit, non riprodotto su quella
+pagina, che con il motore di oggi non parte. Aperto dall'intestazione, «Accedi»
+e poi «Crea un account», senza un runner aperto, il modulo si vede, con la
+frase sopra il pulsante: guardato in una schermata a 375 px, ed è quello che i
+collaudi di P-18 e di P-56 hanno visto. Nessun controllo lo vedeva perché il
+banco preme con `element.click()` e scrive nei campi da uno script (R-ACC-60):
+C-04 e C-05 fanno una registrazione intera dentro una finestra coperta.
+**Non riprodotto, letto nel CSS:** ogni finestra dell'account aperta con un
+runner sotto — il modulo dopo un carteggio o una partita dei Segnali, l'accesso
+dal riepilogo, la data d'esame dopo la registrazione — sta allo stesso livello.
+Lo chiude `ui/*`, portando la finestra sopra i runner, e nello stesso commit
+toglie la riga `C-20` da «Difetti aperti dichiarati» in
+`docs/eccezioni-interfaccia.md`: fino ad allora la suite pretende che la quinta
+verifica sia rossa, per quello che sta sopra la finestra, con le altre quattro
+verdi. Tolta la difesa «che cosa sta sopra», sulla pagina vera la quinta è
+verde: schermo, opacità e contrasto passano già.
+
+**E una cosa da decidere, misurata e non controllata.** Il link del modulo si
+apre nella **stessa scheda**: la pagina va su `/avvertenza#condizioni`, e con
+lei se ne va la pagina che tiene in memoria le risposte da salvare. Con
+«indietro» del browser, in Chrome, la pagina torna dalla cache di navigazione
+com'era, con il riepilogo e il modulo. Con «← torna alla palestra»,
+il link che l'avvertenza offre in cima, `/app` si ricarica: niente riepilogo,
+niente risposte. Lo stesso vale per «Come trattiamo i dati», lì da P-18. C-20
+segue il link in un'altra scheda, e non lo vede. Un `target="_blank"`, o le
+condizioni mostrate dentro la finestra, sono scelte dell'interfaccia e
+dell'autore.
+
+**Ventuno rotture, tutte rosse per il loro motivo.** Diciotto della pagina di
+riferimento: la frase tolta, nascosta con `hidden`, invisibile, il link senza
+testo; il link con l'estensione, verso un'altra pagina, senza l'ancora, verso
+un'ancora che non c'è, fuori dal sito; i 18 anni tolti, e scritti ma nascosti;
+la frase dopo il pulsante, dopo nel documento ma sopra sullo schermo, sotto il
+pulsante per il CSS, nel riepilogo invece che nella finestra; e, per la quinta
+verifica, il modulo sotto il riepilogo — il difetto della pagina vera, rifatto
+—, la frase trasparente, la frase del colore del fondo. E tre del **sito**, con
+la pagina di riferimento intatta: l'ancora tolta dall'avvertenza, messa su
+un'altra sezione, nascosta. Per queste il banco serve, al posto del file di
+`site/`, la copia rotta che la prova porta con sé (`sito: { '/avvertenza': … }`):
+`site/` non si tocca.
+
+**Il banco contro sé stesso**, una difesa tolta alla volta. Senza `V` e il
+testo del link, le tre rotture del link che non si vede non sono più rosse per
+il loro motivo; con `textContent` al posto di `innerText` passano verdi i 18
+anni nascosti; cercando in tutta la pagina e non nella finestra, la frase nel
+riepilogo non è più rossa per il suo motivo; senza l'ordine nel documento, lo
+stesso per la frase messa dopo e spostata sopra, e senza quello sullo schermo
+passa verde la frase spostata sotto dal CSS; con il percorso che «comincia per»
+passa verde il link con l'estensione; senza seguire il link passano verdi le
+tre rotture del sito; senza «si vede» e senza «nomina le condizioni» sull'ancora
+passano verdi la sezione nascosta e l'ancora sull'altra sezione; senza «che
+cosa sta sopra», senza l'opacità e senza il contrasto passano verdi il modulo
+sotto il riepilogo, la frase trasparente e quella del colore del fondo.
+**Una difesa non la esercita nessuna rottura da sola**: l'ancora esatta nel
+link. Senza, il link senza ancora e quello verso l'ancora che non c'è restano
+rossi dove il link viene seguito; e senza seguirlo restano rossi per
+l'indirizzo. Si coprono a vicenda, e restano tutte e due.
+
+**Che cosa non vede.** Le altre due porte del modulo sulla pagina vera — «Crea
+un account» dalla finestra di accesso e dall'import di un file —, che passano
+dalla stessa `moduloRegistrazione()`; che la frase sia letta, e detta da un
+lettore di schermo; la vicinanza al pulsante, oltre al «prima»; il contenuto
+delle condizioni, che è del gate dell'autore; le larghezze diverse da 375 px;
+la sorte delle risposte quando il link si apre nella stessa scheda; Safari.
 
 ## 13. Evidenze e limiti di P-13
 
