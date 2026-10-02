@@ -2734,6 +2734,40 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   libera; nessun carico di prova lanciato. `site/` e
   `docs/prossime-sessioni.md` non sono stati toccati.
 
+### Corretto — P-58: le finestre dell'account sopra l'attività da salvare
+
+- **Il modulo c'era, ma il riepilogo lo copriva.** Riprodotto e guardato
+  prima della correzione a 375 e 1280 px, senza account: dopo «Crea un account
+  e salva» il fuoco era su `account-title`, mentre `elementFromPoint` sul suo
+  centro vedeva il riepilogo. Misurati i livelli 30 per `.account-panel`,
+  80 per il runner e 84 per il riepilogo. Il pannello comune dell'account
+  passa a 110, sopra anche la revisione a 82: vale per registrazione, accesso,
+  data d'esame e tutti i pannelli che usano la stessa finestra.
+- **Le condizioni e la privacy si leggono in un'altra scheda**, con
+  `target="_blank"` e `rel="noopener"`, per conservare la pagina che tiene le
+  risposte in memoria. Vale anche per la privacy nell'invito del riepilogo e
+  per il collegamento alla palestra nella finestra senza API. Seguiti nel
+  browser i due link del modulo; anche «torna alla palestra» dall'avvertenza
+  lascia intatti il modulo e la risposta nella scheda originale.
+- **Collaudo guardato in Chrome a 320, 375 e 1280 px**, aprendo registrazione
+  e accesso dai riepiloghi di un quiz, di una prova di carteggio con quattro
+  giudizi e di una partita dei Segnali con dieci risposte. Il titolo riceve
+  il fuoco ed è scoperto; «Torna al riepilogo» ed Esc conservano il testo del
+  riepilogo e restituiscono il fuoco alla porta di apertura. Guardati anche
+  il recupero password e, con un account fittizio su database temporaneo e
+  posta fittizia locali, la data d'esame dopo la registrazione alle tre
+  larghezze e i pannelli secondari dell'account sopra i Segnali. Nessun
+  servizio di produzione toccato.
+- **Tolto C-20 dai difetti aperti dichiarati** in
+  `docs/eccezioni-interfaccia.md`: R-ACC-76 ora passa sulla pagina vera.
+  Suite: interfaccia **2.245** (erano 2.248: tre verifiche nette in meno nel
+  passaggio dalla dichiarazione del difetto al controllo verde della finestra);
+  specifica **824**; dati **263**; motore **193/197**, con i quattro skip
+  previsti; server **72/72** sia con Node 25.3.0 sia con la **24.21.0 LTS**,
+  archivio del pacchetto ufficiale confrontato con il manifesto SHA-256
+  conservato accanto. Guardiano e controllo della documentazione verdi.
+  `tests/`, `docs/prossime-sessioni.md` e le tre versioni non modificati.
+
 ## [0.28.1] — 2026-10-01
 
 Un rilascio di correzione, da un ramo che parte da `v0.28.0`, con una cosa
