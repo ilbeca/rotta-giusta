@@ -231,15 +231,15 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 12 | Il controllo della frase sulle condizioni nel modulo di registrazione | Claude | `main` | — **in corso**, lanciato dalla regia | P-57 |
-| 9 | **La versione con gli account** — il traguardo | tutti | `main` | la riga 12, poi le suite verdi su `main` e il via dell'autore; il cancello degli adempimenti è chiuso dalla sua decisione del 2 ottobre (§4) | P-27, la lista scritta |
+| 13 | Il modulo dell'account che dal riepilogo resta sotto il riepilogo | ChatGPT | `ui/main` | — **pronto** | P-58 |
+| 9 | **La versione con gli account** — il traguardo | tutti | `main` | la riga 13, poi le suite verdi su `main` e il via dell'autore; il cancello degli adempimenti è chiuso dalla sua decisione del 2 ottobre (§4) | P-27, la lista scritta |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**, e si sono incontrate: il client degli
 account è nella pagina (P-18), Progressi è la mappa (P-23), e il carteggio ha
 i suoi contratti e controlli su `main` (P-32…P-35). **Per Claude, l'ordine
-consigliato:** P-57, in corso. **Per ChatGPT:** niente di pronto. Il traguardo
-aspetta P-57, poi i suoi cancelli (P-27) e il via dell'autore. I prompt di Claude vanno uno alla volta nella cartella principale, e
+consigliato:** niente di pronto. **Per ChatGPT:** P-58, pronto. Il traguardo
+aspetta P-58, poi i suoi cancelli (P-27) e il via dell'autore. I prompt di Claude vanno uno alla volta nella cartella principale, e
 la suite dell'interfaccia di un worktree esclude quella dell'altro, per la porta
 8620. Il numero di una riga è il suo nome, non la sua posizione. Il traguardo,
 P-27, non aspetta le aree 4–6: aspetta il server in esercizio, i testi e gli
@@ -672,7 +672,9 @@ consuma, non si riprogetta.
   ultime righe delle sessioni «Adempimenti progetto account» e della regia
   precedente. **Due cose bloccavano il traguardo, e sono fatte lo stesso
   giorno:** la prima con P-55 (`server/leggi.mjs`), la seconda con P-56 (la
-  frase nel modulo, fusa); resta P-57, il controllo della seconda. **Da P-55,
+  frase nel modulo, fusa), e il controllo della seconda con P-57 — che ha
+  trovato il modulo di registrazione **sotto** il riepilogo, da P-18: lo chiude
+  P-58, e il traguardo lo aspetta. **Da P-55,
   per l'autore**, nel §20 di `account-progetto.md`: nella procedura del
   titolare gli account si leggono con `leggi.mjs`, mai con `sqlite3`; e se le
   letture annotate debbano sopravvivere a un ripristino (proposta: tenerla
@@ -3364,9 +3366,11 @@ ripetuto il collaudo nel browser. Il controllo permanente della frase è P-57.
 
 ### P-57 — Claude: il controllo delle condizioni nel modulo di registrazione
 
-**Stato:** **lanciato dalla regia il 2 ottobre 2026** (punto 8), su delega
-dell'autore, dopo la merge di P-56. **Dove:** Claude Code,
-`~/Software/rotta-giusta`, ramo **`main`**. **Nasce da:** P-56 — è per lei quello che P-49 è stato per P-48.
+**Stato:** **chiuso il 2 ottobre 2026**, commit `dcced58` su `main`; lanciato
+dalla regia (punto 8) su delega dell'autore, dopo la merge di P-56. Si è
+interrotto una volta a metà, per il limite d'uso dell'account, ed è stato
+ripreso con il suo contesto: le modifiche non committate erano rimaste
+com'erano. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**. **Nasce da:** P-56 — è per lei quello che P-49 è stato per P-48.
 
 ```
 Questo prompt è per Claude Code, nella cartella principale
@@ -3393,6 +3397,84 @@ Suite verdi su più giri, voce in fondo a [Unreleased], un commit.
 Chiudi con il resoconto di docs/prossime-sessioni.md.
 ```
 
+**Esito:** commit `dcced58`, voce nel CHANGELOG. Gruppo nuovo C-20 nel banco
+del client: dal riepilogo apre «Crea un account» e cerca nella finestra, in
+quello che si vede e prima del pulsante, il link a `/avvertenza#condizioni` e i
+18 anni; poi segue il link fino all'ancora. `test_client_condizioni`
+(R-ACC-75), con l'ancora controllata anche nel file, e
+`test_client_modulo_visto` (R-ACC-76). 21 rotture rosse per il loro motivo, il
+banco provato contro sé stesso; la pagina di prima di P-56 è rossa in quattro
+verifiche, tutte di C-20. **Trovato, e conta più del controllo: un difetto
+della pagina vera, da P-18.** «Crea un account e salva», nel riepilogo di
+un'attività, apre il modulo **sotto** il riepilogo: `.account-panel` ha
+`z-index:30`, i runner 80, `#rivedi` 82, `.fine` 84. Riprodotto dalla sessione
+a 375 e 1280 px: la schermata prima e dopo il clic è identica, il fuoco va su
+un titolo che non si vede. Dall'intestazione il modulo si vede, ed è quello che
+i collaudi di P-18 e P-56 hanno guardato; il banco preme con `element.click()`
+e registrava dentro una finestra coperta. È la strada dell'ADR-004 — registrarsi
+alla fine di un'attività. Dichiarato fra i «Difetti aperti dichiarati» di
+`docs/eccezioni-interfaccia.md` (riga C-20), con la quinta verifica di C-20 che
+la suite pretende rossa finché il difetto c'è: lo chiude P-58. Secondo
+trovato: il link alle condizioni, e «Come trattiamo i dati», si aprono nella
+stessa scheda, e tornando con «← torna alla palestra» la pagina si ricarica e
+le risposte da salvare sono perse (§12 del progetto del client, «E una cosa da
+decidere»). **Non fatto:** le altre due porte del modulo sulla pagina vera, che
+la pagina di riferimento non ha. Controllato dalla regia: i valori di
+`z-index` riletti nel sorgente; la coda non toccata; motore 193/197, server
+72/72 anche con la 24.21.0 LTS, dati 263, specifica 824, interfaccia 2.248.
+
+### P-58 — ChatGPT: il modulo dell'account sopra il riepilogo
+
+**Stato:** **pronto**. **Dove:** app di ChatGPT, progetto
+`~/Software/rotta-giusta-ui`, ramo `ui/main`, modalità Local. **Nasce da:**
+P-57. Il traguardo lo aspetta: la registrazione dal riepilogo è la strada
+dell'ADR-004. L'ultimo capoverso sui link in una scheda nuova è la proposta
+della regia: se l'autore decide altrimenti, lo dice prima di lanciarlo.
+
+```
+Questo prompt è per ChatGPT, nel worktree ~/Software/rotta-giusta-ui,
+sul ramo ui/main. Se sei un altro agente o sei in un'altra cartella,
+fermati e dillo, senza scrivere niente.
+
+Sessione P-58. Leggi l'esito di P-57 nel §6 di
+docs/prossime-sessioni.md, la riga C-20 fra i «Difetti aperti
+dichiarati» di docs/eccezioni-interfaccia.md, R-ACC-76 nel §9.9 della
+specifica, e nel §12 di docs/account-client-progetto.md «Le condizioni
+nel modulo».
+
+Il difetto: nel riepilogo di un'attività, «Crea un account e salva»
+apre il modulo sotto il riepilogo, e chi vuole salvare non vede
+cambiare niente. È la strada dell'ADR-004, e c'è da P-18. P-57 indica
+una causa — .account-panel a z-index 30 contro i runner a 80, #rivedi
+a 82 e .fine a 84 —: riproducila nel browser e guardala prima di
+fidarti. Poi ogni finestra dell'account si vede sopra qualunque runner,
+revisione e riepilogo: la registrazione, l'accesso, la data d'esame e
+le altre che si aprono da lì, dal riepilogo dei quiz, del carteggio e
+dei Segnali. Il fuoco va dove si vede; Esc e «Torna al riepilogo»
+riportano al riepilogo com'era, con le risposte ancora lì.
+
+Nello stesso commit togli la riga C-20 da
+docs/eccezioni-interfaccia.md: da lì la verifica gira verde sulla
+pagina vera, e la suite lo pretende.
+
+E i link dentro le finestre dell'account — le condizioni e «Come
+trattiamo i dati» — si aprono in una scheda nuova: oggi si aprono nella
+stessa, e chi torna dall'avvertenza con «torna alla palestra» ricarica
+la pagina e perde le risposte che stava per salvare.
+
+La suite dell'interfaccia vuole Chrome, la porta 8620 libera
+(lsof -iTCP:8620 -sTCP:LISTEN) e il permesso per le connessioni locali,
+e dura circa quattro minuti; se non gira, fermati e dillo. Non toccare
+tests/ né docs/prossime-sessioni.md. Se un controllo ti sta stretto,
+fermati e dillo: cambiarlo tocca main.
+
+Tutte le suite verdi, collaudo guardato a 320, 375 e 1280 px aprendo il
+modulo dal riepilogo di un quiz, di una prova di carteggio e di una
+partita dei Segnali, senza account, voce in fondo a [Unreleased], un
+commit con il trailer, versione non toccata. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
 **Esito:** —
 
 ### P-27 — la regia, con l'autore: il traguardo, la 0.29.0
@@ -3417,7 +3499,9 @@ ordine; ogni passo dice chi lo fa e come si vede che è fatto.
   strumento che annota le letture del titolare, e le condizioni per l'account
   nel modulo di registrazione. Si chiude quando l'autore decide per ciascuna:
   farla prima, o cambiare la frase che la promette. Sono P-55, P-56 e P-57:
-  i primi due chiusi il 2 ottobre, il terzo in corso;
+  tutti e tre chiusi il 2 ottobre. **E riaperto da P-57**, che ha trovato il
+  modulo di registrazione sotto il riepilogo: resta aperto finché P-58 non è
+  fuso e la riga C-20 non è uscita dai difetti dichiarati;
 - le suite verdi sullo stato di `main`, quella del server anche con la LTS 24.
 
 **I passi, in quest'ordine:**
@@ -3981,3 +4065,12 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   dati 263, specifica 816, interfaccia 2.158. L'autore ha delegato alla regia
   anche P-57, lanciato dopo la merge. Due domande nuove per lui nel §20, da
   P-55; nel passo 5 di P-27 entra `leggi.mjs`.
+- **2 ottobre 2026 — P-57 chiuso, e un difetto che ferma il traguardo.** Il
+  controllo delle condizioni nel modulo c'è (R-ACC-75), e scrivendolo la
+  sessione ha trovato che il modulo aperto dal riepilogo resta sotto il
+  riepilogo, da P-18: chi vuole registrarsi alla fine di un'attività non vede
+  niente. Dichiarato, con la verifica che lo dimostra (R-ACC-76); P-58 per
+  ChatGPT lo chiude, con i link delle finestre dell'account in una scheda
+  nuova. P-57 si era interrotto per il limite d'uso dell'account ed è stato
+  ripreso senza perdere niente. Suite sullo stato di `dcced58`: motore 193/197,
+  server 72/72 anche con la LTS, dati 263, specifica 824, interfaccia 2.248.
