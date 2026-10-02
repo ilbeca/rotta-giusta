@@ -1734,8 +1734,12 @@ verifica sia rossa, per quello che sta sopra la finestra, con le altre quattro
 verdi. Tolta la difesa «che cosa sta sopra», sulla pagina vera la quinta è
 verde: schermo, opacità e contrasto passano già.
 
-**E una cosa da decidere, misurata e non controllata.** Il link del modulo si
-apre nella **stessa scheda**: la pagina va su `/avvertenza#condizioni`, e con
+**E una cosa da decidere, misurata e non controllata** — *chiusa da P-58 il 2
+ottobre 2026: i link delle finestre dell'account («condizioni», «Come
+trattiamo i dati») si aprono in una scheda nuova, `target="_blank"` con
+`rel="noopener"`; era la proposta della regia, che l'autore non ha cambiato.
+Nessun controllo lo ripete. Il testo di prima:* Il link del modulo si
+apriva nella **stessa scheda**: la pagina va su `/avvertenza#condizioni`, e con
 lei se ne va la pagina che tiene in memoria le risposte da salvare. Con
 «indietro» del browser, in Chrome, la pagina torna dalla cache di navigazione
 com'era, con il riepilogo e il modulo. Con «← torna alla palestra»,

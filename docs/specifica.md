@@ -1588,7 +1588,7 @@ controllo in `test_server.mjs`.
 | R-ACC-73 | Una lettura non cambia niente dell'account: ogni tabella tranne il registro resta com'era — nemmeno «ultimo accesso» —, niente va nel file delle cancellazioni, e chi studia non vede niente di diverso. La riga della lettura sopravvive alla cancellazione dell'account, con il suo numero e senza email, e dura un anno come gli altri eventi del registro | `test_server.mjs::letture: una lettura non cambia niente dell account, e la sua riga sopravvive alla cancellazione e dura un anno` |
 | R-ACC-74 | Il titolare ha una strada sola per leggere, e fuori dal web: i file di `server/` e di `strumenti/macchina/` che leggono le righe di un account sono dichiarati uno per uno con il motivo, e un file nuovo è rosso finché non lo è; solo `server/leggi.mjs` importa `server/letture.mjs`; lo strumento non ha query sue, non apre in sola lettura e non migra | `test_server.mjs::letture: chi legge le righe di un account e dichiarato, e il titolare ha una strada sola, fuori dal web` |
 | R-ACC-75 | Chi si registra incontra le condizioni per l'account e l'età prima di creare l'account: nel modulo «Crea un account» aperto dal riepilogo di un'attività, dentro la finestra e in testo che si vede, prima del pulsante «Crea l'account e salva» — nel documento e sullo schermo —, c'è un link a `/avvertenza#condizioni`, l'indirizzo pulito e dentro il sito, e la frase dice i 18 anni; seguito il link, l'ancora c'è nella pagina che il sito serve, si vede, ed è il titolo delle condizioni per l'account; e in `site/avvertenza.html` l'ancora è una sola, su quel titolo, in una sezione che dice gli stessi 18 anni. Coperto per quello che il banco vede: non la frase parola per parola, non le altre due porte del modulo; che la finestra non sia coperta è R-ACC-76 | `test_interfaccia.py::test_client_condizioni` |
-| R-ACC-76 | Il modulo «Crea un account» aperto dal riepilogo di un'attività si vede davvero: a 375 px il titolo, il link alle condizioni, la frase sui 18 anni e il pulsante che crea l'account, portati al centro, stanno nello schermo, non sono trasparenti, non hanno niente sopra e hanno il contrasto minimo. **Difetto aperto dichiarato sulla pagina vera**: la finestra si apre sotto il riepilogo — `.account-panel` ha `z-index` 30, i runner 80 —, e dopo «Crea un account e salva» la schermata è la stessa di prima | `test_interfaccia.py::test_client_modulo_visto` |
+| R-ACC-76 | Il modulo «Crea un account» aperto dal riepilogo di un'attività si vede davvero: a 375 px il titolo, il link alle condizioni, la frase sui 18 anni e il pulsante che crea l'account, portati al centro, stanno nello schermo, non sono trasparenti, non hanno niente sopra e hanno il contrasto minimo. Fino al 2 ottobre 2026 era un difetto aperto dichiarato sulla pagina vera: la finestra si apriva sotto il riepilogo — `.account-panel` aveva `z-index` 30, i runner 80 —; P-58 l'ha portata sopra, e la verifica gira verde senza eccezione | `test_interfaccia.py::test_client_modulo_visto` |
 
 R-ACC-20 e R-ACC-24 sono i primi requisiti del server con un controllo che si
 esegue, e il giro intero sta in `node server/ripristina.mjs --prova`, che la
@@ -1759,19 +1759,21 @@ gli stia sopra: sulla pagina vera le quattro verifiche della frase erano verdi
 mentre il modulo, aperto dal riepilogo, stava **sotto** il riepilogo — la
 schermata prima e dopo il clic è la stessa, byte per byte, a 375 e a 1280 px.
 Per questo C-20 ha una quinta verifica, con le misure degli avvisi dell'area 6
-su titolo, link, frase e pulsante, e sulla pagina vera è un difetto aperto
-dichiarato in `docs/eccezioni-interfaccia.md`: la suite pretende che sia ancora
-rossa, per quello che sta sopra la finestra, con le altre quattro verdi. È
-separata apposta: la frase resta controllata anche finché la finestra è
-coperta. La riproduzione, da quando c'è e che cosa lo chiude sono nel §12 del
+su titolo, link, frase e pulsante. Sulla pagina vera è stata un difetto aperto
+dichiarato in `docs/eccezioni-interfaccia.md` fino a P-58 (2 ottobre 2026), che
+ha portato `.account-panel` sopra runner, revisione e riepiloghi e ha tolto la
+riga: da allora la verifica gira verde sulla pagina vera, e la suite lo
+pretende. È separata apposta: la frase resta controllata anche se la finestra
+tornasse coperta. La riproduzione, da quando c'è e che cosa lo chiude sono nel §12 del
 progetto del client, «Le condizioni nel modulo». **Che cosa non vedono:** le
 altre due porte del modulo sulla pagina vera, «Crea un account» dalla finestra
 di accesso e dall'import di un file, che passano dalla stessa funzione; le
 altre finestre dell'account aperte sopra un runner, che stanno allo stesso
 livello di questa; che chi si registra legga la frase, e che cosa le condizioni
-dicano — il loro contenuto è del gate dell'autore —; che cosa succede alle
-risposte della pagina quando il link si apre nella stessa scheda, misurato e
-scritto nello stesso §12; un lettore di schermo; Safari.
+dicano — il loro contenuto è del gate dell'autore —; che i link delle
+finestre dell'account si aprano in una scheda nuova, come fanno da P-58 perché
+la pagina con le risposte da salvare non si ricarichi: l'ha guardato il suo
+collaudo, e nessun controllo lo ripete; un lettore di schermo; Safari.
 
 ### 9.10 La mappa di Progressi
 
@@ -2507,3 +2509,9 @@ successo, ed è il motivo per cui questo file esiste.
   una verifica sua e una riga fra i difetti aperti dichiarati; lo chiude
   `ui/*`. Ventuno rotture — diciotto della pagina di riferimento e tre del
   sito —, tutte rosse per il loro motivo.
+- **2 ottobre 2026 — R-ACC-76 senza eccezione (P-58).** L'interfaccia ha
+  portato la finestra dell'account sopra runner, revisione e riepiloghi, e ha
+  tolto la riga C-20 dai difetti aperti dichiarati: la quinta verifica di C-20
+  gira verde sulla pagina vera. I link delle finestre dell'account si aprono
+  ora in una scheda nuova; nessun controllo lo tiene, ed è detto fra le cose
+  che i controlli non vedono.

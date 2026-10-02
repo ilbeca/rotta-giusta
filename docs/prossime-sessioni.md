@@ -231,15 +231,14 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 13 | Il modulo dell'account che dal riepilogo resta sotto il riepilogo | ChatGPT | `ui/main` | — **pronto** | P-58 |
-| 9 | **La versione con gli account** — il traguardo | tutti | `main` | la riga 13, poi le suite verdi su `main` e il via dell'autore; il cancello degli adempimenti è chiuso dalla sua decisione del 2 ottobre (§4) | P-27, la lista scritta |
+| 9 | **La versione con gli account** — il traguardo | tutti | `main` | il via dell'autore: i tre cancelli di P-27 sono chiusi dal 2 ottobre; il cancello degli adempimenti è chiuso dalla sua decisione del 2 ottobre (§4) | P-27, la lista scritta |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**, e si sono incontrate: il client degli
 account è nella pagina (P-18), Progressi è la mappa (P-23), e il carteggio ha
 i suoi contratti e controlli su `main` (P-32…P-35). **Per Claude, l'ordine
-consigliato:** niente di pronto. **Per ChatGPT:** P-58, pronto. Il traguardo
-aspetta P-58, poi i suoi cancelli (P-27) e il via dell'autore. I prompt di Claude vanno uno alla volta nella cartella principale, e
+consigliato:** niente di pronto. **Per ChatGPT:** niente di pronto. Il traguardo
+ha i tre cancelli chiusi (P-27) e aspetta il via dell'autore. I prompt di Claude vanno uno alla volta nella cartella principale, e
 la suite dell'interfaccia di un worktree esclude quella dell'altro, per la porta
 8620. Il numero di una riga è il suo nome, non la sua posizione. Il traguardo,
 P-27, non aspetta le aree 4–6: aspetta il server in esercizio, i testi e gli
@@ -3425,9 +3424,9 @@ la pagina di riferimento non ha. Controllato dalla regia: i valori di
 
 ### P-58 — ChatGPT: il modulo dell'account sopra il riepilogo
 
-**Stato:** **pronto**. **Dove:** app di ChatGPT, progetto
+**Stato:** **chiuso il 2 ottobre 2026**, merge `ce86d3f`. **Dove:** app di ChatGPT, progetto
 `~/Software/rotta-giusta-ui`, ramo `ui/main`, modalità Local. **Nasce da:**
-P-57. Il traguardo lo aspetta: la registrazione dal riepilogo è la strada
+P-57. Il traguardo lo aspettava: la registrazione dal riepilogo è la strada
 dell'ADR-004. L'ultimo capoverso sui link in una scheda nuova è la proposta
 della regia: se l'autore decide altrimenti, lo dice prima di lanciarlo.
 
@@ -3475,7 +3474,24 @@ commit con il trailer, versione non toccata. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `abb6b4f` su `ui/main`, merge `ce86d3f`, voce nel CHANGELOG.
+`.account-panel` passa da `z-index` 30 a 110, sopra runner (80), revisione (82)
+e riepilogo (84): la causa indicata da P-57, riprodotta dalla sessione prima di
+correggerla. I link delle finestre dell'account — le condizioni, «Come
+trattiamo i dati», e `rottagiusta.it/app` nel pannello «Account non
+disponibile qui» — si aprono in una scheda nuova, con `rel="noopener"`. Tolta la
+riga C-20 dai «Difetti aperti dichiarati»: nessun difetto dichiarato resta.
+Collaudo della sessione a 320, 375 e 1280 px dai riepiloghi di quiz, carteggio
+e Segnali. Controllato dalla regia: territori puliti, trailer, il diff tocca
+`site/app.html` (cinque righe), le eccezioni e il CHANGELOG, `git log
+main..ui/main` vuoto, CHANGELOG con la sua riga vuota e nessuna riga del ramo
+persa; **sullo stato fuso** motore 193/197, server 72/72 anche con la 24.21.0
+LTS, dati 263, specifica 824, interfaccia **2.245** — tre in meno, quelle della
+dichiarazione uscita —, `ripristina --prova` 22 controlli. La regia **non** ha
+ripetuto il collaudo nel browser. Nello stesso commit della coda la regia ha
+aggiornato R-ACC-76 e il suo paragrafo nel §9.9 della specifica, e «E una cosa
+da decidere» nel §12 del progetto del client: i link in una scheda nuova erano
+la sua proposta, che l'autore non ha cambiato prima di lanciare.
 
 ### P-27 — la regia, con l'autore: il traguardo, la 0.29.0
 
@@ -3500,9 +3516,12 @@ ordine; ogni passo dice chi lo fa e come si vede che è fatto.
   nel modulo di registrazione. Si chiude quando l'autore decide per ciascuna:
   farla prima, o cambiare la frase che la promette. Sono P-55, P-56 e P-57:
   tutti e tre chiusi il 2 ottobre. **E riaperto da P-57**, che ha trovato il
-  modulo di registrazione sotto il riepilogo: resta aperto finché P-58 non è
-  fuso e la riga C-20 non è uscita dai difetti dichiarati;
+  modulo di registrazione sotto il riepilogo. **Chiuso di nuovo il 2 ottobre
+  2026**: P-58 è fuso, la riga C-20 è uscita, nessun ramo ha lavoro non fuso;
 - le suite verdi sullo stato di `main`, quella del server anche con la LTS 24.
+  **Chiuso il 2 ottobre 2026 sullo stato fuso con P-58**: motore 193/197,
+  server 72/72 anche con la 24.21.0 LTS, dati 263, specifica 824, interfaccia
+  2.245. Si rifanno sul commit di rilascio, prima del tag.
 
 **I passi, in quest'ordine:**
 
@@ -4074,3 +4093,9 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   nuova. P-57 si era interrotto per il limite d'uso dell'account ed è stato
   ripreso senza perdere niente. Suite sullo stato di `dcced58`: motore 193/197,
   server 72/72 anche con la LTS, dati 263, specifica 824, interfaccia 2.248.
+- **2 ottobre 2026 — P-58 chiuso: i tre cancelli di P-27 sono chiusi.** La
+  finestra dell'account sta sopra i riepiloghi, e nessun difetto dichiarato
+  resta. In un giorno il controllo chiesto dall'autore ha prodotto quattro
+  prompt — P-55, P-56, P-57, P-58 — per due promesse dell'informativa senza il
+  loro pezzo e per un difetto che c'era da P-18 sulla strada dell'ADR-004. Il
+  traguardo aspetta il via dell'autore, e comincia dal passo 1.
