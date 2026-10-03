@@ -271,6 +271,21 @@ statichost.eu, e `curl https://rottagiusta.it/sw.js` per vedere il `CACHE` nuovo
 vedere la versione nuova (`docs/account-progetto.md` §2.7). Un passo non fa
 l'altro: un rilascio fermato a metà lascia la pagina e il server su due numeri.
 
+**«Build now» si preme con il commit di rilascio in cima a `main`.** Il
+pannello di statichost.eu scrive accanto a ogni build il messaggio dell'ultimo
+commit del ramo, ed è il primo posto in cui si guarda che cosa è in linea. Se
+sopra il rilascio ci sono già altri commit — la coda, una voce di verifica —,
+si pusha prima il solo commit di rilascio, si preme «Build now», e poi il resto:
+
+```sh
+git push origin vX.Y.Z^{commit}:refs/heads/main vX.Y.Z
+```
+
+Un commit che non tocca `site/` non chiede una build. Il 3 ottobre 2026 la
+versione con gli account è andata in linea con l'etichetta di un commit della
+coda, `docs(coda): …`: il contenuto era quello del tag, byte per byte, e
+l'etichetta non lo diceva.
+
 ## Il rischio caratteristico: il guasto muto
 
 L'offline che non è mai esistito, lo specchio locale sovrascritto, le righe
