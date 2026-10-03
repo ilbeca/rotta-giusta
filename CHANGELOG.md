@@ -11,6 +11,24 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+## [0.30.0] — 2026-10-03
+
+**Il sito più semplice: niente offline.** Rotta Giusta si apre con la rete,
+e senza rete non si apre più. Il motivo è la semplicità: con gli account le
+risposte di chi si registra stanno sul server, e l'offline costava una cosa
+che pochi capivano — dopo ogni rilascio la versione nuova arrivava solo alla
+seconda ricarica. Da qui la versione nuova arriva alla prima. Chi aveva il sito
+nel browser trova, alla visita dopo, un service worker che cancella la vecchia
+cache e si toglie da solo, senza ricaricare la pagina aperta: in quella cache
+c'erano soltanto il sito e la banca, mai una risposta. **Esce anche il
+passaggio dell'archivio di prima degli account**: la pagina non legge più le
+risposte salvate nel browser prima del 3 ottobre, e non le tocca. Le due
+decisioni, con il loro prezzo, sono nell'ADR-005.
+
+Il server degli account non cambia: si porta allo stesso tag con `rg-aggiorna`
+perché `GET /v1/salute` dica la versione nuova. Le voci che seguono sono il
+lavoro di questi giorni, com'è stato scritto allora.
+
 ### Verificato — la v0.29.0, in esercizio
 
 - **Il tag e le suite.** `v0.29.0` è un tag annotato su `3198803`, il commit
