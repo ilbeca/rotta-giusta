@@ -347,8 +347,8 @@ nav button{position:relative;padding:9px 2px 10px;font-size:10.5px;color:var(--d
 /* Sette voci su un iPhone SE: 375 / 7 = 53 px a testa, e "Carteggio" a 10,5px
    non ci sta piu'. Sotto i 400 px il corpo scende quel tanto che basta. */
 @media(max-width:400px){ nav button{font-size:9.5px;letter-spacing:0} }
-/* Il pallino su Info: si accende quando qualcosa non torna (coda ferma,
-   offline non pronto). La diagnostica e' uscita da Oggi, ma un guasto muto
+/* Il pallino su Info: si accende quando una scrittura fallisce.
+   La diagnostica e' uscita da Oggi, ma un guasto muto
    deve restare visibile da qualunque schermata. */
 .ndot{display:none;position:absolute;top:7px;right:12px;width:7px;height:7px;
       border-radius:99px;background:var(--warn)}
@@ -769,7 +769,7 @@ details.card summary{min-height:44px}
       <button data-v="cart"><svg class="ico" aria-hidden="true"><use href="#i-chart"/></svg><span>Carteggio</span></button>
       <button id="nav-progressi" data-v="diag"><svg class="ico" aria-hidden="true"><use href="#i-bars"/></svg><span>Progressi</span></button>
     </nav>
-    <button class="app-info" data-v="info"><span class="ndot" id="nav-info-dot"></span><svg class="ico" aria-hidden="true"><use href="#i-info"/></svg><span class="header-statuses"><span id="nav-info-label">Info</span><span id="nav-save-status" hidden>Salvataggio da controllare</span><span id="nav-offline-status" hidden>Offline da completare</span></span></button>
+    <button class="app-info" data-v="info"><span class="ndot" id="nav-info-dot"></span><svg class="ico" aria-hidden="true"><use href="#i-info"/></svg><span class="header-statuses"><span id="nav-info-label">Info</span><span id="nav-save-status" hidden>Salvataggio da controllare</span></span></button>
     <button class="app-info" id="conto-porta" data-account="porta">Accedi</button>
   </div>
 </header>
@@ -779,7 +779,6 @@ details.card summary{min-height:44px}
   <!-- ====================== PERCORSO ====================== -->
   <section class="view on rotta-view" id="v-oggi">
     <div class="rotta-alerts" id="rotta-alerts" aria-live="polite"></div>
-    <section class="account-warning" id="vecchio-avviso" hidden></section>
     <div class="account-warning" id="conto-verifica" hidden></div>
     <p class="account-warning prova-avviso">Senza account le risposte valgono solo finché questa pagina resta aperta. Se la chiudi o la ricarichi, le perdi. Non salviamo niente, nemmeno le tue preferenze.</p>
 
@@ -892,7 +891,6 @@ details.card summary{min-height:44px}
       <div class="row" id="quiz-vuoto"></div>
       <p id="quiz-durata" class="note"></p>
       <p id="quiz-storage" class="note"></p>
-      <p id="quiz-offline" class="note"></p>
       <button class="btn primary" id="start">Inizia</button>
       <button class="text-btn" id="quiz-return" hidden></button>
     </section>
@@ -993,7 +991,7 @@ details.card summary{min-height:44px}
   <section class="view" id="v-info">
     <h1>Info e diagnostica</h1>
     <button class="text-btn" data-v="diag">Vedi i progressi</button>
-    <p class="sub">Versione, archivio delle risposte, offline. Quando qualcosa non torna,
+    <p class="sub">Versione e archivio delle risposte. Quando qualcosa non torna,
       la risposta comincia da qui — e il pallino ambra sulla voce Info si accende da solo.</p>
 
     <h2>Versione</h2>
@@ -1005,9 +1003,7 @@ details.card summary{min-height:44px}
     <button class="btn" data-account="porta">Accedi o apri Account</button>
     <div class="card">
       <p class="note" id="i-archivio">…</p>
-      <div id="vecchio-info" class="note" hidden></div>
-      <!-- La prova resta in memoria; l'account usa il server e una copia locale
-           isolata. L'archivio precedente è una fonte di migrazione separata. -->
+      <!-- La prova resta in memoria; l'account usa il server e una copia locale isolata. -->
       <div class="row" style="margin-top:12px">
         <button class="btn" id="esporta" style="flex:1 1 200px">Scarica i tuoi progressi</button>
         <button class="btn" id="importa" style="flex:1 1 200px">Ricaricali da un file</button>
@@ -1015,14 +1011,6 @@ details.card summary{min-height:44px}
       </div>
       <p class="note" style="margin-top:10px">Senza account le risposte della pagina non vengono conservate. Con l'account le risposte sono legate alla tua email e arrivano al nostro server in chiaro. Puoi scaricare il file dei progressi e importare un file precedente.</p>
       <button class="btn" id="azzera" style="margin-top:12px">Azzera i progressi su questo dispositivo</button>
-    </div>
-
-    <h2 id="info-offline" tabindex="-1">Offline</h2>
-    <div class="card">
-      <p class="note" id="offnote">Il guscio e la banca vengono messi in cache al primo caricamento.
-        Le figure no: sono 102 file. Scaricale prima di partire, cosi' una batteria
-        funziona anche senza rete.</p>
-      <button class="btn" id="dl" style="margin-top:12px">Scarica tutto per l'offline</button>
     </div>
 
     <h2>Il sito</h2>
@@ -1143,7 +1131,7 @@ details.card summary{min-height:44px}
 
 <!--
   La revisione di una prova sostenuta: si riapre dall'elenco, in sola lettura.
-  Le domande e le risposte esatte le ha la banca in cache; le risposte che hai
+  Le domande e le risposte esatte le ha la banca caricata; le risposte che hai
   dato quella volta stanno nell'archivio, riga per riga, con l'uid della prova.
 -->
 <div id="rivedi">
@@ -1192,8 +1180,7 @@ import * as E from '/engine.js';
 /* ===================== stato e persistenza ============================== */
 //
 // Senza account risposte e preferenze vivono soltanto nella pagina aperta.
-// La copia precedente agli account viene letta a parte, per il passaggio
-// esplicito. Con account righe e coda sono nello stesso database per chiave.
+// Con account righe e coda sono nello stesso database per chiave.
 //
 // Lo specchio per quesito (S.prog, S.tprog, S.cprog) — quello che il motore di
 // selezione legge — **non si salva mai**: si ricalcola dall'archivio con
@@ -1225,7 +1212,7 @@ const S = {
   caricamento: true, bancaErrore: null, cartStato: 'caricamento',
   archivio: [],                        // righe della pagina o dell'account corrente
   prova: [], conto: null, contoDb: null, ciclo: 0, invioController: null, profiloController: null, puliziaChiave: null,
-  invio: null, invioAncora: false, vecchio: [], vecchioFonti: [], vecchioConflitti: [], vecchioErrore: null, vecchioMigrato: null,
+  invio: null, invioAncora: false,
   accountOrigine: null, trasferimento: null, onboarding: false, dataProposta: null,
   prog: {}, tprog: {}, cprog: {},      // derivati dall'archivio, mai salvati
   date: { oggi: null, esame: null, chiusura_quiz: null, inizio_quiz: null },
@@ -1249,8 +1236,7 @@ function segnala(t, err) {
 
 /* ===================== stato locale ===================================== */
 // Le risposte anonime restano in memoria. Le sole scritture persistenti nuove
-// passano dall'archivio rg-account-<chiave_locale>; la copia precedente si
-// legge in leggiVecchio() e non si modifica implicitamente.
+// passano dall'archivio rg-account-<chiave_locale>.
 const ARCH = {
   modo: 'memoria', lettura: 'in_corso', erroreLettura: null,
   errore: null, ultimaScrittura: null,
@@ -1271,7 +1257,6 @@ function indirizzoApi(loc) {
   return null;
 }
 const API = indirizzoApi(location);
-const NOME_VECCHIO_DB = 'open-patente-nautica'; // NOME: 'open-patente-nautica' — archivio precedente, mai rinominare.
 const nomeConto = (chiave) => `rg-account-${chiave}`;
 const CANALE = typeof BroadcastChannel === 'function' ? new BroadcastChannel('rg-account') : null;
 let invioTimer = null, rilascioLock = null, primoTrasferimento = false;
@@ -1320,13 +1305,13 @@ function contoTx(fai = () => null) {
     try { tx = S.contoDb.transaction(['righe', 'meta'], 'readwrite'); }
     catch (e) { return ko(e); }
     const righe = tx.objectStore('righe'), meta = tx.objectStore('meta');
-    const qr = righe.getAll(), qc = meta.get('coda'), qt = meta.get('trasferimento'), qf = meta.get('conflitto'), qs = meta.get('segnali-pendenti'), qm = meta.get('migrazione-vecchio'), qp = meta.get('preferenze');
+    const qr = righe.getAll(), qc = meta.get('coda'), qt = meta.get('trasferimento'), qf = meta.get('conflitto'), qs = meta.get('segnali-pendenti'), qp = meta.get('preferenze');
     let stato;
     tx.oncomplete = () => ok(stato);
     tx.onerror = () => ko(tx.error || new Error('transazione fallita'));
     tx.onabort = () => ko(tx.error || new Error('transazione interrotta'));
     qp.onsuccess = () => {
-      stato = { righe: qr.result || [], coda: qc.result || E.nuovaCoda({ generazione: S.conto.generazione, epocaDb: S.conto.epoca }), trasferimento: qt.result || null, conflitto: qf.result || null, segnaliPendenti: qs.result || null, migrazione: qm.result || null, preferenze: qp.result || null };
+      stato = { righe: qr.result || [], coda: qc.result || E.nuovaCoda({ generazione: S.conto.generazione, epocaDb: S.conto.epoca }), trasferimento: qt.result || null, conflitto: qf.result || null, segnaliPendenti: qs.result || null, preferenze: qp.result || null };
       try {
         const out = fai(stato) || {};
         for (const r of out.nuove || []) righe.put(r);
@@ -1335,7 +1320,6 @@ function contoTx(fai = () => null) {
         if (out.trasferimento !== undefined) meta.put(out.trasferimento, 'trasferimento');
         if (out.conflitto !== undefined) meta.put(out.conflitto, 'conflitto');
         if (out.segnaliPendenti !== undefined) meta.put(out.segnaliPendenti, 'segnali-pendenti');
-        if (out.migrazione !== undefined) meta.put(out.migrazione, 'migrazione-vecchio');
         if (out.preferenze !== undefined) meta.put(out.preferenze, 'preferenze');
       } catch (e) { tx.abort(); ko(e); }
     };
@@ -1371,7 +1355,6 @@ function chiudiAccount() {
   document.getElementById('account').hidden = true;
   document.getElementById('account-card').innerHTML = '';
   const o = S.accountOrigine; S.accountOrigine = null;
-  S.portaVecchio = false;
   if (o && document.contains(o)) o.focus();
 }
 const esitoAccount = (t) => { const el = document.getElementById('account-esito'); if (el) el.textContent = t; };
@@ -1433,7 +1416,7 @@ async function entraConto(io) {
   ARCH.modo = 'indexeddb';
   segPunti = io.segnali || {};
   try { localStorage.setItem('rg.ultimo-account', io.chiave_locale); }
-  catch { /* offline richiede il database; l'errore di preferenza non perde righe */ }
+  catch { /* l'errore di preferenza non perde le righe nel database dell'account */ }
   if (navigator.locks) {
     const mio = S.ciclo;
     navigator.locks.request(nomeConto(io.chiave_locale), { mode: 'shared' }, () =>
@@ -1448,8 +1431,6 @@ async function entraConto(io) {
   if (LS.get('filtro', null)) S.filtro = LS.get('filtro', null);
   segModo = LS.get('segModo', 'notturni');
   if (!SEGMODI[segModo]) segModo = 'notturni';
-  S.vecchioMigrato = locale.migrazione;
-  mostraVecchio();
   const pendentiSegnali = locale.segnaliPendenti;
   if (pendentiSegnali) {
     for (const [modo, p] of Object.entries(pendentiSegnali)) {
@@ -1567,11 +1548,6 @@ async function dipingiContoStato() {
     const r = E.riepilogoTrasferimento(s.trasferimento, s.coda, s.righe);
     if (r.completo) {
       el.textContent = `${r.confermate} ${r.confermate === 1 ? 'risposta salvata' : 'risposte salvate'} nel tuo account`;
-      if (S.portaVecchio && S.vecchio.length && !S.vecchioConflitti.length) {
-        const migrazione = { chiave: S.conto.chiave_locale, numero: S.vecchio.length, data: E.isoLocale(), uid: S.vecchio.map((x) => String(x.uid)).sort() };
-        try { await contoTx(() => ({ migrazione })); S.vecchioMigrato = migrazione; mostraVecchio(); }
-        catch { el.append(' · Non siamo riusciti a segnare il trasferimento della copia precedente. Riprova prima di cancellarla.'); }
-      }
       if (S.onboarding) { S.onboarding = false; mostraOnboarding(); }
     } else if (r.stato === 'con scarti') {
       el.innerHTML = `${r.confermate} risposte salvate · ${r.nonSalvate} righe non salvate. ${esc(Object.entries(r.motivi || {}).map(([m, n]) => `${m}: ${n}`).join(' · '))} <button class="btn" data-account="scarica-scartate">Scarica le righe non importate</button>`;
@@ -1626,24 +1602,14 @@ async function dopoRegistrazionePersa() {
 
 async function registratoConto(io, postaFallita = false) {
   S.dataProposta ||= LS.get('esame', null);
-  if (!S.dataProposta && S.portaVecchio) {
-    try { S.dataProposta = JSON.parse(localStorage.getItem('pn.esame') || 'null'); } catch { S.dataProposta = null; }
-  }
   if (!dataIsoValida(S.dataProposta)) S.dataProposta = null;
   let righe = S.archivio.slice();
   if (S.fileImport) righe.push(...S.fileImport.righe);
-  if (S.portaVecchio) {
-    await leggiVecchio();
-    if (S.vecchioErrore) return esitoAccount('Non riusciamo a leggere la copia precedente. Riprova prima di trasferirla.');
-    if (S.vecchioConflitti.length) return esitoAccount('Le copie precedenti hanno risposte diverse con gli stessi uid. Scarica entrambe le fonti prima di continuare.');
-    righe = E.fondiArchivio(righe, S.vecchio, { quesiti: new Set([...S.banca, ...S.cart].map((x) => x.id)) }).righe;
-  }
   try { await entraConto(io); } catch (e) { esitoAccount('Non riusciamo ad aprire la copia di questo account: ' + e.message); return; }
   aggiornaPorteConto();
   S.onboarding = true;
   if (postaFallita) S.postaFallita = true;
   await trasferisciConto(righe);
-  S.portaVecchio = false;
   if (!righe.length) { S.onboarding = false; mostraOnboarding(); }
   else if (document.getElementById('account').hidden === false && S.onboarding) chiudiAccount();
 }
@@ -1684,12 +1650,6 @@ async function accediConto() {
   // Se qui c'è ancora A (per esempio dopo un 401), quelle righe sono di A:
   // un accesso a B non le rende risposte anonime da proporre per B.
   let prova = S.conto ? [] : S.archivio.slice();
-  if (!S.conto && S.portaVecchio) {
-    await leggiVecchio();
-    if (S.vecchioErrore) { esitoAccount('Non riusciamo a leggere la copia precedente. Riprova prima di trasferirla.'); return; }
-    if (S.vecchioConflitti.length) { esitoAccount('Le copie precedenti hanno risposte diverse con gli stessi uid. Scarica entrambe le fonti prima di continuare.'); return; }
-    prova = E.fondiArchivio(prova, S.vecchio, { quesiti: new Set([...S.banca, ...S.cart].map((x) => x.id)) }).righe;
-  }
   if (!S.conto && S.fileImport) prova = E.fondiArchivio(prova, S.fileImport.righe, { quesiti: new Set([...S.banca, ...S.cart].map((x) => x.id)) }).righe;
   if (!prova.length && !Object.keys(segPunti || {}).length) {
     await entraConto(r.corpo); aggiornaPorteConto(); chiudiAccount(); return sincronizza();
@@ -1701,30 +1661,28 @@ async function accediConto() {
 }
 
 function domandaRigheDellaPagina(prova) {
-  pannelloAccount(`<h2 id="account-title">Accedi</h2><p>${S.portaVecchio ? `Vuoi portare nel tuo account le ${prova.length} risposte salvate in questo browser prima degli account?` : `Vuoi portare nel tuo account le ${prova.length} risposte di questa pagina?`}</p>
+  pannelloAccount(`<h2 id="account-title">Accedi</h2><p>Vuoi portare nel tuo account le ${prova.length} risposte di questa pagina?</p>
     <p>Account: ${esc(S.conto.email)}</p><label><input type="radio" name="porta" value="si" checked> Sì, portale</label>
     <label><input type="radio" name="porta" value="no"> No, continua senza portarle</label>
     <label><input type="checkbox" name="segnali"> Porta anche i punteggi dei Segnali</label>
-    <button class="btn primary" data-account="scelta">${S.portaVecchio ? 'Portale nel mio account' : 'Conferma la scelta'}</button>`);
+    <button class="btn primary" data-account="scelta">Conferma la scelta</button>`);
 }
 
 async function sceltaConto() {
   const si = document.querySelector('#account [name=porta]:checked')?.value === 'si';
   const segnali = document.querySelector('#account [name=segnali]')?.checked;
-  const portaVecchio = S.portaVecchio;
   chiudiAccount();
-  if (si) { S.portaVecchio = portaVecchio; await trasferisciConto(S.prova); }
+  if (si) await trasferisciConto(S.prova);
   else await sincronizza();
   if (segnali && Object.keys(segPunti || {}).length) await salvaSegnali(segPunti);
   S.prova = [];
-  S.portaVecchio = false;
 }
 
 function mostraOnboarding() {
   pannelloAccount(`<h2 id="account-title">Hai una data d'esame?</h2>
     ${S.postaFallita ? '<p>L\'account è creato, ma non siamo riusciti a spedire la mail di conferma.</p>' : ''}
     <label>Data d'esame (facoltativa)<input type="date" name="data" value="${esc(S.dataProposta || '')}"></label>
-    ${S.dataProposta ? `<p>Ti proponiamo la data ${esc(S.dataProposta)} della ${S.portaVecchio ? 'copia precedente' : 'pagina aperta'}. La salviamo solo se scegli «Salva la data».</p>` : ''}
+    ${S.dataProposta ? `<p>Ti proponiamo la data ${esc(S.dataProposta)} della pagina aperta. La salviamo solo se scegli «Salva la data».</p>` : ''}
     <p>Puoi aggiungerla quando la conosci. Puoi allenarti anche senza una data.</p>
     <p id="account-esito" role="status" aria-live="polite"></p>
     <div class="account-actions"><button class="btn primary" data-account="salva-data">Salva la data</button><button class="btn" data-account="torna">Continua senza data</button></div>`);
@@ -1831,18 +1789,6 @@ async function azioneAccount(t) {
   if (a === 'scarta-cart-uscita') { S.uscitaBozzeConfermata = true; return uscitaConto(); }
   if (a === 'porta') return S.conto && !S.sessioneScaduta ? pannelloConto() : moduloAccesso();
   if (a === 'registra') return moduloRegistrazione();
-  if (a === 'porta-vecchio') {
-    S.portaVecchio = true;
-    if (S.conto) return pannelloAccount(`<h2 id="account-title">Porta l'archivio precedente</h2><p>Vuoi portare ${S.vecchio.length} risposte precedenti in ${esc(S.conto.email)}?</p><div class="account-actions"><button class="btn primary" data-account="conferma-vecchio">Sì, portale</button><button class="btn" data-account="torna">Annulla</button></div>`);
-    return moduloAccesso();
-  }
-  if (a === 'conferma-vecchio') {
-    await leggiVecchio();
-    if (S.vecchioErrore) return esitoAccount('La copia precedente non si legge. Riprova prima di trasferire.');
-    if (S.vecchioConflitti.length) return esitoAccount('Le copie precedenti hanno risposte diverse con gli stessi uid. Scarica entrambe le fonti prima di continuare.');
-    await trasferisciConto(S.vecchio);
-    S.portaVecchio = false; chiudiAccount(); return;
-  }
   if (a === 'accedi') return moduloAccesso(t.dataset.email || '');
   if (a === 'reimposta') return moduloRecupero(t.dataset.email || document.querySelector('#account [name=email]')?.value || '');
   if (a === 'torna') return chiudiAccount();
@@ -1960,32 +1906,6 @@ async function azioneAccount(t) {
   }
   if (a === 'salva-data') return salvaDataConto(document.querySelector('#account [name=data]')?.value || '');
   if (a === 'verifica-sessione') return dopoRegistrazionePersa();
-  if (a === 'rileggi-vecchio') return leggiVecchio();
-  if (a === 'rinvia-vecchio') return document.getElementById('vecchio-avviso').hidden = true;
-  if (a === 'scarica-vecchio') { await leggiVecchio(); if (S.vecchioErrore) return segnala('La copia precedente non si legge. Riprova.', true); return scaricaJson({ app: 'rotta-giusta', righe: S.vecchio, fonti: S.vecchioFonti }, `rotta-giusta-archivio-precedente-${today()}.json`); }
-  if (a === 'scarica-fonti') {
-    await leggiVecchio();
-    if (S.vecchioErrore) return esitoAccount('Non riusciamo a rileggere entrambe le copie. Riprova.');
-    for (const fonte of S.vecchioFonti) scaricaJson({ app: 'rotta-giusta', fonte: fonte.nome, righe: fonte.righe }, `rotta-giusta-${fonte.nome}-${today()}.json`);
-    return;
-  }
-  if (a === 'cancella-vecchio' || a === 'conferma-cancella-vecchio') {
-    if (a === 'conferma-cancella-vecchio' && !document.querySelector('#account [name=conferma]')?.checked) return esitoAccount('Conferma prima la cancellazione.');
-    await leggiVecchio();
-    if (S.vecchioErrore || S.vecchioConflitti.length || !S.vecchioMigrato ||
-        JSON.stringify(S.vecchioMigrato.uid) !== JSON.stringify(S.vecchio.map((x) => String(x.uid)).sort()))
-      return pannelloAccount('<h2 id="account-title">Copia precedente cambiata</h2><p>Ci sono risposte nuove, diverse o illeggibili nella copia precedente. Scaricale o trasferiscile prima di cancellarla.</p><button class="btn" data-account="torna">Torna all’attività</button>');
-    if (a === 'cancella-vecchio') return pannelloAccount(`<h2 id="account-title">Cancella la copia precedente</h2><p>Cancelleremo ${S.vecchioFonti.map((f) => esc(f.nome)).join(' e ')} da questo browser. Il file già scaricato e le risposte nell'account restano.</p><label><input type="checkbox" name="conferma"> Confermo la cancellazione delle copie precedenti</label><p id="account-esito" role="status"></p><button class="btn primary" data-account="conferma-cancella-vecchio">Cancella la copia precedente</button><button class="btn" data-account="torna">Annulla</button>`);
-    try {
-      if (S.vecchioFonti.some((f) => f.nome === NOME_VECCHIO_DB)) await new Promise((ok, ko) => {
-        const q = indexedDB.deleteDatabase(NOME_VECCHIO_DB);
-        q.onsuccess = ok; q.onerror = () => ko(q.error); q.onblocked = () => ko(new Error('Chiudi le altre schede e riprova.'));
-      });
-      if (S.vecchioFonti.some((f) => f.nome === 'pn.archivio')) localStorage.removeItem('pn.archivio');
-      S.vecchio = []; S.vecchioFonti = []; mostraVecchio(); chiudiAccount();
-    } catch (e) { esitoAccount(`La cancellazione non è completa: ${e?.message || e}. Riprova dopo aver chiuso le altre schede.`); }
-    return;
-  }
   if (a === 'stato') {
     const r = await chiamaApi('GET', '/v1/io');
     if (r.codice === 200) { S.conto = r.corpo; mostraVerifica(); pannelloConto(); }
@@ -2088,79 +2008,13 @@ async function avvioConto() {
       db.close();
       if (locale?.chiave_locale !== chiave) throw new Error('copia senza identità');
       await entraConto(locale); aggiornaPorteConto();
-      document.getElementById('conto-stato').textContent = 'Sei offline. Le nuove risposte sono in questo dispositivo e saranno inviate quando tornerà la rete.';
+      document.getElementById('conto-stato').textContent = 'La rete non è disponibile. Le nuove risposte sono in questo dispositivo e saranno inviate quando tornerà la rete.';
     } catch {
-      document.getElementById('conto-stato').textContent = 'La copia di questo account non è leggibile offline. Apri il sito con la rete e riprova.';
+      document.getElementById('conto-stato').textContent = 'Non riusciamo a leggere la copia di questo account sul dispositivo. Controlla la connessione e riprova.';
     }
   } else {
     document.getElementById('conto-stato').textContent = "L'accesso non è più valido. Entra di nuovo per inviare le risposte rimaste in questo dispositivo.";
   }
-}
-
-async function leggiVecchio() {
-  // L'archivio precedente è una fonte protetta: la ricerca non deve aprire
-  // un database vuoto, né usare le sue righe come attività della prova.
-  const fonti = [];
-  try {
-    const raw = localStorage.getItem('pn.archivio');
-    if (raw != null) {
-      const righe = JSON.parse(raw);
-      if (!Array.isArray(righe)) throw new Error('pn.archivio non è un elenco');
-      fonti.push({ nome: 'pn.archivio', righe });
-    }
-    const presenti = indexedDB.databases ? await indexedDB.databases() : [];
-    if (presenti.some((x) => x.name === NOME_VECCHIO_DB)) {
-      const righe = await new Promise((ok, ko) => {
-        const q = indexedDB.open(NOME_VECCHIO_DB);
-        q.onsuccess = () => {
-          const db = q.result;
-          if (!db.objectStoreNames.contains('righe')) { db.close(); return ko(new Error('archivio precedente senza righe')); }
-          const tx = db.transaction('righe', 'readonly');
-          const r = tx.objectStore('righe').getAll();
-          r.onsuccess = () => { db.close(); ok(r.result || []); };
-          r.onerror = () => { db.close(); ko(r.error); };
-        };
-        q.onerror = () => ko(q.error);
-      });
-      fonti.push({ nome: NOME_VECCHIO_DB, righe });
-    }
-    const perUid = new Map(), conflitti = new Set();
-    for (const fonte of fonti) for (const r of fonte.righe) {
-      if (r?.uid == null) continue;
-      const uid = String(r.uid);
-      if (perUid.has(uid) && JSON.stringify(perUid.get(uid)) !== JSON.stringify(r)) conflitti.add(uid);
-      else perUid.set(uid, r);
-    }
-    const unione = fonti.reduce((r, f) => E.fondiArchivio(r, f.righe).righe, []);
-    S.vecchio = unione;
-    S.vecchioFonti = fonti;
-    S.vecchioConflitti = [...conflitti];
-    S.vecchioErrore = null;
-  } catch (e) { S.vecchioErrore = String(e?.message || e); S.vecchioFonti = fonti; }
-  mostraVecchio();
-}
-
-function mostraVecchio() {
-  const el = document.getElementById('vecchio-avviso');
-  if (!el) return;
-  const giaPortati = S.conto && S.vecchioMigrato?.chiave === S.conto.chiave_locale ? new Set(S.vecchioMigrato.uid || []) : new Set();
-  const ancoraDaPortare = S.vecchio.filter((r) => !giaPortati.has(String(r.uid)));
-  if (S.vecchioErrore) {
-    el.innerHTML = '<p>Non siamo riusciti a leggere le risposte già presenti in questo browser. Riprova prima di cancellare i dati del sito.</p><button class="btn" data-account="rileggi-vecchio">Riprova</button>';
-    el.hidden = false;
-  } else if (S.vecchioConflitti.length) {
-    el.innerHTML = `<p>Le due copie precedenti hanno ${S.vecchioConflitti.length} uid uguali con contenuti diversi. Scarica entrambe le fonti prima di scegliere che cosa importare: non scegliamo una risposta al posto tuo.</p><button class="btn" data-account="scarica-fonti">Scarica entrambe le fonti</button><button class="btn" data-account="rinvia-vecchio">Più tardi</button>`;
-    el.hidden = false;
-  } else if (S.vecchio.length && S.conto && S.vecchioMigrato?.chiave === S.conto.chiave_locale && !ancoraDaPortare.length) {
-    el.innerHTML = `<p>${S.vecchioMigrato.numero} risposte portate nel tuo account il ${esc(new Date(S.vecchioMigrato.data).toLocaleString('it-IT'))}. La copia precedente è ancora in questo browser.</p><button class="btn" data-account="scarica-vecchio">Scarica la copia precedente</button><button class="btn" data-account="cancella-vecchio">Cancella la copia precedente da questo browser</button>`;
-    el.hidden = true;
-  } else if (S.vecchio.length) {
-    el.innerHTML = `<p>In questo browser ci sono ${ancoraDaPortare.length} risposte salvate prima degli account. Da questa versione, senza account non si salva più niente. Portale nel tuo account, oppure scaricale.</p>
-      <div class="row"><button class="btn primary" data-account="porta-vecchio">Registrati o entra e portale</button><button class="btn" data-account="scarica-vecchio">Scarica il file</button><button class="btn" data-account="rinvia-vecchio">Più tardi</button></div>`;
-    el.hidden = false;
-  } else { el.innerHTML = ''; el.hidden = true; }
-  const info = document.getElementById('vecchio-info');
-  if (info) { info.innerHTML = el.innerHTML; info.hidden = !el.innerHTML; }
 }
 
 function invitoAccount() {
@@ -2248,7 +2102,7 @@ function calcolaDate() {
 
 /* ===================== rete ============================================= */
 
-// Solo GET di file statici: la banca, che il service worker tiene in cache.
+// Solo GET di file statici: la banca arriva dalla rete, riconvalidata dal browser.
 async function jget_cache(u) { const r = await fetch(u); if (!r.ok) throw new Error(u + ' ' + r.status); return r.json(); }
 
 /* ===================== avvio ============================================ */
@@ -2279,7 +2133,6 @@ async function avviaApp() {
     S.cartStato = 'errore'; segnala('carteggio non caricato: ' + e.message, true); dipingi();
   });
   S.archivio = [];
-  await leggiVecchio();
   ARCH.modo = 'memoria'; ARCH.lettura = 'ordinario';
   ricalcola();
   S.caricamento = false;
@@ -2293,7 +2146,6 @@ async function avviaApp() {
   dipingi();
   const fv = document.getElementById('foot-ver');
   if (fv) fv.textContent = 'v' + (S.meta.versione || '?');
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
 }
 
 /* ===================== scarica / ricarica / azzera ====================== */
@@ -2409,29 +2261,22 @@ function statoArchivio() {
 
   DIAG.arch = !!ARCH.errore || ARCH.lettura === 'errore';
   aggiornaBadge();
-  verificaOffline();
 }
 
 /* Il pallino ambra sulla voce Info: acceso se una scrittura nell'archivio e'
-   fallita o l'offline non e' pronto. Un guasto muto deve restare visibile da
+   fallita. Un guasto muto deve restare visibile da
    qualunque schermata. */
-const DIAG = { arch: false, off: false };
+const DIAG = { arch: false };
 function aggiornaBadge() {
   const d = document.getElementById('nav-info-dot');
-  if (d) d.classList.toggle('on', DIAG.arch || DIAG.off);
+  if (d) d.classList.toggle('on', DIAG.arch);
   const save = document.getElementById('nav-save-status');
-  const offline = document.getElementById('nav-offline-status');
   if (save) save.hidden = !ARCH.errore;
-  if (offline) offline.hidden = !DIAG.off;
   dipingiStatoRotta();
 }
 
-// Il sito si e' spostato su rottagiusta.it il 25 settembre 2026. L'archivio
-// delle risposte e' legato all'indirizzo, quindi chi apre la palestra su quello
-// vecchio ha i progressi li' e non li vede sul nuovo. E' misurato che il
-// redirect finale congela chi ha la palestra installata su questa copia, con il
-// service worker che non si aggiorna piu': l'avviso deve esserci **prima**, in
-// questa versione, perche' e' quella che resta. docs/migrazione-hosting.md.
+// Fuori dall'indirizzo del sito non si accede agli account: la porta indica
+// dove continuare e permette di scaricare le risposte della pagina aperta.
 const CASA = 'rottagiusta.it';
 
 /** Vero quando la palestra gira su un indirizzo che non e' il suo: il vecchio
@@ -2449,7 +2294,7 @@ function dipingiStatoRotta() {
   // Il trasloco viene prima di tutto: e' l'unico stato che fa perdere qualcosa
   // se lo si ignora, e lo si scopre solo quando e' troppo tardi.
   if (fuoriCasa()) righe.push(alert(
-    '<strong>Rotta Giusta ora è su ' + CASA + '.</strong><span>Se hai una copia precedente su questo indirizzo, scaricala in un file e importala nel tuo account sul nuovo sito.</span>',
+    '<strong>Rotta Giusta ora è su ' + CASA + '.</strong><span>Puoi scaricare le risposte di questa pagina in un file e importarlo nel tuo account sul nuovo sito.</span>',
     '<button class="text-btn" data-route-export>Scarica i progressi</button><a class="text-btn" href="' + 'https://' + CASA + '/app' + '">Vai a ' + CASA + '</a>'));
   if (ARCH.errore) righe.push(alert(
     '<strong>Le ultime risposte potrebbero non essere salvate.</strong><span>Scarica i progressi prima di chiudere la pagina e controlla l\'archivio.</span>',
@@ -2461,9 +2306,6 @@ function dipingiStatoRotta() {
   if (!S.caricamento && ARCH.lettura === 'errore') righe.push(alert(
     '<strong>Non riusciamo a leggere i progressi in questo browser. Questo non significa che siano stati cancellati.</strong>',
     '<button class="text-btn" data-retry-load>Riprova</button><button class="text-btn" data-info-section="importa">Controlla l\'archivio</button>', true));
-  if (DIAG.off) righe.push(alert(
-    '<strong>Il sito non è ancora pronto per l\'uso senza rete.</strong>',
-    '<button class="text-btn" data-info-section="offline">Controlla l\'offline</button>'));
   if (S.cartStato === 'errore') righe.push(alert(
     '<strong>Gli esercizi di carteggio non sono disponibili in questa apertura.</strong>',
     '<button class="text-btn" data-v="cart">Apri Carteggio</button>'));
@@ -2481,116 +2323,6 @@ function dipingiStatoRotta() {
   if (come) come.textContent = ARCH.errore
     ? "Le ultime risposte potrebbero non essere salvate. Scarica i progressi prima di chiudere la pagina e controlla l'archivio."
     : 'Non serve un account per provare. Senza account le risposte e le preferenze valgono solo finché questa pagina resta aperta. Con l’account salvi sul server e vedi i Progressi.';
-}
-
-// Il guscio minimo per aprire l'app e fare una batteria. Stessa lista di sw.js:
-// qui serve per controllare che ci sia davvero, li' per metterla. C'e' un test
-// che le confronta.
-//
-// `/privacy` e `/avvertenza` **senza `.html`**: l'host fino alla 0.26
-// rispondeva 308 al percorso con l'estensione, e statichost.eu serve entrambe
-// le forme — gli indirizzi puliti restano perche' rendono il sito indifferente
-// all'host. Il perche' per esteso sta in sw.js, accanto alla stessa lista; un
-// test pretende che i link di questa pagina non tornino alla forma con
-// l'estensione.
-// La palestra sta su /app: la radice e' la vetrina, che non entra nel guscio
-// perche' e' la pagina per chi arriva con la rete, non da tenere in barca.
-const GUSCIO = ['/app', '/engine.js', '/manifest.json',
-                '/dati/meta.json', '/dati/quiz.json', '/dati/tecniche.json',
-                '/dati/carteggio.json', '/privacy', '/avvertenza',
-                // Le icone, cosi' l'app installata ha la sua faccia anche
-                // offline. La og-card no: la guarda un crawler, non chi studia.
-                '/favicon.svg', '/favicon-32.png', '/favicon-16.png', '/apple-touch-icon.png',
-                '/icon-192.png', '/icon-512.png', '/icon-maskable-512.png',
-                '/marchio.svg', '/paesaggio.svg', '/carteggio-ui.svg'];
-
-/** Il nome della cache lo scrive sw.js e lo tiene allineato a VERSION un test:
- *  qui lo si legge dalle cache esistenti, non lo si indovina. */
-async function nomeCache() {
-  const k = await caches.keys();
-  return k.find((n) => n.startsWith('rg-'))
-      || ('rg-' + ((S.meta && S.meta.versione) || '0'));
-}
-
-/**
- * Controlla **davvero** se l'app puo' partire senza rete, invece di dichiararlo.
- *
- * Fino alla 0.4.2 questa scheda diceva "il guscio e la banca vengono messi in
- * cache al primo caricamento": una promessa, non una verifica. Ed era falsa,
- * perche' su http il service worker non si installava nemmeno -- e nessuno
- * poteva accorgersene leggendo la schermata. Qui la cache si apre e si guarda
- * che cosa contiene: se manca qualcosa, lo dice, e dice anche che cosa.
- *
- * Le figure non sono un dettaglio: 120 quesiti su 1.722 ne mostrano una, e senza
- * quelle una batteria offline si blocca su una domanda che non si puo' leggere.
- */
-async function verificaOffline() {
-  const el = document.getElementById('offnote');
-  if (!el) return;
-
-  if (!window.isSecureContext || !('caches' in window) || !('serviceWorker' in navigator)) {
-    DIAG.off = true; aggiornaBadge();
-    el.innerHTML =
-      '<b style="color:var(--ko)">Su questo indirizzo l\'uso offline non funziona.</b> ' +
-      'Senza HTTPS il browser non abilita il service worker: niente cache, niente ' +
-      'allenamento senza rete, e il pulsante qui sotto non ha effetto. ' +
-      'Apri il sito dal suo indirizzo <b>https</b>.';
-    return;
-  }
-
-  try {
-    const reg = await navigator.serviceWorker.getRegistration();
-    const attivo = !!(reg && reg.active && reg.active.state === 'activated');
-    const nome = await nomeCache();
-    const c = await caches.open(nome);
-    const dentro = new Set((await c.keys()).map((r) => new URL(r.url).pathname));
-    const mancanti = GUSCIO.filter((p) => !dentro.has(p));
-    // **Esserci non basta: bisogna che si possa servire.** Una risposta
-    // *rediretta* in cache non si puo' dare a una navigazione — il redirect
-    // mode di una navigazione e' 'manual' e `respondWith` la rifiuta — quindi
-    // la pagina muore con ERR_FAILED pur essendo in cache. E' successo davvero
-    // nella 0.19.1 con `/privacy.html` e `/avvertenza.html`, a cui l'host di
-    // allora rispondeva 308: la chiave c'era, questa scheda scriveva «guscio e
-    // banca in cache» in verde, e i due link del pie' di pagina erano morti.
-    // Guardare solo le chiavi era l'errore; qui si guarda la risposta.
-    const rediretti = [];
-    for (const p of GUSCIO) {
-      if (!dentro.has(p)) continue;
-      const res = await c.match(p);
-      if (res && res.redirected) rediretti.push(p);
-    }
-    // I disegni, non l'indice: `/figure/index.json` sta nella stessa cartella e
-    // finisce nella stessa cache, ma non e' una figura. Contandolo la scheda
-    // scriveva «figure 103/102» — il numero contato e quello promesso da
-    // meta.json presi da due fonti diverse, che e' il difetto di casa.
-    const figure = [...dentro].filter((p) => p.startsWith('/figure/') && p !== '/figure/index.json').length;
-    const attese = (S.meta && S.meta.figure) || 0;
-
-    const v = (t) => `<b style="color:var(--ok)">${t}</b>`;
-    const x = (t) => `<b style="color:var(--ko)">${t}</b>`;
-    const w = (t) => `<b style="color:var(--warn)">${t}</b>`;
-    const righe = [
-      attivo ? v('service worker attivo') : x('service worker non attivo'),
-      mancanti.length ? x(`guscio incompleto (manca ${mancanti.join(', ')})`)
-        : rediretti.length ? x(`in cache ma non servibile: ${rediretti.join(', ')} risponde con un redirect`)
-        : v('guscio e banca in cache'),
-      attese && figure >= attese ? v(`figure ${figure}/${attese}`)
-        : (figure ? w(`figure ${figure}/${attese || '?'}`) : w('figure non scaricate')),
-    ];
-    const pronto = attivo && !mancanti.length && !rediretti.length && attese && figure >= attese;
-    DIAG.off = !pronto; DIAG.figureMancanti = figure < attese; aggiornaBadge();
-
-    el.innerHTML =
-      (pronto
-        ? '<b style="color:var(--ok)">Pronto per l\'offline.</b> '
-        : '<b style="color:var(--warn)">Non ancora pronto per l\'offline.</b> ') +
-      righe.join(' · ') + '.<br>' +
-      (pronto
-        ? 'Verifica finale: metti il dispositivo in modalita\' aereo e ricarica questa pagina. Se si apre, ci sei.'
-        : 'Premi il pulsante qui sotto con la rete, poi ricontrolla.');
-  } catch (e) {
-    el.textContent = 'Non riesco a leggere la cache: ' + e.message;
-  }
 }
 
 function dipingiPercorsoNonPronto() {
@@ -3218,7 +2950,6 @@ function anteprima() {
     ? 'Le ultime risposte potrebbero non essere salvate. Apri Info e scarica i progressi adesso. <button class="text-btn" data-info-section="importa">Apri Info</button>'
     : ARCH.lettura === 'errore' ? 'Non riusciamo a leggere le risposte. Apri Info per controllare l’archivio. <button class="text-btn" data-info-section="importa">Apri Info</button>'
     : S.conto ? 'Puoi fermarti quando vuoi. Le risposte vengono inviate al tuo account; la lista corrente non si riprende dopo una ricarica.' : avvisoProva;
-  document.getElementById('quiz-offline').textContent = (!navigator.onLine ? 'Sei offline. Puoi usare i quiz disponibili su questo dispositivo. ' : '') + (DIAG.figureMancanti ? 'Alcune figure potrebbero non essere disponibili offline. Apri Info per controllarle.' : '');
   if (S.caricamento) { el.textContent = 'Caricamento dei quiz…'; return; }
   if (S.bancaErrore || !S.banca.length) { el.textContent = 'Non riusciamo a caricare i quiz. Controlla la connessione e riprova.'; vide.innerHTML = '<button class="btn" data-retry-load>Riprova</button>'; return; }
   if (ARCH.lettura === 'errore' && m !== 'sim') { el.textContent = 'Non riusciamo a leggere le risposte. Apri Info per controllare l’archivio.'; return; }
@@ -3642,7 +3373,7 @@ function testoConservazione() {
   // Gli avvisi prevalgono sulla frase ordinaria: con una scrittura fallita
   // «restano in questo browser» non e' vero, e lo dice l'avviso sopra.
   if (ARCH.errore) return '';
-  return S.conto ? '<p class="note">Le risposte si conservano nel tuo account e in questo dispositivo per l’offline. Controlla lo stato dell’invio in Info.</p>' : `<p class="note">${avvisoProva}</p>`;
+  return S.conto ? '<p class="note">Le risposte si conservano nel tuo account. Se la rete cade, restano in questo dispositivo finché non arrivano: controlla lo stato dell’invio in Info.</p>' : `<p class="note">${avvisoProva}</p>`;
 }
 
 /** Gli avvisi del ciclo, prima di tutto il resto (§3). */
@@ -4218,7 +3949,7 @@ function dipingiSessioni() {
  * la risposta che avevi dato accanto a quella esatta.
  *
  * Il legame risposta-prova e' `sim_uid`, che ogni riga porta con se'. Le righe
- * stanno nell'archivio, quindi la revisione funziona anche offline; per una
+ * stanno nell'archivio, quindi la revisione usa le risposte di quella volta; per una
  * sessione ricostruita (senza legame) la `fonte` lo dichiara.
  */
 let rvRitorno = null;
@@ -4455,7 +4186,7 @@ function curaFigure(radice) {
   for (const img of radice.querySelectorAll('.fig-box img')) {
     img.addEventListener('error', () => {
       const avviso = document.createElement('p'); avviso.className = 'note nofig';
-      avviso.textContent = 'Figura non disponibile. Apri Info per controllare le figure offline.';
+      avviso.textContent = 'Figura non disponibile. Controlla la connessione e riprova.';
       img.closest('.fig-box').replaceWith(avviso);
     }, { once: true });
   }
@@ -4482,25 +4213,11 @@ function sfondoInerte() {
 
 /* --- la schermata Info --------------------------------------------------- */
 
-/**
- * Versione e archivio: si dipinge quando la apri.
- *
- * La versione che gira QUI puo' essere piu' vecchia di quella pubblicata: c'e'
- * una cache offline di mezzo, e senza vederla scritta si perde un pomeriggio a
- * cercare un bug gia' corretto. Il nome della cache dice quale versione ha
- * installato il service worker; dopo un rilascio serve una ricarica in piu'.
- */
-async function dipingiInfo() {
+/** Versione della banca caricata e stato delle risposte in questa apertura. */
+function dipingiInfo() {
   statoArchivio();
-  const vEl = document.getElementById('i-ver');
-  const dev = (S.meta && S.meta.versione) || '?';
-  let cache = null;
-  try { if ('caches' in window) cache = (await caches.keys()).find((n) => n.startsWith('rg-')) || null; } catch {}
-  vEl.innerHTML = `su questo dispositivo <b>v${esc(dev)}</b>` +
-    (cache ? ` · cache offline <b>${esc(cache)}</b>` : ' · nessuna cache offline') +
-    (cache && cache !== 'rg-' + dev
-      ? ` — <b style="color:var(--warn)">diverse: ricarica due volte questa pagina per prendere la nuova</b>` : '') +
-    '<br>Dopo un aggiornamento del sito la prima ricarica serve ancora la copia in cache; la seconda prende la nuova.';
+  const dev = S.meta?.versione || '?';
+  document.getElementById('i-ver').innerHTML = `su questo dispositivo <b>v${esc(dev)}</b><br>Dopo un aggiornamento del sito, ricarica questa pagina per prendere la nuova versione.`;
 }
 
 function carteDi(lista) { return [...new Set(lista.map((e) => e.carta ?? null))]; }
@@ -5186,7 +4903,7 @@ function figSeg(e, conAudio = true) {
 }
 
 /* Il fischio e la campana con la Web Audio API: niente file, funziona anche
-   offline. Durate compresse rispetto alle vere (dichiarato in schermata). */
+   senza richieste di rete. Durate compresse rispetto alle vere (dichiarato in schermata). */
 let AC = null;
 function suonaSegnale(s) {
   try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); } catch { return; }
@@ -5334,30 +5051,6 @@ function fineSeg() {
   f.scrollTop = 0;
 }
 
-/* ===================== offline ========================================== */
-
-async function scaricaTutto() {
-  const b = document.getElementById('dl');
-  b.disabled = true;
-  try {
-    const lista = Object.values(await jget_cache('/figure/index.json'));
-    // Il nome della cache non si scrive a mano: qui c'era 'patente-v1' fisso, e
-    // da quando il nome segue VERSION le figure sarebbero finite in una cache
-    // che il service worker cancella al primo activate. Scaricate per niente,
-    // senza un errore.
-    const c = await caches.open(await nomeCache());
-    let n = 0;
-    for (const f of lista) {
-      try { await c.add('/figure/' + f); } catch {}
-      b.textContent = `Scarico… ${++n} / ${lista.length}`;
-    }
-    await c.addAll(GUSCIO);
-    b.textContent = 'Ricontrolla';
-    b.disabled = false;
-    await verificaOffline();
-  } catch (e) { b.textContent = 'Non riuscito, riprova con la rete'; b.disabled = false; }
-}
-
 /* ===================== eventi =========================================== */
 
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -5374,7 +5067,7 @@ function vaiScelta() {
 function vaiInfo(sezione) {
   mostraVista('info');
   requestAnimationFrame(() => {
-    const id = sezione === 'offline' ? 'info-offline' : sezione === 'difetti' ? 'info-difetti' : 'info-importa';
+    const id = sezione === 'difetti' ? 'info-difetti' : 'info-importa';
     const el = document.getElementById(id);
     if (sezione === 'difetti') document.getElementById('difetti').open = true;
     if (el) { el.scrollIntoView({ block: 'start' }); el.focus({ preventScroll: true }); }
@@ -5585,7 +5278,6 @@ document.addEventListener('click', (ev) => {
   }
   if (t.dataset.progressiRiprova !== undefined) return avviaApp();
   if (t.id === 'start') return avviaQuizSnapshot();
-  if (t.id === 'dl') return scaricaTutto();
   if (t.id === 'esporta') return esporta();
   if (t.id === 'importa') return document.getElementById('importa-file').click();
   if (t.id === 'azzera') {
