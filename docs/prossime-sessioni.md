@@ -228,14 +228,15 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
 | 10 | **Che cosa viene dopo gli account** — il brainstorming, poi lo smistamento in prompt | Claude con l'autore, poi la regia | `main` | niente | P-59 |
-| 11 | **Togliere il passaggio dell'archivio di prima** — la decisione, la specifica e i controlli | Claude | `main` | niente | P-60 |
-| 12 | **Togliere il passaggio dell'archivio di prima** — la pagina | ChatGPT | `ui/main` | P-60 | P-61 |
+| 11 | **Semplificare: via l'offline e l'archivio di prima** — le decisioni, la specifica, i controlli, il `sw.js` che si toglie | Claude | `main` | niente | P-60 |
+| 12 | **Semplificare: via l'offline e l'archivio di prima** — la pagina | ChatGPT | `ui/main` | P-60 | P-61 |
+| 13 | **Il rilascio 0.30.0** | la regia, con l'autore | `main` | P-61 | — |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo il traguardo» e le voci non barrate |
 
 **Il traguardo è fatto: la v0.29.0 è in linea dal 3 ottobre 2026** (P-27),
 sulla pagina e sul server, e `main` è pushato. La riga 9 della coda è uscita.
 **Per Claude:** P-59 e P-60, pronti, tutti e due nella cartella principale e
-quindi uno alla volta: P-60 è corto e sblocca ChatGPT; P-59 è lungo e chiede
+quindi uno alla volta: P-60 sblocca ChatGPT; P-59 è lungo e chiede
 l'autore davanti. **Per ChatGPT:** P-61, dopo P-60. Lo smistamento delle idee
 di P-59 in prompt — decisioni dell'autore, ricerche, lavoro di Claude su
 `main`, lavoro di ChatGPT su `ui/main` — lo fa la regia dal suo resoconto,
@@ -477,10 +478,11 @@ consuma, non si riprogetta.
      nessuno che arrivi dalla 0.29.0 in poi; cambia, in peggio, per chi aveva
      risposte nel browser prima del 3 ottobre e non le ha ancora portate —
      non le vedrà più, e nessuno glielo dirà —, e quante siano queste persone
-     non si sa. Scartata la proposta della regia, toglierlo con una data. La
-     regia ne deriva, e P-60 lo scrive nell'ADR: la pagina **non legge e non
-     cancella** quelle risposte, che restano nel browser di chi le ha. P-60 e
-     P-61. Il testo di prima: togliere o no.
+     non si sa. Scartata la proposta della regia, toglierlo con una data.
+     **Precisato dall'autore lo stesso giorno: si considera che nessuno abbia
+     usato il sito prima degli account.** La pagina non legge e non tocca più
+     quelle risposte. Un lavoro solo con il punto 6: P-60 e P-61. Il testo di
+     prima: togliere o no.
      Al traguardo l'autore ha deciso di non provarlo su un archivio vero
      (R-ACC-05 sull'archivio vero, R-ACC-62), perché pensa di togliere la
      funzionalità. Oggi l'intenzione è scritta soltanto nella voce
@@ -508,6 +510,20 @@ consuma, non si riprogetta.
      dice —, anche nel file `/var/lib/rg/cancellazioni` (§2.8).
   5. **Safari su iPhone e in navigazione privata**: non provati al traguardo,
      restano in Q-PROVE (§19 di `account-progetto.md`).
+  6. **L'offline — deciso dall'autore il 3 ottobre 2026: si toglie, per
+     semplicità.** I suoi motivi: la «seconda ricarica» dopo un rilascio è un
+     comportamento strano che pochi utenti capirebbero; dubita che l'offline
+     serva a una parte discreta di chi studia; e con gli account le risposte
+     stanno sul server. Il prezzo: senza rete il sito non si apre, e «anche in
+     barca» esce dalla vetrina. **Ne deriva la regia:** un `sw.js` che si
+     disinstalla da solo e cancella le cache, senza forzare la ricarica — la
+     0.29.0 in linea installa il service worker a chi la visita, e senza quel
+     file quei browser resterebbero sulla versione vecchia per sempre —; la
+     versione in due posti invece di tre; la copia delle risposte nel
+     dispositivo, per chi ha l'account, **resta**, perché è la coda che le tiene
+     quando la rete cade e ci vive la bozza del carteggio (proposta della
+     regia, che l'autore non ha cambiato). Un lavoro solo con il punto 1:
+     P-60 per Claude, P-61 per ChatGPT, poi il rilascio 0.30.0.
 - ~~**Da `b50edec`, il 29 settembre 2026, `main` non si pusha fino al
   traguardo.**~~ — **superato il 3 ottobre 2026**: `main` e `v0.29.0` sono
   pushati (P-27). Da qui vale la regola di `AGENTS.md`: nessun push senza
@@ -3850,59 +3866,79 @@ docs/prossime-sessioni.md.
 
 **Esito:** —
 
-### P-60 — Claude: togliere il passaggio dell'archivio di prima, la decisione e i controlli
+### P-60 — Claude: semplificare — via l'offline e l'archivio di prima; le decisioni, la specifica, i controlli
 
 **Stato:** pronto, dal 3 ottobre 2026. **Dove:** Claude Code,
-`~/Software/rotta-giusta`, ramo **`main`**, a mano: tocca `tests/` e la
-specifica. **Nasce da:** la decisione dell'autore del 3 ottobre (§4, «Dopo il
-traguardo», punto 1). **Sblocca:** P-61.
+`~/Software/rotta-giusta`, ramo **`main`**, a mano: tocca `tests/`, la
+specifica, le regole e `site/sw.js`. **Nasce da:** le decisioni dell'autore del
+3 ottobre (§4, «Dopo il traguardo», punti 1 e 6). **Sblocca:** P-61; dopo P-61
+il rilascio 0.30.0.
 
 ```
 Questo prompt è per Claude Code, nella cartella principale
 ~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
 un'altra cartella, fermati e dillo, senza scrivere niente.
 
-Sessione P-60: togliere il passaggio dell'archivio di prima degli
-account — la decisione scritta, la specifica, i controlli. La pagina la
-cambia ChatGPT dopo di te, con P-61.
+Sessione P-60: semplificare il sito togliendo due cose — l'offline (il
+service worker e la sua cache) e il passaggio dell'archivio di prima
+degli account. Tu scrivi le decisioni, la specifica, le regole, i
+controlli e il nuovo site/sw.js; la pagina la cambia ChatGPT dopo di
+te, con P-61. Poi la regia rilascia la 0.30.0.
 
-La decisione è dell'autore, del 3 ottobre 2026, ed è scritta in
-docs/prossime-sessioni.md, §4, «Dopo il traguardo», punto 1, con il suo
-criterio e il suo prezzo. Leggi AGENTS.md, l'ADR-004, e nella specifica
-il §2.4 (la quarta condizione), il §3.2, il §5.4, il §7.1, il §7.8,
-R-ACC-05 e R-ACC-62 nel §9.9, R-ARCH-07 nel §9.2; in
-docs/account-client-progetto.md il §7 e le righe di C-09 nel §12; in
-site/app.html leggiVecchio(), mostraVecchio() e chi le chiama. Prima di
-togliere un controllo, di' che cosa tiene fermo oggi e chi se ne
-accorgerebbe senza.
+Le decisioni sono dell'autore, del 3 ottobre 2026, in
+docs/prossime-sessioni.md, §4, «Dopo il traguardo», punti 1 e 6: il
+criterio è la semplicità, e si considera che nessuno abbia usato il
+sito prima degli account. Leggi AGENTS.md, l'ADR-004, docs/filosofia.md,
+e nella specifica tutto quello che nomina l'offline, il guscio, la cache
+e l'archivio di prima (§2, §3.2, §3.5, §3.6, §5, §7.1, §7.8, §8, §9 —
+cercalo, non fidarti di questo elenco); in docs/account-client-progetto.md
+il §7 e il §12. Prima di togliere un controllo, di' che cosa tiene fermo
+oggi e chi se ne accorgerebbe senza.
 
-1. ADR-005, che sostituisce la quarta condizione dell'ADR-004 e la
-   marca lì: il perché dell'autore, e il prezzo per intero — chi ha
-   risposte nel browser di prima del 3 ottobre e non le ha portate non
-   le vede più, e nessuno glielo dice. La pagina non le legge e non le
-   cancella: restano nel suo browser.
-2. La specifica e il progetto del client riscritti in quei punti.
-   R-ACC-05 e R-ACC-62 escono o diventano il requisito nuovo: la pagina
-   non legge né cancella `open-patente-nautica` e `pn.archivio`, con il
-   suo controllo. Di' che cosa resta vero di R-ARCH-07 e di
-   test_rinomino quando nessuno legge più quel database. Cerca anche le
-   frasi del passaggio che C-18 e R-ACC-57 pretendono.
-3. I controlli. C-09 e le sue rotture escono dal banco del client e
-   dalla pagina di riferimento, che il passaggio non lo ha più. Il
-   controllo nuovo è rosso sulla pagina vera di oggi: dichiaralo fra i
-   «Difetti aperti dichiarati» di docs/eccezioni-interfaccia.md, così
-   main resta verde e P-61 toglie la riga nello stesso commit in cui
-   toglie il codice. Provalo al contrario.
+1. Un ADR solo, ADR-005, con le due decisioni e il loro prezzo: senza
+   rete il sito non si apre; chi avesse risposte nel browser di prima
+   del 3 ottobre non le vede più. Marca nell'ADR-004 i punti che
+   cambiano.
+2. site/sw.js diventa un service worker che si toglie di mezzo: alla
+   sua attivazione cancella le cache del sito e si disinstalla, e non
+   forza la ricarica delle pagine aperte — senza account una ricarica
+   perde le risposte della pagina aperta. La 0.29.0 in linea installa il
+   service worker a chi la visita: questo file resta pubblicato finché
+   la regia non scrive il prompt che lo toglie, e l'ADR dice per quanto.
+   Provalo nel motore come i test di sw.js di oggi, e in Chrome: un
+   browser con la 0.29.0 installata, servita in locale, poi la versione
+   nuova — alla visita dopo nessun service worker e nessuna cache rg-.
+3. La versione vive in due posti, VERSION e meta.json: R-ARCH-03 e la
+   chiusura di un rilascio in AGENTS.md (il curl guarda meta.json, non
+   sw.js). Riscrivi la specifica, filosofia, README, AGENTS.md e la
+   skill del progetto per il sito senza offline e senza archivio di
+   prima. La copia delle risposte nel dispositivo, per chi ha l'account,
+   resta com'è: è la coda che tiene le risposte quando la rete cade e la
+   bozza del carteggio; cambia solo il perché, e la specifica lo dice.
+4. I controlli: escono quelli del guscio, della cache, delle figure per
+   l'offline, dell'autodiagnosi, la parte offline di R-ACC-01, C-09 e le
+   sue rotture. Entrano: la pagina non registra un service worker; non
+   legge e non tocca open-patente-nautica né pn.archivio; il sw.js fa
+   quello che il punto 2 dice. Quelli rossi sulla pagina vera di oggi
+   dichiarali fra i «Difetti aperti dichiarati» di
+   docs/eccezioni-interfaccia.md: main resta verde, e P-61 toglie le
+   righe nello stesso commit in cui toglie il codice. Provali al
+   contrario. strumenti/serve.py segue l'host, e R-ARCH-12 con lui.
+5. Scrivi per P-61 che cosa della pagina deve cambiare, nel posto della
+   specifica o del progetto del client dove lo leggerà — compreso
+   site/_headers, che con la cache del browser al posto del service
+   worker decide se una pagina o la banca arrivano fresche: misura che
+   cosa serve oggi statichost.eu, non dedurlo.
 
 Le cinque suite verdi, quella dell'interfaccia con la 8620 guardata
-libera prima, e la riga finale che dica su quale pagina. Un commit,
-con la voce in fondo a [Unreleased]; niente push. Chiudi con il
-resoconto di docs/prossime-sessioni.md.
+libera prima. Un commit, con la voce in fondo a [Unreleased]; niente
+push e niente rilascio. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
 ```
 
 **Esito:** —
 
-### P-61 — ChatGPT: togliere il passaggio dell'archivio di prima, la pagina
+### P-61 — ChatGPT: semplificare — via l'offline e l'archivio di prima, la pagina
 
 **Stato:** in attesa di P-60. **Dove:** l'app ChatGPT (Codex), progetto
 `~/Software/rotta-giusta-ui` in modalità Local, ramo **`ui/main`**. La regia
@@ -3914,27 +3950,29 @@ Questo prompt è per ChatGPT (Codex), nella cartella
 un altro agente o sei in un'altra cartella, fermati e dillo, senza
 scrivere niente.
 
-Sessione P-61: togliere dalla pagina il passaggio dell'archivio di
-prima degli account. Leggi AGENTS.md, l'ADR-005 in docs/adr/, e il
-requisito che lo sostituisce nel §9.9 di docs/specifica.md: è il
-contratto, scritto da P-60.
+Sessione P-61: togliere dalla pagina l'offline e il passaggio
+dell'archivio di prima degli account. Leggi AGENTS.md, l'ADR-005 in
+docs/adr/, e quello che P-60 ha scritto nella specifica e in
+docs/account-client-progetto.md: è il contratto.
 
-In site/app.html togli quello che legge, mostra, porta, scarica o
-cancella le risposte di `open-patente-nautica` e `pn.archivio` —
-leggiVecchio(), mostraVecchio(), i pannelli, l'avviso nella Rotta e in
-Info, lo stato in S — e i testi che lo nominano. La pagina non apre
-più quel database e non tocca quella chiave, né per leggere né per
-cancellare. Niente altro cambia: il resto dell'account, i
-trasferimenti di un file e delle risposte della pagina aperta restano
-come sono. Togli nello stesso commit la riga dei «Difetti aperti
-dichiarati» di docs/eccezioni-interfaccia.md che P-60 ha messo.
+In site/: la pagina non registra più il service worker, e escono il
+guscio (GUSCIO), il pulsante delle figure per l'offline, l'autodiagnosi
+offline di Info, e quello che legge, mostra, porta, scarica o cancella
+le risposte di open-patente-nautica e pn.archivio. I testi che
+promettono l'offline o parlano dell'archivio di prima — la vetrina, la
+privacy, Info, la palestra — dicono il sito di adesso. site/_headers e
+manifest.json come P-60 ha scritto. site/sw.js non lo tocchi: è quello
+di P-60. Niente altro cambia: l'account, la copia nel dispositivo, la
+coda, i trasferimenti di un file e delle risposte della pagina aperta
+restano come sono. Togli nello stesso commit le righe dei «Difetti
+aperti dichiarati» di docs/eccezioni-interfaccia.md che P-60 ha messo.
 
-Collaudo in Chrome a 375 e 1280 px, senza account e con l'account, con
-un archivio di prima scritto nel browser prima del primo carico: la
-pagina non mostra niente, e dopo il giro l'archivio è ancora lì,
-intatto. Le cinque suite verdi; quella dell'interfaccia vuole la 8620
-libera. Un commit con il trailer, la voce in fondo a [Unreleased], il
-numero di versione non si tocca. Chiudi con il resoconto di
+Collaudo in Chrome a 375 e 1280 px, senza account e con l'account: un
+browser che aveva la 0.29.0 installata prende la versione nuova senza
+service worker e senza cache rg-; nessuna schermata nomina l'offline.
+Le cinque suite verdi; quella dell'interfaccia vuole la 8620 libera. Un
+commit con il trailer, la voce in fondo a [Unreleased], il numero di
+versione non si tocca. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
 ```
 
@@ -4492,3 +4530,9 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   le donazioni l'autore vuole un brainstorming in una sessione sua: P-59; lo
   smistamento in prompt è della regia, dal suo resoconto. Rilasci piccoli e
   frequenti.
+- **3 ottobre 2026 — via anche l'offline, in un lavoro solo.** L'autore ha
+  deciso di togliere l'offline per semplicità, e di considerare che nessuno
+  abbia usato il sito prima degli account. P-60 e P-61 riscritti: un ADR, il
+  `sw.js` che si toglie di mezzo, la versione in due posti, la pagina; poi il
+  rilascio 0.30.0 (riga 13). La copia nel dispositivo per chi ha l'account
+  resta.
