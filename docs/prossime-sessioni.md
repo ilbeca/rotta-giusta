@@ -228,16 +228,16 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
 | 10 | **Che cosa viene dopo gli account** — il brainstorming, poi lo smistamento in prompt | Claude con l'autore, poi la regia | `main` | niente | P-59 |
-| 11 | **Semplificare: via l'offline e l'archivio di prima** — le decisioni, la specifica, i controlli, il `sw.js` che si toglie | Claude | `main` | niente | P-60 |
-| 12 | **Semplificare: via l'offline e l'archivio di prima** — la pagina | ChatGPT | `ui/main` | P-60 | P-61 |
+| 12 | **Semplificare: via l'offline e l'archivio di prima** — la pagina | ChatGPT | `ui/main` | niente: P-60 è chiuso | P-61 |
+| 14 | **La casella `privacy@` sull'iPhone**, e la prova `dkim=pass` | Claude con l'autore | `main`, solo `account-progetto.md` | niente | P-62 |
 | 13 | **Il rilascio 0.30.0** | la regia, con l'autore | `main` | P-61 | — |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo il traguardo» e le voci non barrate |
 
 **Il traguardo è fatto: la v0.29.0 è in linea dal 3 ottobre 2026** (P-27),
 sulla pagina e sul server, e `main` è pushato. La riga 9 della coda è uscita.
-**Per Claude:** P-59 e P-60, pronti, tutti e due nella cartella principale e
-quindi uno alla volta: P-60 sblocca ChatGPT; P-59 è lungo e chiede
-l'autore davanti. **Per ChatGPT:** P-61, dopo P-60. Lo smistamento delle idee
+**Per Claude:** P-59, il brainstorming, lungo e con l'autore davanti; e
+P-62, la casella `privacy@` sull'iPhone, che tocca soltanto
+`account-progetto.md`. P-60 è chiuso. **Per ChatGPT:** P-61, pronto. Lo smistamento delle idee
 di P-59 in prompt — decisioni dell'autore, ricerche, lavoro di Claude su
 `main`, lavoro di ChatGPT su `ui/main` — lo fa la regia dal suo resoconto,
 con prima le decisioni che cambiano una promessa (informativa, filosofia, un
@@ -501,7 +501,10 @@ consuma, non si riprogetta.
      unico commit fuori da `main`, `affc37d`, è il tag `v0.28.1`, che resta.
      Toglierlo da GitHub è una scrittura sul remoto: la fa la regia con il sì
      dell'autore.
-  3. **Dal 16 ottobre 2026**, il redirect di `.pages.dev` (fase D2 di
+  3. **Dal 16 ottobre 2026** — e con una condizione nuova da P-60: anche dopo
+     il redirect, `.pages.dev/sw.js` deve rispondere 200 con il `sw.js` che si
+     disinstalla, altrimenti chi ha la palestra installata lì resta fermo
+     (`migrazione-hosting.md`, ADR-005) —, il redirect di `.pages.dev` (fase D2 di
      `docs/migrazione-hosting.md`): oggi serve anche lui la 0.29.0.
   4. **Dal 2 novembre 2026**, trenta giorni dopo il traguardo, la soglia degli
      allarmi riletta sul registro vero (§15.4 di `account-progetto.md`). Nel
@@ -510,6 +513,12 @@ consuma, non si riprogetta.
      dice —, anche nel file `/var/lib/rg/cancellazioni` (§2.8).
   5. **Safari su iPhone e in navigazione privata**: non provati al traguardo,
      restano in Q-PROVE (§19 di `account-progetto.md`).
+  7. **Da P-60, per l'autore** (ADR-005): la decisione è in tensione con la
+     frase della filosofia «una che scopri dopo è un inganno», e
+     `filosofia.md` lo dice accanto, senza riscriverla («Che cosa si perde»,
+     punto 5); i due anni di `sw.js` pubblicato sono una scelta di P-60, e si
+     possono accorciare; e una variante non considerata — dire che l'archivio
+     di prima c'è, senza leggerlo — è fra le «Alternatives Considered».
   6. **L'offline — deciso dall'autore il 3 ottobre 2026: si toglie, per
      semplicità.** I suoi motivi: la «seconda ricarica» dopo un rilascio è un
      comportamento strano che pochi utenti capirebbero; dubita che l'offline
@@ -3873,12 +3882,10 @@ docs/prossime-sessioni.md.
 
 ### P-60 — Claude: semplificare — via l'offline e l'archivio di prima; le decisioni, la specifica, i controlli
 
-**Stato:** **in corso dal 3 ottobre 2026, con il testo di prima** — quello
-di `20113dc`, che toglieva solo l'archivio di prima. La sessione è partita
-prima che la regia riscrivesse il prompt per l'offline; alle 11:10 aveva
-scritto `docs/adr/ADR-005-l-archivio-di-prima-resta-nel-browser.md` e
-modificato tredici file. Il testo qui sotto è quello nuovo: se portarlo a
-quella sessione o farne un prompt a parte lo decide l'autore. **Dove:** Claude
+**Stato:** **chiuso il 3 ottobre 2026** (esito in fondo a questa sezione). È
+partito con il testo di prima — quello di `20113dc`, che toglieva solo
+l'archivio di prima —, e l'autore gli ha portato il testo nuovo a metà
+sessione, con un messaggio della regia: un lavoro solo, come voleva. **Dove:** Claude
 Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano: tocca `tests/`, la
 specifica, le regole e `site/sw.js`. **Nasce da:** le decisioni dell'autore del
 3 ottobre (§4, «Dopo il traguardo», punti 1 e 6). **Sblocca:** P-61; dopo P-61
@@ -3946,13 +3953,43 @@ push e niente rilascio. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** `c8a336b`, sulla cartella principale. Un ADR solo per le due
+decisioni, `docs/adr/ADR-005-semplificare-senza-offline-e-senza-archivio-di-prima.md`,
+con il prezzo per intero e i punti dell'ADR-004 che cambiano. `site/sw.js` è il
+service worker che cancella le cache e si disinstalla senza ricaricare le pagine
+aperte, resta pubblicato almeno fino al 3 ottobre 2028 ed è passato al
+territorio del motore (`territori.yaml`). La versione sta in due posti, e il
+`curl` della chiusura di un rilascio guarda `meta.json`. Specifica, filosofia,
+README, `AGENTS.md`, la skill e il progetto del client riscritti; il contratto
+della pagina per P-61 è il §3.5 della specifica, «Per P-61». Escono i controlli
+del guscio, della cache, delle figure fra un rilascio e l'altro,
+dell'autodiagnosi, la parte offline di C-01 e C-09; entrano C-21 (R-ACC-05), C-22
+(R-ARCH-15) e tre test del motore su `sw.js` (R-ARCH-16…18), ognuno provato al
+contrario. C-21 e C-22 sono rossi sulla pagina vera e dichiarati in
+`docs/eccezioni-interfaccia.md`. Trovato: C-22 guardava solo lo stato e la
+pagina vera passava due giri su tre, ora legge anche le chiamate; la pagina vera
+apre da sé una cache vuota `rg-0.29.0`; statichost.eu serve tutto con
+`max-age=0, must-revalidate` e risponde 304, quindi senza service worker non
+serve una regola nuova in `_headers`. Tre punti per l'autore nel §4, «Dopo il
+traguardo», punto 7.
+
+**Che cosa ha controllato la regia, il 3 ottobre:** il commit c'è, con il
+trailer, e non tocca questo file; le due cartelle sono pulite. Le suite sullo
+stato di `main`: motore 192/196 con quattro skip, server 72/72, dati 223,
+specifica 820, controllo della documentazione verde, interfaccia 2.246 sulla pagina vera
+con la 8620 libera prima. **Non ha controllato:** la LTS 24, `ripristina
+--prova` e le prove al contrario, che dice il resoconto; e non ha guardato la
+pagina in un browser — lì P-61 non è ancora passato.
 
 ### P-61 — ChatGPT: semplificare — via l'offline e l'archivio di prima, la pagina
 
-**Stato:** in attesa di P-60. **Dove:** l'app ChatGPT (Codex), progetto
-`~/Software/rotta-giusta-ui` in modalità Local, ramo **`ui/main`**. La regia
-riguarda questo prompt quando P-60 è chiuso.
+**Stato:** **pronto, dal 3 ottobre 2026**: P-60 è chiuso, e la regia ha
+riletto questo prompt sul suo esito. Il contratto è il §3.5 della specifica,
+«Per P-61»; la frase nuova della conservazione con l'account è nel §11.2 del
+progetto del client, e F-01 accetta la vecchia e la nuova finché P-61 non
+arriva. `site/sw.js` è ora del motore: il `pre-commit` di `ui/*` lo rifiuta.
+**Dove:** l'app ChatGPT (Codex), progetto `~/Software/rotta-giusta-ui` in
+modalità Local, ramo **`ui/main`**, allineato a `main` dalla regia.
 
 ```
 Questo prompt è per ChatGPT (Codex), nella cartella
@@ -3984,6 +4021,62 @@ Le cinque suite verdi; quella dell'interfaccia vuole la 8620 libera. Un
 commit con il trailer, la voce in fondo a [Unreleased], il numero di
 versione non si tocca. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-62 — Claude, con l'autore: la casella `privacy@` sull'iPhone, e la prova `dkim=pass`
+
+**Stato:** pronto, dal 3 ottobre 2026. **Dove:** Claude Code,
+`~/Software/rotta-giusta`, ramo **`main`**, a mano, con l'autore e il suo
+iPhone. Scrive soltanto `docs/account-progetto.md`. **Nasce da:** §4, «Aperto il
+2 ottobre 2026», punto 5, e «Dopo il traguardo», la decisione sul Registro
+privacy; l'autore ha chiesto una sessione a parte il 3 ottobre.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-62: la casella privacy@rottagiusta.it nell'app Mail
+dell'iPhone dell'autore, con le notifiche, e la prova che una mail
+spedita da lì è firmata (dkim=pass). È la casella dove arrivano le
+richieste degli interessati e gli allarmi del server, cioè le cose con
+una scadenza: oggi non la legge nessuna automazione, e non deve restare
+una casella che si apre solo dalla webmail.
+
+Leggi in docs/account-progetto.md il §15.4, punti 2 e 10 (la casella
+OVHcloud Zimbra Starter, i record DNS, il DKIM), e in
+docs/prossime-sessioni.md il §4, «Aperto il 2 ottobre 2026», punto 5.
+
+Dove si è fermato il primo tentativo, il 3 ottobre: l'autore ha
+aggiunto l'account sull'iPhone con il server che gli aveva dato la
+regia, zimbra1.mail.ovh.net, che è la webmail e non un server di posta.
+L'iPhone ha detto «impossibile connettersi utilizzando SSL», poi ha
+salvato l'account con «nessun messaggio», e l'invio è fallito con
+«connessione al server non riuscita». La guida OVHcloud per Zimbra
+(docs.ovhcloud.com, «Zimbra - Configurare il proprio account e-mail su
+un client di posta») indica per IMAP imap.mail.ovh.net o ssl0.ovh.net
+sulla 993, e per SMTP smtp.mail.ovh.net o ssl0.ovh.net sulla 465, con
+SSL/TLS e l'indirizzo intero come utente: verificalo tu su quella
+guida, non prenderlo da qui.
+
+Guida l'autore un passo alla volta. La password la scrive solo lui, e tu
+non la chiedi; l'SSL non si spegne mai; il pannello OVHcloud e i DNS non
+si toccano senza il suo sì. Poi la prova nei due versi: dall'iPhone,
+dall'account privacy@, una mail a francesco.becattini@gmail.com, che
+leggi con il connettore Gmail in sola lettura e di cui guardi le
+intestazioni di autenticazione — DKIM, SPF e DMARC per rottagiusta.it —;
+e una risposta da Gmail, che deve arrivare sull'iPhone con la notifica.
+Se il connettore non mostra le intestazioni, l'autore apre «Mostra
+originale» e te le legge.
+
+Scrivi l'esito nel §15.4 di docs/account-progetto.md, ai punti 2 e 10:
+che cosa è configurato, con quali server e porte, e che cosa hai visto
+nelle intestazioni, con la data. Un commit di quel file soltanto, con
+il percorso nel comando (git commit -- docs/account-progetto.md): nella
+cartella possono lavorare altre sessioni. Niente push. Chiudi con il
+resoconto di docs/prossime-sessioni.md.
 ```
 
 **Esito:** —
@@ -4557,3 +4650,10 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   `git status` prima di tutto — e la regia non l'ha fatto; d'ora in poi nella
   cartella principale non lancia comandi git che toccano l'albero, né
   `checkout` di file, mentre una sessione ci lavora.
+- **3 ottobre 2026 — P-60 chiuso, P-61 pronto, P-62 per la mail.** P-60 ha
+  tolto l'offline e il passaggio dell'archivio di prima dai documenti e dai
+  controlli, in un ADR solo, e ha lasciato a P-61 il contratto della pagina.
+  La regia ha rifatto le suite sullo stato di `main`. La casella `privacy@`
+  sull'iPhone non si è collegata: la regia aveva indicato come server
+  `zimbra1.mail.ovh.net`, che è la webmail, senza verificarlo sulla guida
+  OVHcloud. L'autore ha chiesto una sessione a parte: P-62.
