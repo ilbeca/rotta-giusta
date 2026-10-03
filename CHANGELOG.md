@@ -11,6 +11,39 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+## [0.29.0] — 2026-10-02
+
+**La versione con gli account.** Si fa ancora tutto senza registrarsi, ma senza
+account il sito non conserva più niente, nemmeno nel browser: le risposte
+valgono finché la pagina resta aperta, e la pagina lo dice prima di cominciare
+e alla fine di ogni attività. Con un account — un'email e una password — le
+risposte si salvano sul server, in chiaro, si ritrovano su un altro dispositivo
+e danno i Progressi. **Chi ha nel browser l'archivio di prima** lo trova
+segnalato alla prima apertura: lo porta nell'account o lo scarica, e non
+sparisce da solo.
+
+Con gli account esce il ridisegno intero, che su `main` si era accumulato dal
+26 settembre: il ciclo dei quiz che si chiude con riepilogo, revisione e
+riprova degli errori (area 3); il Carteggio con le tre porte, il giudizio di
+chi studia detto prima, e la bozza che con l'account regge una ricarica (area
+4); Progressi come mappa per tema (area 5); la rifinitura di fuoco, reflow,
+contrasto e bersagli (area 6). L'informativa e l'avvertenza sono quelle della
+versione con gli account, con le condizioni per l'account; la vetrina non
+carica più niente da altri host.
+
+**Il server degli account**, in esercizio su `api.rottagiusta.it` dal 1°
+ottobre, si aggiorna allo stesso tag con `rg-aggiorna`: porta lo schema 4,
+l'esclusione dalle statistiche di chi si oppone, lo strumento con cui il
+titolare legge un account lasciando traccia, e il `Retry-After` che la pagina
+può leggere. **Su `rottagiusta.it`** il ramo di build di statichost.eu torna
+da `fix/0.28.1` a `main` prima di «Build now». Dopo il rilascio ogni
+dispositivo prende la versione nuova alla seconda ricarica.
+
+La 0.28.1, uscita il 1° ottobre da un ramo a parte, è qui sotto: il suo avviso
+sul testo del carteggio è superato dalla bozza. Le voci che seguono sono il
+lavoro di questi giorni, sessione per sessione, com'è stato scritto allora:
+dove dicono «non ancora pubblicato» parlano di prima di questo rilascio.
+
 ### Verificato — la v0.28.0 sui due indirizzi
 
 - **Su `rottagiusta.it`, dopo «Build now», e su `.pages.dev`:** `CACHE =

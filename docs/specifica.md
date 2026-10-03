@@ -1,8 +1,9 @@
 # Rotta Giusta — la specifica
 
 **Data:** 9 settembre 2026.
-**Prodotto di riferimento:** v0.22.1 pubblicata, più il lavoro in corso sul ramo
-`ui/main` (non committato al momento della stesura).
+**Prodotto di riferimento:** la v0.29.0, la versione con gli account, dal 2
+ottobre 2026. La prima stesura descriveva la v0.22.1 pubblicata, più il lavoro
+allora in corso sul ramo `ui/main`.
 **Che cos'è:** il documento unico di progetto. Che cosa il sito è, per chi, com'è
 fatto sotto, dove vive ogni funzionalità, e — per ogni garanzia — **il controllo
 che la tiene ferma**.
@@ -130,15 +131,14 @@ qui cadono. Sotto: che cosa
 resta, che cosa cade, e che cosa si perde — detto per esteso, perché è il posto
 in cui una decisione del genere si è tentati di scriverla a mezza voce.
 
-**La decisione è nel prodotto su `main`, non ancora in quello pubblicato.**
-Dal 29 settembre 2026 la pagina su `main` ha il client degli account (P-18), e
-con lei i testi di `site/`; il server è scritto e provato dalla sua suite; dal
-30 settembre (P-26) questo documento, `README.md`, `AGENTS.md` e la skill del
-progetto descrivono il sito con gli account. La versione pubblicata, la
-v0.28.0, non li ha: finché il rilascio che li porta non c'è, chi apre
-`rottagiusta.it` trova il sito di prima, e `main` non si pusha
-(`docs/prossime-sessioni.md` §4). Testi e prodotto cambiano **nella stessa
-versione** — non prima e non dopo. Un'informativa che descrive un server che
+**La decisione è nel prodotto pubblicato dalla v0.29.0**, il rilascio del 2
+ottobre 2026. La pagina ha il client degli account (P-18) e i testi di `site/`
+che lo dicono; il server è in esercizio su `api.rottagiusta.it` (P-15); questo
+documento, `README.md`, `AGENTS.md` e la skill del progetto descrivono il sito
+con gli account (P-26). Fino alla v0.28.1 chi apriva `rottagiusta.it` trovava
+il sito di prima, senza registrazione e con tutto nel browser, e `main` non si
+è pushato finché il rilascio non c'era. Testi e prodotto sono cambiati **nella
+stessa versione** — non prima e non dopo. Un'informativa che descrive un server che
 non c'è è falsa quanto una che tace quello che c'è.
 
 ### 2.1 Che cosa resta — Vincolo
@@ -287,7 +287,7 @@ stanno in prima pagina invece che in una nota.
 
 ## 3. L'architettura: righe che viaggiano, e niente altro
 
-Fino alla v0.28.0 qui c'era scritto «non c'è un backend», ed era vero. Con gli
+Fino alla v0.28.1 qui c'era scritto «non c'è un backend», ed era vero. Con gli
 account un backend c'è (§3.7), ma fa un mestiere solo: **conserva le righe delle
 risposte di chi si registra, e le restituisce.** Non seleziona, non calcola
 misure, non ha uno specchio. Tutto il resto è ancora un **livello di dati**
@@ -358,11 +358,11 @@ variante 'cieca' | 'nuoviPrima', solo nella prova di carteggio (da P-32)
 di `area-4-progetto.md`, dove sta per esteso). Ogni attività su carta — prova,
 giro, tappeto — e ogni riconoscimento delle tecniche scrive un `sim_uid` nuovo
 a ogni avvio, lo stesso su tutte le sue righe, con `proposti` e `pos`; la prova
-anche `variante`, e resta la sola con una riga `_t:'s'`. La pagina su `main`
-le scrive così dal 30 settembre 2026 (P-21). Prima scriveva le righe di prima —
+anche `variante`, e resta la sola con una riga `_t:'s'`. La pagina
+le scrive così dalla v0.29.0 (P-21, 30 settembre 2026). Fino alla v0.28.1
+scriveva le righe di prima —
 giro e tappeto con `sim_uid: null`, le tecniche senza legame, nessuna con
-`proposti` o `pos` —, e le scrive ancora il sito pubblicato, la v0.28.0, fino al
-rilascio che porta l'area 4; il motore legge quelle righe per come sono:
+`proposti` o `pos` —; il motore legge quelle righe per come sono:
 ricostruite e dichiarate, con quantità, ordine e variante «non registrati», mai
 dedotti (§4.4).
 
@@ -385,7 +385,7 @@ dedotti (§4.4).
   nomina (R-ACC-13), e la si dice salvata solo allora (R-ACC-39). All'uscita, la
   copia del dispositivo si cancella (R-ACC-46).
 
-Fino alla v0.28.0 questa sezione diceva «l'unica copia», ed era la ragione per
+Fino alla v0.28.1 questa sezione diceva «l'unica copia», ed era la ragione per
 cui cambiare telefono perdeva tutto. Oggi senza account di copie non ce n'è
 nessuna, e con l'account ce ne sono due — ma **nessuna delle due è derivata**:
 si uniscono righe, non stati, ed è per questo che non è la sincronia della
@@ -397,7 +397,7 @@ La scelta di IndexedDB è misurata, non dedotta: una riga pesa 192 byte;
 la prende la risposta sparisce mentre la schermata dice che va tutto bene.
 IndexedDB nello stesso browser dichiara 3,7 GB, scrive 30.000 righe in 1,9 s.
 
-**Non c'è più il ripiego su `localStorage`.** Fino alla v0.28.0, se IndexedDB
+**Non c'è più il ripiego su `localStorage`.** Fino alla v0.28.1, se IndexedDB
 non si apriva, l'app ripiegava lì e lo dichiarava. Con l'account la copia del
 dispositivo sta solo in IndexedDB; se non si apre, l'accesso lo dice, e la
 pagina non scrive «salvato sul dispositivo» (`account-client-progetto.md`
@@ -770,7 +770,7 @@ giusta scritta in un altro formato, **sulla prova che manda a casa**.
 migliore e giocate per modalità. Senza account valgono per la pagina aperta; con
 l'account stanno nel profilo sul server, fusi con il massimo così che rimandarli
 non cambi niente, e viaggiano nel file dei progressi (R-ACC-35). Fino alla
-v0.28.0 stavano in `localStorage`.
+v0.28.1 stavano in `localStorage`.
 
 ### 4.6 Che cosa il motore **non** sa
 
@@ -1061,10 +1061,10 @@ preparazione, che le prende dal motore; Inizia apre la stessa lista, con
 un'identità nuova, oppure non avvia niente e lo dice. R-SEL-17.
 
 **Dove c'è.** Le tre porte, le preparazioni, la guida e l'esempio, il confronto,
-il giudizio, il riepilogo e la revisione sono nella pagina su `main` dal 30
-settembre 2026 (P-21), con il raccordo del §10.1 dell'area 4; dal 1° ottobre il
-controllo ha un regime solo (P-50, §9.6). Il sito pubblicato, la v0.28.0, ha
-ancora il Carteggio di prima, fino al rilascio che porta gli account (P-27).
+il giudizio, il riepilogo e la revisione sono nella pagina dalla v0.29.0 (P-21,
+30 settembre 2026), con il raccordo del §10.1 dell'area 4; dal 1° ottobre il
+controllo ha un regime solo (P-50, §9.6). Fino alla v0.28.1 il sito pubblicato
+aveva il Carteggio di prima.
 
 **Stati.** *Foglio finito* nel tappeto: dirlo, non spegnere il pulsante in
 silenzio.
@@ -1138,19 +1138,19 @@ risposte rivedere, che cosa non è stato affrontato. Dal riepilogo si apre la
 **revisione** di quel tentativo — tutte le risposte o solo gli errori, la tua e
 quella ufficiale — che non scrive niente oltre ai tag, e la **riprova esatta**
 degli errori di quell'attività, con un'anteprima prima dell'avvio. Base e vela
-sono due fasi con due riepiloghi e due riprove. È nella pagina su `main` dal
-26 settembre 2026 (P-19); il sito pubblicato, v0.28.0, ha ancora il riepilogo
-di prima, con gli errori del runner e senza riprova, fino al prossimo rilascio.
+sono due fasi con due riepiloghi e due riprove. È nella pagina dalla v0.29.0
+(P-19, 26 settembre 2026); fino alla v0.28.1 il sito pubblicato aveva il
+riepilogo di prima, con gli errori del runner e senza riprova.
 Dal 30 settembre il controllo del ciclo ha un regime solo (P-37, §9.6).
 
 ### 7.6 Il runner del carteggio
 
 **Con l'account il testo regge una ricarica; senza, resta finché la pagina è
-aperta, e la pagina lo dice.** È così nella pagina su `main` dal 30 settembre
-2026 (P-21). Il sito pubblicato, la v0.28.0, non ha né la bozza né gli account,
-e nemmeno l'avviso e la conferma del browser di P-36, che sono su `main`: lì il
-testo sta solo in memoria e una ricarica lo perde senza che la pagina lo dica,
-fino al rilascio che porta tutti e tre (P-27).
+aperta, e la pagina lo dice.** È così dalla v0.29.0 (P-21, 30 settembre
+2026). La v0.28.0 non aveva né la bozza né gli account, e nemmeno un avviso:
+lì il testo stava solo in memoria e una ricarica lo perdeva senza che la pagina
+lo dicesse. La v0.28.1, il 1° ottobre, ha portato l'avviso e la conferma del
+browser di P-36; la bozza è arrivata con gli account.
 
 **La storia, perché non si ripeta.** Fino al 26 settembre 2026 qui c'era
 scritto, come Vincolo, che quello che scrivi è salvato **a ogni tasto**. Non era
@@ -1219,7 +1219,7 @@ scrittura fallita». L'autodiagnosi offline. Le fonti e le anomalie della banca.
 Scarica / ricarica / azzera (§5.4), e la porta dell'archivio di prima degli
 account, anche dopo «Più tardi».
 
-**Non è più l'unica via di salvataggio.** Fino alla v0.28.0 scaricare il file
+**Non è più l'unica via di salvataggio.** Fino alla v0.28.1 scaricare il file
 era l'unico modo di non perdere tutto cambiando telefono. Con l'account si
 salva sul server, e il file è l'export, una portabilità; senza account è il
 modo di portarsi via le risposte della pagina aperta, e il sito non ne
@@ -1506,9 +1506,9 @@ liste, perché una lista in un prompt è una regola da ricordare.
 
 ### 9.9 L'accesso
 
-Nati dall'ADR-004. Gli account non esistono ancora nel sito pubblicato, ma
-sono nella pagina su `main` dal 29 settembre 2026 (P-18): i requisiti della
-pagina si controllano su quella, in un browser vero, e dal 30 settembre (P-40)
+Nati dall'ADR-004. Gli account sono nel sito pubblicato dalla v0.29.0, e nella
+pagina dal 29 settembre 2026 (P-18): i requisiti della pagina si controllano su
+quella, in un browser vero, e dal 30 settembre (P-40)
 una pagina senza il client è rossa. Quello che il banco non vede è scritto in
 righe sue, scoperte con il motivo (R-ACC-59…62). Quelli del server hanno il loro
 controllo in `test_server.mjs`.
@@ -1829,8 +1829,7 @@ vera ha la bozza dal 30 settembre 2026 (P-21), e C-19 gira intero su di lei. Fin
 ad allora R-BOZZA-06 era un **difetto aperto dichiarato** in
 `docs/eccezioni-interfaccia.md`, e il suo controllo pretendeva che restasse rosso
 finché lo era; P-21 ha tolto la dichiarazione nello stesso commit. Il sito
-pubblicato, la v0.28.0, la bozza non ce l'ha: arriva con il rilascio degli
-account (P-27).
+pubblicato ha la bozza dalla v0.29.0, il rilascio degli account.
 
 | ID | Requisito | Controllo |
 |---|---|---|
@@ -2515,3 +2514,10 @@ successo, ed è il motivo per cui questo file esiste.
   gira verde sulla pagina vera. I link delle finestre dell'account si aprono
   ora in una scheda nuova; nessun controllo lo tiene, ed è detto fra le cose
   che i controlli non vedono.
+- **2 ottobre 2026 — il rilascio degli account, la v0.29.0.** Le frasi che
+  dicevano «il sito pubblicato, la v0.28.0, non li ha ancora» — nel §2, §3.2,
+  §7.3, §7.5, §7.6, §9.9 e §9.11 — dicono ora il presente: gli account, il
+  ciclo dei quiz, il Carteggio con la bozza e la mappa di Progressi sono nel
+  sito pubblicato. Dove si legge «fino alla v0.28.1» è l'ultima versione senza
+  account, la correzione del 1° ottobre. Il prodotto di riferimento in testa
+  è la v0.29.0.

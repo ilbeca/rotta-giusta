@@ -15,17 +15,6 @@ due filosofie leggermente diverse, ed è esattamente il tipo di divergenza
 silenziosa che questo progetto ha già pagato una volta (vedi `specifica.md`,
 §0).
 
-> **Questo documento descrive il sito deciso, non ancora quello pubblicato.**
-> Gli account degli ADR-003 e 004 sono nella pagina su `main` dal 29 settembre
-> 2026, con i testi di `site/` che li dicono, e il server che li tiene è
-> scritto e provato; ma il sito pubblicato, la v0.28.0, non li ha ancora. Fino
-> al rilascio che li porta, chi apre `rottagiusta.it` trova il sito di prima:
-> senza registrazione, con tutto nel browser. Qui si scrive in che cosa
-> crediamo **dopo** quella decisione, perché i valori non si aggiornano il
-> giorno del rilascio. **Questa nota resta finché quel rilascio non c'è, e si
-> toglie nel suo commit** — non prima, perché oggi è vera, e non dopo, perché
-> da quel giorno sarebbe falsa.
-
 ---
 
 ## Il nostro impegno
@@ -283,6 +272,11 @@ cambia, deve cambiare in una direzione e non nell'altra.
 ---
 
 ## Registro
+
+- **2 ottobre 2026 — la nota in testa è tolta.** Diceva che il documento
+  descriveva il sito deciso e non quello pubblicato, e che si toglieva nel
+  commit del rilascio che porta gli account: è questo, la v0.29.0. Da qui il
+  sito che chi studia apre è quello che queste pagine descrivono.
 
 - **30 settembre 2026 — la nota in testa, dopo P-18 e P-26.** Diceva che gli
   account non esistevano e che le pagine di `site/` descrivevano ancora il sito
