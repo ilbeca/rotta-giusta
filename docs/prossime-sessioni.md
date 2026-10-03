@@ -175,9 +175,7 @@ esito nel §6 dice che cosa del passo 6 resta. Per Claude e per ChatGPT
 non c'è nessun prompt pronto.
 
 I prossimi passi, in quest'ordine:
-1. Quello che resta del passo 6 di P-27, con il mio sì: fix/0.28.1
-   tolto da GitHub, ui/main e ui/vetrina allineati a main.
-2. Il §4: «Dopo il traguardo» — per primo, se e come togliere il
+1. Il §4: «Dopo il traguardo» — per primo, se e come togliere il
    passaggio dell'archivio di prima — e quello che resta in «Aperto il
    2 ottobre 2026» e in «Trovato dal controllo del 2 ottobre». La
    cartella del titolare non si tocca senza dirmelo.
@@ -478,7 +476,8 @@ consuma, non si riprogetta.
      sapendo che R-ARCH-07 tiene il nome del database proprio per quel
      passaggio. Finché c'è, la tiene soltanto il banco, su un archivio
      sintetico.
-  2. **Il ramo `fix/0.28.1` si può togliere**, locale e da GitHub: il campo
+  2. ~~**Il ramo `fix/0.28.1` si può togliere**~~ — **tolto il 3 ottobre
+     2026**, dal Mac e da GitHub, con il sì dell'autore. Il testo di prima: il campo
      «Branch» di statichost.eu è tornato `main` al passo 4 di P-27, e il suo
      unico commit fuori da `main`, `affc37d`, è il tag `v0.28.1`, che resta.
      Toglierlo da GitHub è una scrittura sul remoto: la fa la regia con il sì
@@ -3745,11 +3744,11 @@ che non toccano codice (il resoconto dice dati, specifica, guardiano e
 controllo della documentazione verdi dopo di loro).
 
 **Il passo 6, la chiusura:** esito, registro e le parti di questo file che il
-rilascio ha reso passato sono scritti in questo commit. **Restano, perché
-chiedono un sì:** togliere `fix/0.28.1` da GitHub (§4, «Dopo il traguardo»,
-punto 2) e allineare `ui/main` e `ui/vetrina` a `main` — le due cartelle sono
-pulite, ma la regia non sa se una sessione di ChatGPT è aperta (punto 5 di
-«Come si usa»).
+rilascio ha reso passato sono in `6217fda`. **Il resto, con il sì
+dell'autore, lo stesso giorno:** `6217fda` pushato, `fix/0.28.1` tolto dal Mac
+e da GitHub (il suo commit resta nel tag `v0.28.1`), `ui/main` e `ui/vetrina`
+allineati a `main` con un avanzamento veloce, a cartelle pulite e senza
+sessioni di ChatGPT aperte. **P-27 è chiuso per intero.**
 
 ---
 
@@ -4292,3 +4291,6 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   `fix/0.28.1`, il redirect del 16 ottobre, la soglia del 2 novembre, Safari su
   iPhone. Il prompt di ripresa dice lo stato nuovo. Restano, con un sì
   dell'autore, `fix/0.28.1` da GitHub e l'allineamento dei rami di ChatGPT.
+- **3 ottobre 2026 — il passo 6 finito.** Con il sì dell'autore: la chiusura
+  della coda pushata, `fix/0.28.1` tolto dal Mac e da GitHub, `ui/main` e
+  `ui/vetrina` allineati a `main`. Per la regia resta il §4.
