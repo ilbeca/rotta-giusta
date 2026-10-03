@@ -1,6 +1,6 @@
 # Prossime sessioni — la coda, con i prompt
 
-**Aggiornato il 2 ottobre 2026.** Territorio neutro. **Penna: la sessione di regia** (sotto, «Come si usa»).
+**Aggiornato il 3 ottobre 2026.** Territorio neutro. **Penna: la sessione di regia** (sotto, «Come si usa»).
 
 > **Questo file invecchia.** È una coda, non una verità: quando un lavoro è
 > fatto, il suo prompt si chiude con l'esito e resta, la riga della coda si
@@ -170,19 +170,21 @@ e che cosa aspetta una mia decisione.
 Dove siamo, perché tu lo verifichi e non lo prenda per buono: il
 ridisegno è finito, il server degli account è in esercizio su
 api.rottagiusta.it da v0.28.0, rottagiusta.it serve la 0.28.1 costruita
-dal ramo fix/0.28.1, main non è pushato. Per Claude e per ChatGPT non
-c'è nessun prompt pronto: resta il traguardo, P-27, la 0.29.0.
+dal ramo fix/0.28.1, main non è pushato. Il commit di rilascio della
+0.29.0 è su main dal 3 ottobre, senza tag: lo stato esatto è nello
+«Stato» di P-27, nel §6. Per Claude e per ChatGPT non c'è nessun altro
+prompt pronto.
 
 I prossimi passi, in quest'ordine:
-1. Le cose aperte per l'autore in cima al §4, nel punto «Aperto il 2
-   ottobre 2026»: quello che resta dopo la sessione di quel giorno. La
-   cartella del titolare non si tocca senza dirmelo.
-2. Il traguardo: P-27 nel §6 è la lista, con i cancelli prima del passo
-   1. Si fa qui, con me, passo per passo: il commit di rilascio lo
-   lancio io con TERRITORI_OK=1, il push si chiede, rg-aggiorna lo
-   faccio io sulla macchina, il ramo di build di statichost.eu lo
-   rimetto io su main. Prima di partire controlli ogni cancello e mi
-   dici quali sono chiusi.
+1. Il traguardo, P-27, lo conduco in una sessione sua, con il prompt
+   del §6. Tu non lo fai: aspetti il suo resoconto, lo confronti con
+   il repo e con quello che servono rottagiusta.it e api., e chiudi la
+   coda — l'esito di P-27, il registro, le parti del file che dopo il
+   rilascio diventano passato, il ramo fix/0.28.1, ui/main e ui/vetrina
+   allineati.
+2. Le cose aperte per l'autore nel §4, nel punto «Aperto il 2 ottobre
+   2026» e in «Trovato dal controllo del 2 ottobre»: quello che resta.
+   La cartella del titolare non si tocca senza dirmelo.
 
 Non lanciare niente e non scrivere niente finché non te lo chiedo: da
 lì ti incollerò i resoconti.
@@ -231,7 +233,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 9 | **La versione con gli account** — il traguardo | tutti | `main` | il via dell'autore: i tre cancelli di P-27 sono chiusi dal 2 ottobre; il cancello degli adempimenti è chiuso dalla sua decisione del 2 ottobre (§4) | P-27, la lista scritta |
+| 9 | **La versione con gli account** — il traguardo | tutti | `main` | la sessione di P-27, con l'autore: il commit di rilascio c'è dal 3 ottobre, mancano la data, il tag e i passi 2–6; il cancello degli adempimenti è chiuso dalla sua decisione del 2 ottobre (§4) | P-27, la lista scritta |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**, e si sono incontrate: il client degli
@@ -620,7 +622,15 @@ consuma, non si riprogetta.
      classificate da mittente, oggetto e anteprima — non si sa se il rifiuto
      vale solo per il cestino, e un avviso vero di un fornitore andrebbe letto
      per intero —; l'orologio del Mac è a +05:00, quindi «alle 8 e alle 20»
-     sono le 5 e le 17 di Roma.
+     sono le 5 e le 17 di Roma. **Guardato il 3 ottobre, dall'elenco dei
+     passaggi e senza aprire la cartella:** il passaggio delle 08:12 del 2
+     ottobre non è mai partito; quello partito il 2 ottobre alle 18:29 UTC è
+     «failed», «Request timed out», dopo più di quattro ore; quello del 3
+     ottobre alle 04:01 UTC è «succeeded», ma con attività fino alle 05:17, per
+     un lavoro da un minuto. **Non è quindi dimostrato che giri da solo.** Da
+     fare, con il sì dell'autore: leggere il diario e le trascrizioni dei due
+     passaggi per vedere dove si sono fermati — un permesso che manca, o
+     Gmail che non risponde.
   2. **Il DPA di statichost.eu: firmato e spedito dall'autore, la copia
      controfirmata è attesa.** Detto dall'autore alla regia il 2 ottobre 2026;
      la data di spedizione non è scritta. Quando torna: accanto al registro, e
@@ -3495,10 +3505,83 @@ la sua proposta, che l'autore non ha cambiato prima di lanciare.
 
 ### P-27 — la regia, con l'autore: il traguardo, la 0.29.0
 
-**Stato:** in attesa dei cancelli qui sotto; la lista è scritta il 2 ottobre
-2026, perché quel giorno non si inventi niente. **Dove:** la sessione di regia,
-su `main`, con l'autore ai pannelli. **È la lista di controllo del §5**, in
-ordine; ogni passo dice chi lo fa e come si vede che è fatto.
+**Stato:** **cominciato il 3 ottobre 2026, fermo a metà del passo 1.** I tre
+cancelli sono chiusi dal 2 ottobre. Che cosa c'è e che cosa manca, misurato il
+3 ottobre alle 07:40:
+
+- **Il commit di rilascio c'è**: `9c7afe8`, «release: v0.29.0 — la versione
+  con gli account», lanciato dall'autore con `TERRITORI_OK=1` il 3 ottobre alle
+  07:29. Sette file: i tre numeri a 0.29.0, la testa `[0.29.0]` del CHANGELOG,
+  la privacy senza «Bozza» e senza il commento «Gate dell'autore»,
+  `filosofia.md` senza la nota, la specifica al presente. Suite sull'albero del
+  rilascio, il 2 ottobre: motore 193/197, server 72/72 anche con la 24.21.0
+  LTS, dati 263, specifica 824, interfaccia 2.245, `ripristina --prova` verde.
+- **La data dentro quel commit è sbagliata di un giorno**: dice 2 ottobre —
+  la regia l'aveva preparato la sera prima —, e il rilascio è del 3. La
+  correzione è **in stage e non committata**, in quattro file: `CHANGELOG.md`
+  (`## [0.29.0] — 2026-10-03`), `site/privacy.html` («Aggiornata il 3 ottobre
+  2026»), `docs/specifica.md` (tre righe), `docs/filosofia.md` (una). Tocca
+  `site/privacy.html`, quindi la committa l'autore:
+  `TERRITORI_OK=1 git commit -F <file del messaggio>`, oppure
+  `git commit --amend` se nel frattempo nessun altro commit è salito sopra
+  `9c7afe8` — il 3 ottobre ci è salito il commit della coda, quindi un commit
+  nuovo. **Si vede dallo stato**: `git status --short` con quattro `M` in
+  prima colonna vuol dire che manca ancora. Se l'autore decide di tenere il 2
+  ottobre, si tolgono dallo stage (`git restore --staged --worktree` sui
+  quattro file) e lo si scrive qui.
+- **Il tag `v0.29.0` non esiste.** Va sul commit che porta la data giusta,
+  dopo le suite rifatte su quel commit.
+- **Niente è pushato**: `origin/main` è `51d9485`, la 0.28.0; `rottagiusta.it`
+  serve `rg-0.28.1`, `api.` risponde 0.28.0 con schema 3.
+
+L'autore ha chiesto il 3 ottobre di condurlo **in una sessione sua**, con il
+prompt qui sotto, perché quella di regia aveva il contesto pieno. La lista
+scritta il 2 ottobre resta sotto il prompt, ed è quella che la sessione segue.
+**Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano, con
+l'autore ai pannelli. **È la lista di controllo del §5**, in ordine; ogni passo
+dice chi lo fa e come si vede che è fatto.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-27: il traguardo, la v0.29.0, insieme all'autore. Lui agisce
+nei pannelli, sulla macchina e con TERRITORI_OK; tu prepari, spieghi un
+passo alla volta, aspetti che dica «fatto», e verifichi misurando.
+Leggi AGENTS.md, in docs/prossime-sessioni.md la sezione P-27 del §6
+per intero — lo stato, i cancelli, i sei passi, come si torna
+indietro — e il §4, e in docs/account-progetto.md il §2.7 e il §2.8.
+
+Prima controlla lo stato vero, e dimmelo in poche righe: git status e
+git log -3 nella cartella principale, se il tag v0.29.0 esiste, che
+cosa c'è su origin (git ls-remote), che cosa servono oggi
+rottagiusta.it/sw.js e api.rottagiusta.it/v1/salute. Il passo 1 è a
+metà: il commit di rilascio c'è, e lo «Stato» di P-27 dice che cosa
+manca — la data, il tag. Riparti da lì, senza rifare quello che è
+fatto, e se lo stato che trovi non è quello scritto, dillo prima di
+toccare qualcosa.
+
+Poi i passi, uno alla volta, ognuno con la verifica che la lista gli
+dà. Prima del tag rifai girare le cinque suite sul commit da taggare,
+quella del server anche con la LTS 24, e guarda che la porta 8620 sia
+libera. Il tag annotato lo fai tu. Il push di main e del tag solo con
+il mio sì. rg-aggiorna sulla macchina lo lancio io, con il commit che
+mi dai tu. Il ramo di build di statichost.eu lo rimetto io su main, e
+premo io «Build now». Poi le verifiche che solo quel giorno può fare,
+con me. Se una verifica non torna, fermati: come si torna indietro è
+scritto nella lista. Non inserisci credenziali, non lanci TERRITORI_OK
+e non entri nella macchina al posto mio.
+
+Quello che misuri si scrive dove vive: una voce «Verificato — la
+v0.29.0» in fondo a [Unreleased] del CHANGELOG, e il §2.8 e il §19 di
+docs/account-progetto.md per la macchina. Non toccare
+docs/prossime-sessioni.md: l'esito lo scrive la regia dal tuo
+resoconto. Un commit per quello che scrivi, nessun altro push senza
+chiedere. Chiudi con il resoconto di docs/prossime-sessioni.md.
+```
+
+**La lista**, scritta il 2 ottobre 2026.
 
 **I cancelli — tutti chiusi prima del passo 1:**
 
@@ -4099,3 +4182,14 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   prompt — P-55, P-56, P-57, P-58 — per due promesse dell'informativa senza il
   loro pezzo e per un difetto che c'era da P-18 sulla strada dell'ADR-004. Il
   traguardo aspetta il via dell'autore, e comincia dal passo 1.
+- **3 ottobre 2026 — il commit di rilascio, e la regia si passa di mano.**
+  L'autore ha lanciato il commit della 0.29.0 (`9c7afe8`) la mattina del 3
+  ottobre, sull'albero che la regia aveva preparato la sera prima: per questo
+  la data dentro era il 2, e la correzione è rimasta in stage, da committare
+  da lui. Il tag non c'è e niente è pushato. Su sua richiesta P-27 prosegue in
+  una sessione sua, con un prompt scritto ora nel §6 insieme allo stato esatto,
+  e la regia si riprende in una sessione nuova: il contesto di questa era
+  pieno. Il prompt di ripresa dice che cosa aspetta la regia nuova — il
+  resoconto di P-27, e le cose aperte del §4. Il Registro privacy, la notte,
+  ha avuto un passaggio scaduto e uno durato 76 minuti: non è ancora
+  dimostrato che giri da solo.
