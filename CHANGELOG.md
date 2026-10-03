@@ -11,7 +11,7 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
-## [0.29.0] — 2026-10-02
+## [0.29.0] — 2026-10-03
 
 **La versione con gli account.** Si fa ancora tutto senza registrarsi, ma senza
 account il sito non conserva più niente, nemmeno nel browser: le risposte

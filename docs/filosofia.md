@@ -273,7 +273,7 @@ cambia, deve cambiare in una direzione e non nell'altra.
 
 ## Registro
 
-- **2 ottobre 2026 — la nota in testa è tolta.** Diceva che il documento
+- **3 ottobre 2026 — la nota in testa è tolta.** Diceva che il documento
   descriveva il sito deciso e non quello pubblicato, e che si toglieva nel
   commit del rilascio che porta gli account: è questo, la v0.29.0. Da qui il
   sito che chi studia apre è quello che queste pagine descrivono.

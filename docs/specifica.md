@@ -1,7 +1,7 @@
 # Rotta Giusta — la specifica
 
 **Data:** 9 settembre 2026.
-**Prodotto di riferimento:** la v0.29.0, la versione con gli account, dal 2
+**Prodotto di riferimento:** la v0.29.0, la versione con gli account, dal 3
 ottobre 2026. La prima stesura descriveva la v0.22.1 pubblicata, più il lavoro
 allora in corso sul ramo `ui/main`.
 **Che cos'è:** il documento unico di progetto. Che cosa il sito è, per chi, com'è
@@ -131,7 +131,7 @@ qui cadono. Sotto: che cosa
 resta, che cosa cade, e che cosa si perde — detto per esteso, perché è il posto
 in cui una decisione del genere si è tentati di scriverla a mezza voce.
 
-**La decisione è nel prodotto pubblicato dalla v0.29.0**, il rilascio del 2
+**La decisione è nel prodotto pubblicato dalla v0.29.0**, il rilascio del 3
 ottobre 2026. La pagina ha il client degli account (P-18) e i testi di `site/`
 che lo dicono; il server è in esercizio su `api.rottagiusta.it` (P-15); questo
 documento, `README.md`, `AGENTS.md` e la skill del progetto descrivono il sito
@@ -2514,7 +2514,7 @@ successo, ed è il motivo per cui questo file esiste.
   gira verde sulla pagina vera. I link delle finestre dell'account si aprono
   ora in una scheda nuova; nessun controllo lo tiene, ed è detto fra le cose
   che i controlli non vedono.
-- **2 ottobre 2026 — il rilascio degli account, la v0.29.0.** Le frasi che
+- **3 ottobre 2026 — il rilascio degli account, la v0.29.0.** Le frasi che
   dicevano «il sito pubblicato, la v0.28.0, non li ha ancora» — nel §2, §3.2,
   §7.3, §7.5, §7.6, §9.9 e §9.11 — dicono ora il presente: gli account, il
   ciclo dei quiz, il Carteggio con la bozza e la mappa di Progressi sono nel
