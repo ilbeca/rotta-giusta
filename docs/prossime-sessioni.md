@@ -713,9 +713,14 @@ consuma, non si riprogetta.
      di solito sempre — ma il 2 ottobre è andato in stop, e impedire lo stop è
      un'impostazione di sistema dell'autore. **Da fare:** la casella OVH di
      `privacy@` nell'app Mail dell'iPhone, con le notifiche, per le richieste e
-     gli allarmi — la aggiunge l'autore, perché chiede la sua password —; e un
-     filtro in Gmail che metta in evidenza gli avvisi di sicurezza dei
-     fornitori, che la regia crea con il sì dell'autore sui suoi parametri.
+     gli allarmi — la aggiunge l'autore, perché chiede la sua password, ed è
+     in corso il 3 ottobre —. **Il filtro in Gmail è fatto**, il 3 ottobre
+     2026, dalla regia con il sì dell'autore, nel suo Chrome: da Scaleway,
+     IONOS, statichost.eu e OVHcloud, con le parole e le esclusioni della
+     ricerca B dell'attività, mette una stella, l'etichetta rossa «Rotta Giusta
+     — sicurezza fornitori», «importante» e «mai in spam». Funziona anche a Mac
+     spento. Non è stato applicato alla posta già arrivata: zero messaggi
+     corrispondevano.
   2. **Il DPA di statichost.eu: firmato e spedito dall'autore, la copia
      controfirmata è attesa.** Detto dall'autore alla regia il 2 ottobre 2026;
      la data di spedizione non è scritta. Quando torna: accanto al registro, e
