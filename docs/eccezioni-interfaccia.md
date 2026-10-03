@@ -150,6 +150,8 @@ sulla pagina vera.
 
 | parte | verifica | perché è ancora qui |
 |---|---|---|
+| C-22 | la pagina non registra un service worker e non apre una cache | L'offline è uscito con l'ADR-005 (P-60, 3 ottobre 2026), e la pagina registra ancora `/sw.js` a ogni avvio; il service worker nuovo si disinstalla da sé, ma la registrazione c'è, e con lei per un attimo un service worker. Lo toglie P-61, con il guscio, l'autodiagnosi e il pulsante delle figure, e con questa riga, nello stesso commit |
+| C-21 | la pagina non apre, non legge e non cancella l'archivio di prima: IndexedDB «open-patente-nautica» e le chiavi «pn.» | Il passaggio dell'archivio di prima è uscito con l'ADR-005 (P-60, 3 ottobre 2026), e la pagina lo fa ancora: `leggiVecchio()` apre `open-patente-nautica` e legge `pn.archivio` a ogni avvio e all'accesso, `mostraVecchio()` ne dice il conteggio, e con una conferma lo cancella. Lo toglie P-61, con questa riga e con la riga `NOME_VECCHIO_DB`, nello stesso commit |
 
 *P-25 ha chiuso i cinque difetti di fuoco, reflow, contrasto e bersagli: i gruppi T-* girano per intero sulla pagina vera.*
 

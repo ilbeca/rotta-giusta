@@ -2143,9 +2143,9 @@ const troppoGrande = (r, generazione, maxByte) => byteJson({ generazione, righe:
 
 /**
  * Una coda nuova. Con `righe`, sono tutte da inviare, nell'ordine dell'archivio:
- * e' il caso di chi si registra alla fine di un'attivita' (ADR-004) o porta un
- * archivio di prima degli account (§12). `epocaDb` resta `null` finche' il
- * server non la dice.
+ * e' il caso di chi si registra alla fine di un'attivita' (ADR-004) — e fino
+ * all'ADR-005 di chi portava l'archivio di prima degli account. `epocaDb`
+ * resta `null` finche' il server non la dice.
  */
 export function nuovaCoda({ generazione = 1, epocaDb = null, righe = [] } = {}) {
   const daInviare = [...new Set((righe || []).map(chiaveUid).filter((u) => u != null))];
@@ -2312,8 +2312,9 @@ export function nonInviabili(righe, coda, { maxByte = INVIO_MAX_BYTE } = {}) {
 //
 // docs/account-client-progetto.md §4.3, §5.1, §7, §8 e §12. Chi si registra
 // alla fine di un'attivita', chi entra e dice «si', portale», chi converte un
-// file o porta l'archivio di prima degli account: un insieme di righe che deve
-// arrivare sul server per intero, in piu' lotti, con scarti e ritenti. La
+// file — e fino all'ADR-005 chi portava l'archivio di prima degli account —:
+// un insieme di righe che deve arrivare sul server per intero, in piu' lotti,
+// con scarti e ritenti. La
 // pagina scrive «{N} risposte salvate» solo quando **ogni** uid e' stato
 // nominato dal server — in un invio o in una ricezione.
 //

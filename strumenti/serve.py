@@ -2,10 +2,11 @@
 """Il sito in locale, servito come lo serve statichost.eu su rottagiusta.it.
 
 `python3 -m http.server --directory site` non basta, e non e' un dettaglio di
-comodita': il guscio offline elenca `/privacy` e `/avvertenza`, indirizzi che
-`http.server` non conosce. In locale l'app direbbe «guscio incompleto» per due
-file che ci sono, e la differenza fra locale e produzione tornerebbe invisibile
-— che e' esattamente il guasto che questo sito insegue.
+comodita': i link del sito sono `/privacy`, `/avvertenza` e `/app`, indirizzi
+che `http.server` non conosce, e la differenza fra locale e produzione
+tornerebbe invisibile — che e' esattamente il guasto che questo sito insegue.
+Fino alla 0.29.0 lo chiedeva anche il guscio offline, che elencava quegli
+indirizzi; dall'ADR-005 il guscio non c'e' piu'.
 
 Le regole sono quelle **misurate** su rottagiusta.it il 25 settembre 2026
 (docs/migrazione-hosting.md), non quelle che ci si aspetterebbe:
@@ -17,6 +18,12 @@ Le regole sono quelle **misurate** su rottagiusta.it il 25 settembre 2026
   inesistente      -> 404, «404 Not Found» in testo semplice
   Cache-Control    -> quello di site/_headers se c'e' una regola, altrimenti
                       `public, max-age=0, must-revalidate`; `no-cache` sul 404
+  riconvalida      -> 304 a una richiesta con If-Modified-Since, se il file e'
+                      quello di prima (misurato il 3 ottobre 2026: l'host
+                      risponde 304 anche a If-None-Match, perche' manda un
+                      ETag; qui l'ETag non c'e', e per il browser e' lo stesso
+                      giro). Senza service worker (ADR-005) e' questo che fa
+                      arrivare fresche le pagine e la banca.
 
 Fino alla 0.26 l'host precedente rispondeva **308** al percorso con
 l'estensione, e questo file riproduceva quel 308 (la storia e' nel CHANGELOG). Sul nuovo host non esiste

@@ -1281,42 +1281,11 @@ test('coda con stati [nuovo]: la modalita solo-mai-fatte non ripesca niente', ()
 
 /* --- 0.5.0: il guscio offline, e la prova di carteggio ------------------- */
 
-test('il GUSCIO di sw.js e quello di app.html sono la stessa lista', async () => {
-  // Sono due copie della stessa cosa, in due file diversi: una le mette in
-  // cache, l'altra controlla che ci siano. Se divergono, l'autodiagnosi dice
-  // "guscio incompleto" per un file che nessuno ha mai messo in cache, oppure —
-  // peggio — dice "pronto per l'offline" mentre manca qualcosa.
-  // Unificarle richiederebbe un import fra service worker e pagina; questo test
-  // costa una riga e prende la divergenza il giorno in cui succede.
-  const fs = await import('node:fs/promises');
-  const dir = new URL('../site/', import.meta.url);
-  const estrai = (testo) => {
-    const m = testo.match(/const GUSCIO = \[([\s\S]*?)\]/);
-    assert.ok(m, 'GUSCIO non trovato');
-    // Solo le stringhe che sono percorsi: dentro i commenti italiani ci sono
-    // apostrofi (l'esame, dell'app) che altrimenti finiscono nella lista.
-    return [...m[1].matchAll(/'(\/[^']*)'/g)].map((x) => x[1]);
-  };
-  const sw = estrai(await fs.readFile(new URL('sw.js', dir), 'utf8'));
-  // Dalla 0.22.0 la palestra e' app.html: index.html e' la vetrina.
-  const pagina = estrai(await fs.readFile(new URL('app.html', dir), 'utf8'));
-  assert.deepEqual(sw, pagina, 'il guscio di sw.js e quello di app.html sono diversi');
-  assert.ok(sw.includes('/dati/carteggio.json'), 'la prova di carteggio deve funzionare offline');
-  // Ogni voce del guscio deve esistere davvero in site/: un percorso sbagliato
-  // qui fa dire all'autodiagnosi «guscio incompleto» per sempre, oppure — se
-  // `c.add` fallisce in silenzio — «pronto per l'offline» con un buco dentro.
-  // I percorsi sono gli **indirizzi puliti**, non i nomi dei file: /privacy, non
-  // /privacy.html. L'host fino alla 0.26 rispondeva 308 al percorso con
-  // l'estensione, una risposta rediretta in cache non si puo' servire a una
-  // navigazione, e nella 0.19.1 i due link del pie' di pagina erano morti anche
-  // online. L'host di oggi serve entrambe le forme: la regola resta perche' e'
-  // lei a rendere il sito indifferente all'host.
-  for (const u of sw) {
-    assert.ok(!u.endsWith('.html'), `${u}: nel guscio vanno gli indirizzi puliti, senza .html`);
-    const f = u === '/' ? 'index.html' : u.slice(1);
-    await fs.access(new URL(/\.[a-z]+$/.test(f) ? f : f + '.html', dir));
-  }
-});
+// Fino al 3 ottobre 2026 qui c'era «il GUSCIO di sw.js e quello di app.html
+// sono la stessa lista» (R-ARCH-04): due copie della stessa lista, una che
+// metteva in cache e l'altra che controllava. L'ADR-005 ha tolto l'offline, e
+// sw.js non ha piu' un guscio; quello di app.html esce con P-61. I test del
+// sw.js nuovo sono piu' giu', «sw.js: si toglie di mezzo».
 
 test('la prova di carteggio: uno per argomento, pescati a caso', () => {
   // Fino a P-32 questo test riproduceva `componiProva()` di app.html con
@@ -1794,25 +1763,22 @@ test('provaCarteggio: il motore compone la stessa prova della pagina', (t) => {
 
 /* --- 0.19.0: sito statico — l'archivio nel browser ------------------------ */
 
-test('la versione e una sola: VERSION, la cache del service worker e meta.json', async () => {
-  // Nel progetto originario il nome della cache lo scriveva il server
-  // sostituendo un segnaposto in sw.js. Qui non c'e' un server e non c'e' un
-  // build step: il file committato e' quello pubblicato, e l'unica difesa
-  // contro una cache dimenticata — che congelerebbe l'app sulla prima versione
-  // vista da ogni dispositivo — e' questo test.
+test('la versione e una sola: VERSION e meta.json, e sw.js non la porta', async () => {
+  // Fino al 3 ottobre 2026 la versione stava in tre posti: anche il nome della
+  // cache in sw.js, perche' una cache dimenticata congelava l'app sulla prima
+  // versione vista da ogni dispositivo. Dall'ADR-005 non c'e' piu' una cache:
+  // i posti sono due, e sw.js non deve tornare a portare una versione — un
+  // nome di cache li' vorrebbe dire che l'offline e' rientrato senza decisione.
   const fs = await import('node:fs/promises');
   const radice = new URL('../', import.meta.url);
   const versione = (await fs.readFile(new URL('VERSION', radice), 'utf8')).trim();
   assert.match(versione, /^\d+\.\d+\.\d+$/, 'VERSION non e un numero di versione');
-  const sw = await fs.readFile(new URL('site/sw.js', radice), 'utf8');
-  const m = sw.match(/const CACHE = '([^']+)'/);
-  assert.ok(m, 'CACHE non trovata in sw.js');
-  assert.equal(m[1], 'rg-' + versione, 'il nome della cache non segue VERSION');
-  assert.ok(!sw.includes('__VERSIONE__'), 'in sw.js e rimasto il segnaposto del server');
   const meta = JSON.parse(await fs.readFile(new URL('site/dati/meta.json', radice), 'utf8'));
   assert.equal(meta.versione, versione, 'meta.json dichiara un altra versione');
   const changelog = await fs.readFile(new URL('CHANGELOG.md', radice), 'utf8');
   assert.ok(changelog.includes(`## [${versione}]`), 'il CHANGELOG non ha la voce di VERSION');
+  const sw = await fs.readFile(new URL('site/sw.js', radice), 'utf8');
+  assert.ok(!/const CACHE\b/.test(sw) && !sw.includes(`'rg-${versione}'`), 'sw.js porta di nuovo il nome di una cache');
 });
 
 test('epoca e ordinaRighe: due formati di ts, un ordine solo', () => {
@@ -2668,134 +2634,103 @@ test('sessioni: un confine sconosciuto e un errore, non un ripiego', () => {
 });
 
 
-/* --- le figure scaricate sopravvivono a un rilascio ----------------------- */
+/* --- sw.js: si toglie di mezzo (ADR-005) ----------------------------------- */
 
-// Misurato il 25 settembre 2026 su rottagiusta.it: con la v0.25.0 e «Scarica
-// tutto per l'offline» premuto, la cache `rg-0.25.0` aveva 122 voci, 102 delle
-// quali figure. Dopo il rilascio v0.26.0 e due ricariche l'unica cache era
-// `rg-0.26.0`, con le 19 voci del guscio e **zero** figure: l'`activate`
-// cancellava la cache vecchia, e le figure ci stavano dentro. A ogni rilascio
-// chi studia in barca doveva riscaricarle.
+// Fino al 3 ottobre 2026 qui c'erano i test delle figure che sopravvivevano a
+// un rilascio (R-ARCH-10, R-ARCH-11): il sw.js di allora teneva una cache per
+// rilascio e ci portava avanti le figure. L'ADR-005 ha tolto l'offline. Il
+// sw.js di oggi resta pubblicato per chi ha installato quello della 0.29.0: lo
+// sostituisce, cancella le cache del sito e si disinstalla, senza forzare la
+// ricarica delle pagine aperte — senza account una ricarica perde le risposte.
 //
-// Qui `sw.js` si esegue davvero, com'e' pubblicato, contro una Cache Storage
-// finta: install e activate, come fa il browser dopo un rilascio.
+// Qui sw.js si esegue com'e' pubblicato, contro una Cache Storage finta che
+// contiene quello che la 0.29.0 lascia, con un registro di tutto quello che il
+// service worker chiede al browser.
 
 const ORIGINE = 'https://rottagiusta.it';
 
-function cacheStorageFinta() {
+function cacheStorageFinta(registro) {
   const cache = new Map();                               // nome -> Map(url -> corpo)
-  const assoluto = (r) => new URL(typeof r === 'string' ? r : r.url, ORIGINE).href;
-  const apri = (nome) => {
-    if (!cache.has(nome)) cache.set(nome, new Map());
-    const voci = cache.get(nome);
-    return {
-      async add(u) { const res = await fetchFinta(u); voci.set(assoluto(u), await res.text()); },
-      async addAll(l) { for (const u of l) await this.add(u); },
-      async put(r, res) { voci.set(assoluto(r), await res.text()); },
-      async match(r) { const k = assoluto(r); return voci.has(k) ? new Response(voci.get(k)) : undefined; },
-      async keys() { return [...voci.keys()].map((url) => ({ url })); },
-    };
-  };
   return {
     cache,
     api: {
-      async open(nome) { return apri(nome); },
+      async open(nome) { registro.push('caches.open ' + nome); return {}; },
       async keys() { return [...cache.keys()]; },
-      async delete(nome) { return cache.delete(nome); },
+      async delete(nome) { registro.push('caches.delete ' + nome); return cache.delete(nome); },
       async has(nome) { return cache.has(nome); },
-      async match(r) {
-        for (const nome of cache.keys()) { const hit = await apri(nome).match(r); if (hit) return hit; }
-        return undefined;
-      },
+      async match() { registro.push('caches.match'); return undefined; },
     },
   };
 }
 
-// La rete: ogni file risponde con un corpo che dice da dove viene, cosi' si
-// distingue la copia rimasta in cache da quella scaricata adesso.
-async function fetchFinta(u) {
-  return new Response('rete:' + new URL(typeof u === 'string' ? u : u.url, ORIGINE).pathname);
+/** Quello che la 0.29.0 lascia: la sua cache con il guscio e le figure, e una cache estranea dello stesso sito. */
+function dopoLaVersioneDiPrima(cs) {
+  cs.cache.set('rg-0.29.0', new Map([[ORIGINE + '/app', 'app'], [ORIGINE + '/dati/quiz.json', 'quiz'], [ORIGINE + '/figure/figura-001.png', 'png']]));
+  cs.cache.set('rg-0.28.1', new Map([[ORIGINE + '/app', 'app']]));
 }
 
-async function eseguiServiceWorker(cs) {
+async function eseguiServiceWorker(cs, registro, { cancellazioneFallita = false } = {}) {
   const { readFile } = await import('node:fs/promises');
   const vm = await import('node:vm');
   const codice = await readFile(new URL('../site/sw.js', import.meta.url), 'utf8');
   const gestori = {};
+  const api = cancellazioneFallita ? { ...cs.api, delete: async (n) => { registro.push('caches.delete ' + n); throw new Error('non si cancella'); } } : cs.api;
   const self = {
-    addEventListener: (tipo, f) => { gestori[tipo] = f; },
-    skipWaiting: async () => {},
-    clients: { claim: async () => {} },
+    addEventListener: (tipo, f) => { registro.push('ascolta ' + tipo); gestori[tipo] = f; },
+    skipWaiting: async () => { registro.push('skipWaiting'); },
+    clients: {
+      claim: async () => { registro.push('clients.claim'); },
+      matchAll: async () => { registro.push('clients.matchAll'); return [{ navigate: async () => registro.push('client.navigate') }]; },
+    },
+    registration: { unregister: async () => { registro.push('unregister'); return true; } },
     location: { origin: ORIGINE },
   };
-  vm.runInNewContext(codice, { self, caches: cs.api, fetch: fetchFinta, URL, Response, Promise });
+  const fetch = async () => { registro.push('fetch'); throw new Error('nessuna rete nel test'); };
+  vm.runInNewContext(codice, { self, caches: api, fetch, URL, Response, Promise });
   const evento = async (tipo) => {
     const attese = [];
+    if (!gestori[tipo]) return;
     gestori[tipo]({ waitUntil: (p) => attese.push(p) });
-    await Promise.all(attese);
+    await Promise.allSettled(attese);
   };
   await evento('install');
   await evento('activate');
-  return codice.match(/const CACHE = '([^']+)'/)[1];
+  return gestori;
 }
 
-const FIGURE_VERE = Object.values(JSON.parse(readFileSync(new URL('../site/figure/index.json', import.meta.url), 'utf8')));
-
-function rilascioPrecedente(cs) {
-  // Il dispositivo come l'abbiamo trovato: la versione vecchia installata, le
-  // figure scaricate col pulsante, e una banca che nel frattempo e' cambiata.
-  const vecchia = new Map();
-  vecchia.set(ORIGINE + '/app', 'vecchia:/app');
-  vecchia.set(ORIGINE + '/dati/quiz.json', 'vecchia:/dati/quiz.json');
-  // Fuori dal guscio, messo in cache dal fetch alla prima richiesta: l'install
-  // non lo riscarica, quindi e' qui che si vede se la copia porta avanti solo
-  // le figure o tutto quello che trova.
-  vecchia.set(ORIGINE + '/dati/carteggio_e12.json', 'vecchia:/dati/carteggio_e12.json');
-  vecchia.set(ORIGINE + '/figure/index.json', 'vecchia:/figure/index.json');
-  for (const f of FIGURE_VERE) vecchia.set(ORIGINE + '/figure/' + f, 'vecchia:/figure/' + f);
-  cs.cache.set('rg-0.0.1', vecchia);
-}
-
-test('sw.js: le figure scaricate sopravvivono a un rilascio', async () => {
-  assert.equal(FIGURE_VERE.length, 102, 'la banca pubblicata ha 102 disegni');
-  const cs = cacheStorageFinta();
-  rilascioPrecedente(cs);
-  const CACHE = await eseguiServiceWorker(cs);
-
-  // Una cache sola, quella nuova: e' quella che Info e l'autodiagnosi cercano
-  // con `startsWith('rg-')`, e una seconda cache col prefisso le confonderebbe.
-  assert.deepEqual([...cs.cache.keys()], [CACHE], 'dopo l\'activate resta una cache sola, quella nuova');
-  const voci = cs.cache.get(CACHE);
-  const figure = [...voci.keys()].filter((k) => k.startsWith(ORIGINE + '/figure/') && !k.endsWith('/index.json'));
-  assert.equal(figure.length, 102, `dopo il rilascio le figure in cache sono ${figure.length}, non 102`);
-  assert.ok(voci.has(ORIGINE + '/figure/index.json'), 'anche l\'indice delle figure resta');
+test('sw.js: si toglie di mezzo — cancella le cache del sito e si disinstalla', async () => {
+  const registro = [];
+  const cs = cacheStorageFinta(registro);
+  dopoLaVersioneDiPrima(cs);
+  await eseguiServiceWorker(cs, registro);
+  assert.deepEqual([...cs.cache.keys()], [], `dopo l'activate restano delle cache: ${[...cs.cache.keys()]}`);
+  assert.ok(registro.includes('skipWaiting'), 'l\'install non salta l\'attesa: la cache vecchia servirebbe ancora le schede aperte');
+  assert.ok(registro.includes('unregister'), 'il service worker non si disinstalla');
+  const ultima = Math.max(...registro.map((x, i) => (x.startsWith('caches.delete') ? i : -1)));
+  assert.ok(registro.indexOf('unregister') > ultima, `si disinstalla prima di aver cancellato le cache: ${registro.join(', ')}`);
 });
 
-test('sw.js: da un rilascio all\'altro passano solo le figure, non la banca', async () => {
-  // Le figure sono l'Allegato A e non cambiano; la banca si': note, correzioni,
-  // quesiti oscurati. Portare avanti la copia vecchia di quiz.json servirebbe a
-  // chi aggiorna la banca di ieri con l'aria di quella di oggi.
-  const cs = cacheStorageFinta();
-  rilascioPrecedente(cs);
-  const CACHE = await eseguiServiceWorker(cs);
-  const voci = cs.cache.get(CACHE);
-  assert.equal(voci.get(ORIGINE + '/dati/quiz.json'), 'rete:/dati/quiz.json', 'la banca viene dalla rete, non dal rilascio vecchio');
-  assert.equal(voci.get(ORIGINE + '/app'), 'rete:/app', 'la pagina viene dalla rete, non dal rilascio vecchio');
-  assert.ok(!voci.has(ORIGINE + '/dati/carteggio_e12.json'),
-    'un file della banca fuori dal guscio non passa: alla prossima richiesta si riprende dalla rete');
-  assert.equal(voci.get(ORIGINE + '/figure/figura-001.png'), 'vecchia:/figure/figura-001.png',
-    'la figura e\' quella gia\' scaricata: nessun download in piu\'');
+test('sw.js: non forza la ricarica, non serve niente, non apre una cache', async () => {
+  // Senza account una ricarica perde le risposte della pagina aperta: niente
+  // clients.claim(), niente navigate(). Senza un gestore di fetch ogni
+  // richiesta va in rete dal momento in cui si attiva; e una cache aperta,
+  // anche vuota, sarebbe di nuovo una cache «rg-» nel browser.
+  const registro = [];
+  const cs = cacheStorageFinta(registro);
+  dopoLaVersioneDiPrima(cs);
+  const gestori = await eseguiServiceWorker(cs, registro);
+  for (const vietato of ['clients.claim', 'clients.matchAll', 'client.navigate', 'fetch', 'caches.match'])
+    assert.ok(!registro.includes(vietato), `sw.js chiama ${vietato}: ${registro.join(', ')}`);
+  assert.ok(!registro.some((x) => x.startsWith('caches.open')), `sw.js apre una cache: ${registro.join(', ')}`);
+  assert.deepEqual(Object.keys(gestori).sort(), ['activate', 'install'], `sw.js ascolta altro: ${Object.keys(gestori)}`);
 });
 
-test('sw.js: senza figure scaricate, il rilascio non ne inventa', async () => {
-  // L'autodiagnosi conta le figure in cache: se l'activate le mettesse da se',
-  // il pulsante «Scarica tutto» diventerebbe una promessa gia' mantenuta da
-  // nessuno. Le 102 figure non si scaricano di soppiatto su una rete a consumo.
-  const cs = cacheStorageFinta();
-  cs.cache.set('rg-0.0.1', new Map([[ORIGINE + '/app', 'vecchia:/app']]));
-  const CACHE = await eseguiServiceWorker(cs);
-  const figure = [...cs.cache.get(CACHE).keys()].filter((k) => k.includes('/figure/'));
-  assert.deepEqual(figure, []);
+test('sw.js: se una cache non si cancella, si disinstalla lo stesso', async () => {
+  const registro = [];
+  const cs = cacheStorageFinta(registro);
+  dopoLaVersioneDiPrima(cs);
+  await eseguiServiceWorker(cs, registro, { cancellazioneFallita: true });
+  assert.ok(registro.includes('unregister'), 'una cancellazione fallita lascia il service worker installato, e la cache vecchia servirebbe ancora');
 });
 
 // --- la coda verso il server degli account ----------------------------------------
@@ -3034,10 +2969,10 @@ test('coda: le funzioni non toccano quello che ricevono', () => {
 //
 // docs/account-client-progetto.md §4.3, §9.1 e §12 (P-13, contatti per P-28).
 // Un trasferimento e' un insieme di righe che chi studia ha chiesto di portare
-// nell'account: quelle della pagina alla registrazione, quelle di un file,
-// l'archivio di prima degli account. «{N} risposte salvate» si scrive solo
-// quando **ogni** uid e' stato nominato dal server — in un invio o in una
-// ricezione —, mai per deduzione dalla coda: misurato il 26 settembre, la
+// nell'account: quelle della pagina alla registrazione, quelle di un file (e,
+// fino all'ADR-005, l'archivio di prima degli account). «{N} risposte
+// salvate» si scrive solo quando **ogni** uid e' stato nominato dal server —
+// in un invio o in una ricezione —, mai per deduzione dalla coda: misurato il 26 settembre, la
 // deduzione «snapshot meno daInviare» da' per salvate le righe dopo un
 // azzeramento scelto e una riga mai messa in coda.
 

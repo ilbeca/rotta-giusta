@@ -65,6 +65,91 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   altro: pensa di togliere la funzionalità. Finché c'è, la tiene solo il banco,
   su un archivio sintetico.
 
+### Deciso — P-60: via l'offline e il passaggio dell'archivio di prima (ADR-005)
+
+- **Due decisioni dell'autore del 3 ottobre 2026, un ADR solo.** Il criterio è
+  la semplicità, con un'ipotesi: si considera che nessuno abbia usato il sito
+  prima degli account. **L'offline esce**: la seconda ricarica dopo un rilascio
+  era strana, l'offline serviva a pochi, e con gli account le risposte stanno
+  sul server. **Il passaggio dell'archivio di prima esce**: per chi arriva dalla
+  0.29.0 non cambia niente. L'ADR-005 sostituisce la quarta condizione
+  dell'ADR-004 e le sue frasi sull'offline, marcate lì. Il prezzo, per intero
+  nell'ADR: senza rete il sito non si apre, per nessuno; chi avesse risposte
+  nel browser di prima del 3 ottobre e non le avesse portate non le vede più, e
+  nessuno glielo dice — restano nel suo browser, perché la pagina non le legge e
+  non le cancella. È in tensione con «una che scopri dopo è un inganno» di
+  `docs/filosofia.md`, che ora lo dice accanto alla frase; le frasi non sono
+  riscritte, è dell'autore.
+
+- **`site/sw.js` si toglie di mezzo.** Chi ha visitato la 0.29.0 ha il suo
+  service worker cache-first: senza un file nuovo resterebbe su quella copia per
+  sempre. Il file nuovo salta l'attesa, cancella le cache del sito e si
+  disinstalla; non ha un gestore di `fetch`, non apre una cache e **non ricarica
+  le pagine aperte**, perché senza account una ricarica perde le risposte.
+  Resta pubblicato almeno fino al 3 ottobre 2028. Passa al territorio del
+  motore: P-61 non lo deve toccare, e ora lo dice git.
+
+- **Senza service worker la freschezza la decide l'host, misurato.** Il 3
+  ottobre statichost.eu serve pagine, banca, figure e manifest con
+  `public, max-age=0, must-revalidate`, ETag e `Last-Modified`, e risponde 304
+  con `If-None-Match` e con `If-Modified-Since`; `/sw.js` con `no-cache`. Non
+  serve nessuna regola nuova in `_headers`. `strumenti/serve.py` riconvalida
+  con la data, e `test_serve` lo pretende: tolta la riconvalida, tre rossi. La
+  versione vive in **due** posti, `VERSION` e `meta.json`, e la chiusura di un
+  rilascio in `AGENTS.md` fa `curl` su `meta.json`.
+
+- **I controlli che escono, e che cosa tenevano.** Il guscio uguale in due
+  file, il prefisso della cache, le figure da un rilascio all'altro (tre test
+  del motore), l'autodiagnosi (scoperta), la parte offline di C-01 con due
+  rotture, C-09 con sette: senza l'offline e senza il passaggio non c'è più
+  niente da rompere, e nessuno se ne accorgerebbe. Il requisito dell'archivio
+  vero, mai eseguito, esce; R-ACC-05 dice il contrario di prima.
+
+- **I controlli che entrano, ognuno provato al contrario.** **C-21**
+  (R-ACC-05): con l'archivio di prima nel browser la pagina non apre il
+  database, non tocca le chiavi `pn.`, non ne dice niente, niente arriva
+  nell'account, e l'archivio resta byte per byte; uno strumento nella scheda e
+  l'archivio riletto da un'altra si coprono a vicenda, sei rotture rosse
+  ognuna in una verifica sola. **C-22** (R-ARCH-15): la pagina non registra un
+  service worker e non apre una cache; e un browser con la 0.29.0 installata,
+  servita in locale dal tag, prende la versione nuova senza ricaricare le pagine
+  aperte e alla visita dopo non ha né service worker né cache. Sei rotture,
+  quattro delle quali sono `sw.js` serviti al posto di quello vero. **Tre test
+  del motore** eseguono il `sw.js` nuovo (R-ARCH-16, 17), sette rotture del
+  file rosse; `test_sw` ne guarda la forma (R-ARCH-18). `test_rinomino` ammette
+  il nome del database di prima in `site/` solo finché la lettura è un difetto
+  dichiarato: tolta la riga, un rosso.
+
+- **Sulla pagina vera C-21 e C-22 sono difetti aperti dichiarati**, misurati:
+  la pagina apre `open-patente-nautica` e legge `pn.archivio` a ogni avvio,
+  registra `/sw.js` e apre una cache `rg-0.29.0`. P-61 toglie il codice e le due
+  righe nello stesso commit; il contratto è il §3.5 della specifica, «Per P-61»,
+  e il §12 del progetto del client.
+
+- **Trovato misurando.** C-22 guardava solo lo stato, e il giro intero l'ha
+  dato verde sulla pagina vera: con il `sw.js` nuovo la registrazione dura pochi
+  millisecondi, e due giri su tre il banco guardava dopo. Ora legge anche le
+  chiamate, con uno strumento nella scheda. Ne viene una misura per la regia:
+  con il `sw.js` nuovo pubblicato, il service worker che la pagina di oggi
+  registra se ne va da sé. E una per D2: il redirect di `.pages.dev` deve
+  continuare a servire `/sw.js` con un 200, o chi ha la palestra installata lì
+  resta sulla sua cache (`docs/migrazione-hosting.md`). La rottura «il sw.js che
+  ricarica le pagine aperte» era rossa per il motivo sbagliato alla prima
+  stesura — un `navigate()` che lanciava fermava il service worker prima che si
+  disinstallasse — ed è stata riscritta; e il banco serviva la `sw.js` rotta
+  anche alla 0.29.0, corretto.
+
+  Suite: motore **192/196** con i quattro skip previsti (erano 193/197: il test
+  del guscio e i tre delle figure escono, tre di `sw.js` entrano); server
+  72/72; dati **223** (erano 263: il guscio, il prefisso della cache, la
+  versione in sw.js; entrano il 304 e la forma di sw.js); specifica **820**
+  (erano 824); interfaccia **2.246** (erano 2.245), in 4 min 06 s, sulla
+  pagina vera; motore e server anche con la **24.21.0 LTS**, l'archivio
+  confrontato con il `SHASUMS256.txt` riletto da nodejs.org ed estratto di
+  nuovo; `ripristina --prova` 22 controlli. Guardiano verde. Prima di ogni giro
+  dell'interfaccia la 8620 guardata libera. `site/` fuori dal motore — la
+  pagina, la vetrina, `_headers` — non è stato toccato: è di P-61.
+
 ## [0.29.0] — 2026-10-03
 
 **La versione con gli account.** Si fa ancora tutto senza registrarsi, ma senza

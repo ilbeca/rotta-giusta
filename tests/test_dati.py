@@ -442,40 +442,24 @@ def guscio(testo):
 
 
 def test_sw():
+    # Fino al 3 ottobre 2026 qui si controllava il guscio offline: il nome della
+    # cache uguale a VERSION, la stessa lista in sw.js e in app.html, ogni voce
+    # esistente e senza `.html`. L'ADR-005 ha tolto l'offline: sw.js e' un
+    # service worker che si disinstalla (i suoi test, eseguendolo, sono in
+    # tests/test_engine.mjs, «sw.js: si toglie di mezzo»). Qui resta la
+    # forma: niente guscio, niente cache, nessun gestore di fetch.
     sw = (SITE / 'sw.js').read_text(encoding='utf-8')
-    # Dalla 0.22.0 la palestra sta su /app: index.html e' la vetrina, che nel
-    # guscio non c'e' apposta.
-    index = (SITE / 'app.html').read_text(encoding='utf-8')
-    # Il nome della cache segue VERSION e nessun build step lo sostituisce:
-    # nel file committato c'e' il numero, e deve essere quello di VERSION.
-    check("sw.js: const CACHE = 'rg-' + VERSION", ("const CACHE = 'rg-" + VERSION + "'") in sw,
-          re.search(r"const CACHE = .*", sw).group(0) if re.search(r"const CACHE = .*", sw) else 'assente')
-    g_sw = guscio(sw)
-    g_ix = guscio(index)
-    check('sw.js: GUSCIO presente', g_sw is not None)
-    check('app.html: GUSCIO presente', g_ix is not None)
-    check('GUSCIO: la stessa lista in sw.js e app.html', g_sw == g_ix, '%s vs %s' % (g_sw, g_ix))
-    # Il guscio elenca gli **indirizzi puliti**, non i nomi dei file: `/` e'
-    # index.html e `/privacy` e' privacy.html. La regola e' nata da un host che
-    # rispondeva 308 al percorso con l'estensione (Cloudflare Pages, fino alla
-    # 0.26): una risposta rediretta messa in cache non si puo' servire a una
-    # navigazione (`respondWith` la rifiuta quando il redirect mode e'
-    # 'manual'), e la pagina moriva con ERR_FAILED anche online. statichost.eu
-    # serve entrambe le forme con 200, quindi oggi quel guasto non puo'
-    # succedere — ed e' proprio per questo che la regola resta: e' lei che rende
-    # il sito indifferente all'host, e un test che la tiene ferma costa meno di
-    # riscoprirla al prossimo trasloco.
-    for p in g_sw or []:
-        f = SITE / ('index.html' if p == '/' else p.lstrip('/'))
-        if not f.is_file() and not f.suffix:
-            f = f.with_suffix('.html')
-        check('GUSCIO: %s esiste in site/' % p, f.is_file(), str(f.relative_to(RADICE)))
-    # E il guscio non deve tornare alla forma con l'estensione: sarebbe di nuovo
-    # una voce rediretta in cache, cioe' il difetto della 0.19.1.
-    for p in g_sw or []:
-        check('GUSCIO: %s non ha .html (indirizzo pulito, qualunque sia l\'host)' % p, not p.endswith('.html'), p)
-    # Gli stessi indirizzi nei link, in tutte e tre le pagine: un href con
-    # l'estensione e' un link che muore appena il service worker e' installato.
+    check('sw.js: niente guscio', guscio(sw) is None)
+    check('sw.js: niente nome di cache', 'const CACHE' not in sw)
+    check('sw.js: nessun gestore di fetch', "addEventListener('fetch'" not in sw)
+    check('sw.js: si disinstalla', 'registration.unregister()' in sw)
+    # Gli indirizzi puliti nei link, in tutte le pagine. La regola e' nata da un
+    # host che rispondeva 308 al percorso con l'estensione (Cloudflare Pages,
+    # fino alla 0.26): una risposta rediretta messa nella cache del service
+    # worker non si poteva servire a una navigazione, e la pagina moriva con
+    # ERR_FAILED anche online. Non c'e' piu' ne' quell'host ne' quella cache;
+    # la regola resta perche' e' lei che rende il sito indifferente all'host, e
+    # un test che la tiene ferma costa meno di riscoprirla al prossimo trasloco.
     for nome in ('index.html', 'app.html', 'privacy.html', 'avvertenza.html'):
         testo = (SITE / nome).read_text(encoding='utf-8')
         cattivi = re.findall(r'href="(/[A-Za-z0-9._-]+\.html)"', testo)
@@ -486,17 +470,33 @@ def test_sw():
 #
 # Un rinomino lascia residui invisibili, e questo ne aveva due che il conteggio
 # a mano non aveva distinto: il nome del database IndexedDB e il marcatore nel
-# file esportato. Il primo NON si tocca — rinominarlo aprirebbe un archivio
-# vuoto e ogni risposta data sparirebbe senza un errore — quindi il controllo
-# lo dichiara come eccezione invece di fingere che non esista.
+# file esportato. Il primo non si toccava — rinominarlo avrebbe fatto cercare
+# alla pagina un archivio che non c'e', e ogni risposta di prima sarebbe
+# sparita dal passaggio senza un errore —, quindi il controllo lo dichiarava
+# come eccezione invece di fingere che non esista. Dall'ADR-005 la pagina non
+# lo legge piu', e l'eccezione si spegne con la lettura: eccezioni_rinomino().
 
 NOME_VECCHIO = 'Open Patente Nautica'
 PREFISSO_VECCHIO = 'opn-'
-# L'unica occorrenza ammessa del vecchio identificativo: il nome del database.
-ECCEZIONI = ("NOME: 'open-patente-nautica'",)
+
+
+def eccezioni_rinomino():
+    """L'unica occorrenza ammessa del vecchio identificativo: il nome del
+    database di prima, nella costante della lettura che l'ADR-005 toglie.
+
+    Fino al 3 ottobre 2026 valeva sempre, perche' la pagina leggeva quel
+    database per il passaggio nell'account (R-ARCH-07 di allora). Dall'ADR-005
+    nessuno lo legge piu': l'eccezione vale solo finche' la lettura e' un
+    difetto aperto dichiarato, la riga C-21 di docs/eccezioni-interfaccia.md.
+    P-61 toglie la costante e la riga nello stesso commit, e da li' il nome non
+    torna in site/ — una pagina che lo rimette, anche per «solo guardare», e'
+    rossa qui prima ancora che nel browser."""
+    testo = (RADICE / 'docs' / 'eccezioni-interfaccia.md').read_text(encoding='utf-8')
+    return ("NOME: 'open-patente-nautica'",) if re.search(r'^\|\s*C-21\s*\|', testo, re.M) else ()
 
 
 def test_rinomino():
+    ECCEZIONI = eccezioni_rinomino()
     for f in sorted(SITE.rglob('*')):
         if not f.is_file() or f.suffix not in ('.html', '.js', '.json'):
             continue
@@ -513,28 +513,13 @@ def test_rinomino():
               not residuo, residuo[:3])
 
 
-# --- il prefisso della cache e' uno solo -------------------------------------
+# --- il prefisso della cache e' uno solo: uscito il 3 ottobre 2026 -----------
 #
-# Il nome della cache vive in sw.js, ma app.html lo cerca con startsWith per
-# dire quale versione gira davvero su questo dispositivo. Sono quattro punti in
-# due file: cambiarne tre su quattro fa mentire la scheda Info in silenzio.
-
-def test_prefisso_cache():
-    sw = (SITE / 'sw.js').read_text(encoding='utf-8')
-    index = (SITE / 'app.html').read_text(encoding='utf-8')
-    m = re.search(r"const CACHE = '([a-z]+-)", sw)
-    check('sw.js: il prefisso della cache si legge', m is not None)
-    if not m:
-        return
-    prefisso = m.group(1)
-    trovati = set(re.findall(r"startsWith\('([a-z]+-)'\)", index))
-    for riga in index.split('\n'):
-        if 'cache' in riga.lower():
-            trovati |= set(re.findall(r"'([a-z]+-)'\s*\+", riga))
-    trovati = sorted(trovati)
-    check('app.html: usa il prefisso della cache', bool(trovati), trovati)
-    check('app.html: un prefisso solo, uguale a quello di sw.js (%s)' % prefisso,
-          trovati == [prefisso], trovati)
+# test_prefisso_cache (R-ARCH-08) teneva lo stesso prefisso in sw.js e nei
+# punti di app.html che cercavano la cache per dire quale versione gira. Con
+# l'ADR-005 non c'e' piu' una cache: il prefisso in sw.js non c'e', e quei punti
+# di app.html escono con P-61. Che la pagina non crei una cache lo tiene C-22,
+# nel browser.
 
 
 # --- il manifest dichiara delle icone, ed esistono ---------------------------
@@ -614,15 +599,9 @@ def test_nessuna_risorsa_di_terzi():
 
 def test_indirizzi():
     man = json.loads((SITE / 'manifest.json').read_text(encoding='utf-8'))
-    sw = (SITE / 'sw.js').read_text(encoding='utf-8')
-    g = guscio(sw) or []
     palestra = man.get('start_url')
     check('manifest: start_url e la palestra, non la vetrina', palestra == '/app', palestra)
     check('manifest: scope copre tutto il sito', man.get('scope') == '/', man.get('scope'))
-    check('guscio: contiene la palestra', palestra in g, g)
-    # La vetrina fuori dal guscio, e non e' un dimenticanza: sw.js e'
-    # cache-first, e una pagina di presentazione in cache resterebbe congelata.
-    check('guscio: la vetrina NON e in cache', '/' not in g, g)
     check('site/app.html esiste', (SITE / 'app.html').is_file())
     # E la vetrina deve portare alla palestra, altrimenti e un vicolo cieco.
     vetrina = (SITE / 'index.html').read_text(encoding='utf-8')
@@ -658,9 +637,9 @@ def test_serve():
     t.start()
     porta = s.server_address[1]
 
-    def chiedi(p):
+    def chiedi(p, intestazioni=None):
         c = http.client.HTTPConnection('127.0.0.1', porta, timeout=5)
-        c.request('GET', p)
+        c.request('GET', p, headers=intestazioni or {})
         r = c.getresponse()
         corpo = r.read()
         c.close()
@@ -685,6 +664,18 @@ def test_serve():
         check('serve.py: il resto public, max-age=0, must-revalidate',
               chiedi('/app')[1].get('cache-control') == 'public, max-age=0, must-revalidate',
               chiedi('/app')[1].get('cache-control'))
+        # Senza service worker (ADR-005) e' la cache del browser a decidere se una
+        # pagina o la banca arrivano fresche: con `max-age=0, must-revalidate` il
+        # browser chiede ogni volta, e l'host risponde 304 se il file e' quello
+        # di prima. Misurato su rottagiusta.it il 3 ottobre 2026: 304 con
+        # If-None-Match e con If-Modified-Since, su /app e /dati/quiz.json.
+        # serve.py non manda un ETag, e riconvalida con la data: per il browser
+        # e' lo stesso giro.
+        for p in ('/app', '/dati/quiz.json', '/engine.js'):
+            data = chiedi(p)[1].get('last-modified')
+            st = chiedi(p, {'If-Modified-Since': data})[0] if data else None
+            check('serve.py: %s si riconvalida con un 304, come statichost.eu' % p, st == 304,
+                  'Last-Modified %r, poi %r' % (data, st))
         check('serve.py: /index.html e /index servono la vetrina, non la palestra',
               chiedi('/index.html')[2] == (SITE / 'index.html').read_bytes())
     finally:
@@ -697,7 +688,7 @@ def test_serve():
 
 def main():
     for t in (test_controlla, test_titolare, test_segreti, test_materiale_dichiarato, test_quiz, test_meta, test_figure, test_invarianti,
-              test_carteggio, test_sw, test_nessuna_risorsa_di_terzi, test_rinomino, test_prefisso_cache, test_manifest_icone, test_indirizzi,
+              test_carteggio, test_sw, test_nessuna_risorsa_di_terzi, test_rinomino, test_manifest_icone, test_indirizzi,
               test_serve):
         t()
     if falliti:

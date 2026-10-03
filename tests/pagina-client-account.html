@@ -3,8 +3,9 @@
   La pagina di riferimento del client degli account:
   docs/account-client-progetto.md §§3.2, 4, 5, 9, 10 e 11.1. Non e' pubblicata
   e non e' un prototipo: e' il minimo che soddisfa il banco del browser
-  (tests/client_account.mjs) per C-01…C-17 e C-19, e serve a quel banco
-  per provarsi al contrario a ogni esecuzione — questa pagina deve passare, e
+  (tests/client_account.mjs) per C-01…C-17 — tranne C-09, uscito —, C-19,
+  C-20 e C-21, e serve a quel banco per provarsi al contrario a ogni
+  esecuzione — questa pagina deve passare, e
   ognuna delle rotture elencate in ROTTURE_CLIENT di tests/test_interfaccia.py
   deve fallire nominando il difetto.
 
@@ -36,6 +37,17 @@
   l'account, con il link a /avvertenza#condizioni, e i 18 anni —, prima del
   pulsante: e' quello che C-20 cerca, e le sue rotture la tolgono, la nascondono,
   la spostano e ne cambiano l'indirizzo.
+
+  Da P-60 non ha piu' il passaggio dell'archivio di prima degli account (il §7
+  del progetto, C-09): l'ADR-005 l'ha tolto. Le risposte che il browser tiene
+  in IndexedDB `open-patente-nautica` e in `pn.archivio` restano dove sono, e
+  questa pagina non le apre, non le legge e non le cancella: e' quello che
+  C-21 pretende, e le sue rotture rimettono una lettura, un avviso, una
+  cancellazione.
+
+  E da P-60 non registra piu' un service worker: l'ADR-005 ha tolto anche
+  l'offline. C-22 lo pretende, e le sue rotture registrano il service worker,
+  aprono una cache, o pubblicano un sw.js che non se ne va.
 -->
 <html lang="it">
 <meta charset="utf-8">
@@ -68,11 +80,6 @@ a.da-solo, label {display:inline-block} .view:not(.on), #quizrun:not(.on), #rive
   <p id="guasto" role="alert" hidden>Le ultime risposte potrebbero non essere salvate. Scarica i progressi prima di chiudere la pagina.</p>
   <p id="avviso-prova">Senza account le risposte valgono solo finché questa pagina resta aperta. Se la chiudi o la ricarichi, le perdi. Non salviamo niente, nemmeno le tue preferenze.</p>
   <p id="altrove" hidden>Su questo indirizzo non si può creare un account. Per salvare le risposte vai su <a href="https://rottagiusta.it/app">rottagiusta.it/app</a>.</p>
-  <section id="vecchio" hidden><p id="vecchio-txt"></p>
-    <button data-vecchio="porta">Registrati o entra e portale</button>
-    <button data-vecchio="scarica">Scarica il file</button>
-    <button data-vecchio="dopo">Più tardi</button></section>
-  <p id="vecchio-errore" role="alert" hidden>Non siamo riusciti a leggere le risposte già presenti in questo browser. Riprova prima di cancellare i dati del sito. <button data-vecchio="riprova">Riprova</button></p>
   <button data-rotta-start disabled>Inizia l'attività</button>
   <label>Data d'esame (facoltativa) <input type="date" id="esame-data"></label>
   <section id="rotta-last" hidden><h2>Ultima attività nei quiz</h2><p id="rotta-last-txt"></p></section>
@@ -119,7 +126,6 @@ a.da-solo, label {display:inline-block} .view:not(.on), #quizrun:not(.on), #rive
   <p id="importa-esito" role="status"></p>
   <button data-conto="esporta" id="esporta" hidden>Scarica i tuoi progressi</button>
   <p id="esporta-esito" role="status"></p>
-  <p id="vecchio-info"></p>
 </section>
 
 <div id="quizrun">
@@ -186,13 +192,13 @@ const LINK = (() => {
 const S = { banca: [], cart: [], righe: [], run: null, esame: '', auto: false, ultima: null,
   guasto: null, scaduto: false, apertoDa: null,
   conto: null, db: null, ciclo: 0, ac: null, inVolo: null, ancora: false, rilascia: null, trasf: null, onboarding: false,
-  fatte: [], idQuiz: [], vecchio: null, vecchioDopo: false, portaVecchio: false, file: null, sospeso: null, erroreInvio: null, postaFallita: false };
+  fatte: [], idQuiz: [], file: null, sospeso: null, erroreInvio: null, postaFallita: false };
 const $ = (id) => document.getElementById(id);
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
 const oggi = () => E.isoLocale().slice(0, 10);
 
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+// Nessun service worker e nessuna cache: l'offline e' uscito con l'ADR-005 (C-22).
 
 fetch('/dati/quiz.json').then((r) => r.json()).then((b) => {
   S.banca = b.filter((q) => q.k === 'base');
@@ -811,20 +817,19 @@ function tx(fai) {
   return new Promise((ok, ko) => {
     const t = S.db.transaction(['righe', 'meta'], 'readwrite');
     const righe = t.objectStore('righe'), meta = t.objectStore('meta');
-    const qr = righe.getAll(), qc = meta.get('coda'), qv = meta.get('vecchio'), qs = meta.get('seg'), qt = meta.get('trasf');
+    const qr = righe.getAll(), qc = meta.get('coda'), qs = meta.get('seg'), qt = meta.get('trasf');
     let stato;
     t.oncomplete = () => ok(stato);
     t.onerror = () => ko(t.error);
     t.onabort = () => ko(t.error || new Error('transazione interrotta'));
     qt.onsuccess = () => {
       stato = { righe: qr.result, coda: qc.result || E.nuovaCoda({ generazione: S.conto.generazione, epocaDb: S.conto.epoca }), trasf: qt.result || null,
-        vecchio: qv.result || null, seg: qs.result || null };
+        seg: qs.result || null };
       const out = fai(stato) || {};
       if (out.svuota) righe.clear();
       for (const r of out.nuove || []) righe.put(r);
       if (out.coda) meta.put(out.coda, 'coda');
       if (out.trasf !== undefined) meta.put(out.trasf, 'trasf');
-      if (out.vecchio) meta.put(out.vecchio, 'vecchio');
       if (out.seg !== undefined) meta.put(out.seg, 'seg');
     };
   });
@@ -1040,10 +1045,9 @@ async function accedi() {
   return dopoIngresso(r.corpo);
 }
 
-/** Dopo l'accesso o una password nuova: l'archivio di prima, o le risposte della pagina (§5.1, §7). */
+/** Dopo l'accesso o una password nuova: le risposte della pagina (§5.1). L'archivio di
+ *  prima degli account non si legge e non si porta: e' rimasto nel browser (ADR-005). */
 async function dopoIngresso(io) {
-  await controllaVecchio();
-  if (S.portaVecchio) { S.portaVecchio = false; return portaVecchio(); }
   if (!S.righe.length) { chiudiPannello(); return catena(); }
   // Le risposte della prova entrano solo dopo una domanda esplicita (§5.1).
   pannello(`<h2>Accedi</h2>
@@ -1077,12 +1081,11 @@ async function avvioConto() {
   await dipingiStato();
   await catena();
 }
-// All'apertura: l'account, l'archivio di prima, il link (§3.1, §6, §7).
+// All'apertura: l'account e il link (§3.1, §6).
 (async () => {
   // Su un'origine senza API nessun modulo destinato a fallire: la strada e' il link (§3.1).
   if (API) await avvioConto();
   else { $('altrove').hidden = false; for (const b of document.querySelectorAll('#conto-porta, [data-conto="accedi"]')) b.hidden = true; }
-  await controllaVecchio();
   await seguiLink();
 })();
 
@@ -1318,66 +1321,6 @@ async function cancellaRighe() {
   return dopoIngresso(io.corpo);
 }
 
-// --- l'archivio di prima degli account (§7) ---------------------------------------------
-
-const VECCHIO = 'open-patente-nautica';
-
-/** Le due fonti, unite per uid dal motore. Non si apre un database che non c'e': lo creerebbe vuoto. */
-async function leggiVecchio() {
-  const nomi = (await indexedDB.databases()).map((d) => d.name);
-  let daIdb = [];
-  if (nomi.includes(VECCHIO)) {
-    daIdb = await new Promise((ok, ko) => {
-      const q = indexedDB.open(VECCHIO);
-      q.onerror = () => ko(q.error);
-      q.onsuccess = () => {
-        const db = q.result;
-        if (!db.objectStoreNames.contains('righe')) { db.close(); return ok([]); }
-        const g = db.transaction('righe').objectStore('righe').getAll();
-        g.onsuccess = () => { db.close(); ok(g.result); };
-        g.onerror = () => { db.close(); ko(g.error); };
-      };
-    });
-  }
-  const raw = localStorage.getItem('pn.archivio');
-  const daLs = raw ? JSON.parse(raw) : [];
-  if (!Array.isArray(daLs)) throw new Error('pn.archivio non è un elenco');
-  return E.fondiArchivio(daIdb, daLs).righe;
-}
-
-async function controllaVecchio() {
-  $('vecchio-errore').hidden = true;
-  let righe;
-  // Una lettura fallita non e' un archivio vuoto: si dice, e si offre di riprovare.
-  try { righe = await leggiVecchio(); } catch { $('vecchio').hidden = true; $('vecchio-errore').hidden = false; return; }
-  const segno = S.conto ? (await tx(() => null)).vecchio : null;
-  const portate = new Set(segno ? segno.uid : []);
-  const nuove = righe.filter((r) => !portate.has(String(r.uid)));
-  S.vecchio = { righe, nuove };
-  $('vecchio-info').textContent = segno ? `${segno.uid.length} risposte portate nel tuo account il ${new Date(segno.il).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })}` : '';
-  if (!nuove.length || S.vecchioDopo) { $('vecchio').hidden = true; return; }
-  $('vecchio-txt').textContent = `In questo browser ci sono ${nuove.length} risposte salvate prima degli account. Da questa versione, senza account non si salva più niente. Portale nel tuo account, oppure scaricale.`;
-  $('vecchio').hidden = false;
-  document.querySelector('[data-vecchio="porta"]').hidden = !API;
-}
-
-async function portaVecchio() {
-  if (!S.conto) { S.portaVecchio = true; return moduloAccesso(''); }
-  const righe = await leggiVecchio();
-  pannello(`<h2>Porta le risposte nel tuo account</h2>
-    <p>Vuoi portare nel tuo account le ${righe.length} risposte salvate in questo browser prima degli account?</p>
-    <p>Account: ${esc(S.conto.email)}</p>
-    <button data-vecchio="conferma">Portale nel mio account</button><button data-account="torna">Non ora</button>`);
-}
-
-async function confermaVecchio() {
-  // Si rilegge prima del trasferimento: un'altra scheda vecchia puo' aver scritto (§7).
-  const righe = await leggiVecchio();
-  chiudiPannello();
-  $('vecchio').hidden = true;
-  await trasferisci(righe, { fonte: 'vecchio' });
-}
-
 // --- un file dei progressi (§8) ---------------------------------------------------------
 
 $('importa-file').addEventListener('change', async (e) => {
@@ -1421,14 +1364,8 @@ async function importaFile() {
   }
 }
 
-/** A trasferimento finito: il segno dell'archivio di prima, il riepilogo del file (§7, §8). */
+/** A trasferimento finito: il riepilogo del file (§8). */
 async function chiudiTrasferimento(trasf, r, coda, righe) {
-  if (trasf.fonte === 'vecchio' && r.completo && !trasf.segnato) {
-    // Il segno solo quando il server ha nominato ogni uid, con il manifest (§7).
-    await tx((s) => ({ vecchio: { uid: trasf.uid, n: trasf.uid.length, chiave: S.conto.chiave, il: new Date().toISOString() },
-      trasf: { ...s.trasf, segnato: true } }));
-    await controllaVecchio();
-  }
   if (trasf.fonte === 'file' && (r.completo || r.stato === 'con scarti')) {
     const c = trasf.conti || { nuove: 0, gia: 0, scartate: 0 };
     const scarti = trasf.rifiutate.length + r.scartate.length;
@@ -1478,10 +1415,6 @@ function scarica(nome, dati) {
   document.body.append(a);
   a.click();
   a.remove();
-}
-
-async function scaricaVecchio() {
-  scarica('rotta-giusta-progressi-precedenti.json', { app: 'rotta-giusta', righe: await leggiVecchio() });
 }
 
 async function pendenti() {
@@ -1617,12 +1550,6 @@ document.addEventListener('click', (e) => {
   if (c === 'link') return seguiLink();
   if (c === 'esporta') return esporta();
   if (c === 'recupero') return scaricaRecupero();
-  const vv = t.dataset.vecchio;
-  if (vv === 'porta') return portaVecchio();
-  if (vv === 'scarica') return scaricaVecchio();
-  if (vv === 'dopo') { S.vecchioDopo = true; $('vecchio').hidden = true; return; }
-  if (vv === 'riprova') return controllaVecchio();
-  if (vv === 'conferma') return confermaVecchio();
   if (t.dataset.importa === 'si') return importaFile();
   if (t.dataset.importa === 'scarti') return scaricaScarti();
   const k = t.dataset.conflitto;

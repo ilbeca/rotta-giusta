@@ -8,6 +8,15 @@ Tutto il resto dell'ADR-003 vale com'è — account con email e password, verifi
 dell'indirizzo, righe sul server in chiaro e leggibili dal titolare, import del
 file esportato, cancellazione dopo due anni di inattività con avviso.
 
+**Sostituito in parte da ADR-005**, il 3 ottobre 2026, in due punti, marcati
+qui sotto dove compaiono: la quarta condizione — il passaggio dell'archivio di
+prima esce, e la pagina non legge e non cancella quelle risposte, che restano
+nel browser di chi le ha — e l'offline, che esce dal sito: senza rete il sito
+non si apre, e la copia delle risposte nel browser, per chi ha l'account,
+resta per non perdere niente mentre la rete non c'è, non per aprire il sito
+senza rete. Il testo resta com'è stato scritto, perché è quello che l'ADR-005
+ha dovuto correggere; l'ADR-005 dice il prezzo.
+
 (Non è l'ADR-004 di `Standards`, «la regola diventa un controllo», che
 `AGENTS.md` e la specifica citano sempre con il nome del repo accanto.)
 
@@ -49,7 +58,8 @@ si salva, e si vedono i progressi.**
   aperta**, in memoria, e poi spariscono. Nel browser non si scrive l'archivio;
   sul server non arriva niente. Nessun dato personale, nessun cookie.
 - **Con l'account** le risposte si salvano — sul server, e nel browser per
-  l'offline — e si vedono i **Progressi**: copertura, diagnosi, andamento,
+  l'offline *(ADR-005: per non perderle mentre la rete non c'è; l'offline è
+  uscito)* — e si vedono i **Progressi**: copertura, diagnosi, andamento,
   sessioni, e le metriche che il server rende possibili.
 - **Registrarsi alla fine di un'attività non la butta via.** Le risposte della
   pagina aperta salgono con la registrazione, dalla porta dell'import che esiste
@@ -87,7 +97,9 @@ Senza di esse, questa decisione non vale.
 3. **Senza account non si toglie niente apposta.** Tutte le attività, con il
    loro riepilogo e la revisione degli errori della sessione, restano a chi
    prova. Ai registrati restano soltanto le viste che vivono di uno storico.
-4. **Un archivio che esiste già non sparisce in silenzio.** Chi oggi ha le
+4. ~~**Un archivio che esiste già non sparisce in silenzio.**~~ — *sostituita
+   dall'ADR-005 il 3 ottobre 2026: la pagina non legge e non cancella
+   quell'archivio, e non ne dice niente. Il testo di prima:* Chi oggi ha le
    risposte nel browser, nel database `open-patente-nautica`, il giorno del
    rilascio le trova ancora, con due strade dichiarate: registrarsi e portarle
    nell'account, o scaricarle. Il modo lo decide il progetto di realizzazione;
@@ -109,7 +121,7 @@ Senza di esse, questa decisione non vale.
 ## Consequences
 
 **Tornano veri, rispetto all'ADR-003:** il primo quesito senza chiedere niente;
-l'offline alla prima visita, per provare; il primo ingresso dell'area 1, già
+~~l'offline alla prima visita, per provare~~ *(uscito con l'ADR-005)*; il primo ingresso dell'area 1, già
 rilasciato, che si adatta invece di rifarsi.
 
 **Si perde, per chi non si registra,** quello che il sito fino a oggi dava a
@@ -128,7 +140,7 @@ quelle della pagina aperta, o quelle dell'archivio. Cambiano la pagina e il
 progetto di realizzazione.
 
 **Lasciato al progetto di realizzazione**, perché è un *come*: il passaggio di
-chi ha già un archivio locale (condizione 4); che cosa succede alla sessione
+chi ha già un archivio locale (condizione 4; tolto dall'ADR-005); che cosa succede alla sessione
 aperta mentre l'email di verifica non è ancora confermata; la sorte delle
 impostazioni senza account — la data d'esame, i punteggi migliori dei Segnali —
 che oggi stanno in `localStorage`; che cosa resta nel browser all'uscita, su un

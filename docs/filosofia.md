@@ -2,7 +2,9 @@
 
 **Data:** 12 settembre 2026. **Riscritto il 25 settembre 2026**, dopo
 l'ADR-003 e l'ADR-004: senza account si prova e non resta niente; con l'account
-si salva, e le risposte stanno sul server in chiaro.
+si salva, e le risposte stanno sul server in chiaro. **Rivisto il 3 ottobre
+2026**, dopo l'ADR-005: niente offline, e niente passaggio dell'archivio di
+prima degli account.
 **Che cos'è:** non è una specifica e non prescrive un'interfaccia. È il perché
 sotto le scelte — in che cosa crediamo, e da dove viene ogni convinzione.
 Serve come sorgente a due destinazioni diverse: a `docs/specifica.md`, quando
@@ -138,6 +140,17 @@ qualcosa; i tuoi dati si scaricano e si cancellano da dove si vedono, non da un
 modulo sepolto. Prima nessuno poteva rompere queste promesse. Adesso potremmo,
 ed è il motivo per cui le scriviamo.
 
+**Una volta, scelta, le abbiamo rotte, e lo diciamo qui.** Il 3 ottobre 2026
+(ADR-005) abbiamo tolto il passaggio con cui chi aveva studiato nel browser
+prima degli account ritrovava le sue risposte. Il criterio è stato la
+semplicità, e l'ipotesi che nessuno avesse usato il sito prima degli account.
+Se qualcuno l'ha fatto e non le ha portate, quelle risposte sono ancora nel suo
+browser, ma il sito non le mostra e non glielo dice: una perdita che si scopre
+dopo, proprio quella che qui sopra chiamiamo un inganno, e il costo non è stato
+detto prima a chi lo paga. Lo scriviamo invece di lasciare le frasi qui sopra a
+dire una cosa che in quel caso non è vera; se le frasi vadano corrette o la
+decisione rivista, lo decide l'autore.
+
 Un'eccezione unica, e dichiarata: il gioco dei Segnali è l'unica parte del
 sito pensata per essere divertente prima che utile, ed è anche l'unica scritta
 interamente dall'autore, non da un motore di selezione.
@@ -252,8 +265,15 @@ Con le risposte di chi si registra sul nostro server abbiamo rinunciato a:
 - **a chi non si registra, quello che davamo a tutti** — un archivio nel
   browser, i Progressi, la ripresa dal giorno prima, senza chiedere niente.
 
+E il 3 ottobre 2026, per semplicità (ADR-005), a due cose ancora:
+
+- **l'offline** — senza rete il sito non si apre, per nessuno; in cambio dopo
+  un aggiornamento basta una ricarica, non due;
+- **le risposte di chi studiava prima degli account** e non le ha portate —
+  restano nel suo browser, e il sito non le guarda più.
+
 Non abbiamo rinunciato, perché si prova senza account, al primo quesito senza
-chiedere niente e all'offline dalla prima visita.
+chiedere niente. All'offline dalla prima visita sì, con l'ADR-005.
 
 In cambio: **chi si registra non perde più il proprio lavoro** cambiando
 telefono, e chi ci scrive per un problema possiamo aiutarlo davvero. Chi non si
@@ -272,6 +292,13 @@ cambia, deve cambiare in una direzione e non nell'altra.
 ---
 
 ## Registro
+
+- **3 ottobre 2026 — dopo l'ADR-005.** Via l'offline e il passaggio
+  dell'archivio di prima, per semplicità. «Che cosa abbiamo perso» ha le due
+  perdite nuove; e accanto a «una che scopri dopo è un inganno» c'è un
+  paragrafo che dice che per chi studiava prima degli account quella promessa,
+  scelta, non vale. Le frasi non sono state riscritte: è una decisione
+  dell'autore.
 
 - **3 ottobre 2026 — la nota in testa è tolta.** Diceva che il documento
   descriveva il sito deciso e non quello pubblicato, e che si toglieva nel

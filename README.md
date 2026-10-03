@@ -197,19 +197,24 @@ senza che l'informativa lo dicesse. Un test lo tiene fermo: nessuna pagina di
 - **Le risposte sono righe, una per risposta, che non si modificano mai.** Senza
   account stanno solo nella memoria della pagina aperta, e una ricarica le
   perde: il sito lo dice prima di cominciare e alla fine di ogni attività. Con
-  l'account stanno sul server e, per l'offline, in una copia nel browser; le
-  due si uniscono per `uid`, senza un vincitore. Da quelle righe l'app deriva
+  l'account stanno sul server e in una copia nel browser, che le tiene se la
+  rete cade a pagina aperta; le due si uniscono per `uid`, senza un vincitore. Da quelle righe l'app deriva
   tutto — la copertura, i Progressi, le sessioni —, e quello che deriva non si
   salva e non viaggia: si ricalcola in locale.
 - **Dalla schermata Info si scarica un file.** Con l'account è l'export del
   server, e un file dei progressi si carica nell'account; senza account si
-  scaricano le risposte della pagina aperta. Chi ha ancora nel browser le
-  risposte di prima degli account le porta nell'account o le scarica: la pagina
-  lo propone, e non le cancella da sola.
-- **Funziona offline** (service worker, cache-first: la banca è immutabile). Si
-  prova offline dopo aver caricato il sito una volta; con un account già aperto
-  su quel dispositivo le risposte restano nella sua copia e partono quando
-  torna la rete. Le figure si scaricano con un pulsante, apposta.
+  scaricano le risposte della pagina aperta. Chi aveva scaricato il file prima
+  degli account lo carica nell'account allo stesso modo. Le risposte di prima
+  rimaste nel browser, invece, la pagina non le legge e non le cancella: restano
+  lì, e il sito non le porta più nell'account
+  ([ADR-005](docs/adr/ADR-005-semplificare-senza-offline-e-senza-archivio-di-prima.md)).
+- **Non funziona offline**, dal 3 ottobre 2026 (ADR-005): senza rete il sito non
+  si apre. Le pagine e la banca arrivano dalla rete, con la cache del browser,
+  e dopo un aggiornamento basta una ricarica. Con l'account, una risposta data
+  mentre la rete è caduta a pagina aperta resta nella copia del dispositivo e
+  parte quando la rete torna. `site/sw.js` c'è ancora, ma solo per
+  disinstallare il service worker che la 0.29.0 ha lasciato a chi l'ha
+  visitata.
 - **La logica di selezione sta in un solo file**, `site/engine.js`, che gira
   identico nella pagina, nel server e sotto `node --test`. Non ha DOM né rete.
 - **Niente build step.** Le pagine importano `engine.js` e basta; quello che è
@@ -233,7 +238,7 @@ site/                 quello che statichost.eu pubblica, e niente altro
   index.html          la vetrina
   app.html            la palestra, una pagina sola, con il client degli account
   engine.js           motore di selezione e statistiche (logica pura, testata)
-  sw.js               service worker; il nome della cache segue VERSION
+  sw.js               il service worker che si disinstalla (ADR-005)
   dati/               quiz.json, meta.json, tecniche.json, carteggio.json, carteggio_e12.json
   figure/             le figure del decreto (103 caselle, 102 disegni: la n. 8 era un doppione)
   privacy.html, avvertenza.html
@@ -259,12 +264,12 @@ python3 tests/test_specifica.py                   # ogni requisito ha il suo con
 Che cosa serve a ciascuna — Chrome, la porta 8620 libera, una LTS pari di Node —
 lo dice `AGENTS.md`, «Comandi».
 
-Un rilascio alza **tre** numeri che un test tiene insieme — `VERSION`, `CACHE`
-in `site/sw.js`, `versione` in `site/dati/meta.json` — e ha una voce nel
-CHANGELOG con lo stesso numero. Nessuno sostituisce il numero al volo: se uno
-dei tre resta indietro, la suite è rossa. Dopo un rilascio ogni dispositivo
-prende la versione nuova alla **seconda** ricarica, e il server degli account
-si aggiorna a parte, sulla sua macchina, allo stesso tag.
+Un rilascio alza **due** numeri che un test tiene insieme — `VERSION` e
+`versione` in `site/dati/meta.json` — e ha una voce nel CHANGELOG con lo stesso
+numero. Nessuno sostituisce il numero al volo: se uno dei due resta indietro, la
+suite è rossa. Dopo un rilascio ogni dispositivo prende la versione nuova alla
+prima ricarica, e il server degli account si aggiorna a parte, sulla sua
+macchina, allo stesso tag.
 
 Le regole di lavoro sono in [`CLAUDE.md`](CLAUDE.md); vale anche per gli umani.
 

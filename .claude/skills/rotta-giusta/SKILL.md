@@ -13,7 +13,9 @@ description: >
 Sito con i 1.722 quesiti e i 135 esercizi di carteggio dell'Allegato A al DD
 131/2022 e il motore di selezione del progetto personale da cui e' estratto.
 Senza account si prova e non resta niente, nemmeno nel browser; con l'account
-le risposte si salvano sul server, in chiaro (ADR-003, ADR-004). Repo
+le risposte si salvano sul server, in chiaro (ADR-003, ADR-004). Niente
+offline, e niente passaggio dell'archivio di prima degli account (ADR-005).
+Repo
 `~/Software/rotta-giusta` sull'Air, remoto `ilbeca/rotta-giusta` (pubblico).
 
 Due cose pubblicate, in due modi:
@@ -48,12 +50,15 @@ Due cose pubblicate, in due modi:
 
 1. **La logica di selezione sta solo in `site/engine.js`.** Nessuna seconda
    implementazione, ne' nella pagina ne' altrove.
-2. **Una sola versione, in tre posti, tenuta insieme da un test**: `VERSION`,
-   `CACHE` in `site/sw.js`, `versione` in `site/dati/meta.json`. Un rilascio
-   li alza tutti e tre, e serve una voce di CHANGELOG con lo stesso numero.
-3. **Dopo un rilascio serve una ricarica in piu'** sul dispositivo: la prima
-   serve ancora dalla cache precedente. La schermata Info dice quale cache e'
-   installata.
+2. **Una sola versione, in due posti, tenuta insieme da un test**: `VERSION`
+   e `versione` in `site/dati/meta.json`. Un rilascio li alza tutti e due, e
+   serve una voce di CHANGELOG con lo stesso numero. Fino al 3 ottobre 2026 i
+   posti erano tre, con `CACHE` in `site/sw.js`.
+3. **`site/sw.js` non si toglie e non torna a fare cache.** Dall'ADR-005 il
+   sito non e' offline e la pagina non registra un service worker; `sw.js`
+   resta pubblicato, almeno fino al 3 ottobre 2028, perche' disinstalla quello
+   che la 0.29.0 ha lasciato a chi l'ha visitata. Senza, quel browser
+   resterebbe sulla 0.29.0 per sempre. Dopo un rilascio basta una ricarica.
 4. **Il repo di origine e' privato e resta tale.** Non si forka, non si rende
    pubblico, non si copia da `data/seed/`: i dati arrivano solo da
    `site/dati/`, e `strumenti/controlla.py` fallisce se rientra materiale che

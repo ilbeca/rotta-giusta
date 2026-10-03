@@ -1186,16 +1186,16 @@ def test_carteggio_provato_al_contrario():
 # quando cambia la pagina e' il verde a copertura zero.
 BANCO_CLIENT = RADICE / 'tests' / 'client_account.mjs'
 RIFERIMENTO_CLIENT = RADICE / 'tests' / 'pagina-client-account.html'
-GRUPPI_CLIENT = ['C-01', 'C-02', 'C-03', 'C-04', 'C-05', 'C-06', 'C-07', 'C-08', 'C-09', 'C-10', 'C-11', 'C-12',
-                 'C-13', 'C-14', 'C-15', 'C-16', 'C-17', 'F-01', 'C-20']
+GRUPPI_CLIENT = ['C-01', 'C-02', 'C-03', 'C-04', 'C-05', 'C-06', 'C-07', 'C-08', 'C-21', 'C-10', 'C-11', 'C-12',
+                 'C-13', 'C-14', 'C-15', 'C-16', 'C-17', 'F-01', 'C-20', 'C-22']
 # Quante verifiche fa ogni gruppo quando arriva in fondo, sulla pagina di
 # riferimento: meno vuol dire che il giro si e' fermato prima e che una parte
 # dei controlli non e' stata eseguita, cioe' un verde a copertura parziale.
-VERIFICHE_CLIENT = {'C-01': 34, 'C-02': 15, 'C-03': 11, 'C-04': 20, 'C-05': 13, 'C-06': 15, 'C-07': 17, 'C-08': 18,
-                    'C-09': 13, 'C-10': 10, 'C-11': 8, 'C-12': 9, 'C-13': 8, 'C-14': 3, 'C-15': 12, 'C-16': 23, 'C-17': 10,
+VERIFICHE_CLIENT = {'C-01': 28, 'C-02': 15, 'C-03': 11, 'C-04': 20, 'C-05': 13, 'C-06': 15, 'C-07': 17, 'C-08': 18,
+                    'C-21': 17, 'C-10': 10, 'C-11': 8, 'C-12': 9, 'C-13': 8, 'C-14': 3, 'C-15': 12, 'C-16': 23, 'C-17': 10,
                     'C-13:scarica': 7, 'C-08:cancella': 8, 'C-15:segnali': 7,
                     'C-19:senza': 4, 'C-19:ricarica': 4, 'C-19:scadenza': 4, 'C-19:guasto': 3, 'C-19:giudizio': 5,
-                    'C-19:uscita': 4, 'C-19:schede': 4, 'F-01': 21, 'C-20': 5}
+                    'C-19:uscita': 4, 'C-19:schede': 4, 'F-01': 21, 'C-20': 5, 'C-22': 8}
 # Le tre scelte che fino a P-46 nessun gruppo premeva (R-ACC-63): sono parti dei
 # loro gruppi, e girano con loro, ma le verifiche portano il nome della parte e
 # hanno un controllo ciascuna, cosi' la specifica le nomina una per una.
@@ -1248,15 +1248,13 @@ ROTTURE_CLIENT = [
      [("if (t.matches('[data-rotta-start]')) return avvia();",
        "if (t.matches('[data-rotta-start]')) { moduloRegistrazione(); return avvia(); }")],
      'un campo password'),
-    ('la banca chiesta fuori dal guscio', ['C-01'],
-     [("fetch('/dati/quiz.json')", "fetch('/dati/quiz.json?v=' + Date.now())")],
-     'offline: la palestra si apre'),
     ('il riepilogo senza la revisione', ['C-01'],
      [('<button data-ciclo="risposte">Rivedi le risposte</button>', '')],
      'la revisione mostra il quesito risposto'),
-    ('il service worker mai registrato', ['C-01'],
-     [("if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});", '')],
-     'il guscio offline si carica'),
+    # Fino al 3 ottobre 2026 qui c'erano «la banca chiesta fuori dal guscio» e
+    # «il service worker mai registrato»: tenevano l'offline di C-01, che
+    # l'ADR-005 ha tolto. Il contrario — la pagina che registra un service
+    # worker — e' una rottura di C-22.
     # C-02
     ('le risposte in localStorage', ['C-02'],
      [("correct: giusta ? 1 : 0 });", "correct: giusta ? 1 : 0 }); localStorage.setItem('pn.archivio', JSON.stringify(S.righe));")],
@@ -1527,32 +1525,49 @@ ROTTURE_CLIENT = [
      [('    S.pwNuova = pw;\n    return pannello(`<h2>Account confermato</h2>',
        "    S.pwNuova = pw;\n    api('POST', '/v1/azzera', { password: pw });\n    return pannello(`<h2>Account confermato</h2>")],
      'nessuna risposta si cancella da sola'),
-    # C-09, l'archivio di prima
-    ('l\'archivio di prima letto solo da IndexedDB', ['C-09:porta'],
-     [('  const daLs = raw ? JSON.parse(raw) : [];', '  const daLs = [];')],
-     'unite per uid'),
-    ('le due fonti sommate invece di unite', ['C-09:porta'],
-     [('  return E.fondiArchivio(daIdb, daLs).righe;', '  return [...daIdb, ...daLs];')],
-     'unite per uid'),
-    ('le risposte di prima portate senza chiedere', ['C-09:porta'],
-     [('  const righe = await leggiVecchio();\n  pannello(`<h2>Porta le risposte nel tuo account</h2>',
-       '  return confermaVecchio();\n  const righe = await leggiVecchio();\n  pannello(`<h2>Porta le risposte nel tuo account</h2>')],
-     'chiede se portarle'),
-    ('portarle cancella l\'archivio di prima', ['C-09:porta'],
-     [("  await trasferisci(righe, { fonte: 'vecchio' });",
-       "  await trasferisci(righe, { fonte: 'vecchio' });\n  indexedDB.deleteDatabase(VECCHIO); localStorage.removeItem('pn.archivio');")],
-     'resta dov\'era'),
-    ('il segno che guarda il numero e non gli uid', ['C-09:porta'],
-     [('  const nuove = righe.filter((r) => !portate.has(String(r.uid)));',
-       '  const nuove = segno && righe.length === segno.n ? [] : righe.filter((r) => !portate.has(String(r.uid)));')],
-     'anche a conteggio uguale'),
-    ('«Più tardi» ricordato nel browser', ['C-09:dopo'],
-     [("  if (vv === 'dopo') { S.vecchioDopo = true;", "  if (vv === 'dopo') { S.vecchioDopo = true; localStorage.setItem('pn.vecchioDopo', '1');")],
-     'senza scrivere niente'),
-    ('una lettura fallita presa per un archivio vuoto', ['C-09:fallita'],
-     [("  try { righe = await leggiVecchio(); } catch { $('vecchio').hidden = true; $('vecchio-errore').hidden = false; return; }",
-       '  try { righe = await leggiVecchio(); } catch { righe = []; }')],
-     'una lettura fallita'),
+    # C-21, l'archivio di prima resta dov'e' (ADR-005). Le prime tre le vede lo
+    # strumento nella scheda; le altre tre passano accanto a lui — una
+    # cancellazione per proprieta', un avviso da indexedDB.databases(), una
+    # lettura per enumerazione — e le prendono l'archivio riletto, il testo
+    # visibile e il database del server.
+    ('l\'archivio di prima letto all\'avvio', ['C-21:senza'],
+     [("(async () => {\n  // Su un'origine senza API nessun modulo destinato a fallire",
+       "(async () => {\n  try { localStorage.getItem('pn.archivio'); } catch {}\n  // Su un'origine senza API nessun modulo destinato a fallire")],
+     'localStorage.getItem pn.archivio'),
+    ('il database di prima aperto all\'accesso', ['C-21:conto'],
+     [("async function dopoIngresso(io) {\n",
+       "async function dopoIngresso(io) {\n  indexedDB.open('open-patente-nautica').onsuccess = (e) => e.target.result.close();\n")],
+     'IndexedDB.open open-patente-nautica'),
+    ('l\'archivio di prima cancellato all\'uscita', ['C-21:conto'],
+     [("      // Uscita completa: si torna al Percorso, in prova vuota (§10).\n",
+       "      indexedDB.deleteDatabase('open-patente-nautica'); localStorage.removeItem('pn.archivio');\n"
+       "      // Uscita completa: si torna al Percorso, in prova vuota (§10).\n")],
+     'IndexedDB.deleteDatabase open-patente-nautica'),
+    ('l\'archivio di prima cancellato senza passare dai metodi', ['C-21:senza'],
+     [("(async () => {\n  // Su un'origine senza API nessun modulo destinato a fallire",
+       "(async () => {\n  delete localStorage['pn.archivio'];\n  // Su un'origine senza API nessun modulo destinato a fallire")],
+     'byte per byte'),
+    ('un avviso sulle risposte di prima, senza leggerle', ['C-21:senza'],
+     [("(async () => {\n  // Su un'origine senza API nessun modulo destinato a fallire",
+       "(async () => {\n  indexedDB.databases().then((d) => { if (d.some((x) => x.name === 'open-patente-nautica')) {"
+       " const p = document.createElement('p'); p.textContent = 'In questo browser ci sono risposte salvate prima degli account.'; $('v-oggi').prepend(p); } });\n"
+       "  // Su un'origine senza API nessun modulo destinato a fallire")],
+     'non dice niente delle risposte di prima'),
+    ('le risposte di prima portate nell\'account all\'accesso', ['C-21:conto'],
+     [("async function dopoIngresso(io) {\n",
+       "async function dopoIngresso(io) {\n  const prima = JSON.parse({ ...localStorage }['pn.archivio'] || '[]');\n"
+       "  if (prima.length) { chiudiPannello(); return trasferisci(prima); }\n")],
+     'niente dell\'archivio di prima arriva nell\'account'),
+    # C-22, l'offline se ne va (ADR-005): la pagina che torna a registrare un
+    # service worker, o ad aprire una cache.
+    ('la pagina registra un service worker', ['C-22:pagina'],
+     [("const oggi = () => E.isoLocale().slice(0, 10);\n",
+       "const oggi = () => E.isoLocale().slice(0, 10);\nnavigator.serviceWorker.register('/sw.js').catch(() => {});\n")],
+     'la pagina non registra un service worker'),
+    ('la pagina apre una cache', ['C-22:pagina'],
+     [("const oggi = () => E.isoLocale().slice(0, 10);\n",
+       "const oggi = () => E.isoLocale().slice(0, 10);\ncaches.open('rg-0.30.0');\n")],
+     'la pagina non registra un service worker'),
     # C-10, un file
     ('il file filtrato sul nome dell\'app', ['C-10:file'],
      [("if (!dati || !Array.isArray(dati.righe)) throw new Error('formato');",
@@ -1926,6 +1941,45 @@ ROTTURE_SITO_CLIENT = [
      'ma non si vede'),
 ]
 
+# Rotture del sw.js (C-22, P-60): la pagina di riferimento intatta, e al
+# posto di site/sw.js una sua copia rotta, servita dal banco solo nella parte
+# del passaggio dalla 0.29.0. (che cosa, sostituzioni sul sw.js vero — o None
+# per il sw.js della 0.29.0, preso dal tag —, parola che il rosso deve contenere).
+ROTTURE_SW_CLIENT = [
+    ('il sw.js che ricarica le pagine aperte',
+     [("      await self.registration.unregister();\n",
+       "      await self.clients.claim().catch(() => {});\n"
+       "      const aperte = await self.clients.matchAll({ type: 'window' });\n"
+       "      await self.registration.unregister();\n"
+       "      for (const c of aperte) c.navigate(c.url).catch(() => {});\n")],
+     'non ricarica le pagine aperte'),
+    ('il sw.js che non si disinstalla',
+     [("      await self.registration.unregister();\n", "")],
+     'si disinstalla'),
+    ('il sw.js che lascia le cache',
+     [("      for (const nome of await caches.keys()) await caches.delete(nome);\n", "")],
+     'cancella le cache'),
+    ('il sw.js della 0.29.0 rimasto pubblicato', None, 'cancella le cache'),
+]
+
+
+def sw_rotto(sostituzioni):
+    """Il sw.js di una rottura, o None se non si applica."""
+    if sostituzioni is None:
+        try:
+            return subprocess.run(['git', '-C', str(RADICE), 'show', 'v0.29.0:site/sw.js'],
+                                  capture_output=True, text=True, check=True).stdout
+        except (OSError, subprocess.CalledProcessError):
+            return None
+    vero = (SITE / 'sw.js').read_text(encoding='utf-8')
+    rotto = vero
+    for vecchio, nuovo in sostituzioni:
+        if vecchio not in rotto:
+            return None
+        rotto = rotto.replace(vecchio, nuovo, 1)
+    return rotto if rotto != vero else None
+
+
 # Varianti della pagina di riferimento che devono restare **verdi**: il banco
 # contro i propri rossi falsi, come le rotture lo provano contro i verdi falsi.
 # (che cosa, gruppi, sostituzioni). La pagina di riferimento pesca a caso, e
@@ -1984,6 +2038,11 @@ def banco_client():
         applicate[cosa] = ok
         if ok and rotto != vero:
             prove.append({'nome': 'rottura: ' + cosa, 'pagina': rif, 'gruppi': gruppi, 'sito': {percorso: rotto}})
+    for cosa, sostituzioni, _ in ROTTURE_SW_CLIENT:
+        rotto = sw_rotto(sostituzioni)
+        applicate[cosa] = rotto is not None
+        if rotto is not None:
+            prove.append({'nome': 'rottura: ' + cosa, 'pagina': rif, 'gruppi': ['C-22:passaggio'], 'sito': {'/sw.js': rotto}})
     try:
         p = subprocess.run(['node', str(BANCO_CLIENT)], input=json.dumps({'prove': prove}),
                            capture_output=True, text=True, timeout=600)
@@ -2099,8 +2158,122 @@ def test_client_password():
     registra_client('C-08')
 
 
-def test_client_vecchio_archivio():
-    registra_client('C-09')
+# C-21 (P-60): l'archivio di prima degli account resta nel browser, e la pagina
+# non lo legge e non lo cancella (ADR-005). La sua prima verifica e' lo
+# strumento nella scheda; sulla pagina vera di oggi e' rossa — il passaggio
+# legge l'archivio all'avvio e all'accesso — ed e' dichiarata fra i difetti
+# aperti finche' P-61 non toglie il codice e la riga nello stesso commit.
+LETTO_DI_PRIMA = ('la pagina non apre, non legge e non cancella l\'archivio di prima: '
+                  'IndexedDB «open-patente-nautica» e le chiavi «pn.»')
+
+
+def dichiarati_archivio_di_prima():
+    """Le verifiche di C-21 dichiarate fra i difetti aperti."""
+    return [x for p, x in (difetti_dichiarati() or []) if p == 'C-21']
+
+
+def test_client_archivio_di_prima():
+    """R-ACC-05 (ADR-005, P-60): con un archivio di prima nel browser — IndexedDB
+    `open-patente-nautica` e le chiavi `pn.` — la pagina non lo apre, non lo
+    legge e non lo cancella, non ne dice niente, non lo porta nell'account, e
+    alla fine lo lascia com'era, byte per byte: senza account e con, fino
+    all'uscita (C-21 in tests/client_account.mjs).
+
+    Sulla pagina vera, finche' il passaggio c'e', e' un **difetto aperto
+    dichiarato** (docs/eccezioni-interfaccia.md): ogni parte deve arrivare alla
+    verifica dello strumento con i passi prima verdi, e li' essere rossa per
+    quello che la pagina ha aperto o letto. Tolta la riga, il gruppo gira intero
+    e verde, con il suo conto."""
+    _, out, _ = banco_client()
+    v = out.get('app', [])
+    dichiarati = difetti_dichiarati()
+    check('client C-21: la tabella dei difetti aperti si legge', dichiarati is not None,
+          'manca «Difetti aperti dichiarati» in docs/eccezioni-interfaccia.md')
+    dichiarate = dichiarati_archivio_di_prima()
+    for d in dichiarate:
+        check('client C-21: la dichiarazione «%s» nomina la verifica che si puo\' dichiarare' % d, d == LETTO_DI_PRIMA,
+              'di C-21 si dichiara solo «%s»: le altre verifiche devono essere verdi' % LETTO_DI_PRIMA)
+    if LETTO_DI_PRIMA not in dichiarate:
+        registra_client('C-21')
+        return
+    for x in v:
+        if x['gruppo'] == 'banco':
+            check('client banco: %s' % x['nome'], x['ok'], x.get('extra', ''))
+    vg = [x for x in v if x['gruppo'] == 'C-21']
+    altri = [x for x in vg if not x['ok'] and x['nome'] != LETTO_DI_PRIMA]
+    check('client C-21: prima del difetto dichiarato i passi sono verdi', not altri,
+          'rosso per un altro motivo: ' + '; '.join('%s — %s' % (x['nome'], x.get('extra', '')) for x in altri[:2]))
+    letti = [x for x in vg if x['nome'] == LETTO_DI_PRIMA]
+    # Le due parti, senza account e con, si fermano ciascuna al primo rosso: tutte
+    # e due devono arrivarci, cosi' il giorno che una pagina legge solo all'accesso
+    # il difetto resta misurato anche li'.
+    check('client C-21: tutte e due le parti arrivano alla verifica dichiarata', len(letti) == 2,
+          'eseguita %d volte su 2: il giro si e\' fermato prima. Eseguite: %s'
+          % (len(letti), '; '.join(x['nome'] for x in vg[:4]) or 'nessuna'))
+    check('client C-21: il difetto dichiarato e\' ancora vero sulla pagina («%s»)' % LETTO_DI_PRIMA,
+          bool(letti) and all(not x['ok'] for x in letti),
+          'la verifica e\' verde: il passaggio non legge piu\' l\'archivio di prima. Togli la riga da «Difetti aperti '
+          'dichiarati» in docs/eccezioni-interfaccia.md nello stesso commit')
+    check('client C-21: e il rosso dice che cosa la pagina ha aperto o letto',
+          bool(letti) and all('open-patente-nautica' in x.get('extra', '') or 'pn.' in x.get('extra', '') for x in letti),
+          'rosso per un altro motivo: ' + '; '.join(x.get('extra', '') for x in letti))
+
+
+# C-22 (P-60): l'offline se ne va. La verifica che la pagina vera di oggi non
+# passa — registra il service worker a ogni avvio — si dichiara fra i difetti
+# aperti finche' P-61 non toglie la registrazione e la riga nello stesso commit.
+NESSUN_SW = 'la pagina non registra un service worker e non apre una cache'
+
+
+def test_client_offline():
+    """R-ARCH-15 e R-ARCH-16 (ADR-005, P-60): la pagina non registra un service
+    worker e non apre una cache (C-22:pagina); un browser con la 0.29.0
+    installata, servita in locale dal tag, prende la versione nuova, il sw.js
+    nuovo cancella le cache e si disinstalla senza ricaricare le pagine aperte, e
+    alla visita dopo non c'e' nessun service worker e nessuna cache
+    (C-22:passaggio). Sulla pagina vera, finche' la registrazione c'e', la
+    verifica NESSUN_SW e' un difetto aperto dichiarato: deve essere rossa almeno
+    nella prima parte, per quello che il browser ha, con i passi prima verdi.
+    Le rotture del sw.js girano con la pagina di riferimento intatta."""
+    _, out, applicate = banco_client()
+    v = out.get('app', [])
+    dichiarate = [x for p, x in (difetti_dichiarati() or []) if p == 'C-22']
+    for d in dichiarate:
+        check('client C-22: la dichiarazione «%s» nomina la verifica che si puo\' dichiarare' % d, d == NESSUN_SW,
+              'di C-22 si dichiara solo «%s»: le altre verifiche devono essere verdi' % NESSUN_SW)
+    if NESSUN_SW not in dichiarate:
+        registra_client('C-22')
+    else:
+        for x in v:
+            if x['gruppo'] == 'banco':
+                check('client banco: %s' % x['nome'], x['ok'], x.get('extra', ''))
+        vg = [x for x in v if x['gruppo'] == 'C-22']
+        altri = [x for x in vg if not x['ok'] and x['nome'] != NESSUN_SW]
+        check('client C-22: prima del difetto dichiarato i passi sono verdi', not altri,
+              'rosso per un altro motivo: ' + '; '.join('%s — %s' % (x['nome'], x.get('extra', '')) for x in altri[:2]))
+        sw = [x for x in vg if x['nome'] == NESSUN_SW]
+        check('client C-22: il difetto dichiarato e\' ancora vero sulla pagina («%s»)' % NESSUN_SW,
+              bool(sw) and not sw[0]['ok'],
+              'la verifica e\' verde, o non e\' stata eseguita: la pagina non registra piu\' un service worker. '
+              'Togli la riga da «Difetti aperti dichiarati» in docs/eccezioni-interfaccia.md nello stesso commit')
+        check('client C-22: e il rosso dice che cosa la pagina ha chiamato',
+              bool(sw) and all('"chiamate":["' in x.get('extra', '') for x in sw if not x['ok']),
+              'rosso per un altro motivo: ' + '; '.join(x.get('extra', '') for x in sw))
+        # Il passaggio dalla 0.29.0 e' del sw.js, non della pagina: i suoi passi
+        # devono arrivare in fondo anche qui, prima della verifica dichiarata.
+        n = sum(1 for x in vg if x['nome'].startswith(('la 0.29.0', 'e la ricarica', 'il sw.js nuovo', 'e non ricarica', 'la visita dopo')))
+        check('client C-22: il passaggio dalla 0.29.0 arriva in fondo sulla pagina vera', n == 5,
+              'eseguiti %d passi su 5: %s' % (n, '; '.join(x['nome'] for x in vg)))
+    for cosa, _, atteso in ROTTURE_SW_CLIENT:
+        check('rottura del sw.js «%s»: si applica' % cosa, applicate.get(cosa),
+              'il testo da sostituire non c\'e\' piu\', o il tag v0.29.0 non si legge: la rottura non romperebbe niente')
+        vr = out.get('rottura: ' + cosa)
+        if vr is None:
+            continue
+        rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in vr if not x['ok']]
+        check('rottura del sw.js «%s»: il banco diventa rosso' % cosa, bool(rossi), 'e\' passata verde')
+        check('rottura del sw.js «%s»: e il rosso nomina il difetto' % cosa, any(atteso in r for r in rossi),
+              'rossi: ' + '; '.join(rossi[:3]))
 
 
 def test_client_file():
@@ -2922,7 +3095,7 @@ def main():
               test_client_nella_pagina, test_client_primo_ingresso, test_client_senza_account, test_client_email_registrata,
               test_client_invito_e_viste, test_client_tutte_le_attivita, test_client_registrazione, test_riepilogo_frasi,
               test_client_dispositivo_condiviso, test_client_coda, test_client_uscita,
-              test_client_verifica, test_client_password, test_client_vecchio_archivio, test_client_file,
+              test_client_verifica, test_client_password, test_client_archivio_di_prima, test_client_offline, test_client_file,
               test_client_limiti, test_client_azzeramento, test_client_ripristino, test_client_data,
               test_client_export, test_client_testi,
               test_client_scarica_dopo_azzeramento, test_client_cancella_dopo_recupero, test_client_conferma_mancante, test_client_uscita_segnali,

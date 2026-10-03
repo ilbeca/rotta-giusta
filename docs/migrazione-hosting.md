@@ -402,6 +402,14 @@ eliminazione.**
    `_redirects` (non misurato) il sito rimanderebbe a sé stesso. Chi ha la
    palestra installata resta congelato **sulla v0.27.0, con l'avviso dentro**; chi
    arriva senza, finisce su `rottagiusta.it`.
+
+   **Dal 3 ottobre 2026 (ADR-005) c'è un modo di non congelarlo**: il `sw.js`
+   nuovo cancella le cache e si disinstalla. Perché arrivi a chi ha installato
+   la palestra su `.pages.dev`, il ramo del redirect deve continuare a servire
+   `/sw.js` **con un 200**, e il redirect valere per tutto il resto: con un 301
+   anche lì il browser rifiuta il service worker dietro un redirect, misurato
+   qui sopra. Se `_redirects` di Pages lo permetta senza una regola apposta non
+   è misurato: si guarda con `curl -I .../sw.js` prima di chiudere D2.
 4. **D3 — l'eliminazione.** Qualche mese dopo il redirect: il progetto Pages si
    elimina, e la filiera è tutta europea. Da quel giorno i link vecchi non
    rispondono più.

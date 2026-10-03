@@ -26,7 +26,7 @@
 //    Esc; l'archivio dell'account `rg-account-<chiave_locale>`; e l'API in
 //    locale su http://<stesso host>:8620 (account-progetto §7.4 e §16.3).
 //
-// Gruppi realizzati: C-01…C-17 (P-29, P-39, P-43), e C-19, la bozza del
+// Gruppi realizzati: C-01…C-17 (P-29, P-39, P-43; C-09 tolto da P-60), e C-19, la bozza del
 // carteggio (P-34, §9.4 del progetto). C-18, la ricerca dei testi,
 // non ha bisogno di un browser e sta in tests/test_interfaccia.py. Che cosa
 // ognuno non vede e' scritto nel §12 del progetto. Tre parti — C-13:scarica,
@@ -52,8 +52,17 @@
 // registrazione (R-ACC-75): il link a /avvertenza#condizioni e i 18 anni nella
 // finestra, in quello che si vede, prima del pulsante, e l'ancora seguita. La
 // sua ultima verifica chiede se la finestra si vede davvero (R-ACC-76).
+//
+// E da P-60 il gruppo C-22: l'offline tolto dall'ADR-005 — la pagina non
+// registra un service worker, e un browser con la 0.29.0 installata la lascia
+// senza service worker e senza cache. La parte offline di C-01 e' uscita.
+//
+// E da P-60 il gruppo C-21, al posto di C-09: l'archivio di prima degli account
+// resta nel browser, e la pagina non lo legge e non lo cancella (ADR-005,
+// R-ACC-05). C-09, il passaggio nell'account, e' uscito con la decisione.
 
 import { createServer } from 'node:http';
+import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync, mkdirSync, existsSync, mkdtempSync, rmSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname, extname, normalize } from 'node:path';
@@ -128,13 +137,15 @@ const GIUDIZIO_CARTEGGIO = ['Sei tu a giudicare'];
 // Le risposte del gioco dei Segnali: le schede del motore, non un elenco a mano.
 const SEGNALI = [...new Set(E.SEGNALI.map((x) => x.o))];
 
-const GUSCIO = (() => {
-  const sw = readFileSync(join(SITE, 'sw.js'), 'utf8');
-  const m = sw.match(/const GUSCIO = \[([\s\S]*?)\];/);
-  // Le righe di commento hanno apostrofi («e'»): si tolgono prima di leggere.
-  const senza = m[1].split('\n').filter((r) => !r.trim().startsWith('//')).join('\n');
-  return new Set([...senza.matchAll(/'([^']+)'/g)].map((x) => x[1]));
-})();
+// Un file del sito, per percorso: in Cache Storage e' il sito, non una risposta
+// di chi studia (C-02). Fino al 3 ottobre 2026 qui c'era il GUSCIO di sw.js, la
+// lista che il service worker metteva in cache; l'ADR-005 l'ha tolta, e
+// quello che resta da distinguere e' un file del sito da qualunque altra cosa.
+// Che una cache non ci sia proprio lo tiene C-22.
+const DEL_SITO = (percorso) => {
+  const f = normalize(join(SITE, percorso === '/' ? 'index.html' : percorso));
+  return f.startsWith(SITE) && ((existsSync(f) && !statSync(f).isDirectory()) || existsSync(f + '.html'));
+};
 
 const TIPI = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json',
   '.svg': 'image/svg+xml', '.png': 'image/png', '.webmanifest': 'application/manifest+json', '.css': 'text/css' };
@@ -147,19 +158,25 @@ function sito(corrente) {
     // che l'emulazione di rete della scheda non tocca (§12, «che cosa non copre»).
     if (corrente.spento) return req.socket.destroy();
     const p = decodeURIComponent(new URL(req.url, 'http://x').pathname);
-    if (p === '/app') {
+    // Una radice diversa da site/, tutta, pagina compresa: e' cosi' che C-22
+    // serve la 0.29.0 sulla stessa origine, prima della versione nuova (P-60).
+    const radice = corrente.radice || SITE;
+    if (p === '/app' && !corrente.radice) {
       res.writeHead(200, { 'Content-Type': TIPI['.html'], 'Cache-Control': 'no-cache' });
       return res.end(corrente.pagina);
     }
     // Una prova puo' portare una pagina del sito diversa da quella di site/
     // (`sito: { '/avvertenza': '<html>…' }`): e' cosi' che C-20 rompe l'ancora
     // delle condizioni senza toccare site/ (P-57).
-    if (corrente.sito && Object.hasOwn(corrente.sito, p)) {
-      res.writeHead(200, { 'Content-Type': TIPI['.html'], 'Cache-Control': 'no-cache' });
+    // Il tipo e' quello dell'estensione: un service worker servito come HTML
+    // il browser non lo installa (C-22 sostituisce /sw.js).
+    // Con la radice della 0.29.0 si serve la 0.29.0 intera: le rotture valgono per la versione nuova.
+    if (corrente.sito && !corrente.radice && Object.hasOwn(corrente.sito, p)) {
+      res.writeHead(200, { 'Content-Type': TIPI[extname(p)] || TIPI['.html'], 'Cache-Control': 'no-cache' });
       return res.end(corrente.sito[p]);
     }
-    let f = normalize(join(SITE, p === '/' ? 'index.html' : p));
-    if (!f.startsWith(SITE)) { res.writeHead(404); return res.end(); }
+    let f = normalize(join(radice, p === '/' ? 'index.html' : p));
+    if (!f.startsWith(radice)) { res.writeHead(404); return res.end(); }
     if ((!existsSync(f) || statSync(f).isDirectory()) && existsSync(f + '.html')) f += '.html';
     if (!existsSync(f) || statSync(f).isDirectory()) { res.writeHead(404, { 'Content-Type': 'text/plain' }); return res.end('404'); }
     res.writeHead(200, { 'Content-Type': TIPI[extname(f)] || 'application/octet-stream', 'Cache-Control': 'no-cache' });
@@ -272,9 +289,10 @@ async function revisione(tab, testo) {
   return tab.attendi(js(`const r = document.querySelector('#rivedi'); return r.classList.contains('on') && V(document.querySelector('#rv-body')) && document.querySelector('#rv-body').textContent.includes(${q(testo)});`), REAZIONE);
 }
 
-// Pronto vuol dire: un service worker **attivo** — e' lui a servire la
-// ricarica offline, e uno ancora in installazione la lascerebbe alla rete — e
-// in cache quello che la pagina chiede. L'install scrive la cache prima di
+// La 0.29.0 installata (C-22, P-60): un service worker **attivo** — e' lui a
+// servire la pagina dalla cache, e uno ancora in installazione la lascerebbe
+// alla rete — e in cache quello che la pagina chiede. Fino al 3 ottobre 2026
+// lo usava C-01 per la ricarica offline, che l'ADR-005 ha tolto. L'install scrive la cache prima di
 // attivarsi, quindi la sola cache non basta; misurato il 29 settembre, 40 prove
 // su 40 trovavano comunque il worker attivo o in attivazione, e la
 // navigazione aspetta l'attivazione: e' lo stato giusto, non un rosso visto.
@@ -290,7 +308,7 @@ async function guscioPronto(tab) {
   })()`, CARICO);
 }
 
-// --- C-01: il primo quesito senza account, con la rete e senza ------------------
+// --- C-01: il primo quesito senza account ----------------------------------------
 
 async function c01(b, ctx, v, parte) {
   const g = 'C-01';
@@ -311,25 +329,9 @@ async function c01(b, ctx, v, parte) {
         extra: '«Rivedi le risposte» non apre #rivedi con il quesito appena risposto' });
     }
   } finally { await c.chiudi(); }
-
-  const d = await b.nuovoContesto();
-  try {
-    const tab = await d.apri(ctx.sito + '/app');
-    const guscio = await guscioPronto(tab);
-    v.push({ gruppo: g, nome: 'il guscio offline si carica alla prima visita', ok: guscio,
-      extra: `dopo ${CARICO / 1000} s il service worker non ha in cache /app, /engine.js e /dati/quiz.json` });
-    if (!guscio) return;
-    await tab.offline(true);
-    ctx.spegni(true);
-    try {
-      await tab.ricarica();
-      const testo = await unaRisposta(tab, v, g, 'offline: ');
-      if (testo) {
-        v.push({ gruppo: g, nome: 'offline: la revisione del riepilogo', ok: await revisione(tab, testo),
-          extra: 'senza rete il riepilogo non si rivede' });
-      }
-    } finally { ctx.spegni(false); }
-  } finally { await d.chiudi(); }
+  // Fino al 3 ottobre 2026 qui seguiva la stessa attivita' offline, con il
+  // guscio in cache: l'ADR-005 ha tolto l'offline, e senza rete il sito non si
+  // apre. Che la pagina non registri piu' un service worker lo tiene C-22.
 }
 
 // --- C-01, le altre attivita' ----------------------------------------------------
@@ -465,7 +467,7 @@ function personale(cons, api) {
   if (cons.session.length) out.push('sessionStorage: ' + cons.session.map((e) => e[0]).join(', '));
   if (cons.cookie.length) out.push('cookie: ' + cons.cookie.map((c) => c.nome).join(', '));
   for (const [nome, voci] of Object.entries(cons.cache)) {
-    const estranee = voci.filter((u) => { const x = new URL(u); return x.origin === api || !(GUSCIO.has(x.pathname) || x.pathname.startsWith('/figure/')); });
+    const estranee = voci.filter((u) => { const x = new URL(u); return x.origin === api || !DEL_SITO(x.pathname); });
     if (estranee.length) out.push(`Cache Storage «${nome}»: ${estranee.join(', ')}`);
   }
   return out;
@@ -1135,7 +1137,6 @@ const ACCESSO_NO = 'Email o password non corrette. Riprova oppure reimposta la p
 const SE_ISCRITTO = 'Se questo indirizzo è iscritto, riceverai una mail da Rotta Giusta. Il link vale un\'ora.';
 const PW_AGGIORNATA = 'Password aggiornata. Le sessioni precedenti sono state chiuse';
 const PW_LINK_USATO = 'Questo link è scaduto o è già stato usato. Chiedi un nuovo link per reimpostare la password.';
-const LETTURA_NO = 'Non siamo riusciti a leggere le risposte già presenti in questo browser.';
 const FILE_SENZA = 'Per conservare le risposte del file, crea un account o accedi';
 const FILE_NO = 'Non riusciamo a leggere questo file di progressi.';
 const DA_INVIARE_SEG = 'Punteggi da inviare';
@@ -1556,131 +1557,271 @@ async function c08cancella(b, ctx, v, g) {
   } finally { await c.chiudi(); }
 }
 
-// --- C-09: l'archivio di prima degli account ----------------------------------------------
+// --- C-21: l'archivio di prima resta dov'e' (ADR-005) --------------------------------------
+//
+// Fino al 3 ottobre 2026 qui c'era C-09, il passaggio dell'archivio di prima
+// nell'account (R-ACC-05 di allora). L'ADR-005 l'ha tolto: la pagina **non
+// legge e non cancella** le risposte di prima degli account, che restano nel
+// browser di chi le ha. C-21 tiene ferma quella frase, in due modi che si
+// coprono a vicenda: uno strumento nella scheda registra ogni apertura o
+// cancellazione del database `open-patente-nautica` e ogni lettura, scrittura
+// o cancellazione delle chiavi `pn.` della versione di prima; e alla fine
+// l'archivio si rilegge da un'altra scheda, e deve essere quello di prima,
+// byte per byte. Lo strumento non vede una lettura per enumerazione
+// (`Object.keys(localStorage)`, `{ ...localStorage }`) ne' `indexedDB.databases()`:
+// il secondo controllo prende una cancellazione fatta cosi', il testo visibile
+// un avviso che ne nasca.
 
-/** L'archivio di prima, scritto nel browser prima che la palestra si apra: IndexedDB e il ripiego. */
-async function scriviVecchio(c, ctx, idb, ls) {
+const VECCHIO_DB = 'open-patente-nautica';
+// Le chiavi di prima: l'archivio di ripiego e una preferenza che il passaggio leggeva.
+const VECCHIO_LS = { 'pn.archivio': null, 'pn.esame': '"2026-11-20"' };
+const STRUMENTO_VECCHIO = `(() => {
+  const log = (window.__archivioDiPrima = []);
+  const F = IDBFactory.prototype;
+  for (const m of ['open', 'deleteDatabase']) {
+    const o = F[m];
+    F[m] = function (n, ...a) { if (String(n) === ${q(VECCHIO_DB)}) log.push('IndexedDB.' + m + ' ' + n); return o.call(this, n, ...a); };
+  }
+  const S = Storage.prototype;
+  for (const m of ['getItem', 'setItem', 'removeItem']) {
+    const o = S[m];
+    S[m] = function (k, ...a) { if (this === window.localStorage && String(k).startsWith('pn.')) log.push('localStorage.' + m + ' ' + k); return o.call(this, k, ...a); };
+  }
+  const c = S.clear;
+  S.clear = function () { if (this === window.localStorage) log.push('localStorage.clear'); return c.call(this); };
+})();`;
+// Quello che una pagina direbbe di quelle risposte: nessuna di queste parole deve comparire.
+const DICE_DI_PRIMA = /prima degli account|copia precedente|archivio precedente|risposte già presenti in questo browser/i;
+const LETTO_DI_PRIMA = 'la pagina non apre, non legge e non cancella l\'archivio di prima: IndexedDB «open-patente-nautica» e le chiavi «pn.»';
+
+/** L'archivio di prima, scritto da un'altra scheda prima che la palestra si apra; la scheda resta, per rileggerlo. */
+async function scriviVecchio(c, ctx, righe) {
   const t = await c.apri(ctx.sito + '/privacy');
+  const ls = { ...VECCHIO_LS, 'pn.archivio': JSON.stringify(righe.slice(0, 2)) };
   await t.valuta(`new Promise((ok, ko) => {
-    const q = indexedDB.open('open-patente-nautica', 1);
+    const q = indexedDB.open(${q(VECCHIO_DB)}, 1);
     q.onupgradeneeded = () => q.result.createObjectStore('righe', { keyPath: 'uid' });
     q.onerror = () => ko(q.error);
-    q.onsuccess = () => { const tx = q.result.transaction('righe', 'readwrite'); for (const r of ${JSON.stringify(idb)}) tx.objectStore('righe').put(r);
-      tx.oncomplete = () => { q.result.close(); ok(true); }; };
+    q.onsuccess = () => { const tx = q.result.transaction('righe', 'readwrite'); for (const r of ${JSON.stringify(righe)}) tx.objectStore('righe').put(r);
+      tx.oncomplete = () => { q.result.close(); for (const [k, v] of Object.entries(${JSON.stringify(ls)})) localStorage.setItem(k, v); ok(true); }; };
   })`);
-  if (ls) await t.valuta(`localStorage.setItem('pn.archivio', ${q(JSON.stringify(ls))}); true`);
   return t;
 }
 
-const VECCHIO_FALLITO = `(() => { const o = IDBFactory.prototype.open; IDBFactory.prototype.open = function (n, ...a) {
-  if (n === 'open-patente-nautica') throw new DOMException('lettura fallita dal banco', 'UnknownError'); return o.call(this, n, ...a); }; })();`;
+/** L'archivio di prima com'e' adesso, letto dalla scheda che l'ha scritto: un testo da confrontare, o null se non c'e'. */
+const ARCHIVIO_DI_PRIMA = `(async () => {
+  const nomi = (await indexedDB.databases()).map((d) => d.name);
+  let righe = null;
+  if (nomi.includes(${q(VECCHIO_DB)})) righe = await new Promise((ok, ko) => {
+    const q = indexedDB.open(${q(VECCHIO_DB)}); q.onerror = () => ko(q.error);
+    q.onsuccess = () => { const db = q.result;
+      if (!db.objectStoreNames.contains('righe')) { db.close(); return ok('senza righe'); }
+      const g = db.transaction('righe').objectStore('righe').getAll(); g.onsuccess = () => { db.close(); ok(g.result); }; g.onerror = () => { db.close(); ko(g.error); }; };
+  });
+  const ls = {};
+  for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k.startsWith('pn.')) ls[k] = localStorage.getItem(k); }
+  return JSON.stringify({ righe, ls });
+})()`;
 
-async function c09(b, ctx, v, parte) {
-  const g = 'C-09';
+const registroDiPrima = (tab) => tab.valuta('window.__archivioDiPrima ? JSON.stringify(window.__archivioDiPrima) : null');
+
+/** La verifica dello strumento: nessuna apertura, lettura o cancellazione registrata in questa scheda. */
+async function nienteLetto(tab, v, g, quando) {
+  const r = await registroDiPrima(tab);
+  const voci = r === null ? null : JSON.parse(r);
+  v.push({ gruppo: g, nome: LETTO_DI_PRIMA, ok: Array.isArray(voci) && !voci.length,
+    extra: voci === null ? 'lo strumento del banco non c\'e\' nella scheda' : `${quando}: ${voci.join(', ')}` });
+}
+
+async function nienteDetto(tab, v, g, dove) {
+  const m = await tab.valuta(testoRe(DICE_DI_PRIMA));
+  v.push({ gruppo: g, nome: `e non dice niente delle risposte di prima (${dove})`, ok: !m,
+    extra: `in schermata «${m?.[0]}»: ${await tab.valuta(inSchermata)}` });
+}
+
+async function c21(b, ctx, v, parte) {
+  const g = 'C-21';
   const vuole = (x) => !parte || parte === x;
-  if (vuole('porta')) await fermaAlPrimo(v, (w) => c09porta(b, ctx, w, g));
-  if (vuole('dopo')) await fermaAlPrimo(v, (w) => c09dopo(b, ctx, w, g));
-  if (vuole('fallita')) await fermaAlPrimo(v, (w) => c09fallita(b, ctx, w, g));
+  if (vuole('senza')) await fermaAlPrimo(v, (w) => c21senza(b, ctx, w, g));
+  if (vuole('conto')) await fermaAlPrimo(v, (w) => c21conto(b, ctx, w, g));
 }
 
-async function c09porta(b, ctx, v, g) {
-  const K = await nuovoAccount(ctx, 'c09');
-  const s = serie;
-  // Due fonti con una riga in comune: l'unione per uid ne fa sei.
-  const idb = righeDi(`v${s}`, 4), ls = [...righeDi(`v${s}`, 1, { da: 3 }), ...righeDi(`v${s}`, 2, { da: 4 })];
-  const tutte = new Set([...idb, ...ls].map((r) => r.uid));
+async function c21senza(b, ctx, v, g) {
   const c = await b.nuovoContesto();
   try {
-    const priv = await scriviVecchio(c, ctx, idb, ls);
-    const tab = await c.apri(ctx.sito + '/app');
-    await tab.attendi(PRONTO, CARICO);
-    const avviso = `In questo browser ci sono ${tutte.size} risposte salvate prima degli account.`;
-    const visto = await tab.attendi(testoVisibile(avviso), REAZIONE);
-    v.push({ gruppo: g, nome: 'l\'avviso conta le risposte delle due fonti, unite per uid', ok: visto,
-      extra: `«${avviso}» non si vede: ${JSON.stringify((await tab.valuta(testoRe(/ci sono \d+ risposte salvate prima/)))?.[0] ?? 'nessun avviso')}` });
-    if (!visto) return;
-    await clicca(tab, 'Scarica il file');
-    const file = await scaricato(c, 0);
-    v.push({ gruppo: g, nome: '«Scarica il file» porta tutte le risposte di prima, senza rete e senza account', ok: !!file && stessi(uidDi(file.dati), tutte),
-      extra: file ? `nel file ${uidDi(file.dati).size} uid, ne aspettava ${tutte.size}` : 'nessun file scaricato' });
-    await clicca(tab, 'Registrati o entra e portale');
-    await tab.attendi(js(`return V(${campo('Email')});`), REAZIONE);
-    await imposta(tab, 'Email', K.email);
-    await imposta(tab, 'Password', K.password);
-    await clicca(tab, 'Accedi');
-    const chiesto = await tab.attendi(testoVisibile(`Vuoi portare nel tuo account le ${tutte.size} risposte salvate in questo browser prima degli account?`), REAZIONE);
-    v.push({ gruppo: g, nome: 'entrando, la pagina chiede se portarle, con quante e dove', ok: chiesto && await tab.valuta(testoVisibile(K.email)),
-      extra: chiesto ? 'la domanda non mostra l\'email di destinazione' : 'dopo l\'accesso nessuna domanda sulle risposte di prima' });
-    v.push({ gruppo: g, nome: 'prima del si\' niente parte', ok: await maiPer(() => ctx.righeDi(K.email) > 0), extra: `l'account ha gia' ${ctx.righeDi(K.email)} righe` });
-    await clicca(tab, 'Portale nel mio account');
-    const salvate = await finche(() => ctx.righeDi(K.email) === tutte.size, REAZIONE) && (await tab.attendiValore(testoRe(SALVATE), (x) => !!x && Number(x[1]) === tutte.size, REAZIONE)).ok;
-    v.push({ gruppo: g, nome: 'portate: tutte sul server, e «salvate» con il numero del server', ok: salvate, extra: `il server ha ${ctx.righeDi(K.email)} righe su ${tutte.size}` });
-    await clic(tab, '[data-v="info"]');
-    v.push({ gruppo: g, nome: 'Info dice quante ne sono state portate', ok: await tab.attendi(testoVisibile(`${tutte.size} risposte portate nel tuo account il`), REAZIONE),
-      extra: `«${tutte.size} risposte portate nel tuo account il …» non si vede in Info` });
-    const resta = await c.voci(ctx.sito, 'open-patente-nautica', tab);
-    const lsResta = (await c.conservato(ctx.sito, tab)).local.some((e) => e[0] === 'pn.archivio');
-    v.push({ gruppo: g, nome: 'l\'archivio di prima resta dov\'era: portarlo non lo cancella', ok: !!resta && resta.righe === idb.length && lsResta,
-      extra: `IndexedDB ${JSON.stringify(resta)}, pn.archivio ${lsResta ? 'c\'e\'' : 'sparito'}` });
+    const priv = await scriviVecchio(c, ctx, righeDi(`p${++serie}`, 4));
+    const prima = await priv.valuta(ARCHIVIO_DI_PRIMA);
+    const tab = await c.apri(ctx.sito + '/app', { prima: STRUMENTO_VECCHIO });
+    const pronto = await tab.attendi(PRONTO, CARICO);
+    v.push({ gruppo: g, nome: 'senza account, con un archivio di prima nel browser, la palestra si apre', ok: pronto && JSON.parse(prima).righe?.length === 4,
+      extra: pronto ? `l'archivio di prima non e' stato scritto: ${prima}` : `nessun [data-rotta-start] abilitato entro ${CARICO / 1000} s` });
+    // Un'attivita' fino al riepilogo, Info, e una ricarica: i posti dove il passaggio leggeva.
+    const testo = await unaRisposta(tab, v, g, 'senza account: ');
+    if (!testo) return;
+    await nienteLetto(tab, v, g, 'all\'avvio e in un\'attivita\'');
+    await clic(tab, '[data-ciclo="ritorno"]');
     await clic(tab, '[data-v="oggi"]');
+    await tab.attendi(PRONTO, REAZIONE);
+    await nienteDetto(tab, v, g, 'Percorso');
+    await clic(tab, '[data-v="info"]');
+    await nienteDetto(tab, v, g, 'Info');
     await tab.ricarica();
     await tab.attendi(PRONTO, CARICO);
-    await clic(tab, '[data-v="info"]');
-    await tab.attendi(testoVisibile('risposte portate nel tuo account il'), REAZIONE);
-    await clic(tab, '[data-v="oggi"]');
-    v.push({ gruppo: g, nome: 'dopo la ricarica, portate tutte, l\'avviso non torna', ok: !await tab.valuta(testoVisibile(avviso)), extra: 'l\'avviso si vede ancora con le risposte gia\' portate' });
-    // Una riga nuova al posto di una vecchia: stesso numero, un uid diverso.
-    // Se l'archivio non c'e' piu' — una pagina che l'ha cancellato — il passo
-    // fallisce e lo dice, invece di restare appeso.
-    await priv.valuta(`new Promise((ok, ko) => { const q = indexedDB.open('open-patente-nautica'); q.onerror = () => ko(q.error); q.onsuccess = () => { try {
-      const tx = q.result.transaction('righe', 'readwrite');
-      tx.objectStore('righe').delete(${q(idb[0].uid)}); tx.objectStore('righe').put(${JSON.stringify(righeDi(`v${s}n`, 1)[0])}); tx.oncomplete = () => { q.result.close(); ok(true); };
-    } catch (e) { q.result.close(); ko(e); } }; })`);
-    await tab.ricarica();
-    await tab.attendi(PRONTO, CARICO);
-    v.push({ gruppo: g, nome: 'una risposta di prima mai portata riaccende l\'avviso, anche a conteggio uguale', ok: await tab.attendi(testoVisibile('In questo browser ci sono 1 risposte salvate prima degli account.'), REAZIONE),
-      extra: 'con una riga nuova nell\'archivio di prima l\'avviso non torna: il segno guarda il numero, non gli uid' });
+    await nienteLetto(tab, v, g, 'dopo la ricarica');
+    let dopo = null;
+    const intatto = await finche(async () => (dopo = await priv.valuta(ARCHIVIO_DI_PRIMA)) === prima, REAZIONE)
+      && await maiPer(async () => (dopo = await priv.valuta(ARCHIVIO_DI_PRIMA)) !== prima);
+    v.push({ gruppo: g, nome: 'l\'archivio di prima resta com\'era, byte per byte: IndexedDB e localStorage', ok: intatto,
+      extra: `prima ${prima.slice(0, 160)} — dopo ${String(dopo).slice(0, 160)}` });
   } finally { await c.chiudi(); }
 }
 
-async function c09dopo(b, ctx, v, g) {
+async function c21conto(b, ctx, v, g) {
+  const K = await nuovoAccount(ctx, 'c21');
   const c = await b.nuovoContesto();
   try {
-    await scriviVecchio(c, ctx, righeDi(`d${++serie}`, 3));
-    const tab = await c.apri(ctx.sito + '/app');
-    await tab.attendi(PRONTO, CARICO);
-    const avviso = 'In questo browser ci sono 3 risposte salvate prima degli account.';
-    if (!await tab.attendi(testoVisibile(avviso), REAZIONE)) { v.push({ gruppo: g, nome: '«Più tardi»: l\'avviso c\'e\'', ok: false, extra: `«${avviso}» non si vede` }); return; }
-    const prima = await c.conservato(ctx.sito, tab);
-    await clicca(tab, 'Più tardi');
-    const via = await tab.attendi(js(`return !document.body.innerText.includes(${q(avviso)});`), REAZIONE);
-    let nuovo = [];
-    const niente = await maiPer(async () => {
-      const ora = await c.conservato(ctx.sito, tab);
-      nuovo = [...ora.local.filter((e) => !prima.local.some((x) => x[0] === e[0])).map((e) => 'localStorage ' + e[0]),
-        ...ora.session.map((e) => 'sessionStorage ' + e[0]), ...ora.idb.filter((n) => !prima.idb.includes(n)).map((n) => 'IndexedDB ' + n),
-        ...ora.cookie.map((x) => 'cookie ' + x.nome)];
-      return nuovo.length > 0;
+    const priv = await scriviVecchio(c, ctx, righeDi(`k${++serie}`, 4));
+    const prima = await priv.valuta(ARCHIVIO_DI_PRIMA);
+    const tab = await c.apri(ctx.sito + '/app', { prima: STRUMENTO_VECCHIO });
+    const entrato = await dentro(tab, K);
+    v.push({ gruppo: g, nome: 'con un archivio di prima nel browser si entra nell\'account', ok: entrato, extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+    if (!entrato) return;
+    await nienteLetto(tab, v, g, 'all\'avvio e all\'accesso');
+    await nienteDetto(tab, v, g, 'dopo l\'accesso');
+    v.push({ gruppo: g, nome: 'niente dell\'archivio di prima arriva nell\'account', ok: await maiPer(() => ctx.righeDi(K.email) > 0),
+      extra: `l'account ha ${ctx.righeDi(K.email)} righe, e nessuna risposta e' stata data` });
+    await esciDa(tab);
+    const fuori = await tab.attendi(nellaPagina('Accedi'), REAZIONE);
+    v.push({ gruppo: g, nome: '«Esci» chiude l\'accesso', ok: fuori, extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+    if (!fuori) return;
+    await nienteLetto(tab, v, g, 'all\'uscita');
+    let dopo = null;
+    const intatto = await maiPer(async () => (dopo = await priv.valuta(ARCHIVIO_DI_PRIMA)) !== prima);
+    v.push({ gruppo: g, nome: 'uscendo, l\'archivio di prima resta com\'era: la pulizia tocca solo la copia dell\'account', ok: intatto,
+      extra: `prima ${prima.slice(0, 160)} — dopo ${String(dopo).slice(0, 160)}` });
+  } finally { await c.chiudi(); }
+}
+
+// --- C-22: l'offline se ne va (ADR-005) -----------------------------------------------
+//
+// L'ADR-005 ha tolto l'offline. C-22 tiene ferme le due meta' della decisione
+// che si vedono solo nel browser. `C-22:pagina`: la pagina non registra un
+// service worker e non apre una cache. `C-22:passaggio`: un browser con la
+// 0.29.0 installata — servita in locale dal tag, sulla stessa origine —
+// prende la versione nuova; il sw.js nuovo cancella le cache e si
+// disinstalla senza ricaricare le pagine aperte, e alla visita dopo non c'e'
+// nessun service worker e nessuna cache «rg-». I test del motore eseguono il
+// sw.js in una Cache Storage finta; qui lo esegue Chrome.
+
+const NESSUN_SW = 'la pagina non registra un service worker e non apre una cache';
+// Che cosa c'e' nel browser: i service worker registrati e le cache, letti dalla pagina.
+const SW_E_CACHE = `(async () => {
+  const r = navigator.serviceWorker ? await navigator.serviceWorker.getRegistrations() : [];
+  const k = self.caches ? await caches.keys() : [];
+  return JSON.stringify({ sw: r.map((x) => (x.active || x.waiting || x.installing)?.scriptURL || x.scope), cache: k });
+})()`;
+const vuoto = (x) => { const o = JSON.parse(x); return !o.sw.length && !o.cache.length; };
+// Lo strumento nella scheda: ogni register() e ogni caches.open(). Lo stato da
+// solo non basta, misurato il 3 ottobre 2026: la pagina vera registra /sw.js,
+// il sw.js nuovo si disinstalla in pochi millisecondi, e due giri su tre il
+// banco guardava dopo, e trovava tutto pulito. La chiamata invece resta.
+const STRUMENTO_OFFLINE = `(() => {
+  const log = (window.__offline = []);
+  if (self.ServiceWorkerContainer) {
+    const r = ServiceWorkerContainer.prototype.register;
+    ServiceWorkerContainer.prototype.register = function (u, ...a) { log.push('register ' + u); return r.call(this, u, ...a); };
+  }
+  if (self.CacheStorage) {
+    const o = CacheStorage.prototype.open;
+    CacheStorage.prototype.open = function (n, ...a) { log.push('caches.open ' + n); return o.call(this, n, ...a); };
+  }
+})();`;
+const STATO_OFFLINE = `(async () => {
+  const s = JSON.parse(await ${SW_E_CACHE});
+  return JSON.stringify({ ...s, chiamate: window.__offline || ["lo strumento del banco manca"] });
+})()`;
+const nienteFatto = (x) => { const o = JSON.parse(x); return !o.sw.length && !o.cache.length && !o.chiamate.length; };
+
+let SITO_029 = null;
+/** Il sito della 0.29.0, dal tag, in una cartella temporanea: una volta sola per esecuzione. */
+function sito029() {
+  if (SITO_029) return SITO_029;
+  const d = mkdtempSync(join(tmpdir(), 'rg-0.29.0-'));
+  const tar = execFileSync('git', ['-C', RADICE, 'archive', '--format=tar', 'v0.29.0', 'site'], { maxBuffer: 64 * 1024 * 1024 });
+  execFileSync('tar', ['-x', '-C', d], { input: tar });
+  SITO_029 = join(d, 'site');
+  return SITO_029;
+}
+
+async function c22(b, ctx, v, parte) {
+  const g = 'C-22';
+  const vuole = (x) => !parte || parte === x;
+  if (vuole('pagina')) await fermaAlPrimo(v, (w) => c22pagina(b, ctx, w, g));
+  if (vuole('passaggio')) await fermaAlPrimo(v, (w) => c22passaggio(b, ctx, w, g));
+}
+
+/** Per tutta la finestra, nessuna chiamata, nessun service worker e nessuna cache. */
+async function nienteDiOffline(tab, v, g, quando) {
+  let visto = null;
+  const ok = await maiPer(async () => !nienteFatto(visto = await tab.valuta(STATO_OFFLINE)));
+  v.push({ gruppo: g, nome: NESSUN_SW, ok, extra: `${quando}: ${visto}` });
+}
+
+async function c22pagina(b, ctx, v, g) {
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/app', { prima: STRUMENTO_OFFLINE });
+    const pronto = await tab.attendi(PRONTO, CARICO);
+    v.push({ gruppo: g, nome: 'senza account la palestra si apre, dalla rete', ok: pronto, extra: `nessun [data-rotta-start] abilitato entro ${CARICO / 1000} s` });
+    if (!pronto) return;
+    await nienteDiOffline(tab, v, g, 'alla prima visita');
+  } finally { await c.chiudi(); }
+}
+
+async function c22passaggio(b, ctx, v, g) {
+  let dir;
+  try { dir = sito029(); } catch (e) {
+    v.push({ gruppo: g, nome: 'il sito della 0.29.0 si prende dal tag', ok: false, extra: `git archive v0.29.0: ${e.message}` });
+    return;
+  }
+  const c = await b.nuovoContesto();
+  try {
+    ctx.radice(dir);
+    // La 0.29.0, come la trova chi l'ha visitata: installata, e ricaricata, cosi'
+    // che la pagina sia servita dal service worker e dalla sua cache.
+    const t1 = await c.apri(ctx.sito + '/app');
+    const installata = await t1.attendi(PRONTO, CARICO) && await guscioPronto(t1);
+    v.push({ gruppo: g, nome: 'la 0.29.0 si installa: service worker attivo e guscio in cache', ok: installata, extra: await t1.valuta(SW_E_CACHE) });
+    if (!installata) return;
+    await t1.ricarica();
+    const servita = await t1.attendi(PRONTO, CARICO) && await t1.attendi('!!navigator.serviceWorker.controller', REAZIONE);
+    v.push({ gruppo: g, nome: 'e la ricarica e\' servita dal suo service worker', ok: servita, extra: 'la pagina ricaricata non ha un controller' });
+    if (!servita) return;
+    await t1.valuta('window.__primaDelPassaggio = 1; true');
+    // La versione nuova al posto della 0.29.0; la visita dopo, in un'altra
+    // scheda, e' quella che fa controllare al browser se sw.js e' cambiato.
+    ctx.radice(null);
+    const t2 = await c.apri(ctx.sito + '/app');
+    await t2.attendi(PRONTO, CARICO);
+    let visto = null;
+    const via = await finche(async () => vuoto(visto = await t1.valuta(SW_E_CACHE)), CARICO);
+    v.push({ gruppo: g, nome: 'il sw.js nuovo cancella le cache del sito e si disinstalla', ok: via, extra: `dopo ${CARICO / 1000} s: ${visto}` });
+    if (!via) return;
+    // Una pagina che si ricarica sotto il banco fa fallire la lettura: anche quello e' una ricarica.
+    const resta = await maiPer(async () => {
+      try { return (await t1.valuta('window.__primaDelPassaggio === 1 ? location.pathname : null')) !== '/app'; } catch { return true; }
     });
-    v.push({ gruppo: g, nome: '«Più tardi» nasconde l\'avviso senza scrivere niente nel browser', ok: via && niente, extra: via ? 'scritto ' + nuovo.join(', ') : 'l\'avviso resta' });
-    await tab.ricarica();
-    await tab.attendi(PRONTO, CARICO);
-    v.push({ gruppo: g, nome: 'e dopo una ricarica l\'avviso torna', ok: await tab.attendi(testoVisibile(avviso), REAZIONE), extra: '«Più tardi» e\' diventato un «mai piu\'»' });
-  } finally { await c.chiudi(); }
-}
-
-async function c09fallita(b, ctx, v, g) {
-  const c = await b.nuovoContesto();
-  try {
-    await scriviVecchio(c, ctx, righeDi(`f${++serie}`, 3));
-    const tab = await c.apri(ctx.sito + '/app', { prima: VECCHIO_FALLITO });
-    await tab.attendi(PRONTO, CARICO);
-    const detto = await tab.attendi(testoVisibile(LETTURA_NO), REAZIONE);
-    v.push({ gruppo: g, nome: 'una lettura fallita dell\'archivio di prima lo dice, con «Riprova», e non diventa «nessuna risposta»', ok: detto && await tab.valuta(pulsante('Riprova')) && !await tab.valuta(testoRe(/ci sono \d+ risposte salvate prima/)),
-      extra: detto ? 'manca «Riprova», o si vede un conteggio' : `«${LETTURA_NO}» non si vede` });
-    const n = await c.voci(ctx.sito, 'open-patente-nautica', tab);
-    v.push({ gruppo: g, nome: 'e l\'archivio resta com\'era', ok: !!n && n.righe === 3, extra: `IndexedDB ${JSON.stringify(n)}` });
-  } finally { await c.chiudi(); }
+    v.push({ gruppo: g, nome: 'e non ricarica le pagine aperte: senza account una ricarica perde le risposte', ok: resta,
+      extra: 'la scheda aperta con la 0.29.0 e\' stata ricaricata, o portata altrove' });
+    // La visita dopo: dalla rete, senza nessuno in mezzo.
+    const t3 = await c.apri(ctx.sito + '/app', { prima: STRUMENTO_OFFLINE });
+    const pronta = await t3.attendi(PRONTO, CARICO);
+    const libera = pronta && await t3.valuta('!navigator.serviceWorker || !navigator.serviceWorker.controller');
+    v.push({ gruppo: g, nome: 'la visita dopo arriva dalla rete, senza un service worker in mezzo', ok: libera,
+      extra: pronta ? 'la pagina e\' servita da un service worker' : 'la palestra non si apre' });
+    if (!libera) return;
+    await nienteDiOffline(t3, v, g, 'alla visita dopo il passaggio');
+  } finally { ctx.radice(null); await c.chiudi(); }
 }
 
 // --- C-10: un file dei progressi ----------------------------------------------------------
@@ -3526,6 +3667,9 @@ const FRASI_RIEPILOGO = [
   /^Le ultime risposte potrebbero non essere salvate\./,
   /^Senza account le risposte valgono solo finché questa pagina resta aperta\. Se la chiudi o la ricarichi, le perdi\. Non salviamo niente, nemmeno le tue preferenze\.$/,
   /^Le risposte si conservano nel tuo account e in questo dispositivo per l’offline\. Controlla lo stato dell’invio in Info\.$/,
+  // Dall'ADR-005 l'offline non c'e': P-61 cambia la frase in questa (§11.2 del
+  // progetto del client). Tutte e due finche' la pagina vera non e' passata.
+  /^Le risposte si conservano nel tuo account\. Se la rete cade, restano in questo dispositivo finché non arrivano: controlla lo stato dell’invio in Info\.$/,
   /^Vuoi conservare le attività di questa pagina\?$/,
   /^Senza account, chiudendo o ricaricando la pagina perdi le risposte e le preferenze\. Crea un account per salvare le risposte, ritrovarle su un altro dispositivo e vedere i Progressi quando ci sono abbastanza dati\.$/,
   /^Le risposte saranno legate alla tua email e conservate sul nostro server, in chiaro\. Il titolare può leggerle per supporto e statistiche\.$/,
@@ -3791,18 +3935,20 @@ async function c20(b, ctx, v) {
   } finally { await c.chiudi(); }
 }
 
-const GRUPPI = { 'C-01': c01, 'C-02': c02, 'C-03': c03, 'C-04': c04, 'C-05': c05, 'C-06': c06, 'C-07': c07, 'C-08': c08, 'C-09': c09,
+const GRUPPI = { 'C-01': c01, 'C-02': c02, 'C-03': c03, 'C-04': c04, 'C-05': c05, 'C-06': c06, 'C-07': c07, 'C-08': c08, 'C-21': c21,
   'C-10': c10, 'C-11': c11, 'C-12': c12, 'C-13': c13, 'C-14': c14, 'C-15': c15, 'C-16': c16, 'C-17': c17, 'C-19': c19,
   // L'area 6 (P-45): la rifinitura trasversale.
   'T-01': t01, 'T-02': t02, 'T-03': t03, 'T-04': t04, 'T-05': t05, 'T-06': t06, 'T-07': t07, 'T-08': t08, 'T-09': t09,
   // Le frasi del riepilogo dei quiz (P-53, R-UX-06).
   'F-01': f01,
   // Le condizioni per l'account nel modulo di registrazione (P-57, R-ACC-75).
-  'C-20': c20 };
+  'C-20': c20,
+  // L'offline se ne va (P-60, ADR-005).
+  'C-22': c22 };
 // I gruppi che parlano con l'API: il server accetta una sola origine (§7.3),
 // quindi girano uno alla volta sul sito principale. Gli altri girano in
 // parallelo, ognuno con il suo sito e quindi con la sua origine.
-const CON_API = new Set(['C-05', 'C-04', 'C-06', 'C-07', 'C-08', 'C-09', 'C-10', 'C-11', 'C-12', 'C-13', 'C-14', 'C-15', 'C-16', 'C-17', 'C-19',
+const CON_API = new Set(['C-05', 'C-04', 'C-06', 'C-07', 'C-08', 'C-21', 'C-10', 'C-11', 'C-12', 'C-13', 'C-14', 'C-15', 'C-16', 'C-17', 'C-19',
   'T-02', 'T-03', 'T-04', 'T-07:conto']);
 const SOLO_ALTRE = new Set(['C-14']);
 // Una parte puo' parlare con l'API anche se il suo gruppo no: T-07:conto entra
@@ -3880,6 +4026,7 @@ async function corsia(k, cartella, portaApi = PORTA_API) {
     sessioniDi: (email) => api.db.prepare('SELECT COUNT(*) AS n FROM sessione s JOIN account a ON a.id = s.account_id WHERE a.email = ?').get(email).n,
     revoca: (email) => api.db.prepare('DELETE FROM sessione WHERE account_id = (SELECT id FROM account WHERE email = ?)').run(email),
     spegni: (si) => { corrente.spento = si; },
+    radice: (d) => { corrente.radice = d; },
     // --- per i gruppi di P-43: il banco fa quello che un altro dispositivo, il
     // fornitore della posta o la macchina farebbero, e legge il database.
     rifiuta,
@@ -3972,7 +4119,7 @@ export async function esegui(prove, { portaApi = PORTA_API } = {}) {
         try {
           // La pagina di questi gruppi non e' riscritta: parla con la 8620, e il
           // banco guarda quell'indirizzo anche se la corsia 0 ascolta altrove.
-          const ctx = { ...corsie[0].ctx, sito: sv.origine, api: `http://localhost:${PORTA_API}`, spegni: (si) => { proprio.spento = si; } };
+          const ctx = { ...corsie[0].ctx, sito: sv.origine, api: `http://localhost:${PORTA_API}`, spegni: (si) => { proprio.spento = si; }, radice: (d) => { proprio.radice = d; } };
           esiti.get(x.p.nome)[x.g] = await gruppo(b, ctx, x.g);
         } finally { await sv.chiudi(); }
         tempi(inizio, `${x.p.nome} ${x.g}`);

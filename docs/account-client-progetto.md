@@ -111,7 +111,7 @@ letto:*
 | Apertura con verifica della sessione | Memoria; copia locale isolata, se già associata | «Verifica dell'accesso in corso…». Il primo quesito resta accessibile; nessuna copia di un account sconosciuto viene caricata nella prova. |
 | Account verificato | Archivio `rg-account-<chiave_locale>` e server | Attività e Progressi; stato dell'invio separato dall'identità. |
 | Account non verificato | Stesso archivio e stesse funzioni | Avviso di conferma con data/ora di cancellazione, sempre visibile fin dal primo momento. |
-| Account già riconosciuto, offline | Sua copia locale e coda | Attività e Progressi locali; «Sei offline. Le nuove risposte sono in questo dispositivo e saranno inviate quando tornerà la rete.» |
+| Account già riconosciuto, offline a pagina aperta (dall'ADR-005 senza rete la pagina non si apre) | Sua copia locale e coda | Attività e Progressi locali; «Sei offline. Le nuove risposte sono in questo dispositivo e saranno inviate quando tornerà la rete.» |
 | `401` da una rotta autenticata | Copia congelata dell'account | Riaccesso; nessun invio anonimo o verso un altro account. «L'accesso non è più valido. Entra di nuovo per inviare le risposte rimaste in questo dispositivo.» |
 | Generazione diversa | Copia congelata e conflitto del motore | Scelta scaricare/scartare, prima di ricevere o inviare altro (§10). |
 | Archivio vecchio trovato | Fonte di migrazione separata | Avviso di passaggio prima delle attività (§7), anche se si è già entrati. |
@@ -383,6 +383,17 @@ si risolve anche rileggendo io. Nessun blocco del runner già aperto.
 
 ## 7. Passaggio del vecchio archivio
 
+**Tolto il 3 ottobre 2026 (ADR-005, P-60 e P-61).** Il passaggio descritto qui
+sotto è uscito dalla pagina: la pagina non apre il database
+`open-patente-nautica`, non legge, non scrive e non cancella `pn.archivio` né le
+altre chiavi `pn.` della versione di prima, non ne dice niente, e niente ne
+passa nell'account. Quelle risposte restano nel browser di chi le ha. Chi aveva
+scaricato il file dei progressi prima degli account lo porta nell'account dalla
+porta di ogni file (§8). Il prezzo — chi non le ha portate non le vede più, e
+nessuno glielo dice — è scritto nell'ADR-005. Lo tiene fermo R-ACC-05, con C-21
+nel banco (§12, «L'archivio di prima resta dov'è»). Il testo che segue è il
+progetto di allora, e resta come traccia: non va realizzato.
+
 Leggere entrambe le fonti: IndexedDB `open-patente-nautica` e fallback
 `pn.archivio`. Non usare soltanto `S.archivio`, né creare un database vuoto
 durante una ricerca per poi scambiarlo per un archivio trovato. Se entrambe
@@ -532,7 +543,9 @@ pagina non spezza e non modifica la riga.
 
 ### 9.2 Persistenza e origini
 
-Account: `rg-account-<chiave_locale>` per righe, coda e metadata offline;
+Account: `rg-account-<chiave_locale>` per righe, coda e metadata — la coda
+tiene le risposte mentre la rete non c'è, ed è il perché della copia da quando
+l'ADR-005 ha tolto l'offline;
 preferenze del dispositivo associate alla stessa chiave. La chiave casuale
 non è una credenziale e non si ricava dall'email. Password e cookie non sono
 letti o conservati dalla pagina. L'identità offline si riusa solo per l'account
@@ -542,10 +555,9 @@ Un accesso di B non importa la copia di A, neppure se A ha una coda pendente.
 Senza account: nessuna nuova scrittura di dati della persona in IndexedDB,
 localStorage, sessionStorage, cookie o Cache Storage; filtri, `pn.auto`,
 `pn.segModo`, `pn.diagOrdine`, `pn.prep`, `pn.esame` e `pn.segPunti` in memoria.
-Le vecchie chiavi sono fonti di migrazione protette, non preferenze da
-continuare ad aggiornare. Restano la cache del sito/banca e la copia vecchia
-da gestire; la cache può essere installata/aggiornata dal service worker,
-ma non contiene risposte o risultati API. Il download volontario è un file
+Le vecchie chiavi non si leggono, non si scrivono e non si cancellano
+(ADR-005, §7). Dall'ADR-005 non c'è nemmeno la cache del sito: la pagina non
+registra un service worker e non apre una cache (§12, «L'offline se ne va»). Il download volontario è un file
 scelto dalla persona, non una conservazione automatica del sito.
 
 **La bozza del carteggio è l'eccezione dichiarata, ed è dell'account** (D-03,
@@ -591,7 +603,8 @@ troppo grande invece di fermarsi (R-ACC-39 e 40).
 
 **Un trasferimento** è un insieme di righe da portare per intero nell'account:
 le righe della pagina alla registrazione (§4.3) o dopo «Sì, portale» (§5.1),
-un file convertito (§8), l'archivio di prima degli account (§7). È un oggetto
+un file convertito (§8); fino all'ADR-005 anche l'archivio di prima degli
+account (§7), che è uscito. È un oggetto
 semplice, da salvare con la coda. Registra le conferme **per nome**, con la
 generazione e l'epoca del database in cui sono state date.
 
@@ -876,18 +889,18 @@ le copie di «Come funziona», meta description/OG e commenti falsi.
 |---|---|
 | Hero e metadata vetrina/palestra | «Gratis e open source. Prova quiz e carteggio senza account; crea un account per salvare i progressi.» |
 | Pregio vetrina | «Prova senza account» — «Tutte le attività sono disponibili. Senza account non conserviamo risposte o preferenze.» |
-| Spunte vetrina | «Nessuna newsletter e nessun cookie di tracciamento.» Offline: «Puoi provare offline dopo aver caricato il sito. Con un account già aperto su questo dispositivo, salvi qui e invii quando torna la rete.» |
+| Spunte vetrina | «Nessuna newsletter e nessun cookie di tracciamento.» *Dall'ADR-005 la spunta dell'offline esce, e nessuna frase la sostituisce: il sito non promette niente senza rete.* Il testo di prima: «Puoi provare offline dopo aver caricato il sito. Con un account già aperto su questo dispositivo, salvi qui e invii quando torna la rete.» |
 | Come funziona, entrambe le copie | «Non serve un account per provare. Senza account le risposte e le preferenze valgono solo finché questa pagina resta aperta. Con l'account salvi sul server e vedi i Progressi.» |
-| Percorso, conservazione | In prova, §4.1; con account «Le risposte si conservano nel tuo account e in questo dispositivo per l'offline. Controlla lo stato dell'invio in Info.» Gli errori prevalgono sulla promessa. |
-| Info, Archivio | Fonte corrente, coda/scarti e motivi; export server, import, vecchio archivio e impostazioni nello stesso luogo. Non dire che non esiste un server o che tutto rimane soltanto nel browser. |
-| Privacy | Due stati, cache/offline e copia vecchia; dati account e onboarding, server in chiaro, lettura per supporto/statistiche, cookie tecnico, contratto art. 6.1.b, export/cancellazione/due anni con avviso. Contatto `privacy@rottagiusta.it`; dati in Polonia, copie nei Paesi Bassi, fornitore e titolare effettivi dal §15.4 del progetto account. Gate legale e operativo del rilascio, non un testo giuridico approvato da questa sessione. |
+| Percorso, conservazione | In prova, §4.1; con account, dall'ADR-005, «Le risposte si conservano nel tuo account. Se la rete cade, restano in questo dispositivo finché non arrivano: controlla lo stato dell’invio in Info.» (con gli apostrofi tipografici della pagina, come la frase di prima; F-01 accetta le due finché P-61 non c'è). Il testo di prima: «Le risposte si conservano nel tuo account e in questo dispositivo per l'offline. Controlla lo stato dell'invio in Info.» Gli errori prevalgono sulla promessa. |
+| Info, Archivio | Fonte corrente, coda/scarti e motivi; export server, import e impostazioni nello stesso luogo (il vecchio archivio, fino all'ADR-005). Non dire che non esiste un server o che tutto rimane soltanto nel browser. |
+| Privacy | Due stati — dall'ADR-005 senza la cache del sito e senza la copia vecchia —; dati account e onboarding, server in chiaro, lettura per supporto/statistiche, cookie tecnico, contratto art. 6.1.b, export/cancellazione/due anni con avviso. Contatto `privacy@rottagiusta.it`; dati in Polonia, copie nei Paesi Bassi, fornitore e titolare effettivi dal §15.4 del progetto account. Gate legale e operativo del rilascio, non un testo giuridico approvato da questa sessione. |
 
 Download ordinario con account: `GET /v1/esporta`, dopo tentativo di inviare
 i pendenti. Se restano, dire «Il file del server non contiene ancora le {N}
 risposte da inviare» e offrire anche il download locale di recupero, nominato
 come tale. Non spacciare `S.archivio` per export completo del server. Senza
-account il download volontario riguarda soltanto la pagina o la copia vecchia,
-con quelle etichette. Link interni `/privacy` e `/avvertenza`, senza `.html`.
+account il download volontario riguarda soltanto la pagina, con quell'etichetta
+(fino all'ADR-005 anche la copia vecchia). Link interni `/privacy` e `/avvertenza`, senza `.html`.
 README, skill e specifica restano il lavoro di Claude su main nella versione
 degli account; qui non si riscrivono.
 
@@ -906,7 +919,7 @@ schermate non hanno screenshot in P-13 perché non esistono ancora.
 
 | Caso/controllo da aggiungere | Esito obbligatorio e requisito |
 |---|---|
-| C-01, nuovo browser, rete presente e offline con guscio caricato | Primo quesito senza account; tutte le attività complete, stop parziale, riepilogo e revisione. R-ACC-01/04. |
+| C-01, nuovo browser, rete presente (offline con guscio caricato fino all'ADR-005) | Primo quesito senza account; tutte le attività complete, stop parziale, riepilogo e revisione. R-ACC-01/04. |
 | C-02, prova con tutte le attività e tutti i controlli preferenze | Avviso prima e dopo; nessuna scrittura personale in IDB/local/sessionStorage/cookie/cache, nessun invio righe. Ricarica senza risposte, data o punteggi. Cache del sito resta. R-ACC-02/09. |
 | C-03, visite fra viste e fine attività | Invito soltanto nei riepiloghi, niente popup o obbligo; Progressi storici assenti, revisione presente. R-ACC-03/04. |
 | C-04, registrazione dopo più attività, doppio click e perdita risposta HTTP | Uno snapshot completo, trasferimento prima di onboarding; successo solo per uid confermati; verifica io prima del ritento. R-ACC-06/13. |
@@ -914,7 +927,7 @@ schermate non hanno screenshot in P-13 perché non esistono ancora.
 | C-06, accesso con sì/no su dispositivo condiviso | Soltanto le righe autorizzate entrano nell'account; A e B isolati, niente import della coda di A in B. R-ACC-06/09. |
 | C-07, mail rifiutata, rinvio, link validi/usati/scaduti, altra scheda | `503` non dice mail spedita; account creato salva; scadenza server visibile subito e fino alla conferma. Frammento rimosso, gettone mai persistito. R-ACC-11/21/29. |
 | C-08, password corta/comune, incolla/autofill, 401/403/429 e recupero | Motivo e azioni corretti; stessa frase di accesso per email assente; richiesta recupero sempre condizionale; link 1 ora, scelta delle righe di account appena confermato. R-ACC-10/17/25/27/28/29. |
-| C-09, archivio vecchio reale, soltanto fallback, entrambe le fonti, lettura fallita | Download e trasferimento completi senza perdita o cancellazione implicita; più tardi non persistente; segno solo a conferma completa; nuove righe riaccendono avviso. R-ACC-05/07/08. |
+| ~~C-09, archivio vecchio reale, soltanto fallback, entrambe le fonti, lettura fallita~~ | Uscito con il passaggio (ADR-005). Al suo posto C-21: con l'archivio di prima nel browser la pagina non lo apre, non lo legge, non lo cancella e non ne dice niente, senza account e con; l'archivio resta byte per byte. R-ACC-05. |
 | C-10, file vecchio/nome app precedente, tag senza data, uid doppi, scarti e Segnali anche offline | Anteprima e unico riepilogo verificabili; reimport idempotente; massimo Segnali, punteggi pendenti dopo ricarica e uscita protetta, scarti scaricabili. Nessuna validazione UI alternativa. R-ACC-06/07/08/18. |
 | C-11, risposta aggiunta durante fetch, due schede e reload durante import | Riga e coda atomiche; la risposta tardiva resta da inviare; uid nominati soltanto vengono tolti; nessun doppione. R-ACC-12/13. |
 | C-12, lotto per byte, riga oltre limite, 413 e ricezione oltre 5.000 | Corpi dal motore nei due limiti; guasto leggibile, nessun falso completamento; tutte le pagine ricevute; POST e io non spostano cursore. R-ACC-14/31/32/33. |
@@ -1052,7 +1065,9 @@ Da P-43, per i gruppi che restavano:
   {N} risposte. Vuoi tenerle o cancellarle?» con «Tienile» e «Cancella queste
   risposte»; «Questo link è scaduto o è già stato usato. Chiedi un nuovo link
   per reimpostare la password.»;
-- **l'archivio di prima** (§7): «In questo browser ci sono {N} risposte
+- ~~**l'archivio di prima** (§7)~~ — *tolto da P-60 (ADR-005): nessuna di
+  queste frasi deve più comparire, e C-21 cerca nel testo visibile che non ne
+  compaia una; il testo di prima:* «In questo browser ci sono {N} risposte
   salvate prima degli account.», «Registrati o entra e portale», «Scarica il
   file», «Più tardi»; entrando, «Vuoi portare nel tuo account le {N} risposte
   salvate in questo browser prima degli account?» con l'email e «Portale nel
@@ -1254,7 +1269,7 @@ parallelo: 55 s senza carico, come prima.
 | C-15 | **fatto** (P-39, P-43) | Con una riga che non parte, «Esci» dice quante non sono sul server e non esce. Offline dice che serve la rete, e copia, cookie e sessione restano. Con un'altra scheda sulla copia, la sessione si chiude e la pagina dice che la copia non è stata cancellata. L'uscita normale da una scheda mentre l'altra ha una conferma in volo: sessione chiusa, niente dell'account nel browser per tutta la finestra, anche dopo la risposta tardiva, e l'altra scheda senza account. Da P-43: un `401` all'uscita pulisce la copia senza dire che serve la rete; con la sessione revocata e una risposta non inviata la fa scaricare e cancella solo dopo «Ho conservato il file…», senza mandarla a nessun account; «Esci da tutti i dispositivi» chiude ogni sessione sul server e qui la copia, e l'altro dispositivo lo scopre con un `401` e tiene la sua. |
 | C-07 | **fatto** (P-43) | Posta del banco che rifiuta: la frase del `503`, l'account che salva, la scadenza del server dal primo momento — l'orologio del server è tre giorni avanti, così una scadenza del browser cade in un altro giorno — e dopo una ricarica; il rinvio rifiutato senza successo, quello accolto con la mail. Il link aperto in un'altra scheda: frammento tolto, email confermata sul server, l'avviso che sparisce nell'altra scheda, il gettone in nessuno storage; il link usato e quello scaduto lo dicono. |
 | C-08 | **fatto** (P-43) | Password corta e comune: il `messaggio` del server — chiesto dal banco allo stesso server — accanto al campo, con l'email ancora scritta. La stessa frase per email ignota e password sbagliata; al sesto tentativo il `429` del server vero, con l'attesa del `Retry-After`; un `403` finto con il suo messaggio e «Reimposta la password». Recupero: la frase condizionale per iscritto e non iscritto, il link della password con il gettone tenuto dopo un `422`, le sessioni di prima chiuse, la domanda su un account appena confermato e nessuna cancellazione da sola; il link scaduto dopo un'ora e un minuto. |
-| C-09 | **fatto** (P-43) | L'archivio di prima scritto nel browser prima del primo carico, IndexedDB e `pn.archivio` con un uid in comune. Avviso con l'unione, file scaricato con tutte, domanda all'accesso, niente prima del sì, poi tutte sul server; Info lo dice; l'archivio resta; dopo una ricarica niente avviso, e una riga nuova a conteggio uguale lo riaccende. «Più tardi» senza scritture, e l'avviso che torna. Una lettura fallita — `IDBFactory.open` che lancia, iniettato prima del carico — detta, con l'archivio intatto. Nel regime di oggi: aprire la palestra non perde l'archivio. |
+| C-09 | **tolto** (P-60), con il passaggio: ADR-005, e C-21 al suo posto. *Il testo di prima:* | L'archivio di prima scritto nel browser prima del primo carico, IndexedDB e `pn.archivio` con un uid in comune. Avviso con l'unione, file scaricato con tutte, domanda all'accesso, niente prima del sì, poi tutte sul server; Info lo dice; l'archivio resta; dopo una ricarica niente avviso, e una riga nuova a conteggio uguale lo riaccende. «Più tardi» senza scritture, e l'avviso che torna. Una lettura fallita — `IDBFactory.open` che lancia, iniettato prima del carico — detta, con l'archivio intatto. Nel regime di oggi: aprire la palestra non perde l'archivio. |
 | C-10 | **fatto** (P-43) | Un file illeggibile; senza account niente parte e niente resta. Con un file del nome di prima, un tag senza data, un uid doppio, una data rotta e un quesito che non c'è: l'anteprima con i conteggi del motore, niente prima del clic, poi le righe valide sul server, gli scarti scaricati, i Segnali per massimo, e la seconda importazione che non cambia niente. Una partita offline «da inviare» che, dopo una ricarica con la rete, arriva. |
 | C-12 | **fatto** (P-43) | 2.500 righe da un chilo e mezzo, 3,7 MiB, importate da un file: tutte sul server, in più invii. Un `413` finto che si legge e non dice «salvate», poi «Riprova l'invio». 5.200 righe ricevute in più pagine; poi tre righe di un altro dispositivo e una risposta qui: la conferma dell'invio non sposta il cursore, e arrivano. |
 | C-13 | **fatto** (P-43) | Scoperto inviando, con la ricezione che non passa: quante risposte non salvate, le tre scelte, niente che rientri né riparta per la finestra intera, la perdita confermata, la copia vuota, poi una risposta nuova che entra da sola. Scoperto ricevendo, dopo una ricarica: «Carica il nuovo archivio», la copia ferma prima della scelta; «Decidi più tardi», una risposta, «Scegli adesso» che la conta. |
@@ -1346,7 +1361,7 @@ per il banco; le parti che non vedrà sono scritte accanto.
 |---|---|---|
 | C-07 | la posta del banco che rifiuta (`503`), i gettoni letti dalle mail del banco, il frammento `#verifica=` e `history.replaceState`, la scadenza scritta dal primo momento | la mail vera, lo spam |
 | C-08 | `422`, `401`, `403`, `429` dal server vero o finti, il recupero con il gettone della mail | incolla e autofill: il gesto vero e il gestore di password sono del collaudo |
-| C-09 | un archivio di prima scritto nel contesto prima del primo carico (IndexedDB `open-patente-nautica` e `pn.archivio`), una lettura fallita | un archivio vero di anni: è P-27 (R-ACC-05) |
+| ~~C-09~~ | un archivio di prima scritto nel contesto prima del primo carico (IndexedDB `open-patente-nautica` e `pn.archivio`), una lettura fallita — tolto da P-60 | un archivio vero di anni: era P-27 (R-ACC-05 di allora) |
 | C-10 | un file dato al campo con `DOM.setFileInputFiles`, i Segnali per massimo sul server | — |
 | C-12 | più di 2.000 righe e più di 2 MiB, un `413` finto, più di 5.000 righe da ricevere | il tempo di un archivio grande su un telefono |
 | C-13 | un azzeramento dal banco con la generazione nuova, scoperto inviando e ricevendo | — |
@@ -1493,8 +1508,9 @@ pagine. Tutti e due i rossi, ora, dicono che cosa c'era in schermata.
 
 **Quello che il banco non vede** ha ora righe sue nella specifica, scoperte con
 il motivo: R-ACC-59 Safari e i sottodomini veri, R-ACC-60 il gesto vero,
-R-ACC-61 la mail vera, R-ACC-62 un archivio di prima vero, R-ACC-63 le scelte
-che nessun gruppo preme.
+R-ACC-61 la mail vera, R-ACC-62 un archivio di prima vero — uscito con il
+passaggio il 3 ottobre 2026 (ADR-005) —, R-ACC-63 le scelte che nessun gruppo
+preme.
 
 ### Le tre scelte (P-46, 30 settembre 2026)
 
@@ -1785,6 +1801,103 @@ dalla stessa `moduloRegistrazione()`; che la frase sia letta, e detta da un
 lettore di schermo; la vicinanza al pulsante, oltre al «prima»; il contenuto
 delle condizioni, che è del gate dell'autore; le larghezze diverse da 375 px;
 la sorte delle risposte quando il link si apre nella stessa scheda; Safari.
+
+### L'offline se ne va (P-60, 3 ottobre 2026)
+
+L'ADR-005 ha tolto anche l'offline. **Esce la parte offline di C-01** — il
+guscio in cache alla prima visita, poi la stessa attività con il sito spento e
+la scheda offline, fino alla revisione — con le due rotture che la tenevano
+accesa, «la banca chiesta fuori dal guscio» e «il service worker mai
+registrato»: C-01 passa da 34 a 28 verifiche. La pagina di riferimento non
+registra più un service worker. In C-02 una voce di Cache Storage era permessa
+se stava nel guscio di `sw.js`; il guscio non c'è più, ed è permessa se è un
+file del sito — una risposta di chi studia in una cache resta rossa, e che una
+cache non ci sia proprio lo pretende C-22.
+
+**C-22**, in due parti, tiene R-ARCH-15:
+
+| Parte | Che cosa fa il banco | Che cosa pretende |
+|---|---|---|
+| `C-22:pagina` | Un browser nuovo, la palestra dalla rete, con uno strumento nella scheda che registra ogni `register()` e ogni `caches.open()` | Nessuna di quelle chiamate, e per tutta la finestra d'osservazione nessun service worker registrato e nessuna cache, letti dalla pagina |
+| `C-22:passaggio` | Il sito della 0.29.0 preso dal tag con `git archive`, servito sulla stessa origine: la palestra, il suo service worker attivo con il guscio in cache, una ricarica servita da lui, un segno nella scheda. Poi al suo posto la versione nuova — la pagina sotto esame e `site/` — e una visita in un'altra scheda | Il `sw.js` nuovo cancella le cache e si disinstalla; la scheda con il segno non è ricaricata né portata altrove; una terza visita arriva dalla rete senza controller; e poi nessun service worker e nessuna cache |
+
+Il banco sa ora servire un'altra radice al posto di `site/` (`ctx.radice()`),
+e una pagina del sito sostituita con il tipo della sua estensione, perché un
+service worker servito come HTML il browser non lo installa; con la radice
+della 0.29.0 le sostituzioni non valgono, così una rottura di `sw.js` tocca
+solo la versione nuova.
+
+**Sulla pagina vera è un difetto aperto dichiarato**: misurato il 3 ottobre
+2026, la pagina registra `/sw.js` e apre lei stessa una cache `rg-0.29.0` alla
+prima visita, e alla visita dopo il passaggio lo rifà. **Lo stato da solo non
+bastava a vederlo**: con il `sw.js` nuovo la registrazione dura pochi
+millisecondi, e due giri su tre il banco guardava dopo e trovava tutto pulito —
+è stato il giro intero della suite a darne il primo rosso. Per questo la
+verifica legge le chiamate, con uno strumento nella scheda come quello di C-21;
+lo stato resta accanto. Ne viene anche una misura per la regia: con il `sw.js`
+nuovo pubblicato, il service worker che la pagina di oggi registra se ne va da
+sé in pochi millisecondi; la cache vuota che la pagina apre resta (tre giri,
+in Chrome, il 3 ottobre 2026). I quattro passi del passaggio prima di quella verifica sono
+verdi anche sulla pagina vera, ed è giusto: sono del `sw.js`. Il controllo
+pretende che lo siano, e che la verifica dichiarata sia rossa almeno nella
+prima parte. **Per P-61** il contratto è nel §3.5 della specifica, «Per P-61».
+
+**Sei rotture**, tutte rosse nella verifica che le riguarda: la pagina che
+registra il service worker, quella che apre una cache, e quattro `sw.js` —
+uno che ricarica le pagine aperte, uno che non si disinstalla, uno che lascia
+le cache, e quello della 0.29.0 rimasto pubblicato. Alla prima stesura quella
+che ricarica era rossa per il motivo sbagliato: un `navigate()` che lanciava
+fermava il service worker prima che si disinstallasse; riscritta, ricarica
+davvero e se ne va.
+
+**Che cosa non vede:** Safari e Firefox; un browser che torna dopo mesi; la
+cache HTTP del browser, che decide l'host (§3.5 della specifica, misurato con
+`curl`); `.pages.dev` dietro il redirect di D2.
+
+### L'archivio di prima resta dov'è (P-60, 3 ottobre 2026)
+
+L'ADR-005 ha tolto il passaggio del §7. **C-09 esce**, con le sue sette
+rotture, e la pagina di riferimento non ha più il passaggio. **C-21** prende il
+suo posto e tiene fermo R-ACC-05 nella forma nuova: la pagina non legge e non
+cancella l'archivio di prima.
+
+| Parte | Che cosa fa il banco | Che cosa pretende |
+|---|---|---|
+| `C-21:senza` | Da un'altra scheda, `/privacy`, scrive quattro righe nel database `open-patente-nautica` (archivio `righe`, chiave `uid`), due in `pn.archivio` e una data in `pn.esame`; apre `/app` con uno strumento che gira prima della pagina; un'attività fino al riepilogo, il Percorso, Info, una ricarica | Nessun `open` né `deleteDatabase` di quel database, nessun `getItem`, `setItem`, `removeItem` delle chiavi `pn.` né `clear` di `localStorage`, all'avvio e dopo la ricarica; nessuna delle frasi del passaggio nel testo visibile del Percorso e di Info; l'archivio, riletto dall'altra scheda, uguale byte per byte |
+| `C-21:conto` | Lo stesso archivio, poi l'accesso a un account vuoto dall'intestazione, e «Esci» | Lo stesso strumento all'accesso e all'uscita; nessuna frase dopo l'accesso; per la finestra intera nessuna riga nell'account, letto nel database del server; dopo l'uscita l'archivio uguale byte per byte |
+
+Lo strumento è un `Page.addScriptToEvaluateOnNewDocument` della sola scheda
+della palestra, che avvolge i metodi di `IDBFactory.prototype` e di
+`Storage.prototype` e tiene il registro in `window.__archivioDiPrima`; la
+scheda che scrive e rilegge l'archivio non lo ha. Le frasi cercate sono
+un'espressione: «prima degli account», «copia precedente», «archivio
+precedente», «risposte già presenti in questo browser».
+
+**Sulla pagina vera è un difetto aperto dichiarato** in
+`docs/eccezioni-interfaccia.md`: misurato il 3 ottobre 2026, tutte e due le
+parti arrivano alla verifica dello strumento con i passi prima verdi, e lì
+sono rosse per «localStorage.getItem pn.archivio, IndexedDB.open
+open-patente-nautica», all'avvio. Il controllo pretende che lo siano tutte e
+due e per quel motivo; tolta la riga, il gruppo gira intero con le sue 17
+verifiche. **Per P-61:** togliere `leggiVecchio()`, `mostraVecchio()`, i loro
+chiamanti, `NOME_VECCHIO_DB`, `S.vecchio*`, `S.portaVecchio`, `#vecchio-avviso`,
+`#vecchio-info`, il segno `migrazione-vecchio` nella copia dell'account e la
+lettura di `pn.esame`; e la riga C-21 nello stesso commit. `test_rinomino`
+ammette il nome del database in `site/` soltanto finché quella riga c'è.
+
+**Sei rotture** della pagina di riferimento, ognuna rossa in una verifica sola:
+la lettura di `pn.archivio` all'avvio, l'apertura del database all'accesso, la
+cancellazione all'uscita — lo strumento —; una cancellazione con
+`delete localStorage['pn.archivio']`, che lo strumento non vede e l'archivio
+riletto sì; un avviso costruito da `indexedDB.databases()`, che il testo
+visibile prende; e le righe lette con `{ ...localStorage }` e portate
+nell'account all'accesso, che prende il database del server. Nelle ultime tre
+lo strumento è verde: è la prova che le altre difese servono.
+
+**Che cosa non vede:** una lettura per enumerazione che resta nella pagina
+senza diventare un avviso o una riga sul server; `indexedDB.databases()` da
+solo; chiavi della versione di prima senza il prefisso `pn.`; Safari; un
+archivio vero di mesi.
 
 ## 13. Evidenze e limiti di P-13
 

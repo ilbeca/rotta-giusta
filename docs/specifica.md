@@ -169,7 +169,8 @@ conservano fino a due anni di inattività**, poi, dopo un avviso, si cancellano.
 ### 2.3 Che cosa si perde
 
 Non sono effetti collaterali: sono il prezzo, e si paga tutto. Le prime tre
-perdite toccano chi si registra, la quarta chi non lo fa.
+perdite toccano chi si registra, la quarta chi non lo fa, la quinta chi
+studiava prima degli account, la sesta tutti.
 
 1. **Una garanzia che non dipendeva da nessuno.** «Le risposte non arrivano a
    nessuno» era vero per costruzione: non esisteva un posto dove mandarle, e
@@ -191,6 +192,19 @@ perdite toccano chi si registra, la quarta chi non lo fa.
    prima, senza chiedere niente. Senza account, da quando arrivano gli account,
    non resta niente oltre la pagina aperta. È la perdita che l'autore ha scelto
    apposta, perché il salvataggio è ciò che l'account offre (ADR-004).
+5. **Per chi aveva risposte nel browser prima del 3 ottobre 2026, e non le ha
+   portate né scaricate, quelle risposte** — dall'ADR-005, che toglie il
+   passaggio dell'archivio di prima. Non si cancellano: restano nel suo
+   browser, e la pagina non le legge, non le mostra e non lo dice. Quante
+   siano queste persone non si sa. È una perdita scoperta dopo, scelta
+   apposta, e l'ADR-005 dice perché e con quali frasi di `docs/filosofia.md`
+   è in tensione.
+6. **L'offline, per tutti** — dall'ADR-005. Senza rete il sito non si apre,
+   nemmeno dall'icona sulla schermata Home e nemmeno con l'account; «anche in
+   barca» esce dalla vetrina. Una pagina già aperta continua, e con l'account
+   quello che si risponde senza rete resta nella copia del dispositivo e parte
+   quando la rete torna (§3.2). In cambio sparisce la seconda ricarica dopo un
+   rilascio.
 
 **E un imbuto, più piccolo di quello dell'ADR-003 ma vero:** per salvare bisogna
 registrarsi. L'ADR-004 lo sposta dal primo quesito alla fine della prima
@@ -203,17 +217,19 @@ suoi dati. E di chi non si registra non resta niente, da nessuna parte.
 
 ### 2.4 Come si entra — Deciso il 25 settembre 2026 (ADR-004)
 
-Chi arriva fa il primo quesito **senza account**, con l'offline che funziona
-dalla prima visita. L'ADR-003 aveva scelto la registrazione obbligatoria per
-usare il sito; l'ADR-004 la sostituisce, perché nessuna delle tre aspettative
-dell'ADR-003 la richiedeva e il suo costo cadeva sul primo ingresso (§7.1).
+Chi arriva fa il primo quesito **senza account**. Fino al 3 ottobre 2026
+l'offline funzionava dalla prima visita; l'ADR-005 l'ha tolto (§3.5). L'ADR-003
+aveva scelto la registrazione obbligatoria per usare il sito; l'ADR-004 la
+sostituisce, perché nessuna delle tre aspettative dell'ADR-003 la richiedeva e
+il suo costo cadeva sul primo ingresso (§7.1).
 
 Senza account i Progressi non ci sono, e **non è un ricatto**: sono misure su
 uno storico, e senza salvataggio lo storico non esiste. Il ricatto sarebbe stato
 salvare le risposte nel browser e nasconderne le misure; è l'alternativa
 scartata dall'ADR-004.
 
-Quattro condizioni fanno parte della decisione, e sono R-ACC-02…05 nel §9.9:
+Quattro condizioni fanno parte della decisione, e sono R-ACC-02…05 nel §9.9.
+La quarta l'ha sostituita l'ADR-005, il 3 ottobre 2026:
 
 1. **Senza account si dice che non resta niente**, prima di cominciare e alla
    fine di ogni attività.
@@ -223,8 +239,14 @@ Quattro condizioni fanno parte della decisione, e sono R-ACC-02…05 nel §9.9:
 3. **Senza account non si toglie niente apposta**: tutte le attività, con
    riepilogo e revisione della sessione. Ai registrati restano solo le viste che
    vivono di uno storico.
-4. **Un archivio che esiste già non sparisce in silenzio**: chi ha le risposte
-   nel browser il giorno del rilascio le porta nell'account o le scarica.
+4. **L'archivio di prima degli account resta nel browser, e la pagina non lo
+   guarda** (ADR-005): non lo legge, non lo cancella, non ne dice niente, e
+   niente ne passa nell'account. Fino al 3 ottobre 2026 la condizione era
+   l'opposto — «un archivio che esiste già non sparisce in silenzio: chi ha le
+   risposte nel browser il giorno del rilascio le porta nell'account o le
+   scarica» —, e la v0.29.0 l'ha rispettata con un passaggio; l'autore l'ha
+   tolto lo stesso giorno, con il criterio che per chi arriva dalla v0.29.0
+   l'esperienza non cambia. Il prezzo è la perdita 5 del §2.3.
 
 **Deciso il 25 settembre 2026, dall'autore:** chi si registra passa da un
 **onboarding**, che raccoglie fra l'altro la data d'esame. La data vi resta
@@ -237,9 +259,10 @@ Q-ONBOARD nel §10.
 **Deciso il 26 settembre 2026, dall'autore:** senza account nel browser **non
 resta niente, nemmeno le preferenze** — filtri, modalità automatica, ordine
 della diagnosi. La proposta di tenerle, perché non sono risposte, è stata
-scartata: la promessa si legge alla lettera. Restano soltanto la cache del sito,
-che non contiene niente di chi studia, e l'archivio di prima degli account
-finché chi l'ha non sceglie (R-ACC-05). R-ACC-09. Il come di tutto il §2 sta in
+scartata: la promessa si legge alla lettera. Dall'ADR-005 non resta nemmeno la
+cache del sito, che non conteneva niente di chi studia (R-ACC-09, R-ARCH-15). L'archivio di prima degli
+account, se c'è, è nel browser per conto suo: la pagina non lo scrive, non lo
+legge e non lo cancella (R-ACC-05, ADR-005). Il come di tutto il §2 sta in
 `docs/account-progetto.md`.
 
 ### 2.5 Le parti di questo documento riscritte per i due stati
@@ -255,8 +278,8 @@ pagina), e P-26 ha riscritto le parti per i due stati. Che cosa è cambiato:
   Il §3.2 non dice più «l'unica copia» — senza account di copie non ce n'è
   nessuna, con l'account ce ne sono due, sul server e nel dispositivo, unite
   per `uid` —, e non dice più che l'app ripiega su `localStorage`. Il §3.3 e il
-  §3.4 aggiungono la ricezione dal server; il §3.5 dice che l'API non entra
-  nel guscio.
+  §3.4 aggiungono la ricezione dal server; il §3.5 diceva che l'API non entra
+  nel guscio, e dall'ADR-005 dice che il guscio non c'è.
 - **§4.5**, i punteggi dei Segnali: non stanno più in `localStorage`, ma in
   memoria senza account e nel profilo sul server con l'account. Non era
   nell'elenco, ed era falso anche lui.
@@ -377,13 +400,22 @@ dedotti (§4.4).
   un'attività, le righe di tutte le attività della pagina salgono sull'account
   (R-ACC-43).
 - **Con l'account, sul server e nel dispositivo.** Il server le conserva in
-  chiaro, byte per byte (§3.7, R-ACC-12). Il dispositivo ne tiene una copia per
-  l'offline, in un database IndexedDB per account, `rg-account-<chiave_locale>`,
+  chiaro, byte per byte (§3.7, R-ACC-12). Il dispositivo ne tiene una copia, in
+  un database IndexedDB per account, `rg-account-<chiave_locale>`,
   con righe e coda scritte nella stessa transazione (R-ACC-45). Le due copie si
   uniscono per `uid` (R-ACC-06): le righe non si modificano, quindi nessuna è in
   conflitto e nessuna vince. Una riga esce dalla coda solo quando il server la
   nomina (R-ACC-13), e la si dice salvata solo allora (R-ACC-39). All'uscita, la
   copia del dispositivo si cancella (R-ACC-46).
+
+**Perché la copia del dispositivo c'è, senza offline.** Fino al 3 ottobre 2026
+serviva anche ad aprire il sito senza rete, con il guscio del service worker.
+L'ADR-005 ha tolto l'offline, e la copia resta com'è, per due ragioni che non ne
+dipendevano: è **la coda**, che tiene le risposte date mentre la rete è caduta a
+pagina aperta e le manda quando torna, e una ricarica non le perde; ed è dove
+vive **la bozza del carteggio** (§7.6), che regge una ricarica a metà prova. Il
+sito non si apre senza rete; quello che si è risposto prima che la rete cadesse
+non si perde.
 
 Fino alla v0.28.1 questa sezione diceva «l'unica copia», ed era la ragione per
 cui cambiare telefono perdeva tutto. Oggi senza account di copie non ce n'è
@@ -414,13 +446,16 @@ stesse righe per gli stessi motivi. Le righe di tag (`_t: 'g'`) scritte prima
 del 26 settembre 2026 sono le sole senza `ts`, e fino a quel giorno ogni import
 le scartava (R-ACC-08); da P-01 i tag nascono con la data.
 
-**Il database di prima si chiama ancora `open-patente-nautica`**, anche dopo il
-rinomino del progetto. È l'archivio che chi studiava prima degli account ha nel
-browser: la pagina lo legge soltanto, per proporre di portarlo nell'account o
-di scaricarlo, e non lo cancella da sola (R-ACC-05). Rinominarlo farebbe
-cercare un database che non c'è, e ogni risposta di prima sparirebbe dalla
-proposta **senza un errore**. È l'unica eccezione ammessa al rinomino, ed è
-dichiarata da un test.
+**Il database di prima si chiama `open-patente-nautica`**, il nome del progetto
+fino alla 0.19.2. È l'archivio che chi studiava prima degli account ha nel
+browser, con il ripiego `pn.archivio` in `localStorage` e le altre chiavi `pn.`
+della versione di prima. **Dall'ADR-005 la pagina non lo apre, non lo legge e
+non lo cancella** (R-ACC-05): restano nel browser di chi le ha. Fino al 3
+ottobre 2026 la pagina lo leggeva per proporre di portarlo nell'account, e per
+questo il nome non si rinominava: cercare un database che non c'è avrebbe fatto
+sparire ogni risposta di prima dalla proposta **senza un errore**. Il motivo è
+uscito con il passaggio; resta che quel nome non si riusa, e in `site/` non
+compare più dal giorno in cui la pagina smette di leggerlo (R-ARCH-07).
 
 ### 3.3 Lo specchio — in memoria, **non si salva mai**
 
@@ -456,41 +491,73 @@ togliere, dove spostare il cursore, che cosa fare di una generazione diversa —
 è anche lei nel motore, logica pura (`account-progetto.md` §16.1); la pagina fa
 solo il trasporto.
 
-### 3.5 Il guscio offline
+### 3.5 Niente offline — Deciso il 3 ottobre 2026 (ADR-005)
 
-Service worker cache-first, perché la banca è immutabile. Due cose che sono già
-costate:
+**Il sito si apre con la rete, e basta.** Fino alla v0.29.0 c'era un service
+worker cache-first, con un guscio scritto in due posti, una cache per rilascio,
+le 102 figure da scaricare con un pulsante e portate da un rilascio all'altro,
+un'autodiagnosi in Info, e la **seconda ricarica** dopo ogni rilascio. L'ADR-005
+li ha tolti per semplicità; il prezzo — senza rete il sito non si apre — è
+scritto lì e nel §2.3.
 
-- **Il guscio è scritto in due posti** — `GUSCIO` in `sw.js` e in `app.html` — e
-  devono restare identici. C'è un test.
+- **La pagina non registra un service worker e non apre una cache**
+  (R-ARCH-15). Le pagine e la banca arrivano dalla rete, con la cache del
+  browser: statichost.eu le serve con `Cache-Control: public, max-age=0,
+  must-revalidate`, un ETag e un `Last-Modified`, e risponde **304** quando il
+  file è quello di prima — misurato il 3 ottobre 2026 su `/`, `/app`,
+  `/engine.js`, `/dati/*.json`, `/figure/*`, `/manifest.json` e `/privacy`, con
+  `If-None-Match` e con `If-Modified-Since`. Quindi una pagina e la banca
+  arrivano fresche a ogni visita, e un rilascio si prende con **una** ricarica.
+  `strumenti/serve.py` riproduce la riconvalida con la data (R-ARCH-12).
+- **`site/sw.js` si toglie di mezzo** (R-ARCH-16, R-ARCH-17, R-ARCH-18). Chi
+  ha visitato la 0.29.0 ha il suo service worker, che serve la pagina dalla
+  cache: senza un file nuovo a quell'indirizzo resterebbe sulla 0.29.0 per
+  sempre. Il file nuovo, quando il browser lo trova, si installa al posto di
+  quello vecchio, cancella le cache del sito e si disinstalla; non ricarica le
+  pagine aperte — senza account una ricarica perde le risposte —, non ha un
+  gestore di `fetch` e non apre una cache. **Resta pubblicato almeno fino al 3
+  ottobre 2028** (ADR-005), e lo toglie un prompt della regia.
+  `site/_headers` lo tiene in `Cache-Control: no-cache`.
 - **Gli indirizzi sono quelli puliti, non i nomi dei file**: `/privacy`, mai
   `/privacy.html`. La regola è nata sull'host precedente, Cloudflare Pages, che
-  rispondeva **308** al percorso con l'estensione: una risposta rediretta in
-  cache **non si può servire a una navigazione**, e la pagina moriva con
-  `ERR_FAILED` anche online (0.19.2). statichost.eu serve entrambe le forme con
-  200, quindi oggi quel guasto non può succedere — e la regola **resta** per
-  questo: è lei che rende il sito indifferente all'host. Due test la tengono
-  ferma, e `strumenti/serve.py` riproduce in locale l'host di **oggi**, misurato,
-  non quello di ieri.
-- **L'API non entra nel guscio.** Sta su un'altra origine, `api.rottagiusta.it`,
-  e il service worker ignora le richieste verso le altre origini: nessuna
-  risposta dell'API finisce in cache. Senza account la cache contiene il sito e
-  la banca, e nessuna risposta di chi studia (R-ACC-09).
+  rispondeva **308** al percorso con l'estensione: una risposta rediretta nella
+  cache del service worker **non si poteva servire a una navigazione**, e la
+  pagina moriva con `ERR_FAILED` anche online (0.19.2). Non c'è più né
+  quell'host né quella cache, e la regola **resta**: è lei che rende il sito
+  indifferente all'host. Un test la tiene ferma (R-ARCH-05), e
+  `strumenti/serve.py` riproduce in locale l'host di **oggi**, misurato.
+- **Le figure** si caricano quando un quesito le mostra, come ogni altra
+  immagine: niente pulsante, niente cache sua.
 
-Le figure si scaricano con un pulsante, apposta: sono 102 file. **E si scaricano
-una volta sola**: a ogni rilascio l'`activate` le copia dalla cache vecchia a
-quella nuova prima di cancellarla. Solo le figure, che sono l'Allegato A e non
-cambiano; la banca e le pagine si riprendono dalla rete all'install. La cache
-resta una sola, perché la pagina la cerca con `startsWith('rg-')` e prende la
-prima che trova. Fino alla 0.26.0 le figure si perdevano a ogni rilascio
-(R-ARCH-10, R-ARCH-11).
+**Per P-61, la pagina** (ChatGPT, `ui/main`; il contratto, che i controlli del
+§9 tengono):
 
-### 3.6 La versione, in tre posti
+- in `site/app.html`: via la registrazione di `/sw.js`; via `GUSCIO`, il
+  pulsante «Scarica tutto per l'offline», l'autodiagnosi offline di Info con le
+  sue righe e la parte del pallino ambra che la riguarda — il pallino resta per
+  una scrittura fallita (R-STA-05) —, ogni `caches.open` e ogni ricerca di una
+  cache `rg-`; la versione in Info si legge da `meta.json`, non dalla cache;
+- ogni testo che promette l'offline o la seconda ricarica — la vetrina («anche
+  in barca», le spunte dell'offline), la palestra, Info, la privacy se nomina
+  la cache del service worker — dice il sito di adesso; la frase della
+  conservazione con l'account diventa quella del §11.2 del progetto del client;
+- `site/_headers`: resta la regola di `/sw.js`, e il commento che dice «il resto
+  lo governa sw.js, cache-first» diventa vero: il resto lo governa l'host, con
+  `max-age=0, must-revalidate` e il 304. Nessuna regola nuova serve — misurato;
+- `site/manifest.json`: resta com'è — `start_url`, `scope`, le icone (R-ARCH-06):
+  l'icona sulla schermata Home apre il sito, e senza rete non si apre, come il
+  sito;
+- `site/sw.js` non si tocca: è questo;
+- le righe C-21 e C-22 dei «Difetti aperti dichiarati» di
+  `docs/eccezioni-interfaccia.md` escono nello stesso commit.
 
-`VERSION`, `CACHE` in `site/sw.js`, `versione` in `site/dati/meta.json`. Nessuno
-la sostituisce al volo: se uno dei tre resta indietro la suite è rossa. Dopo un
-rilascio ogni dispositivo prende la versione nuova alla **seconda** ricarica, e
-la schermata Info dice quale cache è installata.
+### 3.6 La versione, in due posti
+
+`VERSION` e `versione` in `site/dati/meta.json`. Nessuno la sostituisce al
+volo: se uno dei due resta indietro la suite è rossa (R-ARCH-03). Fino al 3
+ottobre 2026 erano tre, con il nome della cache in `site/sw.js`; dall'ADR-005
+la cache non c'è, e `sw.js` non porta una versione. Dopo un rilascio basta
+**una** ricarica.
 
 Il server degli account legge `VERSION` dal tag che gira e la dice in `GET
 /v1/salute`, ma non la scrive nelle pagine: le pagine e il server si aggiornano
@@ -821,7 +888,7 @@ site/engine.js    tutta la selezione e tutte le statistiche. Logica pura.
                   Se una regola di scelta o un numero derivato non è qui, è nel
                   posto sbagliato.
 site/app.html     una pagina sola: DOM, archivio, runner, disegno.
-site/index.html   la vetrina, fuori dal guscio offline.
+site/index.html   la vetrina.
 ```
 
 ---
@@ -901,9 +968,9 @@ il controllo esegue (R-NAV-04).
 | Accedi / Account | intestazione, e da Info | «Accedi» senza account, «Account» con: email, verifica, stato dell'invio, data d'esame, trasferimenti, uscita, azzeramento, cancellazione |
 | «Senza account non resta niente» | accanto a ogni avvio senza account, e nel riepilogo | R-ACC-02 |
 | L'invito a registrarsi | nel riepilogo di un'attività senza account, e in nessun altro posto | Con i vantaggi che esistono; «Continua senza account» lo chiude (R-ACC-03) |
-| L'archivio di prima degli account | Rotta, prima delle attività, e Info | Le risposte trovate nel browser si portano nell'account o si scaricano; non si cancellano da sole (R-ACC-05) |
+| ~~L'archivio di prima degli account~~ | da nessuna parte, dall'ADR-005 | Fino al 3 ottobre 2026 un avviso nel Percorso e una porta in Info le proponevano di portarle nell'account o di scaricarle. Il passaggio è uscito: la pagina non le legge, non le cancella e non ne dice niente (R-ACC-05). Chi ha un file esportato lo carica nell'account dalla riga «Scarica / ricarica» |
 | Lo stato dell'invio | Account e Info | Da inviare, in corso, confermate, non accolte con il motivo: dalla coda del motore, non da un conto della pagina |
-| Autodiagnosi offline | Info | Apre ogni voce del guscio e guarda che sia *servibile*, non che la chiave esista |
+| ~~Autodiagnosi offline~~ | da nessuna parte, dall'ADR-005 | Apriva ogni voce del guscio e guardava che fosse *servibile*; il guscio non c'è più (§3.5) |
 | Pallino ambra dei guasti | sulla voce Info, visibile da ogni schermata | R-STA-05 |
 | Tag N/L/C sugli errori | runner e riepilogo | Un tag per tentativo |
 | Revisione di una sessione | riepilogo di ogni attività; con l'account anche Progressi e Carteggio | La tua risposta accanto a quella esatta. Senza account si rivedono le attività della pagina aperta |
@@ -990,8 +1057,9 @@ parte, con l'account nel tuo account e in questo dispositivo.
   quota o semaforo da storico, perché uno storico non c'è. Il motore può usare
   le righe della pagina aperta per scegliere l'attività dopo; questo non le
   rende uno storico (`account-client-progetto.md` §3.2).
-- *Archivio di prima trovato*: l'avviso di passaggio viene prima delle attività,
-  anche con l'accesso fatto (R-ACC-05).
+- *Archivio di prima nel browser*: non è uno stato della Rotta. Fino al 3
+  ottobre 2026 l'avviso del passaggio veniva prima delle attività; dall'ADR-005
+  la pagina non lo guarda, e la Rotta è quella di chiunque (R-ACC-05).
 - *Con l'account*: gli stati qui sotto, sulle righe dell'account.
 - *Archivio vuoto*: orientamento, **non** una diagnosi a zero. Con archivio vuoto
   e senza data, il prodotto v0.22.1 mostrava tre zeri, «1722 quesiti rimasti ·
@@ -1013,9 +1081,11 @@ Mettere o togliere la data d'esame.
 **Casi limite.** Senza account ogni visita sembra la prima, e la pagina non può
 sapere se lo è: chi ha mesi di risposte nel suo account e non è ancora entrato
 vede la stessa Rotta di chi arriva adesso. Per questo «Accedi» sta
-nell'intestazione, e l'archivio di prima, se c'è, si propone da sé. Con
-l'account, un archivio vuoto non prova che l'account sia nuovo: offrire anche
-l'importazione di un file. Se esistono progressi, non trattare la persona come
+nell'intestazione. Chi ha ancora un archivio di prima degli account nel browser
+vede anche lui la Rotta di chi arriva adesso, e la pagina non glielo dice: è il
+prezzo dell'ADR-005. Con l'account, un archivio vuoto non prova che l'account
+sia nuovo: offrire anche l'importazione di un file, che è la porta rimasta a
+chi aveva scaricato le risposte di prima. Se esistono progressi, non trattare la persona come
 un nuovo candidato.
 
 **Accessibilità.** Le spiegazioni `?` funzionano col mouse **e al tocco** — un
@@ -1210,14 +1280,17 @@ con il tema.
 
 ### 7.8 Info
 
-**Cosa si vede.** La versione che gira su questo dispositivo **e la cache
-installata**, che con un guscio offline possono divergere per giorni.
+**Cosa si vede.** La versione che gira su questo dispositivo, letta da
+`meta.json`. Fino al 3 ottobre 2026 anche la cache installata, che con il guscio
+offline poteva divergere per giorni; l'ADR-005 ha tolto l'una e l'altro.
 L'archivio, nei due stati: senza account le righe della pagina aperta, dette
 come tali; con l'account la copia del dispositivo, lo stato dell'invio — da
 inviare, in corso, confermate, non accolte con il motivo — e la riga «ultima
-scrittura fallita». L'autodiagnosi offline. Le fonti e le anomalie della banca.
-Scarica / ricarica / azzera (§5.4), e la porta dell'archivio di prima degli
-account, anche dopo «Più tardi».
+scrittura fallita». Le fonti e le anomalie della banca. L'autodiagnosi
+offline c'era fino al 3 ottobre 2026 (ADR-005).
+Scarica / ricarica / azzera (§5.4). Fino al 3 ottobre 2026 anche la porta
+dell'archivio di prima degli account, anche dopo «Più tardi»: l'ADR-005 l'ha
+tolta (R-ACC-05).
 
 **Non è più l'unica via di salvataggio.** Fino alla v0.28.1 scaricare il file
 era l'unico modo di non perdere tutto cambiando telefono. Con l'account si
@@ -1240,7 +1313,7 @@ Da disegnare e provare per **ogni** flusso, non solo per quello che va bene.
 | **Vuoto** | Orientamento, non una diagnosi a zero. Senza account è lo stato di ogni apertura; con l'account, un archivio vuoto non prova che l'account sia nuovo. |
 | **Dati parziali** | Dirlo. Sotto le soglie del §4.3 non si mostra la misura, si mostra che non c'è. |
 | **Interruzione** | Con l'account, quello che è stato risposto è nella copia del dispositivo e parte per il server: il numero in schermata deve dirlo, altrimenti sembra lavoro perduto — è già successo. Senza account resta finché la pagina è aperta, e una ricarica lo perde: la pagina l'ha detto prima di cominciare, e non lo nasconde dopo. |
-| **Offline** | Non una promessa generica: lo stato riflette la disponibilità **reale** di guscio, banca e figure, e una voce in cache ma non servibile compare in rosso. |
+| **Offline** | Senza rete il sito non si apre (ADR-005, §3.5), e la pagina non promette il contrario. Una pagina già aperta continua: con l'account una risposta data senza rete resta nella copia del dispositivo e parte quando la rete torna, e il numero da inviare lo dice (R-RIF-02). |
 | **Contenuto mancante** | Una figura indisponibile si dichiara con il perché (base-59), non si lascia un buco. |
 | **Errore di salvataggio** | Avviso in schermata + pallino su Info + riga nella scheda Archivio, che chiede di scaricare i progressi adesso. **Non si spegne mai «per pulizia».** |
 | **Selezione vuota** | «Niente da fare con questa selezione», mai un clic che non produce niente. |
@@ -1280,18 +1353,60 @@ colonna: «scoperto, perché …» è una risposta accettabile, «—» no.
 |---|---|---|
 | R-ARCH-01 | Lo specchio ricalcolato coincide con quello costruito risposta per risposta | `test_engine.mjs::ripiega: dalle righe lo stesso specchio` |
 | R-ARCH-02 | Coperti + da ripassare + mai visti = totale, sempre | `test_engine.mjs::coperti + da_ripassare + mai_visti === totale` |
-| R-ARCH-03 | La versione è una sola, nei tre posti | `test_engine.mjs::la versione e una sola` |
-| R-ARCH-04 | Il guscio di `sw.js` e quello di `app.html` sono la stessa lista | `test_engine.mjs::il GUSCIO di sw.js` |
-| R-ARCH-05 | Nessun percorso del guscio e nessun `href` interno finisce in `.html` | `test_dati.py::test_indirizzi` |
+| R-ARCH-03 | La versione è una sola, nei due posti — `VERSION` e `meta.json` —, con la sua voce nel CHANGELOG, e `sw.js` non ne porta una: fino al 3 ottobre 2026 i posti erano tre, con il nome della cache | `test_engine.mjs::la versione e una sola` |
+| R-ARCH-05 | Nessun `href` interno finisce in `.html`, in nessuna pagina: gli indirizzi puliti rendono il sito indifferente all'host | `test_dati.py::test_sw` |
 | R-ARCH-06 | `start_url` è la palestra, non la vetrina | `test_dati.py::test_indirizzi` |
-| R-ARCH-07 | Il nome del database IndexedDB non cambia col nome del progetto | `test_dati.py::test_rinomino` |
-| R-ARCH-08 | Il prefisso della cache è uno solo, in tutti i punti che lo cercano | `test_dati.py::test_prefisso_cache` |
+| R-ARCH-07 | Il nome del database di prima, `open-patente-nautica`, non si riusa e la pagina non lo nomina: in `site/` compare soltanto nella costante della lettura che l'ADR-005 toglie, e solo finché quella lettura è un difetto aperto dichiarato (C-21 in `docs/eccezioni-interfaccia.md`); tolta la riga, da nessuna parte. Fino al 3 ottobre 2026 diceva che il nome non cambia col nome del progetto, perché la pagina lo cercava per il passaggio | `test_dati.py::test_rinomino` |
 | R-ARCH-09 | I due `<title>` sono diversi, e quello della vetrina nomina la patente | `test_dati.py::test_indirizzi` |
-| R-ARCH-10 | Le figure scaricate per l'offline sopravvivono a un rilascio, nella cache nuova e senza un secondo download | `test_engine.mjs::sw.js: le figure scaricate sopravvivono a un rilascio` |
-| R-ARCH-11 | Da un rilascio all'altro passano solo le figure: la banca e le pagine vengono dalla rete | `test_engine.mjs::sw.js: da un rilascio all` |
-| R-ARCH-12 | `strumenti/serve.py` risponde come l'host di produzione misurato: codici, assenza di redirect, 404, `Cache-Control` da `_headers` | `test_dati.py::test_serve` |
+| R-ARCH-12 | `strumenti/serve.py` risponde come l'host di produzione misurato: codici, assenza di redirect, 404, `Cache-Control` da `_headers`, e il 304 di una riconvalida, che senza service worker è ciò che fa arrivare fresche le pagine e la banca | `test_dati.py::test_serve` |
 | R-ARCH-13 | Di un tentativo vale l'ultimo tag N/L/C, per istante: i tag storici senza data prima di ogni tag datato, UTC e offset locale confrontati come istanti, l'ordine dell'archivio a parità di istante — e un ritag aggiunge una riga, non cancella quella di prima | `test_engine.mjs::tagPerTentativo: i tag storici senza data vengono prima di quelli datati` |
 | R-ARCH-14 | Una riga di tag che `validaRiga()` rifiuterebbe — tag fuori da N/L/C, senza tentativo, data rotta — non sovrascrive il tag buono di un tentativo | `test_engine.mjs::tagPerTentativo: una riga che l archivio non accetterebbe non decide un tag` |
+| R-ARCH-15 | La pagina non registra un service worker e non apre una cache (ADR-005); e un browser con la 0.29.0 installata — servita in locale dal tag, sulla stessa origine — prende la versione nuova, il `sw.js` nuovo cancella le cache del sito e si disinstalla senza ricaricare le pagine aperte, e alla visita dopo, arrivata dalla rete, non c'è nessun service worker e nessuna cache. Guidato in Chrome (C-22). **Difetto aperto dichiarato sulla pagina vera** finché P-61 non toglie la registrazione | `test_interfaccia.py::test_client_offline` |
+| R-ARCH-16 | `sw.js`, eseguito com'è pubblicato contro una Cache Storage con quello che la 0.29.0 lascia: salta l'attesa, cancella tutte le cache del sito e poi si disinstalla | `test_engine.mjs::sw.js: si toglie di mezzo` |
+| R-ARCH-17 | `sw.js` non forza la ricarica delle pagine aperte — niente `clients.claim()`, `matchAll()` né `navigate()` —, non ha un gestore di `fetch` e non apre una cache; e se una cache non si cancella, si disinstalla lo stesso | `test_engine.mjs::sw.js: non forza la ricarica` |
+| R-ARCH-18 | `site/sw.js` resta pubblicato, senza guscio, senza nome di cache e senza gestore di `fetch`, e si disinstalla: almeno fino al 3 ottobre 2028 (ADR-005) | `test_dati.py::test_sw` |
+
+**L'offline se ne va (P-60).** L'ADR-005 ha tolto l'offline, e con lui
+escono cinque requisiti e i loro controlli, e i loro numeri non si riusano.
+**Che cosa tenevano fermo, e chi se ne accorgerebbe senza.** Il guscio uguale in
+`sw.js` e in `app.html` (`il GUSCIO di sw.js`, nel motore): senza,
+l'autodiagnosi avrebbe detto «pronto per l'offline» con un buco dentro; senza
+guscio non c'è niente da tenere uguale. Il prefisso della cache uno solo
+(`test_prefisso_cache`): senza, Info avrebbe detto la versione sbagliata;
+senza cache Info la legge da `meta.json`. Le figure che passano da un rilascio
+all'altro, e soltanto loro (tre test del motore su `sw.js`): senza, chi
+studiava in barca avrebbe riscaricato 102 file a ogni rilascio; senza cache le
+figure arrivano quando un quesito le mostra. L'autodiagnosi offline era
+scoperta, e non era mai stata eseguita. E la parte offline di R-ACC-01, in
+C-01, con le due rotture che la tenevano accesa — la banca chiesta fuori dal guscio, il service
+worker mai registrato. Nessuno se ne accorgerebbe, perché non c'è più niente da
+rompere: è il motivo per cui escono invece di restare verdi a vuoto. **Entrano**
+R-ARCH-15…18. R-ARCH-15 è **C-22** nel banco del client, in due parti: la
+pagina che non registra un service worker e non apre una cache — uno strumento
+nella scheda registra ogni `register()` e ogni `caches.open()`, e accanto si
+guarda lo stato per tutta la finestra d'osservazione: lo stato da solo, misurato
+il 3 ottobre 2026, mancava la pagina vera due giri su tre, perché il `sw.js`
+nuovo si disinstalla in pochi millisecondi —; e il passaggio dalla 0.29.0 — il suo sito
+preso dal tag con `git archive`, servito sulla stessa origine, installato e
+ricaricato finché la pagina è servita dalla cache; poi la versione nuova al suo
+posto, una visita in un'altra scheda, che è quella che fa controllare al
+browser se `sw.js` è cambiato; e allora niente service worker né cache, la
+scheda aperta con la 0.29.0 non ricaricata, e la visita dopo dalla rete, senza
+nessuno in mezzo. Sei rotture, tutte rosse ognuna nella verifica che la
+riguarda: la pagina che registra il service worker, quella che apre una cache, e
+quattro `sw.js` serviti al posto di quello vero nella sola versione nuova —
+uno che ricarica le pagine aperte, uno che non si disinstalla, uno che lascia le
+cache, e quello della 0.29.0 rimasto pubblicato. **Sulla pagina vera C-22 è un
+difetto aperto dichiarato**: misurato il 3 ottobre 2026, la pagina registra
+`/sw.js` e apre lei stessa una cache `rg-0.29.0`, due volte; il passaggio dalla 0.29.0
+arriva in fondo verde anche lì, perché è del `sw.js` e non della pagina.
+R-ARCH-16 e R-ARCH-17 eseguono `sw.js` nel motore, in una Cache Storage finta,
+e sette rotture del file li fanno rossi; R-ARCH-18 ne guarda la forma. **Che
+cosa non vedono:** Safari e Firefox; un browser che torna dopo mesi; un
+`.pages.dev` dietro il redirect di D2, che deve continuare a servire `/sw.js`
+(ADR-005); la cache HTTP del browser, che oggi decide l'host con
+`max-age=0, must-revalidate` e che il banco non misura — la misura è del 3
+ottobre 2026, con `curl` su `rottagiusta.it` (§3.5).
 
 ### 9.3 La selezione
 
@@ -1363,7 +1478,6 @@ ritorni, «Base e vela» come due fasi — resta collaudo a 375 e 1280 px.
 | R-STA-03 | L'import dice quante righe ha preso, quante aveva già, quante ha scartato | `test_engine.mjs::fondiArchivio: per uid, senza doppioni` |
 | R-STA-04 | Una coda vuota produce un messaggio, non un clic senza effetto | scoperto — la suite non esercita il DOM di `app.html`; oggi si verifica solo guidando la pagina |
 | R-STA-05 | Una scrittura fallita accende l'avviso, il pallino e la riga in Archivio | scoperto — richiede di far fallire IndexedDB nella pagina viva |
-| R-STA-06 | L'autodiagnosi offline apre ogni voce del guscio, non ne controlla la chiave | scoperto — richiede un service worker attivo su HTTPS |
 | R-STA-07 | Una figura indisponibile si dichiara con il perché | `test_dati.py::test_figure` |
 | R-STA-08 | Una lettura che fallisce non ripiega su un dato plausibile: le letture cieche ancora presenti sono dichiarate, con l'area che le chiude | `test_interfaccia.py::test_letture_che_non_mascherano` |
 | R-STA-09 | Aperte su un indirizzo che non è `rottagiusta.it`, la palestra lo dichiara per prima cosa e offre di scaricare i progressi, e la vetrina manda alla palestra sul nuovo indirizzo | `test_interfaccia.py::test_trasloco` |
@@ -1515,15 +1629,15 @@ controllo in `test_server.mjs`.
 
 | ID | Requisito | Controllo |
 |---|---|---|
-| R-ACC-01 | Si arriva al primo quesito senza registrarsi, anche alla prima visita, con la rete e offline con il guscio caricato; fermata dopo una risposta, l'attività ha il suo riepilogo e la sua revisione | `test_interfaccia.py::test_client_primo_ingresso` |
+| R-ACC-01 | Si arriva al primo quesito senza registrarsi, anche alla prima visita; fermata dopo una risposta, l'attività ha il suo riepilogo e la sua revisione. Fino al 3 ottobre 2026 anche offline, con il guscio caricato: l'ADR-005 ha tolto l'offline | `test_interfaccia.py::test_client_primo_ingresso` |
 | R-ACC-02 | Senza account nessuna risposta resta dopo la chiusura della pagina, e la pagina lo dice prima di cominciare e alla fine di ogni attività: le due frasi del §4.1 del progetto del client, in testo che si vede; dopo una ricarica non mostra niente di prima | `test_interfaccia.py::test_client_senza_account` |
 | R-ACC-03 | La registrazione si raccomanda alla fine di un'attività con i vantaggi che esistono, e non a ogni schermata: in nessuna vista un invito, un modulo o una finestra d'account; nel riepilogo sì, «Continua senza account» lo chiude senza chiedere altro, e non torna durante l'attività dopo ma nel suo riepilogo | `test_interfaccia.py::test_client_invito_e_viste` |
 | R-ACC-04 | Senza account si fanno tutte le attività — il Percorso, i Quiz per argomento, la simulazione con la sua consegna, «Che tecnica serve?», la prova di carteggio, i Segnali —, ognuna fino al suo punto d'arrivo; ai registrati restano solo le viste che vivono di uno storico, e Progressi senza account dice perché non c'è invece di un cruscotto di zeri | `test_interfaccia.py::test_client_tutte_le_attivita` |
-| R-ACC-05 | Un archivio locale che esiste il giorno del rilascio non sparisce in silenzio: si porta nell'account o si scarica. L'avviso conta le due fonti — IndexedDB `open-patente-nautica` e `pn.archivio` — unite per uid; «Scarica il file» le porta tutte senza rete; portarle chiede con quante e dove, e le lascia dov'erano; il segno guarda gli uid, e una riga nuova riaccende l'avviso a conteggio uguale; «Più tardi» non scrive niente; una lettura fallita si dice e non diventa «nessuna risposta» | `test_interfaccia.py::test_client_vecchio_archivio` |
+| R-ACC-05 | L'archivio di prima degli account resta nel browser, e la pagina non lo guarda (ADR-005): con un database IndexedDB `open-patente-nautica` e le chiavi `localStorage` `pn.archivio` e `pn.esame` scritti prima, senza account e con — all'avvio, in un'attività fino al riepilogo, dopo una ricarica, all'accesso, all'uscita —, la pagina non apre quel database e non legge, non scrive e non cancella le chiavi `pn.`; non dice niente delle risposte di prima nel Percorso, in Info e dopo l'accesso; niente ne arriva nell'account; e alla fine l'archivio è quello di prima, byte per byte. Fino al 3 ottobre 2026 diceva il contrario — l'archivio si porta nell'account o si scarica —, con C-09. **Difetto aperto dichiarato sulla pagina vera** finché P-61 non toglie il passaggio, che lo legge a ogni avvio | `test_interfaccia.py::test_client_archivio_di_prima` |
 | R-ACC-06 | Le righe della pagina aperta e quelle dell'account si uniscono per `uid`, senza doppioni e senza vincitore | `test_engine.mjs::fondiArchivio: per uid, senza doppioni` |
 | R-ACC-07 | Una riga si accetta o si rifiuta con una regola sola, `validaRiga()`, e il rifiuto dice il motivo | `test_engine.mjs::validaRiga: una riga rotta` |
 | R-ACC-08 | Le righe dei tag N/L/C, che nascono senza data, si importano | `test_engine.mjs::fondiArchivio: i tag si importano` |
-| R-ACC-09 | Senza account la pagina non conserva niente nel browser, nemmeno le preferenze: dopo un'attività e la data d'esame, niente in IndexedDB, localStorage, sessionStorage, cookie, né in Cache Storage oltre il guscio e le figure, e nessuna richiesta all'API | `test_interfaccia.py::test_client_senza_account` |
+| R-ACC-09 | Senza account la pagina non conserva niente nel browser, nemmeno le preferenze: dopo un'attività e la data d'esame, niente in IndexedDB, localStorage, sessionStorage, cookie, né in Cache Storage altro che file del sito, e nessuna richiesta all'API | `test_interfaccia.py::test_client_senza_account` |
 | R-ACC-10 | Una password più corta di 15 caratteri è rifiutata, senza regole di composizione | `test_server.mjs::account: una password piu corta di 15 caratteri e rifiutata, senza regole di composizione` |
 | R-ACC-11 | Un account non confermato entro sette giorni si cancella con le sue righe, e la schermata dice la data dal primo momento | `test_server.mjs::verifica: un account non confermato entro sette giorni si cancella con le sue righe` |
 | R-ACC-12 | Una riga accolta torna dal server byte per byte com'era, campi sconosciuti compresi | `test_server.mjs::righe: una riga accolta torna dal server byte per byte, campi sconosciuti compresi` |
@@ -1551,7 +1665,7 @@ controllo in `test_server.mjs`.
 | R-ACC-36 | A 700 giorni senza attività parte un avviso con la data; trenta giorni dopo l'avviso, se nessuno è tornato, l'account si cancella passando dal file delle cancellazioni; un accesso dopo l'avviso lo salva, e un riavvio non manda un secondo avviso | `test_server.mjs::inattivita: a 700 giorni un avviso con la data, a 730 senza attivita si cancella, e un accesso lo salva` |
 | R-ACC-37 | Cento accessi falliti in 24 ore, una copia con meno righe senza cancellazioni che lo spieghino e una mail rifiutata dal fornitore avvisano il titolare, senza email né indirizzi nella mail, una volta sola, anche attraverso un riavvio | `test_server.mjs::allarmi: accessi falliti oltre soglia, una copia con meno righe e una mail rifiutata avvisano il titolare, una volta sola` |
 | R-ACC-38 | Le mail si contano per mese dal registro: raggiunte le 300 comprese il titolare riceve un avviso, uno al mese, e nessuna mail è bloccata | `test_server.mjs::mail del mese: oltre le 300 la mail parte lo stesso, e il titolare riceve un avviso solo` |
-| R-ACC-39 | Un trasferimento verso l'account — le righe della pagina alla registrazione, un file, l'archivio di prima — si dice salvato solo quando il server ha nominato ogni sua riga, in un invio o in una ricezione: non per deduzione dalla coda, non dopo un azzeramento, e non con le conferme di un database che un ripristino ha sostituito; scarti locali e del server si contano per motivo | `test_engine.mjs::trasferimento: salvate solo le righe che il server nomina, anche su piu lotti` |
+| R-ACC-39 | Un trasferimento verso l'account — le righe della pagina alla registrazione, un file — si dice salvato solo quando il server ha nominato ogni sua riga, in un invio o in una ricezione: non per deduzione dalla coda, non dopo un azzeramento, e non con le conferme di un database che un ripristino ha sostituito; scarti locali e del server si contano per motivo | `test_engine.mjs::trasferimento: salvate solo le righe che il server nomina, anche su piu lotti` |
 | R-ACC-40 | Una riga che da sola supera il limite di un invio non ferma quelle dietro, e le righe in coda che non partiranno mai si nominano con il motivo | `test_engine.mjs::coda: una riga oltre il limite non ferma quelle dietro, e si nomina` |
 | R-ACC-41 | La pagina dice «Questa email è già registrata.» dal `409` della registrazione riconosciuto da codice **e** `errore`, con Accedi — email già scritta, password vuota — e Reimposta la password; zero cookie, zero sessioni e zero mail nuove, e le risposte della pagina ancora nel riepilogo. Un `409` di un altro genere non parla di email | `test_interfaccia.py::test_client_email_registrata` |
 | R-ACC-42 | Il banco del client è provato contro sé stesso a ogni esecuzione, in un browser vero: una pagina di riferimento lo passa, ciascuna delle sue rotture dichiarate lo fa fallire nominando il difetto, e le sue varianti restano verdi | `test_interfaccia.py::test_client_provato_al_contrario` |
@@ -1574,7 +1688,6 @@ controllo in `test_server.mjs`.
 | R-ACC-59 | Il cookie di sessione va e torna fra `rottagiusta.it` e `api.rottagiusta.it`, in HTTPS e con il prefisso `__Host-`, anche su Safari con la sua protezione dal tracciamento; e un IndexedDB che su Safari non si apre si dichiara | scoperto — il banco guida solo Chrome, su `http://localhost` e due porte (§12 del progetto del client, «Il banco»); si prova in esercizio (P-15) e su un Safari vero (Q-PROVE) |
 | R-ACC-60 | I moduli dell'account si usano con il gesto vero: tastiera e fuoco, lettore di schermo, incolla e riempimento del gestore di password, a 375 e 1280 px | scoperto — i clic del banco sono `element.click()` e i campi si scrivono da uno script; è il collaudo della pagina, fatto da P-18 in Chrome e nel dialogo di accesso su Safari |
 | R-ACC-61 | Le mail di conferma, di recupero e d'avviso arrivano nella casella e non nello spam, con i link com'erano | scoperto — il banco ha una posta sua, e il server sa solo che il fornitore l'ha accettata; si vede alla messa in esercizio (P-15) |
-| R-ACC-62 | Un archivio di prima vero, di mesi di risposte, si porta nell'account o si scarica senza perdite, anche su un telefono | scoperto — il banco ne scrive uno sintetico di sei righe (R-ACC-05 è coperto su quello); l'archivio vero è del collaudo del traguardo (P-27) |
 | R-ACC-63 | «Scarica e passa al nuovo archivio», dopo un azzeramento fatto altrove, fa quello che dice: il file porta le risposte non salvate e si ricarica; dopo il download si chiede di confermare di aver conservato il file, e senza la conferma la copia non cambia; confermato, la copia è quella del server e nessuna risposta del file rientra, mentre una risposta nuova entra | `test_interfaccia.py::test_client_scarica_dopo_azzeramento` |
 | R-ACC-64 | «Cancella queste risposte», dopo il recupero della password di un account che non era confermato, fa quello che dice: chiede una conferma esplicita e senza la spunta non cancella niente; confermata, le risposte spariscono dal server con una generazione nuova, la copia di questo dispositivo le segue, e l'account resta usabile | `test_interfaccia.py::test_client_cancella_dopo_recupero` |
 | R-ACC-65 | Con punteggi dei Segnali che il server non ha accolto non si esce, e lo si dice; «Scarica le risposte non salvate» porta anche i punteggi, e dopo la scelta esplicita si esce senza mandarli a nessun account; con la rete «Riprova l'invio» li manda, e solo dopo esce | `test_interfaccia.py::test_client_uscita_segnali` |
@@ -1774,6 +1887,40 @@ dicano — il loro contenuto è del gate dell'autore —; che i link delle
 finestre dell'account si aprano in una scheda nuova, come fanno da P-58 perché
 la pagina con le risposte da salvare non si ricarichi: l'ha guardato il suo
 collaudo, e nessun controllo lo ripete; un lettore di schermo; Safari.
+
+**L'archivio di prima resta dov'è (P-60).** L'ADR-005 ha tolto il passaggio
+dell'archivio di prima degli account, e R-ACC-05 dice ora il contrario di
+prima: la pagina non lo legge e non lo cancella. **Che cosa tenevano fermo i
+controlli che escono, e chi se ne accorgerebbe senza.** C-09 teneva fermo il
+passaggio — l'avviso con le due fonti unite per uid, il download senza rete, la
+domanda prima di portarle, il segno sugli uid, «Più tardi» che non scrive, la
+lettura fallita detta —; senza il passaggio non tiene fermo niente, e nessuno
+se ne accorge, perché non c'è più niente da rompere. Il requisito che chiedeva
+di portare un archivio vero senza perdite, scoperto, non era mai stato
+eseguito, e chiedeva una cosa che non si fa più: è uscito dalla tabella, e il
+suo numero non si riusa. Le sette rotture di C-09 escono con lui, e con il passaggio esce
+dalla pagina di riferimento del client. **C-21** prende il posto, in due parti,
+senza account e con l'account fino all'uscita: un archivio di prima scritto da
+un'altra scheda — quattro righe in IndexedDB, due in `pn.archivio`, la data in
+`pn.esame` —, e nella scheda della palestra uno strumento che registra ogni
+`open` e `deleteDatabase` di quel database e ogni `getItem`, `setItem`,
+`removeItem` e `clear` delle chiavi `pn.`. Poi il testo visibile, il database
+del server, e l'archivio riletto dall'altra scheda e confrontato byte per byte.
+Sei rotture della pagina di riferimento, tutte rosse ognuna in una verifica
+sola: una lettura all'avvio, un'apertura all'accesso, una cancellazione
+all'uscita — le vede lo strumento —; e tre che gli passano accanto, una
+cancellazione per proprietà (`delete localStorage[…]`), un avviso nato da
+`indexedDB.databases()` e una lettura per enumerazione (`{ ...localStorage }`)
+che porta le righe nell'account — le prendono l'archivio riletto, il testo
+visibile e il server. In ciascuna le altre verifiche restano verdi, quindi
+ognuna delle quattro difese è l'unica a prendere la sua rottura. **Sulla pagina
+vera C-21 è un difetto aperto dichiarato**: misurato il 3 ottobre 2026, la
+pagina apre `open-patente-nautica` e legge `pn.archivio` all'avvio, nelle due
+parti. **Che cosa non vede:** una lettura per enumerazione che non diventa né
+un avviso né una riga sul server; `indexedDB.databases()` da solo, che non
+legge le risposte; le chiavi della versione di prima senza il prefisso `pn.`,
+se ce ne sono; Safari; e un archivio di prima vero, di mesi, che il banco non ha
+e nessuno ha cercato.
 
 ### 9.10 La mappa di Progressi
 
@@ -2085,8 +2232,9 @@ per una decisione.
   l'invito sta nel riepilogo, con i vantaggi che esistono, e «Continua senza
   account» lo chiude senza chiedere altro (R-ACC-03); le risposte non si tengono
   per nasconderne le misure. Niente da vendere, come prima.
-- **Offline-first vero**, verificato misurando **zero byte trasferiti** a pagina
-  ricaricata, e non dedotto dalla presenza del service worker.
+- ~~**Offline-first vero**, verificato misurando **zero byte trasferiti** a
+  pagina ricaricata, e non dedotto dalla presenza del service worker.~~ —
+  *tolto dall'ADR-005 il 3 ottobre 2026: senza rete il sito non si apre.*
 - **Errori con una via d'uscita** e non rimproveri.
 - **Progressive disclosure** già applicata: le spiegazioni `?` accanto ai numeri
   derivati, e funzionano al tocco oltre che in hover.
@@ -2131,10 +2279,9 @@ chiara sparisce.
   riconoscere, occupa spazio verticale per niente.
 - **Il primo elemento della prima schermata è un filtro** che a chi comincia non
   serve, e il primo campo chiede una data che spesso non c'è.
-- **Il pallino ambra è acceso alla prima apertura**, perché l'offline non è ancora
-  pronto. È corretto per la regola di casa — un guasto muto deve restare visibile
-  — ma per chi apre il sito la prima volta è un allarme senza causa. È una
-  tensione fra due principi giusti, e non ha ancora una risposta.
+- ~~**Il pallino ambra è acceso alla prima apertura**, perché l'offline non è
+  ancora pronto.~~ — *risolto togliendo l'offline (ADR-005): il pallino resta
+  per una scrittura fallita, e alla prima apertura non c'è niente da segnalare.*
 
 ### Il limite di questa appendice
 
@@ -2521,3 +2668,23 @@ successo, ed è il motivo per cui questo file esiste.
   sito pubblicato. Dove si legge «fino alla v0.28.1» è l'ultima versione senza
   account, la correzione del 1° ottobre. Il prodotto di riferimento in testa
   è la v0.29.0.
+- **3 ottobre 2026 — via l'offline e l'archivio di prima (P-60).** L'autore
+  ha deciso di togliere l'offline e il passaggio dell'archivio di prima degli
+  account, per semplicità, ed è l'ADR-005, che sostituisce la quarta condizione
+  dell'ADR-004 e le sue frasi sull'offline. Il §3.5 diventa «Niente offline»,
+  con quello che P-61 cambia nella pagina; il §3.6 dice la versione in due
+  posti; il §3.2 dice perché la copia del dispositivo resta. Escono, con i loro
+  controlli, i requisiti del guscio, del prefisso della cache, delle figure da
+  un rilascio all'altro — due — e dell'autodiagnosi, e la parte offline di
+  R-ACC-01;
+  entrano R-ARCH-15…18, con C-22 nel banco del client — un difetto aperto
+  dichiarato fino a P-61 — e tre test del motore che eseguono il `sw.js` nuovo. Il §2.3 ha una
+  quinta perdita, chi aveva risposte nel browser prima degli account e non le
+  ha portate, e una sesta, l'offline; il §2.4, il §3.2, il §5.4, il §7.1 e il §7.8 non descrivono più il
+  passaggio come presente. R-ACC-05 dice il contrario di prima — la pagina non
+  legge e non cancella quell'archivio — con un controllo nuovo, C-21, che è un
+  difetto aperto dichiarato finché P-61 non toglie il codice; il requisito
+  dell'archivio vero, scoperto e mai eseguito, esce, e il suo numero non si
+  riusa;
+  R-ARCH-07 dice che cosa resta del nome. C-09 e le sue sette rotture escono;
+  sei rotture nuove, tutte rosse ognuna in una verifica sola.

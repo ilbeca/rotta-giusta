@@ -1233,7 +1233,8 @@ stesso rilevamento che oggi accende l'avviso del trasloco (R-STA-09).
   (§3); non un hash dell'email, che cambierebbe con l'indirizzo e lascerebbe
   l'archivio locale sotto un nome che nessuno cerca più. Mai
   `open-patente-nautica`, che resta l'archivio di prima degli account ed è
-  oggetto del §12.
+  oggetto del §12 — dall'ADR-005, il 3 ottobre 2026, un archivio che la pagina
+  non legge e non cancella.
 - **Perché uno per account e non uno solo:** su un dispositivo condiviso, se B
   entra dove A è appena uscito e trova le righe di A nell'archivio, la prima
   sincronia le carica nell'account di B. Unione per `uid`, nessun conflitto,
@@ -1532,6 +1533,12 @@ responsabilità di chi carica.
 
 ## 12. Chi ha già un archivio nel browser — la condizione 4
 
+**Superato il 3 ottobre 2026 dall'ADR-005**, che sostituisce la condizione 4:
+il passaggio qui sotto è uscito dalla pagina, e la pagina non legge e non
+cancella l'archivio di prima, che resta nel browser di chi lo ha. Il prezzo è
+scritto lì. Il testo resta com'era, come traccia di che cosa si è fatto e
+perché; non va realizzato.
+
 «Un archivio che esiste già non sparisce in silenzio.» Il *come* è lasciato a
 questo documento.
 
@@ -1621,7 +1628,10 @@ Due cose restano nel browser anche senza account, e l'informativa le nomina:
 **la cache del service worker**, che contiene il sito e la banca e non una riga
 di chi studia — è ciò che fa funzionare l'offline dalla prima visita —, e
 **l'archivio di prima degli account**, finché chi l'ha non sceglie che cosa
-farne (§12). Nessuna delle due è scritta dalla versione con gli account.
+farne (§12). Nessuna delle due è scritta dalla versione con gli account. *Dal 3
+ottobre 2026 (ADR-005) l'archivio di prima resta nel browser senza che la
+pagina lo legga o lo cancelli; l'informativa non lo nomina, cercato quel
+giorno.*
 
 Come per i testi di `site/`, il cambiamento entra **nella stessa versione** degli
 account: oggi quelle chiavi sono vere, perché oggi il sito salva nel browser.

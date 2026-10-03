@@ -3,12 +3,13 @@
 #
 # L'ordine conta: un file appartiene al PRIMO territorio che lo combacia, quindi
 # le eccezioni dentro `site/` stanno prima del suo `**`. I `condivisi` vincono su
-# tutto: `site/sw.js` resta di tutti anche se combacerebbe `site/**`.
+# tutto. `site/sw.js` e' del motore dal 3 ottobre 2026 (ADR-005): era condiviso
+# per il guscio offline scritto anche in app.html, che non c'e' piu'.
 territori:
-  motore:      [site/engine.js, site/dati/**, site/figure/**, server/**, fonte/**, strumenti/**, tests/**, docs/adr/**, docs/motore.md, docs/specifica.md, docs/filosofia.md]
+  motore:      [site/engine.js, site/sw.js, site/dati/**, site/figure/**, server/**, fonte/**, strumenti/**, tests/**, docs/adr/**, docs/motore.md, docs/specifica.md, docs/filosofia.md]
   regole:      [AGENTS.md, CLAUDE.md, territori.yaml, docs-check.yaml, .githooks/**, .claude/**, .agents/**, .gitignore, .gitattributes, README.md, LICENSE, VERSION]
   interfaccia: [docs/*-ux.md, site/**]
-condivisi:     [CHANGELOG.md, site/sw.js]
+condivisi:     [CHANGELOG.md]
 rami:
   "main":  [motore, regole]
   "ui/*":  [interfaccia]

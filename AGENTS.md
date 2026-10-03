@@ -25,7 +25,7 @@ questo sito.
 ## Comandi
 
 ```bash
-node --test tests/test_engine.mjs                 # il motore, e le tre versioni allineate
+node --test tests/test_engine.mjs                 # il motore, le due versioni allineate, e sw.js eseguito
 node --test tests/test_server.mjs                 # il server degli account, e il ripristino provato
 python3 tests/test_dati.py                        # dati, invarianti, e il guardiano
 python3 tests/test_interfaccia.py                 # le viste, le porte, le modalità, e la pagina in Chrome headless
@@ -65,9 +65,10 @@ aggiorna, come si torna indietro e come si ripristina una copia sta nel §2.7 di
   statichost.eu, su `rottagiusta.it`: nessun comando di build, cartella di
   output `site`. `server/` è il server degli account, su `api.rottagiusta.it`:
   un processo Node senza dipendenze npm e un file SQLite, su una macchina
-  Scaleway, che si aggiorna a parte allo stesso tag del sito. Il service worker
-  non vede l'API, e l'API non passa mai dal guscio offline. Tutto il resto del
-  repo è sorgente, verifica e documentazione.
+  Scaleway, che si aggiorna a parte allo stesso tag del sito. **Il sito non è
+  offline** (ADR-005): la pagina non registra un service worker, e
+  `site/sw.js` resta pubblicato solo per disinstallare quello che la 0.29.0 ha
+  lasciato. Tutto il resto del repo è sorgente, verifica e documentazione.
 - **La logica di selezione sta solo in `site/engine.js`.** Logica pura, senza
   DOM né rete, che gira identica nella pagina, nel server e sotto `node
   --test`. Nessuna seconda implementazione, in nessun posto: il server importa
@@ -75,7 +76,8 @@ aggiorna, come si torna indietro e come si ripristina una copia sta nel §2.7 di
 - **Le risposte sono righe, una per risposta, che non si modificano mai.**
   Senza account vivono solo nella memoria della pagina aperta, e nel browser
   non resta niente, nemmeno le preferenze (ADR-004). Con l'account stanno sul
-  server e, per l'offline, nella copia `rg-account-<chiave>` del dispositivo, e
+  server e nella copia `rg-account-<chiave>` del dispositivo — che non le perde
+  mentre la rete non c'è —, e
   le due si uniscono per `uid` senza un vincitore. Lo specchio per quesito che
   il motore legge **non si salva mai e non viaggia**: si ricalcola con
   `E.ripiega()` a ogni avvio, dopo ogni import e dopo ogni ricezione, e c'è un
@@ -108,10 +110,10 @@ controllo che git esegue.
 
 | territorio | file | chi |
 |---|---|---|
-| **motore** | `site/engine.js`, `site/dati/`, `site/figure/`, `server/`, `fonte/`, `strumenti/`, `tests/`, `docs/adr/`, `docs/motore.md` | Claude, su `main` |
+| **motore** | `site/engine.js`, `site/sw.js`, `site/dati/`, `site/figure/`, `server/`, `fonte/`, `strumenti/`, `tests/`, `docs/adr/`, `docs/motore.md` | Claude, su `main` |
 | **regole** | `AGENTS.md`, `CLAUDE.md`, `territori.yaml`, `docs-check.yaml`, `.githooks/`, `.claude/`, `.agents/`, `.gitignore`, `.gitattributes`, `README.md`, `LICENSE`, `VERSION` | Claude, su `main` |
 | **interfaccia** | il resto di `site/`, e `docs/*-ux.md` | ChatGPT, su `ui/*` |
-| *condivisi* | `CHANGELOG.md`, `site/sw.js` | tutti |
+| *condivisi* | `CHANGELOG.md` | tutti |
 
 Cinque cose che la tabella non dice.
 
@@ -121,7 +123,7 @@ Cinque cose che la tabella non dice.
   `site/dati/` e `site/figure/`, che sono l'Allegato A al decreto e non asset
   grafici: il marchio e le icone, quelli si', sono dell'interfaccia.
 - **`VERSION` sta fra le regole e `site/dati/meta.json` e' del motore: da `ui/*`
-  non si rilascia.** La versione vive in tre posti e i tag sono condivisi fra i
+  non si rilascia.** La versione vive in due posti e i tag sono condivisi fra i
   worktree, quindi due rami che chiudessero entrambi con un bump si
   scontrerebbero per forza. Il rilascio e' un commit solo, su `main`, dopo la
   merge.
@@ -148,9 +150,12 @@ Cinque cose che la tabella non dice.
   `pre-commit`, che su `main` rifiuta i file di `ui/*`: il 26 settembre 2026 la
   merge di P-05 si e' fermata cosi'. Dopo una merge si guarda che fra le due
   voci ci sia una riga vuota: il driver non la mette.
-- **Il guscio offline e' scritto in due posti** — `GUSCIO` in `site/sw.js` e in
-  `site/app.html` — e chi aggiunge un asset li aggiorna tutti e due. C'e' un
-  test. E' per questo che `sw.js` e' condiviso invece di essere dell'interfaccia.
+- **`site/sw.js` e' del motore**, anche se sta in `site/`. Fino al 3 ottobre
+  2026 era condiviso, perche' il guscio offline era scritto li' e in
+  `site/app.html`; l'ADR-005 ha tolto l'offline, e `sw.js` e' ora il service
+  worker che si disinstalla, con i suoi test nel motore. Resta pubblicato
+  almeno fino al 3 ottobre 2028, e lo toglie un prompt della regia: un `sw.js`
+  sparito lascerebbe chi ha visitato la 0.29.0 sulla sua cache per sempre.
 - **Chi disegna non ricalcola.** `site/app.html` e `site/index.html` consumano
   `site/engine.js`: se serve un numero che il motore non espone, si chiede un
   export nuovo invece di rifare il conto in pagina. E' la regola «un numero
@@ -219,24 +224,22 @@ Poi si guarda il `CHANGELOG.md`, che e' il posto dove il conflitto arriva.
   carteggio e **ignora lo storico di proposito** (pesca come il ministero);
   `estraiNuoviPrima()` serve lo screening e il selettore «solo mai fatte».
   Sono due funzioni perché sono due mestieri.
-- **Il guscio offline è scritto in due posti** — `GUSCIO` in `sw.js` e in
-  `app.html` — e devono restare identici. C'è un test.
 - **Gli indirizzi sono quelli puliti, non i nomi dei file**: `/privacy` e
   `/avvertenza`, mai `/privacy.html`. La regola è nata sull'host precedente, che
   rispondeva **308** al percorso con l'estensione: una risposta rediretta messa
-  in cache **non si può servire a una navigazione**, e la pagina moriva con
-  `ERR_FAILED` anche online, perché il service worker legge prima la cache.
-  statichost.eu serve entrambe le forme con 200, e la regola resta proprio per
-  questo: è lei che rende il sito indifferente all'host. Vale per il guscio e
-  per ogni `href` interno; due test la tengono ferma. `strumenti/serve.py`
-  riproduce in locale l'host di **oggi**, misurato — e un test pretende che lo
-  faccia.
-- **Una versione, in tre posti, tenuta insieme da un test**: `VERSION`, `CACHE`
-  in `site/sw.js`, `versione` in `site/dati/meta.json`. Nessuno la sostituisce
-  al volo: il server degli account legge `VERSION` dal tag che gira, e la dice
-  in `GET /v1/salute`, ma non la scrive nelle pagine. Dopo un rilascio serve **una ricarica in più** sul
-  dispositivo: la prima serve ancora dalla cache precedente, e la schermata
-  Info dice quale cache è installata.
+  nella cache del service worker **non si poteva servire a una navigazione**, e
+  la pagina moriva con `ERR_FAILED` anche online. Non c'è più né quell'host né
+  quella cache, e la regola resta proprio per questo: è lei che rende il sito
+  indifferente all'host. Vale per ogni `href` interno, e un test la tiene ferma.
+  `strumenti/serve.py` riproduce in locale l'host di **oggi**, misurato,
+  compreso il 304 di una riconvalida — e un test pretende che lo faccia.
+- **Una versione, in due posti, tenuta insieme da un test**: `VERSION` e
+  `versione` in `site/dati/meta.json`. Nessuno la sostituisce al volo: il
+  server degli account legge `VERSION` dal tag che gira, e la dice in `GET
+  /v1/salute`, ma non la scrive nelle pagine. Fino al 3 ottobre 2026 i posti
+  erano tre, con `CACHE` in `site/sw.js`, e dopo un rilascio serviva una
+  ricarica in più; dall'ADR-005 non c'è una cache, e ne basta una. `sw.js` non
+  porta una versione, e un test lo pretende.
 - **Niente dati che non escono di casa.** `strumenti/controlla.py` fallisce se
   nel repo rientrano identificatori delle macchine dell'autore, il suo nome,
   materiale di terzi o file di provenienza non dichiarata. Gira nella suite.
@@ -255,7 +258,7 @@ Poi si guarda il `CHANGELOG.md`, che e' il posto dove il conflitto arriva.
 
 ## Chiusura di ogni sessione
 
-Dipende dal ramo, e non e' un dettaglio: il numero di versione vive in tre posti
+Dipende dal ramo, e non e' un dettaglio: il numero di versione vive in due posti
 e i tag sono condivisi fra i worktree, quindi due rami che rilasciassero
 entrambi si scontrerebbero per forza.
 
@@ -263,10 +266,10 @@ entrambi si scontrerebbero per forza.
 commit con il trailer. **Il numero non si tocca**, e non si tagga.
 
 **Su `main`** — test verdi → un commit. Il **rilascio** e' un commit a se', dopo
-la merge, e lo fa chi la merge la fa: bump di `VERSION`, di `CACHE` in `sw.js` e
-di `versione` in `meta.json` → voce di CHANGELOG con lo stesso numero → tag
-annotato `vX.Y.Z` → chiedere prima del push → dopo il push, «Build now» su
-statichost.eu, e `curl https://rottagiusta.it/sw.js` per vedere il `CACHE` nuovo
+la merge, e lo fa chi la merge la fa: bump di `VERSION` e di `versione` in
+`meta.json` → voce di CHANGELOG con lo stesso numero → tag annotato `vX.Y.Z` →
+chiedere prima del push → dopo il push, «Build now» su statichost.eu, e
+`curl https://rottagiusta.it/dati/meta.json` per vedere la `versione` nuova
 → sulla macchina degli account `rg-aggiorna <tag> <commit>`, e `GET /v1/salute` per
 vedere la versione nuova (`docs/account-progetto.md` §2.7). Un passo non fa
 l'altro: un rilascio fermato a metà lascia la pagina e il server su due numeri.

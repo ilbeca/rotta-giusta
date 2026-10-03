@@ -111,7 +111,7 @@ export async function avviaChrome({ attesaMs = 15000, nomi = [] } = {}) {
         const s = scheda(sessionId, targetId);
         await s.prepara();
         // Uno script che gira prima di quelli della pagina, a ogni carico: e'
-        // cosi' che il banco fa fallire una lettura (C-09) senza toccare la pagina.
+        // cosi' che il banco registra che cosa la pagina apre (C-21) senza toccarla.
         if (prima) await cmd('Page.addScriptToEvaluateOnNewDocument', { source: prima }, sessionId);
         schede.push(s);
         if (url) await s.vai(url);
