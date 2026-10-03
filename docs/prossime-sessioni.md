@@ -229,14 +229,14 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 |---|---|---|---|---|---|
 | 10 | **Che cosa viene dopo gli account** — il brainstorming, poi lo smistamento in prompt | Claude con l'autore, poi la regia | `main` | niente | P-59 |
 | 14 | **La casella `privacy@` sull'iPhone**, e la prova `dkim=pass` | Claude con l'autore | `main`, solo `account-progetto.md` | niente | P-62 |
-| 13 | **Il rilascio 0.30.0** | la regia, con l'autore | `main` | niente: P-61 è fuso | — |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo il traguardo» e le voci non barrate |
 
 **Il traguardo è fatto: la v0.29.0 è in linea dal 3 ottobre 2026** (P-27),
 sulla pagina e sul server, e `main` è pushato. La riga 9 della coda è uscita.
 **Per Claude:** P-59, il brainstorming, lungo e con l'autore davanti; e
 P-62, la casella `privacy@` sull'iPhone, che tocca soltanto
-`account-progetto.md`. P-60 e P-61 sono chiusi, e il rilascio 0.30.0 è in corso. **Per
+`account-progetto.md`. P-60 e P-61 sono chiusi, e la 0.30.0 è in linea dal 3 ottobre 2026, sulla
+pagina e sul server. **Per
 ChatGPT:** niente di pronto. Lo smistamento delle idee
 di P-59 in prompt — decisioni dell'autore, ricerche, lavoro di Claude su
 `main`, lavoro di ChatGPT su `ui/main` — lo fa la regia dal suo resoconto,
@@ -4674,3 +4674,11 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   sull'iPhone non si è collegata: la regia aveva indicato come server
   `zimbra1.mail.ovh.net`, che è la webmail, senza verificarlo sulla guida
   OVHcloud. L'autore ha chiesto una sessione a parte: P-62.
+- **3 ottobre 2026 — la v0.30.0 è in linea.** P-61 fuso (`6ad7342`), suite
+  verdi sullo stato fuso e sull'albero del rilascio; commit di rilascio
+  dell'autore con `TERRITORI_OK=1` (`decdf76`), tag e push della regia con il
+  suo sì. Su richiesta dell'autore la regia ha premuto «Build now» nel suo
+  Chrome e lanciato `rg-aggiorna` sulla macchina con l'alias `rg-api`. Pagina
+  e server alla 0.30.0, verificati da fuori; il dettaglio è nella voce
+  «Verificato — la v0.30.0, in linea» del CHANGELOG. Resta aperta P-59, il
+  brainstorming, e P-62, la casella `privacy@` sull'iPhone.

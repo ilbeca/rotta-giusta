@@ -11,6 +11,24 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+### Verificato — la v0.30.0, in linea
+
+- **La pagina.** `v0.30.0` è un tag annotato su `decdf76`, fatto dopo le
+  cinque suite sull'albero del rilascio: motore 192/196 con i quattro skip
+  previsti, server 72/72, dati 223, specifica 820, interfaccia 2.263 con la
+  8620 libera prima. Pushati `main` e il tag con il sì dell'autore; «Build now»
+  su statichost.eu dalla regia, nel Chrome dell'autore e su sua richiesta: la
+  build, 38 s, porta l'etichetta del rilascio. Da fuori `meta.json` dice 0.30.0
+  su `rottagiusta.it` e su `.pages.dev`; tredici file del sito sono identici
+  byte per byte a `v0.30.0:site/`; `sw.js` è quello che si disinstalla, servito
+  con `no-cache`, e `/app` non registra un service worker.
+- **Il server.** `rg-aggiorna v0.30.0 decdf76…` lanciato dalla regia sulla
+  macchina, su richiesta dell'autore: la copia di prima con `integrity_check`
+  ok, schema 4 invariato. Da fuori `GET /v1/salute` dice 0.30.0, schema 4/4 e
+  la stessa epoca; il CORS espone `Retry-After` al sito e a nessun altro.
+- **Non guardato:** un browser vero con la 0.29.0 installata che passa alla
+  0.30.0 su `rottagiusta.it`. L'ha provato P-61 in locale, quattro volte.
+
 ## [0.30.0] — 2026-10-03
 
 **Il sito più semplice: niente offline.** Rotta Giusta si apre con la rete,
