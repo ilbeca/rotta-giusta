@@ -3868,8 +3868,13 @@ docs/prossime-sessioni.md.
 
 ### P-60 — Claude: semplificare — via l'offline e l'archivio di prima; le decisioni, la specifica, i controlli
 
-**Stato:** pronto, dal 3 ottobre 2026. **Dove:** Claude Code,
-`~/Software/rotta-giusta`, ramo **`main`**, a mano: tocca `tests/`, la
+**Stato:** **in corso dal 3 ottobre 2026, con il testo di prima** — quello
+di `20113dc`, che toglieva solo l'archivio di prima. La sessione è partita
+prima che la regia riscrivesse il prompt per l'offline; alle 11:10 aveva
+scritto `docs/adr/ADR-005-l-archivio-di-prima-resta-nel-browser.md` e
+modificato tredici file. Il testo qui sotto è quello nuovo: se portarlo a
+quella sessione o farne un prompt a parte lo decide l'autore. **Dove:** Claude
+Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano: tocca `tests/`, la
 specifica, le regole e `site/sw.js`. **Nasce da:** le decisioni dell'autore del
 3 ottobre (§4, «Dopo il traguardo», punti 1 e 6). **Sblocca:** P-61; dopo P-61
 il rilascio 0.30.0.
@@ -4536,3 +4541,14 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   `sw.js` che si toglie di mezzo, la versione in due posti, la pagina; poi il
   rilascio 0.30.0 (riga 13). La copia nel dispositivo per chi ha l'account
   resta.
+- **3 ottobre 2026 — un errore della regia, rimediato.** Per confrontare i
+  conti di `test_specifica.py` su versioni diverse di questo file, la regia ha
+  lanciato `git stash` nella cartella principale senza guardare prima `git
+  status`: P-60 ci stava lavorando, e lo stash ha tolto per qualche secondo le
+  sue modifiche a tredici file. Ripristinate subito con `git stash pop`, senza
+  conflitti e con lo stash svuotato; i file sono tornati com'erano. Se in quei
+  secondi P-60 ha letto un file o lanciato una suite, ha visto lo stato di
+  `main`: glielo si dice. Il passo 1 di «Che cosa fa la regia» lo diceva già —
+  `git status` prima di tutto — e la regia non l'ha fatto; d'ora in poi nella
+  cartella principale non lancia comandi git che toccano l'albero, né
+  `checkout` di file, mentre una sessione ci lavora.
