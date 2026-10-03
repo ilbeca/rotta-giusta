@@ -4064,7 +4064,7 @@ guida, non prenderlo da qui.
 Guida l'autore un passo alla volta. La password la scrive solo lui, e tu
 non la chiedi; l'SSL non si spegne mai; il pannello OVHcloud e i DNS non
 si toccano senza il suo sì. Poi la prova nei due versi: dall'iPhone,
-dall'account privacy@, una mail a francesco.becattini@gmail.com, che
+dall'account privacy@, una mail all'indirizzo Gmail dell'autore, che
 leggi con il connettore Gmail in sola lettura e di cui guardi le
 intestazioni di autenticazione — DKIM, SPF e DMARC per rottagiusta.it —;
 e una risposta da Gmail, che deve arrivare sull'iPhone con la notifica.
