@@ -167,24 +167,20 @@ principale e in ../rotta-giusta-ui, i rami non fusi, i worktree — e
 dimmi in poche righe dove siamo, che cosa è in corso, che cosa è pronto
 e che cosa aspetta una mia decisione.
 
-Dove siamo, perché tu lo verifichi e non lo prenda per buono: il
-ridisegno è finito, il server degli account è in esercizio su
-api.rottagiusta.it da v0.28.0, rottagiusta.it serve la 0.28.1 costruita
-dal ramo fix/0.28.1, main non è pushato. Il commit di rilascio della
-0.29.0 è su main dal 3 ottobre, senza tag: lo stato esatto è nello
-«Stato» di P-27, nel §6. Per Claude e per ChatGPT non c'è nessun altro
-prompt pronto.
+Dove siamo, perché tu lo verifichi e non lo prenda per buono: la
+v0.29.0, la versione con gli account, è in linea dal 3 ottobre 2026 —
+rottagiusta.it e .pages.dev servono rg-0.29.0, api.rottagiusta.it dice
+0.29.0 con schema 4, main e il tag sono pushati. P-27 è chiuso; il suo
+esito nel §6 dice che cosa del passo 6 resta. Per Claude e per ChatGPT
+non c'è nessun prompt pronto.
 
 I prossimi passi, in quest'ordine:
-1. Il traguardo, P-27, lo conduco in una sessione sua, con il prompt
-   del §6. Tu non lo fai: aspetti il suo resoconto, lo confronti con
-   il repo e con quello che servono rottagiusta.it e api., e chiudi la
-   coda — l'esito di P-27, il registro, le parti del file che dopo il
-   rilascio diventano passato, il ramo fix/0.28.1, ui/main e ui/vetrina
-   allineati.
-2. Le cose aperte per l'autore nel §4, nel punto «Aperto il 2 ottobre
-   2026» e in «Trovato dal controllo del 2 ottobre»: quello che resta.
-   La cartella del titolare non si tocca senza dirmelo.
+1. Quello che resta del passo 6 di P-27, con il mio sì: fix/0.28.1
+   tolto da GitHub, ui/main e ui/vetrina allineati a main.
+2. Il §4: «Dopo il traguardo» — per primo, se e come togliere il
+   passaggio dell'archivio di prima — e quello che resta in «Aperto il
+   2 ottobre 2026» e in «Trovato dal controllo del 2 ottobre». La
+   cartella del titolare non si tocca senza dirmelo.
 
 Non lanciare niente e non scrivere niente finché non te lo chiedo: da
 lì ti incollerò i resoconti.
@@ -233,18 +229,16 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 9 | **La versione con gli account** — il traguardo | tutti | `main` | la sessione di P-27, con l'autore: il commit di rilascio c'è dal 3 ottobre, mancano il tag e i passi 2–6; il cancello degli adempimenti è chiuso dalla sua decisione del 2 ottobre (§4) | P-27, la lista scritta |
-| — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
+| — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo il traguardo» e le voci non barrate |
 
-**Le due colonne corrono in parallelo**, e si sono incontrate: il client degli
-account è nella pagina (P-18), Progressi è la mappa (P-23), e il carteggio ha
-i suoi contratti e controlli su `main` (P-32…P-35). **Per Claude, l'ordine
-consigliato:** niente di pronto. **Per ChatGPT:** niente di pronto. Il traguardo
-ha i tre cancelli chiusi (P-27) e aspetta il via dell'autore. I prompt di Claude vanno uno alla volta nella cartella principale, e
-la suite dell'interfaccia di un worktree esclude quella dell'altro, per la porta
-8620. Il numero di una riga è il suo nome, non la sua posizione. Il traguardo,
-P-27, non aspetta le aree 4–6: aspetta il server in esercizio, i testi e gli
-adempimenti.
+**Il traguardo è fatto: la v0.29.0 è in linea dal 3 ottobre 2026** (P-27),
+sulla pagina e sul server, e `main` è pushato. La riga 9 della coda è uscita.
+**Per Claude:** niente di pronto. **Per ChatGPT:** niente di pronto. Quello che
+resta è dell'autore (§4), e un prompt nasce soltanto da una sua decisione — la
+prima candidata è togliere il passaggio dell'archivio di prima (§4, «Dopo il
+traguardo»). I prompt di Claude vanno uno alla volta nella cartella principale,
+e la suite dell'interfaccia di un worktree esclude quella dell'altro, per la
+porta 8620. Il numero di una riga è il suo nome, non la sua posizione.
 
 I prompt «da scrivere» li scrive la regia quando si chiude quello da cui
 dipendono, non prima: un prompt scritto in anticipo punta a uno stato che nel
@@ -281,6 +275,9 @@ ragionamento su cui le decisioni successive hanno dovuto rispondere:
 ---
 
 ## 1 · I testi di `site/` che gli account renderanno falsi — per `ui/*`
+
+*Fatto: i testi sono cambiati con P-18 e P-26, e sono nel sito pubblicato dalla
+v0.29.0. La sezione resta com'era, come traccia di che cosa si è cercato.*
 
 `docs/filosofia.md` e il §2 di `docs/specifica.md` sono riscritti. Restano i
 testi che chi studia legge davvero, e sono tutti dell'interfaccia.
@@ -467,8 +464,39 @@ consuma, non si riprogetta.
 
 ## 4 · Fuori dalle sessioni — l'autore
 
-- **Da `b50edec`, il 29 settembre 2026, `main` non si pusha fino al
-  traguardo.** Contiene la pagina con gli account, e il server in produzione non
+- **Dopo il traguardo** (3 ottobre 2026, dal resoconto di P-27):
+  1. **Il passaggio dell'archivio di prima degli account: togliere o no.**
+     Al traguardo l'autore ha deciso di non provarlo su un archivio vero
+     (R-ACC-05 sull'archivio vero, R-ACC-62), perché pensa di togliere la
+     funzionalità. Oggi l'intenzione è scritta soltanto nella voce
+     «Verificato — la v0.29.0, in esercizio» del CHANGELOG. Se si toglie, è
+     una decisione da scrivere — un ADR, o il §10 della specifica, perché
+     cambia la quarta condizione dell'ADR-004 (§2.4 della specifica) —, e poi
+     un prompt che tolga insieme codice, testi e controlli (R-ACC-05, C-09,
+     R-ACC-62, e le righe della specifica che la nominano — §2.4, §3.2, §5.4,
+     §7.1, §7.8; l'informativa non la nomina, cercato il 3 ottobre),
+     sapendo che R-ARCH-07 tiene il nome del database proprio per quel
+     passaggio. Finché c'è, la tiene soltanto il banco, su un archivio
+     sintetico.
+  2. **Il ramo `fix/0.28.1` si può togliere**, locale e da GitHub: il campo
+     «Branch» di statichost.eu è tornato `main` al passo 4 di P-27, e il suo
+     unico commit fuori da `main`, `affc37d`, è il tag `v0.28.1`, che resta.
+     Toglierlo da GitHub è una scrittura sul remoto: la fa la regia con il sì
+     dell'autore.
+  3. **Dal 16 ottobre 2026**, il redirect di `.pages.dev` (fase D2 di
+     `docs/migrazione-hosting.md`): oggi serve anche lui la 0.29.0.
+  4. **Dal 2 novembre 2026**, trenta giorni dopo il traguardo, la soglia degli
+     allarmi riletta sul registro vero (§15.4 di `account-progetto.md`). Nel
+     registro vero ci sono le righe delle prove del traguardo — una lettura
+     del titolare, un'opposizione messa e una ritirata, con un motivo che lo
+     dice —, anche nel file `/var/lib/rg/cancellazioni` (§2.8).
+  5. **Safari su iPhone e in navigazione privata**: non provati al traguardo,
+     restano in Q-PROVE (§19 di `account-progetto.md`).
+- ~~**Da `b50edec`, il 29 settembre 2026, `main` non si pusha fino al
+  traguardo.**~~ — **superato il 3 ottobre 2026**: `main` e `v0.29.0` sono
+  pushati (P-27). Da qui vale la regola di `AGENTS.md`: nessun push senza
+  chiedere, e «Build now» con il commit di rilascio in cima. Il testo di
+  prima: Contiene la pagina con gli account, e il server in produzione non
   c'è ancora: finché `.pages.dev` è acceso un push la pubblica lì da solo, con
   una registrazione che non può funzionare e un'informativa che descrive un
   server che non esiste. Su `rottagiusta.it` servirebbe «Build now», ma il
@@ -588,8 +616,9 @@ consuma, non si riprogetta.
   porta la bozza vera; oppure un rilascio di correzione da un ramo che parte da
   `v0.28.0`, con il solo P-36, come dice la prima riga di questo §4. **Deciso
   dall'autore il 1° ottobre: il rilascio di correzione, 0.28.1 — pubblicato lo
-  stesso giorno**, vedi sotto e il registro. **Il ramo di build di statichost.eu
-  è ora `fix/0.28.1`**: nel pannello, sito rotta-giusta → «Source & build» →
+  stesso giorno**, vedi sotto e il registro. *Dal 3 ottobre 2026 il ramo di
+  build è di nuovo `main` (passo 4 di P-27).* **Il ramo di build di statichost.eu
+  era `fix/0.28.1`**: nel pannello, sito rotta-giusta → «Source & build» →
   riquadro «Repository» → campo «Branch», poi «Save» sotto quel riquadro e
   «Build now» in «Builds». Al traguardo, lo stesso campo torna `main` (P-27). Due cose che
   il §4 non diceva, verificate dalla regia: **statichost.eu costruisce da
@@ -738,13 +767,17 @@ consuma, non si riprogetta.
 - ~~**Alla messa in esercizio**~~ — **fatta il 1° ottobre 2026 con P-15**: la
   STARDUST1-S, le chiavi sulla macchina, il record di `api.`. Esito nel §6.
 - ~~I worktree `rotta-giusta-p07` e `-p08`~~ — **tolti il 1° ottobre 2026**,
-  con i loro rami già fusi, insieme a `rotta-giusta-fix`. Il ramo `fix/0.28.1`
+  con i loro rami già fusi, insieme a `rotta-giusta-fix`. *Dal 3 ottobre il
+  ramo `fix/0.28.1` non serve più: «Dopo il traguardo», punto 2.* Il ramo `fix/0.28.1`
   resta, locale e su GitHub: statichost.eu costruisce da lì fino al traguardo,
   e **il campo «Branch» del pannello non va rimesso a `main` prima**, perché il
   `main` di GitHub è la 0.28.0 senza P-36, e una build qualunque lo
   ripubblicherebbe.
 
 ## 5 · Il traguardo: la versione con gli account
+
+**Fatto il 3 ottobre 2026: la v0.29.0** (P-27, esito nel §6). Quello che segue
+è il piano com'era scritto prima.
 
 È il lavoro più grande della coda, e **non è una sessione**: è il punto in cui
 quattro filoni arrivano insieme, e la regola del §1 — i testi cambiano nella
@@ -3505,9 +3538,13 @@ la sua proposta, che l'autore non ha cambiato prima di lanciare.
 
 ### P-27 — la regia, con l'autore: il traguardo, la 0.29.0
 
-**Stato:** **cominciato il 3 ottobre 2026, fermo a metà del passo 1.** I tre
-cancelli sono chiusi dal 2 ottobre. Che cosa c'è e che cosa manca, misurato il
-3 ottobre alle 07:40:
+**Stato:** **chiuso il 3 ottobre 2026, ai passi 1–5; il passo 6 è della regia,
+e l'ha fatto per la parte che non chiede un sì** (esito in fondo a questa
+sezione). Lo stato com'era alle 07:40, prima della sessione, resta qui sotto.
+
+**Lo stato prima della sessione:** cominciato il 3 ottobre 2026, fermo a metà
+del passo 1. I tre cancelli sono chiusi dal 2 ottobre. Che cosa c'è e che cosa
+manca, misurato il 3 ottobre alle 07:40:
 
 - **Il commit di rilascio c'è**: `9c7afe8`, «release: v0.29.0 — la versione
   con gli account», lanciato dall'autore con `TERRITORI_OK=1` il 3 ottobre alle
@@ -3661,7 +3698,58 @@ apre niente che possa fallire.
 vero (§15.4); **dal 16 ottobre**, il redirect di `.pages.dev` (fase D2 di
 `docs/migrazione-hosting.md`), dell'autore.
 
-**Esito:** —
+**Esito:** **la v0.29.0 è in linea, sulla pagina e sul server.** Tre commit su
+`main`, tutti pushati: `3198803` (il rilascio, dell'autore), `34df1ed` (una
+regola nuova in `AGENTS.md`) e `6392cf3` (le verifiche, nel CHANGELOG e in
+`account-progetto.md` §2.8 e §19).
+
+- **Passo 1:** tag annotato `v0.29.0` su `3198803`, dopo le cinque suite
+  rifatte su `bee675d`, che rispetto al commit di rilascio cambia solo questo
+  file: motore 193/197 con i quattro skip previsti, server 72/72, tutti e due
+  anche con la 24.21.0 LTS (archivio confrontato con lo `SHASUMS256.txt` di
+  nodejs.org), dati 263, specifica 824, interfaccia 2.245 in 4 min 05 s con la
+  8620 libera, `ripristina --prova` 22.
+- **Passo 2:** `main` e il tag pushati dalla sessione con il sì dell'autore;
+  `.pages.dev` ha costruito da sé la 0.29.0.
+- **Passo 3:** `rg-aggiorna v0.29.0 31988034…` l'ha lanciato **la sessione**,
+  su richiesta esplicita dell'autore — il prompt lo dava a lui —, entrando
+  come root con la chiave `rg-produzione` dal portachiavi. 1,9 s, schema 3 → 4,
+  epoca invariata.
+- **Passo 4:** l'autore ha rimesso «Branch» su `main` e premuto «Build now».
+  La prima build portava l'etichetta del commit della coda (`bee675d`), senza
+  il numero: da qui la regola nuova di `AGENTS.md`, «Build now» con il commit
+  di rilascio in cima (`34df1ed`). Una seconda build alle 07:13 UTC porta
+  l'etichetta della verifica.
+- **Passo 5:** una registrazione vera con la mail in Posta in arrivo e il link
+  intatto, arrivata in IPv6 (R-ACC-61); Safari 27.0.1 su macOS 27.0.1 che
+  salva sul server, cookie e IndexedDB compresi (R-ACC-59); `statistica`,
+  `leggi` e `opposizione` lanciati come utente `rg`, anche sull'account
+  dell'autore con il suo sì. **Non fatto, per scelta dell'autore:** l'archivio
+  vero di prima degli account (R-ACC-05, R-ACC-62) — pensa di togliere la
+  funzionalità (§4, «Dopo il traguardo»). Non provati Safari su iPhone e in
+  navigazione privata.
+
+**Che cosa ha controllato la regia, il 3 ottobre:** il tag è annotato e punta
+a `31988034…`; su `origin` ci sono `main` a `6392cf3` e il tag; i due commit
+dopo il tag toccano solo `AGENTS.md`, `CHANGELOG.md` e `account-progetto.md`,
+e questo file l'ha toccato solo la regia; `strumenti/macchina/` non è cambiato
+da `4d530e6`. Da fuori: `rottagiusta.it/sw.js` e `.pages.dev/sw.js` dicono
+`rg-0.29.0`; dodici file del sito — `sw.js`, `/app`, `index.html`,
+`/privacy`, `/avvertenza`, `engine.js`, il manifest e i cinque JSON della
+banca — sono identici byte per byte a `v0.29.0:site/`; `GET /v1/salute` dice
+0.29.0, schema 4/4; il preflight CORS dal sito risponde 204 con
+`Access-Control-Expose-Headers: Retry-After`. **Non ha controllato:** la
+macchina dall'interno, il registro vero, la mail e Safari — sono del
+resoconto —, e **non ha rifatto girare le suite** dopo `34df1ed` e `6392cf3`,
+che non toccano codice (il resoconto dice dati, specifica, guardiano e
+controllo della documentazione verdi dopo di loro).
+
+**Il passo 6, la chiusura:** esito, registro e le parti di questo file che il
+rilascio ha reso passato sono scritti in questo commit. **Restano, perché
+chiedono un sì:** togliere `fix/0.28.1` da GitHub (§4, «Dopo il traguardo»,
+punto 2) e allineare `ui/main` e `ui/vetrina` a `main` — le due cartelle sono
+pulite, ma la regia non sa se una sessione di ChatGPT è aperta (punto 5 di
+«Come si usa»).
 
 ---
 
@@ -4191,3 +4279,16 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
 - **3 ottobre 2026 — la data del rilascio corretta.** L'autore ha committato
   la correzione (`3198803`): il rilascio è datato 3 ottobre. Il tag `v0.29.0`
   va su quel commit, e lo fa la sessione di P-27 dopo le suite.
+- **3 ottobre 2026 — P-27 chiuso: la v0.29.0 è in linea.** La regia nuova ha
+  confrontato il resoconto con il repo e con quello che servono
+  `rottagiusta.it`, `.pages.dev` e `api.`: il tag su `3198803`, dodici file del
+  sito identici byte per byte al tag, il server a 0.29.0 con schema 4 e il
+  `Retry-After` esposto solo al sito. La sessione di P-27 ha lanciato lei
+  `rg-aggiorna`, su richiesta dell'autore, e ha trovato che statichost.eu
+  etichetta la build con l'ultimo commit del ramo: è una regola in `AGENTS.md`.
+  Esce la riga 9 della coda; la testa del §4, «`main` non si pusha», è barrata;
+  §1 e §5 dicono che sono passato. Nel §4 entra «Dopo il traguardo»: la
+  decisione sull'archivio di prima, che vive ancora solo nel CHANGELOG, il ramo
+  `fix/0.28.1`, il redirect del 16 ottobre, la soglia del 2 novembre, Safari su
+  iPhone. Il prompt di ripresa dice lo stato nuovo. Restano, con un sì
+  dell'autore, `fix/0.28.1` da GitHub e l'allineamento dei rami di ChatGPT.
