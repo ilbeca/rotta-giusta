@@ -419,7 +419,7 @@ quelle del commit di P-15. **Il codice del server invece arriva solo dal tag**
 | Chiave d'accesso | `rg-produzione` (ed25519), l'unica del progetto; sul Mac in `~/.ssh/rg-produzione`, con la passphrase nel portachiavi |
 | Impronta della macchina | `SHA256:WB77SvOkaSGD+lJIi1B8JQD8ddmNxTohEySMTXa8os4` (ed25519): una sessione che entra la confronta |
 | Node | 24.21.0 LTS da nodejs.org, verificato con `SHASUMS256.txt` (`installa-node`) |
-| Server | `v0.28.0`, commit `51d94858103032f50168e04b71eb769e5bb25b6c`, uguale sul Mac e sul repo pubblico |
+| Server | `v0.29.0`, commit `31988034ac0ecf57596e8b15cd286a0270b89f2c`, dal 3 ottobre 2026 (sotto); prima `v0.28.0`, `51d94858…` |
 | Proxy | Caddy 2.6.2 dai pacchetti di Ubuntu, certificato Let's Encrypt (YE2), rinnovo suo |
 
 **Il gruppo di sicurezza era tutto aperto.** La console lo crea con la politica
@@ -522,7 +522,43 @@ nessuno, perché la pagina non lo chiama fino alla versione con gli account; al
 traguardo `rg-aggiorna` lo porta al tag nuovo, che ha anche R-ACC-49 — il
 `Retry-After` esposto dal CORS — e il controllo del modulo principale corretto.
 Le istantanee del disco come ritorno indietro del sistema intero non sono
-provate.
+provate. *(3 ottobre 2026: fatto al traguardo, sotto. Le istantanee restano
+non provate.)*
+
+**Al traguardo — 3 ottobre 2026 (P-27).** La sessione è entrata nella macchina
+con `rg-produzione` dal portachiavi, su richiesta dell'autore, verificando
+l'impronta qui sopra; nessuna password digitata. Prima di toccare: `v0.28.0` in
+uso, `rg-api`, `caddy` e `rg-copia.timer` attivi, 4,7 GB liberi, e
+`rg-aggiorna` e `rg-torna` sulla macchina uguali a quelli di
+`strumenti/macchina/` (SHA-256), che da P-15 non sono cambiati — quindi niente
+da ricopiare.
+
+- **`rg-aggiorna v0.29.0 31988034…`: 1,9 s, uscita 0.** Il tag sul commit
+  atteso; la copia di prima (`aggiorna-20261003T060725Z.db`) con
+  `integrity_check` ok, 0 righe e 0 account; nel log «schema del database
+  portato da 3 a 4», e nessun «posta non configurata» né «titolare non
+  configurato». `/var/lib/rg/precedente` dice `v0.28.0`: è lì che torna
+  `rg-torna`.
+- **Da fuori:** `GET /v1/salute` risponde 0.29.0, schema 4/4, epoca
+  `278fd81e…` invariata. Il CORS espone `Retry-After` nella preflight e nella
+  risposta, solo per `https://rottagiusta.it`; un'origine estranea non riceve
+  intestazioni CORS (R-ACC-49).
+- **Gli strumenti del titolare, come utente `rg`** (`runuser -u rg`, dal
+  rilascio in uso). `statistica.mjs` conta (0, poi 1 iscritto e 2 risposte) e
+  rifiuta una query sulla tabella `account` — anche una che nomina «account»
+  solo come colonna: il controllo è sul nome. `leggi.mjs` e `opposizione.mjs`
+  su un'email che non c'è escono con 1, e il registro resta a 10 righe; senza
+  motivo `leggi.mjs` esce con 2. Sull'account dell'autore, con il suo sì e un
+  motivo che dice la prova: `leggi.mjs` annota «lettura del titolare» (registro
+  da 14 a 15) e non mostra password, chiave locale né impronte; `--metti` porta
+  gli iscritti contati da 1 a 0 con «fuori dai conteggi: 1», `--togli` li
+  rimette. Il file `/var/lib/rg/cancellazioni` nasce lì, `0600 rg`, con le due
+  voci, numero dell'account e chiave, senza email.
+- **Il primo account vero** è dell'autore: mail di conferma spedita un secondo
+  dopo la registrazione, arrivata in Posta in arrivo con il link intatto,
+  confermata 28 s dopo. È arrivato **in IPv6**.
+- **Il riavvio di `rg-api`** ha chiuso il processo partito il 1° ottobre dopo
+  due giorni e due ore, 175 MB di picco.
 
 ---
 
@@ -2434,14 +2470,22 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
   - ~~il riavvio della macchina dopo un aggiornamento del kernel, e il gruppo di
     sicurezza~~ — 32,5 s, e tutto riparte da solo; il gruppo era tutto aperto,
     ora in entrata passano solo 22, 443 e ICMP.
-  - **Resta:** le regole `::/0` del gruppo di sicurezza provate da una rete
-    IPv6, e le istantanee del disco come ritorno indietro del sistema (§2.7).
+  - **Resta:** ~~le regole `::/0` del gruppo di sicurezza provate da una rete
+    IPv6~~ — **provate il 3 ottobre 2026**: la registrazione dell'autore è
+    arrivata in IPv6 sulla 443 (§2.8, «Al traguardo»); la 22 in IPv6 non è
+    provata —, e le istantanee del disco come ritorno indietro del sistema
+    (§2.7).
 - **Le regole di `validaRiga()` su archivi diversi da quello dell'autore.**
   Misurate su uno solo (§4.1): 2.341 righe su 2.341. Un archivio che ha
   attraversato versioni diverse, o importato da altrove, può avere forme che
   quello non ha; per questo il rifiuto dice il motivo invece di un numero.
-- **Il cookie fra `rottagiusta.it` e `api.rottagiusta.it` su Safari**, con la
-  prevenzione del tracciamento attiva (§6.1). È Q-PROVE.
+- ~~**Il cookie fra `rottagiusta.it` e `api.rottagiusta.it` su Safari**, con la
+  prevenzione del tracciamento attiva (§6.1). È Q-PROVE.~~ — **provato il 3
+  ottobre 2026 su Safari 27.0.1, macOS 27.0.1**, dall'autore: accesso e due
+  risposte date lì, che la pagina conta nella copia IndexedDB dell'account «più
+  server» e che il server ha. Le impostazioni di Safari non sono state lette,
+  quindi che la prevenzione del tracciamento fosse attiva è il predefinito, non
+  una misura. **Resta:** iPhone, e la navigazione privata (R-ACC-59, Q-PROVE).
 - **Il peso reale sul server**: i 347 byte a riga del §2.4 vengono da righe
   sintetiche.
 - ~~**`crypto.argon2` nella versione di Node che girerà sulla macchina**~~ —

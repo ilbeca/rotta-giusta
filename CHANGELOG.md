@@ -11,6 +11,60 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+### Verificato — la v0.29.0, in esercizio
+
+- **Il tag e le suite.** `v0.29.0` è un tag annotato su `3198803`, il commit
+  che porta la data giusta, fatto dopo le cinque suite rifatte il 3 ottobre su
+  quel contenuto — fra lui e la cima di `main` cambiava solo
+  `docs/prossime-sessioni.md`, che nessuna suite legge: motore 193/197 con i
+  quattro skip previsti, server 72/72, tutti e due anche con la **24.21.0 LTS**
+  (archivio confrontato con il `SHASUMS256.txt` di nodejs.org ed estratto di
+  nuovo); dati 263, specifica 824, interfaccia **2.245** in 4 min 05 s con la
+  8620 guardata libera prima; `ripristina --prova` 22 controlli. `main` e il
+  tag pushati con il sì dell'autore; `.pages.dev` ha costruito da sé la 0.29.0.
+
+- **Il server, da `v0.28.0` a `v0.29.0`, in 1,9 s.** `rg-aggiorna` lanciato
+  dalla sessione su richiesta dell'autore, con gli script della macchina uguali
+  a quelli del repo byte per byte: il tag sul commit atteso, la copia di prima
+  con `integrity_check` ok, «schema del database portato da 3 a 4» nel log.
+  Da fuori: `GET /v1/salute` dice 0.29.0, schema 4/4, **la stessa epoca** di
+  prima — un aggiornamento non è un ripristino —; il CORS espone `Retry-After`
+  al sito e a nessun altro (R-ACC-49).
+
+- **La pagina: il contenuto è quello del tag, l'etichetta no.** Dopo «Build
+  now» `rottagiusta.it` serve `rg-0.29.0`, e undici file — `sw.js`, le pagine,
+  `engine.js`, il manifest, i quattro JSON della banca — sono identici byte per
+  byte a `v0.29.0:site/`; la privacy dice «Aggiornata il 3 ottobre 2026» e non
+  più «Bozza». Ma il pannello di statichost.eu ha etichettato la build con il
+  messaggio dell'ultimo commit di `main`, uno della coda, senza il numero: è
+  il primo posto in cui si guarda che cosa è in linea. Da qui `AGENTS.md`
+  chiede di costruire con il commit di rilascio in cima, e questa voce porta il
+  numero apposta.
+
+- **Una registrazione vera**, dall'autore: la mail di conferma spedita un
+  secondo dopo, arrivata in Posta in arrivo con il link intatto, confermata
+  dopo 28 s (R-ACC-61). E l'arrivo era **in IPv6**: la 443 aperta su `::/0` è
+  provata da una rete vera.
+
+- **Safari 27.0.1 su macOS 27.0.1** (R-ACC-59): accesso e due risposte date
+  lì; la pagina le conta «nella copia di questo account in IndexedDB, più
+  server», e il server ne ha due. Il cookie va e torna fra `rottagiusta.it` e
+  `api.`, e IndexedDB si apre. Non provato su iPhone, né in navigazione privata.
+
+- **Gli strumenti del titolare sulla macchina, come utente `rg`.**
+  `statistica.mjs` conta e rifiuta una tabella vera; `leggi.mjs` e
+  `opposizione.mjs` su un'email che non c'è escono con 1 senza annotare niente.
+  Sull'account dell'autore, con il suo sì e un motivo che dice la prova:
+  `leggi.mjs` annota «lettura del titolare» e mostra l'account senza segreti;
+  `--metti` lo toglie dai conteggi (iscritti 1 → 0) e `--togli` lo rimette, e il
+  file delle cancellazioni nasce con le due voci, `0600 rg`, senza email.
+
+- **Non provato, per scelta dell'autore:** un archivio vero di prima degli
+  account portato nell'account (R-ACC-05 sull'archivio vero, R-ACC-62). Il
+  browser della prova non ne aveva uno, e l'autore ha deciso di non cercarne un
+  altro: pensa di togliere la funzionalità. Finché c'è, la tiene solo il banco,
+  su un archivio sintetico.
+
 ## [0.29.0] — 2026-10-03
 
 **La versione con gli account.** Si fa ancora tutto senza registrarsi, ma senza
