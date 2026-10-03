@@ -659,6 +659,20 @@ consuma, non si riprogetta.
      fare, con il sì dell'autore: leggere il diario e le trascrizioni dei due
      passaggi per vedere dove si sono fermati — un permesso che manca, o
      Gmail che non risponde.
+     **Letto il 3 ottobre 2026, con il sì dell'autore:** l'attività gira da
+     sola, e quando il Mac è sveglio fa il suo lavoro. Il passaggio fallito del
+     2 ottobre si è fermato perché **il Mac è andato in stop a metà risposta**
+     («Your computer went to sleep mid-response»), e poi è scaduto; quello del
+     3 ottobre ha chiuso bene — riga nel diario, JSON riletto, riepilogo
+     «Niente di nuovo» — con la prima ricerca Gmail scaduta e riuscita al
+     secondo tentativo. Un passaggio saltato non perde niente: la finestra di
+     ricerca parte da due giorni prima dell'ultima scansione, quindi il prezzo
+     di un Mac spento è il **ritardo**, non una mail persa. Due limiti veri, da
+     decidere: l'attività legge solo gli avvisi dei fornitori in Gmail, mentre
+     richieste e allarmi del server — la parte con le scadenze — arrivano nella
+     casella OVH di `privacy@`, che nessuna automazione legge; e il suo orario
+     segue un fuso diverso da quello del Mac (`nextRunAt` alle 15:00 UTC per
+     «20:00»), cioè gira alle 05 e alle 17 di Roma.
   2. **Il DPA di statichost.eu: firmato e spedito dall'autore, la copia
      controfirmata è attesa.** Detto dall'autore alla regia il 2 ottobre 2026;
      la data di spedizione non è scritta. Quando torna: accanto al registro, e
@@ -742,7 +756,13 @@ consuma, non si riprogetta.
   `dkim=pass` da guardare in una mail vera di `privacy@`; la cartella
   `~/Software/rotta-giusta-quarantena/p34-2026-09-26/`, che non serve più da
   P-34; la sessione «Donazioni PayPal e tassazione» del 25 settembre, di cui
-  nel repo non c'è traccia — se conteneva una decisione, vive solo lì. E una
+  nel repo non c'è traccia — se conteneva una decisione, vive solo lì. *Letta il 3 ottobre 2026: era una ricerca, senza decisioni.*
+  Diceva che il pulsante «Donazione» di PayPal è solo per enti benefici
+  registrati, che a un privato resta un link PayPal.Me sul conto personale, che
+  una donazione resta una liberalità solo se non promette niente in cambio, che
+  Liberapay e GitHub Sponsors sono alternative, e che anche un semplice link va
+  dichiarato nell'informativa. Fonti del 25 settembre, prima degli account: da
+  riverificare quando si decide. E una
   cosa già falsa oggi nella specifica, che il passo 1 di P-27 corregge con le
   altre: dice «v0.28.0» dove il sito pubblicato è la 0.28.1, con l'avviso di
   P-36.
