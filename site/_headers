@@ -1,8 +1,7 @@
 # statichost.eu: intestazioni per percorso. Lo stesso formato lo legge
 # strumenti/serve.py, che le applica anche in locale.
 #
-# Il service worker non deve restare in cache HTTP: e' lui che decide quale
-# versione dell'app gira, e una copia vecchia servita dal browser rimanderebbe
-# ogni aggiornamento di un giorno. Il resto lo governa sw.js, cache-first.
+# Il service worker deve arrivare fresco: disinstalla quello della 0.29.0.
+# Il resto lo governa l'host con max-age=0, must-revalidate e il 304.
 /sw.js
   Cache-Control: no-cache

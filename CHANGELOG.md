@@ -150,6 +150,50 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   dell'interfaccia la 8620 guardata libera. `site/` fuori dal motore — la
   pagina, la vetrina, `_headers` — non è stato toccato: è di P-61.
 
+### Cambiato — P-61: la pagina senza offline e senza passaggio dell'archivio di prima
+
+- **La pagina realizza l'ADR-005.** Non registra più il service worker e non
+  apre cache: escono `GUSCIO`, il download delle figure, l'autodiagnosi e il
+  segnale dell'offline. Info legge la versione dalla banca caricata e dice di
+  ricaricare una volta; il pallino resta per una scrittura fallita. La vetrina,
+  la palestra e la privacy descrivono il sito che si apre con la rete e le
+  risposte dell'account che, se la rete cade, aspettano nel dispositivo.
+  `_headers` conserva il `no-cache` di `/sw.js` e spiega la riconvalida
+  dell'host; il manifest e il `sw.js` di P-60 restano com'erano.
+
+- **L'archivio di prima resta dov'è.** Escono lettura, avvisi, conteggi,
+  trasferimento, download e cancellazione del database precedente e delle
+  chiavi `pn.`, con la loro data d'esame e il segno di migrazione nella copia
+  dell'account. I trasferimenti delle risposte della pagina aperta e dei file,
+  la copia dell'account, le bozze e la coda restano quelli di prima. Le righe
+  C-21 e C-22 escono da `docs/eccezioni-interfaccia.md` nello stesso commit:
+  i gruppi girano ora per intero sulla pagina vera, senza eccezioni.
+
+- **Verificato in Chrome a 375 e 1280 px**, senza account e con account
+  sintetici, soltanto su server e database temporanei: tutte le sette viste,
+  nessun testo sull'offline o sul passaggio dell'archivio di prima, nessun
+  debordamento orizzontale, nessun errore JavaScript, nessun service worker o
+  cache. Schermate acquisite e guardate, con le misure degli stili calcolati;
+  anche vetrina e privacy alle due larghezze. **Quattro passaggi dalla
+  0.29.0**, presa dal tag e installata sulla stessa origine, alle due
+  larghezze e nei due stati: prima un controller e `rg-0.29.0`, dopo nessun
+  controller, registrazione o cache; la scheda già aperta non viene
+  ricaricata, e l'account si ritrova nella nuova visita.
+
+- **Suite:** motore **192/196**, con i quattro skip previsti; server **72/72**
+  sia con Node di sistema sia con la **24.21.0 LTS**, il cui archivio è stato
+  confrontato con `SHASUMS256.txt`; interfaccia **2.263**, con la 8620 libera
+  prima; dati **223**; specifica **820**. Il controllo condiviso della
+  documentazione è verde. Versione non toccata, nessun tag, push o deploy.
+
+- **Trovato e corretto nel controllo dati:** due impronte di identificatori
+  privati nella stessa riga del prompt P-62, `docs/prossime-sessioni.md:4067`,
+  già presente nel commit iniziale `77cc779`, rendevano rosso il guardiano.
+  Con la deroga esplicita dell'autore alla penna unica, quella sola riga
+  sostituisce l'indirizzo personale con «all'indirizzo Gmail dell'autore»:
+  testo e apostrofi uguali alla correzione della regia su `main`, `6106e42`.
+  Nessun'altra riga della coda cambia.
+
 ## [0.29.0] — 2026-10-03
 
 **La versione con gli account.** Si fa ancora tutto senza registrarsi, ma senza
