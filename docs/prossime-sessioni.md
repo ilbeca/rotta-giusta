@@ -227,14 +227,22 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
+| 10 | **Che cosa viene dopo gli account** — il brainstorming, poi lo smistamento in prompt | Claude con l'autore, poi la regia | `main` | niente | P-59 |
+| 11 | **Togliere il passaggio dell'archivio di prima** — la decisione, la specifica e i controlli | Claude | `main` | niente | P-60 |
+| 12 | **Togliere il passaggio dell'archivio di prima** — la pagina | ChatGPT | `ui/main` | P-60 | P-61 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo il traguardo» e le voci non barrate |
 
 **Il traguardo è fatto: la v0.29.0 è in linea dal 3 ottobre 2026** (P-27),
 sulla pagina e sul server, e `main` è pushato. La riga 9 della coda è uscita.
-**Per Claude:** niente di pronto. **Per ChatGPT:** niente di pronto. Quello che
-resta è dell'autore (§4), e un prompt nasce soltanto da una sua decisione — la
-prima candidata è togliere il passaggio dell'archivio di prima (§4, «Dopo il
-traguardo»). I prompt di Claude vanno uno alla volta nella cartella principale,
+**Per Claude:** P-59 e P-60, pronti, tutti e due nella cartella principale e
+quindi uno alla volta: P-60 è corto e sblocca ChatGPT; P-59 è lungo e chiede
+l'autore davanti. **Per ChatGPT:** P-61, dopo P-60. Lo smistamento delle idee
+di P-59 in prompt — decisioni dell'autore, ricerche, lavoro di Claude su
+`main`, lavoro di ChatGPT su `ui/main` — lo fa la regia dal suo resoconto,
+con prima le decisioni che cambiano una promessa (informativa, filosofia, un
+ADR) e poi il codice. Rilasci piccoli e frequenti (deciso dall'autore il 3
+ottobre 2026): ogni rilascio è un «Build now», più `rg-aggiorna` quando cambia
+il server. I prompt di Claude vanno uno alla volta nella cartella principale,
 e la suite dell'interfaccia di un worktree esclude quella dell'altro, per la
 porta 8620. Il numero di una riga è il suo nome, non la sua posizione.
 
@@ -463,7 +471,16 @@ consuma, non si riprogetta.
 ## 4 · Fuori dalle sessioni — l'autore
 
 - **Dopo il traguardo** (3 ottobre 2026, dal resoconto di P-27):
-  1. **Il passaggio dell'archivio di prima degli account: togliere o no.**
+  1. **Il passaggio dell'archivio di prima degli account — deciso
+     dall'autore il 3 ottobre 2026: si toglie subito.** Il suo criterio: se
+     per chi usa il sito l'esperienza non cambia, si toglie. Non cambia per
+     nessuno che arrivi dalla 0.29.0 in poi; cambia, in peggio, per chi aveva
+     risposte nel browser prima del 3 ottobre e non le ha ancora portate —
+     non le vedrà più, e nessuno glielo dirà —, e quante siano queste persone
+     non si sa. Scartata la proposta della regia, toglierlo con una data. La
+     regia ne deriva, e P-60 lo scrive nell'ADR: la pagina **non legge e non
+     cancella** quelle risposte, che restano nel browser di chi le ha. P-60 e
+     P-61. Il testo di prima: togliere o no.
      Al traguardo l'autore ha deciso di non provarlo su un archivio vero
      (R-ACC-05 sull'archivio vero, R-ACC-62), perché pensa di togliere la
      funzionalità. Oggi l'intenzione è scritta soltanto nella voce
@@ -673,6 +690,16 @@ consuma, non si riprogetta.
      casella OVH di `privacy@`, che nessuna automazione legge; e il suo orario
      segue un fuso diverso da quello del Mac (`nextRunAt` alle 15:00 UTC per
      «20:00»), cioè gira alle 05 e alle 17 di Roma.
+     **Deciso dall'autore il 3 ottobre 2026, e fatto:** l'attività dice
+     quante ore sono passate dall'ultima scansione, in ogni riga del diario, e
+     un RITARDO in cima al riepilogo sopra le 36 ore (il prompt di prima è in
+     una copia della regia, fuori dal repo). Gli orari restano: il Mac è acceso
+     di solito sempre — ma il 2 ottobre è andato in stop, e impedire lo stop è
+     un'impostazione di sistema dell'autore. **Da fare:** la casella OVH di
+     `privacy@` nell'app Mail dell'iPhone, con le notifiche, per le richieste e
+     gli allarmi — la aggiunge l'autore, perché chiede la sua password —; e un
+     filtro in Gmail che metta in evidenza gli avvisi di sicurezza dei
+     fornitori, che la regia crea con il sì dell'autore sui suoi parametri.
   2. **Il DPA di statichost.eu: firmato e spedito dall'autore, la copia
      controfirmata è attesa.** Detto dall'autore alla regia il 2 ottobre 2026;
      la data di spedizione non è scritta. Quando torna: accanto al registro, e
@@ -3772,6 +3799,147 @@ sessioni di ChatGPT aperte. **P-27 è chiuso per intero.**
 
 ---
 
+### P-59 — Claude, con l'autore: che cosa viene dopo gli account, il brainstorming
+
+**Stato:** pronto, dal 3 ottobre 2026. **Dove:** Claude Code,
+`~/Software/rotta-giusta`, ramo **`main`**, a mano, con l'autore davanti.
+**Nasce da:** la richiesta dell'autore, il 3 ottobre, di fare il brainstorming
+in una sessione sua; la regia smista dopo.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-59: il brainstorming su che cosa viene dopo la versione con
+gli account, insieme all'autore. È la casella BRAINSTORM del ciclo di
+dev-standards: niente codice, niente prompt, niente ordine dei lavori.
+Le idee le smista dopo la regia, in decisioni dell'autore, ricerche,
+lavoro di Claude su main e lavoro di ChatGPT su ui/main.
+
+Leggi AGENTS.md, docs/filosofia.md, e in docs/specifica.md il §1 (per
+chi è), il §2 (che cosa è e che cosa non è), il §4.6 (che cosa il
+motore non sa) e il §10 (le questioni aperte); poi
+docs/decisioni-aperte.md, e le issue aperte su GitHub (gh issue list).
+Poi ascolta l'autore: le sue idee una alla volta, con le domande che
+servono finché ciascuna è chiara. Proponi anche tu, dichiarando che
+cosa è tuo.
+
+Un tema c'è già: le donazioni, con PayPal. In docs/prossime-sessioni.md,
+§4, «Trovato dal controllo del 2 ottobre», c'è che cosa diceva la
+ricerca del 25 settembre, fatta prima degli account: sono fatti da
+riverificare, non da prendere per buoni. Riverificali sulle pagine
+ufficiali — PayPal, e le alternative che trovi —, con la fonte e la
+data accanto a ogni affermazione. La parte fiscale scrivila come
+domande per un professionista, non come risposte.
+
+Per ogni idea scrivi: il problema; per quale delle tre persone del §1;
+che cosa cambia per chi studia; quale promessa tocca — filosofia,
+informativa, un ADR, un Vincolo del §2.1 —; che cosa il motore e il
+server sanno già e che cosa no; quanto è grande, a occhio; i rischi, il
+guasto muto per primo; le decisioni che servono all'autore. Un'idea
+scartata resta scritta, con il perché.
+
+Scrivi in docs/idee-dopo-gli-account.md, file neutro, mentre si
+discute e non alla fine: la chat non sopravvive alla sessione. Non
+toccare site/, tests/, server/, docs/specifica.md né
+docs/prossime-sessioni.md. Un commit del tuo file e di una voce in fondo
+a [Unreleased] del CHANGELOG; niente push. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-60 — Claude: togliere il passaggio dell'archivio di prima, la decisione e i controlli
+
+**Stato:** pronto, dal 3 ottobre 2026. **Dove:** Claude Code,
+`~/Software/rotta-giusta`, ramo **`main`**, a mano: tocca `tests/` e la
+specifica. **Nasce da:** la decisione dell'autore del 3 ottobre (§4, «Dopo il
+traguardo», punto 1). **Sblocca:** P-61.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-60: togliere il passaggio dell'archivio di prima degli
+account — la decisione scritta, la specifica, i controlli. La pagina la
+cambia ChatGPT dopo di te, con P-61.
+
+La decisione è dell'autore, del 3 ottobre 2026, ed è scritta in
+docs/prossime-sessioni.md, §4, «Dopo il traguardo», punto 1, con il suo
+criterio e il suo prezzo. Leggi AGENTS.md, l'ADR-004, e nella specifica
+il §2.4 (la quarta condizione), il §3.2, il §5.4, il §7.1, il §7.8,
+R-ACC-05 e R-ACC-62 nel §9.9, R-ARCH-07 nel §9.2; in
+docs/account-client-progetto.md il §7 e le righe di C-09 nel §12; in
+site/app.html leggiVecchio(), mostraVecchio() e chi le chiama. Prima di
+togliere un controllo, di' che cosa tiene fermo oggi e chi se ne
+accorgerebbe senza.
+
+1. ADR-005, che sostituisce la quarta condizione dell'ADR-004 e la
+   marca lì: il perché dell'autore, e il prezzo per intero — chi ha
+   risposte nel browser di prima del 3 ottobre e non le ha portate non
+   le vede più, e nessuno glielo dice. La pagina non le legge e non le
+   cancella: restano nel suo browser.
+2. La specifica e il progetto del client riscritti in quei punti.
+   R-ACC-05 e R-ACC-62 escono o diventano il requisito nuovo: la pagina
+   non legge né cancella `open-patente-nautica` e `pn.archivio`, con il
+   suo controllo. Di' che cosa resta vero di R-ARCH-07 e di
+   test_rinomino quando nessuno legge più quel database. Cerca anche le
+   frasi del passaggio che C-18 e R-ACC-57 pretendono.
+3. I controlli. C-09 e le sue rotture escono dal banco del client e
+   dalla pagina di riferimento, che il passaggio non lo ha più. Il
+   controllo nuovo è rosso sulla pagina vera di oggi: dichiaralo fra i
+   «Difetti aperti dichiarati» di docs/eccezioni-interfaccia.md, così
+   main resta verde e P-61 toglie la riga nello stesso commit in cui
+   toglie il codice. Provalo al contrario.
+
+Le cinque suite verdi, quella dell'interfaccia con la 8620 guardata
+libera prima, e la riga finale che dica su quale pagina. Un commit,
+con la voce in fondo a [Unreleased]; niente push. Chiudi con il
+resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-61 — ChatGPT: togliere il passaggio dell'archivio di prima, la pagina
+
+**Stato:** in attesa di P-60. **Dove:** l'app ChatGPT (Codex), progetto
+`~/Software/rotta-giusta-ui` in modalità Local, ramo **`ui/main`**. La regia
+riguarda questo prompt quando P-60 è chiuso.
+
+```
+Questo prompt è per ChatGPT (Codex), nella cartella
+~/Software/rotta-giusta-ui, sul ramo ui/main, in modalità Local. Se sei
+un altro agente o sei in un'altra cartella, fermati e dillo, senza
+scrivere niente.
+
+Sessione P-61: togliere dalla pagina il passaggio dell'archivio di
+prima degli account. Leggi AGENTS.md, l'ADR-005 in docs/adr/, e il
+requisito che lo sostituisce nel §9.9 di docs/specifica.md: è il
+contratto, scritto da P-60.
+
+In site/app.html togli quello che legge, mostra, porta, scarica o
+cancella le risposte di `open-patente-nautica` e `pn.archivio` —
+leggiVecchio(), mostraVecchio(), i pannelli, l'avviso nella Rotta e in
+Info, lo stato in S — e i testi che lo nominano. La pagina non apre
+più quel database e non tocca quella chiave, né per leggere né per
+cancellare. Niente altro cambia: il resto dell'account, i
+trasferimenti di un file e delle risposte della pagina aperta restano
+come sono. Togli nello stesso commit la riga dei «Difetti aperti
+dichiarati» di docs/eccezioni-interfaccia.md che P-60 ha messo.
+
+Collaudo in Chrome a 375 e 1280 px, senza account e con l'account, con
+un archivio di prima scritto nel browser prima del primo carico: la
+pagina non mostra niente, e dopo il giro l'archivio è ancora lì,
+intatto. Le cinque suite verdi; quella dell'interfaccia vuole la 8620
+libera. Un commit con il trailer, la voce in fondo a [Unreleased], il
+numero di versione non si tocca. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
 ### I segnaposto — i prompt che non si possono ancora scrivere
 
 Qui sotto c'è **tutto quello che resta** fino alla versione con gli account e
@@ -4314,3 +4482,13 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
 - **3 ottobre 2026 — il passo 6 finito.** Con il sì dell'autore: la chiusura
   della coda pushata, `fix/0.28.1` tolto dal Mac e da GitHub, `ui/main` e
   `ui/vetrina` allineati a `main`. Per la regia resta il §4.
+- **3 ottobre 2026 — dopo il traguardo: tre decisioni e tre prompt.**
+  L'autore ha deciso di togliere subito il passaggio dell'archivio di prima,
+  con il criterio che per chi arriva dalla 0.29.0 non cambia niente: P-60 per
+  la decisione scritta e i controlli, P-61 per la pagina. Il Registro privacy
+  letto con il suo sì: gira, e il fallimento del 2 ottobre era il Mac in
+  stop; l'attività ora dice il ritardo dall'ultima scansione. La casella OVH
+  nell'app Mail e un filtro in Gmail restano da fare. Per i miglioramenti e
+  le donazioni l'autore vuole un brainstorming in una sessione sua: P-59; lo
+  smistamento in prompt è della regia, dal suo resoconto. Rilasci piccoli e
+  frequenti.
