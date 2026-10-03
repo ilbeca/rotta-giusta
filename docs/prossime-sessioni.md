@@ -228,16 +228,16 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
 | 10 | **Che cosa viene dopo gli account** — il brainstorming, poi lo smistamento in prompt | Claude con l'autore, poi la regia | `main` | niente | P-59 |
-| 12 | **Semplificare: via l'offline e l'archivio di prima** — la pagina | ChatGPT | `ui/main` | niente: P-60 è chiuso | P-61 |
 | 14 | **La casella `privacy@` sull'iPhone**, e la prova `dkim=pass` | Claude con l'autore | `main`, solo `account-progetto.md` | niente | P-62 |
-| 13 | **Il rilascio 0.30.0** | la regia, con l'autore | `main` | P-61 | — |
+| 13 | **Il rilascio 0.30.0** | la regia, con l'autore | `main` | niente: P-61 è fuso | — |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo il traguardo» e le voci non barrate |
 
 **Il traguardo è fatto: la v0.29.0 è in linea dal 3 ottobre 2026** (P-27),
 sulla pagina e sul server, e `main` è pushato. La riga 9 della coda è uscita.
 **Per Claude:** P-59, il brainstorming, lungo e con l'autore davanti; e
 P-62, la casella `privacy@` sull'iPhone, che tocca soltanto
-`account-progetto.md`. P-60 è chiuso. **Per ChatGPT:** P-61, pronto. Lo smistamento delle idee
+`account-progetto.md`. P-60 e P-61 sono chiusi, e il rilascio 0.30.0 è in corso. **Per
+ChatGPT:** niente di pronto. Lo smistamento delle idee
 di P-59 in prompt — decisioni dell'autore, ricerche, lavoro di Claude su
 `main`, lavoro di ChatGPT su `ui/main` — lo fa la regia dal suo resoconto,
 con prima le decisioni che cambiano una promessa (informativa, filosofia, un
@@ -3983,8 +3983,9 @@ pagina in un browser — lì P-61 non è ancora passato.
 
 ### P-61 — ChatGPT: semplificare — via l'offline e l'archivio di prima, la pagina
 
-**Stato:** **pronto, dal 3 ottobre 2026**: P-60 è chiuso, e la regia ha
-riletto questo prompt sul suo esito. Il contratto è il §3.5 della specifica,
+**Stato:** **chiuso il 3 ottobre 2026** (esito in fondo). Era pronto dallo
+stesso giorno: P-60 chiuso, e la regia aveva riletto questo prompt sul suo
+esito. Il contratto è il §3.5 della specifica,
 «Per P-61»; la frase nuova della conservazione con l'account è nel §11.2 del
 progetto del client, e F-01 accetta la vecchia e la nuova finché P-61 non
 arriva. `site/sw.js` è ora del motore: il `pre-commit` di `ui/*` lo rifiuta.
@@ -4023,7 +4024,23 @@ versione non si tocca. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** `608f627` su `ui/main`, fuso in `main` con `6ad7342` il 3 ottobre
+2026. La pagina non registra più il service worker; escono il guscio, il
+pulsante delle figure, l'autodiagnosi offline e il passaggio dell'archivio di
+prima; vetrina, privacy e `_headers` dicono il sito senza offline. C-21 e C-22
+girano interi sulla pagina vera, e le loro righe sono uscite da
+`docs/eccezioni-interfaccia.md`. Collaudo di ChatGPT in Chrome a 375 e 1280 px,
+con e senza account: quattro passaggi da una 0.29.0 installata, conclusi senza
+service worker, senza cache e senza ricaricare la scheda aperta. Con la deroga
+della regia ha corretto la riga 4067 di questo file, identica a `6106e42`.
+
+**Che cosa ha controllato la regia:** il commit con il trailer; il controllo
+dei territori sull'intervallo, uscita 0; il diff, solo pagina, testi,
+`_headers`, CHANGELOG, eccezioni e quella riga; la merge senza conflitti e
+`main..ui/main` vuoto; la riga vuota fra le voci del CHANGELOG, già a posto. Le
+suite sullo stato fuso: motore 192/196, server 72/72, dati 223, specifica 820,
+documentazione verde, interfaccia 2.263 con la 8620 libera prima. **Non ha controllato:** il
+collaudo nel browser, che è del resoconto.
 
 ### P-62 — Claude, con l'autore: la casella `privacy@` sull'iPhone, e la prova `dkim=pass`
 
