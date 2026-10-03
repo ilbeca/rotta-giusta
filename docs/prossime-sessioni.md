@@ -233,7 +233,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 9 | **La versione con gli account** — il traguardo | tutti | `main` | la sessione di P-27, con l'autore: il commit di rilascio c'è dal 3 ottobre, mancano la data, il tag e i passi 2–6; il cancello degli adempimenti è chiuso dalla sua decisione del 2 ottobre (§4) | P-27, la lista scritta |
+| 9 | **La versione con gli account** — il traguardo | tutti | `main` | la sessione di P-27, con l'autore: il commit di rilascio c'è dal 3 ottobre, mancano il tag e i passi 2–6; il cancello degli adempimenti è chiuso dalla sua decisione del 2 ottobre (§4) | P-27, la lista scritta |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4 |
 
 **Le due colonne corrono in parallelo**, e si sono incontrate: il client degli
@@ -3516,21 +3516,16 @@ cancelli sono chiusi dal 2 ottobre. Che cosa c'è e che cosa manca, misurato il
   `filosofia.md` senza la nota, la specifica al presente. Suite sull'albero del
   rilascio, il 2 ottobre: motore 193/197, server 72/72 anche con la 24.21.0
   LTS, dati 263, specifica 824, interfaccia 2.245, `ripristina --prova` verde.
-- **La data dentro quel commit è sbagliata di un giorno**: dice 2 ottobre —
-  la regia l'aveva preparato la sera prima —, e il rilascio è del 3. La
-  correzione è **in stage e non committata**, in quattro file: `CHANGELOG.md`
+- **La data dentro quel commit era sbagliata di un giorno**, 2 ottobre invece
+  di 3, perché la regia l'aveva preparato la sera prima. **Corretta dal commit
+  `3198803`**, «release: v0.29.0 — la data del rilascio è il 3 ottobre»,
+  lanciato dall'autore con `TERRITORI_OK=1` il 3 ottobre: `CHANGELOG.md`
   (`## [0.29.0] — 2026-10-03`), `site/privacy.html` («Aggiornata il 3 ottobre
-  2026»), `docs/specifica.md` (tre righe), `docs/filosofia.md` (una). Tocca
-  `site/privacy.html`, quindi la committa l'autore:
-  `TERRITORI_OK=1 git commit -F <file del messaggio>`, oppure
-  `git commit --amend` se nel frattempo nessun altro commit è salito sopra
-  `9c7afe8` — il 3 ottobre ci è salito il commit della coda, quindi un commit
-  nuovo. **Si vede dallo stato**: `git status --short` con quattro `M` in
-  prima colonna vuol dire che manca ancora. Se l'autore decide di tenere il 2
-  ottobre, si tolgono dallo stage (`git restore --staged --worktree` sui
-  quattro file) e lo si scrive qui.
-- **Il tag `v0.29.0` non esiste.** Va sul commit che porta la data giusta,
-  dopo le suite rifatte su quel commit.
+  2026»), tre righe di `docs/specifica.md` e una di `docs/filosofia.md`. Fra
+  i due c'è un commit della coda (`aec3443`). Le suite veloci sulla correzione
+  erano verdi; quelle intere si rifanno prima del tag.
+- **Il tag `v0.29.0` non esiste.** Va su `3198803`, il commit che porta la
+  data giusta, dopo le suite rifatte su quel commit.
 - **Niente è pushato**: `origin/main` è `51d9485`, la 0.28.0; `rottagiusta.it`
   serve `rg-0.28.1`, `api.` risponde 0.28.0 con schema 3.
 
@@ -3558,7 +3553,7 @@ git log -3 nella cartella principale, se il tag v0.29.0 esiste, che
 cosa c'è su origin (git ls-remote), che cosa servono oggi
 rottagiusta.it/sw.js e api.rottagiusta.it/v1/salute. Il passo 1 è a
 metà: il commit di rilascio c'è, e lo «Stato» di P-27 dice che cosa
-manca — la data, il tag. Riparti da lì, senza rifare quello che è
+manca — il tag, dopo le suite. Riparti da lì, senza rifare quello che è
 fatto, e se lo stato che trovi non è quello scritto, dillo prima di
 toccare qualcosa.
 
@@ -4193,3 +4188,6 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   resoconto di P-27, e le cose aperte del §4. Il Registro privacy, la notte,
   ha avuto un passaggio scaduto e uno durato 76 minuti: non è ancora
   dimostrato che giri da solo.
+- **3 ottobre 2026 — la data del rilascio corretta.** L'autore ha committato
+  la correzione (`3198803`): il rilascio è datato 3 ottobre. Il tag `v0.29.0`
+  va su quel commit, e lo fa la sessione di P-27 dopo le suite.
