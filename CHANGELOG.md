@@ -208,6 +208,78 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   `server/`, `tests/`, la specifica e `docs/prossime-sessioni.md` non sono
   stati toccati.
 
+### Aggiunto — P-72: le previsioni registrate, il motore (A-1)
+
+- **Il motore sa che cos'è una riga d'avvio, e nient'altro la legge.** È il
+  lavoro A-1 del §10.1 di `docs/esito-esame-progetto.md`: la parte che deve
+  esserci prima della prima riga, perché la regola con cui si giudicherà la
+  stima si fissa prima di vedere un esito. `TIPI_RIGA`, ora esportato e
+  congelato, prende `'a'` — il server lo dirà in `GET /v1/io` (A-2), e la
+  pagina scriverà una riga d'avvio solo se il server che ha davanti lo
+  dichiara —; `validaRiga()` la accoglie con le sue regole (`uid` uguale a
+  `sim_uid + ':a'`, `sim_uid` fino a 60 caratteri, `kind` base o vela, `prova`,
+  `motore` fino a 16, `stime` un oggetto semplice con chiavi `nome-N`, `errore`
+  fino a 200, niente `item_id`) e rifiuta il resto con un motivo nuovo,
+  «avvio non valido». Il server importa questa funzione: da oggi accetterebbe
+  la riga, ma nessuno la scrive — la pagina non è stata toccata.
+
+- **`regola-semplice-1`, la regola da battere, come l'ha confermata l'autore il
+  4 ottobre** (§11, punto 8): le ultime 5 prove della stessa `kind` prima
+  dell'avvio, (superate + 1) / (n + 2). Sta in `PREVISIONI`, congelata, con la
+  definizione scritta accanto come `PROVA_CARTEGGIO` porta la sua fonte; salva
+  i due interi e gli `uid` delle prove contate, non un decimale. Precisato
+  scrivendo, e scritto nel §10.1: una prova per `uid`, solo righe con una data,
+  **strettamente** prima dell'avvio, e `passed` vale se è `1` o `true`.
+  `previsioniProva()` chiama ogni metodo nel suo `try`, così uno che lancia non
+  toglie gli altri né la riga; `rigaAvvio()` compone la riga intera e **lancia**
+  se gli argomenti non ne fanno una valida, perché una prova non deve partire
+  in silenzio senza la sua riga. `rigaDiRisposta()` è il predicato con cui la
+  pagina conterà le «risposte» senza righe d'avvio e senza tag. La vela si
+  registra come il base, la prova di carteggio no (§11, punto 10).
+
+- **Sette test, scritti prima** — rossi tutti e sette, per le funzioni che
+  mancavano e per `'a'` «tipo sconosciuto» —, **e provati al contrario su
+  trentadue rotture**, una alla volta, tutte rosse nel test che le riguarda:
+  fra le altre `'a'` tolto da `TIPI_RIGA`, l'`uid` non legato al `sim_uid`, la
+  `kind` carteggio accettata, le prove allo stesso istante o dopo l'avvio
+  contate, le prime cinque al posto delle ultime, l'ordine per stringa, la
+  finestra a 3, un liscio diverso, un metodo nuovo senza le sue uscite fissate,
+  un metodo che lancia e ferma gli altri, un `uid` casuale, `rigaDiRisposta()`
+  vera per un avvio o per un tag. R-PREV-02 esegue le funzioni del §7 e quelle
+  che lo specchio alimenta — `ripiega`, `sessioni` nei due confini,
+  `erroriSessione`, `ritmo`, `attivitaCarteggio` e `dettaglioCarteggio` sui due
+  tipi, `tagPerTentativo`, `coda`, `daAllenare`, `diagnosi`, `quadro`,
+  `dovePesa`, `traccia`, `mirata`, `stimaImpegno` e le previsioni stesse — con
+  e senza otto righe d'avvio, in coda, in testa e mescolate, e le confronta in
+  profondità; fra le otto, alcune patologiche, con il `sim_uid` di un giro di
+  carteggio o di una batteria. R-PREV-08 ha due difese, e servono tutte e due:
+  nel sorgente il tipo `'a'` può comparire solo dove deve, ed eseguendo una
+  riga d'avvio-spia annota ogni campo che le si legge. **Due rotture le prende
+  soltanto la spia**: `ripiega()` che guarda le righe d'avvio senza cambiare il
+  risultato, e una che legge le `stime` senza nominare `'a'`.
+
+- **I chiamanti della pagina che contano «risposte»** sono elencati nel §10.1
+  del progetto, sotto A-1: sono il lavoro di B-2. **Trovato elencandoli:** due
+  numeri arrivano alla pagina già contati dal motore, senza gli `uid` —
+  «N risposte salvate» (`riepilogoTrasferimento().confermate`) e le risposte
+  non salvate di un conflitto —, e la pagina non li può ricontare: un file
+  esportato da un account, caricato, direbbe salvate come risposte le sue righe
+  d'avvio. Serve un conto nel motore prima di B-2; il §7 del progetto lo dice
+  dove prima diceva che bastava `rigaDiRisposta()`. E i tag N/L/C, oggi,
+  contano come risposte in tutti quei testi. I contratti di P-71 — cinque
+  stati, segnalibri — non c'erano ancora nel motore: R-PREV-02 esegue quelli
+  che c'erano.
+
+  Suite: motore **199/203** con i quattro skip previsti (erano 192/196); server
+  72/72; tutti e due anche con la **24.21.0 LTS**, dalla cartella già estratta
+  in una sessione precedente — il suo archivio non c'era più per rifarne
+  l'impronta, e il server non è stato toccato; dati 223; specifica 820,
+  invariata — i requisiti R-PREV li porta P-74; interfaccia **2.270** (erano
+  2.263: tre esportate nuove con un chiamante, e i due orfani dichiarati), in
+  4 min 12 s, con la 8620 guardata libera per 90 s prima. Guardiano verde.
+  `site/` fuori da `engine.js`, `server/`, la specifica e
+  `docs/prossime-sessioni.md` non sono stati toccati.
+
 ## [0.30.0] — 2026-10-03
 
 **Il sito più semplice: niente offline.** Rotta Giusta si apre con la rete,

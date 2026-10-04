@@ -3671,3 +3671,352 @@ test('concludiBozza: un testo troppo lungo per una riga non autorizza la conclus
   assert.deepEqual(r.righe, []); assert.match(r.motivo, /troppo grande/);
   assert.throws(() => E.concludiBozza(b, { ts: 'ieri' }), /data/);
 });
+
+// --- le previsioni registrate (P-72) ------------------------------------------------
+//
+// docs/esito-esame-progetto.md §4 e §10.1, A-1. A Inizia di ogni simulazione
+// completa la pagina scrivera' una riga `_t: 'a'`, «avvio di una prova», con le
+// previsioni dei metodi attivi: oggi uno, `regola-semplice-1`, deciso
+// dall'autore il 4 ottobre 2026 (§11, punti 8–10). La riga e' una
+// testimonianza, non uno stato: niente nel motore la rilegge per scegliere,
+// misurare o disegnare (R-PREV-02, R-PREV-08). Qui le regole pure; dove e
+// quando si scrive e' della pagina (B-2), che oggi non la scrive.
+
+const TA = (ora, giorno = '2026-10-04') => `${giorno}T${ora}+02:00`;
+/** Una riga di prova sostenuta, come la scrive fine() di app.html. */
+const rs = (uid, kind, ora, passed, giorno) => ({ _t: 's', uid, kind, ts: TA(ora, giorno),
+  score: passed ? 18 : 12, total: kind === 'vela' ? 5 : 20, passed: passed ? 1 : 0, ms: 1800000 });
+/** Una riga d'avvio nella forma del §4.2, scritta a mano: non dipende da rigaAvvio(). */
+const ra = (simUid, o = {}) => ({ _t: 'a', uid: `${simUid}:a`, sim_uid: simUid, kind: 'base', prova: 'base',
+  ts: TA('09:00:00'), motore: '0.31.0',
+  stime: { 'regola-semplice-1': { superate: 0, n: 0, prove: [] } }, ...o });
+
+test('validaRiga: la riga d avvio', () => {
+  // TIPI_RIGA e' esportato: il server lo dira' in GET /v1/io (tipi_riga), e la
+  // pagina scrivera' una riga d'avvio solo se il server dichiara 'a' (§6).
+  assert.ok(Array.isArray(E.TIPI_RIGA) && Object.isFrozen(E.TIPI_RIGA), 'TIPI_RIGA, un elenco congelato');
+  assert.deepEqual([...E.TIPI_RIGA].sort(), ['a', 'c', 'g', 'q', 's', 't']);
+  const buona = ra('mt9x1-abcdefgh');
+  assert.equal(validaRiga(buona), null);
+  assert.equal(validaRiga({ ...buona, kind: 'vela', prova: 'entrambe' }), null, 'la fase vela di «Base e vela»');
+  assert.equal(validaRiga({ ...buona, stime: {} }), null, 'nessun metodo ha potuto dire niente');
+  assert.equal(validaRiga({ ...buona, stime: {}, errore: 'regola-semplice-1: boh' }), null, 'un metodo che lancia');
+  assert.equal(validaRiga({ ...buona, ts: '2026-10-04T07:00:00Z' }), null);
+  const sim60 = 'x'.repeat(60);
+  assert.equal(validaRiga(ra(sim60)), null, 'sessanta caratteri, e con «:a» l uid ne fa 62');
+  assert.equal(validaRiga({ ...buona, campo_futuro: 1 }), null, 'un campo che non conosce lo lascia stare');
+  assert.equal(validaRiga(buona, { quesiti: new Set(['base-1']) }), null, 'una riga d avvio non ha un quesito');
+  const casi = [
+    [{ ...buona, ts: undefined }, 'data non valida'],
+    [{ ...buona, ts: 'alle dieci' }, 'data non valida'],
+    [{ ...buona, uid: '' }, 'senza uid'],
+    [{ ...buona, uid: 'mt9x1-abcdefgh' }, 'avvio non valido'],              // non e' sim_uid + ':a'
+    [{ ...buona, uid: 'altro:a' }, 'avvio non valido'],
+    [{ ...buona, sim_uid: undefined, uid: 'undefined:a' }, 'avvio non valido'],
+    [{ ...buona, sim_uid: '', uid: ':a' }, 'avvio non valido'],
+    [{ ...buona, sim_uid: 42, uid: '42:a' }, 'avvio non valido'],
+    [ra('x'.repeat(61)), 'avvio non valido'],
+    [{ ...buona, kind: 'carteggio' }, 'avvio non valido'],                  // il carteggio non si registra (§11, 10)
+    [{ ...buona, kind: undefined }, 'avvio non valido'],
+    [{ ...buona, prova: 'tutte' }, 'avvio non valido'],
+    [{ ...buona, prova: undefined }, 'avvio non valido'],
+    [{ ...buona, motore: undefined }, 'avvio non valido'],
+    [{ ...buona, motore: 31 }, 'avvio non valido'],
+    [{ ...buona, motore: '' }, 'avvio non valido'],
+    [{ ...buona, motore: '0.31.0-sperimentale' }, 'avvio non valido'],     // 19 caratteri
+    [{ ...buona, stime: undefined }, 'avvio non valido'],
+    [{ ...buona, stime: null }, 'avvio non valido'],
+    [{ ...buona, stime: [] }, 'avvio non valido'],
+    [{ ...buona, stime: 0.71 }, 'avvio non valido'],
+    [{ ...buona, stime: { 'regola semplice': {} } }, 'avvio non valido'],
+    [{ ...buona, stime: { regola: {} } }, 'avvio non valido'],               // senza numero
+    [{ ...buona, stime: { 'Regola-1': {} } }, 'avvio non valido'],
+    [{ ...buona, stime: { 'regola-semplice-1': 0.5 } }, 'avvio non valido'],
+    [{ ...buona, stime: { 'regola-semplice-1': [3, 5] } }, 'avvio non valido'],
+    [{ ...buona, stime: Object.assign(Object.create({ ereditata: 1 }), { 'regola-semplice-1': {} }) }, 'avvio non valido'],
+    [{ ...buona, errore: 42 }, 'avvio non valido'],
+    [{ ...buona, errore: 'x'.repeat(201) }, 'avvio non valido'],
+    [{ ...buona, item_id: 'base-1' }, 'avvio non valido'],
+  ];
+  for (const [riga, motivo] of casi) assert.equal(validaRiga(riga), motivo, JSON.stringify(riga)?.slice(0, 120));
+  // L'import la prende per quello che e', e la fonde per uid come le altre.
+  const f = fondiArchivio([], [buona, buona, { ...buona, uid: 'x' }]);
+  assert.equal(f.nuove, 1); assert.equal(f.gia, 1); assert.deepEqual(f.motivi, { 'avvio non valido': 1 });
+});
+
+test('rigaDiRisposta: una riga d avvio e un tag non sono risposte', () => {
+  for (const t of ['q', 'c', 't', 's']) assert.equal(E.rigaDiRisposta({ ...RIGHE_VERE[t] }), true, t);
+  assert.equal(E.rigaDiRisposta(RIGHE_VERE.g), false, 'un tag');
+  assert.equal(E.rigaDiRisposta(ra('m1')), false, 'una riga d avvio');
+  for (const x of [null, undefined, {}, { _t: 'z' }, 'q', [RIGHE_VERE.q]]) assert.equal(E.rigaDiRisposta(x), false, String(x));
+  // E' il conto che la pagina fara' dove scrive «risposte» (§7): una riga
+  // d'avvio in coda non e' «1 risposte da inviare».
+  const righe = [RIGHE_VERE.q, RIGHE_VERE.g, ra('m1'), RIGHE_VERE.s];
+  assert.equal(righe.filter(E.rigaDiRisposta).length, 2);
+});
+
+test('regola-semplice-1: le prove prima dell avvio, e nessuna dopo', () => {
+  const avvio = TA('12:00:00');
+  const righe = [
+    rs('b1', 'base', '08:00:00', 1), rs('b2', 'base', '08:30:00', 0),
+    rs('b3', 'base', '09:00:00', 1), rs('b4', 'base', '09:30:00', 1),
+    rs('b5', 'base', '10:00:00', 0), rs('b6', 'base', '10:30:00', 1),
+    // in UTC, 09:45Z = 11:45+02:00: e' la piu' recente prima dell'avvio, anche se come stringa no
+    { ...rs('b7', 'base', '00:00:00', 0), ts: '2026-10-04T09:45:00Z' },
+    rs('v1', 'vela', '11:00:00', 1),                                          // un'altra kind
+    { _t: 's', uid: 'pc1', kind: 'carteggio', ts: TA('11:10:00'), score: 4, total: 4, passed: 1, ms: 3600000 },
+    rs('b8', 'base', '12:00:00', 1),                                          // allo stesso istante: non e' prima
+    rs('b9', 'base', '12:00:01', 1),                                          // dopo
+    rs('b10', 'base', '13:00:00', 0),                                         // dopo
+    { ...rs('rotta', 'base', '00:00:00', 1), ts: 'ieri' },                    // senza una data: non si sa se e' prima
+    { _t: 'q', uid: 'q1', item_id: 'base-1', kind: 'base', ts: TA('11:59:00'), correct: 1, ms: 5000, mode: 'simulazione', sim_uid: 'b9' },
+    ra('vecchio', { ts: TA('11:00:00'), stime: { 'regola-semplice-1': { superate: 5, n: 5, prove: ['b1', 'b2', 'b3', 'b4', 'b5'] } } }),
+  ];
+  const { stime, errore } = E.previsioniProva(righe, 'base', avvio);
+  assert.equal(errore, undefined);
+  assert.deepEqual(stime['regola-semplice-1'], { superate: 3, n: 5, prove: ['b3', 'b4', 'b5', 'b6', 'b7'] },
+    'le ultime cinque base prima delle 12:00, nell ordine di ordinaRighe()');
+  // Dopo l'avvio niente conta: aggiungere o togliere righe dopo non sposta la previsione.
+  const soloPrima = righe.filter((r) => !['b8', 'b9', 'b10'].includes(r.uid));
+  assert.deepEqual(E.previsioniProva(soloPrima, 'base', avvio).stime, stime);
+  // La vela conta la vela, e basta.
+  assert.deepEqual(E.previsioniProva(righe, 'vela', avvio).stime['regola-semplice-1'], { superate: 1, n: 1, prove: ['v1'] });
+  // Nessuna prova: n 0, cioe' (0 + 1) / (0 + 2) = 1/2, «non so».
+  assert.deepEqual(E.previsioniProva([], 'base', avvio).stime['regola-semplice-1'], { superate: 0, n: 0, prove: [] });
+  // Meno di cinque: tutte quelle che ci sono.
+  assert.deepEqual(E.previsioniProva(righe, 'base', TA('09:15:00')).stime['regola-semplice-1'],
+    { superate: 2, n: 3, prove: ['b1', 'b2', 'b3'] });
+  // Una riga ripetuta (lo stesso uid due volte nell'archivio) e' una prova sola.
+  assert.deepEqual(E.previsioniProva([rs('b1', 'base', '08:00:00', 1), rs('b1', 'base', '08:00:00', 1)], 'base', avvio)
+    .stime['regola-semplice-1'], { superate: 1, n: 1, prove: ['b1'] });
+  // L'ordine in cui l'archivio restituisce le righe non conta.
+  assert.deepEqual(E.previsioniProva([...righe].reverse(), 'base', avvio).stime, stime);
+  // «passed» e' 1 o 0: true vale 1, qualunque altra cosa non e' superata.
+  assert.deepEqual(E.previsioniProva([{ ...rs('x', 'base', '08:00:00', 0), passed: true }, { ...rs('y', 'base', '08:10:00', 0), passed: 'si' }],
+    'base', avvio).stime['regola-semplice-1'], { superate: 1, n: 2, prove: ['x', 'y'] });
+  // Un avvio senza data o su una kind che non e' dei quiz non ha una previsione: lo dice.
+  for (const [k, ts] of [['base', 'boh'], ['carteggio', avvio], [undefined, avvio]]) {
+    const p = E.previsioniProva(righe, k, ts);
+    assert.deepEqual(p.stime, {}, `${k} ${ts}`); assert.match(p.errore, /regola-semplice-1/);
+  }
+});
+
+test('previsioniProva: ogni metodo nel suo try, e la riga d avvio c e anche con un errore', () => {
+  const metodi = {
+    'rotto-1': { calcola: () => { throw new Error('divisione per zero'); } },
+    'regola-semplice-1': E.PREVISIONI['regola-semplice-1'],
+    'strano-1': { calcola: () => 0.5 },                                          // non e' un oggetto: non entra
+  };
+  const righe = [rs('b1', 'base', '08:00:00', 1)];
+  const p = E.previsioniProva(righe, 'base', TA('12:00:00'), { metodi });
+  assert.deepEqual(Object.keys(p.stime), ['regola-semplice-1'], 'un metodo che lancia non toglie gli altri');
+  assert.match(p.errore, /rotto-1: divisione per zero/); assert.match(p.errore, /strano-1/);
+  assert.ok(p.errore.length <= 200);
+  // Senza metodi passati valgono quelli di PREVISIONI, e un errore non toglie la riga.
+  const r = E.rigaAvvio({ simUid: 'mt9x1-abcdefgh', kind: 'base', prova: 'entrambe', ts: TA('12:00:00'), motore: '0.31.0',
+    righe, metodi });
+  assert.equal(validaRiga(r), null, 'la riga intera passa da validaRiga()');
+  assert.equal(r._t, 'a'); assert.equal(r.uid, 'mt9x1-abcdefgh:a'); assert.equal(r.sim_uid, 'mt9x1-abcdefgh');
+  assert.equal(r.kind, 'base'); assert.equal(r.prova, 'entrambe'); assert.equal(r.motore, '0.31.0'); assert.equal(r.ts, TA('12:00:00'));
+  assert.deepEqual(r.stime, { 'regola-semplice-1': { superate: 1, n: 1, prove: ['b1'] } });
+  assert.match(r.errore, /rotto-1/);
+  assert.ok(!('item_id' in r));
+  const r2 = E.rigaAvvio({ simUid: 'mt9x1-abcdefgh', kind: 'base', prova: 'entrambe', ts: TA('12:00:00'), motore: '0.31.0', righe });
+  assert.ok(!('errore' in r2), 'senza errori, nessun campo errore');
+  assert.equal(r2.uid, r.uid, 'due Inizia della stessa prova sono una riga');
+  // Il peso: con cinque uid della forma che la pagina scrive (18 caratteri)
+  // meno di 400 byte, come dice il §4.2; con ogni campo al suo massimo, lontano
+  // dai 4.096 di RIGA_MAX_BYTE. Misurato: 297 e 856.
+  const uid18 = (i) => `mt9x1abc-abcdefg${i}`;
+  const cinque = Array.from({ length: 5 }, (_, i) => rs(uid18(i), 'base', `0${i + 1}:00:00`, 1));
+  const pesa = (x) => new TextEncoder().encode(JSON.stringify(x)).length;
+  assert.ok(pesa(E.rigaAvvio({ simUid: uid18(9), kind: 'base', prova: 'entrambe', ts: TA('12:00:00'), motore: '0.31.0', righe: cinque })) < 400);
+  const piena = ra('x'.repeat(60), { motore: 'x'.repeat(16), errore: 'e'.repeat(200),
+    stime: { 'regola-semplice-1': { superate: 5, n: 5, prove: Array(5).fill('y'.repeat(64)) } } });
+  assert.equal(validaRiga(piena), null); assert.ok(pesa(piena) < E.RIGA_MAX_BYTE / 4);
+  // Argomenti sbagliati sono un errore di chi chiama, e si dicono: la pagina non
+  // deve aprire una prova in silenzio senza la sua riga (§4.8, punto 4).
+  assert.throws(() => E.rigaAvvio({ simUid: '', kind: 'base', prova: 'base', ts: TA('12:00:00'), motore: '0.31.0', righe }), /avvio non valido/);
+  assert.throws(() => E.rigaAvvio({ simUid: 'm1', kind: 'carteggio', prova: 'base', ts: TA('12:00:00'), motore: '0.31.0', righe }),
+    /avvio non valido/, 'la prova di carteggio non si registra (§11, punto 10)');
+  assert.throws(() => E.rigaAvvio({ simUid: 'm1', kind: 'base', prova: 'base', ts: 'ora', motore: '0.31.0', righe }), /data non valida/);
+});
+
+test('un metodo che cambia cambia numero', () => {
+  // Le uscite di ogni metodo registrato, fissate su un archivio di prova. Se una
+  // di queste cambia, il metodo non e' piu' lo stesso: le righe gia' scritte
+  // col suo nome direbbero una cosa e quelle nuove un'altra. Il rimedio non e'
+  // aggiornare l'attesa: e' un metodo nuovo con il numero dopo (§4.8, punto 3).
+  const righe = [
+    rs('p1', 'base', '08:00:00', 1, '2026-10-01'), rs('p2', 'base', '08:00:00', 0, '2026-10-02'),
+    rs('p3', 'base', '08:00:00', 0, '2026-10-03'), rs('p4', 'base', '07:00:00', 1),
+    rs('p5', 'base', '07:30:00', 1), rs('p6', 'base', '08:00:00', 0), rs('p7', 'base', '08:30:00', 1),
+    rs('w1', 'vela', '07:45:00', 0), rs('w2', 'vela', '08:15:00', 1),
+    rs('p8', 'base', '11:00:00', 0),
+  ];
+  const attese = {
+    'regola-semplice-1': [
+      ['base', TA('10:00:00'), { superate: 3, n: 5, prove: ['p3', 'p4', 'p5', 'p6', 'p7'] }],
+      ['base', TA('07:15:00'), { superate: 2, n: 4, prove: ['p1', 'p2', 'p3', 'p4'] }],
+      ['vela', TA('10:00:00'), { superate: 1, n: 2, prove: ['w1', 'w2'] }],
+      ['base', TA('12:00:00'), { superate: 3, n: 5, prove: ['p4', 'p5', 'p6', 'p7', 'p8'] }],
+    ],
+  };
+  assert.deepEqual(Object.keys(E.PREVISIONI).sort(), Object.keys(attese).sort(),
+    'ogni metodo attivo ha le sue uscite fissate qui, e solo quelli');
+  for (const [nome, casi] of Object.entries(attese)) {
+    for (const [kind, ts, attesa] of casi) {
+      assert.deepEqual(E.previsioniProva(righe, kind, ts, { metodi: { [nome]: E.PREVISIONI[nome] } }).stime[nome], attesa,
+        `${nome} ha cambiato uscita su ${kind} ${ts}: cambia il numero del metodo, non questa attesa`);
+    }
+  }
+  // La probabilita' discende dai due interi, e la definizione e' scritta accanto.
+  const m = E.PREVISIONI['regola-semplice-1'];
+  assert.ok(Object.isFrozen(E.PREVISIONI) && Object.isFrozen(m), 'congelata');
+  assert.equal(m.finestra, 5);
+  assert.equal(m.probabilita({ superate: 3, n: 5 }), 4 / 7);
+  assert.equal(m.probabilita({ superate: 0, n: 0 }), 1 / 2);
+  assert.match(m.definizione, /ultime 5/); assert.match(m.definizione, /\(superate \+ 1\) \/ \(n \+ 2\)/);
+});
+
+/**
+ * Un archivio con un po' di tutto: una simulazione base consegnata e una
+ * abbandonata, una vela, una batteria, un giro di carteggio, una prova di
+ * carteggio, un riconoscimento delle tecniche, un tag. Le righe d'avvio stanno
+ * a parte, per aggiungerle e toglierle.
+ */
+function archivioConAvvii() {
+  const q = (uid, item, sim, ora, correct, o = {}) => ({ _t: 'q', uid, item_id: item, kind: 'base', ts: TA(ora),
+    correct, ms: 9000, mode: 'simulazione', sim_uid: sim, chosen: '0', ...o });
+  const righe = [
+    q('q1', 'base-1', 'simB1', '09:01:00', 1), q('q2', 'base-2', 'simB1', '09:02:00', 0), q('q3', 'base-3', 'simB1', '09:03:00', 1),
+    rs('simB1', 'base', '09:04:00', 0),
+    q('q4', 'base-4', 'simB2', '09:31:00', 0),                                   // abbandonata: nessuna riga s
+    q('v1', 'vela-1', 'simV1', '10:01:00', 1, { kind: 'vela' }), q('v2', 'vela-2', 'simV1', '10:02:00', 1, { kind: 'vela' }),
+    rs('simV1', 'vela', '10:03:00', 1),
+    q('q5', 'base-5', 'bat1', '10:30:00', 1, { mode: 'batteria' }), q('q6', 'base-6', 'bat1', '10:31:00', 0, { mode: 'batteria' }),
+    q('q7', 'base-7', 'bat1', '10:32:00', 1, { mode: 'batteria' }),
+    rc('c1', '5.1.3-1', { sim_uid: 'giro1', ts: TA('11:00:00'), proposti: 2, pos: 0 }),
+    rc('c2', '5.1.3-2', { sim_uid: 'giro1', ts: TA('11:00:00'), proposti: 2, pos: 1, verdict: 0 }),
+    rc('c3', '5.1.3-3', { sim_uid: 'pc1', ts: TA('11:30:00'), mode: 'simulazione', proposti: 1, pos: 0, variante: 'cieca' }),
+    { _t: 's', uid: 'pc1', kind: 'carteggio', ts: TA('11:30:00'), score: 1, total: 1, passed: 0, ms: 3600000, variante: 'cieca' },
+    rt('t1', '5.1.3-1', { sim_uid: 'tec1', mode: 'tecnica', ts: TA('12:00:00'), proposti: 2, pos: 0 }),
+    rt('t2', '5.1.3-2', { sim_uid: 'tec1', mode: 'tecnica', ts: TA('12:01:00'), proposti: 2, pos: 1, correct: 0 }),
+    tagRiga('g1', 'q2', 'L', TA('09:05:00')),
+  ];
+  const avvii = [
+    ra('simB1', { ts: TA('09:00:00') }),
+    ra('simB2', { ts: TA('09:30:00'), stime: { 'regola-semplice-1': { superate: 0, n: 1, prove: ['simB1'] } } }),
+    ra('simV1', { kind: 'vela', prova: 'entrambe', ts: TA('10:00:00') }),
+    ra('simB3', { ts: TA('13:00:00') }),                                          // abbandonata alla prima domanda
+    // Patologiche, ma valide: un sim_uid che e' quello di un'attivita' di
+    // carteggio o di tecniche non la rende «di tipi diversi», e uno di una
+    // batteria non la fa diventare una prova.
+    ra('giro1', { ts: TA('10:59:00') }), ra('pc1', { ts: TA('11:29:00') }), ra('tec1', { ts: TA('11:59:00') }),
+    ra('bat1', { ts: TA('10:29:00'), errore: 'regola-semplice-1: boh', stime: {} }),
+  ];
+  for (const a of avvii) assert.equal(validaRiga(a), null, `riga d avvio di prova ${a.uid}`);
+  return { righe, avvii };
+}
+
+test('la riga d avvio non cambia niente di quello che il motore calcola', () => {
+  const { righe, avvii } = archivioConAvvii();
+  const items = [...bancaVera(), ...Array.from({ length: 10 }, (_, i) => ({ id: `vela-${i + 1}`, k: 'vela', t: 'VELA',
+    v: 'Vela v0', d: 'd', r: ['a', 'b', 'c'], x: 0 }))];
+  const carte = bancaC('5.1.3-1', '5.1.3-2', '5.1.3-3');
+  const oggi = '2026-10-04';
+  const PESI_V = { ...PESI };
+  // Tutto quello che seleziona, misura o prepara una schermata, a partire dalle righe.
+  const calcola = (rr) => {
+    const spec = ripiega(rr);
+    const out = {
+      ripiega: spec,
+      sessioniPausa: sessioni(rr),
+      sessioniAttivita: sessioni(rr, { confine: 'attivita' }),
+      ritmo: ritmo(rr), ritmoBasso: ritmo(rr, { minRisposte: 2 }),
+      tag: E.tagPerTentativo(rr),
+      carteggio: E.attivitaCarteggio(rr, { tipo: 'c' }), tecniche: E.attivitaCarteggio(rr, { tipo: 't' }),
+      previsioneBase: E.previsioniProva(rr, 'base', TA('14:00:00')),
+      previsioneVela: E.previsioniProva(rr, 'vela', TA('14:00:00')),
+    };
+    out.errori = Object.fromEntries(['simB1', 'simB2', 'simV1', 'bat1', 'simB3', 'giro1']
+      .map((id) => [id, erroriSessione(rr, items, id)]));
+    out.dettagli = Object.fromEntries([...out.carteggio.map((a) => [`c:${a.id}`, E.dettaglioCarteggio(rr, carte, a.id, { tipo: 'c' })]),
+      ...out.tecniche.map((a) => [`t:${a.id}`, E.dettaglioCarteggio(rr, carte, a.id, { tipo: 't' })]),
+      ['c:simB1', E.dettaglioCarteggio(rr, carte, 'simB1', { tipo: 'c' })]]);
+    const p = spec.quiz;
+    out.coda = coda(items, p, oggi, { n: 50 });
+    out.sbagliate = coda(items, p, oggi, { soloSbagliate: true, n: 50 });
+    out.daAllenare = daAllenare(items, p, oggi, 'base');
+    out.diagnosi = diagnosi(items, p, oggi, 'base', PESI_V);
+    out.quadro = quadro(items, p, oggi, 'base', PESI_V);
+    out.dovePesa = dovePesa(out.quadro);
+    out.traccia = traccia(items, p, oggi, 'base', '2026-11-01', '2026-10-01');
+    out.mirata = mirata(items, p, oggi, { n: 25, kind: 'base', pesi: PESI_V });
+    out.impegno = stimaImpegno(p, 100, 10, { msPerDomanda: out.ritmoBasso.msPerDomanda });
+    return out;
+  };
+  const senza = calcola(righe);
+  // Le premesse: l'archivio esercita davvero quello che confronta.
+  assert.ok(senza.sessioniAttivita.length >= 4 && senza.carteggio.length === 2 && senza.tecniche.length === 1);
+  assert.equal(senza.errori.simB1.quanti, 1); assert.ok(senza.previsioneBase.stime['regola-semplice-1'].n === 1);
+  assert.ok(Object.keys(senza.tag).length === 1 && senza.dettagli['c:pc1'].esito);
+  // Con le righe d'avvio, in testa, in coda, in mezzo: niente cambia.
+  for (const [nome, rr] of [['in coda', [...righe, ...avvii]], ['in testa', [...avvii, ...righe]],
+    ['mescolate', righe.flatMap((r, i) => (avvii[i] ? [avvii[i], r] : [r]))]]) {
+    const con = calcola(rr);
+    for (const k of Object.keys(senza)) assert.deepStrictEqual(con[k], senza[k], `${k} cambia con le righe d avvio ${nome}`);
+  }
+});
+
+test('la riga d avvio non la rilegge nessuno', () => {
+  // Due difese, perche' ognuna vede un modo diverso di sbagliare.
+  //
+  // 1. Nel sorgente: il tipo 'a' compare soltanto nelle dichiarazioni che lo
+  //    devono conoscere. Una funzione che seleziona, misura o disegna e scrive
+  //    `_t === 'a'` sta leggendo la previsione (§4.3).
+  const sorgente = readFileSync(new URL('../site/engine.js', import.meta.url), 'utf8');
+  const senzaCommenti = sorgente.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:'"`\\])\/\/.*$/gm, '$1');
+  const ammesse = new Set(['TIPI_RIGA', 'validaRiga', 'rigaAvvio', 'rigaDiRisposta', 'PREVISIONI', 'previsioniProva', 'AVVIO']);
+  const blocchi = senzaCommenti.split(/^(?=(?:export\s+)?(?:async\s+)?(?:function|const|let|class)\s)/m);
+  const fuori = [];
+  for (const b of blocchi) {
+    const nome = (b.match(/^(?:export\s+)?(?:async\s+)?(?:function|const|let|class)\s+([A-Za-z_$][\w$]*)/) || [])[1] || '(in testa)';
+    if (/(['"`])a\1/.test(b) && !ammesse.has(nome)) fuori.push(nome);
+  }
+  assert.deepEqual(fuori, [], `il tipo 'a' compare fuori da validaRiga(), dalla coda e dai metodi di previsione: ${fuori.join(', ')}`);
+
+  // 2. Eseguendo: una riga d'avvio che annota ogni campo che le si legge. Chi
+  //    sceglie, misura o disegna puo' guardarne il tipo, e la data per mettere
+  //    in ordine; non la previsione, non la prova, non il sim_uid.
+  const { righe } = archivioConAvvii();
+  const letti = new Map();
+  const spia = (riga) => new Proxy(riga, { get(o, k, r) {
+    if (typeof k === 'string') { const s = letti.get(spia.chi) || new Set(); s.add(k); letti.set(spia.chi, s); }
+    return Reflect.get(o, k, r);
+  } });
+  const avvio = () => spia(ra('simB1', { ts: TA('09:00:00') }));
+  const items = bancaVera();
+  const carte = bancaC('5.1.3-1', '5.1.3-2', '5.1.3-3');
+  const chiamate = {
+    ordinaRighe: (rr) => ordinaRighe(rr), ripiega: (rr) => ripiega(rr),
+    sessioni: (rr) => sessioni(rr), sessioniAttivita: (rr) => sessioni(rr, { confine: 'attivita' }),
+    ritmo: (rr) => ritmo(rr), erroriSessione: (rr) => erroriSessione(rr, items, 'simB1'),
+    tagPerTentativo: (rr) => E.tagPerTentativo(rr),
+    attivitaCarteggio: (rr) => [E.attivitaCarteggio(rr, { tipo: 'c' }), E.attivitaCarteggio(rr, { tipo: 't' })],
+    dettaglioCarteggio: (rr) => [E.dettaglioCarteggio(rr, carte, 'pc1', { tipo: 'c' }), E.dettaglioCarteggio(rr, carte, 'tec1', { tipo: 't' })],
+    previsioniProva: (rr) => E.previsioniProva(rr, 'base', TA('14:00:00')),
+    rigaDiRisposta: (rr) => rr.filter(E.rigaDiRisposta),
+  };
+  const permessi = new Set(['_t', 'ts']);
+  for (const [nome, f] of Object.entries(chiamate)) {
+    spia.chi = nome;
+    f([...righe, avvio()]);
+    const oltre = [...(letti.get(nome) || [])].filter((k) => !permessi.has(k));
+    assert.deepEqual(oltre, [], `${nome}() legge della riga d avvio: ${oltre.join(', ')}`);
+  }
+  // E chi invece la deve leggere tutta la legge: la spia funziona.
+  spia.chi = 'validaRiga';
+  assert.equal(validaRiga(avvio()), null);
+  assert.ok(letti.get('validaRiga').has('stime'), 'validaRiga() guarda le stime: la spia vede le letture');
+});

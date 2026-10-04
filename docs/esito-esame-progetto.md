@@ -739,7 +739,7 @@ il 4 ottobre 2026 — chi legge le righe per tipo, e che cosa cambia per lui con
 | `attivitaCarteggio()` (`:1624`–`1630`) | `'s'`, il tipo nominato, e i `sim_uid` di `q`/`c`/`t` come «altrui» | ignorata: il controllo deve provarlo, perché un `sim_uid` su un tipo che non conosce non diventi una prova estranea |
 | `tagPerTentativo()` (`:1279`) | solo `'g'` | ignorata |
 | `validaRiga()`, `fondiArchivio()` | `TIPI_RIGA` | accettata con le sue regole (§10.1) |
-| la coda, `nuovoTrasferimento()`, `riepilogoTrasferimento()` | per `uid` | contata fra le righe: i testi che dicono «risposte» usano `rigaDiRisposta()` |
+| la coda, `nuovoTrasferimento()`, `riepilogoTrasferimento()` | per `uid` | contata fra le righe: i testi che dicono «risposte» usano `rigaDiRisposta()`. **Non regge per due numeri** (P-72): `riepilogoTrasferimento().confermate` e il `nonSalvate` del conflitto arrivano alla pagina già contati, senza gli `uid`, e la pagina non li può ricontare — vedi il §10.1, A-1 |
 | `statoArchivio()` in pagina (`app.html:2242`) | conta per tipo | una voce sua, «prove avviate» |
 | «N risposte da inviare» (`app.html:1561`), l'uscita (`:1964`), l'export senza le pendenti (`:2162`) | la coda intera | `rigaDiRisposta()`, e le righe d'avvio nominate a parte |
 | `server/leggi.mjs` | righe per tipo | le mostra con le altre; e mostra gli esiti |
@@ -855,6 +855,66 @@ si ferma, li corregge qui e lo dice nel resoconto.
   funzioni sono quelle del §7, eseguite con e senza una riga d'avvio, e un
   confronto profondo. Le funzioni nuove fra gli orfani dichiarati di
   `docs/eccezioni-interfaccia.md` finché B-2 non le chiama.
+
+**A-1 fatto da P-72, il 4 ottobre 2026** (voce nel CHANGELOG). Come è uscito,
+dove si scosta dal testo qui sopra:
+
+- `TIPI_RIGA` è un **elenco congelato**, non un `Set`: un `Set` congelato si
+  modifica lo stesso, e il server lo manderà come elenco in `tipi_riga`.
+- `PREVISIONI` è un oggetto per nome di metodo; ogni metodo porta
+  `definizione`, `decisa`, `finestra`, `calcola(righe, kind, ts)` e
+  `probabilita({ superate, n })`, che si calcola e non si salva.
+- `regola-semplice-1` conta **una prova per `uid`** (un archivio con una riga
+  ripetuta non la conta due volte), solo le righe `s` con un `ts` che è una
+  data e **strettamente prima** dell'avvio (una prova allo stesso istante non
+  conta), e `passed` vale se è `1` o `true`. Lancia — e quindi va in `errore`
+  — se l'avvio non ha una data o la `kind` non è `'base'` o `'vela'`.
+- `previsioniProva(righe, kind, ts, { metodi })`: `metodi` sostituisce
+  `PREVISIONI`, per i test. Un metodo che restituisce qualcosa che non è un
+  oggetto semplice conta come un errore. `errore` riunisce i messaggi dei
+  metodi, `nome: messaggio`, ed è tagliato a 200 caratteri.
+- `rigaAvvio()` **lancia** con il motivo di `validaRiga()` se gli argomenti non
+  fanno una riga valida — `simUid` vuoto o oltre 60 caratteri, `ts` che non è
+  una data, `kind` `'carteggio'`: è un errore di chi chiama, e la prova non
+  deve partire in silenzio senza la sua riga (§4.8, punto 4). Un metodo che
+  lancia, invece, lascia la riga con `errore`. B-2 prende l'eccezione, apre lo
+  stesso il runner, e lo segnala come una scrittura fallita.
+- `stime` vuole un oggetto semplice anche per ogni voce, non solo per il
+  contenitore: è la forma che `json_extract` del §4.7 legge.
+- I contratti di P-71 (cinque stati, segnalibri) **non c'erano** nel motore il
+  4 ottobre 2026: il test di R-PREV-02 esegue quelli che c'erano, ed è
+  l'elenco da allungare quando arrivano.
+
+**I chiamanti della pagina che contano «risposte»**, letti in `site/app.html`
+il 4 ottobre 2026 (numeri di riga di quel giorno). Sono il lavoro di B-2.
+
+| Riga | Testo | Che cosa conta | Che cosa cambia |
+|---|---|---|---|
+| 1561 | «N risposte da inviare» | `s.coda.daInviare.length`, la coda intera | contare con `rigaDiRisposta()` sulle righe di `s.righe` in coda; le righe d'avvio in attesa si dicono a parte, «e l'avvio di una simulazione». Con soli tag o soli avvii in coda la frase non può dire «0 risposte» |
+| 1964–1965 | l'uscita: «N risposte non sono sul server» | `daInviare` + `scartate` | il testo con `rigaDiRisposta()` e gli avvii nominati a parte; **la condizione che blocca resta sulla coda intera**: una riga d'avvio non inviata blocca l'uscita come una risposta (R-ACC-46) |
+| 2161–2162 | l'export: «il file del server non contiene ancora le N risposte da inviare» | `daInviare` + `scartate` | come l'uscita; il file di recupero porta lo stesso tutte le righe in coda |
+| 2242–2248 | Info, `statoArchivio()`: risposte ai quiz, tecniche, carteggio, prove | per tipo | una voce sua, «prove avviate N», senza i numeri dentro (§4.6); i quattro conti di oggi non cambiano |
+| 1543 | il conflitto: «Qui ci sono N risposte non salvate» | `nonSalvate` del conflitto, dal motore (`conflittoDa()` via `dopoInvio()`) | **la pagina riceve un numero, non gli `uid`**: serve un conto nel motore |
+| 1550, 1553 | «N risposte salvate nel tuo account» | `riepilogoTrasferimento().confermate`, dal motore | come sopra. Un trasferimento dalla pagina aperta senza account non ha righe d'avvio — B-2 le scrive solo con l'account —, ma **un file esportato da un account sì**: caricato, oggi direbbe salvate come risposte le sue righe d'avvio |
+| 1664 | «le N risposte di questa pagina» | `S.prova.length`, senza account | niente righe d'avvio senza account; conta i tag, come le altre righe di qui |
+
+Guardati e fuori dall'elenco: «N nuove · N già presenti · N scartate» di un
+import (1897, 2195), «N righe della pagina nel file» (2170) e «Cancella N
+righe» (5288) dicono righe, non risposte; le condizioni che bloccano uscita,
+cancellazione e uscita da tutti i dispositivi (1823, 1831) devono continuare a
+contare la coda intera. I conteggi del riepilogo (`riepilogoQuiz()`), di
+Progressi (`serieGruppi()`) e del Carteggio (`attivitaCarteggio()`) vengono da
+funzioni che R-PREV-02 tiene ferme.
+
+**Due cose da sapere prima di B-2.** I due numeri che arrivano già contati
+(1543, 1550/1553) chiedono al motore un conto delle sole risposte —
+`confermateRisposte` accanto a `confermate`, `nonSalvateRisposte` accanto a
+`nonSalvate`, con `rigaDiRisposta()` sulle righe che le due funzioni hanno già
+—: è lavoro di `main`, in A-3 o in una sessione sua prima di B-2, e P-72 non
+l'ha fatto perché non era nel contratto. E **i tag N/L/C oggi contano come
+risposte** in tutti questi testi: `rigaDiRisposta()` li toglie, ed è giusto,
+ma è un numero che cambia anche senza righe d'avvio — B-2 lo dice nel suo
+collaudo.
 
 **A-2 — Claude su `main`: il server** (`server/`, `tests/test_server.mjs`).
 

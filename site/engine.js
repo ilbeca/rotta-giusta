@@ -1801,7 +1801,15 @@ export function dettaglioCarteggio(righe, banca, id, opt = {}) {
 // carteggio, che porta il testo scritto da chi studia. Il tetto lascia spazio a
 // una risposta lunga e non a un file infilato dentro una riga.
 export const RIGA_MAX_BYTE = 4096;
-const TIPI_RIGA = new Set(['q', 'c', 't', 's', 'g']);
+/**
+ * I tipi di riga che l'archivio accoglie. Esportato perche' il server lo dice
+ * in `GET /v1/io` (`tipi_riga`): la pagina scrive un tipo nuovo solo se il
+ * server che ha davanti lo accetta, e un server di un rilascio di prima non lo
+ * dichiara (docs/esito-esame-progetto.md §6). `'a'` e' l'avvio di una prova,
+ * con le previsioni registrate (P-72).
+ */
+export const TIPI_RIGA = Object.freeze(['q', 'c', 't', 's', 'g', 'a']);
+const TIPO_RIGA = new Set(TIPI_RIGA);
 const TIPI_CON_QUESITO = new Set(['q', 'c', 't']);
 const TAG = new Set(['N', 'L', 'C']);
 // Data e ora, con i secondi facoltativi, e **sempre** un offset: `Z` (le righe
@@ -1836,7 +1844,7 @@ const TS_ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d{1,9})?)?(Z|[+-]\d{2}:
 export function validaRiga(riga, { quesiti } = {}) {
   if (!riga || typeof riga !== 'object' || Array.isArray(riga)) return "non e' una riga";
   if (typeof riga.uid !== 'string' || !riga.uid || riga.uid.length > 64) return 'senza uid';
-  if (!TIPI_RIGA.has(riga._t)) return 'tipo sconosciuto';
+  if (!TIPO_RIGA.has(riga._t)) return 'tipo sconosciuto';
   if (riga._t !== 'g' || riga.ts != null) {
     if (typeof riga.ts !== 'string' || !TS_ISO.test(riga.ts) || epoca(riga.ts) == null) return 'data non valida';
   }
@@ -1847,6 +1855,7 @@ export function validaRiga(riga, { quesiti } = {}) {
   if (riga._t === 'g' && (typeof riga.attempt_uid !== 'string' || !riga.attempt_uid || !TAG.has(riga.tag))) {
     return 'tag non valido';
   }
+  if (riga._t === 'a' && !avvioBuono(riga)) return 'avvio non valido';
   let json;
   try { json = JSON.stringify(riga); } catch { return "non e' una riga"; }
   if (new TextEncoder().encode(json).length > RIGA_MAX_BYTE) return 'troppo grande';
@@ -1875,6 +1884,177 @@ export function fondiArchivio(presenti, importate, opt = {}) {
     per.set(String(r.uid), r); nuove++;
   }
   return { righe: [...per.values()], nuove, gia, scartate, motivi };
+}
+
+// --- le previsioni registrate (P-72) ------------------------------------------------
+//
+// La stima d'esame (ADR-006, decisioni 23–27) si potra' dire tarata solo
+// confrontandola con quello che e' successo dopo. Per questo, a Inizia di ogni
+// simulazione completa dei quiz, la pagina scrivera' una riga `_t: 'a'`,
+// «avvio di una prova», con le previsioni dei metodi attivi: prima della prova,
+// non dopo. Il progetto e' docs/esito-esame-progetto.md §4, il contratto il
+// lavoro A-1 del suo §10.1. Qui le regole pure; la scrittura e' della pagina
+// (B-2), con l'account e solo se il server dichiara `'a'` fra i `tipi_riga`.
+//
+// **Non e' una seconda contabilita', e va detto perche' sembra esserlo**: e' un
+// numero calcolato dalle righe e salvato. La differenza e' che niente lo
+// rilegge per decidere o per disegnare — nessuna funzione che seleziona,
+// misura o prepara una schermata guarda `_t: 'a'`, e due test lo pretendono
+// (R-PREV-02, R-PREV-08). E' una testimonianza, non uno stato.
+//
+// **E non e' una risposta**: dove la pagina scrive «N risposte» contando righe,
+// conta con `rigaDiRisposta()` (§4.3 e §7 del progetto).
+
+/** Le regole della riga d'avvio, scritte una volta: `validaRiga()` e `rigaAvvio()` le usano. */
+const AVVIO = Object.freeze({
+  simUidMax: 60,                 // con «:a» l'uid resta entro i 64 caratteri di validaRiga()
+  kind: Object.freeze(['base', 'vela']),
+  prova: Object.freeze(['base', 'vela', 'entrambe']),
+  motoreMax: 16,
+  erroreMax: 200,
+  metodo: /^[a-z]+(-[a-z]+)*-[1-9]\d*$/,   // `nome-N`: la versione sta nel nome
+});
+
+/** Un oggetto semplice, `{}` e non un array, una data o qualcosa con un prototipo suo. */
+function oggettoSemplice(x) {
+  if (!x || typeof x !== 'object' || Array.isArray(x)) return false;
+  const p = Object.getPrototypeOf(x);
+  return p === Object.prototype || p === null;
+}
+
+function avvioBuono(r) {
+  const A = AVVIO;
+  if (typeof r.sim_uid !== 'string' || !r.sim_uid || r.sim_uid.length > A.simUidMax) return false;
+  if (r.uid !== `${r.sim_uid}:a`) return false;
+  if (!A.kind.includes(r.kind) || !A.prova.includes(r.prova)) return false;
+  if (typeof r.motore !== 'string' || !r.motore || r.motore.length > A.motoreMax) return false;
+  if (!oggettoSemplice(r.stime)) return false;
+  for (const [nome, v] of Object.entries(r.stime)) if (!A.metodo.test(nome) || !oggettoSemplice(v)) return false;
+  if ('errore' in r && (typeof r.errore !== 'string' || r.errore.length > A.erroreMax)) return false;
+  if ('item_id' in r) return false;
+  return true;
+}
+
+/** Le prove sostenute di una kind, prima di un istante, una per uid, in ordine. */
+function proveFinoA(righe, kind, prima) {
+  const viste = new Set(), out = [];
+  for (const r of righe || []) {
+    if (!r || r._t !== 's' || r.kind !== kind) continue;
+    const t = epoca(r.ts);
+    if (t == null || t >= prima || typeof r.uid !== 'string' || viste.has(r.uid)) continue;
+    viste.add(r.uid); out.push(r);
+  }
+  return ordinaRighe(out);
+}
+
+const FINESTRA_SEMPLICE = 5;
+
+/**
+ * I metodi di previsione **attivi**, ognuno con la sua definizione accanto,
+ * come `PROVA_CARTEGGIO` porta la sua fonte. Un metodo si chiama `nome-N`, e
+ * **la versione sta nel nome**: un metodo che cambia comportamento cambia
+ * numero, perche' le righe gia' scritte con il nome di prima direbbero una
+ * cosa e quelle nuove un'altra. Un test fissa le uscite di ognuno su un
+ * archivio di prova, e il suo rosso dice di cambiare il numero (R-PREV-04).
+ *
+ * `calcola(righe, kind, ts)` restituisce i numeri da salvare — interi esatti
+ * dove si puo', non un decimale — e lancia se non puo' dire niente:
+ * `previsioniProva()` lo prende e lo scrive in `errore`.
+ *
+ * **`regola-semplice-1`**, decisa dall'autore il 4 ottobre 2026 (§11, punto 8,
+ * di docs/esito-esame-progetto.md), prima della prima riga: e' il metro che un
+ * modello dovra' battere, non la stima. Non guarda le risposte, i temi, la
+ * composizione: e proprio perche' e' banale si puo' fissare oggi.
+ */
+export const PREVISIONI = Object.freeze({
+  'regola-semplice-1': Object.freeze({
+    definizione: "Le ultime 5 righe `_t: 's'` della stessa kind, con l'istante prima dell'avvio, "
+      + "nell'ordine di ordinaRighe(), una per uid. n quante sono (da 0 a 5), superate quante hanno "
+      + 'passed: 1. La probabilità di superare è (superate + 1) / (n + 2): senza prove 1/2, cioè «non so».',
+    decisa: "4 ottobre 2026, l'autore: docs/esito-esame-progetto.md §4.5 e §11, punto 8",
+    finestra: FINESTRA_SEMPLICE,
+    calcola(righe, kind, ts) {
+      if (!AVVIO.kind.includes(kind)) throw new Error(`kind «${kind}» non è dei quiz`);
+      const prima = epoca(ts);
+      if (prima == null || !TS_ISO.test(String(ts))) throw new Error("l'avvio non ha una data");
+      const ultime = proveFinoA(righe, kind, prima).slice(-FINESTRA_SEMPLICE);
+      return {
+        superate: ultime.filter((r) => r.passed === 1 || r.passed === true).length,
+        n: ultime.length,
+        prove: ultime.map((r) => r.uid),
+      };
+    },
+    /** La probabilita' dai due interi salvati: si calcola, non si salva. */
+    probabilita({ superate, n }) { return (superate + 1) / (n + 2); },
+  }),
+});
+
+/**
+ * Le previsioni per una prova che sta per cominciare: `{ stime }`, una voce per
+ * metodo che ha potuto dire qualcosa, e `errore` se qualcuno ha lanciato.
+ *
+ * **Ogni metodo nel suo `try`**: uno che lancia non toglie gli altri, e non
+ * toglie la riga d'avvio — «nessuna previsione» e «prova mai avviata» restano
+ * due cose diverse (§4.2). Un metodo che restituisce qualcosa che non e' un
+ * oggetto semplice conta come un errore: in una riga non entrerebbe.
+ *
+ * `ts` e' l'istante di Inizia, e solo le prove prima di lui contano: una
+ * previsione che ha visto l'esito non e' una previsione (§4.8, punto 2).
+ * `opt.metodi` sostituisce `PREVISIONI`, per i test.
+ */
+export function previsioniProva(righe, kind, ts, opt = {}) {
+  const metodi = opt.metodi || PREVISIONI;
+  const stime = {}, errori = [];
+  for (const [nome, m] of Object.entries(metodi)) {
+    try {
+      const v = m.calcola(righe, kind, ts);
+      if (!oggettoSemplice(v)) throw new Error("non ha restituito un oggetto");
+      stime[nome] = v;
+    } catch (e) {
+      errori.push(`${nome}: ${(e && e.message) || String(e)}`);
+    }
+  }
+  if (!errori.length) return { stime };
+  const errore = errori.join(' · ');
+  return { stime, errore: errore.length > AVVIO.erroreMax ? errore.slice(0, AVVIO.erroreMax - 1) + '…' : errore };
+}
+
+/**
+ * La riga d'avvio intera, nella forma del §4.2: la pagina non la compone da
+ * se'. L'`uid` e' deterministico, `<simUid>:a`, cosi' due Inizia della stessa
+ * prova sono un rinvio idempotente e non due previsioni.
+ *
+ * `simUid` e' quello della prova, che la sua riga `_t: 's'` portera' come uid;
+ * `kind` la fase, `'base'` o `'vela'`; `prova` la scelta in Quiz → Simula la
+ * prova; `ts` l'istante di Inizia, prima della prima risposta; `motore` la
+ * versione di `meta.json`; `righe` l'archivio com'e'.
+ *
+ * Un metodo che lancia lascia la riga, con `errore`. **Argomenti sbagliati
+ * lanciano**, con il motivo di `validaRiga()`: sono un errore di chi chiama, e
+ * la pagina non deve aprire una prova in silenzio senza la sua riga (§4.8,
+ * punto 4). La prova di carteggio non si registra (§11, punto 10): `kind`
+ * `'carteggio'` e' un errore.
+ */
+export function rigaAvvio({ simUid, kind, prova, ts, motore, righe, metodi } = {}) {
+  const { stime, errore } = previsioniProva(righe, kind, ts, metodi ? { metodi } : {});
+  const riga = { _t: 'a', uid: `${simUid}:a`, sim_uid: simUid, kind, prova, ts, motore, stime,
+    ...(errore ? { errore } : {}) };
+  const motivo = validaRiga(riga);
+  if (motivo) throw new Error(`rigaAvvio: ${motivo}`);
+  return riga;
+}
+
+/**
+ * Se una riga e' una **risposta** — una cosa che chi studia ha fatto e che la
+ * pagina puo' chiamare cosi': vero per i quiz, il carteggio, le tecniche e le
+ * prove sostenute; falso per i tag N/L/C, per le righe d'avvio e per tutto il
+ * resto. Ogni conteggio che la pagina scrive come «risposte» lo usa, e le
+ * righe d'avvio in attesa si nominano a parte (§4.3): una riga d'avvio in coda
+ * non e' «1 risposte da inviare», il difetto che P-48 aveva tolto per i
+ * Segnali.
+ */
+export function rigaDiRisposta(r) {
+  return !!r && typeof r === 'object' && (r._t === 'q' || r._t === 'c' || r._t === 't' || r._t === 's');
 }
 
 // --- la bozza del carteggio (P-34) ------------------------------------------------
