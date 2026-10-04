@@ -109,6 +109,89 @@ export function classifica(p) {
   return p.s > 0 ? 'coperto' : 'da_ripassare';
 }
 
+// --- i cinque stati per quesito (P-71, decisione 14 di P-59) --------------------
+//
+// I tre stati qui sopra dicono soltanto com'e' andata l'**ultima** risposta: un
+// quesito sbagliato cinque volte e preso la sesta e' «coperto» quanto uno preso
+// sempre (la issue #1, chiusa in questo verso). Decisi dall'autore il 3 e il 4
+// ottobre 2026, cinque stati, disgiunti, che sommano al totale:
+//
+//   mai_visto   nessuna risposta
+//   debole      l'ultima risposta e' sbagliata — sempre sbagliato, o una regressione
+//   sistemato   dopo l'ultimo errore, due giuste ad almeno CONFERMA_ORE l'una
+//               dall'altra; le giuste dopo la mantengono, un errore la riapre
+//   ok          nessun errore, e due giuste ad almeno CONFERMA_ORE
+//   incerto     il resto del visto: l'ultima e' giusta, ma non e' confermata
+//
+// **Nessuno stato e' salvato**: si leggono dallo specchio, che si ricalcola
+// dalle righe. Lo specchio porta per questo due campi in piu', `gp` e `gu`,
+// l'istante (in ms) della prima e dell'ultima giusta della serie in corso — la
+// serie e' quella che la streak `s` conta, e un errore la chiude. «Due giuste ad
+// almeno 12 ore» dentro la serie vuol dire `gu - gp >= 12 ore`: la prima e
+// l'ultima sono le piu' lontane. Per questo una terza giusta cinque minuti dopo
+// la seconda **non toglie** la conferma, che era il controesempio di ChatGPT a
+// «le ultime due giuste» (I-06): `gu` puo' solo crescere.
+//
+// **I nomi qui non sono quelli della barra.** Le parole in schermata sono
+// Q-STATI, dell'autore (§10 della specifica); `mai_visto`, `debole`, `incerto`,
+// `sistemato`, `ok` sono gli identificatori del contratto, e la pagina li
+// traduce.
+//
+// **`classifica()` non cambia**, e i tre si ottengono dai cinque
+// (`STATI_IN_TRE`): misurato, ogni «incerto» ha l'ultima risposta giusta,
+// quindi i «coperti» di oggi sono incerto + sistemato + ok, e i «da ripassare»
+// sono esattamente i deboli. «Rifai N errori» (`soloDaRifare`) apre i deboli.
+
+/**
+ * La distanza minima fra le due risposte giuste che confermano un quesito.
+ * Dodici ore e non «un giorno diverso»: con le date, due risposte a cinque
+ * minuti a cavallo della mezzanotte sarebbero due giorni (riga 12 del confronto
+ * con ChatGPT in docs/idee-dopo-gli-account.md). Una scelta pratica, non una
+ * soglia dimostrata: si rivede con i dati, ed e' per questo che ha un nome.
+ */
+export const CONFERMA_ORE = 12;
+const CONFERMA_MS = CONFERMA_ORE * 3600000;
+
+export const STATI_QUESITO = Object.freeze(['mai_visto', 'debole', 'incerto', 'sistemato', 'ok']);
+
+/** Da cinque a tre: lo stato di `classifica()` che corrisponde a ognuno. */
+export const STATI_IN_TRE = Object.freeze({
+  mai_visto: 'mai_visto', debole: 'da_ripassare', incerto: 'coperto', sistemato: 'coperto', ok: 'coperto',
+});
+
+/**
+ * Lo stato di un quesito, uno dei cinque, dallo specchio di `ripiega()`.
+ *
+ * Senza gli istanti — uno specchio costruito da `applica()` senza il sesto
+ * argomento, come fa oggi la pagina — nessuna conferma si inventa: il quesito
+ * resta «incerto», mai «ok» o «sistemato». Uno stato che sale per un istante
+ * che non c'e' sarebbe il numero verde a copertura zero.
+ */
+export function statoQuesito(p) {
+  if (!p || !p.n) return 'mai_visto';
+  if (!(p.s > 0)) return 'debole';
+  const confermato = p.gp != null && p.gu != null && p.gu - p.gp >= CONFERMA_MS;
+  if (!confermato) return 'incerto';
+  return p.lw == null ? 'ok' : 'sistemato';
+}
+
+/**
+ * Quanti quesiti in ciascuno dei cinque stati, sotto una restrizione — `kind`,
+ * `temi`, `voci`, come in `coda()` —, e il `totale`: la somma dei cinque e'
+ * sempre il totale, perche' ogni quesito ne ha uno e uno solo.
+ */
+export function contaStati(items, progress, { kind, temi, voci } = {}) {
+  const out = { mai_visto: 0, debole: 0, incerto: 0, sistemato: 0, ok: 0, totale: 0 };
+  for (const it of items || []) {
+    if (kind && it.k !== kind) continue;
+    if (temi && temi.length && !temi.includes(it.t)) continue;
+    if (voci && voci.length && !voci.includes(it.v)) continue;
+    out[statoQuesito(progress[it.id])]++;
+    out.totale++;
+  }
+  return out;
+}
+
 // --- la coda ------------------------------------------------------------------
 //
 // Una riga: prima i mai visti, nell'ordine della banca, che segue il decreto ed
@@ -1209,17 +1292,34 @@ export function fondi(locale, remoto) {
   return out;
 }
 
-export function applica(progress, itemId, corretto, ms, giorno) {
-  const p = progress[itemId] || { n: 0, c: 0, first: null, s: 0, lw: null, k: 0, t: null, avg: null };
+/**
+ * Una risposta nello specchio. `giorno` e' la data di studio, `ts` l'istante
+ * della riga: serve ai cinque stati (`gp`, `gu`: la prima e l'ultima giusta
+ * della serie in corso, in ms), e chi chiama lo passa — `ripiega()` lo fa, la
+ * pagina di oggi no, e senza nessuna conferma si inventa (`statoQuesito()`).
+ *
+ * Con un istante mancante `gp` resta vuoto o prende la prima giusta che lo ha:
+ * la distanza misurata e' cosi' sempre fra due risposte vere, e mai piu' larga
+ * di quella vera.
+ */
+export function applica(progress, itemId, corretto, ms, giorno, ts) {
+  const p = progress[itemId] || { n: 0, c: 0, first: null, s: 0, lw: null, k: 0, t: null, avg: null, gp: null, gu: null };
+  if (!('gp' in p)) { p.gp = null; p.gu = null; }
   const nMs = p.avg == null ? 0 : p.n;
+  const istante = ts == null ? null : epoca(ts);
   p.n++;
   if (p.first == null) p.first = corretto ? 1 : 0;
   p.t = giorno;
   if (corretto) {
     p.c++; p.s++;
     if (p.lw != null) p.k++;
+    if (istante != null) {
+      if (p.gp == null) p.gp = istante;
+      p.gu = istante;
+    }
   } else {
     p.s = 0; p.lw = giorno; p.k = 0;
+    p.gp = null; p.gu = null;
   }
   if (ms) p.avg = Math.round(((p.avg || 0) * nMs + ms) / (nMs + 1));
   progress[itemId] = p;
@@ -1299,7 +1399,7 @@ export function ripiega(righe) {
     const dest = r._t === 'q' ? out.quiz : r._t === 't' ? out.tecnica : r._t === 'c' ? out.carteggio : null;
     if (!dest || !r.item_id) continue;
     const ok = r._t === 'c' ? !!r.verdict : !!r.correct;
-    applica(dest, r.item_id, ok, +r.ms || 0, String(r.ts || '').slice(0, 10));
+    applica(dest, r.item_id, ok, +r.ms || 0, String(r.ts || '').slice(0, 10), r.ts);
   }
   return out;
 }
@@ -1806,12 +1906,26 @@ export const RIGA_MAX_BYTE = 4096;
  * in `GET /v1/io` (`tipi_riga`): la pagina scrive un tipo nuovo solo se il
  * server che ha davanti lo accetta, e un server di un rilascio di prima non lo
  * dichiara (docs/esito-esame-progetto.md §6). `'a'` e' l'avvio di una prova,
- * con le previsioni registrate (P-72).
+ * con le previsioni registrate (P-72); `'b'` un segnalibro (P-71).
  */
-export const TIPI_RIGA = Object.freeze(['q', 'c', 't', 's', 'g', 'a']);
+export const TIPI_RIGA = Object.freeze(['q', 'c', 't', 's', 'g', 'a', 'b']);
 const TIPO_RIGA = new Set(TIPI_RIGA);
-const TIPI_CON_QUESITO = new Set(['q', 'c', 't']);
-const TAG = new Set(['N', 'L', 'C']);
+const TIPI_CON_QUESITO = new Set(['q', 'c', 't', 'b']);
+/**
+ * I tag di un errore (decisione 15 di P-59, 4 ottobre 2026): due, «Non lo
+ * sapevo» (`N`, lo stesso di prima) e «Svista» (`S`, nuovo). `L` «Letto male» e
+ * `C` «Calcolo» sono della classificazione precedente: restano validi per
+ * sempre — le righe sono append-only, e una regola che li rifiutasse farebbe
+ * scartare all'import e al server le righe di prima, in silenzio — e **non si
+ * riconvertono**: si mostrano come classificazione precedente.
+ *
+ * Perche' un codice nuovo e non `L` riusato per «Svista»: un `L` di prima e uno
+ * di dopo sarebbero la stessa riga con due significati, e «senza riconvertirli»
+ * non si potrebbe piu' mantenere.
+ */
+export const TAG_ATTUALI = Object.freeze(['N', 'S']);
+export const TAG_PRECEDENTI = Object.freeze(['L', 'C']);
+const TAG = new Set([...TAG_ATTUALI, ...TAG_PRECEDENTI]);
 // Data e ora, con i secondi facoltativi, e **sempre** un offset: `Z` (le righe
 // in UTC scritte fino alla 0.4.5, 135 nell'archivio vero) o `±hh:mm` (tutte le
 // altre). Senza offset un'ora non dice quando e', e il giorno di studio che se
@@ -1856,9 +1970,44 @@ export function validaRiga(riga, { quesiti } = {}) {
     return 'tag non valido';
   }
   if (riga._t === 'a' && !avvioBuono(riga)) return 'avvio non valido';
+  if (riga._t === 'b' && riga.segnato !== 1 && riga.segnato !== 0) return 'segnalibro non valido';
   let json;
   try { json = JSON.stringify(riga); } catch { return "non e' una riga"; }
   if (new TextEncoder().encode(json).length > RIGA_MAX_BYTE) return 'troppo grande';
+  return null;
+}
+
+// I tipi e i tag che un server accetta senza dirlo: quelli della v0.30.0, che
+// non ha `tipi_riga` in GET /v1/io. Un server che lo dice accetta i tag di
+// prima, e quelli nati con un tipo che dichiara.
+const TIPI_DI_PRIMA = Object.freeze(['q', 'c', 't', 's', 'g']);
+const TAG_DI_PRIMA = new Set(['N', 'L', 'C']);
+// Un tag nuovo non ha un campo suo in GET /v1/io: si riconosce dal tipo di riga
+// nato **nello stesso commit**, che il server dichiara in `tipi_riga` solo se
+// il suo motore e' quello. `S` e `'b'` sono entrati insieme (P-71): un server
+// che dice `'b'` ha un `validaRiga()` che accetta `S`, per costruzione.
+const TAG_NATO_CON = Object.freeze({ S: 'b' });
+
+/**
+ * Se il server che la pagina ha davanti accoglierebbe questa riga: `null` se
+ * si', altrimenti il motivo. `tipiRiga` e' quello che il server dice in
+ * `GET /v1/io`, `tipi_riga`, o `null` se non lo dice — e allora e' un server di
+ * un rilascio di prima, la v0.30.0 o una precedente.
+ *
+ * Serve perche' la pagina e il server si aggiornano in due passi, e un rilascio
+ * si puo' riportare indietro sulla macchina (`rg-torna`): una riga di un tipo o
+ * con un tag che il server di prima non conosce gli arriverebbe e verrebbe
+ * scartata, «non accolta», con la risposta gia' data. La pagina la chiede
+ * **prima** di scrivere, e un gesto che il server non accoglierebbe non lo offre.
+ */
+export function rigaScrivibile(riga, tipiRiga) {
+  const motivo = validaRiga(riga);
+  if (motivo) return motivo;
+  const tipi = Array.isArray(tipiRiga) ? tipiRiga : TIPI_DI_PRIMA;
+  if (!tipi.includes(riga._t)) return 'tipo che il server non accoglie';
+  if (riga._t === 'g' && !TAG_DI_PRIMA.has(riga.tag) && !tipi.includes(TAG_NATO_CON[riga.tag])) {
+    return 'tag che il server non accoglie';
+  }
   return null;
 }
 
@@ -2055,6 +2204,96 @@ export function rigaAvvio({ simUid, kind, prova, ts, motore, righe, metodi } = {
  */
 export function rigaDiRisposta(r) {
   return !!r && typeof r === 'object' && (r._t === 'q' || r._t === 'c' || r._t === 't' || r._t === 's');
+}
+
+// --- i segnalibri (P-71, decisione 20 di P-59) ------------------------------------
+//
+// «Salva questo quesito per dopo» (I-17). Una riga per gesto, `_t: 'b'`, con il
+// quesito e `segnato: 1` o `0`: togliere il segno e' una riga in piu', non una
+// cancellazione, e l'archivio resta append-only. Vale l'ultimo gesto, come per
+// i tag (`tagPerTentativo()`): per istante, i tag e i segni rotti non decidono.
+//
+// **Non e' una risposta**: `ripiega()` non la legge, `rigaDiRisposta()` dice
+// falso, e nessuna funzione che seleziona o misura cambia con lei — un test lo
+// pretende. Viaggia come le altre righe: per `uid` all'import, nella coda,
+// nell'export. Senza account vale per la pagina aperta, come tutto (ADR-004).
+
+/** Gli id dei quesiti segnati adesso, nell'ordine del gesto che li ha segnati. */
+export function segnalibri(righe) {
+  const ultimo = new Map();
+  const buone = (righe || []).filter((r) => r && r._t === 'b' && validaRiga(r) === null);
+  for (const r of ordinaRighe(buone)) { ultimo.delete(r.item_id); ultimo.set(r.item_id, r); }
+  return [...ultimo.values()].filter((r) => r.segnato === 1).map((r) => r.item_id);
+}
+
+/**
+ * L'allenamento «i miei segnalibri»: la lista e il numero dalla stessa
+ * chiamata, cosi' il pulsante che promette N apre N. La lista e' nell'ordine
+ * della banca, quello di `coda()`, e con `kind` si restringe a una banca.
+ * `fuori` nomina i segni su quesiti che la banca caricata non ha, invece di
+ * farli sparire dal conto.
+ */
+export function codaSegnalibri(items, righe, { kind } = {}) {
+  const segnati = new Set(segnalibri(righe));
+  const ids = new Set((items || []).map((it) => it.id));
+  const lista = (items || []).filter((it) => segnati.has(it.id) && (!kind || it.k === kind));
+  const fuori = [...segnati].filter((id) => !ids.has(id));
+  return { lista, quanti: lista.length, fuori };
+}
+
+// --- cerca un quesito per numero del decreto (P-71, decisione 8 di P-59) -----------
+//
+// Chi studia con il manuale o con la scuola ha il numero del quesito, il
+// progressivo `p` dell'Allegato A («1.1.1-24»), che la pagina scrive sopra la
+// domanda come «N. 1.1.1-24». Da li' al quesito.
+//
+// **Due difetti della banca, misurati il 4 ottobre 2026 e non corretti qui**:
+// quattro quesiti hanno un progressivo che non si legge (base-8, base-385,
+// base-943, base-1326: l'estrazione del PDF), e undici numeri sono portati da
+// due quesiti diversi (da 1.2.2-2 a 1.2.2-8 fra «Irregolarita'» e «Calcolo
+// dell'autonomia», e altri quattro). I primi non si trovano per numero; un
+// numero ripetuto apre tutti e due. La banca si corregge solo con un motivo e
+// un test (AGENTS.md), e un test fissa la misura finche' non succede.
+
+const NUMERO_INTERO = /^\d+\.\d+\.\d+-\d+$/;
+// Una parte del numero: i segmenti prima del trattino, o tutti e tre con un trattino e l'inizio del numero.
+const NUMERO_PARZIALE = /^(\d+(\.\d+){0,2}|\d+\.\d+\.\d+-\d*)$/;
+
+/**
+ * `{ valido, numero, esatti, parziali, quanti, oscurati }`, e `motivo` se il
+ * testo non e' un numero del decreto.
+ *
+ * Il testo si legge come lo scrive chi ha il libro accanto: spazi, un «N.»
+ * davanti, un trattino lungo. **Esatti** sono i quesiti con quel numero —
+ * di norma uno, due dove la banca lo ripete. **Parziali** quelli che lo
+ * completano: la parte prima del trattino si confronta per segmenti interi
+ * («1.1» prende 1.1.x e non 1.10.x), il numero dopo il trattino per prefisso
+ * («1.1.1-2» prende 1.1.1-20…29). `quanti` e' la somma: il numero che la
+ * pagina scrive e le liste che apre sono la stessa cosa.
+ *
+ * Un numero che non c'e' e' una ricerca valida senza risultati, non un errore.
+ * Un oscurato si trova — e' in banca e si allena — e sta anche in `oscurati`,
+ * perche' la pagina dica, come prima di rispondere, che all'esame non esce.
+ */
+export function cercaNumero(items, testo, { kind } = {}) {
+  const numero = String(testo ?? '').trim().replace(/^n\.?\s*/i, '').replace(/\s*[-\u2013\u2014]\s*/g, '-').replace(/\.$/, '');
+  const vuoto = { numero, esatti: [], parziali: [], quanti: 0, oscurati: [] };
+  if (!numero) return { valido: false, motivo: 'scrivi il numero del quesito, per esempio 1.1.1-24', ...vuoto };
+  if (!NUMERO_PARZIALE.test(numero)) return { valido: false, motivo: "non e' un numero del decreto: si scrive come 1.1.1-24", ...vuoto };
+  const [testa, coda_] = numero.split('-');
+  const segmenti = testa.split('.');
+  const esatti = [], parziali = [];
+  for (const it of items || []) {
+    if (kind && it.k !== kind) continue;
+    if (typeof it.p !== 'string' || !NUMERO_INTERO.test(it.p)) continue;
+    if (it.p === numero) { esatti.push(it); continue; }
+    const [t, n] = it.p.split('-');
+    const pezzi = t.split('.');
+    if (!segmenti.every((x, i) => pezzi[i] === x)) continue;
+    if (coda_ === undefined || (segmenti.length === 3 && n.startsWith(coda_))) parziali.push(it);
+  }
+  const oscurati = [...esatti, ...parziali].filter(oscurato).map((it) => it.id);
+  return { valido: true, numero, esatti, parziali, quanti: esatti.length + parziali.length, oscurati };
 }
 
 // --- la bozza del carteggio (P-34) ------------------------------------------------

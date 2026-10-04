@@ -379,6 +379,103 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   Guardiano e controllo della documentazione verdi. `site/`, la specifica e
   `docs/prossime-sessioni.md` non sono stati toccati.
 
+### Aggiunto — P-71: i contratti del motore per il ridisegno
+
+- **Quattro decisioni di P-59 diventano contratti del motore, accanto a quello
+  che c'è.** Sono i cinque stati per quesito (14), i due tag (15), i segnalibri
+  (20) e la ricerca per numero del decreto (8). Tutto è additivo: la pagina non
+  è stata toccata e non chiama niente di nuovo. Le quattro funzioni esportate
+  senza chiamanti — `contaStati`, `rigaScrivibile`, `codaSegnalibri`,
+  `cercaNumero` — stanno fra gli orfani dichiarati finché non arriva il
+  ridisegno.
+
+- **I cinque stati: `statoQuesito()` e `contaStati()`, accanto a
+  `classifica()`, che non cambia.** Gli stati sono *mai visto*, *debole*,
+  *incerto*, *sistemato* e *ok*, disgiunti, e sommano al totale. Si leggono
+  dallo specchio e non si salvano. **Lo specchio di prima non bastava:** non
+  portava gli istanti delle risposte giuste, quindi «due giuste ad almeno 12
+  ore» non si poteva dire. Ora porta `gp` e `gu`, la prima e l'ultima giusta
+  della serie in corso, in millisecondi. La regola diventa `gu − gp ≥ 12 ore`, e
+  per costruzione una risposta giusta non toglie mai una conferma: il
+  controesempio di ChatGPT in I-06 è un caso di test. La distanza è
+  `CONFERMA_ORE = 12`, una scelta pratica con un nome. `applica()` riceve il
+  `ts` della riga come sesto argomento. Senza, nessuna conferma si inventa: il
+  quesito resta *incerto*. R-ARCH-01 resta: il suo test passa ora l'istante, e
+  ripiega e applica coincidono anche sui campi nuovi. **Misurato, non supposto:**
+  ogni *incerto* ha l'ultima risposta giusta, quindi i tre stati di oggi si
+  ottengono dai cinque (`STATI_IN_TRE`): giusti = incerto + sistemato + ok, da
+  rifare = deboli. «Rifai N errori» (`soloDaRifare`) apre esattamente i deboli,
+  e un test lo pretende su ogni tema e ogni voce della banca vera. **I nomi nel
+  codice non sono quelli della barra**: le parole in schermata sono Q-STATI,
+  dell'autore.
+
+- **Un controllo per il giorno in cui la pagina leggerà i cinque stati.** Oggi
+  la pagina chiama `E.applica()` con cinque argomenti, ed è innocuo, perché
+  nessuno legge gli stati. Con il ridisegno una risposta conterebbe come
+  conferma solo dopo una ricarica, senza un errore. `test_applica_con_istante`
+  si accende con la prima chiamata ai cinque stati e pretende il sesto
+  argomento. È provato contro sé stesso a ogni esecuzione, su due pagine finte.
+
+- **I tag: `N` «Non lo sapevo», lo stesso di prima, e `S` «Svista», nuovo.**
+  `L` e `C` restano validi per sempre e non si riconvertono (`TAG_ATTUALI`,
+  `TAG_PRECEDENTI`). Ho scelto un codice nuovo e non `L`, perché un `L` di prima
+  e uno di dopo sarebbero la stessa riga con due significati.
+  **Come la pagina saprà che il server accetta `S`:** `tipi_riga` di
+  `GET /v1/io` (P-73) dice i tipi, non i tag. Un tag nuovo però si riconosce
+  dal tipo di riga nato nello stesso commit, il segnalibro `'b'`: un server che
+  dichiara `'b'` ha per costruzione un `validaRiga()` che accetta `S`. Lo dice
+  `rigaScrivibile(riga, tipiRiga)`, che va chiamata prima di scrivere; con
+  `tipiRiga` nullo il server è della v0.30.0. Il test non lo dà per scontato:
+  estrae dal repo i motori della v0.30.0 e di `eabd6fd` (il main di P-73), li
+  importa e verifica che tutti e due rifiutino `S` e il segnalibro.
+
+- **I segnalibri: una riga per gesto, `_t: 'b'`, con `segnato` 1 o 0.** Vale
+  l'ultimo gesto per istante, come per i tag, e un segno rotto non decide. Il
+  segnalibro non è una risposta: `ripiega()` non lo legge e `rigaDiRisposta()`
+  dice falso. Un test pretende che sessioni, ritmo, carteggio, previsioni,
+  mappa e specchio non cambino con i segnalibri, che entrino dall'import per
+  `uid` e che viaggino nella coda. `TIPI_RIGA` prende `'b'`, quindi il server
+  di oggi lo dichiara e lo accoglie già. `codaSegnalibri()` dà la lista e il
+  numero dalla stessa chiamata, e nomina i segni su quesiti che la banca non
+  ha.
+
+- **Cerca per numero: `cercaNumero()`, base e vela.** Accetta il numero scritto
+  come lo scrive chi studia («N. 1.1.1 – 24»). Restituisce gli esatti e i
+  parziali: la parte prima del trattino si confronta per segmenti interi, il
+  numero dopo il trattino per prefisso. Un numero che non c'è dà una ricerca
+  senza risultati, un testo che non è un numero lo dice, e un oscurato si trova
+  e viene nominato. **Trovato misurando la banca, e non corretto qui:** quattro
+  progressivi `p` non si leggono, quelli di base-8 (`zzetto1 d.1i. 1p-o8ppa.`),
+  base-385, base-943 e base-1326, e quei quesiti non si trovano per numero.
+  Undici numeri sono portati da due quesiti diversi, sette da 1.2.2-2 a 1.2.2-8
+  fra «Irregolarità» e «Calcolo dell'autonomia». È l'estrazione del PDF. La
+  banca si corregge con un motivo, un test in `test_dati.py` e il README;
+  intanto un test fissa la misura.
+
+- **Prima i test, rossi uno per uno.** Undici test nuovi del motore e il
+  controllo dell'interfaccia. **Provati al contrario su trentotto rotture del
+  motore**, una alla volta, tutte rosse nel test che le riguarda e nessuna per
+  sintassi. **Due erano passate verdi** alla prima corsa. La prima: l'ordine
+  dei segnalibri senza il riposizionamento all'ultimo gesto, perché nessun
+  quesito era segnato due volte. La seconda: `quanti` uguale ai soli esatti,
+  perché la ricerca controllata non aveva parziali. Ho aggiunto i due casi e
+  ora sono rosse. Due test di prima sono cambiati con il contratto: quello di
+  R-ARCH-01 passa l'istante ad `applica()`, e quello di P-72 su `TIPI_RIGA`
+  conta `'b'`. Specifica: §3.2, §3.3, §4.1 e §4.2, il nuovo §9.12 con
+  R-STATI-01…06, R-TAG-01 e 02, R-SEGNO-01…03, R-NUM-01 e 02 (dodici coperti,
+  uno scoperto: le parole degli stati), e accanto alle decisioni 8, 14, 15 e
+  20 del §10 il contratto che c'è.
+
+  Suite: motore **210/214** con i quattro skip previsti (erano 199/203),
+  anche con la **24.21.0 LTS**, il cui archivio coincide con il
+  `SHASUMS256.txt` riscaricato oggi da nodejs.org; server **80/80** con
+  Node 25.3 e con la LTS, invariato; `ripristina --prova` 24 controlli; dati
+  223; specifica **870** (erano 820); interfaccia **2.288** (erano 2.270), in
+  4 min 38 s, con la 8620 guardata libera per 90 s prima. Un primo lancio
+  dell'interfaccia era partito per sbaglio senza aspettare: l'ho fermato prima
+  che prendesse la porta, e non conta. Guardiano verde. `site/` fuori da
+  `engine.js`, `server/` e `docs/prossime-sessioni.md` non sono stati toccati.
+
 ## [0.30.0] — 2026-10-03
 
 **Il sito più semplice: niente offline.** Rotta Giusta si apre con la rete,

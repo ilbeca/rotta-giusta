@@ -381,6 +381,7 @@ decisione se tirarlo fuori è §10, Q-AMBITO.
 
 ```
 _t       'q' quiz · 'c' carteggio · 't' tecnica · 'g' tag · 's' prova sostenuta
+         'b' segnalibro (da P-71) · 'a' avvio di una prova (P-72, nel §9 con P-74)
 uid      identificatore della riga: la fusione all'import avviene su questo
 item_id  il quesito o l'esercizio
 ts       ISO 8601 con offset **locale** (non UTC: vedi 0.4.5)
@@ -394,7 +395,29 @@ delta    sempre null nel carteggio, perché nessuno analizza la tua risposta
 proposti quanti esercizi aveva la lista proposta (carteggio e tecniche, da P-33)
 pos      la posizione dell'esercizio in quella lista, da 0 (carteggio e tecniche, da P-33)
 variante 'cieca' | 'nuoviPrima', solo nella prova di carteggio (da P-32)
+tag      'N' | 'S' nelle righe di tag; 'L' | 'C' quelle di prima (da P-71)
+segnato  1|0   (segnalibro: 1 lo mette, 0 lo toglie; da P-71)
 ```
+
+**I tag e i segnalibri, dal 4 ottobre 2026** (P-71, decisioni 15 e 20 di P-59).
+Un tag dice perché si è sbagliato: **«Non lo sapevo»**, `N`, lo stesso di
+prima, e **«Svista»**, `S`, un codice nuovo. `L` «Letto male» e `C` «Calcolo»
+sono della classificazione precedente: restano validi per sempre — una regola
+che li rifiutasse farebbe scartare all'import e al server le righe di prima — e
+non si riconvertono. «Svista» non riusa `L`, perché un `L` di prima e uno di
+dopo sarebbero la stessa riga con due significati. Un segnalibro è una riga
+`_t: 'b'` per gesto, con il quesito e `segnato`: togliere il segno è una riga in
+più, non una cancellazione, e vale l'ultimo gesto per istante, come per i tag.
+Non è una risposta (`rigaDiRisposta()` dice falso, `ripiega()` non lo legge).
+
+**Come la pagina sa che il server li accetta.** Il server dice `tipi_riga` in
+`GET /v1/io` (P-73), ed è `TIPI_RIGA` del suo motore: `'b'` c'è solo da P-71.
+Un tag nuovo non ha un campo suo, e si riconosce dal tipo nato **nello stesso
+commit**: un server che dichiara `'b'` ha un `validaRiga()` che accetta `S`, per
+costruzione. Un server che non dice `tipi_riga` è della v0.30.0 o di prima, e
+accetta `q c t s g` con `N L C`. Lo dice `rigaScrivibile(riga, tipiRiga)`, che
+la pagina chiama prima di scrivere: un gesto che il server non accoglierebbe
+non lo offre (R-TAG-02).
 
 **Carteggio e tecniche: lo schema del 30 settembre 2026** (P-33, D-02 del §10.1
 di `area-4-progetto.md`, dove sta per esteso). Ogni attività su carta — prova,
@@ -480,7 +503,13 @@ compare più dal giorno in cui la pagina smette di leggerlo (R-ARCH-07).
 
 Per ogni quesito: `n` risposte, `c` esatte, `first` (1 se la prima era esatta),
 `s` streak, `lw` giorno dell'ultimo errore, `k` riprese dopo un errore, `t`
-giorno dell'ultimo tocco, `avg` tempo medio.
+giorno dell'ultimo tocco, `avg` tempo medio; e dal 4 ottobre 2026 (P-71) `gp` e
+`gu`, l'istante in millisecondi della prima e dell'ultima risposta giusta della
+serie in corso — la serie che `s` conta, che un errore chiude. Servono ai cinque
+stati (§4.1): lo specchio di prima non portava gli istanti delle risposte
+giuste, e «due giuste ad almeno 12 ore» non si poteva dire. `applica()` li
+riceve come sesto argomento, il `ts` della riga; senza, restano vuoti e nessuna
+conferma si inventa.
 
 Si ricalcola con `ripiega()` a ogni avvio, dopo ogni import e dopo ogni
 ricezione dal server, e un test pretende che coincida con `applica()` risposta
@@ -649,6 +678,35 @@ Con due soli stati un quesito preso male conterebbe come coperto, e il buco
 sparirebbe dentro il numero verde (0.6.0). **Chi disegna una barra di
 avanzamento usa i tre, non la percentuale sola.**
 
+**I cinque stati, accanto ai tre** (decisione 14 di P-59; contratto da P-71, 4
+ottobre 2026). I tre dicono soltanto com'è andata l'ultima risposta.
+`statoQuesito()` ne dà cinque, disgiunti, che sommano al totale
+(`contaStati()`):
+
+- `mai_visto` — nessuna risposta;
+- `debole` — l'ultima risposta è sbagliata: sempre sbagliato, o una regressione;
+- `sistemato` — dopo l'ultimo errore, due giuste ad almeno `CONFERMA_ORE` = 12
+  ore l'una dall'altra; le giuste dopo la mantengono, un errore la riapre;
+- `ok` — nessun errore, e due giuste ad almeno 12 ore;
+- `incerto` — il resto del visto.
+
+«Due giuste ad almeno 12 ore» dentro la serie in corso è `gu − gp ≥ 12 ore`
+(§3.3): la prima e l'ultima sono le più lontane, quindi **una risposta giusta
+non toglie mai una conferma** — il controesempio di ChatGPT a «le ultime due
+giuste» (I-06) è un test. Le 12 ore sono una scelta pratica, con un nome, da
+rivedere con i dati. **Nessuno stato si salva**: si leggono dallo specchio, che
+si ricalcola dalle righe, e R-ARCH-01 resta.
+
+**I tre si ottengono dai cinque, misurato** (`STATI_IN_TRE`): ogni `incerto` ha
+l'ultima risposta giusta, quindi `coperto` = incerto + sistemato + ok,
+`da_ripassare` = debole, e «Rifai N errori» (`soloDaRifare`) apre esattamente i
+deboli. **`classifica()` non cambia**: la usano la barra, `quadro()`,
+`dovePesa()` e `traccia()`, che passano ai cinque con il ridisegno.
+
+**I nomi nel codice non sono quelli della barra.** `mai_visto`, `debole`,
+`incerto`, `sistemato`, `ok` sono gli identificatori del contratto; le parole in
+schermata sono Q-STATI, dell'autore (§10).
+
 ### 4.2 Il catalogo: sei mestieri, non sei varianti
 
 | Funzione | Mestiere | Guarda lo storico? |
@@ -663,6 +721,20 @@ avanzamento usa i tre, non la percentuale sola.**
 | `giroTecniche()` | copertura greedy delle 12 tecniche di carteggio | sì (a parità preferisce i mai fatti) |
 | `tappeto()` | i prossimi n esercizi mai fatti, nell'ordine del foglio | sì |
 | `daAllenare()` | che cosa mi manca sotto una restrizione qualunque: la lista **e** l'arretrato, dalla stessa fonte | sì |
+| `codaSegnalibri()` | i quesiti segnati adesso, nell'ordine della banca, con il numero e i segni su quesiti che la banca non ha (da P-71) | sì, i segnalibri |
+| `cercaNumero()` | dal progressivo del decreto («1.1.1-24») ai quesiti: esatti, parziali, oscurati (da P-71) | no |
+
+**La ricerca per numero** (decisione 8 di P-59, P-71). Il testo si legge come lo
+scrive chi ha il libro accanto — spazi, «N.» davanti, un trattino lungo —; un
+numero che non c'è è una ricerca valida senza risultati, un testo che non è un
+numero lo dice. Parziali: la parte prima del trattino per segmenti interi
+(«1.1» non prende 1.10), il numero dopo per prefisso («1.1.1-2» prende 20…29).
+Un oscurato si trova, e sta in `oscurati`. **Due difetti della banca, misurati
+il 4 ottobre 2026 e non corretti**: quattro progressivi non si leggono
+(base-8, base-385, base-943, base-1326) e quei quesiti non si trovano per
+numero; undici numeri sono portati da due quesiti diversi, e la ricerca li apre
+tutti e due. R-NUM-02 fissa la misura finché la banca non si corregge, con un
+motivo e un test in `test_dati.py`.
 
 **Due funzioni di estrazione e non una** perché sono due mestieri: una prova che
 ti serve solo quesiti mai visti misura quanto è vergine il foglio, non il voto
@@ -2086,6 +2158,37 @@ conforme».
   ogni passo, e per le figure un campione di riconoscimento, di carteggio e la
   figura mancante di base-59.
 
+### 9.12 I contratti per il ridisegno: stati, tag, segnalibri, numero
+
+Nati dalle decisioni 8, 14, 15 e 20 di P-59, il 4 ottobre 2026 (P-71). Sono del
+motore, e la pagina di oggi non li chiama: stanno fra gli orfani dichiarati di
+`docs/eccezioni-interfaccia.md` finché il ridisegno non lo fa.
+
+| ID | Requisito | Controllo |
+|---|---|---|
+| R-STATI-01 | Cinque stati per quesito, con le conferme ad almeno 12 ore fra due risposte giuste, misurate come istanti: una risposta giusta non toglie una conferma (il controesempio di I-06), un errore la riapre, e una risposta senza data non conferma niente | `test_engine.mjs::statoQuesito: cinque stati, con le conferme ad almeno 12 ore` |
+| R-STATI-02 | I cinque stati sono disgiunti e sommano al totale, per banca e sotto un filtro, e i tre di `classifica()` si ottengono dai cinque, quesito per quesito: coperto = incerto + sistemato + ok, da ripassare = debole | `test_engine.mjs::statoQuesito: i cinque stati sono disgiunti, sommano al totale` |
+| R-STATI-03 | «Rifai N errori» apre i deboli: su ogni tema e ogni voce della banca vera la lista di `soloDaRifare` è quella dei deboli, e il loro conto è il suo numero | `test_engine.mjs::statoQuesito: «Rifai N errori» apre i deboli` |
+| R-STATI-04 | Con l'istante della riga `applica()` costruisce lo stesso specchio di `ripiega()`, conferme comprese; senza, nessuna conferma si inventa e i tre stati non cambiano | `test_engine.mjs::applica: con l istante, lo stesso specchio di ripiega` |
+| R-STATI-05 | Una pagina che legge i cinque stati passa a ogni `E.applica()` il `ts` della riga: altrimenti una risposta conterebbe come conferma solo dopo una ricarica. Il controllo tace finché la pagina non li legge, ed è provato contro sé stesso a ogni esecuzione | `test_interfaccia.py::test_applica_con_istante` |
+| R-STATI-06 | Le parole dei cinque stati in schermata | scoperto — sono Q-STATI, dell'autore; il controllo arriva con il testo deciso |
+| R-TAG-01 | I tag «Non lo sapevo» (`N`) e «Svista» (`S`) si scrivono e si leggono; `L` e `C` restano validi, anche senza data, e non si riconvertono: vale l'ultimo tag per istante, qualunque sia | `test_engine.mjs::validaRiga: i tag «Non lo sapevo» e «Svista», e i vecchi restano` |
+| R-TAG-02 | Un tag o un tipo di riga nuovo si scrive solo se il server che la pagina ha davanti lo accoglie, dal suo `tipi_riga`: provato contro i motori della v0.30.0 e del main di P-73, estratti dal repo, che rifiutano il tag `S` e il segnalibro | `test_engine.mjs::rigaScrivibile: un tag o un tipo nuovo solo se il server che hai davanti lo accetta` |
+| R-SEGNO-01 | Il segnalibro è un tipo di riga, `_t: 'b'`, con data, quesito e `segnato` 1 o 0, che il server dichiara; non è una risposta | `test_engine.mjs::validaRiga: il segnalibro` |
+| R-SEGNO-02 | Vale l'ultimo gesto per istante, i segni rotti non decidono, e l'allenamento «i miei segnalibri» dà la lista e il numero dalla stessa chiamata, nomina i segni su quesiti che la banca non ha e si restringe per banca | `test_engine.mjs::segnalibri: vale l ultimo gesto` |
+| R-SEGNO-03 | I segnalibri non cambiano niente di quello che il motore seleziona o misura, entrano dall'import per `uid` e viaggiano nella coda | `test_engine.mjs::il segnalibro non e una risposta` |
+| R-NUM-01 | Dal progressivo del decreto al quesito, base e vela: scritto come lo scrive chi studia, esatto o parziale per segmenti interi, un numero che non c'è senza risultati, un testo che non è un numero detto, un oscurato trovato e nominato, e ogni quesito con un progressivo leggibile trovato con il suo | `test_engine.mjs::cercaNumero: dal progressivo del decreto al quesito` |
+| R-NUM-02 | La misura dei difetti della banca: quattro progressivi illeggibili, che non si trovano né per numero né per somiglianza, e undici numeri ripetuti, che aprono tutti i loro quesiti | `test_engine.mjs::cercaNumero: sulla banca vera quattro progressivi` |
+
+**Che cosa questi controlli non vedono.** La pagina: nessuno dei quattro
+contratti ha ancora un gesto, una barra o una casella di ricerca, e i testi —
+le parole degli stati, dei tag, del segnalibro, i messaggi della ricerca — sono
+dell'interfaccia. Il server: accoglie già il tag `S` e il segnalibro, perché
+importa `validaRiga()`, ma `server/letture.mjs` non conta i segnalibri fra le
+righe dell'account e la fonte `risposte` delle statistiche li comprende — una
+statistica sulle risposte filtra per `tipo`. E la regola delle 12 ore, che è una
+scelta e non una misura: se rende, lo dirà l'archivio vero.
+
 ---
 
 ## 10. Che cosa non è deciso
@@ -2159,6 +2262,7 @@ Ogni riga dice **chi decide**. Una questione senza un decidente non si chiude ma
      `docs/filosofia.md`, è rimasta: è una parola dell'impegno e non il nome
      di una pagina, e toglierla è dell'autore.
   8. **Cerca un quesito per numero** del decreto, in Allenati → Quiz.
+     *Contratto del motore da P-71:* `cercaNumero()`, §4.2, R-NUM-01 e 02.
   9. **Chi non ha l'account non perde le risposte passando fra le sezioni, né
      aprendo un link** — privacy, condizioni, donazione, registrazione —: dopo
      il primo caricamento il sito resta un documento solo, e un controllo
@@ -2179,7 +2283,9 @@ Ogni riga dice **chi decide**. Una questione senza un decidente non si chiude ma
   da rivedere con i dati. «Rifai N errori» apre i deboli, cioè la lista di oggi
   (`soloDaRifare`). Le parole sulla barra non sono decise: Q-STATI.
   *Cambierà:* il §4.1, `classifica()` con i suoi chiamanti, `quadro()` e
-  `dovePesa()`, R-ARCH-02, R-MAPPA-01…13.
+  `dovePesa()`, R-ARCH-02, R-MAPPA-01…13. *Contratto del motore da P-71:*
+  `statoQuesito()` e `contaStati()` accanto a `classifica()`, che non cambia;
+  lo specchio con `gp` e `gu` (§3.3, §4.1), R-STATI-01…06.
 
   **Le altre** — quelle dell'ADR-006 sono là:
   - **10. Le viste che vivono di uno storico sono dei registrati**: Progressi
@@ -2195,7 +2301,8 @@ Ogni riga dice **chi decide**. Una questione senza un decidente non si chiude ma
     prima restano nelle righe e si mostrano come classificazione precedente,
     senza riconvertirli. (I-07) *Cambierà:* la riga dei tag nel §5.4; e
     `validaRiga()` oggi accetta soltanto N, L e C (R-ARCH-14): come si scrive il
-    tag nuovo lo dicono i contratti del motore.
+    tag nuovo lo dicono i contratti del motore. *Contratto da P-71:* `N` e `S`,
+    con `L` e `C` validi per sempre (§3.2, R-TAG-01 e 02).
   - **16. Il Percorso è una mappa con il «sei qui»**, ricalcolata dalle risposte
     e mai salvata (R-ARCH-01 resta), con fasi che orientano e non chiudono
     porte, una quota minima di esplorazione, e controlli proposti dal motore
@@ -2213,7 +2320,8 @@ Ogni riga dice **chi decide**. Una questione senza un decidente non si chiude ma
     blocco solo, e con lui R-SEL-06 e R-SEL-11.
   - **20. I segnalibri**: una riga per gesto, vale l'ultimo, come i tag
     (`tagPerTentativo()`). È un tipo di riga nuovo, che `validaRiga()` deve
-    conoscere: dei contratti del motore. (I-17)
+    conoscere: dei contratti del motore. (I-17) *Contratto da P-71:* `_t: 'b'`,
+    `segnalibri()` e `codaSegnalibri()` (§3.2, §4.2, R-SEGNO-01…03).
   - **21. «Ero sicuro / avevo un dubbio»**, facoltativo dopo una risposta
     giusta; da verificare prima di usarlo nella stima. (N-01)
   - **22. La ripresa dopo un'assenza, e «hai concluso quello che ti avevamo
@@ -2872,3 +2980,15 @@ successo, ed è il motivo per cui questo file esiste.
   il §9 non sono riscritti, se non per i due nomi: descrivono la pagina che
   c'è, e cambiano con il progetto del ridisegno. Nessun requisito nuovo né
   tolto.
+- **4 ottobre 2026 — i contratti per il ridisegno (P-71).** Quattro decisioni
+  di P-59 entrano nel motore, accanto a quello che c'è e senza cambiarlo: i
+  cinque stati per quesito (14), con lo specchio che porta l'istante della
+  prima e dell'ultima giusta della serie (§3.3, §4.1); i tag `N` e `S` con `L`
+  e `C` validi per sempre (15); il segnalibro, `_t: 'b'` (20); la ricerca per
+  numero del decreto (8), con due difetti della banca misurati e non corretti
+  — quattro progressivi illeggibili, undici ripetuti (§4.2). Nuovo §9.12, con
+  R-STATI-01…06, R-TAG-01 e 02, R-SEGNO-01…03, R-NUM-01 e 02: dodici coperti e
+  uno scoperto, le parole degli stati, che sono Q-STATI. `classifica()` non
+  cambia, e un test pretende che i tre stati si ottengano dai cinque.
+  Trentotto rotture del motore, tutte rosse nel loro test; due erano passate
+  verdi alla prima corsa, e i test che le prendono sono stati scritti dopo.

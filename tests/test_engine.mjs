@@ -1939,10 +1939,13 @@ test('ripiega: dalle righe lo stesso specchio che applica() costruisce una alla 
   // La stessa cosa costruita una risposta alla volta, nell'ordine in cui e'
   // successa: deve dare lo stesso specchio. E' cio' che rende innocuo un
   // «ricarica i tuoi progressi»: non esiste una seconda contabilita'.
+  //
+  // Con l'istante della riga come sesto argomento (P-71): lo specchio porta
+  // anche la prima e l'ultima giusta della serie, per i cinque stati.
   const inc = {};
-  applica(inc, 'base-1', false, 9000, '2026-08-08');
-  applica(inc, 'base-2', true, 4000, '2026-08-08');
-  applica(inc, 'base-1', true, 5000, '2026-08-09');
+  applica(inc, 'base-1', false, 9000, '2026-08-08', '2026-08-08T10:00:00+02:00');
+  applica(inc, 'base-2', true, 4000, '2026-08-08', '2026-08-08T10:01:00+02:00');
+  applica(inc, 'base-1', true, 5000, '2026-08-09', '2026-08-09T10:00:00+02:00');
   assert.deepEqual(s.quiz, inc);
   // e l'ordine di arrivo delle righe non conta: ripiega le riordina
   assert.deepEqual(ripiega([...righe].reverse()).quiz, inc);
@@ -3695,7 +3698,7 @@ test('validaRiga: la riga d avvio', () => {
   // TIPI_RIGA e' esportato: il server lo dira' in GET /v1/io (tipi_riga), e la
   // pagina scrivera' una riga d'avvio solo se il server dichiara 'a' (§6).
   assert.ok(Array.isArray(E.TIPI_RIGA) && Object.isFrozen(E.TIPI_RIGA), 'TIPI_RIGA, un elenco congelato');
-  assert.deepEqual([...E.TIPI_RIGA].sort(), ['a', 'c', 'g', 'q', 's', 't']);
+  assert.deepEqual([...E.TIPI_RIGA].sort(), ['a', 'b', 'c', 'g', 'q', 's', 't'], "'b', il segnalibro, da P-71");
   const buona = ra('mt9x1-abcdefgh');
   assert.equal(validaRiga(buona), null);
   assert.equal(validaRiga({ ...buona, kind: 'vela', prova: 'entrambe' }), null, 'la fase vela di «Base e vela»');
@@ -4019,4 +4022,352 @@ test('la riga d avvio non la rilegge nessuno', () => {
   spia.chi = 'validaRiga';
   assert.equal(validaRiga(avvio()), null);
   assert.ok(letti.get('validaRiga').has('stime'), 'validaRiga() guarda le stime: la spia vede le letture');
+});
+
+// --- P-71: i contratti per il ridisegno -------------------------------------------
+//
+// Quattro decisioni di P-59 (specifica §10): i cinque stati per quesito (14), i
+// due tag (15), i segnalibri (20) e la ricerca per numero del decreto (8). Tutto
+// additivo: la pagina di oggi non chiama niente di qui, e i tre stati di
+// `classifica()` restano quelli della barra finche' il ridisegno non cambia.
+
+const ORA = (giorno, ora, off = '+02:00') => `2026-10-${giorno}T${ora}${off}`;
+/** Una risposta di quiz, per i cinque stati: solo quello che conta. */
+const rqs = (uid, item, ts, correct) => ({ _t: 'q', uid, item_id: item, kind: 'base', ts, correct: correct ? 1 : 0, ms: 9000 });
+/** Lo stato di un quesito dopo queste risposte, attraverso lo specchio di ripiega(). */
+const statoDopo = (...risposte) => E.statoQuesito(ripiega(risposte.map(([ts, ok], i) => rqs(`u${i}`, 'base-1', ts, ok))).quiz['base-1']);
+
+test('statoQuesito: cinque stati, con le conferme ad almeno 12 ore', () => {
+  assert.deepEqual([...E.STATI_QUESITO], ['mai_visto', 'debole', 'incerto', 'sistemato', 'ok']);
+  assert.ok(Object.isFrozen(E.STATI_QUESITO));
+  assert.equal(E.CONFERMA_ORE, 12, 'la distanza fra due conferme: una scelta pratica, da rivedere con i dati');
+  assert.equal(E.statoQuesito(undefined), 'mai_visto');
+  assert.equal(E.statoQuesito({ n: 0 }), 'mai_visto');
+  const L8 = ORA('05', '08:00:00'), M8 = ORA('06', '08:00:00');
+  // Senza errori: una giusta e' fortuna quanto e' sapere, con tre risposte possibili.
+  assert.equal(statoDopo([L8, 1]), 'incerto');
+  assert.equal(statoDopo([L8, 1], [ORA('05', '08:05:00'), 1]), 'incerto', 'due giuste a cinque minuti');
+  assert.equal(statoDopo([L8, 1], [ORA('05', '19:59:59'), 1]), 'incerto', 'un secondo meno di 12 ore');
+  assert.equal(statoDopo([L8, 1], [ORA('05', '20:00:00'), 1]), 'ok', '12 ore esatte bastano');
+  assert.equal(statoDopo([L8, 1], [M8, 1]), 'ok');
+  // Le ore sono istanti, non stringhe: 08:00Z e 20:00+02:00 distano 10 ore, 08:00Z e 22:00+02:00 dodici.
+  assert.equal(statoDopo([ORA('05', '08:00:00', 'Z'), 1], [ORA('05', '20:00:00'), 1]), 'incerto');
+  assert.equal(statoDopo([ORA('05', '08:00:00', 'Z'), 1], [ORA('05', '22:00:00'), 1]), 'ok');
+  // Debole: l'ultima risposta e' sbagliata — sempre sbagliata, o una regressione.
+  assert.equal(statoDopo([L8, 0]), 'debole');
+  assert.equal(statoDopo([L8, 0], [M8, 0]), 'debole');
+  assert.equal(statoDopo([L8, 1], [M8, 1], [ORA('07', '08:00:00'), 0]), 'debole', 'giusta, giusta, sbagliata');
+  // Sistemato: dopo l'ultimo errore, due giuste ad almeno 12 ore.
+  assert.equal(statoDopo([ORA('04', '08:00:00'), 0], [L8, 1]), 'incerto', 'una sola giusta dopo l errore');
+  assert.equal(statoDopo([ORA('04', '08:00:00'), 0], [L8, 1], [ORA('05', '08:10:00'), 1]), 'incerto', 'due giuste vicine');
+  assert.equal(statoDopo([ORA('04', '08:00:00'), 0], [L8, 1], [M8, 1]), 'sistemato');
+  // La conferma conta dopo l'ultimo errore, non prima: un errore la riapre.
+  assert.equal(statoDopo([L8, 1], [M8, 1], [ORA('06', '09:00:00'), 0], [ORA('06', '10:00:00'), 1]), 'incerto');
+  assert.equal(statoDopo([L8, 1], [M8, 1], [ORA('06', '09:00:00'), 0], [ORA('06', '10:00:00'), 1], [ORA('07', '10:00:00'), 1]), 'sistemato');
+  // Il controesempio di ChatGPT (I-06, il secondo parere): con «le ultime due
+  // giuste» una terza giusta cinque minuti dopo la seconda toglieva la
+  // conferma. Una risposta giusta non toglie mai una conferma.
+  const domenica = [ORA('04', '08:00:00'), 0];
+  assert.equal(statoDopo(domenica, [L8, 1], [M8, 1]), 'sistemato');
+  assert.equal(statoDopo(domenica, [L8, 1], [M8, 1], [ORA('06', '08:05:00'), 1]), 'sistemato', 'martedi 8:05 non la toglie');
+  assert.equal(statoDopo([L8, 1], [M8, 1], [ORA('06', '08:05:00'), 1]), 'ok', 'e senza errori resta ok');
+  // L'ordine in cui l'archivio restituisce le righe non conta.
+  const righe = [domenica, [L8, 1], [M8, 1]].map(([ts, ok], i) => rqs(`u${i}`, 'base-1', ts, ok));
+  assert.equal(E.statoQuesito(ripiega([...righe].reverse()).quiz['base-1']), 'sistemato');
+  // Una risposta senza una data che si legga non conferma niente: lo stato non sale mai per un istante che non c'e'.
+  assert.equal(statoDopo(['ieri', 1], [M8, 1]), 'incerto');
+  assert.equal(statoDopo(['ieri', 1], [L8, 1], [M8, 1]), 'ok', 'le due con la data bastano');
+});
+
+test('statoQuesito: i cinque stati sono disgiunti, sommano al totale, e danno i tre di classifica()', () => {
+  // Sulla banca vera, con uno storico a caso ma deterministico: tre giorni, ore diverse, giuste e sbagliate.
+  const items = bancaPubblicata();
+  let s = 41;
+  const rnd = () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296);
+  const righe = [];
+  for (const it of items) {
+    const quante = Math.floor(rnd() * 5);
+    for (let j = 0; j < quante; j++) {
+      const g = String(1 + Math.floor(rnd() * 9)).padStart(2, '0'), h = String(Math.floor(rnd() * 24)).padStart(2, '0');
+      righe.push({ _t: 'q', uid: `${it.id}:${j}`, item_id: it.id, kind: it.k, ts: `2026-10-${g}T${h}:00:00+02:00`, correct: rnd() < 0.7 ? 1 : 0, ms: 9000 });
+    }
+  }
+  const prog = ripiega(righe).quiz;
+  const visti = { mai_visto: 0, debole: 0, incerto: 0, sistemato: 0, ok: 0 };
+  for (const it of items) {
+    const cinque = E.statoQuesito(prog[it.id]);
+    visti[cinque]++;
+    // I tre stati si ottengono dai cinque, quesito per quesito. Misurato, non
+    // supposto: ogni «incerto» ha l'ultima risposta giusta, quindi i giusti di
+    // classifica() sono incerto + sistemato + ok, e i da rifare sono i deboli.
+    assert.equal(E.STATI_IN_TRE[cinque], classifica(prog[it.id]), `${it.id}: ${cinque}`);
+  }
+  for (const k of E.STATI_QUESITO) assert.ok(visti[k] > 0, `lo storico esercita «${k}»`);
+  for (const kind of ['base', 'vela']) {
+    const c = E.contaStati(items, prog, { kind });
+    const tot = items.filter((x) => x.k === kind).length;
+    assert.equal(c.totale, tot);
+    assert.equal(E.STATI_QUESITO.reduce((a, k) => a + c[k], 0), tot, `${kind}: sommano al totale (R-ARCH-02, a cinque)`);
+    const tre = { mai_visto: 0, coperto: 0, da_ripassare: 0 };
+    for (const it of items.filter((x) => x.k === kind)) tre[classifica(prog[it.id])]++;
+    assert.equal(c.incerto + c.sistemato + c.ok, tre.coperto, `${kind}: giusti = incerto + sistemato + ok`);
+    assert.equal(c.debole, tre.da_ripassare, `${kind}: da rifare = deboli`);
+    assert.equal(c.mai_visto, tre.mai_visto);
+  }
+  // E un filtro restringe allo stesso modo di coda(): per tema e per voce.
+  const tema = 'MOTORI', voce = items.find((x) => x.t === tema).v;
+  assert.equal(E.contaStati(items, prog, { kind: 'base', temi: [tema] }).totale, items.filter((x) => x.k === 'base' && x.t === tema).length);
+  assert.equal(E.contaStati(items, prog, { kind: 'base', voci: [voce] }).totale, items.filter((x) => x.k === 'base' && x.v === voce).length);
+});
+
+test('statoQuesito: «Rifai N errori» apre i deboli, e il numero e la lista coincidono', () => {
+  const items = bancaPubblicata();
+  for (const [kind, pesi] of [['base', PESI], ['vela', null]]) {
+    const progress = storicoMisto(items.filter((x) => x.k === kind));
+    const q = quadro(items, progress, OGGI, kind, pesi);
+    for (const r of q.righe.flatMap((x) => [x, ...(x.voci || [])])) {
+      const lista = coda(items, progress, OGGI, r.rifai).map((x) => x.id).sort();
+      const deboli = items.filter((it) => it.k === kind && (!r.filtro.tema || it.t === r.filtro.tema)
+        && (!r.filtro.voce || it.v === r.filtro.voce) && E.statoQuesito(progress[it.id]) === 'debole').map((x) => x.id).sort();
+      assert.deepEqual(lista, deboli, `${kind} · ${r.nome}: soloDaRifare apre i deboli`);
+      const filtro = { kind, ...(r.filtro.tema ? { temi: [r.filtro.tema] } : {}), ...(r.filtro.voce ? { voci: [r.filtro.voce] } : {}) };
+      assert.equal(E.contaStati(items, progress, filtro).debole, lista.length, `${kind} · ${r.nome}: il conto dei deboli`);
+    }
+  }
+});
+
+test('applica: con l istante, lo stesso specchio di ripiega, conferme comprese', () => {
+  // R-ARCH-01 resta: lo specchio porta in piu' l'istante della prima e
+  // dell'ultima giusta della serie in corso, e i due modi coincidono anche li'.
+  const righe = [
+    rqs('1', 'base-1', ORA('04', '08:00:00'), 0), rqs('2', 'base-1', ORA('05', '08:00:00'), 1),
+    rqs('3', 'base-1', ORA('06', '08:00:00'), 1), rqs('4', 'base-2', ORA('05', '09:00:00', 'Z'), 1),
+    rqs('5', 'base-2', ORA('05', '10:00:00'), 1),
+  ];
+  const inc = {};
+  for (const r of ordinaRighe(righe)) applica(inc, r.item_id, !!r.correct, r.ms, r.ts.slice(0, 10), r.ts);
+  assert.deepEqual(ripiega(righe).quiz, inc);
+  assert.equal(E.statoQuesito(inc['base-1']), 'sistemato');
+  assert.equal(E.statoQuesito(inc['base-2']), 'incerto', '09:00Z e 10:00+02:00 sono a zero ore');
+  assert.equal(inc['base-1'].gp, epoca(ORA('05', '08:00:00')));
+  assert.equal(inc['base-1'].gu, epoca(ORA('06', '08:00:00')));
+  // Un errore chiude la serie, e le conferme con lei.
+  applica(inc, 'base-1', false, 9000, '2026-10-07', ORA('07', '08:00:00'));
+  assert.equal(inc['base-1'].gp, null); assert.equal(inc['base-1'].gu, null);
+  assert.equal(E.statoQuesito(inc['base-1']), 'debole');
+  // Senza l'istante — la pagina di oggi chiama applica() con cinque argomenti —
+  // nessuna conferma si inventa: lo stato resta «incerto», mai «ok».
+  const vecchio = {};
+  applica(vecchio, 'base-3', true, 9000, '2026-10-01');
+  applica(vecchio, 'base-3', true, 9000, '2026-10-05');
+  assert.equal(E.statoQuesito(vecchio['base-3']), 'incerto');
+  assert.equal(classifica(vecchio['base-3']), 'coperto', 'e i tre stati di oggi non cambiano');
+});
+
+test('validaRiga: i tag «Non lo sapevo» e «Svista», e i vecchi restano', () => {
+  assert.deepEqual([...E.TAG_ATTUALI], ['N', 'S']);
+  assert.deepEqual([...E.TAG_PRECEDENTI], ['L', 'C']);
+  assert.ok(Object.isFrozen(E.TAG_ATTUALI) && Object.isFrozen(E.TAG_PRECEDENTI));
+  for (const t of ['N', 'S', 'L', 'C']) assert.equal(validaRiga(tagRiga('g', 'a1', t, ORA('04', '10:00:00'))), null, t);
+  assert.equal(validaRiga(tagRiga('g', 'a1', 'L')), null, 'i tag storici senza data restano validi');
+  for (const t of ['X', 's', 'Svista', '', null]) assert.equal(validaRiga(tagRiga('g', 'a1', t, ORA('04', '10:00:00'))), 'tag non valido', String(t));
+  // Vale l'ultimo, e un tag vecchio non si riconverte: L resta L, anche dopo un S.
+  const t = E.tagPerTentativo([
+    tagRiga('g1', 'a1', 'L', ORA('04', '10:00:00')), tagRiga('g2', 'a1', 'S', ORA('04', '10:01:00')),
+    tagRiga('g3', 'a2', 'S', ORA('04', '10:00:00')), tagRiga('g4', 'a2', 'L', ORA('04', '10:01:00')),
+    tagRiga('g5', 'a3', 'C'), tagRiga('g6', 'a4', 'N', ORA('04', '10:00:00')),
+  ]);
+  assert.deepEqual({ ...t }, { a1: 'S', a2: 'L', a3: 'C', a4: 'N' });
+});
+
+/** Il motore di un commit del repo, estratto e importato com'era: un server di quel rilascio. */
+async function motoreDi(ref) {
+  const { execFileSync } = await import('node:child_process');
+  const { mkdtempSync, writeFileSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const radice = new URL('..', import.meta.url).pathname;
+  const sorgente = execFileSync('git', ['-C', radice, 'show', `${ref}:site/engine.js`], { encoding: 'utf8' });
+  const file = join(mkdtempSync(join(tmpdir(), 'rg-motore-')), 'engine.mjs');
+  writeFileSync(file, sorgente);
+  return import(file);
+}
+
+test('rigaScrivibile: un tag o un tipo nuovo solo se il server che hai davanti lo accetta', async () => {
+  const tagS = tagRiga('g1', 'a1', 'S', ORA('04', '10:00:00'));
+  const segno = { _t: 'b', uid: 'b1', item_id: 'base-1', ts: ORA('04', '10:00:00'), segnato: 1 };
+  const tagN = tagRiga('g2', 'a1', 'N', ORA('04', '10:00:00'));
+  // Oggi, con lo stesso motore: tutto si scrive.
+  for (const r of [tagS, segno, tagN, RIGHE_VERE.q]) assert.equal(E.rigaScrivibile(r, E.TIPI_RIGA), null, JSON.stringify(r));
+  // Una riga che validaRiga() rifiuta non si scrive per nessuno, e il motivo e' il suo.
+  assert.equal(E.rigaScrivibile({ ...segno, segnato: 2 }, E.TIPI_RIGA), 'segnalibro non valido');
+  // I server di prima, presi dal repo come girano: v0.30.0 non dice `tipi_riga`
+  // (la pagina passa null), il main di P-73 li dice senza 'b'. Tutti e due
+  // rifiutano il tag S e il segnalibro, e rigaScrivibile() lo sa prima di inviare.
+  for (const [ref, tipi] of [['v0.30.0', null], ['eabd6fd', 'dal motore']]) {
+    const vecchio = await motoreDi(ref);
+    const dichiarati = tipi === null ? null : [...vecchio.TIPI_RIGA];
+    if (tipi === null) assert.equal(vecchio.TIPI_RIGA, undefined, `${ref} non esporta TIPI_RIGA, e il suo server non dice tipi_riga`);
+    assert.equal(vecchio.validaRiga(tagS), 'tag non valido', `${ref} rifiuta il tag S`);
+    assert.equal(vecchio.validaRiga(segno), 'tipo sconosciuto', `${ref} rifiuta il segnalibro`);
+    assert.notEqual(E.rigaScrivibile(tagS, dichiarati), null, `${ref}: il tag S non si scrive`);
+    assert.notEqual(E.rigaScrivibile(segno, dichiarati), null, `${ref}: il segnalibro non si scrive`);
+    assert.equal(vecchio.validaRiga(tagN), null);
+    assert.equal(E.rigaScrivibile(tagN, dichiarati), null, `${ref}: «Non lo sapevo» si scrive anche li`);
+    assert.equal(E.rigaScrivibile(RIGHE_VERE.q, dichiarati), null);
+  }
+  // E il verso che tiene la regola: ogni tag che il motore accetta e il server
+  // di prima no ha un tipo nato con lui, che il server dichiara.
+  for (const t of [...E.TAG_ATTUALI, ...E.TAG_PRECEDENTI]) {
+    const r = tagRiga('g', 'a1', t, ORA('04', '10:00:00'));
+    assert.equal(E.rigaScrivibile(r, E.TIPI_RIGA), null, `${t} si scrive con il motore di oggi`);
+  }
+});
+
+const segnoRiga = (uid, item, ts, segnato = 1) => ({ _t: 'b', uid, item_id: item, ts, segnato });
+
+test('validaRiga: il segnalibro', () => {
+  assert.ok(E.TIPI_RIGA.includes('b'), 'il segnalibro e un tipo di riga che il server dichiara');
+  const buona = segnoRiga('mtb1-aaaa', 'base-24', ORA('04', '10:00:00'));
+  assert.equal(validaRiga(buona), null);
+  assert.equal(validaRiga({ ...buona, segnato: 0 }), null, 'togliere il segno e una riga in piu');
+  assert.equal(validaRiga(segnoRiga('x', '5.1.3-1', ORA('04', '10:00:00'))), null, 'anche un esercizio di carteggio');
+  assert.equal(validaRiga(buona, { quesiti: new Set(['base-24']) }), null);
+  assert.equal(validaRiga({ ...buona, campo_futuro: 1 }), null);
+  const casi = [
+    [{ ...buona, ts: undefined }, 'data non valida'],
+    [{ ...buona, item_id: undefined }, 'senza quesito'],
+    [{ ...buona, item_id: 'base-99999' }, 'quesito sconosciuto', { quesiti: new Set(['base-24']) }],
+    [{ ...buona, segnato: undefined }, 'segnalibro non valido'],
+    [{ ...buona, segnato: true }, 'segnalibro non valido'],
+    [{ ...buona, segnato: 'si' }, 'segnalibro non valido'],
+    [{ ...buona, segnato: 2 }, 'segnalibro non valido'],
+  ];
+  for (const [r, motivo, opt] of casi) assert.equal(validaRiga(r, opt), motivo, JSON.stringify(r));
+  assert.equal(E.rigaDiRisposta(buona), false, 'un segnalibro non e una risposta');
+});
+
+test('segnalibri: vale l ultimo gesto, e il numero e la lista vengono dalla stessa chiamata', () => {
+  const items = bancaPubblicata();
+  const righe = [
+    segnoRiga('s1', 'base-24', ORA('04', '10:00:00')),
+    segnoRiga('s2', 'base-100', ORA('04', '10:05:00')),
+    segnoRiga('s3', 'base-24', ORA('04', '11:00:00'), 0),            // tolto
+    segnoRiga('s4', 'vela-1', ORA('04', '12:00:00')),
+    segnoRiga('s5', 'base-24', ORA('04', '08:30:00', 'Z')),          // 10:30+02:00: prima del «tolto»
+    segnoRiga('s6', 'base-zzz', ORA('04', '12:30:00')),              // non c'e' nella banca
+    segnoRiga('s0', 'base-7', ORA('04', '09:00:00')),                // segnato presto…
+    segnoRiga('s7', 'base-7', ORA('04', '13:00:00')),                // …e risegnato: conta questo gesto
+    { ...segnoRiga('s8', 'base-7', ORA('04', '14:00:00')), segnato: 'no' },   // rotta: non decide
+    segnoRiga('s2', 'base-100', ORA('04', '10:05:00')),              // la stessa riga due volte
+    rqs('q1', 'base-100', ORA('04', '10:06:00'), 0),
+  ];
+  assert.deepEqual(E.segnalibri(righe), ['base-100', 'vela-1', 'base-zzz', 'base-7'], 'nell ordine del gesto che li ha segnati');
+  assert.deepEqual(E.segnalibri([...righe].reverse()), E.segnalibri(righe), 'l ordine dell archivio non conta');
+  const base = E.codaSegnalibri(items, righe, { kind: 'base' });
+  assert.deepEqual(base.lista.map((x) => x.id), ['base-7', 'base-100'], 'nell ordine della banca');
+  assert.equal(base.quanti, base.lista.length);
+  assert.deepEqual(base.fuori, ['base-zzz'], 'un segno su un quesito che la banca non ha si nomina');
+  const tutti = E.codaSegnalibri(items, righe);
+  assert.deepEqual(tutti.lista.map((x) => x.id), ['base-7', 'base-100', 'vela-1']);
+  assert.equal(tutti.quanti, 3);
+  assert.deepEqual(E.codaSegnalibri(items, []), { lista: [], quanti: 0, fuori: [] });
+});
+
+test('il segnalibro non e una risposta, e non cambia niente di quello che il motore calcola', () => {
+  const { righe } = archivioConAvvii();
+  const segni = [segnoRiga('b1', 'base-2', TA('09:02:30')), segnoRiga('b2', 'base-6', TA('10:31:30')),
+    segnoRiga('b3', 'base-2', TA('09:10:00'), 0), segnoRiga('b4', '5.1.3-1', TA('11:00:30'))];
+  const items = bancaVera();
+  const carte = bancaC('5.1.3-1', '5.1.3-2', '5.1.3-3');
+  const calcola = (rr) => {
+    const spec = ripiega(rr);
+    return {
+      ripiega: spec, sessioniPausa: sessioni(rr), sessioniAttivita: sessioni(rr, { confine: 'attivita' }),
+      ritmo: ritmo(rr, { minRisposte: 2 }), tag: E.tagPerTentativo(rr),
+      carteggio: E.attivitaCarteggio(rr, { tipo: 'c' }), tecniche: E.attivitaCarteggio(rr, { tipo: 't' }),
+      dettaglio: E.dettaglioCarteggio(rr, carte, 'giro1', { tipo: 'c' }),
+      errori: erroriSessione(rr, items, 'bat1'), previsione: E.previsioniProva(rr, 'base', TA('14:00:00')),
+      risposte: rr.filter(E.rigaDiRisposta).length,
+      quadro: quadro(items, spec.quiz, '2026-10-04', 'base', PESI),
+    };
+  };
+  const senza = calcola(righe);
+  for (const rr of [[...righe, ...segni], [...segni, ...righe]]) {
+    const con = calcola(rr);
+    for (const k of Object.keys(senza)) assert.deepStrictEqual(con[k], senza[k], `${k} cambia con i segnalibri`);
+  }
+  // Entra dall'import come le altre righe, per uid, e viaggia nella coda.
+  const f = fondiArchivio(righe, [...segni, segni[0]]);
+  assert.equal(f.nuove, 4); assert.equal(f.gia, 1); assert.equal(f.scartate, 0);
+  let c = E.nuovaCoda({ generazione: 1, epocaDb: EPOCA_A, righe: segni });
+  const lotto = E.lottoDaInviare(segni, c);
+  assert.deepEqual(lotto.righe.map((r) => r.uid), ['b1', 'b2', 'b3', 'b4']);
+  const esito = E.dopoInvio(c, lotto, ok200({ nuove: ['b1', 'b2', 'b3', 'b4'], gia: [], scartate: [], ultima_seq: 4, epoca: EPOCA_A, generazione: 1 }), segni);
+  assert.deepEqual(esito.coda.daInviare, []);
+});
+
+test('cercaNumero: dal progressivo del decreto al quesito, base e vela', () => {
+  const items = bancaPubblicata();
+  const ids = (r) => r.esatti.map((x) => x.id);
+  const r = E.cercaNumero(items, '1.1.1-24');
+  assert.equal(r.valido, true); assert.equal(r.numero, '1.1.1-24');
+  assert.deepEqual(ids(r), ['base-24']);
+  assert.equal(r.quanti, r.esatti.length + r.parziali.length);
+  assert.deepEqual(ids(E.cercaNumero(items, '2.1.1-1')), ['vela-1']);
+  assert.deepEqual(ids(E.cercaNumero(items, '2.1.1-1', { kind: 'base' })), [], 'la vela non e nella banca base');
+  // Come lo scrive chi ha il libro accanto, o lo copia dalla schermata («N. 1.1.1-24»).
+  for (const scritto of ['  1.1.1-24 ', 'N. 1.1.1-24', 'n.1.1.1 - 24', '1.1.1–24', '1.1.1 — 24']) {
+    assert.deepEqual(ids(E.cercaNumero(items, scritto)), ['base-24'], JSON.stringify(scritto));
+  }
+  // Parziale: il numero dentro la voce si completa per prefisso, le parti prima del trattino no.
+  const p = E.cercaNumero(items, '1.1.1-2');
+  assert.deepEqual(ids(p), ['base-2']);
+  assert.equal(p.parziali.length, 10, '1.1.1-20 … 1.1.1-29');
+  assert.equal(p.quanti, 11, 'quanti conta esatti e parziali: e il numero che la pagina scrive');
+  assert.ok(p.parziali.every((x) => /^1\.1\.1-2\d$/.test(x.p)));
+  const voce = E.cercaNumero(items, '1.1.1');
+  assert.equal(voce.esatti.length, 0);
+  assert.equal(voce.parziali.length, items.filter((x) => /^1\.1\.1-\d+$/.test(x.p)).length, 'tutta la voce 1.1.1');
+  const finta = [{ id: 'a', k: 'base', p: '1.1.1-1' }, { id: 'b', k: 'base', p: '1.10.1-1' }, { id: 'c', k: 'base', p: '11.1.1-1' }];
+  assert.deepEqual(E.cercaNumero(finta, '1.1').parziali.map((x) => x.id), ['a'], '«1.1» non prende 1.10 ne 11.1');
+  assert.deepEqual(E.cercaNumero(finta, '1.1.').parziali.map((x) => x.id), ['a']);
+  // Un numero che non c'e' e' una ricerca valida senza risultati; uno che non e' un numero lo dice.
+  const nessuno = E.cercaNumero(items, '9.9.9-999');
+  assert.equal(nessuno.valido, true); assert.equal(nessuno.quanti, 0);
+  for (const x of ['', '   ', 'abc', '1.1.1-x', '1..1', '-24', 'base-24', '1.1-2', '1.1.1.1', null, undefined]) {
+    const n = E.cercaNumero(items, x);
+    assert.equal(n.valido, false, JSON.stringify(x)); assert.equal(typeof n.motivo, 'string');
+    assert.deepEqual([n.esatti, n.parziali, n.quanti], [[], [], 0]);
+  }
+  // Un oscurato si trova — e' in banca, e si allena —, e il risultato lo dice.
+  const osc = items.find((x) => x.osc);
+  const o = E.cercaNumero(items, osc.p);
+  assert.ok(ids(o).includes(osc.id)); assert.ok(o.oscurati.includes(osc.id));
+  assert.deepEqual(r.oscurati, []);
+  // Ogni quesito con un progressivo leggibile si trova con il suo numero.
+  for (const it of items.filter((x) => /^\d+\.\d+\.\d+-\d+$/.test(x.p))) assert.ok(ids(E.cercaNumero(items, it.p)).includes(it.id), it.id);
+});
+
+test('cercaNumero: sulla banca vera quattro progressivi non si leggono e undici sono ripetuti', () => {
+  // Misurato il 4 ottobre 2026 su site/dati/quiz.json, e non corretto qui: la
+  // banca si corregge solo con un motivo, un test in test_dati.py e il README.
+  // Questo test e' il segnaposto della misura: se diventa rosso, la banca e'
+  // cambiata, e il numero va riletto.
+  const items = bancaPubblicata();
+  const illeggibili = items.filter((x) => !/^\d+\.\d+\.\d+-\d+$/.test(x.p)).map((x) => x.id);
+  assert.deepEqual(illeggibili, ['base-8', 'base-385', 'base-943', 'base-1326']);
+  for (const id of illeggibili) {
+    const it = items.find((x) => x.id === id);
+    assert.ok(!ids0(E.cercaNumero(items, it.p)).includes(id), `${id} (${it.p}) non si trova per numero`);
+  }
+  // Nemmeno per somiglianza: «1.3.2.113» comincia come la voce 1.3.2, e non e' un suo quesito.
+  assert.ok(!E.cercaNumero(items, '1.3.2').parziali.some((x) => x.id === 'base-385'));
+  const per = new Map();
+  for (const it of items) per.set(it.p, [...(per.get(it.p) || []), it.id]);
+  const ripetuti = [...per].filter(([, v]) => v.length > 1);
+  assert.equal(ripetuti.length, 11);
+  // Un numero ripetuto apre tutti e due i quesiti: chi cerca vede che sono due.
+  assert.deepEqual(ids0(E.cercaNumero(items, '1.2.2-2')), ['base-145', 'base-156']);
+  function ids0(r) { return r.esatti.map((x) => x.id); }
 });

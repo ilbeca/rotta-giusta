@@ -2947,6 +2947,75 @@ def test_chiamate_al_motore_preservate():
             'in docs/eccezioni-interfaccia.md, cosi\' da domani sono protette')
 
 
+# --- 7a. chi legge i cinque stati passa l'istante ad applica() (R-STATI-05) -----
+
+def argomenti_chiamate(pagina, nome):
+    """Per ogni chiamata `nome(…)` nel testo, quanti argomenti ha al primo livello.
+
+    Euristica come `senza_commenti()`: segue le parentesi e salta le stringhe,
+    non e' un parser. Basta per contare le virgole di una chiamata.
+    """
+    out = []
+    for m in re.finditer(re.escape(nome) + r'\s*\(', pagina):
+        i, prof, args, vuota, corda = m.end(), 1, 1, True, None
+        while i < len(pagina) and prof:
+            c = pagina[i]
+            if corda:
+                if c == '\\':
+                    i += 1
+                elif c == corda:
+                    corda = None
+            elif c in '\'"`':
+                corda, vuota = c, False
+            elif c in '([{':
+                prof += 1
+                vuota = False
+            elif c in ')]}':
+                prof -= 1
+            elif c == ',' and prof == 1:
+                args += 1
+            elif not c.isspace():
+                vuota = False
+            i += 1
+        out.append(0 if vuota else args)
+    return out
+
+
+def applica_senza_istante(pagina):
+    """Le chiamate a E.applica() senza il sesto argomento, se la pagina legge i cinque stati.
+
+    Lo specchio porta l'istante della prima e dell'ultima giusta della serie
+    (`gp`, `gu`) solo se `applica()` lo riceve: senza, `statoQuesito()` non
+    inventa conferme e il quesito resta «incerto». Nella pagina di oggi e'
+    innocuo — nessuno legge i cinque stati —; il giorno che il ridisegno li
+    legge, una risposta data adesso non conterebbe come conferma fino alla
+    ricarica, senza un errore. Il guasto muto, in attesa: questo controllo si
+    accende da solo con la prima chiamata ai cinque stati.
+    """
+    usa = re.search(r'\bE\.(statoQuesito|contaStati|STATI_QUESITO|STATI_IN_TRE)\b', pagina)
+    if not usa:
+        return None
+    return [n for n in argomenti_chiamate(pagina, 'E.applica') if n < 6]
+
+
+def test_applica_con_istante():
+    pagina = senza_commenti(leggi('app.html'))
+    corte = applica_senza_istante(pagina)
+    check('se la pagina legge i cinque stati, ogni E.applica() porta l\'istante',
+          not corte,
+          '%d chiamate a E.applica() con meno di sei argomenti: passa il `ts` della '
+          'riga come sesto, o le conferme dei cinque stati arrivano solo alla '
+          'ricarica' % len(corte or []))
+    # Provato contro se' stesso a ogni esecuzione: due pagine finte.
+    oggi = "E.applica(S.prog, it.id, ok, ms, today());\nconst s = E.statoQuesito(S.prog[id]);"
+    domani = "E.applica(S.prog, it.id, ok, ms, today(), riga.ts);\nE.contaStati(S.banca, S.prog, { kind });"
+    check('il controllo dell\'istante prende una pagina che lo dimentica',
+          applica_senza_istante(oggi) == [5])
+    check('e lascia passare quella che lo passa', applica_senza_istante(domani) == [])
+    check('e tace su una pagina che non legge i cinque stati',
+          applica_senza_istante("E.applica(S.prog, it.id, ok, ms, f(a, 'b,c'));") is None)
+
+
 # --- 7b. una lettura non ripiega su un dato plausibile ------------------------
 
 def test_letture_che_non_mascherano():
@@ -3105,7 +3174,7 @@ def main():
               test_rifinitura_senza_account, test_rifinitura_invio, test_rifinitura_guasto, test_rifinitura_identita,
               test_rifinitura_finestra, test_rifinitura_fuoco, test_rifinitura_avvisi, test_rifinitura_larghezze,
               test_rifinitura_contrasto, test_rifinitura_bersagli, test_rifinitura_provata_al_contrario,
-              test_motore_senza_orfani, test_chiamate_al_motore_preservate,
+              test_motore_senza_orfani, test_chiamate_al_motore_preservate, test_applica_con_istante,
               test_letture_che_non_mascherano,
               test_testi_leggibili, test_alt_di_contenuto, test_trasloco):
         t()
