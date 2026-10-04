@@ -172,16 +172,19 @@ e che cosa aspetta una mia decisione.
 Dove siamo, perché tu lo verifichi e non lo prenda per buono: la
 v0.30.0, il sito senza offline, è in linea dal 3 ottobre 2026 su
 rottagiusta.it, .pages.dev e api.rottagiusta.it. P-59, il brainstorming,
-è chiuso il 4 ottobre, e la regia l'ha smistato: la tabella della coda
-e «Dopo P-59» nel §4 dicono che cosa è pronto. Pronti: P-63 e P-64 per
-Claude, P-65 per ChatGPT, P-62 con l'autore.
+è chiuso il 4 ottobre, e la regia l'ha smistato. Chiusi lo stesso
+giorno P-63 (ADR-006, filosofia, §10 della specifica) e P-64 (il
+progetto di «com'è andata» e delle previsioni, in
+docs/esito-esame-progetto.md). Pronti: P-71, P-72 e P-73 per Claude,
+uno alla volta; P-65 per ChatGPT; P-62 con l'autore.
 
 I prossimi passi, in quest'ordine:
-1. I resoconti di P-63, P-64 e P-65, e da ciascuno il prompt che
-   sblocca: i segnaposto P-66…P-70 dei mock, e le righe 20–23 della
-   coda, che aspettano P-63 e la prova con le persone.
-2. Le decisioni dell'autore in «Dopo P-59» nel §4: ricordagliele quando
-   il lavoro che le aspetta sta per partire.
+1. I resoconti di P-65 (e da lì P-66, il secondo mock), di P-71, P-72
+   e P-73; chiusi P-72 e P-73, il prompt di P-74 (i controlli della
+   pagina e la specifica per esito e previsioni).
+2. Le decisioni dell'autore nel §4, «Dopo P-59» e «Dopo P-64»:
+   ricordagliele quando il lavoro che le aspetta sta per partire. La
+   base giuridica di esito e previsioni ferma P-75.
 3. Il §4, «Dopo il traguardo»: il redirect di .pages.dev dal 16
    ottobre, la soglia degli allarmi dal 2 novembre.
 
@@ -233,23 +236,29 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
 | 14 | **La casella `privacy@` sull'iPhone**, e la prova `dkim=pass` | Claude con l'autore | `main`, solo `account-progetto.md` | niente | P-62 |
-| 15 | **Le decisioni di P-59, formali**: un ADR, la filosofia, il §10 della specifica; e via i nomi «vetrina» e «palestra» dai documenti | Claude | `main` | niente | P-63 |
-| 16 | **«Com'è andata» dopo l'esame, e le previsioni registrate**: il progetto | Claude | `main`, solo file neutri | P-63 fuori dalla cartella | P-64 |
 | 17 | **I mock della nuova interfaccia**, in cinque passi, in `docs/prototipi/` | ChatGPT | `ui/main` | niente per il primo; ognuno aspetta il precedente | P-65, poi P-66…P-69 |
 | 18 | **La prova dei mock** con tre-cinque persone vere, e con i bot sulle varianti | l'autore, con Claude | — | P-69 | P-70 |
 | 19 | **Le ricerche**: il parere del professionista sulle donazioni (14 domande, I-11); se all'esame vero si torna indietro fra le domande; Lighthouse su telefono e Safari veri (I-08) | l'autore | — | — | §4, «Dopo P-59» |
-| 20 | **I contratti del motore**: cinque stati, Percorso, tag, costanza, segnalibri, cerca per numero, obiettivo | Claude | `main` | P-63 | da scrivere |
+| 20 | **I contratti del motore, prima parte**: cinque stati, i due tag, segnalibri, cerca per numero | Claude | `main` | niente | P-71 |
+| 20-bis | **I contratti del motore, seconda parte**: Percorso con il «sei qui», costanza, obiettivo, «hai concluso quello che ti avevamo proposto» | Claude | `main` | P-71; Q-COSTANZA e la decisione 22 (§4, «Dopo P-59», 3 e 10) | P-76, da scrivere |
 | 21 | **Il progetto e la realizzazione del ridisegno**, con i controlli dei tragitti | ChatGPT, e Claude per i controlli | `ui/main`, `main` | P-70 | da scrivere |
-| 22 | **Spiegazioni**: il primo lotto di 50, «Segnala un problema», la misura dell'effetto | Claude con l'autore, poi ChatGPT | `main`, `ui/main` | P-63; l'indirizzo e la licenza (§4) | da scrivere |
-| 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | P-63 e P-64 | da scrivere |
-| — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo P-59», «Dopo il traguardo» e le voci non barrate |
+| 22 | **Spiegazioni**: il primo lotto di 50, «Segnala un problema», la misura dell'effetto | Claude con l'autore, poi ChatGPT | `main`, `ui/main` | l'indirizzo e la licenza (§4, «Dopo P-59», 2 e 6) | da scrivere |
+| 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | P-72: le previsioni si registrano come metodi di `PREVISIONI` | da scrivere |
+| 24 | **Esito e previsioni, il motore** (A-1 di `esito-esame-progetto.md` §10.1): la riga d'avvio `_t:'a'`, `PREVISIONI`, `rigaDiRisposta()` | Claude | `main` | il sì dell'autore alle proposte 8, 9 e 10 del §11 | P-72 |
+| 25 | **Esito e previsioni, il server** (A-2): la tabella `esito`, schema 5, `tipi_riga` in `GET /v1/io` | Claude | `main` | il sì dell'autore alle proposte 4, 7 e 11 del §11 | P-73 |
+| 26 | **Esito e previsioni, i controlli della pagina e la specifica** (A-3, A-4) | Claude | `main` | P-72 e P-73 | P-74, da scrivere |
+| 27 | **Esito e previsioni, la pagina e l'informativa** (B-1, B-2), poi un rilascio | ChatGPT | `ui/main` | P-74, e la base giuridica (§4, «Dopo P-64», 1–3) | P-75, da scrivere |
+| — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo P-59», «Dopo P-64», «Dopo il traguardo» e le voci non barrate |
 
 **La v0.30.0 è in linea dal 3 ottobre 2026**, sulla pagina e sul server; P-59,
 il brainstorming, è chiuso il 4 ottobre, e questa tabella è il suo
-smistamento. **Per Claude:** P-63, le decisioni formali, per primo, perché
-tutto il resto ci si appoggia; poi P-64; P-62 con l'autore quando vuole, tocca
-soltanto `account-progetto.md`. **Per ChatGPT:** P-65, il primo dei cinque
-mock. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
+smistamento. P-63 e P-64 sono chiusi lo stesso giorno, e le loro righe, 15 e
+16, sono uscite. **Per Claude**, uno alla volta nella cartella principale:
+P-72 e P-73 appena l'autore conferma le proposte del §11 di
+`docs/esito-esame-progetto.md` che li riguardano — vengono prima perché i loro
+dati arrivano mesi dopo —, e P-71; l'ordine fra i tre è libero, e ognuno dice
+che cosa fare se trova il lavoro dell'altro. P-62 con l'autore quando vuole.
+**Per ChatGPT:** P-65, il primo dei cinque mock. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
 che cambiano una promessa (un ADR, la filosofia, la specifica), poi i mock e la
 prova con le persone, poi il codice; «com'è andata» parte presto perché i suoi
 dati arrivano mesi dopo. **Il §5, il §6 e i controlli R-NAV della specifica non
@@ -510,8 +519,51 @@ consuma, non si riprogetta.
      guardata lo dice; se sì, la simulazione dovrebbe permetterlo. Da chiedere
      alla scuola nautica, come Q-CART4.
   8. **La issue #1 su GitHub** si chiude in un verso con la decisione 14 (due
-     giuste ad almeno 12 ore): la regia la commenta e la chiude con il tuo sì,
-     dopo P-63.
+     giuste ad almeno 12 ore): la regia la commenta e la chiude con il tuo sì.
+     P-63 è chiuso: manca solo il sì.
+  9. **Dal resoconto di P-63, le tre domande nuove del §10 della specifica:**
+     **Q-STATI**, le parole dei cinque stati sulla barra (ferma P-68, il mock
+     di Progressi; il motore non le aspetta); **Q-COSTANZA**, che è il punto 3
+     qui sopra più una cosa trovata scrivendo: i Segnali non entrano
+     nell'archivio e non lasciano una data, quindi contarli nella costanza
+     vuol dire una riga nuova o un dato nuovo nel profilo; **Q-STIMA**, che è
+     il punto 1 più chi fissa le soglie con cui la stima si mostra.
+  10. **«Hai concluso quello che ti avevamo proposto»** (decisione 22): o si
+      costruisce dalle righe, senza uno stato salvato, o tocca il §4.4 della
+      specifica, «non esiste una sessione prospettica». Se serve uno stato
+      salvato lo decidi tu; lo dirà il progetto di P-76. Ferma soltanto quel
+      pezzo della riga 20-bis.
+  11. **«Una palestra onesta e sicura»**, nell'impegno in testa a
+      `docs/filosofia.md`: P-63 l'ha lasciata, perché è una parola
+      dell'impegno e non il nome di una pagina. Se va tolta con «vetrina» e
+      «palestra» (decisione 7) lo dici tu. Non ferma niente.
+  12. **Progressi senza account, nell'ADR-006** (§1, ultimo punto): P-63 l'ha
+      letto come la spiegazione di una vista che manca, non come un quarto
+      posto per l'invito a registrarsi. Se lo intendi come invito, va scritto
+      lì. Lo guarda P-68.
+  **Da sapere, da P-63:** la struttura nuova dà al Carteggio due porte, in
+  Allenati e in Esame, e nessuna voce di barra: cambia la decisione dell'8
+  settembre nel §6.1 della specifica, ed è scritto nel §10 accanto alla
+  decisione 3. E il banco dei bot di `~/bot-ux/` prende a intermittenza la
+  porta 8620: prima della suite dell'interfaccia si guarda che sia libera da
+  un po', non solo in quell'istante.
+- **Dopo P-64** (4 ottobre 2026) — le dodici decisioni del §11 di
+  `docs/esito-esame-progetto.md`. Sono lì per esteso, con la proposta di
+  ognuna; qui c'è che cosa ferma che cosa:
+  1. **La base giuridica dell'esito** (punto 1), **quella delle previsioni, e
+     se sono una profilazione** (punto 2), **e se chiedere un parere** (punto
+     3). Fermano P-75, cioè la pagina e l'informativa: senza, niente si
+     pubblica. Non fermano il motore e il server.
+  2. **La regola da battere, `regola-semplice-1`** (punto 8: le ultime 5
+     prove, (superate + 1) / (n + 2)), **«senza aiuti» non si chiede** (9),
+     **la vela sì e il carteggio no** (10). Fermano P-72: la regola si fissa
+     prima della prima riga e non si ritocca.
+  3. **Gli errori, se li sai** (punto 4), **l'azzeramento che non tocca
+     l'esito** (7), **la soglia di 20 persone** (11). Fermano P-73.
+  4. **Novanta giorni** (5) e **niente email dopo l'esame, per ora** (6):
+     fermano P-75. La 6 è la terza parte di Q-STIMA.
+  5. **Partire con una raccolta sola** (12): le previsioni possono uscire
+     prima, con P-72 e la loro metà dei controlli, se l'esito aspetta.
   **Una nota da riallineare:** una sessione parallela sul menu, riportata in
   P-59 e non nel repo, scrive «congelamento della serie scartato, visto che hai
   deciso che si azzera». La decisione 19 dice il contrario — «giorni di
@@ -4172,7 +4224,7 @@ resoconto di docs/prossime-sessioni.md.
 
 ### P-63 — Claude: le decisioni di P-59, formali, e via «vetrina» e «palestra» dai documenti
 
-**Stato:** pronto, dal 4 ottobre 2026. **Dove:** Claude Code,
+**Stato:** chiuso il 4 ottobre 2026, `e2ec898`. **Dove:** Claude Code,
 `~/Software/rotta-giusta`, ramo **`main`**, a mano o lanciato dalla regia
 (punto 8): tocca `docs/adr/`, la filosofia, la specifica, `AGENTS.md` e la
 skill. **Nasce da:** «Le decisioni di P-59». **Sblocca:** le righe 20, 22 e 23
@@ -4237,12 +4289,32 @@ docs/prossime-sessioni.md. Un commit, con la voce in fondo a
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** chiuso il 4 ottobre 2026, `e2ec898`. **L'ADR-006** per le quattro
+decisioni che cambiano una promessa — l'invito in tre posti, il sito che
+spiega, la costanza detta, la stima calcolata e non mostrata —, ognuna con il
+suo prezzo, e la condizione 2 dell'ADR-004 marcata come sostituita.
+**`docs/filosofia.md`**: la frase di I-10 al posto di «il sito non insegna»,
+la costanza al posto di «niente gamification», l'imbuto con i suoi tre posti;
+la frase sulla stima è rimasta, con accanto che cosa la aspetta. **La
+specifica**: nel §10 Q-NAV e Q-EXTRA chiuse, Q-DUE punto 3 riaperto, le altre
+decisioni fra le chiuse con accanto i requisiti che cambieranno; tre domande
+nuove, Q-STATI, Q-COSTANZA e Q-STIMA; §1, §2.4, §2.5, §4.6 e appendice A
+ritoccati; il §5, il §6, il §7 e il §9 non riscritti, nessun requisito nuovo
+né tolto. **«Vetrina» e «palestra»** fuori da `AGENTS.md`, specifica, README e
+skill, che li tiene fra gli inneschi; nei test soltanto messaggi e commenti —
+la regia ha riletto il diff di `tests/`: nessun controllo cambia. Restano «una
+palestra onesta e sicura» nell'impegno della filosofia e il `<title>` di
+`/app`, che è dell'interfaccia. **Trovato, e portato nel §4, «Dopo P-59»,
+punti 9–12:** i Segnali che la costanza dovrebbe contare non lasciano una
+data; la decisione 22 contro il §4.4; il Carteggio senza voce di barra contro
+il §6.1; la lettura di «Progressi senza account» nell'ADR-006. Suite della
+sessione: motore 192/196, server 72/72, dati 223, specifica 820, interfaccia
+2.263; rifatte dalla regia sullo stato di `main` dopo P-64, con gli stessi
+numeri: interfaccia 2.263, con la 8620 libera prima. `site/` e questo file non toccati.
 
 ### P-64 — Claude: «com'è andata» dopo l'esame, e le previsioni registrate — il progetto
 
-**Stato:** pronto, dal 4 ottobre 2026; parte quando P-63 ha lasciato la
-cartella principale. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo
+**Stato:** chiuso il 4 ottobre 2026, `0b441ab`. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo
 **`main`**, a mano o lanciato dalla regia (punto 8). Scrive soltanto file
 neutri. **Nasce da:** le decisioni 25 e 27 di P-59: i dati per validare la
 stima arrivano mesi dopo le risposte, quindi la raccolta si progetta adesso.
@@ -4291,7 +4363,29 @@ fondo a [Unreleased], con i percorsi nel comando; niente push. Chiudi
 con il resoconto di docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** chiuso il 4 ottobre 2026, `0b441ab`: `docs/esito-esame-progetto.md`,
+968 righe, e la voce nel CHANGELOG; nient'altro toccato. **«Com'è andata»:**
+un riquadro nel Percorso e una voce «Il tuo esame» nell'Account, per chi ha
+l'account e una data d'esame passata da non più di novanta giorni; una tabella
+`esito` sul server, schema 5 additivo, con `PUT` e `DELETE /v1/esito`; il
+ritiro scritto prima nel file delle cancellazioni, come le opposizioni; le
+statistiche da una fonte nuova di `server/statistiche.mjs`. **Le previsioni:**
+a Inizia di ogni simulazione completa la pagina, con il motore, scrive una
+riga `_t:'a'` con le stime dei metodi di `PREVISIONI` — oggi uno,
+`regola-semplice-1`, (superate + 1) / (n + 2) sulle ultime 5 prove —, mai
+mostrata; `rigaDiRisposta()` perché i conteggi di «risposte» non la contino;
+`tipi_riga` in `GET /v1/io` perché la pagina non mandi a un server di prima un
+tipo che rifiuterebbe. **Per tutte e due:** il testo proposto per
+l'informativa, con la base giuridica come domanda; il guasto muto di ciascuna;
+R-ESITO-01…09 e R-PREV-01…10 proposti; nel §10.1 quattro lavori per Claude
+(A-1 motore, A-2 server, A-3 controlli della pagina, A-4 specifica) e due per
+ChatGPT (B-1, B-2). **Per l'autore**, dodici decisioni nel §11: nel §4, «Dopo
+P-64», con che cosa ferma che cosa. **Non fatto, dichiarato nel §10.2:**
+niente in un browser, niente sulla macchina, nessuna misura di quanti
+risponderanno. Suite della sessione: motore 192/196, server 72/72, dati 223,
+specifica 820; l'interfaccia non lanciata, perché è un documento — l'ha
+rifatta la regia: 2.263. Da qui P-72 (A-1) e P-73 (A-2); A-3 e A-4
+sono P-74, B-1 e B-2 sono P-75, da scrivere.
 
 ### P-65 — ChatGPT: i mock della nuova interfaccia, passo 1 — la mappa dei tragitti
 
@@ -4354,6 +4448,186 @@ docs/prossime-sessioni.md.
 
 **Esito:** —
 
+### P-71 — Claude: i contratti del motore, prima parte — cinque stati, due tag, segnalibri, cerca per numero
+
+**Stato:** pronto, dal 4 ottobre 2026. **Dove:** Claude Code,
+`~/Software/rotta-giusta`, ramo **`main`**, uno alla volta con P-72 e P-73.
+**Nasce da:** le decisioni 8, 14, 15 e 20 di P-59, formali nel §10 della
+specifica (P-63). **Sblocca:** P-76, e il progetto del ridisegno (riga 21),
+che consuma questi contratti.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-71: quattro contratti nuovi nel motore, per il ridisegno che
+verrà. Solo site/engine.js, tests/, la specifica e
+docs/eccezioni-interfaccia.md: la pagina non si tocca, ed è
+dell'interfaccia.
+
+Leggi AGENTS.md; nella specifica §3.2, §4.1, §4.2, §4.3 e nel §10 le
+decisioni 8, 14, 15 e 20 di P-59 con quello che ognuna dice che
+«cambierà»; in docs/idee-dopo-gli-account.md le schede I-06, I-07, I-17
+e la issue #1 citata lì; l'ADR-006. In docs/esito-esame-progetto.md il
+§4.3 e il §10.1, A-1: se P-72 è già nel repo, TIPI_RIGA è esportato e
+`tipi_riga` è il modo in cui la pagina sa che cosa il server accetta —
+usalo; se non c'è ancora, non anticiparlo, e scrivi nel resoconto che
+cosa P-72 troverà.
+
+Tutto è additivo: la pagina di oggi resta verde con i suoi controlli.
+Prima di toccare una funzione condivisa elenca i chiamanti e di' che
+cosa cambia per ciascuno. Prima il test che fallisce, poi il codice;
+ogni test provato al contrario.
+
+1. I cinque stati per quesito (decisione 14): mai visto, debole,
+   incerto, sistemato, ok, con le due conferme ad almeno 12 ore — una
+   costante con il suo nome e la sua ragione. Disgiunti, sommano al
+   totale, e si ricalcolano dalle righe: niente di salvato. Lo specchio
+   di oggi non porta gli istanti delle risposte giuste: di' che cosa
+   gli serve in più, e R-ARCH-01 resta — ripiega() e applica()
+   coincidono. classifica() a tre stati NON cambia: la usano la barra,
+   quadro(), dovePesa() e traccia(), che cambiano con il ridisegno. I
+   cinque stati sono una funzione nuova, e i tre si devono poter
+   ottenere dai cinque: un test lo pretende (giusti = sistemato + ok +
+   la parte di incerto con l'ultima giusta, o come risulta: misuralo e
+   scrivilo). «Rifai N errori» apre i deboli, cioè soloDaRifare: un
+   test che il conto dei deboli e quella lista coincidano. Il
+   controesempio di ChatGPT alla regola, in I-06, è un caso di test.
+2. I due tag (decisione 15): «Non lo sapevo» e «Svista». Scegli come si
+   scrivono nella riga, con il perché; N, L e C di prima restano validi
+   e leggibili, e non si riconvertono. validaRiga() e tagPerTentativo()
+   con i loro chiamanti, server compreso: il server importa validaRiga,
+   e un server di prima rifiuterebbe il tag nuovo — di' come la pagina
+   lo saprà.
+3. I segnalibri (decisione 20): una riga per gesto, vale l'ultimo, come
+   i tag. Un tipo di riga nuovo: validaRiga(), ripiega() che non lo
+   conta come risposta, fondiArchivio(), la coda, l'export. Una
+   funzione che dà i quesiti segnati adesso, e una selezione che li
+   apre — numero e lista dalla stessa fonte.
+4. Cerca per numero del decreto (decisione 8): dal progressivo `p`
+   («1.1.1-24») al quesito, base e vela; che cosa succede con un numero
+   che non c'è, parziale, o di un quesito oscurato.
+
+Specifica: i contratti nel §3.2 e nel §4, i requisiti nel §9 con il
+loro controllo, le funzioni nuove fra gli orfani dichiarati di
+docs/eccezioni-interfaccia.md finché il ridisegno non le chiama. Le
+parole in schermata dei cinque stati sono Q-STATI, dell'autore: i nomi
+nel codice non sono quelli della barra, e dillo.
+
+Le cinque suite verdi, il server anche con la LTS 24, l'interfaccia con
+la 8620 guardata libera prima (il banco di ~/bot-ux la prende a tratti).
+Non toccare docs/prossime-sessioni.md né site/ fuori da engine.js. Un
+commit, con la voce in fondo a [Unreleased]; niente push. Chiudi con il
+resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-72 — Claude: esito e previsioni, il motore (A-1)
+
+**Stato:** pronto dal 4 ottobre 2026, **appena l'autore conferma** le proposte
+8, 9 e 10 del §11 di `docs/esito-esame-progetto.md` (§4, «Dopo P-64», punto
+2): la regola si fissa prima della prima riga. **Dove:** Claude Code,
+`~/Software/rotta-giusta`, ramo **`main`**. **Nasce da:** P-64, §10.1, A-1.
+**Sblocca:** P-74, e la riga 23.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-72: la parte del motore delle previsioni registrate. Solo
+site/engine.js, tests/test_engine.mjs e docs/eccezioni-interfaccia.md.
+
+Leggi AGENTS.md; docs/esito-esame-progetto.md per intero, e poi di
+nuovo il §4, il §7, il §9 e nel §10.1 il lavoro A-1, che è il tuo
+contratto; l'ADR-006, «La stima»; nella specifica §3.2 e §4.4.
+L'autore ha confermato le proposte 8, 9 e 10 del §11: la regola
+`regola-semplice-1` sulle ultime 5 prove, (superate + 1) / (n + 2);
+«senza aiuti» non si chiede; la vela si registra come il base, la prova
+di carteggio no. Se nel §4 di docs/prossime-sessioni.md, «Dopo P-64»,
+trovi scritto che ha deciso diversamente, vale quello.
+
+Fai A-1 com'è scritto: TIPI_RIGA esportato con 'a'; validaRiga() per la
+riga d'avvio; PREVISIONI congelata, con la definizione della regola
+accanto; previsioniProva(), con ogni metodo nel suo try;
+rigaAvvio(); rigaDiRisposta(). Prima di rigaDiRisposta() elenca i
+chiamanti della pagina che contano «risposte» (§7 del progetto) e
+scrivili nel resoconto e nel §10.1 del progetto: sono il lavoro della
+pagina. La pagina non si tocca. Se trovi nel motore i contratti di P-71
+(cinque stati, segnalibri), la riga d'avvio non è una risposta nemmeno
+per loro: un test.
+
+I test di R-PREV-01…04 e 08, scritti prima e provati al contrario; per
+R-PREV-02 le funzioni del §7 eseguite con e senza una riga d'avvio, con
+un confronto profondo. Se un testo del progetto non regge, fermati su
+quello, correggilo lì e dillo. I requisiti nella specifica li porta
+P-74: tu non toccarla.
+
+Le cinque suite verdi — il server importa validaRiga(): 72/72 anche con
+la LTS 24 —, l'interfaccia con la 8620 guardata libera prima. Non
+toccare docs/prossime-sessioni.md. Un commit, con la voce in fondo a
+[Unreleased]; niente push. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-73 — Claude: esito e previsioni, il server (A-2)
+
+**Stato:** pronto dal 4 ottobre 2026, **appena l'autore conferma** le proposte
+4, 7 e 11 del §11 di `docs/esito-esame-progetto.md` (§4, «Dopo P-64», punto
+3). **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**. **Nasce
+da:** P-64, §10.1, A-2. **Sblocca:** P-74.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-73: la parte del server di «com'è andata» e delle previsioni.
+Solo server/, tests/test_server.mjs, strumenti/macchina/ se serve, e
+docs/account-progetto.md. La macchina in esercizio non si tocca.
+
+Leggi AGENTS.md; docs/esito-esame-progetto.md per intero, e poi di
+nuovo §3.3, §3.4, §3.6, §4.3, §6 e nel §10.1 il lavoro A-2, che è il
+tuo contratto; in docs/account-progetto.md §2.7, §3, §7.1, §14, §15.2;
+gli esiti di P-54 e P-55 in docs/prossime-sessioni.md, perché il
+ritiro di un esito segue la strada delle opposizioni e la lettura del
+titolare deve mostrare gli esiti. L'autore ha confermato le proposte
+4, 7 e 11 del §11: gli errori si chiedono, facoltativi; l'azzeramento
+non tocca l'esito; sotto 20 persone un conteggio sugli esiti non esce.
+Se nel §4 di docs/prossime-sessioni.md, «Dopo P-64», trovi scritto che
+ha deciso diversamente, vale quello.
+
+Fai A-2 com'è scritto: lo schema 5 con la tabella `esito`, additivo;
+PUT e DELETE /v1/esito; il ritiro scritto prima nel file delle
+cancellazioni, e riletto da ripristina.mjs e dall'avvio; `esiti` e
+`tipi_riga` in GET /v1/io, `esiti` nell'export; la fonte `esiti` in
+server/statistiche.mjs con il controllo statico di R-ACC-69 esteso;
+server/leggi.mjs che mostra gli esiti, e R-ACC-74 che dichiara la
+tabella; la cancellazione dell'account che porta via gli esiti anche
+dai byte (R-ACC-19). `tipi_riga` viene dal motore: se P-72 è nel repo
+è TIPI_RIGA esportato; se non c'è, di' nel resoconto come li hai
+ricavati e che cosa cambia quando arriva.
+
+I test di R-ESITO-01 e 05…09, scritti prima e provati al contrario.
+R-ESITO-06 — il rilascio di prima gira sul database di dopo — si prova
+con il codice del tag v0.30.0 estratto in una cartella, come P-54 per
+lo schema 4. Un ripristino da una copia di prima dello schema 5.
+docs/account-progetto.md aggiornato dove A-2 dice. I requisiti nella
+specifica li porta P-74: tu non toccarla.
+
+Le cinque suite verdi, il server anche con la LTS 24 dal pacchetto
+verificato, `node server/ripristina.mjs --prova`, l'interfaccia con la
+8620 guardata libera prima. Non toccare docs/prossime-sessioni.md né
+site/. Un commit, con la voce in fondo a [Unreleased]; niente push.
+Chiudi con il resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
 ### I segnaposto — i prompt che non si possono ancora scrivere
 
 **Dopo P-59, dal 4 ottobre 2026.** I mock sono cinque passi, tutti in
@@ -4378,8 +4652,27 @@ il resoconto del precedente, e la regia scrive il suo prompt allora.
   varianti, come segnale debole accanto. Aspetta P-69. Dal suo esito: i nomi
   definitivi (§4), e il prompt del progetto del ridisegno (riga 21).
 
-Le righe 20–23 della coda aspettano P-63: i loro prompt puntano all'ADR-006 e
-al §10 della specifica, che non esistono ancora.
+**Dopo P-63 e P-64, dal 4 ottobre 2026.**
+
+- **P-74 — esito e previsioni, i controlli della pagina e la specifica** (A-3
+  e A-4 del §10.1 di `docs/esito-esame-progetto.md`), Claude su `main`. Aspetta
+  P-72 e P-73: i gruppi E-01 e P-01 del banco girano contro il server e il
+  motore veri. Se l'autore parte con le sole previsioni, la metà di P-01 esce
+  da sola dopo P-72.
+- **P-75 — esito e previsioni, la pagina e l'informativa** (B-1 e B-2),
+  ChatGPT su `ui/main`. Aspetta P-74 fuso e la base giuridica (§4, «Dopo
+  P-64», punto 1). Poi un rilascio: «Build now» e `rg-aggiorna`, schema 5.
+- **P-76 — i contratti del motore, seconda parte**: il Percorso come mappa con
+  il «sei qui» (decisione 16), la costanza (19), l'obiettivo (13), la ripresa
+  e «hai concluso quello che ti avevamo proposto» (22). Prima un progetto, poi
+  il codice: il Percorso ha fasi da definire, e la 22 tocca il §4.4. Aspetta
+  P-71, Q-COSTANZA, e conviene che parta dopo P-68, che disegna il «sei qui».
+- **Riga 22, le spiegazioni**: aspetta l'indirizzo delle segnalazioni e la
+  licenza. Il prompt dovrà dire: il file accanto alla banca, la verifica
+  dell'autore una per una, la data, «Segnala un problema», e la misura a
+  scaglioni (decisione 29).
+- **Riga 23, la stima**: aspetta P-72, perché ogni modello candidato entra
+  come un metodo di `PREVISIONI` e si registra accanto alla regola semplice.
 
 **Quello che segue è di prima del traguardo.** Qui sotto c'era **tutto quello
 che restava** fino alla versione con gli account e
@@ -4979,3 +5272,13 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   specifica aspettano il progetto del ridisegno. Nel §4, «Dopo P-59»: otto
   cose per l'autore, e la nota della sessione parallela sul menu da
   riallineare. `ui/main` e `ui/vetrina` allineati a `main`.
+- **4 ottobre 2026 — P-63 e P-64 chiusi; P-71, P-72 e P-73 pronti.** I due
+  resoconti letti contro il repo: i commit ci sono, questo file non l'ha
+  toccato nessuno, le cinque suite rifatte dalla regia sullo stato di `main`.
+  Le righe 15 e 16 escono dalla coda; la riga 20 si divide in due — la prima
+  parte, P-71, ha tutto deciso; la seconda aspetta Q-COSTANZA e un progetto —;
+  entrano le righe 24–27 per esito e previsioni. Nel §4: quattro punti nuovi
+  in «Dopo P-59» dal resoconto di P-63, e «Dopo P-64» con le dodici decisioni
+  del progetto ordinate per che cosa fermano. P-72 e P-73 partono con le
+  proposte del §11 come valori, e per questo aspettano il sì dell'autore.
+  `ui/main` e `ui/vetrina` non allineati dalla regia: P-65 può essere aperto.
