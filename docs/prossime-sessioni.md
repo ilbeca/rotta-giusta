@@ -1,6 +1,6 @@
 # Prossime sessioni — la coda, con i prompt
 
-**Aggiornato il 3 ottobre 2026.** Territorio neutro. **Penna: la sessione di regia** (sotto, «Come si usa»).
+**Aggiornato il 4 ottobre 2026.** Territorio neutro. **Penna: la sessione di regia** (sotto, «Come si usa»).
 
 > **Questo file invecchia.** È una coda, non una verità: quando un lavoro è
 > fatto, il suo prompt si chiude con l'esito e resta, la riga della coda si
@@ -30,7 +30,8 @@ quelle di prodotto nel §10 della specifica, quelle degli account nel §20 di
 | **`docs/prossime-sessioni.md`** | la coda, con i prompt | **la sessione di regia**, su `main` | vivo |
 | `docs/specifica.md` | che cosa è il prodotto, i requisiti col loro controllo, le domande aperte (§10) | Claude, su `main` | vivo |
 | `docs/filosofia.md` | il perché, e il tono dei testi | Claude, su `main` | vivo |
-| `docs/adr/` | le decisioni, una per file | Claude, su `main` | ADR-002 superato, 001/003/004 validi |
+| `docs/adr/` | le decisioni, una per file | Claude, su `main` | ADR-002 superato; 001, 003, 004 e 005 validi, il 004 sostituito in parte dal 005 |
+| `docs/idee-dopo-gli-account.md` | il brainstorming P-59: le idee, e in fondo «Le decisioni di P-59» | neutro | chiuso il 4 ottobre 2026; le decisioni diventano vincolanti quando entrano nella specifica o in un ADR (P-63) |
 | `docs/prossima-versione.md` | il piano del ridisegno in sei aree, e i contratti col motore | neutro | vivo; l'ordine delle aree sta qui sotto |
 | `docs/account-progetto.md` | come si fanno gli account; aperte nel §20, non misurate nel §19 | neutro | vivo |
 | `docs/area-1-progetto.md` | il progetto dell'area 1 | neutro | **fatto** — resta come modello per le aree successive |
@@ -155,12 +156,13 @@ Questo prompt è per Claude Code, nella cartella principale
 ~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
 un'altra cartella, fermati e dillo, senza scrivere niente.
 
-Sei la nuova sessione di regia della versione con gli account di Rotta
-Giusta. Leggi AGENTS.md, e poi docs/prossime-sessioni.md per intero:
-«Come si usa», «Che cosa fa la regia, passo per passo», la coda, il §4
-e il §6 con gli esiti di tutti i prompt chiusi. È l'unica memoria della
-regia precedente: quello che non c'è scritto non lo sai, e non lo
-inventi.
+Sei la nuova sessione di regia di Rotta Giusta. Leggi AGENTS.md, e poi
+docs/prossime-sessioni.md per intero: «Come si usa», «Che cosa fa la
+regia, passo per passo», la coda, il §4 e il §6 con gli esiti di tutti
+i prompt chiusi. È l'unica memoria della regia precedente: quello che
+non c'è scritto non lo sai, e non lo inventi. Poi leggi in
+docs/idee-dopo-gli-account.md la sezione finale, «Le decisioni di
+P-59».
 
 Poi controlla lo stato vero — git log, git status nella cartella
 principale e in ../rotta-giusta-ui, i rami non fusi, i worktree — e
@@ -168,17 +170,20 @@ dimmi in poche righe dove siamo, che cosa è in corso, che cosa è pronto
 e che cosa aspetta una mia decisione.
 
 Dove siamo, perché tu lo verifichi e non lo prenda per buono: la
-v0.29.0, la versione con gli account, è in linea dal 3 ottobre 2026 —
-rottagiusta.it e .pages.dev servono rg-0.29.0, api.rottagiusta.it dice
-0.29.0 con schema 4, main e il tag sono pushati. P-27 è chiuso; il suo
-esito nel §6 dice che cosa del passo 6 resta. Per Claude e per ChatGPT
-non c'è nessun prompt pronto.
+v0.30.0, il sito senza offline, è in linea dal 3 ottobre 2026 su
+rottagiusta.it, .pages.dev e api.rottagiusta.it. P-59, il brainstorming,
+è chiuso il 4 ottobre, e la regia l'ha smistato: la tabella della coda
+e «Dopo P-59» nel §4 dicono che cosa è pronto. Pronti: P-63 e P-64 per
+Claude, P-65 per ChatGPT, P-62 con l'autore.
 
 I prossimi passi, in quest'ordine:
-1. Il §4: «Dopo il traguardo» — per primo, se e come togliere il
-   passaggio dell'archivio di prima — e quello che resta in «Aperto il
-   2 ottobre 2026» e in «Trovato dal controllo del 2 ottobre». La
-   cartella del titolare non si tocca senza dirmelo.
+1. I resoconti di P-63, P-64 e P-65, e da ciascuno il prompt che
+   sblocca: i segnaposto P-66…P-70 dei mock, e le righe 20–23 della
+   coda, che aspettano P-63 e la prova con le persone.
+2. Le decisioni dell'autore in «Dopo P-59» nel §4: ricordagliele quando
+   il lavoro che le aspetta sta per partire.
+3. Il §4, «Dopo il traguardo»: il redirect di .pages.dev dal 16
+   ottobre, la soglia degli allarmi dal 2 novembre.
 
 Non lanciare niente e non scrivere niente finché non te lo chiedo: da
 lì ti incollerò i resoconti.
@@ -227,21 +232,29 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
-| 10 | **Che cosa viene dopo gli account** — il brainstorming, poi lo smistamento in prompt | Claude con l'autore, poi la regia | `main` | niente | P-59 |
 | 14 | **La casella `privacy@` sull'iPhone**, e la prova `dkim=pass` | Claude con l'autore | `main`, solo `account-progetto.md` | niente | P-62 |
-| — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo il traguardo» e le voci non barrate |
+| 15 | **Le decisioni di P-59, formali**: un ADR, la filosofia, il §10 della specifica; e via i nomi «vetrina» e «palestra» dai documenti | Claude | `main` | niente | P-63 |
+| 16 | **«Com'è andata» dopo l'esame, e le previsioni registrate**: il progetto | Claude | `main`, solo file neutri | P-63 fuori dalla cartella | P-64 |
+| 17 | **I mock della nuova interfaccia**, in cinque passi, in `docs/prototipi/` | ChatGPT | `ui/main` | niente per il primo; ognuno aspetta il precedente | P-65, poi P-66…P-69 |
+| 18 | **La prova dei mock** con tre-cinque persone vere, e con i bot sulle varianti | l'autore, con Claude | — | P-69 | P-70 |
+| 19 | **Le ricerche**: il parere del professionista sulle donazioni (14 domande, I-11); se all'esame vero si torna indietro fra le domande; Lighthouse su telefono e Safari veri (I-08) | l'autore | — | — | §4, «Dopo P-59» |
+| 20 | **I contratti del motore**: cinque stati, Percorso, tag, costanza, segnalibri, cerca per numero, obiettivo | Claude | `main` | P-63 | da scrivere |
+| 21 | **Il progetto e la realizzazione del ridisegno**, con i controlli dei tragitti | ChatGPT, e Claude per i controlli | `ui/main`, `main` | P-70 | da scrivere |
+| 22 | **Spiegazioni**: il primo lotto di 50, «Segnala un problema», la misura dell'effetto | Claude con l'autore, poi ChatGPT | `main`, `ui/main` | P-63; l'indirizzo e la licenza (§4) | da scrivere |
+| 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | P-63 e P-64 | da scrivere |
+| — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo P-59», «Dopo il traguardo» e le voci non barrate |
 
-**Il traguardo è fatto: la v0.29.0 è in linea dal 3 ottobre 2026** (P-27),
-sulla pagina e sul server, e `main` è pushato. La riga 9 della coda è uscita.
-**Per Claude:** P-59, il brainstorming, lungo e con l'autore davanti; e
-P-62, la casella `privacy@` sull'iPhone, che tocca soltanto
-`account-progetto.md`. P-60 e P-61 sono chiusi, e la 0.30.0 è in linea dal 3 ottobre 2026, sulla
-pagina e sul server. **Per
-ChatGPT:** niente di pronto. Lo smistamento delle idee
-di P-59 in prompt — decisioni dell'autore, ricerche, lavoro di Claude su
-`main`, lavoro di ChatGPT su `ui/main` — lo fa la regia dal suo resoconto,
-con prima le decisioni che cambiano una promessa (informativa, filosofia, un
-ADR) e poi il codice. Rilasci piccoli e frequenti (deciso dall'autore il 3
+**La v0.30.0 è in linea dal 3 ottobre 2026**, sulla pagina e sul server; P-59,
+il brainstorming, è chiuso il 4 ottobre, e questa tabella è il suo
+smistamento. **Per Claude:** P-63, le decisioni formali, per primo, perché
+tutto il resto ci si appoggia; poi P-64; P-62 con l'autore quando vuole, tocca
+soltanto `account-progetto.md`. **Per ChatGPT:** P-65, il primo dei cinque
+mock. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
+che cambiano una promessa (un ADR, la filosofia, la specifica), poi i mock e la
+prova con le persone, poi il codice; «com'è andata» parte presto perché i suoi
+dati arrivano mesi dopo. **Il §5, il §6 e i controlli R-NAV della specifica non
+si riscrivono con P-63**: descrivono la pagina che c'è, e cambiano con il
+progetto del ridisegno, dopo la prova con le persone. Rilasci piccoli e frequenti (deciso dall'autore il 3
 ottobre 2026): ogni rilascio è un «Build now», più `rg-aggiorna` quando cambia
 il server. I prompt di Claude vanno uno alla volta nella cartella principale,
 e la suite dell'interfaccia di un worktree esclude quella dell'altro, per la
@@ -471,6 +484,43 @@ consuma, non si riprogetta.
 
 ## 4 · Fuori dalle sessioni — l'autore
 
+- **Dopo P-59** (4 ottobre 2026) — quello che «Le decisioni di P-59» lasciano
+  a te, con il lavoro che ciascuna ferma:
+  1. **La frase della filosofia sulla stima** (I-12): la proposta è lì, «Non
+     ti diciamo che supererai l'esame. Ti diciamo, quando abbiamo abbastanza
+     risposte per dirlo, come andresti in una prova estratta come all'esame —
+     e che cosa questa stima non sa». Ferma la riga 23, e la riga della
+     filosofia che P-63 lascia marcata.
+  2. **L'indirizzo per le segnalazioni** (C-03): `privacy@` o uno nuovo; la
+     proposta è `segnalazioni@`. Ferma «Segnala un problema» (riga 22), e va
+     nell'informativa.
+  3. **Quante risposte fanno un giorno di attività** (I-15): la proposta è
+     un'attività conclusa, anche da dieci domande. Ferma la costanza nella
+     riga 20.
+  4. **I nomi definitivi delle voci**: Home · Allenati · Esame · Progressi è
+     deciso; «si prova con persone che chi cerca i quiz li trovi». I bot del 4
+     ottobre dicono che nella struttura approvata «quiz su un argomento» cade a
+     1/5, perché «Allenati con 10 domande» in Home ruba l'intenzione alla voce
+     «Allenati»: è un segnale debole, e lo guarda P-65. Si chiude dopo P-70.
+  5. **Il parere del professionista sulle donazioni** (I-11): le 14 domande
+     sono nella scheda. Ferma le donazioni, e nient'altro.
+  6. **La licenza delle spiegazioni** (I-10): MIT come il codice, o una licenza
+     per i testi. Ferma la pubblicazione del primo lotto (riga 22).
+  7. **Se all'esame vero si torna indietro fra le domande**: nessuna fonte
+     guardata lo dice; se sì, la simulazione dovrebbe permetterlo. Da chiedere
+     alla scuola nautica, come Q-CART4.
+  8. **La issue #1 su GitHub** si chiude in un verso con la decisione 14 (due
+     giuste ad almeno 12 ore): la regia la commenta e la chiude con il tuo sì,
+     dopo P-63.
+  **Una nota da riallineare:** una sessione parallela sul menu, riportata in
+  P-59 e non nel repo, scrive «congelamento della serie scartato, visto che hai
+  deciso che si azzera». La decisione 19 dice il contrario — «giorni di
+  attività negli ultimi 14», senza serie che si spezza —, e vale lei: i prompt
+  dei mock lo dicono, e quella sessione, se è ancora aperta, va corretta da te.
+  **Fuori dal repo, e da sapere:** `~/bot-ux/` (il banco dei bot e la lettura
+  del 4 ottobre) e le 14 schermate di quella sessione parallela. Quello che
+  serve ai mock è riassunto in I-09 e I-18; il resto, se conta, va portato in
+  `docs/prototipi/` da chi lo usa.
 - **Dopo il traguardo** (3 ottobre 2026, dal resoconto di P-27):
   1. **Il passaggio dell'archivio di prima degli account — deciso
      dall'autore il 3 ottobre 2026: si toglie subito.** Il suo criterio: se
@@ -3831,7 +3881,8 @@ sessioni di ChatGPT aperte. **P-27 è chiuso per intero.**
 
 ### P-59 — Claude, con l'autore: che cosa viene dopo gli account, il brainstorming
 
-**Stato:** pronto, dal 3 ottobre 2026. **Dove:** Claude Code,
+**Stato:** **chiuso il 4 ottobre 2026**, commit `51acb13` su `main`, più
+`84e6230` della regia. **Dove:** Claude Code,
 `~/Software/rotta-giusta`, ramo **`main`**, a mano, con l'autore davanti.
 **Nasce da:** la richiesta dell'autore, il 3 ottobre, di fare il brainstorming
 in una sessione sua; la regia smista dopo.
@@ -3878,7 +3929,28 @@ a [Unreleased] del CHANGELOG; niente push. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `51acb13`, pushato, voce «Progettato — P-59» nel CHANGELOG.
+`docs/idee-dopo-gli-account.md`: ventuno idee — diciotto dell'autore, tre di
+Claude — più quattro di ChatGPT, ognuna nella forma chiesta; i tre concorrenti
+guardati nel browser; due pareri di ChatGPT letti punto per punto; e in fondo
+**«Le decisioni di P-59», 34 righe**, una formulazione per decisione, con che
+cosa andrebbe riscritto. Per scelta dell'autore filosofia, ADR e Vincoli non
+erano un limite. Le donazioni riverificate sulle pagine ufficiali, con 14
+domande per un professionista; il «DD 199/2026» letto sul sito del MIT:
+riguarda solo la patente D1. **Trovato:** la doppia ricarica dal vivo sulla
+0.29.0, che la 0.30.0 ha tolto; e che Home (`/`) e sezioni (`/app`) sono due
+documenti, quindi passare dall'uno all'altro perde le risposte di chi non ha
+l'account — è il requisito 9 delle decisioni. **Rimasto fuori dal commit**, e
+committato dalla regia con il sì dell'autore (`84e6230`): i giri dei bot del 4
+ottobre e la decisione sul Mac mini. **Il resoconto nella forma fissa la regia
+non l'ha avuto**: è rimasto nella chat di quella sessione, e l'esito è scritto
+dal commit, dal CHANGELOG e dal file. **Che cosa ha controllato la regia:** i
+due commit, `main` uguale a `origin/main` prima di `84e6230`, guardiano e
+controllo della documentazione verdi; nessuna suite, perché sono file di
+documentazione. **Non ha controllato:** le fonti citate, i giri dei bot, che
+stanno in `~/bot-ux/` fuori dal repo, e le 14 schermate della sessione
+parallela sul menu. **Lo smistamento** è la tabella della coda, righe 15–23, e
+«Dopo P-59» nel §4.
 
 ### P-60 — Claude: semplificare — via l'offline e l'archivio di prima; le decisioni, la specifica, i controlli
 
@@ -4098,9 +4170,219 @@ resoconto di docs/prossime-sessioni.md.
 
 **Esito:** —
 
+### P-63 — Claude: le decisioni di P-59, formali, e via «vetrina» e «palestra» dai documenti
+
+**Stato:** pronto, dal 4 ottobre 2026. **Dove:** Claude Code,
+`~/Software/rotta-giusta`, ramo **`main`**, a mano o lanciato dalla regia
+(punto 8): tocca `docs/adr/`, la filosofia, la specifica, `AGENTS.md` e la
+skill. **Nasce da:** «Le decisioni di P-59». **Sblocca:** le righe 20, 22 e 23
+della coda.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-63: rendere formali le decisioni del brainstorming P-59.
+Niente codice e niente site/: decisioni scritte dove si decidono.
+
+Leggi AGENTS.md; in docs/idee-dopo-gli-account.md la sezione finale,
+«Le decisioni di P-59», e le schede a cui rimanda quando una riga non
+ti basta; docs/adr/ADR-004 e ADR-005; docs/filosofia.md; nella
+specifica §0, §1, §2, §4.6, §6 e §10; in docs/prossime-sessioni.md il
+§4, «Dopo P-59». Le 34 decisioni sono dell'autore, del 3 e 4 ottobre
+2026, e per sua scelta filosofia, ADR e Vincoli non erano un limite:
+qui si scrive che cosa cambia, non si rimette in discussione. Se una
+decisione ne contraddice un'altra, o non si può scrivere senza
+scegliere qualcosa che l'autore non ha scelto, fermati su quel punto e
+dillo nel resoconto.
+
+1. Un ADR nuovo, ADR-006, per ciò che cambia una promessa: l'invito a
+   registrarsi fuori dal riepilogo — nella Home e nel risultato di una
+   simulazione (decisione 12), che sostituisce la condizione 2
+   dell'ADR-004 —; le spiegazioni, cioè il sito che comincia a
+   spiegare (11, 28); la costanza detta (19); la stima calcolata e
+   registrata senza mostrarla, con la difficoltà dei quesiti dalle
+   risposte di tutti (23–27). Con il prezzo di ciascuna, come l'ADR-005.
+   Marca nell'ADR-004 i punti che cambiano.
+2. docs/filosofia.md: la frase approvata in I-10 al posto di «il sito
+   non insegna»; «niente gamification» riscritta per la decisione 19;
+   l'imbuto, che ora ha un invito anche in Home. La frase sulla stima
+   («"supera l'esame con noi" non lo diciamo») l'autore non l'ha ancora
+   scelta: lasciala com'è, e scrivi accanto che cosa la aspetta, come
+   ha fatto P-60 con la sua. Una voce nel registro.
+3. docs/specifica.md, §10: Q-NAV chiusa con la struttura delle
+   decisioni 1–9; Q-DUE punto 3 riaperta dai cinque stati (14), con le
+   parole della barra ancora da decidere; le altre decisioni fra le
+   chiuse, ognuna in poche righe con la data e il rimando alla scheda.
+   Il §1 con la frase nuova. Nel §2.5 la frase sui difetti dichiarati
+   che «nessun concorrente può copiare» è eccessiva: correggila. Il §5,
+   il §6, il §7 e i requisiti del §9 NON si riscrivono: descrivono la
+   pagina che c'è, i loro controlli la tengono verde, e cambiano con il
+   progetto del ridisegno. Dove una decisione li cambierà, dillo nel
+   §10 accanto alla decisione, non nel requisito.
+4. I nomi «vetrina» e «palestra» escono (decisione 7) da AGENTS.md,
+   dalla specifica, dal README e dalla skill del progetto: la pagina
+   iniziale è «la Home», `/app` è «l'app», e le sue parti hanno i nomi
+   delle sezioni. Il CHANGELOG non si riscrive, e la skill tiene i nomi
+   vecchi fra i suoi inneschi. Nella pagina li toglie l'interfaccia:
+   non toccare site/. In tests/ soltanto dove un nome sta in un
+   messaggio o in un commento e nessun controllo cambia; se un
+   controllo cerca quella parola nella pagina, lascialo e dillo.
+
+Le cinque suite verdi — test_specifica.py conta i requisiti —, quella
+dell'interfaccia con la 8620 guardata libera prima. Non toccare
+docs/prossime-sessioni.md. Un commit, con la voce in fondo a
+[Unreleased]; niente push. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-64 — Claude: «com'è andata» dopo l'esame, e le previsioni registrate — il progetto
+
+**Stato:** pronto, dal 4 ottobre 2026; parte quando P-63 ha lasciato la
+cartella principale. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo
+**`main`**, a mano o lanciato dalla regia (punto 8). Scrive soltanto file
+neutri. **Nasce da:** le decisioni 25 e 27 di P-59: i dati per validare la
+stima arrivano mesi dopo le risposte, quindi la raccolta si progetta adesso.
+**Sblocca:** i prompt del server e della pagina, e la riga 23.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-64: il progetto di due raccolte di dati che servono a
+validare la stima d'esame, e che vanno avviate molto prima della stima.
+Solo un documento: niente codice, niente site/, niente server/.
+
+Leggi AGENTS.md; in docs/idee-dopo-gli-account.md la scheda I-12, il
+secondo parere di ChatGPT alla riga I-12, e le decisioni 23–27; in
+docs/account-progetto.md §3, §7, §13, §14, §15 e §20;
+site/privacy.html; server/statistiche.mjs; l'ADR-006 se P-63 è chiuso.
+
+Scrivi docs/esito-esame-progetto.md, sul modello dei progetti delle
+aree, con due parti.
+1. «Com'è andata»: dopo la data d'esame chi ha l'account può dire
+   l'esito, separato per quiz base, vela, carteggio e pratica.
+   Facoltativo. Che cosa si chiede e con quali parole; quando, e che
+   cosa succede a chi non ha messo una data o la sposta; dove sta il
+   dato — il profilo, una riga, un'altra tabella —, con lo schema solo
+   additivo; come si corregge e come si cancella; che cosa ne vede chi
+   studia; come entra nelle statistiche, da server/statistiche.mjs e
+   senza chi si è opposto.
+2. Le previsioni registrate: prima di ogni simulazione completa il
+   modello, quando esisterà, salva la sua previsione con la versione e
+   la data, senza mostrarla. Che cosa si salva, dove, chi lo calcola —
+   la pagina con il motore, o il server —, e che cosa si può già
+   registrare oggi, senza modello, perché serva dopo: almeno la regola
+   semplice che il modello dovrà battere.
+Per tutte e due: che cosa cambia nell'informativa, con una proposta di
+testo e la base giuridica come domanda per l'autore, non come risposta;
+il guasto muto di ciascuna; e in un §10.1 le dipendenze — che cosa fa
+Claude su main (motore, server, controlli, specifica) e che cosa fa
+ChatGPT su ui/main —, abbastanza precise da diventare prompt. Le
+decisioni che servono all'autore, in un elenco in fondo.
+
+Guardiano e controllo della documentazione verdi. Non toccare
+docs/prossime-sessioni.md. Un commit del documento e della voce in
+fondo a [Unreleased], con i percorsi nel comando; niente push. Chiudi
+con il resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-65 — ChatGPT: i mock della nuova interfaccia, passo 1 — la mappa dei tragitti
+
+**Stato:** pronto, dal 4 ottobre 2026; `ui/main` è allineato a `main`.
+**Dove:** l'app ChatGPT (Codex), progetto `~/Software/rotta-giusta-ui` in
+modalità Local, ramo **`ui/main`**. Scrive soltanto in `docs/prototipi/`, che è
+neutro. **Nasce da:** le decisioni 1–9 di P-59. **Sblocca:** P-66.
+
+```
+Questo prompt è per ChatGPT (Codex), nella cartella
+~/Software/rotta-giusta-ui, sul ramo ui/main, in modalità Local. Se sei
+un altro agente o sei in un'altra cartella, fermati e dillo, senza
+scrivere niente.
+
+Sessione P-65: il primo di cinque passi di mock della nuova
+interfaccia. Questo passo non disegna schermate: disegna i tragitti.
+Niente site/, niente tests/: soltanto la cartella
+docs/prototipi/interfaccia-2026-10/.
+
+Leggi AGENTS.md; in docs/idee-dopo-gli-account.md «Le decisioni di
+P-59» — soprattutto 1–13 —, le schede I-13, I-14 e I-18, la riga I-01
+del secondo parere, e in I-09 «I primi due profili» con i giri dei bot
+del 4 ottobre; nella specifica §1, §5 e §6.3; l'ADR-004 e l'ADR-005. La
+struttura è decisa dall'autore: Home · Allenati · Esame · Progressi,
+più l'avatar. Non si rimette in discussione; se un tragitto non regge
+con quella struttura, dillo nel resoconto con il tragitto che lo
+dimostra.
+
+Scrivi docs/prototipi/interfaccia-2026-10/tragitti.md:
+- l'albero delle voci, con ogni schermata e la porta — o le porte — da
+  cui ci si arriva: nessuna schermata di oggi perde il suo ingresso
+  (specifica §5.2 e §5.3, sono l'elenco da cui partire);
+- i tragitti, uno per riga, per le tre persone del §1 e nei tre stati
+  della Home (prima visita, risposte senza account, con l'account):
+  simulare il quiz base, un quiz su un argomento, gli esercizi e la
+  prova di carteggio, i Segnali, registrarsi dal risultato di una
+  simulazione e dalla Home, aprire privacy e condizioni, tornare
+  indietro da un'attività, trovare i progressi. Per ognuno i tocchi,
+  le parole che si leggono a ogni tocco, e dove si torna chiudendo;
+- la continuità senza account (decisione 9): per ogni passaggio di
+  ogni tragitto, se le risposte della pagina aperta sopravvivono e
+  perché. Oggi `/` e `/app` sono due documenti, e passare dall'uno
+  all'altro le perde: di' come si tiene un documento solo con indirizzi
+  veri, che cosa succede con il tasto indietro e con una ricarica, e
+  che cosa resta impossibile e va detto a chi studia;
+- i nomi ancora aperti, con le alternative e il perché: i bot del 4
+  ottobre dicono che «Allenati con 10 domande» in Home ruba
+  l'intenzione alla voce «Allenati», e che chi cerca «i quiz» deve
+  trovarli. È un segnale debole: proponi, decide l'autore.
+La costanza è «giorni di attività negli ultimi 14», senza serie che si
+spezza e senza traguardi (decisione 19): una nota di un'altra sessione
+dice il contrario, e non vale. Il pulsante è «Simula il quiz base», non
+«Simula l'esame».
+
+Guardiano verde (python3 strumenti/controlla.py). Non toccare
+docs/prossime-sessioni.md. Un commit con il trailer e la voce in fondo
+a [Unreleased], versione non toccata. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
 ### I segnaposto — i prompt che non si possono ancora scrivere
 
-Qui sotto c'è **tutto quello che resta** fino alla versione con gli account e
+**Dopo P-59, dal 4 ottobre 2026.** I mock sono cinque passi, tutti in
+`docs/prototipi/interfaccia-2026-10/`, per ChatGPT su `ui/main`; ognuno aspetta
+il resoconto del precedente, e la regia scrive il suo prompt allora.
+
+- **P-66 — la Home nei tre stati**: prima visita, risposte senza account, il
+  cruscotto con l'account. Pagine HTML statiche, a 375 e 1280 px, con dati
+  finti dichiarati. Aspetta P-65. Dovrà dire: una schermata, un'azione
+  principale; «Simula il quiz base» sopra la piega; l'invito a registrarsi
+  dell'ADR-006; i difetti dichiarati che restano in Home.
+- **P-67 — Allenati ed Esame**: i tre segmenti, il ritorno che ripristina
+  segmento e posizione; le prove in ordine con le condizioni del decreto, e il
+  carteggio che è un ambiente solo con due ingressi. Aspetta P-66.
+- **P-68 — Progressi**: il «sei qui», la mappa con i cinque stati, e senza
+  account il riepilogo vero della pagina aperta. Aspetta P-67 e, per le parole
+  della barra, Q-DUE punto 3 riaperta da P-63.
+- **P-69 — il giro di un'attività**: preparazione, attività, risultato con la
+  spiegazione e con l'invito, revisione. Aspetta P-68.
+- **P-70 — la prova**, con l'autore: tre-cinque persone vere sui mock, con i
+  compiti dei due profili di I-09 e uno per chi cerca «i quiz»; e i bot sulle
+  varianti, come segnale debole accanto. Aspetta P-69. Dal suo esito: i nomi
+  definitivi (§4), e il prompt del progetto del ridisegno (riga 21).
+
+Le righe 20–23 della coda aspettano P-63: i loro prompt puntano all'ADR-006 e
+al §10 della specifica, che non esistono ancora.
+
+**Quello che segue è di prima del traguardo.** Qui sotto c'era **tutto quello
+che restava** fino alla versione con gli account e
 alla fine del ridisegno, perché niente si perda. Ogni segnaposto ha già il suo
 numero, che cosa aspetta, e che cosa il prompt dovrà contenere; il testo del
 prompt no, perché punterebbe a documenti che non esistono ancora. La regia lo
@@ -4682,3 +4964,18 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   e server alla 0.30.0, verificati da fuori; il dettaglio è nella voce
   «Verificato — la v0.30.0, in linea» del CHANGELOG. Resta aperta P-59, il
   brainstorming, e P-62, la casella `privacy@` sull'iPhone.
+- **4 ottobre 2026 — P-59 chiuso e smistato, e la regia si è passata di mano.**
+  La regia nuova è partita da un prompt che l'autore le ha dato in chat, perché
+  quello scritto qui era ancora della v0.29.0: è riscritto ora, in «Come si
+  riprende la regia». La sua prima risposta ha trovato quello che al file
+  mancava: una modifica di `docs/idee-dopo-gli-account.md` non committata — i
+  giri dei bot del 4 ottobre —, committata con il sì dell'autore (`84e6230`);
+  l'esito di P-59 ancora «—», e il suo resoconto rimasto in chat; la testata e
+  la coda ferme al 3 ottobre; l'ADR-005 fuori dalla tabella dei documenti. «Le
+  decisioni di P-59» sono smistate nella tabella della coda, righe 15–23, con
+  l'ordine deciso con l'autore: prima le decisioni formali (P-63), poi i mock
+  in cinque passi (P-65…P-69) e la prova con le persone (P-70), poi il codice;
+  «com'è andata» presto (P-64). Il §5, il §6 e i controlli R-NAV della
+  specifica aspettano il progetto del ridisegno. Nel §4, «Dopo P-59»: otto
+  cose per l'autore, e la nota della sessione parallela sul menu da
+  riallineare. `ui/main` e `ui/vetrina` allineati a `main`.
