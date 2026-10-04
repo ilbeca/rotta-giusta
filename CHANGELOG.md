@@ -83,6 +83,17 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   della documentazione verdi prima del commit. `site/`, `tests/`, `server/`,
   `docs/specifica.md` e `docs/prossime-sessioni.md` non sono stati toccati.
 
+- **Aggiunto dopo il commit di P-59, il 4 ottobre, e committato dalla regia:**
+  il Mac mini per i bot si tralascia — girano sull'Air, con l'abbonamento —, e
+  i primi giri degli utenti simulati (I-09). Dieci giri sul sito com'è, tutti
+  arrivati: nessuno vede «Simula la prova dei quiz», che sta sotto la piega, e
+  «Crea un account» si trova solo dentro «Accedi». Centoventi giri sulle
+  varianti del menu, solo testo: «Rotta» non dice progressi (0/5), i Segnali
+  sotto «Quiz → Altro» non li trova nessuno (0/5), e nella struttura approvata
+  «quiz su un argomento» cade a 1/5, perché «Allenati con 10 domande» in Home
+  ruba l'intenzione alla voce «Allenati». La lettura intera sta in
+  `~/bot-ux/`, fuori dal repo; frasi e prototipi vanno riletti dall'autore.
+
 ## [0.30.0] — 2026-10-03
 
 **Il sito più semplice: niente offline.** Rotta Giusta si apre con la rete,

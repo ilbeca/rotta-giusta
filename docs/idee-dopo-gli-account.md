@@ -1174,7 +1174,9 @@ né sito né browser: è solo testo. Il pilota gira sull'Air, dentro una session
 il **Mac mini** dell'autore, oggi quasi fermo, serve quando i giri diventano
 ricorrenti e senza nessuno davanti (di notte, a ogni rilascio), e toglie la
 contesa sulla porta 8620. Da decidere allora: come paga il modello lì
-(abbonamento con `claude -p`, o chiave API a consumo).
+(abbonamento con `claude -p`, o chiave API a consumo). **L'autore, 4
+ottobre:** il Mac mini era per un modello locale, gratuito; è una
+complicazione, si tralascia. I bot girano con l'abbonamento, sull'Air.
 
 **Il pilota, 4 ottobre 2026: il banco c'è, i giri no.** Sta in `~/bot-ux/`,
 fuori da ogni repo, con il suo `LEGGIMI.md` (struttura, comandi, la tabella del
@@ -1188,8 +1190,26 @@ un'espressione sullo stato della pagina, letta dal banco: un bot che dice
 confronta quattro prototipi di carta — oggi, la prima proposta di I-18,
 l'ibrida approvata, e una rotta apposta per vedere se lo strumento distingue.
 Provato con bot finti: orchestrazione, falso arrivo e uso fuori dalle regole
-vengono presi. **Non ancora girato con un modello:** l'accesso di `claude` da
-riga di comando sull'Air è scaduto, e lo rifà l'autore.
+vengono presi.
+
+**Girato il 4 ottobre 2026** — la lettura intera è in
+`~/bot-ux/rotta-giusta/lettura-2026-10-04.md`. Dieci giri sul sito com'è
+(Sonnet, 35–97 s e 0,16–0,42 $ di stima l'uno, dentro l'abbonamento): 10 su 10
+arrivati e confermati dal banco, nessun falso arrivo. Il profilo 1 arriva
+sempre in 4 tocchi — il tetto della sua regola d'abbandono —, e nessuno dei
+cinque vede il pulsante «Simula la prova dei quiz» del Percorso, che sta sotto
+la piega: tutti passano da Quiz o da «Scegli un'attività», e tutti dichiarano
+di aver preso l'allenamento da 10 per la prova. Il profilo 2 fa cinque volte la
+stessa strada, scorre la Home a vuoto cercando «Registrati», e trova «Crea un
+account» solo dentro «Accedi». La prova del menu (Haiku, 120 giri, 0,90 $): la
+variante rotta apposta crolla sulle etichette opache ma non sull'account
+nascosto — lo strumento vede le parole, non la profondità —; **«Rotta» non
+dice progressi** (0/5), **i Segnali sotto «Quiz → Altro» non li trova
+nessuno** (0/5), e nella struttura approvata **«quiz su un argomento» cade a
+1/5** perché «Allenati con 10 domande» in Home ruba l'intenzione alla voce
+«Allenati» della barra. Un bot che arriva è un segnale debole; cinque giri di
+uno stesso profilo valgono una o due osservazioni; frasi e prototipi li ha
+scritti Claude, e vanno riletti dall'autore.
 
 ---
 
