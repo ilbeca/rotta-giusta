@@ -157,6 +157,57 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   documentazione verdi. `site/` e `docs/prossime-sessioni.md` non sono stati
   toccati.
 
+### Progettato — P-64: «com'è andata» e le previsioni registrate
+
+- **`docs/esito-esame-progetto.md`, file neutro: le due raccolte che la stima
+  d'esame (riga 23) dovrà avere per essere validata, progettate adesso perché i
+  loro dati arrivano mesi dopo.** Nessuna delle due aspetta il modello.
+  **«Com'è andata»**: dopo la data d'esame, con l'account e facoltativo, una
+  riga per prova — carteggio, quiz base, quiz vela, pratica — con l'esito e, se
+  lo si sa, gli errori; un riquadro solo nel Percorso, per 90 giorni, e sempre
+  la voce in Profilo; testi per esteso; una tabella sua, `esito`, con lo schema
+  5, perché un esito si deve poter togliere davvero e una riga dell'archivio no.
+  **Le previsioni**: a Inizia di ogni simulazione completa, una riga nuova
+  `_t: 'a'` che registra l'avvio, e con lui le prove abbandonate, e le stime
+  dei metodi attivi; oggi uno, `regola-semplice-1` — le ultime 5 prove,
+  (superate + 1) / (n + 2) —, il metro che il modello dovrà battere. La calcola
+  la pagina con il motore, non la vede nessuno, e niente la rilegge per
+  decidere o disegnare: è una testimonianza, non uno specchio.
+
+- **Tre misure hanno scelto dove sta il dato**, sul server vero avviato in
+  locale con il codice del tag in esercizio: `PUT /v1/profilo` con un campo
+  sconosciuto risponde `200` e lo butta senza dirlo — un esito nel profilo, con
+  il server tornato indietro, si perderebbe mentre la pagina dice «salvato»;
+  una riga `_t: 'a'` è rifiutata con «tipo sconosciuto», visibile, e la pagina
+  — letto nel codice — blocca l'uscita finché non si scarica; una rotta nuova
+  dà un `404` che si legge. Da qui: l'esito in una tabella con le sue rotte, e
+  `GET /v1/io` che dice `esiti` e `tipi_riga`, così la pagina nuova accanto al
+  server di prima resta spenta invece di rompersi. **E la statistica di
+  validazione gira**: il Brier della regola semplice e le prove abbandonate,
+  attraverso `statistica()` sulle fonti filtrate, su un database sintetico; con
+  un'opposizione il conto perde quell'account senza una riga in più.
+
+- **Trovato scrivendo**: una riga d'avvio in coda farebbe dire «1 risposte da
+  inviare» prima della prima domanda (`site/app.html:1561`), il difetto di casa
+  e la forma che P-48 ha tolto ai Segnali; il motore esporterà
+  `rigaDiRisposta()`. Un ritiro dell'esito tornerebbe con un ripristino: va nel
+  file delle cancellazioni, e il server lo rilegge a ogni avvio. Il campione di
+  chi risponde non è casuale, e nessun risultato sugli esiti si legge senza il
+  tasso di risposta.
+
+- **L'informativa**: una proposta di testo per i due dati, e la base giuridica
+  come domanda per l'autore — consenso o legittimo interesse per l'esito; per
+  le previsioni, se sono una profilazione e che cosa succede a chi si oppone.
+  Il §10.1 ha sei lavori pronti per diventare prompt, quattro di Claude su
+  `main` e due di ChatGPT su `ui/main`, con diciannove requisiti proposti; il
+  §11 dodici decisioni per l'autore.
+
+  Suite: motore 192/196 con i quattro skip previsti; server 72/72; dati 223;
+  specifica 820; interfaccia non lanciata — un documento solo, e nessun file
+  che legge. Guardiano e controllo della documentazione verdi. `site/`,
+  `server/`, `tests/`, la specifica e `docs/prossime-sessioni.md` non sono
+  stati toccati.
+
 ## [0.30.0] — 2026-10-03
 
 **Il sito più semplice: niente offline.** Rotta Giusta si apre con la rete,
