@@ -29,6 +29,60 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 - **Non guardato:** un browser vero con la 0.29.0 installata che passa alla
   0.30.0 su `rottagiusta.it`. L'ha provato P-61 in locale, quattro volte.
 
+### Progettato — P-59: che cosa viene dopo gli account, il brainstorming
+
+- **`docs/idee-dopo-gli-account.md`, file neutro, scritto mentre si discuteva,
+  il 3 e il 4 ottobre, con l'autore davanti.** È la casella BRAINSTORM: niente
+  codice, niente prompt, niente ordine dei lavori; le decisioni le smista la
+  regia. Ventuno idee — diciotto dell'autore, tre di Claude — più quattro di
+  ChatGPT, ognuna con il problema, la persona del §1, le promesse che tocca,
+  che cosa motore e server sanno già, la grandezza, il guasto muto, le
+  decisioni; e in fondo **«Le decisioni di P-59»**, 34 righe, una per
+  decisione. Per scelta dell'autore filosofia, ADR e Vincoli non erano un
+  limite: ogni decisione dice che cosa andrebbe riscritto.
+
+- **Le decisioni più grosse:** il menu **Home · Allenati · Esame · Progressi**,
+  con «Simula il quiz base» a un tocco; Percorso e Progressi in una pagina; i
+  nomi «vetrina» e «palestra» tolti; **spiegazioni verificate per tutti**; cinque
+  stati per quesito con conferme ad almeno 12 ore (chiude la issue #1 in un
+  verso); una **stima del risultato della prossima simulazione**, calcolata e
+  registrata senza mostrarla finché non è validata; la costanza senza serie che
+  si spezza; segnalibri; ricerca per numero del decreto; donazioni dopo il
+  parere. Diverse toccano la filosofia, l'ADR-004 e il §4.6: la regia le porta
+  a decisione formale.
+
+- **Verificato, con fonte e data accanto.** Le donazioni, riverificate sulle
+  pagine ufficiali da un agente della sessione: delle quattro affermazioni del
+  25 settembre una smentita nella forma (il conto Business PayPal è previsto
+  anche per le persone; il pulsante si inserisce solo con uno script, che il
+  sito non carica), una confermata con riserve, due da precisare; la parte
+  fiscale come 14 domande per un professionista. Il «DD 199/2026» citato da un
+  concorrente, letto sul sito del MIT: riguarda soltanto la patente D1, non la
+  nostra. Tre concorrenti guardati nel browser a 375 px, con che cosa prendere
+  e che cosa no; due giudizi su uno di loro, più forti dell'evidenza, corretti
+  dopo il parere di ChatGPT.
+
+- **Trovato misurando: la doppia ricarica, dal vivo.** Nel browser della
+  sessione, che aveva già visitato il sito, la prima apertura di `/app` (allora
+  v0.29.0) mostrava sotto la proposta «Ti fermi quando vuoi, e quello che hai
+  risposto resta» — falsa senza account, e assente dal `site/app.html` del tag,
+  identico byte per byte a quello servito. Veniva dal service worker; alla
+  ricarica la frase giusta. La v0.30.0 lo toglie. **E un guasto strutturale per
+  il ridisegno**, trovato dal secondo parere di ChatGPT e controllato nel
+  codice: Home (`/`) e sezioni (`/app`) sono due documenti, e passare dall'uno
+  all'altro perde le risposte di chi non ha l'account; è il requisito 9 delle
+  decisioni.
+
+- **Due pareri di ChatGPT**, letti punto per punto: dove aveva ragione il testo
+  è corretto con la data e barrato, non riscritto — fra l'altro la spiegazione
+  in simulazione solo dopo la consegna (la simulazione non corregge durante la
+  prova) e un controesempio alla regola degli stati che Claude aveva scritto
+  male.
+
+  Nessuna suite toccata: è un file di documentazione. Guardiano e controllo
+  della documentazione verdi prima del commit. `site/`, `tests/`, `server/`,
+  `docs/specifica.md` e `docs/prossime-sessioni.md` non sono stati toccati.
+
 ## [0.30.0] — 2026-10-03
 
 **Il sito più semplice: niente offline.** Rotta Giusta si apre con la rete,
