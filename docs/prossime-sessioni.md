@@ -244,8 +244,8 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 21 | **Il progetto e la realizzazione del ridisegno**, con i controlli dei tragitti | ChatGPT, e Claude per i controlli | `ui/main`, `main` | P-70 | da scrivere |
 | 22 | **Spiegazioni**: il primo lotto di 50, «Segnala un problema», la misura dell'effetto | Claude con l'autore, poi ChatGPT | `main`, `ui/main` | l'indirizzo e la licenza (§4, «Dopo P-59», 2 e 6) | da scrivere |
 | 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | P-72: le previsioni si registrano come metodi di `PREVISIONI` | da scrivere |
-| 24 | **Esito e previsioni, il motore** (A-1 di `esito-esame-progetto.md` §10.1): la riga d'avvio `_t:'a'`, `PREVISIONI`, `rigaDiRisposta()` | Claude | `main` | il sì dell'autore alle proposte 8, 9 e 10 del §11 | P-72 |
-| 25 | **Esito e previsioni, il server** (A-2): la tabella `esito`, schema 5, `tipi_riga` in `GET /v1/io` | Claude | `main` | il sì dell'autore alle proposte 4, 7 e 11 del §11 | P-73 |
+| 24 | **Esito e previsioni, il motore** (A-1 di `esito-esame-progetto.md` §10.1): la riga d'avvio `_t:'a'`, `PREVISIONI`, `rigaDiRisposta()` | Claude | `main` | niente: le proposte 8, 9 e 10 del §11 confermate dall'autore il 4 ottobre | P-72 |
+| 25 | **Esito e previsioni, il server** (A-2): la tabella `esito`, schema 5, `tipi_riga` in `GET /v1/io` | Claude | `main` | niente: le proposte 4, 7 e 11 del §11 confermate dall'autore il 4 ottobre | P-73 |
 | 26 | **Esito e previsioni, i controlli della pagina e la specifica** (A-3, A-4) | Claude | `main` | P-72 e P-73 | P-74, da scrivere |
 | 27 | **Esito e previsioni, la pagina e l'informativa** (B-1, B-2), poi un rilascio | ChatGPT | `ui/main` | P-74, e la base giuridica (§4, «Dopo P-64», 1–3) | P-75, da scrivere |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo P-59», «Dopo P-64», «Dopo il traguardo» e le voci non barrate |
@@ -254,9 +254,9 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 il brainstorming, è chiuso il 4 ottobre, e questa tabella è il suo
 smistamento. P-63 e P-64 sono chiusi lo stesso giorno, e le loro righe, 15 e
 16, sono uscite. **Per Claude**, uno alla volta nella cartella principale:
-P-72 e P-73 appena l'autore conferma le proposte del §11 di
-`docs/esito-esame-progetto.md` che li riguardano — vengono prima perché i loro
-dati arrivano mesi dopo —, e P-71; l'ordine fra i tre è libero, e ognuno dice
+P-72 e P-73 — le proposte del §11 di `docs/esito-esame-progetto.md` che li
+riguardano sono confermate dall'autore, e vengono prima perché i loro dati
+arrivano mesi dopo —, e P-71; l'ordine fra i tre è libero, e ognuno dice
 che cosa fare se trova il lavoro dell'altro. P-62 con l'autore quando vuole.
 **Per ChatGPT:** P-65, il primo dei cinque mock. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
 che cambiano una promessa (un ADR, la filosofia, la specifica), poi i mock e la
@@ -520,7 +520,7 @@ consuma, non si riprogetta.
      alla scuola nautica, come Q-CART4.
   8. **La issue #1 su GitHub** si chiude in un verso con la decisione 14 (due
      giuste ad almeno 12 ore): la regia la commenta e la chiude con il tuo sì.
-     P-63 è chiuso: manca solo il sì.
+     *Chiusa dalla regia il 4 ottobre 2026, con il sì dell'autore.*
   9. **Dal resoconto di P-63, le tre domande nuove del §10 della specifica:**
      **Q-STATI**, le parole dei cinque stati sulla barra (ferma P-68, il mock
      di Progressi; il motore non le aspetta); **Q-COSTANZA**, che è il punto 3
@@ -556,10 +556,12 @@ consuma, non si riprogetta.
      pubblica. Non fermano il motore e il server.
   2. **La regola da battere, `regola-semplice-1`** (punto 8: le ultime 5
      prove, (superate + 1) / (n + 2)), **«senza aiuti» non si chiede** (9),
-     **la vela sì e il carteggio no** (10). Fermano P-72: la regola si fissa
-     prima della prima riga e non si ritocca.
+     **la vela sì e il carteggio no** (10). **Confermate dall'autore il 4
+     ottobre 2026**, come proposte: P-72 può partire. La regola si fissa prima
+     della prima riga e non si ritocca.
   3. **Gli errori, se li sai** (punto 4), **l'azzeramento che non tocca
-     l'esito** (7), **la soglia di 20 persone** (11). Fermano P-73.
+     l'esito** (7), **la soglia di 20 persone** (11). **Confermate dall'autore
+     il 4 ottobre 2026**, come proposte: P-73 può partire.
   4. **Novanta giorni** (5) e **niente email dopo l'esame, per ora** (6):
      fermano P-75. La 6 è la terza parte di Q-STIMA.
   5. **Partire con una raccolta sola** (12): le previsioni possono uscire
@@ -4526,7 +4528,7 @@ resoconto di docs/prossime-sessioni.md.
 
 ### P-72 — Claude: esito e previsioni, il motore (A-1)
 
-**Stato:** pronto dal 4 ottobre 2026, **appena l'autore conferma** le proposte
+**Stato:** pronto dal 4 ottobre 2026; l'autore ha **confermato** quel giorno le proposte
 8, 9 e 10 del §11 di `docs/esito-esame-progetto.md` (§4, «Dopo P-64», punto
 2): la regola si fissa prima della prima riga. **Dove:** Claude Code,
 `~/Software/rotta-giusta`, ramo **`main`**. **Nasce da:** P-64, §10.1, A-1.
@@ -4576,7 +4578,7 @@ docs/prossime-sessioni.md.
 
 ### P-73 — Claude: esito e previsioni, il server (A-2)
 
-**Stato:** pronto dal 4 ottobre 2026, **appena l'autore conferma** le proposte
+**Stato:** pronto dal 4 ottobre 2026; l'autore ha **confermato** quel giorno le proposte
 4, 7 e 11 del §11 di `docs/esito-esame-progetto.md` (§4, «Dopo P-64», punto
 3). **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**. **Nasce
 da:** P-64, §10.1, A-2. **Sblocca:** P-74.
@@ -5280,5 +5282,6 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   entrano le righe 24–27 per esito e previsioni. Nel §4: quattro punti nuovi
   in «Dopo P-59» dal resoconto di P-63, e «Dopo P-64» con le dodici decisioni
   del progetto ordinate per che cosa fermano. P-72 e P-73 partono con le
-  proposte del §11 come valori, e per questo aspettano il sì dell'autore.
-  `ui/main` e `ui/vetrina` non allineati dalla regia: P-65 può essere aperto.
+  proposte del §11 come valori: l'autore le ha confermate lo stesso giorno
+  (4, 7, 8, 9, 10, 11). Con il suo sì: `main` pushato, la issue #1 commentata
+  e chiusa con la decisione 14, `ui/main` e `ui/vetrina` allineati a `main`.
