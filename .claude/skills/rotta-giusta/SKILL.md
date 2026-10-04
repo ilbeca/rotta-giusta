@@ -4,7 +4,7 @@ description: >
   Coordinate di Rotta Giusta, il sito open source con quiz e carteggio per la
   patente nautica senza limiti dalla costa: pagine statiche, e un server a parte
   per gli account. Dove guardare e le trappole. MUST trigger on: rotta giusta, rotta-giusta, open patente nautica (nome fino alla 0.19.2), sito
-  statico patente, statichost patente, rottagiusta.it, api.rottagiusta.it, server degli account, Cloudflare Pages patente (hoster fino alla 0.26), pubblicare la palestra. NON per il
+  statico patente, statichost patente, rottagiusta.it, api.rottagiusta.it, server degli account, Cloudflare Pages patente (hoster fino alla 0.26), pubblicare la palestra, vetrina e palestra (i nomi della Home e dell'app fino al 4 ottobre 2026). NON per il
   progetto personale di preparazione (patente), che e' un altro repo.
 ---
 
@@ -15,6 +15,10 @@ Sito con i 1.722 quesiti e i 135 esercizi di carteggio dell'Allegato A al DD
 Senza account si prova e non resta niente, nemmeno nel browser; con l'account
 le risposte si salvano sul server, in chiaro (ADR-003, ADR-004). Niente
 offline, e niente passaggio dell'archivio di prima degli account (ADR-005).
+La pagina iniziale si chiama la Home, `/app` e' l'app, e le sue parti hanno i
+nomi delle sezioni: «vetrina» e «palestra» sono nomi usciti il 4 ottobre 2026
+(decisione 7 di P-59). Le decisioni di quel brainstorming sono nel §10 della
+specifica e nell'ADR-006.
 Repo
 `~/Software/rotta-giusta` sull'Air, remoto `ilbeca/rotta-giusta` (pubblico).
 

@@ -41,7 +41,7 @@ def check(nome, cond, extra=''):
         falliti.append(nome + (' — ' + extra if extra else ''))
 
 
-# RG_PAGINA=<file> fa girare la suite su una copia della palestra al posto di
+# RG_PAGINA=<file> fa girare la suite su una copia dell'app al posto di
 # site/app.html (P-51): serve a misurare una bozza — quella di un altro
 # worktree, o una copia con una modifica — senza toccare la pagina vera, anche
 # nel browser, perche' il banco del client prende la pagina da qui. Il resto del
@@ -3042,12 +3042,12 @@ def test_trasloco():
     # R-STA-09. Il 25 settembre 2026 il sito si e' spostato da
     # open-patente-nautica.pages.dev a rottagiusta.it. L'archivio delle risposte
     # e' legato all'origine, quindi non segue da solo; e misurato: un redirect
-    # sul vecchio indirizzo congela chi ha la palestra installata su una copia
+    # sul vecchio indirizzo congela chi ha l'app installata su una copia
     # in cache, con il service worker che non si aggiorna piu' («The script
     # resource is behind a redirect, which is disallowed»), **senza un avviso**.
     # Quindi, prima del redirect, la versione che resta congelata deve gia'
-    # contenere l'avviso: la palestra, fuori casa, dice dove andare e offre di
-    # scaricare i progressi; la vetrina manda alla palestra nuova, cosi' chi
+    # contenere l'avviso: l'app, fuori casa, dice dove andare e offre di
+    # scaricare i progressi; la Home manda all'app nuova, cosi' chi
     # arriva adesso non comincia a salvare risposte sull'indirizzo vecchio.
     app = leggi('app.html')
     vetrina = leggi('index.html')
@@ -3075,12 +3075,12 @@ def test_trasloco():
         check('trasloco: il Percorso chiama fuoriCasa()', i >= 0)
         blocco = corpo[i:i + 900] if i >= 0 else ''
         check('trasloco: l\'avviso offre di scaricare i progressi', 'data-route-export' in blocco, blocco[:120])
-        check('trasloco: l\'avviso porta alla palestra su CASA', "'https://' + CASA + '/app'" in blocco
+        check('trasloco: l\'avviso porta all\'app su CASA', "'https://' + CASA + '/app'" in blocco
               or '`https://${CASA}/app`' in blocco, blocco[:120])
         prima = corpo.find('righe.push')
         check('trasloco: l\'avviso e\' il primo degli stati del Percorso', i >= 0 and (prima < 0 or i < prima))
-    check('trasloco: la vetrina guarda location.hostname', 'location.hostname' in vetrina)
-    check('trasloco: la vetrina riscrive i link /app verso CASA fuori casa',
+    check('trasloco: la Home guarda location.hostname', 'location.hostname' in vetrina)
+    check('trasloco: la Home riscrive i link /app verso CASA fuori casa',
           'a[href="/app"]' in vetrina and ('`https://${CASA}/app`' in vetrina or "'https://' + CASA + '/app'" in vetrina))
 
 

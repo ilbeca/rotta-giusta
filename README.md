@@ -17,9 +17,9 @@ quanto lo dice l'[informativa](site/privacy.html); perché si è scelto così lo
 dicono l'[ADR-003](docs/adr/ADR-003-account-obbligatorio-e-dati-sul-server.md)
 e l'[ADR-004](docs/adr/ADR-004-senza-account-si-prova-con-l-account-si-salva.md).
 
-È la palestra che l'autore ha scritto per sé, con l'aiuto di Claude, e con cui
-ha superato l'esame il 3 settembre 2026. Ora la restituisce alla comunità che
-lo ha aiutato.
+È lo strumento di studio che l'autore ha scritto per sé, con l'aiuto di Claude,
+e con cui ha superato l'esame il 3 settembre 2026. Ora lo restituisce alla
+comunità che lo ha aiutato.
 
 ## La cosa da sapere prima di tutto: i difetti dichiarati
 
@@ -166,7 +166,7 @@ una password più corta la rifiuta già la lunghezza.
   SOFTWARE.
   ```
 
-### Il carattere della vetrina
+### Il carattere della Home
 
 `site/caratteri/manrope-latin-wght-normal.woff2` è **Manrope**, di The Manrope
 Project Authors ([sharanda/manrope](https://github.com/sharanda/manrope)), con
@@ -177,7 +177,7 @@ caratteri latini, presa dal pacchetto `@fontsource-variable/manrope` 5.2.8 il
 `a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972`.
 
 Si serve da qui e non da Google Fonts perché ogni richiesta a un altro host
-manda l'IP di chi visita a un terzo; fino a quel giorno la vetrina lo faceva
+manda l'IP di chi visita a un terzo; fino a quel giorno la Home lo faceva
 senza che l'informativa lo dicesse. Un test lo tiene fermo: nessuna pagina di
 `site/` carica risorse da un altro host.
 
@@ -235,8 +235,8 @@ dall'autore, extra banca.
 
 ```
 site/                 quello che statichost.eu pubblica, e niente altro
-  index.html          la vetrina
-  app.html            la palestra, una pagina sola, con il client degli account
+  index.html          la Home
+  app.html            l'app, una pagina sola, con il client degli account
   engine.js           motore di selezione e statistiche (logica pura, testata)
   sw.js               il service worker che si disinstalla (ADR-005)
   dati/               quiz.json, meta.json, tecniche.json, carteggio.json, carteggio_e12.json

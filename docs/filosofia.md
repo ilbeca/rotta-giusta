@@ -4,7 +4,9 @@
 l'ADR-003 e l'ADR-004: senza account si prova e non resta niente; con l'account
 si salva, e le risposte stanno sul server in chiaro. **Rivisto il 3 ottobre
 2026**, dopo l'ADR-005: niente offline, e niente passaggio dell'archivio di
-prima degli account.
+prima degli account. **Rivisto il 4 ottobre 2026**, dopo l'ADR-006: il sito
+comincia a spiegare, l'invito a registrarsi sta anche nella Home e nel
+risultato di una simulazione, e la costanza si dice.
 **Che cos'è:** non è una specifica e non prescrive un'interfaccia. È il perché
 sotto le scelte — in che cosa crediamo, e da dove viene ogni convinzione.
 Serve come sorgente a due destinazioni diverse: a `docs/specifica.md`, quando
@@ -108,19 +110,34 @@ tracciamento: c'è un solo cookie, quello che ti tiene dentro dopo l'accesso, e
 chi non si registra non ha nemmeno quello. Non c'è niente
 da vendere e nessuno a cui vendere l'attenzione di chi studia.
 
-Non c'è **gamification**: nessuna streak da non rompere, nessun badge, nessuna
-notifica che chiede di tornare. È una scelta esplicita contro la pratica
-dominante nelle app di studio, che punta a trattenere. Chi prepara un esame in
-poche settimane non ha bisogno di essere trattenuto: ha bisogno di sapere dove
-è scoperto e di andarsene quando ha finito.
+Non c'è la **gamification** che punisce: nessuna serie da non rompere, nessun
+badge, nessuna notifica che chiede di tornare. Fino al 4 ottobre 2026 qui c'era
+scritto «non c'è gamification», e basta. Da quel giorno (ADR-006), per chi ha
+l'account, c'è una cosa sola che le somiglia, e la chiamiamo con il suo nome:
+**la costanza, detta** — in quanti degli ultimi quattordici giorni hai studiato
+qui, e quanti quesiti oggi sono da confermare. Un giorno saltato non cancella
+niente; il numero scende piano, e arriva a zero solo dopo quattordici giorni
+senza studio. È una spinta a tornare, e non fingiamo che non lo sia. La ragione
+per darla è vera: tornare un altro giorno conta più che ripetere subito, e la
+stima che stiamo costruendo conta una osservazione per quesito al giorno.
+Resta una scelta contro la pratica dominante nelle app di studio, che punta a
+trattenere. Chi prepara un esame in poche settimane non ha bisogno di essere
+trattenuto: ha bisogno di sapere dove è scoperto, quando tornare serve, e di
+andarsene quando ha finito.
 
 Fino al 25 settembre 2026 qui c'era scritto che nessun **dark pattern** era
 possibile, perché non c'era un imbuto in cui far cadere qualcuno. **Non è più
 vero.** Per non perdere i progressi bisogna registrarsi, e questo **è un
 imbuto**. Non lo chiamiamo in un altro modo.
 
-Abbiamo deciso dove metterlo: non davanti al primo quesito, ma alla fine di
-un'attività, quando hai qualcosa da perdere. Chi arriva vede prima che cosa gli
+Abbiamo deciso dove metterlo: non davanti al primo quesito, ma dove hai
+qualcosa da perdere — alla fine di un'attività, nel risultato di una
+simulazione, e nella Home quando ci torni con risposte che non hai salvato.
+Fino al 4 ottobre 2026 stava soltanto alla fine di un'attività; l'abbiamo
+allargato (ADR-006) perché chi non finiva un'attività non lo vedeva mai, e una
+simulazione appena fatta è il momento in cui c'è di più da perdere. Tre posti,
+e in nessun altro: non durante una prova, non a ogni pagina. L'imbuto così è
+più largo di prima, e lo diciamo. Chi arriva vede prima che cosa gli
 offriamo, e decide dopo. Per poche ore la decisione è stata l'altra —
 registrazione obbligatoria per entrare — e l'abbiamo cambiata perché il suo
 costo cadeva proprio su chi comincia da zero, nel momento in cui decide se
@@ -194,16 +211,25 @@ sito viene, ha perso giorni di studio.
 
 ### Accompagniamo la preparazione, non la sostituiamo
 
-Il sito non insegna: allena e dà riscontri. Chi studia ha un manuale, una
-scuola, un istruttore — questo sito serve a esercitarsi fra una lezione e
-l'altra e a scoprire, prima dell'esame, dove sono ancora scoperti. L'unica
-eccezione dichiarata è il gioco dei Segnali, che insegna per davvero a
-riconoscere fanali e segnali a colpo d'occhio.
+**Spieghiamo perché una risposta è quella giusta, e lo diciamo quando la
+spiegazione è nostra e non del decreto. Non sostituiamo la scuola né il
+manuale.** Chi studia ha un manuale, una scuola, un istruttore — questo sito
+serve a esercitarsi fra una lezione e l'altra, a capire una risposta quando la
+dai, e a scoprire, prima dell'esame, dove è ancora scoperto. Il gioco dei
+Segnali insegna per davvero a riconoscere fanali e segnali a colpo d'occhio.
 
-Questa distinzione conta perché cambia che cosa il sito può onestamente
-promettere. Non diciamo "impari con noi": diciamo "ti eserciti, e ti diciamo
-la verità su come sta andando". È una promessa più piccola, ed è per questo
-che possiamo mantenerla.
+Fino al 4 ottobre 2026 qui c'era scritto «il sito non insegna: allena e dà
+riscontri», e la promessa che ne seguiva era: *«Non diciamo "impari con noi":
+diciamo "ti eserciti, e ti diciamo la verità su come sta andando". È una
+promessa più piccola, ed è per questo che possiamo mantenerla.»* Da quel giorno
+(ADR-006) la promessa è più grande, e quindi più facile da rompere: una
+spiegazione sbagliata insegna il falso con l'aria di essere giusta, e chi
+studia non ha modo di accorgersene. Per questo una spiegazione esce solo quando
+l'ha verificata una persona, porta la data della verifica, dice che è nostra e
+non del decreto, e dove il decreto sembra sbagliato dice che all'esame vale
+lui. La diamo a tutti, anche senza account: non vive di uno storico, e non la
+teniamo per spingere a registrarsi. Finché le spiegazioni non ci sono, la frase
+di prima descrive ancora il sito.
 
 ### Un numero promesso e la lista che si apre vengono dalla stessa fonte
 
@@ -250,6 +276,18 @@ noi" non lo diciamo, perché non sappiamo che cosa studi fuori da questo sito, e
 fingere di saperlo sarebbe esattamente il tipo di rassicurazione vuota che
 rifiutiamo altrove.
 
+*Questa frase aspetta una decisione dell'autore* (ADR-006, 4 ottobre 2026). Il
+sito calcolerà una stima — se supereresti la prossima simulazione completa del
+quiz base — e la registrerà senza mostrarla, finché non avrà passato la prova
+sulle simulazioni vere di chi si registra; quando si mostrerà, questa frase non
+basterà più a dire che cosa promettiamo. La proposta per sostituirla è in
+`docs/idee-dopo-gli-account.md`, I-12: «Non ti diciamo che supererai l'esame.
+Ti diciamo, quando abbiamo abbastanza risposte per dirlo, come andresti in una
+prova estratta come all'esame — e che cosa questa stima non sa». La scelta è
+dell'autore (`docs/prossime-sessioni.md` §4, «Dopo P-59», punto 1). Finché la
+stima non si mostra, la frase di sopra è vera; dal giorno in cui la previsione
+si registra, «I tuoi dati li teniamo noi» deve dire anche quella.
+
 ## Che cosa abbiamo perso
 
 Detto in un posto solo, perché sparso nelle sezioni sopra si leggerebbe meno.
@@ -292,6 +330,17 @@ cambia, deve cambiare in una direzione e non nell'altra.
 ---
 
 ## Registro
+
+- **4 ottobre 2026 — dopo l'ADR-006** (P-63, le decisioni del brainstorming
+  P-59). «Il sito non insegna» lascia il posto alla frase approvata
+  dall'autore in I-10, con quella di prima citata accanto; «niente
+  gamification» diventa la costanza detta, senza serie che si spezza; l'imbuto
+  ha tre posti, la Home e il risultato di una simulazione oltre al riepilogo.
+  La frase sulla stima, in «Che cosa non siamo», non è riscritta: la nuova la
+  sceglie l'autore, e accanto c'è che cosa la aspetta. «Una palestra onesta e
+  sicura», nell'impegno, è rimasta: è una parola dell'impegno, non il nome di
+  una pagina, e se toglierla con i nomi «vetrina» e «palestra» (decisione 7) è
+  dell'autore.
 
 - **3 ottobre 2026 — dopo l'ADR-005.** Via l'offline e il passaggio
   dell'archivio di prima, per semplicità. «Che cosa abbiamo perso» ha le due

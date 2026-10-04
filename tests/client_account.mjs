@@ -83,7 +83,7 @@ const ECONOMICO = { memory: 1024, passes: 1, parallelism: 1 };
 // pulsante abilitato, un quesito della banca con le sue risposte, il
 // riepilogo, il service worker attivo —, e questi numeri sono solo le
 // scadenze oltre le quali lo stato non e' arrivato: una pagina che funziona
-// non le tocca. Misurato in locale il 26 settembre 2026: la palestra e' pronta
+// non le tocca. Misurato in locale il 26 settembre 2026: l'app e' pronta
 // in 0,3 s dal primo ingresso, il guscio in cache in meno di un secondo, e una
 // reazione a un clic in millisecondi. Le scadenze stanno parecchie volte sopra,
 // perche' una macchina carica non faccia un rosso falso; ogni rottura che le
@@ -275,7 +275,7 @@ async function chiudiQuiz(tab, v, gruppo, prefisso, { sim = false } = {}) {
 /** Dal primo ingresso a una risposta, poi «Termina»: il giro minimo. */
 async function unaRisposta(tab, v, gruppo, prefisso = '') {
   const pronto = await tab.attendi(PRONTO, CARICO);
-  v.push({ gruppo, nome: `${prefisso}la palestra si apre e la prima attivita' si puo' avviare`, ok: pronto,
+  v.push({ gruppo, nome: `${prefisso}l'app si apre e la prima attivita' si puo' avviare`, ok: pronto,
     extra: `nessun [data-rotta-start] abilitato entro ${CARICO / 1000} s` + (tab.errori.length ? ': ' + tab.errori[0] : '') });
   if (!pronto) return null;
   await clic(tab, '[data-rotta-start]');
@@ -448,7 +448,7 @@ async function partitaSegnali(tab, v, g, p) {
 
 async function attivita(tab, v, g) {
   const pronto = await tab.attendi(PRONTO, CARICO);
-  v.push({ gruppo: g, nome: 'le altre attivita\': la palestra si apre', ok: pronto, extra: `nessun [data-rotta-start] abilitato entro ${CARICO / 1000} s` });
+  v.push({ gruppo: g, nome: 'le altre attivita\': l\'app si apre', ok: pronto, extra: `nessun [data-rotta-start] abilitato entro ${CARICO / 1000} s` });
   if (!pronto) return;
   await giroQuiz(tab, v, g, 'Quiz per argomento: ', 'argomento');
   await giroQuiz(tab, v, g, 'Simulazione: ', 'sim');
@@ -513,7 +513,7 @@ async function c02(b, ctx, v) {
     // Una pagina che non si ricarica non mostra niente, e «niente di prima»
     // passerebbe per vero: prima si aspetta che sia di nuovo pronta.
     const ripronta = await tab.attendi(PRONTO, CARICO);
-    v.push({ gruppo: g, nome: 'dopo la ricarica la palestra torna pronta', ok: ripronta,
+    v.push({ gruppo: g, nome: 'dopo la ricarica l\'app torna pronta', ok: ripronta,
       extra: `nessun [data-rotta-start] abilitato entro ${CARICO / 1000} s dalla ricarica` });
     if (!ripronta) return;
     const vuota = await tab.valuta(js(`const s = document.querySelector('#rotta-last'); const d = document.querySelector('#esame-data');
@@ -695,7 +695,7 @@ async function c03(b, ctx, v) {
   try {
     const tab = await c.apri(ctx.sito + '/app');
     if (!await tab.attendi(PRONTO, CARICO)) {
-      v.push({ gruppo: g, nome: 'la palestra si apre', ok: false, extra: `nessun [data-rotta-start] abilitato entro ${CARICO / 1000} s` });
+      v.push({ gruppo: g, nome: 'l\'app si apre', ok: false, extra: `nessun [data-rotta-start] abilitato entro ${CARICO / 1000} s` });
       return;
     }
     const mute = [], invadenti = [];
@@ -1594,7 +1594,7 @@ const STRUMENTO_VECCHIO = `(() => {
 const DICE_DI_PRIMA = /prima degli account|copia precedente|archivio precedente|risposte già presenti in questo browser/i;
 const LETTO_DI_PRIMA = 'la pagina non apre, non legge e non cancella l\'archivio di prima: IndexedDB «open-patente-nautica» e le chiavi «pn.»';
 
-/** L'archivio di prima, scritto da un'altra scheda prima che la palestra si apra; la scheda resta, per rileggerlo. */
+/** L'archivio di prima, scritto da un'altra scheda prima che l'app si apra; la scheda resta, per rileggerlo. */
 async function scriviVecchio(c, ctx, righe) {
   const t = await c.apri(ctx.sito + '/privacy');
   const ls = { ...VECCHIO_LS, 'pn.archivio': JSON.stringify(righe.slice(0, 2)) };
@@ -1653,7 +1653,7 @@ async function c21senza(b, ctx, v, g) {
     const prima = await priv.valuta(ARCHIVIO_DI_PRIMA);
     const tab = await c.apri(ctx.sito + '/app', { prima: STRUMENTO_VECCHIO });
     const pronto = await tab.attendi(PRONTO, CARICO);
-    v.push({ gruppo: g, nome: 'senza account, con un archivio di prima nel browser, la palestra si apre', ok: pronto && JSON.parse(prima).righe?.length === 4,
+    v.push({ gruppo: g, nome: 'senza account, con un archivio di prima nel browser, l\'app si apre', ok: pronto && JSON.parse(prima).righe?.length === 4,
       extra: pronto ? `l'archivio di prima non e' stato scritto: ${prima}` : `nessun [data-rotta-start] abilitato entro ${CARICO / 1000} s` });
     // Un'attivita' fino al riepilogo, Info, e una ricarica: i posti dove il passaggio leggeva.
     const testo = await unaRisposta(tab, v, g, 'senza account: ');
@@ -1772,7 +1772,7 @@ async function c22pagina(b, ctx, v, g) {
   try {
     const tab = await c.apri(ctx.sito + '/app', { prima: STRUMENTO_OFFLINE });
     const pronto = await tab.attendi(PRONTO, CARICO);
-    v.push({ gruppo: g, nome: 'senza account la palestra si apre, dalla rete', ok: pronto, extra: `nessun [data-rotta-start] abilitato entro ${CARICO / 1000} s` });
+    v.push({ gruppo: g, nome: 'senza account l\'app si apre, dalla rete', ok: pronto, extra: `nessun [data-rotta-start] abilitato entro ${CARICO / 1000} s` });
     if (!pronto) return;
     await nienteDiOffline(tab, v, g, 'alla prima visita');
   } finally { await c.chiudi(); }
@@ -1818,7 +1818,7 @@ async function c22passaggio(b, ctx, v, g) {
     const pronta = await t3.attendi(PRONTO, CARICO);
     const libera = pronta && await t3.valuta('!navigator.serviceWorker || !navigator.serviceWorker.controller');
     v.push({ gruppo: g, nome: 'la visita dopo arriva dalla rete, senza un service worker in mezzo', ok: libera,
-      extra: pronta ? 'la pagina e\' servita da un service worker' : 'la palestra non si apre' });
+      extra: pronta ? 'la pagina e\' servita da un service worker' : 'l\'app non si apre' });
     if (!libera) return;
     await nienteDiOffline(t3, v, g, 'alla visita dopo il passaggio');
   } finally { ctx.radice(null); await c.chiudi(); }
@@ -2618,7 +2618,7 @@ async function c19senza(b, ctx, v, g) {
     const pronta = await tab.attendi(PRONTO, CARICO);
     const niente = pronta && await maiPer(async () => await tab.valuta(testoVisibile(OFFERTA)) || await tab.valuta(testoVisibile(testo)), 1000);
     v.push({ gruppo: g, nome: 'senza account, dopo una ricarica, nessun lavoro da riprendere', ok: !!niente,
-      extra: !pronta ? 'la palestra non torna pronta dopo la ricarica' : `dopo la ricarica si vede «${OFFERTA}» o il testo scritto` });
+      extra: !pronta ? 'l\'app non torna pronta dopo la ricarica' : `dopo la ricarica si vede «${OFFERTA}» o il testo scritto` });
   } finally { await c.chiudi(); }
 }
 
@@ -3220,7 +3220,7 @@ async function t01(b, ctx, v) {
         const f = await tab.valuta(fraseVista(FRASI_SALVATO));
         w.push({ gruppo: g, nome: `senza account ${dove} non dice che le risposte sono conservate`, ok: !f, extra: `si legge «${f}»` });
       };
-      w.push({ gruppo: g, nome: 'la palestra si apre senza account', ok: pronto, extra: 'nessun [data-rotta-start] abilitato' });
+      w.push({ gruppo: g, nome: 'l\'app si apre senza account', ok: pronto, extra: 'nessun [data-rotta-start] abilitato' });
       await niente('il Percorso');
       await clic(tab, '[data-rotta-start]');
       w.push({ gruppo: g, nome: 'una risposta senza account', ok: !!await rispondiQuiz(tab, [], g, ''), extra: 'il runner non mostra un quesito della banca' });
@@ -3734,7 +3734,7 @@ async function f01(b, ctx, v) {
   try {
     const tab = await c.apri(ctx.sito + '/app');
     const pronto = await tab.attendi(PRONTO, CARICO);
-    v.push({ gruppo: g, nome: 'la palestra si apre e la prima attivita\' si puo\' avviare', ok: pronto,
+    v.push({ gruppo: g, nome: 'l\'app si apre e la prima attivita\' si puo\' avviare', ok: pronto,
       extra: `nessun [data-rotta-start] abilitato entro ${CARICO / 1000} s` + (tab.errori.length ? ': ' + tab.errori[0] : '') });
     if (!pronto) return;
     // Prima attivita': una giusta e una sbagliata, poi «Termina». Con un

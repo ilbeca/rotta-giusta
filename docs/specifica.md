@@ -114,9 +114,15 @@ carteggio, che si fa al tavolo con carta nautica, squadrette e compasso: è
 l'unica attività che il telefono non basta a svolgere, e il sito lo dice prima
 di iniziare invece di lasciarlo scoprire.
 
-**Il sito accompagna una preparazione, non la sostituisce.** Non insegna: allena
-e dà riscontri. L'unica eccezione dichiarata è il gioco dei Segnali, che insegna
-per davvero, ed è anche l'unica parte scritta interamente dall'autore.
+**Il sito accompagna una preparazione, non la sostituisce.** Spieghiamo perché
+una risposta è quella giusta, e lo diciamo quando la spiegazione è nostra e non
+del decreto. Non sostituiamo la scuola né il manuale. Il gioco dei Segnali
+insegna per davvero, ed è l'unica parte scritta interamente dall'autore.
+
+*Deciso il 4 ottobre 2026 (ADR-006, decisioni 11 e 28 di P-59).* Fino ad allora
+qui c'era scritto «non insegna: allena e dà riscontri», e della pagina di oggi
+è ancora vero: le spiegazioni non ci sono, e quando ci saranno usciranno solo
+verificate dall'autore, dopo la risposta e mai prima (§10).
 
 ---
 
@@ -201,7 +207,7 @@ studiava prima degli account, la sesta tutti.
    è in tensione.
 6. **L'offline, per tutti** — dall'ADR-005. Senza rete il sito non si apre,
    nemmeno dall'icona sulla schermata Home e nemmeno con l'account; «anche in
-   barca» esce dalla vetrina. Una pagina già aperta continua, e con l'account
+   barca» esce dalla Home. Una pagina già aperta continua, e con l'account
    quello che si risponde senza rete resta nella copia del dispositivo e parte
    quando la rete torna (§3.2). In cambio sparisce la seconda ricarica dopo un
    rilascio.
@@ -229,13 +235,20 @@ salvare le risposte nel browser e nasconderne le misure; è l'alternativa
 scartata dall'ADR-004.
 
 Quattro condizioni fanno parte della decisione, e sono R-ACC-02…05 nel §9.9.
-La quarta l'ha sostituita l'ADR-005, il 3 ottobre 2026:
+La quarta l'ha sostituita l'ADR-005, il 3 ottobre 2026; la seconda l'ADR-006,
+il 4 ottobre 2026:
 
 1. **Senza account si dice che non resta niente**, prima di cominciare e alla
    fine di ogni attività.
-2. **La registrazione si raccomanda con i vantaggi veri, quando c'è qualcosa da
-   perdere** — la fine di un'attività — e non a ogni schermata. Nessuna metrica
-   si promette sotto le soglie del §4.3.
+2. **La registrazione si raccomanda con i vantaggi veri, in tre posti**
+   (ADR-006): nella Home, a chi ha risposto senza account; nel risultato di
+   una simulazione; nei riepiloghi delle attività. Fuori da quei tre posti non
+   c'è un invito, né durante un'attività né a ogni schermata. Nessuna metrica
+   si promette sotto le soglie del §4.3, e risultato e revisione restano a chi
+   non si registra. Fino al 4 ottobre 2026 la condizione diceva «quando c'è
+   qualcosa da perdere — la fine di un'attività — e non a ogni schermata», ed è
+   ancora quello che la pagina fa e che R-ACC-03 tiene fermo: cambiano con il
+   progetto del ridisegno (§10, decisione 12).
 3. **Senza account non si toglie niente apposta**: tutte le attività, con
    riepilogo e revisione della sessione. Ai registrati restano solo le viste che
    vivono di uno storico.
@@ -254,7 +267,9 @@ La quarta l'ha sostituita l'ADR-005, il 3 ottobre 2026:
 non ce l'ha, e senza data il motore non inventa quota né semaforo — e un
 onboarding non la rende obbligatoria senza una decisione che lo dica. Che
 cos'altro chieda, e se il sito consigli un piano di studio strutturato, è
-Q-ONBOARD nel §10.
+Q-ONBOARD nel §10: chiusa il 1° ottobre 2026, e decisa di nuovo il 4 ottobre
+dalle decisioni 13 e 16 di P-59 — l'onboarding chiede anche «che cosa stai
+preparando?», e il Percorso diventa una mappa con il «sei qui».
 
 **Deciso il 26 settembre 2026, dall'autore:** senza account nel browser **non
 resta niente, nemmeno le preferenze** — filtri, modalità automatica, ordine
@@ -302,9 +317,13 @@ globale le ha riscritte P-12, il 30 settembre 2026, con il regime vecchio dei
 controlli (§9.4).
 
 E una cosa che c'è e resta: **il sito dichiara i propri difetti**, quesito per
-quesito. È l'unica cosa che nessun concorrente può copiare, ed è il motivo per
-cui i 37 oscurati, gli 11 divergenti dal DM 133/2024 e le dieci figure riabbinate
-stanno in prima pagina invece che in una nota.
+quesito. Fra i concorrenti guardati il 3 ottobre 2026 nessuno lo fa, ma
+chiunque potrebbe farlo: quello che ci distingue non è l'idea, è tenerla su
+tutta la banca e a ogni rilascio. È il motivo per cui i 37 oscurati, gli 11
+divergenti dal DM 133/2024 e le dieci figure riabbinate stanno in prima pagina
+invece che in una nota. *(Corretto il 4 ottobre 2026, dopo il confronto con
+ChatGPT in `docs/idee-dopo-gli-account.md`: qui c'era scritto «è l'unica cosa
+che nessun concorrente può copiare», ed era più di quanto si sappia.)*
 
 ---
 
@@ -537,8 +556,8 @@ scritto lì e nel §2.3.
   sue righe e la parte del pallino ambra che la riguarda — il pallino resta per
   una scrittura fallita (R-STA-05) —, ogni `caches.open` e ogni ricerca di una
   cache `rg-`; la versione in Info si legge da `meta.json`, non dalla cache;
-- ogni testo che promette l'offline o la seconda ricarica — la vetrina («anche
-  in barca», le spunte dell'offline), la palestra, Info, la privacy se nomina
+- ogni testo che promette l'offline o la seconda ricarica — la Home («anche
+  in barca», le spunte dell'offline), l'app, Info, la privacy se nomina
   la cache del service worker — dice il sito di adesso; la frase della
   conservazione con l'account diventa quella del §11.2 del progetto del client;
 - `site/_headers`: resta la regola di `/sw.js`, e il commento che dice «il resto
@@ -860,7 +879,10 @@ v0.28.1 stavano in `localStorage`.
   statistiche (`account-progetto.md` §15.2); il motore no, e riceve soltanto
   le righe di chi è entrato. Mostrare a chi studia qualcosa degli altri — una
   media, un confronto — è una decisione dell'autore ancora aperta
-  (`account-progetto.md` §20).
+  (`account-progetto.md` §20). *Cambierà con la stima* (ADR-006, decisione 24
+  di P-59): la difficoltà dei quesiti sarà stimata sulle prime risposte di
+  tutti i registrati, senza chi si è opposto e sopra una soglia di persone.
+  Finché la stima non c'è, questa riga descrive il motore.
 - **Non ha un budget di tempo.** Non sa quanti minuti hai oggi.
   `stimaImpegno()` stima quanto **costa** ciò che resta, non quanto puoi fare.
 - **Non giudica il carteggio.**
@@ -888,7 +910,7 @@ site/engine.js    tutta la selezione e tutte le statistiche. Logica pura.
                   Se una regola di scelta o un numero derivato non è qui, è nel
                   posto sbagliato.
 site/app.html     una pagina sola: DOM, archivio, runner, disegno.
-site/index.html   la vetrina.
+site/index.html   la Home.
 ```
 
 ---
@@ -906,11 +928,11 @@ codice.
 
 | Funzionalità | Vive in | Ingresso | Requisito |
 |---|---|---|---|
-| Vetrina | `site/index.html` | `/` — è la pagina che deve comparire nelle ricerche | R-NAV-01 |
-| Palestra | `site/app.html` | `/app`, e dal pulsante della vetrina | R-NAV-01 |
+| Home | `site/index.html` | `/` — è la pagina che deve comparire nelle ricerche | R-NAV-01 |
+| App | `site/app.html` | `/app`, e dal pulsante della Home | R-NAV-01 |
 | Privacy, Avvertenza | file propri | piè di pagina di ogni schermata | R-ARCH-06 |
 
-### 5.2 Le schermate della palestra
+### 5.2 Le schermate dell'app
 
 | Schermata | id | Ingresso oggi (v0.22.1) | Requisito |
 |---|---|---|---|
@@ -1042,7 +1064,7 @@ non si applica, è scritto perché.
 saper già leggere un cruscotto.
 
 **Ci si arriva da.** L'apertura dell'app, il marchio, la prima voce della barra,
-la vetrina.
+la Home.
 
 **Cosa si vede.** Un'attività consigliata con la sua motivazione e il numero di
 quesiti che apre; la scelta libera; una sintesi dei progressi che rimanda al
@@ -1317,7 +1339,7 @@ Da disegnare e provare per **ogni** flusso, non solo per quello che va bene.
 | **Contenuto mancante** | Una figura indisponibile si dichiara con il perché (base-59), non si lascia un buco. |
 | **Errore di salvataggio** | Avviso in schermata + pallino su Info + riga nella scheda Archivio, che chiede di scaricare i progressi adesso. **Non si spegne mai «per pulizia».** |
 | **Selezione vuota** | «Niente da fare con questa selezione», mai un clic che non produce niente. |
-| **Banca non raggiungibile** | Lo si dice. Non si inventano cifre: la vetrina, se `meta.json` non risponde, scrive che non può contare gli argomenti invece di mostrare tessere vuote. |
+| **Banca non raggiungibile** | Lo si dice. Non si inventano cifre: la Home, se `meta.json` non risponde, scrive che non può contare gli argomenti invece di mostrare tessere vuote. |
 
 **Il principio sui messaggi d'errore.** Un errore non è un rimprovero: è
 un'informazione **più un modo di uscirne**. Ogni messaggio dice che cosa è
@@ -1355,9 +1377,9 @@ colonna: «scoperto, perché …» è una risposta accettabile, «—» no.
 | R-ARCH-02 | Coperti + da ripassare + mai visti = totale, sempre | `test_engine.mjs::coperti + da_ripassare + mai_visti === totale` |
 | R-ARCH-03 | La versione è una sola, nei due posti — `VERSION` e `meta.json` —, con la sua voce nel CHANGELOG, e `sw.js` non ne porta una: fino al 3 ottobre 2026 i posti erano tre, con il nome della cache | `test_engine.mjs::la versione e una sola` |
 | R-ARCH-05 | Nessun `href` interno finisce in `.html`, in nessuna pagina: gli indirizzi puliti rendono il sito indifferente all'host | `test_dati.py::test_sw` |
-| R-ARCH-06 | `start_url` è la palestra, non la vetrina | `test_dati.py::test_indirizzi` |
+| R-ARCH-06 | `start_url` è l'app, non la Home | `test_dati.py::test_indirizzi` |
 | R-ARCH-07 | Il nome del database di prima, `open-patente-nautica`, non si riusa e la pagina non lo nomina: in `site/` compare soltanto nella costante della lettura che l'ADR-005 toglie, e solo finché quella lettura è un difetto aperto dichiarato (C-21 in `docs/eccezioni-interfaccia.md`); tolta la riga, da nessuna parte. Fino al 3 ottobre 2026 diceva che il nome non cambia col nome del progetto, perché la pagina lo cercava per il passaggio | `test_dati.py::test_rinomino` |
-| R-ARCH-09 | I due `<title>` sono diversi, e quello della vetrina nomina la patente | `test_dati.py::test_indirizzi` |
+| R-ARCH-09 | I due `<title>` sono diversi, e quello della Home nomina la patente | `test_dati.py::test_indirizzi` |
 | R-ARCH-12 | `strumenti/serve.py` risponde come l'host di produzione misurato: codici, assenza di redirect, 404, `Cache-Control` da `_headers`, e il 304 di una riconvalida, che senza service worker è ciò che fa arrivare fresche le pagine e la banca | `test_dati.py::test_serve` |
 | R-ARCH-13 | Di un tentativo vale l'ultimo tag N/L/C, per istante: i tag storici senza data prima di ogni tag datato, UTC e offset locale confrontati come istanti, l'ordine dell'archivio a parità di istante — e un ritag aggiunge una riga, non cancella quella di prima | `test_engine.mjs::tagPerTentativo: i tag storici senza data vengono prima di quelli datati` |
 | R-ARCH-14 | Una riga di tag che `validaRiga()` rifiuterebbe — tag fuori da N/L/C, senza tentativo, data rotta — non sovrascrive il tag buono di un tentativo | `test_engine.mjs::tagPerTentativo: una riga che l archivio non accetterebbe non decide un tag` |
@@ -1480,7 +1502,7 @@ ritorni, «Base e vela» come due fasi — resta collaudo a 375 e 1280 px.
 | R-STA-05 | Una scrittura fallita accende l'avviso, il pallino e la riga in Archivio | scoperto — richiede di far fallire IndexedDB nella pagina viva |
 | R-STA-07 | Una figura indisponibile si dichiara con il perché | `test_dati.py::test_figure` |
 | R-STA-08 | Una lettura che fallisce non ripiega su un dato plausibile: le letture cieche ancora presenti sono dichiarate, con l'area che le chiude | `test_interfaccia.py::test_letture_che_non_mascherano` |
-| R-STA-09 | Aperte su un indirizzo che non è `rottagiusta.it`, la palestra lo dichiara per prima cosa e offre di scaricare i progressi, e la vetrina manda alla palestra sul nuovo indirizzo | `test_interfaccia.py::test_trasloco` |
+| R-STA-09 | Aperte su un indirizzo che non è `rottagiusta.it`, l'app lo dichiara per prima cosa e offre di scaricare i progressi, e la Home manda all'app sul nuovo indirizzo | `test_interfaccia.py::test_trasloco` |
 
 ### 9.6 Il tempo, e il ciclo che si chiude
 
@@ -1902,7 +1924,7 @@ suo numero non si riusa. Le sette rotture di C-09 escono con lui, e con il passa
 dalla pagina di riferimento del client. **C-21** prende il posto, in due parti,
 senza account e con l'account fino all'uscita: un archivio di prima scritto da
 un'altra scheda — quattro righe in IndexedDB, due in `pn.archivio`, la data in
-`pn.esame` —, e nella scheda della palestra uno strumento che registra ogni
+`pn.esame` —, e nella scheda dell'app uno strumento che registra ogni
 `open` e `deleteDatabase` di quel database e ogni `getItem`, `setItem`,
 `removeItem` e `clear` delle chiavi `pn.`. Poi il testo visibile, il database
 del server, e l'archivio riletto dall'altra scheda e confrontato byte per byte.
@@ -2072,23 +2094,160 @@ Ogni riga dice **chi decide**. Una questione senza un decidente non si chiude ma
 
 | ID | Questione | Decide | Conseguenza se resta aperta |
 |---|---|---|---|
-| Q-NAV | Le destinazioni della barra: quattro, cinque, quali etichette | l'autore | Il codice decide al posto suo, come è già successo (§6.2) |
-| Q-EXTRA | Nome, forma e collocazione del riquadro degli extra | l'autore | I Segnali restano dove capita |
 | Q-DIM | La dimensione della prima attività per chi comincia | l'autore, dopo un confronto fra due varianti | Restano i 25 quesiti attuali, mai verificati su chi inizia |
 | Q-PROG | Il programma d'esame come dataset | serve una fonte, poi l'autore | Nessuna mappa del programma è possibile: nel repo non c'è (§4.6) |
 | Q-AMBITO | Se `carteggio_e12.json` esce dal cassetto | l'autore | 50 esercizi pubblicati e non usati; cambia il pubblico più di ogni scelta di navigazione. Finché resta aperta, un controllo pretende che la pagina non li carichi (R-UX-07): tirarli fuori è una decisione, non un ritocco |
 | Q-CART4 | «Un esercizio per ciascuno dei quattro argomenti» è un'assunzione | serve la scuola nautica | La composizione della prova resta non confermata, e la 42/D non ha esercizi di carburante. Dal 30 settembre 2026 l'assunzione viaggia con il contratto, `PROVA_CARTEGGIO.assunzione`, e chi compone la prova la riceve con la lista (R-SEL-12). Dal 30 settembre 2026 (P-35) arriva anche alla preparazione della pagina, che la dichiara prima dell'avvio come la dà il motore, e un controllo la segue fino lì (R-SEL-17) |
+| Q-STATI | Le parole dei cinque stati della decisione 14 di P-59 sulla barra e nella legenda, al posto di «giusti · da rifare · mai visti» (Q-DUE punto 3, riaperto) | l'autore | La barra resta a tre stati, e i contratti del motore non sanno come chiamare in schermata gli altri due |
+| Q-COSTANZA | Che cosa fa un giorno di attività (ADR-006): quante risposte, e come si contano il carteggio e i Segnali — i Segnali oggi non lasciano una data, perché non entrano nell'archivio (§4.5, R-UX-02), e contarli vuol dire una riga nuova o un dato nuovo nel profilo | l'autore (la proposta è un'attività conclusa, anche da dieci domande: `prossime-sessioni.md` §4, «Dopo P-59», punto 3) | La costanza non si costruisce |
+| Q-STIMA | La frase di `docs/filosofia.md` sulla stima (proposta in I-12); chi fissa, prima di vedere i risultati, le soglie con cui la stima si mostra (ADR-006); e la strada per chiedere «com'è andata» dopo l'esame — se passa da una mail, è un uso dell'email che oggi la filosofia non nomina | l'autore, sul progetto di P-64 per la terza | La stima si calcola e si registra, ma non si mostra; la frase di oggi resta |
 | Q-PROVE | Verifiche con dispositivi reali e con persone — e Safari, che il banco del browser non raggiunge (rimandato dall'autore il 29 settembre 2026) | l'autore fornisce dispositivi e persone | Nessuna prova su hardware Apple vero, e nessuna prova con persone diverse dall'autore. Safari nel banco vorrebbe «Allow remote automation», un'impostazione dell'autore, e anche così WebDriver non legge lo storage (`account-client-progetto.md` §12): il cookie fra `rottagiusta.it` e `api.` su Safari si prova a mano |
 
 **Chiuse, e non si riaprono senza un motivo nuovo:**
 
+- **Le decisioni del brainstorming P-59** (3 e 4 ottobre 2026, l'autore;
+  scritte qui il 4 ottobre, con P-63). Le schede e la formulazione di ognuna
+  sono in `docs/idee-dopo-gli-account.md`, «Le decisioni di P-59», e i numeri
+  qui sotto sono i loro. Quelle che cambiano una promessa sono l'**ADR-006**:
+  l'invito (12), le spiegazioni (11, 28), la costanza (19), la stima (23–27).
+  **Il §5, il §6, il §7 e i requisiti del §9 non sono riscritti**: descrivono
+  la pagina che c'è, e i loro controlli la tengono verde. Accanto a ogni
+  decisione, che cosa cambierà con il progetto del ridisegno o con i contratti
+  del motore.
+
+  **Q-NAV, chiusa: la struttura** (decisioni 1–9; I-01, I-02, I-13, I-18).
+  1. Il menu è **Home · Allenati · Esame · Progressi**, più l'avatar, che apre
+     il Profilo — account, data d'esame, obiettivo, dati, Info, note legali,
+     Esci —, e senza account «Accedi». Il pallino dei guasti sta sull'avatar,
+     raggiungibile anche durante un'attività. Sul desktop la barra sta in alto.
+     *Cambierà:* §5.2, §6.2, R-NAV-01…07, e la riga del pallino nel §5.4, che
+     oggi sta sulla voce Info.
+  2. **Allenati** ha tre segmenti, Quiz · Carteggio · Segnali: si apre sul
+     segmento da cui si arriva, altrimenti su Quiz, e il ritorno da un'attività
+     ripristina origine, segmento e posizione. «Che tecnica serve?» sta in
+     Carteggio. Chiude anche **Q-EXTRA**: i Segnali sono il terzo segmento di
+     Allenati, fuori dalla mappa della copertura come vuole il §6.3 (R-UX-04).
+  3. **Esame** mette le prove nell'ordine in cui si sostengono — carteggio,
+     quiz base, quiz vela —, con le condizioni del decreto, la data e le prove
+     fatte, e mostra quelle che servono all'obiettivo scelto (13). Il carteggio
+     d'allenamento e la prova di carteggio sono un ambiente solo, con due
+     modalità e due ingressi. *Cambia* la decisione dell'8 settembre nel §6.1
+     per la parte «un accesso nella navigazione principale»: il Carteggio resta
+     un ambiente, e le sue porte sono in Allenati e in Esame. *Cambierà:* §7.3,
+     R-UX-01.
+  4. **Progressi** unisce Percorso e Progressi: in alto il «sei qui», poi i
+     temi, le prove, l'andamento, le sessioni. Senza account mostra il
+     riepilogo vero della pagina aperta, e che cosa l'account aggiunge.
+     *Cambierà:* §7.1, §7.4, R-ACC-04.
+  5. **La Home è `/`**, in tre stati. Senza risposte: che cos'è il sito, con i
+     suoi benefici; **«Simula il quiz base»** come primo pulsante, con le
+     condizioni accanto («20 domande · 30 minuti · al più 4 errori»);
+     «Allenati con 10 domande»; le schermate; «Che cosa non torna». Con
+     risposte e senza account: l'invito a conservarle (ADR-006). Con
+     l'account: il cruscotto — una proposta per oggi con il suo perché,
+     «Simula il quiz base», una riga di fatti e di costanza. *Cambierà:* §5.1,
+     §7.1, e R-ARCH-06 se l'icona sulla schermata Home smette di aprire l'app.
+  6. **La simulazione si raggiunge in un tocco**, dalla Home e da Esame, e apre
+     la stessa preparazione: la regola «una stanza, una porta principale» del
+     §6.3 resta.
+  7. **I nomi «vetrina» e «palestra» escono**, e si usano i nomi delle sezioni.
+     Da `AGENTS.md`, da questo documento, dal README e dalla skill li ha tolti
+     P-63: la pagina iniziale è «la Home», `/app` è «l'app». Il CHANGELOG e i
+     registri restano come sono stati scritti. Nella pagina — il `<title>` di
+     `/app`, «La palestra · Rotta Giusta», e i testi — li toglie
+     l'interfaccia. «Una palestra onesta e sicura», l'impegno in testa a
+     `docs/filosofia.md`, è rimasta: è una parola dell'impegno e non il nome
+     di una pagina, e toglierla è dell'autore.
+  8. **Cerca un quesito per numero** del decreto, in Allenati → Quiz.
+  9. **Chi non ha l'account non perde le risposte passando fra le sezioni, né
+     aprendo un link** — privacy, condizioni, donazione, registrazione —: dopo
+     il primo caricamento il sito resta un documento solo, e un controllo
+     guarda **i tragitti**, non solo le porte. Oggi la Home e l'app sono due
+     documenti, e passare dall'una all'altra ricarica la pagina: la decisione 5
+     non esce senza questa. *Cambierà:* R-NAV-01, che oggi chiede soltanto una
+     porta per vista.
+
+  I nomi delle voci si provano con persone prima di chiudersi del tutto
+  (decisione 33; `docs/prossime-sessioni.md` §4, «Dopo P-59», punto 4).
+
+  **Q-DUE punto 3, riaperto: cinque stati per quesito** (decisione 14; I-06,
+  la issue #1). *Mai visto*; *debole* — l'ultima risposta è sbagliata;
+  *sistemato* — dopo l'ultimo errore, due risposte giuste ad almeno 12 ore
+  l'una dall'altra, mantenuto dalle giuste successive e riaperto da un errore;
+  *ok* — nessun errore, e due giuste ad almeno 12 ore; *incerto* — il resto del
+  visto. Sono disgiunti e sommano al totale. Le 12 ore sono una scelta pratica,
+  da rivedere con i dati. «Rifai N errori» apre i deboli, cioè la lista di oggi
+  (`soloDaRifare`). Le parole sulla barra non sono decise: Q-STATI.
+  *Cambierà:* il §4.1, `classifica()` con i suoi chiamanti, `quadro()` e
+  `dovePesa()`, R-ARCH-02, R-MAPPA-01…13.
+
+  **Le altre** — quelle dell'ADR-006 sono là:
+  - **10. Le viste che vivono di uno storico sono dei registrati**: Progressi
+    con la mappa e gli stati nel tempo, la stima, il Percorso. È la condizione
+    3 dell'ADR-004, applicata. (I-03)
+  - **13. L'onboarding chiede la data d'esame e «che cosa stai preparando?»** —
+    solo motore o anche vela, prima patente o estensione dalla entro 12 —,
+    tutte e due facoltative e modificabili, anche prima dell'account: senza
+    account valgono per la pagina aperta, e nel browser non restano (R-ACC-09).
+    Niente età, niente livello. Sostituisce «soltanto la data d'esame» di
+    Q-ONBOARD. (I-04, C-01) *Cambierà:* R-ACC-55.
+  - **15. Due tag, «Non lo sapevo» e «Svista»**, facoltativi; i `L` e i `C` di
+    prima restano nelle righe e si mostrano come classificazione precedente,
+    senza riconvertirli. (I-07) *Cambierà:* la riga dei tag nel §5.4; e
+    `validaRiga()` oggi accetta soltanto N, L e C (R-ARCH-14): come si scrive il
+    tag nuovo lo dicono i contratti del motore.
+  - **16. Il Percorso è una mappa con il «sei qui»**, ricalcolata dalle risposte
+    e mai salvata (R-ARCH-01 resta), con fasi che orientano e non chiudono
+    porte, una quota minima di esplorazione, e controlli proposti dal motore
+    quando è il momento. Sostituisce «il sito non consiglia un piano di studio»
+    di Q-ONBOARD; i limiti del §4.6 restano — il motore non ha il programma
+    d'esame (Q-PROG) e non sa che cosa studi altrove —, e le fasi si reggono su
+    quello che sa. (I-05)
+  - **17. Il tempo al giorno si suggerisce, non si chiede**: minuti di
+    esercizio, come intervallo, con la fonte; mai «ti bastano N minuti per
+    essere pronto». Sotto le soglie del ritmo non si suggerisce niente:
+    R-TEMPO-01 e R-TEMPO-03 restano. (I-04)
+  - **18. La prima simulazione fa da test d'ingresso**; il dettaglio viene a
+    blocchi di 10 domande, che esplorano le parti poco osservate. (I-14)
+    *Cambierà forse:* «Un giro tra gli argomenti» nel §5.3, che oggi è un
+    blocco solo, e con lui R-SEL-06 e R-SEL-11.
+  - **20. I segnalibri**: una riga per gesto, vale l'ultimo, come i tag
+    (`tagPerTentativo()`). È un tipo di riga nuovo, che `validaRiga()` deve
+    conoscere: dei contratti del motore. (I-17)
+  - **21. «Ero sicuro / avevo un dubbio»**, facoltativo dopo una risposta
+    giusta; da verificare prima di usarlo nella stima. (N-01)
+  - **22. La ripresa dopo un'assenza, e «hai concluso quello che ti avevamo
+    proposto».** (N-03) Il secondo dice quanto era proposto e quanto ne resta:
+    va costruito dalle righe, senza uno stato salvato, oppure tocca il §4.4,
+    «non esiste una sessione prospettica». Quale delle due lo dice il contratto
+    del motore; se serve uno stato salvato, è una decisione dell'autore.
+  - **29. L'effetto delle spiegazioni si misura**: rilascio a scaglioni, in
+    ordine casuale fra spiegazioni pronte, anche sul trasferimento ad altri
+    quesiti; si registra che la spiegazione è stata mostrata, e quale versione —
+    soltanto per chi ha l'account, perché senza non resta niente (ADR-004).
+    (I-16)
+  - **30. «Segnala un problema»** sotto ogni quesito, con l'indirizzo visibile
+    e «copia il riferimento». L'indirizzo è da scegliere — la proposta è
+    `segnalazioni@` (`docs/prossime-sessioni.md` §4, «Dopo P-59», punto 2) —, e
+    va nell'informativa. (C-03)
+  - **31. «Com'è fatto l'esame»**, in Esame: una sintesi comprensibile, con
+    l'approfondimento e le citazioni datate. (C-02)
+  - **32. Le donazioni sì, dopo il parere** del professionista sulle 14
+    domande; il link si apre in una scheda nuova (decisione 9). (I-11)
+  - **33. Il collaudo**: giri lunghi automatici, agenti esplorativi con un
+    rapporto, e poche persone vere prima del ridisegno completo. Non chiude
+    Q-PROVE: le persone e i dispositivi restano dell'autore. (I-09)
+  - **34. Le prestazioni**: prima la misura, su telefono e Safari veri. (I-08)
 - **Q-TEMA, Q-ONBOARD e Q-SUITE** (1° ottobre 2026, l'autore, su una proposta
   verificata dalla regia). **Q-TEMA:** il tema scuro è un'opzione futura, non
   un requisito; il tema chiaro si misura da solo (appendice A). **Q-ONBOARD:**
   l'onboarding chiede soltanto la data d'esame, facoltativa (R-ACC-55), e il
   sito non consiglia un piano di studio: un piano dovrebbe reggersi su quello
   che il motore non sa — il programma d'esame (Q-PROG), lo studio fatto altrove,
-  quanto tempo hai (R-TEMPO-03). Si riapre se l'uso lo chiede. **Q-SUITE:** la
+  quanto tempo hai (R-TEMPO-03). Si riapre se l'uso lo chiede. *Decisa di
+  nuovo il 4 ottobre 2026 dalle decisioni 13, 16 e 17 di P-59, qui sotto:
+  l'onboarding chiede anche che cosa stai preparando, il Percorso orienta con
+  delle fasi, e il tempo al giorno si suggerisce.* **Q-SUITE:** la
   suite dell'interfaccia resta com'è, circa 240 s con Chrome e la porta 8620:
   accorciarla vorrebbe dire aprire il CORS del server a più origini o accorciare
   attese che hanno già dato rossi falsi, cioè pagare in sicurezza o affidabilità
@@ -2115,11 +2274,17 @@ Ogni riga dice **chi decide**. Una questione senza un decidente non si chiude ma
   2. **Un errore si chiude con una risposta giusta**, come oggi; rafforzarlo è
      un'idea, [ilbeca/rotta-giusta#1](https://github.com/ilbeca/rotta-giusta/issues/1).
      Rimandare è sicuro: lo stato si ricalcola dalle righe con `ripiega()`.
+     *Precisato il 4 ottobre 2026 dalla decisione 14 di P-59: una risposta
+     giusta toglie un quesito dai deboli, e lo fa «sistemato» soltanto la
+     seconda ad almeno 12 ore. La issue #1 si chiude in questo verso.*
   3. **Le parole della barra: «giusti · da rifare · mai visti»**, con il `?`
      «in base all'ultima risposta», e il pulsante «Rifai N errori» con N uguale
      al segmento «da rifare». In schermata non compaiono «aperto», «ripreso»,
      «coperto». Scartato «da ripassare»: nei Quiz «Ripasso degli errori» apre
      tutti gli errori di sempre, e la stessa parola indicherebbe due liste.
+     *Riaperto il 4 ottobre 2026 dalla decisione 14 di P-59: gli stati
+     diventano cinque, e le parole sono Q-STATI. Fino a quel giorno, e finché
+     la barra non cambia, valgono queste.*
   4. *(su delega)* **La vela**: le sue tre voci fanno da righe, in ordine di
      banca. Un peso per voce non esiste, e non si inventa.
   5. *(su delega)* **«X su Y giusti al primo tentativo»**, con X le esatte alla
@@ -2222,7 +2387,11 @@ per una decisione.
 - **Niente gamification**: nessuna streak, nessun badge, nessuna notifica. È una
   divergenza consapevole dalla pratica dominante nelle app di studio, ed è
   coerente col pubblico: chi prepara un esame in poche settimane non ha bisogno
-  di essere trattenuto, ha bisogno di sapere dove è scoperto.
+  di essere trattenuto, ha bisogno di sapere dove è scoperto. *Cambierà con la
+  costanza* (ADR-006, decisione 19 di P-59): per chi ha l'account, «giorni di
+  attività qui negli ultimi 14» e i quesiti da confermare oggi — senza una
+  serie che si spezza, senza badge né notifiche. È una spinta a tornare, e la
+  filosofia lo dice. Finché la costanza non c'è, questa riga descrive il sito.
 - **Un imbuto dichiarato, e nessun dark pattern.** Il 9 settembre qui c'era
   scritto «nessun dark pattern possibile: non c'è account, non c'è un imbuto».
   Dall'ADR-004 un imbuto c'è — per salvare bisogna registrarsi — e quindi un
@@ -2688,3 +2857,18 @@ successo, ed è il motivo per cui questo file esiste.
   riusa;
   R-ARCH-07 dice che cosa resta del nome. C-09 e le sue sette rotture escono;
   sei rotture nuove, tutte rosse ognuna in una verifica sola.
+- **4 ottobre 2026 — le decisioni di P-59, formali (P-63).** Le 34 decisioni
+  del brainstorming, prese dall'autore il 3 e il 4 ottobre, entrano qui con la
+  loro data: Q-NAV chiusa con la struttura delle decisioni 1–9, e con lei
+  Q-EXTRA; Q-DUE punto 3 riaperto dai cinque stati, con Q-STATI per le parole;
+  le altre fra le chiuse del §10, ognuna con accanto che cosa cambierà. Tre
+  domande nuove fra le aperte: Q-STATI, Q-COSTANZA — i Segnali non lasciano una
+  data, e la costanza dovrebbe contarli — e Q-STIMA. Quelle che cambiano una
+  promessa sono l'ADR-006: il §1 ha la frase sulle spiegazioni, la condizione 2
+  del §2.4 è sostituita, il §4.6 e l'appendice A hanno una nota su che cosa
+  cambierà. Il §2.5 non dice più che i difetti dichiarati non si possono
+  copiare. I nomi «vetrina» e «palestra» escono dal documento, fuori dal
+  registro: la pagina iniziale è la Home, `/app` è l'app. Il §5, il §6, il §7 e
+  il §9 non sono riscritti, se non per i due nomi: descrivono la pagina che
+  c'è, e cambiano con il progetto del ridisegno. Nessun requisito nuovo né
+  tolto.

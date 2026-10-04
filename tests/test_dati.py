@@ -554,9 +554,9 @@ def test_manifest_icone():
         check('site/%s esiste' % f, (SITE / f).is_file())
 
 
-# --- la vetrina sta su /, la palestra su /app --------------------------------
+# --- la Home sta su /, l'app su /app --------------------------------------------
 #
-# La trappola non e' spostare il file: e' `start_url`. Se la palestra si sposta
+# La trappola non e' spostare il file: e' `start_url`. Se l'app si sposta
 # e start_url resta '/', chi ha l'icona sulla schermata Home la tocca e si
 # ritrova sulla pagina di presentazione invece che sui suoi quiz — e non c'e'
 # nessun errore che lo dica.
@@ -576,7 +576,7 @@ def risorse_di_terzi(testo):
 def test_nessuna_risorsa_di_terzi():
     """Le pagine non caricano niente da un altro host: ogni richiesta del genere
     manda l'IP di chi visita a un terzo che l'informativa non nomina. Google
-    Fonts nella vetrina l'ha fatto fino al 1° ottobre 2026 senza che niente lo
+    Fonts nella Home l'ha fatto fino al 1° ottobre 2026 senza che niente lo
     dicesse (account-progetto.md §15.4, il primo parere). I collegamenti <a>
     non contano: li apre chi li tocca. L'API degli account la chiama lo script,
     non un tag, e l'informativa la nomina."""
@@ -600,12 +600,12 @@ def test_nessuna_risorsa_di_terzi():
 def test_indirizzi():
     man = json.loads((SITE / 'manifest.json').read_text(encoding='utf-8'))
     palestra = man.get('start_url')
-    check('manifest: start_url e la palestra, non la vetrina', palestra == '/app', palestra)
+    check('manifest: start_url e l\'app, non la Home', palestra == '/app', palestra)
     check('manifest: scope copre tutto il sito', man.get('scope') == '/', man.get('scope'))
     check('site/app.html esiste', (SITE / 'app.html').is_file())
-    # E la vetrina deve portare alla palestra, altrimenti e un vicolo cieco.
+    # E la Home deve portare all'app, altrimenti e un vicolo cieco.
     vetrina = (SITE / 'index.html').read_text(encoding='utf-8')
-    check('la vetrina rimanda a %s' % palestra, ('href="%s"' % palestra) in vetrina)
+    check('la Home rimanda a %s' % palestra, ('href="%s"' % palestra) in vetrina)
     # Due indirizzi, due titoli. Con lo stesso titolo sono due schede
     # indistinguibili, e per un motore di ricerca due pagine che competono per
     # la stessa query invece di dividersi il lavoro.
@@ -613,13 +613,13 @@ def test_indirizzi():
     titolo = lambda f: (_re.search(r'<title>(.*?)</title>',
                         (SITE / f).read_text(encoding='utf-8'), _re.S) or [None, ''])[1].strip()
     tv, tp = titolo('index.html'), titolo('app.html')
-    check('vetrina e palestra hanno titoli diversi', tv != tp and tv and tp, '%r / %r' % (tv, tp))
-    check('il titolo della vetrina nomina la patente nautica',
+    check('Home e app hanno titoli diversi', tv != tp and tv and tp, '%r / %r' % (tv, tp))
+    check('il titolo della Home nomina la patente nautica',
           'patente nautica' in tv.lower(), tv)
-    # Le pagine legali tornano alla palestra, non alla vetrina.
+    # Le pagine legali tornano all'app, non alla Home.
     for f in ('privacy.html', 'avvertenza.html'):
         testo = (SITE / f).read_text(encoding='utf-8')
-        check('%s: torna alla palestra' % f, 'href="/app"' in testo)
+        check('%s: torna all\'app' % f, 'href="/app"' in testo)
 
 
 def test_serve():
@@ -676,7 +676,7 @@ def test_serve():
             st = chiedi(p, {'If-Modified-Since': data})[0] if data else None
             check('serve.py: %s si riconvalida con un 304, come statichost.eu' % p, st == 304,
                   'Last-Modified %r, poi %r' % (data, st))
-        check('serve.py: /index.html e /index servono la vetrina, non la palestra',
+        check('serve.py: /index.html e /index servono la Home, non l\'app',
               chiedi('/index.html')[2] == (SITE / 'index.html').read_bytes())
     finally:
         s.shutdown()

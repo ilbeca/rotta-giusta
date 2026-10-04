@@ -2022,7 +2022,7 @@ test('fondiArchivio: per uid, senza doppioni, e dice quante ne ha scartate', () 
 // Oggi la usa l'import; con gli account la useranno anche la conversione di un
 // file e il server, importando questo stesso file (docs/account-progetto.md
 // §4.1). Due copie della regola sono la riga con `ts: "boh"` della 0.4.6, che
-// entrava con HTTP 200 e spegneva la palestra su ogni dispositivo.
+// entrava con HTTP 200 e spegneva l'app su ogni dispositivo.
 //
 // Le forme qui sotto sono quelle che `app.html` scrive, e le regole sono state
 // misurate il 26 settembre 2026 sull'archivio vero del progetto di preparazione

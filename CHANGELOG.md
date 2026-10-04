@@ -94,6 +94,69 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   ruba l'intenzione alla voce «Allenati». La lettura intera sta in
   `~/bot-ux/`, fuori dal repo; frasi e prototipi vanno riletti dall'autore.
 
+### Deciso — P-63: le decisioni di P-59, scritte dove si decidono
+
+- **L'ADR-006 per le quattro che cambiano una promessa**, ognuna con il suo
+  prezzo, come l'ADR-005. **L'invito a registrarsi** sta in tre posti — nella
+  Home a chi ha risposto senza account, nel risultato di una simulazione, nei
+  riepiloghi — e in nessun altro: sostituisce la condizione 2 dell'ADR-004,
+  marcata lì. **Il sito spiega**: spiegazioni per i quiz, per tutti, solo se
+  verificate dall'autore, mai prima della risposta, in un file loro accanto
+  alla banca. **La costanza si dice**: giorni di attività negli ultimi 14,
+  senza serie che si spezza. **La stima** si calcola e si registra senza
+  mostrarla, con la difficoltà dei quesiti dalle prime risposte di tutti i
+  registrati, finché non passa la prova sulle simulazioni vere. Il prezzo
+  scritto per intero: un imbuto più largo, una promessa più grande e una
+  persona sola a tenerla vera, una spinta a tornare, e un dato nuovo per ogni
+  registrato che lui non vede.
+
+- **`docs/filosofia.md`**: la frase di I-10, «Spieghiamo perché una risposta è
+  quella giusta…», al posto di «il sito non insegna», con quella di prima
+  citata accanto; «niente gamification» riscritta per la costanza; l'imbuto con
+  i suoi tre posti. La frase sulla stima, «"supera l'esame con noi" non lo
+  diciamo», resta: accanto c'è che cosa la aspetta, e la nuova la sceglie
+  l'autore.
+
+- **La specifica**: nel §10 Q-NAV chiusa con la struttura delle decisioni 1–9
+  — Home · Allenati · Esame · Progressi — e con lei Q-EXTRA; Q-DUE punto 3
+  riaperto dai cinque stati; le altre decisioni fra le chiuse, ognuna con
+  accanto i requisiti che cambieranno. Tre domande nuove fra le aperte, con
+  l'autore come decidente: **Q-STATI**, le parole dei cinque stati;
+  **Q-COSTANZA**, che cosa fa un giorno di attività — e i Segnali, che la
+  costanza dovrebbe contare, oggi non lasciano una data; **Q-STIMA**, la frase
+  della filosofia, chi fissa le soglie, e come si chiede «com'è andata». Il §1
+  ha la frase nuova, il §2.4 la condizione 2 sostituita, il §4.6 e l'appendice
+  A una nota su che cosa cambierà; il §2.5 non dice più che i difetti
+  dichiarati sono «l'unica cosa che nessun concorrente può copiare» — chiunque
+  potrebbe, e nessuno dei tre guardati lo fa. **Il §5, il §6, il §7 e il §9 non sono riscritti**,
+  se non per i due nomi: descrivono la pagina che c'è, e i loro controlli la
+  tengono verde; nessun requisito nuovo né tolto.
+
+- **«Vetrina» e «palestra» escono** da `AGENTS.md`, dalla specifica, dal README
+  e dalla skill: la pagina iniziale è la Home, `/app` è l'app. La skill li tiene
+  fra i suoi inneschi; il CHANGELOG e i registri restano come sono stati
+  scritti. Nei test cambiano soltanto messaggi e commenti: nessun controllo
+  cercava quelle parole nella pagina, e i nomi delle variabili sono rimasti.
+  Restano, e lo decide l'autore, la «palestra onesta e sicura» dell'impegno in
+  testa alla filosofia, e nella pagina il `<title>` di `/app`, che toglie
+  l'interfaccia.
+
+- **Trovato scrivendo, e lasciato all'autore o ai contratti del motore**, nel
+  §10 accanto alla decisione: la costanza conta i Segnali, che non entrano
+  nell'archivio (Q-COSTANZA); «hai concluso quello che ti avevamo proposto»
+  (decisione 22) va costruito dalle righe, o tocca il §4.4 sulle sessioni
+  prospettiche; la struttura nuova dà al Carteggio due porte e nessuna voce di
+  barra, e cambia così la decisione dell'8 settembre nel §6.1; e chiedere
+  «com'è andata» per email sarebbe un uso dell'email che la filosofia non
+  nomina.
+
+  Suite: motore 192/196 con i quattro skip previsti; server 72/72; dati 223;
+  specifica 820, invariata; interfaccia 2.263, in 4 min 06 s, con la 8620
+  libera da 90 s prima — la teneva a intermittenza il banco dei bot di
+  `~/bot-ux/`, e si è aspettato che finisse. Guardiano e controllo della
+  documentazione verdi. `site/` e `docs/prossime-sessioni.md` non sono stati
+  toccati.
+
 ## [0.30.0] — 2026-10-03
 
 **Il sito più semplice: niente offline.** Rotta Giusta si apre con la rete,

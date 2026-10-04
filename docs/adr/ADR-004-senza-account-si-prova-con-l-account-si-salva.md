@@ -17,6 +17,14 @@ resta per non perdere niente mentre la rete non c'è, non per aprire il sito
 senza rete. Il testo resta com'è stato scritto, perché è quello che l'ADR-005
 ha dovuto correggere; l'ADR-005 dice il prezzo.
 
+**Sostituito in parte da ADR-006**, il 4 ottobre 2026, in un punto, marcato qui
+sotto: la seconda condizione. L'invito a registrarsi sta in tre posti — nella
+Home, a chi ha risposto senza account; nel risultato di una simulazione; nei
+riepiloghi — e in nessun altro; non più soltanto alla fine di un'attività.
+Restano i vantaggi veri, nessuna metrica sotto le soglie del §4.3, e niente
+invito durante un'attività. L'ADR-006 dice il prezzo. La condizione 3 non
+cambia, ed è lei che porta le spiegazioni anche a chi non ha l'account.
+
 (Non è l'ADR-004 di `Standards`, «la regola diventa un controllo», che
 `AGENTS.md` e la specifica citano sempre con il nome del repo accanto.)
 
@@ -88,7 +96,12 @@ Senza di esse, questa decisione non vale.
    fine di ogni attività, con parole che non si possono fraintendere. Una
    perdita dichiarata è una scelta di chi studia; una perdita scoperta dopo è il
    guasto di casa.
-2. **La registrazione si raccomanda con i vantaggi veri, quando c'è qualcosa da
+2. ~~**La registrazione si raccomanda con i vantaggi veri, quando c'è qualcosa da
+   perdere.**~~ — *sostituita dall'ADR-006 il 4 ottobre 2026: la registrazione si
+   raccomanda con i vantaggi veri in tre posti — nella Home, a chi ha risposto
+   senza account; nel risultato di una simulazione; nei riepiloghi delle
+   attività —, e fuori da quei tre posti non c'è un invito. Il testo di prima:*
+   **La registrazione si raccomanda con i vantaggi veri, quando c'è qualcosa da
    perdere.** La fine di un'attività è quel momento. I vantaggi mostrati sono
    quelli che esistono — il salvataggio, i Progressi, le metriche — e nessuna
    metrica si promette sotto le soglie del §4.3. **Non a ogni schermata:** un
