@@ -3,10 +3,11 @@
 //   node server/statistica.mjs [--db /var/lib/rg/conti.db] "SELECT count(*) risposte FROM risposte"
 //
 // La query e' una SELECT sulle fonti di server/statistiche.mjs — iscritti,
-// risposte, punteggi —, che escludono chi si e' opposto al trattamento per le
-// statistiche (docs/account-progetto.md §15.2). Una query che nomina una
+// risposte, punteggi, esiti —, che escludono chi si e' opposto al trattamento
+// per le statistiche (docs/account-progetto.md §15.2). Una query che nomina una
 // tabella vera e' rifiutata. Il risultato esce in JSON su stdout; su stderr,
-// quanti account sono fuori dai conteggi.
+// quanti account sono fuori dai conteggi, e — se la query legge gli esiti —
+// quante persone ci sono e la soglia sotto cui un conteggio non esce di qui.
 //
 // Funziona con il servizio acceso, e apre il database **in sola lettura**: uno
 // strumento che conta non deve poter scrivere.
@@ -14,9 +15,9 @@
 import { existsSync } from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
 import { parseArgs } from 'node:util';
-import { statistica, esclusi, FONTI } from './statistiche.mjs';
+import { statistica, esclusi, personeConEsito, FONTI, SOGLIA_PERSONE } from './statistiche.mjs';
 
-const USO = 'uso: node server/statistica.mjs [--db …] "SELECT … FROM iscritti | risposte | punteggi"';
+const USO = 'uso: node server/statistica.mjs [--db …] "SELECT … FROM iscritti | risposte | punteggi | esiti"';
 
 let argomenti;
 try {
@@ -41,6 +42,10 @@ try {
   db.exec('PRAGMA busy_timeout = 5000');
   const righe = statistica(db, positionals[0]);
   console.error(`fuori dai conteggi per opposizione: ${esclusi(db)} account`);
+  if (/\besiti\b/i.test(positionals[0])) {
+    console.error(`esiti: ${personeConEsito(db)} persone nei conteggi hanno detto un esito. Un conteggio su un gruppo di `
+      + `meno di ${SOGLIA_PERSONE} persone non esce da questa macchina: non in un documento, non in un messaggio (docs/account-progetto.md §15.2).`);
+  }
   console.log(JSON.stringify(righe, null, 2));
 } catch (e) {
   console.error(`statistica non eseguita: ${e.message}`);

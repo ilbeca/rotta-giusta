@@ -47,7 +47,8 @@ if (values.prova) {
     + (r.schemaDellaCopia < r.schema ? ` (la copia era allo schema ${r.schemaDellaCopia}: portata a quello del codice)` : ''));
   console.log(`epoca ${r.epocaPrima} → ${r.epoca}: i client rimanderanno le loro righe`);
   console.log(`dal file delle cancellazioni: ${r.ricancellati.length} account ricancellati, ${r.riazzerati.length} riazzerati, `
-    + `${r.riesclusi.length} di nuovo fuori dalle statistiche, ${r.riammessi.length} rientrati`
+    + `${r.riesclusi.length} di nuovo fuori dalle statistiche, ${r.riammessi.length} rientrati, `
+    + `${r.ritolti.length} con un esito dell'esame tolto di nuovo`
     + (r.illeggibili ? `, ${r.illeggibili} righe ILLEGGIBILI — guardale prima di riaprire` : ''));
 } else {
   console.error('uso: node server/ripristina.mjs --prova | <copia.db> [--db …] [--cancellazioni …]');

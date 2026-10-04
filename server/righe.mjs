@@ -12,7 +12,7 @@
 // `site/engine.js`, dove un test la raggiunge.
 
 import { readFileSync } from 'node:fs';
-import { aggiungiRighe, righeDopo, leggiEpoca } from './db.mjs';
+import { aggiungiRighe, righeDopo, leggiEpoca, esitiDi } from './db.mjs';
 import { INVIO_MAX_RIGHE, INVIO_MAX_BYTE } from '../site/engine.js';
 
 /** Al piu' tante righe per ricezione (§7.2): il resto con `altre: true`. */
@@ -79,6 +79,12 @@ export function creaRighe({ db, ora, versione, quesiti = leggiBanca() }) {
      * ricarica con `importa()`, identico, compresi i punteggi dei Segnali in
      * `segPunti` (§13.2). Dal profilo (P-11) il server li conosce, quindi un
      * `{}` qui vuol dire davvero «nessuna partita».
+     *
+     * Dal P-73 porta anche `esiti`, l'esito dell'esame com'e' in `GET /v1/io`:
+     * e' l'accesso e la portabilita'. `importa()` non lo carica — un file si
+     * ricarica in qualunque account, e un esito e' una dichiarazione del
+     * titolare dell'account, non una risposta —, e le righe del file restano
+     * quelle di prima.
      */
     esporta({ account }) {
       const righe = db.prepare('SELECT dati FROM riga WHERE account_id = ? ORDER BY seq').all(account.id)
@@ -88,7 +94,7 @@ export function creaRighe({ db, ora, versione, quesiti = leggiBanca() }) {
         segPunti[x.modo] = { migliore: x.migliore, giocate: x.giocate };
       }
       const giorno = iso().slice(0, 10);
-      return [200, { app: 'rotta-giusta', versione, esportato: iso(), righe, segPunti },
+      return [200, { app: 'rotta-giusta', versione, esportato: iso(), righe, segPunti, esiti: esitiDi(db, account.id) },
         { intestazioni: { 'Content-Disposition': `attachment; filename="rotta-giusta-progressi-${giorno}.json"` } }];
     },
   };

@@ -4,8 +4,10 @@
 // perche' il database nasca giusto e perche' la copia di sicurezza si possa
 // ripristinare davvero: lo schema con il suo numero, l'epoca, le righe con il
 // loro cursore, le due operazioni che tolgono — cancellare un account e
-// azzerarne i progressi — e il segno di chi si oppone alle statistiche (§15.2),
-// tutte scritte anche nel file delle cancellazioni.
+// azzerarne i progressi —, il segno di chi si oppone alle statistiche (§15.2),
+// e l'esito dell'esame detto da chi studia, che si toglie davvero
+// (docs/esito-esame-progetto.md §3): tutte scritte anche nel file delle
+// cancellazioni.
 //
 // Niente HTTP qui dentro: copia e ripristino sono strumenti della macchina e
 // girano a servizio fermo (server/copie.mjs).
@@ -21,12 +23,13 @@ import { validaRiga } from '../site/engine.js';
  * e tabelle nuove, mai tolte ne' rinominate, cosi' il rilascio precedente gira
  * sul database di quello nuovo e tornare indietro resta di un secondo.
  */
-export const SCHEMA = 4;
+export const SCHEMA = 5;
 
 // Lo schema del §3, un pezzo per volta. Le tabelle arrivano con i pezzi che le
 // usano, e ognuno e' una migrazione additiva: la 1 e' di P-03 (le righe e la
 // copia), la 2 di P-09 (l'account), la 3 di P-11 (i punteggi dei Segnali), la 4
-// di P-54 (il segno di chi si oppone alle statistiche).
+// di P-54 (il segno di chi si oppone alle statistiche), la 5 di P-73 (l'esito
+// dell'esame).
 const SCHEMA_1 = `
   CREATE TABLE impianto (
     id            INTEGER PRIMARY KEY CHECK (id = 1),
@@ -118,15 +121,38 @@ const SCHEMA_4 = `
   ALTER TABLE account ADD COLUMN fuori_statistiche_dal TEXT;
 `;
 
+// L'esito dell'esame, detto da chi studia (docs/esito-esame-progetto.md §3.3):
+// una riga per prova e per giorno. Una tabella sua e non una riga
+// dell'archivio, perche' un esito si deve poter togliere davvero — le righe non
+// si modificano —, e un azzeramento non lo tocca; e non colonne del profilo,
+// che il server di prima butterebbe con un 200 (misurato, §2 del progetto).
+// La chiave esterna fa si' che anche il codice di prima, che non sa di questa
+// tabella, la svuoti cancellando l'account. Le regole sui valori stanno in
+// server/esiti.mjs: niente CHECK, che una prova nuova costringerebbe a rifare
+// la tabella invece di aggiungere.
+const SCHEMA_5 = `
+  CREATE TABLE esito (
+    account_id    INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
+    giorno        TEXT NOT NULL,     -- AAAA-MM-GG, il giorno della prova, detto da chi studia
+    prova         TEXT NOT NULL,     -- 'carteggio' | 'base' | 'vela' | 'pratica'
+    esito         TEXT NOT NULL,     -- 'superata' | 'non_superata' | 'non_sostenuta' | 'non_detto'
+    errori        INTEGER,           -- facoltativo; NULL per la pratica e per chi non lo sa
+    detto_il      TEXT NOT NULL,     -- la prima volta, UTC
+    cambiato_il   TEXT NOT NULL,     -- l'ultima, UTC: il ripristino la confronta con i ritiri
+    PRIMARY KEY (account_id, giorno, prova)
+  ) WITHOUT ROWID;
+`;
+
 /**
  * Le migrazioni, in ordine: la n-esima porta il database da n-1 a n. Un
  * database nuovo le esegue tutte, cosi' nuovo e migrato sono lo stesso schema
  * e c'e' una strada sola da provare.
  */
-export const MIGRAZIONI = [SCHEMA_1, SCHEMA_2, SCHEMA_3, SCHEMA_4];
+export const MIGRAZIONI = [SCHEMA_1, SCHEMA_2, SCHEMA_3, SCHEMA_4, SCHEMA_5];
 
 const adesso = () => new Date().toISOString();
 const nuovaEpoca = () => randomBytes(16).toString('hex');
+const DATA = /^\d{4}-\d{2}-\d{2}$/;
 
 /** Le impostazioni di ogni connessione: non stanno nel file, si ripetono. */
 function imposta(db) {
@@ -318,6 +344,10 @@ export function righeDopo(db, accountId, dopo = 0, { quante = Infinity } = {}) {
 // le restituisce a parte: chi legge `voci` per spiegare un calo di righe
 // (server/copie.mjs) non deve ricordarsi di scartarle.
 //
+// Dal P-73 anche i ritiri dell'esito dell'esame («esito tolto»: numero, chiave,
+// giorno, le prove se non sono tutte, quando — nessun valore dell'esito), per
+// la stessa ragione e restituiti a parte anche loro: non sono righe.
+//
 // Il file si scrive **prima** del database, e con `fsync`. Se il processo cade
 // fra i due, il file dice «cancellato» e il database no: il ripristino
 // successivo cancella un account che l'aveva chiesto. Nell'ordine opposto un
@@ -432,8 +462,8 @@ export function opponi(db, id, { cancellazioni, opposto = true, motivo, il = ade
  * mentre la scriveva — si conta e non si salta in silenzio.
  */
 export function leggiCancellazioni(percorso) {
-  if (!percorso || !existsSync(percorso)) return { voci: [], opposizioni: [], illeggibili: 0 };
-  const voci = [], opposizioni = [];
+  if (!percorso || !existsSync(percorso)) return { voci: [], opposizioni: [], ritiri: [], illeggibili: 0 };
+  const voci = [], opposizioni = [], ritiri = [];
   let illeggibili = 0;
   for (const testo of readFileSync(percorso, 'utf8').split('\n')) {
     if (!testo.trim()) continue;
@@ -442,12 +472,14 @@ export function leggiCancellazioni(percorso) {
       const intera = Number.isInteger(v.account) && typeof v.chiave === 'string' && typeof v.il === 'string';
       if (intera && (v.evento === 'cancellazione' || (v.evento === 'azzeramento' && Number.isInteger(v.generazione)))) voci.push(v);
       else if (intera && (v.evento === 'opposizione' || v.evento === 'opposizione ritirata')) opposizioni.push(v);
+      else if (intera && v.evento === 'esito tolto' && DATA.test(v.giorno)
+        && (v.prove === undefined || (Array.isArray(v.prove) && v.prove.length && v.prove.every((x) => typeof x === 'string')))) ritiri.push(v);
       else illeggibili++;
     } catch {
       illeggibili++;
     }
   }
-  return { voci, opposizioni, illeggibili };
+  return { voci, opposizioni, ritiri, illeggibili };
 }
 
 /**
@@ -457,13 +489,15 @@ export function leggiCancellazioni(percorso) {
  * Per le opposizioni alle statistiche vale l'ultima voce di ogni account: chi
  * si e' opposto dopo la copia torna fuori dai conteggi, chi ha ritirato dopo
  * la copia ci rientra. Il registro della copia non sa di un'opposizione venuta
- * dopo, quindi qui la si annota di nuovo. Vuole lo schema del codice
- * (`migra()`): una copia di prima del segno non ha la colonna.
+ * dopo, quindi qui la si annota di nuovo. Gli esiti tolti dopo la copia si
+ * tolgono di nuovo; un azzeramento rifatto non li tocca. Vuole lo schema del
+ * codice (`migra()`): una copia di prima del segno non ha la colonna, una di
+ * prima dello schema 5 non ha la tabella degli esiti.
  */
 export function riapplicaCancellazioni(db, percorso) {
-  const { voci, opposizioni, illeggibili } = leggiCancellazioni(percorso);
+  const { voci, opposizioni, ritiri, illeggibili } = leggiCancellazioni(percorso);
   const ricancellati = [], riazzerati = [];
-  let riesclusi = [], riammessi = [];
+  let riesclusi = [], riammessi = [], ritolti = [];
   transazione(db, () => {
     for (const v of voci) {
       const a = db.prepare('SELECT id, generazione FROM account WHERE id = ? AND chiave_locale = ?').get(v.account, v.chiave);
@@ -476,10 +510,13 @@ export function riapplicaCancellazioni(db, percorso) {
         riazzerati.push(a.id);
       }
     }
-    // Dopo le cancellazioni: chi non c'e' piu' non ha un segno da rimettere.
+    // Dopo le cancellazioni: chi non c'e' piu' non ha un segno da rimettere,
+    // ne' un esito da togliere.
     ({ riesclusi, riammessi } = riallinea(db, opposizioni, 'dopo il ripristino di una copia'));
+    ritolti = ritoglie(db, ritiri).account;
   });
-  return { ricancellati, riazzerati, riesclusi, riammessi, illeggibili };
+  if (ritolti.length) svuotaWal(db);
+  return { ricancellati, riazzerati, riesclusi, riammessi, ritolti, illeggibili };
 }
 
 // Porta il segno di ogni account a quello che dice l'ultima voce del file. Per
@@ -518,4 +555,108 @@ export function rileggiOpposizioni(db, percorso) {
   const { opposizioni } = leggiCancellazioni(percorso);
   if (!opposizioni.length) return { riesclusi: [], riammessi: [] };
   return transazione(db, () => riallinea(db, opposizioni, "all'avvio: il database non la aveva"));
+}
+
+
+// --- l'esito dell'esame (P-73) ----------------------------------------------------------
+//
+// docs/esito-esame-progetto.md §3.3 e §3.4. Qui c'e' quello che tocca la
+// tabella e il file; le regole sui valori — quali prove, quali esiti, quanti
+// errori, il giorno, il tetto dei venti giorni — stanno in server/esiti.mjs,
+// che le controlla tutte prima di chiamare queste funzioni.
+
+/** L'ordine delle prove, quello dell'esame: il carteggio e' propedeutico ai quiz. */
+const ORDINE_PROVE = "CASE prova WHEN 'carteggio' THEN 1 WHEN 'base' THEN 2 WHEN 'vela' THEN 3 WHEN 'pratica' THEN 4 ELSE 5 END";
+/**
+ * Gli esiti di un account, ordinati per giorno e per prova:
+ * `[{ giorno, prova, esito, errori, detto_il, cambiato_il }]`. E' l'elenco che
+ * `GET /v1/io`, l'export e lo strumento del titolare mostrano, ed e' sempre lo
+ * stesso: un solo posto che lo legge.
+ */
+export function esitiDi(db, id) {
+  return db.prepare(`SELECT giorno, prova, esito, errori, detto_il, cambiato_il FROM esito WHERE account_id = ? ORDER BY giorno, ${ORDINE_PROVE}`)
+    .all(id).map((x) => ({ ...x }));
+}
+
+/**
+ * Scrive le prove nominate per quel giorno: `{ esito, errori }` le scrive o le
+ * corregge — `detto_il` resta, `cambiato_il` si sposta —, `null` le toglie. Una
+ * prova assente resta com'e'. Una prova tolta passa **prima** dal file delle
+ * cancellazioni, come un `DELETE` (`togliEsiti()`), e solo se c'era.
+ * Restituisce gli esiti dell'account dopo la scrittura.
+ */
+export function scriviEsiti(db, id, { giorno, prove, cancellazioni, il = adesso() }) {
+  const a = account(db, id);
+  const ci = new Set(db.prepare('SELECT prova FROM esito WHERE account_id = ? AND giorno = ?').all(a.id, giorno).map((x) => x.prova));
+  const via = Object.entries(prove).filter(([prova, p]) => p === null && ci.has(prova)).map(([prova]) => prova);
+  if (via.length) annota(cancellazioni, { evento: 'esito tolto', account: a.id, chiave: a.chiave_locale, giorno, prove: via, il });
+  const scrivi = db.prepare(`INSERT INTO esito (account_id, giorno, prova, esito, errori, detto_il, cambiato_il) VALUES (?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT (account_id, giorno, prova) DO UPDATE SET esito = excluded.esito, errori = excluded.errori, cambiato_il = excluded.cambiato_il`);
+  const togli = db.prepare('DELETE FROM esito WHERE account_id = ? AND giorno = ? AND prova = ?');
+  transazione(db, () => {
+    for (const [prova, p] of Object.entries(prove)) {
+      if (p === null) togli.run(a.id, giorno, prova);
+      else scrivi.run(a.id, giorno, prova, p.esito, p.errori ?? null, il, il);
+    }
+  });
+  if (via.length) svuotaWal(db);
+  return esitiDi(db, a.id);
+}
+
+/**
+ * Toglie tutte le prove di un giorno (§3.4 del progetto). **Deve cancellare
+ * davvero**: prima nel file delle cancellazioni, con `fsync`, perche' una copia
+ * di prima non lo riporti; poi il database, con `secure_delete`; poi il WAL
+ * svuotato, perche' la versione di prima della pagina non resti nei suoi frame
+ * (§14.4). Un giorno senza esiti non scrive niente, nemmeno nel file.
+ * Restituisce gli esiti dell'account dopo.
+ */
+export function togliEsiti(db, id, { giorno, cancellazioni, il = adesso() }) {
+  const a = account(db, id);
+  const presente = db.prepare('SELECT 1 FROM esito WHERE account_id = ? AND giorno = ?').get(a.id, giorno);
+  if (presente) {
+    annota(cancellazioni, { evento: 'esito tolto', account: a.id, chiave: a.chiave_locale, giorno, il });
+    transazione(db, () => db.prepare('DELETE FROM esito WHERE account_id = ? AND giorno = ?').run(a.id, giorno));
+    svuotaWal(db);
+  }
+  return esitiDi(db, a.id);
+}
+
+// Applica i ritiri del file: per ogni voce, le prove di quel giorno — tutte, o
+// quelle nominate — con `cambiato_il` **prima** del ritiro. Un esito detto di
+// nuovo dopo il ritiro ha un `cambiato_il` dopo, e resta: senza questa
+// condizione ogni avvio del server toglierebbe quello che chi studia ha detto
+// dopo aver tolto. Per `id` e chiave, come le cancellazioni: un id riusato non
+// perde gli esiti di chi l'aveva prima. Dentro una transazione di chi chiama.
+function ritoglie(db, ritiri) {
+  const account = new Set();
+  let prove = 0;
+  for (const v of ritiri) {
+    const a = db.prepare('SELECT id FROM account WHERE id = ? AND chiave_locale = ?').get(v.account, v.chiave);
+    if (!a) continue;
+    const quali = v.prove ?? [null];
+    for (const prova of quali) {
+      const tolte = prova === null
+        ? db.prepare('DELETE FROM esito WHERE account_id = ? AND giorno = ? AND cambiato_il < ?').run(a.id, v.giorno, v.il).changes
+        : db.prepare('DELETE FROM esito WHERE account_id = ? AND giorno = ? AND prova = ? AND cambiato_il < ?').run(a.id, v.giorno, prova, v.il).changes;
+      if (tolte) { prove += tolte; account.add(a.id); }
+    }
+  }
+  return { account: [...account], prove };
+}
+
+/**
+ * All'avvio del server: un esito che il file dice tolto e il database ha
+ * ancora — con un `cambiato_il` di prima del ritiro — si toglie, e lo si dice
+ * nel log. Serve per lo stesso caso delle opposizioni (`rileggiOpposizioni()`):
+ * il `ripristina.mjs` del rilascio di prima non conosce i ritiri, li conta fra
+ * le righe illeggibili e lascia gli esiti della copia. Il registro non lo
+ * annota: l'esito non e' un evento di sicurezza (§3.3 del progetto).
+ */
+export function rileggiRitiri(db, percorso) {
+  const { ritiri } = leggiCancellazioni(percorso);
+  if (!ritiri.length) return { account: [], prove: 0 };
+  const r = transazione(db, () => ritoglie(db, ritiri));
+  if (r.prove) svuotaWal(db);
+  return r;
 }

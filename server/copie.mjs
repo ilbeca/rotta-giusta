@@ -13,7 +13,7 @@ import { existsSync, rmSync, renameSync, statSync, readFileSync } from 'node:fs'
 import { join } from 'node:path';
 import {
   SCHEMA, apri, migra, versioneSchema, leggiEpoca, rigeneraEpoca, creaAccount, aggiungiRighe, righeDopo,
-  cancellaAccount, azzera, opponi, leggiCancellazioni, riapplicaCancellazioni,
+  cancellaAccount, azzera, opponi, leggiCancellazioni, riapplicaCancellazioni, scriviEsiti, togliEsiti, esitiDi,
 } from './db.mjs';
 import { statistica, esclusi } from './statistiche.mjs';
 
@@ -116,11 +116,12 @@ function annotaCopia(percorsoDb, esito) {
  *   che vede cambiare l'epoca azzera il suo e rimanda tutte le righe che ha, e
  *   l'unione per `uid` riporta sul server quelle accolte dopo la copia;
  * - **rilegge il file delle cancellazioni**, che sta fuori dal database: gli
- *   account cancellati e i progressi azzerati dopo la copia restano tali, e
+ *   account cancellati e i progressi azzerati dopo la copia restano tali,
  *   chi si e' opposto alle statistiche dopo la copia resta fuori dai conteggi
- *   (§15.2). Per questo la copia si porta prima allo schema del codice: puo'
- *   essere di prima del segno, come quella che `rg-aggiorna` fa prima di
- *   aggiornare, e il servizio la migrerebbe comunque al primo avvio.
+ *   (§15.2), e un esito dell'esame tolto dopo la copia non torna (P-73). Per
+ *   questo la copia si porta prima allo schema del codice: puo' essere di prima
+ *   del segno o della tabella degli esiti, come quella che `rg-aggiorna` fa
+ *   prima di aggiornare, e il servizio la migrerebbe comunque al primo avvio.
  */
 export function ripristina(copiaPath, percorsoDb, { cancellazioni } = {}) {
   if (!existsSync(copiaPath)) throw new Error(`${copiaPath}: la copia non c'e'`);
@@ -197,6 +198,10 @@ export function prova({ cartella }) {
   aggiungiRighe(db, a, serie(0, 40));
   aggiungiRighe(db, b, serie(1000, 30));
   aggiungiRighe(db, c, serie(2000, 20));
+  // E due esiti dell'esame (P-73): quello di a si togliera' dopo la copia,
+  // quello di c deve sopravvivere al suo azzeramento.
+  scriviEsiti(db, a, { giorno: '2026-09-03', prove: { base: { esito: 'superata', errori: 2 } }, cancellazioni: f });
+  scriviEsiti(db, c, { giorno: '2026-09-03', prove: { carteggio: { esito: 'non_superata' } }, cancellazioni: f });
   const primaDellaCopia = db.prepare('SELECT account_id, uid, seq, dati FROM riga ORDER BY seq').all();
   db.close();
 
@@ -218,6 +223,8 @@ export function prova({ cartella }) {
   aggiungiRighe(db, c, serie(2500, 3));
   // E chi ha il telefono scrive al titolare: si oppone alle statistiche (§15.2).
   opponi(db, a, { cancellazioni: f, motivo: 'la prova del ripristino' });
+  // E toglie l'esito del suo esame.
+  togliEsiti(db, a, { giorno: '2026-09-03', cancellazioni: f });
   db.close();
   k("cancellazioni: il file c'e' e non ha email", existsSync(f) && !readFileSync(f, 'utf8').includes('@'));
 
@@ -233,6 +240,7 @@ export function prova({ cartella }) {
   k('cancellazioni: riazzerato chi aveva azzerato dopo la copia', r.riazzerati.length === 1 && r.riazzerati[0] === c, r.riazzerati);
   k('cancellazioni: nessuna riga del file illeggibile', r.illeggibili === 0, r.illeggibili);
   k('statistiche: chi si era opposto dopo la copia torna fuori dai conteggi', r.riesclusi.length === 1 && r.riesclusi[0] === a, r.riesclusi);
+  k("esiti: l'esito tolto dopo la copia si toglie di nuovo", r.ritolti.length === 1 && r.ritolti[0] === a, r.ritolti);
 
   // Confronta.
   db = apri(p, { log: () => {} });
@@ -245,6 +253,8 @@ export function prova({ cartella }) {
     !db.prepare('SELECT 1 FROM account WHERE id = ?').get(b) && db.prepare('SELECT count(*) n FROM riga WHERE account_id = ?').get(b).n === 0);
   const gc = db.prepare('SELECT generazione g FROM account WHERE id = ?').get(c)?.g;
   k("cancellazioni: l'azzeramento resta, con la sua generazione", gc === 2 && righeDopo(db, c, 0).righe.length === 0, `generazione ${gc}`);
+  k("esiti: quello tolto non torna, quello dell'account azzerato resta", esitiDi(db, a).length === 0 && esitiDi(db, c).length === 1,
+    `${esitiDi(db, a).length} e ${esitiDi(db, c).length}`);
   k('righe: le cinque accolte dopo la copia mancano dal server, come previsto', righeDopo(db, a, 0).righe.length === 40);
   const contate = statistica(db, 'SELECT count(*) n FROM risposte')[0].n;
   k('statistiche: le sue quaranta risposte restano nel suo account, e nessun conteggio le vede', esclusi(db) === 1 && contate === 0, `${contate} contate`);

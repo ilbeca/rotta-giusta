@@ -280,6 +280,105 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   `site/` fuori da `engine.js`, `server/`, la specifica e
   `docs/prossime-sessioni.md` non sono stati toccati.
 
+### Aggiunto — P-73: «com'è andata», il server (A-2)
+
+- **Il server conserva l'esito dell'esame che chi studia dice, prova per prova,
+  e lo toglie davvero.** È il lavoro A-2 del §10.1 di
+  `docs/esito-esame-progetto.md`, con le tre proposte del §11 che l'autore ha
+  confermato il 4 ottobre: gli errori si chiedono, facoltativi; l'azzeramento
+  non tocca l'esito; sotto 20 persone un conteggio sugli esiti non esce. Lo
+  schema passa a **5** con la tabella `esito` — una riga per prova e per giorno —,
+  una migrazione additiva; `PUT` e `DELETE /v1/esito`, in un modulo nuovo,
+  `server/esiti.mjs`, senza password come la data d'esame, e senza una riga nel
+  registro di sicurezza. `GET /v1/io` porta **`esiti`**, anche vuoto, e
+  **`tipi_riga`**, che è `TIPI_RIGA` del motore esportato da P-72, quindi con
+  `'a'`: la pagina accenderà la domanda e scriverà le righe d'avvio solo se ci
+  sono, e accanto al server di prima resterà spenta. L'export porta `esiti`; le
+  righe del file restano quelle di prima, e un altro account che le carica non
+  riceve nessun esito. La pagina non è stata toccata.
+
+- **Togliere cancella dai byte, e un ripristino non lo riporta.** Il ritiro — un
+  giorno intero, o una prova sola con `null` — si scrive prima nel file delle
+  cancellazioni, «esito tolto», con numero, chiave, giorno, le prove se non sono
+  tutte e quando, nessun valore; poi la riga con `secure_delete`; poi il WAL
+  svuotato. Il ripristino lo rilegge, e **lo rilegge il server a ogni avvio**:
+  misurato con il `ripristina.mjs` del tag `v0.30.0`, estratto in una cartella,
+  che conta quelle voci fra le righe illeggibili e rimette gli esiti della copia
+  — al primo avvio il server di oggi li toglie di nuovo, e lo scrive nel log. Si
+  tolgono solo le prove con `cambiato_il` prima del ritiro: un esito detto di
+  nuovo dopo resta, anche attraverso un riavvio, e un id riusato non perde i
+  suoi. **Il rilascio di prima sul database di dopo**, `v0.30.0` avviato sullo
+  schema 5: parte, dice «schema del database 5, del codice 4», non manda `esiti`,
+  risponde `404` a `/v1/esito`, e cancellando un account ne porta via gli esiti
+  per la chiave esterna, anche dai byte. Un azzeramento non li tocca, né chiesto
+  né rifatto da un ripristino. Una copia di prima dello schema 5 si porta allo
+  schema del codice prima di rileggere il file.
+
+- **Le statistiche: una quarta fonte, `esiti`**, filtrata dagli iscritti come le
+  altre, quindi senza chi si è opposto. La sua colonna è **`risultato` e non
+  `esito`**, come scriveva il §3.6 del progetto: `esito` è il nome della tabella
+  vera, che una statistica non nomina, e una colonna con quel nome sarebbe stata
+  rifiutata anche lei. Il controllo statico di R-ACC-69 è rosso anche per una
+  lettura di `esito` che non si ferma a un account, e R-ACC-74 dichiara chi legge
+  la tabella — `server/esiti.mjs` entra nel suo elenco. Su un database di prima
+  dello schema 5 una statistica sugli esiti si ferma, invece di contare zero.
+  **La soglia delle 20 persone** è una regola per chi copia un numero fuori dal
+  terminale, e nessun controllo la può eseguire: `server/statistica.mjs` la
+  ricorda a ogni statistica sugli esiti, con quante persone hanno detto un
+  esito. `server/leggi.mjs` mostra gli esiti, un giorno per riga.
+
+- **Scelte che il progetto non diceva, scritte in `docs/account-progetto.md`
+  §7.1:** un campo che il server non conosce è un `422`, non un `200` che lo
+  butta — è la prima misura del §2 del progetto rivolta contro la rotta nuova —;
+  il `422` ha una forma sola, `{errore: 'esito', campo, messaggio}`; gli errori
+  su una prova `non_sostenuta` sono un rifiuto come su `non_detto`; i limiti
+  degli errori vengono da `PROVA_CARTEGGIO` e da `meta.prove`, gli stessi della
+  simulazione; il tetto dei 20 giorni si conta in JavaScript sull'elenco che
+  `esitiDi()` già legge, senza un aggregato da dichiarare.
+
+- **Trovato, e corretto: una data impossibile dava `500`, anche nel profilo in
+  esercizio.** `new Date('2026-13-01T00:00:00Z').toISOString()` lancia, e `PUT
+  /v1/profilo` con la data d'esame `2026-13-01` rispondeva `500` invece di `422`
+  dalla v0.28.0. Trovato scrivendo il controllo del giorno dell'esito, riprodotto
+  sul profilo con un test rosso prima di correggere i due posti. Non era muto,
+  ma era l'errore sbagliato.
+
+- **Prima i test, rossi uno per uno**: sette nuovi — R-ESITO-01 e 05…09 con i
+  nomi che il §9 del progetto proponeva, e il ripristino da una copia di prima
+  dello schema 5 —, contro moduli che lanciavano, e otto esistenti estesi —
+  R-ACC-19 sui byte dell'esito, la migrazione, l'export e il file di R-ACC-67,
+  le fonti di R-ACC-69 e il suo controllo statico, le letture di R-ACC-71 e 73,
+  l'elenco di R-ACC-74 —; poi un test per l'id riusato, e la data impossibile
+  nel test del profilo. **Provati al contrario su
+  trentaquattro rotture**, una alla volta, ognuna rossa nel test che la riguarda.
+  **Due erano passate verdi** alla prima corsa: il `DELETE` senza il WAL
+  svuotato, perché la sonda dei byte guardava dopo una rimozione parziale che il
+  WAL lo svuota lei; e il ritiro di un giorno intero senza la condizione sul
+  tempo, perché il test ridiceva soltanto una prova singola. Il test è stato
+  riscritto — la sonda subito dopo il `DELETE`, e un giorno tolto per intero e
+  poi ridetto, che un riavvio non deve togliere —, e tutte e due sono rosse.
+  **E una ha appeso la suite invece di farla fallire**: un'asserzione caduta con
+  il server del test già chiuso, e il `t.after` che lo richiudeva non tornava
+  più. I test che fermano il server a metà ora lasciano al suo posto un
+  segnaposto che si chiude a vuoto. `ripristina --prova` ha due controlli in più,
+  gli esiti, ed è a **24**.
+
+- **Non fatto, ed è di altri:** la specifica — i requisiti R-ESITO e R-PREV li
+  porta P-74 —; i controlli della pagina (A-3); la pagina e l'informativa (B-1,
+  B-2), che aspettano la base giuridica. `docs/esito-esame-progetto.md` non dice
+  ancora che A-2 è fatto, né gli scostamenti: stanno in
+  `docs/account-progetto.md`, e il prompt di questa sessione non lo nominava. La
+  macchina non è stata toccata: il codice ci arriva con il rilascio.
+
+  Suite: server **80/80** (erano 72), con Node 25.3 e con la **24.21.0 LTS** — il
+  pacchetto riscaricato da nodejs.org e confrontato con il suo `SHASUMS256.txt`,
+  la stessa impronta del manifesto del 29 settembre, ed estratto in una cartella
+  a parte —; `ripristina --prova` **24** controlli, con tutte e due; motore
+  199/203 con i quattro skip previsti, anche con la LTS; dati 223; specifica 820;
+  interfaccia 2.270, in 4 min 08 s, con la 8620 guardata libera per 90 s prima.
+  Guardiano e controllo della documentazione verdi. `site/`, la specifica e
+  `docs/prossime-sessioni.md` non sono stati toccati.
+
 ## [0.30.0] — 2026-10-03
 
 **Il sito più semplice: niente offline.** Rotta Giusta si apre con la rete,

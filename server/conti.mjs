@@ -10,13 +10,13 @@
 // l'azzeramento, che chiede la password come le altre operazioni dell'account.
 
 import { randomBytes, createHash } from 'node:crypto';
-import { creaAccount, cancellaAccount, azzera as azzeraProgressi, transazione, leggiEpoca, svuotaWal } from './db.mjs';
+import { creaAccount, cancellaAccount, azzera as azzeraProgressi, transazione, leggiEpoca, svuotaWal, esitiDi } from './db.mjs';
 import { hashPassword, verificaPassword, valutaPassword, PARAMETRI } from './password.mjs';
 import { Finestra, Fallimenti, DISATTIVA_A } from './limiti.mjs';
 import {
   mailVerifica, mailPassword, mailDisattivata, mailCambioEmail, mailAvvisoEmail, mailCancellato, mailInattivita,
 } from './posta.mjs';
-import { SEGNALI, lunghezzaPartita } from '../site/engine.js';
+import { SEGNALI, lunghezzaPartita, TIPI_RIGA } from '../site/engine.js';
 
 const MINUTO = 60000;
 const ORA = 60 * MINUTO;
@@ -110,6 +110,12 @@ export function creaConti({ db, ora, argon2 = PARAMETRI, posta, sito, cancellazi
       chiave_locale: a.chiave_locale,
       righe: r.n,
       ultima_seq: r.s,
+      // P-73, §6 di docs/esito-esame-progetto.md: la pagina accende la domanda
+      // «com'è andata» solo se c'e' `esiti`, anche vuoto, e scrive una riga
+      // d'avvio solo se `tipi_riga` porta 'a'. Il server di prima non li manda,
+      // e la pagina nuova accanto a lui resta spenta invece di rompersi.
+      esiti: esitiDi(db, a.id),
+      tipi_riga: [...TIPI_RIGA],
     };
   }
 
@@ -509,7 +515,10 @@ export function creaConti({ db, ora, argon2 = PARAMETRI, posta, sito, cancellazi
       const cambi = {};
       if ('data_esame' in corpo) {
         const d = corpo.data_esame;
-        const vera = typeof d === 'string' && DATA.test(d) && new Date(`${d}T00:00:00Z`).toISOString().slice(0, 10) === d;
+        // Un mese 13 fa una data che non esiste, e `toISOString()` lancia: era un
+        // 500 invece di un 422 (trovato da P-73). Il controllo guarda prima che esista.
+        const t = typeof d === 'string' && DATA.test(d) ? Date.parse(`${d}T00:00:00Z`) : NaN;
+        const vera = !Number.isNaN(t) && new Date(t).toISOString().slice(0, 10) === d;
         if (d !== null && !vera) {
           return [422, errore('data_esame', "La data d'esame è una data vera nella forma AAAA-MM-GG, oppure null per toglierla.")];
         }

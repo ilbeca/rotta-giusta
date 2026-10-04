@@ -10,7 +10,8 @@
 // cambio d'indirizzo, profilo, cancellazione, i due anni di inattivita' e gli
 // allarmi al titolare; e le statistiche, con chi si oppone fuori da ogni
 // conteggio (P-54); e le letture del titolare, ognuna annotata nel registro
-// (P-55). L'altra meta' di questo file e' la
+// (P-55); e l'esito dell'esame, detto da chi studia, che si toglie davvero
+// (P-73). L'altra meta' di questo file e' la
 // copia di sicurezza con il ripristino provato — *un backup mai ripristinato
 // non e' un backup, e' un file* (0.4.6) — con l'epoca del database e il file
 // delle cancellazioni del §2.7.
@@ -23,7 +24,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, rmSync, readFileSync, writeFileSync, existsSync, readdirSync, utimesSync, statSync, chmodSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
@@ -31,10 +32,11 @@ import { DatabaseSync } from 'node:sqlite';
 import { avvia } from '../server/server.mjs';
 import {
   SCHEMA, MIGRAZIONI, apri, leggiEpoca, creaAccount, aggiungiRighe, righeDopo,
-  cancellaAccount, azzera, leggiCancellazioni, opponi,
+  cancellaAccount, azzera, leggiCancellazioni, opponi, esitiDi, scriviEsiti, togliEsiti,
 } from '../server/db.mjs';
 import { copia, ripristina, prova } from '../server/copie.mjs';
-import { statistica, esclusi, FONTI } from '../server/statistiche.mjs';
+import { statistica, esclusi, FONTI, personeConEsito, SOGLIA_PERSONE } from '../server/statistiche.mjs';
+import { PROVE_ESAME } from '../server/esiti.mjs';
 import { leggiAccount, EVENTO_LETTURA } from '../server/letture.mjs';
 import { hashPassword } from '../server/password.mjs';
 import * as E from '../site/engine.js';
@@ -1078,7 +1080,7 @@ test('database: uno schema 1 si porta all ultimo aggiungendo, senza togliere nie
   assert.deepEqual({ ...a }, { email: 'a@esempio.it', accessi_falliti: 0, password_disattivata_il: null, fuori_statistiche_dal: null },
     'e chi c era prima del segno resta nei conteggi: nessuno si e opposto');
   const tabelle = db.prepare("SELECT name FROM sqlite_schema WHERE type = 'table'").all().map((r) => r.name);
-  for (const nome of ['sessione', 'gettone', 'registro', 'segnali']) assert.ok(tabelle.includes(nome), nome);
+  for (const nome of ['sessione', 'gettone', 'registro', 'segnali', 'esito']) assert.ok(tabelle.includes(nome), nome);
 
   // E un database nuovo e' identico a uno migrato: una strada sola.
   const nuovo = apri(join(c, 'nuovo.db')); t.after(() => nuovo.close());
@@ -1561,7 +1563,7 @@ test('profilo: la data d esame facoltativa e i punteggi dei Segnali fusi con il 
   assert.equal(r.status, 200, JSON.stringify(r.corpo));
   assert.equal(r.corpo.data_esame, '2026-11-20');
   assert.deepEqual(r.corpo.segnali, {});
-  for (const data of ['2026-02-30', '20/11/2026', '2026-11-20T10:00:00Z', 20261120, '']) {
+  for (const data of ['2026-02-30', '2026-13-01', '2026-00-10', '20/11/2026', '2026-11-20T10:00:00Z', 20261120, '']) {
     const no = await profilo({ data_esame: data });
     assert.equal(no.status, 422, JSON.stringify(data));
     assert.equal(no.corpo.errore, 'data_esame');
@@ -1614,8 +1616,11 @@ test('cancellazione: DELETE /v1/account toglie tutto, anche dai byte del file, e
   await k.chiama('POST', '/v1/righe', { generazione: 1, righe: [riga(1, { nota: segno }), riga(2)] }, { cookie });
   await k.chiama('POST', '/v1/righe', { generazione: 1, righe: [riga(3)] }, { cookie: altro });
   await k.chiama('PUT', '/v1/profilo', { data_esame: '2026-12-01', segnali: { nebbia: { migliore: 3, giocate: 9 } } }, { cookie });
+  // L'esito dell'esame, con un giorno che nel database non c'e' altrove (P-73).
+  assert.equal((await k.chiama('PUT', '/v1/esito', { giorno: '2026-07-09', prove: { base: { esito: 'superata', errori: 1 } } }, { cookie })).status, 200);
   await k.chiama('POST', '/v1/email/cambia', { password: BUONA, nuova: 'in.sospeso.qui@esempio.it' }, { cookie });
   const id = idDi(k, email);
+  assert.ok(bytesDel(k).includes('2026-07-09'), 'prima, il giorno dell esito e nei byte: la sonda funziona');
   // Una copia di prima, con il servizio acceso.
   copia(k.opzioni.db, join(k.c, 'copia.db'));
 
@@ -1629,7 +1634,7 @@ test('cancellazione: DELETE /v1/account toglie tutto, anche dai byte del file, e
   assert.match(via.setCookie, /Max-Age=0/);
   assert.equal((await k.chiama('GET', '/v1/io', undefined, { cookie })).status, 401);
   assert.equal((await k.chiama('POST', '/v1/accesso', { email, password: BUONA })).status, 401);
-  for (const tabella of ['account', 'riga', 'sessione', 'gettone', 'segnali']) {
+  for (const tabella of ['account', 'riga', 'sessione', 'gettone', 'segnali', 'esito']) {
     const col = tabella === 'account' ? 'id' : 'account_id';
     assert.equal(k.s.db.prepare(`SELECT count(*) n FROM ${tabella} WHERE ${col} = ?`).get(id).n, 0, tabella);
   }
@@ -1641,7 +1646,7 @@ test('cancellazione: DELETE /v1/account toglie tutto, anche dai byte del file, e
   assert.deepEqual(file.map((v) => [v.evento, v.account]), [['cancellazione', id]]);
 
   const byte = bytesDel(k);
-  for (const [cosa, valore] of [['l email', email], ['l email in sospeso', 'in.sospeso.qui@esempio.it'], ['una riga', segno]]) {
+  for (const [cosa, valore] of [['l email', email], ['l email in sospeso', 'in.sospeso.qui@esempio.it'], ['una riga', segno], ['l esito dell esame', '2026-07-09']]) {
     assert.ok(!byte.includes(valore), `${cosa} e ancora nei byte del database`);
   }
 
@@ -1974,14 +1979,14 @@ test('statistiche: chi si e opposto esce da ogni conteggio, e le sue risposte re
   const ric = await k.chiama('GET', '/v1/righe?dopo=0', undefined, { cookie: a });
   assert.deepEqual(ric.corpo.righe.map((r) => r.uid), ['u000001', 'u000002', 'u000003']);
   assert.deepEqual(await esportato(), filePrima, 'l export non cambia, e il segno non ci viaggia');
-  assert.deepEqual(Object.keys(filePrima).sort(), ['app', 'righe', 'segPunti', 'versione']);
+  assert.deepEqual(Object.keys(filePrima).sort(), ['app', 'esiti', 'righe', 'segPunti', 'versione']);
   assert.deepEqual((await k.chiama('GET', '/v1/io', undefined, { cookie: a })).corpo, ioPrima);
 
   // Annotato nel registro, con l'id interno e il motivo, senza email; e nel
   // file che il ripristino rilegge, senza email nemmeno li'.
   assert.deepEqual(registro(), [{ evento: 'opposizione alle statistiche', account_id: idA, ip: null, dettaglio: RICHIESTA }]);
   const chiave = k.s.db.prepare('SELECT chiave_locale c FROM account WHERE id = ?').get(idA).c;
-  assert.deepEqual(leggiCancellazioni(f), { voci: [], opposizioni: [{ evento: 'opposizione', account: idA, chiave, il }], illeggibili: 0 });
+  assert.deepEqual(leggiCancellazioni(f), { voci: [], opposizioni: [{ evento: 'opposizione', account: idA, chiave, il }], ritiri: [], illeggibili: 0 });
   assert.ok(!readFileSync(f, 'utf8').includes('esempio.it'), 'nessuna email nel file');
 
   // Rimetterlo non cambia niente e non scrive niente.
@@ -2037,6 +2042,7 @@ test('statistiche: una statistica legge solo le fonti filtrate, e non porta fuor
     ['SELECT count(*) n FROM segnali', /«segnali»/],
     ['SELECT count(*) n FROM registro', /«registro»/],
     ['SELECT count(*) n FROM sessione', /«sessione»/],
+    ['SELECT count(*) n FROM esito', /«esito»/],
     ['SELECT count(*) n FROM risposte; SELECT count(*) n FROM riga', /una sola/],
     ['WITH tutte AS (SELECT * FROM riga) SELECT count(*) n FROM tutte', /SELECT/],
     ['DELETE FROM risposte', /SELECT/],
@@ -2053,7 +2059,7 @@ test('statistiche: una statistica legge solo le fonti filtrate, e non porta fuor
   // Quello che si puo' fare: contare, con dei parametri, su colonne senza nomi.
   assert.deepEqual(statistica(db, 'SELECT tipo, count(*) n FROM risposte WHERE tipo = ? GROUP BY tipo', ['q']), [{ tipo: 'q', n: 2 }]);
   assert.deepEqual(statistica(db, 'SELECT count(*) n FROM iscritti WHERE confermato'), [{ n: 1 }]);
-  assert.deepEqual(Object.keys(FONTI), ['iscritti', 'risposte', 'punteggi']);
+  assert.deepEqual(Object.keys(FONTI), ['iscritti', 'risposte', 'punteggi', 'esiti']);
   for (const [fonte, colonne] of Object.entries(FONTI)) {
     for (const c of colonne) assert.ok(!/email|password|chiave|^id$|account_id|^ip$/.test(c), `${fonte}.${c}`);
     assert.deepEqual(statistica(db, `SELECT count(${colonne.join(') a, count(')}) z FROM ${fonte}`).length, 1, `le colonne dichiarate di ${fonte} esistono`);
@@ -2078,10 +2084,11 @@ test('statistiche: una statistica legge solo le fonti filtrate, e non porta fuor
 
 // Che cosa conta come «una statistica nata fuori posto», riga per riga, tolti i
 // commenti: una funzione di aggregazione di SQL o un GROUP BY, oppure una
-// lettura della tabella `riga` che non si ferma a un account. Una riga che
+// lettura della tabella `riga` o della tabella `esito` (P-73) che non si
+// ferma a un account. Una riga che
 // chiama `statistica(` passa dal posto solo, e non conta.
 const AGGREGATO = /(?<![.\w])(count|sum|avg|total|group_concat|min|max)\s*\(|\bgroup\s+by\b/i;
-const TUTTE_LE_RIGHE = /\b(from|join)\s+riga\b/i;
+const TUTTE_LE_RIGHE = /\b(from|join)\s+(riga|esito)\b/i;
 const DI_UN_ACCOUNT = /\baccount_id\s*=\s*\?/;
 
 function queryFuoriPosto(file) {
@@ -2156,6 +2163,9 @@ test('statistiche: una query aggregata o su tutte le righe fuori da server/stati
     ['// db.prepare(\'SELECT count(*) n FROM riga\')', []],
     [" * Il cursore non viene da MAX(seq) FROM riga", []],
     ["const r = statistica(db, 'SELECT item_id, count(*) n FROM risposte GROUP BY item_id');", []],
+    ["db.prepare('SELECT prova, esito FROM esito').all()", ['legge le righe di tutti']],
+    ["db.prepare('SELECT prova, count(*) n FROM esito GROUP BY prova').all()", ['aggrega, legge le righe di tutti']],
+    ["db.prepare('SELECT giorno, prova, esito FROM esito WHERE account_id = ? ORDER BY giorno').all(id)", []],
   ]) {
     assert.deepEqual(su(testo), attese, testo);
   }
@@ -2406,6 +2416,8 @@ const ATT_TECNICHE = [{ _t: 't', uid: 'att-tec:0', item_id: '5.1.3-1', ts: '2026
 const UN_TAG = [{ _t: 'g', uid: 'tag-letture-1', attempt_uid: ATT_QUIZ[1].uid, tag: 'L', ts: '2026-09-28T10:05:00+02:00' }];
 const RIGHE_DI_CHI_SCRIVE = [...ATT_QUIZ, ...ATT_RIPRESA, ...ATT_PROVA, ...ATT_CARTA, ...ATT_TECNICHE, ...UN_TAG];
 const RIGHE_DI_UN_ALTRO = [riga(201), riga(202)];
+// E l'esito del suo esame (P-73): il titolare lo vede con il resto dell'account.
+const ESITO_DI_CHI_SCRIVE = { giorno: '2026-09-03', prove: { carteggio: { esito: 'superata' }, base: { esito: 'non_superata', errori: 6 } } };
 
 /** Chi chiede aiuto, con le sue attivita', la data d'esame e i Segnali; e un altro, che nessuno deve vedere. */
 async function chiChiedeAiuto(k) {
@@ -2414,7 +2426,9 @@ async function chiChiedeAiuto(k) {
   let r = await k.chiama('POST', '/v1/righe', { generazione: 1, righe: RIGHE_DI_CHI_SCRIVE }, { cookie: a });
   assert.deepEqual([r.status, r.corpo.nuove?.length, r.corpo.scartate], [200, RIGHE_DI_CHI_SCRIVE.length, []], JSON.stringify(r.corpo));
   assert.equal((await k.chiama('PUT', '/v1/profilo', { data_esame: '2026-11-20', segnali: { nebbia: { migliore: 7, giocate: 4 } } }, { cookie: a })).status, 200);
+  assert.equal((await k.chiama('PUT', '/v1/esito', ESITO_DI_CHI_SCRIVE, { cookie: a })).status, 200);
   r = await k.chiama('POST', '/v1/righe', { generazione: 1, righe: RIGHE_DI_UN_ALTRO }, { cookie: b });
+  assert.equal((await k.chiama('PUT', '/v1/esito', { giorno: '2026-09-17', prove: { pratica: { esito: 'superata' } } }, { cookie: b })).status, 200);
   assert.equal(r.status, 200);
   return { a, b, idA: idDi(k, CHI_SCRIVE), idB: idDi(k, UN_ALTRO) };
 }
@@ -2496,22 +2510,27 @@ test('letture: il titolare legge un account dalla riga di comando, con il serviz
   }
   assert.deepEqual(letto.copertura.base, { totale: 1472, coperti: 5, da_ripassare: 2, mai_visti: 1465, risposte: 7 });
   assert.deepEqual(letto.tag, { [ATT_QUIZ[1].uid]: 'L' }, 'tagPerTentativo() del motore');
+  // L'esito dell'esame, com'e' nel suo GET /v1/io; e niente di quello dell'altro.
+  assert.deepEqual(letto.esiti, (await k.chiama('GET', '/v1/io', undefined, { cookie: a })).corpo.esiti);
+  assert.deepEqual(letto.esiti.map((e) => [e.giorno, e.prova, e.esito, e.errori]),
+    [['2026-09-03', 'carteggio', 'superata', null], ['2026-09-03', 'base', 'non_superata', 6]]);
   assert.ok(letto.registro.some((e) => e.evento === 'registrazione' && e.ip === '192.0.2.1'), 'gli eventi dell account nel registro');
   assert.deepEqual(letto.registro.at(-1), { quando, evento: 'lettura del titolare', ip: null, dettaglio: MOTIVO_LETTURA }, 'compresa questa lettura');
 
   // Niente di un altro account.
-  for (const altrui of [UN_ALTRO, ...RIGHE_DI_UN_ALTRO.map((x) => x.uid)]) assert.ok(!r.stdout.includes(altrui), altrui);
+  for (const altrui of [UN_ALTRO, '2026-09-17', ...RIGHE_DI_UN_ALTRO.map((x) => x.uid)]) assert.ok(!r.stdout.includes(altrui), altrui);
 
   // In chiaro, per chi legge a schermo: lo stesso account, le stesse attivita'.
   // Ogni lettura e' una riga, anche la seconda con lo stesso motivo.
   r = leggi('--email', CHI_SCRIVE, '--motivo', MOTIVO_LETTURA);
   assert.equal(r.status, 0, r.stdout + r.stderr);
   for (const atteso of ['annotata nel registro', `account ${idA}`, CHI_SCRIVE, '2026-11-20', 'att-quiz-1', 'att-quiz-2', 'att-prova', 'att-carta', 'att-tec',
-    '12 righe', '2/3 esatte', 'coperti 5', 'da ripassare 2', 'mai visti 1465', 'nebbia']) {
+    '12 righe', '2/3 esatte', 'coperti 5', 'da ripassare 2', 'mai visti 1465', 'nebbia',
+    'ESAME', '2026-09-03', 'carteggio superata', 'base non superata, 6 errori']) {
     assert.ok(r.stdout.includes(atteso), `nel testo manca «${atteso}»:\n${r.stdout}`);
   }
   assert.ok(!r.stdout.includes(ATT_QUIZ[0].uid), 'senza --attivita le righe non si elencano');
-  assert.ok(!r.stdout.includes(UN_ALTRO) && !r.stdout.includes('argon2'));
+  assert.ok(!r.stdout.includes(UN_ALTRO) && !r.stdout.includes('argon2') && !r.stdout.includes('2026-09-17'));
   assert.equal(letture().length, 2);
 
   // Una attivita' sola, con le sue righe com'erano.
@@ -2629,7 +2648,7 @@ test('letture: una lettura non cambia niente dell account, e la sua riga sopravv
   const k = await conti(t);
   const { a, idA } = await chiChiedeAiuto(k);
   const leggi = leggiDa(k.opzioni.db);
-  const tutto = () => Object.fromEntries(['impianto', 'account', 'riga', 'sessione', 'gettone', 'segnali']
+  const tutto = () => Object.fromEntries(['impianto', 'account', 'riga', 'sessione', 'gettone', 'segnali', 'esito']
     .map((tabella) => [tabella, k.s.db.prepare(`SELECT * FROM ${tabella} ORDER BY 1, 2`).all().map((x) => ({ ...x }))]));
   const delRegistro = () => k.s.db.prepare('SELECT * FROM registro ORDER BY id').all().map((x) => ({ ...x }));
   const visto = async () => ({
@@ -2688,11 +2707,12 @@ test('letture: una lettura non cambia niente dell account, e la sua riga sopravv
 // nuovo che leggesse le righe per conto suo passerebbe il controllo delle
 // statistiche — legge un account solo — e non annoterebbe niente. Un file
 // nuovo qui e' una decisione, con il suo motivo.
-const LEGGE_LE_RIGHE = /\b(from|join)\s+riga\b|\brigheDopo\s*\(|\bleggiAccount\s*\(/i;
+const LEGGE_LE_RIGHE = /\b(from|join)\s+(riga|esito)\b|\b(righeDopo|leggiAccount|esitiDi)\s*\(/i;
 const CHI_LEGGE_LE_RIGHE = [
   { file: 'server/db.mjs', perche: 'il database: aggiunge, conta il cursore e restituisce le righe di un account a chi le chiede con la sua sessione (righeDopo)' },
-  { file: 'server/righe.mjs', perche: 'la ricezione e l export: a chi e entrato, le sue righe (§7.2)' },
-  { file: 'server/conti.mjs', perche: 'quante righe ha un account, dette a lui solo in GET /v1/io' },
+  { file: 'server/righe.mjs', perche: 'la ricezione e l export: a chi e entrato, le sue righe e i suoi esiti (§7.2)' },
+  { file: 'server/conti.mjs', perche: 'quante righe ha un account, e i suoi esiti, detti a lui solo in GET /v1/io' },
+  { file: 'server/esiti.mjs', perche: 'PUT e DELETE /v1/esito: a chi e entrato, i suoi esiti, dopo averli scritti o tolti (P-73)' },
   { file: 'server/copie.mjs', perche: 'la copia conta le righe per sapere se e intera, e la prova del ripristino gira su righe finte' },
   { file: 'server/statistiche.mjs', perche: 'le fonti delle statistiche, che non fanno uscire ne chi ha risposto ne le righe intere (R-ACC-69)' },
   { file: 'server/letture.mjs', perche: 'il titolare: legge un account e lo annota nel registro nella stessa transazione (R-ACC-71)' },
@@ -2744,7 +2764,533 @@ test('letture: chi legge le righe di un account e dichiarato, e il titolare ha u
     [' * le righe arrivano da righeDopo(), in ordine', false],
     ["const riga = { from: 'riga 12' }; // from riga", false],
     ["db.prepare('SELECT quando FROM registro WHERE account_id = ?').all(id)", false],
+    ["db.prepare('SELECT prova, esito FROM esito WHERE account_id = ?').all(id)", true],
+    ['const elenco = esitiDi(db, id);', true],
+    ["const esito = { giorno: '2026-09-03' }; // esiti dell esame", false],
   ]) {
     assert.equal(su(testo).length === 1, atteso, testo);
   }
+});
+
+// --- l'esito dell'esame (P-73) ------------------------------------------------------
+//
+// docs/esito-esame-progetto.md §3 e A-2 del §10.1; docs/account-progetto.md §3,
+// §7.1, §14, §15.2. «Com'è andata», detto da chi studia: una riga per prova e
+// per giorno, in una tabella sua e non nell'archivio delle risposte, perche'
+// un esito si deve poter togliere davvero. Si scrive senza password, come la
+// data d'esame; il registro di sicurezza non lo annota. Togliere passa prima
+// dal file delle cancellazioni, che il ripristino e l'avvio del server
+// rileggono; la cancellazione dell'account lo porta via con la chiave esterna,
+// anche con il codice di un rilascio che non conosce la tabella.
+
+const vistaEsiti = (esiti) => esiti.map((e) => [e.giorno, e.prova, e.esito, e.errori]);
+const ioDi = async (k, cookie) => (await k.chiama('GET', '/v1/io', undefined, { cookie })).corpo;
+// Ferma il server del test a meta', per un ripristino o per il rilascio di
+// prima: al suo posto resta un segnaposto che si chiude a vuoto, cosi' se
+// un'asserzione cade prima che si riapra il t.after non richiude un server gia'
+// chiuso — che non tornerebbe mai, e la suite si appenderebbe invece di dire rosso.
+const ferma = async (k) => { await k.s.chiudi(); k.s = { chiudi: async () => {} }; };
+
+/**
+ * Il codice di un rilascio pubblicato, estratto dal tag in una cartella: il
+ * server, il motore e la banca che importa, e VERSION. Come fa rg-aggiorna
+ * sulla macchina (§2.7). Senza il tag il test e' rosso, non saltato.
+ */
+function rilascioDiPrima(t, tag = 'v0.30.0') {
+  const dir = cartella(t);
+  const r = spawnSync('sh', ['-c', 'git -C "$1" archive --format=tar "$2" server site/engine.js site/dati VERSION | tar -x -C "$3"',
+    'sh', RADICE, tag, dir], { encoding: 'utf8' });
+  assert.equal(r.status, 0, `il tag ${tag} non si estrae: ${r.stderr}`);
+  assert.equal(readFileSync(join(dir, 'VERSION'), 'utf8').trim(), tag.slice(1));
+  return dir;
+}
+
+test('esito: si scrive per prova e per giorno, e un campo rotto non lascia scritti gli altri', async (t) => {
+  // R-ESITO-01, §3.3 del progetto. Una riga per prova e per giorno; una prova
+  // assente resta com'e', `null` la toglie; ogni regola si controlla prima di
+  // scrivere, e un rifiuto dice il campo e non lascia scritto niente — nemmeno
+  // le prove buone dello stesso invio. Un campo che il server non conosce e' un
+  // rifiuto, non un 200 che lo butta: e' la prima misura del §2 del progetto.
+  const k = await conti(t);
+  const { cookie, io } = await dentro(k);
+  const put = (corpo, c = cookie) => k.chiama('PUT', '/v1/esito', corpo, { cookie: c });
+  const del = (corpo, c = cookie) => k.chiama('DELETE', '/v1/esito', corpo, { cookie: c });
+
+  // GET /v1/io dice che il server conosce gli esiti, e quali righe accetta.
+  assert.deepEqual(io.esiti, [], 'esiti c e anche vuoto: un campo assente spegne la funzione nella pagina (§3.7)');
+  assert.deepEqual(io.tipi_riga, [...E.TIPI_RIGA], 'i tipi di validaRiga(), dal motore');
+  assert.ok(io.tipi_riga.includes('a'));
+  // I limiti degli errori vengono dalle condizioni delle prove, non da numeri scritti qui.
+  const meta = JSON.parse(readFileSync(join(RADICE, 'site/dati/meta.json'), 'utf8'));
+  assert.deepEqual(JSON.parse(JSON.stringify(PROVE_ESAME)), {
+    carteggio: { errori: E.PROVA_CARTEGGIO.esercizi, ammessi: E.PROVA_CARTEGGIO.erroriMax },
+    base: { errori: meta.prove.base.n, ammessi: meta.prove.base.errori_max },
+    vela: { errori: meta.prove.vela.n, ammessi: meta.prove.vela.errori_max },
+    pratica: { errori: null, ammessi: null },
+  });
+
+  assert.equal((await k.chiama('PUT', '/v1/esito', { giorno: '2026-09-03', prove: { base: { esito: 'superata' } } })).status, 401);
+  assert.equal((await k.chiama('DELETE', '/v1/esito', { giorno: '2026-09-03' })).status, 401);
+
+  // Il caso 1 del §8: carteggio superata, base superata con 2 errori, vela non sostenuta.
+  let r = await put({ giorno: '2026-09-03', prove: { carteggio: { esito: 'superata' }, base: { esito: 'superata', errori: 2 }, vela: { esito: 'non_sostenuta' } } });
+  assert.equal(r.status, 200, JSON.stringify(r.corpo));
+  assert.deepEqual(Object.keys(r.corpo), ['esiti']);
+  assert.deepEqual(vistaEsiti(r.corpo.esiti), [
+    ['2026-09-03', 'carteggio', 'superata', null], ['2026-09-03', 'base', 'superata', 2], ['2026-09-03', 'vela', 'non_sostenuta', null],
+  ], 'nell ordine delle prove dell esame');
+  const t0 = new Date(T0).toISOString();
+  assert.ok(r.corpo.esiti.every((e) => e.detto_il === t0 && e.cambiato_il === t0), JSON.stringify(r.corpo.esiti));
+  assert.deepEqual((await ioDi(k, cookie)).esiti, r.corpo.esiti, 'GET /v1/io porta lo stesso elenco');
+
+  // Una prova assente resta com'e'; una corretta cambia, e cambiato_il con lei, detto_il no.
+  k.avanza(ORA);
+  const t1 = new Date(k.orologio.t).toISOString();
+  r = await put({ giorno: '2026-09-03', prove: { vela: { esito: 'superata', errori: 1 } } });
+  assert.equal(r.status, 200, JSON.stringify(r.corpo));
+  assert.deepEqual(vistaEsiti(r.corpo.esiti), [
+    ['2026-09-03', 'carteggio', 'superata', null], ['2026-09-03', 'base', 'superata', 2], ['2026-09-03', 'vela', 'superata', 1],
+  ]);
+  const vela = r.corpo.esiti.find((e) => e.prova === 'vela');
+  assert.deepEqual([vela.detto_il, vela.cambiato_il], [t0, t1]);
+  assert.equal(r.corpo.esiti.find((e) => e.prova === 'base').cambiato_il, t0, 'una prova non nominata non si tocca');
+
+  // `null` toglie la prova nominata, e solo lei.
+  r = await put({ giorno: '2026-09-03', prove: { vela: null } });
+  assert.deepEqual(vistaEsiti(r.corpo.esiti), [['2026-09-03', 'carteggio', 'superata', null], ['2026-09-03', 'base', 'superata', 2]]);
+  // La pratica, in un altro giorno, senza errori; «non chiedermelo più» e' non_detto.
+  r = await put({ giorno: '2026-09-25', prove: { pratica: { esito: 'non_superata' } } });
+  assert.equal(r.status, 200, JSON.stringify(r.corpo));
+  r = await put({ giorno: '2026-06-10', prove: { carteggio: { esito: 'non_detto' }, base: { esito: 'non_detto' }, vela: { esito: 'non_detto' } } });
+  assert.equal(r.status, 200, JSON.stringify(r.corpo));
+  const buono = r.corpo.esiti;
+  assert.deepEqual(vistaEsiti(buono), [
+    ['2026-06-10', 'carteggio', 'non_detto', null], ['2026-06-10', 'base', 'non_detto', null], ['2026-06-10', 'vela', 'non_detto', null],
+    ['2026-09-03', 'carteggio', 'superata', null], ['2026-09-03', 'base', 'superata', 2],
+    ['2026-09-25', 'pratica', 'non_superata', null],
+  ], 'ordinato per giorno, e dentro il giorno per prova');
+
+  // I rifiuti: ognuno dice il campo, e accanto c'e' una prova buona che non deve restare scritta.
+  const buona = { carteggio: { esito: 'non_superata', errori: 2 } };
+  for (const [corpo, campo] of [
+    [{ giorno: '2026-09-03', prove: { ...buona, base: { esito: 'superata', errori: 6 } } }, 'prove.base.errori'],   // il caso 8 del §8
+    [{ giorno: '2026-09-03', prove: { ...buona, base: { esito: 'superata', errori: 5 } } }, 'prove.base.errori'],
+    [{ giorno: '2026-09-03', prove: { carteggio: { esito: 'superata', errori: 2 } } }, 'prove.carteggio.errori'],
+    [{ giorno: '2026-09-03', prove: { ...buona, vela: { esito: 'superata', errori: 2 } } }, 'prove.vela.errori'],
+    [{ giorno: '2026-09-03', prove: { ...buona, base: { esito: 'non_superata', errori: 21 } } }, 'prove.base.errori'],
+    [{ giorno: '2026-09-03', prove: { carteggio: { esito: 'non_superata', errori: 5 } } }, 'prove.carteggio.errori'],
+    [{ giorno: '2026-09-03', prove: { ...buona, vela: { esito: 'non_superata', errori: 6 } } }, 'prove.vela.errori'],
+    [{ giorno: '2026-09-03', prove: { ...buona, base: { esito: 'non_superata', errori: -1 } } }, 'prove.base.errori'],
+    [{ giorno: '2026-09-03', prove: { ...buona, base: { esito: 'non_superata', errori: 2.5 } } }, 'prove.base.errori'],
+    [{ giorno: '2026-09-03', prove: { ...buona, base: { esito: 'non_superata', errori: '2' } } }, 'prove.base.errori'],
+    [{ giorno: '2026-09-03', prove: { ...buona, pratica: { esito: 'superata', errori: 0 } } }, 'prove.pratica.errori'],
+    [{ giorno: '2026-09-03', prove: { ...buona, base: { esito: 'non_detto', errori: 0 } } }, 'prove.base.errori'],
+    [{ giorno: '2026-09-03', prove: { ...buona, base: { esito: 'non_sostenuta', errori: 3 } } }, 'prove.base.errori'],
+    [{ giorno: '2026-09-03', prove: { ...buona, base: { esito: 'passata' } } }, 'prove.base.esito'],
+    [{ giorno: '2026-09-03', prove: { ...buona, base: {} } }, 'prove.base.esito'],
+    [{ giorno: '2026-09-03', prove: { ...buona, base: 'superata' } }, 'prove.base'],
+    [{ giorno: '2026-09-03', prove: { ...buona, base: { esito: 'superata', voto: 30 } } }, 'prove.base'],
+    [{ giorno: '2026-09-03', prove: { ...buona, teoria: { esito: 'superata' } } }, 'prove'],
+    [{ giorno: '2026-09-03', prove: {} }, 'prove'],
+    [{ giorno: '2026-09-03', prove: [buona] }, 'prove'],
+    [{ giorno: '2026-09-03' }, 'prove'],
+    [{ giorno: '2026-02-30', prove: buona }, 'giorno'],
+    [{ giorno: '03/09/2026', prove: buona }, 'giorno'],
+    [{ giorno: '2026-09-03T10:00:00Z', prove: buona }, 'giorno'],
+    [{ giorno: null, prove: buona }, 'giorno'],
+    [{ prove: buona }, 'giorno'],
+    [{ giorno: '2026-10-03', prove: buona }, 'giorno'],                // nel futuro: oltre il giorno UTC del server piu uno
+    [{ giorno: '2026-09-03', prove: buona, data_esame: '2026-09-03' }, 'corpo'],
+    [[buona], 'corpo'],
+  ]) {
+    r = await put(corpo);
+    assert.equal(r.status, 422, `${JSON.stringify(corpo)}: ${JSON.stringify(r.corpo)}`);
+    assert.equal(r.corpo.errore, 'esito', JSON.stringify(corpo));
+    assert.equal(r.corpo.campo, campo, JSON.stringify(corpo));
+    assert.ok(r.corpo.messaggio.length > 20, 'un rifiuto dice che cosa non va');
+  }
+  assert.deepEqual((await ioDi(k, cookie)).esiti, buono, 'nessun rifiuto ha scritto niente, nemmeno la prova buona accanto');
+
+  // Domani, nel giorno UTC del server, e' un giorno ammesso: per i fusi.
+  r = await put({ giorno: '2026-10-02', prove: buona });
+  assert.equal(r.status, 200, JSON.stringify(r.corpo));
+
+  // DELETE toglie tutte le prove di un giorno; rifarlo non cambia niente.
+  r = await del({ giorno: '2026-10-02' });
+  assert.equal(r.status, 200, JSON.stringify(r.corpo));
+  assert.deepEqual(r.corpo.esiti, buono);
+  r = await del({ giorno: '2026-10-02' });
+  assert.deepEqual([r.status, r.corpo.esiti], [200, buono]);
+  for (const corpo of [{ giorno: '2026-13-01' }, {}, { giorno: '2026-09-03', prove: {} }]) {
+    r = await del(corpo);
+    assert.equal(r.status, 422, JSON.stringify(corpo));
+    assert.equal(r.corpo.errore, 'esito');
+  }
+
+  // Al piu' 20 giorni per account: il ventunesimo e' un 409, e niente e' scritto.
+  // Correggere un giorno che c'e' resta possibile.
+  const giorni = Array.from({ length: 17 }, (_, i) => `2025-0${1 + Math.floor(i / 9)}-${String(10 + (i % 9)).padStart(2, '0')}`);
+  for (const giorno of giorni) assert.equal((await put({ giorno, prove: { pratica: { esito: 'superata' } } })).status, 200, giorno);
+  assert.equal(new Set((await ioDi(k, cookie)).esiti.map((e) => e.giorno)).size, 20);
+  r = await put({ giorno: '2024-12-01', prove: { base: { esito: 'superata' } } });
+  assert.equal(r.status, 409, JSON.stringify(r.corpo));
+  assert.equal(r.corpo.errore, 'troppi_giorni');
+  assert.ok(!(await ioDi(k, cookie)).esiti.some((e) => e.giorno === '2024-12-01'));
+  assert.equal((await put({ giorno: '2026-09-03', prove: { vela: { esito: 'non_sostenuta' } } })).status, 200, 'un giorno che c e si corregge');
+  assert.equal((await del({ giorno: giorni[0] })).status, 200);
+  assert.equal((await put({ giorno: '2024-12-01', prove: { base: { esito: 'superata' } } })).status, 200, 'tolto un giorno, c e posto');
+
+  // Un altro account non vede e non tocca.
+  const altro = await registrato(k, 'altro.esame@esempio.it');
+  assert.deepEqual((await ioDi(k, altro)).esiti, []);
+  assert.deepEqual((await del({ giorno: '2026-09-03' }, altro)).corpo.esiti, []);
+  assert.ok((await ioDi(k, cookie)).esiti.some((e) => e.giorno === '2026-09-03'));
+
+  // Il registro di sicurezza non lo annota (§3.3): non e' un evento di sicurezza.
+  const eventi = k.s.db.prepare('SELECT evento FROM registro').all().map((x) => x.evento);
+  assert.ok(eventi.length > 0 && !eventi.some((e) => /esit/i.test(e)), eventi.join(', '));
+  // E sta nel database: un riavvio non lo perde.
+  const prima = (await ioDi(k, cookie)).esiti;
+  await k.riavvia();
+  assert.deepEqual((await ioDi(k, cookie)).esiti, prima);
+});
+
+test('esito: togliere cancella davvero, e un ripristino non lo riporta', async (t) => {
+  // R-ESITO-05, §3.4 del progetto. Togliere cancella dai byte del database e
+  // del WAL. Il ritiro si scrive prima nel file delle cancellazioni — numero,
+  // chiave, giorno, quando; nessun valore dell'esito —, e una copia di prima
+  // non lo riporta: lo rilegge il ripristino, e lo rilegge il server a ogni
+  // avvio, perche' il ripristina.mjs del rilascio di prima non lo conosce. Un
+  // esito detto di nuovo dopo il ritiro, invece, resta.
+  const vecchio = rilascioDiPrima(t);
+  const k = await conti(t);
+  const cookie = await confermato(k, 'ha.dato.l.esame@esempio.it');
+  const altro = await confermato(k, 'un.altro.esame@esempio.it');
+  const id = idDi(k, 'ha.dato.l.esame@esempio.it');
+  const f = k.opzioni.cancellazioni;
+  const put = (corpo, c = cookie) => k.chiama('PUT', '/v1/esito', corpo, { cookie: c });
+  const togli = (giorno) => k.chiama('DELETE', '/v1/esito', { giorno }, { cookie });
+
+  // Tre giorni: il 17 luglio, che si togliera' intero e nei byte non tornera';
+  // il 21 agosto, da cui si togliera' una prova sola; il 25 agosto, che si
+  // togliera' intero e poi si dira' di nuovo.
+  assert.equal((await put({ giorno: '2026-07-17', prove: { carteggio: { esito: 'superata' }, base: { esito: 'superata', errori: 3 }, vela: { esito: 'non_superata', errori: 2 } } })).status, 200);
+  assert.equal((await put({ giorno: '2026-08-21', prove: { base: { esito: 'non_superata', errori: 7 }, vela: { esito: 'superata', errori: 0 } } })).status, 200);
+  assert.equal((await put({ giorno: '2026-08-25', prove: { base: { esito: 'superata', errori: 0 } } })).status, 200);
+  assert.equal((await put({ giorno: '2026-08-20', prove: { base: { esito: 'superata', errori: 1 } } }, altro)).status, 200);
+  copia(k.opzioni.db, join(k.c, 'copia.db'));
+  assert.ok(bytesDel(k).includes('2026-07-17'), 'prima, il giorno e nei byte: la sonda funziona');
+
+  k.avanza(ORA);
+  const il = new Date(k.orologio.t).toISOString();
+  let r = await togli('2026-07-17');
+  assert.equal(r.status, 200, JSON.stringify(r.corpo));
+  assert.ok(!bytesDel(k).includes('2026-07-17'), 'il giorno tolto non e piu nei byte del database ne del WAL');
+  assert.deepEqual(vistaEsiti(r.corpo.esiti), [
+    ['2026-08-21', 'base', 'non_superata', 7], ['2026-08-21', 'vela', 'superata', 0], ['2026-08-25', 'base', 'superata', 0],
+  ]);
+  r = await put({ giorno: '2026-08-21', prove: { vela: null } });
+  assert.deepEqual(vistaEsiti(r.corpo.esiti), [['2026-08-21', 'base', 'non_superata', 7], ['2026-08-25', 'base', 'superata', 0]]);
+  r = await togli('2026-08-25');
+  assert.deepEqual(vistaEsiti(r.corpo.esiti), [['2026-08-21', 'base', 'non_superata', 7]]);
+
+  // Il file: prima del database, senza email e senza i valori dell'esito.
+  const chiave = k.s.db.prepare('SELECT chiave_locale c FROM account WHERE id = ?').get(id).c;
+  const { voci, opposizioni, ritiri, illeggibili } = leggiCancellazioni(f);
+  assert.deepEqual([voci, opposizioni, illeggibili], [[], [], 0], 'un ritiro non spiega un calo di righe, e non e un opposizione');
+  assert.deepEqual(ritiri, [
+    { evento: 'esito tolto', account: id, chiave, giorno: '2026-07-17', il },
+    { evento: 'esito tolto', account: id, chiave, giorno: '2026-08-21', prove: ['vela'], il },
+    { evento: 'esito tolto', account: id, chiave, giorno: '2026-08-25', il },
+  ]);
+  const testo = readFileSync(f, 'utf8');
+  assert.ok(!testo.includes('@') && !/superata|non_|errori/.test(testo), testo);
+  // Togliere quello che non c'e' non scrive niente nel file.
+  await put({ giorno: '2026-08-21', prove: { pratica: null } });
+  await togli('2026-07-17');
+  assert.equal(leggiCancellazioni(f).ritiri.length, 3);
+
+  // Detti di nuovo dopo il ritiro — una prova sola, e un giorno intero —: sono
+  // esiti nuovi, e un riavvio, che rilegge il file, non li tocca.
+  k.avanza(ORA);
+  assert.equal((await put({ giorno: '2026-08-21', prove: { vela: { esito: 'non_sostenuta' } } })).status, 200);
+  assert.equal((await put({ giorno: '2026-08-25', prove: { base: { esito: 'non_superata', errori: 5 } } })).status, 200);
+  const ridetti = [['2026-08-21', 'base', 'non_superata', 7], ['2026-08-21', 'vela', 'non_sostenuta', null], ['2026-08-25', 'base', 'non_superata', 5]];
+  k.scritto.length = 0;
+  await k.riavvia();
+  assert.deepEqual(vistaEsiti((await ioDi(k, cookie)).esiti), ridetti, 'un riavvio non toglie quello che e stato detto dopo il ritiro');
+  assert.deepEqual(k.scritto.filter((m) => /esit/.test(m)), [], 'e non ha niente da dire');
+
+  // Il ripristino di oggi, dalla copia di prima: i tre ritiri restano tali.
+  // Quello che e' stato detto di nuovo dopo la copia si perde, come ogni cosa
+  // scritta dopo una copia che non passa dalla coda (§3.4 del progetto): si
+  // dice, non si nasconde.
+  await ferma(k);
+  const rip = ripristina(join(k.c, 'copia.db'), k.opzioni.db, { cancellazioni: f });
+  assert.deepEqual([rip.ritolti, rip.illeggibili], [[id], 0]);
+  k.s = await avvia(k.opzioni);
+  assert.deepEqual(vistaEsiti((await ioDi(k, cookie)).esiti), [['2026-08-21', 'base', 'non_superata', 7]]);
+  assert.deepEqual(vistaEsiti((await ioDi(k, altro)).esiti), [['2026-08-20', 'base', 'superata', 1]], 'quelli degli altri restano');
+  assert.ok(!bytesDel(k).includes('2026-07-17'));
+
+  // Il ripristino del rilascio di prima non conosce i ritiri: li conta fra le
+  // righe illeggibili, e rimette quello che la copia aveva. Il server di oggi,
+  // all'avvio, li rilegge e li toglie di nuovo.
+  await ferma(k);
+  const vr = spawnSync(process.execPath, [join(vecchio, 'server', 'ripristina.mjs'), join(k.c, 'copia.db'), '--db', k.opzioni.db, '--cancellazioni', f], { encoding: 'utf8' });
+  assert.equal(vr.status, 0, vr.stdout + vr.stderr);
+  assert.match(vr.stdout, /3 righe ILLEGGIBILI/, 'il rilascio di prima non sa che cosa sia un esito tolto');
+  const grezzo = new DatabaseSync(k.opzioni.db, { readOnly: true });
+  const tornati = grezzo.prepare('SELECT giorno, prova FROM esito WHERE account_id = ? ORDER BY giorno, prova').all(id).map((x) => `${x.giorno} ${x.prova}`);
+  grezzo.close();
+  assert.deepEqual(tornati, ['2026-07-17 base', '2026-07-17 carteggio', '2026-07-17 vela', '2026-08-21 base', '2026-08-21 vela', '2026-08-25 base'],
+    'cosi com e, i ritiri sarebbero persi');
+  k.scritto.length = 0;
+  k.s = await avvia(k.opzioni);
+  assert.deepEqual(vistaEsiti((await ioDi(k, cookie)).esiti), [['2026-08-21', 'base', 'non_superata', 7]], 'al primo avvio vale il file');
+  assert.ok(k.scritto.some((m) => /esiti tolti riletti dal file: 5 prove di 1 account/.test(m)), k.scritto.join(' | '));
+  assert.ok(!bytesDel(k).includes('2026-07-17'), 'e dai byte');
+  assert.deepEqual(vistaEsiti((await ioDi(k, altro)).esiti), [['2026-08-20', 'base', 'superata', 1]]);
+});
+
+test('esito: la cancellazione dell account li porta via, anche con il codice di prima', async (t) => {
+  // R-ESITO-06, §3.4 e §6 del progetto. Con il codice di oggi lo prova il test
+  // di R-ACC-19, sui byte. Qui il rilascio di prima, `v0.30.0`, estratto dal tag
+  // e avviato sul database di dopo: non sa che la tabella esiste, ed e' il caso
+  // di rg-torna. Cancellando l'account, la chiave esterna con ON DELETE CASCADE
+  // e foreign_keys = ON porta via anche gli esiti, e secure_delete con il WAL
+  // svuotato li toglie dai byte.
+  const vecchio = rilascioDiPrima(t);
+  const k = await conti(t);
+  const cookie = await confermato(k, 'esame.e.via@esempio.it');
+  const altro = await confermato(k, 'resta.col.suo.esame@esempio.it');
+  const id = idDi(k, 'esame.e.via@esempio.it');
+  assert.equal((await k.chiama('PUT', '/v1/esito', { giorno: '2026-07-17', prove: { carteggio: { esito: 'superata' }, base: { esito: 'non_superata', errori: 6 } } }, { cookie })).status, 200);
+  assert.equal((await k.chiama('PUT', '/v1/esito', { giorno: '2026-08-20', prove: { base: { esito: 'superata', errori: 1 } } }, { cookie: altro })).status, 200);
+  const suoi = (await ioDi(k, altro)).esiti;
+
+  // Il rilascio di prima, sullo stesso database e con lo stesso file.
+  await ferma(k);
+  k.scritto.length = 0;
+  const { avvia: avviaDiPrima } = await import(pathToFileURL(join(vecchio, 'server', 'server.mjs')).href);
+  k.s = await avviaDiPrima(k.opzioni);
+  const salute = (await k.chiama('GET', '/v1/salute')).corpo;
+  assert.deepEqual([salute.versione, salute.schema], ['0.30.0', { codice: 4, database: SCHEMA }], 'e davvero il codice di prima');
+  assert.ok(k.scritto.some((m) => /schema del database 5, del codice 4/.test(m)), k.scritto.join(' | '));
+  const ioVecchio = await ioDi(k, cookie);
+  assert.ok(!('esiti' in ioVecchio) && !('tipi_riga' in ioVecchio), 'il server di prima non dice esiti: la pagina nuova resta spenta (§6 del progetto)');
+  assert.equal((await k.chiama('PUT', '/v1/esito', { giorno: '2026-07-17', prove: {} }, { cookie })).status, 404, 'e la rotta e un 404 che si legge');
+
+  const via = await k.chiama('DELETE', '/v1/account', { password: BUONA }, { cookie });
+  assert.equal(via.status, 204, JSON.stringify(via.corpo));
+  assert.equal(k.s.db.prepare('SELECT count(*) n FROM esito WHERE account_id = ?').get(id).n, 0, 'gli esiti se ne vanno con l account');
+  assert.equal(k.s.db.prepare('SELECT count(*) n FROM esito').get().n, 1, 'quelli degli altri restano');
+  assert.ok(!bytesDel(k).includes('2026-07-17'), 'anche dai byte del database e del WAL');
+  assert.deepEqual(leggiCancellazioni(k.opzioni.cancellazioni).voci.map((v) => [v.evento, v.account]), [['cancellazione', id]]);
+
+  // Di nuovo il codice di oggi: l'altro account ha i suoi esiti come prima.
+  await ferma(k);
+  k.s = await avvia(k.opzioni);
+  assert.deepEqual((await ioDi(k, altro)).esiti, suoi);
+  assert.equal((await k.chiama('GET', '/v1/salute')).corpo.versione, VERSION);
+});
+
+test('statistiche: gli esiti passano dalla fonte filtrata', async (t) => {
+  // R-ESITO-07, §3.6 del progetto. Una quarta fonte, `esiti`, filtrata dagli
+  // iscritti come le altre: chi si e' opposto esce anche da qui, senza una
+  // riga nuova da ricordare. La tabella `esito` non si nomina; una query su di
+  // lei fuori dal posto solo e' rossa. E sotto le venti persone in un gruppo un
+  // conteggio sugli esiti non esce dalla macchina (§11, punto 11, confermato
+  // dall'autore): lo strumento lo ricorda, con quante persone ci sono.
+  const k = await conti(t);
+  const { a, b, idA } = await dueStudenti(k);
+  const db = k.s.db;
+  assert.equal((await k.chiama('PUT', '/v1/esito', { giorno: '2026-09-03', prove: { carteggio: { esito: 'superata' }, base: { esito: 'non_superata', errori: 6 } } }, { cookie: a })).status, 200);
+  assert.equal((await k.chiama('PUT', '/v1/esito', { giorno: '2026-09-03', prove: { carteggio: { esito: 'superata' }, base: { esito: 'superata', errori: 2 }, vela: { esito: 'non_detto' } } }, { cookie: b })).status, 200);
+
+  assert.deepEqual([...FONTI.esiti], ['chi', 'giorno', 'prova', 'risultato', 'errori', 'detto_il']);
+  const scritta = () => statistica(db, "SELECT prova, risultato, count(*) n FROM esiti WHERE risultato != 'non_detto' GROUP BY prova, risultato ORDER BY prova, risultato");
+  assert.deepEqual(scritta(), [
+    { prova: 'base', risultato: 'non_superata', n: 1 }, { prova: 'base', risultato: 'superata', n: 1 }, { prova: 'carteggio', risultato: 'superata', n: 2 },
+  ]);
+  assert.deepEqual(statistica(db, 'SELECT avg(errori) m FROM esiti WHERE prova = ?', ['base']), [{ m: 4 }]);
+  assert.equal(personeConEsito(db), 2);
+  assert.equal(SOGLIA_PERSONE, 20);
+
+  // Chi si oppone esce anche dagli esiti, e i suoi restano nel suo account.
+  opponi(db, idA, { cancellazioni: k.opzioni.cancellazioni, motivo: RICHIESTA });
+  assert.deepEqual(scritta(), [{ prova: 'base', risultato: 'superata', n: 1 }, { prova: 'carteggio', risultato: 'superata', n: 1 }]);
+  assert.equal(personeConEsito(db), 1);
+  assert.equal((await ioDi(k, a)).esiti.length, 2, 'nel suo account non cambia niente');
+  assert.equal(db.prepare('SELECT count(*) n FROM esito').get().n, 5, 'le righe ci sono: un conteggio sulla tabella le conterebbe');
+
+  // La tabella vera non si nomina, e chi ha risposto non esce.
+  for (const [sql, perche] of [
+    ['SELECT count(*) n FROM esito', /«esito»/],
+    ['select count(*) n from ESITO', /«esito»/i],
+    ['SELECT count(*) n FROM esiti e JOIN esito x ON x.account_id = e.chi', /«esito»/],
+    ['SELECT chi, count(*) n FROM esiti GROUP BY chi', /«chi»/],
+  ]) {
+    assert.throws(() => statistica(db, sql), perche, sql);
+  }
+
+  // Dalla riga di comando: il ricordo della soglia, con quante persone ci sono.
+  const cli = (sql) => spawnSync(process.execPath, [join(RADICE, 'server', 'statistica.mjs'), '--db', k.opzioni.db, sql], { encoding: 'utf8' });
+  let r = cli("SELECT prova, count(*) n FROM esiti WHERE risultato = 'superata' GROUP BY prova");
+  assert.equal(r.status, 0, r.stderr);
+  assert.deepEqual(JSON.parse(r.stdout), [{ prova: 'base', n: 1 }, { prova: 'carteggio', n: 1 }]);
+  assert.match(r.stderr, /esiti: 1 persone nei conteggi/);
+  assert.match(r.stderr, /meno di 20 persone/);
+  r = cli('SELECT count(*) n FROM risposte');
+  assert.equal(r.status, 0, r.stderr);
+  assert.doesNotMatch(r.stderr, /esiti/, 'una statistica che non legge gli esiti non lo dice');
+
+  // Su un database di prima della tabella la fonte non c'e': si ferma, invece di dire zero.
+  const p4 = join(k.c, 'schema-4.db');
+  const d4 = new DatabaseSync(p4);
+  t.after(() => d4.close());
+  for (const m of MIGRAZIONI.slice(0, 4)) d4.exec(m);
+  d4.exec('PRAGMA user_version = 4');
+  assert.throws(() => statistica(d4, 'SELECT count(*) n FROM esiti'), /schema 4/);
+  assert.throws(() => personeConEsito(d4), /schema 4/);
+  assert.deepEqual(statistica(d4, 'SELECT count(*) n FROM risposte'), [{ n: 0 }], 'le altre fonti si contano lo stesso');
+
+  // Il controllo statico: una query su `esito` fuori dal posto solo e' rossa,
+  // una che si ferma a un account no (il testo completo e' quello di R-ACC-69).
+  const su = (testo) => queryFuoriPosto([{ nome: 'server/nuovo.mjs', testo }]).map((q) => q.perche);
+  assert.deepEqual(su("db.prepare('SELECT prova, esito FROM esito').all()"), ['legge le righe di tutti']);
+  assert.deepEqual(su("db.prepare('SELECT esito, count(*) n FROM esito GROUP BY esito').all()"), ['aggrega, legge le righe di tutti']);
+  assert.deepEqual(su("db.prepare('SELECT giorno, prova FROM esito WHERE account_id = ?').all(id)"), []);
+});
+
+test('esporta: il file porta gli esiti, e importa non li carica', async (t) => {
+  // R-ESITO-08, §3.4 del progetto. Il file dei progressi porta `esiti`
+  // accanto a `righe` e `segPunti`: e' l'accesso e la portabilita'. Ma un
+  // esito e' una dichiarazione del titolare dell'account, non una risposta, e
+  // un file si ricarica in qualunque account: le righe del file sono quelle di
+  // prima, e un altro account che le carica non riceve nessun esito. Che
+  // l'anteprima dell'import lo dica e' della pagina (B-1), e il suo controllo
+  // del banco del client (A-3).
+  const k = await conti(t);
+  const { cookie } = await dentro(k);
+  const mie = [riga(1), riga(2), { _t: 'g', uid: 'g1', attempt_uid: 'u000001', tag: 'L', ts: '2026-09-26T10:01:00+02:00' }];
+  assert.equal((await k.chiama('POST', '/v1/righe', { generazione: 1, righe: mie }, { cookie })).status, 200);
+  assert.equal((await k.chiama('PUT', '/v1/esito', { giorno: '2026-09-03', prove: { base: { esito: 'superata', errori: 2 }, pratica: { esito: 'non_sostenuta' } } }, { cookie })).status, 200);
+
+  const file = (await k.chiama('GET', '/v1/esporta', undefined, { cookie })).corpo;
+  assert.deepEqual(Object.keys(file).sort(), ['app', 'esiti', 'esportato', 'righe', 'segPunti', 'versione']);
+  assert.deepEqual(file.esiti, (await ioDi(k, cookie)).esiti, 'gli esiti com e li vede lui');
+  assert.deepEqual(vistaEsiti(file.esiti), [['2026-09-03', 'base', 'superata', 2], ['2026-09-03', 'pratica', 'non_sostenuta', null]]);
+  const ricaricato = E.fondiArchivio([], file.righe);
+  assert.deepEqual([ricaricato.nuove, ricaricato.gia, ricaricato.scartate], [3, 0, 0]);
+  assert.deepEqual(ricaricato.righe, mie, 'le stesse righe: gli esiti non sono righe');
+
+  // Caricato in un altro account, come fa la pagina — le righe del file
+  // mandate a /v1/righe —: le righe entrano, gli esiti no.
+  const altro = await registrato(k, 'altro.import@esempio.it');
+  const r = await k.chiama('POST', '/v1/righe', { generazione: 1, righe: file.righe }, { cookie: altro });
+  assert.deepEqual([r.status, r.corpo.nuove.length, r.corpo.scartate], [200, 3, []]);
+  assert.deepEqual((await ioDi(k, altro)).esiti, []);
+  // E un esito messo fra le righe da un file manomesso non entra: non e' una riga.
+  const manomesso = await k.chiama('POST', '/v1/righe', { generazione: 1, righe: file.esiti }, { cookie: altro });
+  assert.equal(manomesso.corpo.scartate.length, 2);
+  assert.deepEqual(manomesso.corpo.nuove, []);
+  assert.deepEqual((await ioDi(k, altro)).esiti, []);
+});
+
+test('azzera: gli esiti restano', async (t) => {
+  // R-ESITO-09, §3.4 del progetto, confermato dall'autore (§11, punto 7):
+  // azzerare e' ricominciare a studiare, l'esame resta sostenuto. Vale per
+  // l'azzeramento chiesto e per quello che un ripristino rifa' dal file.
+  const k = await conti(t);
+  const { cookie } = await dentro(k);
+  const id = idDi(k, 'studente@esempio.it');
+  assert.equal((await k.chiama('POST', '/v1/righe', { generazione: 1, righe: [riga(1), riga(2)] }, { cookie })).status, 200);
+  assert.equal((await k.chiama('PUT', '/v1/esito', { giorno: '2026-09-03', prove: { carteggio: { esito: 'superata' }, base: { esito: 'superata', errori: 0 } } }, { cookie })).status, 200);
+  const prima = (await ioDi(k, cookie)).esiti;
+  copia(k.opzioni.db, join(k.c, 'copia.db'));
+
+  const r = await k.chiama('POST', '/v1/azzera', { password: BUONA }, { cookie });
+  assert.equal(r.status, 200, JSON.stringify(r.corpo));
+  assert.deepEqual([r.corpo.righe, r.corpo.generazione], [0, 2]);
+  assert.deepEqual(r.corpo.esiti, prima, 'le righe se ne vanno, l esito resta');
+
+  // Un ripristino da una copia di prima rifa' l'azzeramento dal file: le righe
+  // tornano via, l'esito resta.
+  await ferma(k);
+  const rip = ripristina(join(k.c, 'copia.db'), k.opzioni.db, { cancellazioni: k.opzioni.cancellazioni });
+  assert.deepEqual([rip.riazzerati, rip.ritolti], [[id], []]);
+  k.s = await avvia(k.opzioni);
+  const io = await ioDi(k, cookie);
+  assert.deepEqual([io.righe, io.generazione], [0, 2]);
+  assert.deepEqual(io.esiti, prima);
+});
+
+test('ripristino: una copia di prima dello schema 5 si porta allo schema del codice, e i ritiri del file non la fermano', async (t) => {
+  // §2.7. La copia che rg-aggiorna fa prima di aggiornare e' di prima della
+  // tabella `esito`: il ripristino la porta allo schema del codice prima di
+  // rileggere il file, invece di fermarsi su un ritiro che non sa dove
+  // applicare. Gli esiti detti dopo quella copia si perdono, e si dice.
+  const c = cartella(t);
+  const p = join(c, 'conti.db');
+  const f = join(c, 'cancellazioni');
+
+  // Un database com'e' in esercizio da v0.29.0: schema 4.
+  let db = new DatabaseSync(p);
+  for (const m of MIGRAZIONI.slice(0, 4)) db.exec(m);
+  db.exec(`INSERT INTO impianto VALUES (1, '${'e'.repeat(32)}', 'x', 'x', 0); PRAGMA user_version = 4;`);
+  const a = creaAccount(db, { email: 'a@esempio.it', password: PHC });
+  const b = creaAccount(db, { email: 'b@esempio.it', password: PHC });
+  aggiungiRighe(db, a, [riga(1), riga(2)]);
+  db.close();
+  assert.equal(copia(p, join(c, 'copia-schema-4.db')).schema, 4);
+
+  // Il codice nuovo lo porta a 5; A dice un esito e lo toglie, B lo dice.
+  db = apri(p, { log: () => {} });
+  assert.equal(db.prepare('PRAGMA user_version').get().user_version, SCHEMA);
+  scriviEsiti(db, a, { giorno: '2026-09-03', prove: { base: { esito: 'superata', errori: 1 } }, cancellazioni: f, il: '2026-10-03T08:00:00.000Z' });
+  togliEsiti(db, a, { giorno: '2026-09-03', cancellazioni: f, il: '2026-10-04T08:00:00.000Z' });
+  scriviEsiti(db, b, { giorno: '2026-09-10', prove: { vela: { esito: 'non_superata', errori: 3 } }, cancellazioni: f, il: '2026-10-04T09:00:00.000Z' });
+  assert.deepEqual(vistaEsiti(esitiDi(db, b)), [['2026-09-10', 'vela', 'non_superata', 3]]);
+  db.close();
+  assert.equal(leggiCancellazioni(f).ritiri.length, 1);
+
+  const r = ripristina(join(c, 'copia-schema-4.db'), p, { cancellazioni: f });
+  assert.deepEqual([r.schema, r.schemaDellaCopia, r.illeggibili, r.ritolti], [SCHEMA, 4, 0, []]);
+  db = apri(p, { log: () => {} });
+  assert.ok(db.prepare("SELECT 1 FROM sqlite_schema WHERE type = 'table' AND name = 'esito'").get(), 'la tabella c e');
+  assert.deepEqual([esitiDi(db, a), esitiDi(db, b)], [[], []], 'quello che e stato detto dopo la copia si perde: la copia non lo aveva');
+  assert.equal(db.prepare('SELECT count(*) n FROM riga WHERE account_id = ?').get(a).n, 2);
+  db.close();
+
+  // E il server parte su questo database, e lo dice a schema pieno.
+  const s = await avvia({ db: p, cancellazioni: f, porta: 0, argon2: ECONOMICO, log: () => {} });
+  t.after(() => s.chiudi());
+  assert.deepEqual((await (await fetch(`${s.indirizzo}/v1/salute`)).json()).schema, { codice: SCHEMA, database: SCHEMA });
+});
+
+test('ripristino: un id riusato non perde gli esiti per il ritiro di chi lo aveva prima', (t) => {
+  // §2.7: il file porta il numero e la chiave dell'account, e un ritiro si
+  // rilegge solo se combaciano tutte e due — come le cancellazioni e le
+  // opposizioni. Con la condizione sul tempo un esito detto dopo il ritiro resta
+  // comunque; la chiave serve quando l'orologio non basta: qui un orologio
+  // tornato indietro, che le funzioni ricevono come `il`.
+  const c = cartella(t);
+  const p = join(c, 'conti.db');
+  const f = join(c, 'cancellazioni');
+  let db = apri(p);
+  const a = creaAccount(db, { email: 'a@esempio.it', password: PHC });
+  scriviEsiti(db, a, { giorno: '2026-09-03', prove: { base: { esito: 'superata' } }, cancellazioni: f, il: '2026-09-04T08:00:00.000Z' });
+  togliEsiti(db, a, { giorno: '2026-09-03', cancellazioni: f, il: '2026-09-10T08:00:00.000Z' });
+  cancellaAccount(db, a, { cancellazioni: f });
+  const b = creaAccount(db, { email: 'b@esempio.it', password: PHC });
+  assert.equal(b, a, 'l id si riusa davvero');
+  scriviEsiti(db, b, { giorno: '2026-09-03', prove: { vela: { esito: 'non_superata' } }, cancellazioni: f, il: '2026-09-08T08:00:00.000Z' });
+  db.close();
+  copia(p, join(c, 'copia.db'));
+  const r = ripristina(join(c, 'copia.db'), p, { cancellazioni: f });
+  assert.deepEqual([r.ritolti, r.ricancellati], [[], []]);
+  db = apri(p);
+  t.after(() => db.close());
+  assert.deepEqual(vistaEsiti(esitiDi(db, b)), [['2026-09-03', 'vela', 'non_superata', null]], 'il ritiro era di a, non di b');
 });

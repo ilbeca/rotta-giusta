@@ -7,11 +7,12 @@
 // ricordare — «aggiungi WHERE fuori_statistiche_dal IS NULL» —: la prima query
 // scritta di fretta la dimentica, e niente lo dice.
 //
-// Qui una statistica non vede le tabelle: vede tre **fonti**, gia' filtrate.
+// Qui una statistica non vede le tabelle: vede quattro **fonti**, gia' filtrate.
 //
 //   iscritti   gli account che non si sono opposti
 //   risposte   le loro righe
 //   punteggi   i loro punteggi dei Segnali
+//   esiti      l'esito del loro esame, detto da loro (P-73)
 //
 // L'email, la password e la chiave dell'account non sono in nessuna fonte,
 // quindi non possono uscire nemmeno per sbaglio. `chi` e' il numero interno
@@ -30,16 +31,31 @@ import { versioneSchema } from './db.mjs';
 
 /** Lo schema che porta il segno: sotto, una statistica non parte. */
 const SCHEMA_DEL_SEGNO = 4;
+/** Lo schema che porta la tabella degli esiti (P-73). */
+const SCHEMA_DEGLI_ESITI = 5;
+
+/**
+ * Sotto quante persone in un gruppo un conteggio sugli esiti non esce dalla
+ * macchina: deciso dall'autore il 4 ottobre 2026 (docs/esito-esame-progetto.md
+ * §3.6 e §11, punto 11). Con tre persone che hanno detto «non superata», un
+ * aggregato dice qualcosa di loro. E' una regola per chi copia un numero fuori
+ * dal terminale, quindi nessun controllo la puo' eseguire: server/statistica.mjs
+ * la ricorda a ogni statistica sugli esiti, con quante persone ci sono.
+ */
+export const SOGLIA_PERSONE = 20;
 
 /** Le fonti e le loro colonne. E' tutto quello che una statistica puo' leggere. */
 export const FONTI = Object.freeze({
   iscritti: Object.freeze(['chi', 'creato_il', 'ultimo_accesso_il', 'confermato', 'data_esame']),
   risposte: Object.freeze(['chi', 'tipo', 'item_id', 'ts', 'ricevuta_il', 'dati']),
   punteggi: Object.freeze(['chi', 'modo', 'migliore', 'giocate']),
+  // `risultato` e non `esito`: la parola `esito` e' il nome della tabella vera,
+  // e una statistica che la nomina e' rifiutata.
+  esiti: Object.freeze(['chi', 'giorno', 'prova', 'risultato', 'errori', 'detto_il']),
 });
 
-// L'unico punto in cui il segno si legge. Le righe e i punteggi passano dagli
-// iscritti, cosi' il filtro e' uno e non tre.
+// L'unico punto in cui il segno si legge. Le righe, i punteggi e gli esiti
+// passano dagli iscritti, cosi' il filtro e' uno e non quattro.
 const DEFINIZIONE = `
   WITH iscritti AS (
     SELECT id AS chi, creato_il, ultimo_accesso_il, email_verificata_il IS NOT NULL AS confermato, data_esame
@@ -52,9 +68,15 @@ const DEFINIZIONE = `
     FROM segnali s JOIN iscritti i ON i.chi = s.account_id
   )
 `;
+const ESITI = `
+  , esiti AS (
+    SELECT e.account_id AS chi, e.giorno, e.prova, e.esito AS risultato, e.errori, e.detto_il
+    FROM esito e JOIN iscritti i ON i.chi = e.account_id
+  )
+`;
 
 // Le tabelle vere, che una statistica non nomina: le legge dalle fonti.
-const TABELLE = /\b(account|riga|segnali|sessione|gettone|registro|impianto|sqlite_\w+)\b/i;
+const TABELLE = /\b(account|riga|segnali|esito|sessione|gettone|registro|impianto|sqlite_\w+)\b/i;
 // Quello che non esce: chi ha risposto, e le righe intere.
 const NON_ESCE = new Set(['chi', 'dati']);
 
@@ -89,7 +111,14 @@ export function statistica(db, sql, parametri = []) {
       + 'che escludono chi si e\' opposto (server/statistiche.mjs)');
   }
   conIlSegno(db);
-  const righe = db.prepare(DEFINIZIONE + testo).all(...parametri).map((r) => ({ ...r }));
+  // Su un database di prima della tabella degli esiti la fonte non c'e': una
+  // statistica che la usa si ferma, invece di contare zero esiti che non e' vero.
+  const conEsiti = versioneSchema(db) >= SCHEMA_DEGLI_ESITI;
+  if (!conEsiti && /\besiti\b/i.test(testo)) {
+    throw new Error(`schema ${versioneSchema(db)}: questo database non ha ancora gli esiti dell'esame. `
+      + "Niente conteggi sugli esiti finche' il server del rilascio nuovo non lo ha aperto.");
+  }
+  const righe = db.prepare(DEFINIZIONE + (conEsiti ? ESITI : '') + testo).all(...parametri).map((r) => ({ ...r }));
   for (const colonna of Object.keys(righe[0] ?? {})) {
     if (NON_ESCE.has(colonna.toLowerCase())) {
       throw new Error(`«${colonna}» non esce da una statistica: e' ${colonna.toLowerCase() === 'chi' ? "il numero dell'account" : 'la riga intera'}. `
@@ -107,4 +136,15 @@ export function statistica(db, sql, parametri = []) {
 export function esclusi(db) {
   conIlSegno(db);
   return db.prepare('SELECT count(*) n FROM account WHERE fuori_statistiche_dal IS NOT NULL').get().n;
+}
+
+
+/**
+ * Quante persone, fra chi non si e' opposto, hanno detto almeno un esito. E' il
+ * numero da guardare prima di leggere una statistica sugli esiti: sotto
+ * `SOGLIA_PERSONE` in un gruppo, il conteggio resta sulla macchina. Il tasso di
+ * risposta si scrive accanto a ogni risultato (§3.7 del progetto, punto 1).
+ */
+export function personeConEsito(db) {
+  return statistica(db, 'SELECT count(DISTINCT chi) n FROM esiti')[0].n;
 }

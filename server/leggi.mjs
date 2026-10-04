@@ -110,11 +110,17 @@ if (letto === null) {
 }
 
 /** L'account e le sue attivita', per chi legge a schermo. Le righe no: quelle con --attivita o --json. */
-function testo({ account: a, conteggi: c, copertura, quiz, carteggio, tecniche, tag, registro }) {
+function testo({ account: a, conteggi: c, copertura, quiz, carteggio, tecniche, tag, esiti, registro }) {
   const o = (v) => v ?? '—';
   const minuti = (ms) => (ms == null ? 'durata non misurata' : ms < 30000 ? 'meno di 1 min' : `${Math.round(ms / 60000)} min`);
   const note = (x) => `${x.fonte === 'risposte' ? ' · confine ricostruito' : ''}${x.ambigua ? ` · AMBIGUA: ${x.motivi.join(', ')}` : ''}`;
   const segnali = Object.entries(a.segnali).map(([modo, p]) => `${modo}: migliore ${p.migliore}, giocate ${p.giocate}`).join(' · ');
+  // L'esito dell'esame, un giorno per riga: «carteggio superata · base non superata, 6 errori».
+  const giorni = new Map();
+  for (const e of esiti ?? []) {
+    const detto = e.esito === 'non_detto' ? 'non detto' : `${e.esito.replace('_', ' ')}${e.errori == null ? '' : `, ${e.errori} ${e.errori === 1 ? 'errore' : 'errori'}`}`;
+    giorni.set(e.giorno, [...(giorni.get(e.giorno) ?? []), `${e.prova} ${detto}`]);
+  }
   const out = [
     `ACCOUNT ${a.id}`,
     `  email              ${a.email} — ${a.email_verificata_il ? `confermata il ${a.email_verificata_il}` : `NON confermata: si cancella il ${a.scade_se_non_verificata}`}`,
@@ -147,6 +153,10 @@ function testo({ account: a, conteggi: c, copertura, quiz, carteggio, tecniche, 
       + `${x.conteggi ? `coincidenti ${x.conteggi.coincidenti} · non coincidenti ${x.conteggi.nonCoincidenti}` : 'conteggi non disponibili'}  id ${x.id}${note(x)}`),
     '',
     `TAG — ${Object.keys(tag).length} tentativi con un tag N/L/C`,
+    '',
+    esiti === null ? "ESAME — questo database non ha ancora gli esiti dell'esame (schema prima del 5)"
+      : `ESAME — l'esito detto da chi studia, ${giorni.size} ${giorni.size === 1 ? 'giorno' : 'giorni'}`,
+    ...[...giorni].map(([giorno, prove]) => `  ${giorno}  ${prove.join(' · ')}`),
     '',
     `REGISTRO dell'account — ${registro.length > 20 ? `gli ultimi 20 eventi di ${registro.length}` : `${registro.length} eventi`}`,
     ...registro.slice(-20).map((e) => `  ${e.quando}  ${e.evento}${e.ip ? `  da ${e.ip}` : ''}${e.dettaglio ? `  — ${e.dettaglio}` : ''}`),

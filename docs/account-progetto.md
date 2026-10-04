@@ -391,6 +391,17 @@ così non spiegano un calo di righe; il ripristino porta la copia allo schema
 del codice prima di rileggerle; e il `ripristina.mjs` di `v0.28.0` le conta fra
 le righe illeggibili. §15.2.)*
 
+*(4 ottobre 2026, P-73: il file porta anche i ritiri dell'esito dell'esame,
+«esito tolto» — numero dell'account, chiave casuale, giorno, le prove se non
+sono tutte, quando; nessun valore dell'esito —, scritti prima del database come
+le cancellazioni. `leggiCancellazioni()` li restituisce a parte, in `ritiri`:
+non spiegano un calo di righe. Il ripristino, dopo aver portato la copia allo
+schema del codice, toglie di nuovo le prove di quel giorno con `cambiato_il`
+**prima** del ritiro: un esito detto di nuovo dopo il ritiro resta. Il
+`ripristina.mjs` di `v0.30.0` li conta fra le righe illeggibili e li lascia —
+misurato —, e per questo il server li rilegge a ogni avvio, come le
+opposizioni. §3, §14.4.)*
+
 **Non fatto, e resta della macchina:** il trasporto delle copie verso `nl-ams`,
 che vuole la chiave del §19, e i due giri al giorno. `node server/copia.mjs`
 fa la copia, la verifica e il confronto con la precedente, ed esce 1 su un calo
@@ -630,7 +641,28 @@ registro (                           -- sicurezza e responsabilità, §15
   ip            TEXT,                -- tolto dopo 6 mesi; la riga dopo un anno (§15.3)
   dettaglio     TEXT
 )
+
+esito (                              -- l'esito dell'esame, detto da chi studia (P-73)
+  account_id    INTEGER NOT NULL REFERENCES account(id) ON DELETE CASCADE,
+  giorno        TEXT NOT NULL,       -- AAAA-MM-GG, il giorno della prova
+  prova         TEXT NOT NULL,       -- 'carteggio' | 'base' | 'vela' | 'pratica'
+  esito         TEXT NOT NULL,       -- 'superata' | 'non_superata' | 'non_sostenuta' | 'non_detto'
+  errori        INTEGER,             -- facoltativo; NULL per la pratica e per chi non lo sa
+  detto_il      TEXT NOT NULL,       -- la prima volta
+  cambiato_il   TEXT NOT NULL,       -- l'ultima: il ripristino la confronta con i ritiri (§2.7)
+  PRIMARY KEY (account_id, giorno, prova)
+) WITHOUT ROWID
 ```
+
+*(4 ottobre 2026, P-73: la tabella `esito`, con lo schema 5, una migrazione
+additiva. È il progetto di `docs/esito-esame-progetto.md` §3.3, e la ragione per
+cui è una tabella e non una riga dell'archivio né una colonna del profilo è lì,
+misurata: un esito si deve poter togliere davvero, un azzeramento non lo tocca,
+e un campo del profilo sconosciuto al server di prima sparirebbe con un `200`.
+Niente `CHECK` sui valori: una prova nuova vorrebbe rifare la tabella invece di
+aggiungere; le regole stanno in `server/esiti.mjs`, controllate tutte prima di
+scrivere. La chiave esterna fa sì che anche il codice di prima, che non sa della
+tabella, la svuoti cancellando l'account — provato con `v0.30.0`, §14.4.)*
 
 Cinque scelte che non si vedono dallo schema.
 
@@ -1101,7 +1133,7 @@ uscirne — vale anche per chi legge la risposta in console.
 | `POST /v1/accesso` `{email, password}` | apre la sessione | `200` + cookie; `401` |
 | `POST /v1/uscita` | chiude questa sessione | `204` |
 | `POST /v1/uscita/ovunque` | chiude tutte | `204` |
-| `GET /v1/io` | chi sono | `{email, verificata, scade_se_non_verificata, data_esame, segnali, generazione, azzerato_il, epoca, chiave_locale, righe, ultima_seq}`; `401` |
+| `GET /v1/io` | chi sono | `{email, verificata, scade_se_non_verificata, data_esame, segnali, generazione, azzerato_il, epoca, chiave_locale, righe, ultima_seq, esiti, tipi_riga}`; `401` |
 | `POST /v1/verifica` `{gettone}` | conferma l'email | `200`; `410` gettone scaduto o usato |
 | `POST /v1/verifica/rinvia` | nuova mail di verifica | `202` |
 | `POST /v1/password/dimenticata` `{email}` | mail di reimpostazione | sempre `202` |
@@ -1112,6 +1144,8 @@ uscirne — vale anche per chi legge la risposta in console.
 | `PUT /v1/profilo` `{data_esame, segnali}` | onboarding e impostazioni (§13); un campo assente resta com'è | `200` nella forma di `GET /v1/io`; `422` con il campo che non va, e niente scritto |
 | `POST /v1/azzera` `{password}` | cancella le righe, alza la generazione (§8.4) | `200` con la generazione nuova, nella forma di `GET /v1/io`; `401` |
 | `DELETE /v1/account` `{password}` | cancella tutto, adesso (§14.1) | `204`, e il cookie tolto; `401` |
+| `PUT /v1/esito` `{giorno, prove: {carteggio?, base?, vela?, pratica?}}`, ogni prova `{esito, errori?}` o `null` | scrive le prove nominate per quel giorno; una assente resta com'è, `null` la toglie (P-73) | `200 {esiti}`; `422 {errore: 'esito', campo, messaggio}` e niente scritto; `409 {errore: 'troppi_giorni'}` oltre 20 giorni per account; `401` |
+| `DELETE /v1/esito` `{giorno}` | toglie tutte le prove di quel giorno, anche dai byte e da un ripristino futuro (§14.4) | `200 {esiti}`, anche se non c'era niente; `422`; `401` |
 
 **Fatto il 26 settembre 2026 (P-11)**, in `server/conti.mjs`: le rotte che
 mancavano. Le scelte che la tabella non diceva:
@@ -1136,13 +1170,53 @@ mancavano. Le scelte che la tabella non diceva:
 - **`GET /v1/io` porta anche `segnali`**, nella forma di `segPunti` della
   pagina, perché il client sappia i punteggi fusi senza scaricare l'export.
 
+**Fatto il 4 ottobre 2026 (P-73)**, in `server/esiti.mjs`: l'esito dell'esame,
+il lavoro A-2 di `docs/esito-esame-progetto.md` §10.1, con le regole del §3.3 di
+quel progetto. Senza password, come la data d'esame; il registro di sicurezza
+non lo annota. Quello che il progetto non diceva, o diceva diversamente:
+
+- **`GET /v1/io` — e ogni risposta nella sua forma — porta `esiti` e
+  `tipi_riga`.** `esiti` è l'elenco intero, `[{giorno, prova, esito, errori,
+  detto_il, cambiato_il}]`, ordinato per giorno e per prova nell'ordine
+  dell'esame — carteggio, base, vela, pratica —, anche vuoto: la pagina accende
+  la domanda solo se c'è. `tipi_riga` è `TIPI_RIGA` del motore, esportato da
+  P-72, quindi oggi `['q', 'c', 't', 's', 'g', 'a']`: la pagina scrive una riga
+  d'avvio solo se c'è `'a'`. Il server di `v0.30.0` non manda né l'uno né
+  l'altro, misurato, e la pagina nuova accanto a lui resta spenta.
+- **Un campo che il server non conosce è un `422`, non un `200` che lo
+  butta**: nel corpo, in una prova, o una prova che non esiste. È la prima
+  misura del §2 di quel progetto rivolta contro la rotta nuova: un esito messo
+  nel profilo spariva così.
+- **I limiti degli errori non sono scritti a mano**: il carteggio da
+  `PROVA_CARTEGGIO` del motore (4, superata con al più 1), i quiz da
+  `meta.prove` della banca (base 20 e 4, vela 5 e 1), gli stessi numeri della
+  simulazione. Oltre a «superata» con troppi errori, sono un `422` anche gli
+  errori su una prova `non_sostenuta` — il progetto lo diceva solo di
+  `non_detto` — e sulla pratica.
+- **Il `422` ha una forma sola**, `{errore: 'esito', campo, messaggio}`, con il
+  campo per esteso: `giorno`, `prove`, `prove.base`, `prove.base.esito`,
+  `prove.base.errori`, o `corpo`.
+- **Togliere una prova sola con `null` passa dal file delle cancellazioni**,
+  come il `DELETE` di un giorno, con le prove nominate nella voce: senza, un
+  ripristino la riporterebbe. E solo se c'era: togliere una prova che non c'è
+  non scrive niente, nemmeno nel file.
+- **Il tetto dei 20 giorni** si conta sugli esiti dell'account in JavaScript,
+  dall'elenco che `esitiDi()` già legge: niente aggregato in SQL, quindi
+  niente da dichiarare nel controllo delle statistiche (§15.2).
+- **Una data impossibile dava `500`, e nel profilo lo dà dalla v0.28.0.**
+  `new Date('2026-13-01T00:00:00Z').toISOString()` lancia, e la data d'esame
+  `2026-13-01` riceveva un `500` invece di un `422`. Trovato scrivendo il
+  controllo del giorno dell'esito, riprodotto sul profilo prima di correggerlo:
+  ora tutti e due guardano che la data esista prima di confrontarla. Non era
+  muto — un `500` si vede —, ma era l'errore sbagliato.
+
 ### 7.2 Le righe
 
 | Rotta | Che cosa | Risposte |
 |---|---|---|
 | `POST /v1/righe` `{generazione, righe: [...]}` | aggiunge, per `uid` | `200 {nuove: [uid], gia: [uid], scartate: [{uid, motivo, indice}], ultima_seq, epoca, generazione}`; `409 {generazione, azzerato_il, epoca}` generazione vecchia; `413` oltre 2.000 righe o 2 MiB; `422` senza generazione o senza righe |
 | `GET /v1/righe?dopo=<seq>` | le righe arrivate dopo il cursore, al più 5.000 | `200 {righe, ultima_seq, altre: bool, epoca, generazione, azzerato_il}`; `422` se `dopo` non è un intero da zero in su |
-| `GET /v1/esporta` | **il file dei progressi**, nella forma di `esporta()` | `200`, `Content-Disposition: attachment` |
+| `GET /v1/esporta` | **il file dei progressi**, nella forma di `esporta()`, con `segPunti` e, dal P-73, `esiti` | `200`, `Content-Disposition: attachment` |
 
 **`/v1/righe` risponde con gli `uid`, non con i conteggi soli.** I conteggi
 sono quello che la schermata scrive; gli `uid` sono quello che serve al client
@@ -1656,6 +1730,13 @@ copie il dato sparisce entro 30 giorni. Le tre strade che cancellano un
 account — chiesta, non confermato, inattivo — passano dalla stessa funzione, e
 quindi dal file del §2.7. R-ACC-19.)*
 
+*(4 ottobre 2026, P-73: con l'account se ne vanno anche gli esiti dell'esame,
+per la chiave esterna, anche con il codice di `v0.30.0` che non conosce la
+tabella — provato, §14.4. Un azzeramento invece non li tocca, né chiesto né
+rifatto da un ripristino: azzerare è ricominciare a studiare, l'esame resta
+sostenuto — confermato dall'autore il 4 ottobre 2026, `esito-esame-progetto.md`
+§11, punto 7. R-ESITO-06, R-ESITO-09.)*
+
 ### 14.2 Due anni di inattività — l'ADR-003
 
 - **Attività** è qualunque richiesta con una sessione valida, sincronia
@@ -1711,6 +1792,27 @@ in schermata.
   lo fanno; se un lettore aperto accanto — una copia in corso — lo impedisce,
   lo scrive nel log e ci riprova il lavoro quotidiano. Il controllo di R-ACC-19
   cerca l'email nei byte del database e del `-wal`, non nelle righe.
+- **L'esito dell'esame tolto cancella anche lui davvero** (P-73). `DELETE
+  /v1/esito`, e una prova tolta con `null`: prima la voce «esito tolto» nel file
+  delle cancellazioni, poi la riga con `secure_delete`, poi il WAL svuotato. Il
+  controllo cerca il giorno dell'esito nei byte del database e del `-wal`, dopo
+  un ritiro e dopo una cancellazione dell'account, e prima di tutto guarda che
+  la sonda lo trovi quando c'è. Un ripristino non lo riporta: lo rilegge il
+  ripristino, e lo rilegge il server a ogni avvio, perché il `ripristina.mjs`
+  di `v0.30.0` non lo conosce e lascia gli esiti della copia — misurato con il
+  codice del tag. **Il rilascio di prima, `v0.30.0`, estratto dal tag e avviato
+  sul database a schema 5** parte, lo scrive nel log — «schema del database 5,
+  del codice 4» —, non manda `esiti` in `GET /v1/io`, risponde `404` a
+  `/v1/esito`, e cancellando un account ne porta via gli esiti, anche dai byte.
+  R-ESITO-05, R-ESITO-06.
+- **Che cosa non regge, e si dice: un esito scritto o corretto dopo una copia
+  si perde con un ripristino.** Non passa dalla coda, quindi l'epoca non lo fa
+  tornare (§2.7). Un esito nuovo si ripara da sé, perché la pagina lo richiede;
+  una correzione no, e chi studia vede in Profilo il valore di prima. La
+  finestra è di dodici ore al più. E il ritiro si confronta con `cambiato_il`,
+  che è l'orologio del server: un orologio tornato indietro di più del tempo
+  fra un ritiro e un esito detto di nuovo farebbe togliere quest'ultimo al
+  primo avvio. Lo stesso orologio decide le sessioni e i gettoni.
 
 ---
 
@@ -1741,8 +1843,9 @@ leggere solo con `sqlite3`, senza traccia. Com'è fatto:
   A schermo: l'account — email e conferma, date, generazione, stato della
   password, sessioni aperte, se è fuori dalle statistiche, punteggi dei Segnali
   —, quante righe ha per tipo, la copertura nei tre stati, le attività dei quiz,
-  del carteggio e delle tecniche, e gli eventi di quell'account nel registro,
-  comprese le letture di prima. `--attivita <id>` aggiunge le righe di una
+  del carteggio e delle tecniche, l'esito dell'esame che ha detto, un giorno per
+  riga (dal P-73), e gli eventi di quell'account nel registro, comprese le
+  letture di prima. `--attivita <id>` aggiunge le righe di una
   attività, com'erano; `--json` dà tutto in JSON, righe comprese, così non c'è
   una domanda di supporto per cui serva `sqlite3`. **Non mostra mai** la
   password, la chiave della copia locale, le impronte di sessioni e gettoni.
@@ -1858,7 +1961,8 @@ Com'è fatto:
   tabelle: vede tre **fonti** già filtrate — `iscritti`, gli account che non si
   sono opposti; `risposte`, le loro righe; `punteggi`, i loro punteggi dei
   Segnali —, e il segno si legge in un punto solo, la definizione di
-  `iscritti`, da cui le altre due passano. `statistica(db, sql, parametri)`
+  `iscritti`, da cui le altre due passano. *(Dal P-73 le fonti sono quattro: la
+  sezione «Gli esiti dell'esame», qui sotto.)* `statistica(db, sql, parametri)`
   esegue una `SELECT` sulle fonti e **rifiuta, prima di eseguirla, una query
   che nomina una tabella vera**. L'email, la password e la chiave dell'account
   non sono in nessuna fonte, quindi non possono uscire; `chi`, il numero
@@ -1892,6 +1996,32 @@ Com'è fatto:
   codice prima di rileggere il file, invece di fermare il ripristino.
   Un'opposizione **non spiega un calo di righe** nel confronto fra due copie:
   `leggiCancellazioni()` la restituisce a parte.
+
+**Gli esiti dell'esame — fatto il 4 ottobre 2026 (P-73).** Una quarta fonte,
+`esiti`, filtrata dagli iscritti come le altre: chi si è opposto esce anche da
+qui, senza una riga nuova da ricordare. Le sue colonne sono `chi`, `giorno`,
+`prova`, **`risultato`**, `errori`, `detto_il`: `risultato` e non `esito`,
+come scriveva il §3.6 di `esito-esame-progetto.md`, perché `esito` è il nome
+della tabella vera, che una statistica non nomina — una colonna con quel nome
+sarebbe stata rifiutata anche lei. Il controllo statico di R-ACC-69 è rosso
+anche per una lettura di `esito` che non si ferma a un account, e
+quello di R-ACC-74 dichiara chi legge la tabella. Su un database di prima dello
+schema 5 una statistica che usa `esiti` si ferma con un errore, invece di
+contare zero esiti che non sarebbe vero.
+
+**La soglia delle venti persone**, decisa dall'autore il 4 ottobre 2026
+(`esito-esame-progetto.md` §11, punto 11): un conteggio sugli esiti di un
+gruppo di meno di 20 persone **non esce dalla macchina** — non in un documento
+del repo, non in un messaggio —, perché con tre persone che hanno detto «non
+superata» un aggregato dice qualcosa di loro. È una regola per chi copia un
+numero fuori dal terminale, e nessun controllo la può eseguire: la tiene il
+titolare. `server/statistica.mjs` gliela ricorda a ogni statistica che legge gli
+esiti, su stderr, con quante persone hanno detto un esito
+(`personeConEsito()`); `SOGLIA_PERSONE` sta in `server/statistiche.mjs`. Va
+nella procedura del titolare accanto a «le statistiche si lanciano con
+`statistica.mjs`». E con il numero va sempre il tasso di risposta: nessun
+risultato sugli esiti si legge senza sapere quanti hanno risposto (§3.7 del
+progetto, punto 1).
 
 **Tre scelte, con il loro perché.**
 
@@ -2353,6 +2483,14 @@ lo strumento della macchina che lo chiama, `server/leggi.mjs`.
 `motivoPerIlRegistro()` sta in `db.mjs`, e la usa anche `opponi()`. Nessuna
 rotta nuova. §15.1.)*
 
+*(4 ottobre 2026, P-73: l'esito dell'esame. Lo schema passa a 5 con la tabella
+`esito`, additiva. Un modulo nuovo, `server/esiti.mjs`, con `PUT` e `DELETE
+/v1/esito` e le regole; in `db.mjs` `esitiDi()`, `scriviEsiti()`,
+`togliEsiti()` e `rileggiRitiri()`, che il server chiama all'avvio accanto a
+`rileggiOpposizioni()`. `GET /v1/io` porta `esiti` e `tipi_riga`, l'export
+`esiti`; la quarta fonte in `statistiche.mjs`; `leggi.mjs` mostra gli esiti.
+§3, §7.1, §14.4, §15.2.)*
+
 ### 16.3 In locale
 
 `strumenti/serve.py` serve il sito come oggi; il server gira accanto su un'altra
@@ -2433,6 +2571,14 @@ scoperta.
 | R-ACC-31 | Il cursore della ricezione lo sposta solo una ricezione: l'`ultima_seq` di un invio non lo tocca (§7.2) | `test_engine.mjs` — entrato |
 | R-ACC-32 | Un invio oltre 2.000 righe o 2 MiB riceve un `413` che si legge, e niente entra (§7.2) | `test_server.mjs` — entrato |
 | R-ACC-33 | La ricezione va a pagine di 5.000 righe, che insieme non perdono e non ripetono (§7.2) | `test_server.mjs` — entrato |
+
+**L'esito dell'esame (P-73, 4 ottobre 2026).** R-ESITO-01 e R-ESITO-05…09 sono
+proposti nel §9 di `docs/esito-esame-progetto.md`, e hanno il loro test in
+`test_server.mjs`, con i nomi che quel §9 proponeva; li porta nel §9 della
+specifica P-74, con R-ESITO-02…04, che sono della pagina. Di R-ESITO-08 il
+server prova la sua metà — l'export porta gli esiti, e le righe del file,
+caricate in un altro account, non ne portano —; che l'anteprima dell'import lo
+dica è della pagina.
 
 ---
 
@@ -2526,6 +2672,9 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
 | La pagina mostra a chi si è opposto che è fuori dalle statistiche | l'autore | no, per ora: la conferma è la risposta alla sua mail; servirebbero un campo in `GET /v1/io` e un testo dell'interfaccia (§15.2, scelta 1) |
 | Le letture del titolare annotate dopo una copia si perdono con un ripristino, come ogni evento del registro (§15.1, misurato da P-55) | l'autore | tenerla così: dopo un ripristino il titolare rilancia `leggi.mjs` per le letture di quella finestra, al più dodici ore, con un motivo che lo dica. L'alternativa è scriverle anche nel file delle cancellazioni e farle rileggere al ripristino, come le opposizioni: più meccanismo, e il `ripristina.mjs` di `v0.28.0` le direbbe illeggibili |
 | Nella procedura del titolare, fuori dal repo: gli account si leggono con `server/leggi.mjs`, mai con `sqlite3` | l'autore | scriverla accanto a quella delle statistiche (§15.1, punto 1): è la sola cosa che tiene vera «ogni lettura è annotata» sulla macchina |
+| ~~Gli errori dell'esito si chiedono; l'azzeramento non tocca l'esito; la soglia di 20 persone~~ | — | **decisi dall'autore il 4 ottobre 2026** (`esito-esame-progetto.md` §11, punti 4, 7 e 11), realizzati da P-73 (§7.1, §14.1, §15.2) |
+| Nella procedura del titolare, fuori dal repo: un conteggio sugli esiti di meno di 20 persone non esce dalla macchina, e con ogni numero va il tasso di risposta | l'autore | scriverla accanto alle altre due (§15.2, «La soglia delle venti persone»): `statistica.mjs` la ricorda, ma non la può far rispettare |
+| Un esito scritto o corretto dopo una copia si perde con un ripristino (§14.4) | l'autore | tenerla così, come per le letture del titolare: dodici ore al più, e un esito nuovo la pagina lo richiede da sé. L'alternativa è scriverli nel file come i ritiri, cioè il valore dell'esito fuori dal database, in un file che le copie non governano |
 | ~~Cosa chiede l'onboarding oltre alla data~~ | — | **deciso dall'autore il 1° ottobre 2026**: solo la data, facoltativa; Q-ONBOARD è fra le chiuse del §10 della specifica |
 | ~~Chiudere il difetto dei tag che resta (§4.2)~~ | — | **chiuso** da P-01 il 26 settembre (merge `6e07525`): i tag nascono con la data, ritaggare aggiunge |
 | ~~La registrazione dice chi è iscritto (§5.3)~~ | — | **deciso dall'autore il 26 settembre 2026**: si dice apertamente, «Questa email è già registrata», con `409` e senza mail; accesso e password dimenticata restano come sono (§5.3). Il server lo fa con P-11 |

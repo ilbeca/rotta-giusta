@@ -6,7 +6,7 @@
 // sono arrivate un pezzo per volta, ognuna con i suoi test in
 // tests/test_server.mjs: l'account (§7.1, P-09), le righe con la sincronia
 // (§7.2, P-10), e il cambio d'indirizzo, il profilo, la cancellazione e gli
-// allarmi al titolare (P-11).
+// allarmi al titolare (P-11); l'esito dell'esame (P-73).
 //
 //   RG_DB=… RG_CANCELLAZIONI=… RG_TITOLARE=… RG_PORTA=8620 node server/server.mjs
 //
@@ -17,10 +17,11 @@ import { createServer } from 'node:http';
 import { readFileSync, realpathSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { SCHEMA, apri, versioneSchema, leggiEpoca, rileggiOpposizioni } from './db.mjs';
+import { SCHEMA, apri, versioneSchema, leggiEpoca, rileggiOpposizioni, rileggiRitiri } from './db.mjs';
 import { hashPassword, calcolati, PARAMETRI } from './password.mjs';
 import { creaConti, COOKIE } from './conti.mjs';
 import { creaRighe, CORPO_RIGHE } from './righe.mjs';
+import { creaEsiti } from './esiti.mjs';
 import { creaAllarmi } from './allarmi.mjs';
 import { postaScaleway, postaAssente } from './posta.mjs';
 
@@ -100,11 +101,19 @@ export async function avvia({
     log(`opposizioni alle statistiche rilette dal file: ${riletto.riesclusi.length} account rimessi fuori dai conteggi, ${riletto.riammessi.length} rientrati. `
       + "Il database non le aveva: un ripristino fatto con un rilascio di prima, o un processo caduto a metà.");
   }
+  // Lo stesso per gli esiti dell'esame tolti (P-73): un ripristino fatto con il
+  // rilascio di prima li rimette, perche' non conosce i ritiri.
+  const ritolti = rileggiRitiri(db, cancellazioni);
+  if (ritolti.prove) {
+    log(`esiti tolti riletti dal file: ${ritolti.prove} prove di ${ritolti.account.length} account tolte di nuovo. `
+      + "Il database le aveva ancora: un ripristino fatto con un rilascio di prima, o un processo caduto a metà.");
+  }
   // L'hash con cui si controlla la password di un'email che non esiste (§5.3):
   // una volta, adesso, con i parametri veri, cosi' costa quanto uno vero.
   const fittizia = await hashPassword(randomBytes(24).toString('base64'), parametri);
   const conti = creaConti({ db, ora, argon2: parametri, posta, sito, cancellazioni, fittizia, log });
   const righe = creaRighe({ db, ora, versione: VERSIONE });
+  const esiti = creaEsiti({ db, ora, cancellazioni });
   const allarmi = creaAllarmi({ db, ora, titolare, spedisci: conti.spedisci, registra: conti.registra, log });
 
   // Le rotte: [gestore, che cosa chiede, quanto puo' pesare il corpo].
@@ -135,6 +144,7 @@ export async function avvia({
     '/v1/azzera': { POST: [conti.azzera, 'sessione'] },
     '/v1/righe': { POST: [righe.invia, 'sessione', CORPO_RIGHE], GET: [righe.ricevi, 'sessione'] },
     '/v1/esporta': { GET: [righe.esporta, 'sessione'] },
+    '/v1/esito': { PUT: [esiti.scrivi, 'sessione'], DELETE: [esiti.togli, 'sessione'] },
   };
 
   // §7.3: il CORS, solo per l'origine del sito, con i cookie. Il Retry-After

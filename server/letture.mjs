@@ -28,16 +28,17 @@
 // account si leggono con `leggi.mjs`, mai con `sqlite3`.
 
 import { readFileSync } from 'node:fs';
-import { transazione, versioneSchema, motivoPerIlRegistro } from './db.mjs';
+import { transazione, versioneSchema, motivoPerIlRegistro, esitiDi } from './db.mjs';
 import { NON_CONFERMATO_MS } from './conti.mjs';
 import { sessioni, attivitaCarteggio, dettaglioCarteggio, ripiega, traccia, tagPerTentativo } from '../site/engine.js';
 
 /** Il nome dell'evento nel registro: e' quello che l'informativa chiama «le letture fatte dal titolare». */
 export const EVENTO_LETTURA = 'lettura del titolare';
 
-// Il registro c'e' dallo schema 2, i punteggi dei Segnali dal 3.
+// Il registro c'e' dallo schema 2, i punteggi dei Segnali dal 3, gli esiti dal 5.
 const SCHEMA_DEL_REGISTRO = 2;
 const SCHEMA_DEI_SEGNALI = 3;
+const SCHEMA_DEGLI_ESITI = 5;
 
 /**
  * La banca di questo rilascio, per la copertura e per il dettaglio di carta e
@@ -71,6 +72,8 @@ export function leggiBanche() {
  *              `esito` e `mancanti` di `dettaglioCarteggio()`
  *   tecniche   lo stesso, con `tipo: 't'`
  *   tag        `tagPerTentativo(righe)`
+ *   esiti      l'esito dell'esame, com'e' nel suo `GET /v1/io` (P-73); `null`
+ *              su un database di prima della tabella, che non e' «nessun esito»
  *   registro   gli eventi di questo account nel registro, compresa questa
  *              lettura e quelle di prima: e' da qui che una lettura si rendiconta
  */
@@ -134,6 +137,7 @@ export function leggiAccount(db, email, { motivo, il = new Date().toISOString(),
       carteggio: delCarteggio('c', banche.carteggio),
       tecniche: delCarteggio('t', banche.tecniche),
       tag: { ...tagPerTentativo(righe) },
+      esiti: schema >= SCHEMA_DEGLI_ESITI ? esitiDi(db, a.id) : null,
       registro: db.prepare('SELECT quando, evento, ip, dettaglio FROM registro WHERE account_id = ? ORDER BY id').all(a.id).map((x) => ({ ...x })),
     };
   });
