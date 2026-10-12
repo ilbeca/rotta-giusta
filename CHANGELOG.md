@@ -475,6 +475,28 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   dell'interfaccia era partito per sbaglio senza aspettare: l'ho fermato prima
   che prendesse la porta, e non conta. Guardiano verde. `site/` fuori da
   `engine.js`, `server/` e `docs/prossime-sessioni.md` non sono stati toccati.
+### Progettato — P-65: i tragitti della nuova interfaccia
+
+- **`docs/prototipi/interfaccia-2026-10/tragitti.md`: prima le porte e i
+  ritorni, perché il trasloco dei menu non faccia sparire attività o risposte
+  senza account.** Albero Home · Allenati · Esame · Progressi, più avatar;
+  copertura delle sette schermate e delle dieci attività della specifica;
+  108 tragitti — tre persone, tre stati della Home, dodici compiti — con
+  parole, tocchi e continuità a ogni passaggio. Una proposta di documento
+  unico con URL reali, Indietro/Avanti, ricarica e legale; condizioni su
+  `/avvertenza#condizioni`, non una pagina inventata. Registrazione sopra il
+  risultato, acquisizione e invio distinti, Segnali fuori dalla copertura,
+  costanza sugli ultimi 14 giorni senza serie o traguardi.
+
+- **I costi restano visibili:** quattro tocchi dalla Home alla prima domanda
+  su un argomento scelto, e due alla prima domanda della simulazione — un
+  tocco apre la Preparazione. I nomi alternativi del breve e il richiamo ai
+  quiz sono proposte per l'autore, dai segnali deboli dei bot del 4 ottobre;
+  nessun nuovo collaudo con persone o browser dichiarato. Guardiano e
+  controllo della documentazione verdi; verificati i nove gruppi da dodici,
+  gli ID, i riferimenti locali e le formule dei tocchi. Nessuna suite di
+  esecuzione rilanciata per un documento di mock; nessun codice modificato.
+  Versione e coda intatte, nessun push.
 
 ## [0.30.0] — 2026-10-03
 
