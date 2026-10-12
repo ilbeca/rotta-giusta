@@ -171,20 +171,26 @@ e che cosa aspetta una mia decisione.
 
 Dove siamo, perché tu lo verifichi e non lo prenda per buono: la
 v0.30.0, il sito senza offline, è in linea dal 3 ottobre 2026 su
-rottagiusta.it, .pages.dev e api.rottagiusta.it. P-59, il brainstorming,
-è chiuso il 4 ottobre, e la regia l'ha smistato. Chiusi lo stesso
-giorno P-63 (ADR-006, filosofia, §10 della specifica) e P-64 (il
-progetto di «com'è andata» e delle previsioni, in
-docs/esito-esame-progetto.md). Pronti: P-71, P-72 e P-73 per Claude,
-uno alla volta; P-65 per ChatGPT; P-62 con l'autore.
+rottagiusta.it, .pages.dev e api.rottagiusta.it. Su main, sopra il
+rilascio e non ancora pubblicati, ci sono cinque commit: P-63
+(ADR-006, filosofia, §10 della specifica), P-64 (il progetto di «com'è
+andata» e delle previsioni, docs/esito-esame-progetto.md), P-72 (il
+motore delle previsioni: TIPI_RIGA con 'a', PREVISIONI, rigaAvvio),
+P-73 (il server dell'esito: schema 5, PUT e DELETE /v1/esito, esiti e
+tipi_riga in GET /v1/io) e P-71 (i contratti del motore per il
+ridisegno: cinque stati, i tag N e S, i segnalibri, cerca per numero).
+Chiusi dalla regia il 12 ottobre. Pronti: P-74, P-77 e P-78 per
+Claude, uno alla volta e in quest'ordine; P-65 per ChatGPT; P-62 con
+l'autore.
 
 I prossimi passi, in quest'ordine:
-1. I resoconti di P-65 (e da lì P-66, il secondo mock), di P-71, P-72
-   e P-73; chiusi P-72 e P-73, il prompt di P-74 (i controlli della
-   pagina e la specifica per esito e previsioni).
+1. I resoconti di P-65 (e da lì P-66, il secondo mock), di P-74, P-77
+   e P-78; chiuso P-74, il prompt di P-75 aspetta la base giuridica.
 2. Le decisioni dell'autore nel §4, «Dopo P-59» e «Dopo P-64»:
    ricordagliele quando il lavoro che le aspetta sta per partire. La
-   base giuridica di esito e previsioni ferma P-75.
+   base giuridica di esito e previsioni ferma P-75; i due punti nuovi
+   di P-73 — la procedura del titolare, gli esiti dopo una copia — non
+   fermano niente.
 3. Il §4, «Dopo il traguardo»: il redirect di .pages.dev dal 16
    ottobre, la soglia degli allarmi dal 2 novembre.
 
@@ -239,25 +245,26 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 17 | **I mock della nuova interfaccia**, in cinque passi, in `docs/prototipi/` | ChatGPT | `ui/main` | niente per il primo; ognuno aspetta il precedente | P-65, poi P-66…P-69 |
 | 18 | **La prova dei mock** con tre-cinque persone vere, e con i bot sulle varianti | l'autore, con Claude | — | P-69 | P-70 |
 | 19 | **Le ricerche**: il parere del professionista sulle donazioni (14 domande, I-11); se all'esame vero si torna indietro fra le domande; Lighthouse su telefono e Safari veri (I-08) | l'autore | — | — | §4, «Dopo P-59» |
-| 20 | **I contratti del motore, prima parte**: cinque stati, i due tag, segnalibri, cerca per numero | Claude | `main` | niente | P-71 |
-| 20-bis | **I contratti del motore, seconda parte**: Percorso con il «sei qui», costanza, obiettivo, «hai concluso quello che ti avevamo proposto» | Claude | `main` | P-71; Q-COSTANZA e la decisione 22 (§4, «Dopo P-59», 3 e 10) | P-76, da scrivere |
+| 20-bis | **I contratti del motore, seconda parte**: Percorso con il «sei qui», costanza, obiettivo, «hai concluso quello che ti avevamo proposto» | Claude | `main` | Q-COSTANZA e la decisione 22 (§4, «Dopo P-59», 3 e 10); e P-68, che disegna il «sei qui» | P-76, da scrivere |
 | 21 | **Il progetto e la realizzazione del ridisegno**, con i controlli dei tragitti | ChatGPT, e Claude per i controlli | `ui/main`, `main` | P-70 | da scrivere |
 | 22 | **Spiegazioni**: il primo lotto di 50, «Segnala un problema», la misura dell'effetto | Claude con l'autore, poi ChatGPT | `main`, `ui/main` | l'indirizzo e la licenza (§4, «Dopo P-59», 2 e 6) | da scrivere |
-| 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | P-72: le previsioni si registrano come metodi di `PREVISIONI` | da scrivere |
-| 24 | **Esito e previsioni, il motore** (A-1 di `esito-esame-progetto.md` §10.1): la riga d'avvio `_t:'a'`, `PREVISIONI`, `rigaDiRisposta()` | Claude | `main` | niente: le proposte 8, 9 e 10 del §11 confermate dall'autore il 4 ottobre | P-72 |
-| 25 | **Esito e previsioni, il server** (A-2): la tabella `esito`, schema 5, `tipi_riga` in `GET /v1/io` | Claude | `main` | niente: le proposte 4, 7 e 11 del §11 confermate dall'autore il 4 ottobre | P-73 |
-| 26 | **Esito e previsioni, i controlli della pagina e la specifica** (A-3, A-4) | Claude | `main` | P-72 e P-73 | P-74, da scrivere |
-| 27 | **Esito e previsioni, la pagina e l'informativa** (B-1, B-2), poi un rilascio | ChatGPT | `ui/main` | P-74, e la base giuridica (§4, «Dopo P-64», 1–3) | P-75, da scrivere |
+| 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | niente dal motore: `PREVISIONI` c'è (P-72), e un modello entra come metodo accanto alla regola semplice; Q-STIMA solo per quando si mostra | da scrivere |
+| 26 | **Esito e previsioni, i controlli della pagina e la specifica** (A-3, A-4), con i due conti delle sole risposte nel motore | Claude | `main` | niente: P-72 e P-73 sono chiusi | P-74 |
+| 27 | **Esito e previsioni, la pagina e l'informativa** (B-1, B-2), poi un rilascio | ChatGPT | `ui/main` | P-74 fuso, e la base giuridica (§4, «Dopo P-64», 1–3) | P-75, da scrivere |
+| 28 | **La banca: quattro progressivi illeggibili e undici ripetuti**, corretti sul PDF del decreto con motivo, test e README | Claude | `main` | niente | P-77 |
+| 29 | **Il server che conta i tipi di riga nuovi**: `leggi.mjs` con avvii e segnalibri a parte, la fonte `risposte` delle statistiche che distingue il tipo | Claude | `main` | niente | P-78 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo P-59», «Dopo P-64», «Dopo il traguardo» e le voci non barrate |
 
 **La v0.30.0 è in linea dal 3 ottobre 2026**, sulla pagina e sul server; P-59,
 il brainstorming, è chiuso il 4 ottobre, e questa tabella è il suo
-smistamento. P-63 e P-64 sono chiusi lo stesso giorno, e le loro righe, 15 e
-16, sono uscite. **Per Claude**, uno alla volta nella cartella principale:
-P-72 e P-73 — le proposte del §11 di `docs/esito-esame-progetto.md` che li
-riguardano sono confermate dall'autore, e vengono prima perché i loro dati
-arrivano mesi dopo —, e P-71; l'ordine fra i tre è libero, e ognuno dice
-che cosa fare se trova il lavoro dell'altro. P-62 con l'autore quando vuole.
+smistamento. Chiusi dopo il rilascio, e non ancora pubblicati: P-63 e P-64 il 4
+ottobre; P-72, P-73 e P-71 — il motore delle previsioni, il server dell'esito, i
+contratti del motore per il ridisegno — il 12 ottobre, e le loro righe 20, 24 e
+25 sono uscite. **Per Claude**, uno alla volta nella cartella principale, in
+quest'ordine: P-74 — i controlli della pagina e la specifica per esito e
+previsioni, più i due conti che B-2 non può fare —, che è quello che sblocca
+P-75; poi P-77, la banca, e P-78, il server, piccoli e senza dipendenze. P-62
+con l'autore quando vuole.
 **Per ChatGPT:** P-65, il primo dei cinque mock. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
 che cambiano una promessa (un ADR, la filosofia, la specifica), poi i mock e la
 prova con le persone, poi il codice; «com'è andata» parte presto perché i suoi
@@ -566,6 +573,18 @@ consuma, non si riprogetta.
      fermano P-75. La 6 è la terza parte di Q-STIMA.
   5. **Partire con una raccolta sola** (12): le previsioni possono uscire
      prima, con P-72 e la loro metà dei controlli, se l'esito aspetta.
+  6. **Dal resoconto di P-73 — la procedura del titolare, fuori dal repo:**
+     un conteggio sugli esiti con meno di 20 persone non esce dalla macchina,
+     e con ogni numero va il tasso di risposta. `statistica.mjs` lo ricorda a
+     ogni statistica sugli esiti, ma non può farlo rispettare: va scritto
+     nella procedura, accanto alle altre due righe (`account-progetto.md`
+     §15.2 e §20). Non ferma niente.
+  7. **Dal resoconto di P-73 — gli esiti scritti o corretti dopo una copia si
+     perdono con un ripristino** (`account-progetto.md` §14.4 e §20), come
+     le letture del titolare: dodici ore al più, e un esito nuovo la pagina lo
+     richiede da sé. La proposta è tenerla così; l'alternativa è scrivere il
+     valore dell'esito nel file delle cancellazioni, fuori dal database. Non
+     ferma niente.
   **Una nota da riallineare:** una sessione parallela sul menu, riportata in
   P-59 e non nel repo, scrive «congelamento della serie scartato, visto che hai
   deciso che si azzera». La decisione 19 dice il contrario — «giorni di
@@ -4452,7 +4471,7 @@ docs/prossime-sessioni.md.
 
 ### P-71 — Claude: i contratti del motore, prima parte — cinque stati, due tag, segnalibri, cerca per numero
 
-**Stato:** pronto, dal 4 ottobre 2026. **Dove:** Claude Code,
+**Stato:** **chiuso il 12 ottobre 2026**, commit `9beb360` su `main` (del 4 ottobre, dopo P-72 e P-73). Prima era: pronto, dal 4 ottobre 2026. **Dove:** Claude Code,
 `~/Software/rotta-giusta`, ramo **`main`**, uno alla volta con P-72 e P-73.
 **Nasce da:** le decisioni 8, 14, 15 e 20 di P-59, formali nel §10 della
 specifica (P-63). **Sblocca:** P-76, e il progetto del ridisegno (riga 21),
@@ -4524,11 +4543,38 @@ commit, con la voce in fondo a [Unreleased]; niente push. Chiudi con il
 resoconto di docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `9beb360`, voce «Aggiunto — P-71» nel CHANGELOG. Quattro
+contratti additivi in `site/engine.js`, e la pagina non ne chiama nessuno: i
+cinque stati — `statoQuesito()`, `contaStati()`, `STATI_QUESITO`,
+`STATI_IN_TRE`, `CONFERMA_ORE = 12` —, con lo specchio che porta `gp` e `gu` e
+`applica()` che riceve il `ts` come sesto argomento, R-ARCH-01 intatto e
+`classifica()` invariata, i tre stati misurati dai cinque; i tag `N` e `S`, con
+`L` e `C` validi per sempre, e `rigaScrivibile()` che legge dal `tipi_riga` del
+server se accoglie un tag o un tipo nuovo, provato contro i motori della
+v0.30.0 e di `eabd6fd` estratti dal repo; i segnalibri, `_t: 'b'`, con
+`segnalibri()` e `codaSegnalibri()`; `cercaNumero()`. Un controllo
+dell'interfaccia nuovo, `test_applica_con_istante`, tace finché la pagina non
+legge i cinque stati e da quel giorno pretende il `ts` in ogni `E.applica()`.
+Specifica: §3.2, §3.3, §4.1, §4.2, il nuovo §9.12 con dodici requisiti coperti
+e uno scoperto (R-STATI-06, le parole: Q-STATI), le note accanto alle
+decisioni 8, 14, 15 e 20 del §10. Trentotto rotture del motore, tutte rosse;
+due passate verdi alla prima corsa, e i casi che le prendono aggiunti.
+**Controllato dalla regia il 12 ottobre:** il commit, i sei file nel territorio
+del motore, i sei orfani dichiarati in `docs/eccezioni-interfaccia.md`, i nomi
+dei test del §9.12 che `test_specifica` risolve; le cinque suite rifatte sullo
+stato di `main` a `9beb360`: motore 210/214 con i quattro skip previsti, server
+80/80, dati 223, specifica 870, interfaccia 2.288 con la 8620 guardata libera
+per 90 s; guardiano e controllo della documentazione verdi. Non rifatte le
+trentotto rotture né la LTS. **Trovato, e smistato:** la banca ha quattro
+progressivi illeggibili e undici ripetuti, misurati e non corretti — P-77;
+`server/letture.mjs` non conta `'b'` e la fonte `risposte` comprende segnalibri
+e tag — P-78; R-PREV-02 non nomina i contratti di P-71, misurato dalla regia —
+P-74, punto 1. Per l'autore niente di nuovo: le parole dei cinque stati restano
+Q-STATI.
 
 ### P-72 — Claude: esito e previsioni, il motore (A-1)
 
-**Stato:** pronto dal 4 ottobre 2026; l'autore ha **confermato** quel giorno le proposte
+**Stato:** **chiuso il 12 ottobre 2026**, commit `847d290` su `main` (del 4 ottobre). Prima era: pronto dal 4 ottobre 2026; l'autore ha **confermato** quel giorno le proposte
 8, 9 e 10 del §11 di `docs/esito-esame-progetto.md` (§4, «Dopo P-64», punto
 2): la regola si fissa prima della prima riga. **Dove:** Claude Code,
 `~/Software/rotta-giusta`, ramo **`main`**. **Nasce da:** P-64, §10.1, A-1.
@@ -4574,11 +4620,31 @@ toccare docs/prossime-sessioni.md. Un commit, con la voce in fondo a
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `847d290`, voce «Aggiunto — P-72» nel CHANGELOG. A-1 com'è
+scritto, con le proposte 8, 9 e 10 confermate: `TIPI_RIGA` esportato e
+congelato con `'a'`; `validaRiga()` accoglie la riga d'avvio con le sue regole
+e rifiuta il resto con «avvio non valido»; `PREVISIONI` congelata con
+`regola-semplice-1` e la definizione accanto; `previsioniProva()` con ogni
+metodo nel suo `try`; `rigaAvvio()`, che lancia se gli argomenti non fanno una
+riga valida; `rigaDiRisposta()`. Precisazioni scritte nel §10.1: una prova per
+`uid`, solo righe con una data e strettamente prima dell'avvio, `passed` 1 o
+`true`. Sette test scritti prima — R-PREV-01…04 e 08, più `rigaDiRisposta` e
+`previsioniProva` —, trentadue rotture tutte rosse, due prese solo dalla
+riga-spia di R-PREV-08. Nel §10.1 del progetto l'elenco dei chiamanti della
+pagina che contano «risposte», riga per riga, per B-2. **Controllato dalla
+regia il 12 ottobre:** il commit, i cinque file nel territorio del motore, i
+due orfani dichiarati, i nomi dei test di R-PREV-01…04 e 08 in
+`tests/test_engine.mjs` uguali a quelli proposti nel §9 del progetto; le cinque
+suite come per P-71. Non rifatte le rotture. **Trovato, e smistato:** due numeri
+arrivano alla pagina già contati — `confermate` e `nonSalvate` — e servono
+`confermateRisposte` e `nonSalvateRisposte` nel motore prima di B-2: P-74,
+punto 1; i tag N/L/C contano oggi come risposte, e `rigaDiRisposta()` li toglie:
+B-2 lo dice nel collaudo; il §7 del progetto corretto lì. Per l'autore niente di
+nuovo.
 
 ### P-73 — Claude: esito e previsioni, il server (A-2)
 
-**Stato:** pronto dal 4 ottobre 2026; l'autore ha **confermato** quel giorno le proposte
+**Stato:** **chiuso il 12 ottobre 2026**, commit `eabd6fd` su `main` (del 4 ottobre). Prima era: pronto dal 4 ottobre 2026; l'autore ha **confermato** quel giorno le proposte
 4, 7 e 11 del §11 di `docs/esito-esame-progetto.md` (§4, «Dopo P-64», punto
 3). **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**. **Nasce
 da:** P-64, §10.1, A-2. **Sblocca:** P-74.
@@ -4628,6 +4694,242 @@ site/. Un commit, con la voce in fondo a [Unreleased]; niente push.
 Chiudi con il resoconto di docs/prossime-sessioni.md.
 ```
 
+**Esito:** commit `eabd6fd`, voce «Aggiunto — P-73» nel CHANGELOG. A-2 com'è
+scritto, con le proposte 4, 7 e 11 confermate: lo schema 5 con la tabella
+`esito`, additivo; `PUT` e `DELETE /v1/esito` in `server/esiti.mjs`, con il
+`422 {errore: 'esito', campo, messaggio}` e il `409 {errore: 'troppi_giorni'}`;
+il ritiro scritto prima nel file delle cancellazioni, riletto dal ripristino e
+dall'avvio del server; `esiti` e `tipi_riga` in `GET /v1/io`, `esiti`
+nell'export; la fonte `esiti` delle statistiche, con la colonna `risultato` e
+non `esito`; `leggi.mjs` che mostra gli esiti. Sette test scritti prima —
+R-ESITO-01 e 05…09, il ripristino da una copia di prima dello schema 5 — e
+otto estesi, trentaquattro rotture tutte rosse; R-ESITO-06 e il ripristino
+provati con il codice di `v0.30.0` estratto dal tag. **Trovato e corretto:** una
+data con il mese 13 faceva rispondere `500` invece di `422` anche a `PUT
+/v1/profilo`, in esercizio dalla v0.28.0 — la correzione arriva alla macchina
+con il prossimo rilascio. **Controllato dalla regia il 12 ottobre:** il commit,
+i quattordici file in `server/`, `tests/`, `docs/account-progetto.md` e il
+CHANGELOG; i nomi dei test di R-ESITO in `tests/test_server.mjs` uguali a quelli
+proposti nel §9 del progetto; server 80/80 con `ripristina --prova` dentro, e
+le altre suite come per P-71. Non rifatte le rotture né la LTS. **Per
+l'autore,** nel §4 «Dopo P-64» ai punti 6 e 7: la procedura del titolare sulla
+soglia delle 20 persone, e gli esiti dopo una copia che un ripristino perde.
+**Per la coda:** il §10.1 di `docs/esito-esame-progetto.md` non dice che A-2 è
+fatto, perché il prompt limitava la sessione a `account-progetto.md`: lo
+annota P-74, punto 4, con gli scostamenti.
+
+### P-74 — Claude: esito e previsioni, i controlli della pagina e la specifica (A-3, A-4)
+
+**Stato:** pronto, dal 12 ottobre 2026: P-72 e P-73 sono chiusi, e P-71 è
+nel motore. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**,
+uno alla volta con P-77 e P-78. **Nasce da:** P-64, §10.1, A-3 e A-4; i
+resoconti di P-72 e P-73 (gli esiti qui sopra). **Sblocca:** P-75, cioè la
+pagina e l'informativa, che aspetta anche la base giuridica.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-74: i controlli della pagina e la specifica per «com'è
+andata» e per le previsioni registrate, più due conti nel motore che la
+pagina non può fare da sé. Solo tests/, site/engine.js per i due conti,
+docs/specifica.md, docs/esito-esame-progetto.md (il §10.1),
+docs/account-client-progetto.md (il §12), docs/eccezioni-interfaccia.md.
+La pagina non si tocca: site/app.html è dell'interfaccia, e B-1 e B-2
+la faranno dopo di te.
+
+Leggi AGENTS.md; docs/esito-esame-progetto.md per intero, e poi di
+nuovo il §3.1, §3.2, §3.5, §4.1, §4.6, §7, §8, §9 e nel §10.1 i lavori
+A-3 e A-4, che sono il tuo contratto, con le note «A-1 fatto da P-72» e
+l'elenco dei chiamanti che contano «risposte»; in
+docs/account-progetto.md il §7.1 di P-73 (la forma di PUT e DELETE
+/v1/esito, il 422 e il 409, esiti e tipi_riga in GET /v1/io); la voce
+di P-72 e di P-73 nel CHANGELOG; nella specifica §9.9 «Un regime solo
+(P-40)» e il §9.6 «Un regime solo per il Carteggio», che sono la storia
+del meccanismo che userai; in docs/account-client-progetto.md il §12,
+«Il banco».
+
+Quattro lavori, in quest'ordine.
+
+1. Due conti nel motore, prima di tutto, perché B-2 non li può fare
+   (§10.1, «Due cose da sapere prima di B-2»): riepilogoTrasferimento()
+   dà anche confermateRisposte accanto a confermate, e il conflitto
+   (conflittoDa() via dopoInvio()) dà nonSalvateRisposte accanto a
+   nonSalvate, tutti e due con rigaDiRisposta() sulle righe che le due
+   funzioni hanno già in mano. Elenca prima i chiamanti e di' che cosa
+   cambia per ciascuno: i campi di oggi restano com'erano. Un test per
+   ognuno, con un file esportato da un account che porta righe d'avvio
+   e tag. E allunga R-PREV-02 con i contratti di P-71 — contaStati(),
+   codaSegnalibri(), cercaNumero() — che P-72 non aveva nel motore:
+   misurato il 12 ottobre, il test non li nomina.
+
+2. I controlli della pagina: due gruppi nuovi del banco del client
+   (tests/client_account.mjs), E-01 per l'esito — R-ESITO-02…04 — e
+   P-01 per l'avvio — R-PREV-05…07, 09, 10 —, con il server vero sulla
+   8620 e, per il caso del server di prima, una risposta di GET /v1/io
+   sostituita dal banco senza esiti e senza tipi_riga (tests/browser.mjs
+   sa farlo). I numeri, non i testi: una riga d'avvio letta dal
+   database del server, con il suo uid; i conteggi di «risposte» letti
+   dalla copia dell'account; l'elenco dell'esito confrontato con la
+   risposta del 200. Il testo dell'esito (§3.1) si cerca nel testo che
+   si vede, come fa C-20, non nel DOM.
+
+   La pagina di oggi non ha né il riquadro né la riga d'avvio, e deve
+   restare verde: usa il meccanismo delle aree 2–5, con la lezione di
+   P-51. Scrivi nel §10.1 del progetto, prima del codice, il contratto
+   di un raccordo che B-1 e B-2 dovranno dichiarare — poche funzioni di
+   primo livello, come riepilogoQuiz() per il ciclo —, e il banco
+   riconosce il regime da quello: senza raccordo pretende che la pagina
+   non chiami /v1/esito, non scriva righe _t:'a' e non mostri un
+   riquadro; con il raccordo esegue i due gruppi per intero. La pagina
+   di riferimento del client realizza il raccordo con i testi del §3.1
+   e porta le rotture dell'A-3: il riquadro senza data, dopo 90 giorni,
+   con un esito già detto, in un riepilogo, in una finestra modale;
+   «Salvato» prima del 200; la riga d'avvio scritta alla consegna, senza
+   account, due volte con due uid, con il server di prima; una
+   percentuale nel riepilogo; «1 risposte da inviare» per una riga
+   d'avvio; un metodo che lancia e ferma la prova. Ogni rottura rossa
+   per il suo motivo, e il banco provato contro sé stesso. Il regime
+   senza raccordo ha una scadenza, la merge di P-75: scrivilo nel §10.1
+   e in questo file no — lo scrive la regia.
+
+3. La specifica (A-4): §3.2 la riga d'avvio, e perché non è uno
+   specchio; §3.7 il server conserva gli esiti; §4.6 la nota sulla
+   stima diventa «si registra»; §5.4 le due voci; i requisiti del §9 del
+   progetto nel §9 della specifica — R-ESITO-01 e 05…09 con i nomi dei
+   test che P-73 ha scritto, R-PREV-01…04 e 08 con quelli di P-72:
+   leggili in tests/, non copiarli dal §9 del progetto, che li
+   proponeva —, R-ESITO-02…04 e R-PREV-05…07, 09, 10 con i tuoi; una
+   riga per i due conti del punto 1; Q-STIMA nel §10 aggiornato: la
+   strada in pagina c'è, resta l'email; il registro. Quello che il banco
+   non vede va nel §12 del progetto del client e nel paragrafo sotto la
+   tabella, come per gli altri gruppi.
+
+4. Nel §10.1 di docs/esito-esame-progetto.md annota A-2 come fatto da
+   P-73, con gli scostamenti che P-73 ha scritto in account-progetto.md
+   (§7.1, §14.4, §15.2: il 422 per un campo sconosciuto, la colonna
+   risultato, gli esiti dopo una copia), e A-3 e A-4 come fatti da te.
+
+Prima il test che fallisce, poi il codice; ogni test provato al
+contrario. Se un testo del progetto non regge, fermati su quello,
+correggilo lì e dillo. Le cinque suite verdi, il server anche con la
+LTS 24, l'interfaccia con la 8620 guardata libera prima. Non toccare
+docs/prossime-sessioni.md né site/ fuori da engine.js. Un commit, con
+la voce in fondo a [Unreleased]; niente push. Chiudi con il resoconto
+di docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-77 — Claude: la banca, i quattro progressivi illeggibili e gli undici ripetuti
+
+**Stato:** pronto, dal 12 ottobre 2026. **Dove:** Claude Code,
+`~/Software/rotta-giusta`, ramo **`main`**, uno alla volta con P-74 e P-78.
+**Nasce da:** il resoconto di P-71, che ha misurato la banca scrivendo
+`cercaNumero()`. **Sblocca:** niente; il ridisegno (riga 21) trova una ricerca
+per numero che trova tutto.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-77: la banca ha quattro progressivi `p` che non si leggono —
+base-8 («zzetto1 d.1i. 1p-o8ppa.»), base-385, base-943, base-1326 — e
+undici numeri portati da due quesiti diversi, sette fra 1.2.2-2 e
+1.2.2-8 fra «Irregolarità» e «Calcolo dell'autonomia», più altri
+quattro. Li ha misurati P-71 (CHANGELOG, specifica §4.2 e R-NUM-02, un
+commento in engine.js), e un test li fissa com'erano. Solo site/dati/,
+fonte/, tests/test_dati.py, tests/test_engine.mjs per R-NUM-02,
+README.md e la specifica §4.2 e R-NUM-02.
+
+Leggi AGENTS.md — «Non toccare site/dati/ se non con una correzione
+motivata, fissata da un test in tests/test_dati.py e dichiarata nel
+README» — e il README, «I difetti dichiarati»; nella specifica §3.1,
+§4.2 e R-NUM-02; la voce di P-71 nel CHANGELOG.
+
+La regola: la banca si corregge solo dove il PDF del decreto in fonte/
+la smentisce, e si guarda il PDF, non si deduce dal contesto — le
+figure della 0.12.0 sono state riabbinate guardandole una per una, e la
+tabella del DM 133/2024 letta come immagine perché il testo estratto
+collassava le colonne. Per i quattro illeggibili: apri la pagina del
+decreto e leggi il progressivo vero; se il PDF stesso non lo dà, resta
+illeggibile e lo dichiari. Per gli undici ripetuti: per ciascuno, il
+PDF ha due quesiti con lo stesso numero, oppure uno dei due è un errore
+di estrazione? Correggi solo i secondi; i primi restano, dichiarati, e
+cercaNumero() continua ad aprirli tutti e due. Nessun altro campo si
+tocca: né testo, né risposte, né figure.
+
+Prima il test che fallisce, in tests/test_dati.py, con il valore
+atteso letto dal PDF e il motivo scritto accanto, come le dieci figure
+e base-226; poi la correzione; poi R-NUM-02 nel motore con la misura
+nuova — zero illeggibili se il PDF li dà tutti, e i ripetuti che il
+decreto ha davvero —, e la specifica §4.2 e R-NUM-02 riscritti sul
+nuovo stato; il README con la correzione fra i difetti dichiarati, con
+la fonte e la pagina. fonte/verifica.py resta verde se lo lanci (serve
+pypdf); se la correzione tocca qualcosa che lui confronta, dillo.
+
+Le cinque suite verdi, l'interfaccia con la 8620 guardata libera prima.
+Non toccare docs/prossime-sessioni.md né site/ fuori da site/dati/. Un
+commit, con la voce in fondo a [Unreleased]; niente push. Chiudi con il
+resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
+### P-78 — Claude: il server che conta i tipi di riga nuovi
+
+**Stato:** pronto, dal 12 ottobre 2026. **Dove:** Claude Code,
+`~/Software/rotta-giusta`, ramo **`main`**, uno alla volta con P-74 e P-77.
+**Nasce da:** il resoconto di P-71, «Trovato» 4, e il §9.12 della specifica,
+«Che cosa non vedono». **Sblocca:** niente; va in esercizio con il prossimo
+rilascio del server.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-78: il server accoglie già le righe d'avvio (_t:'a', P-72) e
+i segnalibri (_t:'b', P-71), perché importa validaRiga(); ma
+server/letture.mjs non le conta fra le righe dell'account, e la fonte
+`risposte` di server/statistiche.mjs le comprende insieme ai tag,
+quindi una statistica «sulle risposte» che non filtra per tipo conta
+anche quello che risposta non è. Solo server/, tests/test_server.mjs,
+docs/account-progetto.md §15.1 e §15.2, e la specifica §9.9 e §9.12.
+
+Leggi AGENTS.md; la specifica §3.2, §3.7, §9.12 «Che cosa non vedono»;
+in docs/account-progetto.md §15.1 e §15.2; gli esiti di P-54 e P-55 in
+docs/prossime-sessioni.md; le voci di P-71, P-72 e P-73 nel CHANGELOG.
+
+1. server/leggi.mjs e letture.mjs: le risposte si contano con
+   rigaDiRisposta() del motore, e accanto, a parte e con il loro nome,
+   le prove avviate (le righe 'a', con motore e stime com'erano), i
+   segnalibri (le righe 'b', con l'ultimo gesto per quesito da
+   segnalibri() del motore) e i tag. Chi aiuta vede quello che vede chi
+   chiede aiuto, con le stesse funzioni della pagina: niente seconda
+   contabilità. R-ACC-71 e R-ACC-74 nella specifica dicono che cosa
+   cambia, e il controllo di R-ACC-74 resta verde senza eccezioni nuove.
+
+2. server/statistiche.mjs: la fonte `risposte` dice il tipo di ogni
+   riga, e una statistica che conta risposte deve poterle distinguere
+   dagli avvii, dai segnalibri e dai tag senza ricordarsi di filtrare:
+   decidi la forma — una colonna `tipo` che c'è già e si documenta, o
+   una fonte `risposte` ristretta alle righe di rigaDiRisposta() e una
+   `righe` con tutto —, con il perché scritto nel §15.2, e un test che
+   una statistica sulle risposte non conti una riga d'avvio né un
+   segnalibro. Il controllo statico di R-ACC-69 resta com'è.
+
+Prima il test che fallisce, poi il codice; ogni test provato al
+contrario. Le cinque suite verdi, il server anche con la LTS 24 dal
+pacchetto verificato, node server/ripristina.mjs --prova, l'interfaccia
+con la 8620 guardata libera prima. La macchina in esercizio non si
+tocca. Non toccare docs/prossime-sessioni.md né site/. Un commit, con
+la voce in fondo a [Unreleased]; niente push. Chiudi con il resoconto
+di docs/prossime-sessioni.md.
+```
+
 **Esito:** —
 
 ### I segnaposto — i prompt che non si possono ancora scrivere
@@ -4656,25 +4958,25 @@ il resoconto del precedente, e la regia scrive il suo prompt allora.
 
 **Dopo P-63 e P-64, dal 4 ottobre 2026.**
 
-- **P-74 — esito e previsioni, i controlli della pagina e la specifica** (A-3
-  e A-4 del §10.1 di `docs/esito-esame-progetto.md`), Claude su `main`. Aspetta
-  P-72 e P-73: i gruppi E-01 e P-01 del banco girano contro il server e il
-  motore veri. Se l'autore parte con le sole previsioni, la metà di P-01 esce
-  da sola dopo P-72.
+- **P-74**: scritto il 12 ottobre 2026, qui sopra.
 - **P-75 — esito e previsioni, la pagina e l'informativa** (B-1 e B-2),
   ChatGPT su `ui/main`. Aspetta P-74 fuso e la base giuridica (§4, «Dopo
   P-64», punto 1). Poi un rilascio: «Build now» e `rg-aggiorna`, schema 5.
 - **P-76 — i contratti del motore, seconda parte**: il Percorso come mappa con
   il «sei qui» (decisione 16), la costanza (19), l'obiettivo (13), la ripresa
   e «hai concluso quello che ti avevamo proposto» (22). Prima un progetto, poi
-  il codice: il Percorso ha fasi da definire, e la 22 tocca il §4.4. Aspetta
-  P-71, Q-COSTANZA, e conviene che parta dopo P-68, che disegna il «sei qui».
+  il codice: il Percorso ha fasi da definire, e la 22 tocca il §4.4. P-71 è
+  chiuso; aspetta Q-COSTANZA, e conviene che parta dopo P-68, che disegna il
+  «sei qui».
 - **Riga 22, le spiegazioni**: aspetta l'indirizzo delle segnalazioni e la
   licenza. Il prompt dovrà dire: il file accanto alla banca, la verifica
   dell'autore una per una, la data, «Segnala un problema», e la misura a
   scaglioni (decisione 29).
-- **Riga 23, la stima**: aspetta P-72, perché ogni modello candidato entra
-  come un metodo di `PREVISIONI` e si registra accanto alla regola semplice.
+- **Riga 23, la stima**: P-72 è chiuso, e ogni modello candidato entra come
+  un metodo di `PREVISIONI` accanto alla regola semplice. Il prompt dovrà dire:
+  prima un progetto — il modello, gli studenti finti, come si valida sulle
+  prove vere (§4.7 di `esito-esame-progetto.md`) —, poi il codice; le soglie
+  con cui si mostra sono Q-STIMA, dell'autore.
 
 **Quello che segue è di prima del traguardo.** Qui sotto c'era **tutto quello
 che restava** fino alla versione con gli account e
@@ -5285,3 +5587,18 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   proposte del §11 come valori: l'autore le ha confermate lo stesso giorno
   (4, 7, 8, 9, 10, 11). Con il suo sì: `main` pushato, la issue #1 commentata
   e chiusa con la decisione 14, `ui/main` e `ui/vetrina` allineati a `main`.
+- **12 ottobre 2026 — P-72, P-73 e P-71 chiusi; P-74, P-77 e P-78 pronti.** I
+  tre resoconti letti contro il repo: i tre commit del 4 ottobre ci sono,
+  tutti nel territorio del motore, questo file non l'ha toccato nessuno, le
+  cinque suite rifatte dalla regia sullo stato di `main` a `9beb360` — motore
+  210/214, server 80/80, dati 223, specifica 870, interfaccia 2.288 —, i nomi
+  dei test dei requisiti proposti nel §9 del progetto ritrovati in `tests/`.
+  Le righe 20, 24 e 25 escono dalla coda; entrano la 28, la banca con i
+  progressivi da correggere, e la 29, il server che conta i tipi di riga nuovi,
+  tutte e due dal resoconto di P-71. P-74 è scritto: A-3 con il meccanismo dei
+  due regimi delle aree 2–5, A-4, i due conti delle sole risposte che P-72 ha
+  lasciato a `main`, R-PREV-02 allungato con i contratti di P-71 — misurato
+  dalla regia: non li nomina —, e la nota di A-2 nel §10.1 del progetto, che
+  P-73 non poteva scrivere. Nel §4, «Dopo P-64», i due punti di P-73 per
+  l'autore, che non fermano niente. Gli allineamenti di `ui/main` e
+  `ui/vetrina` e il push aspettano il sì dell'autore.
