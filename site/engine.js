@@ -2603,12 +2603,17 @@ export function lottoDaInviare(righe, coda, { maxRighe = INVIO_MAX_RIGHE, maxByt
   return lotto.length ? { generazione: coda.generazione, righe: lotto } : null;
 }
 
+// `nonSalvate` conta le righe in coda; `nonSalvateRisposte` le sole risposte fra
+// quelle, con `rigaDiRisposta()` (P-74): una riga d'avvio o un tag non sono
+// «risposte non salvate», e la pagina riceve il numero, non gli uid.
 function conflittoDa(coda, corpo, righe) {
+  const inCoda = (righe || []).filter((r) => coda.daInviare.includes(chiaveUid(r)));
   return {
     generazione: corpo.generazione,
     azzerato_il: corpo.azzerato_il ?? null,
     epocaDb: corpo.epoca ?? coda.epocaDb,
-    nonSalvate: (righe || []).filter((r) => coda.daInviare.includes(chiaveUid(r))).length,
+    nonSalvate: inCoda.length,
+    nonSalvateRisposte: inCoda.filter(rigaDiRisposta).length,
   };
 }
 
@@ -2801,8 +2806,8 @@ export function registraEsito(trasferimento, esito) {
 /**
  * A che punto e' un trasferimento, letto con la coda corrente e l'archivio:
  *
- *   { stato, completo, righe, confermate, daInviare, bloccate, scartate,
- *     daVerificare, nonSalvate, motivi, conflitto }
+ *   { stato, completo, righe, confermate, confermateRisposte, daInviare,
+ *     bloccate, scartate, daVerificare, nonSalvate, motivi, conflitto }
  *
  * `stato` e' uno di:
  *   - «annullato»: la generazione della coda non e' piu' quella del
@@ -2821,6 +2826,12 @@ export function registraEsito(trasferimento, esito) {
  * coda), non inviabili (`bloccate`, da `nonInviabili()`); `motivi` le conta per
  * motivo. Una conferma data da un database con un'altra epoca non vale finche'
  * il server non la ripete.
+ *
+ * `confermateRisposte` conta, fra le confermate, le sole risposte
+ * (`rigaDiRisposta()` sulla riga dell'archivio con quell'uid; P-74): e' il
+ * numero di «{N} risposte salvate nel tuo account». Un file esportato da un
+ * account porta anche righe d'avvio, tag e segnalibri, che sono righe salvate
+ * e non risposte. Un uid senza la sua riga nell'archivio non si conta.
  */
 export function riepilogoTrasferimento(trasferimento, coda, righe, opt = {}) {
   const t = trasferimento;
@@ -2830,14 +2841,17 @@ export function riepilogoTrasferimento(trasferimento, coda, righe, opt = {}) {
   const inCoda = new Set(coda.daInviare);
   const bloccateMappa = new Map(nonInviabili(righe, coda, opt).map((x) => [x.uid, x.motivo]));
   const bloccate = [], scartate = [], daVerificare = [];
-  let daInviare = 0, confermate = 0;
+  const perUid = new Map((righe || []).map((r) => [chiaveUid(r), r]));
+  let daInviare = 0, confermate = 0, confermateRisposte = 0;
   for (const u of t.uid) {
     if (u in coda.scartate) scartate.push({ uid: u, motivo: coda.scartate[u] });
     else if (inCoda.has(u)) {
       if (bloccateMappa.has(u)) bloccate.push({ uid: u, motivo: bloccateMappa.get(u) });
       else daInviare++;
-    } else if (confermateSet.has(u)) confermate++;
-    else daVerificare.push(u);
+    } else if (confermateSet.has(u)) {
+      confermate++;
+      if (rigaDiRisposta(perUid.get(u))) confermateRisposte++;
+    } else daVerificare.push(u);
   }
   const motivi = {};
   for (const m of [...t.rifiutate, ...scartate, ...bloccate].map((x) => x.motivo)) motivi[m] = (motivi[m] || 0) + 1;
@@ -2851,7 +2865,8 @@ export function riepilogoTrasferimento(trasferimento, coda, righe, opt = {}) {
   else stato = 'completo';
   return {
     stato, completo: stato === 'completo', righe: t.uid.length,
-    confermate: annullato ? 0 : confermate, daInviare, bloccate, scartate, daVerificare,
+    confermate: annullato ? 0 : confermate, confermateRisposte,
+    daInviare, bloccate, scartate, daVerificare,
     nonSalvate, motivi, conflitto: t.conflitto,
   };
 }

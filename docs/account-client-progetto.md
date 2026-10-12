@@ -1899,6 +1899,72 @@ senza diventare un avviso o una riga sul server; `indexedDB.databases()` da
 solo; chiavi della versione di prima senza il prefisso `pn.`; Safari; un
 archivio vero di mesi.
 
+### «Com'è andata» e la riga d'avvio (P-74, 13 ottobre 2026)
+
+Due gruppi nuovi, **E-01** per l'esito dell'esame e **P-01** per la riga
+d'avvio delle simulazioni, con il server vero e il contratto nel §10.1 di
+`docs/esito-esame-progetto.md`, scritto prima del banco: il raccordo di quattro
+funzioni, gli agganci, le parti. In breve, gli agganci nuovi: il riquadro nel
+Percorso con il titolo «Com'è andato l'esame del {giorno e mese}?» e i tre
+pulsanti; il modulo «Il tuo esame» con `input[name="giorno"]`,
+`input[name="esito-{prova}"]` e `input[name="errori-{prova}"]` e «Salva»;
+«Salvato. Lo usiamo soltanto in conteggi aggregati.» con l'elenco del `200`
+nella forma del §3.5 del progetto; «Il tuo esame» nella finestra dell'account;
+`input[name="quiz-prova"]` e `[data-fase]` per «Base e vela», che la pagina di
+oggi ha già; «prove avviate {N}» in Info.
+
+**Due regimi, con la lezione di P-51.** `tests/test_interfaccia.py` legge dal
+testo di ogni pagina se dichiara `domandaEsito` e `salvaEsito`, e
+`avvioProva` e `daInviare`, e lo passa al banco in `regimi`. Con il raccordo i
+gruppi girano per intero; senza, la parte `spento`; con una coppia a metà, un
+rosso che lo dice. La pagina vera di oggi è senza raccordo, e la parte `spento`
+— un account con la data d'esame di ieri, una simulazione completa — la trova
+pulita. Il regime senza raccordo esce con la merge di P-75.
+
+**Che cosa il banco ha imparato.** `tests/browser.mjs` dà al gestore di una
+risposta intercettata il suo corpo vero (`{ corpo }`, con
+`Fetch.getResponseBody`): è così che il banco toglie due campi a `GET /v1/io`
+per imitare il server di prima. Il contesto di una corsia sa scrivere e leggere
+gli esiti nel database (`ctx.esito`, `ctx.togliEsiti`, `ctx.esitiDi`) e
+servire un file del sito diverso per il resto di un gruppo (`ctx.sostituisci`):
+`P-01:errore` serve `/engine.js` con `regola-semplice-1` che lancia.
+
+**Il riquadro si cerca nel posto, non nell'occlusione.** Per ogni elemento più
+interno che mostra il titolo, il banco guarda dove sta: dentro `#v-oggi`, fuori
+da una finestra modale, da un runner, da un riepilogo e dalla revisione. Sotto
+un runner il Percorso può restare disegnato e coperto, e quello non è un
+difetto; il riquadro dentro il riepilogo sì.
+
+**Ventinove rotture della pagina di riferimento**, tutte rosse per il loro
+motivo: le tredici del §10.1 del progetto, dodici nate scrivendo il banco, e
+quattro di regime — il raccordo tolto con la funzione rimasta, per l'esito e
+per l'avvio, e una coppia a metà per ciascuno.
+
+**Il banco contro sé stesso**, una difesa tolta alla volta. Senza guardare il
+posto del riquadro passano verdi il riquadro nel riepilogo e quello in una
+finestra modale. Senza il confronto fra la stessa simulazione con e senza riga
+d'avvio passa verde una frase che cambia con la previsione e non ha cifre;
+senza la ricerca delle parole da previsione passa verde la previsione detta
+anche senza riga d'avvio, uguale nei due casi: le due difese si coprono a
+vicenda, e ognuna ha la sua rottura. Tre difese sono di struttura, e toglierle
+fa rossa anche la pagina giusta: il `PUT` trattenuto — senza, «Salvato» arriva
+prima che il banco guardi —, la risposta del `200` sostituita con un elenco
+diverso da quello mandato, e i due campi tolti a `GET /v1/io`. E «prima della
+prima risposta» si guarda due volte, nella copia prima del primo tocco e con
+l'istante della riga, che si coprono a vicenda.
+
+**Che cosa non vede.** Il server di prima vero: il banco ne imita la sola
+differenza che conta, i due campi di `GET /v1/io`, e la pagina che li prendesse
+da un'altra risposta dopo la ricarica non sarebbe vista. «Non l'ho ancora
+fatto», la correzione e il ritiro di un esito dalla pagina, la pratica in un
+altro giorno, il messaggio di un `404` o di un `422` dell'esito, la frase
+«Se la ripeti…». Un testo che lascia capire la previsione senza scriverla e
+senza cambiare fra i due casi. L'orologio sbagliato di un dispositivo, e il
+giorno vicino alla mezzanotte, che il banco e il browser leggono dalla stessa
+macchina. Chi risponde e chi no. Il riepilogo di una simulazione con risposte,
+che con e senza riga d'avvio cambia con le risposte: il confronto si fa sulla
+prova consegnata vuota. Safari.
+
 ## 13. Evidenze e limiti di P-13
 
 Precondizioni: worktree `rotta-giusta-ui`, ramo `ui/main`, albero pulito,

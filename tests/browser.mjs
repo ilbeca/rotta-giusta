@@ -184,7 +184,13 @@ export async function avviaChrome({ attesaMs = 15000, nomi = [] } = {}) {
       const fase = params.responseStatusCode !== undefined || params.responseErrorReason !== undefined ? 'Response' : 'Request';
       const regola = regole.find((r) => r.fase === fase && r.re.test(params.request.url));
       const id = { requestId: params.requestId };
-      const r = regola ? await regola.gestore(params.request, params) : null;
+      // Dopo la risposta il gestore puo' leggerne il corpo: e' cosi' che il banco
+      // toglie due campi a una risposta vera (E-01 e P-01, «il server di prima»).
+      const aiuti = fase === 'Response' ? { corpo: async () => {
+        const x = await cmd('Fetch.getResponseBody', id, sessionId);
+        return x.base64Encoded ? Buffer.from(x.body, 'base64').toString('utf8') : x.body;
+      } } : {};
+      const r = regola ? await regola.gestore(params.request, params, aiuti) : null;
       // La pagina puo' aver annullato la richiesta nel frattempo: allora il
       // comando fallisce, ed e' quello che si vuole.
       if (r && r.fallisci) return cmd('Fetch.failRequest', { ...id, errorReason: r.fallisci }, sessionId).catch(() => {});
@@ -309,7 +315,9 @@ export async function avviaChrome({ attesaMs = 15000, nomi = [] } = {}) {
        * errore di rete; puo' essere asincrono, e allora la richiesta resta ferma
        * finche' non risponde: e' cosi' che il banco tiene una richiesta in volo.
        * `fase` e' 'Request' — prima che parta — o 'Response' — dopo che il
-       * server ha risposto, cioe' con la richiesta gia' accolta.
+       * server ha risposto, cioe' con la richiesta gia' accolta; in quella fase
+       * il gestore riceve come terzo argomento `{ corpo }`, una funzione che
+       * restituisce il corpo della risposta vera, come testo.
        * Piu' chiamate sulla stessa scheda si sommano.
        */
       async intercetta(schema, gestore, { fase = 'Request' } = {}) {

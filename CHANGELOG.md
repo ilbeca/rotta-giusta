@@ -499,6 +499,116 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   esecuzione rilanciata per un documento di mock; nessun codice modificato.
   Versione e coda intatte, nessun push.
 
+### Test — P-74: «com'è andata» e la riga d'avvio, nella pagina e nella specifica
+
+- **Due conti nel motore, prima di tutto, perché la pagina non li può fare.**
+  «N risposte salvate nel tuo account» e «Qui ci sono N risposte non salvate»
+  arrivano alla pagina già contati, senza gli `uid`, e contavano righe: un file
+  esportato da un account porta anche righe d'avvio, tag e segnalibri, e
+  caricato direbbe «risposte» anche quelle. Ora `riepilogoTrasferimento()` dà
+  `confermateRisposte` accanto a `confermate`, e il conflitto di `dopoInvio()` e
+  `dopoRicezione()` `nonSalvateRisposte` accanto a `nonSalvate`, con
+  `rigaDiRisposta()` sulle righe che le due funzioni avevano già. **I chiamanti,
+  prima**: `app.html` (lo stato dell'invio, l'esito di un import, il conflitto
+  e il suo pannello), la pagina di riferimento del client, `test_server.mjs` e i
+  test del motore. I campi di prima restano com'erano, e nessuno li legge in un
+  altro modo; i due `deepEqual` sul conflitto prendono il campo nuovo. La pagina
+  vera non è stata toccata: usare i campi nuovi è di B-2. **Prima il test che
+  fallisce**, con un file di nove righe di cui cinque risposte: quattro rossi
+  per il campo che mancava. **Provati al contrario su sette rotture**: sei
+  rosse, e una — il conto delle risposte non azzerato quando il trasferimento è
+  annullato — verde, perché la guardia non serviva: con la generazione cambiata
+  l'insieme delle conferme è già vuoto. La guardia è stata tolta, invece di
+  tenere un controllo che non controlla. R-PREV-11 e 12.
+
+- **R-PREV-02 conta i contratti di P-71**, che P-72 non aveva nel motore:
+  `contaStati()`, `statoQuesito()`, `segnalibri()`, `codaSegnalibri()` e
+  `cercaNumero()`, con un tag «Svista» e due segnalibri nell'archivio di prova
+  perché abbiano qualcosa da leggere; e la spia di R-PREV-08 guarda anche i
+  segnalibri. Una rottura di `segnalibri()` che prende la riga d'avvio per un
+  segno è rossa in tutti e due. `contaStati()` e `cercaNumero()` non leggono
+  righe: li tiene fermi `ripiega()`, e lo si dice.
+
+- **Il raccordo, scritto prima del banco** nel §10.1 di
+  `docs/esito-esame-progetto.md`: quattro funzioni di primo livello che B-1 e
+  B-2 dovranno dichiarare — `domandaEsito(io, oggi)` e `salvaEsito(giorno,
+  prove)` per l'esito, `avvioProva({…})` e `daInviare(righe, coda)` per la riga
+  d'avvio —, gli agganci, e le parti del banco una per requisito. Il banco
+  riconosce il regime da quello, con la lezione di P-51: lo legge dal testo
+  della pagina e non lo fissa. Senza raccordo pretende che la pagina non chiami
+  `/v1/esito`, non mostri il riquadro e non scriva righe `_t: 'a'`; con il
+  raccordo esegue i gruppi per intero; una coppia a metà è rossa. I due regimi
+  sono indipendenti, perché B-1 e B-2 possono arrivare in due merge. Il regime
+  senza raccordo esce con la merge di P-75, e il §10.1 lo dice.
+
+- **Due gruppi nuovi del banco del client**, con il server vero. **E-01**,
+  l'esito: senza account niente; il riquadro nel Percorso con la data di oggi e
+  di 90 giorni fa, non di 91 né di domani, non senza data, non con un esito
+  trenta giorni prima della data ma sì con uno trentuno giorni prima; mai in
+  un'altra vista, nel runner, nel riepilogo o in una finestra modale; «Non
+  chiedermelo più» scrive tre righe `non_detto` e il riquadro non torna; con il
+  server di prima — `GET /v1/io` senza `esiti` — niente; e «Salvato» solo dopo
+  il `200`, con il `PUT` trattenuto dal banco, e con l'elenco della risposta, che
+  il banco sostituisce con uno diverso da quello mandato. **P-01**, l'avvio: in
+  «Base e vela» una riga d'avvio per fase, nella copia prima della prima
+  risposta, con l'`uid` della prova più «:a», lo stesso `sim_uid` delle risposte
+  e della consegna, la vela dopo la consegna della base, sul server con lo
+  stesso `uid`, e la seconda simulazione che conta la prima fra le sue prove;
+  senza account nessuna, nemmeno portata nell'account alla registrazione;
+  preparazione, runner e riepilogo uguali con e senza riga d'avvio, cifre a
+  parte, e senza parole da previsione; con il solo avvio in coda nessun «N
+  risposte da inviare», «prove avviate» in Info, l'uscita bloccata senza dire
+  «N risposte»; con il server di prima nessuna riga e l'uscita libera; e con
+  `/engine.js` servito con `regola-semplice-1` che lancia, la prova che si apre
+  lo stesso e la riga con `errore`. I numeri vengono dalla copia e dal database
+  del server; i testi del §3.1 si cercano in quello che si vede, come in C-20.
+  `tests/browser.mjs` dà ora al gestore di una risposta il suo corpo vero, ed è
+  così che il banco toglie due campi a `GET /v1/io`.
+
+- **La pagina di riferimento del client realizza il raccordo**: il riquadro e
+  il modulo con i testi del §3.1, la voce «Il tuo esame», «Base e vela» con le
+  due fasi e la riga `_t: 's'` della consegna — che non scriveva —, la riga
+  d'avvio a Inizia, «prove avviate» in Info, e i conteggi con `daInviare()`.
+  **Ventinove rotture**, tutte rosse per il loro motivo, misurate una per una:
+  le tredici del §10.1, dodici nate scrivendo il banco — fra le altre l'elenco
+  di quello mandato, il riquadro con il server di prima, la vela senza la sua
+  riga, le prove contate senza lo storico, l'uscita che con il solo avvio non si
+  blocca, una frase che cambia con la previsione senza cifre, e la previsione
+  detta anche senza riga d'avvio —, e quattro di regime. **Il banco contro sé
+  stesso**: senza guardare il posto del riquadro passano verdi il riquadro nel
+  riepilogo e quello in una finestra modale; senza il confronto con e senza
+  riga d'avvio passa verde la frase che cambia con la previsione; senza le
+  parole da previsione passa verde quella detta in tutti e due i casi. Il `PUT`
+  trattenuto, la risposta sostituita e i campi tolti sono di struttura:
+  toglierli fa rossa anche la pagina giusta. Sei rotture vecchie toccavano righe
+  che la pagina di riferimento ha cambiato, e sono state riscritte sulle righe
+  nuove senza cambiare che cosa rompono: tutte e sei rosse per il loro motivo.
+
+- **Sulla pagina vera**, che il raccordo non ce l'ha, girano `E-01:spento` e
+  `P-01:spento`: con un account con la data d'esame di ieri e una simulazione
+  completa, niente riquadro, niente «Il tuo esame», nessuna richiesta a
+  `/v1/esito`, nessuna riga d'avvio nella copia e sul server. Verdi.
+
+- **La specifica (A-4).** §3.2 la riga d'avvio, e perché non è uno specchio;
+  §3.7 il server che conserva gli esiti; §4.6 la previsione che si registra;
+  §5.4 le due voci, dette come non ancora nella pagina; il nuovo §9.13 con
+  R-ESITO-01…09 e R-PREV-01…12 — i nomi dei test di P-72 e P-73 letti in
+  `tests/`, quelli della pagina scritti qui, e due righe per i due conti —;
+  Q-STIMA: la strada in pagina c'è, resta l'email. Nel §10.1 del progetto A-2
+  annotato come fatto da P-73, con gli scostamenti che P-73 ha scritto in
+  `account-progetto.md` (§7.1, §14.4, §15.2), e A-3 e A-4 come fatti qui; nel
+  §12 del progetto del client che cosa il banco non vede. `site/` fuori da
+  `engine.js`, `server/` e `docs/prossime-sessioni.md` non sono stati toccati.
+
+  Suite: motore **212/216** con i quattro skip previsti (erano 210/214); server
+  80/80, con Node 25.3 e con la **24.21.0 LTS** — riscaricata da nodejs.org in
+  una cartella a parte, l'archivio confrontato con il suo `SHASUMS256.txt` —,
+  con cui anche il motore dà 212/216; dati 223; specifica **954** (erano 870);
+  interfaccia **2.453** (erano 2.288), in 4 min 08 s, con la 8620 guardata
+  libera prima. Un primo giro intero era rosso solo sulle sei rotture vecchie da
+  riscrivere, un secondo su una di loro, rossa per il motivo sbagliato; il terzo
+  è verde. Guardiano verde.
+
 ## [0.30.0] — 2026-10-03
 
 **Il sito più semplice: niente offline.** Rotta Giusta si apre con la rete,

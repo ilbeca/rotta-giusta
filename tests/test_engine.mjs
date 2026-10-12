@@ -2887,7 +2887,7 @@ test('coda: il 409 non rimanda e non butta, e dice quante risposte non sono salv
   } }, righe);
   assert.deepEqual(e.coda, c, 'la coda resta com era');
   assert.deepEqual(e.salvate, []);
-  assert.deepEqual(e.conflitto, { generazione: 2, azzerato_il: '2026-10-12T09:00:00.000Z', epocaDb: EPOCA_A, nonSalvate: 3 });
+  assert.deepEqual(e.conflitto, { generazione: 2, azzerato_il: '2026-10-12T09:00:00.000Z', epocaDb: EPOCA_A, nonSalvate: 3, nonSalvateRisposte: 3 });
   assert.equal(E.lottoDaInviare(righe, e.coda).generazione, 1, 'finche non si sceglie, si resta alla generazione di prima');
 
   // Scelto: si riparte dalla generazione nuova, dall'inizio, senza niente da
@@ -2903,7 +2903,7 @@ test('coda: una ricezione con un altra generazione e un conflitto, e le sue righ
   assert.deepEqual(r.righe, []);
   assert.deepEqual(r.coda, c);
   assert.equal(r.continua, false);
-  assert.deepEqual(r.conflitto, { generazione: 2, azzerato_il: '2026-10-12T09:00:00.000Z', epocaDb: EPOCA_A, nonSalvate: 1 });
+  assert.deepEqual(r.conflitto, { generazione: 2, azzerato_il: '2026-10-12T09:00:00.000Z', epocaDb: EPOCA_A, nonSalvate: 1, nonSalvateRisposte: 1 });
 });
 
 test('coda: se l epoca del database cambia, il cursore torna a zero e si rimanda tutto', () => {
@@ -3906,6 +3906,11 @@ function archivioConAvvii() {
     rt('t1', '5.1.3-1', { sim_uid: 'tec1', mode: 'tecnica', ts: TA('12:00:00'), proposti: 2, pos: 0 }),
     rt('t2', '5.1.3-2', { sim_uid: 'tec1', mode: 'tecnica', ts: TA('12:01:00'), proposti: 2, pos: 1, correct: 0 }),
     tagRiga('g1', 'q2', 'L', TA('09:05:00')),
+    // P-71: un tag «Svista» e due segnalibri, perche' i contratti nuovi del
+    // motore abbiano qualcosa da leggere (R-PREV-02 allungato da P-74).
+    tagRiga('g2', 'q4', 'S', TA('09:32:00')),
+    { _t: 'b', uid: 'ba1', item_id: 'base-3', ts: TA('09:03:30'), segnato: 1 },
+    { _t: 'b', uid: 'ba2', item_id: 'base-5', ts: TA('10:30:30'), segnato: 1 },
   ];
   const avvii = [
     ra('simB1', { ts: TA('09:00:00') }),
@@ -3929,6 +3934,8 @@ test('la riga d avvio non cambia niente di quello che il motore calcola', () => 
   const carte = bancaC('5.1.3-1', '5.1.3-2', '5.1.3-3');
   const oggi = '2026-10-04';
   const PESI_V = { ...PESI };
+  // La ricerca per numero vuole il progressivo del decreto, che bancaVera() non ha.
+  const numerati = items.map((x, i) => ({ ...x, p: `1.1.${1 + (i % 3)}-${i + 1}` }));
   // Tutto quello che seleziona, misura o prepara una schermata, a partire dalle righe.
   const calcola = (rr) => {
     const spec = ripiega(rr);
@@ -3957,13 +3964,22 @@ test('la riga d avvio non cambia niente di quello che il motore calcola', () => 
     out.traccia = traccia(items, p, oggi, 'base', '2026-11-01', '2026-10-01');
     out.mirata = mirata(items, p, oggi, { n: 25, kind: 'base', pesi: PESI_V });
     out.impegno = stimaImpegno(p, 100, 10, { msPerDomanda: out.ritmoBasso.msPerDomanda });
+    // I contratti di P-71, che P-72 non aveva nel motore (§10.1 del progetto,
+    // «A-1 fatto da P-72»): i cinque stati, i segnalibri, la ricerca per numero.
+    out.stati = E.contaStati(items, p, { kind: 'base' });
+    out.statiVela = E.contaStati(items, p, { kind: 'vela' });
+    out.statoQuesiti = Object.fromEntries(['base-1', 'base-2', 'base-4', 'vela-1'].map((id) => [id, E.statoQuesito(p[id])]));
+    out.segnalibri = E.segnalibri(rr);
+    out.codaSegnalibri = E.codaSegnalibri(items, rr, { kind: 'base' });
+    out.numero = E.cercaNumero(numerati, '1.1.1');
     return out;
   };
   const senza = calcola(righe);
   // Le premesse: l'archivio esercita davvero quello che confronta.
   assert.ok(senza.sessioniAttivita.length >= 4 && senza.carteggio.length === 2 && senza.tecniche.length === 1);
   assert.equal(senza.errori.simB1.quanti, 1); assert.ok(senza.previsioneBase.stime['regola-semplice-1'].n === 1);
-  assert.ok(Object.keys(senza.tag).length === 1 && senza.dettagli['c:pc1'].esito);
+  assert.ok(Object.keys(senza.tag).length === 2 && senza.dettagli['c:pc1'].esito);
+  assert.equal(senza.codaSegnalibri.quanti, 2); assert.ok(senza.stati.debole >= 1 && senza.numero.quanti > 0);
   // Con le righe d'avvio, in testa, in coda, in mezzo: niente cambia.
   for (const [nome, rr] of [['in coda', [...righe, ...avvii]], ['in testa', [...avvii, ...righe]],
     ['mescolate', righe.flatMap((r, i) => (avvii[i] ? [avvii[i], r] : [r]))]]) {
@@ -4010,6 +4026,7 @@ test('la riga d avvio non la rilegge nessuno', () => {
     dettaglioCarteggio: (rr) => [E.dettaglioCarteggio(rr, carte, 'pc1', { tipo: 'c' }), E.dettaglioCarteggio(rr, carte, 'tec1', { tipo: 't' })],
     previsioniProva: (rr) => E.previsioniProva(rr, 'base', TA('14:00:00')),
     rigaDiRisposta: (rr) => rr.filter(E.rigaDiRisposta),
+    segnalibri: (rr) => E.segnalibri(rr), codaSegnalibri: (rr) => E.codaSegnalibri(items, rr),
   };
   const permessi = new Set(['_t', 'ts']);
   for (const [nome, f] of Object.entries(chiamate)) {
@@ -4022,6 +4039,98 @@ test('la riga d avvio non la rilegge nessuno', () => {
   spia.chi = 'validaRiga';
   assert.equal(validaRiga(avvio()), null);
   assert.ok(letti.get('validaRiga').has('stime'), 'validaRiga() guarda le stime: la spia vede le letture');
+});
+
+// --- P-74: i due conti che la pagina non puo' rifare ------------------------------
+//
+// docs/esito-esame-progetto.md §10.1, «Due cose da sapere prima di B-2». Due
+// numeri che la pagina scrive come «risposte» le arrivano gia' contati dal
+// motore, senza gli uid: «N risposte salvate nel tuo account»
+// (`riepilogoTrasferimento().confermate`) e «Qui ci sono N risposte non
+// salvate» (`nonSalvate` del conflitto). Contano righe, e un file esportato da
+// un account porta anche righe d'avvio, tag e segnalibri. Il conto delle sole
+// risposte sta accanto, con `rigaDiRisposta()` sulle righe che le due funzioni
+// hanno gia' in mano; i campi di prima restano com'erano.
+
+/** Un file dei progressi esportato da un account: risposte, una prova, il suo avvio, tag e segnalibri. */
+function fileConAvvii() {
+  return [
+    { ...RIGHE_VERE.q, uid: 'f-q1' }, { ...RIGHE_VERE.q, uid: 'f-q2', item_id: 'base-91', correct: 0, sim_uid: 'f-sim' },
+    { ...RIGHE_VERE.s, uid: 'f-sim' }, ra('f-sim', { ts: '2026-08-25T10:07:00.000Z' }),
+    { ...RIGHE_VERE.c, uid: 'f-c1' }, { ...RIGHE_VERE.t, uid: 'f-t1' },
+    tagRiga('f-g1', 'f-q2', 'N'), tagRiga('f-g2', 'f-q2', 'S', '2026-08-25T10:40:00.000Z'),
+    { _t: 'b', uid: 'f-b1', item_id: 'base-90', ts: '2026-08-25T10:41:00.000Z', segnato: 1 },
+  ];
+}
+
+test('trasferimento: confermateRisposte conta le sole risposte, non gli avvii, i tag e i segnalibri', () => {
+  const file = fileConAvvii();
+  for (const r of file) assert.equal(validaRiga(r), null, `la riga ${r.uid} del file e valida`);
+  const risposte = file.filter(E.rigaDiRisposta).length;
+  assert.equal(risposte, 5, 'premessa: due quiz, una prova, un carteggio, una tecnica');
+  let c = E.nuovaCoda({ generazione: 1, epocaDb: EPOCA_A });
+  const { trasferimento, coda } = E.nuovoTrasferimento(c, file);
+  let t = trasferimento; c = coda;
+  let r = E.riepilogoTrasferimento(t, c, file);
+  assert.equal(r.confermate, 0); assert.equal(r.confermateRisposte, 0);
+
+  // Un lotto confermato a meta': i due quiz, l'avvio e un tag.
+  const meta = ['f-q1', 'f-q2', 'f-sim:a', 'f-g1'];
+  const lotto = E.lottoDaInviare(file, c);
+  let e = E.dopoInvio(c, lotto, ok200({ nuove: meta, gia: [], scartate: [], epoca: EPOCA_A, generazione: 1 }), file);
+  t = E.registraEsito(t, e); c = { ...e.coda, daInviare: file.map((x) => x.uid).filter((u) => !meta.includes(u)) };
+  r = E.riepilogoTrasferimento(t, c, file);
+  assert.equal(r.confermate, 4, 'le righe confermate, com erano');
+  assert.equal(r.confermateRisposte, 2, 'le risposte fra quelle: i due quiz');
+
+  // Tutto confermato: «9 righe», ma «5 risposte salvate nel tuo account».
+  e = E.dopoInvio(c, E.lottoDaInviare(file, c), ok200({ nuove: file.map((x) => x.uid).filter((u) => !meta.includes(u)), gia: meta, scartate: [], epoca: EPOCA_A, generazione: 1 }), file);
+  t = E.registraEsito(t, e); c = e.coda;
+  r = E.riepilogoTrasferimento(t, c, file);
+  assert.equal(r.stato, 'completo');
+  assert.equal(r.confermate, 9);
+  assert.equal(r.confermateRisposte, risposte);
+
+  // Un uid confermato senza la sua riga nell'archivio non si dice risposta: non si sa che cosa sia.
+  assert.equal(E.riepilogoTrasferimento(t, c, file.filter((x) => x.uid !== 'f-q1')).confermateRisposte, risposte - 1);
+  // Annullato, o con un'altra epoca: zero, come confermate.
+  for (const altra of [{ ...c, generazione: 2 }, { ...c, epocaDb: EPOCA_B }]) {
+    const x = E.riepilogoTrasferimento(t, altra, file);
+    assert.equal(x.confermate, 0); assert.equal(x.confermateRisposte, 0);
+  }
+  // Il server di prima rifiuta la riga d'avvio («tipo sconosciuto»): non e' fra le confermate, ne' fra le risposte.
+  let c2 = E.nuovaCoda({ generazione: 1, epocaDb: EPOCA_A });
+  const tr2 = E.nuovoTrasferimento(c2, file); let t2 = tr2.trasferimento; c2 = tr2.coda;
+  const tutte = file.map((x) => x.uid).filter((u) => u !== 'f-sim:a');
+  const e2 = E.dopoInvio(c2, E.lottoDaInviare(file, c2), ok200({ nuove: tutte, gia: [], scartate: [{ uid: 'f-sim:a', motivo: 'tipo sconosciuto' }], epoca: EPOCA_A, generazione: 1 }), file);
+  t2 = E.registraEsito(t2, e2);
+  const r2 = E.riepilogoTrasferimento(t2, e2.coda, file);
+  assert.equal(r2.stato, 'con scarti');
+  assert.equal(r2.confermate, 8); assert.equal(r2.confermateRisposte, 5); assert.equal(r2.nonSalvate, 1);
+});
+
+test('coda: il conflitto conta a parte le risposte non salvate, non gli avvii e i tag', () => {
+  const file = fileConAvvii();
+  const risposte = file.filter(E.rigaDiRisposta).length;
+  const corpo409 = { errore: 'generazione', generazione: 2, azzerato_il: '2026-10-12T09:00:00.000Z', epoca: EPOCA_A };
+  const c = E.nuovaCoda({ generazione: 1, epocaDb: EPOCA_A, righe: file });
+  const e = E.dopoInvio(c, E.lottoDaInviare(file, c), { codice: 409, corpo: corpo409 }, file);
+  assert.equal(e.conflitto.nonSalvate, 9, 'le righe non salvate, com erano');
+  assert.equal(e.conflitto.nonSalvateRisposte, risposte, 'le risposte fra quelle');
+  // Dalla ricezione, la stessa cosa; e conta solo quello che e' ancora in coda.
+  const meno = { ...c, daInviare: c.daInviare.filter((u) => u !== 'f-q1' && u !== 'f-sim:a') };
+  const x = E.dopoRicezione(meno, ok200({ righe: [], ultima_seq: 3, altre: false, epoca: EPOCA_A, generazione: 2, azzerato_il: corpo409.azzerato_il }), file);
+  assert.equal(x.conflitto.nonSalvate, 7);
+  assert.equal(x.conflitto.nonSalvateRisposte, risposte - 1);
+  // Con soli avvii e tag in coda le risposte non salvate sono zero: la pagina
+  // non deve poter scrivere «Qui ci sono 2 risposte non salvate».
+  const soli = { ...c, daInviare: ['f-sim:a', 'f-g1'] };
+  const y = E.dopoInvio(soli, E.lottoDaInviare(file, soli), { codice: 409, corpo: corpo409 }, file);
+  assert.equal(y.conflitto.nonSalvate, 2); assert.equal(y.conflitto.nonSalvateRisposte, 0);
+  // E il conflitto passa com'e' dal trasferimento al suo riepilogo.
+  const tr = E.nuovoTrasferimento(c, file);
+  const t = E.registraEsito(tr.trasferimento, e);
+  assert.equal(E.riepilogoTrasferimento(t, tr.coda, file).conflitto.nonSalvateRisposte, risposte);
 });
 
 // --- P-71: i contratti per il ridisegno -------------------------------------------

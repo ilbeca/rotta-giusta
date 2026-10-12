@@ -1629,7 +1629,7 @@ ROTTURE_CLIENT = [
      [("    $('conto-stato').innerHTML = 'I progressi sono stati azzerati da un altro dispositivo: scegli che cosa fare delle risposte di qui. <button data-conflitto=\"riapri\">Scegli adesso</button>';\n", '')],
      'resta raggiungibile'),
     ('la risposta data dopo «Decidi più tardi» non contata', ['C-13:ricezione'],
-     [('  S.sospeso = { ...S.sospeso, nonSalvate: righe.filter((r) => inCoda.has(String(r.uid))).length };', '  S.sospeso = { ...S.sospeso };')],
+     [('  S.sospeso = { ...S.sospeso, nonSalvate: righe.filter((r) => inCoda.has(String(r.uid))).length, nonSalvateRisposte: daInviare(righe, coda).risposte };', '  S.sospeso = { ...S.sospeso };')],
      'conta la risposta data intanto'),
     # C-14, il ripristino
     ('l\'epoca nuova vista, e le righe perse non rimesse in coda', ['C-14'],
@@ -1782,7 +1782,7 @@ ROTTURE_CLIENT = [
      [("$('c-memoria').hidden = !(P && !P.b && conTesto);", "$('c-memoria').hidden = true;")],
      'non si vede con il testo scritto'),
     ('nessun lavoro offerto dopo la ricarica', ['C-19:ricarica'],
-     [("  await offriBozze();\n}", "}")],
+     [("  await offriBozze();\n  dipingiEsito();\n}", "  dipingiEsito();\n}")],
      'il testo scritto e\' perso'),
     ('la ripresa da\' sessanta minuti nuovi', ['C-19:ricarica'],
      [("inizio: x.inizio, scadenza: x.scadenza,", "inizio: x.inizio, scadenza: Date.now() + 3600000,")],
@@ -2010,8 +2010,8 @@ def banco_client():
         return _BANCO_CLIENT
     app = leggi('app.html')
     rif = RIFERIMENTO_CLIENT.read_text(encoding='utf-8')
-    prove = [{'nome': 'app', 'pagina': app, 'gruppi': GRUPPI_CLIENT + gruppi_bozza_app() + GRUPPI_RIFINITURA},
-             {'nome': 'riferimento', 'pagina': rif, 'gruppi': GRUPPI_CLIENT + ['C-19'] + GRUPPI_RIFINITURA}]
+    prove = [{'nome': 'app', 'pagina': app, 'gruppi': GRUPPI_CLIENT + gruppi_bozza_app() + GRUPPI_RIFINITURA + gruppi_raccordo(app)},
+             {'nome': 'riferimento', 'pagina': rif, 'gruppi': GRUPPI_CLIENT + ['C-19'] + GRUPPI_RIFINITURA + gruppi_raccordo(rif)}]
     applicate = {}
     for cosa, gruppi, sostituzioni in VARIANTI_CLIENT:
         variante, ok = rif, True
@@ -2021,7 +2021,7 @@ def banco_client():
         applicate['variante: ' + cosa] = ok
         if ok:
             prove.append({'nome': 'variante: ' + cosa, 'pagina': variante, 'gruppi': gruppi})
-    for cosa, gruppi, sostituzioni, _ in ROTTURE_CLIENT + ROTTURE_RIFINITURA:
+    for cosa, gruppi, sostituzioni, _ in ROTTURE_CLIENT + ROTTURE_RIFINITURA + ROTTURE_RACCORDO:
         rotta, ok = rif, True
         for vecchio, nuovo in sostituzioni:
             ok = ok and vecchio in rotta
@@ -2043,6 +2043,10 @@ def banco_client():
         applicate[cosa] = rotto is not None
         if rotto is not None:
             prove.append({'nome': 'rottura: ' + cosa, 'pagina': rif, 'gruppi': ['C-22:passaggio'], 'sito': {'/sw.js': rotto}})
+    # Il regime di ogni pagina, letto dal suo testo (P-74): il banco guida E-01 e
+    # P-01 con il raccordo o senza.
+    for x in prove:
+        x['regimi'] = regimi_di(x['pagina'])
     try:
         p = subprocess.run(['node', str(BANCO_CLIENT)], input=json.dumps({'prove': prove}),
                            capture_output=True, text=True, timeout=600)
@@ -2611,6 +2615,293 @@ def test_client_provato_al_contrario():
               'rossi: ' + '; '.join(rossi[:3]))
 
 
+# --- 5-ter. «com'è andata» e la riga d'avvio (P-74) --------------------------------------
+#
+# docs/esito-esame-progetto.md §10.1, A-3: i controlli della pagina per l'esito
+# dell'esame (R-ESITO-02…04) e per la riga d'avvio delle simulazioni
+# (R-PREV-05…07, 09, 10). Li esegue il banco del client, gruppi E-01 e P-01 in
+# tests/client_account.mjs, con il server vero; il contratto — il raccordo, gli
+# agganci, le parti — e' scritto in quel §10.1 prima del banco.
+#
+# **Due regimi, con il meccanismo delle aree 2–5 e la lezione di P-51.** Il
+# regime della pagina vera **si legge** dal suo testo, non si fissa qui: il
+# raccordo dell'esito sono `domandaEsito` e `salvaEsito`, quello dell'avvio
+# `avvioProva` e `daInviare`, funzioni di primo livello. Con il raccordo il
+# gruppo gira per intero; senza, gira la parte `spento`, che pretende che la
+# pagina non chiami /v1/esito, non mostri il riquadro e non scriva righe
+# `_t: 'a'`; con una coppia a meta' e' rosso. I due regimi sono indipendenti,
+# perche' B-1 e B-2 possono arrivare in due merge. La pagina di riferimento ha
+# il raccordo. **Il regime senza raccordo ha una scadenza: la merge di P-75**.
+RACCORDI = {'esito': ['domandaEsito', 'salvaEsito'], 'avvio': ['avvioProva', 'daInviare']}
+PARTI_ESITO = ['E-01:senza', 'E-01:quando', 'E-01:prima', 'E-01:salvato']
+PARTI_AVVIO = ['P-01:avvio', 'P-01:senza', 'P-01:visto', 'P-01:conti', 'P-01:prima', 'P-01:errore']
+# Quante verifiche fa ogni parte arrivando in fondo, sulla pagina di riferimento;
+# le parti `spento` sulla pagina vera di oggi, che non ha il raccordo.
+VERIFICHE_RACCORDO = {'E-01:senza': 5, 'E-01:quando': 12, 'E-01:prima': 4, 'E-01:salvato': 10, 'E-01:spento': 4,
+                      'P-01:avvio': 12, 'P-01:senza': 5, 'P-01:visto': 6, 'P-01:conti': 9, 'P-01:prima': 5,
+                      'P-01:errore': 3, 'P-01:spento': 4}
+
+
+def regime_raccordo(testo, chi):
+    """'raccordo', 'spento' o 'a metà': quante funzioni del raccordo `chi` la
+    pagina dichiara al primo livello, fuori dai commenti."""
+    t = senza_commenti(testo)
+    dichiarate = [n for n in RACCORDI[chi] if re.search(r'^(?:async\s+)?function\s+%s\s*\(' % n, t, re.M)]
+    return 'raccordo' if len(dichiarate) == len(RACCORDI[chi]) else 'spento' if not dichiarate else 'a metà'
+
+
+def regimi_di(testo):
+    return {chi: regime_raccordo(testo, chi) for chi in RACCORDI}
+
+
+def gruppi_raccordo(testo):
+    """Le parti di E-01 e P-01 da eseguire su una pagina: tutte con il raccordo,
+    il gruppo intero — che allora gira la parte `spento` — senza, o a meta'."""
+    r = regimi_di(testo)
+    return ((PARTI_ESITO if r['esito'] == 'raccordo' else ['E-01'])
+            + (PARTI_AVVIO if r['avvio'] == 'raccordo' else ['P-01']))
+
+
+def registra_raccordo(chi, *parti):
+    """Le verifiche di una o piu' parti sulla pagina vera, con il loro conto. Nel
+    regime senza raccordo, al loro posto quelle di `spento`, che tengono lo
+    stesso requisito con l'unica cosa che la pagina di oggi puo' dire: che non
+    fa niente di tutto questo."""
+    _, out, _ = banco_client()
+    v = out.get('app', [])
+    gruppo = 'E-01' if chi == 'esito' else 'P-01'
+    r = regime_raccordo(leggi('app.html'), chi)
+    check('%s: la pagina vera dichiara il raccordo %s per intero, o niente' % (gruppo, ' e '.join(RACCORDI[chi])), r != 'a metà',
+          'site/app.html ne dichiara una parte sola: le due funzioni vanno insieme (esito-esame-progetto §10.1)')
+    if r == 'a metà':
+        return
+    for x in v:
+        if x['gruppo'] == 'banco':
+            check('client banco: %s' % x['nome'], x['ok'], x.get('extra', ''))
+    for p in (parti if r == 'raccordo' else ['%s:spento' % gruppo]):
+        vp = [x for x in v if x['gruppo'] == p]
+        for x in vp:
+            check('client %s: %s' % (p, x['nome']), x['ok'], x.get('extra', ''))
+        check('client %s: il giro sulla pagina vera e\' arrivato in fondo' % p, len(vp) >= VERIFICHE_RACCORDO[p],
+              'troppo poche verifiche (%d su %d): il banco non l\'ha eseguito per intero' % (len(vp), VERIFICHE_RACCORDO[p]))
+
+
+def test_esito_senza_account():
+    """R-ESITO-02: senza account non c'e' la domanda «com'e' andata», non c'e'
+    «Il tuo esame», e nessuna richiesta va a /v1/esito (E-01:senza)."""
+    registra_raccordo('esito', 'E-01:senza')
+
+
+def test_esito_quando():
+    """R-ESITO-03: il riquadro compare solo con la data d'esame passata da al
+    piu' 90 giorni e senza esiti da trenta giorni prima in poi, nel Percorso e
+    in nessun altro posto; e mai se GET /v1/io non porta `esiti`
+    (E-01:quando, E-01:prima)."""
+    registra_raccordo('esito', 'E-01:quando', 'E-01:prima')
+
+
+def test_esito_salvato():
+    """R-ESITO-04: «Salvato» solo dopo il 200, e l'elenco che la pagina mostra
+    e' quello della risposta, non quello mandato (E-01:salvato)."""
+    registra_raccordo('esito', 'E-01:salvato')
+
+
+def test_avvio_registrato():
+    """R-PREV-05: con l'account, a Inizia di ogni simulazione completa e di ogni
+    fase di «Base e vela», una riga d'avvio prima della prima risposta, con un
+    uid che una seconda scrittura non duplica; senza account nessuna, nemmeno
+    portata nell'account alla registrazione (P-01:avvio, P-01:senza)."""
+    registra_raccordo('avvio', 'P-01:avvio', 'P-01:senza')
+
+
+def test_avvio_non_si_vede():
+    """R-PREV-06: la previsione non si vede — preparazione, runner e riepilogo
+    di una simulazione uguali con e senza riga d'avvio (P-01:visto)."""
+    registra_raccordo('avvio', 'P-01:visto')
+
+
+def test_avvio_non_e_una_risposta():
+    """R-PREV-07: i conteggi che la pagina chiama «risposte» non contano le
+    righe d'avvio, e l'uscita con un avvio in coda si blocca senza dire «N
+    risposte» (P-01:conti)."""
+    registra_raccordo('avvio', 'P-01:conti')
+
+
+def test_avvio_server_di_prima():
+    """R-PREV-09: con un server che non dichiara 'a' in `tipi_riga` la pagina
+    non scrive righe d'avvio, e l'uscita non si blocca (P-01:prima)."""
+    registra_raccordo('avvio', 'P-01:prima')
+
+
+def test_avvio_con_un_errore():
+    """R-PREV-10: un metodo che lancia non ferma la prova — la riga d'avvio c'e',
+    con `errore` (P-01:errore)."""
+    registra_raccordo('avvio', 'P-01:errore')
+
+
+def test_raccordo_riconosciuto():
+    """Il regime si legge dalla pagina, come vuole la lezione di P-51; provato
+    al contrario senza browser sulla pagina di riferimento: con le due funzioni
+    di una coppia e' il raccordo, con nessuna e' spento, con una sola e' a
+    meta', e una funzione in un commento non conta."""
+    rif = RIFERIMENTO_CLIENT.read_text(encoding='utf-8')
+    for chi, (a, b) in RACCORDI.items():
+        check('raccordo %s: la pagina di riferimento lo dichiara' % chi, regime_raccordo(rif, chi) == 'raccordo')
+        senza = rif
+        for n in (a, b):
+            senza = re.sub(r'^(async\s+)?function %s\(' % n, r'\1function %sAltrove(' % n, senza, flags=re.M)
+        check('raccordo %s provato al contrario: senza le due funzioni la pagina e\' spenta' % chi,
+              regime_raccordo(senza, chi) == 'spento')
+        meta = re.sub(r'^(async\s+)?function %s\(' % b, r'\1function %sAltrove(' % b, rif, flags=re.M)
+        check('raccordo %s provato al contrario: con una sola delle due e\' a meta\'' % chi, regime_raccordo(meta, chi) == 'a metà')
+        commento = re.sub(r'^((?:async\s+)?function (?:%s|%s)\()' % (a, b), r'// \1', rif, flags=re.M)
+        check('raccordo %s provato al contrario: in un commento non conta' % chi, regime_raccordo(commento, chi) == 'spento')
+    # La pagina vera: il regime che dice, scritto nel nome della verifica, cosi'
+    # che il giorno della merge di P-75 il cambio si veda nell'uscita della suite.
+    app = leggi('app.html')
+    for chi in RACCORDI:
+        r = regime_raccordo(app, chi)
+        check('raccordo %s: la pagina vera e\' nel regime «%s»' % (chi, r), r in ('raccordo', 'spento'),
+              'una coppia a meta\' (esito-esame-progetto §10.1)')
+
+
+def test_raccordo_provato_al_contrario():
+    """E-01 e P-01 contro se stessi: la pagina di riferimento li passa per
+    intero, ogni rottura e' rossa per il suo motivo — anche quelle che tolgono
+    il raccordo e lasciano la funzione, che il regime spento deve prendere."""
+    _, out, applicate = banco_client()
+    rif = out.get('riferimento', [])
+    for p in PARTI_ESITO + PARTI_AVVIO:
+        vp = [x for x in rif if x['gruppo'] == p]
+        rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in vp if not x['ok']]
+        check('raccordo %s: la pagina di riferimento la passa' % p, not rossi, '; '.join(rossi[:3]))
+        check('raccordo %s: il giro sulla pagina di riferimento e\' arrivato in fondo' % p, len(vp) >= VERIFICHE_RACCORDO[p],
+              'troppo poche verifiche (%d su %d)' % (len(vp), VERIFICHE_RACCORDO[p]))
+    for cosa, gruppi, _, atteso in ROTTURE_RACCORDO:
+        check('rottura del raccordo «%s»: si applica alla pagina di riferimento' % cosa, applicate.get(cosa),
+              'il testo da sostituire non c\'e\' piu\': la rottura non romperebbe niente')
+        vr = out.get('rottura: ' + cosa)
+        if vr is None:
+            continue
+        rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in vr if not x['ok']]
+        check('rottura del raccordo «%s»: il banco diventa rosso' % cosa, bool(rossi), 'e\' passata verde')
+        check('rottura del raccordo «%s»: e il rosso nomina il difetto' % cosa, any(atteso in r for r in rossi),
+              'rossi: ' + '; '.join(rossi[:3]))
+
+
+# Le rotture della pagina di riferimento per E-01 e P-01: (che cosa, parti da
+# eseguire, sostituzioni, parola che il rosso deve contenere). Le prime sono
+# quelle che il §10.1 del progetto elenca; le ultime tolgono il raccordo e
+# lasciano la funzione, o ne tolgono meta'.
+_RIQUADRO_SI = "  if (!io || !Array.isArray(io.esiti) || !io.data_esame) return null;\n  const d = io.data_esame;"
+_AVVIO_SI = "      if (riga) await archivia(riga);"
+_SCRITTA = "  if (!io || !Array.isArray(io.tipi_riga) || !io.tipi_riga.includes('a')) return null;"
+ROTTURE_RACCORDO = [
+    # E-01, R-ESITO-02…04
+    ('il riquadro senza data d\'esame', ['E-01:quando'],
+     [(_RIQUADRO_SI, "  if (!io || !Array.isArray(io.esiti)) return null;\n  const d = io.data_esame || oggi;")],
+     'senza data d\'esame'),
+    ('il riquadro dopo 90 giorni', ['E-01:quando'],
+     [('oggi > E.addGiorni(d, 90)', 'oggi > E.addGiorni(d, 365)')], '91 giorni'),
+    ('il riquadro con un esito gia\' detto', ['E-01:quando'],
+     [('  if (io.esiti.some((x) => x.giorno >= da)) return null;\n', '')], 'trenta giorni prima'),
+    ('il riquadro in un riepilogo', ['E-01:quando'],
+     [('    <p>Puoi concludere qui.</p>`;',
+       "    ${S.conto && domandaEsito(S.io, oggi()) ? `<h2>Com'è andato l'esame del ${giornoMese(domandaEsito(S.io, oggi()).giorno)}?</h2>` : ''}\n"
+       "    <p>Puoi concludere qui.</p>`;")], 'nel riepilogo'),
+    ('il riquadro in una finestra modale', ['E-01:quando'],
+     [('    <button data-esito="mai" data-giorno="${esc(q.giorno)}">Non chiedermelo più</button>`;\n  box.hidden = false;',
+       '    <button data-esito="mai" data-giorno="${esc(q.giorno)}">Non chiedermelo più</button>`;\n  box.hidden = true; pannello(box.innerHTML);')],
+     'una finestra modale'),
+    ('«Salvato» prima del 200', ['E-01:salvato'],
+     [("  out.textContent = 'Salvataggio in corso…';", "  out.textContent = 'Salvato.';")], 'niente «Salvato»'),
+    ('l\'elenco di quello mandato, non della risposta', ['E-01:salvato'],
+     [('righeEsito(r.esiti).map((x) => `<li>${esc(x)}</li>`)',
+       'righeEsito(Object.entries(prove).map(([prova, p]) => ({ giorno, prova, esito: p.esito, errori: p.errori ?? null }))).map((x) => `<li>${esc(x)}</li>`)')],
+     'quello della risposta del 200'),
+    ('il riquadro con il server di prima', ['E-01:prima'],
+     [(_RIQUADRO_SI, "  if (io && !Array.isArray(io.esiti)) io.esiti = [];\n" + _RIQUADRO_SI)], 'server di prima'),
+    ('«Il tuo esame» senza account', ['E-01:senza'],
+     [('    <button data-account="dimenticata" data-email="${esc(email)}">Ho dimenticato la password</button>',
+       '    <button data-account="dimenticata" data-email="${esc(email)}">Ho dimenticato la password</button>\n    <button data-esito="profilo">Il tuo esame</button>')],
+     '«Il tuo esame»'),
+    ('una richiesta a /v1/esito senza account', ['E-01:senza'],
+     [('  if (API) await avvioConto();', "  if (API) { fetch(API + '/v1/esito', { credentials: 'include' }).catch(() => {}); await avvioConto(); }")],
+     'nessuna richiesta a /v1/esito'),
+    # P-01, R-PREV-05…07, 09, 10
+    ('la riga d\'avvio scritta alla consegna', ['P-01:avvio'],
+     [(_AVVIO_SI, '      if (riga) S.avvioDopo = riga;'),
+      ('    if (S.conto) archivia(prova); else S.righe.push(prova);',
+       '    if (S.conto) { if (S.avvioDopo) archivia(S.avvioDopo); S.avvioDopo = null; archivia(prova); } else S.righe.push(prova);')],
+     'prima della prima risposta'),
+    ('la riga d\'avvio anche senza account', ['P-01:senza'],
+     [('  if (S.conto && S.db) {\n    try {\n      const { righe } = await tx(() => null);',
+       "  if (!S.conto) { const riga = avvioProva({ simUid, kind, prova, righe: S.righe, io: { tipi_riga: ['a'] } }); if (riga) S.righe.push(riga); }\n"
+       '  if (S.conto && S.db) {\n    try {\n      const { righe } = await tx(() => null);')],
+     'nessuna riga d\'avvio'),
+    ('due righe d\'avvio con due uid', ['P-01:avvio'],
+     [(_AVVIO_SI, "      if (riga) { await archivia(riga); await archivia(E.rigaAvvio({ simUid: uid(), kind, prova, ts: E.isoLocale(), motore: S.motore || '0', righe })); }")],
+     'una riga d\'avvio nella copia'),
+    ('la riga d\'avvio con un uid suo', ['P-01:avvio'],
+     [(_AVVIO_SI, '      if (riga) await archivia({ ...riga, uid: uid() });')], '«:a»'),
+    ('la riga d\'avvio con il server di prima', ['P-01:prima'],
+     [(_SCRITTA, '  if (!io) return null;')], 'server di prima'),
+    ('la vela senza la sua riga d\'avvio', ['P-01:avvio'],
+     [('      const riga = avvioProva({ simUid, kind, prova, righe, io: S.io });',
+       "      const riga = kind === 'vela' ? null : avvioProva({ simUid, kind, prova, righe, io: S.io });")], 'fase vela'),
+    ('la previsione senza lo storico', ['P-01:avvio'],
+     [('      const riga = avvioProva({ simUid, kind, prova, righe, io: S.io });',
+       '      const riga = avvioProva({ simUid, kind, prova, righe: [], io: S.io });')], 'fra le prove'),
+    ('una percentuale nel riepilogo', ['P-01:visto'],
+     [(_AVVIO_SI, "      if (riga) { await archivia(riga); S.previsto = E.PREVISIONI['regola-semplice-1'].probabilita(riga.stime['regola-semplice-1']); }"),
+      ('    <p>Puoi concludere qui.</p>`;',
+       "    ${S.previsto != null ? `<p>Ti davamo il ${Math.round(S.previsto * 100)}% di superarla.</p>` : ''}\n    <p>Puoi concludere qui.</p>`;")],
+     'riepilogo di una simulazione'),
+    # Una frase che cambia con la previsione, senza numeri ne' parole da previsione:
+    # la prende solo il confronto con la stessa simulazione senza riga d'avvio.
+    ('una frase che dipende dalla previsione nel riepilogo', ['P-01:visto'],
+     [(_AVVIO_SI, '      if (riga) { await archivia(riga); S.previsto = riga.stime; }'),
+      ('    <p>Puoi concludere qui.</p>`;', "    ${S.previsto ? '<p>Ci sei quasi.</p>' : ''}\n    <p>Puoi concludere qui.</p>`;")],
+     'lo stesso con e senza riga d\'avvio'),
+    # E una che la prende solo la parola: la previsione detta anche senza riga
+    # d'avvio, quindi uguale nei due casi, cifre a parte.
+    ('la previsione detta anche senza riga d\'avvio', ['P-01:visto'],
+     [('    <p>Puoi concludere qui.</p>`;',
+       "    ${u.sim ? `<p>Ti davamo il ${Math.round(E.PREVISIONI['regola-semplice-1'].probabilita({ superate: 0, n: 0 }) * 100)}% di superarla.</p>` : ''}\n    <p>Puoi concludere qui.</p>`;")],
+     'non dice una previsione'),
+    ('«1 risposte da inviare» per una riga d\'avvio', ['P-01:conti'],
+     [('    const d = daInviare(righe, coda);', '    const d = { ...daInviare(righe, coda), risposte: coda.daInviare.length };')],
+     'niente «N risposte da inviare»'),
+    ('Info conta la riga d\'avvio fra le risposte', ['P-01:conti'],
+     [("righe.filter((r) => r._t === 'q').length} · prove avviate", "righe.filter((r) => r._t === 'q' || r._t === 'a').length} · prove avviate")],
+     'prove avviate'),
+    ('l\'uscita con il solo avvio in coda non si blocca', ['P-01:conti'],
+     [('  const pendenti = coda.daInviare.length + Object.keys(coda.scartate).length;',
+       '  const pendenti = daInviare(tutte, coda).risposte + Object.keys(coda.scartate).length;')], 'si blocca'),
+    ('l\'uscita conta le righe e non le risposte', ['P-01:conti'],
+     [("(d.risposte ? `${d.risposte} ${d.risposte === 1 ? 'risposta non è' : 'risposte non sono'} sul server. ` : '')",
+       "(pendenti ? `${pendenti} ${pendenti === 1 ? 'risposta non è' : 'risposte non sono'} sul server. ` : '')")],
+     'non dice «N risposte»'),
+    ('un metodo che lancia e ferma la prova', ['P-01:errore'],
+     [(_AVVIO_SI, '      if (riga && riga.errore) return guasto(new Error(riga.errore));\n' + _AVVIO_SI)], 'si apre lo stesso'),
+    # Il raccordo tolto, con la funzione rimasta: il regime spento deve prenderla.
+    ('il riquadro senza il raccordo', ['E-01'],
+     [('function domandaEsito(io, oggi) {', 'const domandaEsito = (io, oggi) => chiediEsito(io, oggi);\nfunction chiediEsito(io, oggi) {'),
+      ('async function salvaEsito(giorno, prove) {', 'const salvaEsito = (g, p) => scriviEsito(g, p);\nasync function scriviEsito(giorno, prove) {')],
+     'senza il raccordo'),
+    ('la riga d\'avvio senza il raccordo', ['P-01'],
+     [('function avvioProva({ simUid, kind, prova, righe, io }) {', 'const avvioProva = (o) => preparaAvvio(o);\nfunction preparaAvvio({ simUid, kind, prova, righe, io }) {'),
+      ('function daInviare(righe, coda) {', 'const daInviare = (r, c) => contaInCoda(r, c);\nfunction contaInCoda(righe, coda) {')],
+     'senza il raccordo'),
+    ('il raccordo dell\'esito a meta\'', ['E-01'],
+     [('async function salvaEsito(giorno, prove) {', 'const salvaEsito = (g, p) => scriviEsito(g, p);\nasync function scriviEsito(giorno, prove) {')],
+     'per intero'),
+    ('il raccordo dell\'avvio a meta\'', ['P-01'],
+     [('function daInviare(righe, coda) {', 'const daInviare = (r, c) => contaInCoda(r, c);\nfunction contaInCoda(righe, coda) {')],
+     'per intero'),
+]
+
+
 # --- 5-bis. l'area 6: la rifinitura trasversale (P-45) ---------------------------------
 #
 # docs/area-6-progetto.md §10.1 chiede controlli nei due regimi d'accesso — la
@@ -2641,7 +2932,7 @@ _STILE = 'a.da-solo, label {display:inline-block}'
 _TEC = '<section class="view" id="v-tec">\n  <h1>Che tecnica serve?</h1>'
 _PRIMA = '<p id="avviso-prova">'
 _INFO = ("  const righe = S.conto && S.db ? (await tx(() => null)).righe : S.righe.concat(S.prova || []);\n"
-         "  $('info-conta').textContent = `risposte ai quiz ${righe.filter((r) => r._t === 'q').length}`;")
+         "  $('info-conta').textContent = `risposte ai quiz ${righe.filter((r) => r._t === 'q').length} · prove avviate ${righe.filter((r) => r._t === 'a').length}`;")
 ROTTURE_RIFINITURA = [
     # T-01: senza account nessuna frase dice che le risposte sono conservate
     ('senza account il riepilogo dice «Risposte salvate»', ['T-01'],
@@ -2657,11 +2948,11 @@ ROTTURE_RIFINITURA = [
        "  catch (e) { guasto(e); return; }\n")],
      'non dice che sono sul server'),
     ('«confermate sul server» senza guardare la coda', ['T-02'],
-     [("coda.daInviare.length ? `${coda.daInviare.length} risposte da inviare.${guasto}` : 'Le risposte di questo dispositivo sono confermate sul server'",
-       "'Le risposte di questo dispositivo sono confermate sul server'")],
+     [("    $('conto-stato').textContent = d.risposte ? ", "    $('conto-stato').textContent = false ? "),
+      ("      : coda.daInviare.length ? `Da inviare:", "      : false ? `Da inviare:")],
      'non dice che sono sul server'),
     ('il numero da inviare conta le righe della copia, non la coda', ['T-02'],
-     [('`${coda.daInviare.length} risposte da inviare.${guasto}`', '`${righe.length} risposte da inviare.${guasto}`')],
+     [('    const d = daInviare(righe, coda);', '    const d = daInviare(righe, coda);\n    if (coda.daInviare.length) d.risposte = righe.length;')],
      'il numero da inviare'),
     # T-03: la scrittura fallita
     ('una scrittura riuscita spegne il segnale del guasto', ['T-03'],
@@ -2731,8 +3022,8 @@ ROTTURE_RIFINITURA = [
      [('<meta name="viewport" content="width=device-width, initial-scale=1">', '')],
      'meta viewport'),
     ('con l\'account il pannello sborda', ['T-07:conto'],
-     [('function pannelloConto() {\n  pannello(`<h2>Il tuo account</h2>',
-       'function pannelloConto() {\n  pannello(`<h2 style="white-space:nowrap">Il tuo account, con le sue risposte e i suoi punteggi</h2>')],
+     [('  pannello(`<h2>Il tuo account</h2><p>${esc(S.conto.email)}</p>${esame}',
+       '  pannello(`<h2 style="white-space:nowrap">Il tuo account, con le sue risposte e i suoi punteggi</h2><p>${esc(S.conto.email)}</p>${esame}')],
      'il pannello dell\'account'),
     # T-08 e T-09
     ('un titolo grigio chiaro', ['T-08'], [(_STILE, _STILE + '\nh1 {color:#aaa}')], 'contrasto minimo'),
@@ -3174,6 +3465,9 @@ def main():
               test_rifinitura_senza_account, test_rifinitura_invio, test_rifinitura_guasto, test_rifinitura_identita,
               test_rifinitura_finestra, test_rifinitura_fuoco, test_rifinitura_avvisi, test_rifinitura_larghezze,
               test_rifinitura_contrasto, test_rifinitura_bersagli, test_rifinitura_provata_al_contrario,
+              test_raccordo_riconosciuto, test_esito_senza_account, test_esito_quando, test_esito_salvato,
+              test_avvio_registrato, test_avvio_non_si_vede, test_avvio_non_e_una_risposta, test_avvio_server_di_prima,
+              test_avvio_con_un_errore, test_raccordo_provato_al_contrario,
               test_motore_senza_orfani, test_chiamate_al_motore_preservate, test_applica_con_istante,
               test_letture_che_non_mascherano,
               test_testi_leggibili, test_alt_di_contenuto, test_trasloco):

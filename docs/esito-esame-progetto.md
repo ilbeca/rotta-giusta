@@ -936,6 +936,29 @@ collaudo.
   Con la 24.21.0 LTS come sempre.
 - `docs/account-progetto.md`: §3, §7.1, §14, §15.2 e il §20 con le righe nuove.
 
+**A-2 fatto da P-73, il 4 ottobre 2026** (voce nel CHANGELOG; annotato da
+P-74). Le rotte, la tabella `esito` con lo schema 5, la quarta fonte delle
+statistiche, i ritiri riletti dal ripristino e a ogni avvio. Dove si scosta dal
+testo di qui, scritto da P-73 in `account-progetto.md`:
+
+- **§7.1:** un campo che il server non conosce — nel corpo, in una prova, o una
+  prova che non esiste — è un `422`, non un `200` che lo butta: la prima misura
+  del §2 rivolta contro la rotta nuova. Il `422` ha una forma sola, `{errore:
+  'esito', campo, messaggio}`, con il campo per esteso. Gli errori sono un
+  `422` anche su una prova `non_sostenuta` e sulla pratica, non solo su
+  `non_detto`; i loro limiti vengono da `PROVA_CARTEGGIO` e da `meta.prove`, non
+  da numeri scritti a mano. Togliere una prova sola con `null` passa dal file
+  delle cancellazioni come il `DELETE` di un giorno. Il tetto dei 20 giorni si
+  conta in JavaScript, senza un aggregato da dichiarare. E una data impossibile,
+  che dava `500` — anche nel profilo, dalla v0.28.0 —, è un `422`.
+- **§14.4:** un esito scritto o corretto dopo una copia si perde con un
+  ripristino, come il §3.4 di qui diceva; e il ritiro si confronta con
+  `cambiato_il`, l'orologio del server.
+- **§15.2:** la colonna della fonte `esiti` è **`risultato`**, non `esito` come
+  scriveva il §3.6 di qui: `esito` è il nome della tabella vera, che una
+  statistica non nomina. La soglia delle 20 persone la ricorda
+  `server/statistica.mjs` a ogni statistica sugli esiti.
+
 **A-3 — Claude su `main`: i controlli della pagina** (`tests/client_account.mjs`,
 `tests/test_interfaccia.py`, la pagina di riferimento del client).
 
@@ -950,11 +973,131 @@ collaudo.
   riga d'avvio; un metodo che lancia e ferma la prova.
 - Che cosa non vedono, scritto nel §12 del progetto del client.
 
-**A-4 — Claude su `main`: la specifica.** §3.2 (la riga d'avvio, e perché non è
+**Il raccordo, scritto da P-74 prima del banco** (13 ottobre 2026). La pagina di
+oggi non ha né il riquadro né la riga d'avvio, e deve restare verde; quella di
+B-1 e B-2 deve passare i gruppi per intero. Il banco riconosce quale delle due
+ha davanti con il meccanismo delle aree 2–5 — e con la lezione di P-51: il
+regime della pagina vera **si legge** dal suo testo, non si fissa nel
+controllo. Il segno è un raccordo di quattro funzioni di primo livello in
+`site/app.html`, due per B-1 e due per B-2, come `riepilogoQuiz()` per il ciclo.
+
+*Per B-1, l'esito:*
+
+- **`domandaEsito(io, oggi)`** → `{ giorno }` oppure `null`. `io` è l'ultima
+  descrizione dell'account — `GET /v1/io`, o una risposta nella sua forma —;
+  `oggi` il giorno locale della pagina, `E.isoLocale().slice(0, 10)`. È `null`
+  se `io` non porta `esiti` (il server di prima, §6), se non c'è `data_esame`,
+  se `oggi` è prima della data o più di 90 giorni dopo, o se fra gli `esiti` ce
+  n'è uno con un `giorno` da trenta giorni prima della data in poi; altrimenti
+  `{ giorno: data_esame }`. Logica pura, con le condizioni del §3.2: il
+  riquadro si mostra solo quando lei dice un giorno, e solo nel Percorso.
+- **`salvaEsito(giorno, prove)`** → `Promise<{ codice, esiti }>`: `PUT
+  /v1/esito` con il corpo del §3.3. `esiti` è l'elenco della risposta `200`, e
+  `null` con ogni altro codice; la pagina scrive «Salvato.» e l'elenco solo da
+  lì (§3.7, punto 6).
+
+*Per B-2, l'avvio:*
+
+- **`avvioProva({ simUid, kind, prova, righe, io })`** → la riga di
+  `E.rigaAvvio()`, oppure `null` senza account (`io` nullo) o se `io.tipi_riga`
+  non porta `'a'`. `righe` è l'archivio della copia dell'account com'è, `motore`
+  la `versione` di `meta.json`. Si chiama a Inizia di ogni simulazione completa
+  e di ogni fase di «Base e vela», nella funzione che apre il runner e **prima**
+  di aprirlo, e la riga va in `archivia()`. Può lanciare — `E.rigaAvvio()`
+  lancia su argomenti che non fanno una riga —: chi chiama lo prende, apre lo
+  stesso il runner e lo segnala come una scrittura fallita.
+- **`daInviare(righe, coda)`** → `{ risposte, avvii, altre }`: le righe in coda
+  divise con `E.rigaDiRisposta()` e con `_t: 'a'`; `altre` sono tag e
+  segnalibri. «N risposte da inviare», l'uscita e l'export scrivono `risposte`
+  e nominano gli avvii a parte; la condizione che blocca l'uscita resta sulla
+  coda intera (R-ACC-46).
+
+**Il regime.** Una pagina che dichiara `domandaEsito` è nel regime dell'esito e
+deve dichiarare anche `salvaEsito`; una che dichiara `avvioProva` è nel regime
+dell'avvio e deve dichiarare anche `daInviare`. Una coppia a metà è rossa. I
+due regimi sono indipendenti, perché B-1 e B-2 possono arrivare in due merge.
+**Senza raccordo** E-01 e P-01 guidano la pagina con un account che avrebbe le
+condizioni del riquadro e una simulazione completa, e pretendono che non
+chiami `/v1/esito`, non mostri il riquadro e non scriva righe `_t: 'a'`, né
+nella copia né sul server. **Con il raccordo** eseguono i due gruppi per
+intero. **Il regime senza raccordo ha una scadenza: la merge di P-75.** Da lì,
+come per le aree 2–5, la pagina senza raccordo è rossa, e il riconoscimento
+esce con lei.
+
+**Gli agganci**, che il banco usa e la pagina deve avere (anche nel §12 del
+progetto del client):
+
+- *il riquadro*, nel Percorso, fuori da ogni finestra modale: il titolo «Com'è
+  andato l'esame del {giorno e mese}?» — il giorno e il mese in italiano, nell'ora
+  di Roma — e i pulsanti «Rispondi», «Non l'ho ancora fatto», «Non chiedermelo
+  più»;
+- *il modulo* «Il tuo esame»: `input[name="giorno"]` con la data d'esame già
+  scritta; `input[type=radio][name="esito-carteggio"]` (e `-base`, `-vela`,
+  `-pratica`) con `value` `superata`, `non_superata`, `non_sostenuta`;
+  `input[name="errori-carteggio"]` (e `-base`, `-vela`);
+  `input[name="giorno-pratica"]`; il pulsante «Salva»;
+- *dopo il `200`*: «Salvato. Lo usiamo soltanto in conteggi aggregati.» e,
+  sotto, l'elenco della risposta, una riga per giorno nella forma del §3.5 —
+  «3 settembre 2026 · carteggio superata · quiz base superata, 2 errori · quiz
+  vela non sostenuta»: le prove nell'ordine dell'esame, «, 1 errore» e «, N
+  errori» dove ci sono, «non ce l'hai detto» per un giorno `non_detto`;
+- *in Profilo*, oggi la finestra dell'account, il pulsante «Il tuo esame», solo
+  se `io` porta `esiti`;
+- *la simulazione*: dopo `[data-modo="sim"]` i `input[type=radio][name="quiz-prova"]`
+  con `value` `base`, `vela`, `entrambe` — la pagina di oggi li ha —, poi
+  `#start`; nel riepilogo della fase base di «Base e vela» `[data-fase]`, che
+  apre la vela, come oggi;
+- *i conteggi*: in Info «prove avviate {N}», dalle righe d'avvio della copia;
+  «{N} risposte da inviare» e «{N} risposte non sono sul server» con N uguale a
+  `risposte`, e con `risposte` a zero nessuna delle due frasi.
+
+**Che cosa il banco guarda: i numeri, non i testi** — una riga d'avvio letta
+nella copia e nel database del server con il suo `uid`, i conteggi della pagina
+confrontati con le righe della copia, l'elenco dell'esito confrontato con la
+risposta del `200` —; i testi del §3.1 si cercano in quello che si vede, come
+fa C-20. Le parti, una per requisito:
+
+| Parte | Che cosa fa | Requisito |
+|---|---|---|
+| `E-01:senza` | senza account: Percorso, Quiz, Info, un'attività fino al riepilogo, la finestra «Accedi» | nessuna richiesta a `/v1/esito`, nessun riquadro, nessun «Il tuo esame» (R-ESITO-02) |
+| `E-01:quando` | un account, la data d'esame e gli esiti scritti nel database, la pagina ricaricata per ogni caso: la data oggi, 90 e 91 giorni fa, domani, nessuna; con la data di dieci giorni fa, un esito 30 e 31 giorni prima; poi «Non chiedermelo più» | il riquadro c'è solo dove deve, con la data giusta; mai in un'altra vista, nel runner, nel riepilogo o in una finestra modale; «Non chiedermelo più» scrive tre righe `non_detto` e il riquadro non torna (R-ESITO-03) |
+| `E-01:prima` | lo stesso account con `GET /v1/io` sostituita dal banco senza `esiti` e senza `tipi_riga` | nessun riquadro, nessun «Il tuo esame», nessuna richiesta a `/v1/esito` (R-ESITO-03) |
+| `E-01:salvato` | «Rispondi», il modulo, «Salva» con il `PUT` trattenuto, poi la risposta `200` sostituita con un elenco diverso da quello mandato | niente «Salvato» finché il `200` non arriva; poi «Salvato» e la riga del `200`, non quella mandata; nel database le righe mandate; il riquadro sparisce (R-ESITO-04) |
+| `P-01:avvio` | un account, «Base e vela»: Inizia, una risposta, la consegna, la vela, la consegna; poi una simulazione base | una riga d'avvio per fase, nella copia prima della prima risposta, `uid` uguale a `sim_uid` più «:a», lo stesso `sim_uid` delle risposte e della riga `s`, la vela dopo la consegna della base; sul server con lo stesso `uid`; la seconda simulazione conta la prima fra le `prove` (R-PREV-05) |
+| `P-01:senza` | senza account una simulazione fino al riepilogo, poi la registrazione da lì | sul server le risposte, e nessuna riga d'avvio (R-PREV-05) |
+| `P-01:visto` | la stessa simulazione, consegnata vuota, con il server e con `GET /v1/io` senza `tipi_riga` | preparazione, runner e riepilogo uguali, cifre a parte, e nessuna percentuale né parola di una previsione (R-PREV-06) |
+| `P-01:conti` | l'invio delle righe che fallisce: Inizia, poi la pagina ricaricata — la prova abbandonata, con il solo avvio in coda —, Info, «Esci»; poi una risposta, e di nuovo «Esci» | con il solo avvio in coda nessun «N risposte da inviare» e nessuna frase che dica tutto sul server, «prove avviate» in Info uguale alle righe d'avvio e le risposte ai quiz a zero, l'uscita bloccata senza «N risposte»; con una risposta, N uguale alle risposte in coda nella copia, e la stessa N nell'uscita (R-PREV-07) |
+| `P-01:prima` | `GET /v1/io` senza `tipi_riga` — il banco toglie i due campi dalla risposta vera, l'account entra e la pagina si ricarica —: una simulazione con una risposta, poi «Esci» | nessuna riga d'avvio nella copia e sul server; l'uscita non si blocca (R-PREV-09) |
+| `P-01:errore` | `/engine.js` servito con `regola-semplice-1` che lancia | il runner si apre, e la riga d'avvio c'è con `errore` e senza quel metodo in `stime` (R-PREV-10) |
+
+E `E-01:spento` e `P-01:spento`, le due parti del regime senza raccordo.
+
+ §3.2 (la riga d'avvio, e perché non è
 uno specchio), §3.7 (il server conserva gli esiti), §4.6 (la nota sulla stima
 diventa «si registra»), §5.4 (le due voci), i requisiti del §9 di questo
 documento nel §9 della specifica, Q-STIMA nel §10 aggiornato: la strada in
 pagina c'è, resta l'email.
+
+**A-3 e A-4 fatti da P-74, il 13 ottobre 2026** (voce nel CHANGELOG). Il
+raccordo e gli agganci qui sopra, scritti prima del banco; i gruppi E-01 e
+P-01 in `tests/client_account.mjs`, con le loro parti, la pagina di riferimento
+del client che li realizza, e ventinove rotture; la specifica, §3.2, §3.7, §4.6,
+§5.4 e il nuovo §9.13, con Q-STIMA. Dove si scosta dal testo di prima:
+
+- **Il server di prima il banco lo imita**: toglie `esiti` e `tipi_riga` dalla
+  risposta vera di `GET /v1/io`, entra e ricarica la pagina, così l'unica
+  descrizione dell'account che la pagina ha visto è quella. Un server finto
+  intero non serve, ed è detto fra quello che i controlli non vedono.
+- **«Base e vela» vuole due agganci** che la pagina di oggi ha già: il
+  `input[name="quiz-prova"]` della preparazione e il `[data-fase]` del
+  riepilogo della base.
+- **I due conti del motore sono fatti** (punto 1 di P-74): `confermateRisposte`
+  e `nonSalvateRisposte`, R-PREV-11 e 12. B-2 li usa al posto di `confermate` e
+  `nonSalvate` dove scrive «risposte»; il resto dell'elenco dei chiamanti qui
+  sopra resta il suo lavoro. Con loro, i tag N/L/C smettono di contare come
+  risposte anche in quei due testi, e B-2 lo dice nel suo collaudo.
+- **R-PREV-02 conta i contratti di P-71**: `contaStati()`, `statoQuesito()`,
+  `segnalibri()`, `codaSegnalibri()`, `cercaNumero()`.
 
 **B-1 — ChatGPT su `ui/main`: «com'è andata»**, dopo A-2 e A-3 fusi
 (`site/app.html`, `site/privacy.html`).

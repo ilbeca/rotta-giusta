@@ -60,6 +60,12 @@
 // E da P-60 il gruppo C-21, al posto di C-09: l'archivio di prima degli account
 // resta nel browser, e la pagina non lo legge e non lo cancella (ADR-005,
 // R-ACC-05). C-09, il passaggio nell'account, e' uscito con la decisione.
+//
+// E da P-74 i gruppi E-01 e P-01: «com'e' andata» e la riga d'avvio delle
+// simulazioni (docs/esito-esame-progetto.md §10.1, dove stanno il raccordo, gli
+// agganci e le parti). Hanno due regimi, che tests/test_interfaccia.py legge
+// dal testo della pagina e passa qui in `regimi`: senza il raccordo gira la
+// parte `spento`, fino alla merge di P-75.
 
 import { createServer } from 'node:http';
 import { execFileSync } from 'node:child_process';
@@ -70,7 +76,7 @@ import { fileURLToPath } from 'node:url';
 import { avviaChrome } from './browser.mjs';
 import * as E from '../site/engine.js';
 import { avvia } from '../server/server.mjs';
-import { aggiungiRighe, azzera as azzeraDb } from '../server/db.mjs';
+import { aggiungiRighe, azzera as azzeraDb, esitiDi as esitiDb } from '../server/db.mjs';
 import { copia as copiaDb, ripristina as ripristinaDb } from '../server/copie.mjs';
 
 const RADICE = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -3935,6 +3941,602 @@ async function c20(b, ctx, v) {
   } finally { await c.chiudi(); }
 }
 
+// --- E-01 e P-01: «com'è andata» e la riga d'avvio (P-74) --------------------------
+//
+// docs/esito-esame-progetto.md §3, §4 e il §10.1, che ha il contratto per
+// esteso: il raccordo, gli agganci, le parti. Il banco guarda i numeri — una
+// riga d'avvio nella copia e nel database del server con il suo uid, i conteggi
+// della pagina contro le righe della copia, l'elenco dell'esito contro la
+// risposta del 200 — e cerca i testi del §3.1 in quello che si vede, come C-20.
+//
+// **Due regimi per gruppo, con la lezione di P-51.** Il regime lo legge
+// tests/test_interfaccia.py dal testo della pagina — `domandaEsito` e
+// `salvaEsito` per E-01, `avvioProva` e `daInviare` per P-01 — e lo passa qui
+// in `regimi`. Con il raccordo il gruppo gira per intero; senza, gira la parte
+// `spento`, che pretende che la pagina non faccia niente di tutto questo con un
+// account che ne avrebbe le condizioni. Una coppia a meta' e' rossa. Il regime
+// senza raccordo esce con la merge di P-75.
+
+const TITOLO_ESITO = /Com['’]è andato l['’]esame del ([^?\n]+)\?/;
+const SALVATO_ESITO = 'Salvato. Lo usiamo soltanto in conteggi aggregati.';
+const IL_TUO_ESAME = 'Il tuo esame';
+const giornoMese = (g) => new Date(g + 'T12:00:00Z').toLocaleDateString('it-IT', { day: 'numeric', month: 'long', timeZone: 'Europe/Rome' });
+const giornoLungo = (g) => new Date(g + 'T12:00:00Z').toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Rome' });
+// Il giorno locale, come lo legge la pagina (§3.2): il banco e il browser sono sulla stessa macchina.
+const oggiQui = () => E.isoLocale().slice(0, 10);
+
+/**
+ * Dove sta il titolo del riquadro, in quello che si vede: per ogni elemento piu'
+ * interno che lo mostra, il giorno e se il posto e' quello giusto — dentro il
+ * Percorso, fuori da una finestra modale, dal runner, dal riepilogo e dalla
+ * revisione (§3.2: «in un posto solo, mai durante un'attivita', mai una finestra
+ * modale, mai in un riepilogo»). Sotto un runner il Percorso puo' restare
+ * disegnato, coperto: il controllo e' sul posto, non sull'occlusione.
+ */
+const RIQUADRO = js(`const re = new RegExp(${q(TITOLO_ESITO.source)});
+  if (!re.test(document.body.innerText)) return [];
+  const tutti = [...document.querySelectorAll('body *')].filter((e) => V(e) && re.test(e.innerText || ''));
+  const interni = tutti.filter((e) => !tutti.some((f) => f !== e && e.contains(f)));
+  return interni.map((e) => ({ giorno: (e.innerText.match(re) || [])[1] || null,
+    posto: e.closest('[aria-modal="true"], dialog') ? 'una finestra modale'
+      : e.closest('#r-fine, #c-fine, #sr-fine') ? 'un riepilogo' : e.closest('#quizrun, #cartrun, #segrun') ? 'un runner'
+      : e.closest('#rivedi') ? 'la revisione' : !e.closest('#v-oggi') ? 'fuori dal Percorso' : null }));`);
+const fuoriPosto = (xs) => (xs || []).filter((x) => x.posto).map((x) => x.posto);
+
+/** Le richieste a /v1/esito, di qualunque metodo: senza account, o con il server di prima, nessuna. */
+const versoEsito = (tab) => tab.richieste.filter((r) => new URL(r.url).pathname === '/v1/esito');
+
+/** La copia dell'account intera, letta dalla pagina: le righe e la coda. */
+const COPIA = (chiave) => `(async () => {
+  if (!(await indexedDB.databases()).some((d) => d.name === ${q('rg-account-' + chiave)})) return null;
+  return new Promise((ok) => {
+    const q = indexedDB.open(${q('rg-account-' + chiave)});
+    q.onerror = () => ok(null);
+    q.onsuccess = () => {
+      const db = q.result;
+      try {
+        const t = db.transaction(['righe', 'meta']);
+        const r = t.objectStore('righe').getAll(), c = t.objectStore('meta').get('coda');
+        t.oncomplete = () => { db.close(); ok({ righe: r.result, coda: c.result || { daInviare: [], scartate: {} } }); };
+        t.onerror = () => { db.close(); ok(null); };
+      } catch { db.close(); ok(null); }
+    };
+  });
+})()`;
+/** Le righe in coda nella copia, divise come le divide daInviare() del raccordo. */
+function inCoda(copia) {
+  if (!copia) return null;
+  const u = new Set(copia.coda.daInviare || []);
+  const d = { risposte: 0, avvii: 0, altre: 0 };
+  for (const r of copia.righe) if (u.has(String(r.uid))) { if (E.rigaDiRisposta(r)) d.risposte++; else if (r._t === 'a') d.avvii++; else d.altre++; }
+  return d;
+}
+const tipo = (copia, t) => (copia ? copia.righe.filter((r) => r._t === t) : []);
+
+/**
+ * «Il server di prima» (§6): `GET /v1/io` senza `esiti` e senza `tipi_riga`.
+ * Il banco toglie i due campi dalla risposta vera; poi la pagina si ricarica,
+ * cosi' l'unica descrizione dell'account che ha visto e' quella.
+ */
+async function serverDiPrima(ctx, tab) {
+  await tab.intercetta(ctx.api + '/v1/io', async (req, params, { corpo }) => {
+    if (req.method !== 'GET' || params.responseStatusCode !== 200) return null;
+    const o = JSON.parse(await corpo());
+    delete o.esiti; delete o.tipi_riga;
+    return finti(ctx, 200, o);
+  }, { fase: 'Response' });
+}
+
+/** Entra, e se serve ricarica: l'account si riconosce da GET /v1/io (§3.1 del client). */
+async function entraERicarica(tab, U) {
+  if (!await dentro(tab, U)) return false;
+  await tab.ricarica();
+  return await tab.attendi(PRONTO, CARICO) && tab.attendi(nellaPagina('Account'), REAZIONE);
+}
+
+/** Il riquadro, aspettato finche' compare nel posto giusto con il giorno giusto. */
+async function riquadroC(tab, giorno) {
+  return tab.attendiValore(RIQUADRO, (xs) => xs.length > 0 && !fuoriPosto(xs).length && xs.every((x) => x.giorno === giornoMese(giorno)), REAZIONE);
+}
+/** Il riquadro che non c'e', guardato per tutta la finestra: un'assenza non ha un evento. */
+async function riquadroNo(tab) {
+  let visto = [];
+  const ok = await maiPer(async () => { visto = await tab.valuta(RIQUADRO); return visto.length > 0; });
+  return { ok, visto };
+}
+
+// I regimi: chi non li passa (una prova senza `regimi`) e' nel regime senza raccordo.
+const regime = (ctx, chi) => (ctx.regimi && ctx.regimi[chi]) || 'spento';
+function aMeta(v, g, chi, r) {
+  v.push({ gruppo: g, nome: `la pagina dichiara il raccordo di ${chi} per intero, o niente`, ok: false,
+    extra: `la pagina ne dichiara una parte (${r}): ${chi === 'esito' ? 'domandaEsito() e salvaEsito()' : 'avvioProva() e daInviare()'} vanno insieme (esito-esame-progetto §10.1)` });
+}
+
+async function e01(b, ctx, v, parte) {
+  const r = regime(ctx, 'esito');
+  if (r !== 'raccordo' && r !== 'spento') return aMeta(v, 'E-01', 'esito', r);
+  if (r === 'spento') return e01spento(b, ctx, v, 'E-01:spento');
+  const vuole = (x) => !parte || parte === x;
+  if (vuole('senza')) await e01senza(b, ctx, v, 'E-01:senza');
+  if (vuole('quando')) await e01quando(b, ctx, v, 'E-01:quando');
+  if (vuole('prima')) await e01prima(b, ctx, v, 'E-01:prima');
+  if (vuole('salvato')) await e01salvato(b, ctx, v, 'E-01:salvato');
+}
+
+/** Senza raccordo: un account con la data di ieri, e niente di «com'è andata». */
+async function e01spento(b, ctx, v, g) {
+  const U = await nuovoAccount(ctx, 'e01s');
+  ctx.dataEsame(U.email, E.addGiorni(oggiQui(), -1));
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    await fermaAlPrimo(v, async (w) => {
+      w.push({ gruppo: g, nome: 'si entra in un account con la data d\'esame di ieri', ok: await entraERicarica(tab, U), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+      const { ok, visto } = await riquadroNo(tab);
+      w.push({ gruppo: g, nome: 'senza il raccordo la pagina non mostra il riquadro di «com\'è andata»', ok,
+        extra: `la pagina non dichiara domandaEsito() e salvaEsito(), e mostra il riquadro: ${JSON.stringify(visto)}` });
+      await clicca(tab, 'Account');
+      const esame = await tab.attendi(pulsante(IL_TUO_ESAME), 1000);
+      w.push({ gruppo: g, nome: 'senza il raccordo la finestra dell\'account non ha «Il tuo esame»', ok: !esame, extra: '«Il tuo esame» c\'e\'' });
+      w.push({ gruppo: g, nome: 'senza il raccordo nessuna richiesta a /v1/esito', ok: !versoEsito(tab).length,
+        extra: versoEsito(tab).map((x) => `${x.metodo} ${x.url}`).join('; ') });
+    });
+  } finally { await c.chiudi(); }
+}
+
+// R-ESITO-02: senza account non c'e' la domanda, non c'e' la voce, e nessuna richiesta.
+async function e01senza(b, ctx, v, g) {
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    await fermaAlPrimo(v, async (w) => {
+      w.push({ gruppo: g, nome: 'l\'app si apre senza account', ok: await tab.attendi(PRONTO, CARICO), extra: 'nessun [data-rotta-start] abilitato' });
+      const viste = [];
+      for (const x of VISTE) { await clic(tab, `[data-v="${x}"]`); await pausa(200); viste.push(...await tab.valuta(RIQUADRO)); }
+      await clic(tab, '[data-v="oggi"]');
+      const testo = await unaRisposta(tab, [], g, '');
+      w.push({ gruppo: g, nome: 'un\'attivita\' fino al riepilogo, senza account', ok: !!testo, extra: 'il runner o il riepilogo non si aprono' });
+      viste.push(...await tab.valuta(RIQUADRO));
+      await alPercorso(tab);
+      await clicca(tab, 'Accedi');
+      await tab.attendi(modaleVisibile, REAZIONE);
+      const voce = await tab.valuta(pulsante(IL_TUO_ESAME));
+      await esc(tab);
+      const { ok, visto } = await riquadroNo(tab);
+      w.push({ gruppo: g, nome: 'senza account il riquadro di «com\'è andata» non c\'e\'', ok: ok && !viste.length,
+        extra: `si vede ${JSON.stringify([...viste, ...visto])}` });
+      w.push({ gruppo: g, nome: 'senza account non c\'e\' «Il tuo esame»', ok: !voce, extra: 'nella finestra «Accedi» c\'e\' «Il tuo esame»' });
+      w.push({ gruppo: g, nome: 'senza account nessuna richiesta a /v1/esito', ok: !versoEsito(tab).length,
+        extra: versoEsito(tab).map((x) => `${x.metodo} ${x.url}`).join('; ') });
+    });
+  } finally { await c.chiudi(); }
+}
+
+// R-ESITO-03: quando, e dove. I casi uno per uno, con la pagina ricaricata.
+async function e01quando(b, ctx, v, g) {
+  const U = await nuovoAccount(ctx, 'e01q');
+  const oggi = oggiQui();
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    await fermaAlPrimo(v, async (w) => {
+      w.push({ gruppo: g, nome: 'si entra nell\'account', ok: await dentro(tab, U), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+      /** Un caso: la data e gli esiti scritti nel database, poi la pagina ricaricata. */
+      const caso = async (nome, data, { esiti = [], ce }) => {
+        ctx.dataEsame(U.email, data);
+        ctx.togliEsiti(U.email);
+        for (const [giorno, prova, esito] of esiti) ctx.esito(U.email, giorno, prova, esito);
+        await tab.ricarica();
+        const pronta = await tab.attendi(PRONTO, CARICO) && await tab.attendi(nellaPagina('Account'), REAZIONE);
+        if (!pronta) return w.push({ gruppo: g, nome: `${nome}: la pagina si riapre nell'account`, ok: false, extra: await tab.valuta(inSchermata) });
+        if (ce) {
+          const { ok, valore } = await riquadroC(tab, data);
+          return w.push({ gruppo: g, nome: `${nome}: il riquadro c'e', nel Percorso, con «${giornoMese(data)}»`, ok,
+            extra: `si vede ${JSON.stringify(valore)}; atteso il titolo del §3.1 con «${giornoMese(data)}», dentro il Percorso` });
+        }
+        const { ok, visto } = await riquadroNo(tab);
+        return w.push({ gruppo: g, nome: `${nome}: il riquadro non c'e'`, ok, extra: `si vede ${JSON.stringify(visto)}` });
+      };
+      await caso('la data d\'esame e\' oggi', oggi, { ce: true });
+      // Il posto: le altre viste, il runner, il riepilogo.
+      const altrove = [];
+      for (const x of VISTE.filter((x) => x !== 'oggi')) { await clic(tab, `[data-v="${x}"]`); await pausa(200); altrove.push(...fuoriPosto(await tab.valuta(RIQUADRO)).map((p) => `${x}: ${p}`)); }
+      await clic(tab, '[data-v="oggi"]');
+      await clic(tab, '[data-rotta-start]');
+      const risposto = await rispondiQuiz(tab, [], g, '');
+      altrove.push(...fuoriPosto(await tab.valuta(RIQUADRO)).map((p) => `con il runner aperto: ${p}`));
+      const riep = risposto && await chiudiQuiz(tab, [], g, '');
+      altrove.push(...fuoriPosto(await tab.valuta(RIQUADRO)).map((p) => `nel riepilogo: ${p}`));
+      w.push({ gruppo: g, nome: 'il riquadro sta in un posto solo: mai in un\'altra vista, nel runner, nel riepilogo o in una finestra modale',
+        ok: !!riep && !altrove.length, extra: !riep ? 'l\'attivita\' non arriva al riepilogo' : altrove.join('; ') });
+      await alPercorso(tab);
+      await caso('la data d\'esame e\' di 90 giorni fa', E.addGiorni(oggi, -90), { ce: true });
+      await caso('la data d\'esame e\' di 91 giorni fa', E.addGiorni(oggi, -91), {});
+      await caso('la data d\'esame e\' domani', E.addGiorni(oggi, 1), {});
+      await caso('senza data d\'esame', null, {});
+      await clicca(tab, 'Account');
+      const voce = await tab.attendi(pulsante(IL_TUO_ESAME), REAZIONE);
+      w.push({ gruppo: g, nome: 'senza data, «Il tuo esame» c\'e\' nella finestra dell\'account', ok: voce, extra: `nella finestra: ${await tab.valuta(inSchermata)}` });
+      await esc(tab);
+      const d = E.addGiorni(oggi, -10);
+      await caso('con un esito trenta giorni prima della data', d, { esiti: [[E.addGiorni(d, -30), 'base', 'superata']] });
+      await caso('con un esito solo trentuno giorni prima della data', d, { esiti: [[E.addGiorni(d, -31), 'base', 'non_superata']], ce: true });
+      // «Non chiedermelo piu'»: tre righe non_detto per quel giorno, e il riquadro non torna (§3.2).
+      await clicca(tab, 'Non chiedermelo più');
+      const scritte = await finche(() => ctx.esitiDi(U.email).filter((x) => x.giorno === d && x.esito === 'non_detto').length === 3, REAZIONE);
+      w.push({ gruppo: g, nome: '«Non chiedermelo piu\'» scrive tre righe «non detto» per quel giorno', ok: scritte,
+        extra: `sul server: ${JSON.stringify(ctx.esitiDi(U.email).map((x) => [x.giorno, x.prova, x.esito]))}` });
+      await tab.ricarica();
+      await tab.attendi(PRONTO, CARICO); await tab.attendi(nellaPagina('Account'), REAZIONE);
+      const { ok, visto } = await riquadroNo(tab);
+      w.push({ gruppo: g, nome: 'dopo «Non chiedermelo piu\'» il riquadro non torna', ok, extra: `si vede ${JSON.stringify(visto)}` });
+    });
+  } finally { await c.chiudi(); }
+}
+
+// R-ESITO-03, l'altra meta': un campo assente spegne la funzione (§3.7, punto 2).
+async function e01prima(b, ctx, v, g) {
+  const U = await nuovoAccount(ctx, 'e01p');
+  ctx.dataEsame(U.email, E.addGiorni(oggiQui(), -1));
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    await serverDiPrima(ctx, tab);
+    await fermaAlPrimo(v, async (w) => {
+      w.push({ gruppo: g, nome: 'si entra, e la pagina si riapre con GET /v1/io senza esiti', ok: await entraERicarica(tab, U), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+      const { ok, visto } = await riquadroNo(tab);
+      w.push({ gruppo: g, nome: 'con il server di prima il riquadro non c\'e\'', ok, extra: `GET /v1/io non porta esiti, e si vede ${JSON.stringify(visto)}` });
+      await clicca(tab, 'Account');
+      await tab.attendi(modaleVisibile, REAZIONE);
+      w.push({ gruppo: g, nome: 'con il server di prima non c\'e\' «Il tuo esame»', ok: !await tab.valuta(pulsante(IL_TUO_ESAME)), extra: 'nella finestra dell\'account c\'e\' «Il tuo esame»' });
+      w.push({ gruppo: g, nome: 'con il server di prima nessuna richiesta a /v1/esito', ok: !versoEsito(tab).length,
+        extra: versoEsito(tab).map((x) => `${x.metodo} ${x.url}`).join('; ') });
+    });
+  } finally { await c.chiudi(); }
+}
+
+// R-ESITO-04: «Salvato» solo dopo il 200, e l'elenco e' quello della risposta.
+async function e01salvato(b, ctx, v, g) {
+  const U = await nuovoAccount(ctx, 'e01v');
+  const data = E.addGiorni(oggiQui(), -2);
+  ctx.dataEsame(U.email, data);
+  const c = await b.nuovoContesto();
+  let lascia;
+  const via = new Promise((r) => { lascia = r; });
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    let presa = false;
+    // Il PUT resta fermo finche' il banco non lo lascia; poi la risposta del
+    // server arriva con un elenco diverso da quello mandato: 3 errori al posto di 2.
+    await tab.intercetta(ctx.api + '/v1/esito', async (req) => { if (req.method !== 'PUT') return null; presa = true; await via; return null; });
+    await tab.intercetta(ctx.api + '/v1/esito', async (req, params) => {
+      if (req.method !== 'PUT' || params.responseStatusCode !== 200) return null;
+      const esiti = ctx.esitiDi(U.email).map((x) => (x.prova === 'base' ? { ...x, errori: 3 } : x));
+      return finti(ctx, 200, { esiti });
+    }, { fase: 'Response' });
+    await fermaAlPrimo(v, async (w) => {
+      w.push({ gruppo: g, nome: 'si entra in un account con la data d\'esame di due giorni fa', ok: await dentro(tab, U), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+      const { ok: c1, valore } = await riquadroC(tab, data);
+      w.push({ gruppo: g, nome: 'il riquadro c\'e\'', ok: c1, extra: JSON.stringify(valore) });
+      await clicca(tab, 'Rispondi');
+      const modulo = await tab.attendi(js(`return !!document.querySelector('input[name="giorno"]') && V(document.querySelector('input[name="giorno"]'));`), REAZIONE);
+      const giorno = modulo && await tab.valuta(js(`return document.querySelector('input[name="giorno"]').value;`));
+      w.push({ gruppo: g, nome: '«Rispondi» apre il modulo, con la data d\'esame gia\' scritta', ok: modulo && giorno === data,
+        extra: modulo ? `il giorno della prova scritta e' «${giorno}», la data d'esame ${data}` : 'nessun input[name="giorno"] visibile' });
+      const scegli = (nome, valore) => tab.valuta(js(`const e = document.querySelector('input[name="${nome}"][value="${valore}"]'); if (!e) return false; e.click(); return e.checked;`));
+      const errori = (nome, n) => tab.valuta(js(`const e = document.querySelector('input[name="${nome}"]'); if (!e) return false;
+        e.value = ${q(String(n))}; e.dispatchEvent(new Event('input', { bubbles: true })); e.dispatchEvent(new Event('change', { bubbles: true })); return true;`));
+      const compilato = await scegli('esito-carteggio', 'superata') && await scegli('esito-base', 'superata') && await errori('errori-base', 2)
+        && await scegli('esito-vela', 'non_sostenuta');
+      w.push({ gruppo: g, nome: 'il modulo ha le scelte e gli errori del contratto', ok: compilato,
+        extra: 'manca uno di input[name="esito-carteggio|esito-base|esito-vela"] con il suo value, o input[name="errori-base"]' });
+      await clicca(tab, 'Salva');
+      const ferma = await finche(() => presa, REAZIONE);
+      w.push({ gruppo: g, nome: '«Salva» manda il PUT', ok: ferma, extra: 'nessun PUT /v1/esito' });
+      let detto = false;
+      const zitta = await maiPer(async () => (detto = await tab.valuta(testoVisibile('Salvato'))));
+      w.push({ gruppo: g, nome: 'finche\' il server non ha risposto, niente «Salvato»', ok: zitta && !ctx.esitiDi(U.email).length,
+        extra: detto ? 'con il PUT ancora fermo la pagina dice «Salvato»' : `il server ha gia' ${ctx.esitiDi(U.email).length} esiti` });
+      lascia();
+      const salvato = await tab.attendi(testoVisibile(SALVATO_ESITO), REAZIONE);
+      w.push({ gruppo: g, nome: 'dopo il 200, «Salvato» con la frase del §3.1', ok: salvato, extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+      const dalla = `${giornoLungo(data)} · carteggio superata · quiz base superata, 3 errori · quiz vela non sostenuta`;
+      const mandata = `${giornoLungo(data)} · carteggio superata · quiz base superata, 2 errori · quiz vela non sostenuta`;
+      const vista = await tab.attendi(testoVisibile(dalla), REAZIONE);
+      const sua = await tab.valuta(testoVisibile(mandata));
+      w.push({ gruppo: g, nome: 'l\'elenco e\' quello della risposta del 200, non quello mandato', ok: vista && !sua,
+        extra: sua ? `si legge «${mandata}», cioe' quello che la pagina ha mandato; la risposta diceva «${dalla}»` : `non si legge «${dalla}»; in schermata: ${await tab.valuta(inSchermata)}` });
+      const sul = ctx.esitiDi(U.email).map((x) => [x.giorno, x.prova, x.esito, x.errori]);
+      w.push({ gruppo: g, nome: 'sul server le prove mandate, e la pratica lasciata vuota non c\'e\'', ok: JSON.stringify(sul) === JSON.stringify([[data, 'carteggio', 'superata', null], [data, 'base', 'superata', 2], [data, 'vela', 'non_sostenuta', null]]),
+        extra: JSON.stringify(sul) });
+      await esc(tab);
+      const { ok, visto } = await riquadroNo(tab);
+      w.push({ gruppo: g, nome: 'detto l\'esito, il riquadro non c\'e\' piu\'', ok, extra: `si vede ${JSON.stringify(visto)}` });
+    });
+  } finally { lascia(); await c.chiudi(); }
+}
+
+// --- P-01: la riga d'avvio delle simulazioni -------------------------------------------
+
+/** Quiz → Simula la prova → quale prova → Inizia. */
+async function apriSim(tab, prova) {
+  const ok = await clic(tab, '[data-v="quiz"]') && await tab.attendi(visibile('[data-modo="sim"]'), REAZIONE) && await clic(tab, '[data-modo="sim"]');
+  if (!ok) return false;
+  if (prova) {
+    const scelta = await tab.attendi(js(`const e = document.querySelector('input[name="quiz-prova"][value="${prova}"]'); if (!e) return false; if (!e.checked) e.click(); return e.checked;`), REAZIONE);
+    if (!scelta) return false;
+  }
+  if (!await tab.attendi(js(`const b = document.querySelector('#start'); return V(b) && !b.disabled;`), REAZIONE)) return false;
+  await clic(tab, '#start');
+  return tab.attendi(QUESITO_C, REAZIONE);
+}
+const QUESITO_C = js(`const t = document.querySelector('#r-text'); return V(t) && !!t.textContent.trim() && [...document.querySelectorAll('#r-ans .ans')].filter(V).length > 1;`);
+const istante = (r) => (r && r.ts ? Date.parse(r.ts) : NaN);
+
+async function p01(b, ctx, v, parte) {
+  const r = regime(ctx, 'avvio');
+  if (r !== 'raccordo' && r !== 'spento') return aMeta(v, 'P-01', 'avvio', r);
+  if (r === 'spento') return p01spento(b, ctx, v, 'P-01:spento');
+  const vuole = (x) => !parte || parte === x;
+  if (vuole('avvio')) await p01avvio(b, ctx, v, 'P-01:avvio');
+  if (vuole('senza')) await p01senza(b, ctx, v, 'P-01:senza');
+  if (vuole('visto')) await p01visto(b, ctx, v, 'P-01:visto');
+  if (vuole('conti')) await p01conti(b, ctx, v, 'P-01:conti');
+  if (vuole('prima')) await p01prima(b, ctx, v, 'P-01:prima');
+  if (vuole('errore')) await p01errore(b, ctx, v, 'P-01:errore');
+}
+
+/** Senza raccordo: una simulazione completa con l'account, e nessuna riga d'avvio. */
+async function p01spento(b, ctx, v, g) {
+  const U = await nuovoAccount(ctx, 'p01s');
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    await fermaAlPrimo(v, async (w) => {
+      w.push({ gruppo: g, nome: 'si entra nell\'account', ok: await dentro(tab, U), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+      w.push({ gruppo: g, nome: 'una simulazione si apre', ok: await apriSim(tab, null), extra: 'Quiz → Simula la prova → Inizia non apre un quesito' });
+      const risposto = await rispondiQuiz(tab, [], g, '', { sim: true }) && await chiudiQuiz(tab, [], g, '', { sim: true });
+      w.push({ gruppo: g, nome: 'una risposta e la consegna', ok: !!risposto, extra: 'la simulazione non arriva al riepilogo' });
+      const sul = await finche(() => ctx.righeServer(U.email).some((x) => x._t === 'q'), CARICO);
+      const copia = await tab.valuta(COPIA(U.chiave));
+      const avvii = [...tipo(copia, 'a'), ...ctx.righeServer(U.email).filter((x) => x._t === 'a')];
+      w.push({ gruppo: g, nome: 'senza il raccordo la pagina non scrive righe d\'avvio, ne\' nella copia ne\' sul server', ok: sul && !avvii.length,
+        extra: !sul ? 'la risposta non arriva sul server' : `la pagina non dichiara avvioProva() e daInviare(), e scrive ${avvii.length} righe _t:'a'` });
+    });
+  } finally { await c.chiudi(); }
+}
+
+// R-PREV-05: a Inizia di ogni fase una riga d'avvio, prima della prima risposta.
+async function p01avvio(b, ctx, v, g) {
+  const U = await nuovoAccount(ctx, 'p01a');
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    await fermaAlPrimo(v, async (w) => {
+      w.push({ gruppo: g, nome: 'si entra nell\'account', ok: await dentro(tab, U), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+      w.push({ gruppo: g, nome: '«Base e vela» si apre con il primo quesito', ok: await apriSim(tab, 'entrambe'),
+        extra: 'Quiz → Simula la prova → input[name="quiz-prova"][value="entrambe"] → Inizia non apre un quesito' });
+      // Prima della prima risposta: la copia ha gia' la riga d'avvio, e nessuna risposta.
+      const c0 = await tab.valuta(COPIA(U.chiave));
+      const a0 = tipo(c0, 'a');
+      w.push({ gruppo: g, nome: 'a Inizia, prima della prima risposta, una riga d\'avvio nella copia', ok: a0.length === 1 && !tipo(c0, 'q').length,
+        extra: `nella copia ${a0.length} righe d'avvio e ${tipo(c0, 'q').length} risposte` });
+      const a = a0[0];
+      w.push({ gruppo: g, nome: 'la riga d\'avvio ha l\'uid della prova piu\' «:a», la fase base e la scelta «entrambe»',
+        ok: a.uid === `${a.sim_uid}:a` && a.kind === 'base' && a.prova === 'entrambe' && E.validaRiga(a) === null, extra: JSON.stringify(a).slice(0, 300) });
+      w.push({ gruppo: g, nome: 'regola-semplice-1 senza prove prima: zero su zero', ok: JSON.stringify(a.stime['regola-semplice-1']) === JSON.stringify({ superate: 0, n: 0, prove: [] }),
+        extra: JSON.stringify(a.stime) });
+      const risposto = await rispondiQuiz(tab, [], g, '', { sim: true });
+      const c1 = await tab.valuta(COPIA(U.chiave));
+      const q1 = tipo(c1, 'q');
+      w.push({ gruppo: g, nome: 'la risposta ha il sim_uid della riga d\'avvio, e viene dopo', ok: !!risposto && q1.length === 1 && q1[0].sim_uid === a.sim_uid && istante(a) <= istante(q1[0]) && tipo(c1, 'a').length === 1,
+        extra: `risposte ${q1.length}, sim_uid ${q1[0] && q1[0].sim_uid} contro ${a.sim_uid}, avvio ${a.ts} risposta ${q1[0] && q1[0].ts}, righe d'avvio ${tipo(c1, 'a').length}` });
+      w.push({ gruppo: g, nome: 'la consegna della base apre il suo riepilogo', ok: await chiudiQuiz(tab, [], g, '', { sim: true }), extra: 'nessun riepilogo' });
+      const c2 = await tab.valuta(COPIA(U.chiave));
+      const s1 = tipo(c2, 's').find((x) => x.uid === a.sim_uid);
+      w.push({ gruppo: g, nome: 'alla consegna la riga della prova ha l\'uid della prova, e nessuna riga d\'avvio in piu\'', ok: !!s1 && tipo(c2, 'a').length === 1,
+        extra: `righe s ${JSON.stringify(tipo(c2, 's').map((x) => x.uid))}, righe d'avvio ${tipo(c2, 'a').length}` });
+      // La vela: la sua riga d'avvio nasce con lei, dopo la consegna della base (§4.1).
+      const vela = await clic(tab, '[data-fase]') && await tab.attendi(QUESITO_C, REAZIONE);
+      const c3 = await tab.valuta(COPIA(U.chiave));
+      const av = tipo(c3, 'a').find((x) => x.uid !== a.uid);
+      w.push({ gruppo: g, nome: 'la fase vela ha la sua riga d\'avvio, scritta dopo la consegna della base', ok: vela && tipo(c3, 'a').length === 2 && !!av
+        && av.kind === 'vela' && av.prova === 'entrambe' && av.sim_uid !== a.sim_uid && av.uid === `${av.sim_uid}:a` && istante(av) >= istante(s1),
+        extra: vela ? `righe d'avvio ${JSON.stringify(tipo(c3, 'a').map((x) => [x.uid, x.kind, x.prova, x.ts]))}, la base consegnata ${s1 && s1.ts}` : '[data-fase] non apre la vela' });
+      await chiudiQuiz(tab, [], g, '', { sim: true });
+      const sul = await finche(() => ctx.righeServer(U.email).filter((x) => x._t === 'a').length === 2, CARICO);
+      const server = ctx.righeServer(U.email).filter((x) => x._t === 'a').map((x) => x.uid).sort();
+      w.push({ gruppo: g, nome: 'sul server le due righe d\'avvio, con lo stesso uid', ok: sul && JSON.stringify(server) === JSON.stringify([a.uid, av.uid].sort()),
+        extra: `sul server ${JSON.stringify(server)}` });
+      // Una seconda simulazione base: la regola conta la prima, consegnata prima di lei.
+      await clic(tab, '[data-ciclo="ritorno"]');
+      w.push({ gruppo: g, nome: 'una seconda simulazione base si apre', ok: await apriSim(tab, 'base'), extra: 'non si apre' });
+      const c4 = await tab.valuta(COPIA(U.chiave));
+      const a3 = tipo(c4, 'a').find((x) => x.uid !== a.uid && x.uid !== av.uid);
+      const attesa = { superate: s1.passed === 1 ? 1 : 0, n: 1, prove: [a.sim_uid] };
+      w.push({ gruppo: g, nome: 'la seconda conta la prima simulazione base fra le prove, e nessun\'altra', ok: !!a3 && JSON.stringify(a3.stime['regola-semplice-1']) === JSON.stringify(attesa),
+        extra: a3 ? `regola-semplice-1 ${JSON.stringify(a3.stime['regola-semplice-1'])}, attesa ${JSON.stringify(attesa)}` : 'nessuna terza riga d\'avvio' });
+    });
+  } finally { await c.chiudi(); }
+}
+
+// R-PREV-05, senza account: nessuna riga d'avvio, nemmeno portata nell'account alla registrazione.
+async function p01senza(b, ctx, v, g) {
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    await fermaAlPrimo(v, async (w) => {
+      w.push({ gruppo: g, nome: 'l\'app si apre senza account', ok: await tab.attendi(PRONTO, CARICO), extra: 'nessun [data-rotta-start] abilitato' });
+      w.push({ gruppo: g, nome: 'una simulazione base si apre senza account', ok: await apriSim(tab, 'base'), extra: 'non si apre' });
+      const ok = await rispondiQuiz(tab, [], g, '', { sim: true }) && await chiudiQuiz(tab, [], g, '', { sim: true });
+      w.push({ gruppo: g, nome: 'una risposta e la consegna', ok: !!ok, extra: 'nessun riepilogo' });
+      const email = `p01-${++serie}@esempio.it`;
+      w.push({ gruppo: g, nome: 'dal riepilogo si crea l\'account', ok: await registraDalRiepilogo(tab, email), extra: 'il modulo non si apre' });
+      const salvate = await tab.attendi(testoRe(SALVATE), CARICO);
+      const righe = ctx.righeServer(email);
+      w.push({ gruppo: g, nome: 'le righe della pagina arrivano nell\'account, e fra loro nessuna riga d\'avvio', ok: salvate && righe.some((x) => x._t === 'q') && !righe.some((x) => x._t === 'a'),
+        extra: `sul server ${JSON.stringify(righe.map((x) => x._t))}` });
+    });
+  } finally { await c.chiudi(); }
+}
+
+// R-PREV-06: la previsione non si vede. La stessa simulazione, consegnata vuota,
+// con il server che accoglie la riga d'avvio e con quello di prima.
+const PREVISIONE = /\d+\s*%|probabilit|previsio|preved|\bstim[ae]\b|regola|possibilit|chance|percentual/i;
+const normale = (t) => String(t || '').replace(/\d+/g, '#').replace(/\b(minut|second|domand|rispost|error)[oaie]\b/gi, '$1*').replace(/\s+/g, ' ').trim();
+const TESTI_SIM = {
+  prep: js(`const v = document.querySelector('#v-quiz'); return V(v) ? v.innerText : null;`),
+  runner: js(`const r = document.querySelector('#quizrun'); if (!V(r)) return null; let t = r.innerText;
+    for (const e of [document.querySelector('#r-text'), ...document.querySelectorAll('#r-ans .ans')]) if (e && e.innerText) t = t.split(e.innerText).join('');
+    return t;`),
+  riepilogo: js(`const f = document.querySelector('#r-fine'); return V(f) ? f.innerText : null;`),
+};
+async function testiSim(tab) {
+  const out = {};
+  if (!await clic(tab, '[data-v="quiz"]') || !await tab.attendi(visibile('[data-modo="sim"]'), REAZIONE) || !await clic(tab, '[data-modo="sim"]')) return null;
+  await tab.attendi(js(`const e = document.querySelector('input[name="quiz-prova"][value="base"]'); if (!e) return false; if (!e.checked) e.click(); return e.checked;`), REAZIONE);
+  if (!await tab.attendi(js(`const b = document.querySelector('#start'); return V(b) && !b.disabled;`), REAZIONE)) return null;
+  out.prep = await tab.valuta(TESTI_SIM.prep);
+  await clic(tab, '#start');
+  if (!await tab.attendi(QUESITO_C, REAZIONE)) return null;
+  out.runner = await tab.valuta(TESTI_SIM.runner);
+  await clic(tab, '#r-close');
+  if (!await tab.attendi(visibile('[data-consegna="si"]'), REAZIONE)) return null;
+  await clic(tab, '[data-consegna="si"]');
+  if (!await tab.attendi(RIEPILOGO, REAZIONE)) return null;
+  out.riepilogo = await tab.valuta(TESTI_SIM.riepilogo);
+  return out;
+}
+async function p01visto(b, ctx, v, g) {
+  const A = await nuovoAccount(ctx, 'p01v'), B = await nuovoAccount(ctx, 'p01w');
+  const ca = await b.nuovoContesto(), cb = await b.nuovoContesto();
+  try {
+    const ta = await ca.apri(ctx.sito + '/app'), tb = await cb.apri(ctx.sito + '/app');
+    await serverDiPrima(ctx, tb);
+    await fermaAlPrimo(v, async (w) => {
+      w.push({ gruppo: g, nome: 'si entra in due account, il secondo con il server di prima', ok: await dentro(ta, A) && await entraERicarica(tb, B), extra: 'un accesso non riesce' });
+      const con = await testiSim(ta), senza = await testiSim(tb);
+      w.push({ gruppo: g, nome: 'la simulazione si apre e si consegna vuota, nei due casi', ok: !!con && !!senza && Object.values(con).every((x) => x !== null) && Object.values(senza).every((x) => x !== null),
+        extra: `con la riga d'avvio ${JSON.stringify(con)}; senza ${JSON.stringify(senza)}` });
+      const avviiA = tipo(await ta.valuta(COPIA(A.chiave)), 'a').length, avviiB = tipo(await tb.valuta(COPIA(B.chiave)), 'a').length;
+      w.push({ gruppo: g, nome: 'premessa: una riga d\'avvio con il server, nessuna con quello di prima', ok: avviiA === 1 && avviiB === 0,
+        extra: `righe d'avvio: ${avviiA} e ${avviiB}` });
+      for (const k of ['prep', 'runner', 'riepilogo']) {
+        const dove = { prep: 'la preparazione', runner: 'il runner', riepilogo: 'il riepilogo' }[k];
+        const parola = (con[k].match(PREVISIONE) || [])[0];
+        w.push({ gruppo: g, nome: `${dove} di una simulazione e' lo stesso con e senza riga d'avvio, e non dice una previsione`, ok: normale(con[k]) === normale(senza[k]) && !parola,
+          extra: parola ? `si legge «${parola}»: ${normale(con[k]).slice(0, 200)}` : `con la riga d'avvio «${normale(con[k]).slice(0, 200)}», senza «${normale(senza[k]).slice(0, 200)}»` });
+      }
+    });
+  } finally { await ca.chiudi(); await cb.chiudi(); }
+}
+
+// R-PREV-07: una riga d'avvio non e' una risposta, nei conteggi che la pagina scrive.
+const PROVE_AVVIATE = js(`const m = document.body.innerText.match(/prove avviate (\\d+)/); return m ? Number(m[1]) : null;`);
+const RESTA_N = js(`const m = document.body.innerText.match(/(\\d+) rispost[ae] non (?:sono|è) sul server/); return m ? Number(m[1]) : null;`);
+async function p01conti(b, ctx, v, g) {
+  const U = await nuovoAccount(ctx, 'p01c');
+  const c = await b.nuovoContesto();
+  let blocca = false;
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    // L'invio delle righe fallisce come senza rete: le righe restano in coda.
+    await tab.intercetta(ctx.api + '/v1/righe', async (req) => (blocca && req.method === 'POST' ? { fallisci: 'InternetDisconnected' } : null));
+    await fermaAlPrimo(v, async (w) => {
+      w.push({ gruppo: g, nome: 'si entra nell\'account', ok: await dentro(tab, U), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+      blocca = true;
+      w.push({ gruppo: g, nome: 'una simulazione si apre con l\'invio che fallisce', ok: await apriSim(tab, 'base'), extra: 'non si apre' });
+      const c0 = await tab.valuta(COPIA(U.chiave));
+      w.push({ gruppo: g, nome: 'premessa: in coda c\'e\' la riga d\'avvio e nessuna risposta', ok: JSON.stringify(inCoda(c0)) === JSON.stringify({ risposte: 0, avvii: 1, altre: 0 }),
+        extra: JSON.stringify(inCoda(c0)) });
+      // La prova abbandonata: la pagina si ricarica con il solo avvio in coda (§8, caso 11).
+      await tab.ricarica();
+      w.push({ gruppo: g, nome: 'la pagina si riapre nell\'account', ok: await tab.attendi(PRONTO, CARICO) && await tab.attendi(nellaPagina('Account'), REAZIONE), extra: await tab.valuta(inSchermata) });
+      let detto = null;
+      const zitta = await maiPer(async () => { detto = await tab.valuta(DA_INVIARE) ?? await tab.valuta(fraseVista(FRASI_SERVER)); return detto !== null; });
+      w.push({ gruppo: g, nome: 'con il solo avvio in coda, niente «N risposte da inviare» e niente «sul server»', ok: zitta,
+        extra: `si legge ${typeof detto === 'number' ? `«${detto} risposte da inviare»` : `«${detto}»`}` });
+      const c1 = await tab.valuta(COPIA(U.chiave));
+      await apriVista(tab, 'info');
+      const pa = await tab.attendiValore(PROVE_AVVIATE, (n) => n === tipo(c1, 'a').length, REAZIONE);
+      const rq = await tab.valuta(QUIZ_IN_INFO);
+      w.push({ gruppo: g, nome: 'in Info «prove avviate» e\' il numero delle righe d\'avvio, e le risposte ai quiz non lo contano', ok: pa.ok && rq === 0,
+        extra: `Info dice prove avviate ${pa.valore}, risposte ai quiz ${rq}; la copia ha ${tipo(c1, 'a').length} righe d'avvio e 0 risposte` });
+      await clic(tab, '[data-v="oggi"]');
+      await clicca(tab, 'Account'); await tab.attendi(modaleVisibile, REAZIONE); await clicca(tab, 'Esci');
+      // Una riga d'avvio non inviata blocca l'uscita come una risposta (R-ACC-46), e non e' «N risposte».
+      let n0 = null, uscito = false;
+      const ferma = await maiPer(async () => { n0 = await tab.valuta(RESTA_N); uscito = await tab.valuta(nellaPagina('Accedi')); return n0 !== null || uscito; });
+      const copia = !!copieAccount(await c.conservato(ctx.sito, tab)).length;
+      w.push({ gruppo: g, nome: 'con il solo avvio in coda l\'uscita si blocca, e non dice «N risposte»', ok: ferma && copia,
+        extra: n0 !== null ? `si legge «${n0} risposte non sono sul server», e in coda non ce n'e' nessuna` : `con l'avvio in coda la pagina esce: ${uscito ? '«Accedi» nell\'intestazione' : ''} ${copia ? '' : 'la copia non c\'e\' piu\''}` });
+      await esc(tab);
+      // Una risposta: il numero e' quello delle risposte in coda, non delle righe.
+      await clic(tab, '[data-rotta-start]');
+      const una = await rispondiQuiz(tab, [], g, '') && await chiudiQuiz(tab, [], g, '');
+      const c2 = await tab.valuta(COPIA(U.chiave));
+      const d2 = inCoda(c2);
+      const n = await tab.attendiValore(DA_INVIARE, (x) => d2 && x === d2.risposte, REAZIONE);
+      w.push({ gruppo: g, nome: 'con una risposta e l\'avvio in coda, «N risposte da inviare» conta la risposta', ok: !!una && d2 && d2.risposte === 1 && d2.avvii === 1 && n.ok,
+        extra: `la pagina dice ${n.valore}; in coda ${JSON.stringify(d2)}` });
+      await alPercorso(tab);
+      await clicca(tab, 'Account'); await tab.attendi(modaleVisibile, REAZIONE); await clicca(tab, 'Esci');
+      const n1 = await tab.attendiValore(RESTA_N, (x) => x === d2.risposte, CARICO);
+      w.push({ gruppo: g, nome: 'e l\'uscita, bloccata, dice le risposte e non le righe', ok: n1.ok, extra: `si legge «${n1.valore} risposte non sono sul server», in coda ${JSON.stringify(d2)}` });
+    });
+  } finally { await c.chiudi(); }
+}
+
+// R-PREV-09: con un server che non dichiara 'a', nessuna riga d'avvio, e l'uscita non si blocca.
+async function p01prima(b, ctx, v, g) {
+  const U = await nuovoAccount(ctx, 'p01p');
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    await serverDiPrima(ctx, tab);
+    await fermaAlPrimo(v, async (w) => {
+      w.push({ gruppo: g, nome: 'si entra, e la pagina si riapre con GET /v1/io senza tipi_riga', ok: await entraERicarica(tab, U), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+      w.push({ gruppo: g, nome: 'una simulazione base si apre', ok: await apriSim(tab, 'base'), extra: 'non si apre' });
+      const ok = await rispondiQuiz(tab, [], g, '', { sim: true }) && await chiudiQuiz(tab, [], g, '', { sim: true });
+      w.push({ gruppo: g, nome: 'una risposta e la consegna', ok: !!ok, extra: 'nessun riepilogo' });
+      const sul = await finche(() => ctx.righeServer(U.email).some((x) => x._t === 's'), CARICO);
+      const copia = await tab.valuta(COPIA(U.chiave));
+      const avvii = [...tipo(copia, 'a'), ...ctx.righeServer(U.email).filter((x) => x._t === 'a')];
+      w.push({ gruppo: g, nome: 'con il server di prima nessuna riga d\'avvio, ne\' nella copia ne\' sul server', ok: sul && !avvii.length,
+        extra: !sul ? 'la prova non arriva sul server' : `${avvii.length} righe _t:'a' con un server che non le dichiara` });
+      await alPercorso(tab);
+      await clicca(tab, 'Account'); await tab.attendi(modaleVisibile, REAZIONE); await clicca(tab, 'Esci');
+      const uscito = await tab.attendi(nellaPagina('Accedi'), USCITA) && await finche(async () => !copieAccount(await c.conservato(ctx.sito, tab)).length, REAZIONE);
+      w.push({ gruppo: g, nome: 'e l\'uscita non si blocca', ok: uscito, extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+    });
+  } finally { await c.chiudi(); }
+}
+
+// R-PREV-10: un metodo che lancia non ferma la prova. /engine.js servito con
+// regola-semplice-1 che lancia: la riga d'avvio c'e', con `errore`.
+const METODO_SANO = "    calcola(righe, kind, ts) {\n      if (!AVVIO.kind.includes(kind))";
+const METODO_ROTTO = "    calcola(righe, kind, ts) {\n      if (kind) throw new Error('rotto dal banco');\n      if (!AVVIO.kind.includes(kind))";
+async function p01errore(b, ctx, v, g) {
+  const motore = readFileSync(join(SITE, 'engine.js'), 'utf8');
+  if (!motore.includes(METODO_SANO)) {
+    return v.push({ gruppo: g, nome: 'il banco sa far lanciare regola-semplice-1', ok: false, extra: 'il testo di calcola() in site/engine.js e\' cambiato: aggiorna METODO_SANO' });
+  }
+  ctx.sostituisci('/engine.js', motore.replace(METODO_SANO, METODO_ROTTO));
+  const U = await nuovoAccount(ctx, 'p01e');
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/app');
+    await fermaAlPrimo(v, async (w) => {
+      w.push({ gruppo: g, nome: 'si entra nell\'account', ok: await dentro(tab, U), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+      w.push({ gruppo: g, nome: 'con un metodo che lancia la simulazione si apre lo stesso', ok: await apriSim(tab, 'base'), extra: 'il runner non mostra un quesito' });
+      const ok = await finche(async () => tipo(await tab.valuta(COPIA(U.chiave)), 'a').length === 1, REAZIONE);
+      const a = tipo(await tab.valuta(COPIA(U.chiave)), 'a')[0];
+      w.push({ gruppo: g, nome: 'la riga d\'avvio c\'e\', con l\'errore del metodo e senza la sua stima', ok: ok && !!a && /regola-semplice-1: rotto dal banco/.test(a.errore || '') && !('regola-semplice-1' in a.stime),
+        extra: a ? JSON.stringify(a).slice(0, 300) : 'nessuna riga d\'avvio nella copia' });
+    });
+  } finally { await c.chiudi(); }
+}
+
 const GRUPPI = { 'C-01': c01, 'C-02': c02, 'C-03': c03, 'C-04': c04, 'C-05': c05, 'C-06': c06, 'C-07': c07, 'C-08': c08, 'C-21': c21,
   'C-10': c10, 'C-11': c11, 'C-12': c12, 'C-13': c13, 'C-14': c14, 'C-15': c15, 'C-16': c16, 'C-17': c17, 'C-19': c19,
   // L'area 6 (P-45): la rifinitura trasversale.
@@ -3944,12 +4546,14 @@ const GRUPPI = { 'C-01': c01, 'C-02': c02, 'C-03': c03, 'C-04': c04, 'C-05': c05
   // Le condizioni per l'account nel modulo di registrazione (P-57, R-ACC-75).
   'C-20': c20,
   // L'offline se ne va (P-60, ADR-005).
-  'C-22': c22 };
+  'C-22': c22,
+  // «Com'e' andata» e la riga d'avvio delle simulazioni (P-74, esito-esame-progetto §10.1).
+  'E-01': e01, 'P-01': p01 };
 // I gruppi che parlano con l'API: il server accetta una sola origine (§7.3),
 // quindi girano uno alla volta sul sito principale. Gli altri girano in
 // parallelo, ognuno con il suo sito e quindi con la sua origine.
 const CON_API = new Set(['C-05', 'C-04', 'C-06', 'C-07', 'C-08', 'C-21', 'C-10', 'C-11', 'C-12', 'C-13', 'C-14', 'C-15', 'C-16', 'C-17', 'C-19',
-  'T-02', 'T-03', 'T-04', 'T-07:conto']);
+  'T-02', 'T-03', 'T-04', 'T-07:conto', 'E-01', 'P-01']);
 const SOLO_ALTRE = new Set(['C-14']);
 // Una parte puo' parlare con l'API anche se il suo gruppo no: T-07:conto entra
 // in un account, T-07:prova no, e gira dove c'e' posto.
@@ -4051,6 +4655,14 @@ async function corsia(k, cartella, portaApi = PORTA_API) {
     segnaliDi: (email) => Object.fromEntries(api.db.prepare('SELECT modo, migliore, giocate FROM segnali s JOIN account a ON a.id = s.account_id WHERE a.email = ?')
       .all(email).map((x) => [x.modo, { migliore: x.migliore, giocate: x.giocate }])),
     dataEsame: (email, d) => api.db.prepare('UPDATE account SET data_esame = ? WHERE email = ?').run(d, email),
+    // --- per E-01 (P-74): gli esiti dell'esame, scritti e letti nel database.
+    esito: (email, giorno, prova, esito, errori = null) => api.db.prepare('INSERT INTO esito (account_id, giorno, prova, esito, errori, detto_il, cambiato_il) VALUES (?, ?, ?, ?, ?, ?, ?)')
+      .run(ctx.conto(email).id, giorno, prova, esito, errori, new Date(orologio.t).toISOString(), new Date(orologio.t).toISOString()),
+    togliEsiti: (email) => api.db.prepare('DELETE FROM esito WHERE account_id = ?').run(ctx.conto(email).id),
+    esitiDi: (email) => esitiDb(api.db, ctx.conto(email).id),
+    // Un file del sito diverso da quello di site/, per il resto del gruppo: e' cosi'
+    // che P-01:errore serve un motore con un metodo che lancia.
+    sostituisci: (percorso, testo) => { corrente.sito = { ...(corrente.sito || {}), [percorso]: testo }; },
     /** Una copia di sicurezza, con il server acceso, come la fa la macchina (§2.5). */
     copia: () => { const x = join(cartella, `copia-${k}-${++copie}.db`); copiaDb(percorsoDb, x); return x; },
     /** Il ripristino di quella copia: il server si ferma, riparte dalla copia con un'epoca nuova, sulla stessa porta. */
@@ -4081,6 +4693,7 @@ async function corsia(k, cartella, portaApi = PORTA_API) {
     async esegui(b, p, g) {
       corrente.pagina = porta !== PORTA_API ? p.pagina.replaceAll(':8620', `:${porta}`) : p.pagina;
       corrente.sito = p.sito;
+      ctx.regimi = p.regimi || {};
       orologio.t += 2 * 3600 * 1000;
       return gruppo(b, ctx, g);
     },

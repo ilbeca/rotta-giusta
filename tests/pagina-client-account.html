@@ -48,6 +48,14 @@
   E da P-60 non registra piu' un service worker: l'ADR-005 ha tolto anche
   l'offline. C-22 lo pretende, e le sue rotture registrano il service worker,
   aprono una cache, o pubblicano un sw.js che non se ne va.
+
+  Da P-74 realizza il raccordo di docs/esito-esame-progetto.md §10.1 — le
+  quattro funzioni di primo livello domandaEsito(), salvaEsito(), avvioProva()
+  e daInviare() — con «com'è andata» (§3.1, §3.2) e la riga d'avvio delle
+  simulazioni (§4): e' la pagina che E-01 e P-01 guidano per intero, e le loro
+  rotture tolgono una condizione, scrivono «Salvato» troppo presto, mettono la
+  riga d'avvio alla consegna, o la contano fra le risposte. Per questo la
+  simulazione ha «Base e vela», con le due fasi, e la riga `_t: 's'`.
 -->
 <html lang="it">
 <meta charset="utf-8">
@@ -82,6 +90,7 @@ a.da-solo, label {display:inline-block} .view:not(.on), #quizrun:not(.on), #rive
   <p id="altrove" hidden>Su questo indirizzo non si può creare un account. Per salvare le risposte vai su <a href="https://rottagiusta.it/app">rottagiusta.it/app</a>.</p>
   <button data-rotta-start disabled>Inizia l'attività</button>
   <label>Data d'esame (facoltativa) <input type="date" id="esame-data"></label>
+  <section id="esito-riquadro" hidden></section>
   <section id="rotta-last" hidden><h2>Ultima attività nei quiz</h2><p id="rotta-last-txt"></p></section>
 </section>
 
@@ -89,6 +98,11 @@ a.da-solo, label {display:inline-block} .view:not(.on), #quizrun:not(.on), #rive
   <h1>Quiz</h1>
   <button data-modo="argomento">Scegli un argomento</button>
   <button data-modo="sim">Simula la prova</button>
+  <fieldset id="q-prova" hidden><legend>Quale prova</legend>
+    <label><input type="radio" name="quiz-prova" value="base" checked> Quiz base</label>
+    <label><input type="radio" name="quiz-prova" value="vela"> Quiz vela</label>
+    <label><input type="radio" name="quiz-prova" value="entrambe"> Base e vela</label>
+  </fieldset>
   <button id="start" hidden>Inizia</button>
 </section>
 
@@ -189,7 +203,7 @@ const LINK = (() => {
 
 // Senza account tutto in memoria (§9.2). Con l'account, S.conto e il suo
 // archivio: S.righe resta la prova della pagina, finche' non si sceglie.
-const S = { banca: [], cart: [], righe: [], run: null, esame: '', auto: false, ultima: null,
+const S = { banca: [], vela: [], cart: [], righe: [], run: null, esame: '', auto: false, ultima: null, io: null, motore: '',
   guasto: null, scaduto: false, apertoDa: null,
   conto: null, db: null, ciclo: 0, ac: null, inVolo: null, ancora: false, rilascia: null, trasf: null, onboarding: false,
   fatte: [], idQuiz: [], file: null, sospeso: null, erroreInvio: null, postaFallita: false };
@@ -202,9 +216,11 @@ const oggi = () => E.isoLocale().slice(0, 10);
 
 fetch('/dati/quiz.json').then((r) => r.json()).then((b) => {
   S.banca = b.filter((q) => q.k === 'base');
+  S.vela = b.filter((q) => q.k === 'vela');
   S.idQuiz = b.map((q) => q.id);
   document.querySelector('[data-rotta-start]').disabled = false;
 });
+fetch('/dati/meta.json').then((r) => r.json()).then((m) => { S.motore = String(m.versione || ''); }).catch(() => {});
 const CART = fetch('/dati/carteggio.json').then((r) => r.json()).then((c) => { S.cart = c; }).catch(() => {});
 
 $('esame-data').addEventListener('change', (e) => { S.esame = e.target.value; });
@@ -221,8 +237,9 @@ function vista(v) {
 // copia dell'account, o le risposte della pagina aperta —, non da un
 // contatore suo (R-RIF-03).
 async function dipingiInfo() {
+  // Le prove avviate a parte, senza i numeri dentro (esito-esame §4.6).
   const righe = S.conto && S.db ? (await tx(() => null)).righe : S.righe.concat(S.prova || []);
-  $('info-conta').textContent = `risposte ai quiz ${righe.filter((r) => r._t === 'q').length}`;
+  $('info-conta').textContent = `risposte ai quiz ${righe.filter((r) => r._t === 'q').length} · prove avviate ${righe.filter((r) => r._t === 'a').length}`;
 }
 
 // Una scrittura fallita si dice dove succede, si annuncia, e il segnale su
@@ -240,8 +257,9 @@ function avvia() {
   apriRun(E.estrai(S.banca, {}, E.isoLocale().slice(0, 10), 10, Date.now() % 997), 'mirata');
 }
 
-function apriRun(lista, mode, sim = false) {
-  S.run = { id: uid(), lista, i: 0, esiti: [], mode, sim, pronta: Date.now() + 200 };
+function apriRun(lista, mode, sim = false, fase = {}) {
+  S.run = { id: fase.id || uid(), lista, i: 0, esiti: [], mode, sim, pronta: Date.now() + 200,
+    kind: fase.kind || 'base', prova: fase.prova || null, resto: fase.resto || [] };
   $('quizrun').classList.add('on');
   $('r-fine').classList.remove('on');
   $('r-close').textContent = sim ? 'Consegna la prova' : 'Termina l\'attività';
@@ -262,7 +280,7 @@ function rispondi(j) {
   if (Date.now() < R.pronta || R.esiti.length > R.i) return;
   const giusta = j === it.x;
   R.esiti.push(giusta);
-  S.righe.push({ _t: 'q', uid: uid(), item_id: it.id, ts: E.isoLocale(), ms: 5000, mode: R.mode, kind: 'base', sim_uid: R.id, correct: giusta ? 1 : 0 });
+  S.righe.push({ _t: 'q', uid: uid(), item_id: it.id, ts: E.isoLocale(), ms: 5000, mode: R.mode, kind: R.kind, sim_uid: R.id, correct: giusta ? 1 : 0 });
   // Il raccordo del riepilogo le legge tutte, anche quelle passate all'account.
   S.fatte.push(S.righe[S.righe.length - 1]);
   // Con l'account la risposta va nel suo archivio, insieme alla coda (§9.1).
@@ -286,8 +304,17 @@ function avanti() {
 function termina() {
   const R = S.run;
   if (R.tec) { $('quizrun').classList.remove('on'); S.run = null; return; }
-  if (!R.esiti.length) { $('quizrun').classList.remove('on'); S.run = null; return; }
-  S.ultima = { id: R.id, lista: R.lista.slice(0, R.esiti.length), esiti: R.esiti.slice(), sim: R.sim, n: R.lista.length };
+  // Una simulazione consegnata anche vuota ha il suo riepilogo (specifica §7.5).
+  if (!R.esiti.length && !R.sim) { $('quizrun').classList.remove('on'); S.run = null; return; }
+  if (R.sim) {
+    // La prova sostenuta: la riga `_t: 's'`, con l'uid della prova (fine() della pagina vera).
+    const corrette = R.esiti.filter(Boolean).length, max = R.kind === 'vela' ? 1 : 4;
+    const prova = { _t: 's', uid: R.id, kind: R.kind, ts: E.isoLocale(), score: corrette, total: R.lista.length,
+      passed: R.esiti.length === R.lista.length && R.lista.length - corrette <= max ? 1 : 0, ms: (R.kind === 'vela' ? 15 : 30) * 60000 };
+    if (S.conto) archivia(prova); else S.righe.push(prova);
+  }
+  S.ultima = { id: R.id, lista: R.lista.slice(0, R.esiti.length), esiti: R.esiti.slice(), sim: R.sim, n: R.lista.length,
+    prova: R.prova, resto: R.resto };
   $('rotta-last').hidden = false;
   $('rotta-last-txt').textContent = `Risposte: ${R.esiti.length}`;
   riepilogo();
@@ -326,6 +353,7 @@ function riepilogo() {
     <ul><li>Risposte corrette: ${r.corrette}</li><li>Risposte errate: ${r.errate}</li><li>Domande non affrontate: ${M}</li></ul>
     ${r.errate ? '<p>Puoi rivedere la tua risposta e quella ufficiale, poi riprovare questi quesiti.</p>' : r.risposte ? '<p>Tutte le risposte date in questa attività sono corrette.</p>' : ''}
     ${M ? '<p>Le domande non affrontate non sono conteggiate come errori.</p>' : ''}
+    ${u.resto && u.resto.length ? `<button data-fase="1">Continua con la ${u.resto[0]}</button>` : ''}
     ${r.errate ? `<button data-ciclo="riprova">${riprova}</button><button data-ciclo="errori">Rivedi gli errori</button>` : ''}
     <button data-ciclo="risposte">Rivedi le risposte</button>
     <button data-ciclo="ritorno">Torna al Percorso</button>
@@ -339,6 +367,158 @@ function rivedi(soloErrori = false) {
   $('rv-body').innerHTML = `<h1>Rivedi le risposte</h1>` + u.lista.map((it, k) =>
     soloErrori && u.esiti[k] ? '' : `<p>${esc(it.d)} — ${u.esiti[k] ? 'esatta' : 'errata'}; risposta ufficiale: ${esc(it.r[it.x])}</p>`).join('');
   $('rivedi').classList.add('on');
+}
+
+// --- il raccordo dell'esito e dell'avvio (P-74, esito-esame-progetto §10.1) ----------
+//
+// Quattro funzioni di primo livello: la pagina che le dichiara e' nel regime
+// dell'esito (domandaEsito, salvaEsito) e dell'avvio (avvioProva, daInviare),
+// e il banco la guida per intero. Il resto — il riquadro, il modulo, la riga
+// d'avvio a Inizia — passa da qui.
+
+/** Il giorno dell'esame da chiedere, o null: le condizioni del §3.2, sulla descrizione dell'account. */
+function domandaEsito(io, oggi) {
+  if (!io || !Array.isArray(io.esiti) || !io.data_esame) return null;
+  const d = io.data_esame;
+  if (oggi < d || oggi > E.addGiorni(d, 90)) return null;
+  const da = E.addGiorni(d, -30);
+  if (io.esiti.some((x) => x.giorno >= da)) return null;
+  return { giorno: d };
+}
+
+/** PUT /v1/esito: l'elenco e' quello della risposta 200, e niente altro (§3.7, punto 6). */
+async function salvaEsito(giorno, prove) {
+  const r = await api('PUT', '/v1/esito', { giorno, prove });
+  return { codice: r.codice, esiti: r.codice === 200 && r.corpo && Array.isArray(r.corpo.esiti) ? r.corpo.esiti : null,
+    messaggio: r.corpo && r.corpo.messaggio };
+}
+
+/** La riga d'avvio di una fase che sta per cominciare, o null: senza account, o se il server non la accoglie (§6). */
+function avvioProva({ simUid, kind, prova, righe, io }) {
+  if (!io || !Array.isArray(io.tipi_riga) || !io.tipi_riga.includes('a')) return null;
+  return E.rigaAvvio({ simUid, kind, prova, ts: E.isoLocale(), motore: S.motore || '0', righe });
+}
+
+/** Le righe in coda, divise: le risposte, gli avvii, il resto (tag e segnalibri). */
+function daInviare(righe, coda) {
+  const u = new Set(coda.daInviare);
+  const out = { risposte: 0, avvii: 0, altre: 0 };
+  for (const r of righe) {
+    if (!u.has(String(r.uid))) continue;
+    if (E.rigaDiRisposta(r)) out.risposte++;
+    else if (r._t === 'a') out.avvii++;
+    else out.altre++;
+  }
+  return out;
+}
+
+// --- la simulazione: le fasi, e la riga d'avvio a Inizia (§4.1, §4.4) -------------------
+
+/** Inizia: una fase dopo l'altra in «Base e vela»; la riga d'avvio prima del runner. */
+async function avviaFase(kind, prova, resto) {
+  const simUid = uid();
+  const lista = E.estrai(kind === 'vela' ? S.vela : S.banca, {}, oggi(), kind === 'vela' ? 5 : 20, Date.now() % 991);
+  if (S.conto && S.db) {
+    try {
+      const { righe } = await tx(() => null);
+      const riga = avvioProva({ simUid, kind, prova, righe, io: S.io });
+      if (riga) await archivia(riga);
+    } catch (e) {
+      // Un errore di chi chiama non ferma la prova: si dice, come una scrittura fallita (§10.1, A-1).
+      guasto(e);
+    }
+  }
+  apriRun(lista, 'simulazione', true, { id: simUid, kind, prova, resto });
+}
+
+function avviaSim() {
+  const prova = (document.querySelector('[name="quiz-prova"]:checked') || {}).value || 'base';
+  const fasi = prova === 'entrambe' ? ['base', 'vela'] : [prova];
+  return avviaFase(fasi[0], prova, fasi.slice(1));
+}
+
+// --- «com'è andata» (§3.1, §3.2) ---------------------------------------------------------
+
+const giornoMese = (g) => new Date(g + 'T12:00:00Z').toLocaleDateString('it-IT', { day: 'numeric', month: 'long', timeZone: 'Europe/Rome' });
+const giornoLungo = (g) => new Date(g + 'T12:00:00Z').toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Rome' });
+const NOMI_PROVA = { carteggio: 'carteggio', base: 'quiz base', vela: 'quiz vela', pratica: 'pratica' };
+const NOMI_ESITO = { superata: 'superata', non_superata: 'non superata', non_sostenuta: 'non sostenuta' };
+
+/** L'elenco nella forma del §3.5: una riga per giorno, le prove nell'ordine dell'esame. */
+function righeEsito(esiti) {
+  const giorni = new Map();
+  for (const e of esiti) { if (!giorni.has(e.giorno)) giorni.set(e.giorno, []); giorni.get(e.giorno).push(e); }
+  return [...giorni].map(([g, xs]) => {
+    if (xs.every((x) => x.esito === 'non_detto')) return `${giornoLungo(g)} · non ce l'hai detto`;
+    const ordine = ['carteggio', 'base', 'vela', 'pratica'];
+    return [giornoLungo(g), ...xs.filter((x) => x.esito !== 'non_detto').sort((a, b) => ordine.indexOf(a.prova) - ordine.indexOf(b.prova))
+      .map((x) => `${NOMI_PROVA[x.prova]} ${NOMI_ESITO[x.esito]}${x.errori == null ? '' : `, ${x.errori} ${x.errori === 1 ? 'errore' : 'errori'}`}`)].join(' · ');
+  });
+}
+
+/** Il riquadro, nel Percorso e in nessun altro posto: solo se domandaEsito() dice un giorno. */
+function dipingiEsito() {
+  const box = $('esito-riquadro');
+  const q = S.conto ? domandaEsito(S.io, oggi()) : null;
+  if (!q) { box.hidden = true; box.innerHTML = ''; return; }
+  box.innerHTML = `<h2>Com'è andato l'esame del ${esc(giornoMese(q.giorno))}?</h2>
+    <p>Se ti va, dicci com'è andata, prova per prova. Ci serve a capire se le simulazioni di questo sito somigliano all'esame vero. È facoltativo, e puoi cambiarlo o toglierlo quando vuoi.</p>
+    <button data-esito="rispondi" data-giorno="${esc(q.giorno)}">Rispondi</button>
+    <button data-esito="non-ancora">Non l'ho ancora fatto</button>
+    <button data-esito="mai" data-giorno="${esc(q.giorno)}">Non chiedermelo più</button>`;
+  box.hidden = false;
+}
+
+const sceltaProva = (k, sotto) => `<fieldset><legend>${NOMI_PROVA[k][0].toUpperCase() + NOMI_PROVA[k].slice(1)}</legend>
+  ${['superata', 'non_superata', 'non_sostenuta'].map((v) => `<label><input type="radio" name="esito-${k}" value="${v}"> ${v === 'non_sostenuta' ? 'non l\'ho sostenuta' : NOMI_ESITO[v]}</label>`).join('')}
+  ${sotto}</fieldset>`;
+
+function moduloEsito(giorno = '') {
+  const elenco = S.io && Array.isArray(S.io.esiti) && S.io.esiti.length ? `<ul>${righeEsito(S.io.esiti).map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : '';
+  pannello(`<h2>Il tuo esame</h2>${elenco}
+    <label>Giorno della prova scritta <input type="date" name="giorno" value="${esc(giorno)}"></label>
+    ${sceltaProva('carteggio', '<label>Errori, se lo sai <input type="number" name="errori-carteggio" min="0" max="4"></label>')}
+    ${sceltaProva('base', '<label>Errori, se lo sai <input type="number" name="errori-base" min="0" max="20"></label>')}
+    ${sceltaProva('vela', '<label>Errori, se lo sai <input type="number" name="errori-vela" min="0" max="5"></label>')}
+    <p>Se dopo il carteggio non hai proseguito con i quiz, segnali come non sostenuti.</p>
+    ${sceltaProva('pratica', '<label>Giorno della pratica <input type="date" name="giorno-pratica"></label><p>La pratica è in un altro giorno. Se non l\'hai ancora fatta, lascia vuoto: puoi aggiungerla dopo, da Profilo.</p>')}
+    <p>Una prova lasciata vuota non la registriamo.</p>
+    <div id="esito-salvato" role="status"></div>
+    <button data-esito="salva">Salva</button><button data-account="torna">Annulla</button>`);
+}
+
+async function salvaModuloEsito() {
+  const a = $('account'), val = (n) => (a.querySelector(`[name="${n}"]`) || {}).value || '';
+  const scelta = (k) => (a.querySelector(`[name="esito-${k}"]:checked`) || {}).value || null;
+  const giorno = val('giorno'), prove = {};
+  for (const k of ['carteggio', 'base', 'vela']) {
+    const e = scelta(k); if (!e) continue;
+    prove[k] = val('errori-' + k) === '' ? { esito: e } : { esito: e, errori: Number(val('errori-' + k)) };
+  }
+  const out = $('esito-salvato');
+  out.textContent = 'Salvataggio in corso…';
+  let r = Object.keys(prove).length ? await salvaEsito(giorno, prove) : { codice: 200, esiti: S.io.esiti };
+  if (r.codice === 200 && scelta('pratica') && val('giorno-pratica')) r = await salvaEsito(val('giorno-pratica'), { pratica: { esito: scelta('pratica') } });
+  if (r.codice !== 200 || !r.esiti) {
+    out.textContent = r.codice === 404 ? 'Questa funzione non è ancora disponibile.'
+      : r.codice === 0 ? 'Non l\'abbiamo salvato: il server non risponde. Riprova fra poco; finché non lo vedi qui sotto, non è salvato.'
+      : (r.messaggio || 'Non l\'abbiamo salvato. Riprova fra poco.');
+    return;
+  }
+  S.io = { ...S.io, esiti: r.esiti };
+  out.innerHTML = `<p>Salvato. Lo usiamo soltanto in conteggi aggregati.</p><ul>${righeEsito(r.esiti).map((x) => `<li>${esc(x)}</li>`).join('')}</ul>`;
+  dipingiEsito();
+}
+
+async function maiPiuEsito(giorno) {
+  const r = await salvaEsito(giorno, { carteggio: { esito: 'non_detto' }, base: { esito: 'non_detto' }, vela: { esito: 'non_detto' } });
+  if (r.esiti) { S.io = { ...S.io, esiti: r.esiti }; dipingiEsito(); }
+}
+
+function dataEsameDopo() {
+  pannello(`<h2>Quando lo fai?</h2><p>La data serve a dirti quanto resta e a chiederti, dopo, com'è andata.</p>
+    <label>Data d'esame <input type="date" name="data"></label>
+    <button data-conto="data">Salva la data</button><button data-esito="togli-data">Togli la data</button><button data-account="torna">Annulla</button>`);
 }
 
 // --- Che tecnica serve?, il carteggio, i Segnali: il minimo per C-01 --------------
@@ -941,19 +1121,24 @@ async function dipingiStato() {
   const { righe, coda, trasf } = await tx(() => null);
   const guasto = S.erroreInvio ? ' ' + S.erroreInvio : '';
   if (!trasf) {
-    $('conto-stato').textContent = coda.daInviare.length ? `${coda.daInviare.length} risposte da inviare.${guasto}` : 'Le risposte di questo dispositivo sono confermate sul server';
+    const d = daInviare(righe, coda);
+    const avvio = d.avvii ? (d.avvii === 1 ? 'l\'avvio di una simulazione' : `l'avvio di ${d.avvii} simulazioni`) : '';
+    $('conto-stato').textContent = d.risposte ? `${d.risposte} ${d.risposte === 1 ? 'risposta' : 'risposte'} da inviare${avvio ? ' e ' + avvio : ''}.${guasto}`
+      : coda.daInviare.length ? `Da inviare: ${avvio || 'righe di questo dispositivo'}.${guasto}`
+      : 'Le risposte di questo dispositivo sono confermate sul server';
     return;
   }
   const r = E.riepilogoTrasferimento(trasf, coda, righe);
   await chiudiTrasferimento(trasf, r, coda, righe);
   if (r.completo) {
-    $('conto-stato').textContent = `${r.confermate} ${r.confermate === 1 ? 'risposta salvata' : 'risposte salvate'} nel tuo account`;
+    // Le sole risposte: un file da un account porta anche avvii e tag (P-74).
+    $('conto-stato').textContent = `${r.confermateRisposte} ${r.confermateRisposte === 1 ? 'risposta salvata' : 'risposte salvate'} nel tuo account`;
     if (S.onboarding) { S.onboarding = false; onboarding(); }
   } else if (r.stato === 'da verificare') {
     $('conto-stato').textContent = 'Non chiudere la pagina: le risposte non sono ancora salvate nel tuo account.';
     S.ancora = true; pianifica();
   } else if (r.stato === 'con scarti') {
-    $('conto-stato').textContent = `${r.confermate} risposte salvate · ${r.nonSalvate} righe non salvate`;
+    $('conto-stato').textContent = `${r.confermateRisposte} risposte salvate · ${r.nonSalvate} righe non salvate`;
   } else {
     $('conto-stato').innerHTML = 'Non chiudere la pagina: le risposte non sono ancora salvate nel tuo account. <button data-conto="riprova">Riprova l\'invio</button>' + esc(guasto);
   }
@@ -970,11 +1155,13 @@ function onboarding() {
     <button data-conto="data">Salva la data</button><button data-account="torna">Continua senza data</button>`);
 }
 
-async function salvaData() {
-  const v = $('account').querySelector('[name=data]').value;
+async function salvaData(togli = false) {
+  const v = togli ? '' : $('account').querySelector('[name=data]').value;
   const r = await api('PUT', '/v1/profilo', { data_esame: v || null });
   if (r.codice === 200) {
     S.conto.data = r.corpo.data_esame;
+    S.io = { ...S.io, data_esame: r.corpo.data_esame };
+    dipingiEsito();
     $('esame-data').value = r.corpo.data_esame || '';
     chiudiPannello();
     $('data-esito').textContent = 'Data salvata';
@@ -987,6 +1174,7 @@ async function salvaData() {
 
 async function entra(io) {
   S.ciclo++;
+  S.io = io;
   S.conto = { email: io.email, chiave: io.chiave_locale, generazione: io.generazione, epoca: io.epoca,
     verificata: io.verificata, scade: io.scade_se_non_verificata, data: io.data_esame, segnali: io.segnali || {} };
   S.db = await apriDb(S.conto.chiave);
@@ -1003,6 +1191,7 @@ async function entra(io) {
   await punteggiInSospeso();
   // Il lavoro di carteggio lasciato su questo dispositivo, per questo account (§9.4).
   await offriBozze();
+  dipingiEsito();
 }
 
 /** Ferma questa scheda: niente piu' invii, niente scritture, memoria pulita. */
@@ -1016,7 +1205,8 @@ function fermaQui() {
   clearTimeout(timer);
   if (S.db) S.db.close();
   if (S.rilascia) S.rilascia();
-  S.db = null; S.conto = null; S.rilascia = null; S.trasf = null; S.scaduto = false;
+  S.db = null; S.conto = null; S.rilascia = null; S.trasf = null; S.scaduto = false; S.io = null;
+  dipingiEsito();
   $('conto-porta').textContent = 'Accedi';
   $('conto-stato').textContent = '';
   $('avviso-prova').hidden = false;
@@ -1090,7 +1280,9 @@ async function avvioConto() {
 })();
 
 function pannelloConto() {
-  pannello(`<h2>Il tuo account</h2><p>${esc(S.conto.email)}</p><p id="account-esito" role="status"></p>
+  // «Il tuo esame», in Profilo, solo se il server sa degli esiti (§3.7, punto 2).
+  const esame = S.io && Array.isArray(S.io.esiti) ? '<button data-esito="profilo">Il tuo esame</button>' : '';
+  pannello(`<h2>Il tuo account</h2><p>${esc(S.conto.email)}</p>${esame}<p id="account-esito" role="status"></p>
     <button data-conto="esci">Esci</button><button data-conto="ovunque">Esci da tutti i dispositivi</button><button data-account="torna">Torna all'attività</button>`);
 }
 
@@ -1103,11 +1295,15 @@ async function esci(tutti = false) {
   // Anche i punteggi dei Segnali: uscire con punteggi che il server non ha li perderebbe (§8, P-46).
   await punteggiInSospeso();
   if (!S.conto) return;
-  const { coda, seg } = await tx(() => null);
+  const { righe: tutte, coda, seg } = await tx(() => null);
   const pendenti = coda.daInviare.length + Object.keys(coda.scartate).length;
   const segnali = !!(seg && seg.daInviare);
   if (pendenti || segnali) {
-    const righe = pendenti ? `${pendenti} ${pendenti === 1 ? 'risposta non è' : 'risposte non sono'} sul server. ` : '';
+    // Le risposte si contano con daInviare(); la condizione che blocca resta sulla coda intera (R-ACC-46).
+    const d = daInviare(tutte, { daInviare: [...coda.daInviare, ...Object.keys(coda.scartate)] });
+    const altre = d.avvii + d.altre;
+    const righe = (d.risposte ? `${d.risposte} ${d.risposte === 1 ? 'risposta non è' : 'risposte non sono'} sul server. ` : '')
+      + (altre ? (d.avvii && !d.altre ? (d.avvii === 1 ? 'L\'avvio di una simulazione non è sul server. ' : `L'avvio di ${d.avvii} simulazioni non è sul server. `) : 'Alcune righe di questo dispositivo non sono sul server. ') : '');
     esito.innerHTML = `${righe}${segnali ? 'Ci sono punteggi dei Segnali che il server non ha ancora accolto. ' : ''}Collegati alla rete e riprova, oppure scaricale prima di uscire. <button data-conto="riprova-uscita">Riprova l'invio</button> <button data-conto="scarica-pendenti">Scarica le risposte non salvate</button>`;
     S.uscitaTutti = tutti;
     return;
@@ -1453,7 +1649,7 @@ function mostraConflitto(c) {
   S.sospeso = c;
   const giorno = c.azzerato_il ? `Il ${new Date(c.azzerato_il).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })} i progressi sono stati azzerati da un altro dispositivo.` : 'I progressi sono stati azzerati da un altro dispositivo.';
   if (c.nonSalvate) {
-    return pannello(`<h2>Progressi azzerati</h2><p>${giorno} Qui ci sono ${c.nonSalvate} risposte non salvate. Scaricale oppure scegli di scartarle prima di caricare il nuovo archivio.</p>
+    return pannello(`<h2>Progressi azzerati</h2><p>${giorno} Qui ci sono ${c.nonSalvateRisposte ?? c.nonSalvate} risposte non salvate. Scaricale oppure scegli di scartarle prima di caricare il nuovo archivio.</p>
       <button data-conflitto="scarica">Scarica e passa al nuovo archivio</button><button data-conflitto="scarta">Scarta e passa al nuovo archivio</button><button data-conflitto="dopo">Decidi più tardi</button>`);
   }
   pannello(`<h2>Progressi azzerati</h2><p>${giorno} La copia di questo dispositivo verrà sostituita.</p>
@@ -1476,7 +1672,7 @@ async function scaricaConflitto() {
 async function riapriConflitto(carica) {
   const { righe, coda } = await tx(() => null);
   const inCoda = new Set(coda.daInviare);
-  S.sospeso = { ...S.sospeso, nonSalvate: righe.filter((r) => inCoda.has(String(r.uid))).length };
+  S.sospeso = { ...S.sospeso, nonSalvate: righe.filter((r) => inCoda.has(String(r.uid))).length, nonSalvateRisposte: daInviare(righe, coda).risposte };
   if (carica && !S.sospeso.nonSalvate) return risolvi();
   return mostraConflitto(S.sospeso);
 }
@@ -1512,7 +1708,19 @@ document.addEventListener('click', (e) => {
   if (t.dataset.ciclo === 'ritorno') { $('quizrun').classList.remove('on'); S.run = null; return vista('oggi'); }
   if (t.id === 'rv-close') return $('rivedi').classList.remove('on');
   if (t.dataset.v) return vista(t.dataset.v);
-  if (t.dataset.modo) { S.modo = t.dataset.modo; $('start').hidden = false; return; }
+  if (t.dataset.modo) { S.modo = t.dataset.modo; $('start').hidden = false; $('q-prova').hidden = S.modo !== 'sim'; return; }
+  if (t.id === 'start' && S.modo === 'sim') return avviaSim();
+  if (t.dataset.fase) {
+    const u = S.ultima; $('r-fine').classList.remove('on');
+    return avviaFase(u.resto[0], u.prova, u.resto.slice(1));
+  }
+  const ex = t.dataset.esito;
+  if (ex === 'rispondi') return moduloEsito(t.dataset.giorno);
+  if (ex === 'mai') return maiPiuEsito(t.dataset.giorno);
+  if (ex === 'non-ancora') return dataEsameDopo();
+  if (ex === 'togli-data') { chiudiPannello(); return salvaData(true); }
+  if (ex === 'profilo') return moduloEsito((S.conto && S.conto.data) || '');
+  if (ex === 'salva') return salvaModuloEsito();
   if (t.id === 'start') return apriRun(E.estrai(S.banca, {}, oggi(), S.modo === 'sim' ? 20 : 10, Date.now() % 991), S.modo === 'sim' ? 'simulazione' : 'argomento', S.modo === 'sim');
   if (t.id === 't-start') return avviaTec();
   if (t.id === 'c-start') return avviaCart();

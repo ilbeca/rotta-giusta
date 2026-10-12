@@ -381,7 +381,7 @@ decisione se tirarlo fuori è §10, Q-AMBITO.
 
 ```
 _t       'q' quiz · 'c' carteggio · 't' tecnica · 'g' tag · 's' prova sostenuta
-         'b' segnalibro (da P-71) · 'a' avvio di una prova (P-72, nel §9 con P-74)
+         'b' segnalibro (da P-71) · 'a' avvio di una prova (P-72, §9.13)
 uid      identificatore della riga: la fusione all'import avviene su questo
 item_id  il quesito o l'esercizio
 ts       ISO 8601 con offset **locale** (non UTC: vedi 0.4.5)
@@ -409,6 +409,31 @@ dopo sarebbero la stessa riga con due significati. Un segnalibro è una riga
 `_t: 'b'` per gesto, con il quesito e `segnato`: togliere il segno è una riga in
 più, non una cancellazione, e vale l'ultimo gesto per istante, come per i tag.
 Non è una risposta (`rigaDiRisposta()` dice falso, `ripiega()` non lo legge).
+
+**La riga d'avvio, dal 4 ottobre 2026** (P-72; `esito-esame-progetto.md` §4,
+dove sta per esteso). A Inizia di ogni simulazione completa, e di ogni fase di
+«Base e vela», la pagina con l'account scrive una riga `_t: 'a'`: la prova che
+comincia (`sim_uid`, la sua `kind`, la scelta `prova`), l'istante, la versione
+del motore e le `stime` dei metodi di previsione attivi — oggi uno,
+`regola-semplice-1`, il metro che un modello dovrà battere. L'`uid` è il
+`sim_uid` più «:a», quindi una seconda scrittura della stessa prova è un rinvio
+e non una seconda previsione; la riga `_t: 's'` della consegna ha come `uid` lo
+stesso `sim_uid`, e una prova abbandonata è un avvio senza consegna. La compone
+il motore (`rigaAvvio()`), e un metodo che lancia non la toglie: c'è con
+`errore`. **Non è uno specchio, ed è da dire perché sembra esserlo**: è un
+numero calcolato dalle righe e salvato, la forma che il §3.3 vieta. La
+differenza è che niente la rilegge per decidere o per disegnare — nessuna
+funzione del motore che seleziona, misura o prepara una schermata guarda
+`_t: 'a'`, e due controlli lo pretendono, uno sul sorgente e uno eseguendo
+(R-PREV-02, R-PREV-08). È una testimonianza, non uno stato; il giorno in cui
+una schermata la leggesse servirebbe una decisione. **Non è una risposta**:
+`rigaDiRisposta()` dice falso, e ogni numero che la pagina scrive come
+«risposte» la lascia fuori, compresi i due che le arrivano già contati dal
+motore — `confermateRisposte` di un trasferimento, `nonSalvateRisposte` di un
+conflitto (R-PREV-07, 11, 12). Senza account non si scrive, e nemmeno con un
+server che non dichiara `'a'` in `tipi_riga` (R-PREV-05, 09). La pagina di oggi
+non la scrive: la scriverà B-2, e fino ad allora P-01 pretende che non ci sia
+(§9.13).
 
 **Come la pagina sa che il server li accetta.** Il server dice `tipi_riga` in
 `GET /v1/io` (P-73), ed è `TIPI_RIGA` del suo motore: `'b'` c'è solo da P-71.
@@ -629,6 +654,20 @@ vero anche quando l'implementazione cambia.
   profilo — data d'esame e punteggi dei Segnali —, e un registro di sicurezza.
   Il titolare le legge per il supporto e per le statistiche; niente esce verso
   script di terzi (§2.1).
+- **E, se chi studia lo dice, l'esito del suo esame** (P-73, schema 5;
+  `esito-esame-progetto.md` §3): una riga per prova e per giorno — carteggio,
+  quiz base, quiz vela, pratica —, con l'esito e, se lo sa, gli errori. Sta in
+  una tabella sua, `esito`, e non fra le righe, perché un esito si deve poter
+  togliere davvero: `DELETE` lo cancella dai byte del database e del WAL, e un
+  ripristino non lo riporta, perché il ritiro passa prima dal file delle
+  cancellazioni e il server lo rilegge a ogni avvio. Un azzeramento dei
+  progressi non lo tocca; la cancellazione dell'account sì, anche con il codice
+  di un rilascio che non conosce la tabella; l'export lo porta, l'import non lo
+  carica; chi si è opposto è fuori dalla fonte `esiti` delle statistiche
+  (R-ESITO-01, 05…09). `GET /v1/io` porta `esiti` e `tipi_riga`: un campo
+  assente — il server di prima — spegne la funzione nella pagina, non la accende
+  (R-ESITO-03, R-PREV-09). La pagina di oggi non chiede l'esito: lo chiederà
+  B-1, e fino ad allora E-01 pretende che non lo faccia (§9.13).
 - **Il titolare legge un account da un posto solo**, `server/leggi.mjs`, dalla
   macchina e mai dal web: un'email e un motivo obbligatorio, l'account e le sue
   attività con le funzioni del motore, e una riga nel registro per ogni
@@ -954,7 +993,12 @@ v0.28.1 stavano in `localStorage`.
   (`account-progetto.md` §20). *Cambierà con la stima* (ADR-006, decisione 24
   di P-59): la difficoltà dei quesiti sarà stimata sulle prime risposte di
   tutti i registrati, senza chi si è opposto e sopra una soglia di persone.
-  Finché la stima non c'è, questa riga descrive il motore.
+  Finché la stima non c'è, questa riga descrive il motore. **Intanto la
+  previsione si registra** (P-72, §3.2): a Inizia di ogni simulazione completa
+  la riga d'avvio porta quella di `regola-semplice-1`, che guarda soltanto le
+  ultime cinque prove di chi studia, e niente la mostra né la rilegge
+  (R-PREV-01…12). La stima che userà gli altri non c'è; quando ci sarà, la riga
+  d'avvio avrà un metodo in più.
 - **Non ha un budget di tempo.** Non sa quanti minuti hai oggi.
   `stimaImpegno()` stima quanto **costa** ciò che resta, non quanto puoi fare.
 - **Non giudica il carteggio.**
@@ -1064,6 +1108,8 @@ il controllo esegue (R-NAV-04).
 | L'invito a registrarsi | nel riepilogo di un'attività senza account, e in nessun altro posto | Con i vantaggi che esistono; «Continua senza account» lo chiude (R-ACC-03) |
 | ~~L'archivio di prima degli account~~ | da nessuna parte, dall'ADR-005 | Fino al 3 ottobre 2026 un avviso nel Percorso e una porta in Info le proponevano di portarle nell'account o di scaricarle. Il passaggio è uscito: la pagina non le legge, non le cancella e non ne dice niente (R-ACC-05). Chi ha un file esportato lo carica nell'account dalla riga «Scarica / ricarica» |
 | Lo stato dell'invio | Account e Info | Da inviare, in corso, confermate, non accolte con il motivo: dalla coda del motore, non da un conto della pagina |
+| «Com'è andato l'esame?» | un riquadro nel Percorso, con l'account; e «Il tuo esame» nella finestra dell'account | **Non c'è ancora: lo porta B-1** (`esito-esame-progetto.md` §3, §10.1). Il riquadro solo con la data d'esame passata da al più 90 giorni e senza esiti da trenta giorni prima in poi, mai in un'attività, in un riepilogo o in una finestra modale; «Salvato» solo dopo il `200`, con l'elenco della risposta; senza account e con il server di prima niente (R-ESITO-02…04). Fino ad allora E-01 pretende che la pagina non lo faccia |
+| La riga d'avvio delle simulazioni | nessuna voce in schermata; in Info «prove avviate N» | **Non c'è ancora: la porta B-2** (§3.2). A Inizia, con l'account e un server che la dichiara; non si vede, e non è una risposta in nessun conteggio (R-PREV-05…07, 09, 10). Fino ad allora P-01 pretende che la pagina non la scriva |
 | ~~Autodiagnosi offline~~ | da nessuna parte, dall'ADR-005 | Apriva ogni voce del guscio e guardava che fosse *servibile*; il guscio non c'è più (§3.5) |
 | Pallino ambra dei guasti | sulla voce Info, visibile da ogni schermata | R-STA-05 |
 | Tag N/L/C sugli errori | runner e riepilogo | Un tag per tentativo |
@@ -2189,6 +2235,68 @@ righe dell'account e la fonte `risposte` delle statistiche li comprende — una
 statistica sulle risposte filtra per `tipo`. E la regola delle 12 ore, che è una
 scelta e non una misura: se rende, lo dirà l'archivio vero.
 
+### 9.13 «Com'è andata» e le previsioni registrate
+
+Nati da `docs/esito-esame-progetto.md` (P-64), con le decisioni dell'autore del
+4 ottobre 2026 nel suo §11. Il motore li ha da P-72, il server da P-73, i
+controlli della pagina da P-74, che porta qui i requisiti del §9 di quel
+progetto con i nomi dei test che le sessioni hanno scritto. La pagina li avrà
+con B-1 e B-2.
+
+| ID | Requisito | Controllo |
+|---|---|---|
+| R-ESITO-01 | Un esito si scrive per prova e per giorno, con le regole del §3.3 del progetto: un `422` dice il campo e non lascia scritto niente, un campo che il server non conosce è un `422` e non un `200` che lo butta | `test_server.mjs::esito: si scrive per prova e per giorno, e un campo rotto non lascia scritti gli altri` |
+| R-ESITO-02 | Senza account non c'è né la domanda né la voce «Il tuo esame», e nessuna richiesta va a `/v1/esito` | `test_interfaccia.py::test_esito_senza_account` |
+| R-ESITO-03 | Il riquadro compare solo con la data d'esame passata da al più 90 giorni — dal giorno stesso — e senza esiti da trenta giorni prima della data in poi, nel Percorso e in nessun altro posto: mai in un'altra vista, in un'attività, in un riepilogo, in una finestra modale; «Non chiedermelo più» lo spegne su ogni dispositivo; e mai se `GET /v1/io` non porta `esiti` | `test_interfaccia.py::test_esito_quando` |
+| R-ESITO-04 | «Salvato» solo dopo il `200`, e l'elenco che la pagina mostra è quello della risposta, non quello mandato | `test_interfaccia.py::test_esito_salvato` |
+| R-ESITO-05 | Togliere cancella dai byte del database e del WAL; un ripristino da una copia di prima non lo riporta, nemmeno fatto con il `ripristina.mjs` di prima, perché il server lo rilegge all'avvio | `test_server.mjs::esito: togliere cancella davvero, e un ripristino non lo riporta` |
+| R-ESITO-06 | La cancellazione dell'account porta via i suoi esiti, anche con il codice di un rilascio che non conosce la tabella | `test_server.mjs::esito: la cancellazione dell account li porta via, anche con il codice di prima` |
+| R-ESITO-07 | Chi si è opposto è fuori dalla fonte `esiti`; una statistica che nomina `esito` è rifiutata; una query su `esito` fuori dal posto solo è rossa | `test_server.mjs::statistiche: gli esiti passano dalla fonte filtrata` |
+| R-ESITO-08 | L'export porta gli esiti, e il file, caricato in un altro account, non li porta con sé: si ricarica con `importa()` con le stesse righe. Che l'anteprima dell'import lo dica è della pagina, con B-1 | `test_server.mjs::esporta: il file porta gli esiti, e importa non li carica` |
+| R-ESITO-09 | Un azzeramento non tocca gli esiti | `test_server.mjs::azzera: gli esiti restano` |
+| R-PREV-01 | `validaRiga()` accetta una riga `_t: 'a'` con le sue regole — `uid` uguale a `sim_uid` più «:a», `kind` base o vela, `stime` un oggetto semplice con chiavi `nome-N` — e rifiuta le altre forme con «avvio non valido» | `test_engine.mjs::validaRiga: la riga d avvio` |
+| R-PREV-02 | Nessuna funzione del motore che seleziona, misura o disegna cambia il suo risultato per una riga d'avvio in più, in coda, in testa o mescolata: le funzioni del §7 del progetto, quelle che lo specchio alimenta e, da P-74, i cinque stati, i segnalibri e la ricerca per numero | `test_engine.mjs::la riga d avvio non cambia niente di quello che il motore calcola` |
+| R-PREV-03 | `regola-semplice-1` conta le ultime 5 prove della stessa `kind`, una per `uid`, strettamente prima dell'avvio, e nessuna dopo | `test_engine.mjs::regola-semplice-1: le prove prima dell avvio, e nessuna dopo` |
+| R-PREV-04 | Le uscite di ogni metodo registrato sono fissate su un archivio di prova: cambiarle senza cambiare il numero del metodo è rosso | `test_engine.mjs::un metodo che cambia cambia numero` |
+| R-PREV-05 | Con l'account, a Inizia di ogni simulazione completa e di ogni fase di «Base e vela», una riga d'avvio nella copia prima della prima risposta, con l'`uid` della prova più «:a» — lo stesso `sim_uid` delle risposte e della riga della consegna —, la vela dopo la consegna della base, sul server con lo stesso `uid`, e le prove di prima contate; senza account nessuna, nemmeno portata nell'account alla registrazione | `test_interfaccia.py::test_avvio_registrato` |
+| R-PREV-06 | La previsione non si vede: preparazione, runner e riepilogo di una simulazione sono gli stessi con e senza riga d'avvio, cifre a parte, e non dicono una percentuale né una parola di previsione | `test_interfaccia.py::test_avvio_non_si_vede` |
+| R-PREV-07 | I conteggi che la pagina chiama «risposte» non contano le righe d'avvio: con il solo avvio in coda nessun «N risposte da inviare» e nessuna frase che dica tutto sul server, «prove avviate» in Info a parte, e l'uscita bloccata senza dire «N risposte»; con una risposta, N uguale alle risposte in coda | `test_interfaccia.py::test_avvio_non_e_una_risposta` |
+| R-PREV-08 | Nessuna funzione del motore, salvo `validaRiga()`, `rigaAvvio()`, `rigaDiRisposta()` e i metodi di previsione, legge `_t: 'a'`: nel sorgente, e con una riga d'avvio che annota ogni campo che le si legge | `test_engine.mjs::la riga d avvio non la rilegge nessuno` |
+| R-PREV-09 | Con un server che non dichiara `'a'` in `tipi_riga` la pagina non scrive righe d'avvio, né nella copia né sul server, e l'uscita non si blocca | `test_interfaccia.py::test_avvio_server_di_prima` |
+| R-PREV-10 | Un metodo che lancia non ferma la prova: il runner si apre, e la riga d'avvio c'è con `errore` e senza la stima di quel metodo | `test_interfaccia.py::test_avvio_con_un_errore` |
+| R-PREV-11 | «N risposte salvate nel tuo account» conta le sole risposte: `riepilogoTrasferimento()` dà `confermateRisposte` accanto a `confermate`, con `rigaDiRisposta()` sulle righe dell'archivio — un file esportato da un account porta anche righe d'avvio, tag e segnalibri, che sono righe salvate e non risposte —; un uid senza la sua riga non si conta | `test_engine.mjs::trasferimento: confermateRisposte conta le sole risposte` |
+| R-PREV-12 | «Qui ci sono N risposte non salvate» conta le sole risposte: il conflitto di `dopoInvio()` e `dopoRicezione()` dà `nonSalvateRisposte` accanto a `nonSalvate`, e con soli avvii e tag in coda è zero | `test_engine.mjs::coda: il conflitto conta a parte le risposte non salvate` |
+
+**Due regimi, e una scadenza** (P-74). R-ESITO-02…04 e R-PREV-05…07, 09, 10
+si eseguono sulla pagina vera, in un browser vero, con il server degli account
+accanto — gruppi E-01 e P-01 del banco del client, il contratto nel §10.1 del
+progetto. La pagina di oggi non ha né il riquadro né la riga d'avvio, e il
+banco la riconosce da un raccordo di quattro funzioni — `domandaEsito()` e
+`salvaEsito()` per B-1, `avvioProva()` e `daInviare()` per B-2 —, letto dal
+testo della pagina e non fissato nel controllo, come vuole la lezione di
+P-51. Senza raccordo E-01 e P-01 girano la parte `spento`: con un account che
+avrebbe le condizioni del riquadro e una simulazione completa, la pagina non
+chiama `/v1/esito`, non mostra il riquadro e non scrive righe `_t: 'a'`, né
+nella copia né sul server. È quello che i sette requisiti dicono oggi della
+pagina vera, e il controllo lo pretende; una coppia del raccordo a metà è
+rossa. Con il raccordo i due gruppi girano per intero, come sulla pagina di
+riferimento del client, che lo realizza. **Il regime senza raccordo ha una
+scadenza: la merge di P-75**, dopo la quale una pagina senza raccordo è rossa.
+Ventinove rotture della pagina di riferimento, tutte rosse per il loro motivo:
+le tredici che il §10.1 del progetto elenca, dodici nate scrivendo il banco —
+fra le altre l'elenco di quello che la pagina ha mandato, il riquadro con il
+server di prima, la vela senza la sua riga, le prove contate senza lo storico,
+l'uscita che con il solo avvio in coda non si blocca, una frase che cambia con
+la previsione senza numeri, e la previsione detta anche senza riga d'avvio —, e
+quattro che tolgono il raccordo, o ne lasciano metà, con la funzione rimasta.
+**Che cosa non vedono**, per esteso nel §12 del progetto del client: chi
+risponde e chi no, e perché; un manuale aperto accanto a una simulazione;
+l'orologio sbagliato di un dispositivo; un testo che lascia capire la
+previsione senza scriverla né cambiare fra i due casi; il server di prima
+vero, che il banco imita togliendo due campi a `GET /v1/io`; «Non l'ho ancora
+fatto», la correzione e il ritiro dell'esito dalla pagina, la pratica in un
+altro giorno; Safari.
+
 ---
 
 ## 10. Che cosa non è deciso
@@ -2203,7 +2311,7 @@ Ogni riga dice **chi decide**. Una questione senza un decidente non si chiude ma
 | Q-CART4 | «Un esercizio per ciascuno dei quattro argomenti» è un'assunzione | serve la scuola nautica | La composizione della prova resta non confermata, e la 42/D non ha esercizi di carburante. Dal 30 settembre 2026 l'assunzione viaggia con il contratto, `PROVA_CARTEGGIO.assunzione`, e chi compone la prova la riceve con la lista (R-SEL-12). Dal 30 settembre 2026 (P-35) arriva anche alla preparazione della pagina, che la dichiara prima dell'avvio come la dà il motore, e un controllo la segue fino lì (R-SEL-17) |
 | Q-STATI | Le parole dei cinque stati della decisione 14 di P-59 sulla barra e nella legenda, al posto di «giusti · da rifare · mai visti» (Q-DUE punto 3, riaperto) | l'autore | La barra resta a tre stati, e i contratti del motore non sanno come chiamare in schermata gli altri due |
 | Q-COSTANZA | Che cosa fa un giorno di attività (ADR-006): quante risposte, e come si contano il carteggio e i Segnali — i Segnali oggi non lasciano una data, perché non entrano nell'archivio (§4.5, R-UX-02), e contarli vuol dire una riga nuova o un dato nuovo nel profilo | l'autore (la proposta è un'attività conclusa, anche da dieci domande: `prossime-sessioni.md` §4, «Dopo P-59», punto 3) | La costanza non si costruisce |
-| Q-STIMA | La frase di `docs/filosofia.md` sulla stima (proposta in I-12); chi fissa, prima di vedere i risultati, le soglie con cui la stima si mostra (ADR-006); e la strada per chiedere «com'è andata» dopo l'esame — se passa da una mail, è un uso dell'email che oggi la filosofia non nomina | l'autore, sul progetto di P-64 per la terza | La stima si calcola e si registra, ma non si mostra; la frase di oggi resta |
+| Q-STIMA | La frase di `docs/filosofia.md` sulla stima (proposta in I-12); chi fissa, prima di vedere i risultati, le soglie con cui la stima si mostra (ADR-006); e se chiedere «com'è andata» anche per email — è un uso dell'email che oggi la filosofia non nomina. **La strada in pagina c'è** (`esito-esame-progetto.md` §3, R-ESITO-01…09): il riquadro nel Percorso e «Il tuo esame», con il server da P-73 e i controlli della pagina da P-74; la porta B-1. Resta l'email, che l'autore ha rimandato il 4 ottobre 2026 (§11, punto 6 di quel progetto) | l'autore | La stima si registra (§3.2) ma non si mostra; la frase di oggi resta; «com'è andata» si chiede solo a chi torna sul sito |
 | Q-PROVE | Verifiche con dispositivi reali e con persone — e Safari, che il banco del browser non raggiunge (rimandato dall'autore il 29 settembre 2026) | l'autore fornisce dispositivi e persone | Nessuna prova su hardware Apple vero, e nessuna prova con persone diverse dall'autore. Safari nel banco vorrebbe «Allow remote automation», un'impostazione dell'autore, e anche così WebDriver non legge lo storage (`account-client-progetto.md` §12): il cookie fra `rottagiusta.it` e `api.` su Safari si prova a mano |
 
 **Chiuse, e non si riaprono senza un motivo nuovo:**
@@ -2992,3 +3100,16 @@ successo, ed è il motivo per cui questo file esiste.
   cambia, e un test pretende che i tre stati si ottengano dai cinque.
   Trentotto rotture del motore, tutte rosse nel loro test; due erano passate
   verdi alla prima corsa, e i test che le prendono sono stati scritti dopo.
+- **13 ottobre 2026 — «com'è andata» e le previsioni registrate (P-74).** I
+  requisiti del §9 di `esito-esame-progetto.md` entrano nel nuovo §9.13 con i
+  nomi dei test che P-72 e P-73 hanno scritto — letti in `tests/`, non copiati
+  dalla proposta — e con i sette della pagina, che P-74 ha scritto nel banco
+  del client: E-01 per l'esito, P-01 per la riga d'avvio. Due regimi, con il
+  raccordo di quattro funzioni scritto nel §10.1 del progetto prima del banco,
+  e la scadenza alla merge di P-75. Due conti nuovi nel motore, R-PREV-11 e 12:
+  le sole risposte fra le righe confermate di un trasferimento e fra quelle non
+  salvate di un conflitto, perché la pagina riceve i numeri e non gli uid.
+  R-PREV-02 conta anche i cinque stati, i segnalibri e la ricerca per numero di
+  P-71. §3.2 dice la riga d'avvio e perché non è uno specchio, §3.7 gli esiti
+  sul server, §4.6 che la previsione si registra, §5.4 le due voci che la pagina
+  non ha ancora, Q-STIMA che la strada in pagina c'è e resta l'email.
