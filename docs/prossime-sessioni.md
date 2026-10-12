@@ -179,12 +179,14 @@ motore delle previsioni: TIPI_RIGA con 'a', PREVISIONI, rigaAvvio),
 P-73 (il server dell'esito: schema 5, PUT e DELETE /v1/esito, esiti e
 tipi_riga in GET /v1/io) e P-71 (i contratti del motore per il
 ridisegno: cinque stati, i tag N e S, i segnalibri, cerca per numero).
-Chiusi dalla regia il 12 ottobre. Pronti: P-74, P-77 e P-78 per
-Claude, uno alla volta e in quest'ordine; P-65 per ChatGPT; P-62 con
+Chiusi dalla regia il 12 ottobre, e lo stesso giorno la merge di
+P-65 (46d5a3c), la mappa dei tragitti della nuova interfaccia, il primo
+dei cinque mock. Pronti: P-74, P-77 e P-78 per Claude, uno alla volta e
+in quest'ordine; P-66 per ChatGPT, la Home nei tre stati; P-62 con
 l'autore.
 
 I prossimi passi, in quest'ordine:
-1. I resoconti di P-65 (e da lì P-66, il secondo mock), di P-74, P-77
+1. I resoconti di P-66 (e da lì P-67, Allenati ed Esame), di P-74, P-77
    e P-78; chiuso P-74, il prompt di P-75 aspetta la base giuridica.
 2. Le decisioni dell'autore nel §4, «Dopo P-59» e «Dopo P-64»:
    ricordagliele quando il lavoro che le aspetta sta per partire. La
@@ -242,7 +244,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
 | 14 | **La casella `privacy@` sull'iPhone**, e la prova `dkim=pass` | Claude con l'autore | `main`, solo `account-progetto.md` | niente | P-62 |
-| 17 | **I mock della nuova interfaccia**, in cinque passi, in `docs/prototipi/` | ChatGPT | `ui/main` | niente per il primo; ognuno aspetta il precedente | P-65, poi P-66…P-69 |
+| 17 | **I mock della nuova interfaccia**, in cinque passi, in `docs/prototipi/` | ChatGPT | `ui/main` | ognuno aspetta il precedente; P-65, la mappa dei tragitti, è fuso | P-66, poi P-67…P-69 |
 | 18 | **La prova dei mock** con tre-cinque persone vere, e con i bot sulle varianti | l'autore, con Claude | — | P-69 | P-70 |
 | 19 | **Le ricerche**: il parere del professionista sulle donazioni (14 domande, I-11); se all'esame vero si torna indietro fra le domande; Lighthouse su telefono e Safari veri (I-08) | l'autore | — | — | §4, «Dopo P-59» |
 | 20-bis | **I contratti del motore, seconda parte**: Percorso con il «sei qui», costanza, obiettivo, «hai concluso quello che ti avevamo proposto» | Claude | `main` | Q-COSTANZA e la decisione 22 (§4, «Dopo P-59», 3 e 10); e P-68, che disegna il «sei qui» | P-76, da scrivere |
@@ -265,7 +267,7 @@ quest'ordine: P-74 — i controlli della pagina e la specifica per esito e
 previsioni, più i due conti che B-2 non può fare —, che è quello che sblocca
 P-75; poi P-77, la banca, e P-78, il server, piccoli e senza dipendenze. P-62
 con l'autore quando vuole.
-**Per ChatGPT:** P-65, il primo dei cinque mock. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
+**Per ChatGPT:** P-66, la Home nei tre stati, il secondo dei cinque mock: P-65 è fuso il 12 ottobre. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
 che cambiano una promessa (un ADR, la filosofia, la specifica), poi i mock e la
 prova con le persone, poi il codice; «com'è andata» parte presto perché i suoi
 dati arrivano mesi dopo. **Il §5, il §6 e i controlli R-NAV della specifica non
@@ -518,6 +520,14 @@ consuma, non si riprogetta.
      ottobre dicono che nella struttura approvata «quiz su un argomento» cade a
      1/5, perché «Allenati con 10 domande» in Home ruba l'intenzione alla voce
      «Allenati»: è un segnale debole, e lo guarda P-65. Si chiude dopo P-70.
+     *Da P-65 (12 ottobre 2026):* otto nomi con le alternative e il rischio di
+     ciascuna, in `docs/prototipi/interfaccia-2026-10/tragitti.md`, «Nomi
+     ancora aperti» — fra gli altri il secondo pulsante della Home, «Allenati
+     con 10 domande» o «Prova 10 domande»; il richiamo «Quiz · Carteggio ·
+     Segnali» accanto alla porta Allenati per chi cerca «i quiz»; la porta
+     account, «Accedi» o «Accedi o registrati». P-65 propone e non decide; i
+     mock mostrano la variante accanto al nome approvato, così scegli
+     guardando.
   5. **Il parere del professionista sulle donazioni** (I-11): le 14 domande
      sono nella scheda. Ferma le donazioni, e nient'altro.
   6. **La licenza delle spiegazioni** (I-10): MIT come il codice, o una licenza
@@ -548,6 +558,13 @@ consuma, non si riprogetta.
       letto come la spiegazione di una vista che manca, non come un quarto
       posto per l'invito a registrarsi. Se lo intendi come invito, va scritto
       lì. Lo guarda P-68.
+  13. **Quattro tocchi per un quiz su un argomento scelto** (da P-65, tragitto
+      F-H0-02): due alla Preparazione, uno per il tema, «Inizia». Il §1 chiede
+      «due tocchi e una batteria parte». Con i temi direttamente nel segmento
+      Quiz si scende a tre, e P-67 lo mostra; per arrivare a due serve un
+      richiamo diretto dell'argomento dalla Home o il salto della
+      Preparazione, e questa è una scelta tua. Non ferma niente; la prova con
+      le persone (P-70) dice se i tre bastano.
   **Da sapere, da P-63:** la struttura nuova dà al Carteggio due porte, in
   Allenati e in Esame, e nessuna voce di barra: cambia la decisione dell'8
   settembre nel §6.1 della specifica, ed è scritto nel §10 accanto alla
@@ -4410,7 +4427,7 @@ sono P-74, B-1 e B-2 sono P-75, da scrivere.
 
 ### P-65 — ChatGPT: i mock della nuova interfaccia, passo 1 — la mappa dei tragitti
 
-**Stato:** pronto, dal 4 ottobre 2026; `ui/main` è allineato a `main`.
+**Stato:** **chiuso il 12 ottobre 2026**, merge `46d5a3c`. Prima era: pronto, dal 4 ottobre 2026; `ui/main` è allineato a `main`.
 **Dove:** l'app ChatGPT (Codex), progetto `~/Software/rotta-giusta-ui` in
 modalità Local, ramo **`ui/main`**. Scrive soltanto in `docs/prototipi/`, che è
 neutro. **Nasce da:** le decisioni 1–9 di P-59. **Sblocca:** P-66.
@@ -4460,6 +4477,103 @@ La costanza è «giorni di attività negli ultimi 14», senza serie che si
 spezza e senza traguardi (decisione 19): una nota di un'altra sessione
 dice il contrario, e non vale. Il pulsante è «Simula il quiz base», non
 «Simula l'esame».
+
+Guardiano verde (python3 strumenti/controlla.py). Non toccare
+docs/prossime-sessioni.md. Un commit con il trailer e la voce in fondo
+a [Unreleased], versione non toccata. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** commit `b5f84bb` su `ui/main`, merge `46d5a3c` su `main`, voce
+«Progettato — P-65» nel CHANGELOG. `docs/prototipi/interfaccia-2026-10/tragitti.md`,
+642 righe: l'albero delle voci con gli indirizzi proposti; la copertura
+dell'inventario — le sette schermate del §5.2 e i dieci mestieri del §5.3
+hanno tutti una porta, e nessun tragitto impone una quinta voce —; la
+continuità senza account come documento solo con indirizzi veri, History API e
+niente archivio nella storia, con quello che resta impossibile (ricarica e
+scarto) da dire a chi studia; 108 tragitti con identificativo, tre persone per
+tre stati per dodici compiti, ognuno con tocchi, parole, chiusure e il segno
+di che cosa sopravvive; le porte secondarie; i limiti che i mock devono
+mostrare su Home, obiettivo e costanza; otto nomi ancora aperti con alternative
+e rischio, per l'autore. **Trovato:** quattro tocchi da Home alla prima
+domanda su un argomento scelto (F-H0-02) e due alla prima domanda della
+simulazione (Z-H0-01): «un tocco» della decisione 6 vale fino alla
+Preparazione. Il conteggio è di carta: nessuna navigazione eseguita, nessuna
+persona. **Controllato dalla regia il 12 ottobre:** il commit con il trailer
+di ChatGPT, il recinto sul diff del ramo (`check_territories --range`), il
+diff limitato al CHANGELOG e al file nuovo, la merge, `main..ui/main` vuoto;
+la riga vuota fra le due voci del CHANGELOG, che il driver `union` non mette,
+aggiunta dalla regia nel suo commit; guardiano, controllo della
+documentazione, dati 223 e specifica 870 sullo stato fuso. Motore, server e
+interfaccia non rilanciati: nessun file che leggono è cambiato. **Per
+l'autore:** nel §4, «Dopo P-59», il punto 4 con gli otto nomi e il punto 13
+con i quattro tocchi. **Per la coda:** P-66 parte dalla mappa, tenendo gli
+identificativi dei tragitti.
+
+### P-66 — ChatGPT: i mock della nuova interfaccia, passo 2 — la Home nei tre stati
+
+**Stato:** pronto, dal 12 ottobre 2026: P-65 è fuso, e `ui/main` sarà
+allineato a `main` con il sì dell'autore. **Dove:** l'app ChatGPT (Codex),
+progetto `~/Software/rotta-giusta-ui` in modalità Local, ramo **`ui/main`**.
+Scrive soltanto in `docs/prototipi/`, che è neutro. **Nasce da:** P-65, la
+mappa dei tragitti; le decisioni 5, 6, 9, 12 e 19 di P-59; l'ADR-006.
+**Sblocca:** P-67.
+
+```
+Questo prompt è per ChatGPT (Codex), nella cartella
+~/Software/rotta-giusta-ui, sul ramo ui/main, in modalità Local. Se sei
+un altro agente o sei in un'altra cartella, fermati e dillo, senza
+scrivere niente.
+
+Sessione P-66: il secondo di cinque passi di mock della nuova
+interfaccia: la Home, nei suoi tre stati. Niente site/, niente tests/:
+soltanto la cartella docs/prototipi/interfaccia-2026-10/.
+
+Leggi AGENTS.md; docs/prototipi/interfaccia-2026-10/tragitti.md per
+intero — è la mappa di P-65, e i tragitti si citano con il loro
+identificativo —; in docs/idee-dopo-gli-account.md «Le decisioni di
+P-59», soprattutto 5, 6, 9, 12, 13, 17 e 19, e le schede I-01, I-09,
+I-13 e I-15; l'ADR-006 per intero; nella specifica §1, §4.3 (le soglie)
+e §7.1; docs/filosofia.md, «Non ti inganniamo mai»; in
+docs/esito-esame-progetto.md il §3.2 e il §3.5, perché nel ridisegno
+«com'è andata» sta nel cruscotto della Home. Nel §4 di
+docs/prossime-sessioni.md, «Dopo P-59», i punti 4 e 13: i nomi sono
+dell'autore, e il mock li mostra, non li decide.
+
+Pagine HTML statiche, autoconsistenti, senza risorse da altri host, in
+docs/prototipi/interfaccia-2026-10/, a 375 e a 1280 px, con dati finti
+dichiarati in pagina: un numero finto che sembra una misura è il
+difetto di casa. Tre schermate, una per stato della decisione 5:
+- H0, senza risposte: che cos'è il sito, con i suoi benefici; «Simula
+  il quiz base» come primo pulsante, sopra la piega, con le condizioni
+  accanto («20 domande · 30 minuti · al più 4 errori»); il secondo
+  pulsante, l'allenamento breve; le porte di Allenati (con i tre
+  segmenti nominati) e di Esame; «Che cosa non torna», i difetti
+  dichiarati che restano in Home.
+- H1, risposte nella pagina aperta senza account: lo stesso, più
+  l'invito a conservarle dell'ADR-006, con i vantaggi che esistono e
+  «Continua senza account» che lo chiude; e il riepilogo vero delle
+  risposte della pagina, senza misure sotto soglia.
+- HA, con l'account: il cruscotto — una proposta per oggi con il suo
+  perché, «Simula il quiz base», una riga di fatti e la costanza
+  («giorni di attività negli ultimi 14», senza serie che si spezza e
+  senza traguardi), e il posto del riquadro «com'è andata» quando la
+  data d'esame è passata da al più 90 giorni —; e i due stati che P-65
+  pretende, l'account in caricamento («Stiamo caricando le tue
+  risposte») e l'errore con «Riprova»: mai una mappa vuota provvisoria.
+In ogni schermata: una schermata, un'azione principale; l'avatar con il
+pallino dei guasti; i difetti dichiarati con i numeri contati dalla
+banca, e dillo. Dove P-65 propone un nome diverso da quello approvato —
+«Prova 10 domande», «Accedi o registrati», il richiamo «Quiz ·
+Carteggio · Segnali» — la schermata esiste in due varianti, con il nome
+approvato e con la proposta, così l'autore sceglie guardando.
+
+Una nota accanto alle pagine, nella stessa cartella: per ogni tragitto
+di P-65 che parte dalla Home, il tocco che la schermata offre e il
+conteggio rimisurato sul mock; che cosa ogni elemento non promette
+(niente stima, niente «sei pronto», niente serie); che cosa resta per
+P-67. Guarda le pagine in un browser a 375 e 1280 px — zero sbordamento
+orizzontale, misurato —, e scrivilo.
 
 Guardiano verde (python3 strumenti/controlla.py). Non toccare
 docs/prossime-sessioni.md. Un commit con il trailer e la voce in fondo
@@ -4938,14 +5052,12 @@ di docs/prossime-sessioni.md.
 `docs/prototipi/interfaccia-2026-10/`, per ChatGPT su `ui/main`; ognuno aspetta
 il resoconto del precedente, e la regia scrive il suo prompt allora.
 
-- **P-66 — la Home nei tre stati**: prima visita, risposte senza account, il
-  cruscotto con l'account. Pagine HTML statiche, a 375 e 1280 px, con dati
-  finti dichiarati. Aspetta P-65. Dovrà dire: una schermata, un'azione
-  principale; «Simula il quiz base» sopra la piega; l'invito a registrarsi
-  dell'ADR-006; i difetti dichiarati che restano in Home.
+- **P-66**: scritto il 12 ottobre 2026, qui sopra.
 - **P-67 — Allenati ed Esame**: i tre segmenti, il ritorno che ripristina
   segmento e posizione; le prove in ordine con le condizioni del decreto, e il
-  carteggio che è un ambiente solo con due ingressi. Aspetta P-66.
+  carteggio che è un ambiente solo con due ingressi. Aspetta P-66. Dovrà
+  dire anche: i temi direttamente nel segmento Quiz, la variante a tre tocchi
+  di P-65 (§4, «Dopo P-59», 13).
 - **P-68 — Progressi**: il «sei qui», la mappa con i cinque stati, e senza
   account il riepilogo vero della pagina aperta. Aspetta P-67 e, per le parole
   della barra, Q-DUE punto 3 riaperta da P-63.
@@ -5602,3 +5714,11 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   P-73 non poteva scrivere. Nel §4, «Dopo P-64», i due punti di P-73 per
   l'autore, che non fermano niente. Gli allineamenti di `ui/main` e
   `ui/vetrina` e il push aspettano il sì dell'autore.
+- **12 ottobre 2026 — P-65 fuso e chiuso, P-66 pronto.** Il resoconto di
+  ChatGPT letto contro il repo: un commit su `ui/main` con il trailer, recinto
+  verde sul diff del ramo, merge `46d5a3c`, `main..ui/main` vuoto; la riga
+  vuota fra le due voci del CHANGELOG aggiunta dalla regia. Guardiano, dati e
+  specifica sullo stato fuso; motore, server e interfaccia non rilanciati, per
+  un documento solo. Nel §4, «Dopo P-59»: gli otto nomi aperti di P-65 nel
+  punto 4, e i quattro tocchi per un argomento scelto nel punto 13. Con il sì
+  dell'autore: `main` pushato, `ui/main` e `ui/vetrina` allineati.

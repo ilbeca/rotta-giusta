@@ -475,6 +475,7 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   dell'interfaccia era partito per sbaglio senza aspettare: l'ho fermato prima
   che prendesse la porta, e non conta. Guardiano verde. `site/` fuori da
   `engine.js`, `server/` e `docs/prossime-sessioni.md` non sono stati toccati.
+
 ### Progettato — P-65: i tragitti della nuova interfaccia
 
 - **`docs/prototipi/interfaccia-2026-10/tragitti.md`: prima le porte e i
