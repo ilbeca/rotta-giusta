@@ -3,7 +3,7 @@
 //   node server/statistica.mjs [--db /var/lib/rg/conti.db] "SELECT count(*) risposte FROM risposte"
 //
 // La query e' una SELECT sulle fonti di server/statistiche.mjs — iscritti,
-// risposte, punteggi, esiti —, che escludono chi si e' opposto al trattamento
+// risposte, righe, punteggi, esiti —, che escludono chi si e' opposto al trattamento
 // per le statistiche (docs/account-progetto.md §15.2). Una query che nomina una
 // tabella vera e' rifiutata. Il risultato esce in JSON su stdout; su stderr,
 // quanti account sono fuori dai conteggi, e — se la query legge gli esiti —
@@ -17,7 +17,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { parseArgs } from 'node:util';
 import { statistica, esclusi, personeConEsito, FONTI, SOGLIA_PERSONE } from './statistiche.mjs';
 
-const USO = 'uso: node server/statistica.mjs [--db …] "SELECT … FROM iscritti | risposte | punteggi | esiti"';
+const USO = 'uso: node server/statistica.mjs [--db …] "SELECT … FROM iscritti | risposte | righe | punteggi | esiti"';
 
 let argomenti;
 try {

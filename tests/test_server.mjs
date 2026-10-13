@@ -2059,7 +2059,7 @@ test('statistiche: una statistica legge solo le fonti filtrate, e non porta fuor
   // Quello che si puo' fare: contare, con dei parametri, su colonne senza nomi.
   assert.deepEqual(statistica(db, 'SELECT tipo, count(*) n FROM risposte WHERE tipo = ? GROUP BY tipo', ['q']), [{ tipo: 'q', n: 2 }]);
   assert.deepEqual(statistica(db, 'SELECT count(*) n FROM iscritti WHERE confermato'), [{ n: 1 }]);
-  assert.deepEqual(Object.keys(FONTI), ['iscritti', 'risposte', 'punteggi', 'esiti']);
+  assert.deepEqual(Object.keys(FONTI), ['iscritti', 'risposte', 'righe', 'punteggi', 'esiti']);
   for (const [fonte, colonne] of Object.entries(FONTI)) {
     for (const c of colonne) assert.ok(!/email|password|chiave|^id$|account_id|^ip$/.test(c), `${fonte}.${c}`);
     assert.deepEqual(statistica(db, `SELECT count(${colonne.join(') a, count(')}) z FROM ${fonte}`).length, 1, `le colonne dichiarate di ${fonte} esistono`);
@@ -2080,6 +2080,70 @@ test('statistiche: una statistica legge solo le fonti filtrate, e non porta fuor
   const vecchioAccount = creaAccount(diPrima, { email: 'di.prima@esempio.it', password: PHC });
   assert.throws(() => opponi(diPrima, vecchioAccount, { cancellazioni: altroFile, motivo: RICHIESTA }), /schema 3/);
   assert.equal(existsSync(altroFile), false, 'e nel file non e finito niente');
+});
+
+// Una riga di ogni tipo che l'archivio accoglie (TIPI_RIGA del motore): una
+// risposta per tipo — quiz, carta, tecniche, prova sostenuta — e le tre che
+// risposte non sono — un tag, l'avvio di una prova, un segnalibro.
+const UNA_PER_TIPO = [
+  riga(301, { sim_uid: 'stat-prova', mode: 'simulazione', correct: 1 }),
+  { _t: 'c', uid: 'stat-carta:0', item_id: '5.1.3-1', ts: '2026-09-30T18:00:00+02:00', input_json: '{}', verdict: 1, delta: null, ms: 600000,
+    mode: 'tappeto', sim_uid: 'stat-carta', proposti: 1, pos: 0 },
+  { _t: 't', uid: 'stat-tec:0', item_id: '5.1.3-1', ts: '2026-09-30T19:00:00+02:00', chosen: 'una', correct: 1, ms: 9000,
+    mode: 'tecniche', sim_uid: 'stat-tec', proposti: 1, pos: 0 },
+  { _t: 's', uid: 'stat-prova', kind: 'base', ts: '2026-09-26T10:30:00+02:00', score: 1, total: 20, passed: 0, ms: 1800000 },
+  { _t: 'g', uid: 'stat-tag', attempt_uid: riga(301).uid, tag: 'S', ts: '2026-09-26T10:31:00+02:00' },
+  E.rigaAvvio({ simUid: 'stat-prova', kind: 'base', prova: 'base', ts: '2026-09-26T09:59:00+02:00', motore: '0.30.0', righe: [] }),
+  { _t: 'b', uid: 'stat-segno', item_id: 'base-7', ts: '2026-09-26T11:00:00+02:00', segnato: 1 },
+];
+
+test('statistiche: la fonte risposte ha solo le risposte, e le righe d avvio, i segnalibri e i tag stanno in righe', async (t) => {
+  // R-ACC-77. Il server accoglie ogni tipo di riga, perche' importa
+  // validaRiga(); fino a P-78 la fonte `risposte` li comprendeva tutti, e
+  // «quante risposte» contava anche l'avvio di una prova e un segnalibro, se
+  // chi scriveva la statistica non si ricordava di filtrare per tipo. Ora
+  // `risposte` ha le righe per cui rigaDiRisposta() del motore dice vero, e
+  // `righe` ha tutto, con il suo tipo.
+  const k = await conti(t);
+  const { a, b, idA } = await dueStudenti(k);
+  assert.equal((await k.chiama('POST', '/v1/righe', { generazione: 1, righe: UNA_PER_TIPO }, { cookie: b })).status, 200);
+  assert.equal(k.s.db.prepare('SELECT count(*) n FROM riga').get().n, 5 + UNA_PER_TIPO.length);
+  const db = k.s.db;
+  const perTipo = (fonte) => statistica(db, `SELECT tipo, count(*) n FROM ${fonte} GROUP BY tipo ORDER BY tipo`)
+    .map((r) => [r.tipo, r.n]);
+
+  // Le risposte di dueStudenti() sono quiz (3 di A, 2 di B): a quelle si
+  // aggiunge una risposta per tipo, e nient'altro.
+  const diRisposta = [...E.TIPI_RIGA].filter((tipo) => E.rigaDiRisposta({ _t: tipo })).sort();
+  assert.deepEqual(diRisposta, ['c', 'q', 's', 't'], 'i tipi di risposta li dice il motore');
+  assert.deepEqual(perTipo('risposte'), [['c', 1], ['q', 6], ['s', 1], ['t', 1]], 'risposte: niente avvii, segnalibri ne tag');
+  assert.equal(statistica(db, 'SELECT count(*) n FROM risposte')[0].n, 9, 'una statistica sulle risposte non conta un avvio ne un segnalibro');
+  assert.equal(statistica(db, "SELECT count(*) n FROM risposte WHERE item_id = 'base-7'")[0].n, 0, 'il quesito segnato non ha una risposta in piu');
+  assert.deepEqual(perTipo('righe'), [['a', 1], ['b', 1], ['c', 1], ['g', 1], ['q', 6], ['s', 1], ['t', 1]], 'righe: tutto, con il suo tipo');
+  assert.deepEqual([...FONTI.righe], [...FONTI.risposte], 'le due fonti hanno le stesse colonne');
+
+  // Una query sulle risposte che cerca un tipo che non c'e' conterebbe zero
+  // in silenzio: e' rifiutata, e dice dove stanno quelle righe.
+  for (const sql of [
+    "SELECT count(*) n FROM risposte WHERE tipo = 'a'",
+    "SELECT count(*) n FROM risposte WHERE tipo IN ('q', 'b')",
+    "SELECT count(*) n FROM risposte r WHERE r.tipo='g'",
+  ]) {
+    assert.throws(() => statistica(db, sql), /fonte «righe»/, sql);
+  }
+  // Leggerle da `righe` si puo', anche insieme alle risposte: e' la statistica
+  // di validazione delle previsioni (docs/esito-esame-progetto.md §4.7).
+  assert.deepEqual(statistica(db, "SELECT count(*) n FROM righe WHERE tipo = 'a'"), [{ n: 1 }]);
+  assert.deepEqual(statistica(db, `SELECT count(s.ts) consegnate, count(*) - count(s.ts) abbandonate
+    FROM righe a LEFT JOIN risposte s ON s.chi = a.chi AND s.tipo = 's' AND json_extract(s.dati, '$.uid') = json_extract(a.dati, '$.sim_uid')
+    WHERE a.tipo = 'a'`), [{ consegnate: 1, abbandonate: 0 }]);
+  assert.deepEqual(statistica(db, "SELECT count(*) n FROM risposte WHERE tipo = 'q'"), [{ n: 6 }], 'un tipo di risposta si cerca');
+
+  // E `righe` passa dagli iscritti come le altre: chi si oppone ne esce.
+  opponi(db, idA, { cancellazioni: k.opzioni.cancellazioni, motivo: RICHIESTA });
+  assert.equal(statistica(db, 'SELECT count(*) n FROM righe')[0].n, 2 + UNA_PER_TIPO.length);
+  assert.equal(statistica(db, 'SELECT count(*) n FROM risposte')[0].n, 6);
+  assert.ok(a);
 });
 
 // Che cosa conta come «una statistica nata fuori posto», riga per riga, tolti i
@@ -2414,7 +2478,16 @@ const ATT_CARTA = [0, 1].map((pos) => ({
 const ATT_TECNICHE = [{ _t: 't', uid: 'att-tec:0', item_id: '5.1.3-1', ts: '2026-09-30T19:00:00+02:00', chosen: 'una|altra',
   correct: 0, ms: 9000, mode: 'tecniche', sim_uid: 'att-tec', proposti: 1, pos: 0 }];
 const UN_TAG = [{ _t: 'g', uid: 'tag-letture-1', attempt_uid: ATT_QUIZ[1].uid, tag: 'L', ts: '2026-09-28T10:05:00+02:00' }];
-const RIGHE_DI_CHI_SCRIVE = [...ATT_QUIZ, ...ATT_RIPRESA, ...ATT_PROVA, ...ATT_CARTA, ...ATT_TECNICHE, ...UN_TAG];
+// E tre righe che risposte non sono (P-78): l'avvio della simulazione, con le
+// stime com'erano (P-72), e tre gesti sui segnalibri — base-5 segnato e poi
+// tolto, base-6 segnato —, cosi' l'ultimo gesto per quesito conta (P-71).
+const UN_AVVIO = [E.rigaAvvio({ simUid: 'att-prova', kind: 'base', prova: 'base', ts: '2026-09-30T07:59:00+02:00', motore: '0.30.0', righe: [] })];
+const I_SEGNALIBRI = [
+  { _t: 'b', uid: 'segno-letture-1', item_id: 'base-5', ts: '2026-09-29T21:00:00+02:00', segnato: 1 },
+  { _t: 'b', uid: 'segno-letture-2', item_id: 'base-6', ts: '2026-09-29T21:01:00+02:00', segnato: 1 },
+  { _t: 'b', uid: 'segno-letture-3', item_id: 'base-5', ts: '2026-09-30T20:00:00+02:00', segnato: 0 },
+];
+const RIGHE_DI_CHI_SCRIVE = [...ATT_QUIZ, ...ATT_RIPRESA, ...ATT_PROVA, ...ATT_CARTA, ...ATT_TECNICHE, ...UN_TAG, ...UN_AVVIO, ...I_SEGNALIBRI];
 const RIGHE_DI_UN_ALTRO = [riga(201), riga(202)];
 // E l'esito del suo esame (P-73): il titolare lo vede con il resto dell'account.
 const ESITO_DI_CHI_SCRIVE = { giorno: '2026-09-03', prove: { carteggio: { esito: 'superata' }, base: { esito: 'non_superata', errori: 6 } } };
@@ -2482,7 +2555,13 @@ test('letture: il titolare legge un account dalla riga di comando, con il serviz
 
   // Le righe com'erano, e le attivita' con le funzioni del motore.
   assert.deepEqual(letto.righe, sue, 'le righe che riceve lui, byte per byte');
-  assert.deepEqual(letto.conteggi, { righe: 12, quiz: 7, carteggio: 2, tecniche: 1, tag: 1, prove: 1 });
+  // Le risposte si contano con rigaDiRisposta() del motore, come nella pagina;
+  // le prove avviate, i segnalibri e i tag accanto, a parte e con il loro nome.
+  assert.equal(letto.conteggi.risposte, sue.filter(E.rigaDiRisposta).length);
+  assert.deepEqual(letto.conteggi, { righe: 16, risposte: 11, quiz: 7, carteggio: 2, tecniche: 1, prove: 1, avviate: 1, segnalibri: 3, tag: 1 });
+  assert.deepEqual(letto.avviate, comeJson(UN_AVVIO), 'le righe d avvio com erano, con motore e stime');
+  assert.deepEqual(letto.segnalibri, { segnati: E.segnalibri(sue), gesti: 3 }, 'segnalibri() del motore: vale l ultimo gesto');
+  assert.deepEqual(letto.segnalibri.segnati, ['base-6']);
   assert.deepEqual(letto.quiz, comeJson(E.sessioni(sue, { confine: 'attivita' })), 'sessioni() del motore, col confine dell attivita');
   assert.deepEqual(letto.quiz.map((s) => [s.id, s.mode, s.n, s.esatte, s.fonte, Boolean(s.prova)]), [
     ['att-prova', 'simulazione', 2, 2, 'sim_uid', true],
@@ -2525,11 +2604,13 @@ test('letture: il titolare legge un account dalla riga di comando, con il serviz
   r = leggi('--email', CHI_SCRIVE, '--motivo', MOTIVO_LETTURA);
   assert.equal(r.status, 0, r.stdout + r.stderr);
   for (const atteso of ['annotata nel registro', `account ${idA}`, CHI_SCRIVE, '2026-11-20', 'att-quiz-1', 'att-quiz-2', 'att-prova', 'att-carta', 'att-tec',
-    '12 righe', '2/3 esatte', 'coperti 5', 'da ripassare 2', 'mai visti 1465', 'nebbia',
+    '16 righe', '11 risposte', 'prove avviate 1', 'segnalibri 3', 'PROVE AVVIATE', 'att-prova:a', 'motore 0.30.0', 'regola-semplice-1',
+    'SEGNALIBRI', 'base-6', '2/3 esatte', 'coperti 5', 'da ripassare 2', 'mai visti 1465', 'nebbia',
     'ESAME', '2026-09-03', 'carteggio superata', 'base non superata, 6 errori']) {
     assert.ok(r.stdout.includes(atteso), `nel testo manca «${atteso}»:\n${r.stdout}`);
   }
   assert.ok(!r.stdout.includes(ATT_QUIZ[0].uid), 'senza --attivita le righe non si elencano');
+  assert.ok(!r.stdout.includes('base-5'), 'un segnalibro tolto non e fra i segnati');
   assert.ok(!r.stdout.includes(UN_ALTRO) && !r.stdout.includes('argon2') && !r.stdout.includes('2026-09-17'));
   assert.equal(letture().length, 2);
 
@@ -2606,7 +2687,7 @@ test('letture: senza motivo, senza account, senza database o senza poter scriver
   // Il registro non si puo' scrivere: la funzione lancia, e non restituisce niente.
   const solaLettura = new DatabaseSync(k.opzioni.db, { readOnly: true });
   t.after(() => solaLettura.close());
-  assert.equal(solaLettura.prepare('SELECT count(*) n FROM riga').get().n, 14, 'le righe ci sono, e si potrebbero leggere');
+  assert.equal(solaLettura.prepare('SELECT count(*) n FROM riga').get().n, 18, 'le righe ci sono, e si potrebbero leggere');
   assert.throws(() => leggiAccount(solaLettura, CHI_SCRIVE, { motivo: MOTIVO_LETTURA }), /readonly/i);
   // E dalla riga di comando, con il file che non si puo' scrivere.
   chmodSync(k.opzioni.db, 0o444);
@@ -2662,7 +2743,7 @@ test('letture: una lettura non cambia niente dell account, e la sua riga sopravv
   // giorno giri la suite, qui e' una data che oggi non puo' essere.
   k.s.db.prepare("UPDATE account SET ultimo_accesso_il = '2025-01-15' WHERE id = ?").run(idA);
   const prima = tutto(), registroPrima = delRegistro();
-  assert.equal(prima.riga.length, 14);
+  assert.equal(prima.riga.length, 18);
   for (const args of [['--json'], [], ['--attivita', 'att-carta']]) {
     assert.equal(leggi('--email', CHI_SCRIVE, '--motivo', MOTIVO_LETTURA, ...args).status, 0);
   }
@@ -2680,7 +2761,7 @@ test('letture: una lettura non cambia niente dell account, e la sua riga sopravv
   const il = new Date(k.orologio.t).toISOString();
   const letto = leggiAccount(k.s.db, CHI_SCRIVE, { motivo: 'indagine su un accesso sospetto del 2 ottobre', il });
   assert.deepEqual(letto.lettura, { quando: il, account: idA, motivo: 'indagine su un accesso sospetto del 2 ottobre' });
-  assert.equal(letto.righe.length, 12);
+  assert.equal(letto.righe.length, 16);
   const sua = [{ quando: il, evento: 'lettura del titolare', account_id: idA, ip: null, dettaglio: 'indagine su un accesso sospetto del 2 ottobre' }];
   assert.deepEqual(lettureNel(k.s.db), sua);
 

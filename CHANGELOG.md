@@ -653,6 +653,78 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   `docs/prossime-sessioni.md` e `site/` fuori da `site/dati/` e da quel
   commento non sono stati toccati.
 
+### Corretto — P-78: le risposte si contano come risposte, sul server
+
+- **Il server accoglie le righe d'avvio (P-72) e i segnalibri (P-71), e due
+  conti li prendevano per risposte.** Accoglierli era giusto: il server importa
+  `validaRiga()`. Ma `server/letture.mjs`, lo strumento con cui il titolare
+  legge un account, li contava fra le righe senza nominarli, quindi la somma
+  per tipo non arrivava al totale e chi aiutava non li vedeva. E la fonte
+  `risposte` di `server/statistiche.mjs` li comprendeva insieme ai tag:
+  `SELECT count(*) FROM risposte` contava anche un avvio e un segnalibro, se
+  chi scriveva la statistica non si ricordava di filtrare per tipo. È la
+  regola da ricordare che il posto solo delle statistiche esiste per togliere.
+  Oggi nessuna statistica si calcola: il giorno della prima doveva già essere
+  giusto.
+
+- **Lo strumento del titolare conta con le funzioni della pagina.** Le
+  risposte si contano con `rigaDiRisposta()` del motore e si dividono in quiz,
+  carteggio, tecniche e prove sostenute. Accanto, a parte e con il loro nome:
+  le prove avviate (le righe `'a'` com'erano, con il motore e le stime
+  registrate a Inizia), i segnalibri (i quesiti segnati adesso secondo
+  `segnalibri()`, cioè l'ultimo gesto per quesito, e quanti gesti) e i tag.
+  `leggi.mjs` lo mostra anche a schermo, con due sezioni nuove. Nessuna query
+  nuova: tutto viene dalle righe che `leggiAccount()` legge già, e il
+  controllo di R-ACC-74 resta senza dichiarazioni nuove.
+
+- **Le statistiche hanno due fonti di righe.** `risposte` ha soltanto le righe
+  per cui `rigaDiRisposta()` dice vero; il filtro si costruisce da
+  `TIPI_RIGA`, non da un elenco scritto in `statistiche.mjs`. `righe` ha
+  tutto, con il suo tipo, e passa dagli iscritti come le altre fonti, quindi
+  chi si oppone esce anche da lì. La strada scartata era una colonna `tipo`
+  documentata: la colonna c'era già, e documentarla avrebbe scritto la regola
+  invece di toglierla. Il perché per esteso è nel §15.2 di
+  `account-progetto.md`.
+
+- **Una guardia per le statistiche scritte prima.** Una query che legge
+  `risposte` e cerca un tipo che lì non c'è (`tipo = 'a'`, `tipo IN ('q',
+  'b')`) avrebbe contato zero in silenzio. È il caso della statistica di
+  validazione delle previsioni nel §4.7 di `esito-esame-progetto.md`, scritta
+  su `risposte a … WHERE a.tipo = 'a'`. Ora `statistica()` la rifiuta e dice
+  di leggere `righe`; una query che legge anche `righe` passa. La guardia
+  guarda il testo e non vede un tipo passato come parametro, e lo si dice.
+  **Quella query va riscritta** su `righe a LEFT JOIN risposte s`, in un file
+  che questa sessione non poteva toccare: il test nuovo la esegue così.
+
+- **Prima il test che fallisce.** Un test nuovo, R-ACC-77, con una riga per
+  ognuno dei sette tipi; quello di R-ACC-71 con un avvio e tre gesti sui
+  segnalibri fra le righe di chi chiede aiuto; le fonti attese in R-ACC-69.
+  Tre test rossi per la ragione misurata: le risposte contavano `a`, `b` e
+  `g`, `conteggi.risposte` non c'era, la fonte `righe` mancava. **Provati al
+  contrario su dieci rotture**, una per volta, tutte rosse nel test che le
+  riguarda: `risposte` senza filtro, i tipi di risposta scritti a mano con
+  dentro `a`, la guardia tolta, la guardia che scatta anche su `righe`, la
+  guardia che non legge `IN`, `righe` senza il filtro degli iscritti, le
+  risposte dello strumento uguali alle righe, i segnalibri senza l'ultimo
+  gesto, le prove avviate senza le stime, e le prove avviate tolte dal testo a
+  schermo. Specifica: R-ACC-71 e R-ACC-74 dicono che cosa cambia, R-ACC-77 è
+  nuovo, e il §9.12 non dice più che le letture e le statistiche li
+  confondono.
+
+  Suite: server **81/81** (erano 80), con Node 25.3 e con la **24.21.0 LTS**,
+  scaricata da nodejs.org e confrontata con il suo `SHASUMS256.txt`;
+  `ripristina --prova` 24 controlli, con tutte e due; motore 212/216 con i
+  quattro skip previsti, anche con la LTS; dati 229; specifica **958** (erano
+  954); interfaccia 2.453, in 4 min 12 s, con la 8620 guardata libera per 90 s
+  prima. **Quattro giri dell'interfaccia, non uno**: il primo rosso su
+  `E-01:spento` («troppo poche verifiche»), il terzo con 14 rossi tutti del
+  browser che non rispondeva («nessuna risposta in 30 s», «Session with given
+  id not found»), il secondo e il quarto verdi. Nessuno dei rossi tocca il
+  server, e questa sessione la pagina non l'ha toccata; il secondo giro è
+  partito senza riguardare la porta, quindi conta il quarto. Guardiano verde.
+  `site/`, `docs/prossime-sessioni.md` e `docs/esito-esame-progetto.md` non
+  sono stati toccati, né la macchina.
+
 ## [0.30.0] — 2026-10-03
 
 **Il sito più semplice: niente offline.** Rotta Giusta si apre con la rete,

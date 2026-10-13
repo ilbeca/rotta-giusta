@@ -30,7 +30,7 @@
 import { readFileSync } from 'node:fs';
 import { transazione, versioneSchema, motivoPerIlRegistro, esitiDi } from './db.mjs';
 import { NON_CONFERMATO_MS } from './conti.mjs';
-import { sessioni, attivitaCarteggio, dettaglioCarteggio, ripiega, traccia, tagPerTentativo } from '../site/engine.js';
+import { sessioni, attivitaCarteggio, dettaglioCarteggio, ripiega, traccia, tagPerTentativo, rigaDiRisposta, segnalibri } from '../site/engine.js';
 
 /** Il nome dell'evento nel registro: e' quello che l'informativa chiama «le letture fatte dal titolare». */
 export const EVENTO_LETTURA = 'lettura del titolare';
@@ -65,7 +65,16 @@ export function leggiBanche() {
  *              della copia locale, ne' le impronte di sessioni e gettoni — con
  *              le sessioni aperte (le date) e i punteggi dei Segnali
  *   righe      le righe com'erano arrivate, nell'ordine del cursore
- *   conteggi   quante sono, per tipo
+ *   conteggi   quante sono: `righe` tutte; `risposte` quelle per cui
+ *              `rigaDiRisposta()` del motore dice vero — come le conta la
+ *              pagina —, divise in quiz, carteggio, tecniche e prove sostenute;
+ *              e a parte, con il loro nome, quello che risposta non e':
+ *              `avviate` (le righe d'avvio), `segnalibri` (i gesti), `tag`
+ *   avviate    le righe d'avvio delle prove (`_t: 'a'`, P-72) com'erano, con il
+ *              motore e le stime registrate a Inizia
+ *   segnalibri `segnati`, i quesiti segnati adesso secondo `segnalibri()` del
+ *              motore — vale l'ultimo gesto per quesito —, e `gesti`, quante
+ *              righe `_t: 'b'` ci sono (P-71)
  *   copertura  per banca, i tre stati di `traccia()` sullo specchio di `ripiega()`
  *   quiz       `sessioni(righe, { confine: 'attivita' })`
  *   carteggio  `attivitaCarteggio(righe, { tipo: 'c' })`, ognuna con `conteggi`,
@@ -131,7 +140,14 @@ export function leggiAccount(db, email, { motivo, il = new Date().toISOString(),
         segnali,
       },
       righe,
-      conteggi: { righe: righe.length, quiz: quanti('q'), carteggio: quanti('c'), tecniche: quanti('t'), tag: quanti('g'), prove: quanti('s') },
+      conteggi: {
+        righe: righe.length,
+        risposte: righe.filter(rigaDiRisposta).length,
+        quiz: quanti('q'), carteggio: quanti('c'), tecniche: quanti('t'), prove: quanti('s'),
+        avviate: quanti('a'), segnalibri: quanti('b'), tag: quanti('g'),
+      },
+      avviate: righe.filter((r) => r._t === 'a'),
+      segnalibri: { segnati: segnalibri(righe), gesti: quanti('b') },
       copertura,
       quiz: sessioni(righe, { confine: 'attivita' }),
       carteggio: delCarteggio('c', banche.carteggio),

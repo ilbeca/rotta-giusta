@@ -1842,7 +1842,7 @@ leggere solo con `sqlite3`, senza traccia. Com'è fatto:
 
   A schermo: l'account — email e conferma, date, generazione, stato della
   password, sessioni aperte, se è fuori dalle statistiche, punteggi dei Segnali
-  —, quante righe ha per tipo, la copertura nei tre stati, le attività dei quiz,
+  —, quante righe ha e quante sono risposte, la copertura nei tre stati, le attività dei quiz,
   del carteggio e delle tecniche, l'esito dell'esame che ha detto, un giorno per
   riga (dal P-73), e gli eventi di quell'account nel registro, comprese le
   letture di prima. `--attivita <id>` aggiunge le righe di una
@@ -1860,6 +1860,20 @@ leggere solo con `sqlite3`, senza traccia. Com'è fatto:
   specchio di `ripiega()`; i tag `tagPerTentativo()`. Chi aiuta vede quello che
   vede chi chiede aiuto, calcolato dalla stessa funzione, sulla banca di questo
   rilascio. Il codice sta in `server/letture.mjs`, `leggiAccount()`.
+- **Le risposte, e quello che risposta non è** (P-78, 13 ottobre 2026). Il
+  server accoglie anche le righe d'avvio delle prove (`_t: 'a'`, P-72) e i
+  segnalibri (`_t: 'b'`, P-71), perché importa `validaRiga()`; fino a P-78
+  lo strumento li contava fra le righe e non li nominava, così un conteggio
+  per tipo non arrivava al totale e chi aiutava non li vedeva. Ora le
+  **risposte** si contano con `rigaDiRisposta()` del motore — la stessa
+  funzione con cui la pagina scrive «N risposte» —, divise in quiz, carteggio,
+  tecniche e prove sostenute; accanto, a parte e con il loro nome, le **prove
+  avviate** (le righe `'a'` com'erano, con il motore e le stime registrate a
+  Inizia, che chi studia non vede), i **segnalibri** (i quesiti segnati adesso
+  secondo `segnalibri()` del motore, cioè l'ultimo gesto per quesito, e quanti
+  gesti) e i **tag**. Nessun conto è dello strumento: anche qui le funzioni sono
+  quelle della pagina, e il controllo di R-ACC-74 resta senza dichiarazioni
+  nuove, perché `letture.mjs` non ha query nuove.
 - **La riga nel registro.** Evento `lettura del titolare`, il numero
   dell'account, nessun indirizzo IP — il titolare è sulla macchina —, e il
   motivo. **Il motivo è obbligatorio e non porta email**, come per
@@ -1962,7 +1976,8 @@ Com'è fatto:
   sono opposti; `risposte`, le loro righe; `punteggi`, i loro punteggi dei
   Segnali —, e il segno si legge in un punto solo, la definizione di
   `iscritti`, da cui le altre due passano. *(Dal P-73 le fonti sono quattro: la
-  sezione «Gli esiti dell'esame», qui sotto.)* `statistica(db, sql, parametri)`
+  sezione «Gli esiti dell'esame», qui sotto. Dal P-78 cinque: `risposte` ha le
+  sole risposte e `righe` tutto, nella sezione «Le risposte e le righe».)* `statistica(db, sql, parametri)`
   esegue una `SELECT` sulle fonti e **rifiuta, prima di eseguirla, una query
   che nomina una tabella vera**. L'email, la password e la chiave dell'account
   non sono in nessuna fonte, quindi non possono uscire; `chi`, il numero
@@ -1996,6 +2011,41 @@ Com'è fatto:
   codice prima di rileggere il file, invece di fermare il ripristino.
   Un'opposizione **non spiega un calo di righe** nel confronto fra due copie:
   `leggiCancellazioni()` la restituisce a parte.
+
+**Le risposte e le righe — deciso il 13 ottobre 2026 (P-78).** Il server
+accoglie ogni tipo di riga che `validaRiga()` accetta: oltre alle risposte —
+quiz, carta, tecniche, prove sostenute —, i tag (`'g'`), le righe d'avvio delle
+prove (`'a'`, P-72) e i segnalibri (`'b'`, P-71). Fino a P-78 la fonte
+`risposte` le comprendeva tutte, con una colonna `tipo`: `SELECT count(*) FROM
+risposte` contava anche un avvio e un segnalibro, e per non contarli bisognava
+ricordarsi di filtrare per tipo. È proprio la regola da ricordare che il posto
+solo esiste per togliere. Ora le fonti di righe sono due:
+
+- **`risposte`** ha soltanto le righe per cui `rigaDiRisposta()` del motore
+  dice vero. Il filtro non è un elenco scritto in `statistiche.mjs`: si
+  costruisce da `TIPI_RIGA` e `rigaDiRisposta()`, così un tipo nuovo che il
+  motore chiama risposta entra da sé, e uno che non lo è resta fuori da sé.
+  Contare risposte è la cosa che si fa di più, e qui non si sbaglia.
+- **`righe`** ha tutte le righe, con il loro `tipo`, filtrata dagli iscritti
+  come le altre. Da qui si leggono gli avvii, i segnalibri e i tag. Le colonne
+  sono le stesse di `risposte`.
+
+**Perché non una colonna `tipo` documentata**, l'altra strada: la colonna c'è
+già, e documentarla non toglie la regola, la scrive. La prima statistica sulle
+risposte scritta di fretta conterebbe gli avvii, e niente lo direbbe.
+**Perché non cambiare il nome di `risposte` in `righe` e basta**: le statistiche
+già scritte su `risposte` — compresa la prova del ripristino in `copie.mjs` —
+contano risposte, e con il nome nuovo continuerebbero a contare tutto.
+
+**E una guardia, per le statistiche scritte prima.** Una query che legge
+`risposte` e cerca un tipo che `risposte` non ha — `tipo = 'a'`, `tipo IN ('q',
+'b')` — conterebbe zero in silenzio: è il caso della statistica di
+validazione delle previsioni nel §4.7 di `esito-esame-progetto.md`, scritta il
+4 ottobre su `risposte a … WHERE a.tipo = 'a'`. `statistica()` la rifiuta,
+e dice che quelle righe si leggono dalla fonte `righe`; una query che legge
+anche `righe` passa, perché il tipo cercato può essere suo. La guardia è sul
+testo, come il controllo dei nomi: non vede un tipo passato come parametro
+(`tipo = ?`). La query del §4.7 va scritta `FROM righe a LEFT JOIN risposte s`.
 
 **Gli esiti dell'esame — fatto il 4 ottobre 2026 (P-73).** Una quarta fonte,
 `esiti`, filtrata dagli iscritti come le altre: chi si è opposto esce anche da

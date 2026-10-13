@@ -1841,12 +1841,13 @@ controllo in `test_server.mjs`.
 | R-ACC-68 | Il segno lo mette e lo toglie il titolare dalla macchina, con il servizio acceso, e ogni cambio è una riga del registro con il numero dell'account e un motivo obbligatorio, che non porta email; rimetterlo non scrive niente, e un database o un account che non ci sono — o un file vuoto al posto del database — non producono un database vuoto né un «fatto» | `test_server.mjs::statistiche: il titolare mette e toglie il segno dalla riga di comando, con il servizio acceso, e il registro lo annota` |
 | R-ACC-69 | Ogni statistica passa da `server/statistiche.mjs`: fuori di lì una query che aggrega, o che legge le righe di tutti, è rossa se non è dichiarata con il motivo per cui non è una statistica; e una statistica che nomina una tabella vera, o che fa uscire chi ha risposto, le righe intere o un'email, è rifiutata. Su un database di prima del segno non si conta | `test_server.mjs::statistiche: una query aggregata o su tutte le righe fuori da server/statistiche.mjs e rossa, se non e dichiarata` |
 | R-ACC-70 | Il ripristino di una copia non rimette nei conteggi chi si è opposto dopo la copia, e non tiene fuori chi ha ritirato: il segno si rilegge dal file delle cancellazioni, per `id` e chiave, anche da una copia di prima dello schema 4 e anche se il ripristino l'ha fatto il rilascio di prima, perché il server lo rilegge a ogni avvio. Un'opposizione non spiega un calo di righe fra due copie | `test_server.mjs::ripristino: chi si e opposto dopo la copia resta fuori dai conteggi, anche da una copia di prima del segno` |
-| R-ACC-71 | Il titolare legge un account dalla macchina, con il servizio acceso, con `server/leggi.mjs`: un'email e un motivo, e lo strumento mostra l'account — senza password, chiave della copia locale né impronte — e le sue attività con le funzioni del motore, le stesse della pagina: le righe com'erano, `sessioni()` con il confine dell'attività, `attivitaCarteggio()` e `dettaglioCarteggio()`, `traccia()`, `tagPerTentativo()`. Ogni lettura è una riga del registro, `lettura del titolare`, con quando, il numero dell'account e il motivo, senza IP; anche la seconda con lo stesso motivo. Niente di un altro account esce | `test_server.mjs::letture: il titolare legge un account dalla riga di comando, con il servizio acceso, e ogni lettura e una riga del registro` |
+| R-ACC-71 | Il titolare legge un account dalla macchina, con il servizio acceso, con `server/leggi.mjs`: un'email e un motivo, e lo strumento mostra l'account — senza password, chiave della copia locale né impronte — e le sue attività con le funzioni del motore, le stesse della pagina: le righe com'erano, `sessioni()` con il confine dell'attività, `attivitaCarteggio()` e `dettaglioCarteggio()`, `traccia()`, `tagPerTentativo()`; le risposte contate con `rigaDiRisposta()`, come le conta la pagina, e a parte, con il loro nome, le prove avviate — le righe `'a'` com'erano, con motore e stime —, i segnalibri — `segnalibri()`, l'ultimo gesto per quesito — e i tag (dal P-78). Ogni lettura è una riga del registro, `lettura del titolare`, con quando, il numero dell'account e il motivo, senza IP; anche la seconda con lo stesso motivo. Niente di un altro account esce | `test_server.mjs::letture: il titolare legge un account dalla riga di comando, con il servizio acceso, e ogni lettura e una riga del registro` |
 | R-ACC-72 | Senza la riga nel registro non si legge: senza motivo, con un'email nel motivo, senza email, con un account o un database che non ci sono, con un file vuoto o che non è un database di questo server, su un database di prima del registro o che non si può scrivere, e se la lettura si rompe a metà, lo strumento non mostra niente, non annota niente, non dice «fatto», e non crea né migra un database | `test_server.mjs::letture: senza motivo, senza account, senza database o senza poter scrivere il registro non si legge niente` |
 | R-ACC-73 | Una lettura non cambia niente dell'account: ogni tabella tranne il registro resta com'era — nemmeno «ultimo accesso» —, niente va nel file delle cancellazioni, e chi studia non vede niente di diverso. La riga della lettura sopravvive alla cancellazione dell'account, con il suo numero e senza email, e dura un anno come gli altri eventi del registro | `test_server.mjs::letture: una lettura non cambia niente dell account, e la sua riga sopravvive alla cancellazione e dura un anno` |
-| R-ACC-74 | Il titolare ha una strada sola per leggere, e fuori dal web: i file di `server/` e di `strumenti/macchina/` che leggono le righe di un account sono dichiarati uno per uno con il motivo, e un file nuovo è rosso finché non lo è; solo `server/leggi.mjs` importa `server/letture.mjs`; lo strumento non ha query sue, non apre in sola lettura e non migra | `test_server.mjs::letture: chi legge le righe di un account e dichiarato, e il titolare ha una strada sola, fuori dal web` |
+| R-ACC-74 | Il titolare ha una strada sola per leggere, e fuori dal web: i file di `server/` e di `strumenti/macchina/` che leggono le righe di un account sono dichiarati uno per uno con il motivo, e un file nuovo è rosso finché non lo è; solo `server/leggi.mjs` importa `server/letture.mjs`; lo strumento non ha query sue, non apre in sola lettura e non migra. Le prove avviate e i segnalibri (P-78) non hanno chiesto né una query né una dichiarazione nuova: vengono dalle righe che `leggiAccount()` legge già | `test_server.mjs::letture: chi legge le righe di un account e dichiarato, e il titolare ha una strada sola, fuori dal web` |
 | R-ACC-75 | Chi si registra incontra le condizioni per l'account e l'età prima di creare l'account: nel modulo «Crea un account» aperto dal riepilogo di un'attività, dentro la finestra e in testo che si vede, prima del pulsante «Crea l'account e salva» — nel documento e sullo schermo —, c'è un link a `/avvertenza#condizioni`, l'indirizzo pulito e dentro il sito, e la frase dice i 18 anni; seguito il link, l'ancora c'è nella pagina che il sito serve, si vede, ed è il titolo delle condizioni per l'account; e in `site/avvertenza.html` l'ancora è una sola, su quel titolo, in una sezione che dice gli stessi 18 anni. Coperto per quello che il banco vede: non la frase parola per parola, non le altre due porte del modulo; che la finestra non sia coperta è R-ACC-76 | `test_interfaccia.py::test_client_condizioni` |
 | R-ACC-76 | Il modulo «Crea un account» aperto dal riepilogo di un'attività si vede davvero: a 375 px il titolo, il link alle condizioni, la frase sui 18 anni e il pulsante che crea l'account, portati al centro, stanno nello schermo, non sono trasparenti, non hanno niente sopra e hanno il contrasto minimo. Fino al 2 ottobre 2026 era un difetto aperto dichiarato sulla pagina vera: la finestra si apriva sotto il riepilogo — `.account-panel` aveva `z-index` 30, i runner 80 —; P-58 l'ha portata sopra, e la verifica gira verde senza eccezione | `test_interfaccia.py::test_client_modulo_visto` |
+| R-ACC-77 | Una statistica sulle risposte conta soltanto risposte: la fonte `risposte` ha le righe per cui `rigaDiRisposta()` del motore dice vero, con il filtro costruito da `TIPI_RIGA` e non da un elenco scritto a mano, e la fonte `righe` ha tutte le righe con il loro tipo — anche i tag, le righe d'avvio e i segnalibri —, filtrata dagli iscritti come le altre. Una query che legge `risposte` e cerca per testo un tipo che lì non c'è (`tipo = 'a'`) è rifiutata, e dice di leggere `righe`: conterebbe zero in silenzio | `test_server.mjs::statistiche: la fonte risposte ha solo le risposte, e le righe d avvio, i segnalibri e i tag stanno in righe` |
 
 R-ACC-20 e R-ACC-24 sono i primi requisiti del server con un controllo che si
 esegue, e il giro intero sta in `node server/ripristina.mjs --prova`, che la
@@ -1996,6 +1997,23 @@ dopo una copia, che un ripristino perde come ogni evento del registro
 (misurato: §15.1 di `account-progetto.md`, e §20 per l'autore); un file che
 leggesse le righe con SQL costruito a pezzi, perché l'elenco di R-ACC-74 è sul
 testo; e la macchina, dove questo codice arriva con il traguardo.
+
+**Le risposte e le righe (P-78).** Il server accoglie le righe d'avvio (P-72) e
+i segnalibri (P-71) da quando il motore li conosce, perché importa
+`validaRiga()`; ma lo strumento del titolare li contava fra le righe senza
+nominarli, e la fonte `risposte` delle statistiche li comprendeva, quindi
+«quante risposte» contava anche quello che risposta non è, se chi scriveva la
+statistica non si ricordava di filtrare per tipo. Ora R-ACC-71 dice le risposte
+con `rigaDiRisposta()` e il resto a parte, ed entra R-ACC-77: `risposte` ha
+le sole risposte, `righe` tutto. La forma, e perché non una colonna `tipo`
+documentata, è nel §15.2 di `account-progetto.md`. **Che cosa non vedono:** un
+tipo cercato con un parametro (`tipo = ?`), che la guardia di R-ACC-77 non
+legge perché è sul testo; una statistica scritta prima di P-78 fuori dal repo,
+che su `risposte` conta adesso meno righe di prima senza errore se non cerca un
+tipo — è il cambio voluto, e fino a oggi nessuna statistica si è calcolata
+(§3.7); e la
+query del §4.7 di `esito-esame-progetto.md`, che legge gli avvii da `risposte`
+e va riscritta su `righe`: oggi la guardia la ferma.
 
 **Le condizioni nel modulo di registrazione (P-57).** L'informativa poggia il
 salvataggio sull'esecuzione del contratto, cioè sulle condizioni per l'account,
@@ -2234,10 +2252,12 @@ motore, e la pagina di oggi non li chiama: stanno fra gli orfani dichiarati di
 **Che cosa questi controlli non vedono.** La pagina: nessuno dei quattro
 contratti ha ancora un gesto, una barra o una casella di ricerca, e i testi —
 le parole degli stati, dei tag, del segnalibro, i messaggi della ricerca — sono
-dell'interfaccia. Il server: accoglie già il tag `S` e il segnalibro, perché
-importa `validaRiga()`, ma `server/letture.mjs` non conta i segnalibri fra le
-righe dell'account e la fonte `risposte` delle statistiche li comprende — una
-statistica sulle risposte filtra per `tipo`. E la regola delle 12 ore, che è una
+dell'interfaccia. Il server accoglie già il tag `S` e il segnalibro, perché
+importa `validaRiga()`; dal P-78 lo strumento del titolare li nomina a parte —
+i segnalibri con `segnalibri()`, i tag fra i tag — e la fonte `risposte` delle
+statistiche non li comprende: stanno in `righe` (R-ACC-71, R-ACC-77). Che un
+tag `S` si mostri al titolare come «Svista» no: `leggi.mjs` conta i tentativi
+con un tag, non le parole. E la regola delle 12 ore, che è una
 scelta e non una misura: se rende, lo dirà l'archivio vero.
 
 ### 9.13 «Com'è andata» e le previsioni registrate

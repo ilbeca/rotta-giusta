@@ -110,7 +110,7 @@ if (letto === null) {
 }
 
 /** L'account e le sue attivita', per chi legge a schermo. Le righe no: quelle con --attivita o --json. */
-function testo({ account: a, conteggi: c, copertura, quiz, carteggio, tecniche, tag, esiti, registro }) {
+function testo({ account: a, conteggi: c, copertura, quiz, carteggio, tecniche, tag, avviate, segnalibri, esiti, registro }) {
   const o = (v) => v ?? '—';
   const minuti = (ms) => (ms == null ? 'durata non misurata' : ms < 30000 ? 'meno di 1 min' : `${Math.round(ms / 60000)} min`);
   const note = (x) => `${x.fonte === 'risposte' ? ' · confine ricostruito' : ''}${x.ambigua ? ` · AMBIGUA: ${x.motivi.join(', ')}` : ''}`;
@@ -133,7 +133,8 @@ function testo({ account: a, conteggi: c, copertura, quiz, carteggio, tecniche, 
     `  statistiche        ${a.fuori_statistiche_dal ? `fuori dai conteggi dal ${a.fuori_statistiche_dal}` : 'nei conteggi'}`,
     `  Segnali            ${segnali || '—'}`,
     '',
-    `RIGHE — ${c.righe} righe: quiz ${c.quiz} · carteggio ${c.carteggio} · tecniche ${c.tecniche} · tag ${c.tag} · prove ${c.prove}`,
+    `RIGHE — ${c.righe} righe: ${c.risposte} risposte (quiz ${c.quiz} · carteggio ${c.carteggio} · tecniche ${c.tecniche} · prove ${c.prove}),`
+      + ` e a parte, che risposte non sono: prove avviate ${c.avviate} · segnalibri ${c.segnalibri} · tag ${c.tag}`,
     '',
     "COPERTURA — traccia() del motore sulla banca di questo rilascio, all'ultima risposta",
     ...Object.entries(copertura).map(([kind, t]) =>
@@ -152,7 +153,14 @@ function testo({ account: a, conteggi: c, copertura, quiz, carteggio, tecniche, 
     ...tecniche.map((x) => `  ${o(x.inizio)}  ${o(x.mode)}  risposte ${x.n}${x.proposti == null ? '' : ` di ${x.proposti}`}  `
       + `${x.conteggi ? `coincidenti ${x.conteggi.coincidenti} · non coincidenti ${x.conteggi.nonCoincidenti}` : 'conteggi non disponibili'}  id ${x.id}${note(x)}`),
     '',
-    `TAG — ${Object.keys(tag).length} tentativi con un tag N/L/C`,
+    `TAG — ${Object.keys(tag).length} tentativi con un tag`,
+    '',
+    `PROVE AVVIATE — ${avviate.length}: le righe d'avvio com'erano, con le stime registrate a Inizia, che chi studia non vede`,
+    ...avviate.map((x) => `  ${o(x.ts)}  ${o(x.prova)} · ${o(x.kind)}  motore ${o(x.motore)}  id ${x.uid}`
+      + `  stime ${JSON.stringify(x.stime ?? {})}${x.errore ? ` · ERRORE: ${x.errore}` : ''}`),
+    '',
+    `SEGNALIBRI — ${segnalibri.segnati.length} quesiti segnati adesso, ${segnalibri.gesti} gesti: segnalibri() del motore, vale l'ultimo gesto`,
+    ...(segnalibri.segnati.length ? [`  ${segnalibri.segnati.join(' · ')}`] : []),
     '',
     esiti === null ? "ESAME — questo database non ha ancora gli esiti dell'esame (schema prima del 5)"
       : `ESAME — l'esito detto da chi studia, ${giorni.size} ${giorni.size === 1 ? 'giorno' : 'giorni'}`,
