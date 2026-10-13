@@ -181,12 +181,15 @@ risposte), la merge di P-66 (la Home nei tre stati, il secondo dei
 cinque mock), la merge di P-67 (Allenati ed Esame, il terzo) e i due
 commit della coda del 13 ottobre: tutto pushato su GitHub il 13
 ottobre. Il server in esercizio è ancora la v0.30.0 con lo schema 4.
-Pronti: P-68 per ChatGPT, Progressi, con le parole dei cinque stati
-decise il 13 ottobre (Q-STATI, su delega); P-62 con l'autore. Per Claude
-niente: P-75 aspetta la base giuridica, P-76 aspetta Q-COSTANZA e P-68.
+Pronti: P-69 per ChatGPT, il giro di un'attività, l'ultimo dei cinque
+mock (P-68, Progressi, è fuso il 13 ottobre con Q-STATI chiusa su
+delega); P-62 con l'autore. Per Claude niente: P-75 aspetta la base
+giuridica, P-76 aspetta Q-COSTANZA, l'ambito della conclusione (§4,
+«Dopo P-59», 10) e le fasi (punto 15).
 
 I prossimi passi, in quest'ordine:
-1. Il resoconto di P-68, e da lì P-69, poi P-70 con l'autore.
+1. Il resoconto di P-69, e da lì P-70 con l'autore — le persone sui
+   mock — e poi il prompt del progetto del ridisegno (riga 21).
 2. Le decisioni dell'autore nel §4, «Dopo P-59» e «Dopo P-64»:
    ricordagliele quando il lavoro che le aspetta sta per partire. La
    base giuridica di esito e previsioni ferma P-75;
@@ -246,7 +249,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
 | 14 | **La casella `privacy@` sull'iPhone**, e la prova `dkim=pass` | Claude con l'autore | `main`, solo `account-progetto.md` | niente | P-62 |
-| 17 | **I mock della nuova interfaccia**, in cinque passi, in `docs/prototipi/` | ChatGPT | `ui/main` | ognuno aspetta il precedente; P-65, P-66 e P-67 sono fusi; Q-STATI è chiusa | P-68, poi P-69 |
+| 17 | **I mock della nuova interfaccia**, in cinque passi, in `docs/prototipi/` | ChatGPT | `ui/main` | ognuno aspetta il precedente; P-65…P-68 sono fusi | P-69, poi P-70 con l'autore |
 | 18 | **La prova dei mock** con tre-cinque persone vere, e con i bot sulle varianti | l'autore, con Claude | — | P-69 | P-70 |
 | 19 | **Le ricerche**: il parere del professionista sulle donazioni (14 domande, I-11); se all'esame vero si torna indietro fra le domande; Lighthouse su telefono e Safari veri (I-08) | l'autore | — | — | §4, «Dopo P-59» |
 | 20-bis | **I contratti del motore, seconda parte**: Percorso con il «sei qui», costanza, obiettivo, «hai concluso quello che ti avevamo proposto» | Claude | `main` | Q-COSTANZA e la decisione 22 (§4, «Dopo P-59», 3 e 10); e P-68, che disegna il «sei qui» | P-76, da scrivere |
@@ -269,7 +272,7 @@ v0.30.0: lo schema 5 e la correzione del `500` sulla data d'esame arrivano con
 il prossimo rilascio. **Per Claude** oggi non c'è un prompt pronto: P-75
 aspetta la base giuridica, P-76 aspetta Q-COSTANZA e P-68. P-62 con l'autore
 quando vuole.
-**Per ChatGPT:** P-68, Progressi, il quarto dei cinque mock: P-67 è fuso il 13 ottobre e Q-STATI è chiusa lo stesso giorno. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
+**Per ChatGPT:** P-69, il giro di un'attività, l'ultimo dei cinque mock: P-68 è fuso il 13 ottobre. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
 che cambiano una promessa (un ADR, la filosofia, la specifica), poi i mock e la
 prova con le persone, poi il codice; «com'è andata» parte presto perché i suoi
 dati arrivano mesi dopo. **Il §5, il §6 e i controlli R-NAV della specifica non
@@ -554,7 +557,13 @@ consuma, non si riprogetta.
       costruisce dalle righe, senza uno stato salvato, o tocca il §4.4 della
       specifica, «non esiste una sessione prospettica». Se serve uno stato
       salvato lo decidi tu; lo dirà il progetto di P-76. Ferma soltanto quel
-      pezzo della riga 20-bis.
+      pezzo della riga 20-bis. *Da P-68 (13 ottobre 2026):* il mock lo mostra
+      e distingue i due ambiti — una conclusione limitata all'attività della
+      pagina aperta si deriva dalle righe con il contesto in memoria, senza
+      toccare il §4.4; una «proposta» che sopravvive alla pagina è un obiettivo
+      prospettico salvato, e tocca il §4.4. **L'ambito lo scegli tu**, prima
+      di P-76 (`progressi-note.md`, «Hai concluso quello che ti avevamo
+      proposto»).
   11. **«Una palestra onesta e sicura»**, nell'impegno in testa a
       `docs/filosofia.md`: P-63 l'ha lasciata, perché è una parola
       dell'impegno e non il nome di una pagina. Se va tolta con «vetrina» e
@@ -585,6 +594,14 @@ consuma, non si riprogetta.
       ricostruire nessun numero; è una scelta sul contratto del motore
       (R-NUM-01 e 02), non presa. Non ferma niente: se la vuoi, entra nel
       prompt che tocca `cercaNumero()` o in P-76.
+  15. **Le fasi del «sei qui»** (da P-68, 13 ottobre 2026; decisione 16). Il
+      mock ne propone tre — Esplorare, Ritornare sulle risposte, Mettersi
+      alla prova — con il criterio del 50 % della banca pertinente mai vista
+      come **proposta da discutere**, e «N quesiti da confermare oggi» come
+      criterio proposto (gli incerti con la prima giusta da almeno 12 ore):
+      `progressi-note.md`, «Le fasi proposte per P-76», con i numeri del
+      motore su cui ciascuna si regge. Decidi tu fasi e criterio, oppure
+      lasci che li proponga il progetto di P-76: ferma P-76, non P-69.
   **Da sapere, da P-63:** la struttura nuova dà al Carteggio due porte, in
   Allenati e in Esame, e nessuna voce di barra: cambia la decisione dell'8
   settembre nel §6.1 della specifica, ed è scritto nel §10 accanto alla
@@ -5275,8 +5292,8 @@ scritto qui sotto dopo che l'autore ha delegato Q-STATI alla regia.
 
 ### P-68 — ChatGPT: i mock della nuova interfaccia, passo 4 — Progressi
 
-**Stato:** pronto, dal 13 ottobre 2026: P-67 è fuso, Q-STATI è chiusa,
-`ui/main` è allineato a `main`. **Dove:** l'app ChatGPT (Codex), progetto
+**Stato:** **chiuso il 13 ottobre 2026**, merge `fb7a32a`. Prima era: pronto,
+dal 13 ottobre 2026. **Dove:** l'app ChatGPT (Codex), progetto
 `~/Software/rotta-giusta-ui` in modalità Local, ramo **`ui/main`**. Scrive
 soltanto in `docs/prototipi/`, che è neutro. **Nasce da:** P-65…P-67; le
 decisioni 4, 10, 14, 16, 19 e 22 di P-59; Q-STATI nel §10 della specifica;
@@ -5351,6 +5368,109 @@ a [Unreleased], versione non toccata. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
 ```
 
+**Esito:** commit `4ccf74f` su `ui/main`, merge `fb7a32a` su `main`, voce
+«Progettato — P-68» nel CHANGELOG. In `docs/prototipi/interfaccia-2026-10/`:
+`progressi.html` e il confronto, dieci casi — account caricato, caricamento,
+errore con «Riprova», vuoto, poche risposte, ricezione incompleta, selezione
+cambiata, riepilogo senza account, proposta conclusa —; `progressi-note.md`;
+`progressi-riscontri/` con le schermate e `misure.json`. Il «sei qui» con tre
+fasi **dichiarate proposte** e le parole di Q-STATI nell'ordine, con la legenda
+e il `?` delle 12 ore; la mappa, le prove, l'andamento e le sessioni
+separati; numeri e liste dallo stesso snapshot del motore — `quadro()`, i
+cinque stati, `dovePesa()`, `sessioni()` —, «Rifai» che apre i da rifare della
+riga senza tetto; senza account il riepilogo delle dieci righe della pagina,
+con la spiegazione dello storico che manca e nessun quarto invito.
+**Misurato da ChatGPT**, non dalla regia: 220 misure a 375 e 1280 px con zero
+sbordamento, 198 controlli, undici percorsi con ritorno. **Non fatto,
+dichiarato:** runner, Risultato e Revisione sono di P-69; niente persone.
+**Trovato:** a telefono l'azione principale con l'account richiede
+scorrimento, da provare in P-70. **Controllato dalla regia il 13 ottobre:**
+il commit con il trailer, recinto verde, diff limitato ai prototipi e al
+CHANGELOG, merge, `main..ui/main` vuoto, la riga vuota nel CHANGELOG al suo
+posto; guardiano, controllo della documentazione, dati 229 e specifica 958
+sullo stato fuso; motore, server e interfaccia non rilanciati. I mock non
+aperti dalla regia in un browser. **Per l'autore,** nel §4, «Dopo P-59»: il
+punto 10 con i due ambiti della conclusione, e il punto 15 nuovo con le fasi
+proposte e i loro criteri. Nessuna decisione presa dal mock su Q-COSTANZA né
+sugli inviti. **Per la coda:** P-69, scritto qui sotto; P-76 parte dalla
+nota di P-68 e dalle decisioni dei punti 10 e 15.
+
+### P-69 — ChatGPT: i mock della nuova interfaccia, passo 5 — il giro di un'attività
+
+**Stato:** pronto, dal 13 ottobre 2026: P-68 è fuso, e `ui/main` è allineato
+a `main`. **Dove:** l'app ChatGPT (Codex), progetto
+`~/Software/rotta-giusta-ui` in modalità Local, ramo **`ui/main`**. Scrive
+soltanto in `docs/prototipi/`, che è neutro. **Nasce da:** P-65…P-68; le
+decisioni 9, 12, 15, 20, 21, 28 e 30 di P-59; l'ADR-006. **Sblocca:** P-70,
+la prova con le persone, e da lì il progetto del ridisegno (riga 21).
+
+```
+Questo prompt è per ChatGPT (Codex), nella cartella
+~/Software/rotta-giusta-ui, sul ramo ui/main, in modalità Local. Se sei
+un altro agente o sei in un'altra cartella, fermati e dillo, senza
+scrivere niente.
+
+Sessione P-69: l'ultimo di cinque passi di mock della nuova
+interfaccia: il giro di un'attività, dalla Preparazione al ritorno.
+Niente site/, niente tests/: soltanto la cartella
+docs/prototipi/interfaccia-2026-10/.
+
+Leggi AGENTS.md; in docs/prototipi/interfaccia-2026-10/ tragitti.md e
+le tre note (home, attivita, progressi), per la consegna a P-69 e gli
+ID dei tragitti; in docs/idee-dopo-gli-account.md «Le decisioni di
+P-59», soprattutto 9, 12, 15, 20, 21, 28 e 30, e le schede I-07, I-10,
+I-14, I-16, I-17, N-01, C-03; l'ADR-006 per intero; nella specifica
+§4.4, §4.5, §7.5, §7.6, §7.7, §8 e §9.6 (il ciclo che si chiude);
+docs/area-3-progetto.md e docs/area-4-progetto.md per i testi del
+riepilogo e del Carteggio di oggi, che il mock non deve peggiorare;
+docs/filosofia.md, «Accompagniamo la preparazione» e «Non ti inganniamo
+mai».
+
+Pagine HTML statiche, autoconsistenti, senza risorse da altri host,
+nella forma dei passi precedenti — a 375 e a 1280 px, dati finti
+dichiarati in pagina, numeri e liste da uno snapshot del motore e mai
+ricalcolati nelle pagine. Un giro per ciascuno dei tre mestieri, nei
+due stati d'accesso:
+- I quiz: il runner — numero del decreto, domanda, risposte sotto il
+  pollice, le note prima e dopo, i tasti dichiarati —, la simulazione
+  senza correzione durante la prova e con il timer, «Base e vela» in
+  due fasi; la consegna, anche parziale; il Risultato con le tre
+  affermazioni del §4.2 dell'area 3 e nessun voto; la Revisione con la
+  tua risposta e quella esatta; «Riprova questi N»; i due tag «Non lo
+  sapevo» e «Svista» (decisione 15), il segnalibro (20), «Ero sicuro /
+  avevo un dubbio» dopo una giusta (21), «Segnala un problema» con
+  l'indirizzo come segnaposto dichiarato perché l'autore non l'ha
+  scelto (30); la spiegazione (28) con la struttura fissa e il segno
+  «verificata il …», mostrata dopo la risposta negli allenamenti e dopo
+  la consegna nella simulazione, con un testo finto dichiarato tale.
+- Il Carteggio: la prova a tempo con il giudizio di chi studia, il
+  giudizio rinviato, la bozza con l'account e l'avviso senza; il
+  riepilogo senza esito per un allenamento.
+- I Segnali: una partita e il suo riepilogo, extra banca e fuori dalla
+  copertura.
+L'invito a registrarsi (decisione 12, ADR-006) sta nel Risultato di una
+simulazione e nei riepiloghi, con i vantaggi che esistono e «Continua
+senza account» che lo chiude; risultato e revisione restano a chi non
+si registra. Il ritorno effettivo — alla voce di Progressi, al segmento
+di Allenati, alla Home — con segmento, posizione e fuoco ripristinati.
+Un documento solo per il giro intero (decisione 9): le risposte della
+pagina aperta senza account devono sopravvivere a ogni passaggio, e il
+mock lo prova sul suo stato in memoria, non con salti fra file.
+
+Una nota accanto alle pagine: per ogni tragitto di P-65 che qui si
+completa — i 01, 02, 07 e 11, e quelli che P-66…P-68 hanno lasciato a
+P-69 —, il conteggio rimisurato fino alla prima domanda e fino al
+ritorno; che cosa ogni elemento non promette (niente stima, niente «sei
+pronto», la spiegazione finta dichiarata); che cosa resta per P-70 e
+per la realizzazione. Guarda le pagine in un browser a 375 e 1280 px —
+zero sbordamento orizzontale, misurato —, e scrivilo.
+
+Guardiano verde (python3 strumenti/controlla.py). Non toccare
+docs/prossime-sessioni.md. Un commit con il trailer e la voce in fondo
+a [Unreleased], versione non toccata. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
 **Esito:** —
 
 ### I segnaposto — i prompt che non si possono ancora scrivere
@@ -5361,9 +5481,8 @@ il resoconto del precedente, e la regia scrive il suo prompt allora.
 
 - **P-66**: scritto il 12 ottobre 2026, chiuso il 13.
 - **P-67**: scritto il 13 ottobre 2026, chiuso lo stesso giorno.
-- **P-68**: scritto il 13 ottobre 2026, qui sopra, dopo Q-STATI.
-- **P-69 — il giro di un'attività**: preparazione, attività, risultato con la
-  spiegazione e con l'invito, revisione. Aspetta P-68.
+- **P-68**: scritto il 13 ottobre 2026, dopo Q-STATI, e chiuso lo stesso giorno.
+- **P-69**: scritto il 13 ottobre 2026, qui sopra.
 - **P-70 — la prova**, con l'autore: tre-cinque persone vere sui mock, con i
   compiti dei due profili di I-09 e uno per chi cerca «i quiz»; e i bot sulle
   varianti, come segnale debole accanto. Aspetta P-69. Dal suo esito: i nomi
@@ -6060,3 +6179,12 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   spiegazione e non come invito, la decisione 22 mostrata e lasciata
   all'autore. `main` pushato, `ui/main` e `ui/vetrina` allineati, sul
   «procedi» dell'autore.
+- **13 ottobre 2026 — P-68 fuso e chiuso; P-69 scritto.** Il resoconto letto
+  contro il repo: il commit con il trailer, recinto verde, diff limitato ai
+  prototipi e al CHANGELOG, merge, `main..ui/main` vuoto; guardiano,
+  documentazione, dati 229 e specifica 958 sullo stato fuso. Dalla nota di
+  P-68 due cose per l'autore nel §4, «Dopo P-59»: l'ambito della conclusione
+  (punto 10) e le fasi proposte del «sei qui» (punto 15, nuovo), che fermano
+  P-76 e non P-69. P-69, l'ultimo mock, scritto; dopo di lui P-70 con
+  l'autore. `main` pushato, i rami di ChatGPT allineati, sul «procedi»
+  dell'autore.
