@@ -1,6 +1,6 @@
 # Prossime sessioni — la coda, con i prompt
 
-**Aggiornato il 4 ottobre 2026.** Territorio neutro. **Penna: la sessione di regia** (sotto, «Come si usa»).
+**Aggiornato il 13 ottobre 2026.** Territorio neutro. **Penna: la sessione di regia** (sotto, «Come si usa»).
 
 > **Questo file invecchia.** È una coda, non una verità: quando un lavoro è
 > fatto, il suo prompt si chiude con l'esito e resta, la riga della coda si
@@ -172,29 +172,31 @@ e che cosa aspetta una mia decisione.
 Dove siamo, perché tu lo verifichi e non lo prenda per buono: la
 v0.30.0, il sito senza offline, è in linea dal 3 ottobre 2026 su
 rottagiusta.it, .pages.dev e api.rottagiusta.it. Su main, sopra il
-rilascio e non ancora pubblicati, ci sono cinque commit: P-63
-(ADR-006, filosofia, §10 della specifica), P-64 (il progetto di «com'è
-andata» e delle previsioni, docs/esito-esame-progetto.md), P-72 (il
-motore delle previsioni: TIPI_RIGA con 'a', PREVISIONI, rigaAvvio),
-P-73 (il server dell'esito: schema 5, PUT e DELETE /v1/esito, esiti e
-tipi_riga in GET /v1/io) e P-71 (i contratti del motore per il
-ridisegno: cinque stati, i tag N e S, i segnalibri, cerca per numero).
-Chiusi dalla regia il 12 ottobre, e lo stesso giorno la merge di
-P-65 (46d5a3c), la mappa dei tragitti della nuova interfaccia, il primo
-dei cinque mock. Pronti: P-74, P-77 e P-78 per Claude, uno alla volta e
-in quest'ordine; P-66 per ChatGPT, la Home nei tre stati; P-62 con
-l'autore.
+rilascio e non ancora pubblicati sul sito né sul server, ci sono i
+commit di P-63, P-64, P-72, P-73, P-71 (fino a qui pushati su GitHub,
+con la merge di P-65), e poi P-74 (i controlli della pagina e la
+specifica per esito e previsioni, §9.13), P-77 (la banca riletta sul
+decreto: base-8 corretto), P-78 (il server che conta le risposte come
+risposte), la merge di P-66 (la Home nei tre stati, il secondo dei
+cinque mock) e il commit della coda del 13 ottobre: questi ultimi
+pushati solo se il registro lo dice. Il server in esercizio è ancora la
+v0.30.0 con lo schema 4. Pronti: P-67 per ChatGPT, Allenati ed Esame;
+P-62 con l'autore. Per Claude nessun prompt pronto: P-75 aspetta la
+base giuridica, P-76 aspetta Q-COSTANZA e P-68.
 
 I prossimi passi, in quest'ordine:
-1. I resoconti di P-66 (e da lì P-67, Allenati ed Esame), di P-74, P-77
-   e P-78; chiuso P-74, il prompt di P-75 aspetta la base giuridica.
+1. Il resoconto di P-67, e da lì P-68 (Progressi, che aspetta anche
+   Q-STATI per le parole della barra) e P-69.
 2. Le decisioni dell'autore nel §4, «Dopo P-59» e «Dopo P-64»:
    ricordagliele quando il lavoro che le aspetta sta per partire. La
-   base giuridica di esito e previsioni ferma P-75; i due punti nuovi
-   di P-73 — la procedura del titolare, gli esiti dopo una copia — non
-   fermano niente.
+   base giuridica di esito e previsioni ferma P-75; Q-STATI ferma P-68;
+   Q-COSTANZA ferma P-76. Il resto non ferma niente.
 3. Il §4, «Dopo il traguardo»: il redirect di .pages.dev dal 16
-   ottobre, la soglia degli allarmi dal 2 novembre.
+   ottobre — con /sw.js che deve restare a 200 —, la soglia degli
+   allarmi dal 2 novembre.
+4. Un rilascio, quando l'autore lo vuole: dalla v0.30.0 main porta la
+   correzione del 500 sulla data d'esame e lo schema 5, e il server si
+   aggiorna con rg-aggiorna allo stesso tag.
 
 Non lanciare niente e non scrivere niente finché non te lo chiedo: da
 lì ti incollerò i resoconti.
@@ -244,30 +246,30 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
 | 14 | **La casella `privacy@` sull'iPhone**, e la prova `dkim=pass` | Claude con l'autore | `main`, solo `account-progetto.md` | niente | P-62 |
-| 17 | **I mock della nuova interfaccia**, in cinque passi, in `docs/prototipi/` | ChatGPT | `ui/main` | ognuno aspetta il precedente; P-65, la mappa dei tragitti, è fuso | P-66, poi P-67…P-69 |
+| 17 | **I mock della nuova interfaccia**, in cinque passi, in `docs/prototipi/` | ChatGPT | `ui/main` | ognuno aspetta il precedente; P-65, la mappa dei tragitti, e P-66, la Home, sono fusi | P-67, poi P-68 e P-69 |
 | 18 | **La prova dei mock** con tre-cinque persone vere, e con i bot sulle varianti | l'autore, con Claude | — | P-69 | P-70 |
 | 19 | **Le ricerche**: il parere del professionista sulle donazioni (14 domande, I-11); se all'esame vero si torna indietro fra le domande; Lighthouse su telefono e Safari veri (I-08) | l'autore | — | — | §4, «Dopo P-59» |
 | 20-bis | **I contratti del motore, seconda parte**: Percorso con il «sei qui», costanza, obiettivo, «hai concluso quello che ti avevamo proposto» | Claude | `main` | Q-COSTANZA e la decisione 22 (§4, «Dopo P-59», 3 e 10); e P-68, che disegna il «sei qui» | P-76, da scrivere |
 | 21 | **Il progetto e la realizzazione del ridisegno**, con i controlli dei tragitti | ChatGPT, e Claude per i controlli | `ui/main`, `main` | P-70 | da scrivere |
 | 22 | **Spiegazioni**: il primo lotto di 50, «Segnala un problema», la misura dell'effetto | Claude con l'autore, poi ChatGPT | `main`, `ui/main` | l'indirizzo e la licenza (§4, «Dopo P-59», 2 e 6) | da scrivere |
 | 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | niente dal motore: `PREVISIONI` c'è (P-72), e un modello entra come metodo accanto alla regola semplice; Q-STIMA solo per quando si mostra | da scrivere |
-| 26 | **Esito e previsioni, i controlli della pagina e la specifica** (A-3, A-4), con i due conti delle sole risposte nel motore | Claude | `main` | niente: P-72 e P-73 sono chiusi | P-74 |
-| 27 | **Esito e previsioni, la pagina e l'informativa** (B-1, B-2), poi un rilascio | ChatGPT | `ui/main` | P-74 fuso, e la base giuridica (§4, «Dopo P-64», 1–3) | P-75, da scrivere |
-| 28 | **La banca: quattro progressivi illeggibili e undici ripetuti**, corretti sul PDF del decreto con motivo, test e README | Claude | `main` | niente | P-77 |
-| 29 | **Il server che conta i tipi di riga nuovi**: `leggi.mjs` con avvii e segnalibri a parte, la fonte `risposte` delle statistiche che distingue il tipo | Claude | `main` | niente | P-78 |
+| 27 | **Esito e previsioni, la pagina e l'informativa** (B-1, B-2), poi un rilascio | ChatGPT | `ui/main` | soltanto la base giuridica (§4, «Dopo P-64», 1–3): P-74 è chiuso | P-75, da scrivere |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo P-59», «Dopo P-64», «Dopo il traguardo» e le voci non barrate |
 
 **La v0.30.0 è in linea dal 3 ottobre 2026**, sulla pagina e sul server; P-59,
 il brainstorming, è chiuso il 4 ottobre, e questa tabella è il suo
-smistamento. Chiusi dopo il rilascio, e non ancora pubblicati: P-63 e P-64 il 4
-ottobre; P-72, P-73 e P-71 — il motore delle previsioni, il server dell'esito, i
-contratti del motore per il ridisegno — il 12 ottobre, e le loro righe 20, 24 e
-25 sono uscite. **Per Claude**, uno alla volta nella cartella principale, in
-quest'ordine: P-74 — i controlli della pagina e la specifica per esito e
-previsioni, più i due conti che B-2 non può fare —, che è quello che sblocca
-P-75; poi P-77, la banca, e P-78, il server, piccoli e senza dipendenze. P-62
-con l'autore quando vuole.
-**Per ChatGPT:** P-66, la Home nei tre stati, il secondo dei cinque mock: P-65 è fuso il 12 ottobre. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
+smistamento. Chiusi dopo il rilascio: P-63 e P-64 il 4 ottobre; P-72, P-73 e
+P-71 — il motore delle previsioni, il server dell'esito, i contratti del motore
+per il ridisegno — il 12 ottobre; P-74, P-77 e P-78 — i controlli della pagina
+e la specifica per esito e previsioni, la banca riletta sul decreto, il server
+che conta le risposte come risposte — il 13 ottobre, e le loro righe 26, 28 e
+29 sono uscite. Pubblicati su GitHub fino a P-71 e alla merge di P-65; da P-74 in
+poi il push aspetta il sì dell'autore, e il server in esercizio è ancora la
+v0.30.0: lo schema 5 e la correzione del `500` sulla data d'esame arrivano con
+il prossimo rilascio. **Per Claude** oggi non c'è un prompt pronto: P-75
+aspetta la base giuridica, P-76 aspetta Q-COSTANZA e P-68. P-62 con l'autore
+quando vuole.
+**Per ChatGPT:** P-67, Allenati ed Esame, il terzo dei cinque mock: P-66 è fuso il 13 ottobre. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
 che cambiano una promessa (un ADR, la filosofia, la specifica), poi i mock e la
 prova con le persone, poi il codice; «com'è andata» parte presto perché i suoi
 dati arrivano mesi dopo. **Il §5, il §6 e i controlli R-NAV della specifica non
@@ -564,7 +566,17 @@ consuma, non si riprogetta.
       Quiz si scende a tre, e P-67 lo mostra; per arrivare a due serve un
       richiamo diretto dell'argomento dalla Home o il salto della
       Preparazione, e questa è una scelta tua. Non ferma niente; la prova con
-      le persone (P-70) dice se i tre bastano.
+      le persone (P-70) dice se i tre bastano. *Da P-66 (13 ottobre 2026):* la
+      Home offre un tocco alla porta Allenati; i temi direttamente nel
+      segmento Quiz e il costo tre contro quattro li mostra P-67.
+  14. **Il punto come trattino nella ricerca per numero** (da P-77, 13
+      ottobre 2026): tre progressivi il decreto li scrive con un punto dove
+      gli altri hanno il trattino — base-385 «1.3.2.113», base-943
+      «1.6.1.97», base-1326 «1.8.1.38» — e `cercaNumero()` non li trova. Se
+      la ricerca accettasse il punto come trattino li troverebbe, senza
+      ricostruire nessun numero; è una scelta sul contratto del motore
+      (R-NUM-01 e 02), non presa. Non ferma niente: se la vuoi, entra nel
+      prompt che tocca `cercaNumero()` o in P-76.
   **Da sapere, da P-63:** la struttura nuova dà al Carteggio due porte, in
   Allenati e in Esame, e nessuna voce di barra: cambia la decisione dell'8
   settembre nel §6.1 della specifica, ed è scritto nel §10 accanto alla
@@ -602,6 +614,10 @@ consuma, non si riprogetta.
      richiede da sé. La proposta è tenerla così; l'alternativa è scrivere il
      valore dell'esito nel file delle cancellazioni, fuori dal database. Non
      ferma niente.
+  8. **Da P-74 (13 ottobre 2026):** A-3 e A-4 sono fatti, e P-75 aspetta
+     soltanto i punti 1 e 4 qui sopra. Finché la pagina non ha il raccordo, i
+     gruppi E-01 e P-01 pretendono che non chiami `/v1/esito` e non scriva
+     righe d'avvio; alla merge di P-75 quel regime esce.
   **Una nota da riallineare:** una sessione parallela sul menu, riportata in
   P-59 e non nel repo, scrive «congelamento della serie scartato, visto che hai
   deciso che si azzera». La decisione 19 dice il contrario — «giorni di
@@ -4512,8 +4528,8 @@ identificativi dei tragitti.
 
 ### P-66 — ChatGPT: i mock della nuova interfaccia, passo 2 — la Home nei tre stati
 
-**Stato:** pronto, dal 12 ottobre 2026: P-65 è fuso, e `ui/main` sarà
-allineato a `main` con il sì dell'autore. **Dove:** l'app ChatGPT (Codex),
+**Stato:** **chiuso il 13 ottobre 2026**, merge `05580c5`. Prima era: pronto,
+dal 12 ottobre 2026. **Dove:** l'app ChatGPT (Codex),
 progetto `~/Software/rotta-giusta-ui` in modalità Local, ramo **`ui/main`**.
 Scrive soltanto in `docs/prototipi/`, che è neutro. **Nasce da:** P-65, la
 mappa dei tragitti; le decisioni 5, 6, 9, 12 e 19 di P-59; l'ADR-006.
@@ -4581,7 +4597,35 @@ a [Unreleased], versione non toccata. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `24fbbd7` su `ui/main`, merge `05580c5` su `main`, voce
+«Progettato — P-66» nel CHANGELOG. In `docs/prototipi/interfaccia-2026-10/`:
+`home.html`, l'indice; dodici pagine autoconsistenti — H0, H1, HA, e i tre
+stati dell'account (caricamento, errore con «Riprova», vuoto confermato) —
+nelle due varianti dei nomi, approvata e proposta; `home-dati.json`, i dati
+finti dichiarati; il carattere incorporato con la sua licenza; `home-note.md`
+con i 108 tragitti di P-65 collegati al tratto presente, i tocchi rimisurati
+sul mock, che cosa ogni elemento non promette, e che cosa resta per P-67;
+`home-riscontri/` con 24 schermate a 375 e 1280 px e `misure.json`.
+**Misurato da ChatGPT**, non dalla regia: zero sbordamento orizzontale in 26
+misure, 100 aperture di porte, pulsante e condizioni della simulazione sopra la
+piega. **Non fatto, e dichiarato nella nota:** il controllo meccanico di
+Impeccable, perché la skill è cambiata di versione durante la sessione;
+nessuna persona, nessun telefono vero. **La «discrepanza» che la nota lascia
+alla regia non è un difetto:** la banca ha 4 note dopo la risposta mentre Home
+e README dichiarano 11 divergenze dal DM 133/2024, perché otto degli undici
+divergenti sono anche oscurati e dalla 0.14.1 su un oscurato il dettaglio
+normativo si omette — restano tre note più quella dei flap. I numeri del mock e
+quelli del sito sono giusti tutti e due, e dicono due cose diverse: il mock
+non deve cambiarli, e in H0 «Che cosa non torna» continua a dire 11
+divergenze, come il README. **Controllato dalla regia il 13 ottobre:** il
+commit con il trailer di ChatGPT, il recinto sul diff del ramo, il diff
+limitato al CHANGELOG e alla cartella dei prototipi, la merge, `main..ui/main`
+vuoto; la riga vuota fra le due voci del CHANGELOG aggiunta dalla regia;
+guardiano, dati 229, specifica 958, motore 212/216, server 81/81 e
+l'interfaccia sullo stato fuso (sotto, nel registro). I mock non sono stati
+aperti dalla regia in un browser. **Per l'autore:** i nomi restano nel §4,
+«Dopo P-59», punto 4, e i mock li mostrano nelle due varianti; Q-COSTANZA
+resta aperta. **Per la coda:** P-67, scritto qui sotto.
 
 ### P-71 — Claude: i contratti del motore, prima parte — cinque stati, due tag, segnalibri, cerca per numero
 
@@ -4834,8 +4878,8 @@ annota P-74, punto 4, con gli scostamenti.
 
 ### P-74 — Claude: esito e previsioni, i controlli della pagina e la specifica (A-3, A-4)
 
-**Stato:** pronto, dal 12 ottobre 2026: P-72 e P-73 sono chiusi, e P-71 è
-nel motore. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**,
+**Stato:** **chiuso il 13 ottobre 2026**, commit `f6c18a2` su `main`. Prima
+era: pronto dal 12 ottobre 2026. **Dove:** Claude Code, `~/Software/rotta-giusta`, ramo **`main`**,
 uno alla volta con P-77 e P-78. **Nasce da:** P-64, §10.1, A-3 e A-4; i
 resoconti di P-72 e P-73 (gli esiti qui sopra). **Sblocca:** P-75, cioè la
 pagina e l'informativa, che aspetta anche la base giuridica.
@@ -4934,11 +4978,42 @@ la voce in fondo a [Unreleased]; niente push. Chiudi con il resoconto
 di docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `f6c18a2`, voce «Test — P-74» nel CHANGELOG. **I due conti
+nel motore:** `riepilogoTrasferimento()` dà `confermateRisposte` accanto a
+`confermate`, e il conflitto di `dopoInvio()` e `dopoRicezione()` dà
+`nonSalvateRisposte` accanto a `nonSalvate`; i campi di prima restano, i
+chiamanti elencati prima. Quattro test rossi prima, sette rotture provate al
+contrario: sei rosse, una verde — la guardia «annullato ? 0» non serviva,
+perché con la generazione cambiata le conferme sono già vuote — e la guardia è
+uscita. R-PREV-02 conta anche i contratti di P-71, e la spia di R-PREV-08
+guarda i segnalibri. **I controlli della pagina:** il raccordo in quattro
+funzioni — `domandaEsito()`, `salvaEsito()`, `avvioProva()`, `daInviare()` —
+scritto nel §10.1 del progetto prima del banco; i gruppi E-01 e P-01 in
+`tests/client_account.mjs` con il server vero, e il «server di prima» imitato
+togliendo `esiti` e `tipi_riga` a `GET /v1/io`; la pagina di riferimento del
+client realizza il raccordo, «Base e vela» in due fasi e la riga `_t:'s'` della
+consegna, che non scriveva; ventinove rotture rosse per il loro motivo, il
+banco provato contro sé stesso; sei rotture vecchie riscritte sulle righe nuove
+e una ristretta. Sulla pagina vera girano `E-01:spento` e `P-01:spento`,
+verdi; il regime senza raccordo ha la scadenza alla merge di P-75, scritta nel
+§10.1. **La specifica:** §3.2, §3.7, §4.6, §5.4, il nuovo §9.13 con
+R-ESITO-01…09 e R-PREV-01…12, Q-STIMA, il registro; nel §10.1 del progetto A-2
+annotato come fatto da P-73 con gli scostamenti, A-3 e A-4 come fatti.
+**Controllato dalla regia il 13 ottobre:** il commit, i file nel territorio
+del motore e nei neutri, gli otto `test_esito_*` e `test_avvio_*` registrati
+in `test_interfaccia.py`, i gruppi nel banco, la scadenza nel §10.1; le
+cinque suite rifatte sullo stato di `main` dopo P-78 e la merge di P-66 (nel
+registro). Non rifatte le rotture né la LTS. **Trovato, e dove sta:** la
+guardia tolta e le sei rotture riscritte, nel CHANGELOG. **Per l'autore:**
+niente di nuovo; Q-STIMA dice che resta solo l'email. **Per la coda:** B-1 e
+B-2 partono sul contratto del §10.1, e B-2 usa `confermateRisposte` e
+`nonSalvateRisposte` dove scrive «risposte»; alla merge di P-75 la regia toglie
+il regime senza raccordo.
 
 ### P-77 — Claude: la banca, i quattro progressivi illeggibili e gli undici ripetuti
 
-**Stato:** pronto, dal 12 ottobre 2026. **Dove:** Claude Code,
+**Stato:** **chiuso il 13 ottobre 2026**, commit `40736e2` su `main`. Prima
+era: pronto dal 12 ottobre 2026. **Dove:** Claude Code,
 `~/Software/rotta-giusta`, ramo **`main`**, uno alla volta con P-74 e P-78.
 **Nasce da:** il resoconto di P-71, che ha misurato la banca scrivendo
 `cercaNumero()`. **Sblocca:** niente; il ridisegno (riga 21) trova una ricerca
@@ -4990,11 +5065,31 @@ commit, con la voce in fondo a [Unreleased]; niente push. Chiudi con il
 resoconto di docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** commit `40736e2`, voce «Corretto — P-77» nel CHANGELOG. Ogni
+progressivo anomalo guardato sull'immagine della sua pagina del PDF in
+`fonte/`, a 300 dpi. **Uno era l'estrazione:** base-8, che il decreto numera
+1.1.1-8 (pagina 2), ora corretto — l'unico campo cambiato in tutto
+`quiz.json`, verificato con un confronto strutturale. **Tre sono del decreto**,
+con un punto dove gli altri hanno il trattino: base-385 «1.3.2.113» (pag. 65),
+base-943 «1.6.1.97» (pag. 158), base-1326 «1.8.1.38» (pag. 222); restano, e non
+si ricostruiscono dal contesto. **Gli undici ripetuti sono tutti ripetuti nel
+decreto** (pagine 25–29, 111–112, 154, 155, 199): nessuno si corregge, e
+`cercaNumero()` li apre tutti e due. Prima il test, `test_progressivi`, rosso
+sulla banca di prima; due rotture provate al contrario; R-NUM-02 riscritto nel
+motore, la specifica §4.2 e R-NUM-02, il README fra i difetti dichiarati, il
+commento sopra `cercaNumero()`, che diceva il falso. `fonte/verifica.py` resta
+135/135 e 134/135. **Controllato dalla regia il 13 ottobre:** il commit, il diff
+di `site/dati/quiz.json` di due righe, R-NUM-02 nella specifica con il suo test;
+le cinque suite rifatte sullo stato di `main` (registro). Non rilette le pagine
+del PDF. **Per l'autore,** nel §4, «Dopo P-59», punto 14: se `cercaNumero()`
+debba accettare il punto come trattino per trovare anche quei tre; non è
+scritto altrove nel repo, e non ferma niente. **Per la coda:** la riga 28 è
+uscita.
 
 ### P-78 — Claude: il server che conta i tipi di riga nuovi
 
-**Stato:** pronto, dal 12 ottobre 2026. **Dove:** Claude Code,
+**Stato:** **chiuso il 13 ottobre 2026**, commit `b6b7462` su `main`. Prima
+era: pronto dal 12 ottobre 2026. **Dove:** Claude Code,
 `~/Software/rotta-giusta`, ramo **`main`**, uno alla volta con P-74 e P-77.
 **Nasce da:** il resoconto di P-71, «Trovato» 4, e il §9.12 della specifica,
 «Che cosa non vedono». **Sblocca:** niente; va in esercizio con il prossimo
@@ -5044,6 +5139,104 @@ la voce in fondo a [Unreleased]; niente push. Chiudi con il resoconto
 di docs/prossime-sessioni.md.
 ```
 
+**Esito:** commit `b6b7462`, voce «Corretto — P-78» nel CHANGELOG.
+`server/letture.mjs` conta le risposte con `rigaDiRisposta()` del motore e
+nomina a parte le prove avviate, i segnalibri (l'ultimo gesto per quesito, da
+`segnalibri()`) e i tag; `leggi.mjs` li mostra in due sezioni nuove; nessuna
+query nuova, R-ACC-74 senza dichiarazioni nuove. `server/statistiche.mjs` ha
+cinque fonti: `risposte` ristretta alle righe di `rigaDiRisposta()`, con il
+filtro costruito da `TIPI_RIGA`, e `righe` con tutto, filtrata dagli iscritti;
+una query su `risposte` che cerca un tipo assente è rifiutata e rimanda a
+`righe`, una guardia che legge il testo e non un parametro (scritto in
+`account-progetto.md` §15.2 e nel §9.9 della specifica). R-ACC-77 nuovo,
+R-ACC-71 e 74 aggiornati; tre test rossi prima, dieci rotture rosse.
+**Controllato dalla regia il 13 ottobre:** il commit, i file in `server/`,
+`tests/` e nei documenti, R-ACC-77 nella specifica con il suo test; server
+81/81 e le altre suite sullo stato di `main` (registro); non la LTS né
+`ripristina --prova`. **Trovato dalla sessione, e dove sta:** la statistica
+di validazione delle previsioni nel §4.7 di `esito-esame-progetto.md` leggeva
+gli avvii da `risposte`, e con la fonte ristretta la guardia la fermava; la
+regia l'ha riscritta su `righe a LEFT JOIN risposte s` nel suo commit, la
+forma che il test di R-ACC-77 esegue. L'interfaccia, in quella sessione, è
+stata instabile: quattro giri, due verdi, uno rosso su `E-01:spento`, uno con
+quattordici rossi del browser che non rispondeva; è scritto nel CHANGELOG, e la
+regia l'ha rifatta una volta, verde. **Per l'autore:** niente. **Per la
+coda:** la riga 29 è uscita; B-2, quando conterà gli avvii in Info, ha la
+stessa distinzione sul server.
+
+### P-67 — ChatGPT: i mock della nuova interfaccia, passo 3 — Allenati ed Esame
+
+**Stato:** pronto, dal 13 ottobre 2026: P-66 è fuso, e `ui/main` sarà
+allineato a `main` con il sì dell'autore. **Dove:** l'app ChatGPT (Codex),
+progetto `~/Software/rotta-giusta-ui` in modalità Local, ramo **`ui/main`**.
+Scrive soltanto in `docs/prototipi/`, che è neutro. **Nasce da:** P-65 e P-66;
+le decisioni 2, 3, 6, 8, 13 e 31 di P-59; il §4, «Dopo P-59», punto 13.
+**Sblocca:** P-68.
+
+```
+Questo prompt è per ChatGPT (Codex), nella cartella
+~/Software/rotta-giusta-ui, sul ramo ui/main, in modalità Local. Se sei
+un altro agente o sei in un'altra cartella, fermati e dillo, senza
+scrivere niente.
+
+Sessione P-67: il terzo di cinque passi di mock della nuova
+interfaccia: Allenati ed Esame, con le loro Preparazioni. Niente site/,
+niente tests/: soltanto la cartella docs/prototipi/interfaccia-2026-10/.
+
+Leggi AGENTS.md; docs/prototipi/interfaccia-2026-10/tragitti.md per
+intero, e home-note.md, «che cosa resta per P-67»; in
+docs/idee-dopo-gli-account.md «Le decisioni di P-59», soprattutto 2, 3,
+6, 8, 13 e 31, e le schede I-18, C-01, C-02; nella specifica §1, §4.2
+(la tabella del catalogo), §5.3, §7.2, §7.3 e Q-CART4 nel §10;
+docs/area-2-progetto.md e docs/area-4-progetto.md per i testi delle
+preparazioni di oggi, che il mock non deve peggiorare. Nel §4 di
+docs/prossime-sessioni.md, «Dopo P-59», il punto 13: quattro tocchi da
+Home a un quiz su un argomento scelto, tre con i temi direttamente nel
+segmento Quiz. I nomi sono dell'autore, e il mock li mostra, non li
+decide; la struttura è decisa.
+
+Pagine HTML statiche, autoconsistenti, senza risorse da altri host,
+nella forma di P-66 — a 375 e a 1280 px, dati finti dichiarati in
+pagina, un numero finto che sembra una misura è il difetto di casa.
+- Allenati (decisione 2): i tre segmenti Quiz · Carteggio · Segnali, con
+  il segmento aperto che dipende da dove si arriva. Nel segmento Quiz le
+  cinque intenzioni di oggi (specifica §5.3) e, in due varianti, i temi
+  direttamente nel segmento — così «un quiz su un argomento» costa tre
+  tocchi dalla Home invece di quattro — e i temi dentro la Preparazione.
+  La ricerca per numero del decreto (decisione 8), con un numero che non
+  c'è e uno di un oscurato. Nel segmento Carteggio le tre porte di oggi
+  (§7.3), con i materiali dichiarati prima e «Sei tu a giudicare» prima
+  di Inizia. Nel segmento Segnali le quattro modalità, dichiarate extra
+  banca e fuori dalla copertura.
+- Esame (decisione 3): le prove nell'ordine in cui si sostengono —
+  carteggio, quiz base, quiz vela —, ognuna con le condizioni del decreto
+  come le dà il motore (PROVA_CARTEGGIO, meta.prove), la data d'esame e
+  le prove fatte, con dati finti; le prove che servono all'obiettivo
+  scelto nell'onboarding (decisione 13), nei suoi quattro casi; «Simula
+  il quiz base» che apre la stessa Preparazione della Home (decisione
+  6); «Com'è fatto l'esame» (decisione 31) come porta, con la sintesi e
+  dove sta l'approfondimento. L'assunzione di Q-CART4 scritta nella
+  Preparazione del carteggio com'è oggi.
+- Le Preparazioni: una schermata per ogni attività che la apre, con il
+  numero che il motore promette, le condizioni, e Inizia; i ritorni, che
+  ripristinano origine, segmento e posizione (decisione 2).
+In ogni schermata: una schermata, un'azione principale; l'avatar con il
+pallino dei guasti; gli stati di errore e di selezione vuota (specifica
+§8), mai un pulsante che non produce niente.
+
+Una nota accanto alle pagine: per ogni tragitto di P-65 che passa da
+Allenati o da Esame, il tocco che la schermata offre e il conteggio
+rimisurato sul mock, con il costo tre contro quattro per l'argomento
+scelto; che cosa ogni elemento non promette; che cosa resta per P-68 e
+P-69. Guarda le pagine in un browser a 375 e 1280 px — zero sbordamento
+orizzontale, misurato —, e scrivilo.
+
+Guardiano verde (python3 strumenti/controlla.py). Non toccare
+docs/prossime-sessioni.md. Un commit con il trailer e la voce in fondo
+a [Unreleased], versione non toccata. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
 **Esito:** —
 
 ### I segnaposto — i prompt che non si possono ancora scrivere
@@ -5052,12 +5245,8 @@ di docs/prossime-sessioni.md.
 `docs/prototipi/interfaccia-2026-10/`, per ChatGPT su `ui/main`; ognuno aspetta
 il resoconto del precedente, e la regia scrive il suo prompt allora.
 
-- **P-66**: scritto il 12 ottobre 2026, qui sopra.
-- **P-67 — Allenati ed Esame**: i tre segmenti, il ritorno che ripristina
-  segmento e posizione; le prove in ordine con le condizioni del decreto, e il
-  carteggio che è un ambiente solo con due ingressi. Aspetta P-66. Dovrà
-  dire anche: i temi direttamente nel segmento Quiz, la variante a tre tocchi
-  di P-65 (§4, «Dopo P-59», 13).
+- **P-66**: scritto il 12 ottobre 2026, chiuso il 13.
+- **P-67**: scritto il 13 ottobre 2026, qui sopra.
 - **P-68 — Progressi**: il «sei qui», la mappa con i cinque stati, e senza
   account il riepilogo vero della pagina aperta. Aspetta P-67 e, per le parole
   della barra, Q-DUE punto 3 riaperta da P-63.
@@ -5070,7 +5259,7 @@ il resoconto del precedente, e la regia scrive il suo prompt allora.
 
 **Dopo P-63 e P-64, dal 4 ottobre 2026.**
 
-- **P-74**: scritto il 12 ottobre 2026, qui sopra.
+- **P-74**: scritto il 12 ottobre 2026, chiuso il 13.
 - **P-75 — esito e previsioni, la pagina e l'informativa** (B-1 e B-2),
   ChatGPT su `ui/main`. Aspetta P-74 fuso e la base giuridica (§4, «Dopo
   P-64», punto 1). Poi un rilascio: «Build now» e `rg-aggiorna`, schema 5.
@@ -5722,3 +5911,21 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   un documento solo. Nel §4, «Dopo P-59»: gli otto nomi aperti di P-65 nel
   punto 4, e i quattro tocchi per un argomento scelto nel punto 13. Con il sì
   dell'autore: `main` pushato, `ui/main` e `ui/vetrina` allineati.
+- **13 ottobre 2026 — P-74, P-77 e P-78 chiusi; P-66 fuso e chiuso; P-67
+  pronto.** Sessione di regia nuova, partita dal prompt del §«Come si
+  riprende»: la prima risposta ha trovato lo stato del file giusto, e in più
+  i tre commit non pushati e il ramo di P-66 non fuso. I quattro resoconti
+  letti contro il repo: i tre commit di Claude su `main`, nei territori del
+  motore e nei neutri, questo file toccato solo dalla regia; il commit di
+  ChatGPT con il trailer, recinto verde sul diff del ramo, merge `05580c5`,
+  `main..ui/main` vuoto, la riga vuota fra le voci del CHANGELOG aggiunta
+  dalla regia. Le cinque suite sullo stato fuso: motore 212/216 con i quattro
+  skip previsti, server 81/81, dati 229, specifica 958, interfaccia
+  2.453 in 4 min 14 s, con la 8620 guardata libera per 60 s prima; guardiano
+  verde. Le righe 26, 28 e 29 escono; P-67 è scritto; nel §4 il punto 14
+  di «Dopo P-59» (il punto come trattino, da P-77) e il punto 8 di «Dopo
+  P-64». La query del §4.7 di `esito-esame-progetto.md` riscritta su `righe`,
+  come P-78 chiedeva. La «discrepanza» di P-66 fra 4 note e 11 divergenze
+  spiegata nel suo esito: otto divergenti sono oscurati, e lì la nota si
+  omette. Il push di `main` e l'allineamento di `ui/main` e `ui/vetrina`
+  aspettano il sì dell'autore.

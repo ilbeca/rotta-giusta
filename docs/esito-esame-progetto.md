@@ -580,13 +580,18 @@ SELECT count(s.ts) AS consegnate, count(*) - count(s.ts) AS abbandonate,
   avg(((json_extract(a.dati, '$.stime."regola-semplice-1".superate') + 1.0)
         / (json_extract(a.dati, '$.stime."regola-semplice-1".n') + 2.0)
         - json_extract(s.dati, '$.passed')) * ( … la stessa differenza … )) AS brier
-FROM risposte a LEFT JOIN risposte s
+FROM righe a LEFT JOIN risposte s
   ON s.chi = a.chi AND s.tipo = 's' AND json_extract(s.dati, '$.uid') = json_extract(a.dati, '$.sim_uid')
 WHERE a.tipo = 'a' AND json_extract(a.dati, '$.kind') = 'base'
 ```
 
 `chi` si usa nel collegamento e non esce; `dati` si apre con `json_extract` e
-non esce; `statistica()` la accetta così com'è. Le altre che servono: quante
+non esce; `statistica()` la accetta così com'è. *Riscritta il 13 ottobre 2026
+dalla regia, dopo P-78:* gli avvii si leggono da `righe`, non da `risposte`,
+perché da P-78 la fonte `risposte` ha soltanto le righe di `rigaDiRisposta()`
+e una query che vi cerca `tipo = 'a'` è rifiutata, invece di contare zero in
+silenzio; le consegne restano in `risposte`, perché una riga `_t:'s'` è una
+risposta. È la forma che il test di R-ACC-77 esegue. Le altre che servono: quante
 prove sono abbandonate, per account e in tutto; la calibrazione per fasce —
 quando il metodo dice fra 0,6 e 0,7, quante prove sono superate —; il confronto
 fra due metodi sulle stesse prove. **Le soglie con cui si dice che un metodo è

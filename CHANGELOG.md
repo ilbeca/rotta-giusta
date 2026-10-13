@@ -724,6 +724,7 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   partito senza riguardare la porta, quindi conta il quarto. Guardiano verde.
   `site/`, `docs/prossime-sessioni.md` e `docs/esito-esame-progetto.md` non
   sono stati toccati, né la macchina.
+
 ### Progettato — P-66: la Home nei tre stati, prima di rifare il sito
 
 - **Mock separati in `docs/prototipi/interfaccia-2026-10/`, senza toccare
