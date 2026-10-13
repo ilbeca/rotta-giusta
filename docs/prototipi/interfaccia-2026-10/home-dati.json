@@ -1,0 +1,67 @@
+{
+  "conteggi_banca": {
+    "osc": 37,
+    "nb": 4,
+    "nbp": 37,
+    "f": 119,
+    "fm": 1,
+    "quiz": 1722,
+    "dm": 3,
+    "carteggio": 135,
+    "sha256": "f38e007b1a54a571f5a0ac76674aa5a95fce434ca8527ef1afcf13994afe9364"
+  },
+  "risposte_H1_FINTE": [
+    {
+      "numero": 1,
+      "esatta": true
+    },
+    {
+      "numero": 2,
+      "esatta": true
+    },
+    {
+      "numero": 3,
+      "esatta": false
+    },
+    {
+      "numero": 4,
+      "esatta": true
+    },
+    {
+      "numero": 5,
+      "esatta": true
+    },
+    {
+      "numero": 6,
+      "esatta": false
+    },
+    {
+      "numero": 7,
+      "esatta": true
+    },
+    {
+      "numero": 8,
+      "esatta": true
+    },
+    {
+      "numero": 9,
+      "esatta": false
+    },
+    {
+      "numero": 10,
+      "esatta": true
+    }
+  ],
+  "HA_FINTO": {
+    "confermare": 8,
+    "giorni_attivita": 6,
+    "finestra": 14,
+    "ultima_prova": {
+      "data": "2026-10-11",
+      "errori": 2,
+      "domande": 20
+    },
+    "data_esame": "2026-10-10",
+    "oggi": "2026-10-13"
+  }
+}

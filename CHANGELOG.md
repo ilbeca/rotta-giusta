@@ -499,6 +499,38 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   esecuzione rilanciata per un documento di mock; nessun codice modificato.
   Versione e coda intatte, nessun push.
 
+### Progettato — P-66: la Home nei tre stati, prima di rifare il sito
+
+- **Mock separati in `docs/prototipi/interfaccia-2026-10/`, senza toccare
+  il sito:** H0 con simulazione base prima e allenamento breve secondo; H1
+  con invito chiudibile e riepilogo delle risposte della pagina; HA con una
+  proposta e il perché, simulazione sempre visibile, fatti e costanza senza
+  serie o pronostici, posto della domanda «com’è andata». Account in
+  caricamento, errore con Riprova e vuoto confermato distinti: nessuna mappa
+  vuota provvisoria. Dodici pagine autoconsistenti, sei casi per due varianti
+  dei nomi, più l’indice `home.html`; dati personali finti dichiarati, font
+  incorporato con licenza, nessuna risorsa da altri host.
+
+- **Misurato e guardato nel browser:** 24 combinazioni di schermata e
+  larghezza, 375 × 812 e 1280 × 900, più l’indice alle due larghezze: zero
+  sbordamento orizzontale. Pulsante e condizioni della simulazione sopra
+  la piega in H0/H1; anche in HA, a 375 px le condizioni terminano a 799 px
+  su 812. Cento aperture di porte: un tocco all’arrivo, due con Chiudi;
+  modulo da H0 in due tocchi, da H1 in uno; l’invito chiuso conserva le dieci
+  righe finte. Screenshot e misure accanto alle pagine; `home-note.md`
+  collega tutti i 108 ID di P-65 al tratto presente, senza chiamare
+  completati i compiti il cui runner, Risultato o revisione ancora mancano.
+  Nomi e Q-COSTANZA restano dell’autore; i temi direttamente in Quiz e
+  il costo quattro → tre tocchi restano da mostrare in P-67.
+
+- **Ricontato dalla banca:** 37 oscurati, 4 note dopo la risposta (3 citano
+  DM 133/2024), un quesito senza figura. Home e README attuali dichiarano
+  11 divergenze: la discrepanza è documentata per la regia, senza dedurre
+  dal numero di note quante siano le divergenze normative reali e senza
+  modificare dati o testi di produzione. Guardiano e controllo della
+  documentazione verdi; nessuna suite di esecuzione rilanciata per mock
+  separati dal codice. Versione, coda e mappa P-65 intatte; nessun push.
+
 ## [0.30.0] — 2026-10-03
 
 **Il sito più semplice: niente offline.** Rotta Giusta si apre con la rete,
