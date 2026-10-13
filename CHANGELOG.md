@@ -812,6 +812,35 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   applicative non rilanciate, runner/Risultato/Revisione completi a P-69.
   Nessuna modifica a site/, tests/, coda o versione; nessun push.
 
+### Prototipato — P-69: dall’attività al ritorno, un documento solo
+
+- **Il giro nei due accessi, senza perdere le risposte fra sezioni.** In
+  `docs/prototipi/interfaccia-2026-10/giro-attivita.html`: Preparazione,
+  runner, consegna anche parziale, Risultato, Revisione e riprova degli errori
+  del tentativo. Quiz base e vela hanno due fasi e timer; Carteggio mantiene
+  confronto e giudizio personale, rinvio e bozza illustrata; i Segnali restano
+  extra banca e fuori dalla copertura. Numero del decreto, note ai loro tempi,
+  tag facoltativi, segnalibro, certezza dopo una giusta e segnalazione con
+  recapito segnaposto. La spiegazione, anche «verificata il …», è dichiarata
+  finta. Invito richiudibile dopo le azioni, modulo e legale nel documento;
+  acquisizione illustrata separa creazione, copia e accoglimento. Nessuna API
+  o persistenza reale, nessuna stima o voto di preparazione.
+
+- **Misurato nel mock, a 375 e 1280 px.** 534 geometrie senza sbordamento
+  orizzontale, 219 controlli verdi e nessuna eccezione JavaScript; 81 ID P-65
+  associati ai giri canonici Z/F/R nei tre stati, più il ritorno dalla voce
+  di Progressi. Simulazione 2/46 tocchi fino alla domanda/al ritorno;
+  argomento 3/46; giro carta 4/23, tappeto 5/18, prova carta 3/16,
+  Segnali 3/24. Risposte e lista di riprova confrontate col motore, fuoco e
+  posizione ripristinati, 70 px prima/dopo sulla voce a telefono. L’intestazione
+  del runner è stata ridotta dopo aver visto la domanda spinta sotto il
+  pannello risposte: sei catture finali verificano la prima domanda intera
+  sopra i controlli. Guardiano e documentazione verdi. Non sono prove su
+  persone, dispositivo fisico, account o produzione. La nota del giro
+  distingue i tragitti, le promesse finte, le scelte dell’autore e ciò che
+  resta per P-70 e la realizzazione. Solo prototipi e questa voce; versione,
+  site/, tests/ e coda intatti.
+
 ## [0.30.0] — 2026-10-03
 
 **Il sito più semplice: niente offline.** Rotta Giusta si apre con la rete,
