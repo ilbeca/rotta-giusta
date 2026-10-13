@@ -181,16 +181,15 @@ risposte), la merge di P-66 (la Home nei tre stati, il secondo dei
 cinque mock), la merge di P-67 (Allenati ed Esame, il terzo) e i due
 commit della coda del 13 ottobre: tutto pushato su GitHub il 13
 ottobre. Il server in esercizio è ancora la v0.30.0 con lo schema 4.
-Pronti: P-62 con l'autore, e basta. Per ChatGPT P-68, Progressi, si
-scrive quando l'autore decide Q-STATI; per Claude P-75 aspetta la base
-giuridica, P-76 aspetta Q-COSTANZA e P-68.
+Pronti: P-68 per ChatGPT, Progressi, con le parole dei cinque stati
+decise il 13 ottobre (Q-STATI, su delega); P-62 con l'autore. Per Claude
+niente: P-75 aspetta la base giuridica, P-76 aspetta Q-COSTANZA e P-68.
 
 I prossimi passi, in quest'ordine:
-1. Q-STATI dall'autore, poi scrivere P-68 (Progressi) e, chiuso quello,
-   P-69.
+1. Il resoconto di P-68, e da lì P-69, poi P-70 con l'autore.
 2. Le decisioni dell'autore nel §4, «Dopo P-59» e «Dopo P-64»:
    ricordagliele quando il lavoro che le aspetta sta per partire. La
-   base giuridica di esito e previsioni ferma P-75; Q-STATI ferma P-68;
+   base giuridica di esito e previsioni ferma P-75;
    Q-COSTANZA ferma P-76. Il resto non ferma niente.
 3. Il §4, «Dopo il traguardo»: il redirect di .pages.dev dal 16
    ottobre — con /sw.js che deve restare a 200 —, la soglia degli
@@ -247,7 +246,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
 | 14 | **La casella `privacy@` sull'iPhone**, e la prova `dkim=pass` | Claude con l'autore | `main`, solo `account-progetto.md` | niente | P-62 |
-| 17 | **I mock della nuova interfaccia**, in cinque passi, in `docs/prototipi/` | ChatGPT | `ui/main` | ognuno aspetta il precedente; P-65, P-66 e P-67 sono fusi; P-68 aspetta anche Q-STATI (§4, «Dopo P-59», 9) | P-68, da scrivere, poi P-69 |
+| 17 | **I mock della nuova interfaccia**, in cinque passi, in `docs/prototipi/` | ChatGPT | `ui/main` | ognuno aspetta il precedente; P-65, P-66 e P-67 sono fusi; Q-STATI è chiusa | P-68, poi P-69 |
 | 18 | **La prova dei mock** con tre-cinque persone vere, e con i bot sulle varianti | l'autore, con Claude | — | P-69 | P-70 |
 | 19 | **Le ricerche**: il parere del professionista sulle donazioni (14 domande, I-11); se all'esame vero si torna indietro fra le domande; Lighthouse su telefono e Safari veri (I-08) | l'autore | — | — | §4, «Dopo P-59» |
 | 20-bis | **I contratti del motore, seconda parte**: Percorso con il «sei qui», costanza, obiettivo, «hai concluso quello che ti avevamo proposto» | Claude | `main` | Q-COSTANZA e la decisione 22 (§4, «Dopo P-59», 3 e 10); e P-68, che disegna il «sei qui» | P-76, da scrivere |
@@ -270,7 +269,7 @@ v0.30.0: lo schema 5 e la correzione del `500` sulla data d'esame arrivano con
 il prossimo rilascio. **Per Claude** oggi non c'è un prompt pronto: P-75
 aspetta la base giuridica, P-76 aspetta Q-COSTANZA e P-68. P-62 con l'autore
 quando vuole.
-**Per ChatGPT:** niente di pronto: P-67, Allenati ed Esame, è fuso il 13 ottobre, e P-68, Progressi, aspetta Q-STATI, le parole dei cinque stati sulla barra, che sono dell'autore. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
+**Per ChatGPT:** P-68, Progressi, il quarto dei cinque mock: P-67 è fuso il 13 ottobre e Q-STATI è chiusa lo stesso giorno. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
 che cambiano una promessa (un ADR, la filosofia, la specifica), poi i mock e la
 prova con le persone, poi il codice; «com'è andata» parte presto perché i suoi
 dati arrivano mesi dopo. **Il §5, il §6 e i controlli R-NAV della specifica non
@@ -542,8 +541,11 @@ consuma, non si riprogetta.
      giuste ad almeno 12 ore): la regia la commenta e la chiude con il tuo sì.
      *Chiusa dalla regia il 4 ottobre 2026, con il sì dell'autore.*
   9. **Dal resoconto di P-63, le tre domande nuove del §10 della specifica:**
-     **Q-STATI**, le parole dei cinque stati sulla barra (ferma P-68, il mock
-     di Progressi; il motore non le aspetta); **Q-COSTANZA**, che è il punto 3
+     ~~**Q-STATI**, le parole dei cinque stati sulla barra (ferma P-68, il mock
+     di Progressi; il motore non le aspetta)~~ — **chiusa il 13 ottobre 2026
+     dalla regia, su tua delega («decidi tu e procedi»)**: «mai visti · da rifare · da confermare · recuperati · acquisiti», con le ragioni e le
+     scartate fra le chiuse del §10 della specifica; si riapre dopo P-70 se le
+     persone non le capiscono; **Q-COSTANZA**, che è il punto 3
      qui sopra più una cosa trovata scrivendo: i Segnali non entrano
      nell'archivio e non lasciano una data, quindi contarli nella costanza
      vuol dire una riga nuova o un dato nuovo nel profilo; **Q-STIMA**, che è
@@ -5268,8 +5270,88 @@ vuoto, la riga vuota nel CHANGELOG già al suo posto; guardiano, controllo
 della documentazione, dati 229 e specifica 958 sullo stato fuso; motore,
 server e interfaccia non rilanciati, per un mock che non tocca niente che
 leggano. I mock non aperti dalla regia in un browser. **Per l'autore:** i nomi
-e la posizione dei temi restano nel §4, punti 4 e 13; **Q-STATI ferma P-68**.
-**Per la coda:** P-68 si scrive quando Q-STATI è decisa.
+e la posizione dei temi restano nel §4, punti 4 e 13. **Per la coda:** P-68,
+scritto qui sotto dopo che l'autore ha delegato Q-STATI alla regia.
+
+### P-68 — ChatGPT: i mock della nuova interfaccia, passo 4 — Progressi
+
+**Stato:** pronto, dal 13 ottobre 2026: P-67 è fuso, Q-STATI è chiusa,
+`ui/main` è allineato a `main`. **Dove:** l'app ChatGPT (Codex), progetto
+`~/Software/rotta-giusta-ui` in modalità Local, ramo **`ui/main`**. Scrive
+soltanto in `docs/prototipi/`, che è neutro. **Nasce da:** P-65…P-67; le
+decisioni 4, 10, 14, 16, 19 e 22 di P-59; Q-STATI nel §10 della specifica;
+il §4, «Dopo P-59», punti 10 e 12. **Sblocca:** P-69, e il progetto di P-76.
+
+```
+Questo prompt è per ChatGPT (Codex), nella cartella
+~/Software/rotta-giusta-ui, sul ramo ui/main, in modalità Local. Se sei
+un altro agente o sei in un'altra cartella, fermati e dillo, senza
+scrivere niente.
+
+Sessione P-68: il quarto di cinque passi di mock della nuova
+interfaccia: Progressi, che unisce il Percorso e i Progressi di oggi.
+Niente site/, niente tests/: soltanto la cartella
+docs/prototipi/interfaccia-2026-10/.
+
+Leggi AGENTS.md; docs/prototipi/interfaccia-2026-10/tragitti.md,
+home-note.md e attivita-note.md, per i tragitti con l'ID 12 e per la
+consegna a P-68; in docs/idee-dopo-gli-account.md «Le decisioni di
+P-59», soprattutto 4, 10, 14, 16, 19 e 22, e le schede I-05, I-06, I-13
+e I-15; nella specifica §4.1 (i cinque stati e i tre), §4.3 (le soglie),
+§7.4, §9.10 e §9.12, e nel §10 Q-STATI fra le chiuse: le parole dei
+cinque stati sono decise — «mai visti · da rifare · da confermare ·
+recuperati · acquisiti», nell'ordine dei cinque stati del motore —, e il
+mock le scrive così, senza varianti. L'ADR-004 per i Progressi dei soli
+registrati, e l'ADR-006, §1 ultimo punto. Nel §4 di
+docs/prossime-sessioni.md, «Dopo P-59», i punti 10 e 12.
+
+Pagine HTML statiche, autoconsistenti, senza risorse da altri host,
+nella forma di P-66 e P-67 — a 375 e a 1280 px, dati finti dichiarati
+in pagina, i numeri della mappa da uno snapshot del motore
+(E.quadro(), E.contaStati(), E.dovePesa()) e non ricalcolati nelle
+pagine. Due stati d'accesso, e per l'account i due stati di P-66,
+caricamento ed errore con «Riprova».
+- Con l'account: in alto il «sei qui» (decisione 16) — una mappa con
+  delle fasi che orientano e non chiudono porte, ricalcolata dalle
+  risposte; le fasi non sono decise, quindi le proponi, le dichiari
+  come proposta in pagina, e scrivi nella nota su quali numeri del
+  motore ciascuna si regge, perché P-76 le progetterà da lì —; poi la
+  mappa per tema di oggi (§7.4, §9.10) con la barra a cinque stati e la
+  legenda con le parole di Q-STATI, «in base alle ultime risposte», il
+  `?` che spiega le 12 ore, «Rifai N errori» che apre i «da rifare», «X
+  su Y giusti al primo tentativo» solo sopra soglia; sotto, separati, le
+  prove, l'andamento, le sessioni riapribili. La costanza sta nella Home
+  (P-66): qui al più «N quesiti da confermare oggi», con il perché.
+  Niente stima, niente «sei pronto», niente voto sulla preparazione:
+  copertura e risultati non si presentano come padronanza (§7.4).
+- Senza account: il riepilogo vero delle risposte della pagina aperta
+  (decisione 4) — quante, quali temi, gli errori da rivedere —, senza
+  misure sotto le soglie del §4.3, e che cosa l'account aggiunge, detto
+  come spiegazione di quello che manca e non come un quarto posto per
+  l'invito (§4, punto 12): l'invito sta nella Home e nei riepiloghi.
+- «Hai concluso quello che ti avevamo proposto» (decisione 22, §4 punto
+  10): mostralo come lo vorresti, e scrivi nella nota se per farlo basta
+  leggere le righe o serve uno stato salvato, perché è una decisione
+  dell'autore e il §4.4 della specifica oggi lo vieta.
+In ogni schermata: una schermata, un'azione principale; l'avatar con il
+pallino dei guasti; gli stati vuoto, parziale ed errore del §8 della
+specifica.
+
+Una nota accanto alle pagine: per ogni tragitto di P-65 con l'ID 12, e
+per quelli che da Progressi aprono un'attività, il tocco offerto e il
+conteggio rimisurato; che cosa ogni elemento non promette; le fasi
+proposte con i numeri su cui si reggono; che cosa resta per P-69.
+Guarda le pagine in un browser a 375 e 1280 px — zero sbordamento
+orizzontale, misurato, con la legenda da cinque voci che sta nello
+schermo —, e scrivilo.
+
+Guardiano verde (python3 strumenti/controlla.py). Non toccare
+docs/prossime-sessioni.md. Un commit con il trailer e la voce in fondo
+a [Unreleased], versione non toccata. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
 
 ### I segnaposto — i prompt che non si possono ancora scrivere
 
@@ -5279,9 +5361,7 @@ il resoconto del precedente, e la regia scrive il suo prompt allora.
 
 - **P-66**: scritto il 12 ottobre 2026, chiuso il 13.
 - **P-67**: scritto il 13 ottobre 2026, chiuso lo stesso giorno.
-- **P-68 — Progressi**: il «sei qui», la mappa con i cinque stati, e senza
-  account il riepilogo vero della pagina aperta. Aspetta P-67 e, per le parole
-  della barra, Q-DUE punto 3 riaperta da P-63.
+- **P-68**: scritto il 13 ottobre 2026, qui sopra, dopo Q-STATI.
 - **P-69 — il giro di un'attività**: preparazione, attività, risultato con la
   spiegazione e con l'invito, revisione. Aspetta P-68.
 - **P-70 — la prova**, con l'autore: tre-cinque persone vere sui mock, con i
@@ -5970,3 +6050,13 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   specifica 958 sullo stato fuso. P-68 non si scrive: aspetta Q-STATI, le
   parole dei cinque stati sulla barra. Con il sì dell'autore, dato in chat:
   `main` pushato, `ui/main` e `ui/vetrina` allineati.
+- **13 ottobre 2026 — Q-STATI chiusa su delega, P-68 scritto.** L'autore ha
+  delegato alla regia le parole dei cinque stati («decidi tu e procedi»): mai
+  visti · da rifare · da confermare · recuperati · acquisiti, con le ragioni e
+  le scartate fra le chiuse del §10 della specifica, R-STATI-06 che le nomina e
+  resta scoperto finché la pagina non le scrive, il §4.1 e il §4 qui che lo
+  dicono. P-68 scritto: il «sei qui» con le fasi come proposta dichiarata per
+  P-76, la mappa a cinque stati con le parole, i Progressi senza account come
+  spiegazione e non come invito, la decisione 22 mostrata e lasciata
+  all'autore. `main` pushato, `ui/main` e `ui/vetrina` allineati, sul
+  «procedi» dell'autore.

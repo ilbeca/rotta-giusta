@@ -744,7 +744,9 @@ deboli. **`classifica()` non cambia**: la usano la barra, `quadro()`,
 
 **I nomi nel codice non sono quelli della barra.** `mai_visto`, `debole`,
 `incerto`, `sistemato`, `ok` sono gli identificatori del contratto; le parole in
-schermata sono Q-STATI, dell'autore (§10).
+schermata sono, nell'ordine, «mai visti · da rifare · da confermare · recuperati · acquisiti» (Q-STATI, chiusa il 13 ottobre 2026 su delega
+dell'autore, §10). Un controllo le tiene ferme dal giorno in cui la pagina le
+scrive (R-STATI-06).
 
 ### 4.2 Il catalogo: sei mestieri, non sei varianti
 
@@ -2240,7 +2242,7 @@ motore, e la pagina di oggi non li chiama: stanno fra gli orfani dichiarati di
 | R-STATI-03 | «Rifai N errori» apre i deboli: su ogni tema e ogni voce della banca vera la lista di `soloDaRifare` è quella dei deboli, e il loro conto è il suo numero | `test_engine.mjs::statoQuesito: «Rifai N errori» apre i deboli` |
 | R-STATI-04 | Con l'istante della riga `applica()` costruisce lo stesso specchio di `ripiega()`, conferme comprese; senza, nessuna conferma si inventa e i tre stati non cambiano | `test_engine.mjs::applica: con l istante, lo stesso specchio di ripiega` |
 | R-STATI-05 | Una pagina che legge i cinque stati passa a ogni `E.applica()` il `ts` della riga: altrimenti una risposta conterebbe come conferma solo dopo una ricarica. Il controllo tace finché la pagina non li legge, ed è provato contro sé stesso a ogni esecuzione | `test_interfaccia.py::test_applica_con_istante` |
-| R-STATI-06 | Le parole dei cinque stati in schermata | scoperto — sono Q-STATI, dell'autore; il controllo arriva con il testo deciso |
+| R-STATI-06 | Le parole dei cinque stati in schermata sono quelle di Q-STATI, «mai visti · da rifare · da confermare · recuperati · acquisiti», nell'ordine dei cinque stati del motore, e la legenda dice che valgono «in base alle ultime risposte» | scoperto — il testo è deciso dal 13 ottobre 2026, la pagina non lo scrive ancora: il controllo arriva con la realizzazione del ridisegno, sul banco del client, e fino ad allora lo mostra il mock di P-68 |
 | R-TAG-01 | I tag «Non lo sapevo» (`N`) e «Svista» (`S`) si scrivono e si leggono; `L` e `C` restano validi, anche senza data, e non si riconvertono: vale l'ultimo tag per istante, qualunque sia | `test_engine.mjs::validaRiga: i tag «Non lo sapevo» e «Svista», e i vecchi restano` |
 | R-TAG-02 | Un tag o un tipo di riga nuovo si scrive solo se il server che la pagina ha davanti lo accoglie, dal suo `tipi_riga`: provato contro i motori della v0.30.0 e del main di P-73, estratti dal repo, che rifiutano il tag `S` e il segnalibro | `test_engine.mjs::rigaScrivibile: un tag o un tipo nuovo solo se il server che hai davanti lo accetta` |
 | R-SEGNO-01 | Il segnalibro è un tipo di riga, `_t: 'b'`, con data, quesito e `segnato` 1 o 0, che il server dichiara; non è una risposta | `test_engine.mjs::validaRiga: il segnalibro` |
@@ -2334,12 +2336,36 @@ Ogni riga dice **chi decide**. Una questione senza un decidente non si chiude ma
 | Q-PROG | Il programma d'esame come dataset | serve una fonte, poi l'autore | Nessuna mappa del programma è possibile: nel repo non c'è (§4.6) |
 | Q-AMBITO | Se `carteggio_e12.json` esce dal cassetto | l'autore | 50 esercizi pubblicati e non usati; cambia il pubblico più di ogni scelta di navigazione. Finché resta aperta, un controllo pretende che la pagina non li carichi (R-UX-07): tirarli fuori è una decisione, non un ritocco |
 | Q-CART4 | «Un esercizio per ciascuno dei quattro argomenti» è un'assunzione | serve la scuola nautica | La composizione della prova resta non confermata, e la 42/D non ha esercizi di carburante. Dal 30 settembre 2026 l'assunzione viaggia con il contratto, `PROVA_CARTEGGIO.assunzione`, e chi compone la prova la riceve con la lista (R-SEL-12). Dal 30 settembre 2026 (P-35) arriva anche alla preparazione della pagina, che la dichiara prima dell'avvio come la dà il motore, e un controllo la segue fino lì (R-SEL-17) |
-| Q-STATI | Le parole dei cinque stati della decisione 14 di P-59 sulla barra e nella legenda, al posto di «giusti · da rifare · mai visti» (Q-DUE punto 3, riaperto) | l'autore | La barra resta a tre stati, e i contratti del motore non sanno come chiamare in schermata gli altri due |
 | Q-COSTANZA | Che cosa fa un giorno di attività (ADR-006): quante risposte, e come si contano il carteggio e i Segnali — i Segnali oggi non lasciano una data, perché non entrano nell'archivio (§4.5, R-UX-02), e contarli vuol dire una riga nuova o un dato nuovo nel profilo | l'autore (la proposta è un'attività conclusa, anche da dieci domande: `prossime-sessioni.md` §4, «Dopo P-59», punto 3) | La costanza non si costruisce |
 | Q-STIMA | La frase di `docs/filosofia.md` sulla stima (proposta in I-12); chi fissa, prima di vedere i risultati, le soglie con cui la stima si mostra (ADR-006); e se chiedere «com'è andata» anche per email — è un uso dell'email che oggi la filosofia non nomina. **La strada in pagina c'è** (`esito-esame-progetto.md` §3, R-ESITO-01…09): il riquadro nel Percorso e «Il tuo esame», con il server da P-73 e i controlli della pagina da P-74; la porta B-1. Resta l'email, che l'autore ha rimandato il 4 ottobre 2026 (§11, punto 6 di quel progetto) | l'autore | La stima si registra (§3.2) ma non si mostra; la frase di oggi resta; «com'è andata» si chiede solo a chi torna sul sito |
 | Q-PROVE | Verifiche con dispositivi reali e con persone — e Safari, che il banco del browser non raggiunge (rimandato dall'autore il 29 settembre 2026) | l'autore fornisce dispositivi e persone | Nessuna prova su hardware Apple vero, e nessuna prova con persone diverse dall'autore. Safari nel banco vorrebbe «Allow remote automation», un'impostazione dell'autore, e anche così WebDriver non legge lo storage (`account-client-progetto.md` §12): il cookie fra `rottagiusta.it` e `api.` su Safari si prova a mano |
 
 **Chiuse, e non si riaprono senza un motivo nuovo:**
+
+- **Q-STATI: le parole dei cinque stati** (13 ottobre 2026, la regia su delega
+  dell'autore, «decidi tu e procedi»). Sulla barra e nella legenda, nell'ordine
+  dei cinque stati del motore: **mai visti** (`mai_visto`), **da rifare**
+  (`debole`), **da confermare** (`incerto`), **recuperati** (`sistemato`),
+  **acquisiti** (`ok`). Le ragioni: «da rifare» resta la parola di oggi per il
+  segmento che «Rifai N errori» apre, e i deboli sono esattamente quella lista
+  (R-STATI-03), quindi chi conosce la barra di oggi non impara una parola nuova
+  per la stessa cosa; «da confermare» è la parola che la decisione 19 usa già
+  per la costanza — «N quesiti da confermare oggi» sono gli incerti a cui manca
+  la seconda giusta a 12 ore —, e un quesito incerto è proprio questo: preso
+  giusto, non ancora confermato; «recuperati» dice che c'è stato un errore e
+  che dopo sono venute le due giuste, senza nascondere l'errore come farebbe
+  «giusti»; «acquisiti» dice che non c'è mai stato un errore e le due giuste ci
+  sono. Tutte plurali e senza verbo, come «mai visti», così stanno in una
+  legenda da cinque voci a 375 px. Scartate: «giusti», perché copre due stati
+  diversi e sparisce dalla barra; «da ripassare», per la ragione di Q-DUE punto
+  3; «sicuri», perché promette una padronanza che il motore non misura (§7.4);
+  «sistemati» e «ok», che sono i nomi del codice e non dicono niente a chi non
+  l'ha scritto. La legenda dice che gli stati si leggono «in base alle ultime
+  risposte», e il `?` spiega le 12 ore. I tre stati di prima si leggono dai
+  cinque come `STATI_IN_TRE`: coperti = da confermare + recuperati + acquisiti.
+  R-STATI-06 nomina le parole, e resta scoperto finché la pagina non le scrive.
+  Si riapre dopo P-70, se le persone non le capiscono: è un testo, non un
+  contratto.
 
 - **Le decisioni del brainstorming P-59** (3 e 4 ottobre 2026, l'autore;
   scritte qui il 4 ottobre, con P-63). Le schede e la formulazione di ognuna
@@ -2414,7 +2440,8 @@ Ogni riga dice **chi decide**. Una questione senza un decidente non si chiude ma
   *ok* — nessun errore, e due giuste ad almeno 12 ore; *incerto* — il resto del
   visto. Sono disgiunti e sommano al totale. Le 12 ore sono una scelta pratica,
   da rivedere con i dati. «Rifai N errori» apre i deboli, cioè la lista di oggi
-  (`soloDaRifare`). Le parole sulla barra non sono decise: Q-STATI.
+  (`soloDaRifare`). Le parole sulla barra sono quelle di Q-STATI, chiusa il 13
+  ottobre 2026 (sotto).
   *Cambierà:* il §4.1, `classifica()` con i suoi chiamanti, `quadro()` e
   `dovePesa()`, R-ARCH-02, R-MAPPA-01…13. *Contratto del motore da P-71:*
   `statoQuesito()` e `contaStati()` accanto a `classifica()`, che non cambia;
@@ -3145,3 +3172,9 @@ successo, ed è il motivo per cui questo file esiste.
   ripetuti sono del decreto, e restano. §4.2 e R-NUM-02 dicono il nuovo stato,
   e `test_dati.py::test_progressivi` fissa la correzione e i numeri del decreto
   con le loro pagine.
+- **13 ottobre 2026 — Q-STATI chiusa, su delega.** Le parole dei cinque stati,
+  «mai visti · da rifare · da confermare · recuperati · acquisiti», decise dalla regia
+  con il «decidi tu e procedi» dell'autore, scritte fra le chiuse del §10 con le
+  ragioni e le scartate; il §4.1 e la nota della decisione 14 le dicono;
+  R-STATI-06 le nomina e resta scoperto finché la pagina non le scrive. Sblocca
+  P-68, il mock di Progressi.
