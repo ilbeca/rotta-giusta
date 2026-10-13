@@ -1,0 +1,87 @@
+[
+  {
+    "id": "Z-H0-12",
+    "arrival": 1,
+    "total": 2,
+    "heading": "Le risposte di questa pagina",
+    "rows": 0,
+    "ok": true
+  },
+  {
+    "id": "Z-H1-12",
+    "arrival": 1,
+    "total": 2,
+    "heading": "Le risposte di questa pagina",
+    "rows": 10,
+    "ok": true
+  },
+  {
+    "id": "Z-HA-12",
+    "arrival": 1,
+    "total": 2,
+    "heading": "Progressi",
+    "rows": 327,
+    "ok": true
+  },
+  {
+    "id": "F-H0-12",
+    "arrival": 1,
+    "total": 2,
+    "heading": "Le risposte di questa pagina",
+    "rows": 0,
+    "ok": true
+  },
+  {
+    "id": "F-H1-12",
+    "arrival": 1,
+    "total": 2,
+    "heading": "Le risposte di questa pagina",
+    "rows": 10,
+    "ok": true
+  },
+  {
+    "id": "F-HA-12",
+    "arrival": 1,
+    "total": 2,
+    "heading": "Progressi",
+    "rows": 327,
+    "ok": true
+  },
+  {
+    "id": "R-H0-12",
+    "arrival": 1,
+    "total": 2,
+    "heading": "Le risposte di questa pagina",
+    "rows": 0,
+    "ok": true
+  },
+  {
+    "id": "R-H1-12",
+    "arrival": 1,
+    "total": 2,
+    "heading": "Le risposte di questa pagina",
+    "rows": 10,
+    "ok": true
+  },
+  {
+    "id": "R-HA-12",
+    "arrival": 1,
+    "total": 2,
+    "heading": "Progressi",
+    "rows": 327,
+    "ok": true
+  },
+  {
+    "id": "Progressi-voce-rifai",
+    "arrival": 5,
+    "ids": 5,
+    "ok": true,
+    "boundary": "Apertura illustrativa, non prima domanda"
+  },
+  {
+    "id": "Progressi-voce-allena",
+    "arrival": 5,
+    "ok": true,
+    "boundary": "Apertura illustrativa"
+  }
+]

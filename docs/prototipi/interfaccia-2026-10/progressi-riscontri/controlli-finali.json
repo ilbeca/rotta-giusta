@@ -1,0 +1,58 @@
+[
+  {
+    "name": "anon fault fits its access state 375",
+    "ok": true
+  },
+  {
+    "name": "scroll and focus to same voice 375",
+    "ok": true
+  },
+  {
+    "name": "list persists after opening 375",
+    "ok": true
+  },
+  {
+    "name": "shortcut from map 375",
+    "ok": true
+  },
+  {
+    "name": "five entries visible in own width 375",
+    "ok": true
+  },
+  {
+    "name": "no foreign resources 375",
+    "ok": true
+  },
+  {
+    "name": "native forward 375",
+    "ok": true
+  },
+  {
+    "name": "anon fault fits its access state 1280",
+    "ok": true
+  },
+  {
+    "name": "scroll and focus to same voice 1280",
+    "ok": true
+  },
+  {
+    "name": "list persists after opening 1280",
+    "ok": true
+  },
+  {
+    "name": "shortcut from map 1280",
+    "ok": true
+  },
+  {
+    "name": "five entries visible in own width 1280",
+    "ok": true
+  },
+  {
+    "name": "no foreign resources 1280",
+    "ok": true
+  },
+  {
+    "name": "native forward 1280",
+    "ok": true
+  }
+]

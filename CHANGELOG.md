@@ -787,6 +787,31 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   cambiano. Niente prova fisica, Safari, lettore di schermo o test con persone.
   Confini, promesse escluse e consegna a P-68/P-69 in `attivita-note.md`.
 
+### Progettato — P-68: Progressi, il «sei qui» e i fatti
+
+- **Mock isolato in `docs/prototipi/interfaccia-2026-10/`**, due HTML
+  autoconsistenti e dieci casi: account caricato, caricamento, errore con
+  Riprova, vuoto, poche risposte, ricezione incompleta, selezione cambiata;
+  riepilogo anonimo e proposta conclusa. Percorso e Progressi insieme, senza
+  scambiare copertura o risultati per padronanza: fasi dichiarate proposte
+  per P-76; cinque parole di Q-STATI in ordine, legenda e spiegazione delle
+  12 ore. Prove, andamento e sessioni separati; niente stima o costanza duplicata.
+- **Numeri e liste dallo stesso snapshot del motore**, fonte sintetica
+  dichiarata: quadro, cinque stati, frase, sessioni, errori e andamento.
+  Rifai apre tutti i da rifare della riga, Allena la sua lista; soglie
+  rispettate. Senza account dieci risposte, due temi e tre errori
+  dell’attività, con la spiegazione dello storico che manca e nessun quarto
+  invito. La nota distingue la conclusione verificabile nella pagina aperta
+  dalla proposta persistente che richiederebbe la decisione sul §4.4.
+- **Chrome a 375 e 1280 px:** 220 misure geometriche, due letture degli
+  stili, 198 controlli e undici percorsi registrati (i nove ID 12 più Allena
+  e Rifai dalla voce); zero sbordamento e legenda completa, al più una
+  principale, liste coincidenti e ritorni con scroll/fuoco. La principale
+  account a telefono richiede scorrimento: costo documentato per P-70,
+  nessuna prova con persone. Guardiano e documentazione verdi; suite
+  applicative non rilanciate, runner/Risultato/Revisione completi a P-69.
+  Nessuna modifica a site/, tests/, coda o versione; nessun push.
+
 ## [0.30.0] — 2026-10-03
 
 **Il sito più semplice: niente offline.** Rotta Giusta si apre con la rete,
