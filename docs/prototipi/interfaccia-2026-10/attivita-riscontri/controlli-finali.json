@@ -1,0 +1,151 @@
+[
+  {
+    "name": "Chiudi Preparazione Z-H0 temi",
+    "pass": true
+  },
+  {
+    "name": "Chiudi Preparazione Z-H1 temi",
+    "pass": true
+  },
+  {
+    "name": "Chiudi Preparazione Z-HA temi",
+    "pass": true
+  },
+  {
+    "name": "Chiudi Preparazione F-H0 temi",
+    "pass": true
+  },
+  {
+    "name": "Chiudi Preparazione F-H1 temi",
+    "pass": true
+  },
+  {
+    "name": "Chiudi Preparazione F-HA temi",
+    "pass": true
+  },
+  {
+    "name": "Chiudi Preparazione R-H0 temi",
+    "pass": true
+  },
+  {
+    "name": "Chiudi Preparazione R-H1 temi",
+    "pass": true
+  },
+  {
+    "name": "Chiudi Preparazione R-HA temi",
+    "pass": true
+  },
+  {
+    "name": "Chiudi Preparazione Z-H0 preparazione",
+    "pass": true
+  },
+  {
+    "name": "Chiudi Preparazione Z-H1 preparazione",
+    "pass": true
+  },
+  {
+    "name": "Chiudi Preparazione Z-HA preparazione",
+    "pass": true
+  },
+  {
+    "name": "Chiudi Preparazione F-H0 preparazione",
+    "pass": true
+  },
+  {
+    "name": "Chiudi Preparazione F-H1 preparazione",
+    "pass": true
+  },
+  {
+    "name": "Chiudi Preparazione F-HA preparazione",
+    "pass": true
+  },
+  {
+    "name": "Chiudi Preparazione R-H0 preparazione",
+    "pass": true
+  },
+  {
+    "name": "Chiudi Preparazione R-H1 preparazione",
+    "pass": true
+  },
+  {
+    "name": "Chiudi Preparazione R-HA preparazione",
+    "pass": true
+  },
+  {
+    "name": "Obiettivo prima-motore",
+    "pass": true,
+    "detail": [
+      "Carteggio",
+      "Quiz base"
+    ]
+  },
+  {
+    "name": "Base libero prima-motore",
+    "pass": true
+  },
+  {
+    "name": "Obiettivo prima-vela",
+    "pass": true,
+    "detail": [
+      "Carteggio",
+      "Quiz base",
+      "Quiz vela"
+    ]
+  },
+  {
+    "name": "Base libero prima-vela",
+    "pass": true
+  },
+  {
+    "name": "Obiettivo estensione-motore",
+    "pass": true,
+    "detail": [
+      "Carteggio"
+    ]
+  },
+  {
+    "name": "Base libero estensione-motore",
+    "pass": true
+  },
+  {
+    "name": "Obiettivo estensione-vela",
+    "pass": true,
+    "detail": [
+      "Carteggio",
+      "Quiz vela"
+    ]
+  },
+  {
+    "name": "Base libero estensione-vela",
+    "pass": true
+  },
+  {
+    "name": "Obiettivo nessuno",
+    "pass": true,
+    "detail": [
+      "Carteggio",
+      "Quiz base",
+      "Quiz vela"
+    ]
+  },
+  {
+    "name": "Base libero nessuno",
+    "pass": true
+  },
+  {
+    "name": "Vuoto non avvia",
+    "pass": true
+  },
+  {
+    "name": "Conteggio vuoto zero",
+    "pass": true
+  },
+  {
+    "name": "Rimuovere filtri avvia",
+    "pass": true
+  },
+  {
+    "name": "Vela spegne figure",
+    "pass": true
+  }
+]

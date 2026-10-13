@@ -1,0 +1,16 @@
+{
+  "bench": {
+    "left": 82.5,
+    "right": 82.5
+  },
+  "body": {
+    "background": "rgb(242, 244, 247)",
+    "color": "rgb(11, 31, 51)",
+    "font": "Manrope, sans-serif"
+  },
+  "button": {
+    "background": "rgb(18, 62, 99)",
+    "color": "rgb(255, 255, 255)",
+    "height": 51.59375
+  }
+}

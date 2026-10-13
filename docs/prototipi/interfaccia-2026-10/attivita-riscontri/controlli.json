@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Base: stessa Preparazione Home/Esame",
+    "pass": true,
+    "detail": {
+      "same": true
+    }
+  },
+  {
+    "name": "Base torna a Esame",
+    "pass": true
+  },
+  {
+    "name": "Carta: stessa Preparazione Allenati/Esame",
+    "pass": true
+  },
+  {
+    "name": "Carta ripristina segmento",
+    "pass": true
+  },
+  {
+    "name": "Origine: segmento scroll fuoco, comando nativo",
+    "pass": true,
+    "detail": {
+      "actualBefore": {
+        "focus": "esercizi",
+        "scroll": 301,
+        "segment": "Carteggio"
+      },
+      "actualAfter": {
+        "focus": "esercizi",
+        "scroll": 301,
+        "segment": "Carteggio"
+      }
+    }
+  }
+]

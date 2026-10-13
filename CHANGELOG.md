@@ -757,6 +757,36 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   documentazione verdi; nessuna suite di esecuzione rilanciata per mock
   separati dal codice. Versione, coda e mappa P-65 intatte; nessun push.
 
+### Progettato — P-67: Allenati, Esame e le Preparazioni
+
+- **Tre HTML statici autoconsistenti in `docs/prototipi/interfaccia-2026-10/`,
+  senza risorse da altri host**, nella forma di P-66: confronto, temi in Quiz,
+  temi nella Preparazione. Tre segmenti, cinque intenzioni, ricerca con numero
+  assente e oscurato, tre porte del Carteggio, quattro giochi extra banca;
+  Esame ordinato con quattro obiettivi e base libero, Preparazioni comuni e
+  ritorni. Materiali, giudizio proprio e Q-CART4 prima dell'avvio. I nomi
+  restano dell'autore. Nessuna modifica a `site/`, `tests/`, versione o coda.
+- **Il numero annunciato viene dal motore, su fonte finta dichiarata.**
+  Snapshot riproducibile con impronte delle fonti, 208 configurazioni per
+  argomento e selezioni dei diversi mestieri; gli HTML non ricalcolano la
+  selezione. Date, esiti e guasto sono esempi. «Inizia» apre una schermata
+  illustrativa dichiarata: runner, timer, Risultato e Revisione restano P-69.
+- **Tre contro quattro, contando anche la scelta del tema.** 144 percorsi
+  eseguiti nel browser: 72 ID P-65 in due varianti, con i 108 ID conservati
+  nella nota e gli altri fuori perimetro dichiarati. Temi nella Preparazione
+  già visibili: un menu da aprire nasconderebbe un tocco. Tre tocchi non
+  provano trovabilità: a telefono i temi richiedono ancora scorrimento, e
+  P-70 deve provarli con le persone. Preparazioni base e carta identiche
+  dalle due porte; ritorno con segmento, fuoco e posizione misurati.
+- **Verificato sul mock finale:** 110 misure in Chrome a 375 e 1280 px,
+  zero sbordamento orizzontale e mai più di una principale attiva, screenshot
+  e stili calcolati; 37 controlli puntuali verdi, 144 percorsi con ritorno,
+  108 ID univoci, snapshot incorporati concordi e riferimenti locali validi.
+  Guardiano verde su 145 file di testo; controllo condiviso documentazione
+  verde. Le suite applicative non rilanciate: il sito e i requisiti non
+  cambiano. Niente prova fisica, Safari, lettore di schermo o test con persone.
+  Confini, promesse escluse e consegna a P-68/P-69 in `attivita-note.md`.
+
 ## [0.30.0] — 2026-10-03
 
 **Il sito più semplice: niente offline.** Rotta Giusta si apre con la rete,
