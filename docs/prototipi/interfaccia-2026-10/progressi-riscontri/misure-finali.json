@@ -1,0 +1,74 @@
+[
+  {
+    "name": "anon-avatar",
+    "width": 375,
+    "innerWidth": 375,
+    "clientWidth": 375,
+    "scrollWidth": 375,
+    "overflow": [],
+    "legend": [],
+    "primary": 0,
+    "title": "Accedi",
+    "font": "Manrope, sans-serif"
+  },
+  {
+    "name": "anon-info",
+    "width": 375,
+    "innerWidth": 375,
+    "clientWidth": 375,
+    "scrollWidth": 375,
+    "overflow": [],
+    "legend": [],
+    "primary": 0,
+    "title": "Info e diagnostica",
+    "font": "Manrope, sans-serif"
+  },
+  {
+    "name": "styles",
+    "width": 375,
+    "benchInset": 18,
+    "legendWidth": 339,
+    "legendEntries": 5,
+    "primaryTop": 1003.734375,
+    "bodyFont": "Manrope, sans-serif",
+    "bodyColor": "rgb(11, 31, 51)",
+    "bodyBackground": "rgb(242, 244, 247)",
+    "secondaryColor": "rgb(71, 85, 105)"
+  },
+  {
+    "name": "anon-avatar",
+    "width": 1280,
+    "innerWidth": 1280,
+    "clientWidth": 1280,
+    "scrollWidth": 1280,
+    "overflow": [],
+    "legend": [],
+    "primary": 0,
+    "title": "Accedi",
+    "font": "Manrope, sans-serif"
+  },
+  {
+    "name": "anon-info",
+    "width": 1280,
+    "innerWidth": 1280,
+    "clientWidth": 1280,
+    "scrollWidth": 1280,
+    "overflow": [],
+    "legend": [],
+    "primary": 0,
+    "title": "Info e diagnostica",
+    "font": "Manrope, sans-serif"
+  },
+  {
+    "name": "styles",
+    "width": 1280,
+    "benchInset": 90,
+    "legendWidth": 1100,
+    "legendEntries": 5,
+    "primaryTop": 668.515625,
+    "bodyFont": "Manrope, sans-serif",
+    "bodyColor": "rgb(11, 31, 51)",
+    "bodyBackground": "rgb(242, 244, 247)",
+    "secondaryColor": "rgb(71, 85, 105)"
+  }
+]
