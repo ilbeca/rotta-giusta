@@ -1,0 +1,1721 @@
+[
+  {
+    "id": "Z-H0-01",
+    "variant": "temi",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-H0-03",
+    "variant": "temi",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "Inizia"
+    ],
+    "tocchi": 4,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-H0-04",
+    "variant": "temi",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "A tappeto",
+      "Inizia"
+    ],
+    "tocchi": 5,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-H0-05",
+    "variant": "temi",
+    "steps": [
+      "Esame",
+      "Prova di carteggio",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-H0-06",
+    "variant": "temi",
+    "steps": [
+      "Allenati",
+      "Segnali",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-H0-07",
+    "variant": "temi",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-H1-01",
+    "variant": "temi",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-H1-03",
+    "variant": "temi",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "Inizia"
+    ],
+    "tocchi": 4,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-H1-04",
+    "variant": "temi",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "A tappeto",
+      "Inizia"
+    ],
+    "tocchi": 5,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-H1-05",
+    "variant": "temi",
+    "steps": [
+      "Esame",
+      "Prova di carteggio",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-H1-06",
+    "variant": "temi",
+    "steps": [
+      "Allenati",
+      "Segnali",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-H1-07",
+    "variant": "temi",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-HA-01",
+    "variant": "temi",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-HA-03",
+    "variant": "temi",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "Inizia"
+    ],
+    "tocchi": 4,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-HA-04",
+    "variant": "temi",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "A tappeto",
+      "Inizia"
+    ],
+    "tocchi": 5,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-HA-05",
+    "variant": "temi",
+    "steps": [
+      "Esame",
+      "Prova di carteggio",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-HA-06",
+    "variant": "temi",
+    "steps": [
+      "Allenati",
+      "Segnali",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-HA-07",
+    "variant": "temi",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H0-01",
+    "variant": "temi",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H0-03",
+    "variant": "temi",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "Inizia"
+    ],
+    "tocchi": 4,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H0-04",
+    "variant": "temi",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "A tappeto",
+      "Inizia"
+    ],
+    "tocchi": 5,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H0-05",
+    "variant": "temi",
+    "steps": [
+      "Esame",
+      "Prova di carteggio",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H0-06",
+    "variant": "temi",
+    "steps": [
+      "Allenati",
+      "Segnali",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H0-07",
+    "variant": "temi",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H1-01",
+    "variant": "temi",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H1-03",
+    "variant": "temi",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "Inizia"
+    ],
+    "tocchi": 4,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H1-04",
+    "variant": "temi",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "A tappeto",
+      "Inizia"
+    ],
+    "tocchi": 5,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H1-05",
+    "variant": "temi",
+    "steps": [
+      "Esame",
+      "Prova di carteggio",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H1-06",
+    "variant": "temi",
+    "steps": [
+      "Allenati",
+      "Segnali",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H1-07",
+    "variant": "temi",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-HA-01",
+    "variant": "temi",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-HA-03",
+    "variant": "temi",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "Inizia"
+    ],
+    "tocchi": 4,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-HA-04",
+    "variant": "temi",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "A tappeto",
+      "Inizia"
+    ],
+    "tocchi": 5,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-HA-05",
+    "variant": "temi",
+    "steps": [
+      "Esame",
+      "Prova di carteggio",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-HA-06",
+    "variant": "temi",
+    "steps": [
+      "Allenati",
+      "Segnali",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-HA-07",
+    "variant": "temi",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H0-01",
+    "variant": "temi",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H0-03",
+    "variant": "temi",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "Inizia"
+    ],
+    "tocchi": 4,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H0-04",
+    "variant": "temi",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "A tappeto",
+      "Inizia"
+    ],
+    "tocchi": 5,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H0-05",
+    "variant": "temi",
+    "steps": [
+      "Esame",
+      "Prova di carteggio",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H0-06",
+    "variant": "temi",
+    "steps": [
+      "Allenati",
+      "Segnali",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H0-07",
+    "variant": "temi",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H1-01",
+    "variant": "temi",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H1-03",
+    "variant": "temi",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "Inizia"
+    ],
+    "tocchi": 4,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H1-04",
+    "variant": "temi",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "A tappeto",
+      "Inizia"
+    ],
+    "tocchi": 5,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H1-05",
+    "variant": "temi",
+    "steps": [
+      "Esame",
+      "Prova di carteggio",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H1-06",
+    "variant": "temi",
+    "steps": [
+      "Allenati",
+      "Segnali",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H1-07",
+    "variant": "temi",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-HA-01",
+    "variant": "temi",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-HA-03",
+    "variant": "temi",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "Inizia"
+    ],
+    "tocchi": 4,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-HA-04",
+    "variant": "temi",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "A tappeto",
+      "Inizia"
+    ],
+    "tocchi": 5,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-HA-05",
+    "variant": "temi",
+    "steps": [
+      "Esame",
+      "Prova di carteggio",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-HA-06",
+    "variant": "temi",
+    "steps": [
+      "Allenati",
+      "Segnali",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-HA-07",
+    "variant": "temi",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-H0-01",
+    "variant": "preparazione",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-H0-03",
+    "variant": "preparazione",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "Inizia"
+    ],
+    "tocchi": 4,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-H0-04",
+    "variant": "preparazione",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "A tappeto",
+      "Inizia"
+    ],
+    "tocchi": 5,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-H0-05",
+    "variant": "preparazione",
+    "steps": [
+      "Esame",
+      "Prova di carteggio",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-H0-06",
+    "variant": "preparazione",
+    "steps": [
+      "Allenati",
+      "Segnali",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-H0-07",
+    "variant": "preparazione",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-H1-01",
+    "variant": "preparazione",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-H1-03",
+    "variant": "preparazione",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "Inizia"
+    ],
+    "tocchi": 4,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-H1-04",
+    "variant": "preparazione",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "A tappeto",
+      "Inizia"
+    ],
+    "tocchi": 5,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-H1-05",
+    "variant": "preparazione",
+    "steps": [
+      "Esame",
+      "Prova di carteggio",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-H1-06",
+    "variant": "preparazione",
+    "steps": [
+      "Allenati",
+      "Segnali",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-H1-07",
+    "variant": "preparazione",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-HA-01",
+    "variant": "preparazione",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-HA-03",
+    "variant": "preparazione",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "Inizia"
+    ],
+    "tocchi": 4,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-HA-04",
+    "variant": "preparazione",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "A tappeto",
+      "Inizia"
+    ],
+    "tocchi": 5,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-HA-05",
+    "variant": "preparazione",
+    "steps": [
+      "Esame",
+      "Prova di carteggio",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-HA-06",
+    "variant": "preparazione",
+    "steps": [
+      "Allenati",
+      "Segnali",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-HA-07",
+    "variant": "preparazione",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H0-01",
+    "variant": "preparazione",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H0-03",
+    "variant": "preparazione",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "Inizia"
+    ],
+    "tocchi": 4,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H0-04",
+    "variant": "preparazione",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "A tappeto",
+      "Inizia"
+    ],
+    "tocchi": 5,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H0-05",
+    "variant": "preparazione",
+    "steps": [
+      "Esame",
+      "Prova di carteggio",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H0-06",
+    "variant": "preparazione",
+    "steps": [
+      "Allenati",
+      "Segnali",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H0-07",
+    "variant": "preparazione",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H1-01",
+    "variant": "preparazione",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H1-03",
+    "variant": "preparazione",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "Inizia"
+    ],
+    "tocchi": 4,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H1-04",
+    "variant": "preparazione",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "A tappeto",
+      "Inizia"
+    ],
+    "tocchi": 5,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H1-05",
+    "variant": "preparazione",
+    "steps": [
+      "Esame",
+      "Prova di carteggio",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H1-06",
+    "variant": "preparazione",
+    "steps": [
+      "Allenati",
+      "Segnali",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H1-07",
+    "variant": "preparazione",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-HA-01",
+    "variant": "preparazione",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-HA-03",
+    "variant": "preparazione",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "Inizia"
+    ],
+    "tocchi": 4,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-HA-04",
+    "variant": "preparazione",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "A tappeto",
+      "Inizia"
+    ],
+    "tocchi": 5,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-HA-05",
+    "variant": "preparazione",
+    "steps": [
+      "Esame",
+      "Prova di carteggio",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-HA-06",
+    "variant": "preparazione",
+    "steps": [
+      "Allenati",
+      "Segnali",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-HA-07",
+    "variant": "preparazione",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H0-01",
+    "variant": "preparazione",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H0-03",
+    "variant": "preparazione",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "Inizia"
+    ],
+    "tocchi": 4,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H0-04",
+    "variant": "preparazione",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "A tappeto",
+      "Inizia"
+    ],
+    "tocchi": 5,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H0-05",
+    "variant": "preparazione",
+    "steps": [
+      "Esame",
+      "Prova di carteggio",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H0-06",
+    "variant": "preparazione",
+    "steps": [
+      "Allenati",
+      "Segnali",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H0-07",
+    "variant": "preparazione",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H1-01",
+    "variant": "preparazione",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H1-03",
+    "variant": "preparazione",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "Inizia"
+    ],
+    "tocchi": 4,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H1-04",
+    "variant": "preparazione",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "A tappeto",
+      "Inizia"
+    ],
+    "tocchi": 5,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H1-05",
+    "variant": "preparazione",
+    "steps": [
+      "Esame",
+      "Prova di carteggio",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H1-06",
+    "variant": "preparazione",
+    "steps": [
+      "Allenati",
+      "Segnali",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H1-07",
+    "variant": "preparazione",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-HA-01",
+    "variant": "preparazione",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-HA-03",
+    "variant": "preparazione",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "Inizia"
+    ],
+    "tocchi": 4,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-HA-04",
+    "variant": "preparazione",
+    "steps": [
+      "Allenati",
+      "Carteggio",
+      "Esercizi",
+      "A tappeto",
+      "Inizia"
+    ],
+    "tocchi": 5,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-HA-05",
+    "variant": "preparazione",
+    "steps": [
+      "Esame",
+      "Prova di carteggio",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-HA-06",
+    "variant": "preparazione",
+    "steps": [
+      "Allenati",
+      "Segnali",
+      "Inizia"
+    ],
+    "tocchi": 3,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-HA-07",
+    "variant": "preparazione",
+    "steps": [
+      "Simula il quiz base",
+      "Inizia"
+    ],
+    "tocchi": 2,
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-H0-11",
+    "variant": "temi",
+    "tocchi": 1,
+    "steps": [
+      "Chiudi / Torna a Home"
+    ],
+    "returnOrigin": true
+  },
+  {
+    "id": "Z-H1-11",
+    "variant": "temi",
+    "tocchi": 1,
+    "steps": [
+      "Chiudi / Torna a Home"
+    ],
+    "returnOrigin": true
+  },
+  {
+    "id": "Z-HA-11",
+    "variant": "temi",
+    "tocchi": 1,
+    "steps": [
+      "Chiudi / Torna a Home"
+    ],
+    "returnOrigin": true
+  },
+  {
+    "id": "F-H0-11",
+    "variant": "temi",
+    "tocchi": 1,
+    "steps": [
+      "Chiudi / Torna a Home"
+    ],
+    "returnOrigin": true
+  },
+  {
+    "id": "F-H1-11",
+    "variant": "temi",
+    "tocchi": 1,
+    "steps": [
+      "Chiudi / Torna a Home"
+    ],
+    "returnOrigin": true
+  },
+  {
+    "id": "F-HA-11",
+    "variant": "temi",
+    "tocchi": 1,
+    "steps": [
+      "Chiudi / Torna a Home"
+    ],
+    "returnOrigin": true
+  },
+  {
+    "id": "R-H0-11",
+    "variant": "temi",
+    "tocchi": 1,
+    "steps": [
+      "Chiudi / Torna a Home"
+    ],
+    "returnOrigin": true
+  },
+  {
+    "id": "R-H1-11",
+    "variant": "temi",
+    "tocchi": 1,
+    "steps": [
+      "Chiudi / Torna a Home"
+    ],
+    "returnOrigin": true
+  },
+  {
+    "id": "R-HA-11",
+    "variant": "temi",
+    "tocchi": 1,
+    "steps": [
+      "Chiudi / Torna a Home"
+    ],
+    "returnOrigin": true
+  },
+  {
+    "id": "Z-H0-11",
+    "variant": "preparazione",
+    "tocchi": 1,
+    "steps": [
+      "Chiudi / Torna a Home"
+    ],
+    "returnOrigin": true
+  },
+  {
+    "id": "Z-H1-11",
+    "variant": "preparazione",
+    "tocchi": 1,
+    "steps": [
+      "Chiudi / Torna a Home"
+    ],
+    "returnOrigin": true
+  },
+  {
+    "id": "Z-HA-11",
+    "variant": "preparazione",
+    "tocchi": 1,
+    "steps": [
+      "Chiudi / Torna a Home"
+    ],
+    "returnOrigin": true
+  },
+  {
+    "id": "F-H0-11",
+    "variant": "preparazione",
+    "tocchi": 1,
+    "steps": [
+      "Chiudi / Torna a Home"
+    ],
+    "returnOrigin": true
+  },
+  {
+    "id": "F-H1-11",
+    "variant": "preparazione",
+    "tocchi": 1,
+    "steps": [
+      "Chiudi / Torna a Home"
+    ],
+    "returnOrigin": true
+  },
+  {
+    "id": "F-HA-11",
+    "variant": "preparazione",
+    "tocchi": 1,
+    "steps": [
+      "Chiudi / Torna a Home"
+    ],
+    "returnOrigin": true
+  },
+  {
+    "id": "R-H0-11",
+    "variant": "preparazione",
+    "tocchi": 1,
+    "steps": [
+      "Chiudi / Torna a Home"
+    ],
+    "returnOrigin": true
+  },
+  {
+    "id": "R-H1-11",
+    "variant": "preparazione",
+    "tocchi": 1,
+    "steps": [
+      "Chiudi / Torna a Home"
+    ],
+    "returnOrigin": true
+  },
+  {
+    "id": "R-HA-11",
+    "variant": "preparazione",
+    "tocchi": 1,
+    "steps": [
+      "Chiudi / Torna a Home"
+    ],
+    "returnOrigin": true
+  },
+  {
+    "id": "Z-H0-02",
+    "variant": "temi",
+    "tocchi": 3,
+    "selected": "SICUREZZA DELLA NAVIGAZIONE",
+    "steps": [
+      "Allenati",
+      "SICUREZZA DELLA NAVIGAZIONE",
+      "Inizia"
+    ],
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-H1-02",
+    "variant": "temi",
+    "tocchi": 3,
+    "selected": "SICUREZZA DELLA NAVIGAZIONE",
+    "steps": [
+      "Allenati",
+      "SICUREZZA DELLA NAVIGAZIONE",
+      "Inizia"
+    ],
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-HA-02",
+    "variant": "temi",
+    "tocchi": 3,
+    "selected": "SICUREZZA DELLA NAVIGAZIONE",
+    "steps": [
+      "Allenati",
+      "SICUREZZA DELLA NAVIGAZIONE",
+      "Inizia"
+    ],
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H0-02",
+    "variant": "temi",
+    "tocchi": 3,
+    "selected": "METEOROLOGIA",
+    "steps": [
+      "Allenati",
+      "METEOROLOGIA",
+      "Inizia"
+    ],
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H1-02",
+    "variant": "temi",
+    "tocchi": 3,
+    "selected": "METEOROLOGIA",
+    "steps": [
+      "Allenati",
+      "METEOROLOGIA",
+      "Inizia"
+    ],
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-HA-02",
+    "variant": "temi",
+    "tocchi": 3,
+    "selected": "METEOROLOGIA",
+    "steps": [
+      "Allenati",
+      "METEOROLOGIA",
+      "Inizia"
+    ],
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H0-02",
+    "variant": "temi",
+    "tocchi": 3,
+    "selected": "METEOROLOGIA",
+    "steps": [
+      "Allenati",
+      "METEOROLOGIA",
+      "Inizia"
+    ],
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H1-02",
+    "variant": "temi",
+    "tocchi": 3,
+    "selected": "METEOROLOGIA",
+    "steps": [
+      "Allenati",
+      "METEOROLOGIA",
+      "Inizia"
+    ],
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-HA-02",
+    "variant": "temi",
+    "tocchi": 3,
+    "selected": "METEOROLOGIA",
+    "steps": [
+      "Allenati",
+      "METEOROLOGIA",
+      "Inizia"
+    ],
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-H0-02",
+    "variant": "preparazione",
+    "tocchi": 4,
+    "selected": "SICUREZZA DELLA NAVIGAZIONE",
+    "steps": [
+      "Allenati",
+      "Scegli un argomento",
+      "SICUREZZA DELLA NAVIGAZIONE",
+      "Inizia"
+    ],
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-H1-02",
+    "variant": "preparazione",
+    "tocchi": 4,
+    "selected": "SICUREZZA DELLA NAVIGAZIONE",
+    "steps": [
+      "Allenati",
+      "Scegli un argomento",
+      "SICUREZZA DELLA NAVIGAZIONE",
+      "Inizia"
+    ],
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "Z-HA-02",
+    "variant": "preparazione",
+    "tocchi": 4,
+    "selected": "SICUREZZA DELLA NAVIGAZIONE",
+    "steps": [
+      "Allenati",
+      "Scegli un argomento",
+      "SICUREZZA DELLA NAVIGAZIONE",
+      "Inizia"
+    ],
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H0-02",
+    "variant": "preparazione",
+    "tocchi": 4,
+    "selected": "METEOROLOGIA",
+    "steps": [
+      "Allenati",
+      "Scegli un argomento",
+      "METEOROLOGIA",
+      "Inizia"
+    ],
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-H1-02",
+    "variant": "preparazione",
+    "tocchi": 4,
+    "selected": "METEOROLOGIA",
+    "steps": [
+      "Allenati",
+      "Scegli un argomento",
+      "METEOROLOGIA",
+      "Inizia"
+    ],
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "F-HA-02",
+    "variant": "preparazione",
+    "tocchi": 4,
+    "selected": "METEOROLOGIA",
+    "steps": [
+      "Allenati",
+      "Scegli un argomento",
+      "METEOROLOGIA",
+      "Inizia"
+    ],
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H0-02",
+    "variant": "preparazione",
+    "tocchi": 4,
+    "selected": "METEOROLOGIA",
+    "steps": [
+      "Allenati",
+      "Scegli un argomento",
+      "METEOROLOGIA",
+      "Inizia"
+    ],
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-H1-02",
+    "variant": "preparazione",
+    "tocchi": 4,
+    "selected": "METEOROLOGIA",
+    "steps": [
+      "Allenati",
+      "Scegli un argomento",
+      "METEOROLOGIA",
+      "Inizia"
+    ],
+    "returnPreparation": true,
+    "overflow": 0
+  },
+  {
+    "id": "R-HA-02",
+    "variant": "preparazione",
+    "tocchi": 4,
+    "selected": "METEOROLOGIA",
+    "steps": [
+      "Allenati",
+      "Scegli un argomento",
+      "METEOROLOGIA",
+      "Inizia"
+    ],
+    "returnPreparation": true,
+    "overflow": 0
+  }
+]
