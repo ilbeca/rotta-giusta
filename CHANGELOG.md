@@ -609,6 +609,50 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   riscrivere, un secondo su una di loro, rossa per il motivo sbagliato; il terzo
   è verde. Guardiano verde.
 
+### Corretto — P-77: i progressivi della banca, riletti sul decreto
+
+- **Dei quattro progressivi illeggibili, uno era l'estrazione e tre sono del
+  decreto.** P-71 li aveva misurati e lasciati com'erano, con un test che li
+  fissava. Qui ognuno è stato guardato sull'immagine della sua pagina del PDF
+  in `fonte/`, rasterizzata a 300 dpi, perché il testo estratto è proprio ciò
+  che aveva sbagliato: **base-8**, pagina 2, riga 8, il decreto scrive
+  **1.1.1-8**, e la banca aveva «zzetto1 d.1i. 1p-o8ppa.», il numero intrecciato
+  con le lettere di «specchio di poppa». È corretto, e nessun altro quesito
+  porta quel numero. **base-385 «1.3.2.113»** (pagina 65), **base-943
+  «1.6.1.97»** (pagina 158) e **base-1326 «1.8.1.38»** (pagina 222) il decreto
+  li scrive così, con un punto dove gli altri hanno il trattino: restano, e non
+  si ricostruisce dal contesto il numero che il decreto non dà — anche dove la
+  serie lo suggerirebbe, come 1.8.1-38 fra il 37 e il 39.
+
+- **Gli undici numeri ripetuti sono tutti ripetuti nel decreto.** Le sette di
+  1.2.2: le righe pari di «Calcolo dell'autonomia» (pagine 27–29) portano
+  1.2.2-2…8, alternate alle 1.2.3, mentre le 1.2.2 vere sono «Irregolarità,
+  piccole avarie» (pagine 25–26); e 1.5.2-3 (pagine 111–112), 1.6.3-17 (154),
+  1.6.1-38 (155), 1.7.5-63 (199), due righe consecutive con lo stesso numero.
+  Nessuno è un errore di estrazione, quindi nessuno si corregge, e
+  `cercaNumero()` continua ad aprirli tutti e due.
+
+- **Solo il campo `p` di base-8**: un confronto strutturale con `HEAD` dà una
+  differenza sola su 1.722 quesiti. Testo, risposte e figure non sono stati
+  toccati. Prima il test che fallisce, `test_dati.py::test_progressivi`: la
+  correzione con il valore letto dal PDF, i tre progressivi del decreto, e gli
+  undici ripetuti, ognuno con la sua pagina; rosso sulla banca di prima per due
+  verifiche, base-8 e l'elenco degli illeggibili. Provato al contrario due
+  volte: rimesso il progressivo vecchio, rossi `test_dati.py` e R-NUM-02 nel
+  motore; spostato il numero di base-156, rosso l'elenco dei ripetuti. R-NUM-02
+  diventa «tre progressivi … come nel decreto», e trova base-8 con il suo
+  numero; §4.2 e R-NUM-02 della specifica, il README fra i difetti dichiarati
+  e il commento sopra `cercaNumero()` in `site/engine.js` — solo commento —
+  dicono il nuovo stato. `fonte/verifica.py` non confronta i quesiti: resta
+  135/135 testi e 134/135 risposte, con la sola `5.1.3-3` di sempre.
+
+  Suite: motore 212/216 con i quattro skip previsti; server 80/80; dati **229**
+  (erano 223); specifica 954; interfaccia 2.453, in 4 min 13 s, con la 8620
+  guardata libera prima. Guardiano verde. Con la LTS 24 non rilanciate: il
+  server non è stato toccato, e del motore solo un commento.
+  `docs/prossime-sessioni.md` e `site/` fuori da `site/dati/` e da quel
+  commento non sono stati toccati.
+
 ## [0.30.0] — 2026-10-03
 
 **Il sito più semplice: niente offline.** Rotta Giusta si apre con la rete,

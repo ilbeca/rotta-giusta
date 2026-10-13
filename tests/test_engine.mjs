@@ -4458,20 +4458,26 @@ test('cercaNumero: dal progressivo del decreto al quesito, base e vela', () => {
   for (const it of items.filter((x) => /^\d+\.\d+\.\d+-\d+$/.test(x.p))) assert.ok(ids(E.cercaNumero(items, it.p)).includes(it.id), it.id);
 });
 
-test('cercaNumero: sulla banca vera quattro progressivi non si leggono e undici sono ripetuti', () => {
-  // Misurato il 4 ottobre 2026 su site/dati/quiz.json, e non corretto qui: la
-  // banca si corregge solo con un motivo, un test in test_dati.py e il README.
-  // Questo test e' il segnaposto della misura: se diventa rosso, la banca e'
-  // cambiata, e il numero va riletto.
+test('cercaNumero: sulla banca vera tre progressivi non si leggono e undici sono ripetuti, come nel decreto', () => {
+  // Misurato il 4 ottobre 2026 (P-71) e riletto sul PDF del decreto il 13
+  // ottobre 2026 (P-77): base-8 era un errore di estrazione, e la banca porta
+  // ora il numero che il decreto scrive, 1.1.1-8. Gli altri tre il decreto li
+  // scrive con un punto al posto del trattino, e gli undici numeri ripetuti
+  // sono ripetuti nel decreto: restano, dichiarati, e la tabella con le pagine
+  // sta in test_dati.py (test_progressivi). Se questo test diventa rosso, la
+  // banca e' cambiata, e il numero va riletto.
   const items = bancaPubblicata();
   const illeggibili = items.filter((x) => !/^\d+\.\d+\.\d+-\d+$/.test(x.p)).map((x) => x.id);
-  assert.deepEqual(illeggibili, ['base-8', 'base-385', 'base-943', 'base-1326']);
+  assert.deepEqual(illeggibili, ['base-385', 'base-943', 'base-1326']);
   for (const id of illeggibili) {
     const it = items.find((x) => x.id === id);
     assert.ok(!ids0(E.cercaNumero(items, it.p)).includes(id), `${id} (${it.p}) non si trova per numero`);
   }
   // Nemmeno per somiglianza: «1.3.2.113» comincia come la voce 1.3.2, e non e' un suo quesito.
   assert.ok(!E.cercaNumero(items, '1.3.2').parziali.some((x) => x.id === 'base-385'));
+  // base-8 si trova con il suo numero, da solo, e fra i parziali della sua voce.
+  assert.deepEqual(ids0(E.cercaNumero(items, '1.1.1-8')), ['base-8']);
+  assert.ok(E.cercaNumero(items, '1.1.1').parziali.some((x) => x.id === 'base-8'));
   const per = new Map();
   for (const it of items) per.set(it.p, [...(per.get(it.p) || []), it.id]);
   const ripetuti = [...per].filter(([, v]) => v.length > 1);

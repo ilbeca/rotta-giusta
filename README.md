@@ -48,6 +48,19 @@ Quello che rende questo sito diverso dagli altri non sono i quiz. È che
   base-1418: due risposte marcate esatte, o nessuna) e sono stati corretti a mano
   con la motivazione accanto. Sono gli unici due casi *rilevabili*; dove la banca
   ne marca una sola, anche se sembra sbagliata, la risposta resta quella.
+- **Un numero di quesito era illeggibile (base-8)**: l'estrazione del PDF lo
+  aveva intrecciato con il testo della domanda accanto. Riletto sull'immagine
+  della pagina 2 dell'Allegato A, è **1.1.1-8**, ed è corretto. Solo il numero:
+  testo, risposte e figura restano com'erano, e un test lo fissa.
+  **Altri tre numeri non si leggono, ma così li scrive il decreto**, con un
+  punto dove gli altri hanno il trattino: base-385 «1.3.2.113» (pagina 65),
+  base-943 «1.6.1.97» (pagina 158), base-1326 «1.8.1.38» (pagina 222). Restano
+  come sono, e quei quesiti non si trovano cercandoli per numero. E **undici
+  numeri sono portati da due quesiti diversi già nel decreto** — sette fra
+  1.2.2-2 e 1.2.2-8, dove le righe di «Calcolo dell'autonomia» portano i numeri
+  di «Irregolarità, piccole avarie» (pagine 25–29), più 1.5.2-3, 1.6.3-17,
+  1.6.1-38 e 1.7.5-63 —: restano, e la ricerca per numero li apre tutti e due.
+  Verificato il 13 ottobre 2026 sul PDF in `fonte/`, pagina per pagina.
 - **La composizione delle 20 domande per tema** — 4 Navigazione, 4 Manovra,
   3 Sicurezza, 3 Normativa, 2 COLREG, 2 Meteorologia, 1 Teoria dello scafo,
   1 Motori — governa la simulazione e tutte le priorità dell'app, ed **è

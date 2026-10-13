@@ -769,11 +769,16 @@ numero che non c'è è una ricerca valida senza risultati, un testo che non è u
 numero lo dice. Parziali: la parte prima del trattino per segmenti interi
 («1.1» non prende 1.10), il numero dopo per prefisso («1.1.1-2» prende 20…29).
 Un oscurato si trova, e sta in `oscurati`. **Due difetti della banca, misurati
-il 4 ottobre 2026 e non corretti**: quattro progressivi non si leggono
-(base-8, base-385, base-943, base-1326) e quei quesiti non si trovano per
-numero; undici numeri sono portati da due quesiti diversi, e la ricerca li apre
-tutti e due. R-NUM-02 fissa la misura finché la banca non si corregge, con un
-motivo e un test in `test_dati.py`.
+il 4 ottobre 2026 e riletti sul PDF del decreto il 13 ottobre (P-77)**: dei
+quattro progressivi che non si leggevano, uno era un errore di estrazione —
+base-8, che il decreto numera 1.1.1-8 (pagina 2), e la banca ora porta quel
+numero —; gli altri tre il decreto li scrive così, con un punto dove gli altri
+hanno il trattino (base-385 «1.3.2.113», base-943 «1.6.1.97», base-1326
+«1.8.1.38»), e quei quesiti non si trovano per numero. Gli undici numeri
+portati da due quesiti diversi sono ripetuti nel decreto, tutti e undici, e la
+ricerca li apre tutti e due. Non si ricostruisce dal contesto il numero che il
+decreto non scrive: all'esame vale lui. La tabella, con le pagine, è
+`test_dati.py::test_progressivi`; R-NUM-02 fissa la misura nel motore.
 
 **Due funzioni di estrazione e non una** perché sono due mestieri: una prova che
 ti serve solo quesiti mai visti misura quanto è vergine il foglio, non il voto
@@ -2224,7 +2229,7 @@ motore, e la pagina di oggi non li chiama: stanno fra gli orfani dichiarati di
 | R-SEGNO-02 | Vale l'ultimo gesto per istante, i segni rotti non decidono, e l'allenamento «i miei segnalibri» dà la lista e il numero dalla stessa chiamata, nomina i segni su quesiti che la banca non ha e si restringe per banca | `test_engine.mjs::segnalibri: vale l ultimo gesto` |
 | R-SEGNO-03 | I segnalibri non cambiano niente di quello che il motore seleziona o misura, entrano dall'import per `uid` e viaggiano nella coda | `test_engine.mjs::il segnalibro non e una risposta` |
 | R-NUM-01 | Dal progressivo del decreto al quesito, base e vela: scritto come lo scrive chi studia, esatto o parziale per segmenti interi, un numero che non c'è senza risultati, un testo che non è un numero detto, un oscurato trovato e nominato, e ogni quesito con un progressivo leggibile trovato con il suo | `test_engine.mjs::cercaNumero: dal progressivo del decreto al quesito` |
-| R-NUM-02 | La misura dei difetti della banca: quattro progressivi illeggibili, che non si trovano né per numero né per somiglianza, e undici numeri ripetuti, che aprono tutti i loro quesiti | `test_engine.mjs::cercaNumero: sulla banca vera quattro progressivi` |
+| R-NUM-02 | La misura dei difetti della banca, riletta sul PDF del decreto (P-77): tre progressivi illeggibili, scritti così nel decreto, che non si trovano né per numero né per somiglianza, e undici numeri ripetuti nel decreto, che aprono tutti i loro quesiti; base-8, l'errore di estrazione, si trova con il suo numero, 1.1.1-8 | `test_engine.mjs::cercaNumero: sulla banca vera tre progressivi` |
 
 **Che cosa questi controlli non vedono.** La pagina: nessuno dei quattro
 contratti ha ancora un gesto, una barra o una casella di ricerca, e i testi —
@@ -3113,3 +3118,10 @@ successo, ed è il motivo per cui questo file esiste.
   P-71. §3.2 dice la riga d'avvio e perché non è uno specchio, §3.7 gli esiti
   sul server, §4.6 che la previsione si registra, §5.4 le due voci che la pagina
   non ha ancora, Q-STIMA che la strada in pagina c'è e resta l'email.
+- **13 ottobre 2026 — i progressivi della banca, riletti sul decreto (P-77).**
+  I quattro progressivi illeggibili e gli undici ripetuti di P-71 guardati sul
+  PDF di `fonte/`, pagina per pagina, a 300 dpi: base-8 era un errore di
+  estrazione e porta ora 1.1.1-8, come il decreto; gli altri tre e gli undici
+  ripetuti sono del decreto, e restano. §4.2 e R-NUM-02 dicono il nuovo stato,
+  e `test_dati.py::test_progressivi` fissa la correzione e i numeri del decreto
+  con le loro pagine.

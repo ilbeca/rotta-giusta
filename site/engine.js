@@ -2247,13 +2247,15 @@ export function codaSegnalibri(items, righe, { kind } = {}) {
 // progressivo `p` dell'Allegato A («1.1.1-24»), che la pagina scrive sopra la
 // domanda come «N. 1.1.1-24». Da li' al quesito.
 //
-// **Due difetti della banca, misurati il 4 ottobre 2026 e non corretti qui**:
-// quattro quesiti hanno un progressivo che non si legge (base-8, base-385,
-// base-943, base-1326: l'estrazione del PDF), e undici numeri sono portati da
-// due quesiti diversi (da 1.2.2-2 a 1.2.2-8 fra «Irregolarita'» e «Calcolo
+// **Due difetti della banca, misurati il 4 ottobre 2026 e riletti sul PDF del
+// decreto il 13 ottobre (P-77)**: tre quesiti hanno un progressivo che non si
+// legge, perche' il decreto lo scrive con un punto (base-385, base-943,
+// base-1326), e undici numeri sono portati da due quesiti diversi anche nel
+// decreto (da 1.2.2-2 a 1.2.2-8 fra «Irregolarita'» e «Calcolo
 // dell'autonomia», e altri quattro). I primi non si trovano per numero; un
-// numero ripetuto apre tutti e due. La banca si corregge solo con un motivo e
-// un test (AGENTS.md), e un test fissa la misura finche' non succede.
+// numero ripetuto apre tutti e due. Il quarto, base-8, era l'estrazione, e la
+// banca porta ora 1.1.1-8. La tabella con le pagine e' in test_dati.py
+// (test_progressivi), e R-NUM-02 fissa la misura qui.
 
 const NUMERO_INTERO = /^\d+\.\d+\.\d+-\d+$/;
 // Una parte del numero: i segmenti prima del trattino, o tutti e tre con un trattino e l'inizio del numero.

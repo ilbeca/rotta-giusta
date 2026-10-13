@@ -329,6 +329,65 @@ RISPOSTE_ANNOTATI = {
 }
 
 
+# g) I progressivi `p` del decreto, letti sull'immagine delle pagine dell'Allegato A
+#    (fonte/allegato-A-DD-131-2022.pdf, la colonna PROGRESSIVO, a 300 dpi) il
+#    13 ottobre 2026 (P-77). Il testo estratto non basta: e' proprio lui ad aver
+#    prodotto l'unico errore.
+#
+#    Corretto, perche' il PDF smentisce la banca: base-8, pagina 2, riga 8.
+#    Il decreto scrive «1.1.1-8»; l'estrazione aveva intrecciato il numero con
+#    le lettere della domanda accanto («specchio di poppa») e scritto
+#    «zzetto1 d.1i. 1p-o8ppa.». Nessun altro quesito porta 1.1.1-8.
+PROGRESSIVI_CORRETTI = {'base-8': '1.1.1-8'}
+
+#    Non corretti, perche' il PDF li scrive cosi': un punto dove gli altri
+#    hanno il trattino, e un numero che non e' quello della serie. Non si
+#    ricostruisce il numero «giusto» dal contesto: all'esame vale il decreto, e
+#    questi tre non si trovano per numero (cercaNumero(), R-NUM-02).
+PROGRESSIVI_DEL_DECRETO = {
+    'base-385': '1.3.2.113',   # pagina 65, riga 385, voce «Centro Internazionale Radio Medico (CIRM).»
+    'base-943': '1.6.1.97',    # pagina 158, riga 943, fra 1.6.2-33 e 1.6.1-42
+    'base-1326': '1.8.1.38',   # pagina 222, riga 1326, fra 1.8.1-37 e 1.8.1-39
+}
+
+#    Ripetuti nel decreto, tutti e undici: due righe del PDF con lo stesso
+#    progressivo. Nessuno e' un errore di estrazione, quindi restano, e
+#    cercaNumero() apre tutti e due i quesiti. Le sette di 1.2.2 sono le righe
+#    pari di «Calcolo dell'autonomia» (pagine 27-29), che il decreto numera
+#    1.2.2 alternate alle 1.2.3: le 1.2.2-2…8 vere sono «Irregolarita', piccole
+#    avarie» alle pagine 25-26.
+RIPETUTI_DEL_DECRETO = {
+    '1.2.2-2': ['base-145', 'base-156'],    # pagine 25 e 27
+    '1.2.2-3': ['base-146', 'base-158'],    # pagine 25 e 27
+    '1.2.2-4': ['base-147', 'base-160'],    # pagine 25 e 27
+    '1.2.2-5': ['base-148', 'base-162'],    # pagine 25 e 28
+    '1.2.2-6': ['base-149', 'base-164'],    # pagine 25 e 28
+    '1.2.2-7': ['base-150', 'base-166'],    # pagine 26 e 28
+    '1.2.2-8': ['base-151', 'base-168'],    # pagine 26 e 29
+    '1.5.2-3': ['base-665', 'base-666'],    # pagine 111 e 112
+    '1.6.3-17': ['base-920', 'base-921'],   # pagina 154
+    '1.6.1-38': ['base-925', 'base-926'],   # pagina 155
+    '1.7.5-63': ['base-1192', 'base-1193'], # pagina 199
+}
+
+
+def test_progressivi():
+    for qid, p in PROGRESSIVI_CORRETTI.items():
+        check('progressivo %s == %s (PDF)' % (qid, p), per_id[qid]['p'] == p, per_id[qid]['p'])
+    for qid, p in PROGRESSIVI_DEL_DECRETO.items():
+        check('progressivo %s resta %s, come nel PDF' % (qid, p), per_id[qid]['p'] == p, per_id[qid]['p'])
+    forma = re.compile(r'^\d+\.\d+\.\d+-\d+$')
+    illeggibili = sorted(q['id'] for q in quiz if not forma.match(q['p']))
+    check('progressivi illeggibili: solo quelli che il decreto scrive cosi\'',
+          illeggibili == sorted(PROGRESSIVI_DEL_DECRETO), illeggibili)
+    per_p = {}
+    for q in quiz:
+        per_p.setdefault(q['p'], []).append(q['id'])
+    ripetuti = {p: ids for p, ids in per_p.items() if len(ids) > 1}
+    check('progressivi ripetuti: esattamente quelli del decreto',
+          ripetuti == RIPETUTI_DEL_DECRETO, sorted(set(ripetuti) ^ set(RIPETUTI_DEL_DECRETO)))
+
+
 def test_invarianti():
     # a) abbinamenti corretti a mano
     for qid, fig in ABBINAMENTI.items():
@@ -687,7 +746,7 @@ def test_serve():
 
 
 def main():
-    for t in (test_controlla, test_titolare, test_segreti, test_materiale_dichiarato, test_quiz, test_meta, test_figure, test_invarianti,
+    for t in (test_controlla, test_titolare, test_segreti, test_materiale_dichiarato, test_quiz, test_meta, test_figure, test_progressivi, test_invarianti,
               test_carteggio, test_sw, test_nessuna_risorsa_di_terzi, test_rinomino, test_manifest_icone, test_indirizzi,
               test_serve):
         t()
