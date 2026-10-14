@@ -1,6 +1,6 @@
 # Prossime sessioni — la coda, con i prompt
 
-**Aggiornato il 13 ottobre 2026.** Territorio neutro. **Penna: la sessione di regia** (sotto, «Come si usa»).
+**Aggiornato il 14 ottobre 2026.** Territorio neutro. **Penna: la sessione di regia** (sotto, «Come si usa»).
 
 > **Questo file invecchia.** È una coda, non una verità: quando un lavoro è
 > fatto, il suo prompt si chiude con l'esito e resta, la riga della coda si
@@ -181,15 +181,16 @@ risposte), la merge di P-66 (la Home nei tre stati, il secondo dei
 cinque mock), la merge di P-67 (Allenati ed Esame, il terzo) e i due
 commit della coda del 13 ottobre: tutto pushato su GitHub il 13
 ottobre. Il server in esercizio è ancora la v0.30.0 con lo schema 4.
-Pronti: P-69 per ChatGPT, il giro di un'attività, l'ultimo dei cinque
-mock (P-68, Progressi, è fuso il 13 ottobre con Q-STATI chiusa su
-delega); P-62 con l'autore. Per Claude niente: P-75 aspetta la base
-giuridica, P-76 aspetta Q-COSTANZA, l'ambito della conclusione (§4,
-«Dopo P-59», 10) e le fasi (punto 15).
+I cinque mock sono fusi, l'ultimo (P-69, il giro di un'attività) il 14
+ottobre. Pronti: P-70 con l'autore, la prova dei mock con le persone e
+i bot; P-62 con l'autore. Per ChatGPT niente finché P-70 non chiude:
+il progetto del ridisegno (riga 21) parte dal suo esito. Per Claude
+niente: P-75 aspetta la base giuridica, P-76 aspetta Q-COSTANZA,
+l'ambito della conclusione (§4, «Dopo P-59», 10) e le fasi (punto 15).
 
 I prossimi passi, in quest'ordine:
-1. Il resoconto di P-69, e da lì P-70 con l'autore — le persone sui
-   mock — e poi il prompt del progetto del ridisegno (riga 21).
+1. P-70 con l'autore, quando ha le persone; dal suo esito i nomi
+   definitivi (§4, punto 4) e il prompt del progetto del ridisegno.
 2. Le decisioni dell'autore nel §4, «Dopo P-59» e «Dopo P-64»:
    ricordagliele quando il lavoro che le aspetta sta per partire. La
    base giuridica di esito e previsioni ferma P-75;
@@ -249,8 +250,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
 | 14 | **La casella `privacy@` sull'iPhone**, e la prova `dkim=pass` | Claude con l'autore | `main`, solo `account-progetto.md` | niente | P-62 |
-| 17 | **I mock della nuova interfaccia**, in cinque passi, in `docs/prototipi/` | ChatGPT | `ui/main` | ognuno aspetta il precedente; P-65…P-68 sono fusi | P-69, poi P-70 con l'autore |
-| 18 | **La prova dei mock** con tre-cinque persone vere, e con i bot sulle varianti | l'autore, con Claude | — | P-69 | P-70 |
+| 18 | **La prova dei mock** con tre-cinque persone vere, e con i bot sulle varianti | l'autore, con Claude | `main`, solo `docs/prototipi/` | niente: i cinque mock sono fusi (P-65…P-69, riga 17 uscita) | P-70 |
 | 19 | **Le ricerche**: il parere del professionista sulle donazioni (14 domande, I-11); se all'esame vero si torna indietro fra le domande; Lighthouse su telefono e Safari veri (I-08) | l'autore | — | — | §4, «Dopo P-59» |
 | 20-bis | **I contratti del motore, seconda parte**: Percorso con il «sei qui», costanza, obiettivo, «hai concluso quello che ti avevamo proposto» | Claude | `main` | Q-COSTANZA e la decisione 22 (§4, «Dopo P-59», 3 e 10); e P-68, che disegna il «sei qui» | P-76, da scrivere |
 | 21 | **Il progetto e la realizzazione del ridisegno**, con i controlli dei tragitti | ChatGPT, e Claude per i controlli | `ui/main`, `main` | P-70 | da scrivere |
@@ -272,7 +272,7 @@ v0.30.0: lo schema 5 e la correzione del `500` sulla data d'esame arrivano con
 il prossimo rilascio. **Per Claude** oggi non c'è un prompt pronto: P-75
 aspetta la base giuridica, P-76 aspetta Q-COSTANZA e P-68. P-62 con l'autore
 quando vuole.
-**Per ChatGPT:** P-69, il giro di un'attività, l'ultimo dei cinque mock: P-68 è fuso il 13 ottobre. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
+**Per ChatGPT:** niente di pronto: i cinque mock sono fusi, P-69 il 14 ottobre, e il prossimo lavoro su `ui/main` è il progetto del ridisegno (riga 21), dopo P-70. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
 che cambiano una promessa (un ADR, la filosofia, la specifica), poi i mock e la
 prova con le persone, poi il codice; «com'è andata» parte presto perché i suoi
 dati arrivano mesi dopo. **Il §5, il §6 e i controlli R-NAV della specifica non
@@ -5397,8 +5397,8 @@ nota di P-68 e dalle decisioni dei punti 10 e 15.
 
 ### P-69 — ChatGPT: i mock della nuova interfaccia, passo 5 — il giro di un'attività
 
-**Stato:** pronto, dal 13 ottobre 2026: P-68 è fuso, e `ui/main` è allineato
-a `main`. **Dove:** l'app ChatGPT (Codex), progetto
+**Stato:** **chiuso il 14 ottobre 2026**, merge `4428d1b`. Prima era: pronto,
+dal 13 ottobre 2026. **Dove:** l'app ChatGPT (Codex), progetto
 `~/Software/rotta-giusta-ui` in modalità Local, ramo **`ui/main`**. Scrive
 soltanto in `docs/prototipi/`, che è neutro. **Nasce da:** P-65…P-68; le
 decisioni 9, 12, 15, 20, 21, 28 e 30 di P-59; l'ADR-006. **Sblocca:** P-70,
@@ -5471,6 +5471,98 @@ a [Unreleased], versione non toccata. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
 ```
 
+**Esito:** commit `ee15c9d` su `ui/main`, merge `4428d1b` su `main`, voce
+«Progettato — P-69» nel CHANGELOG. In `docs/prototipi/interfaccia-2026-10/`:
+`giro.html`, **un documento solo** nei due stati d'accesso, con quiz —
+runner, simulazione con timer e senza correzione in corsa, «Base e vela» in
+due fasi, consegna anche parziale, Risultato con le tre affermazioni e senza
+voto, Revisione, riprova, i tag «Non lo sapevo» e «Svista», il segnalibro,
+«Ero sicuro / avevo un dubbio», «Segnala un problema» con l'indirizzo come
+segnaposto dichiarato, la spiegazione con la struttura fissa e un testo
+dichiarato finto —, Carteggio — prova a tempo con il giudizio di chi studia,
+giudizio rinviato, bozza simulata con l'account, avviso senza —, Segnali con
+il riepilogo; l'invito a registrarsi nel Risultato e nei riepiloghi, con
+«Continua senza account»; i ritorni con stato e fuoco conservati;
+`giro-note.md`; `giro-riscontri/`. **Misurato da ChatGPT**, non dalla
+regia: 534 geometrie a 375 e 1280 px con zero sbordamento, 219 controlli; i
+tragitti 01, 02, 05 e 06 a 2, 3, 3 e 3 tocchi fino alla prima domanda, e
+«un quiz su un argomento» non è sceso a due. **Trovato e corretto nel mock:**
+la domanda spinta sotto le risposte sul telefono. **Non fatto, dichiarato:**
+niente servizi né persistenza vera, niente persone né telefono; i quesiti
+lunghi e la spiegazione possono chiedere scorrimento, da provare in P-70.
+**Controllato dalla regia il 14 ottobre:** il commit con il trailer, recinto
+verde, diff limitato ai prototipi e al CHANGELOG, merge, `main..ui/main`
+vuoto, la riga vuota nel CHANGELOG al suo posto; guardiano, controllo della
+documentazione, dati 229 e specifica 958 sullo stato fuso; motore, server e
+interfaccia non rilanciati. I mock non aperti dalla regia in un browser.
+**Per l'autore:** niente di nuovo — l'indirizzo delle segnalazioni e la
+licenza delle spiegazioni sono i punti 2 e 6 del §4, «Dopo P-59», e fermano
+le spiegazioni, non il ridisegno. **Per la coda:** la riga 17 esce; P-70,
+scritto qui sotto, è con l'autore.
+
+### P-70 — Claude, con l'autore: la prova dei mock, con le persone e con i bot
+
+**Stato:** pronto, dal 14 ottobre 2026: i cinque mock sono fusi. **Dove:**
+Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano e con
+l'autore davanti, perché le persone e i dispositivi li porta lui; scrive solo
+in `docs/prototipi/`, che è neutro, e il §4 lo aggiorna la regia dal
+resoconto. **Nasce da:** la decisione 33 di P-59 e la scheda I-09; le quattro
+note dei mock, che elencano che cosa P-70 deve provare. **Sblocca:** i nomi
+definitivi (§4, «Dopo P-59», 4 e 13), Q-STATI se le parole non reggono, e il
+progetto del ridisegno (riga 21).
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main, con l'autore davanti. Se sei un
+altro agente o sei in un'altra cartella, fermati e dillo, senza
+scrivere niente.
+
+Sessione P-70: la prova dei cinque mock della nuova interfaccia con
+tre-cinque persone vere, e con i bot sulle varianti. Niente site/,
+niente tests/: si scrive soltanto
+docs/prototipi/interfaccia-2026-10/prova-persone.md e, se servono, le
+schermate accanto.
+
+Leggi AGENTS.md; in docs/idee-dopo-gli-account.md la scheda I-09 — i
+due profili, i compiti, e «I primi due profili» con i giri dei bot del
+4 ottobre — e la decisione 33; nel §4 di docs/prossime-sessioni.md,
+«Dopo P-59», i punti 4, 13 e 15; nella specifica §1 e Q-STATI fra le
+chiuse del §10; le quattro note dei mock (home-note.md,
+attivita-note.md, progressi-note.md, giro-note.md), ciascuna con la sua
+parte «P-70»: è l'elenco di che cosa provare, e non lo si riscrive.
+
+Con l'autore, prima di cominciare: chi sono le persone (per ognuna il
+profilo del §1 — comincia da zero, in formazione, sotto esame — e se
+cerca «i quiz»), su quale dispositivo, e in quale ordine vedono le
+varianti dei nomi — l'ordine si alterna fra le persone, così nessuna
+variante è sempre la prima. I compiti sono quelli di I-09 più uno per
+chi cerca «i quiz», dati con le parole della persona e non con i nomi
+delle voci. Per ogni persona e compito: che cosa ha toccato, in quanti
+tocchi, dove si è fermata, che cosa ha detto, e le cinque parole di
+Q-STATI spiegate con parole sue dopo averle viste. Niente aiuto durante
+il compito; le domande si annotano e si rispondono dopo. Le persone non
+si nominano: un numero e il profilo.
+
+I bot girano sulle stesse varianti, con il banco di ~/bot-ux/ che il 4
+ottobre ha fatto i primi giri: l'autore lo lancia, tu leggi l'esito, e
+lo scrivi come segnale debole accanto a quello delle persone, mai al
+posto loro; un nome non si promuove per il solo esito dei bot.
+
+In prova-persone.md: il protocollo com'è stato fatto davvero, le
+osservazioni persona per persona, i conteggi contro quelli delle note
+dei mock, e in fondo — separati, senza decidere — che cosa l'esito dice
+su ogni nome ancora aperto del §4 punto 4, sui tre tocchi del punto 13,
+sulle parole di Q-STATI, sullo scorrimento che i mock dichiarano; e che
+cosa nessuno ha capito. Con meno di tre persone la prova non è fatta, e
+lo scrivi: non si inventa un campione.
+
+Guardiano verde (python3 strumenti/controlla.py). Non toccare
+docs/prossime-sessioni.md né la specifica: le decisioni le prende
+l'autore e le scrive la regia. Un commit, con la voce in fondo a
+[Unreleased]; niente push. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
 **Esito:** —
 
 ### I segnaposto — i prompt che non si possono ancora scrivere
@@ -5482,11 +5574,8 @@ il resoconto del precedente, e la regia scrive il suo prompt allora.
 - **P-66**: scritto il 12 ottobre 2026, chiuso il 13.
 - **P-67**: scritto il 13 ottobre 2026, chiuso lo stesso giorno.
 - **P-68**: scritto il 13 ottobre 2026, dopo Q-STATI, e chiuso lo stesso giorno.
-- **P-69**: scritto il 13 ottobre 2026, qui sopra.
-- **P-70 — la prova**, con l'autore: tre-cinque persone vere sui mock, con i
-  compiti dei due profili di I-09 e uno per chi cerca «i quiz»; e i bot sulle
-  varianti, come segnale debole accanto. Aspetta P-69. Dal suo esito: i nomi
-  definitivi (§4), e il prompt del progetto del ridisegno (riga 21).
+- **P-69**: scritto il 13 ottobre 2026, chiuso il 14.
+- **P-70**: scritto il 14 ottobre 2026, qui sopra.
 
 **Dopo P-63 e P-64, dal 4 ottobre 2026.**
 
@@ -6187,4 +6276,12 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   (punto 10) e le fasi proposte del «sei qui» (punto 15, nuovo), che fermano
   P-76 e non P-69. P-69, l'ultimo mock, scritto; dopo di lui P-70 con
   l'autore. `main` pushato, i rami di ChatGPT allineati, sul «procedi»
+  dell'autore.
+- **14 ottobre 2026 — P-69 fuso e chiuso: i cinque mock ci sono tutti; P-70
+  scritto.** Il resoconto letto contro il repo: il commit con il trailer,
+  recinto verde, diff limitato ai prototipi e al CHANGELOG, merge,
+  `main..ui/main` vuoto; guardiano, documentazione, dati 229 e specifica 958
+  sullo stato fuso. La riga 17 esce dalla coda; la 18, la prova con le
+  persone, è P-70, con l'autore, scritto dalla parte «P-70» delle quattro note
+  dei mock. `main` pushato, i rami di ChatGPT allineati, sul «procedi»
   dell'autore.
