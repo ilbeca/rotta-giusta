@@ -182,15 +182,19 @@ cinque mock), la merge di P-67 (Allenati ed Esame, il terzo) e i due
 commit della coda del 13 ottobre: tutto pushato su GitHub il 13
 ottobre. Il server in esercizio è ancora la v0.30.0 con lo schema 4.
 I cinque mock sono fusi, l'ultimo (P-69, il giro di un'attività) il 14
-ottobre. Pronti: P-70 con l'autore, la prova dei mock con le persone e
-i bot; P-62 con l'autore. Per ChatGPT niente finché P-70 non chiude:
-il progetto del ridisegno (riga 21) parte dal suo esito. Per Claude
-niente: P-75 aspetta la base giuridica, P-76 aspetta Q-COSTANZA,
-l'ambito della conclusione (§4, «Dopo P-59», 10) e le fasi (punto 15).
+ottobre; P-70 è fatto a metà lo stesso giorno — 300 giri dei bot sulle
+varianti, nessuna persona, perché l'autore non le aveva — e il suo
+prompt resta valido per la parte con le persone. Pronti: P-70 con le
+persone, e P-62, tutti e due con l'autore. Per ChatGPT niente: il
+progetto del ridisegno (riga 21) aspetta i nomi, che P-70 non ha
+chiuso. Per Claude niente: P-75 aspetta la base giuridica, P-76
+aspetta Q-COSTANZA, l'ambito della conclusione (§4, «Dopo P-59», 10)
+e le fasi (punto 15).
 
 I prossimi passi, in quest'ordine:
-1. P-70 con l'autore, quando ha le persone; dal suo esito i nomi
-   definitivi (§4, punto 4) e il prompt del progetto del ridisegno.
+1. La decisione dell'autore sui nomi (§4, punto 4): aspettare tre-cinque
+   persone e rifare P-70 con loro, oppure chiudere i nomi sui soli bot;
+   da lì il prompt del progetto del ridisegno.
 2. Le decisioni dell'autore nel §4, «Dopo P-59» e «Dopo P-64»:
    ricordagliele quando il lavoro che le aspetta sta per partire. La
    base giuridica di esito e previsioni ferma P-75;
@@ -250,10 +254,10 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | # | Lavoro | Chi | Dove | Aspetta | Prompt |
 |---|---|---|---|---|---|
 | 14 | **La casella `privacy@` sull'iPhone**, e la prova `dkim=pass` | Claude con l'autore | `main`, solo `account-progetto.md` | niente | P-62 |
-| 18 | **La prova dei mock** con tre-cinque persone vere, e con i bot sulle varianti | l'autore, con Claude | `main`, solo `docs/prototipi/` | niente: i cinque mock sono fusi (P-65…P-69, riga 17 uscita) | P-70 |
+| 18 | **La prova dei mock con le persone** — i bot sono fatti (P-70, 14 ottobre) | l'autore, con Claude | `main`, solo `docs/prototipi/` | tre-cinque persone, dell'autore; oppure la sua decisione di chiudere i nomi sui soli bot (§4, «Dopo P-59», 4) | P-70, la parte con le persone |
 | 19 | **Le ricerche**: il parere del professionista sulle donazioni (14 domande, I-11); se all'esame vero si torna indietro fra le domande; Lighthouse su telefono e Safari veri (I-08) | l'autore | — | — | §4, «Dopo P-59» |
 | 20-bis | **I contratti del motore, seconda parte**: Percorso con il «sei qui», costanza, obiettivo, «hai concluso quello che ti avevamo proposto» | Claude | `main` | Q-COSTANZA e la decisione 22 (§4, «Dopo P-59», 3 e 10); e P-68, che disegna il «sei qui» | P-76, da scrivere |
-| 21 | **Il progetto e la realizzazione del ridisegno**, con i controlli dei tragitti | ChatGPT, e Claude per i controlli | `ui/main`, `main` | P-70 | da scrivere |
+| 21 | **Il progetto e la realizzazione del ridisegno**, con i controlli dei tragitti | ChatGPT, e Claude per i controlli | `ui/main`, `main` | i nomi del §4, «Dopo P-59», 4, che P-70 non ha chiuso: le persone, o la decisione dell'autore | da scrivere |
 | 22 | **Spiegazioni**: il primo lotto di 50, «Segnala un problema», la misura dell'effetto | Claude con l'autore, poi ChatGPT | `main`, `ui/main` | l'indirizzo e la licenza (§4, «Dopo P-59», 2 e 6) | da scrivere |
 | 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | niente dal motore: `PREVISIONI` c'è (P-72), e un modello entra come metodo accanto alla regola semplice; Q-STIMA solo per quando si mostra | da scrivere |
 | 27 | **Esito e previsioni, la pagina e l'informativa** (B-1, B-2), poi un rilascio | ChatGPT | `ui/main` | soltanto la base giuridica (§4, «Dopo P-64», 1–3): P-74 è chiuso | P-75, da scrivere |
@@ -272,7 +276,7 @@ v0.30.0: lo schema 5 e la correzione del `500` sulla data d'esame arrivano con
 il prossimo rilascio. **Per Claude** oggi non c'è un prompt pronto: P-75
 aspetta la base giuridica, P-76 aspetta Q-COSTANZA e P-68. P-62 con l'autore
 quando vuole.
-**Per ChatGPT:** niente di pronto: i cinque mock sono fusi, P-69 il 14 ottobre, e il prossimo lavoro su `ui/main` è il progetto del ridisegno (riga 21), dopo P-70. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
+**Per ChatGPT:** niente di pronto: i cinque mock sono fusi, P-69 il 14 ottobre, e il prossimo lavoro su `ui/main` è il progetto del ridisegno (riga 21), che aspetta i nomi. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
 che cambiano una promessa (un ADR, la filosofia, la specifica), poi i mock e la
 prova con le persone, poi il codice; «com'è andata» parte presto perché i suoi
 dati arrivano mesi dopo. **Il §5, il §6 e i controlli R-NAV della specifica non
@@ -532,7 +536,19 @@ consuma, non si riprogetta.
      Segnali» accanto alla porta Allenati per chi cerca «i quiz»; la porta
      account, «Accedi» o «Accedi o registrati». P-65 propone e non decide; i
      mock mostrano la variante accanto al nome approvato, così scegli
-     guardando.
+     guardando. *Da P-70 (14 ottobre 2026), i bot sui mock, 300 giri, senza
+     persone* (`docs/prototipi/interfaccia-2026-10/prova-persone.md`, «Che
+     cosa l'esito dice»): **nessun nome promosso**. Il solo segnale netto è
+     **contro** il richiamo «Quiz · Carteggio · Segnali» accanto alla porta
+     Allenati: porta chi cerca il carteggio su una porta che si apre su
+     Quiz, dieci mancati su dodici, zero senza il richiamo. «Allenati con 10
+     domande» e «Prova 10 domande» non si distinguono, e «Prova» non ruba
+     nessuno alla simulazione in 36 giri; «Accedi» contro «Accedi o
+     registrati» su carta non si misura. **Decidi tu**: aspettare tre-cinque
+     persone e rifare P-70 con loro — la ricetta è in fondo al verbale, «Per
+     rifare la prova» —, oppure chiudere i nomi sui soli bot, che sono un
+     segnale debole. Il progetto del ridisegno (riga 21) aspetta questa
+     scelta.
   5. **Il parere del professionista sulle donazioni** (I-11): le 14 domande
      sono nella scheda. Ferma le donazioni, e nient'altro.
   6. **La licenza delle spiegazioni** (I-10): MIT come il codice, o una licenza
@@ -585,7 +601,10 @@ consuma, non si riprogetta.
       con «Scegli un argomento» in mezzo fa quattro; ma a 375 px i temi nel
       segmento richiedono scorrimento, e tre tocchi non provano che si
       trovino. Le due varianti sono in `attivita.html`: scegli guardando, e
-      P-70 lo prova con le persone.
+      P-70 lo prova con le persone. *Da P-70 (14 ottobre 2026):* i bot
+      confermano i tre tocchi come conteggio — «i quiz su un argomento»
+      arriva 3/3 in tutte le varianti —, non come trovabilità, che la dice
+      solo una persona.
   14. **Il punto come trattino nella ricerca per numero** (da P-77, 13
       ottobre 2026): tre progressivi il decreto li scrive con un punto dove
       gli altri hanno il trattino — base-385 «1.3.2.113», base-943
@@ -5502,7 +5521,9 @@ scritto qui sotto, è con l'autore.
 
 ### P-70 — Claude, con l'autore: la prova dei mock, con le persone e con i bot
 
-**Stato:** pronto, dal 14 ottobre 2026: i cinque mock sono fusi. **Dove:**
+**Stato:** **fatto a metà il 14 ottobre 2026**, commit `1e98f9e` su `main`: i
+bot sì, le persone no; il prompt resta valido per la parte con le persone,
+quando l'autore le ha. Prima era: pronto, dal 14 ottobre 2026. **Dove:**
 Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano e con
 l'autore davanti, perché le persone e i dispositivi li porta lui; scrive solo
 in `docs/prototipi/`, che è neutro, e il §4 lo aggiorna la regia dal
@@ -5563,7 +5584,30 @@ l'autore e le scrive la regia. Un commit, con la voce in fondo a
 docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito, della prima metà:** commit `1e98f9e`, voce «Progettato — P-70» nel
+CHANGELOG, `docs/prototipi/interfaccia-2026-10/prova-persone.md`, 318 righe.
+**Le persone: zero.** L'autore non le aveva, e con meno di tre la prova non è
+fatta: le sezioni «Osservazioni persona per persona» e «I conteggi contro le
+note» sono vuote e dichiarate tali; Q-STATI, lo scorrimento e «che cosa
+nessuno ha capito» restano senza risposta. **I bot: fatti.** Cinque prototipi
+di carta trascritti dai mock — Home approvata e proposta, per temi in Quiz e
+in Preparazione, più una rotta fatta apposta peggiore —, venti profili come
+compiti, 300 giri con Haiku, 0,24 $, nessun errore; il protocollo con le
+persone scritto com'è pensato, e la ricetta per rifarla in fondo. **Trovato:**
+la rotta apposta esce peggiore (37/60 contro 46–54), quindi lo strumento
+distingue; il richiamo accanto ad Allenati porta chi cerca il carteggio su
+Quiz; «Prova 10 domande» non ruba nessuno alla simulazione; il primo lancio
+dei bot è uscito tutto in errore per la sessione scaduta della CLI, a costo
+zero, e il banco era segnato a consumo e non ad abbonamento; un profilo a 0/15
+era un artefatto del traguardo scelto, non dei mock. **Controllato dalla regia
+il 14 ottobre:** il commit con il trailer, i due soli file toccati, guardiano
+e controllo della documentazione verdi, la coda intatta; i 300 giri non
+rifatti, il file delle varianti e l'uscita stanno fuori dal repo in
+`~/bot-ux/rotta-giusta/menu/`, come la lettura del 4 ottobre. **Per
+l'autore,** nel §4, «Dopo P-59», punti 4 e 13: nessun nome promosso, un
+segnale contro il richiamo, i tre tocchi confermati come conteggio; e la
+scelta fra aspettare le persone e chiudere i nomi sui bot. **Per la coda:** la
+riga 18 resta, per la parte con le persone; la riga 21 aspetta i nomi.
 
 ### I segnaposto — i prompt che non si possono ancora scrivere
 
@@ -5575,7 +5619,7 @@ il resoconto del precedente, e la regia scrive il suo prompt allora.
 - **P-67**: scritto il 13 ottobre 2026, chiuso lo stesso giorno.
 - **P-68**: scritto il 13 ottobre 2026, dopo Q-STATI, e chiuso lo stesso giorno.
 - **P-69**: scritto il 13 ottobre 2026, chiuso il 14.
-- **P-70**: scritto il 14 ottobre 2026, qui sopra.
+- **P-70**: scritto il 14 ottobre 2026, e fatto a metà lo stesso giorno: i bot sì, le persone no.
 
 **Dopo P-63 e P-64, dal 4 ottobre 2026.**
 
@@ -6285,3 +6329,9 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   persone, è P-70, con l'autore, scritto dalla parte «P-70» delle quattro note
   dei mock. `main` pushato, i rami di ChatGPT allineati, sul «procedi»
   dell'autore.
+- **14 ottobre 2026 — P-70 fatto a metà: i bot sì, le persone no.** Il
+  resoconto letto contro il repo: il commit su `main` con il trailer, il
+  verbale e la voce del CHANGELOG, guardiano e documentazione verdi, la coda
+  intatta. L'esito dei bot nel §4, «Dopo P-59», punti 4 e 13, con la scelta per
+  l'autore — le persone, o i nomi chiusi sui bot — che ferma il progetto del
+  ridisegno. `main` pushato, i rami di ChatGPT allineati.
