@@ -1,0 +1,210 @@
+[
+  {
+    "name": "dock at bottom H0375",
+    "ok": true
+  },
+  {
+    "name": "dock at bottom H1375",
+    "ok": true
+  },
+  {
+    "name": "dock at bottom HA375",
+    "ok": true
+  },
+  {
+    "name": "H1 snapshot summary 375",
+    "ok": true
+  },
+  {
+    "name": "H1 three errors available 375",
+    "ok": true
+  },
+  {
+    "name": "H1 historical progress return 375",
+    "ok": true
+  },
+  {
+    "name": "missing figure blocks response 375",
+    "ok": true
+  },
+  {
+    "name": "changed blocks retry 375",
+    "ok": true
+  },
+  {
+    "name": "new preview permitted 375",
+    "ok": true
+  },
+  {
+    "name": "correct confidence tied UID 375",
+    "ok": true
+  },
+  {
+    "name": "draft simulation unchanged 375",
+    "ok": true
+  },
+  {
+    "name": "same unsubmitted draft 375",
+    "ok": true
+  },
+  {
+    "name": "card expiry no autojudgment 375",
+    "ok": true
+  },
+  {
+    "name": "card history is read only 375",
+    "ok": true
+  },
+  {
+    "name": "zero training returns no activity 375",
+    "ok": true
+  },
+  {
+    "name": "computed style 375",
+    "ok": true,
+    "color": "rgb(11, 31, 51)",
+    "bg": "rgb(242, 244, 247)",
+    "font": "Manrope, sans-serif",
+    "size": "16px",
+    "inset": 18,
+    "keyboardSize": "12px"
+  },
+  {
+    "name": "dock at bottom H01280",
+    "ok": true
+  },
+  {
+    "name": "dock at bottom H11280",
+    "ok": true
+  },
+  {
+    "name": "dock at bottom HA1280",
+    "ok": true
+  },
+  {
+    "name": "H1 snapshot summary 1280",
+    "ok": true
+  },
+  {
+    "name": "H1 three errors available 1280",
+    "ok": true
+  },
+  {
+    "name": "H1 historical progress return 1280",
+    "ok": true
+  },
+  {
+    "name": "missing figure blocks response 1280",
+    "ok": true
+  },
+  {
+    "name": "changed blocks retry 1280",
+    "ok": true
+  },
+  {
+    "name": "new preview permitted 1280",
+    "ok": true
+  },
+  {
+    "name": "correct confidence tied UID 1280",
+    "ok": true
+  },
+  {
+    "name": "draft simulation unchanged 1280",
+    "ok": true
+  },
+  {
+    "name": "same unsubmitted draft 1280",
+    "ok": true
+  },
+  {
+    "name": "card expiry no autojudgment 1280",
+    "ok": true
+  },
+  {
+    "name": "card history is read only 1280",
+    "ok": true
+  },
+  {
+    "name": "zero training returns no activity 1280",
+    "ok": true
+  },
+  {
+    "name": "computed style 1280",
+    "ok": true,
+    "color": "rgb(11, 31, 51)",
+    "bg": "rgb(242, 244, 247)",
+    "font": "Manrope, sans-serif",
+    "size": "16px",
+    "inset": 90,
+    "keyboardSize": "12px"
+  },
+  {
+    "name": "creation still in memory 375",
+    "ok": true
+  },
+  {
+    "name": "copy before acceptance 375",
+    "ok": true
+  },
+  {
+    "name": "all UID acquired illustratively 375",
+    "ok": true
+  },
+  {
+    "name": "result remains after acquisition 375",
+    "ok": true
+  },
+  {
+    "name": "review still available after acquisition 375",
+    "ok": true
+  },
+  {
+    "name": "Allena voce partial return 375",
+    "ok": true
+  },
+  {
+    "name": "modifier does not answer 375",
+    "ok": true
+  },
+  {
+    "name": "keyboard answers 375",
+    "ok": true
+  },
+  {
+    "name": "creation still in memory 1280",
+    "ok": true
+  },
+  {
+    "name": "copy before acceptance 1280",
+    "ok": true
+  },
+  {
+    "name": "all UID acquired illustratively 1280",
+    "ok": true
+  },
+  {
+    "name": "result remains after acquisition 1280",
+    "ok": true
+  },
+  {
+    "name": "review still available after acquisition 1280",
+    "ok": true
+  },
+  {
+    "name": "Allena voce partial return 1280",
+    "ok": true
+  },
+  {
+    "name": "modifier does not answer 1280",
+    "ok": true
+  },
+  {
+    "name": "keyboard answers 1280",
+    "ok": true
+  },
+  {
+    "name": "no external resource requests",
+    "ok": true
+  }
+]

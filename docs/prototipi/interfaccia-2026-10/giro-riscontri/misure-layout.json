@@ -1,0 +1,194 @@
+[
+  {
+    "name": "runner-H0",
+    "width": 375,
+    "innerWidth": 375,
+    "clientWidth": 375,
+    "scrollWidth": 375,
+    "overflow": [],
+    "font": "Manrope, sans-serif",
+    "dock": {
+      "x": 18,
+      "y": 484.28125,
+      "width": 339,
+      "height": 327.71875,
+      "top": 484.28125,
+      "right": 357,
+      "bottom": 812,
+      "left": 18
+    },
+    "benchInset": 18,
+    "title": "Nel caso di avaria o incidente occorso alla propria unità, da cui possa derivare uno sversamento di idrocarburi, il comandante deve:"
+  },
+  {
+    "name": "parziale-layout-H0",
+    "width": 375,
+    "innerWidth": 375,
+    "clientWidth": 375,
+    "scrollWidth": 375,
+    "overflow": [],
+    "font": "Manrope, sans-serif",
+    "benchInset": 18,
+    "title": "Simulazione quiz base conclusa"
+  },
+  {
+    "name": "runner-H1",
+    "width": 375,
+    "innerWidth": 375,
+    "clientWidth": 375,
+    "scrollWidth": 375,
+    "overflow": [],
+    "font": "Manrope, sans-serif",
+    "dock": {
+      "x": 18,
+      "y": 484.28125,
+      "width": 339,
+      "height": 327.71875,
+      "top": 484.28125,
+      "right": 357,
+      "bottom": 812,
+      "left": 18
+    },
+    "benchInset": 18,
+    "title": "Nel caso di avaria o incidente occorso alla propria unità, da cui possa derivare uno sversamento di idrocarburi, il comandante deve:"
+  },
+  {
+    "name": "parziale-layout-H1",
+    "width": 375,
+    "innerWidth": 375,
+    "clientWidth": 375,
+    "scrollWidth": 375,
+    "overflow": [],
+    "font": "Manrope, sans-serif",
+    "benchInset": 18,
+    "title": "Simulazione quiz base conclusa"
+  },
+  {
+    "name": "runner-HA",
+    "width": 375,
+    "innerWidth": 375,
+    "clientWidth": 375,
+    "scrollWidth": 375,
+    "overflow": [],
+    "font": "Manrope, sans-serif",
+    "dock": {
+      "x": 18,
+      "y": 484.28125,
+      "width": 339,
+      "height": 327.71875,
+      "top": 484.28125,
+      "right": 357,
+      "bottom": 812,
+      "left": 18
+    },
+    "benchInset": 18,
+    "title": "Nel caso di avaria o incidente occorso alla propria unità, da cui possa derivare uno sversamento di idrocarburi, il comandante deve:"
+  },
+  {
+    "name": "parziale-layout-HA",
+    "width": 375,
+    "innerWidth": 375,
+    "clientWidth": 375,
+    "scrollWidth": 375,
+    "overflow": [],
+    "font": "Manrope, sans-serif",
+    "benchInset": 18,
+    "title": "Simulazione quiz base conclusa"
+  },
+  {
+    "name": "runner-H0",
+    "width": 1280,
+    "innerWidth": 1280,
+    "clientWidth": 1280,
+    "scrollWidth": 1280,
+    "overflow": [],
+    "font": "Manrope, sans-serif",
+    "dock": {
+      "x": 230,
+      "y": 626.625,
+      "width": 820,
+      "height": 273.375,
+      "top": 626.625,
+      "right": 1050,
+      "bottom": 900,
+      "left": 230
+    },
+    "benchInset": 90,
+    "title": "Nel caso di avaria o incidente occorso alla propria unità, da cui possa derivare uno sversamento di idrocarburi, il comandante deve:"
+  },
+  {
+    "name": "parziale-layout-H0",
+    "width": 1280,
+    "innerWidth": 1280,
+    "clientWidth": 1265,
+    "scrollWidth": 1265,
+    "overflow": [],
+    "font": "Manrope, sans-serif",
+    "benchInset": 82.5,
+    "title": "Simulazione quiz base conclusa"
+  },
+  {
+    "name": "runner-H1",
+    "width": 1280,
+    "innerWidth": 1280,
+    "clientWidth": 1280,
+    "scrollWidth": 1280,
+    "overflow": [],
+    "font": "Manrope, sans-serif",
+    "dock": {
+      "x": 230,
+      "y": 626.625,
+      "width": 820,
+      "height": 273.375,
+      "top": 626.625,
+      "right": 1050,
+      "bottom": 900,
+      "left": 230
+    },
+    "benchInset": 90,
+    "title": "Nel caso di avaria o incidente occorso alla propria unità, da cui possa derivare uno sversamento di idrocarburi, il comandante deve:"
+  },
+  {
+    "name": "parziale-layout-H1",
+    "width": 1280,
+    "innerWidth": 1280,
+    "clientWidth": 1265,
+    "scrollWidth": 1265,
+    "overflow": [],
+    "font": "Manrope, sans-serif",
+    "benchInset": 82.5,
+    "title": "Simulazione quiz base conclusa"
+  },
+  {
+    "name": "runner-HA",
+    "width": 1280,
+    "innerWidth": 1280,
+    "clientWidth": 1280,
+    "scrollWidth": 1280,
+    "overflow": [],
+    "font": "Manrope, sans-serif",
+    "dock": {
+      "x": 230,
+      "y": 626.625,
+      "width": 820,
+      "height": 273.375,
+      "top": 626.625,
+      "right": 1050,
+      "bottom": 900,
+      "left": 230
+    },
+    "benchInset": 90,
+    "title": "Nel caso di avaria o incidente occorso alla propria unità, da cui possa derivare uno sversamento di idrocarburi, il comandante deve:"
+  },
+  {
+    "name": "parziale-layout-HA",
+    "width": 1280,
+    "innerWidth": 1280,
+    "clientWidth": 1265,
+    "scrollWidth": 1265,
+    "overflow": [],
+    "font": "Manrope, sans-serif",
+    "benchInset": 82.5,
+    "title": "Simulazione quiz base conclusa"
+  }
+]
