@@ -2430,8 +2430,18 @@ Ogni riga dice **chi decide**. Una questione senza un decidente non si chiude ma
      non esce senza questa. *Cambierà:* R-NAV-01, che oggi chiede soltanto una
      porta per vista.
 
-  I nomi delle voci si provano con persone prima di chiudersi del tutto
-  (decisione 33; `docs/prossime-sessioni.md` §4, «Dopo P-59», punto 4).
+  ~~I nomi delle voci si provano con persone prima di chiudersi del tutto
+  (decisione 33; `docs/prossime-sessioni.md` §4, «Dopo P-59», punto 4).~~
+  **Deciso il 14 ottobre 2026, dall'autore:** la prova con le persone non si
+  fa prima del ridisegno, perché le persone non ci sono; i nomi si chiudono
+  **provvisori**, sui nomi approvati e sui 300 giri dei bot di P-70 — «Home ·
+  Allenati · Esame · Progressi», «Simula il quiz base», «Allenati con 10
+  domande», «Accedi», e **senza** il richiamo «Quiz · Carteggio · Segnali»
+  accanto alla porta Allenati, l'unico punto con un segnale, contro —, e si
+  provano con le persone dopo il rilascio, sul sito vero, con chi lo usa. Il
+  prezzo è scritto nel §4 della coda, punto 4: i nomi entrano nel codice senza
+  che una persona li abbia letti, come la barra del 9 settembre; stavolta è
+  detto, e si prova dopo.
 
   **Q-DUE punto 3, riaperto: cinque stati per quesito** (decisione 14; I-06,
   la issue #1). *Mai visto*; *debole* — l'ultima risposta è sbagliata;
@@ -2504,7 +2514,11 @@ Ogni riga dice **chi decide**. Una questione senza un decidente non si chiude ma
     domande; il link si apre in una scheda nuova (decisione 9). (I-11)
   - **33. Il collaudo**: giri lunghi automatici, agenti esplorativi con un
     rapporto, e poche persone vere prima del ridisegno completo. Non chiude
-    Q-PROVE: le persone e i dispositivi restano dell'autore. (I-09)
+    Q-PROVE: le persone e i dispositivi restano dell'autore. (I-09) *Non
+    rispettata per metà, deciso dall'autore il 14 ottobre 2026:* i giri degli
+    agenti ci sono (P-70, 300 giri sui mock), le persone no, e il ridisegno
+    non le aspetta; la prova con le persone passa a dopo il rilascio, sul
+    sito vero.
   - **34. Le prestazioni**: prima la misura, su telefono e Safari veri. (I-08)
 - **Q-TEMA, Q-ONBOARD e Q-SUITE** (1° ottobre 2026, l'autore, su una proposta
   verificata dalla regia). **Q-TEMA:** il tema scuro è un'opzione futura, non
@@ -3172,6 +3186,12 @@ successo, ed è il motivo per cui questo file esiste.
   ripetuti sono del decreto, e restano. §4.2 e R-NUM-02 dicono il nuovo stato,
   e `test_dati.py::test_progressivi` fissa la correzione e i numeri del decreto
   con le loro pagine.
+- **14 ottobre 2026 — i nomi chiusi provvisori, senza le persone.** La prova
+  dei mock con le persone (P-70) non si è fatta, perché l'autore non le ha;
+  ha deciso di chiudere i nomi sui nomi approvati e sui bot, provvisori, e di
+  provarli dopo il rilascio del ridisegno sul sito vero. La decisione 33 è
+  marcata come non rispettata per metà. Scritto nel §10 accanto a Q-NAV e
+  alla decisione 33.
 - **13 ottobre 2026 — Q-STATI chiusa, su delega.** Le parole dei cinque stati,
   «mai visti · da rifare · da confermare · recuperati · acquisiti», decise dalla regia
   con il «decidi tu e procedi» dell'autore, scritte fra le chiuse del §10 con le
