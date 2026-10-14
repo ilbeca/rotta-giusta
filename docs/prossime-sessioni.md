@@ -187,20 +187,19 @@ varianti, nessuna persona —, e il 14 ottobre l'autore ha deciso: i nomi
 si chiudono provvisori sui nomi approvati e sui bot, e le persone si
 provano dopo il rilascio, sul sito vero. Il progetto del ridisegno è fuso il 15 ottobre (P-79,
 docs/ridisegno-progetto.md, 1.317 righe, con il §10.1 che è il
-contratto dei passi dopo). Pronti: P-80 per Claude — i raccordi, gli
-export, i due regimi e la specifica —; P-62 con l'autore. Dopo P-80:
-P-82, il banco dei tragitti; P-83, i due campi del profilo sul server,
-solo se l'autore dice sì ad A-5; poi P-81 per ChatGPT, la realizzazione,
-e un rilascio. P-75 aspetta la base giuridica; P-76 aspetta Q-COSTANZA,
+contratto dei passi dopo). Le tre decisioni del suo §11 — i temi nel segmento
+Quiz, i due campi del profilo, la frase a metà — sono prese il 15
+ottobre. Pronti: P-80 per Claude — i raccordi, gli export, i due
+regimi e la specifica — e P-83 per Claude — i due campi del profilo
+sul server —, uno alla volta; P-62 con l'autore. Dopo P-80: P-82, il
+banco dei tragitti; poi P-81 per ChatGPT, la realizzazione, e un
+rilascio. P-75 aspetta la base giuridica; P-76 aspetta Q-COSTANZA,
 l'ambito della conclusione (§4, «Dopo P-59», 10) e le fasi (punto 15),
 e il ridisegno parte senza, dichiarandolo.
 
 I prossimi passi, in quest'ordine:
-1. Le tre decisioni del §11 di P-79 nel §4, «Dopo P-59», punti 16–18:
-   i temi in Quiz o nella Preparazione (A-1), le scelte di preparazione
-   nel profilo (A-5), la frase nel risultato (A-6). P-80 parte senza,
-   e consegna tutte e due le strade dove servono.
-2. Il resoconto di P-80, e da lì P-82 e, con A-5, P-83; poi P-81.
+1. I resoconti di P-80 e P-83, che non dipendono l'uno dall'altro; poi
+   P-82, che usa i raccordi di P-80; poi P-81 per ChatGPT.
 2. Le decisioni dell'autore nel §4, «Dopo P-59» e «Dopo P-64»:
    ricordagliele quando il lavoro che le aspetta sta per partire. La
    base giuridica di esito e previsioni ferma P-75;
@@ -263,7 +262,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 18 | **La prova con le persone**, sul sito vero, dopo il rilascio del ridisegno — i bot sui mock sono fatti (P-70, 14 ottobre) | l'autore, con Claude | — | il rilascio del ridisegno, e tre-cinque persone, dell'autore | P-70 resta la ricetta; prompt da riscrivere allora |
 | 19 | **Le ricerche**: il parere del professionista sulle donazioni (14 domande, I-11); se all'esame vero si torna indietro fra le domande; Lighthouse su telefono e Safari veri (I-08) | l'autore | — | — | §4, «Dopo P-59» |
 | 20-bis | **I contratti del motore, seconda parte**: Percorso con il «sei qui», costanza, obiettivo, «hai concluso quello che ti avevamo proposto» | Claude | `main` | Q-COSTANZA e la decisione 22 (§4, «Dopo P-59», 3 e 10); e P-68, che disegna il «sei qui» | P-76, da scrivere |
-| 21 | **Il ridisegno**: il progetto è fatto (P-79, `docs/ridisegno-progetto.md`); poi i raccordi, gli export e la specifica (P-80), il banco dei tragitti (P-82), i due campi del profilo sul server (P-83, se A-5 è sì), la realizzazione (P-81), un rilascio | Claude; Claude; Claude; ChatGPT | `main`; `main`; `main`; `ui/main` | P-80 niente; P-82 P-80 fuso; P-83 la decisione A-5; P-81 tutti fusi | P-80; P-82 e P-83 da scrivere; P-81 da scrivere |
+| 21 | **Il ridisegno**: il progetto è fatto (P-79, `docs/ridisegno-progetto.md`); poi i raccordi, gli export e la specifica (P-80), il banco dei tragitti (P-82), i due campi del profilo sul server (P-83), la realizzazione (P-81), un rilascio | Claude; Claude; Claude; ChatGPT | `main`; `main`; `main`; `ui/main` | P-80 e P-83 niente; P-82 P-80 fuso; P-81 tutti fusi | P-80, P-83; P-82 e P-81 da scrivere |
 | 22 | **Spiegazioni**: il primo lotto di 50, «Segnala un problema», la misura dell'effetto | Claude con l'autore, poi ChatGPT | `main`, `ui/main` | l'indirizzo e la licenza (§4, «Dopo P-59», 2 e 6) | da scrivere |
 | 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | niente dal motore: `PREVISIONI` c'è (P-72), e un modello entra come metodo accanto alla regola semplice; Q-STIMA solo per quando si mostra | da scrivere |
 | 27 | **Esito e previsioni, la pagina e l'informativa** (B-1, B-2), poi un rilascio | ChatGPT | `ui/main` | soltanto la base giuridica (§4, «Dopo P-64», 1–3): P-74 è chiuso | P-75, da scrivere |
@@ -644,7 +643,9 @@ consuma, non si riprogetta.
       che è una decisione nuova. Ferma la disposizione in P-81; P-80 prova
       tutte e due. *Proposta della regia: i temi nel segmento Quiz, tre
       tocchi — i bot arrivano 3/3, e lo scorrimento a 375 px si prova con le
-      persone dopo il rilascio.*
+      persone dopo il rilascio.* **Deciso dall'autore il 15 ottobre 2026:
+      così, i temi nel segmento Quiz, tre tocchi.** Scritto nel §11 del
+      progetto.
   17. **Le scelte di preparazione nel profilo** (A-5): l'onboarding chiede
       «che cosa stai preparando?» (decisione 13), e il profilo sul server
       oggi non lo conserva. O due campi facoltativi nel profilo —
@@ -654,13 +655,17 @@ consuma, non si riprogetta.
       dichiarate temporanee, che non si dicono salvate. Ferma il «salvate»
       dell'onboarding in P-81. *Proposta della regia: sì ai due campi,
       additivi e piccoli; senza, la domanda dell'onboarding promette una
-      cosa che non tiene.*
+      cosa che non tiene.* **Deciso dall'autore il 15 ottobre 2026: sì, i
+      due campi.** Scritto nel §11 del progetto e nel §20 di
+      `account-progetto.md`; è P-83.
   18. **La frase nel risultato di una simulazione** (A-6): l'ADR-006 dice
       «Conserva questa prova e ritrovala quando torni. Da queste risposte
       possiamo proporti da dove iniziare», e la seconda metà promette il
       Percorso con il «sei qui», che aspetta P-76. Il progetto tiene solo la
       prima metà fino a P-76. *Proposta della regia: così; una promessa
-      futura non si pubblica come esistente.* Non ferma niente se accetti.
+      futura non si pubblica come esistente.* **Deciso dall'autore il 15
+      ottobre 2026: solo la prima metà.** L'ADR-006 lo diceva già nel suo
+      secondo prezzo; scritto nel §11 del progetto.
   **Da P-79, senza una decisione nuova:** A-2 è il punto 12 (Progressi senza
   account spiega, non invita); A-3 è il punto 2 (l'indirizzo delle
   segnalazioni, con un segnaposto visibile fino ad allora); A-4 è P-76, i
@@ -5859,6 +5864,67 @@ push. Chiudi con il resoconto di docs/prossime-sessioni.md.
 
 **Esito:** —
 
+### P-83 — Claude: i due campi del profilo sul server
+
+**Stato:** pronto, dal 15 ottobre 2026: l'autore ha deciso A-5. **Dove:**
+Claude Code, `~/Software/rotta-giusta`, ramo **`main`**, uno alla volta con
+P-80: tocca `server/`, `tests/test_server.mjs`, `docs/account-progetto.md`,
+`docs/account-client-progetto.md`, e il §10.1 di `docs/ridisegno-progetto.md`
+per dire che D.3 è fatto. La macchina in esercizio non si tocca. **Nasce da:**
+il punto D.3 del §10.1 di `docs/ridisegno-progetto.md`, e la decisione A-5
+(§4, «Dopo P-59», 17; §20 di `account-progetto.md`). **Sblocca:** P-81, con
+P-80 e P-82.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-83: due campi facoltativi nel profilo sul server, perché
+l'onboarding del ridisegno possa chiedere «che cosa stai preparando?»
+e dire «salvato» solo quando lo è. Solo server/, tests/test_server.mjs,
+docs/account-progetto.md, docs/account-client-progetto.md e, nel §10.1
+di docs/ridisegno-progetto.md, la nota che D.3 è fatto. Niente site/,
+niente engine.js, niente docs/prossime-sessioni.md.
+
+Leggi AGENTS.md; in docs/ridisegno-progetto.md il §6.1 e nel §10.1 il
+punto D.3, che è il tuo contratto, e la decisione A-5 nel §11; in
+docs/account-progetto.md §2.7 (schema solo additivo, il codice di prima
+sul database di dopo), §7.1 (il profilo, e il 422 di P-73 per un campo
+sconosciuto), §13 (export e import), §14.4, §15 e il §20 con la
+decisione; gli esiti di P-11 e P-73 in docs/prossime-sessioni.md, che
+hanno fatto il profilo e la tabella esito con lo stesso metodo.
+
+Fai D.3 com'è scritto: `abilitazione` ('motore' | 'vela' | null) e
+`conseguimento` ('prima' | 'estensione_e12' | null), separati dalla
+data d'esame; assente non modifica, null azzera; validazione atomica,
+un valore estraneo è 422 con il campo e non lascia scritti gli altri,
+e nessun 200 che ignora un valore mandato; in GET /v1/io, nella
+risposta del profilo e nell'export; l'import non li carica da un file
+in un altro account, come gli esiti; la capability `campi_profilo`
+dichiarata nella descrizione, non dedotta dalla versione; migrazione
+additiva allo schema 6; ripristino da una copia dello schema 5 e
+cancellazione dell'account provati, anche dai byte (R-ACC-19); il
+rilascio di prima sul database di dopo, con il codice di v0.30.0
+estratto dal tag, come P-73. Niente fasi, niente obiettivo
+prospettico, niente «oggi». Lo strumento del titolare li mostra.
+
+Prima il test che fallisce, poi il codice; ogni test provato al
+contrario. Scrivi in account-progetto.md (§7.1, §13, §15.2 se le
+statistiche li vedono) e nel progetto del client (§6, il contratto che
+la pagina consumerà) che cosa c'è; se un testo del progetto non regge,
+fermati su quello, correggilo lì e dillo. L'informativa è di P-81: di'
+nel resoconto la riga che dovrà aggiungere.
+
+Le cinque suite verdi, il server anche con la LTS 24 dal pacchetto
+verificato, node server/ripristina.mjs --prova, l'interfaccia con la
+8620 guardata libera prima. Un commit, con la voce in fondo a
+[Unreleased]; niente push. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
 ### I segnaposto — i prompt che non si possono ancora scrivere
 
 **Dopo P-59, dal 4 ottobre 2026.** I mock sono cinque passi, tutti in
@@ -5878,15 +5944,10 @@ il resoconto del precedente, e la regia scrive il suo prompt allora.
   cronologia, i tre posti dell'invito, i cinque stati, i gesti, con le
   rotture della pagina di riferimento. Aspetta P-80 fuso, perché usa i suoi
   raccordi e il suo regime.
-- **P-83 — Claude: i due campi del profilo sul server**, il punto D.3 del
-  §10.1: `abilitazione` e `conseguimento`, nulli, additivi, in `/v1/io` e
-  nell'export, con la capability `campi_profilo`, migrazione, ripristino e
-  cancellazione provati, `account-progetto.md` e il progetto del client
-  aggiornati. Aspetta la decisione A-5 (§4, «Dopo P-59», 17); se è no, non
-  esiste e P-81 fa le scelte temporanee.
+- **P-83**: scritto il 15 ottobre 2026, qui sopra, dopo la decisione A-5.
 - **P-81 — ChatGPT: la realizzazione del ridisegno**, nei tre passi su una
-  copia e un commit solo del §10.1. Aspetta P-80, P-82 e, se c'è, P-83 fusi,
-  e le decisioni A-1 e A-6. Poi la regia toglie il regime di prima, un
+  copia e un commit solo del §10.1. Aspetta P-80, P-82 e P-83 fusi; A-1, A-5
+  e A-6 sono decise. Poi la regia toglie il regime di prima, un
   rilascio, e la riga 18: le persone sul sito vero.
 
 **Dopo P-63 e P-64, dal 4 ottobre 2026.**
@@ -6624,3 +6685,10 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   sarebbe stato una sessione che non chiude. Dal §11 del progetto i punti
   16–18 del §4, con la proposta della regia per ciascuno; A-2, A-3 e A-4
   erano già aperti. `main` pushato, i rami di ChatGPT allineati.
+- **15 ottobre 2026 — A-1, A-5 e A-6 decise; P-83 scritto.** L'autore ha
+  scelto le tre proposte della regia: i temi nel segmento Quiz a tre tocchi,
+  i due campi del profilo sul server, la frase del risultato a metà fino a
+  P-76. Scritte nel §4, nel §11 del progetto e, per i campi, nel §20 di
+  `account-progetto.md`; l'ADR-006 non cambia, perché il suo secondo prezzo
+  diceva già che la frase intera aspetta il Percorso. P-83 scritto, pronto
+  con P-80, uno alla volta. `main` pushato, i rami di ChatGPT allineati.
