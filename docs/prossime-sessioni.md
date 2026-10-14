@@ -1,6 +1,6 @@
 # Prossime sessioni — la coda, con i prompt
 
-**Aggiornato il 14 ottobre 2026.** Territorio neutro. **Penna: la sessione di regia** (sotto, «Come si usa»).
+**Aggiornato il 15 ottobre 2026.** Territorio neutro. **Penna: la sessione di regia** (sotto, «Come si usa»).
 
 > **Questo file invecchia.** È una coda, non una verità: quando un lavoro è
 > fatto, il suo prompt si chiude con l'esito e resta, la riga della coda si
@@ -185,16 +185,22 @@ I cinque mock sono fusi, l'ultimo (P-69, il giro di un'attività) il 14
 ottobre; P-70 è fatto a metà lo stesso giorno — 300 giri dei bot sulle
 varianti, nessuna persona —, e il 14 ottobre l'autore ha deciso: i nomi
 si chiudono provvisori sui nomi approvati e sui bot, e le persone si
-provano dopo il rilascio, sul sito vero. Pronti: P-79 per ChatGPT, il
-progetto del ridisegno; P-62 con l'autore. Per Claude niente: P-80, i
-controlli e la specifica del ridisegno, si scrive dal §10.1 di P-79;
-P-75 aspetta la base giuridica; P-76 aspetta Q-COSTANZA, l'ambito
-della conclusione (§4, «Dopo P-59», 10) e le fasi (punto 15), e il
-ridisegno parte senza, dichiarandolo.
+provano dopo il rilascio, sul sito vero. Il progetto del ridisegno è fuso il 15 ottobre (P-79,
+docs/ridisegno-progetto.md, 1.317 righe, con il §10.1 che è il
+contratto dei passi dopo). Pronti: P-80 per Claude — i raccordi, gli
+export, i due regimi e la specifica —; P-62 con l'autore. Dopo P-80:
+P-82, il banco dei tragitti; P-83, i due campi del profilo sul server,
+solo se l'autore dice sì ad A-5; poi P-81 per ChatGPT, la realizzazione,
+e un rilascio. P-75 aspetta la base giuridica; P-76 aspetta Q-COSTANZA,
+l'ambito della conclusione (§4, «Dopo P-59», 10) e le fasi (punto 15),
+e il ridisegno parte senza, dichiarandolo.
 
 I prossimi passi, in quest'ordine:
-1. Il resoconto di P-79, e da lì P-80 per Claude e P-81 per ChatGPT, nel
-   meccanismo delle aree 2–5: raccordo, due regimi, scadenza alla merge.
+1. Le tre decisioni del §11 di P-79 nel §4, «Dopo P-59», punti 16–18:
+   i temi in Quiz o nella Preparazione (A-1), le scelte di preparazione
+   nel profilo (A-5), la frase nel risultato (A-6). P-80 parte senza,
+   e consegna tutte e due le strade dove servono.
+2. Il resoconto di P-80, e da lì P-82 e, con A-5, P-83; poi P-81.
 2. Le decisioni dell'autore nel §4, «Dopo P-59» e «Dopo P-64»:
    ricordagliele quando il lavoro che le aspetta sta per partire. La
    base giuridica di esito e previsioni ferma P-75;
@@ -257,7 +263,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 18 | **La prova con le persone**, sul sito vero, dopo il rilascio del ridisegno — i bot sui mock sono fatti (P-70, 14 ottobre) | l'autore, con Claude | — | il rilascio del ridisegno, e tre-cinque persone, dell'autore | P-70 resta la ricetta; prompt da riscrivere allora |
 | 19 | **Le ricerche**: il parere del professionista sulle donazioni (14 domande, I-11); se all'esame vero si torna indietro fra le domande; Lighthouse su telefono e Safari veri (I-08) | l'autore | — | — | §4, «Dopo P-59» |
 | 20-bis | **I contratti del motore, seconda parte**: Percorso con il «sei qui», costanza, obiettivo, «hai concluso quello che ti avevamo proposto» | Claude | `main` | Q-COSTANZA e la decisione 22 (§4, «Dopo P-59», 3 e 10); e P-68, che disegna il «sei qui» | P-76, da scrivere |
-| 21 | **Il progetto del ridisegno** (P-79), poi i controlli e la specifica (P-80) e la realizzazione (P-81), in tre passi come le aree | ChatGPT; Claude; ChatGPT | `ui/main`; `main`; `ui/main` | niente: i nomi sono chiusi provvisori il 14 ottobre | P-79; P-80 e P-81 da scrivere |
+| 21 | **Il ridisegno**: il progetto è fatto (P-79, `docs/ridisegno-progetto.md`); poi i raccordi, gli export e la specifica (P-80), il banco dei tragitti (P-82), i due campi del profilo sul server (P-83, se A-5 è sì), la realizzazione (P-81), un rilascio | Claude; Claude; Claude; ChatGPT | `main`; `main`; `main`; `ui/main` | P-80 niente; P-82 P-80 fuso; P-83 la decisione A-5; P-81 tutti fusi | P-80; P-82 e P-83 da scrivere; P-81 da scrivere |
 | 22 | **Spiegazioni**: il primo lotto di 50, «Segnala un problema», la misura dell'effetto | Claude con l'autore, poi ChatGPT | `main`, `ui/main` | l'indirizzo e la licenza (§4, «Dopo P-59», 2 e 6) | da scrivere |
 | 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | niente dal motore: `PREVISIONI` c'è (P-72), e un modello entra come metodo accanto alla regola semplice; Q-STIMA solo per quando si mostra | da scrivere |
 | 27 | **Esito e previsioni, la pagina e l'informativa** (B-1, B-2), poi un rilascio | ChatGPT | `ui/main` | soltanto la base giuridica (§4, «Dopo P-64», 1–3): P-74 è chiuso | P-75, da scrivere |
@@ -276,7 +282,7 @@ v0.30.0: lo schema 5 e la correzione del `500` sulla data d'esame arrivano con
 il prossimo rilascio. **Per Claude** oggi non c'è un prompt pronto: P-75
 aspetta la base giuridica, P-76 aspetta Q-COSTANZA e P-68. P-62 con l'autore
 quando vuole.
-**Per ChatGPT:** P-79, il progetto del ridisegno, dai cinque mock e dalle decisioni; dopo di lui P-80 per Claude e P-81 per ChatGPT. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
+**Per ChatGPT:** niente finché P-80, P-82 e P-83 non sono fusi: la realizzazione (P-81) li consuma tutti. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
 che cambiano una promessa (un ADR, la filosofia, la specifica), poi i mock e la
 prova con le persone, poi il codice; «com'è andata» parte presto perché i suoi
 dati arrivano mesi dopo. **Il §5, il §6 e i controlli R-NAV della specifica non
@@ -630,6 +636,35 @@ consuma, non si riprogetta.
       `progressi-note.md`, «Le fasi proposte per P-76», con i numeri del
       motore su cui ciascuna si regge. Decidi tu fasi e criterio, oppure
       lasci che li proponga il progetto di P-76: ferma P-76, non P-69.
+  16. **I temi in Quiz o nella Preparazione** (A-1 del §11 di
+      `docs/ridisegno-progetto.md`, 15 ottobre 2026): è il punto 13 arrivato
+      al codice. Tre tocchi con i temi nel segmento Quiz, quattro nella
+      Preparazione; i due tocchi del §1 non li fa nessun mock, e farli
+      vorrebbe dire un accesso diretto dalla Home o saltare la Preparazione,
+      che è una decisione nuova. Ferma la disposizione in P-81; P-80 prova
+      tutte e due. *Proposta della regia: i temi nel segmento Quiz, tre
+      tocchi — i bot arrivano 3/3, e lo scorrimento a 375 px si prova con le
+      persone dopo il rilascio.*
+  17. **Le scelte di preparazione nel profilo** (A-5): l'onboarding chiede
+      «che cosa stai preparando?» (decisione 13), e il profilo sul server
+      oggi non lo conserva. O due campi facoltativi nel profilo —
+      `abilitazione` e `conseguimento`, nulli per chi non risponde, in
+      `/v1/io` e nell'export, con una capability dichiarata —, che è un
+      lavoro del server (P-83) e una riga nell'informativa; oppure scelte
+      dichiarate temporanee, che non si dicono salvate. Ferma il «salvate»
+      dell'onboarding in P-81. *Proposta della regia: sì ai due campi,
+      additivi e piccoli; senza, la domanda dell'onboarding promette una
+      cosa che non tiene.*
+  18. **La frase nel risultato di una simulazione** (A-6): l'ADR-006 dice
+      «Conserva questa prova e ritrovala quando torni. Da queste risposte
+      possiamo proporti da dove iniziare», e la seconda metà promette il
+      Percorso con il «sei qui», che aspetta P-76. Il progetto tiene solo la
+      prima metà fino a P-76. *Proposta della regia: così; una promessa
+      futura non si pubblica come esistente.* Non ferma niente se accetti.
+  **Da P-79, senza una decisione nuova:** A-2 è il punto 12 (Progressi senza
+  account spiega, non invita); A-3 è il punto 2 (l'indirizzo delle
+  segnalazioni, con un segnaposto visibile fino ad allora); A-4 è P-76, i
+  punti 3, 10 e 15.
   **Da sapere, da P-63:** la struttura nuova dà al Carteggio due porte, in
   Allenati e in Esame, e nessuna voce di barra: cambia la decisione dell'8
   settembre nel §6.1 della specifica, ed è scritto nel §10 accanto alla
@@ -5625,8 +5660,8 @@ riga 18 resta, per la parte con le persone; la riga 21 aspetta i nomi.
 
 ### P-79 — ChatGPT: il progetto del ridisegno
 
-**Stato:** pronto, dal 14 ottobre 2026: i cinque mock sono fusi, i nomi sono
-chiusi provvisori, `ui/main` è allineato a `main`. **Dove:** l'app ChatGPT
+**Stato:** **chiuso il 15 ottobre 2026**, merge `328c7cf`. Prima era: pronto,
+dal 14 ottobre 2026. **Dove:** l'app ChatGPT
 (Codex), progetto `~/Software/rotta-giusta-ui` in modalità Local, ramo
 **`ui/main`**. Scrive soltanto `docs/ridisegno-progetto.md`, neutro, e la voce
 nel CHANGELOG. **Nasce da:** le decisioni 1–13, 15, 20, 28 e 30 di P-59
@@ -5711,6 +5746,117 @@ la voce in fondo a [Unreleased], versione non toccata. Chiudi con il
 resoconto di docs/prossime-sessioni.md.
 ```
 
+**Esito:** commit `8609787` su `ui/main`, merge `328c7cf` su `main`, voce
+«Progettato — P-79» nel CHANGELOG. `docs/ridisegno-progetto.md`, 1.317
+righe: l'inventario nuovo con le quattro viste e le porte (§2); **il
+documento solo, misurato** con `strumenti/serve.py` — le sezioni in query
+su `/` rispondono 200, `/allenati` 404, quindi le rotte sono query su `/`,
+il canonico è `index.html`, `/app` diventa una porta di compatibilità che
+rimanda al canonico, il manifest passa a `start_url: '/'`, i legali restano
+file propri aperti sopra l'origine, e i gettoni di verifica e password
+passano dal frammento senza finire in query, storage o cronologia (§3) —;
+stati e testi comuni (§4), Home, Allenati ed Esame (§5), avatar, Profilo,
+onboarding e dati (§6), runner, fine attività e i tre posti dell'invito
+(§7), Progressi con i cinque stati, tag, segnalibri, ricerca e
+segnalazione (§8), i 108 tragitti con destinazione, tocchi e continuità
+(§9); nel §10.1 i contratti per P-80 e P-81 — il raccordo
+`navigazioneSito()` e `VISTE_RIDISEGNO` da cui il banco riconosce il
+regime, la specifica da riscrivere con la scadenza alla merge di P-81, la
+tabella degli agganci dei banchi da tenere o tradurre, gli export che
+mancano (`riepilogoPagina()`, i due campi del profilo), cinque raccordi
+puri nuovi, il banco dei tragitti con le sue rotture, e P-81 in tre passi
+su una copia e un commit solo, perché un cambio di documento a metà
+perderebbe le risposte —; nel §11 sei punti per l'autore, tre dei quali
+nuovi. Che cosa non entra, dichiarato: fasi, costanza, obiettivo e
+conclusione (P-76), spiegazioni, stima, P-75 con il suo raccordo.
+**Controllato dalla regia il 15 ottobre:** il commit con il trailer, recinto
+verde, diff limitato al progetto e al CHANGELOG, merge, `main..ui/main`
+vuoto, la riga vuota nel CHANGELOG al suo posto; guardiano, documentazione,
+dati 229 e specifica 958 sullo stato fuso; motore, server e interfaccia non
+rilanciati, per un documento solo, ma la sessione li ha dati con i numeri
+di `main`. Letti dalla regia i §3, §10 e §11; non riletti i 108 tragitti.
+**Per l'autore,** nel §4, «Dopo P-59», punti 16–18: A-1, A-5, A-6, con la
+proposta della regia; A-2, A-3 e A-4 sono punti già aperti. **Per la coda:**
+il §10.1 smistato in P-80 (raccordi, export, due regimi, specifica), P-82
+(il banco dei tragitti), P-83 (i due campi del profilo, se A-5) e P-81 (la
+realizzazione); P-80 scritto qui sotto.
+
+### P-80 — Claude: il ridisegno, prima parte — i raccordi, gli export, i due regimi e la specifica
+
+**Stato:** pronto, dal 15 ottobre 2026: P-79 è fuso. **Dove:** Claude Code,
+`~/Software/rotta-giusta`, ramo **`main`**, a mano: tocca `site/engine.js`,
+`tests/`, la specifica, `docs/ridisegno-progetto.md` (il §10.1) e
+`docs/eccezioni-interfaccia.md`. **Nasce da:** il §10.1 di
+`docs/ridisegno-progetto.md`, P-80 punti A, B, C, D.1–2 e F. **Sblocca:**
+P-82 e, con A-5, P-83; P-81 li aspetta tutti.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-80: la prima parte di quello che il ridisegno chiede a main
+prima della pagina — i raccordi di primo livello, gli export del motore
+che mancano, i due regimi dei banchi e la specifica. Il banco dei
+tragitti in Chrome è P-82, dopo di te; i due campi del profilo sul
+server sono P-83, se l'autore dice sì. Non toccare site/ fuori da
+engine.js, né server/, né docs/prossime-sessioni.md.
+
+Leggi AGENTS.md; docs/ridisegno-progetto.md per intero, e poi di nuovo
+§2, §3, §10.1 — il tuo contratto sono i punti A (fonte e regime), B
+(specifica e scadenza), C (gli agganci), D.1 e D.2 (gli export) e F
+(chiusura); E è P-82 e D.3 è P-83 — e §11; nella specifica §5, §6, §7,
+§9.4, §9.9 «Un regime solo», §9.6 «Un regime solo per il Carteggio» e
+§9.12; docs/eccezioni-interfaccia.md; nel §4 di docs/prossime-sessioni.md,
+«Dopo P-59», i punti 16, 17 e 18: se A-1 e A-5 non sono ancora decisi lì,
+fai come il §10.1 dice — i raccordi e i controlli per tutte e due le
+posizioni dei temi, il contratto del profilo proposto e non realizzato,
+nominando il gate — e non scegliere per l'autore.
+
+Prima di scrivere una riga: elenca nel §10.1 i chiamanti di ogni
+funzione del motore che tocchi e che cosa cambia per ciascuno; fissa la
+firma finale di navigazioneSito() e dei cinque raccordi della tabella
+«Raccordi aggiuntivi» (preparaBreve, preparaSegnalibri,
+avviaSegnalibri, ricercaNumero, permessoGesto) nel §10.1, prima del
+codice, come i progetti delle aree. Prima il test che fallisce, poi il
+codice; ogni test provato al contrario.
+
+1. Gli export del motore (D.1, D.2): riepilogoPagina(righe, banca) —
+   o una composizione pura degli export che ci sono, se dà esattamente
+   quei campi, senza una seconda copia di sessioni() —, e la verifica
+   che confermateRisposte e nonSalvateRisposte di P-74 escludano anche
+   tag e segnalibri oltre agli avvii; se mancano, prima il motore.
+   Niente export per fasi, costanza, «oggi», durata o stima.
+2. I banchi (A, C): il regime nuovo si riconosce da navigazioneSito()
+   e VISTE_RIDISEGNO insieme, mai da un nome di pulsante; senza, la
+   pagina di oggi passa i suoi controlli interi; con, il canonico è
+   index.html con esattamente le quattro viste, e i banchi di quiz,
+   ciclo, mappa, Carteggio, client e rifinitura guidano il grafo nuovo
+   con gli agganci della tabella C — tenuti, o tradotti come lì è
+   scritto —; RG_PAGINA vale anche per la copia canonica; app.html come
+   porta ha controlli suoi. Ogni controllo che oggi legge app.html per
+   nome prova il canonico nel regime nuovo (F). I raccordi nuovi si
+   eseguono contro il motore vero con una spia sulle chiamate, come
+   selezioneQuiz(); la pagina di riferimento di ciascun banco realizza
+   il raccordo nuovo e porta le rotture del §10.1, ognuna rossa per il
+   suo motivo, e il banco provato contro sé stesso.
+3. La specifica (B): §5, §6, §7 e R-NAV-01…07 riscritti sul progetto,
+   con il regime di oggi conservato in un raccordo di transizione datato
+   e la scadenza alla merge di P-81; R-ACC-03/04, R-ACC-55, R-STATI-06,
+   R-ARCH-06/09 come il §10.1 dice; test_specifica.py verde con i nomi
+   veri. Il regime di oggi non è «scoperto»: continua a passare.
+4. docs/eccezioni-interfaccia.md: gli orfani di P-71 restano orfani fino
+   a P-81; i raccordi nuovi che la pagina di oggi non ha stanno dove
+   stavano quelli delle aree prima della realizzazione.
+
+Le cinque suite verdi — il server non lo tocchi, ma gira anche lui —,
+l'interfaccia con la 8620 guardata libera per 90 s prima; se la suite
+cresce oltre i 240 s di Q-SUITE, scrivilo con la misura. Nel §10.1 il
+contratto consegnato dove differisce dalla proposta, e che cosa resta a
+P-82 e P-83. Un commit, con la voce in fondo a [Unreleased]; niente
+push. Chiudi con il resoconto di docs/prossime-sessioni.md.
+```
+
 **Esito:** —
 
 ### I segnaposto — i prompt che non si possono ancora scrivere
@@ -5724,15 +5870,24 @@ il resoconto del precedente, e la regia scrive il suo prompt allora.
 - **P-68**: scritto il 13 ottobre 2026, dopo Q-STATI, e chiuso lo stesso giorno.
 - **P-69**: scritto il 13 ottobre 2026, chiuso il 14.
 - **P-70**: scritto il 14 ottobre 2026, e fatto a metà lo stesso giorno: i bot sì, le persone no; la metà con le persone passa a dopo il rilascio.
-- **P-79**: scritto il 14 ottobre 2026, qui sopra: il progetto del ridisegno.
-- **P-80 — Claude: i controlli e la specifica del ridisegno.** Aspetta il
-  §10.1 di P-79: i controlli sui tragitti e sulle viste nuove, con il
-  meccanismo delle aree 2–5 (raccordo, due regimi, scadenza alla merge di
-  P-81), la specifica §5, §6, §7 e R-NAV riscritti, gli export del motore che
-  P-79 chiede.
-- **P-81 — ChatGPT: la realizzazione del ridisegno**, in uno o più passi
-  secondo il §10.1 di P-79. Aspetta P-80 fuso. Poi un rilascio, e la riga 18:
-  le persone sul sito vero.
+- **P-79**: scritto il 14 ottobre 2026, chiuso il 15: il progetto del ridisegno.
+- **P-80**: scritto il 15 ottobre 2026, qui sopra.
+- **P-82 — Claude: il banco dei tragitti in Chrome**, il punto E del §10.1 di
+  `ridisegno-progetto.md`: un gruppo del banco del client che guida i 108
+  tragitti sul documento solo, misura la continuità senza account, la
+  cronologia, i tre posti dell'invito, i cinque stati, i gesti, con le
+  rotture della pagina di riferimento. Aspetta P-80 fuso, perché usa i suoi
+  raccordi e il suo regime.
+- **P-83 — Claude: i due campi del profilo sul server**, il punto D.3 del
+  §10.1: `abilitazione` e `conseguimento`, nulli, additivi, in `/v1/io` e
+  nell'export, con la capability `campi_profilo`, migrazione, ripristino e
+  cancellazione provati, `account-progetto.md` e il progetto del client
+  aggiornati. Aspetta la decisione A-5 (§4, «Dopo P-59», 17); se è no, non
+  esiste e P-81 fa le scelte temporanee.
+- **P-81 — ChatGPT: la realizzazione del ridisegno**, nei tre passi su una
+  copia e un commit solo del §10.1. Aspetta P-80, P-82 e, se c'è, P-83 fusi,
+  e le decisioni A-1 e A-6. Poi la regia toglie il regime di prima, un
+  rilascio, e la riga 18: le persone sul sito vero.
 
 **Dopo P-63 e P-64, dal 4 ottobre 2026.**
 
@@ -6459,3 +6614,13 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   che il progetto deve decidere prima del codice: il documento solo
   sull'host statico, `/app` e `start_url`, gli agganci dei banchi, il
   controllo sui tragitti. `main` pushato, i rami di ChatGPT allineati.
+- **15 ottobre 2026 — P-79 fuso e chiuso; P-80 scritto; tre decisioni nel
+  §4.** Il resoconto letto contro il repo: il commit con il trailer, recinto
+  verde, diff limitato al progetto e al CHANGELOG, merge, `main..ui/main`
+  vuoto; guardiano, documentazione, dati 229 e specifica 958 sullo stato
+  fuso. Il §10.1 del progetto smistato in quattro prompt — P-80 i raccordi e
+  la specifica, P-82 il banco dei tragitti, P-83 il profilo sul server se
+  A-5, P-81 la realizzazione — perché un prompt solo con tutto E dentro
+  sarebbe stato una sessione che non chiude. Dal §11 del progetto i punti
+  16–18 del §4, con la proposta della regia per ciascuno; A-2, A-3 e A-4
+  erano già aperti. `main` pushato, i rami di ChatGPT allineati.
