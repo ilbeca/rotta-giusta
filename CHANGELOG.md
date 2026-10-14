@@ -883,6 +883,42 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   produzione.
 
 
+### Progettato — P-79: il ridisegno, prima di controlli e pagina
+
+- **Un progetto solo, `docs/ridisegno-progetto.md`.** La struttura e i nomi
+  provvisori chiusi il 14 ottobre diventano schermate, stati, azioni e testi
+  nei due accessi, con 108 ID di P-65 e ritorni espliciti. Progressi parte
+  dalla mappa a cinque stati: fasi, costanza, obiettivo e conclusione aspettano
+  P-76; spiegazioni, stima e raccolte di P-75 mantengono i propri raccordi.
+  La pagina non è stata modificata.
+
+- **La decisione del documento solo regge anche al caricamento diretto.**
+  Otto richieste al server locale invariato di `strumenti/serve.py`: le
+  sezioni in query su `/` hanno 200, `/allenati` ha 404. In Chrome il cambio
+  a `/allenati` con `pushState` e Indietro conserva documento e memoria;
+  un nuovo caricamento perde la memoria e trova il 404. Scelte le query
+  proposte da P-65, canonico in `index.html`, `/app` come porta compatibile,
+  manifest su `/`, legale canonico sopra l'origine. Sono contratti per
+  P-81, non un router già provato sulla pagina di produzione.
+
+- **Il §10.1 diventa consegna per P-80 e P-81.** Banchi con vecchio regime
+  verificato fino alla merge, quattro viste nuove esatte, agganci conservati
+  o tradotti, controlli sui tragitti/UID/cronologia/inviti e rotture deliberate.
+  Dichiarati i numeri mancanti e il profilo che oggi non conserva «che cosa
+  stai preparando?». Per l'autore: temi in Quiz o nella preparazione (tre
+  o quattro tocchi, nessun mock ne fa due), persistenza delle scelte distinta
+  dall'obiettivo P-76, indirizzo segnalazioni e promessa nel risultato che
+  aspetta P-76. Nessuna alternativa dei mock promossa in silenzio.
+
+- **Verificato sulla base invariata:** motore 212/216, quattro skip previsti;
+  server 81/81 con Node 25 e con Node 24.21.0 LTS, pacchetto confrontato con
+  `SHASUMS256.txt` e binario estratto identico; dati 229, interfaccia 2.453,
+  specifica 958. Guardiano verde su 177 file; controllo della documentazione
+  verde; 108 ID univoci, nove gruppi da dodici e 26 riferimenti locali
+  verificati. Nessuna modifica a `site/`, `tests/`, specifica, coda o
+  versione; nessun tag, push o servizio di produzione toccato. La lettura
+  dei mock e il giro sintetico non provano usabilità con persone o Safari.
+
 ## [0.30.0] — 2026-10-03
 
 **Il sito più semplice: niente offline.** Rotta Giusta si apre con la rete,
