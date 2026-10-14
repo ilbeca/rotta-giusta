@@ -841,6 +841,48 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   resta per P-70 e la realizzazione. Solo prototipi e questa voce; versione,
   site/, tests/ e coda intatti.
 
+### Provato — P-70: i mock con i bot; la prova con le persone non è fatta
+
+- **Zero persone, e lo si scrive.** Il prompt chiede tre-cinque persone vere
+  e dice che con meno di tre la prova non è fatta; l'autore non le aveva. In
+  `docs/prototipi/interfaccia-2026-10/prova-persone.md` il protocollo com'è
+  pensato — profili del §1, dispositivo, l'ordine alternato delle varianti, i
+  tre compiti con le parole della persona, le cinque parole di Q-STATI
+  spiegate con parole sue —, le due sezioni delle osservazioni e dei conteggi
+  **vuote per quel motivo**, e in fondo, separato e senza decidere, che cosa
+  l'esito dice su ogni nome aperto, sui tre tocchi, su Q-STATI e sullo
+  scorrimento: per Q-STATI, lo scorrimento e «che cosa nessuno ha capito» la
+  risposta è «nessuno», perché sono prove che solo le persone fanno.
+
+- **I bot sulle varianti dei mock, come segnale debole.** I mock non espongono
+  lo stato della pagina che i giri sul sito misurano, quindi sui mock gira la
+  prova del menu, su prototipi di carta: trascritti oggi dai cinque mock
+  leggendone le etichette nel browser — la Home approvata e proposta, Allenati
+  con i temi in Quiz o nella Preparazione, Esame, Progressi senza account, il
+  pannello dell'avatar —, quattro varianti che incrociano le due coppie più
+  una rotta apposta; i compiti sono i **venti profili** di `~/bot-ux/`, tre
+  frasi ciascuno, con il traguardo scelto da Claude. 300 giri con Haiku, 0,24
+  $, nessun errore; il primo lancio era uscito tutto in errore per la sessione
+  scaduta della CLI, a costo zero, ed è stato rifatto. **La rotta apposta esce
+  peggiore** (37 su 60 contro 46–54), stavolta anche sull'account nascosto.
+  **Un segnale solo, netto**: il richiamo «Quiz · Carteggio · Segnali» accanto
+  alla porta Allenati della Home proposta porta chi cerca il carteggio sulla
+  porta che lo nomina, che si apre su Quiz, dove il bot prende «Navigazione
+  cartografica» per carteggio — dieci mancati su dodici, contro zero senza il
+  richiamo. «Allenati con 10 domande» e «Prova 10 domande» non si
+  distinguono, e «Prova» non ruba nessuno alla simulazione (36 su 36). Il nome
+  del pannello account non si misura su carta, perché l'avatar dice «Accedi»
+  in tutte e due. I tre tocchi del punto 13 sono confermati come conteggio e
+  non come trovabilità. Nessun nome promosso. Il file delle varianti e
+  l'uscita stanno in `~/bot-ux/rotta-giusta/menu/`, fuori dal repo come la
+  lettura del 4 ottobre; la tabella intera è nel verbale.
+
+  Guardiano verde. Nessuna suite di esecuzione rilanciata: un solo file di
+  documentazione nella cartella dei mock. `site/`, `tests/`, la specifica e
+  `docs/prossime-sessioni.md` non sono stati toccati; nessun servizio di
+  produzione.
+
+
 ## [0.30.0] — 2026-10-03
 
 **Il sito più semplice: niente offline.** Rotta Giusta si apre con la rete,
