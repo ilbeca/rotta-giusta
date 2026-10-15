@@ -656,7 +656,8 @@ vero anche quando l'implementazione cambia.
   ripristino è provato (R-ACC-20, R-ACC-24).
 - **Che cosa conserva.** Gli account (l'email, e la password solo come
   impronta Argon2id: R-ACC-16), le sessioni, le righe delle risposte **in chiaro**, il
-  profilo — data d'esame e punteggi dei Segnali —, e un registro di sicurezza.
+  profilo — data d'esame, le scelte di preparazione (P-83) e punteggi dei
+  Segnali —, e un registro di sicurezza.
   Il titolare le legge per il supporto e per le statistiche; niente esce verso
   script di terzi (§2.1).
 - **E, se chi studia lo dice, l'esito del suo esame** (P-73, schema 5;
@@ -1191,7 +1192,7 @@ loro schermata; il breve, i segnalibri, la ricerca e Allena non ci sono.
 | Spunte argomenti, spunte voci | Allenati → Quiz | Più voci insieme; per la vela le spunte viaggiano come `voci`, non `temi` |
 | Banca base / vela, quante | Allenati → Quiz | |
 | Data d'esame | Esame, e Profilo → Data d'esame | Facoltativa. Senza, `quota` e `giorni` sono `null` e il semaforo è `attesa`. Senza account vale per la pagina aperta; con l'account sta nel profilo sul server, e dopo la registrazione si propone senza salvarla da sola (R-ACC-55) |
-| «Che cosa stai preparando?» | l'onboarding dopo la registrazione, Profilo, Esame | Due scelte facoltative — solo motore o anche vela, prima patente o estensione dalla entro 12 —, nulle per chi non risponde; senza account valgono per la pagina aperta. Con l'account si dicono salvate solo quando il server le ha: i due campi del profilo sono P-83 (A-5, deciso il 15 ottobre 2026), e fino ad allora la pagina non promette la persistenza |
+| «Che cosa stai preparando?» | l'onboarding dopo la registrazione, Profilo, Esame | Due scelte facoltative — solo motore o anche vela, prima patente o estensione dalla entro 12 —, nulle per chi non risponde; senza account valgono per la pagina aperta. Con l'account si dicono salvate solo quando il server le ha: i due campi del profilo, `abilitazione` e `conseguimento`, sono sul server da P-83 (A-5, deciso il 15 ottobre 2026; R-ACC-78…81), dichiarati da `campi_profilo` in `GET /v1/io`, e la pagina li consuma con P-81 |
 | I cinque stati | Progressi, con l'account | La barra per tema e per voce con «mai visti · da rifare · da confermare · recuperati · acquisiti» (Q-STATI), da `contaStati()` con il filtro della riga, una chiamata per aggregato; i tre di `classifica()` restano per le azioni (R-MAPPA-18, R-STATI-06). Senza account nessuna copertura cumulativa: non c'è uno storico da coprire |
 | La mappa per tema, e «Dove pesa di più adesso» | Progressi, con l'account | `quadro()` e `dovePesa()` attraverso il raccordo del §10.1 di `area-5-progetto.md`: una riga per tema, le voci al tocco, «Rifai N errori» e «Allena», e in cima la frase solo quando il motore la dà (R-MAPPA-14…18) |
 | Barrette dell'andamento | Progressi | `serieGruppi()`, `tendenza()` |
@@ -1637,8 +1638,9 @@ pagina sono nell'account: «Che cosa stai preparando?», due scelte facoltative
 senza un default, e la data d'esame facoltativa; **Salva le scelte**, **Salta
 per ora**. Senza account «Scelte applicate a questa pagina», mai «salvate»;
 con l'account «Scelte salvate» solo con i valori riletti dalla risposta del
-server (R-ACC-55). I due campi del profilo sono P-83: finché non ci sono, il
-ramo con l'account non promette la persistenza.
+server (R-ACC-55). I due campi del profilo sono sul server da P-83 (15 ottobre
+2026), dichiarati da `campi_profilo`: con un server che non li dichiara il ramo
+con l'account non promette la persistenza.
 
 **Info e diagnostica.** La versione che gira su questo dispositivo, letta da
 `meta.json`. L'archivio, nei due stati: senza account le righe della pagina
@@ -2094,7 +2096,7 @@ controllo in `test_server.mjs`.
 | R-ACC-52 | Un azzeramento fatto altrove, scoperto inviando o ricevendo, sospende invii e ricezioni finché chi studia non sceglie: la pagina dice quante risposte di qui non sono salvate, niente rientra, scartare chiede di confermare la perdita, la scelta rimandata resta raggiungibile e riaperta conta anche le risposte date intanto; dopo, la copia è quella del server e le risposte nuove entrano | `test_interfaccia.py::test_client_azzeramento` |
 | R-ACC-53 | Dopo il ripristino di una copia, la pagina vede l'epoca nuova, rimanda la risposta che il server ha perso, e un altro dispositivo la riceve: R-ACC-24 visto dalla pagina | `test_interfaccia.py::test_client_ripristino` |
 | R-ACC-54 | L'uscita regge anche una sessione che non c'è più: un `401` all'uscita pulisce la copia, non dice che serve la rete; con la sessione revocata e risposte non inviate le fa scaricare e cancella solo dopo una scelta esplicita, senza mandarle a nessun account. «Esci da tutti i dispositivi» chiude ogni sessione sul server e pulisce qui; l'altro dispositivo lo scopre con un `401` e tiene la sua copia, congelata | `test_interfaccia.py::test_client_uscita` |
-| R-ACC-55 | La data d'esame dopo la registrazione è facoltativa e non inventata: la data scritta nella pagina si propone e si salva solo al clic, com'è anche se passata; senza, il campo è vuoto; un salvataggio fallito lo dice; entrando in un account che ha la data, il passo non si ripete, la data resta e la pagina mostra quella del server. Nel ridisegno l'onboarding chiede anche «che cosa stai preparando?», due scelte facoltative senza un default, con le stesse regole: «salvate» solo con i valori riletti dal server, e finché i due campi del profilo non ci sono (P-83, A-5) nessuna promessa di persistenza; il controllo delle scelte arriva con P-82 sul banco del client | `test_interfaccia.py::test_client_data` |
+| R-ACC-55 | La data d'esame dopo la registrazione è facoltativa e non inventata: la data scritta nella pagina si propone e si salva solo al clic, com'è anche se passata; senza, il campo è vuoto; un salvataggio fallito lo dice; entrando in un account che ha la data, il passo non si ripete, la data resta e la pagina mostra quella del server. Nel ridisegno l'onboarding chiede anche «che cosa stai preparando?», due scelte facoltative senza un default, con le stesse regole: «salvate» solo con i valori riletti dal server, e solo con un server che dichiara i due campi in `campi_profilo` (P-83, A-5, sul server dal 15 ottobre 2026): con uno che non li dichiara nessuna promessa di persistenza; il controllo delle scelte arriva con P-82 sul banco del client | `test_interfaccia.py::test_client_data` |
 | R-ACC-56 | «Scarica i tuoi progressi» con l'account è l'export del server, e dice quante risposte da inviare non contiene, scaricabili a parte; su un'origine senza API nessun modulo d'account, nessuna richiesta all'API e niente di personale nel browser: un link a `rottagiusta.it/app` | `test_interfaccia.py::test_client_export` |
 | R-ACC-57 | I testi di `site/` sono quelli della versione con gli account: nessuna delle frasi che gli account rendono false, commenti compresi, e tutte quelle del §11.2 del progetto del client. Il contenuto giuridico dell'informativa resta al gate dell'autore | `test_interfaccia.py::test_client_testi` |
 | R-ACC-58 | La pagina ha il client degli account: dichiara `indirizzoApi()`, e una pagina che non la dichiara — quella di prima di P-18 — è rossa, qui e in ogni gruppo del banco | `test_interfaccia.py::test_client_nella_pagina` |
@@ -2116,6 +2118,10 @@ controllo in `test_server.mjs`.
 | R-ACC-75 | Chi si registra incontra le condizioni per l'account e l'età prima di creare l'account: nel modulo «Crea un account» aperto dal riepilogo di un'attività, dentro la finestra e in testo che si vede, prima del pulsante «Crea l'account e salva» — nel documento e sullo schermo —, c'è un link a `/avvertenza#condizioni`, l'indirizzo pulito e dentro il sito, e la frase dice i 18 anni; seguito il link, l'ancora c'è nella pagina che il sito serve, si vede, ed è il titolo delle condizioni per l'account; e in `site/avvertenza.html` l'ancora è una sola, su quel titolo, in una sezione che dice gli stessi 18 anni. Coperto per quello che il banco vede: non la frase parola per parola, non le altre due porte del modulo; che la finestra non sia coperta è R-ACC-76 | `test_interfaccia.py::test_client_condizioni` |
 | R-ACC-76 | Il modulo «Crea un account» aperto dal riepilogo di un'attività si vede davvero: a 375 px il titolo, il link alle condizioni, la frase sui 18 anni e il pulsante che crea l'account, portati al centro, stanno nello schermo, non sono trasparenti, non hanno niente sopra e hanno il contrasto minimo. Fino al 2 ottobre 2026 era un difetto aperto dichiarato sulla pagina vera: la finestra si apriva sotto il riepilogo — `.account-panel` aveva `z-index` 30, i runner 80 —; P-58 l'ha portata sopra, e la verifica gira verde senza eccezione | `test_interfaccia.py::test_client_modulo_visto` |
 | R-ACC-77 | Una statistica sulle risposte conta soltanto risposte: la fonte `risposte` ha le righe per cui `rigaDiRisposta()` del motore dice vero, con il filtro costruito da `TIPI_RIGA` e non da un elenco scritto a mano, e la fonte `righe` ha tutte le righe con il loro tipo — anche i tag, le righe d'avvio e i segnalibri —, filtrata dagli iscritti come le altre. Una query che legge `risposte` e cerca per testo un tipo che lì non c'è (`tipo = 'a'`) è rifiutata, e dice di leggere `righe`: conterebbe zero in silenzio | `test_server.mjs::statistiche: la fonte risposte ha solo le risposte, e le righe d avvio, i segnalibri e i tag stanno in righe` |
+| R-ACC-78 | `abilitazione` e `conseguimento` sono facoltativi e nulli, ognuno uno dei suoi valori o `null`; assente non modifica, `null` azzera; un valore estraneo o un campo che il profilo non conosce è un `422` con il campo, e non lascia scritti gli altri; la descrizione li porta con `campi_profilo`; un azzeramento non li tocca | `test_server.mjs::profilo: abilitazione e conseguimento, facoltativi e nulli, assente non modifica, null azzera, e un valore estraneo e un 422 che non scrive niente` |
+| R-ACC-79 | L'export porta le scelte, e un altro account che carica il file come la pagina — righe e punteggi — resta con le sue | `test_server.mjs::esporta: il file porta le scelte di preparazione, e un altro account che lo carica non le riceve` |
+| R-ACC-80 | Una copia dello schema 5 si ripristina allo schema 6 con le scelte nulle, non inventate; una dello schema 6 le riporta; lo strumento del titolare le dice `null` su un database di prima | `test_server.mjs::ripristino: una copia dello schema 5 si porta allo schema 6, e le scelte dette dopo la copia si perdono, non si inventano` |
+| R-ACC-81 | Il rilascio di prima sul database di dopo parte, non dichiara `campi_profilo`, butta le scelte con un `200` — la ragione della capability —, e cancellando un account le porta via anche dai byte | `test_server.mjs::profilo: il rilascio di prima sul database di dopo non dice campi_profilo, butta le scelte con un 200, e cancellando le porta via dai byte` |
 
 R-ACC-20 e R-ACC-24 sono i primi requisiti del server con un controllo che si
 esegue, e il giro intero sta in `node server/ripristina.mjs --prova`, che la
@@ -2282,6 +2288,22 @@ tipo — è il cambio voluto, e fino a oggi nessuna statistica si è calcolata
 (§3.7); e la
 query del §4.7 di `esito-esame-progetto.md`, che legge gli avvii da `risposte`
 e va riscritta su `righe`: oggi la guardia la ferma.
+
+**Le scelte di preparazione nel profilo (P-83).** La decisione A-5 del 15
+ottobre 2026 mette sul server «che cosa stai preparando?», perché l'onboarding
+del ridisegno possa dire «salvate» solo quando lo è: R-ACC-78…81, proposti nel
+§17 di `account-progetto.md` e portati qui dalla regia con i nomi dei test
+letti in `tests/`. Si eseguono contro il server vero, e R-ACC-80 e 81 anche
+contro il `ripristina.mjs` e il server della v0.30.0 estratti dal tag. **Un
+difetto corretto per traverso**, misurato: fino a P-83 `PUT /v1/profilo` con
+un campo sconosciuto rispondeva `200` e lo buttava, il «200 che ignora un
+valore mandato» che il §2 di `esito-esame-progetto.md` aveva già trovato per
+l'esito; ora è un `422` con il campo. **Che cosa non vedono:** la pagina,
+che li consumerà con P-81 leggendo `campi_profilo` (R-ACC-55, con il banco di
+P-82); l'informativa, che li nomina con P-81 (§11.2 del progetto del client);
+le statistiche, che non li portano in nessuna fonte finché l'autore non
+decide (§15.2 e §20 di `account-progetto.md`); e che l'export porti la data
+d'esame, che oggi non porta mentre porta le due scelte (§20).
 
 **Le condizioni nel modulo di registrazione (P-57).** L'informativa poggia il
 salvataggio sull'esecuzione del contratto, cioè sulle condizioni per l'account,
@@ -3483,3 +3505,8 @@ successo, ed è il motivo per cui questo file esiste.
   ragioni e le scartate; il §4.1 e la nota della decisione 14 le dicono;
   R-STATI-06 le nomina e resta scoperto finché la pagina non le scrive. Sblocca
   P-68, il mock di Progressi.
+- **15 ottobre 2026 — le scelte di preparazione sul server (P-83).** R-ACC-78…81
+  entrano nel §9.9 con i test di P-83, letti in `tests/`; il §3.7, il §5.4, il
+  §7.8 e R-ACC-55 non dicono più che i due campi non ci sono: sono sul server,
+  dichiarati da `campi_profilo`, e la pagina li consuma con P-81. Scritti dalla
+  regia alla chiusura di P-83, che la specifica non la toccava.

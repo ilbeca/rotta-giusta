@@ -189,17 +189,20 @@ provano dopo il rilascio, sul sito vero. Il progetto del ridisegno è fuso il 15
 docs/ridisegno-progetto.md, 1.317 righe, con il §10.1 che è il
 contratto dei passi dopo). Le tre decisioni del suo §11 — i temi nel segmento
 Quiz, i due campi del profilo, la frase a metà — sono prese il 15
-ottobre. Pronti: P-80 per Claude — i raccordi, gli export, i due
-regimi e la specifica — e P-83 per Claude — i due campi del profilo
-sul server —, uno alla volta; P-62 con l'autore. Dopo P-80: P-82, il
-banco dei tragitti; poi P-81 per ChatGPT, la realizzazione, e un
-rilascio. P-75 aspetta la base giuridica; P-76 aspetta Q-COSTANZA,
+ottobre, e lo stesso giorno sono fusi e chiusi P-80 — i raccordi, gli
+export, i due regimi dei banchi e la specifica §5–§7 riscritta sul
+ridisegno, con il regime di oggi che scade alla merge di P-81 — e P-83
+— i due campi del profilo sul server, schema 6, con la capability
+campi_profilo. Pronto: P-82 per Claude, il banco dei tragitti in
+Chrome; P-62 con l'autore. Dopo P-82: P-81 per ChatGPT, la
+realizzazione, poi la regia toglie il regime di oggi dai controlli e
+si fa un rilascio. P-75 aspetta la base giuridica; P-76 aspetta Q-COSTANZA,
 l'ambito della conclusione (§4, «Dopo P-59», 10) e le fasi (punto 15),
 e il ridisegno parte senza, dichiarandolo.
 
 I prossimi passi, in quest'ordine:
-1. I resoconti di P-80 e P-83, che non dipendono l'uno dall'altro; poi
-   P-82, che usa i raccordi di P-80; poi P-81 per ChatGPT.
+1. Il resoconto di P-82, il banco dei tragitti; poi P-81 per ChatGPT,
+   e alla sua merge togliere il regime di oggi dai controlli.
 2. Le decisioni dell'autore nel §4, «Dopo P-59» e «Dopo P-64»:
    ricordagliele quando il lavoro che le aspetta sta per partire. La
    base giuridica di esito e previsioni ferma P-75;
@@ -208,7 +211,7 @@ I prossimi passi, in quest'ordine:
    ottobre — con /sw.js che deve restare a 200 —, la soglia degli
    allarmi dal 2 novembre.
 4. Un rilascio, quando l'autore lo vuole: dalla v0.30.0 main porta la
-   correzione del 500 sulla data d'esame e lo schema 5, e il server si
+   correzione del 500 sulla data d'esame e lo schema 6, e il server si
    aggiorna con rg-aggiorna allo stesso tag.
 
 Non lanciare niente e non scrivere niente finché non te lo chiedo: da
@@ -262,7 +265,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 18 | **La prova con le persone**, sul sito vero, dopo il rilascio del ridisegno — i bot sui mock sono fatti (P-70, 14 ottobre) | l'autore, con Claude | — | il rilascio del ridisegno, e tre-cinque persone, dell'autore | P-70 resta la ricetta; prompt da riscrivere allora |
 | 19 | **Le ricerche**: il parere del professionista sulle donazioni (14 domande, I-11); se all'esame vero si torna indietro fra le domande; Lighthouse su telefono e Safari veri (I-08) | l'autore | — | — | §4, «Dopo P-59» |
 | 20-bis | **I contratti del motore, seconda parte**: Percorso con il «sei qui», costanza, obiettivo, «hai concluso quello che ti avevamo proposto» | Claude | `main` | Q-COSTANZA e la decisione 22 (§4, «Dopo P-59», 3 e 10); e P-68, che disegna il «sei qui» | P-76, da scrivere |
-| 21 | **Il ridisegno**: il progetto è fatto (P-79, `docs/ridisegno-progetto.md`); poi i raccordi, gli export e la specifica (P-80), il banco dei tragitti (P-82), i due campi del profilo sul server (P-83), la realizzazione (P-81), un rilascio | Claude; Claude; Claude; ChatGPT | `main`; `main`; `main`; `ui/main` | P-80 e P-83 niente; P-82 P-80 fuso; P-81 tutti fusi | P-80, P-83; P-82 e P-81 da scrivere |
+| 21 | **Il ridisegno**: il progetto (P-79), i raccordi, gli export, i due regimi e la specifica (P-80) e i due campi del profilo sul server (P-83) sono fatti; restano il banco dei tragitti in Chrome (P-82), la realizzazione (P-81), un rilascio | Claude; ChatGPT | `main`; `ui/main` | P-82 niente; P-81 P-82 fuso | P-82; P-81 da scrivere |
 | 22 | **Spiegazioni**: il primo lotto di 50, «Segnala un problema», la misura dell'effetto | Claude con l'autore, poi ChatGPT | `main`, `ui/main` | l'indirizzo e la licenza (§4, «Dopo P-59», 2 e 6) | da scrivere |
 | 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | niente dal motore: `PREVISIONI` c'è (P-72), e un modello entra come metodo accanto alla regola semplice; Q-STIMA solo per quando si mostra | da scrivere |
 | 27 | **Esito e previsioni, la pagina e l'informativa** (B-1, B-2), poi un rilascio | ChatGPT | `ui/main` | soltanto la base giuridica (§4, «Dopo P-64», 1–3): P-74 è chiuso | P-75, da scrivere |
@@ -275,13 +278,14 @@ P-71 — il motore delle previsioni, il server dell'esito, i contratti del motor
 per il ridisegno — il 12 ottobre; P-74, P-77 e P-78 — i controlli della pagina
 e la specifica per esito e previsioni, la banca riletta sul decreto, il server
 che conta le risposte come risposte — il 13 ottobre, e le loro righe 26, 28 e
-29 sono uscite. Pubblicati su GitHub fino a P-71 e alla merge di P-65; da P-74 in
-poi il push aspetta il sì dell'autore, e il server in esercizio è ancora la
-v0.30.0: lo schema 5 e la correzione del `500` sulla data d'esame arrivano con
-il prossimo rilascio. **Per Claude** oggi non c'è un prompt pronto: P-75
-aspetta la base giuridica, P-76 aspetta Q-COSTANZA e P-68. P-62 con l'autore
-quando vuole.
-**Per ChatGPT:** niente finché P-80, P-82 e P-83 non sono fusi: la realizzazione (P-81) li consuma tutti. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
+29 sono uscite; P-80 e P-83 — i raccordi, gli export, i due regimi e la
+specifica del ridisegno; i due campi del profilo sul server — il 15 ottobre.
+Pubblicati su GitHub fino alla chiusura di P-79; il server in esercizio è
+ancora la v0.30.0: lo schema 6, con il 5 e la correzione del `500` sulla data
+d'esame, arriva con il prossimo rilascio. **Per Claude** è pronto P-82, il
+banco dei tragitti in Chrome; P-75 aspetta la base giuridica, P-76 aspetta
+Q-COSTANZA e P-68. P-62 con l'autore quando vuole.
+**Per ChatGPT:** niente finché P-82 non è fuso: la realizzazione (P-81) consuma P-80, P-82 e P-83, e i primi due sono già su `main`. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
 che cambiano una promessa (un ADR, la filosofia, la specifica), poi i mock e la
 prova con le persone, poi il codice; «com'è andata» parte presto perché i suoi
 dati arrivano mesi dopo. **Il §5, il §6 e i controlli R-NAV della specifica non
@@ -657,7 +661,14 @@ consuma, non si riprogetta.
       additivi e piccoli; senza, la domanda dell'onboarding promette una
       cosa che non tiene.* **Deciso dall'autore il 15 ottobre 2026: sì, i
       due campi.** Scritto nel §11 del progetto e nel §20 di
-      `account-progetto.md`; è P-83.
+      `account-progetto.md`; **fatti da P-83 il 15 ottobre 2026**, schema 6.
+      Due cose trovate da P-83, per l'autore, nel §20 di `account-progetto.md`:
+      se le **statistiche** debbano vedere le scelte — oggi nessuna fonte le
+      porta, metterle è una riga e una riga nell'informativa; *proposta della
+      regia: no finché non c'è una domanda che le richieda* — e se l'**export**
+      debba portare anche la data d'esame, che non porta dalla v0.28.0 mentre
+      ora porta le scelte; *proposta della regia: sì, nella prima sessione che
+      tocca l'export.* Nessuna delle due ferma P-81.
   18. **La frase nel risultato di una simulazione** (A-6): l'ADR-006 dice
       «Conserva questa prova e ritrovala quando torni. Da queste risposte
       possiamo proporti da dove iniziare», e la seconda metà promette il
@@ -5862,7 +5873,21 @@ P-82 e P-83. Un commit, con la voce in fondo a [Unreleased]; niente
 push. Chiudi con il resoconto di docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** fatto il 15 ottobre 2026, `6604dde` su `main`. Il contratto
+consegnato nel §10.1 del progetto prima del codice; `riepilogoPagina()` nel
+motore come composizione, orfana fino a P-81; il regime letto da due
+dichiarazioni in `tests/regime_pagina.py`, e la pagina di oggi che passa
+intera; `tests/ridisegno.mjs` con la pagina di riferimento e trenta rotture; la
+mappa con i cinque stati e Allena, dieci rotture; il banco del client sul
+canonico; la specifica §5, §6, §7 e §9.4 con R-NAV-08…13, R-MAPPA-18 e
+R-ARCH-19. **Trovato:** R-PREV-08 ha fermato la prima `riepilogoPagina()`,
+che contava gli avvii come la proposta diceva — il contratto corretto è nel
+§10.1 —; il lettore dei raccordi prende le costanti in maiuscolo e non lo
+stato `S`; una sostituzione meccanica nel banco del client ha dato 200 rossi
+al primo giro. Suite: motore 215/219, server 81/81, dati 230, specifica 988,
+interfaccia 2.604 in 4 min 16 s. La regia ha letto il commit, i file nel
+territorio del motore e le cinque suite sullo stato con P-83 sopra. Resta a
+P-82 il banco dei tragitti, con R-NAV-08 scoperto fino ad allora.
 
 ### P-83 — Claude: i due campi del profilo sul server
 
@@ -5923,6 +5948,111 @@ verificato, node server/ripristina.mjs --prova, l'interfaccia con la
 docs/prossime-sessioni.md.
 ```
 
+**Esito:** fatto il 15 ottobre 2026, `cd0faf0` su `main`. D.3 com'era
+scritto: schema 6, `abilitazione` e `conseguimento` facoltativi e nulli,
+validazione atomica con il `422` che porta il campo, `campi_profilo` nella
+descrizione, l'export che li porta e l'import che non li carica altrove,
+ripristino e cancellazione sui byte provati, il rilascio di prima sul database
+di dopo misurato con il codice del tag. R-ACC-78…81 proposti nel §17 del
+progetto degli account; **la specifica non era fra i file del prompt, e li ha
+portati la regia** nel §9.9, con il §3.7, il §5.4, il §7.8 e R-ACC-55.
+**Trovato, e corretto per traverso:** fino a ieri il profilo ignorava con un
+`200` un campo sconosciuto; ora è un `422`. **Per l'autore, portati nel §20 di
+`account-progetto.md` dalla regia:** se le statistiche devono vedere le scelte,
+e se l'export debba portare anche la data d'esame, che oggi non porta. La riga
+dell'informativa per P-81 è nel §11.2 del progetto del client. Suite: server
+85/85 anche con la LTS 24 riscaricata e verificata, motore 215/219, dati 230,
+specifica 988, interfaccia 2.604. Alla macchina lo schema 6 arriva con il
+prossimo rilascio: `rg-aggiorna` fa la copia allo schema 5, provata.
+
+### P-82 — Claude: il banco dei tragitti in Chrome
+
+**Stato:** pronto, dal 15 ottobre 2026: P-80 e P-83 sono fusi. **Dove:** Claude
+Code, `~/Software/rotta-giusta`, ramo **`main`**, a mano: tocca `tests/`, la
+specifica, il §10.1 di `docs/ridisegno-progetto.md`, il §12 di
+`docs/account-client-progetto.md` e `docs/eccezioni-interfaccia.md`. **Nasce
+da:** il punto E del §10.1 di `docs/ridisegno-progetto.md`, e «Che cosa resta a
+P-82 e P-83» in fondo al contratto consegnato da P-80. **Sblocca:** P-81.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-82: il banco dei tragitti del ridisegno, in Chrome, prima
+della pagina. È il punto E del §10.1 di docs/ridisegno-progetto.md,
+l'ultima cosa che main deve a P-81. Non toccare site/, né server/, né
+docs/prossime-sessioni.md.
+
+Leggi AGENTS.md; docs/ridisegno-progetto.md §3, §9 (i 108 tragitti e i
+loro ID), §7.4, §8 e il §10.1 — il tuo contratto è il punto E, e «Che
+cosa resta a P-82 e P-83» in fondo al contratto consegnato da P-80, che
+dice che cosa il banco sotto Node non vede e quali rotture vanno
+provate da browser —; nella specifica §6.2, §9.4 (R-NAV-08 e «Due
+regimi per il ridisegno»), R-ACC-03, R-ACC-04, R-ACC-55 e R-STATI-06;
+il §12 di docs/account-client-progetto.md, «Il banco», e il §11.1 per
+le scelte di preparazione che P-83 ha messo sul server
+(campi_profilo); tests/client_account.mjs, tests/browser.mjs,
+tests/regime_pagina.py, tests/ridisegno.mjs e tests/pagina-ridisegno.html
+di P-80; gli esiti di P-29, P-39, P-43, P-74 e P-80 qui, che hanno
+costruito il banco con lo stesso metodo.
+
+Che cosa fai:
+1. La pagina di riferimento del client nel regime nuovo, in Chrome:
+   un documento solo su /, le quattro sezioni, i segmenti, il Profilo,
+   i raccordi di P-80 collegati ai gesti, la porta /app, con il client
+   degli account che la pagina di riferimento ha già. Realizza il
+   raccordo per intero, come le pagine di riferimento delle aree; non è
+   la pagina di P-81, è il metro con cui P-81 si misura.
+2. Il gruppo dei tragitti, riconoscibile dal regime letto da
+   regime_pagina.py, con tutte le misure del punto E: il documento che
+   resta lo stesso — Document e loader identici, zero richieste di
+   documento dopo il primo ingresso —, uid, righe e bozza identici
+   attraverso le sezioni e i legali; Indietro, Avanti e Chiudi che
+   riportano allo stesso punto con filtri, scorrimento e fuoco; il
+   timer che continua sopra Profilo e legali; ricarica e ingresso
+   diretto delle query a 200, /allenati a 404 dichiarato, /app e i
+   frammenti puliti; lo storage da fuori per tutta OSSERVAZIONE e
+   niente di chi studia in history.state o nell'indirizzo; i tre posti
+   dell'invito e nessun quarto, con la rinuncia che tiene la memoria; la
+   registrazione da Home e dal risultato con l'insieme degli uid prima,
+   nella copia e sul server; i cinque stati con le parole di Q-STATI,
+   nell'ordine, che sommano, con il ts in ogni applica() e la seconda
+   giusta a 12 ore visibile senza ricarica; i tag N/S e L/C storici, il
+   segnalibro senza effetti sulle risposte, permessoGesto con i server
+   di oggi, di P-73 e della v0.30.0 imitati dal banco; la ricerca per
+   numero nei suoi casi; l'onboarding con «Scelte salvate» solo con i
+   valori riletti dal server e nessuna promessa quando GET /v1/io non
+   dichiara i due campi in campi_profilo; C-19 e tutte le attività di
+   C-01 ancora intere nel regime nuovo. Per ogni tragitto del §9: ID,
+   stato, destinazione, tocchi attesi e osservati, ritorno — un giro
+   condiviso dove il percorso è lo stesso, mai un conteggio di tocchi
+   senza il titolo di arrivo.
+3. Le rotture della pagina di riferimento, quelle del punto E e quelle
+   di «Che cosa resta a P-82»: ognuna rossa per il suo motivo, nominato,
+   e il banco provato contro sé stesso, una difesa alla volta. Sulla
+   pagina di oggi il gruppo dice che non si applica, come la mappa di
+   P-80, invece di tacere; una pagina con le due dichiarazioni e senza
+   il grafo è rossa.
+4. La specifica: R-NAV-08 e R-STATI-06 da scoperti a coperti con il
+   nome del test; R-ACC-03 con i tre posti provati, R-ACC-55 con le
+   scelte; il §9.4 «Due regimi per il ridisegno» e il §6.2 dicono che
+   cosa il banco vede e che cosa resta al collaudo di P-81 a 375 e
+   1280 px; registro. Nel §10.1 del progetto E annotato come fatto, con
+   gli scostamenti; nel §12 del progetto del client il gruppo nuovo e
+   che cosa non vede.
+
+Prima il test che fallisce, poi il codice; ogni rottura provata. Non
+scegliere per l'autore: i nomi sono quelli chiusi provvisori il 14
+ottobre, e le fasi, la costanza e la seconda metà della frase del
+risultato sono di P-76 — il banco non le chiede. Le cinque suite verdi,
+l'interfaccia con la 8620 guardata libera per 90 s prima; il banco in
+Chrome costa tempo: misura quanto, scrivilo con Q-SUITE, e se un gruppo
+si può far girare su una corsia libera fallo. Un commit, con la voce in
+fondo a [Unreleased]; niente push. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
 **Esito:** —
 
 ### I segnaposto — i prompt che non si possono ancora scrivere
@@ -5937,18 +6067,17 @@ il resoconto del precedente, e la regia scrive il suo prompt allora.
 - **P-69**: scritto il 13 ottobre 2026, chiuso il 14.
 - **P-70**: scritto il 14 ottobre 2026, e fatto a metà lo stesso giorno: i bot sì, le persone no; la metà con le persone passa a dopo il rilascio.
 - **P-79**: scritto il 14 ottobre 2026, chiuso il 15: il progetto del ridisegno.
-- **P-80**: scritto il 15 ottobre 2026, qui sopra.
-- **P-82 — Claude: il banco dei tragitti in Chrome**, il punto E del §10.1 di
-  `ridisegno-progetto.md`: un gruppo del banco del client che guida i 108
-  tragitti sul documento solo, misura la continuità senza account, la
-  cronologia, i tre posti dell'invito, i cinque stati, i gesti, con le
-  rotture della pagina di riferimento. Aspetta P-80 fuso, perché usa i suoi
-  raccordi e il suo regime.
-- **P-83**: scritto il 15 ottobre 2026, qui sopra, dopo la decisione A-5.
+- **P-80**: scritto il 15 ottobre 2026, chiuso lo stesso giorno.
+- **P-83**: scritto il 15 ottobre 2026, dopo la decisione A-5, chiuso lo stesso giorno.
+- **P-82**: scritto il 15 ottobre 2026, qui sopra.
 - **P-81 — ChatGPT: la realizzazione del ridisegno**, nei tre passi su una
-  copia e un commit solo del §10.1. Aspetta P-80, P-82 e P-83 fusi; A-1, A-5
-  e A-6 sono decise. Poi la regia toglie il regime di prima, un
-  rilascio, e la riga 18: le persone sul sito vero.
+  copia e un commit solo del §10.1. Aspetta P-82 fuso; P-80 e P-83 lo sono,
+  A-1, A-5 e A-6 sono decise. Il prompt dovrà dire: il contratto nel §6.2
+  della specifica e nel §10.1 del progetto; i due campi del profilo da
+  `campi_profilo` (§11.1 del progetto del client) e la riga dell'informativa
+  (§11.2); `app.html` ridotto a porta; gli orfani dichiarati di P-71 e P-80 da
+  consumare. Poi la regia toglie il regime di prima, un rilascio con lo schema
+  6, e la riga 18: le persone sul sito vero.
 
 **Dopo P-63 e P-64, dal 4 ottobre 2026.**
 
@@ -6692,3 +6821,20 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   `account-progetto.md`; l'ADR-006 non cambia, perché il suo secondo prezzo
   diceva già che la frase intera aspetta il Percorso. P-83 scritto, pronto
   con P-80, uno alla volta. `main` pushato, i rami di ChatGPT allineati.
+- **15 ottobre 2026 — P-80 e P-83 chiusi; P-82 scritto.** I due resoconti
+  letti insieme contro il repo: due commit su `main` con il trailer, tutti i
+  file nel territorio del motore, nessuno dei due ha toccato la coda; le
+  cinque suite sullo stato con tutti e due sopra — motore 215/219, server
+  85/85, dati 230, specifica 988 prima delle righe nuove, interfaccia con la
+  8620 guardata libera per 90 s —, guardiano e documentazione verdi. P-83
+  non aveva la specifica fra i suoi file: R-ACC-78…81 li ha portati la regia
+  nel §9.9, con i nomi dei test letti in `tests/`, e le quattro frasi che
+  dicevano «P-83 non c'è ancora» dicono ora il presente. Due righe del
+  resoconto di P-83 vivevano solo in chat e sono entrate nel repo: le due
+  domande per l'autore nel §20 di `account-progetto.md` e nel §4 qui, e la
+  riga dell'informativa per P-81 nel §11.2 del progetto del client. P-82
+  scritto dal punto E e da «Che cosa resta a P-82» del §10.1: la pagina di
+  riferimento del client nel regime nuovo, il gruppo dei tragitti, le
+  rotture, R-NAV-08 e R-STATI-06 da coprire. La LTS 24 che P-80 chiedeva di
+  poter scaricare l'ha riscaricata P-83 nello scratchpad, verificata con
+  `SHASUMS256.txt`: il sì resta per sessione, com'è sempre stato.
