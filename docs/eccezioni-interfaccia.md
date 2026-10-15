@@ -59,6 +59,7 @@ dichiarazione che mente.
 | `rigaScrivibile` | Se il server che la pagina ha davanti accoglierebbe una riga — un tag «Svista» (`S`), un segnalibro (`_t: 'b'`) — dal suo `tipi_riga` (P-71). La chiama il ridisegno prima di scrivere un tipo o un tag nuovo; oggi la pagina non ne scrive |
 | `codaSegnalibri` | L'allenamento «i miei segnalibri», con il numero e la lista dalla stessa chiamata (decisione 20 di P-59, P-71). Il ridisegno: il gesto che segna e il pulsante che apre; `segnalibri()` non è qui perché la chiama `codaSegnalibri()` |
 | `cercaNumero` | Cerca un quesito per numero del decreto, base e vela (decisione 8 di P-59, P-71). Il ridisegno, in Allenati → Quiz |
+| `riepilogoPagina` | «Le attività di questa pagina»: le risposte della pagina aperta contate per tipo, con le attività di `sessioni()` e `attivitaCarteggio()`, e i gesti a parte (D.1 del §10.1 di `docs/ridisegno-progetto.md`, P-80). La consuma il ridisegno nella Home H1 e in Progressi senza account: P-81, su `ui/main` |
 
 ## Chiamate al motore protette
 

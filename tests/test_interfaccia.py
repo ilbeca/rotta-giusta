@@ -27,6 +27,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from regime_pagina import (regime_ridisegno, canonico as _canonico, VISTE_RIDISEGNO, SEGMENTI,  # noqa: E402
+                           ALIAS_VISTE, INGRESSO, e_porta, senza_commenti)
+
 RADICE = Path(__file__).resolve().parent.parent
 SITE = RADICE / 'site'
 
@@ -41,17 +45,65 @@ def check(nome, cond, extra=''):
         falliti.append(nome + (' — ' + extra if extra else ''))
 
 
-# RG_PAGINA=<file> fa girare la suite su una copia dell'app al posto di
-# site/app.html (P-51): serve a misurare una bozza — quella di un altro
-# worktree, o una copia con una modifica — senza toccare la pagina vera, anche
-# nel browser, perche' il banco del client prende la pagina da qui. Il resto del
-# sito resta quello del repo. La riga finale lo dice, verde o rossa: un verde su
-# una copia non e' un verde di main.
+# RG_PAGINA=<file> fa girare la suite su una copia del documento di studio al
+# posto di quello di site/ (P-51): serve a misurare una bozza — quella di un
+# altro worktree, o una copia con una modifica — senza toccare la pagina vera,
+# anche nel browser, perche' il banco del client prende la pagina da qui. Il
+# resto del sito resta quello del repo. La riga finale lo dice, verde o rossa:
+# un verde su una copia non e' un verde di main. Da P-80 la copia sta per il
+# canonico del suo regime: per `index.html` se dichiara il ridisegno, per
+# `app.html` altrimenti.
 PAGINA = os.environ.get('RG_PAGINA')
+
+# ── I due regimi della pagina di studio (P-80, docs/ridisegno-progetto.md §10.1) ──
+#
+# Fino al ridisegno il documento di studio e' `site/app.html`, con sette viste e
+# la Home a parte in `site/index.html`. Il ridisegno ne fa un documento solo,
+# `site/index.html`, con quattro sezioni, e `site/app.html` diventa una porta di
+# compatibilita'. Il regime si **legge** dalla pagina, con la lezione di P-51 —
+# da due dichiarazioni insieme, `navigazioneSito()` e `VISTE_RIDISEGNO`, mai dal
+# nome di un pulsante —, e la regola sta in tests/regime_pagina.py, che anche
+# test_dati.py importa. Nel regime attuale ogni controllo gira com'era; nel
+# ridisegno legge il canonico nuovo, pretende le quattro sezioni, e fa girare i
+# banchi nuovi. Una pagina a meta' e' rossa. Il regime attuale ha una scadenza:
+# la merge di P-81, dopo la quale la regia toglie il suo ramo.
+_CANONICO = None
+
+
+def canonico():
+    """{nome, testo, regime, motivo, copia} del documento di studio, letto una volta."""
+    global _CANONICO
+    if _CANONICO is None:
+        _CANONICO = _canonico(SITE, PAGINA)
+    return _CANONICO
+
+
+def pagina():
+    """Il testo del documento di studio: index.html nel ridisegno, app.html oggi, o la copia di RG_PAGINA."""
+    return canonico()['testo']
+
+
+def regime():
+    return canonico()['regime']
+
+
+def ridisegno():
+    return regime() == 'ridisegno'
+
+
+def nome_canonico():
+    return canonico()['nome']
+
+
+def pagine_del_sito():
+    """[(nome, testo)] delle due pagine che portano testo e stile: il canonico per primo."""
+    if ridisegno():
+        return [('index.html', pagina()), ('app.html', leggi('app.html'))]
+    return [('app.html', pagina()), ('index.html', leggi('index.html'))]
 
 
 def leggi(p):
-    if p == 'app.html' and PAGINA:
+    if p == 'app.html' and PAGINA and not ridisegno():
         return Path(PAGINA).read_text(encoding='utf-8')
     return (SITE / p).read_text(encoding='utf-8')
 
@@ -71,6 +123,21 @@ VISTE = {
     'v-seg':  'il gioco dei Segnali',
     'v-info': 'Info e diagnostica',
 }
+
+# Le quattro sezioni del ridisegno (docs/ridisegno-progetto.md §2): esattamente
+# queste, e nessuna delle sette di prima lasciata vuota per tenere verde il
+# censimento. Le preparazioni, gli ambienti e i pannelli sono superfici interne.
+VISTE_NUOVE = {
+    'v-home': 'la Home',
+    'v-allenati': 'Allenati: Quiz, Carteggio, Segnali',
+    'v-esame': 'Esame',
+    'v-progressi': 'Progressi',
+}
+
+
+def viste_attese():
+    return VISTE_NUOVE if ridisegno() else VISTE
+
 
 # Viste che si aprono per una via diversa da un `data-v`. Ogni riga porta il
 # perche': una vista senza porta e senza eccezione dichiarata e' codice morto
@@ -197,53 +264,51 @@ def tabella(titolo, colonne):
     return out
 
 
-def senza_commenti(testo):
-    """Toglie i commenti, per non scambiare una citazione per un uso.
-
-    Euristica dichiarata, non un parser: si tolgono i blocchi /* */ e le righe
-    che cominciano con //, * o <!--. Basta per questo file e non pretende di
-    piu'; se un giorno non bastasse, il sintomo sarebbe un falso allarme, che e'
-    il verso giusto in cui sbagliare.
-    """
-    testo = re.sub(r'/\*.*?\*/', ' ', testo, flags=re.S)
-    righe = [r for r in testo.split('\n')
-             if not re.match(r'\s*(//|\*|<!--)', r)]
-    return '\n'.join(righe)
-
-
 # --- 1. il censimento e' completo -----------------------------------------------
 
 def test_viste_dichiarate():
-    app = leggi('app.html')
+    app = pagina()
+    attese = viste_attese()
     # `class` porta anche `on` e le classi dell'interfaccia nuova, quindi il
     # censimento non puo' pretendere la stringa esatta: cerca una sezione con
     # la classe `view` e un id `v-*`, comunque sia scritto l'attributo.
     trovate = set(re.findall(r'<section class="[^"]*\bview\b[^"]*" id="(v-[a-z]+)"', app))
-    check('ogni vista del file e\' dichiarata qui',
-          trovate <= set(VISTE),
-          'non dichiarate: ' + ', '.join(sorted(trovate - set(VISTE))))
+    check('ogni vista del file e\' dichiarata qui (regime %s)' % regime(),
+          trovate <= set(attese),
+          'non dichiarate: ' + ', '.join(sorted(trovate - set(attese)))
+          + (' — nel ridisegno le sezioni sono esattamente quattro (R-NAV-06)' if ridisegno() else ''))
     check('ogni vista dichiarata esiste nel file',
-          set(VISTE) <= trovate,
-          'dichiarate ma assenti: ' + ', '.join(sorted(set(VISTE) - trovate)))
+          set(attese) <= trovate,
+          'dichiarate ma assenti: ' + ', '.join(sorted(set(attese) - trovate)))
 
 
 # --- 2. ogni vista ha una porta (R-NAV-01) ---------------------------------------
 
 def test_ogni_vista_ha_una_porta():
-    app = leggi('app.html')
+    app = pagina()
     porte = set(re.findall(r'data-v="([a-z]+)"', app))
-    for vid, cosa in sorted(VISTE.items()):
+    for vid, cosa in sorted(viste_attese().items()):
         chiave = vid[2:]
         ok = chiave in porte or vid in PORTE_FUORI_DAL_DOM
         check('si puo\' aprire: %s' % cosa, ok,
               'la vista #%s esiste ma nessun elemento la apre. Se e\' voluto, '
               'dichiaralo in PORTE_FUORI_DAL_DOM col perche\'.' % vid)
+    if ridisegno():
+        # Le porte di oggi possono restare come alias (tabella C del §10.1),
+        # verso le sezioni nuove; una porta verso una vista che non c'e' e' una
+        # porta verso niente, e una vista di prima rimasta nel file e' una
+        # vista fittizia.
+        estranee = sorted(porte - set(VISTE_RIDISEGNO) - set(ALIAS_VISTE))
+        check('nel ridisegno ogni [data-v] e\' una sezione o un alias della tabella C', not estranee,
+              'porte verso niente: ' + ', '.join(estranee))
+        vecchie = ['v-' + v for v in ('oggi', 'quiz', 'cart', 'diag', 'tec', 'seg', 'info') if re.search(r'id="v-%s"' % v, app)]
+        check('nel ridisegno nessuna vista di prima resta nel file', not vecchie, ', '.join(vecchie))
 
 
 # --- 3. la barra si legge, e non porta altrove (R-NAV-03) -------------------------
 
 def test_voci_barra():
-    app = leggi('app.html')
+    app = pagina()
     m = re.search(r'<nav[^>]*>(.*?)</nav>', app, flags=re.S)
     check('la pagina ha una barra di navigazione', m is not None)
     if not m:
@@ -253,7 +318,7 @@ def test_voci_barra():
     check('la barra ha almeno una voce', len(voci) > 0)
     for dest, dentro in voci:
         check('la voce «%s» porta a una vista dichiarata' % dest,
-              'v-' + dest in VISTE,
+              'v-' + dest in viste_attese(),
               'porta a #v-%s, che non e\' nel censimento' % dest)
         # Un'icona sola non e' un'etichetta: la parola fa tutto il lavoro, e a
         # 375 px la parola c'e' sempre stata. Se sparisse, sparirebbe in
@@ -261,6 +326,14 @@ def test_voci_barra():
         testo = re.sub(r'<[^>]+>', '', dentro).strip()
         check('la voce «%s» ha un\'etichetta di testo' % dest, len(testo) > 0,
               'solo icona: a chi non riconosce il simbolo la voce non dice niente')
+    if ridisegno():
+        # Quattro parole intere, in quest'ordine, e i tre segmenti di Allenati
+        # raggiungibili (R-NAV-03 nel ridisegno).
+        check('la barra ha le quattro voci del ridisegno, in ordine', [d for d, _ in voci] == VISTE_RIDISEGNO,
+              'voci: ' + ', '.join(d for d, _ in voci))
+        segmenti = re.findall(r'data-segmento="([a-z]+)"', app)
+        check('i tre segmenti di Allenati hanno una porta', all(s in segmenti for s in SEGMENTI) and all(s in SEGMENTI for s in segmenti),
+              'segmenti: ' + ', '.join(sorted(set(segmenti))))
 
 
 # --- 4. i quiz: il regime e le sue intenzioni (R-NAV-04, R-NAV-05) ------------
@@ -319,7 +392,7 @@ _QUIZ_APP = None
 def quiz_app():
     global _QUIZ_APP
     if _QUIZ_APP is None:
-        _QUIZ_APP = verifiche_quiz(leggi('app.html'))
+        _QUIZ_APP = verifiche_quiz(pagina())
     return _QUIZ_APP
 
 
@@ -468,7 +541,7 @@ _CICLO_APP = None
 def ciclo_app():
     global _CICLO_APP
     if _CICLO_APP is None:
-        _CICLO_APP = verifiche_ciclo(leggi('app.html'))
+        _CICLO_APP = verifiche_ciclo(pagina())
     return _CICLO_APP
 
 
@@ -644,15 +717,16 @@ def test_ciclo_provato_al_contrario():
 
 # --- 5b'. la mappa di Progressi (R-MAPPA-14…16) ---------------------------------
 
-def banco_mappa(testo):
+def banco_mappa(testo, nel_ridisegno=False):
     """Le verifiche della mappa, eseguite sotto Node sulla pagina data.
 
     Il banco estrae le tre funzioni di raccordo e le esegue contro il motore e
     la banca veri: vedi tests/mappa_progressi.mjs. Se il banco stesso non
-    parte, e' un rosso.
+    parte, e' un rosso. Nel ridisegno (P-80) pretende anche i cinque stati per
+    aggregato e i due raccordi di «Allena».
     """
     try:
-        p = subprocess.run(['node', str(BANCO_MAPPA)], input=json.dumps({'pagina': testo}),
+        p = subprocess.run(['node', str(BANCO_MAPPA)], input=json.dumps({'pagina': testo, 'ridisegno': nel_ridisegno}),
                            capture_output=True, text=True, timeout=120)
         out = json.loads(p.stdout) if p.returncode == 0 else None
     except (OSError, ValueError, subprocess.TimeoutExpired) as e:
@@ -669,15 +743,16 @@ def banco_mappa(testo):
 DIAGNOSI_DI_PRIMA = ['id="d-temi"', 'id="d-voci"']
 
 
-def verifiche_mappa(testo):
+def verifiche_mappa(testo, nel_ridisegno=False):
     """Le verifiche di Progressi sulla pagina data: il banco, e la diagnosi di prima che non c'e' piu'.
 
     Gruppi: «righe» e «frase» sono di R-MAPPA-14; «azioni» e «raccordo» di
-    R-MAPPA-15. Il banco gira sempre: su una pagina senza il raccordo dice quale
-    delle tre funzioni manca, e non ha righe da confrontare.
+    R-MAPPA-15; «stati» e «allena», nel ridisegno, di R-MAPPA-18. Il banco
+    gira sempre: su una pagina senza il raccordo dice quale delle tre funzioni
+    manca, e non ha righe da confrontare.
     """
     js = senza_commenti(testo)
-    v = banco_mappa(testo)
+    v = banco_mappa(testo, nel_ridisegno)
     rimasti = [x for x in DIAGNOSI_DI_PRIMA if x in testo] + (['E.diagnosi('] if 'E.diagnosi(' in js else [])
     v.append({'gruppo': 'righe', 'nome': 'la diagnosi a due tabelle non c\'e\' piu\'', 'ok': not rimasti,
               'extra': 'la pagina ha ancora ' + ', '.join(rimasti) + ': le tabelle ordinate per punti persi sono '
@@ -691,7 +766,7 @@ _MAPPA_APP = None
 def mappa_app():
     global _MAPPA_APP
     if _MAPPA_APP is None:
-        _MAPPA_APP = verifiche_mappa(leggi('app.html'))
+        _MAPPA_APP = verifiche_mappa(pagina(), ridisegno())
     return _MAPPA_APP
 
 
@@ -701,7 +776,8 @@ _MAPPA_RIF = None
 def mappa_riferimento():
     global _MAPPA_RIF
     if _MAPPA_RIF is None:
-        _MAPPA_RIF = verifiche_mappa(RIFERIMENTO_MAPPA.read_text(encoding='utf-8'))
+        # La pagina di riferimento e' fissata al ridisegno: realizza anche stati e Allena.
+        _MAPPA_RIF = verifiche_mappa(RIFERIMENTO_MAPPA.read_text(encoding='utf-8'), True)
     return _MAPPA_RIF
 
 
@@ -738,6 +814,20 @@ def test_mappa_azioni():
     conteggio_mappa(('azioni', 'raccordo'))
 
 
+def test_mappa_stati():
+    """R-MAPPA-18: nel ridisegno la mappa porta i cinque stati per aggregato, da
+    una `contaStati()` con il filtro della riga, e «Allena» passa da due
+    raccordi che rileggono la lista prima di avviare. Nel regime di oggi la
+    pagina non legge i cinque stati, e il controllo lo dice invece di tacere."""
+    if not ridisegno():
+        check('mappa di Progressi: nel regime attuale i cinque stati e «Allena» non si pretendono (si accendono con il ridisegno, P-81)',
+              not any(x['gruppo'] in ('stati', 'allena') for x in mappa_app()), 'il banco ha prodotto verifiche degli stati su una pagina senza il ridisegno')
+        return
+    v = mappa_app()
+    registra_mappa(v, ('stati', 'allena'))
+    conteggio_mappa(('stati', 'allena'))
+
+
 # Il banco della mappa si prova contro se' stesso a ogni esecuzione, sulla
 # pagina di riferimento: lei deve passare, e ciascuna delle sue rotture deve
 # fallire nominando il difetto. Le rotture restano su di lei e non sulla pagina
@@ -762,8 +852,8 @@ ROTTURE_MAPPA = [
        'quanti: r.daRifare, selezione: { ...r.filtro, soloSbagliate: true, n: 0 }')],
      'soloDaRifare'),
     ('i temi riordinati per errori',
-     [('righe: q.righe.map(rigaProgressi),',
-       'righe: [...q.righe].sort((a, b) => b.daRifare - a.daRifare).map(rigaProgressi),')],
+     [('const righe = q.righe.map(rigaProgressi).map(conStati);',
+       'const righe = [...q.righe].sort((a, b) => b.daRifare - a.daRifare).map(rigaProgressi).map(conStati);')],
      'nell\'ordine di quadro()'),
     ('le voci riordinate per errori',
      [('if (r.voci) out.voci = r.voci.map(rigaProgressi);',
@@ -842,6 +932,37 @@ ROTTURE_MAPPA = [
     ('la diagnosi di prima accanto alla mappa',
      [('<div id="d-mappa"></div>', '<div id="d-mappa"></div>\n<table id="d-temi"></table>\n<table id="d-voci"></table>')],
      'la diagnosi a due tabelle non c\'e\' piu\''),
+    # Il ridisegno (P-80, docs/ridisegno-progetto.md §10.1): i cinque stati e «Allena».
+    ('gli stati di una riga con un filtro che non e\' il suo',
+     [("stati: E.contaStati(banca, progress, r.filtro)", "stati: E.contaStati(banca, progress, { kind })")],
+     'filtro della riga'),
+    ('i cinque stati ricontati in pagina con statoQuesito()',
+     [("stati: E.contaStati(banca, progress, r.filtro)",
+       "stati: (() => { const o = { mai_visto: 0, debole: 0, incerto: 0, sistemato: 0, ok: 0, totale: 0 }; "
+       "for (const it of banca) if ((!r.filtro.kind || it.k === r.filtro.kind) && (!r.filtro.tema || it.t === r.filtro.tema) && (!r.filtro.voce || it.v === r.filtro.voce)) { o[E.statoQuesito(progress[it.id])]++; o.totale++; } return o; })()")],
+     'non si ricontano in pagina'),
+    ('il totale senza i cinque stati',
+     [("totale: { ...q.totale, stati: E.contaStati(banca, progress, { kind }) },", "totale: q.totale,")],
+     'portano i cinque stati'),
+    ('«Allena» mascherato da «Rifai»',
+     [("const lista = E.coda(banca, progress, oggi, { ...riga.filtro, n: 20 });", "const lista = E.coda(banca, progress, oggi, { ...riga.filtro, soloDaRifare: true, n: 20 });")],
+     'Allena non e\' Rifai'),
+    ('«Allena» senza il tetto di venti',
+     [("const lista = E.coda(banca, progress, oggi, { ...riga.filtro, n: 20 });", "const lista = E.coda(banca, progress, oggi, { ...riga.filtro, n: 0 });")],
+     'n = 20'),
+    ('Inizia su «Allena» confronta la sola lunghezza',
+     [("const stessa = adesso.length === preparazione.lista.length && adesso.every((x, i) => x.id === preparazione.lista[i].id);\n  if (!stessa) return { avviata: false, stato: 'cambiata' };\n  avvia(preparazione.lista, 'argomento'",
+       "const stessa = adesso.length === preparazione.lista.length;\n  if (!stessa) return { avviata: false, stato: 'cambiata' };\n  avvia(preparazione.lista, 'argomento'")],
+     'id e ordine'),
+    ('Inizia su «Allena» non rilegge la lista',
+     [("const adesso = anteprimaAllenaProgressi(preparazione.riga, richiesta).lista;", "const adesso = preparazione.lista;")],
+     'rilegge'),
+    ('«Allena» apre il runner senza passare dal raccordo',
+     [("    avviaAllenaProgressi(S.allena, S.mappa.richiesta, (lista, modo, o) => apri(lista, modo, o));", "    apri(S.allena.lista, 'argomento', { origine: 'progressi' });")],
+     'dal suo raccordo'),
+    ('i cinque stati contati anche fuori dal raccordo',
+     [("  if (ev.target.closest('[data-avvia-allena]')) {", "  E.contaStati(S.banca, S.prog, { kind: 'base' });\n  if (ev.target.closest('[data-avvia-allena]')) {")],
+     'solo dentro il raccordo'),
 ]
 
 
@@ -854,7 +975,7 @@ def test_mappa_provata_al_contrario():
     # confrontato le righe e fatto il giro delle azioni.
     check('il banco della mappa ha eseguito il giro, non solo letto i nomi', len(v) >= 150,
           'solo %d verifiche' % len(v))
-    for g in ('righe', 'frase', 'azioni', 'raccordo'):
+    for g in ('righe', 'frase', 'azioni', 'raccordo', 'stati', 'allena'):
         check('il banco della mappa ha verifiche del gruppo «%s»' % g, any(x['gruppo'] == g for x in v))
     for cosa, sostituzioni, atteso in ROTTURE_MAPPA:
         rotta = rif
@@ -864,7 +985,7 @@ def test_mappa_provata_al_contrario():
             rotta = rotta.replace(vecchio, nuovo, 1)
         if rotta == rif:
             continue
-        vr = verifiche_mappa(rotta)
+        vr = verifiche_mappa(rotta, True)
         rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in vr if not x['ok']]
         check('rottura della mappa «%s»: il controllo diventa rosso' % cosa, bool(rossi), 'e\' passata verde')
         check('rottura della mappa «%s»: e il rosso nomina il difetto' % cosa, any(atteso in r for r in rossi),
@@ -916,7 +1037,7 @@ _CARTEGGIO_RIF = None
 def carteggio_app():
     global _CARTEGGIO_APP
     if _CARTEGGIO_APP is None:
-        _CARTEGGIO_APP = verifiche_carteggio(leggi('app.html'))
+        _CARTEGGIO_APP = verifiche_carteggio(pagina())
     return _CARTEGGIO_APP
 
 
@@ -976,7 +1097,7 @@ def test_carteggio_ambito():
     regime solo non c'e' piu' niente da riconoscere.
     """
     registra_carteggio(('ambito',))
-    for nome, testo in (('vera', leggi('app.html')),
+    for nome, testo in (('vera', pagina()),
                         ('di riferimento', RIFERIMENTO_CARTEGGIO.read_text(encoding='utf-8'))):
         rotta = testo.replace('</script>', "fetch('/dati/carteggio_e12.json');\n</script>", 1)
         v = verifiche_carteggio(rotta)
@@ -2008,9 +2129,14 @@ def banco_client():
     global _BANCO_CLIENT
     if _BANCO_CLIENT is not None:
         return _BANCO_CLIENT
-    app = leggi('app.html')
+    app = pagina()
     rif = RIFERIMENTO_CLIENT.read_text(encoding='utf-8')
-    prove = [{'nome': 'app', 'pagina': app, 'gruppi': GRUPPI_CLIENT + gruppi_bozza_app() + GRUPPI_RIFINITURA + gruppi_raccordo(app)},
+    # Il canonico si serve al suo ingresso: `/app` oggi, `/` nel ridisegno, con
+    # site/app.html servito com'e' come porta (P-80). La pagina di riferimento
+    # del client e le sue rotture restano al regime di oggi: quella del
+    # ridisegno, in Chrome, e' P-82.
+    prove = [{'nome': 'app', 'pagina': app, 'ingresso': INGRESSO[regime()],
+              'gruppi': GRUPPI_CLIENT + gruppi_bozza_app() + GRUPPI_RIFINITURA + gruppi_raccordo(app)},
              {'nome': 'riferimento', 'pagina': rif, 'gruppi': GRUPPI_CLIENT + ['C-19'] + GRUPPI_RIFINITURA + gruppi_raccordo(rif)}]
     applicate = {}
     for cosa, gruppi, sostituzioni in VARIANTI_CLIENT:
@@ -2083,9 +2209,9 @@ def test_client_nella_pagina():
     """R-ACC-42: la pagina vera ha il client. Senza indirizzoApi() e' la pagina
     di prima di P-18, e da P-40 e' rossa: qui, con il nome del difetto, e in
     ogni gruppo del banco, che la guida come una pagina con il client."""
-    check('client: la pagina dichiara indirizzoApi(), cioe\' ha il client degli account', ha_il_client(leggi('app.html')),
-          'site/app.html non dichiara function indirizzoApi(: e\' la pagina senza account, che dal 30 settembre 2026 '
-          'non passa (account-client-progetto §12, P-40)')
+    check('client: la pagina dichiara indirizzoApi(), cioe\' ha il client degli account', ha_il_client(pagina()),
+          'site/%s non dichiara function indirizzoApi(: e\' la pagina senza account, che dal 30 settembre 2026 '
+          'non passa (account-client-progetto §12, P-40)' % nome_canonico())
     # Provato al contrario sulla pagina di riferimento, senza browser: tolta la
     # dichiarazione, o lasciata solo in un commento, il segno non c'e'.
     rif = RIFERIMENTO_CLIENT.read_text(encoding='utf-8')
@@ -2571,8 +2697,18 @@ def difetti_dei_testi(testi):
 
 
 def test_client_testi():
-    """R-ACC-57 (C-18): i testi pubblici sono quelli della versione con gli account."""
-    testi = {f: leggi(f) for f in ('index.html', 'app.html', 'privacy.html')}
+    """R-ACC-57 (C-18): i testi pubblici sono quelli della versione con gli account.
+
+    Nel ridisegno la Home e l'app sono un documento solo: le frasi chieste alle
+    due pagine di oggi si cercano tutte nel canonico, e la porta `app.html` non
+    deve dire niente che gli account rendono falso."""
+    if ridisegno():
+        testi = {'index.html': pagina(), 'app.html': pagina(), 'privacy.html': leggi('privacy.html')}
+        porta = leggi('app.html')
+        false_nella_porta = [frase for f, frase in FRASI_FALSE if f == 'app.html' and frase in porta]
+        check('client C-18: la porta app.html non dice niente che gli account rendono falso', not false_nella_porta, '; '.join(false_nella_porta))
+    else:
+        testi = {f: leggi(f) for f in ('index.html', 'app.html', 'privacy.html')}
     difetti = difetti_dei_testi(testi)
     check('client C-18: i testi di site/ sono quelli della versione con gli account', not difetti,
           '; '.join('%s %s' % d for d in difetti[:4]))
@@ -2670,9 +2806,9 @@ def registra_raccordo(chi, *parti):
     _, out, _ = banco_client()
     v = out.get('app', [])
     gruppo = 'E-01' if chi == 'esito' else 'P-01'
-    r = regime_raccordo(leggi('app.html'), chi)
+    r = regime_raccordo(pagina(), chi)
     check('%s: la pagina vera dichiara il raccordo %s per intero, o niente' % (gruppo, ' e '.join(RACCORDI[chi])), r != 'a metà',
-          'site/app.html ne dichiara una parte sola: le due funzioni vanno insieme (esito-esame-progetto §10.1)')
+          'site/%s ne dichiara una parte sola: le due funzioni vanno insieme (esito-esame-progetto §10.1)' % nome_canonico())
     if r == 'a metà':
         return
     for x in v:
@@ -2758,7 +2894,7 @@ def test_raccordo_riconosciuto():
         check('raccordo %s provato al contrario: in un commento non conta' % chi, regime_raccordo(commento, chi) == 'spento')
     # La pagina vera: il regime che dice, scritto nel nome della verifica, cosi'
     # che il giorno della merge di P-75 il cambio si veda nell'uscita della suite.
-    app = leggi('app.html')
+    app = pagina()
     for chi in RACCORDI:
         r = regime_raccordo(app, chi)
         check('raccordo %s: la pagina vera e\' nel regime «%s»' % (chi, r), r in ('raccordo', 'spento'),
@@ -3160,6 +3296,236 @@ def test_rifinitura_provata_al_contrario():
               'nessuna rottura della pagina di riferimento la fa fallire: la verifica dichiarata non ha mai mostrato di saper vedere il difetto')
 
 
+# --- 5-quater. il regime della pagina, la porta e il banco del ridisegno (P-80) ---
+#
+# docs/ridisegno-progetto.md §10.1, «Contratto consegnato da P-80». Il regime si
+# legge dalla pagina (tests/regime_pagina.py): nel ridisegno il canonico e'
+# index.html con quattro sezioni, app.html e' una porta, e il banco
+# tests/ridisegno.mjs esegue navigazioneSito() e i cinque raccordi aggiuntivi
+# contro il motore vero. Nel regime di oggi questi controlli dicono che non si
+# applicano, invece di tacere: cosi' il giorno della merge di P-81 il cambio si
+# vede nell'uscita della suite.
+
+BANCO_RIDISEGNO = RADICE / 'tests' / 'ridisegno.mjs'
+RIFERIMENTO_RIDISEGNO = RADICE / 'tests' / 'pagina-ridisegno.html'
+GRUPPI_RIDISEGNO = ['regime', 'struttura', 'navigazione', 'breve', 'segnalibri', 'ricerca', 'gesto']
+
+
+def test_regime_pagina():
+    """R-NAV-09: il regime si legge da navigazioneSito() e VISTE_RIDISEGNO
+    insieme, mai dal nome di un pulsante; una pagina a meta' e' rossa; il
+    ridisegno vive in index.html e app.html non lo dichiara. Provato al
+    contrario su quattro pagine finte."""
+    c = canonico()
+    check('il regime della pagina di studio e\' pulito: «%s», canonico %s' % (c['regime'], c['nome']), not c['motivo'], c['motivo'])
+    check('site/app.html non dichiara il ridisegno', regime_ridisegno(leggi('app.html'))[0] != 'ridisegno',
+          'il ridisegno vive in index.html: app.html e\' la porta (ridisegno §3.2)')
+    if ridisegno():
+        check('nel ridisegno il canonico e\' index.html', c['nome'] == 'index.html', c['nome'])
+    finta = "function navigazioneSito(r) { return r; }\nconst VISTE_RIDISEGNO = ['home', 'allenati', 'esame', 'progressi'];"
+    check('il riconoscimento prende le due dichiarazioni insieme', regime_ridisegno(finta)[0] == 'ridisegno')
+    check('e senza nessuna delle due e\' il regime attuale', regime_ridisegno("function altro() {}")[0] == 'attuale')
+    check('e con una sola e\' a meta\'', regime_ridisegno("const VISTE_RIDISEGNO = ['home', 'allenati', 'esame', 'progressi'];")[0] == 'a metà'
+          and regime_ridisegno("function navigazioneSito(r) { return r; }")[0] == 'a metà')
+    check('e con una lista diversa e\' a meta\'', regime_ridisegno(finta.replace("'esame', ", ''))[0] == 'a metà')
+    check('e una dichiarazione in un commento non conta', regime_ridisegno('// ' + finta.replace('\n', '\n// '))[0] == 'attuale')
+    # Il banco sotto Node legge il regime con la stessa regola: sulla pagina di
+    # riferimento le due dichiarazioni, e con una tolta il suo rosso lo dice.
+    rif = RIFERIMENTO_RIDISEGNO.read_text(encoding='utf-8')
+    check('la pagina di riferimento del ridisegno e\' nel regime del ridisegno', regime_ridisegno(rif)[0] == 'ridisegno')
+
+
+def test_porta_app():
+    """R-NAV-12: nel ridisegno site/app.html e' una porta statica di
+    compatibilita' — niente banca, archivio o client, un location.replace()
+    verso Allenati/Quiz, il frammento letto in memoria e tolto, il link «Apri
+    Allenati» per chi non ha lo script, il suo titolo. Oggi app.html e' l'app,
+    e il controllo lo dice; la regola e' provata al contrario su una porta
+    finta e sulla pagina di oggi."""
+    app = leggi('app.html')
+    difetti = e_porta(app)
+    if ridisegno():
+        check('nel ridisegno site/app.html e\' la porta di compatibilita\'', not difetti, '; '.join(difetti))
+    else:
+        check('nel regime attuale site/app.html e\' l\'app, non una porta', ha_il_client(app) and difetti, 'app.html passa per una porta')
+    porta = ('<!doctype html><title>Apri Allenati · Rotta Giusta</title>'
+             '<p><a href="/?sezione=allenati&amp;segmento=quiz">Apri Allenati</a></p>'
+             '<script>const h = location.hash; history.replaceState(null, "", location.pathname);'
+             'location.replace("/?sezione=allenati&segmento=quiz" + h);</script>')
+    check('una porta finta passa la regola della porta', not e_porta(porta), '; '.join(e_porta(porta)))
+    for cosa, rotta in (('senza il link', porta.replace('Apri Allenati</a>', 'Vai</a>')),
+                        ('con il client', porta.replace('<script>', '<script>\nfunction indirizzoApi(l) {}\n')),
+                        ('senza replace', porta.replace('location.replace(', 'console.log(')),
+                        ('con un altro titolo', porta.replace('Apri Allenati · Rotta Giusta', 'La palestra · Rotta Giusta')),
+                        ('che non toglie il frammento', porta.replace('history.replaceState(null, "", location.pathname);', ''))):
+        check('la regola della porta prende una porta %s' % cosa, bool(e_porta(rotta)))
+
+
+def banco_ridisegno(testo):
+    """Le verifiche del ridisegno, eseguite sotto Node sulla pagina data (tests/ridisegno.mjs)."""
+    try:
+        p = subprocess.run(['node', str(BANCO_RIDISEGNO)], input=json.dumps({'pagina': testo}),
+                           capture_output=True, text=True, timeout=120)
+        out = json.loads(p.stdout) if p.returncode == 0 else None
+    except (OSError, ValueError, subprocess.TimeoutExpired) as e:
+        return [{'gruppo': 'regime', 'nome': 'il banco del ridisegno parte', 'ok': False, 'extra': str(e)}]
+    if out is None:
+        return [{'gruppo': 'regime', 'nome': 'il banco del ridisegno parte', 'ok': False,
+                 'extra': (p.stderr or '').strip()[-400:]}]
+    return out
+
+
+_RID_APP = None
+_RID_RIF = None
+
+
+def ridisegno_app():
+    global _RID_APP
+    if _RID_APP is None:
+        _RID_APP = banco_ridisegno(pagina())
+    return _RID_APP
+
+
+def ridisegno_riferimento():
+    global _RID_RIF
+    if _RID_RIF is None:
+        _RID_RIF = banco_ridisegno(RIFERIMENTO_RIDISEGNO.read_text(encoding='utf-8'))
+    return _RID_RIF
+
+
+def registra_ridisegno(gruppi):
+    """Le verifiche della pagina vera e il conto contro la pagina di riferimento; nel
+    regime di oggi un controllo solo, che dice che il banco non si applica."""
+    if not ridisegno():
+        check('ridisegno (%s): nel regime attuale il banco non si applica alla pagina di oggi; si accende con P-81' % ', '.join(gruppi), True)
+        return
+    v, rif = ridisegno_app(), ridisegno_riferimento()
+    for x in v:
+        if x['gruppo'] in gruppi:
+            check('ridisegno %s: %s' % (x['gruppo'], x['nome']), x['ok'], x.get('extra', ''))
+    for g in gruppi:
+        n, attese = sum(x['gruppo'] == g for x in v), sum(x['gruppo'] == g for x in rif)
+        check('ridisegno: il gruppo «%s» ha fatto tutte le verifiche' % g, attese > 0 and n >= attese,
+              'troppo poche verifiche (%d su %d): il banco si e\' fermato prima' % (n, attese))
+
+
+def test_ridisegno_navigazione():
+    """R-NAV-10: navigazioneSito() come funzione — le quattro sezioni, gli alias,
+    /app, /allenati, il gettone, i legali, l'attivita' in corso —, e la statica
+    delle quattro sezioni, della barra e dei segmenti."""
+    registra_ridisegno(('regime', 'struttura', 'navigazione'))
+
+
+def test_ridisegno_raccordi():
+    """R-NAV-11: i cinque raccordi aggiuntivi eseguiti contro il motore vero —
+    il breve, i segnalibri con Inizia che confronta id e ordine, la ricerca per
+    numero com'e' digitata, il permesso di un gesto con il server che si ha davanti."""
+    registra_ridisegno(('breve', 'segnalibri', 'ricerca', 'gesto'))
+
+
+# Le rotture della pagina di riferimento del ridisegno: (che cosa, sostituzioni,
+# parola che il rosso deve contenere). Sono quelle del §10.1 che un banco sotto
+# Node vede; quelle del browser — documento che ricarica, filtri e scroll
+# perduti, dati in storage, timer nel legale — sono di P-82.
+ROTTURE_RIDISEGNO = [
+    ('produce /allenati, che una ricarica paga con un 404',
+     [("const canon = sezione === 'home' && pezzi.length === 1 ? '/' : '/?' +", "const canon = sezione === 'home' && pezzi.length === 1 ? '/' : '/' + sezione + '?' +")],
+     'rotta che il server non serve'),
+    ('l\'alias diag porta alla Home', [("diag: { sezione: 'progressi' },", "diag: { sezione: 'home' },")], 'alias «diag»'),
+    ('l\'alias cart apre Quiz', [("cart: { sezione: 'allenati', segmento: 'carteggio' },", "cart: { sezione: 'allenati', segmento: 'quiz' },")], 'alias «cart»'),
+    ('il gettone resta nell\'indirizzo',
+     [("return { sezione, segmento, attivita, fase: faseOut, pannello, ritorno: c.tappa || null, effetto, motivo, url: canon, gettone };",
+       "return { sezione, segmento, attivita, fase: faseOut, pannello, ritorno: c.tappa || null, effetto, motivo, url: canon + u.hash, gettone };")],
+     'gettone'),
+    ('un runner si apre da un indirizzo',
+     [("if (fase != null && fase !== 'preparazione') { effetto = 'indisponibile'; motivo = 'attivita non disponibile'; }", "")],
+     'attivita non disponibile'),
+    ('un parametro sconosciuto si ignora',
+     [("for (const k of u.searchParams.keys()) if (!PARAMETRI.includes(k)) return indisponibile('parametro sconosciuto');", "")],
+     'parametro sconosciuto'),
+    ('con l\'attivita\' in corso un tocco non chiede di uscire',
+     [("if (c.attivita && c.attivita.stato === 'in corso') effetto = 'chiedi-uscita';\n    else if", "if (false) effetto = 'chiedi-uscita';\n    else if")],
+     'chiede di uscire'),
+    ('un legale caricato lo serve il canonico',
+     [("if (evento === 'carica') return indisponibile('rotta non servita');\n    const t = c.tappa", "const t = c.tappa")],
+     'file autonomo'),
+    ('il breve pesca due volte',
+     [("const lista = E.estraiNuoviPrima(pool, prog, oggi, 10, conf.seme);\n  return { lista, quanti: lista.length,",
+       "const lista = E.estraiNuoviPrima(pool, prog, oggi, 10, conf.seme);\n  return { lista, quanti: E.estraiNuoviPrima(pool, prog, oggi, 10, conf.seme).length,")],
+     'seconda pescata'),
+    ('il breve filtra la banca in pagina',
+     [("const pool = E.coda(items, prog, oggi, { kind: 'base', n: 0, includiChiusi: true });", "const pool = E.coda(items, prog, oggi, { n: 0, includiChiusi: true }).filter((x) => x.k === 'base');")],
+     'nessun filtro di banca'),
+    ('il breve promette dieci con sette',
+     [("stato: lista.length === 10 ? 'pronta' : lista.length ? 'ridotta' : 'vuota' };", "stato: lista.length ? 'pronta' : 'vuota' };")],
+     'ridotta'),
+    ('i segnalibri tagliati a 20',
+     [("return { lista: r.lista, quanti: r.quanti, fuori: r.fuori,", "return { lista: r.lista.slice(0, 20), quanti: r.lista.slice(0, 20).length, fuori: r.fuori,")],
+     'nessun tetto'),
+    ('i segni fuori banca spariscono', [("return { lista: r.lista, quanti: r.quanti, fuori: r.fuori,", "return { lista: r.lista, quanti: r.quanti, fuori: [],")], 'fuori'),
+    ('Inizia sui segnalibri confronta la sola lunghezza',
+     [("const stessa = adesso.length === preparazione.lista.length && adesso.every((x, i) => x.id === preparazione.lista[i].id);", "const stessa = adesso.length === preparazione.lista.length;")],
+     'id e ordine'),
+    ('Inizia sui segnalibri non rilegge',
+     [("const adesso = E.codaSegnalibri(richiesta.banca, richiesta.righe, { kind: richiesta.kind }).lista;", "const adesso = preparazione.lista;")],
+     'rilegge'),
+    ('la ricerca perde un numero ripetuto',
+     [("return E.cercaNumero(banca, testo, { kind });\n}", "const r = E.cercaNumero(banca, testo, { kind });\n  return { ...r, esatti: r.esatti.slice(0, 1), quanti: r.esatti.slice(0, 1).length + r.parziali.length };\n}")],
+     'duplicati'),
+    ('la ricerca perde gli oscurati', [("return E.cercaNumero(banca, testo, { kind });\n}", "return { ...E.cercaNumero(banca, testo, { kind }), oscurati: [] };\n}")], 'oscurati'),
+    ('la ricerca normalizza il testo in pagina', [("return E.cercaNumero(banca, testo, { kind });\n}", "return E.cercaNumero(banca, String(testo).trim(), { kind });\n}")], 'nessun parser'),
+    ('«Svista» scritta a un server di prima',
+     [("const tipi = fonte.accesso === 'account' ? (fonte.io && Array.isArray(fonte.io.tipi_riga) ? fonte.io.tipi_riga : null) : fonte.tipiRiga;", "const tipi = fonte.tipiRiga;")],
+     'tipi del server'),
+    ('un gesto rifiutato detto scrivibile', [("return { scrivibile: motivo === null, motivo };", "return { scrivibile: true, motivo };")], 'scrivibile false'),
+    ('una vista di prima lasciata nel file',
+     [('<section class="view" id="v-progressi"><h1>Progressi</h1>', '<section class="view" id="v-quiz"></section>\n<section class="view" id="v-progressi"><h1>Progressi</h1>')],
+     'nessun\'altra'),
+    ('la barra perde Esame', [('<button data-v="esame">Esame</button>', '')], 'quattro voci'),
+    ('una voce della barra con la sola icona', [('<button data-v="esame">Esame</button>', '<button data-v="esame"><svg></svg></button>')], 'parola intera'),
+    ('la simulazione fuori da Esame',
+     [('<section class="view" id="v-esame"><h1>Esame</h1>\n  <button data-modo="sim" data-prova="base">Simula il quiz base</button>\n  <button data-modo="sim" data-prova="vela">Simula il quiz vela</button>',
+       '<section class="view" id="v-esame"><h1>Esame</h1>')],
+     'sta in Esame'),
+    ('una porta verso niente', [('<button data-breve>Allenati con 10 domande</button>', '<button data-v="rotta">Rotta</button>')], 'porte verso niente'),
+    ('un segmento in meno', [('<button data-segmento="segnali">Segnali</button>', '')], 'tre segmenti'),
+    ('VISTE_RIDISEGNO con tre sezioni', [("const VISTE_RIDISEGNO = ['home', 'allenati', 'esame', 'progressi'];", "const VISTE_RIDISEGNO = ['home', 'allenati', 'progressi'];")], 'VISTE_RIDISEGNO'),
+    ('navigazioneSito() che manca', [("function navigazioneSito(richiesta) {", "function navigazioneSitoAltrove(richiesta) {")], 'navigazioneSito'),
+    ('un raccordo che manca', [("function permessoGesto(riga, fonte) {", "function permessoGestoAltrove(riga, fonte) {")], 'permessoGesto'),
+    ('un raccordo che legge uno stato globale',
+     [("const { items, prog, oggi } = fonte;\n  const pool", "const { items, oggi } = fonte; const prog = S.prog;\n  const pool")],
+     'lancia'),
+]
+
+
+def test_ridisegno_provato_al_contrario():
+    """R-NAV-13: il banco del ridisegno contro se' stesso — la pagina di
+    riferimento lo passa per intero, ogni rottura e' rossa per il suo motivo, e
+    il regime letto da Python e dal banco coincide anche sulle rotture che lo toccano."""
+    rif = RIFERIMENTO_RIDISEGNO.read_text(encoding='utf-8')
+    v = ridisegno_riferimento()
+    rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in v if not x['ok']]
+    check('la pagina di riferimento del ridisegno passa il banco', not rossi, '; '.join(rossi[:3]))
+    check('il banco del ridisegno ha eseguito navigazione e raccordi, non solo letto i nomi', len(v) >= 150, 'solo %d verifiche' % len(v))
+    for g in GRUPPI_RIDISEGNO:
+        check('il banco del ridisegno ha verifiche del gruppo «%s»' % g, any(x['gruppo'] == g for x in v))
+    for cosa, sostituzioni, atteso in ROTTURE_RIDISEGNO:
+        rotta = rif
+        for vecchio, nuovo in sostituzioni:
+            check('rottura del ridisegno «%s»: si applica alla pagina di riferimento' % cosa, vecchio in rotta,
+                  'il testo da sostituire non c\'e\' piu\': la rottura non romperebbe niente')
+            rotta = rotta.replace(vecchio, nuovo, 1)
+        if rotta == rif:
+            continue
+        vr = banco_ridisegno(rotta)
+        rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in vr if not x['ok']]
+        check('rottura del ridisegno «%s»: il banco diventa rosso' % cosa, bool(rossi), 'e\' passata verde')
+        check('rottura del ridisegno «%s»: e il rosso nomina il difetto' % cosa, any(atteso in r for r in rossi), 'rossi: ' + '; '.join(rossi[:3]))
+        if 'VISTE_RIDISEGNO' in cosa or 'navigazioneSito' in cosa:
+            check('rottura del ridisegno «%s»: anche il regime letto da Python e\' a meta\'' % cosa, regime_ridisegno(rotta)[0] == 'a metà',
+                  regime_ridisegno(rotta)[0])
+
+
 # --- 6. il motore non ha funzioni orfane (R-NAV-02) --------------------------------
 
 def orfani_dichiarati():
@@ -3176,7 +3542,7 @@ def chiamate_protette():
 
 def test_motore_senza_orfani():
     motore = leggi('engine.js')
-    pagina = senza_commenti(leggi('app.html'))
+    testo = senza_commenti(pagina())
     corpo = senza_commenti(motore)
     orfani = orfani_dichiarati()
     check('l\'elenco degli orfani si legge', orfani is not None,
@@ -3189,7 +3555,7 @@ def test_motore_senza_orfani():
     for f in esportate:
         # Chiamata dalla pagina — anche solo nominata, perche' `componiProva()`
         # passa `E.estrai` come valore invece di chiamarla.
-        dalla_pagina = re.search(r'\bE\.%s\b' % f, pagina) is not None
+        dalla_pagina = re.search(r'\bE\.%s\b' % f, testo) is not None
         if dalla_pagina:
             consumate.add(f)
         # Oppure usata dentro il motore stesso: `semaforo()` la chiama
@@ -3219,7 +3585,7 @@ def test_motore_senza_orfani():
 # --- 7. la pagina non smette di consumare il motore in silenzio ---------------
 
 def test_chiamate_al_motore_preservate():
-    app = senza_commenti(leggi('app.html'))
+    app = senza_commenti(pagina())
     protette = chiamate_protette()
     check('l\'elenco delle chiamate protette si legge', protette is not None,
           'manca la tabella «Chiamate al motore protette» in '
@@ -3290,8 +3656,7 @@ def applica_senza_istante(pagina):
 
 
 def test_applica_con_istante():
-    pagina = senza_commenti(leggi('app.html'))
-    corte = applica_senza_istante(pagina)
+    corte = applica_senza_istante(senza_commenti(pagina()))
     check('se la pagina legge i cinque stati, ogni E.applica() porta l\'istante',
           not corte,
           '%d chiamate a E.applica() con meno di sei argomenti: passa il `ts` della '
@@ -3323,9 +3688,9 @@ def test_letture_che_non_mascherano():
           'docs/eccezioni-interfaccia.md')
     dichiarate = {(f, e) for f, e, _ in (righe or [])}
     cieche = []
-    for nome in ('app.html', 'index.html'):
+    for nome, testo in pagine_del_sito():
         for espr in re.findall(r"LS\.get\(\s*'archivio'\s*,[^)]*\)",
-                               senza_commenti(leggi(nome))):
+                               senza_commenti(testo)):
             cieche.append((nome, ' '.join(espr.split())))
     for f, e in cieche:
         check('la lettura dell\'archivio in %s non ripiega in silenzio' % f,
@@ -3343,9 +3708,8 @@ def test_letture_che_non_mascherano():
 
 # --- 8. i testi si possono leggere (R-A11Y) -----------------------------------
 
-def piccoli(nome):
+def piccoli(nome, t):
     """Ogni regola CSS con un font-size sotto la soglia, col suo selettore."""
-    t = leggi(nome)
     fuori = []
     for m in re.finditer(r'([^{};\n]*)\{[^{}]*font-size:\s*(\d+)px', t):
         px = int(m.group(2))
@@ -3360,7 +3724,7 @@ def test_testi_leggibili():
     check('il file delle eccezioni si legge', righe is not None,
           'manca docs/eccezioni-interfaccia.md, o la sua tabella')
     dichiarati = {(f, px, sel) for f, px, sel, _ in (righe or [])}
-    trovati = piccoli('app.html') + piccoli('index.html')
+    trovati = [x for nome, testo in pagine_del_sito() for x in piccoli(nome, testo)]
     for f, px, sel in trovati:
         check('«%s» in %s non e\' sotto i %d px' % (sel, f, FONT_MINIMO),
               (f, str(px), sel) in dichiarati,
@@ -3382,8 +3746,8 @@ def test_alt_di_contenuto():
     check('la tabella degli alt si legge', righe is not None)
     dichiarati = {(f, a) for f, a, _ in (righe or [])}
     trovati = []
-    for nome in ('app.html', 'index.html'):
-        for a in re.findall(r'alt="([^"]*)"', leggi(nome)):
+    for nome, testo in pagine_del_sito():
+        for a in re.findall(r'alt="([^"]*)"', testo):
             if a.strip().lower() in ALT_GENERICI:
                 trovati.append((nome, a.strip().lower()))
     for f, a in trovati:
@@ -3409,6 +3773,24 @@ def test_trasloco():
     # contenere l'avviso: l'app, fuori casa, dice dove andare e offre di
     # scaricare i progressi; la Home manda all'app nuova, cosi' chi
     # arriva adesso non comincia a salvare risposte sull'indirizzo vecchio.
+    if ridisegno():
+        # Un documento solo: la Home e l'app sono la stessa pagina, e fuori casa
+        # l'avviso offre di scaricare le risposte e porta alla Home di casa.
+        app = pagina()
+        casa = re.search(r"const CASA = '([^']+)'", app)
+        check('trasloco: il canonico dichiara CASA, ed e\' rottagiusta.it', casa is not None and casa.group(1) == 'rottagiusta.it',
+              casa.group(1) if casa else 'manca')
+        f = re.search(r'function fuoriCasa\(\)\s*\{(.*?)\n\}', app, re.S)
+        check('trasloco: il canonico ha fuoriCasa()', f is not None)
+        if f:
+            corpo = f.group(1)
+            check('trasloco: fuoriCasa() guarda location.hostname e CASA', 'location.hostname' in corpo and 'CASA' in corpo)
+            check('trasloco: fuoriCasa() non scatta in locale', 'localhost' in corpo and '127.0.0.1' in corpo)
+        i = app.find('fuoriCasa()', (f.end() if f else 0))
+        blocco = app[i:i + 1500] if i >= 0 else ''
+        check('trasloco: fuori casa l\'avviso offre di scaricare le risposte', 'data-route-export' in blocco, blocco[:120])
+        check('trasloco: fuori casa l\'avviso porta alla Home su CASA', "'https://' + CASA + '/'" in blocco or '`https://${CASA}/`' in blocco, blocco[:120])
+        return
     app = leggi('app.html')
     vetrina = leggi('index.html')
     casa_app = re.search(r"const CASA = '([^']+)'", app)
@@ -3449,7 +3831,8 @@ def main():
               test_voci_barra, test_modalita_quiz, test_selettori,
               test_intenzioni_provate_al_contrario,
               test_ciclo_riepilogo, test_ciclo_riprova, test_ciclo_provato_al_contrario,
-              test_mappa_righe, test_mappa_azioni, test_mappa_provata_al_contrario,
+              test_mappa_righe, test_mappa_azioni, test_mappa_stati, test_mappa_provata_al_contrario,
+              test_regime_pagina, test_porta_app, test_ridisegno_navigazione, test_ridisegno_raccordi, test_ridisegno_provato_al_contrario,
               test_carteggio_preparazione, test_carteggio_righe, test_carteggio_riepilogo,
               test_carteggio_senza_riprova, test_carteggio_ambito, test_carteggio_provato_al_contrario,
               test_client_nella_pagina, test_client_primo_ingresso, test_client_senza_account, test_client_email_registrata,
@@ -3472,7 +3855,8 @@ def main():
               test_letture_che_non_mascherano,
               test_testi_leggibili, test_alt_di_contenuto, test_trasloco):
         t()
-    su = (' — sulla copia %s, NON su site/app.html' % PAGINA) if PAGINA else ''
+    su = (' — sulla copia %s, NON su site/%s' % (PAGINA, nome_canonico())) if PAGINA else ''
+    su += ' (regime %s)' % regime()
     if falliti:
         print('%d verifiche FALLITE su %d%s:\n' % (len(falliti), fatti, su))
         for f in falliti:

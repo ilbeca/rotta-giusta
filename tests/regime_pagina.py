@@ -1,0 +1,133 @@
+"""Il regime della pagina di studio: quello di oggi, o quello del ridisegno.
+
+Un modulo solo, letto da `tests/test_interfaccia.py` e da `tests/test_dati.py`:
+due copie della stessa regola divergerebbero, e il giorno in cui una delle due
+riconoscesse il ridisegno e l'altra no, meta' dei controlli guarderebbero la
+pagina sbagliata senza un rosso.
+
+La regola (docs/ridisegno-progetto.md §10.1, punto A, e il contratto di P-80):
+una pagina e' nel regime del **ridisegno** se il suo script dichiara, al primo
+livello e fuori dai commenti, `function navigazioneSito(` **e** `const
+VISTE_RIDISEGNO = ['home', 'allenati', 'esame', 'progressi']`, esattamente
+quei quattro in quell'ordine. Nessuna delle due: regime **attuale**. Una sola,
+o una lista diversa: **a meta'**, che e' un rosso con il motivo. Mai dal nome
+di un pulsante.
+
+Il documento canonico: nel ridisegno `site/index.html`, nel regime attuale
+`site/app.html`. Un `app.html` che dichiara il ridisegno e' rosso: il
+ridisegno vive in `index.html`, e `app.html` e' la porta di compatibilita'.
+`RG_PAGINA=<file>` sostituisce il canonico, qualunque sia: il regime si legge
+dalla copia, e la copia sta per `index.html` o per `app.html` di conseguenza.
+"""
+
+import re
+from pathlib import Path
+
+VISTE_RIDISEGNO = ['home', 'allenati', 'esame', 'progressi']
+SEGMENTI = ['quiz', 'carteggio', 'segnali']
+# Le porte di oggi che possono restare come alias (tabella C del §10.1):
+# alias -> (sezione, segmento, attivita o pannello).
+ALIAS_VISTE = {
+    'quiz': ('allenati', 'quiz', None),
+    'cart': ('allenati', 'carteggio', None),
+    'seg': ('allenati', 'segnali', None),
+    'tec': ('allenati', 'carteggio', 'tecniche'),
+    'diag': ('progressi', None, None),
+    'oggi': ('home', None, None),
+    'info': ('home', None, 'info'),
+}
+INGRESSO = {'ridisegno': '/', 'attuale': '/app'}
+CANONICO = {'ridisegno': 'index.html', 'attuale': 'app.html'}
+
+
+def senza_commenti(testo):
+    """Toglie i commenti, per non scambiare una citazione per un uso.
+
+    Euristica dichiarata, non un parser: si tolgono i blocchi /* */ e le righe
+    che cominciano con //, * o <!--. Basta per queste pagine e non pretende di
+    piu'; se un giorno non bastasse, il sintomo sarebbe un falso allarme, che e'
+    il verso giusto in cui sbagliare.
+    """
+    testo = re.sub(r'/\*.*?\*/', ' ', testo, flags=re.S)
+    righe = [r for r in testo.split('\n')
+             if not re.match(r'\s*(//|\*|<!--)', r)]
+    return '\n'.join(righe)
+
+
+def viste_dichiarate(testo):
+    """La lista di `const VISTE_RIDISEGNO = [...]`, o None se non c'e'."""
+    m = re.search(r'^const VISTE_RIDISEGNO = \[([^\]]*)\];', senza_commenti(testo), re.M)
+    if not m:
+        return None
+    return re.findall(r"'([a-z]+)'", m.group(1))
+
+
+def regime_ridisegno(testo):
+    """('ridisegno' | 'attuale' | 'a metà', motivo)."""
+    t = senza_commenti(testo)
+    nav = re.search(r'^(?:async\s+)?function\s+navigazioneSito\s*\(', t, re.M) is not None
+    viste = viste_dichiarate(testo)
+    if not nav and viste is None:
+        return 'attuale', ''
+    if nav and viste == VISTE_RIDISEGNO:
+        return 'ridisegno', ''
+    if not nav:
+        return 'a metà', 'VISTE_RIDISEGNO senza navigazioneSito(): il regime si legge da tutte e due'
+    if viste is None:
+        return 'a metà', 'navigazioneSito() senza VISTE_RIDISEGNO: il regime si legge da tutte e due'
+    return 'a metà', 'VISTE_RIDISEGNO e\' %s, non %s: quattro sezioni, in quest\'ordine (ridisegno-progetto §2)' % (viste, VISTE_RIDISEGNO)
+
+
+def canonico(site, pagina_env=None):
+    """{nome, testo, regime, motivo, copia} del documento di studio.
+
+    `nome` e' il file di `site/` per cui il testo sta: `index.html` nel
+    ridisegno, `app.html` oggi. `motivo` e' vuoto quando il regime e' pulito;
+    altrimenti dice che cosa non torna, e chi legge lo fa diventare un rosso.
+    """
+    site = Path(site)
+    if pagina_env:
+        testo = Path(pagina_env).read_text(encoding='utf-8')
+        regime, motivo = regime_ridisegno(testo)
+        nome = CANONICO.get(regime, 'app.html')
+        return {'nome': nome, 'testo': testo, 'regime': regime, 'motivo': motivo, 'copia': pagina_env}
+    index = (site / 'index.html').read_text(encoding='utf-8')
+    ri, mi = regime_ridisegno(index)
+    app = (site / 'app.html').read_text(encoding='utf-8')
+    ra, ma = regime_ridisegno(app)
+    if ri == 'ridisegno':
+        motivo = '' if ra == 'attuale' else 'anche site/app.html dichiara il ridisegno, e dev\'essere la porta: ' + (ma or 'una pagina sola e\' il documento di studio')
+        return {'nome': 'index.html', 'testo': index, 'regime': 'ridisegno', 'motivo': motivo, 'copia': None}
+    if ri == 'a metà':
+        return {'nome': 'index.html', 'testo': index, 'regime': 'a metà', 'motivo': 'site/index.html: ' + mi, 'copia': None}
+    if ra != 'attuale':
+        motivo = ('site/app.html dichiara il ridisegno: il documento canonico del ridisegno e\' index.html, e app.html la porta'
+                  if ra == 'ridisegno' else 'site/app.html: ' + ma)
+        return {'nome': 'app.html', 'testo': app, 'regime': 'a metà', 'motivo': motivo, 'copia': None}
+    return {'nome': 'app.html', 'testo': app, 'regime': 'attuale', 'motivo': '', 'copia': None}
+
+
+def e_porta(testo):
+    """I difetti di `site/app.html` come porta di compatibilita' (ridisegno §3.2): [] se e' una porta."""
+    t = senza_commenti(testo)
+    difetti = []
+    if re.search(r"import\s[^;]*from\s*['\"]/engine\.js['\"]|import\(['\"]/engine\.js", t):
+        difetti.append('importa /engine.js: la porta non ha banca ne\' selezione')
+    if re.search(r'^function indirizzoApi\(', t, re.M):
+        difetti.append('dichiara indirizzoApi(): il client degli account non si duplica nella porta')
+    if 'indexedDB' in t:
+        difetti.append('apre indexedDB: la copia dell\'account la apre solo il canonico')
+    if re.search(r"fetch\(\s*['\"]/dati/", t):
+        difetti.append('chiede la banca: la porta non la carica')
+    if 'location.replace(' not in t:
+        difetti.append('non fa location.replace() verso il canonico')
+    if '/?sezione=allenati&segmento=quiz' not in t:
+        difetti.append('non porta a /?sezione=allenati&segmento=quiz')
+    if not re.search(r'<a href="/\?sezione=allenati&(?:amp;)?segmento=quiz"[^>]*>Apri Allenati</a>', testo):
+        difetti.append('senza script non mostra il link «Apri Allenati»')
+    if 'location.hash' not in t or 'replaceState(' not in t:
+        difetti.append('non legge il frammento in memoria e non lo toglie con replaceState: un gettone resterebbe nell\'URL')
+    m = re.search(r'<title>(.*?)</title>', testo, re.S)
+    if not m or m.group(1).strip() != 'Apri Allenati · Rotta Giusta':
+        difetti.append('il titolo non e\' «Apri Allenati · Rotta Giusta»: %r' % (m.group(1).strip() if m else None))
+    return difetti

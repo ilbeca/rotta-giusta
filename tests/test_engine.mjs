@@ -3968,6 +3968,8 @@ test('la riga d avvio non cambia niente di quello che il motore calcola', () => 
     // «A-1 fatto da P-72»): i cinque stati, i segnalibri, la ricerca per numero.
     out.stati = E.contaStati(items, p, { kind: 'base' });
     out.statiVela = E.contaStati(items, p, { kind: 'vela' });
+    // P-80: il riepilogo della pagina aperta non vede le righe d'avvio.
+    out.riepilogoPagina = E.riepilogoPagina(rr, { quiz: items, carteggio: carte, tecniche: carte });
     out.statoQuesiti = Object.fromEntries(['base-1', 'base-2', 'base-4', 'vela-1'].map((id) => [id, E.statoQuesito(p[id])]));
     out.segnalibri = E.segnalibri(rr);
     out.codaSegnalibri = E.codaSegnalibri(items, rr, { kind: 'base' });
@@ -4027,6 +4029,7 @@ test('la riga d avvio non la rilegge nessuno', () => {
     previsioniProva: (rr) => E.previsioniProva(rr, 'base', TA('14:00:00')),
     rigaDiRisposta: (rr) => rr.filter(E.rigaDiRisposta),
     segnalibri: (rr) => E.segnalibri(rr), codaSegnalibri: (rr) => E.codaSegnalibri(items, rr),
+    riepilogoPagina: (rr) => E.riepilogoPagina(rr, { quiz: items, carteggio: carte, tecniche: carte }),
   };
   const permessi = new Set(['_t', 'ts']);
   for (const [nome, f] of Object.entries(chiamate)) {
@@ -4124,9 +4127,10 @@ test('coda: il conflitto conta a parte le risposte non salvate, non gli avvii e 
   assert.equal(x.conflitto.nonSalvateRisposte, risposte - 1);
   // Con soli avvii e tag in coda le risposte non salvate sono zero: la pagina
   // non deve poter scrivere «Qui ci sono 2 risposte non salvate».
-  const soli = { ...c, daInviare: ['f-sim:a', 'f-g1'] };
+  // D.2 di P-80: anche con un segnalibro fra le sole righe in coda.
+  const soli = { ...c, daInviare: ['f-sim:a', 'f-g1', 'f-b1'] };
   const y = E.dopoInvio(soli, E.lottoDaInviare(file, soli), { codice: 409, corpo: corpo409 }, file);
-  assert.equal(y.conflitto.nonSalvate, 2); assert.equal(y.conflitto.nonSalvateRisposte, 0);
+  assert.equal(y.conflitto.nonSalvate, 3); assert.equal(y.conflitto.nonSalvateRisposte, 0);
   // E il conflitto passa com'e' dal trasferimento al suo riepilogo.
   const tr = E.nuovoTrasferimento(c, file);
   const t = E.registraEsito(tr.trasferimento, e);
@@ -4485,4 +4489,93 @@ test('cercaNumero: sulla banca vera tre progressivi non si leggono e undici sono
   // Un numero ripetuto apre tutti e due i quesiti: chi cerca vede che sono due.
   assert.deepEqual(ids0(E.cercaNumero(items, '1.2.2-2')), ['base-145', 'base-156']);
   function ids0(r) { return r.esatti.map((x) => x.id); }
+});
+
+// --- P-80: il riepilogo della pagina aperta ----------------------------------------
+//
+// D.1 del §10.1 di docs/ridisegno-progetto.md: la Home H1 e Progressi senza
+// account scrivono «Le attività di questa pagina» da un conto solo, nel
+// motore, e non sommano per tipo in pagina. E' una composizione degli export
+// che ci sono — sessioni(), attivitaCarteggio(), rigaDiRisposta(), validaRiga()
+// —, non una seconda copia del ritaglio: un test lo pretende confrontando le
+// attivita' con quelle delle tre chiamate.
+
+const RP = (righe, banca = null) => E.riepilogoPagina(righe, banca);
+
+test('riepilogoPagina: senza risposte e vuoto, e dice zero dappertutto', () => {
+  const r = RP([]);
+  assert.equal(r.vuoto, true);
+  assert.deepEqual(r.risposte, { totale: 0, quiz: 0, carteggio: 0, tecniche: 0, prove: 0 });
+  assert.deepEqual(r.attivita, []);
+  assert.equal(r.righe, 0); assert.equal(r.doppioni, 0); assert.equal(r.scartate, 0);
+  assert.equal(r.ricostruite, 0); assert.equal(r.ambigue, 0);
+  assert.equal(r.mancanti, null, 'senza la banca i mancanti non si dicono «nessuno»');
+  // Con soli tag, segnalibri e avvii e' ancora vuoto: non sono risposte.
+  const gesti = RP([tagRiga('g1', 'q-x', 'N'), { _t: 'b', uid: 'b1', item_id: 'base-90', ts: '2026-08-25T10:41:00.000Z', segnato: 1 }, ra('s-x')]);
+  assert.equal(gesti.vuoto, true);
+  // La riga d'avvio non si conta da nessuna parte: non e' una risposta, e non e'
+  // un gesto di chi studia (R-PREV-02, R-PREV-08).
+  assert.deepEqual(gesti.altri, { tag: 1, segnalibri: 1 });
+  assert.equal(gesti.righe, 2);
+  assert.equal(gesti.risposte.totale, 0);
+  assert.equal(RP(null).vuoto, true, 'righe null come vuote');
+});
+
+test('riepilogoPagina: conta risposte e gesti a parte, per tipo, dalle righe che la pagina scrive', () => {
+  const file = fileConAvvii();
+  const prima = JSON.stringify(file);
+  const r = RP(file);
+  assert.equal(JSON.stringify(file), prima, 'non tocca le righe');
+  assert.equal(r.vuoto, false);
+  assert.equal(r.righe, 8, 'otto righe lette: la riga d avvio passa senza essere contata');
+  assert.equal(r.doppioni, 0); assert.equal(r.scartate, 0);
+  assert.deepEqual(r.risposte, { totale: 5, quiz: 2, carteggio: 1, tecniche: 1, prove: 1 });
+  assert.equal(r.risposte.totale, file.filter(E.rigaDiRisposta).length, 'il totale e rigaDiRisposta()');
+  assert.deepEqual(r.quiz, { risposte: 2, esatte: 1, errate: 1 });
+  assert.deepEqual(r.carteggio, { esercizi: 1, coincidenti: 0, daRivedere: 1, senzaGiudizio: 0 });
+  assert.deepEqual(r.tecniche, { risposte: 1, coincidenti: 1, nonCoincidenti: 0 });
+  assert.deepEqual(r.prove, { quiz: 1, carteggio: 0 });
+  assert.deepEqual(r.altri, { tag: 2, segnalibri: 1 });
+  // Le attivita': quelle di sessioni() con il confine dell'attivita' e di
+  // attivitaCarteggio() per tipo, con gli stessi id — nessun secondo ritaglio.
+  const q = E.sessioni(file, { confine: 'attivita' }).map((x) => x.id);
+  const c = E.attivitaCarteggio(file, { tipo: 'c' }).map((x) => x.id);
+  const t = E.attivitaCarteggio(file, { tipo: 't' }).map((x) => x.id);
+  assert.deepEqual(r.attivita.filter((a) => a.tipo === 'q').map((a) => a.id), q);
+  assert.deepEqual(r.attivita.filter((a) => a.tipo === 'c').map((a) => a.id), c);
+  assert.deepEqual(r.attivita.filter((a) => a.tipo === 't').map((a) => a.id), t);
+  assert.equal(r.attivita.length, 4, 'due di quiz (una registrata, una ricostruita), una di carta, una di tecniche');
+  const sim = r.attivita.find((a) => a.id === 'f-sim');
+  assert.deepEqual({ ...sim, inizio: 0, fine: 0 }, { tipo: 'q', id: 'f-sim', fonte: 'sim_uid', ambigua: false, motivi: [],
+    mode: 'batteria', kind: 'base', n: 1, esatte: 0, inizio: 0, fine: 0, prova: true });
+  const carta = r.attivita.find((a) => a.tipo === 'c');
+  assert.equal(carta.fonte, 'risposte'); assert.equal(carta.esatte, 0); assert.equal(carta.n, 1); assert.equal(carta.prova, false);
+  assert.equal(r.ricostruite, 3, 'q1, la carta e la tecnica non hanno un legame');
+  assert.equal(r.ambigue, 0);
+  // Piu' recenti prima.
+  const fini = r.attivita.map((a) => E.epoca(a.fine));
+  assert.ok(fini.every((f, i) => i === 0 || f <= fini[i - 1]), 'in ordine di fine, dalla piu recente');
+  // Con la banca, i riferimenti che la banca non ha; senza, null.
+  const banca = { quiz: [{ id: 'base-90' }], carteggio: [{ id: '5.4.1-9' }], tecniche: [] };
+  assert.deepEqual(RP(file, banca).mancanti, { quiz: ['base-91'], carteggio: [], tecniche: ['5.1.3-1'] });
+  assert.deepEqual(RP(file, { quiz: [{ id: 'base-90' }, { id: 'base-91' }] }).mancanti, { quiz: [], carteggio: null, tecniche: null });
+});
+
+test('riepilogoPagina: un uid ripetuto conta una volta, una riga rotta si conta e non entra, un legame ambiguo si dice', () => {
+  const file = fileConAvvii();
+  const doppio = RP([...file, { ...file[0] }, { ...file[1], correct: 1 }]);
+  assert.equal(doppio.doppioni, 2);
+  assert.deepEqual(doppio.risposte, RP(file).risposte, 'i doppioni non cambiano i conti');
+  assert.deepEqual(doppio.quiz, RP(file).quiz, 'vale la prima riga di un uid, non l ultima');
+  const rotte = RP([...file, { _t: 'x', uid: 'x1', ts: file[0].ts }, { ...file[0], uid: 'q-boh', ts: 'boh' }, null, 'riga']);
+  assert.equal(rotte.scartate, 4);
+  assert.deepEqual(rotte.risposte, RP(file).risposte);
+  assert.equal(rotte.righe, 8);
+  // Lo stesso quesito due volte nello stesso sim_uid: non e' una lista che il
+  // runner possa scrivere, e si dice; le righe restano risposte.
+  const amb = RP([...file, { ...file[1], uid: 'f-q3', ts: '2026-08-25T10:20:00.000Z' }]);
+  assert.equal(amb.ambigue, 1);
+  const a = amb.attivita.find((x) => x.id === 'f-sim');
+  assert.equal(a.ambigua, true); assert.deepEqual(a.motivi, ['quesito ripetuto']);
+  assert.equal(amb.risposte.quiz, 3);
 });

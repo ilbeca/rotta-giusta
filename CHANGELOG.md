@@ -919,6 +919,117 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   versione; nessun tag, push o servizio di produzione toccato. La lettura
   dei mock e il giro sintetico non provano usabilità con persone o Safari.
 
+### Test — P-80: il ridisegno, prima parte — i raccordi, gli export, i due regimi e la specifica
+
+- **Il contratto prima del codice**, nel §10.1 di `docs/ridisegno-progetto.md`,
+  «Contratto consegnato da P-80»: i chiamanti di ogni funzione del motore
+  toccata e che cosa cambia per ciascuno — niente, per quelle che c'erano —;
+  la firma finale di `navigazioneSito({ url, evento, contesto })` con le sue
+  regole; i cinque raccordi aggiuntivi (`preparaBreve`, `preparaSegnalibri`,
+  `avviaSegnalibri`, `ricercaNumero`, `permessoGesto`) e i due di «Allena»,
+  con le differenze dalla proposta dette una per una; la forma di
+  `riepilogoPagina()`; come si legge il regime; che cosa resta a P-82 e P-83.
+
+- **Il motore: `riepilogoPagina(righe, banca)`**, una composizione di
+  `sessioni()` con il confine dell'attività, `attivitaCarteggio()` per tipo,
+  `rigaDiRisposta()` e `validaRiga()` — nessun secondo ritaglio, e un test
+  confronta le attività con quelle delle tre chiamate. Conta le risposte per
+  tipo e a parte i tag e i segnalibri, prende ogni `uid` una volta, conta le
+  righe rotte senza farle entrare, dichiara le attività ricostruite e ambigue e
+  i riferimenti che la banca non ha. **Trovato dal controllo di P-72, e
+  corretto prima del commit:** la prima stesura contava gli avvii fra «gli
+  altri gesti», come la proposta diceva, e R-PREV-08 è diventato rosso — il
+  tipo `'a'` compariva in una funzione che prepara una schermata. La riga
+  d'avvio è una testimonianza che nessuna schermata rilegge: ora il riepilogo
+  ne legge solo il tipo per lasciarla passare, e R-PREV-02 e R-PREV-08
+  eseguono anche lui. D.2 era già vero — `confermateRisposte` e
+  `nonSalvateRisposte` passano da `rigaDiRisposta()` —, e il test del conflitto
+  mette ora anche un segnalibro fra le sole righe in coda. Tre test nuovi,
+  rossi prima per la funzione che mancava; **undici rotture del motore, tutte
+  rosse** nel loro test, fra cui il segnalibro contato come risposta, la
+  deduplica tolta, l'ultima riga di un uid che vince, i mancanti «nessuno»
+  senza la banca, gli avvii contati come prove. Orfana dichiarata fino a P-81.
+
+- **Il regime si legge dalla pagina, da due dichiarazioni insieme** —
+  `navigazioneSito()` e `VISTE_RIDISEGNO = ['home', 'allenati', 'esame',
+  'progressi']`, esattamente così — e la regola sta in un modulo solo,
+  `tests/regime_pagina.py`, che la suite dell'interfaccia e quella dei dati
+  importano. Nessuna delle due: il regime di oggi, e **la pagina di oggi passa
+  i suoi controlli interi**; una sola, o una lista diversa: rosso con il
+  motivo. Nel ridisegno il canonico è `index.html`, `app.html` è una porta con
+  i suoi controlli (niente banca né client, `location.replace()` verso
+  Allenati/Quiz, il frammento tolto, «Apri Allenati», il titolo), `start_url`
+  è `/`, i legali tornano a `/`. Ogni controllo che leggeva `app.html` per nome
+  legge ora il canonico — viste, barra, orfani, chiamate protette, l'istante
+  di `applica()`, le letture cieche, i testi, gli alt, il trasloco, i testi
+  del client, il raccordo di P-74, i banchi dei quiz, del ciclo, della mappa e
+  del Carteggio —, e `RG_PAGINA` vale per il canonico di qualunque regime.
+  Provato con la pagina di riferimento del ridisegno come canonico: il regime
+  letto è «ridisegno», le quattro sezioni e la barra passano, `app.html` di
+  oggi è rosso come porta, e la pagina di riferimento è rossa dove non è una
+  pagina intera — orfani, trasloco, testi.
+
+- **Il banco del ridisegno, `tests/ridisegno.mjs`**, con la pagina di
+  riferimento `tests/pagina-ridisegno.html`: esegue `navigazioneSito()` sui
+  casi del §3 — le sezioni e i segmenti dalle query, i sette alias, `/app`, il
+  gettone in memoria, `/allenati` e il parametro sconosciuto, la fase runner,
+  i legali toccati e caricati, l'attività in corso e conclusa — e i cinque
+  raccordi contro il motore vero con una spia sulle chiamate, come
+  `selezioneQuiz()`: il breve su tre banche, i segnalibri con Inizia che
+  confronta id e ordine anche a lunghezza uguale, la ricerca su dieci testi
+  compresi un numero ripetuto e un oscurato, il permesso con i tipi del server
+  di oggi, di P-73 e della v0.30.0. In statica le quattro sezioni, la barra, i
+  tre segmenti, gli alias, la simulazione in Esame. 180 verifiche sulla pagina
+  di riferimento; **trenta rotture, tutte rosse per il loro motivo**. Il
+  lettore delle pagine prende anche le costanti in maiuscolo che un raccordo
+  nomina — le tabelle —, mai lo stato `S`: la prima stesura lo prendeva, e la
+  rottura «legge uno stato globale» era rossa senza nominare il difetto.
+
+- **La mappa impara il ridisegno:** `tests/mappa_progressi.mjs` riceve il
+  regime e nel nuovo pretende `stati` sul totale e su ogni riga da una
+  `contaStati()` per aggregato con il filtro della riga, e i due raccordi di
+  «Allena» — una `coda()` con il filtro e venti quesiti, Inizia che rilegge e
+  confronta id e ordine. La pagina di riferimento li realizza ed è fissata al
+  ridisegno; **dieci rotture nuove**, fra cui gli stati con un altro filtro,
+  ricontati con `statoQuesito()`, Allena mascherato da Rifai, Inizia che
+  confronta la sola lunghezza, `contaStati()` fuori dal raccordo. Sulla pagina
+  di oggi il controllo dice che non si applica, invece di tacere.
+
+- **Il banco del client serve il canonico al suo ingresso** — `/app` oggi,
+  `/` nel ridisegno, con `site/app.html` servito com'è come porta — e per una
+  porta di oggi prova prima l'alias, poi la strada del ridisegno (sezione,
+  segmento, porta dell'attività). **Nel regime nuovo nessuna pagina lo
+  esercita**: la pagina di riferimento in Chrome, i tragitti e le loro rotture
+  sono P-82, ed è scritto nel contratto invece di dichiararlo provato.
+  Trovato facendo girare la suite: la prima sostituzione meccanica aveva dato
+  all'aiuto il nome di variabili locali già esistenti e reso ricorsiva la sua
+  prima riga — 200 rossi, tutti «porta before initialization» o «call stack»
+  —, corretta e rifatta.
+
+- **La specifica:** il §5, il §6 e il §7 riscritti sul progetto — le quattro
+  sezioni e le superfici, dove sono finite le sette viste, le dieci attività e
+  le tre porte nuove, i controlli, la Home nei tre stati, Allenati, il
+  Carteggio con due porte, Progressi con i cinque stati, il Profilo, Esame — e
+  la pagina di oggi conservata nei paragrafi *Nel regime di transizione*; il
+  §6.2 dice come il regime si legge e che **scade alla merge di P-81**. R-NAV-01…07
+  riscritti; nuovi R-NAV-08 (i tragitti, scoperto fino a P-82), R-NAV-09…13,
+  R-MAPPA-18, R-ARCH-19; R-ACC-03/04/55, R-STATI-06, R-ARCH-06/09 dicono i due
+  regimi. `test_specifica.py` verde con i nomi veri.
+
+- **Non fatto, e di chi è:** il banco dei tragitti in Chrome (E), P-82; i due
+  campi del profilo (D.3), P-83; il motore con la LTS 24 — il pacchetto non è
+  più sul disco, e scaricarlo chiede il sì dell'autore; il server non è stato
+  toccato. `site/` fuori da `engine.js`, `server/` e
+  `docs/prossime-sessioni.md` non sono stati toccati.
+
+  Suite: motore **215/219** con i quattro skip previsti (erano 212/216);
+  server 81/81 e `ripristina --prova` 24 controlli, invariati; dati **230**
+  (erano 229); specifica **988** (erano 958); interfaccia **2.604**
+  (erano 2.453), in 4 min 16 s — oltre i 240 s di Q-SUITE, come già P-74, P-77 e P-78: i gruppi nuovi del ridisegno costano pochi secondi sotto Node, e il tempo è del banco in Chrome —, con la 8620 guardata libera per 90 s prima — il
+  primo giro intero era rosso per i 200 della sostituzione meccanica qui
+  sopra, il secondo è quello che conta. Guardiano e controllo della
+  documentazione verdi.
+
 ## [0.30.0] — 2026-10-03
 
 **Il sito più semplice: niente offline.** Rotta Giusta si apre con la rete,

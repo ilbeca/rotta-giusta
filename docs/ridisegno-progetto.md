@@ -1222,6 +1222,233 @@ rifinitura devono provare il sorgente canonico nel regime nuovo; la porta
 `app.html` deve passare controlli suoi di compatibilità. Un vincolo non
 sparisce perché il file che il test legge diventa una porta vuota.
 
+##### Contratto consegnato da P-80 — 15 ottobre 2026
+
+Scritto **prima del codice**, come i §10.1 delle aree. Dove differisce dalla
+proposta sopra lo dice; i punti E (il banco dei tragitti in Chrome) e D.3 (i
+due campi del profilo) restano a P-82 e P-83, e qui sta scritto che cosa
+P-80 lascia loro.
+
+**I chiamanti delle funzioni del motore che P-80 tocca, e che cosa cambia
+per ciascuno.** Nessuna funzione esistente cambia firma o risultato.
+
+| Funzione | Chiamanti oggi | Che cosa cambia |
+|---|---|---|
+| `riepilogoPagina(righe, banca)` | **nuova**: nessuno. Orfana dichiarata fino a P-81, che la consuma nella Home H1 e in Progressi anonimo | — |
+| `sessioni(righe, {confine:'attivita'})` | `app.html` (ultima attività, riepilogo, elenco), `server/letture.mjs`, `erroriSessione()`, i banchi del ciclo | nessuno: `riepilogoPagina()` la **chiama**, non la copia |
+| `attivitaCarteggio(righe, {tipo})` | `app.html` (riepilogo e revisione del Carteggio), `dettaglioCarteggio()`, `server/letture.mjs`, il banco del Carteggio | nessuno: chiamata com'è, una volta per tipo |
+| `rigaDiRisposta(r)` | `riepilogoTrasferimento()`, `conflittoDa()`, `server/letture.mjs`, `server/statistiche.mjs` | nessuno: è il predicato con cui `riepilogoPagina()` separa risposte e gesti |
+| `validaRiga(riga)` | import, server, `segnalibri()`, `tagPerTentativo()` | nessuno: `riepilogoPagina()` la usa per contare le righe che non hanno la forma di una riga, senza la banca |
+| `riepilogoTrasferimento()`, `dopoInvio()`, `dopoRicezione()` | `app.html`, pagina di riferimento del client, `test_server.mjs` | **nessuno**. D.2 è una verifica, non una modifica: `confermateRisposte` e `nonSalvateRisposte` passano da `rigaDiRisposta()`, che dice falso per `'g'`, `'a'` e `'b'`; il test del conflitto mette ora anche un segnalibro fra le sole righe in coda, e il conto delle risposte resta zero |
+| `contaStati()`, `codaSegnalibri()`, `cercaNumero()`, `rigaScrivibile()`, `estraiNuoviPrima()`, `coda()` | i primi quattro nessuno in pagina (orfani di P-71); `coda()` e `estraiNuoviPrima()` dalla pagina e dal motore | nessuno nel motore: li chiamano i raccordi della pagina, che il banco esegue |
+
+**Il regime, da due dichiarazioni insieme** (A). Una pagina è nel regime del
+ridisegno se il suo script dichiara, al primo livello e fuori dai commenti,
+`function navigazioneSito(` **e** `const VISTE_RIDISEGNO = ['home', 'allenati',
+'esame', 'progressi']`, esattamente questi quattro in quest'ordine. Nessuna
+delle due → regime attuale, e i controlli di oggi girano interi. Una sola, o
+una lista diversa → rosso con il motivo, in ogni suite che legge la pagina.
+Il documento canonico: nel regime nuovo `site/index.html`; nell'attuale
+`site/app.html`. Un `app.html` che dichiarasse il ridisegno è rosso: il
+ridisegno vive in `index.html`, e `app.html` è la porta. `RG_PAGINA=<file>`
+sostituisce il canonico, qualunque sia: il regime si legge dalla copia, e la
+copia sta per `index.html` o per `app.html` di conseguenza; `site/app.html`
+resta letto da `site/` quando è la porta. La regola sta in un modulo solo,
+`tests/regime_pagina.py`, che `test_interfaccia.py` e `test_dati.py`
+importano: due copie divergerebbero.
+
+**La porta `app.html`, nel regime nuovo** (A, F): nessun `import` di
+`/engine.js`, nessun `indirizzoApi()`, nessun `indexedDB`, nessuna richiesta
+alla banca; un `location.replace(` verso `/?sezione=allenati&segmento=quiz`
+che legge prima `location.hash` e lo toglie con `replaceState`; un
+`<a href="/?sezione=allenati&segmento=quiz">Apri Allenati</a>` per chi non ha
+lo script; `<title>Apri Allenati · Rotta Giusta</title>`; nessuna frase che
+gli account rendono false. Il canonico ha il titolo «Rotta Giusta — quiz e
+carteggio per la patente nautica», le icone, i meta Open Graph e le frasi
+della versione con gli account che oggi stanno in due file. Il manifest ha
+`start_url: '/'`. Le pagine legali tornano a `/`.
+
+**`navigazioneSito(richiesta)`, la firma finale** (A). Pura: nessun DOM,
+nessun archivio, nessuna rete, nessuna serializzazione di risposte.
+
+```
+navigazioneSito({ url, evento, contesto })
+  url       percorso + query + frammento, com'è in location ('/?sezione=allenati&segmento=quiz', '/app#verifica=…')
+  evento    'carica' | 'tocco' | 'cronologia'
+  contesto  { attivita: null | { stato: 'in corso' | 'conclusa', riferimento },
+              tappa: null | { sezione, segmento, pannello } }      la voce in memoria di history.state.nav
+→ { sezione, segmento, attivita, fase, pannello, ritorno, effetto, motivo, url, gettone }
+  sezione   'home' | 'allenati' | 'esame' | 'progressi'
+  segmento  'quiz' | 'carteggio' | 'segnali' per allenati (quiz se assente), altrimenti null
+  attivita  il valore di ?attivita, o null; 'tecniche' per l'alias tec
+  fase      'preparazione' o null: un runner, un risultato o una revisione non si aprono da un URL
+  pannello  'privacy' | 'avvertenza' | 'condizioni' | 'profilo' | 'info' | null
+  ritorno   contesto.tappa, dove la chiusura del pannello o dell'attività riporta
+  effetto   'apri' | 'ripristina' | 'chiedi-uscita' | 'mostra-risultato' | 'indisponibile'
+  motivo    con 'indisponibile': 'parametro sconosciuto' | 'rotta non servita' | 'attivita non disponibile'
+  url       l'indirizzo canonico, senza il frammento del gettone: quello che la pagina scrive con replaceState
+            ('/privacy' e '/avvertenza#condizioni' per i pannelli legali)
+  gettone   { tipo: 'verifica' | 'password', valore } letto dal frammento, o null; non torna mai in url
+```
+
+Regole. Un percorso diverso da `/`, `/app`, `/privacy`, `/avvertenza` è
+`indisponibile` per «rotta non servita», con `sezione: 'home'` e `url: '/'`:
+la funzione **non produce mai** un indirizzo del genere. `/app`, con o senza
+query, è Allenati/Quiz. Gli alias dei `data-v` di oggi si accettano come
+valore di `sezione`: `quiz` → allenati/quiz, `cart` → allenati/carteggio,
+`seg` → allenati/segnali, `tec` → allenati/carteggio con `attivita:
+'tecniche'`, `diag` → progressi, `oggi` → home, `info` → home con `pannello:
+'info'`; il frammento `#profilo` apre il pannello `profilo` sulla sezione
+chiesta. Un'`attivita` senza `sezione` è Allenati/Quiz. Un parametro che non è fra `sezione`, `segmento`, `attivita`,
+`fase`, `banca` e i filtri pubblici (`temi`, `voci`, `n`), o un valore di
+`sezione`/`segmento` sconosciuto, è `indisponibile` per «parametro
+sconosciuto», sulla Home. `fase` diversa da `preparazione` è «attivita non
+disponibile», con `fase: 'preparazione'` offerta. `/privacy`,
+`/avvertenza`, `/avvertenza#condizioni` con `evento: 'tocco'` o
+`'cronologia'` sono un pannello sopra la tappa del contesto (la Home senza
+tappa); con `'carica'` sono «rotta non servita» dal canonico, perché quel
+caricamento lo serve il file autonomo. Con un'attività in corso, un tocco o
+una voce di cronologia che lascia la sezione è `chiedi-uscita`; il pannello
+`profilo`/`info`/legale si apre sopra senza chiederla. Con un'attività
+conclusa e `evento: 'cronologia'` l'effetto è `mostra-risultato`.
+`'cronologia'` senza attività è `ripristina`. I segmenti e le sezioni si
+leggono in minuscolo; una query vuota è la Home.
+
+**I cinque raccordi aggiuntivi, e le due funzioni di Allena** (C, D). Puri,
+al primo livello, fuori da `MODI`; `fonte` è quella di `selezioneQuiz()`.
+
+| Firma consegnata | Contratto che il banco esegue |
+|---|---|
+| `preparaBreve(conf, fonte)` | `conf = { seme }`. Una `E.coda(items, prog, oggi, { kind: 'base', n: 0, includiChiusi: true })`, poi una `E.estraiNuoviPrima(<quel pool>, prog, oggi, 10, conf.seme)`; nessun'altra selezione. Ritorna `{ lista, quanti, stato }`: `lista` è il risultato della seconda com'è, `quanti === lista.length`, `stato` `'pronta'` con dieci, `'ridotta'` con meno di dieci e almeno una, `'vuota'` con zero. Il risultato si conserva fino a Inizia |
+| `preparaSegnalibri(richiesta)` | `richiesta = { banca, righe, kind }`, `kind` anche `undefined` per tutte le banche. Una `E.codaSegnalibri(banca, righe, { kind })`; ritorna `{ lista, quanti, fuori, stato }` con i tre campi del motore com'erano — nessun tetto, `fuori` intero anche con `kind` — e `stato` `'pronta'` o `'vuota'` |
+| `avviaSegnalibri(preparazione, richiesta, avvia)` | Rifà la stessa `E.codaSegnalibri` sulla richiesta di adesso e confronta **id e ordine** con `preparazione.lista`. Uguali → `avvia(preparazione.lista, 'segnalibri', { origine: 'quiz' })` una volta, `{ avviata: true, quanti }`; diversi, anche a lunghezza uguale → `{ avviata: false, stato: 'cambiata' }` senza avvio |
+| `ricercaNumero(richiesta)` | `richiesta = { banca, testo, kind }`. Una `E.cercaNumero(banca, testo, { kind })`, con il testo com'è digitato; ritorna i campi del motore interi — `valido, motivo, numero, esatti, parziali, quanti, oscurati` —, duplicati e oscurati compresi, e `quanti === esatti.length + parziali.length` |
+| `permessoGesto(riga, fonte)` | `fonte = { accesso: 'anonimo' | 'account', tipiRiga, io }`: senza account `E.rigaScrivibile(riga, fonte.tipiRiga)`, dove `tipiRiga` è `E.TIPI_RIGA`; con l'account `E.rigaScrivibile(riga, fonte.io && fonte.io.tipi_riga ? fonte.io.tipi_riga : null)` — `null` è il server di prima. Una chiamata; ritorna `{ scrivibile: motivo === null, motivo }` |
+| `mappaProgressi(richiesta)` | Come l'area 5, più `stati` sul totale e su ogni riga: `E.contaStati(banca, progress, filtro)` con **lo stesso `filtro` della riga** di `quadro()` (`{ kind }` per il totale), una chiamata per aggregato e nessuna conversione dei cinque in tre. `righe`, `totale`, `indicazione`, `assente` e le azioni «Rifai» restano quelli di prima |
+| `anteprimaAllenaProgressi(riga, richiesta)` | Una `E.coda(banca, progress, oggi, { ...riga.filtro, n: 20 })`; ritorna `{ stato: 'pronta', quanti, lista }` o `{ stato: 'vuota', quanti: 0, lista: [] }`. Non è «Rifai»: niente `soloDaRifare` |
+| `avviaAllenaProgressi(preparazione, richiesta, avvia)` | Rifà la stessa `coda` e confronta id e ordine con `preparazione.lista`; uguali → `avvia(preparazione.lista, 'argomento', { origine: 'progressi' })` una volta, `{ avviata: true, quanti }`; diversi → `{ avviata: false, stato: 'cambiata' }` |
+
+Differenze dalla proposta: `permessoGesto` prende `accesso` esplicito invece
+di dedurlo da `io`, perché una pagina senza account ha `io` nullo e un
+server di prima lo ha senza `tipi_riga`, e i due casi non si devono
+confondere; `preparaBreve` dichiara `stato` perché la Home scrive «Allenati
+con {N} domande» quando il pool è corto; i raccordi di Allena ricevono la
+riga intera e ne leggono `filtro`, così la selezione è quella della riga e
+non una ricostruita da nome del tema.
+
+**`riepilogoPagina(righe, banca)`** (D.1), nel motore, una composizione
+degli export che ci sono: `sessioni(righe, { confine: 'attivita' })`,
+`attivitaCarteggio(righe, { tipo: 'c' })`, `attivitaCarteggio(righe, { tipo:
+'t' })`, `rigaDiRisposta()`, `validaRiga()`. Nessuna seconda copia del
+ritaglio. Le righe si prendono una volta per `uid` (la prima); una riga che
+`validaRiga()` rifiuta si conta in `scartate` e non entra. `banca` è `{
+quiz, carteggio, tecniche }` — gli elenchi caricati — o `null`.
+
+```
+→ { vuoto, righe, doppioni, scartate,
+    risposte: { totale, quiz, carteggio, tecniche, prove },
+    quiz:      { risposte, esatte, errate },
+    carteggio: { esercizi, coincidenti, daRivedere, senzaGiudizio },
+    tecniche:  { risposte, coincidenti, nonCoincidenti },
+    prove:     { quiz, carteggio },
+    altri:     { tag, segnalibri },
+    attivita:  [ { tipo: 'q'|'c'|'t', id, fonte, ambigua, motivi, mode, kind, n, esatte, inizio, fine, prova } … ],
+    ricostruite, ambigue,
+    mancanti:  banca ? { quiz: [...], carteggio: [...], tecniche: [...] } : null }
+```
+
+`vuoto` è vero senza risposte, anche con tag o segnalibri; `risposte.totale`
+conta le righe per cui `rigaDiRisposta()` dice vero, `prove` le righe `'s'`;
+`altri` i gesti che risposte non sono, e nessuno di loro entra altrove. **La
+riga d'avvio non compare e non si conta**, nemmeno fra gli altri: la proposta
+diceva «altri gesti separati» e la prima stesura contava gli avvii, e R-PREV-08
+l'ha fermata — il tipo `'a'` compariva in una funzione che prepara una
+schermata. La riga d'avvio è una testimonianza (§3.2 della specifica), e il
+riepilogo ne legge soltanto il tipo per lasciarla passare; R-PREV-02 e
+R-PREV-08 eseguono anche `riepilogoPagina()`. Le
+attività sono quelle delle tre chiamate, più recenti prima, con `esatte`
+le giuste dei quiz, i «coincide» della carta e le coincidenti delle
+tecniche; `ricostruite` conta le `fonte: 'risposte'`, `ambigue` le
+`ambigua: true`. I Segnali non hanno righe e non compaiono. Nessuna storia
+cumulativa, nessun «oggi», nessuna durata né stima.
+
+**I banchi** (A, C). Nel regime attuale ogni banco gira com'era, sulla
+pagina di oggi, verifica per verifica; nel regime nuovo:
+
+- il nuovo `tests/ridisegno.mjs` estrae dal canonico `VISTE_RIDISEGNO`,
+  `navigazioneSito()` e i cinque raccordi — con le funzioni di primo livello
+  che nominano e le costanti in MAIUSCOLO che queste leggono (le tabelle degli
+  alias e dei parametri), mai lo stato `S` della pagina, così un raccordo che
+  lo legge lancia come nei banchi dei quiz e della mappa —, e li esegue contro
+  il motore vero con una spia sulle chiamate, come `selezioneQuiz()`: la navigazione sui
+  casi del §3 (le quattro sezioni, gli alias, `/app`, `/allenati`, il
+  frammento con il gettone, il parametro sconosciuto, la fase runner, i
+  legali, l'attività in corso e conclusa); il breve con la banca vera e con
+  una banca di sette e di zero quesiti; i segnalibri con segni, rimozioni,
+  segni fuori banca e la lista cambiata a Inizia a lunghezza uguale; la
+  ricerca su esatti, parziali, i numeri ripetuti, un oscurato, un testo non
+  valido; il permesso con `E.TIPI_RIGA`, con `tipi_riga` della v0.30.0 e di
+  P-73 e senza. In statica: quattro `.view` con gli id del §2 e nessuna
+  delle sette di prima, una `<nav>` con le quattro voci intere, i tre
+  `[data-segmento]`, gli alias `[data-v]` solo fra quelli della tabella C.
+  La pagina di riferimento è `tests/pagina-ridisegno.html`, con le rotture
+  del §10.1 che un banco sotto Node vede: `/allenati` prodotto, la tappa e il
+  segmento sbagliati, l'alias `cart` su Quiz, il gettone che resta nell'URL,
+  il runner aperto da un link, una seconda pescata del breve, i segnalibri
+  tagliati, un duplicato o un oscurato persi dalla ricerca, il gesto `S`
+  scritto a un server di prima, Inizia che non confronta l'ordine;
+- il banco della mappa (`tests/mappa_progressi.mjs`) riceve il regime e nel
+  nuovo pretende `stati` da una `contaStati` per aggregato, con il filtro
+  della riga, e le due funzioni di Allena; la sua pagina di riferimento le
+  realizza, e porta le rotture (stati convertiti in tre, un filtro diverso,
+  una `contaStati` sola per tutto, Allena mascherato da Rifai, l'ordine
+  non confrontato a Inizia);
+- i banchi dei quiz, del ciclo e del Carteggio leggono il canonico e
+  girano com'erano: le loro firme non cambiano (tabella C); nel regime nuovo
+  la porta `data-modo="sim"` sta in `#v-esame`;
+- il banco del client e la rifinitura leggono il canonico e lo servono su
+  `/` invece che su `/app`, con `site/app.html` servito com'è come porta; le
+  porte `[data-v]` di oggi si traducono con gli alias della tabella C quando
+  la pagina non le tiene. **Nel regime nuovo nessuna pagina li esercita in
+  P-80**: la pagina di riferimento del client in Chrome, i gruppi del
+  ridisegno e le loro rotture sono P-82, con il banco dei tragitti. P-80
+  consegna l'innesto — il regime letto, l'ingresso, la traduzione delle
+  porte — e lo dice qui invece di dichiararlo provato.
+
+**La specifica** (B): §5, §6 e §7 riscritti sul progetto, con il regime di
+oggi conservato in «Il regime di transizione (P-80)» nel §6, datato 15
+ottobre 2026 e con **scadenza alla merge di P-81**: alla merge la regia
+toglie dai controlli il ramo del regime attuale, e tiene pagine di
+riferimento, rotture e controlli. R-NAV-01…07 riscritti; nuovi R-NAV-08
+(i tragitti, scoperto fino a P-82), R-NAV-09 (il regime letto da due
+dichiarazioni), R-NAV-10 (`navigazioneSito`), R-NAV-11 (i raccordi
+aggiuntivi), R-NAV-12 (la porta `app.html`), R-NAV-13 (il banco del
+ridisegno contro sé stesso), R-MAPPA-18 (gli stati e Allena), R-ARCH-19
+(`riepilogoPagina`); R-ACC-03/04, R-ACC-55, R-STATI-06, R-ARCH-06/09
+aggiornati come il punto B dice.
+
+**Che cosa resta a P-82 e P-83.** P-82: il gruppo dei tragitti in Chrome
+(E) per intero — documento identico, cronologia, legali sopra il lavoro,
+storage e `history.state`, i tre posti dell'invito, i cinque stati in
+schermata e le parole di Q-STATI (R-STATI-06), i gesti con i server di
+prima dal browser, la porta `/app` e il frammento visti dal browser —, con
+la pagina di riferimento del client nel regime nuovo e le rotture del §10.1
+che qui non si vedono (link Home che ricarica, perdita di filtri/scroll/
+fuoco, dati in storage, timer nel legale, modulo ricreato, «salvate» con
+scarti, quarto invito, `applica` senza `ts` in esecuzione, N/S invertiti,
+`b` contato come risposta in schermata). P-83: D.3 per intero sul server, e
+il campo `campi_profilo` che l'onboarding leggerà; fino ad allora
+`permessoGesto` non sa niente del profilo, e il banco non chiede niente di
+«salvate» alle scelte di preparazione.
+
+**Che cosa questi controlli non vedono.** Tutto quello che il §10.1 di
+`account-client-progetto.md` dice dei banchi sotto Node: il DOM, i testi,
+il fuoco, i ritorni, la geometria. La navigazione si prova come funzione —
+un indirizzo entra, una destinazione esce —, non come documento che resta
+lo stesso: quello è E. Che i raccordi siano **collegati** ai gesti veri — la
+casella di ricerca, il pulsante del segnalibro, Inizia — lo guarda solo il
+collegamento statico (chi li chiama nello script), come per la mappa.
+
 #### P-81 — ChatGPT, `ui/main`, Local: realizzazione dopo P-80 fuso
 
 Verifica cartella/ramo e un solo scrivente. Leggi AGENTS, questo documento,

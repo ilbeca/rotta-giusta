@@ -1,7 +1,10 @@
 <!doctype html>
 <!--
   La pagina di riferimento della mappa di Progressi: docs/area-5-progetto.md
-  §§4, 5 e 10.1. Non e' pubblicata e non e' un prototipo: e' il minimo che
+  §§4, 5 e 10.1, e dal 15 ottobre 2026 (P-80) anche il contratto del ridisegno,
+  docs/ridisegno-progetto.md §10.1: i cinque stati per aggregato e i due
+  raccordi di «Allena». Nel regime di oggi il banco li ignora; nel ridisegno li
+  pretende, e questa pagina li realizza. Non e' pubblicata e non e' un prototipo: e' il minimo che
   soddisfa il controllo di tests/test_interfaccia.py, e serve a quel controllo
   per provarsi al contrario a ogni esecuzione — questa pagina deve passare, e
   ognuna delle sue rotture elencate in ROTTURE_MAPPA deve fallire.
@@ -40,13 +43,34 @@ function mappaProgressi(richiesta) {
   const { banca, progress, oggi, kind, pesi } = richiesta;
   const q = E.quadro(banca, progress, oggi, kind, pesi);
   const d = kind === 'base' ? E.dovePesa(q) : { indicazione: null, assente: 'senza pesi' };
+  // I cinque stati (ridisegno §8.1, P-80): una contaStati() per aggregato, con
+  // il filtro della riga, e nessuna conversione dei cinque in tre in pagina.
+  const conStati = (r) => ({ ...r, stati: E.contaStati(banca, progress, r.filtro), voci: r.voci ? r.voci.map(conStati) : undefined });
+  const righe = q.righe.map(rigaProgressi).map(conStati);
+  for (const r of righe) if (r.voci === undefined) delete r.voci;
   return {
     kind,
-    righe: q.righe.map(rigaProgressi),
-    totale: q.totale,
+    righe,
+    totale: { ...q.totale, stati: E.contaStati(banca, progress, { kind }) },
     indicazione: d.indicazione,
     assente: d.assente,
   };
+}
+
+/** «Allena»: i quesiti della riga, da coda() con il suo filtro e il tetto di venti. */
+function anteprimaAllenaProgressi(riga, richiesta) {
+  const { banca, progress, oggi } = richiesta;
+  const lista = E.coda(banca, progress, oggi, { ...riga.filtro, n: 20 });
+  return lista.length ? { stato: 'pronta', quanti: lista.length, lista } : { stato: 'vuota', quanti: 0, lista: [] };
+}
+
+/** Inizia su Allena: la lista dell'anteprima, se e' ancora quella, id e ordine. */
+function avviaAllenaProgressi(preparazione, richiesta, avvia) {
+  const adesso = anteprimaAllenaProgressi(preparazione.riga, richiesta).lista;
+  const stessa = adesso.length === preparazione.lista.length && adesso.every((x, i) => x.id === preparazione.lista[i].id);
+  if (!stessa) return { avviata: false, stato: 'cambiata' };
+  avvia(preparazione.lista, 'argomento', { origine: 'progressi' });
+  return { avviata: true, quanti: preparazione.lista.length };
 }
 
 /** Quanti quesiti apre un pulsante adesso: la sua lista, o niente se i dati sono cambiati. */
@@ -85,6 +109,14 @@ document.addEventListener('click', (ev) => {
   if (b) {
     const azione = JSON.parse(b.dataset.rifai);
     avviaProgressi(azione, S.mappa.richiesta, (lista, modo, o) => apri(lista, modo, o));
+  }
+  const a = ev.target.closest('[data-allena]');
+  if (a) {
+    const riga = S.mappa.vista.righe[Number(a.dataset.allena)];
+    S.allena = { riga, ...anteprimaAllenaProgressi(riga, S.mappa.richiesta) };
+  }
+  if (ev.target.closest('[data-avvia-allena]')) {
+    avviaAllenaProgressi(S.allena, S.mappa.richiesta, (lista, modo, o) => apri(lista, modo, o));
   }
 });
 </script>

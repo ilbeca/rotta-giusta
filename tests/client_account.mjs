@@ -6,9 +6,11 @@
 // Chrome headless (tests/browser.mjs), il sito servito da qui come lo serve
 // l'host, e il server degli account vero (server/server.mjs) accanto.
 //
-// Uso: node tests/client_account.mjs  < {"prove":[{nome,pagina,gruppi}]}
-// Stampa {nome: [{gruppo, nome, ok, extra}]}. La pagina sostituisce /app; il
-// resto del sito e' quello di site/. Ogni pagina e' guidata come una pagina con
+// Uso: node tests/client_account.mjs  < {"prove":[{nome,pagina,gruppi,ingresso}]}
+// Stampa {nome: [{gruppo, nome, ok, extra}]}. La pagina sostituisce il suo
+// ingresso — `/app` oggi, `/` nel ridisegno (P-80): e' `ingresso` della prova,
+// e senza e' `/app` —; il resto del sito e' quello di site/, la porta
+// `site/app.html` compresa quando il canonico e' `/`. Ogni pagina e' guidata come una pagina con
 // il client: dal 30 settembre 2026 (P-40) non c'e' piu' il regime della pagina
 // senza account, e una pagina senza client e' rossa in ogni gruppo.
 //
@@ -167,7 +169,8 @@ function sito(corrente) {
     // Una radice diversa da site/, tutta, pagina compresa: e' cosi' che C-22
     // serve la 0.29.0 sulla stessa origine, prima della versione nuova (P-60).
     const radice = corrente.radice || SITE;
-    if (p === '/app' && !corrente.radice) {
+    const ingressoDi = corrente.ingresso || '/app';
+    if ((p === ingressoDi || (ingressoDi === '/' && p === '/index.html')) && !corrente.radice) {
       res.writeHead(200, { 'Content-Type': TIPI['.html'], 'Cache-Control': 'no-cache' });
       return res.end(corrente.pagina);
     }
@@ -215,6 +218,32 @@ const imposta = (tab, etichetta, valore) => tab.valuta(js(`const c = ${campo(eti
 // Il primo elemento **visibile** che combacia: la stessa porta puo' stare in
 // piu' viste, e quella nascosta non si tocca.
 const clic = (tab, sel) => tab.valuta(js(`const e = [...document.querySelectorAll(${q(sel)})].find(V); if (!e || e.disabled) return false; e.click(); return true;`));
+
+// --- i due regimi della pagina di studio (P-80, docs/ridisegno-progetto.md §10.1) ---
+//
+// Oggi il documento di studio e' `/app`; nel ridisegno e' `/`, con quattro
+// sezioni e tre segmenti, e le porte `[data-v]` di oggi possono restare come
+// alias (tabella C) o no. Il banco non conosce il regime: apre l'ingresso che
+// la prova gli da', e per una porta di oggi prova prima l'alias, poi la strada
+// nuova — la sezione, il segmento, la porta dell'attivita'. Nel regime di oggi
+// l'alias c'e' sempre, e il banco fa esattamente quello che faceva.
+const ingresso = (ctx) => ctx.ingresso || '/app';
+// alias -> [sezione, segmento, porta dell'attivita'].
+const ALIAS_PORTE = { quiz: ['allenati', 'quiz', null], cart: ['allenati', 'carteggio', null], seg: ['allenati', 'segnali', null],
+  tec: ['allenati', 'carteggio', '[data-cporta="tecniche"]'], diag: ['progressi', null, null], oggi: ['home', null, null], info: ['home', null, '[data-profilo="info"]'] };
+/** La vista che la porta `x` apre: la sua di oggi, o la sezione del ridisegno. */
+const vistaDi = (x) => ALIAS_PORTE[x] ? `#v-${x}, #v-${ALIAS_PORTE[x][0]}` : `#v-${x}`;
+/** Apre la porta `x`: l'alias se c'e', altrimenti la strada del ridisegno. */
+async function apriPorta(tab, x) {
+  if (await clic(tab, `[data-v="${x}"]`)) return true;
+  const a = ALIAS_PORTE[x];
+  if (!a) return false;
+  const [sezione, segmento, attivita] = a;
+  if (!await clic(tab, `[data-v="${sezione}"]`)) return false;
+  if (segmento && !(await tab.attendi(visibile(`[data-segmento="${segmento}"]`), REAZIONE) && await clic(tab, `[data-segmento="${segmento}"]`))) return false;
+  if (attivita) return await tab.attendi(visibile(attivita), REAZIONE) && clic(tab, attivita);
+  return true;
+}
 const passwordVisibile = js(`return [...document.querySelectorAll('input[type=password]')].some(V);`);
 const modaleVisibile = js(`return [...document.querySelectorAll('[aria-modal="true"], dialog[open]')].some(V);`);
 const pausa = (ms) => new Promise((ok) => setTimeout(ok, ms));
@@ -323,12 +352,12 @@ async function c01(b, ctx, v, parte) {
     // Le altre attivita', ognuna fino al suo punto d'arrivo, senza account
     // (R-ACC-04): Quiz, simulazione, Carteggio, tecniche, Segnali.
     const a = await b.nuovoContesto();
-    try { await attivita(await a.apri(ctx.sito + '/app'), v, g); } finally { await a.chiudi(); }
+    try { await attivita(await a.apri(ctx.sito + ingresso(ctx)), v, g); } finally { await a.chiudi(); }
   }
   if (!vuole('percorso')) return;
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     const testo = await unaRisposta(tab, v, g);
     if (testo) {
       v.push({ gruppo: g, nome: 'dal riepilogo la revisione mostra il quesito risposto', ok: await revisione(tab, testo),
@@ -352,7 +381,7 @@ async function c01(b, ctx, v, parte) {
 
 async function giroQuiz(tab, v, g, prefisso, modo) {
   const sim = modo === 'sim';
-  const porta = await clic(tab, '[data-v="quiz"]') && await tab.attendi(visibile(`[data-modo="${modo}"]`), REAZIONE)
+  const porta = await apriPorta(tab, 'quiz') && await tab.attendi(visibile(`[data-modo="${modo}"]`), REAZIONE)
     && await clic(tab, `[data-modo="${modo}"]`) && await tab.attendi(js(`const b = document.querySelector('#start'); return V(b) && !b.disabled;`), REAZIONE);
   v.push({ gruppo: g, nome: `${prefisso}la porta dei Quiz apre la configurazione con Inizia`, ok: porta,
     extra: `[data-v="quiz"], [data-modo="${modo}"] o #start abilitato non si trovano` });
@@ -370,8 +399,8 @@ async function giroQuiz(tab, v, g, prefisso, modo) {
 
 async function giroTecniche(tab, v, g) {
   const p = 'Che tecnica serve?: ';
-  const porta = await clic(tab, '[data-v="cart"]') && await tab.attendi(visibile('[data-v="tec"]'), REAZIONE)
-    && await clic(tab, '[data-v="tec"]') && await tab.attendi(visibile('#t-start'), REAZIONE);
+  const porta = await apriPorta(tab, 'cart') && await tab.attendi(visibile('[data-v="tec"]'), REAZIONE)
+    && await apriPorta(tab, 'tec') && await tab.attendi(visibile('#t-start'), REAZIONE);
   v.push({ gruppo: g, nome: `${p}ci si arriva dal Carteggio`, ok: porta, extra: 'dal Carteggio nessun [data-v="tec"] porta a #t-start' });
   if (!porta) return;
   const prima = await tab.valuta(passwordVisibile);
@@ -396,7 +425,7 @@ async function giroTecniche(tab, v, g) {
 
 async function giroCarteggio(tab, v, g) {
   const p = 'Carteggio: ';
-  const porta = await clic(tab, '[data-v="cart"]') && await tab.attendi(visibile('#c-start'), REAZIONE);
+  const porta = await apriPorta(tab, 'cart') && await tab.attendi(visibile('#c-start'), REAZIONE);
   v.push({ gruppo: g, nome: `${p}la prova si avvia dalla sua porta`, ok: porta, extra: 'nessun #c-start visibile nel Carteggio' });
   if (!porta) return;
   // Prima di Inizia, e nel testo che si vede: una frase nel DOM ma nascosta,
@@ -431,8 +460,8 @@ async function giroCarteggio(tab, v, g) {
 /** Una partita dei Segnali fino in fondo: restituisce se ci e' arrivata. */
 async function partitaSegnali(tab, v, g, p) {
   // La porta dei Segnali sta nel Percorso, fra gli extra (specifica §6.1).
-  await clic(tab, '[data-v="oggi"]');
-  const porta = await clic(tab, '[data-v="seg"]') && await tab.attendi(visibile('#s-start'), REAZIONE);
+  await apriPorta(tab, 'oggi');
+  const porta = await apriPorta(tab, 'seg') && await tab.attendi(visibile('#s-start'), REAZIONE);
   v.push({ gruppo: g, nome: `${p}il gioco si avvia dalla sua porta`, ok: porta, extra: 'dal Percorso nessun [data-v="seg"] porta a #s-start' });
   if (!porta) return false;
   await clic(tab, '#s-start');
@@ -483,7 +512,7 @@ async function c02(b, ctx, v) {
   const g = 'C-02';
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     const pronto = await tab.attendi(PRONTO, CARICO);
     const prima = pronto && await tab.valuta(testoVisibile(PRIMA));
     v.push({ gruppo: g, nome: 'prima di cominciare la pagina dice che senza account non resta niente', ok: prima,
@@ -493,7 +522,7 @@ async function c02(b, ctx, v) {
     if (await partitaSegnali(tab, v, g, 'Segnali: ')) {
       v.push({ gruppo: g, nome: 'i Segnali dicono che senza account i punteggi valgono per questa pagina', ok: await tab.valuta(testoVisibile(SEG_PRIMA)),
         extra: `la frase del §4.1 «${SEG_PRIMA}» non si vede` });
-      await clic(tab, '[data-v="oggi"]');
+      await apriPorta(tab, 'oggi');
       await tab.attendi(PRONTO, REAZIONE);
     }
     // Le preferenze che la pagina di oggi conserva: la data d'esame e l'auto.
@@ -538,7 +567,7 @@ async function c05(b, ctx, v) {
   const g = 'C-05';
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     const testo = await unaRisposta(tab, v, g);
     if (!testo) return;
     const invito = await clicca(tab, 'Crea un account e salva');
@@ -576,7 +605,7 @@ async function c05(b, ctx, v) {
   // non spegne la frase della pagina.
   const d = await b.nuovoContesto();
   try {
-    const tab = await d.apri(ctx.sito + '/app');
+    const tab = await d.apri(ctx.sito + ingresso(ctx));
     const finti = [
       { errore: 'altro', messaggio: 'Conflitto: la richiesta non si puo\' completare.' },
       { errore: 'email_registrata', messaggio: 'Indirizzo in uso.' },
@@ -631,7 +660,7 @@ async function nuovoAccount(ctx, prefisso) {
 /** Dal riepilogo al Percorso, con l'uscita che la pagina di oggi ha gia' (`[data-ciclo="ritorno"]`). */
 async function alPercorso(tab) {
   await clic(tab, '[data-ciclo="ritorno"]');
-  await clic(tab, '[data-v="oggi"]');
+  await apriPorta(tab, 'oggi');
   return tab.attendi(PRONTO, REAZIONE);
 }
 
@@ -699,7 +728,7 @@ async function c03(b, ctx, v) {
   const g = 'C-03';
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     if (!await tab.attendi(PRONTO, CARICO)) {
       v.push({ gruppo: g, nome: 'l\'app si apre', ok: false, extra: `nessun [data-rotta-start] abilitato entro ${CARICO / 1000} s` });
       return;
@@ -707,18 +736,18 @@ async function c03(b, ctx, v) {
     const mute = [], invadenti = [];
     // Ogni vista dal Percorso, che ha una porta verso ognuna (specifica §5.2).
     for (const x of VISTE) {
-      await clic(tab, '[data-v="oggi"]');
-      if (!await clic(tab, `[data-v="${x}"]`) || !await tab.attendi(visibile(`#v-${x}`), REAZIONE)) { mute.push(x); continue; }
+      await apriPorta(tab, 'oggi');
+      if (!await apriPorta(tab, x) || !await tab.attendi(visibile(vistaDi(x)), REAZIONE)) { mute.push(x); continue; }
       if (await tab.valuta(passwordVisibile) || await tab.valuta(pulsante('Crea un account e salva')) || await tab.valuta(modaleVisibile)) invadenti.push(x);
     }
     v.push({ gruppo: g, nome: 'ogni vista si apre dal Percorso', ok: !mute.length, extra: 'non si aprono: ' + mute.join(', ') });
     v.push({ gruppo: g, nome: 'in nessuna vista un invito, un modulo o una finestra d\'account', ok: !invadenti.length, extra: 'invito, campo password o finestra modale in: ' + invadenti.join(', ') });
-    await clic(tab, '[data-v="diag"]');
+    await apriPorta(tab, 'diag');
     const cruscotto = await tab.valuta(js(`return ${q(CRUSCOTTO)}.filter((s) => V(document.querySelector(s)));`));
     v.push({ gruppo: g, nome: 'senza account Progressi dice perche\' non c\'e\', con Vai al Percorso e Accedi, senza un cruscotto',
       ok: await tab.valuta(testoVisibile(PORTA_PROGRESSI)) && await tab.valuta(pulsante('Vai al Percorso')) && await tab.valuta(pulsante('Accedi')) && !cruscotto.length,
       extra: cruscotto.length ? 'si vede il cruscotto: ' + cruscotto.join(', ') : `manca «${PORTA_PROGRESSI}», «Vai al Percorso» o «Accedi» (§3.2)` });
-    await clic(tab, '[data-v="oggi"]');
+    await apriPorta(tab, 'oggi');
     if (!await unaRisposta(tab, v, g)) return;
     v.push({ gruppo: g, nome: 'l\'invito e\' nel riepilogo', ok: await tab.valuta(testoVisibile(DOPO)) && await tab.valuta(pulsante('Continua senza account')),
       extra: `il riepilogo non porta «${DOPO}» con «Continua senza account» (§4.1)` });
@@ -726,7 +755,7 @@ async function c03(b, ctx, v) {
     const via = await tab.attendi(js(`return !document.body.innerText.includes(${q(DOPO)});`), REAZIONE);
     v.push({ gruppo: g, nome: '«Continua senza account» lo chiude senza chiedere altro', ok: via && !await tab.valuta(modaleVisibile),
       extra: via ? 'dopo «Continua senza account» si apre una finestra' : 'l\'invito resta dopo «Continua senza account»' });
-    await clic(tab, '[data-v="oggi"]');
+    await apriPorta(tab, 'oggi');
     if (!await tab.attendi(PRONTO, REAZIONE)) return;
     await clic(tab, '[data-rotta-start]');
     const giro = [];
@@ -753,7 +782,7 @@ async function c04(b, ctx, v, parte) {
 async function c04registrazione(b, ctx, v, g) {
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     // La risposta all'invio resta ferma: il server ha gia' le righe, la pagina
     // non lo sa ancora. E' il momento in cui «salvate» sarebbe una bugia.
     const t = trattenuta();
@@ -803,7 +832,7 @@ async function c04persa(b, ctx, v, g) {
   // deve chiedere al server (GET /v1/io) prima di ripetere (§4.3).
   const d = await b.nuovoContesto();
   try {
-    const tab = await d.apri(ctx.sito + '/app');
+    const tab = await d.apri(ctx.sito + ingresso(ctx));
     let perse = 0;
     await tab.intercetta(`${ctx.api}/v1/registrazione`, (r) => (r.method === 'POST' && !perse++ ? { fallisci: 'ConnectionReset' } : null), { fase: 'Response' });
     if (!await unaRisposta(tab, v, g, 'risposta persa: ')) return;
@@ -840,7 +869,7 @@ async function c06scelta(b, ctx, v, g, A) {
   // Le risposte di prova entrano solo con un si' esplicito (§5.1).
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     if (!await unaRisposta(tab, v, g, 'prova: ')) return;
     await entraCome(tab, A);
     const chiesto = await tab.attendi(testoVisibile(DOMANDA), REAZIONE);
@@ -869,7 +898,7 @@ async function c06corsa(b, ctx, v, g, A, B) {
   // annullata prima che l'uscita si compia (§9.1).
   const d = await b.nuovoContesto();
   try {
-    const t1 = await d.apri(ctx.sito + '/app');
+    const t1 = await d.apri(ctx.sito + ingresso(ctx));
     await t1.attendi(PRONTO, CARICO);
     await entraCome(t1, A);
     if (!await t1.attendi(pulsante('Account'), REAZIONE)) {
@@ -884,7 +913,7 @@ async function c06corsa(b, ctx, v, g, A, B) {
     const inVolo = await Promise.race([t.presa.then(() => true), pausa(REAZIONE).then(() => false)]);
     v.push({ gruppo: g, nome: 'corsa: la risposta di A parte, e resta ferma prima del server', ok: inVolo, extra: 'nessuna POST /v1/righe dalla scheda di A' });
     if (!inVolo) return;
-    const t2 = await d.apri(ctx.sito + '/app');
+    const t2 = await d.apri(ctx.sito + ingresso(ctx));
     const riconosciuta = await t2.attendi(pulsante('Account'), CARICO);
     // Le sessioni si contano per differenza: la registrazione dal banco e gli
     // accessi di prima ne hanno aperte altre, su altri «browser».
@@ -911,7 +940,7 @@ async function c06congelata(b, ctx, v, g, A, B) {
   // La coda di A, congelata da un accesso non piu' valido, non entra in B (§10).
   const e = await b.nuovoContesto();
   try {
-    const tab = await e.apri(ctx.sito + '/app');
+    const tab = await e.apri(ctx.sito + ingresso(ctx));
     await tab.attendi(PRONTO, CARICO);
     await entraCome(tab, A);
     await tab.attendi(pulsante('Account'), REAZIONE);
@@ -949,7 +978,7 @@ async function c11volo(b, ctx, v, g) {
   const K = await nuovoAccount(ctx, 'c11');
   const c = await b.nuovoContesto();
   try {
-    const t1 = await c.apri(ctx.sito + '/app');
+    const t1 = await c.apri(ctx.sito + ingresso(ctx));
     await t1.attendi(PRONTO, CARICO);
     await entraCome(t1, K);
     await t1.attendi(pulsante('Account'), REAZIONE);
@@ -970,7 +999,7 @@ async function c11volo(b, ctx, v, g) {
     v.push({ gruppo: g, nome: 'la risposta data durante l\'invio arriva anche lei sul server', ok: !!seconda && await finche(() => ctx.righeDi(K.email) === 2, REAZIONE),
       extra: `il server ha ${ctx.righeDi(K.email)} righe, le risposte erano 2: una e' uscita dalla coda senza che il server la nominasse` });
     // Due schede, una risposta ciascuna, nello stesso istante.
-    const t2 = await c.apri(ctx.sito + '/app');
+    const t2 = await c.apri(ctx.sito + ingresso(ctx));
     await t2.attendi(pulsante('Account'), CARICO);
     await chiudiQuiz(t1, [], g, '');
     await alPercorso(t1);
@@ -993,7 +1022,7 @@ async function c11ricarica(b, ctx, v, g) {
   // riprende dalla coda salvata, e dice «salvate» solo quando il server le ha.
   const d = await b.nuovoContesto();
   try {
-    const tab = await d.apri(ctx.sito + '/app');
+    const tab = await d.apri(ctx.sito + ingresso(ctx));
     const t = trattenuta();
     await tab.intercetta(`${ctx.api}/v1/righe*`, t.gestore);
     if (!await unaRisposta(tab, v, g, 'ricarica: ')) return;
@@ -1043,7 +1072,7 @@ async function c15uscite(b, ctx, v, g, U) {
   const account = copieAccount;
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     await tab.attendi(PRONTO, CARICO);
     // Con righe da inviare non si esce, e lo si dice (§10).
     let rompi = true;
@@ -1097,11 +1126,11 @@ async function c15corsa(b, ctx, v, g, U) {
   // L'uscita normale, e la risposta tardiva di un'altra scheda.
   const d = await b.nuovoContesto();
   try {
-    const t1 = await d.apri(ctx.sito + '/app');
+    const t1 = await d.apri(ctx.sito + ingresso(ctx));
     await t1.attendi(PRONTO, CARICO);
     await entraCome(t1, U);
     await t1.attendi(pulsante('Account'), REAZIONE);
-    const t2 = await d.apri(ctx.sito + '/app');
+    const t2 = await d.apri(ctx.sito + ingresso(ctx));
     await t2.attendi(pulsante('Account'), CARICO);
     const t = trattenuta();
     await t1.intercetta(`${ctx.api}/v1/righe*`, t.gestore, { fase: 'Response' });
@@ -1292,7 +1321,7 @@ async function c07posta(b, ctx, v, g) {
   ctx.avanza(3 * GIORNO);
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     if (!await unaRisposta(tab, v, g, 'posta rifiutata: ')) return;
     const email = `c07-${++serie}@esempio.it`;
     ctx.rifiuta.add(email);
@@ -1330,7 +1359,7 @@ async function c07link(b, ctx, v, g) {
   const K = await nuovoAccount(ctx, 'c07l');
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     if (!await dentro(tab, K)) { v.push({ gruppo: g, nome: 'link: si entra', ok: false, extra: 'l\'intestazione non dice «Account»' }); return; }
     const frase = `Conferma ${K.email} entro il`;
     v.push({ gruppo: g, nome: 'entrando con un account non confermato, la scadenza si vede', ok: await tab.attendi(testoVisibile(frase), REAZIONE), extra: `«${frase} …» non si vede` });
@@ -1381,7 +1410,7 @@ async function motivoPassword(ctx, password) {
 async function c08password(b, ctx, v, g) {
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     const testo = await unaRisposta(tab, v, g, 'password: ');
     if (!testo) return;
     const email = `c08-${++serie}@esempio.it`;
@@ -1407,7 +1436,7 @@ async function c08accesso(b, ctx, v, g) {
   const K = await nuovoAccount(ctx, 'c08a');
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     await tab.attendi(PRONTO, CARICO);
     const prova = async (email, password) => {
       const n = richiesteA(tab, 'POST', '/v1/accesso').length;
@@ -1447,7 +1476,7 @@ async function c08recupero(b, ctx, v, g) {
   ctx.aggiungi(K.email, righeDi(`c08r${serie}`, 2));
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     await tab.attendi(PRONTO, CARICO);
     await clicca(tab, 'Accedi');
     await tab.attendi(pulsante('Ho dimenticato la password'), REAZIONE);
@@ -1519,7 +1548,7 @@ async function c08cancella(b, ctx, v, g) {
     // link della password nella stessa scheda. Senza, al momento della domanda
     // la copia e' vuota su tutte e due le pagine (misurato il 30 settembre 2026),
     // e «la copia le segue» sarebbe stato un verde che non misura niente.
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     if (!await dentro(tab, K)) { v.push({ gruppo: g, nome: 'si entra', ok: false, extra: 'l\'intestazione non dice «Account»' }); return; }
     const ricevute = await finche(async () => await nellaCopia(c, ctx, tab, K.chiave) === 2, REAZIONE);
     v.push({ gruppo: g, nome: 'entrando, la copia di questo dispositivo riceve le 2 risposte dell\'account', ok: ricevute, extra: `nella copia ${await nellaCopia(c, ctx, tab, K.chiave)} righe` });
@@ -1554,7 +1583,7 @@ async function c08cancella(b, ctx, v, g) {
       extra: `nella copia ${await nellaCopia(c, ctx, tab, K.chiave)} righe` });
     // L'account resta usabile: una risposta nuova entra con la generazione nuova, senza un 409.
     await tab.attendi(js(`return ![...document.querySelectorAll('[aria-modal="true"], dialog[open]')].some(V);`), REAZIONE);
-    await clic(tab, '[data-v="oggi"]');
+    await apriPorta(tab, 'oggi');
     await tab.attendi(PRONTO, REAZIONE);
     await clic(tab, '[data-rotta-start]');
     await rispondiQuiz(tab, [], g, '');
@@ -1657,7 +1686,7 @@ async function c21senza(b, ctx, v, g) {
   try {
     const priv = await scriviVecchio(c, ctx, righeDi(`p${++serie}`, 4));
     const prima = await priv.valuta(ARCHIVIO_DI_PRIMA);
-    const tab = await c.apri(ctx.sito + '/app', { prima: STRUMENTO_VECCHIO });
+    const tab = await c.apri(ctx.sito + ingresso(ctx), { prima: STRUMENTO_VECCHIO });
     const pronto = await tab.attendi(PRONTO, CARICO);
     v.push({ gruppo: g, nome: 'senza account, con un archivio di prima nel browser, l\'app si apre', ok: pronto && JSON.parse(prima).righe?.length === 4,
       extra: pronto ? `l'archivio di prima non e' stato scritto: ${prima}` : `nessun [data-rotta-start] abilitato entro ${CARICO / 1000} s` });
@@ -1666,10 +1695,10 @@ async function c21senza(b, ctx, v, g) {
     if (!testo) return;
     await nienteLetto(tab, v, g, 'all\'avvio e in un\'attivita\'');
     await clic(tab, '[data-ciclo="ritorno"]');
-    await clic(tab, '[data-v="oggi"]');
+    await apriPorta(tab, 'oggi');
     await tab.attendi(PRONTO, REAZIONE);
     await nienteDetto(tab, v, g, 'Percorso');
-    await clic(tab, '[data-v="info"]');
+    await apriPorta(tab, 'info');
     await nienteDetto(tab, v, g, 'Info');
     await tab.ricarica();
     await tab.attendi(PRONTO, CARICO);
@@ -1688,7 +1717,7 @@ async function c21conto(b, ctx, v, g) {
   try {
     const priv = await scriviVecchio(c, ctx, righeDi(`k${++serie}`, 4));
     const prima = await priv.valuta(ARCHIVIO_DI_PRIMA);
-    const tab = await c.apri(ctx.sito + '/app', { prima: STRUMENTO_VECCHIO });
+    const tab = await c.apri(ctx.sito + ingresso(ctx), { prima: STRUMENTO_VECCHIO });
     const entrato = await dentro(tab, K);
     v.push({ gruppo: g, nome: 'con un archivio di prima nel browser si entra nell\'account', ok: entrato, extra: `in schermata: ${await tab.valuta(inSchermata)}` });
     if (!entrato) return;
@@ -1776,7 +1805,7 @@ async function nienteDiOffline(tab, v, g, quando) {
 async function c22pagina(b, ctx, v, g) {
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app', { prima: STRUMENTO_OFFLINE });
+    const tab = await c.apri(ctx.sito + ingresso(ctx), { prima: STRUMENTO_OFFLINE });
     const pronto = await tab.attendi(PRONTO, CARICO);
     v.push({ gruppo: g, nome: 'senza account l\'app si apre, dalla rete', ok: pronto, extra: `nessun [data-rotta-start] abilitato entro ${CARICO / 1000} s` });
     if (!pronto) return;
@@ -1795,7 +1824,7 @@ async function c22passaggio(b, ctx, v, g) {
     ctx.radice(dir);
     // La 0.29.0, come la trova chi l'ha visitata: installata, e ricaricata, cosi'
     // che la pagina sia servita dal service worker e dalla sua cache.
-    const t1 = await c.apri(ctx.sito + '/app');
+    const t1 = await c.apri(ctx.sito + ingresso(ctx));
     const installata = await t1.attendi(PRONTO, CARICO) && await guscioPronto(t1);
     v.push({ gruppo: g, nome: 'la 0.29.0 si installa: service worker attivo e guscio in cache', ok: installata, extra: await t1.valuta(SW_E_CACHE) });
     if (!installata) return;
@@ -1807,7 +1836,7 @@ async function c22passaggio(b, ctx, v, g) {
     // La versione nuova al posto della 0.29.0; la visita dopo, in un'altra
     // scheda, e' quella che fa controllare al browser se sw.js e' cambiato.
     ctx.radice(null);
-    const t2 = await c.apri(ctx.sito + '/app');
+    const t2 = await c.apri(ctx.sito + ingresso(ctx));
     await t2.attendi(PRONTO, CARICO);
     let visto = null;
     const via = await finche(async () => vuoto(visto = await t1.valuta(SW_E_CACHE)), CARICO);
@@ -1815,12 +1844,12 @@ async function c22passaggio(b, ctx, v, g) {
     if (!via) return;
     // Una pagina che si ricarica sotto il banco fa fallire la lettura: anche quello e' una ricarica.
     const resta = await maiPer(async () => {
-      try { return (await t1.valuta('window.__primaDelPassaggio === 1 ? location.pathname : null')) !== '/app'; } catch { return true; }
+      try { return (await t1.valuta('window.__primaDelPassaggio === 1 ? location.pathname : null')) !== ingresso(ctx); } catch { return true; }
     });
     v.push({ gruppo: g, nome: 'e non ricarica le pagine aperte: senza account una ricarica perde le risposte', ok: resta,
       extra: 'la scheda aperta con la 0.29.0 e\' stata ricaricata, o portata altrove' });
     // La visita dopo: dalla rete, senza nessuno in mezzo.
-    const t3 = await c.apri(ctx.sito + '/app', { prima: STRUMENTO_OFFLINE });
+    const t3 = await c.apri(ctx.sito + ingresso(ctx), { prima: STRUMENTO_OFFLINE });
     const pronta = await t3.attendi(PRONTO, CARICO);
     const libera = pronta && await t3.valuta('!navigator.serviceWorker || !navigator.serviceWorker.controller');
     v.push({ gruppo: g, nome: 'la visita dopo arriva dalla rete, senza un service worker in mezzo', ok: libera,
@@ -1854,9 +1883,9 @@ async function c10(b, ctx, v, parte) {
 async function c10senza(b, ctx, v, g) {
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     await tab.attendi(PRONTO, CARICO);
-    await clic(tab, '[data-v="info"]');
+    await apriPorta(tab, 'info');
     const rotto = ctx.file('rotto.json', '{ questo non e\' JSON');
     await tab.caricaFile('#importa-file', rotto);
     v.push({ gruppo: g, nome: 'un file illeggibile lo dice', ok: await tab.attendi(testoVisibile(FILE_NO), REAZIONE), extra: `«${FILE_NO}» non si vede` });
@@ -1880,9 +1909,9 @@ async function c10file(b, ctx, v, g) {
   const valide = E.fondiArchivio([], FILE.righe, { quesiti: ID_BANCA });
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     if (!await dentro(tab, K)) { v.push({ gruppo: g, nome: 'file: si entra', ok: false, extra: 'l\'intestazione non dice «Account»' }); return; }
-    await clic(tab, '[data-v="info"]');
+    await apriPorta(tab, 'info');
     await tab.caricaFile('#importa-file', percorso);
     const attesi = conti([]);
     const anteprima = await tab.attendi(testoVisibile(attesi), REAZIONE);
@@ -1930,7 +1959,7 @@ async function c10segnali(b, ctx, v, g) {
   const K = await nuovoAccount(ctx, 'c10s');
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     if (!await dentro(tab, K)) { v.push({ gruppo: g, nome: 'Segnali: si entra', ok: false, extra: 'l\'intestazione non dice «Account»' }); return; }
     await tab.offline(true);
     const giocata = await partitaSegnali(tab, [], g, '');
@@ -1970,9 +1999,9 @@ async function c12lotti(b, ctx, v, g) {
   const percorso = ctx.file(`grande-${serie}.json`, JSON.stringify({ app: 'rotta-giusta', righe }));
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     if (!await dentro(tab, K)) { v.push({ gruppo: g, nome: 'lotti: si entra', ok: false, extra: 'l\'intestazione non dice «Account»' }); return; }
-    await clic(tab, '[data-v="info"]');
+    await apriPorta(tab, 'info');
     await tab.caricaFile('#importa-file', percorso);
     await tab.attendi(pulsante('Importa nel mio account'), REAZIONE);
     await clicca(tab, 'Importa nel mio account');
@@ -1988,7 +2017,7 @@ async function c12troppo(b, ctx, v, g) {
   const c = await b.nuovoContesto();
   const MSG = 'La richiesta è troppo grande: al più 2 MiB. Niente è stato salvato.';
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     let primo = true;
     await tab.intercetta(`${ctx.api}/v1/righe`, (r) => (r.method === 'POST' && primo ? (primo = false, finti(ctx, 413, { errore: 'troppo_grande', messaggio: MSG })) : null));
     if (!await unaRisposta(tab, v, g, '413: ')) return;
@@ -2009,7 +2038,7 @@ async function c12ricezione(b, ctx, v, g) {
   ctx.aggiungi(K.email, righeDi(`r${serie}`, 5200));
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     if (!await dentro(tab, K)) { v.push({ gruppo: g, nome: 'ricezione: si entra', ok: false, extra: 'l\'intestazione non dice «Account»' }); return; }
     const copia = () => nellaCopia(c, ctx, tab, K.chiave);
     const tutte = await finche(async () => await copia() === 5200, 4 * REAZIONE);
@@ -2040,7 +2069,7 @@ async function c13invio(b, ctx, v, g) {
   const K = await nuovoAccount(ctx, 'c13');
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     // La ricezione non passa: l'azzeramento si scopre solo inviando. Senza,
     // sotto carico la ricezione dopo il primo invio lo scopriva prima (misurato):
     // e' il caso della parte «ricezione», non di questa.
@@ -2078,7 +2107,7 @@ async function c13ricezione(b, ctx, v, g) {
   const K = await nuovoAccount(ctx, 'c13r');
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     if (!await dentro(tab, K)) { v.push({ gruppo: g, nome: 'ricezione: si entra', ok: false, extra: 'l\'intestazione non dice «Account»' }); return; }
     await clic(tab, '[data-rotta-start]');
     await rispondiQuiz(tab, [], g, '');
@@ -2136,7 +2165,7 @@ async function c13scarica(b, ctx, v, g) {
   const K = await nuovoAccount(ctx, 'c13s');
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     // Come in «invio»: l'azzeramento si scopre inviando, non ricevendo.
     await tab.intercetta(`${ctx.api}/v1/righe?*`, (r) => (r.method === 'GET' ? { fallisci: 'ConnectionReset' } : null));
     if (!await dentro(tab, K)) { v.push({ gruppo: g, nome: 'si entra', ok: false, extra: 'l\'intestazione non dice «Account»' }); return; }
@@ -2205,7 +2234,7 @@ async function c14giro(b, ctx, v, g) {
   const K = await nuovoAccount(ctx, 'c14');
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     if (!await dentro(tab, K)) { v.push({ gruppo: g, nome: 'si entra', ok: false, extra: 'l\'intestazione non dice «Account»' }); return; }
     await clic(tab, '[data-rotta-start]');
     await rispondiQuiz(tab, [], g, '');
@@ -2223,7 +2252,7 @@ async function c14giro(b, ctx, v, g) {
       extra: `il server ha ${ctx.righeDi(K.email)} righe, ne aspettava 2` });
     const d = await b.nuovoContesto();
     try {
-      const t2 = await d.apri(ctx.sito + '/app');
+      const t2 = await d.apri(ctx.sito + ingresso(ctx));
       await dentro(t2, K);
       v.push({ gruppo: g, nome: 'e un altro dispositivo le riceve tutte e due', ok: await finche(async () => await nellaCopia(d, ctx, t2, K.chiave) === 2, REAZIONE),
         extra: `nella copia dell'altro dispositivo ${await nellaCopia(d, ctx, t2, K.chiave)} righe` });
@@ -2243,7 +2272,7 @@ async function c15scaduta(b, ctx, v, g) {
   const U = await nuovoAccount(ctx, 'c15s');
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     await tab.intercetta(`${ctx.api}/v1/uscita`, (r) => (r.method === 'POST' ? finti(ctx, 401, { errore: 'sessione', messaggio: 'Non sei dentro.' }) : null));
     if (!await dentro(tab, U)) { v.push({ gruppo: g, nome: '401: si entra', ok: false, extra: 'l\'intestazione non dice «Account»' }); return; }
     await esciDa(tab);
@@ -2282,7 +2311,7 @@ async function c15ovunque(b, ctx, v, g) {
   const U = await nuovoAccount(ctx, 'c15o');
   const c = await b.nuovoContesto(), d = await b.nuovoContesto();
   try {
-    const t1 = await c.apri(ctx.sito + '/app'), t2 = await d.apri(ctx.sito + '/app');
+    const t1 = await c.apri(ctx.sito + ingresso(ctx)), t2 = await d.apri(ctx.sito + ingresso(ctx));
     if (!await dentro(t1, U) || !await dentro(t2, U)) { v.push({ gruppo: g, nome: 'ovunque: si entra da due dispositivi', ok: false, extra: 'l\'intestazione non dice «Account»' }); return; }
     await clicca(t1, 'Account');
     await t1.attendi(pulsante('Esci da tutti i dispositivi'), REAZIONE);
@@ -2310,7 +2339,7 @@ async function c15segnali(b, ctx, v, g, rete) {
   const U = await nuovoAccount(ctx, 'c15g');
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     let blocca = true;
     await tab.intercetta(`${ctx.api}/v1/profilo`, (r) => (r.method === 'PUT' && blocca ? { fallisci: 'ConnectionReset' } : null));
     if (!await dentro(tab, U)) { v.push({ gruppo: g, nome: `${p}si entra`, ok: false, extra: 'l\'intestazione non dice «Account»' }); return; }
@@ -2365,7 +2394,7 @@ async function c16(b, ctx, v, parte) {
 
 /** Una prova, la registrazione, e il passo della data (§11.1). */
 async function finoAllaData(b, c, ctx, v, g, prefisso, { data } = {}) {
-  const tab = await c.apri(ctx.sito + '/app');
+  const tab = await c.apri(ctx.sito + ingresso(ctx));
   await tab.attendi(PRONTO, CARICO);
   if (data) await tab.valuta(js(`const d = document.querySelector('#esame-data'); d.value = ${q(data)}; d.dispatchEvent(new Event('change', { bubbles: true })); return true;`));
   if (!await unaRisposta(tab, v, g, prefisso)) return null;
@@ -2425,7 +2454,7 @@ async function c16accesso(b, ctx, v, g) {
   ctx.dataEsame(K.email, '2027-03-03');
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     if (!await dentro(tab, K)) { v.push({ gruppo: g, nome: 'accesso: si entra', ok: false, extra: 'l\'intestazione non dice «Account»' }); return; }
     v.push({ gruppo: g, nome: 'entrando in un account che ha la data, il passo non si ripete e la data resta', ok: await maiPer(async () => await tab.valuta(testoVisibile(ONBOARDING)) || ctx.conto(K.email).data_esame !== '2027-03-03'),
       extra: `sul server ${ctx.conto(K.email).data_esame}; la domanda ${await tab.valuta(testoVisibile(ONBOARDING)) ? 'compare' : 'non compare'}` });
@@ -2437,6 +2466,7 @@ async function c16accesso(b, ctx, v, g) {
 // --- C-17: l'export, e le origini senza API --------------------------------------------------
 
 const ALTROVE = 'https://rottagiusta.it/app';
+const ALTROVE_RIDISEGNO = 'https://rottagiusta.it/';
 
 async function c17(b, ctx, v, parte) {
   const g = 'C-17';
@@ -2449,7 +2479,7 @@ async function c17export(b, ctx, v, g) {
   const K = await nuovoAccount(ctx, 'c17');
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     let blocca = false;
     await tab.intercetta(`${ctx.api}/v1/righe*`, () => (blocca ? { fallisci: 'ConnectionReset' } : null));
     if (!await dentro(tab, K)) { v.push({ gruppo: g, nome: 'export: si entra', ok: false, extra: 'l\'intestazione non dice «Account»' }); return; }
@@ -2466,7 +2496,7 @@ async function c17export(b, ctx, v, g) {
     await rispondiQuiz(tab, [], g, '');
     await chiudiQuiz(tab, [], g, '');
     await clic(tab, '[data-ciclo="ritorno"]');
-    await clic(tab, '[data-v="info"]');
+    await apriPorta(tab, 'info');
     const n = c.scaricati().length;
     await clicca(tab, 'Scarica i tuoi progressi');
     const file = await scaricato(c, n, 2 * REAZIONE);
@@ -2488,9 +2518,9 @@ async function c17origine(b, ctx, v, g) {
   const sito = ctx.sito.replace('localhost', 'rotta.test');
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(sito + '/app');
+    const tab = await c.apri(sito + ingresso(ctx));
     await tab.attendi(PRONTO, CARICO);
-    const link = js(`return [...document.querySelectorAll('a')].some((a) => V(a) && a.href === ${q(ALTROVE)});`);
+    const link = js(`return [...document.querySelectorAll('a')].some((a) => V(a) && (a.href === ${q(ALTROVE)} || a.href === ${q(ALTROVE_RIDISEGNO)}));`);
     v.push({ gruppo: g, nome: 'su un\'origine senza API la pagina porta a rottagiusta.it, e non offre «Accedi»', ok: await tab.valuta(link) && !await tab.valuta(pulsante('Accedi')),
       extra: !await tab.valuta(link) ? `nessun link visibile a ${ALTROVE}` : 'si vede «Accedi»: un modulo destinato a fallire' });
     if (!await unaRisposta(tab, v, g, 'origine senza API: ')) return;
@@ -2550,7 +2580,7 @@ const GUASTO_IDB = `(() => { const p = IDBObjectStore.prototype.put; IDBObjectSt
 
 /** La prova dal Carteggio, fino al primo esercizio della banca: restituisce il suo testo, o null. */
 async function apriProvaC(tab) {
-  if (!await clic(tab, '[data-v="cart"]') || !await tab.attendi(visibile('#c-start'), REAZIONE)) return null;
+  if (!await apriPorta(tab, 'cart') || !await tab.attendi(visibile('#c-start'), REAZIONE)) return null;
   await clic(tab, '#c-start');
   const { ok, valore } = await tab.attendiValore(esercizioC, (x) => CARTEGGIO.has(x), REAZIONE);
   return ok ? valore : null;
@@ -2603,7 +2633,7 @@ async function c19(b, ctx, v, parte) {
 async function c19senza(b, ctx, v, g) {
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     await tab.attendi(PRONTO, CARICO);
     const primo = await apriProvaC(tab);
     v.push({ gruppo: g, nome: 'senza account la prova si apre', ok: !!primo, extra: 'nessun esercizio della banca in #c-testo dopo #c-start' });
@@ -2633,7 +2663,7 @@ async function c19ricarica(b, ctx, v, g) {
   const U = await nuovoAccount(ctx, 'c19r');
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     const p = await provaConTesto(tab, v, g, U, 'ricarica');
     if (!p) return;
     const [t0, t1] = p.testi;
@@ -2660,7 +2690,7 @@ async function c19ricarica(b, ctx, v, g) {
     // prima e dopo la ricarica non bastava: tutto il giro sta nel primo
     // secondo della prova, e «60:00» prima e dopo passava per giusto.
     const dieci = await c.apri(null, { prima: avanti(10 * 60000) });
-    await dieci.vai(ctx.sito + '/app');
+    await dieci.vai(ctx.sito + ingresso(ctx));
     await dieci.attendi(PRONTO, CARICO);
     const altrove = await dieci.attendi(testoVisibile(OFFERTA), CARICO) && await clicca(dieci, 'Riapri il lavoro');
     const { valore: resta } = await dieci.attendiValore(tempoC, (x) => secondiC(x) != null, REAZIONE);
@@ -2679,13 +2709,13 @@ async function c19scadenza(b, ctx, v, g) {
   const U = await nuovoAccount(ctx, 'c19s');
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     const p = await provaConTesto(tab, v, g, U, 'scadenza');
     if (!p) return;
     v.push({ gruppo: g, nome: 'scadenza: il testo si dice salvato', ok: await tab.attendi(testoVisibile(SALVATO), REAZIONE), extra: `«${SALVATO}» non compare` });
     // Un'altra scheda con l'orologio sessantuno minuti avanti: la stessa copia, piu' tardi.
     const tardi = await c.apri(null, { prima: avanti(61 * 60000) });
-    await tardi.vai(ctx.sito + '/app');
+    await tardi.vai(ctx.sito + ingresso(ctx));
     await tardi.attendi(PRONTO, CARICO);
     const offerta = await tardi.attendi(testoVisibile(OFFERTA), CARICO) && await clicca(tardi, 'Riapri il lavoro');
     const confronto = offerta && await tardi.attendi(js(`return V(document.querySelector('#c-fine')) && document.body.innerText.includes(${q(SCADUTO)});`), REAZIONE);
@@ -2703,7 +2733,7 @@ async function c19guasto(b, ctx, v, g) {
   const c = await b.nuovoContesto();
   try {
     const tab = await c.apri(null, { prima: GUASTO_IDB });
-    await tab.vai(ctx.sito + '/app');
+    await tab.vai(ctx.sito + ingresso(ctx));
     const p = await provaConTesto(tab, v, g, U, 'guasto');
     if (!p) return;
     await tab.attendi(testoVisibile(SALVATO), REAZIONE);
@@ -2726,7 +2756,7 @@ async function c19giudizio(b, ctx, v, g) {
   const U = await nuovoAccount(ctx, 'c19j');
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     const p = await provaConTesto(tab, v, g, U, 'giudizio');
     if (!p) return;
     const consegnata = await consegnaC(tab);
@@ -2765,7 +2795,7 @@ async function c19uscita(b, ctx, v, g) {
   const U = await nuovoAccount(ctx, 'c19u');
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     const p = await provaConTesto(tab, v, g, U, 'uscita');
     if (!p) return;
     await tab.attendi(testoVisibile(SALVATO), REAZIONE);
@@ -2801,11 +2831,11 @@ async function c19schede(b, ctx, v, g) {
   const B = await nuovoAccount(ctx, 'c19b');
   const c = await b.nuovoContesto();
   try {
-    const t1 = await c.apri(ctx.sito + '/app');
+    const t1 = await c.apri(ctx.sito + ingresso(ctx));
     const p = await provaConTesto(t1, v, g, A, 'schede');
     if (!p) return;
     await t1.attendi(testoVisibile(SALVATO), REAZIONE);
-    const t2 = await c.apri(ctx.sito + '/app');
+    const t2 = await c.apri(ctx.sito + ingresso(ctx));
     await t2.attendi(nellaPagina('Account'), CARICO);
     await t2.attendi(js(`return ![...document.querySelectorAll('[aria-modal="true"], dialog[open]')].some(V);`), REAZIONE);
     await esciDa(t2);
@@ -3082,8 +3112,8 @@ const NOMI_VISTE = { oggi: 'Percorso', quiz: 'Quiz', cart: 'Carteggio', diag: 'P
  */
 async function apriVista(tab, v) {
   const ok = await tab.valuta(js(`const e = [...document.querySelectorAll('[data-v="${v}"]')].find(V) || document.querySelector('[data-v="${v}"]');
-    if (!e) return false; e.click(); return true;`));
-  return ok && tab.attendi(js(`return V(document.getElementById('v-${v}'));`), REAZIONE);
+    if (!e) return false; e.click(); return true;`)) || await apriPorta(tab, v);
+  return ok && tab.attendi(js(`return [...document.querySelectorAll(${q(vistaDi(v))})].some(V);`), REAZIONE);
 }
 
 /**
@@ -3219,7 +3249,7 @@ async function t01(b, ctx, v) {
   const g = 'T-01';
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     await fermaAlPrimo(v, async (w) => {
       const pronto = await tab.attendi(PRONTO, CARICO);
       const niente = async (dove) => {
@@ -3257,7 +3287,7 @@ async function t02(b, ctx, v) {
   let tieni = false, lascia;
   const via = new Promise((r) => { lascia = r; });
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     await tab.intercetta(ctx.api + '/*', async () => { if (!tieni) return null; await via; return { fallisci: 'InternetDisconnected' }; });
     let avanti = false;
     await fermaAlPrimo(v, async (w) => {
@@ -3311,7 +3341,7 @@ async function t03(b, ctx, v) {
   const c = await b.nuovoContesto();
   try {
     const tab = await c.apri(null, { prima: GUASTO_IDB });
-    await tab.vai(ctx.sito + '/app');
+    await tab.vai(ctx.sito + ingresso(ctx));
     await fermaAlPrimo(v, async (w) => {
       w.push({ gruppo: g, nome: 'si entra nell\'account', ok: await dentro(tab, U), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
       w.push({ gruppo: g, nome: 'prima del guasto Info non segnala niente', ok: !await tab.valuta(segnaleInInfo), extra: `la porta di Info dice gia' «${SEGNALE_INFO}»` });
@@ -3350,7 +3380,7 @@ async function t04(b, ctx, v) {
   ctx.aggiungi(A.email, righeDi(`t04-${serie}`, 3));
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     await fermaAlPrimo(v, async (w) => {
       w.push({ gruppo: g, nome: 'A entra', ok: await dentro(tab, A), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
       const a = await numeroInInfo(tab, (n) => n === 3);
@@ -3384,7 +3414,7 @@ async function t05(b, ctx, v, parte) {
 async function t05finestra(b, ctx, v, g) {
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     await tab.dimensioni(375, 800);
     await fermaAlPrimo(v, async (w) => {
       await tab.attendi(PRONTO, CARICO);
@@ -3414,7 +3444,7 @@ async function t05finestra(b, ctx, v, g) {
 async function t05arresti(b, ctx, v, g) {
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     await tab.dimensioni(375, 800);
     await tab.attendi(PRONTO, CARICO);
     const largo = await disposta(tab, 375);
@@ -3439,7 +3469,7 @@ async function t06(b, ctx, v) {
   const g = 'T-06';
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     await tab.dimensioni(375, 800);
     await fermaAlPrimo(v, async (w) => {
       await tab.attendi(PRONTO, CARICO);
@@ -3469,7 +3499,7 @@ async function sbordaA(tab, larghezza, dove, out) {
 async function t07prova(b, ctx, v, g) {
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     await tab.attendi(PRONTO, CARICO);
     const per = { 1280: [], 640: [], 375: [], 320: [] }, altre = { 375: [], 320: [] };
     for (const L of [1280, 640, 375, 320]) {
@@ -3498,7 +3528,7 @@ async function t07conto(b, ctx, v, g) {
   ctx.aggiungi(U.email, righeDi(`t07-${serie}`, 40));
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     await tab.dimensioni(375, 800);
     if (!await dentro(tab, U)) { v.push({ gruppo: g, nome: 'si entra nell\'account', ok: false, extra: `in schermata: ${await tab.valuta(inSchermata)}` }); return; }
     const n = await numeroInInfo(tab, (x) => x === 40);
@@ -3524,7 +3554,7 @@ async function t08(b, ctx, v) {
   const g = 'T-08';
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     await tab.dimensioni(375, 800);
     await tab.attendi(PRONTO, CARICO);
     const bassi = [], vuote = [], nonMisurabili = [];
@@ -3549,7 +3579,7 @@ async function t09(b, ctx, v) {
   const g = 'T-09';
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     await tab.dimensioni(375, 800);
     await tab.attendi(PRONTO, CARICO);
     const piccoli = [], sotto = [];
@@ -3738,7 +3768,7 @@ async function f01(b, ctx, v) {
   const g = 'F-01';
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     const pronto = await tab.attendi(PRONTO, CARICO);
     v.push({ gruppo: g, nome: 'l\'app si apre e la prima attivita\' si puo\' avviare', ok: pronto,
       extra: `nessun [data-rotta-start] abilitato entro ${CARICO / 1000} s` + (tab.errori.length ? ': ' + tab.errori[0] : '') });
@@ -3880,7 +3910,7 @@ async function c20(b, ctx, v) {
   try {
     const tab = await c.apri();
     await tab.dimensioni(375);
-    await tab.vai(ctx.sito + '/app');
+    await tab.vai(ctx.sito + ingresso(ctx));
     // Il giro fino al riepilogo lo controllano C-01 e C-05: qui, se non arriva
     // in fondo, lo si dice, invece di saltare in silenzio le verifiche.
     const giro = [];
@@ -4069,7 +4099,7 @@ async function e01spento(b, ctx, v, g) {
   ctx.dataEsame(U.email, E.addGiorni(oggiQui(), -1));
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     await fermaAlPrimo(v, async (w) => {
       w.push({ gruppo: g, nome: 'si entra in un account con la data d\'esame di ieri', ok: await entraERicarica(tab, U), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
       const { ok, visto } = await riquadroNo(tab);
@@ -4088,12 +4118,12 @@ async function e01spento(b, ctx, v, g) {
 async function e01senza(b, ctx, v, g) {
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     await fermaAlPrimo(v, async (w) => {
       w.push({ gruppo: g, nome: 'l\'app si apre senza account', ok: await tab.attendi(PRONTO, CARICO), extra: 'nessun [data-rotta-start] abilitato' });
       const viste = [];
-      for (const x of VISTE) { await clic(tab, `[data-v="${x}"]`); await pausa(200); viste.push(...await tab.valuta(RIQUADRO)); }
-      await clic(tab, '[data-v="oggi"]');
+      for (const x of VISTE) { await apriPorta(tab, x); await pausa(200); viste.push(...await tab.valuta(RIQUADRO)); }
+      await apriPorta(tab, 'oggi');
       const testo = await unaRisposta(tab, [], g, '');
       w.push({ gruppo: g, nome: 'un\'attivita\' fino al riepilogo, senza account', ok: !!testo, extra: 'il runner o il riepilogo non si aprono' });
       viste.push(...await tab.valuta(RIQUADRO));
@@ -4118,7 +4148,7 @@ async function e01quando(b, ctx, v, g) {
   const oggi = oggiQui();
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     await fermaAlPrimo(v, async (w) => {
       w.push({ gruppo: g, nome: 'si entra nell\'account', ok: await dentro(tab, U), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
       /** Un caso: la data e gli esiti scritti nel database, poi la pagina ricaricata. */
@@ -4140,8 +4170,8 @@ async function e01quando(b, ctx, v, g) {
       await caso('la data d\'esame e\' oggi', oggi, { ce: true });
       // Il posto: le altre viste, il runner, il riepilogo.
       const altrove = [];
-      for (const x of VISTE.filter((x) => x !== 'oggi')) { await clic(tab, `[data-v="${x}"]`); await pausa(200); altrove.push(...fuoriPosto(await tab.valuta(RIQUADRO)).map((p) => `${x}: ${p}`)); }
-      await clic(tab, '[data-v="oggi"]');
+      for (const x of VISTE.filter((x) => x !== 'oggi')) { await apriPorta(tab, x); await pausa(200); altrove.push(...fuoriPosto(await tab.valuta(RIQUADRO)).map((p) => `${x}: ${p}`)); }
+      await apriPorta(tab, 'oggi');
       await clic(tab, '[data-rotta-start]');
       const risposto = await rispondiQuiz(tab, [], g, '');
       altrove.push(...fuoriPosto(await tab.valuta(RIQUADRO)).map((p) => `con il runner aperto: ${p}`));
@@ -4180,7 +4210,7 @@ async function e01prima(b, ctx, v, g) {
   ctx.dataEsame(U.email, E.addGiorni(oggiQui(), -1));
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     await serverDiPrima(ctx, tab);
     await fermaAlPrimo(v, async (w) => {
       w.push({ gruppo: g, nome: 'si entra, e la pagina si riapre con GET /v1/io senza esiti', ok: await entraERicarica(tab, U), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
@@ -4204,7 +4234,7 @@ async function e01salvato(b, ctx, v, g) {
   let lascia;
   const via = new Promise((r) => { lascia = r; });
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     let presa = false;
     // Il PUT resta fermo finche' il banco non lo lascia; poi la risposta del
     // server arriva con un elenco diverso da quello mandato: 3 errori al posto di 2.
@@ -4260,7 +4290,7 @@ async function e01salvato(b, ctx, v, g) {
 
 /** Quiz → Simula la prova → quale prova → Inizia. */
 async function apriSim(tab, prova) {
-  const ok = await clic(tab, '[data-v="quiz"]') && await tab.attendi(visibile('[data-modo="sim"]'), REAZIONE) && await clic(tab, '[data-modo="sim"]');
+  const ok = await apriPorta(tab, 'quiz') && await tab.attendi(visibile('[data-modo="sim"]'), REAZIONE) && await clic(tab, '[data-modo="sim"]');
   if (!ok) return false;
   if (prova) {
     const scelta = await tab.attendi(js(`const e = document.querySelector('input[name="quiz-prova"][value="${prova}"]'); if (!e) return false; if (!e.checked) e.click(); return e.checked;`), REAZIONE);
@@ -4291,7 +4321,7 @@ async function p01spento(b, ctx, v, g) {
   const U = await nuovoAccount(ctx, 'p01s');
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     await fermaAlPrimo(v, async (w) => {
       w.push({ gruppo: g, nome: 'si entra nell\'account', ok: await dentro(tab, U), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
       w.push({ gruppo: g, nome: 'una simulazione si apre', ok: await apriSim(tab, null), extra: 'Quiz → Simula la prova → Inizia non apre un quesito' });
@@ -4311,7 +4341,7 @@ async function p01avvio(b, ctx, v, g) {
   const U = await nuovoAccount(ctx, 'p01a');
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     await fermaAlPrimo(v, async (w) => {
       w.push({ gruppo: g, nome: 'si entra nell\'account', ok: await dentro(tab, U), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
       w.push({ gruppo: g, nome: '«Base e vela» si apre con il primo quesito', ok: await apriSim(tab, 'entrambe'),
@@ -4364,7 +4394,7 @@ async function p01avvio(b, ctx, v, g) {
 async function p01senza(b, ctx, v, g) {
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     await fermaAlPrimo(v, async (w) => {
       w.push({ gruppo: g, nome: 'l\'app si apre senza account', ok: await tab.attendi(PRONTO, CARICO), extra: 'nessun [data-rotta-start] abilitato' });
       w.push({ gruppo: g, nome: 'una simulazione base si apre senza account', ok: await apriSim(tab, 'base'), extra: 'non si apre' });
@@ -4393,7 +4423,7 @@ const TESTI_SIM = {
 };
 async function testiSim(tab) {
   const out = {};
-  if (!await clic(tab, '[data-v="quiz"]') || !await tab.attendi(visibile('[data-modo="sim"]'), REAZIONE) || !await clic(tab, '[data-modo="sim"]')) return null;
+  if (!await apriPorta(tab, 'quiz') || !await tab.attendi(visibile('[data-modo="sim"]'), REAZIONE) || !await clic(tab, '[data-modo="sim"]')) return null;
   await tab.attendi(js(`const e = document.querySelector('input[name="quiz-prova"][value="base"]'); if (!e) return false; if (!e.checked) e.click(); return e.checked;`), REAZIONE);
   if (!await tab.attendi(js(`const b = document.querySelector('#start'); return V(b) && !b.disabled;`), REAZIONE)) return null;
   out.prep = await tab.valuta(TESTI_SIM.prep);
@@ -4411,7 +4441,7 @@ async function p01visto(b, ctx, v, g) {
   const A = await nuovoAccount(ctx, 'p01v'), B = await nuovoAccount(ctx, 'p01w');
   const ca = await b.nuovoContesto(), cb = await b.nuovoContesto();
   try {
-    const ta = await ca.apri(ctx.sito + '/app'), tb = await cb.apri(ctx.sito + '/app');
+    const ta = await ca.apri(ctx.sito + ingresso(ctx)), tb = await cb.apri(ctx.sito + ingresso(ctx));
     await serverDiPrima(ctx, tb);
     await fermaAlPrimo(v, async (w) => {
       w.push({ gruppo: g, nome: 'si entra in due account, il secondo con il server di prima', ok: await dentro(ta, A) && await entraERicarica(tb, B), extra: 'un accesso non riesce' });
@@ -4439,7 +4469,7 @@ async function p01conti(b, ctx, v, g) {
   const c = await b.nuovoContesto();
   let blocca = false;
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     // L'invio delle righe fallisce come senza rete: le righe restano in coda.
     await tab.intercetta(ctx.api + '/v1/righe', async (req) => (blocca && req.method === 'POST' ? { fallisci: 'InternetDisconnected' } : null));
     await fermaAlPrimo(v, async (w) => {
@@ -4462,7 +4492,7 @@ async function p01conti(b, ctx, v, g) {
       const rq = await tab.valuta(QUIZ_IN_INFO);
       w.push({ gruppo: g, nome: 'in Info «prove avviate» e\' il numero delle righe d\'avvio, e le risposte ai quiz non lo contano', ok: pa.ok && rq === 0,
         extra: `Info dice prove avviate ${pa.valore}, risposte ai quiz ${rq}; la copia ha ${tipo(c1, 'a').length} righe d'avvio e 0 risposte` });
-      await clic(tab, '[data-v="oggi"]');
+      await apriPorta(tab, 'oggi');
       await clicca(tab, 'Account'); await tab.attendi(modaleVisibile, REAZIONE); await clicca(tab, 'Esci');
       // Una riga d'avvio non inviata blocca l'uscita come una risposta (R-ACC-46), e non e' «N risposte».
       let n0 = null, uscito = false;
@@ -4492,7 +4522,7 @@ async function p01prima(b, ctx, v, g) {
   const U = await nuovoAccount(ctx, 'p01p');
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     await serverDiPrima(ctx, tab);
     await fermaAlPrimo(v, async (w) => {
       w.push({ gruppo: g, nome: 'si entra, e la pagina si riapre con GET /v1/io senza tipi_riga', ok: await entraERicarica(tab, U), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
@@ -4525,7 +4555,7 @@ async function p01errore(b, ctx, v, g) {
   const U = await nuovoAccount(ctx, 'p01e');
   const c = await b.nuovoContesto();
   try {
-    const tab = await c.apri(ctx.sito + '/app');
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
     await fermaAlPrimo(v, async (w) => {
       w.push({ gruppo: g, nome: 'si entra nell\'account', ok: await dentro(tab, U), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
       w.push({ gruppo: g, nome: 'con un metodo che lancia la simulazione si apre lo stesso', ok: await apriSim(tab, 'base'), extra: 'il runner non mostra un quesito' });
@@ -4693,6 +4723,8 @@ async function corsia(k, cartella, portaApi = PORTA_API) {
     async esegui(b, p, g) {
       corrente.pagina = porta !== PORTA_API ? p.pagina.replaceAll(':8620', `:${porta}`) : p.pagina;
       corrente.sito = p.sito;
+      corrente.ingresso = p.ingresso || '/app';
+      ctx.ingresso = corrente.ingresso;
       ctx.regimi = p.regimi || {};
       orologio.t += 2 * 3600 * 1000;
       return gruppo(b, ctx, g);

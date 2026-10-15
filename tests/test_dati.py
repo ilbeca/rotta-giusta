@@ -24,8 +24,10 @@ DATI = SITE / 'dati'
 
 # Le frasi spia sono una sola cosa, e stanno nel guardiano.
 sys.path.insert(0, str(RADICE / 'strumenti'))
+sys.path.insert(0, str(RADICE / 'tests'))
 from controlla import SPIA, controlla_testo, file_di_testo  # noqa: E402
 import controlla  # noqa: E402
+import regime_pagina  # noqa: E402
 
 ok = 0
 falliti = []
@@ -603,7 +605,11 @@ def test_manifest_icone():
     # E la pagina deve dichiarare la favicon e l'apple-touch-icon: iOS il
     # manifest non lo legge, quindi senza quel link l'icona sulla Home e' uno
     # screenshot della pagina.
-    for pagina in ('index.html', 'app.html'):
+    # Le pagine che si aprono come documento: oggi la Home e l'app, nel ridisegno
+    # il solo canonico — la porta app.html rimanda e non si installa (P-80).
+    canonico = regime_pagina.canonico(SITE)
+    pagine = ('index.html',) if canonico['regime'] == 'ridisegno' else ('index.html', 'app.html')
+    for pagina in pagine:
         testo = (SITE / pagina).read_text(encoding='utf-8')
         for rel in ('icon', 'apple-touch-icon'):
             check('%s: <link rel="%s">' % (pagina, rel), ('rel="%s"' % rel) in testo)
@@ -657,21 +663,42 @@ def test_nessuna_risorsa_di_terzi():
 
 
 def test_indirizzi():
+    """R-ARCH-06 e R-ARCH-09, nei due regimi della pagina (P-80).
+
+    Oggi: la Home su `/`, l'app su `/app`, `start_url` l'app. Nel ridisegno
+    (docs/ridisegno-progetto.md §3.2): un documento solo su `/`, `start_url`
+    `/`, `app.html` una porta di compatibilita' con il suo titolo, e le pagine
+    legali che tornano a `/`. Il regime si legge dalla pagina, con la regola di
+    tests/regime_pagina.py; una pagina a meta' e' rossa anche qui."""
+    import re as _re
     man = json.loads((SITE / 'manifest.json').read_text(encoding='utf-8'))
-    palestra = man.get('start_url')
-    check('manifest: start_url e l\'app, non la Home', palestra == '/app', palestra)
+    canonico = regime_pagina.canonico(SITE)
+    check('il regime della pagina di studio e\' pulito (%s)' % canonico['regime'], not canonico['motivo'], canonico['motivo'])
+    titolo = lambda f: (_re.search(r'<title>(.*?)</title>',
+                        (SITE / f).read_text(encoding='utf-8'), _re.S) or [None, ''])[1].strip()
+    tv, tp = titolo('index.html'), titolo('app.html')
     check('manifest: scope copre tutto il sito', man.get('scope') == '/', man.get('scope'))
     check('site/app.html esiste', (SITE / 'app.html').is_file())
+    if canonico['regime'] == 'ridisegno':
+        check('manifest: start_url e\' il documento di studio, /', man.get('start_url') == '/', man.get('start_url'))
+        check('il titolo del canonico e\' «Rotta Giusta — quiz e carteggio per la patente nautica»',
+              tv == 'Rotta Giusta — quiz e carteggio per la patente nautica', tv)
+        check('il titolo della porta e\' «Apri Allenati · Rotta Giusta»', tp == 'Apri Allenati · Rotta Giusta', tp)
+        difetti = regime_pagina.e_porta((SITE / 'app.html').read_text(encoding='utf-8'))
+        check('site/app.html e\' la porta di compatibilita\'', not difetti, '; '.join(difetti))
+        # Le pagine legali tornano al documento di studio, che e' la Home.
+        for f in ('privacy.html', 'avvertenza.html'):
+            testo = (SITE / f).read_text(encoding='utf-8')
+            check('%s: torna a /' % f, 'href="/"' in testo and 'href="/app"' not in testo)
+        return
+    palestra = man.get('start_url')
+    check('manifest: start_url e l\'app, non la Home', palestra == '/app', palestra)
     # E la Home deve portare all'app, altrimenti e un vicolo cieco.
     vetrina = (SITE / 'index.html').read_text(encoding='utf-8')
     check('la Home rimanda a %s' % palestra, ('href="%s"' % palestra) in vetrina)
     # Due indirizzi, due titoli. Con lo stesso titolo sono due schede
     # indistinguibili, e per un motore di ricerca due pagine che competono per
     # la stessa query invece di dividersi il lavoro.
-    import re as _re
-    titolo = lambda f: (_re.search(r'<title>(.*?)</title>',
-                        (SITE / f).read_text(encoding='utf-8'), _re.S) or [None, ''])[1].strip()
-    tv, tp = titolo('index.html'), titolo('app.html')
     check('Home e app hanno titoli diversi', tv != tp and tv and tp, '%r / %r' % (tv, tp))
     check('il titolo della Home nomina la patente nautica',
           'patente nautica' in tv.lower(), tv)

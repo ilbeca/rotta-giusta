@@ -2298,6 +2298,111 @@ export function cercaNumero(items, testo, { kind } = {}) {
   return { valido: true, numero, esatti, parziali, quanti: esatti.length + parziali.length, oscurati };
 }
 
+// --- il riepilogo della pagina aperta (P-80, D.1 del §10.1 di docs/ridisegno-progetto.md) ---
+//
+// Senza account le righe vivono nella memoria della pagina aperta (ADR-004), e
+// la Home H1 e Progressi anonimo le raccontano: «Le attività di questa pagina»,
+// con quante risposte per tipo e il riepilogo di ognuna. Il conto sta qui e non
+// in pagina, per la regola di casa: un numero promesso e la lista che si apre
+// vengono dalla stessa fonte, e una pagina che sommasse le righe per `_t` da
+// se' conterebbe un tag o un segnalibro come risposta — il difetto che P-78 ha
+// tolto allo strumento del titolare.
+//
+// E' una **composizione** degli export che ci sono: `sessioni()` con il confine
+// dell'attivita', `attivitaCarteggio()` per i due tipi, `rigaDiRisposta()` e
+// `validaRiga()`. Nessun secondo ritaglio: le attivita' sono quelle delle tre
+// chiamate, con gli stessi id, e un test lo pretende.
+
+/** I tipi di riga che il riepilogo legge: le risposte, i tag e i segnalibri. Senza nominare gli altri. */
+const TIPI_RIEPILOGO = new Set(TIPI_RIGA.filter((t) => rigaDiRisposta({ _t: t }) || t === 'g' || t === 'b'));
+
+/** Un'attivita' nella forma del riepilogo, da una di sessioni() o di attivitaCarteggio(). */
+function attivitaRiepilogo(tipo, a, esatte) {
+  return { tipo, id: a.id, fonte: a.fonte, ambigua: !!a.ambigua, motivi: [...(a.motivi || [])],
+    mode: a.mode ?? null, kind: a.kind ?? null, n: a.n, esatte, inizio: a.inizio, fine: a.fine, prova: !!a.prova };
+}
+
+/**
+ * Il riepilogo delle righe di una pagina: `{ vuoto, righe, doppioni, scartate,
+ * risposte, quiz, carteggio, tecniche, prove, altri, attivita, ricostruite,
+ * ambigue, mancanti }`.
+ *
+ * Le righe si prendono una volta per `uid` — vale la prima — e `doppioni` le
+ * conta; una riga che `validaRiga()` rifiuta si conta in `scartate` e non entra
+ * in niente. `risposte.totale` sono le righe per cui `rigaDiRisposta()` dice
+ * vero, divise per tipo, con le righe di prova (`'s'`) a parte; `altri` sono i
+ * gesti che risposte non sono — i tag e i segnalibri — e nessuno di loro entra
+ * altrove. `vuoto` e' vero senza risposte, anche con dei gesti. Il gioco dei
+ * Segnali non scrive righe (§4.5) e qui non compare. **La riga d'avvio di una
+ * simulazione non compare, e non si conta**: e' una testimonianza che nessuna
+ * schermata rilegge (specifica §3.2, R-PREV-02 e R-PREV-08), e qui se ne legge
+ * soltanto il tipo, per lasciarla passare.
+ *
+ * `attivita` sono quelle di `sessioni(righe, { confine: 'attivita' })` e di
+ * `attivitaCarteggio(righe, { tipo })` per `'c'` e `'t'`, piu' recenti prima,
+ * ognuna con `tipo`, `id`, `fonte` — `'sim_uid'` registrata, `'risposte'`
+ * ricostruita —, `ambigua` e `motivi` com'erano, `n` e `esatte` (le giuste dei
+ * quiz, i «coincide» della carta, le coincidenti delle tecniche), `inizio`,
+ * `fine`, e `prova` se ha la sua riga `'s'`. `ricostruite` e `ambigue` le
+ * contano. Nessuna storia cumulativa, nessun «oggi», nessuna durata ne' stima.
+ *
+ * `banca` e' `{ quiz, carteggio, tecniche }`, gli elenchi caricati, o `null`:
+ * con la banca `mancanti` nomina per tipo i riferimenti che la banca non ha
+ * (`null` per un elenco non passato); senza, e' `null`, non «nessuno».
+ */
+export function riepilogoPagina(righe, banca = null) {
+  const visti = new Set(), buone = [];
+  let doppioni = 0, scartate = 0;
+  for (const r of righe || []) {
+    if (!r || typeof r !== 'object' || Array.isArray(r)) { scartate++; continue; }
+    // I tipi che il riepilogo legge: le risposte, i tag e i segnalibri. Un
+    // altro tipo che l'archivio accoglie passa senza essere letto ne' contato.
+    if (!TIPI_RIEPILOGO.has(r._t)) { if (!TIPO_RIGA.has(r._t)) scartate++; continue; }
+    if (validaRiga(r) !== null) { scartate++; continue; }
+    if (visti.has(r.uid)) { doppioni++; continue; }
+    visti.add(r.uid);
+    buone.push(r);
+  }
+  const di = (t) => buone.filter((r) => r._t === t);
+  const q = di('q'), c = di('c'), t = di('t'), s = di('s');
+  const si = (v) => v === 1 || v === true;
+  const quiz = { risposte: q.length, esatte: q.filter((r) => si(r.correct)).length, errate: 0 };
+  quiz.errate = quiz.risposte - quiz.esatte;
+  const carteggio = { esercizi: c.length,
+    coincidenti: c.filter((r) => si(r.verdict)).length,
+    daRivedere: c.filter((r) => r.verdict === 0 || r.verdict === false).length,
+    senzaGiudizio: c.filter((r) => r.verdict == null).length };
+  const tecniche = { risposte: t.length, coincidenti: t.filter((r) => si(r.correct)).length, nonCoincidenti: 0 };
+  tecniche.nonCoincidenti = tecniche.risposte - tecniche.coincidenti;
+  const prove = { quiz: s.filter((r) => r.kind !== 'carteggio').length, carteggio: s.filter((r) => r.kind === 'carteggio').length };
+  const altri = { tag: di('g').length, segnalibri: di('b').length };
+  const risposte = { totale: buone.filter(rigaDiRisposta).length, quiz: q.length, carteggio: c.length, tecniche: t.length, prove: s.length };
+
+  const attivita = [
+    ...sessioni(buone, { confine: 'attivita' }).map((a) => attivitaRiepilogo('q', a, a.esatte)),
+    ...attivitaCarteggio(buone, { tipo: 'c' }).map((a) => attivitaRiepilogo('c', a, a.righe.filter((r) => si(r.verdict)).length)),
+    ...attivitaCarteggio(buone, { tipo: 't' }).map((a) => attivitaRiepilogo('t', a, a.righe.filter((r) => si(r.correct)).length)),
+  ];
+  attivita.sort((x, y) => ((epoca(y.fine) ?? 0) - (epoca(x.fine) ?? 0)) || ((epoca(y.inizio) ?? 0) - (epoca(x.inizio) ?? 0)));
+
+  const mancano = (elenco, mie) => {
+    if (!Array.isArray(elenco)) return null;
+    const ids = new Set(elenco.filter(Boolean).map((e) => e.id));
+    return [...new Set(mie.map((r) => r.item_id).filter((id) => !ids.has(id)))];
+  };
+  const mancanti = banca && typeof banca === 'object'
+    ? { quiz: mancano(banca.quiz, q), carteggio: mancano(banca.carteggio, c), tecniche: mancano(banca.tecniche, t) }
+    : null;
+
+  return {
+    vuoto: risposte.totale === 0, righe: buone.length, doppioni, scartate,
+    risposte, quiz, carteggio, tecniche, prove, altri, attivita,
+    ricostruite: attivita.filter((a) => a.fonte === 'risposte').length,
+    ambigue: attivita.filter((a) => a.ambigua).length,
+    mancanti,
+  };
+}
+
 // --- la bozza del carteggio (P-34) ------------------------------------------------
 //
 // Il testo che si scrive nel runner del carteggio durante un'ora di prova non e'

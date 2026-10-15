@@ -1,8 +1,17 @@
 // Il banco della mappa di Progressi — l'area 5, nella pagina vera da P-23.
 //
 // Lo chiama tests/test_interfaccia.py, e non gira da solo sotto `node --test`:
-// legge da stdin `{"pagina": "<testo di una pagina>"}` e scrive su stdout la
-// lista delle verifiche, `[{gruppo, nome, ok, extra}]`.
+// legge da stdin `{"pagina": "<testo di una pagina>", "ridisegno": bool}` e
+// scrive su stdout la lista delle verifiche, `[{gruppo, nome, ok, extra}]`.
+//
+// Due regimi, dal 15 ottobre 2026 (P-80, docs/ridisegno-progetto.md §10.1):
+// nel regime di oggi il banco gira com'era; nel ridisegno pretende in piu' i
+// cinque stati — `stati` sul totale e su ogni riga, da una `E.contaStati()`
+// per aggregato con il filtro della riga — e i due raccordi di «Allena»,
+// `anteprimaAllenaProgressi(riga, richiesta)` e `avviaAllenaProgressi(
+// preparazione, richiesta, avvia)`. Il regime lo dice chi chiama, letto dalla
+// pagina: la pagina di riferimento lo realizza sempre, e si prova sempre nel
+// ridisegno.
 //
 // Perche' non bastano i test del motore. `quadro()` e `dovePesa()` sono
 // coperti da R-MAPPA-01…13 (P-41): contano giusto. Ma la pagina puo' chiamarli
@@ -39,13 +48,14 @@ import { funzioni, conDipendenze, dipendenze, scriptModulo } from './pagina_js.m
 
 const RADICE = new URL('..', import.meta.url);
 const RACCORDO = ['mappaProgressi', 'anteprimaProgressi', 'avviaProgressi'];
+const RACCORDO_ALLENA = ['anteprimaAllenaProgressi', 'avviaAllenaProgressi'];
 // Le funzioni del motore che contano o scelgono. Nel raccordo della mappa ci
 // sono solo `quadro()` e `dovePesa()`; nell'anteprima `coda()`. Le altre sono
 // una seconda fonte: `diagnosi()` per rifare l'ordine, `classifica()` per
 // ricontare i tre stati. `consigli()`, la lista uscita con la mappa, non c'e'
 // piu' nemmeno nel motore (P-47): una pagina che la chiamasse lancerebbe, e il
 // controllo del collegamento lo dice prima, per nome.
-const REGISTRATE = ['quadro', 'dovePesa', 'diagnosi', 'coda', 'classifica', 'stato', 'sbagliato',
+const REGISTRATE = ['quadro', 'dovePesa', 'diagnosi', 'coda', 'classifica', 'stato', 'sbagliato', 'contaStati', 'statoQuesito',
   'daAllenare', 'mirata', 'screening', 'simulazione', 'simulazioneVela', 'estrai', 'estraiNuoviPrima',
   'giroTecniche', 'tappeto', 'provaCarteggio', 'erroriSessione', 'serieGruppi'];
 
@@ -223,7 +233,7 @@ function confrontaMappa(nome, rich, attesa) {
   // risultato; nient'altro che conti.
   const qc = run.chiamate.filter((c) => c.f === 'quadro');
   const dc = run.chiamate.filter((c) => c.f === 'dovePesa');
-  const altre = run.chiamate.filter((c) => c.f !== 'quadro' && c.f !== 'dovePesa');
+  const altre = run.chiamate.filter((c) => c.f !== 'quadro' && c.f !== 'dovePesa' && !(RIDISEGNO && c.f === 'contaStati'));
   check('righe', nome + ': una sola chiamata a E.quadro(), con banca, storico, giorno e banca della richiesta',
     qc.length === 1 && qc[0].args[0] === rich.banca && qc[0].args[1] === rich.progress
       && qc[0].args[2] === rich.oggi && qc[0].args[3] === rich.kind,
@@ -261,7 +271,8 @@ function confrontaMappa(nome, rich, attesa) {
     primi(out.azione) + ' — senza tetto e con soloDaRifare: soloSbagliate e\' il Ripasso dei Quiz');
   check('azioni', nome + ': nessun pulsante da zero', !out.zero.length,
     primi(out.zero) + ' — con zero errori la riga dice «Nessun errore da rifare qui», senza pulsante');
-  check('righe', nome + ': il totale e\' quello di quadro()', uguale(r.totale, q.totale),
+  // Nel ridisegno il totale porta anche `stati`, che si confronta a parte.
+  check('righe', nome + ': il totale e\' quello di quadro()', uguale(r.totale && { ...r.totale, stati: undefined }, q.totale),
     breve(r.totale && { visti: r.totale.visti, n: r.totale.n }));
 
   // La frase.
@@ -272,8 +283,40 @@ function confrontaMappa(nome, rich, attesa) {
       : ' — quando la frase manca, la pagina non mette niente al suo posto (Q-DUE, punto 6)'));
   check('frase', nome + ': dice perche\' la frase manca, con la parola del motore', r.assente === ass,
     'assente: ' + breve(r.assente) + ' invece di ' + breve(ass));
+  if (RIDISEGNO) stati(nome, rich, r, q, run.chiamate);
   if (attesa) attesa(q, d, r);
   return { r, q, d };
+}
+
+/**
+ * I cinque stati (ridisegno §8.1): `stati` sul totale e su ogni riga, uguali a
+ * contaStati() con il filtro della riga, da una chiamata per aggregato — mai
+ * i tre convertiti in pagina, mai una chiamata sola spalmata.
+ */
+function stati(nome, rich, r, q, chiamate) {
+  const G = 'stati';
+  const aggregati = [['totale', { kind: rich.kind }, r.totale]];
+  for (const [i, m] of q.righe.entries()) {
+    const p = (r.righe || [])[i];
+    aggregati.push([(rich.kind === 'base' ? 'tema ' : 'voce ') + m.nome, m.filtro, p]);
+    if (m.voci) for (const [j, v] of m.voci.entries()) aggregati.push(['voce ' + v.nome, v.filtro, p && p.voci && p.voci[j]]);
+  }
+  const diversi = [], mancano = [];
+  for (const [dove, filtro, p] of aggregati) {
+    const attesi = REALE.contaStati(rich.banca, rich.progress, filtro);
+    if (!p || !p.stati) mancano.push(dove);
+    else if (!uguale(p.stati, attesi)) diversi.push(`${dove}: ${breve(p.stati)} invece di ${breve(attesi)}`);
+  }
+  check(G, nome + ': ogni riga e il totale portano i cinque stati', !mancano.length, 'senza stati: ' + mancano.slice(0, 3).join(', '));
+  check(G, nome + ': gli stati sono quelli di contaStati() con il filtro della riga', !diversi.length, diversi.slice(0, 2).join('; ')
+    + ' — mai visti, debole, incerto, sistemato, ok sommano al totale della riga, e si leggono dallo specchio');
+  const cs = chiamate.filter((c) => c.f === 'contaStati');
+  const unaPer = aggregati.every(([, filtro]) => cs.some((c) => c.args[0] === rich.banca && c.args[1] === rich.progress && uguale(c.args[2], filtro)));
+  check(G, nome + ': una E.contaStati() per aggregato, con banca e storico della richiesta e il filtro della riga', cs.length === aggregati.length && unaPer,
+    cs.length + ' chiamate per ' + aggregati.length + ' aggregati' + (unaPer ? '' : ', e almeno un filtro non e\' quello della sua riga'));
+  const tre = chiamate.filter((c) => c.f === 'classifica' || c.f === 'statoQuesito');
+  check(G, nome + ': i cinque stati non si ricontano in pagina', !tre.length, 'chiamate: ' + nomi(tre)
+    + ' — contaStati() li da\' gia\' sommati; i tre di quadro() restano per le azioni e la compatibilita\'');
 }
 
 function mappa() {
@@ -401,6 +444,82 @@ function azioni(ricco) {
   }
 }
 
+// --- 2b. «Allena» (ridisegno §8.1): la lista della riga, e Inizia che confronta --
+
+function allena(fns, ricco) {
+  const G = 'allena';
+  if (!ricco || !fns.anteprimaAllenaProgressi || !fns.avviaAllenaProgressi) return;
+  const { anteprimaAllenaProgressi: ant, avviaAllenaProgressi: avv } = fns;
+  const rich = richiesta(RICCO);
+  const righe = ricco.r.righe || [];
+  const ta = righe.find((x) => x && x.nome === TA);
+  const va1 = ta && (ta.voci || []).find((v) => v && v.daRifare === 25);
+  const vela = esegui(mappaProgressi, richiesta(RICCO, 'vela'));
+  const vv = vela.esito && vela.esito.righe && vela.esito.righe[0];
+  const tutto = esegui(mappaProgressi, richiesta(TUTTO));
+  const tt = tutto.esito && tutto.esito.righe && tutto.esito.righe.find((x) => x.nome === TA);
+  const casi = [['«Allena» sul tema', ta, rich, 'pronta'], ['«Allena» sulla voce', va1, rich, 'pronta'],
+    ['«Allena» su una voce della vela', vv, richiesta(RICCO, 'vela'), 'pronta'], ['«Allena» con tutto gia\' visto', tt, richiesta(TUTTO), 'vuota']];
+  check(G, 'il banco ha le righe da provare: tema, voce, vela, e un tema tutto visto', casi.every(([, r]) => r && r.filtro), casi.filter(([, r]) => !r).map(([n]) => n).join(', '));
+  const anteprima = (nome, riga, rr, attesa) => {
+    if (!riga) return null;
+    const run = esegui(ant, riga, rr);
+    if (!riuscita(G, nome, run)) return null;
+    const a = run.esito || {};
+    const cc = run.chiamate.filter((c) => c.f === 'coda'), altre = run.chiamate.filter((c) => c.f !== 'coda');
+    const opt = { ...riga.filtro, n: 20 };
+    check(G, nome + ': una E.coda() con il filtro della riga e n = 20', cc.length === 1 && cc[0].args[0] === rr.banca && cc[0].args[1] === rr.progress && cc[0].args[2] === rr.oggi
+      && uguale(Object.fromEntries(Object.entries(cc[0].args[3] || {}).filter(([, v]) => v !== undefined).sort()), Object.fromEntries(Object.entries(opt).sort())),
+      cc.length + ' chiamate' + (cc[0] ? ', opzioni ' + breve(cc[0].args[3]) + ' invece di ' + breve(opt) : '') + ' — Allena non e\' Rifai: niente soloDaRifare, e il filtro e\' quello della riga');
+    check(G, nome + ': nessun\'altra selezione', !altre.length, 'chiamate: ' + nomi(altre));
+    const vera = REALE.coda(rr.banca, rr.progress, rr.oggi, opt);
+    if (attesa === 'pronta') {
+      check(G, nome + ': apre la lista del motore, con il suo numero', a.stato === 'pronta' && a.quanti === vera.length && stessa(a.lista, vera) && vera.length > 0,
+        `stato ${a.stato}, quanti ${a.quanti}, lista di ${Array.isArray(a.lista) ? a.lista.length : '—'} invece di ${vera.length}`);
+    } else {
+      check(G, nome + ': con niente da aprire dice «vuota», senza un pulsante che apre zero', a.stato === 'vuota' && a.quanti === 0 && Array.isArray(a.lista) && !a.lista.length && vera.length === 0,
+        `stato ${a.stato}, quanti ${a.quanti}`);
+    }
+    return { riga, ...a };
+  };
+  const preps = casi.map(([nome, riga, rr, attesa]) => [nome, anteprima(nome, riga, rr, attesa), rr]);
+  const avvio = (nome, prep, rr, attesa) => {
+    if (!prep) return;
+    const avvii = [];
+    const run = esegui(avv, prep, rr, (...a) => avvii.push(a));
+    if (!riuscita(G, nome, run)) return;
+    const e = run.esito || {};
+    const cc = run.chiamate.filter((c) => c.f === 'coda');
+    check(G, nome + ': Inizia rilegge la lista di adesso con una E.coda()', cc.length === 1 && cc[0].args[1] === rr.progress, cc.length + ' chiamate a coda');
+    if (attesa === 'pronta') {
+      check(G, nome + ': Inizia avvia una volta la lista dell\'anteprima, come argomento', avvii.length === 1 && avvii[0][0] === prep.lista && avvii[0][1] === 'argomento' && e.avviata === true,
+        avvii.length + ' avvii, avviata ' + e.avviata + ', modo ' + breve(avvii[0] && avvii[0][1]));
+    } else {
+      check(G, nome + ': con la lista cambiata Inizia non avvia niente e dice «cambiata»', !avvii.length && e.avviata === false && e.stato === 'cambiata',
+        avvii.length + ' avvii, avviata ' + e.avviata + ', stato ' + e.stato + ' — si confrontano id e ordine, non il numero');
+    }
+  };
+  const [[, pTema], [, pVoce]] = preps;
+  avvio('Inizia su «Allena» del tema', pTema, rich, 'pronta');
+  avvio('Inizia su «Allena» della voce', pVoce, rich, 'pronta');
+  // Fra un clic e l'altro: un mai visto del tema risposto cambia la lista; la
+  // banca ricaricata uguale no; la banca ricaricata al contrario cambia l'ordine
+  // a parita' di quesiti, sul tema di QUASI che ne ha dieci mai visti.
+  if (pTema) {
+    const primo = pTema.lista && pTema.lista[0];
+    const risposto = congela(storico([...passiRicco, [primo, true, '2026-09-29']]));
+    avvio('Inizia dopo che un mai visto del tema e\' stato risposto', pTema, richiesta(risposto), 'cambiata');
+    avvio('Inizia con la banca ricaricata uguale', pTema, richiesta(RICCO, 'base', { banca: congela(JSON.parse(JSON.stringify(items))) }), 'pronta');
+  }
+  const quasi = esegui(mappaProgressi, richiesta(QUASI));
+  const tq = quasi.esito && quasi.esito.righe && quasi.esito.righe.find((x) => x.nome === TA);
+  const pq = anteprima('«Allena» sul tema con dieci mai visti', tq, richiesta(QUASI), 'pronta');
+  if (pq) {
+    check(G, 'il banco: la lista del tema di QUASI sta sotto i venti', pq.quanti === 10, 'quanti ' + pq.quanti);
+    avvio('Inizia con gli stessi quesiti in un altro ordine', pq, richiesta(QUASI, 'base', { banca: congela([...items].reverse()) }), 'cambiata');
+  }
+}
+
 // --- 3. la pagina: il raccordo, e come si collega ---------------------------
 
 function collegamento(script, tutte) {
@@ -422,11 +541,22 @@ function collegamento(script, tutte) {
     usi('avviaProgressi').some((i) => /\bapri\b/.test(resto.slice(i, resto.indexOf(';', i) + 1 || i + 400))),
     'Inizia deve passare dal raccordo, e il raccordo deve avviare il runner: un pulsante che chiama apri() '
     + 'da se\' apre una lista che nessuno ha verificato');
+  // Le verifiche del solo ridisegno stanno nei loro gruppi, «stati» e «allena»:
+  // il conteggio di «raccordo» fra la pagina vera di oggi e il riferimento
+  // resta lo stesso nei due regimi.
+  if (RIDISEGNO) {
+    check('stati', 'E.contaStati si chiama solo dentro il raccordo', !/\bE\.contaStati\b/.test(resto),
+      'i cinque stati si contano nel raccordo della mappa, una volta per aggregato: fuori sarebbero una seconda fonte');
+    check('allena', 'la pagina chiama avviaAllenaProgressi() e le passa apri',
+      usi('avviaAllenaProgressi').some((i) => /\bapri\b/.test(resto.slice(i, resto.indexOf(';', i) + 1 || i + 400))),
+      '«Allena» deve passare dal suo raccordo, che rilegge la lista prima di avviare');
+  }
 }
 
 // --- la pagina ---------------------------------------------------------------
 
-const pagina = JSON.parse(readFileSync(0, 'utf8')).pagina;
+const { pagina, ridisegno = false } = JSON.parse(readFileSync(0, 'utf8'));
+const RIDISEGNO = !!ridisegno;
 const script = scriptModulo(pagina);
 const tutte = funzioni(script);
 const G = 'raccordo';
@@ -436,10 +566,16 @@ for (const f of RACCORDO) {
   check(G, 'la pagina dichiara ' + f + '()', !!tutte[f],
     'la mappa passa da tre funzioni di raccordo: il contratto e\' in docs/area-5-progetto.md §10.1');
 }
+if (RIDISEGNO) {
+  for (const f of RACCORDO_ALLENA) {
+    check('allena', 'la pagina dichiara ' + f + '()', !!tutte[f],
+      '«Allena» passa da due funzioni di raccordo (docs/ridisegno-progetto.md §10.1, tabella C)');
+  }
+}
 if (RACCORDO.every((f) => tutte[f])) {
   const sel = {};
   try {
-    for (const f of RACCORDO) {
+    for (const f of [...RACCORDO, ...(RIDISEGNO ? RACCORDO_ALLENA.filter((x) => tutte[x]) : [])]) {
       sel[f] = new Function('E', '"use strict";\n' + conDipendenze(tutte, f) + '\nreturn ' + f + ';')(E);
     }
   } catch (e) {
@@ -447,7 +583,9 @@ if (RACCORDO.every((f) => tutte[f])) {
   }
   if (RACCORDO.every((f) => sel[f])) {
     ({ mappaProgressi, anteprimaProgressi, avviaProgressi } = sel);
-    azioni(mappa());
+    const ricco = mappa();
+    azioni(ricco);
+    if (RIDISEGNO) allena(sel, ricco);
   }
   collegamento(script, tutte);
 }

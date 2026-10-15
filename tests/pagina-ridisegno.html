@@ -1,0 +1,204 @@
+<!doctype html>
+<!--
+  La pagina di riferimento del ridisegno: docs/ridisegno-progetto.md §§2, 3, 8
+  e il contratto consegnato da P-80 nel §10.1. Non e' pubblicata e non e' un
+  prototipo: e' il minimo che soddisfa il banco tests/ridisegno.mjs e il
+  riconoscimento del regime di tests/regime_pagina.py, e serve a quei controlli
+  per provarsi al contrario a ogni esecuzione — questa pagina deve passare, e
+  ognuna delle sue rotture elencate in ROTTURE_RIDISEGNO deve fallire.
+
+  Mostra anche la forma del contratto a chi realizza P-81: le due dichiarazioni
+  da cui si legge il regime, la firma di navigazioneSito() e dei cinque
+  raccordi aggiuntivi, le quattro sezioni, la barra, i segmenti e gli alias
+  delle porte di oggi. Il disegno, i testi e il flusso sono del progetto, non
+  di qui. Niente qui gira in un browser: il banco esegue le funzioni sotto Node.
+-->
+<title>Rotta Giusta — quiz e carteggio per la patente nautica</title>
+<nav>
+  <button data-v="home">Home</button><button data-v="allenati">Allenati</button><button data-v="esame">Esame</button><button data-v="progressi">Progressi</button>
+</nav>
+<button data-profilo="apri" aria-label="Accedi">Accedi</button>
+<section class="view on" id="v-home"><h1>Preparati alla patente nautica, un passo alla volta.</h1>
+  <button data-modo="sim" data-prova="base">Simula il quiz base</button>
+  <button data-breve>Allenati con 10 domande</button>
+  <button data-v="quiz">Quiz</button><button data-v="cart">Carteggio</button><button data-v="seg">Segnali</button><button data-v="diag">Progressi</button>
+</section>
+<section class="view" id="v-allenati"><h1>Allenati</h1>
+  <div role="tablist"><button data-segmento="quiz">Quiz</button><button data-segmento="carteggio">Carteggio</button><button data-segmento="segnali">Segnali</button></div>
+  <button data-modo="mirata">Allenamento consigliato</button>
+  <button data-modo="argomento">Scegli un argomento</button>
+  <button data-modo="sbagliate">Ripassa gli errori</button>
+  <details><summary>Altri modi di esercitarti</summary><button data-modo="screening">Un giro tra gli argomenti</button></details>
+  <button data-segnalibri>Segnalibri</button>
+  <form data-ricerca><label>Numero del decreto <input name="numero" placeholder="1.1.1-24"></label><button>Cerca</button></form>
+  <button data-cporta="tecniche" data-v="tec">Che tecnica serve?</button>
+  <button id="c-start">Inizia la prova</button><button id="t-start">Inizia il riconoscimento</button><button id="s-start">Inizia</button>
+</section>
+<section class="view" id="v-esame"><h1>Esame</h1>
+  <button data-modo="sim" data-prova="base">Simula il quiz base</button>
+  <button data-modo="sim" data-prova="vela">Simula il quiz vela</button>
+  <button data-cporta="prova">Prova di carteggio</button>
+</section>
+<section class="view" id="v-progressi"><h1>Progressi</h1><div id="d-mappa"></div></section>
+<section id="profilo" role="dialog" aria-modal="true" hidden><button data-v="info">Info e diagnostica</button></section>
+<script type="module">
+import * as E from '/engine.js';
+
+// Le due dichiarazioni da cui si legge il regime (ridisegno §10.1, A): insieme,
+// esattamente questa lista, e mai dal nome di un pulsante.
+const VISTE_RIDISEGNO = ['home', 'allenati', 'esame', 'progressi'];
+const SEGMENTI = ['quiz', 'carteggio', 'segnali'];
+// Gli alias delle porte di oggi (tabella C): quiz/cart/seg/tec/diag/oggi/info.
+const ALIAS = {
+  quiz: { sezione: 'allenati', segmento: 'quiz' },
+  cart: { sezione: 'allenati', segmento: 'carteggio' },
+  seg: { sezione: 'allenati', segmento: 'segnali' },
+  tec: { sezione: 'allenati', segmento: 'carteggio', attivita: 'tecniche' },
+  diag: { sezione: 'progressi' },
+  oggi: { sezione: 'home' },
+  info: { sezione: 'home', pannello: 'info' },
+};
+const PARAMETRI = ['sezione', 'segmento', 'attivita', 'fase', 'banca', 'temi', 'voci', 'n'];
+const LEGALI = { '/privacy': 'privacy', '/avvertenza': 'avvertenza' };
+const S = { righe: [], banca: [], prog: {}, oggi: '', conto: null, io: null, tappa: null, attivita: null, run: null, breve: null, segni: null };
+
+/**
+ * Da un indirizzo e un evento alla destinazione: pura, senza DOM, archivio o
+ * rete. Il contratto per esteso e' nel §10.1 del progetto, «Contratto
+ * consegnato da P-80».
+ *
+ * richiesta: { url, evento: 'carica' | 'tocco' | 'cronologia', contesto: { attivita, tappa } }
+ */
+function navigazioneSito(richiesta) {
+  const { url, evento, contesto } = richiesta || {};
+  const c = contesto || {};
+  const u = new URL(String(url || '/'), 'http://x');
+  const g = u.hash.match(/^#(verifica|password)=([A-Za-z0-9_-]+)$/);
+  const gettone = g ? { tipo: g[1], valore: g[2] } : null;
+  const base = { sezione: 'home', segmento: null, attivita: null, fase: null, pannello: null,
+    ritorno: c.tappa || null, effetto: 'apri', motivo: null, url: '/', gettone };
+  const indisponibile = (motivo) => ({ ...base, effetto: 'indisponibile', motivo });
+  const path = u.pathname;
+  const legale = path === '/avvertenza' && u.hash === '#condizioni' ? 'condizioni' : LEGALI[path];
+  if (legale) {
+    // Un caricamento di /privacy lo serve il file autonomo, non il canonico.
+    if (evento === 'carica') return indisponibile('rotta non servita');
+    const t = c.tappa || { sezione: 'home', segmento: null };
+    return { ...base, sezione: t.sezione || 'home', segmento: t.sezione === 'allenati' ? t.segmento || 'quiz' : null,
+      pannello: legale, effetto: evento === 'cronologia' ? 'ripristina' : 'apri', url: path + (legale === 'condizioni' ? '#condizioni' : '') };
+  }
+  if (path !== '/' && path !== '/app') return indisponibile('rotta non servita');
+  let sezione, segmento = null, attivita = null, pannello = null, fase = null;
+  if (path === '/app') {
+    sezione = 'allenati'; segmento = 'quiz';
+  } else {
+    for (const k of u.searchParams.keys()) if (!PARAMETRI.includes(k)) return indisponibile('parametro sconosciuto');
+    sezione = (u.searchParams.get('sezione') || '').toLowerCase();
+    segmento = (u.searchParams.get('segmento') || '').toLowerCase() || null;
+    attivita = u.searchParams.get('attivita') || null;
+    fase = u.searchParams.get('fase');
+    if (ALIAS[sezione]) {
+      const a = ALIAS[sezione];
+      sezione = a.sezione; segmento = a.segmento || segmento; attivita = a.attivita || attivita; pannello = a.pannello || null;
+    }
+    if (!sezione) sezione = attivita ? 'allenati' : 'home';
+    if (!VISTE_RIDISEGNO.includes(sezione)) return indisponibile('parametro sconosciuto');
+    if (sezione === 'allenati') { segmento = segmento || 'quiz'; if (!SEGMENTI.includes(segmento)) return indisponibile('parametro sconosciuto'); }
+    else segmento = null;
+  }
+  if (u.hash === '#profilo') pannello = 'profilo';
+  let effetto = 'apri', motivo = null;
+  if (fase != null && fase !== 'preparazione') { effetto = 'indisponibile'; motivo = 'attivita non disponibile'; }
+  const faseOut = fase != null ? 'preparazione' : null;
+  const pezzi = [['sezione', sezione], segmento && ['segmento', segmento], attivita && ['attivita', attivita], faseOut && ['fase', faseOut]].filter(Boolean);
+  const canon = sezione === 'home' && pezzi.length === 1 ? '/' : '/?' + pezzi.map(([k, v]) => k + '=' + encodeURIComponent(v)).join('&');
+  if (effetto === 'apri' && evento !== 'carica' && !pannello) {
+    if (c.attivita && c.attivita.stato === 'in corso') effetto = 'chiedi-uscita';
+    else if (c.attivita && c.attivita.stato === 'conclusa' && evento === 'cronologia') effetto = 'mostra-risultato';
+    else if (evento === 'cronologia') effetto = 'ripristina';
+  } else if (effetto === 'apri' && evento === 'cronologia') effetto = 'ripristina';
+  return { sezione, segmento, attivita, fase: faseOut, pannello, ritorno: c.tappa || null, effetto, motivo, url: canon, gettone };
+}
+
+/**
+ * L'allenamento breve della Home: dieci quiz base, prima i mai visti.
+ * conf: { seme }; fonte: { items, prog, oggi, pesi, prove, esame } come selezioneQuiz().
+ */
+function preparaBreve(conf, fonte) {
+  const { items, prog, oggi } = fonte;
+  const pool = E.coda(items, prog, oggi, { kind: 'base', n: 0, includiChiusi: true });
+  const lista = E.estraiNuoviPrima(pool, prog, oggi, 10, conf.seme);
+  return { lista, quanti: lista.length, stato: lista.length === 10 ? 'pronta' : lista.length ? 'ridotta' : 'vuota' };
+}
+
+/** I segnalibri: lista e numero dalla stessa chiamata, senza tetto. richiesta: { banca, righe, kind } */
+function preparaSegnalibri(richiesta) {
+  const { banca, righe, kind } = richiesta;
+  const r = E.codaSegnalibri(banca, righe, { kind });
+  return { lista: r.lista, quanti: r.quanti, fuori: r.fuori, stato: r.quanti ? 'pronta' : 'vuota' };
+}
+
+/** Inizia sui segnalibri: la lista dell'anteprima, se e' ancora quella, id e ordine. */
+function avviaSegnalibri(preparazione, richiesta, avvia) {
+  const adesso = E.codaSegnalibri(richiesta.banca, richiesta.righe, { kind: richiesta.kind }).lista;
+  const stessa = adesso.length === preparazione.lista.length && adesso.every((x, i) => x.id === preparazione.lista[i].id);
+  if (!stessa) return { avviata: false, stato: 'cambiata' };
+  avvia(preparazione.lista, 'segnalibri', { origine: 'quiz' });
+  return { avviata: true, quanti: preparazione.lista.length };
+}
+
+/** Cerca un quesito per numero del decreto: il testo com'e' digitato, il risultato com'e'. richiesta: { banca, testo, kind } */
+function ricercaNumero(richiesta) {
+  const { banca, testo, kind } = richiesta;
+  return E.cercaNumero(banca, testo, { kind });
+}
+
+/**
+ * Se un gesto — un tag, un segnalibro — si puo' scrivere con il server che la
+ * pagina ha davanti. fonte: { accesso: 'anonimo' | 'account', tipiRiga, io }
+ */
+function permessoGesto(riga, fonte) {
+  const tipi = fonte.accesso === 'account' ? (fonte.io && Array.isArray(fonte.io.tipi_riga) ? fonte.io.tipi_riga : null) : fonte.tipiRiga;
+  const motivo = E.rigaScrivibile(riga, tipi);
+  return { scrivibile: motivo === null, motivo };
+}
+
+/* ---- il collegamento con la pagina: letto dal banco, non eseguito ---- */
+
+function fonteQuiz() {
+  return { items: S.banca, prog: S.prog, oggi: S.oggi, pesi: S.meta && S.meta.pesi_esame, prove: S.meta && S.meta.prove, esame: S.esame || null };
+}
+
+function apri(lista, modo, opt = {}) {
+  S.run = { coda: lista, i: 0, modo, origine: opt.origine || null };
+}
+
+function vai(url, evento) {
+  const d = navigazioneSito({ url, evento, contesto: { attivita: S.attivita, tappa: S.tappa } });
+  if (d.effetto === 'apri' || d.effetto === 'ripristina') {
+    for (const v of VISTE_RIDISEGNO) document.getElementById('v-' + v).classList.toggle('on', v === d.sezione);
+    S.tappa = { sezione: d.sezione, segmento: d.segmento, pannello: d.pannello };
+    if (evento === 'tocco') history.pushState({ nav: 1 }, '', d.url);
+    else if (evento === 'carica') history.replaceState({ nav: 1 }, '', d.url);
+  }
+  return d;
+}
+
+document.addEventListener('click', (ev) => {
+  const b = ev.target.closest('[data-v]');
+  if (b) { ev.preventDefault(); vai('/?sezione=' + b.dataset.v, 'tocco'); return; }
+  const s = ev.target.closest('[data-segmento]');
+  if (s) { vai('/?sezione=allenati&segmento=' + s.dataset.segmento, 'tocco'); return; }
+  if (ev.target.closest('[data-breve]')) { S.breve = preparaBreve({ seme: Date.now() }, fonteQuiz()); return; }
+  if (ev.target.closest('[data-segnalibri]')) { S.segni = { richiesta: { banca: S.banca, righe: S.righe, kind: undefined }, preparazione: null }; S.segni.preparazione = preparaSegnalibri(S.segni.richiesta); return; }
+  if (ev.target.closest('[data-avvia-segnalibri]')) { avviaSegnalibri(S.segni.preparazione, S.segni.richiesta, apri); }
+});
+document.addEventListener('submit', (ev) => {
+  const f = ev.target.closest('[data-ricerca]');
+  if (!f) return;
+  ev.preventDefault();
+  S.ricerca = ricercaNumero({ banca: S.banca, testo: f.elements.numero.value, kind: undefined });
+});
+window.addEventListener('popstate', () => vai(location.pathname + location.search + location.hash, 'cronologia'));
+vai(location.pathname + location.search + location.hash, 'carica');
+</script>
