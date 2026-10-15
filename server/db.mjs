@@ -7,7 +7,7 @@
 // azzerarne i progressi —, il segno di chi si oppone alle statistiche (§15.2),
 // e l'esito dell'esame detto da chi studia, che si toglie davvero
 // (docs/esito-esame-progetto.md §3): tutte scritte anche nel file delle
-// cancellazioni.
+// cancellazioni. E, nel profilo, che cosa chi studia sta preparando (P-83).
 //
 // Niente HTTP qui dentro: copia e ripristino sono strumenti della macchina e
 // girano a servizio fermo (server/copie.mjs).
@@ -23,13 +23,13 @@ import { validaRiga } from '../site/engine.js';
  * e tabelle nuove, mai tolte ne' rinominate, cosi' il rilascio precedente gira
  * sul database di quello nuovo e tornare indietro resta di un secondo.
  */
-export const SCHEMA = 5;
+export const SCHEMA = 6;
 
 // Lo schema del §3, un pezzo per volta. Le tabelle arrivano con i pezzi che le
 // usano, e ognuno e' una migrazione additiva: la 1 e' di P-03 (le righe e la
 // copia), la 2 di P-09 (l'account), la 3 di P-11 (i punteggi dei Segnali), la 4
 // di P-54 (il segno di chi si oppone alle statistiche), la 5 di P-73 (l'esito
-// dell'esame).
+// dell'esame), la 6 di P-83 (le scelte di preparazione).
 const SCHEMA_1 = `
   CREATE TABLE impianto (
     id            INTEGER PRIMARY KEY CHECK (id = 1),
@@ -143,12 +143,25 @@ const SCHEMA_5 = `
   ) WITHOUT ROWID;
 `;
 
+// Che cosa chi studia sta preparando (P-83; docs/ridisegno-progetto.md §10.1
+// D.3, account-progetto.md §13.4): due colonne del profilo, separate dalla data
+// d'esame, NULL per chi non ha risposto. Colonne dell'account e non una tabella,
+// perche' sono un fatto dell'account e se ne vanno con lui — anche con il codice
+// di prima, che cancella la riga intera. I valori ammessi stanno in
+// server/conti.mjs, non in un CHECK: un valore nuovo sarebbe un'aggiunta, non
+// una tabella da rifare. Il server di prima un campo del profilo che non conosce
+// lo butta con un 200: e' per questo che la descrizione dichiara `campi_profilo`.
+const SCHEMA_6 = `
+  ALTER TABLE account ADD COLUMN abilitazione TEXT;    -- 'motore' | 'vela' | NULL
+  ALTER TABLE account ADD COLUMN conseguimento TEXT;   -- 'prima' | 'estensione_e12' | NULL
+`;
+
 /**
  * Le migrazioni, in ordine: la n-esima porta il database da n-1 a n. Un
  * database nuovo le esegue tutte, cosi' nuovo e migrato sono lo stesso schema
  * e c'e' una strada sola da provare.
  */
-export const MIGRAZIONI = [SCHEMA_1, SCHEMA_2, SCHEMA_3, SCHEMA_4, SCHEMA_5];
+export const MIGRAZIONI = [SCHEMA_1, SCHEMA_2, SCHEMA_3, SCHEMA_4, SCHEMA_5, SCHEMA_6];
 
 const adesso = () => new Date().toISOString();
 const nuovaEpoca = () => randomBytes(16).toString('hex');

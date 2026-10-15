@@ -37,6 +37,27 @@ export const DOPO_AVVISO_MS = 30 * GIORNO;
 const MODI_SEGNALI = new Set(SEGNALI.map((x) => x.modo));
 const DATA = /^\d{4}-\d{2}-\d{2}$/;
 
+/**
+ * Le scelte di preparazione (P-83; docs/ridisegno-progetto.md §10.1 D.3,
+ * decisione 13 di P-59): che cosa si prepara e da dove si parte, separati dalla
+ * data d'esame. Ognuno e' uno di questi valori o `null`, «non detto»: nessuno si
+ * deduce dall'altro e nessuno ha un valore predefinito. Non sono un obiettivo,
+ * una fase o un piano — quelli aspettano P-76.
+ */
+export const SCELTE_PROFILO = Object.freeze({
+  abilitazione: Object.freeze(['motore', 'vela']),
+  conseguimento: Object.freeze(['prima', 'estensione_e12']),
+});
+
+/**
+ * I campi che `PUT /v1/profilo` conserva, dichiarati nella descrizione come
+ * `campi_profilo`. La pagina manda le scelte di preparazione solo a un server che
+ * le nomina qui: quello di prima un campo che non conosce lo butta con un 200, e
+ * la pagina direbbe «salvate» per niente. Una capability dichiarata, non una
+ * deduzione dalla versione. Un campo che non e' qui e' un 422.
+ */
+export const CAMPI_PROFILO = Object.freeze(['data_esame', 'segnali', ...Object.keys(SCELTE_PROFILO)]);
+
 export const COOKIE = '__Host-rg';
 
 const nuovoToken = () => randomBytes(32).toString('base64url');
@@ -103,6 +124,11 @@ export function creaConti({ db, ora, argon2 = PARAMETRI, posta, sito, cancellazi
       verificata: Boolean(a.email_verificata_il),
       scade_se_non_verificata: a.email_verificata_il ? null : iso(Date.parse(a.creato_il) + NON_CONFERMATO_MS),
       data_esame: a.data_esame,
+      // P-83: null per chi non ha risposto; `campi_profilo` dice che questo
+      // server le conserva, e quello di prima non lo manda.
+      abilitazione: a.abilitazione ?? null,
+      conseguimento: a.conseguimento ?? null,
+      campi_profilo: [...CAMPI_PROFILO],
       segnali: segnaliDi(a.id),
       generazione: a.generazione,
       azzerato_il: a.azzerato_il,
@@ -502,17 +528,31 @@ export function creaConti({ db, ora, argon2 = PARAMETRI, posta, sito, cancellazi
     },
 
     /**
-     * Il profilo (§13): la data d'esame, facoltativa, e i punteggi dei Segnali.
-     * Un campo assente resta com'e'; `data_esame: null` la toglie. I punteggi si
+     * Il profilo (§13): la data d'esame, facoltativa, i punteggi dei Segnali, e
+     * dal P-83 le scelte di preparazione, facoltative anche loro. Un campo
+     * assente resta com'e'; `null` toglie la data o una scelta. I punteggi si
      * fondono con il massimo, sia il migliore sia le partite: rimandare gli
      * stessi valori non cambia niente (§13.2). Tutto si controlla prima di
-     * scrivere: un campo rotto non lascia scritti gli altri.
+     * scrivere: un campo rotto non lascia scritti gli altri, e un campo che il
+     * server non conosce e' un 422 con il suo nome, mai un 200 che lo ignora.
      */
     profilo({ account, corpo, ip }) {
       if (!corpo || typeof corpo !== 'object' || Array.isArray(corpo)) {
-        return [422, errore('profilo', 'Il corpo è { data_esame, segnali }, e ognuno dei due si può omettere.')];
+        return [422, errore('profilo', `Il corpo è { ${CAMPI_PROFILO.join(', ')} }, e ognuno si può omettere.`)];
+      }
+      const ignoto = Object.keys(corpo).find((k) => !CAMPI_PROFILO.includes(k));
+      if (ignoto !== undefined) {
+        return [422, errore('profilo', `«${ignoto.slice(0, 40)}» non è un campo del profilo: sono ${CAMPI_PROFILO.join(', ')}.`, { campo: ignoto.slice(0, 40) })];
       }
       const cambi = {};
+      for (const [campo, valori] of Object.entries(SCELTE_PROFILO)) {
+        if (!(campo in corpo)) continue;
+        const v = corpo[campo];
+        if (v !== null && !valori.includes(v)) {
+          return [422, errore(campo, `«${campo}» è ${valori.map((x) => `'${x}'`).join(' o ')}, oppure null per toglierlo.`, { campo })];
+        }
+        cambi[campo] = v;
+      }
       if ('data_esame' in corpo) {
         const d = corpo.data_esame;
         // Un mese 13 fa una data che non esiste, e `toISOString()` lancia: era un
@@ -520,13 +560,13 @@ export function creaConti({ db, ora, argon2 = PARAMETRI, posta, sito, cancellazi
         const t = typeof d === 'string' && DATA.test(d) ? Date.parse(`${d}T00:00:00Z`) : NaN;
         const vera = !Number.isNaN(t) && new Date(t).toISOString().slice(0, 10) === d;
         if (d !== null && !vera) {
-          return [422, errore('data_esame', "La data d'esame è una data vera nella forma AAAA-MM-GG, oppure null per toglierla.")];
+          return [422, errore('data_esame', "La data d'esame è una data vera nella forma AAAA-MM-GG, oppure null per toglierla.", { campo: 'data_esame' })];
         }
         cambi.data_esame = d;
       }
       if ('segnali' in corpo) {
         const sg = corpo.segnali;
-        const cattivo = (msg) => [422, errore('segnali', msg)];
+        const cattivo = (msg) => [422, errore('segnali', msg, { campo: 'segnali' })];
         if (!sg || typeof sg !== 'object' || Array.isArray(sg)) return cattivo('I punteggi dei Segnali sono { modo: { migliore, giocate } }.');
         for (const [modo, p] of Object.entries(sg)) {
           if (!MODI_SEGNALI.has(modo)) return cattivo(`«${String(modo).slice(0, 20)}» non è un modo del gioco dei Segnali: sono ${[...MODI_SEGNALI].join(', ')}.`);
@@ -540,6 +580,10 @@ export function creaConti({ db, ora, argon2 = PARAMETRI, posta, sito, cancellazi
       }
       transazione(db, () => {
         if ('data_esame' in cambi) db.prepare('UPDATE account SET data_esame = ? WHERE id = ?').run(cambi.data_esame, account.id);
+        // I nomi delle colonne vengono da SCELTE_PROFILO, non dal corpo.
+        for (const campo of Object.keys(SCELTE_PROFILO)) {
+          if (campo in cambi) db.prepare(`UPDATE account SET ${campo} = ? WHERE id = ?`).run(cambi[campo], account.id);
+        }
         for (const [modo, p] of Object.entries(cambi.segnali ?? {})) {
           db.prepare(`INSERT INTO segnali (account_id, modo, migliore, giocate) VALUES (?, ?, ?, ?)
             ON CONFLICT (account_id, modo) DO UPDATE SET migliore = MAX(migliore, excluded.migliore), giocate = MAX(giocate, excluded.giocate)`)

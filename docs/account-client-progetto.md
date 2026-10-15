@@ -78,6 +78,13 @@ letto:*
   `POST /v1/accesso`, `POST /v1/verifica`, `PUT /v1/profilo` — porta
   `data_esame` e `segnali`, nella forma di `segPunti`; `GET /v1/esporta` porta
   `segPunti` accanto alle righe.
+- **Le scelte di preparazione (P-83, 15 ottobre 2026):** la descrizione porta
+  anche `abilitazione` (`'motore'`, `'vela'` o `null`), `conseguimento`
+  (`'prima'`, `'estensione_e12'` o `null`) e `campi_profilo`, l'elenco dei campi
+  che il profilo conserva; `PUT /v1/profilo` le accetta accanto alla data, e un
+  campo o un valore che il server non conosce è un `422 {errore, campo,
+  messaggio}`. Il contratto per la pagina è nel §11.1; quello del server nel
+  §7.1 e nel §13.4 di `account-progetto.md`.
 - **Cambio d'indirizzo:** `POST /v1/email/cambia` con la password, solo da un
   indirizzo già confermato; l'indirizzo cambia quando il nuovo apre il suo
   link, con `POST /v1/email/conferma`, entro 24 ore. Una password cambiata
@@ -496,6 +503,14 @@ si leggono da `segnali` nella descrizione dell'account (§1).
 Una uscita con punteggi non confermati offre download e scelta di perdita
 come per le risposte; un file di recupero include anche `segPunti`.
 
+**Le scelte di preparazione del file non si caricano** (P-83). Dal P-83 il file
+esportato dal server porta `abilitazione` e `conseguimento`, accanto a
+`esiti`; come gli esiti, la conversione non li porta nell'account: non
+diventano un `PUT /v1/profilo`, e l'anteprima non li propone. Il file si
+ricarica in qualunque account, e le scelte sono di chi le ha dette; chi vuole le
+stesse le sceglie nel Profilo. Il server lo prova facendo come la pagina
+(`test_server.mjs`, R-ACC-79); che la pagina non le copi è del banco del client.
+
 ## 9. Contratti con motore, archivio e trasporto
 
 ### 9.1 Una sola contabilità
@@ -878,6 +893,43 @@ la pagina aperta»; non abilita viste di storico o un piano promesso.
 Nessuna fase di preparazione, obiettivo giornaliero, numero di ore o consiglio
 di piano aggiunto: Q-ONBOARD richiede una decisione dell'autore nella specifica.
 Questo non impedisce di implementare il passo minimo già deciso.
+
+**«Che cosa stai preparando?», il contratto con il server (P-83, 15 ottobre
+2026).** Il ridisegno aggiunge a questo passo le due scelte della decisione 13
+(`docs/ridisegno-progetto.md` §6.1, A-5). Che cosa la pagina consuma:
+
+- **La capability.** La pagina sa che il server conserva le scelte solo se la
+  descrizione dell'account — `GET /v1/io`, e le risposte nella sua forma — ha
+  `campi_profilo` con dentro `'abilitazione'` e `'conseguimento'`. Non lo
+  deduce dalla versione né dalla presenza dei due campi. Senza — il server di
+  `v0.30.0`, misurato: risponde `200` a un `PUT` con `abilitazione` e lo butta
+  — le scelte restano bozza della pagina, dette come tali, e la pagina non manda
+  i due campi e non dice «salvate» (§6.1 del progetto del ridisegno: «Server di
+  prima → scelte temporanee dichiarate»).
+- **La scrittura.** `PUT /v1/profilo` con `{ abilitazione, conseguimento }`,
+  uno o tutti e due, anche insieme a `data_esame`: un campo assente resta com'è,
+  `null` toglie la scelta. I valori sono esattamente `'motore'` | `'vela'` e
+  `'prima'` | `'estensione_e12'`; le parole in schermata — «Solo motore», «Anche
+  vela», «Prima patente», «Estensione dalla entro 12 miglia» — sono della
+  pagina e non viaggiano. Nessun valore predefinito e nessuna scelta dedotta
+  dall'altra: «Salta per ora» non manda niente.
+- **La conferma.** «Scelte salvate» solo con il `200`, e con i valori **riletti
+  dalla risposta**, che è la descrizione dell'account: la bozza e i valori
+  confermati restano distinti. Un `422` porta `campo` — `abilitazione`,
+  `conseguimento`, o il nome di un campo che il server non conosce, con `errore:
+  'profilo'` — e non ha scritto niente, nemmeno la data dello stesso invio: la
+  pagina dice «Le scelte non sono state salvate», non «la data è salvata». Un
+  errore di rete o un `5xx` non sono un «salvate».
+- **La lettura.** I valori confermati si leggono da `abilitazione` e
+  `conseguimento` della descrizione, all'accesso e dopo ogni `PUT`; un account
+  nuovo li ha `null`, cioè «non detto», mai una scelta mostrata come fatta.
+  L'accesso a un account che le ha non ripete l'onboarding e non le sovrascrive
+  con la bozza anonima: si propone la bozza, e serve il gesto (R-ACC-55).
+- **Che cosa non sono.** Non sono l'obiettivo del Percorso né una fase, e il
+  motore non le riceve: in Esame dicono quali prove mostrare, senza
+  disabilitarne nessuna (§7.9 della specifica). Un azzeramento non le tocca; la
+  cancellazione dell'account le porta via; l'export le porta, e la conversione
+  di un file non le carica (§8).
 
 ### 11.2 Sostituzioni nella stessa versione degli account
 

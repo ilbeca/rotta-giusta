@@ -85,6 +85,11 @@ export function creaRighe({ db, ora, versione, quesiti = leggiBanca() }) {
      * ricarica in qualunque account, e un esito e' una dichiarazione del
      * titolare dell'account, non una risposta —, e le righe del file restano
      * quelle di prima.
+     *
+     * Dal P-83 porta le scelte di preparazione, `abilitazione` e
+     * `conseguimento`, com'e' nel profilo, per la stessa ragione e con lo stesso
+     * limite: sono di chi le ha dette, e la pagina non le carica da un file in
+     * un altro account.
      */
     esporta({ account }) {
       const righe = db.prepare('SELECT dati FROM riga WHERE account_id = ? ORDER BY seq').all(account.id)
@@ -94,7 +99,8 @@ export function creaRighe({ db, ora, versione, quesiti = leggiBanca() }) {
         segPunti[x.modo] = { migliore: x.migliore, giocate: x.giocate };
       }
       const giorno = iso().slice(0, 10);
-      return [200, { app: 'rotta-giusta', versione, esportato: iso(), righe, segPunti, esiti: esitiDi(db, account.id) },
+      return [200, { app: 'rotta-giusta', versione, esportato: iso(), righe, segPunti, esiti: esitiDi(db, account.id),
+        abilitazione: account.abilitazione ?? null, conseguimento: account.conseguimento ?? null },
         { intestazioni: { 'Content-Disposition': `attachment; filename="rotta-giusta-progressi-${giorno}.json"` } }];
     },
   };

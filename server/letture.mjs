@@ -63,7 +63,8 @@ export function leggiBanche() {
  *   lettura    la riga appena scritta: `{ quando, account, motivo }`
  *   account    l'account senza i suoi segreti — ne' la password, ne' la chiave
  *              della copia locale, ne' le impronte di sessioni e gettoni — con
- *              le sessioni aperte (le date) e i punteggi dei Segnali
+ *              le sessioni aperte (le date), i punteggi dei Segnali e le scelte
+ *              di preparazione (P-83), `null` se non dette
  *   righe      le righe com'erano arrivate, nell'ordine del cursore
  *   conteggi   quante sono: `righe` tutte; `risposte` quelle per cui
  *              `rigaDiRisposta()` del motore dice vero — come le conta la
@@ -131,6 +132,10 @@ export function leggiAccount(db, email, { motivo, il = new Date().toISOString(),
         ultimo_accesso_il: a.ultimo_accesso_il,
         avviso_inattivita_il: a.avviso_inattivita_il,
         data_esame: a.data_esame,
+        // P-83. `?? null` perche' su un database di prima dello schema 6 la
+        // colonna non c'e', e un undefined sparirebbe dal JSON: «non detto» si dice.
+        abilitazione: a.abilitazione ?? null,
+        conseguimento: a.conseguimento ?? null,
         generazione: a.generazione,
         azzerato_il: a.azzerato_il,
         accessi_falliti: a.accessi_falliti,

@@ -1030,6 +1030,76 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   sopra, il secondo è quello che conta. Guardiano e controllo della
   documentazione verdi.
 
+### Aggiunto — P-83: le scelte di preparazione nel profilo, il server
+
+- **Il profilo conserva «che cosa stai preparando?», perché l'onboarding del
+  ridisegno possa dire «salvato» solo quando lo è.** È il punto D.3 del §10.1
+  di `docs/ridisegno-progetto.md`, con la decisione A-5 dell'autore del 15
+  ottobre. Due campi facoltativi e nulli, separati dalla data d'esame:
+  `abilitazione` (`'motore'` o `'vela'`) e `conseguimento` (`'prima'` o
+  `'estensione_e12'`). Lo schema passa a **6** con due colonne dell'account,
+  una migrazione additiva senza valori predefiniti — un default sarebbe una
+  risposta che nessuno ha dato. `PUT /v1/profilo` li accetta accanto alla data:
+  un campo assente resta com'è, `null` lo toglie, e la validazione è atomica.
+  La descrizione dell'account — `GET /v1/io`, la risposta del profilo,
+  l'accesso — li porta con **`campi_profilo`**, l'elenco dei campi che il
+  profilo conserva: la capability dichiarata, non dedotta dalla versione.
+  L'export li porta; la conversione di un file non li carica in un altro
+  account, come gli esiti. Un azzeramento non li tocca; la cancellazione li
+  porta via. Lo strumento del titolare li mostra, `null` anche su un database
+  di prima. Niente fasi, niente obiettivo, niente «oggi»: quelli sono P-76. La
+  pagina non è stata toccata.
+
+- **Il profilo smette di ignorare un campo che non conosce.** Fino a oggi un
+  `PUT /v1/profilo` con un campo sconosciuto riceveva `200` e il campo spariva:
+  nessuna pagina lo mandava, quindi nessuno se n'era accorto, ma è il «200 che
+  ignora un valore mandato» che D.3 vieta. Ora è un `422 {errore: 'profilo',
+  campo, messaggio}` che non scrive niente, nemmeno i campi buoni accanto, come
+  `PUT /v1/esito` di P-73; e ogni `422` del profilo porta `campo`. Il banco del
+  client gira sul server vero e resta verde: nessuna pagina mandava altro.
+
+- **Misurato con il codice del tag: perché la capability serve.** `v0.30.0`,
+  estratto con `git archive` e avviato sul database dello schema 6, parte e
+  scrive «schema del database 6, del codice 4»; non manda `campi_profilo`; a un
+  `PUT {data_esame, abilitazione}` risponde `200`, scrive la data e lascia la
+  colonna com'era. Una pagina che si fidasse del `200` direbbe «salvate» per
+  niente. E cancellando un account la riga se ne va con le colonne che lui non
+  conosce: `estensione_e12`, che nel database non sta altrove, sparisce dal file
+  e dal `-wal`. Una copia dello schema 5 — quella che `rg-aggiorna` farà prima
+  di portare la macchina allo schema 6 — si ripristina allo schema 6 con le
+  scelte nulle: quelle dette dopo la copia si perdono, come un esito, e non si
+  inventano.
+
+- **Prima i test, rossi uno per uno**: quattro nuovi — R-ACC-78…81, proposti
+  nel §17 di `docs/account-progetto.md` — e cinque estesi: la migrazione, la
+  cancellazione sui byte (R-ACC-19), la lettura del titolare (R-ACC-71), e le
+  chiavi dell'export nei test degli esiti e dell'opposizione; otto rossi per
+  la ragione misurata, la colonna che non c'era. **Provati al contrario su
+  diciotto rotture**, una alla volta, tutte rosse nel test che le riguarda: fra
+  le altre qualunque stringa accettata, i valori dei due campi uniti, le
+  maiuscole, il campo ignoto ignorato, `null` rifiutato, un campo assente che
+  diventa `null`, le scelte scritte prima di controllare i segnali, la
+  capability senza le scelte, l'errore senza il campo, l'export senza le
+  scelte, l'azzeramento che le toglie, la migrazione con un predefinito o
+  dimenticata nell'elenco, il ripristino che non migra la copia, e lo
+  strumento del titolare che lascia `undefined`. Il test di P-73 sul rilascio
+  di prima guardava «schema del database 5»: ora guarda lo schema del codice.
+
+- **Documenti:** `account-progetto.md` §3, §7.1 (le scelte che il contratto
+  non diceva), §7.2, il nuovo §13.4, §14.4, §15.2 — le statistiche non le
+  vedono: la fonte `iscritti` non le porta, e metterle è una decisione —, §17,
+  §20 e il registro; `account-client-progetto.md` §1, §8 e §11.1, il contratto
+  che la pagina consumerà; la nota nel §10.1 del progetto del ridisegno. La
+  riga dell'informativa resta a P-81.
+
+  Suite: server **85/85** (erano 81), con Node 25.3 e con la **24.21.0 LTS**,
+  scaricata da nodejs.org e confrontata con il suo `SHASUMS256.txt`;
+  `ripristina --prova` 24 controlli, con tutte e due; motore 215/219 con i
+  quattro skip previsti, anche con la LTS; dati 230; specifica 988;
+  interfaccia 2.604, in 4 min 16 s, con la 8620 guardata libera per 90 s
+  prima. Guardiano verde. `site/`, il motore e `docs/prossime-sessioni.md` non
+  sono stati toccati; la macchina nemmeno.
+
 ## [0.30.0] — 2026-10-03
 
 **Il sito più semplice: niente offline.** Rotta Giusta si apre con la rete,

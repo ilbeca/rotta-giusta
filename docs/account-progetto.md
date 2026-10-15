@@ -593,7 +593,9 @@ account (
   chiave_locale          TEXT NOT NULL UNIQUE,  -- casuale: il nome dell'archivio nel browser (§8.1)
   accessi_falliti        INTEGER NOT NULL DEFAULT 0,   -- di fila; al centesimo la password si disattiva (§6.5)
   password_disattivata_il TEXT,                 -- NULL finché non si arriva a cento; la toglie la reimpostazione
-  fuori_statistiche_dal  TEXT                   -- NULL, o da quando si è opposto alle statistiche (§15.2)
+  fuori_statistiche_dal  TEXT,                  -- NULL, o da quando si è opposto alle statistiche (§15.2)
+  abilitazione           TEXT,                  -- 'motore' | 'vela' | NULL: che cosa prepara (§13.4, P-83)
+  conseguimento          TEXT                   -- 'prima' | 'estensione_e12' | NULL: da dove parte (§13.4, P-83)
 )
 
 riga (
@@ -663,6 +665,17 @@ Niente `CHECK` sui valori: una prova nuova vorrebbe rifare la tabella invece di
 aggiungere; le regole stanno in `server/esiti.mjs`, controllate tutte prima di
 scrivere. La chiave esterna fa sì che anche il codice di prima, che non sa della
 tabella, la svuoti cancellando l'account — provato con `v0.30.0`, §14.4.)*
+
+*(15 ottobre 2026, P-83: `abilitazione` e `conseguimento`, due colonne
+dell'account con lo schema 6, una migrazione additiva — `ALTER TABLE … ADD
+COLUMN`, `NULL` per chi c'era prima, nessun valore predefinito, perché un
+default sarebbe una risposta che nessuno ha dato. Colonne e non una tabella,
+perché sono un fatto dell'account e se ne vanno con lui, anche con il codice di
+prima che cancella la riga intera; niente `CHECK`, come per `esito`: i valori
+stanno in `SCELTE_PROFILO` di `server/conti.mjs`, e un valore nuovo sarebbe
+un'aggiunta. È la regola qui sotto, «quello che Q-ONBOARD deciderà di chiedere
+diventerà colonne, ognuna con la sua validazione», applicata alla decisione 13
+di P-59 e ad A-5. §13.4.)*
 
 Cinque scelte che non si vedono dallo schema.
 
@@ -1133,7 +1146,7 @@ uscirne — vale anche per chi legge la risposta in console.
 | `POST /v1/accesso` `{email, password}` | apre la sessione | `200` + cookie; `401` |
 | `POST /v1/uscita` | chiude questa sessione | `204` |
 | `POST /v1/uscita/ovunque` | chiude tutte | `204` |
-| `GET /v1/io` | chi sono | `{email, verificata, scade_se_non_verificata, data_esame, segnali, generazione, azzerato_il, epoca, chiave_locale, righe, ultima_seq, esiti, tipi_riga}`; `401` |
+| `GET /v1/io` | chi sono | `{email, verificata, scade_se_non_verificata, data_esame, abilitazione, conseguimento, campi_profilo, segnali, generazione, azzerato_il, epoca, chiave_locale, righe, ultima_seq, esiti, tipi_riga}`; `401` |
 | `POST /v1/verifica` `{gettone}` | conferma l'email | `200`; `410` gettone scaduto o usato |
 | `POST /v1/verifica/rinvia` | nuova mail di verifica | `202` |
 | `POST /v1/password/dimenticata` `{email}` | mail di reimpostazione | sempre `202` |
@@ -1141,7 +1154,7 @@ uscirne — vale anche per chi legge la risposta in console.
 | `POST /v1/password/cambia` `{attuale, nuova}` | cambia | `200`; `401` |
 | `POST /v1/email/cambia` `{password, nuova}` | mail di conferma al nuovo indirizzo, avviso al vecchio | `202`; `401`; `403` indirizzo non ancora confermato (§9.6); `409` nuovo indirizzo già registrato; `422`; `503` se la mail non è partita |
 | `POST /v1/email/conferma` `{gettone}` | il nuovo indirizzo diventa quello dell'account, confermato | `200` nella forma di `GET /v1/io`; `410`; `409` se nel frattempo l'ha preso un altro account |
-| `PUT /v1/profilo` `{data_esame, segnali}` | onboarding e impostazioni (§13); un campo assente resta com'è | `200` nella forma di `GET /v1/io`; `422` con il campo che non va, e niente scritto |
+| `PUT /v1/profilo` `{data_esame, segnali, abilitazione, conseguimento}` | onboarding e impostazioni (§13); un campo assente resta com'è, `null` toglie la data o una scelta (P-83) | `200` nella forma di `GET /v1/io`; `422 {errore, campo, messaggio}` con il campo che non va — anche un campo che il server non conosce, `errore: 'profilo'` —, e niente scritto |
 | `POST /v1/azzera` `{password}` | cancella le righe, alza la generazione (§8.4) | `200` con la generazione nuova, nella forma di `GET /v1/io`; `401` |
 | `DELETE /v1/account` `{password}` | cancella tutto, adesso (§14.1) | `204`, e il cookie tolto; `401` |
 | `PUT /v1/esito` `{giorno, prove: {carteggio?, base?, vela?, pratica?}}`, ogni prova `{esito, errori?}` o `null` | scrive le prove nominate per quel giorno; una assente resta com'è, `null` la toglie (P-73) | `200 {esiti}`; `422 {errore: 'esito', campo, messaggio}` e niente scritto; `409 {errore: 'troppi_giorni'}` oltre 20 giorni per account; `401` |
@@ -1210,13 +1223,50 @@ non lo annota. Quello che il progetto non diceva, o diceva diversamente:
   ora tutti e due guardano che la data esista prima di confrontarla. Non era
   muto — un `500` si vede —, ma era l'errore sbagliato.
 
+**Fatto il 15 ottobre 2026 (P-83)**, in `server/conti.mjs`: le scelte di
+preparazione nel profilo, il punto D.3 del §10.1 di `docs/ridisegno-progetto.md`,
+con la decisione A-5 dell'autore (§20). Quello che il contratto non diceva, o
+diceva diversamente:
+
+- **`abilitazione`** è `'motore'`, `'vela'` o `null`; **`conseguimento`** è
+  `'prima'`, `'estensione_e12'` o `null`. Esattamente così: niente maiuscole,
+  niente stringa vuota, niente valore dell'altro campo — `'prima'` per
+  l'abilitazione è un `422` —, niente booleani o numeri. Sono in
+  `SCELTE_PROFILO`, esportato. Nessuno si deduce dall'altro e nessuno ha un
+  valore predefinito: un account nuovo li ha tutti e due `null`, «non detto».
+- **Separati dalla data d'esame**: si scrivono uno alla volta o insieme, e
+  ognuno assente resta com'è. Un `PUT` con la sola data non tocca le scelte, e
+  viceversa. Un azzeramento dei progressi non le tocca, come la data: azzerare è
+  ricominciare a studiare, non cambiare patente.
+- **Un campo che il server non conosce, nel profilo, è un `422`** con
+  `{errore: 'profilo', campo: <il suo nome>, messaggio}`, e niente scritto —
+  nemmeno i campi buoni accanto. Fino al P-83 il profilo lo ignorava con un
+  `200`: nessuna pagina mandava altro che `data_esame` e `segnali`, quindi
+  nessuno se ne accorgeva, ed è il «200 che ignora un valore mandato» che D.3
+  vieta. Ora il profilo fa come `PUT /v1/esito` (P-73). Ogni `422` del profilo
+  porta `campo`, anche quelli di `data_esame` e `segnali`, che prima avevano il
+  solo `errore`, uguale al nome del campo, e lo tengono.
+- **`campi_profilo`**, nella descrizione — `GET /v1/io` e ogni risposta nella
+  sua forma —, è l'elenco dei campi che `PUT /v1/profilo` conserva: oggi
+  `['data_esame', 'segnali', 'abilitazione', 'conseguimento']`, da
+  `CAMPI_PROFILO`. È la capability, dichiarata e non dedotta dalla versione: la
+  pagina manda le scelte e dice «Scelte salvate» solo a un server che le
+  nomina lì. **Il server di `v0.30.0` non la manda, e le scelte le butta con un
+  `200`, misurato**: un `PUT {data_esame, abilitazione}` scrive la data e
+  risponde `200` senza toccare la colonna. È la stessa ragione per cui gli
+  esiti hanno `esiti` in `GET /v1/io`. Un valore nuovo, il giorno che servisse,
+  sarebbe un campo nuovo o una decisione su questo elenco: oggi la capability
+  dice i campi, e i valori sono quelli scritti qui.
+- **Il registro di sicurezza non le annota**, come la data d'esame: non sono
+  un evento di sicurezza.
+
 ### 7.2 Le righe
 
 | Rotta | Che cosa | Risposte |
 |---|---|---|
 | `POST /v1/righe` `{generazione, righe: [...]}` | aggiunge, per `uid` | `200 {nuove: [uid], gia: [uid], scartate: [{uid, motivo, indice}], ultima_seq, epoca, generazione}`; `409 {generazione, azzerato_il, epoca}` generazione vecchia; `413` oltre 2.000 righe o 2 MiB; `422` senza generazione o senza righe |
 | `GET /v1/righe?dopo=<seq>` | le righe arrivate dopo il cursore, al più 5.000 | `200 {righe, ultima_seq, altre: bool, epoca, generazione, azzerato_il}`; `422` se `dopo` non è un intero da zero in su |
-| `GET /v1/esporta` | **il file dei progressi**, nella forma di `esporta()`, con `segPunti` e, dal P-73, `esiti` | `200`, `Content-Disposition: attachment` |
+| `GET /v1/esporta` | **il file dei progressi**, nella forma di `esporta()`, con `segPunti`, dal P-73 `esiti` e dal P-83 `abilitazione` e `conseguimento` | `200`, `Content-Disposition: attachment` |
 
 **`/v1/righe` risponde con gli `uid`, non con i conteggi soli.** I conteggi
 sono quello che la schermata scrive; gli `uid` sono quello che serve al client
@@ -1710,6 +1760,42 @@ giorno.*
 Come per i testi di `site/`, il cambiamento entra **nella stessa versione** degli
 account: oggi quelle chiavi sono vere, perché oggi il sito salva nel browser.
 
+### 13.4 Le scelte di preparazione — fatto il 15 ottobre 2026 (P-83)
+
+L'onboarding del ridisegno chiede «Che cosa stai preparando?»
+(`docs/ridisegno-progetto.md` §6.1, decisione 13 di P-59), e l'autore ha deciso
+il 15 ottobre 2026 (A-5) che con l'account la risposta si conserva. Due colonne
+dell'account, con lo schema 6:
+
+| Campo | Valori | Che cosa dice |
+|---|---|---|
+| `abilitazione` | `'motore'`, `'vela'`, `null` | «Solo motore» o «Anche vela» |
+| `conseguimento` | `'prima'`, `'estensione_e12'`, `null` | «Prima patente» o «Estensione dalla entro 12 miglia» |
+
+- **Facoltative e nulle**: `null` è «non detto», e un account nuovo le ha nulle.
+  Si scrivono con `PUT /v1/profilo`, si leggono nella descrizione, l'export le
+  porta (§7.1, §7.2). La validazione è quella del §7.1, atomica.
+- **Non sono un obiettivo, una fase, un piano né «oggi».** Non limitano le
+  attività e il motore non le legge: la pagina le usa per dire quali prove
+  servono in Esame. L'obiettivo prospettico e le fasi aspettano P-76.
+- **L'import non le carica da un file in un altro account**, come gli esiti
+  (R-ESITO-08): il file si ricarica in qualunque account, e le scelte sono di
+  chi le ha dette. Dal lato del server è vero per costruzione — l'import manda
+  le righe a `/v1/righe` e i punteggi a `/v1/profilo` —, e il controllo lo
+  prova facendo come la pagina; che la pagina non le copi dal file in un `PUT`
+  è del client (`account-client-progetto.md` §8).
+- **Le statistiche non le vedono**: la fonte `iscritti` non le porta (§15.2).
+- **L'informativa le nomina** fra i dati del profilo: è il lavoro di P-81
+  nella pagina, nella stessa versione in cui l'onboarding le chiede.
+
+Che cosa regge e che cosa no, misurato con i loro controlli: una copia dello
+schema 5, quella che `rg-aggiorna` fa prima di portare la macchina allo
+schema 6, si ripristina e si porta allo schema 6, e chi aveva detto le scelte
+dopo la copia ritrova `null` — si perdono, come un esito detto dopo una copia
+(§14.4), e non si inventano; una copia dello schema 6 le riporta. Il rilascio
+di prima, `v0.30.0`, sul database dello schema 6 parte, non dichiara
+`campi_profilo` e cancellando un account le porta via anche dai byte (§14.4).
+
 ---
 
 ## 14. La cancellazione
@@ -1813,6 +1899,17 @@ in schermata.
   che è l'orologio del server: un orologio tornato indietro di più del tempo
   fra un ritiro e un esito detto di nuovo farebbe togliere quest'ultimo al
   primo avvio. Lo stesso orologio decide le sessioni e i gettoni.
+- **Le scelte di preparazione se ne vanno con l'account, anche dai byte**
+  (P-83). Sono due colonne della riga dell'account, che la cancellazione toglie
+  con `secure_delete` e il WAL svuotato: il controllo di R-ACC-19 cerca
+  `estensione_e12`, che nel database non sta altrove, prima e dopo. E con il
+  codice di prima: `v0.30.0`, estratto dal tag e avviato sul database dello
+  schema 6, non conosce le colonne ma cancella la riga intera, e il valore
+  sparisce dal database e dal `-wal` — misurato. Una scelta non si ritira da
+  sola: si toglie con `null`, che riscrive la colonna, e non passa dal file
+  delle cancellazioni, perché non è un dato che un ripristino debba ritogliere —
+  una copia di prima porta il valore di prima, o `null` se è dello schema 5,
+  come la data d'esame (§13.4).
 
 ---
 
@@ -2058,6 +2155,13 @@ anche per una lettura di `esito` che non si ferma a un account, e
 quello di R-ACC-74 dichiara chi legge la tabella. Su un database di prima dello
 schema 5 una statistica che usa `esiti` si ferma con un errore, invece di
 contare zero esiti che non sarebbe vero.
+
+**Le scelte di preparazione non sono in nessuna fonte (P-83).** La fonte
+`iscritti` porta `data_esame` e non `abilitazione` né `conseguimento`: oggi
+nessuna statistica le chiede, e il controllo di R-ACC-69 è rosso per una query
+che le contasse fuori da qui. Metterle fra le colonne di `iscritti` è una riga
+in `server/statistiche.mjs`, ed è una decisione: quella che oggi l'informativa
+chiama statistiche sono sulle risposte.
 
 **La soglia delle venti persone**, decisa dall'autore il 4 ottobre 2026
 (`esito-esame-progetto.md` §11, punto 11): un conteggio sugli esiti di un
@@ -2630,6 +2734,20 @@ server prova la sua metà — l'export porta gli esiti, e le righe del file,
 caricate in un altro account, non ne portano —; che l'anteprima dell'import lo
 dica è della pagina.
 
+**Le scelte di preparazione (P-83, 15 ottobre 2026).** Quattro proposti, con il
+loro test in `test_server.mjs`; li porta nel §9.9 della specifica chi tiene la
+specifica, con la pagina che li consuma (P-81, P-82):
+
+| ID | Requisito | Controllo proposto |
+|---|---|---|
+| R-ACC-78 | `abilitazione` e `conseguimento` sono facoltativi e nulli, ognuno uno dei suoi valori o `null`; assente non modifica, `null` azzera; un valore estraneo o un campo che il profilo non conosce è un `422` con il campo, e non lascia scritti gli altri; la descrizione li porta con `campi_profilo`; un azzeramento non li tocca | `test_server.mjs::profilo: abilitazione e conseguimento, facoltativi e nulli, assente non modifica, null azzera, e un valore estraneo e un 422 che non scrive niente` |
+| R-ACC-79 | L'export porta le scelte, e un altro account che carica il file come la pagina — righe e punteggi — resta con le sue | `test_server.mjs::esporta: il file porta le scelte di preparazione, e un altro account che lo carica non le riceve` |
+| R-ACC-80 | Una copia dello schema 5 si ripristina allo schema 6 con le scelte nulle, non inventate; una dello schema 6 le riporta; lo strumento del titolare le dice `null` su un database di prima | `test_server.mjs::ripristino: una copia dello schema 5 si porta allo schema 6, e le scelte dette dopo la copia si perdono, non si inventano` |
+| R-ACC-81 | Il rilascio di prima sul database di dopo parte, non dichiara `campi_profilo`, butta le scelte con un `200` — la ragione della capability —, e cancellando un account le porta via anche dai byte | `test_server.mjs::profilo: il rilascio di prima sul database di dopo non dice campi_profilo, butta le scelte con un 200, e cancellando le porta via dai byte` |
+
+R-ACC-19 e R-ACC-71 si estendono: la cancellazione cerca anche la scelta nei
+byte, e la lettura del titolare mostra le scelte, in JSON e a schermo.
+
 ---
 
 ## 18. Che cosa diventa falso — le aggiunte
@@ -2704,7 +2822,7 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
 
 | Questione | Decide | Proposta |
 |---|---|---|
-| ~~Le scelte di preparazione nel profilo~~ | — | **deciso dall'autore il 15 ottobre 2026** (A-5 del §11 di `docs/ridisegno-progetto.md`): due campi facoltativi e nulli nel profilo, `abilitazione` (`motore` o `vela`) e `conseguimento` (`prima` o `estensione_e12`), separati dalla data d'esame, in `GET /v1/io`, nella risposta del profilo e nell'export, con la capability `campi_profilo` dichiarata; valore estraneo `422` con il campo; migrazione additiva. Non sono un obiettivo prospettico né una fase: quelli aspettano P-76. Li fa P-83, e l'informativa li nomina fra i dati del profilo |
+| ~~Le scelte di preparazione nel profilo~~ | — | **deciso dall'autore il 15 ottobre 2026** (A-5 del §11 di `docs/ridisegno-progetto.md`): due campi facoltativi e nulli nel profilo, `abilitazione` (`motore` o `vela`) e `conseguimento` (`prima` o `estensione_e12`), separati dalla data d'esame, in `GET /v1/io`, nella risposta del profilo e nell'export, con la capability `campi_profilo` dichiarata; valore estraneo `422` con il campo; migrazione additiva. Non sono un obiettivo prospettico né una fase: quelli aspettano P-76. **Fatti da P-83 il 15 ottobre 2026** (§7.1, §13.4, schema 6); l'informativa li nomina fra i dati del profilo con P-81 |
 | ~~Macchina con SQLite, o container con PostgreSQL gestito~~ | — | **deciso** su delega: macchina, SQLite, Node senza dipendenze (§2.2) |
 | ~~Quale macchina~~ | — | **deciso dall'autore il 26 settembre 2026: STARDUST1-S a `pl-waw-2`**, 5,04 € al mese. Il prezzo che si accetta: i dati stanno a Varsavia (UE), e dopo un guasto la macchina potrebbe non essere ricreabile subito perché le scorte sono incerte. Le copie restano a `nl-ams` (§2.6). L'informativa dirà Polonia. **Si crea alla messa in esercizio, non prima** (dall'autore, il 26 settembre 2026): accesa da subito costerebbe 5,04 € al mese per settimane senza niente sopra, e andrebbe comunque tenuta aggiornata. Il prezzo che si accetta è di trovarla esaurita quel giorno; allora si sceglie fra la DEV1-S a `fr-par` e un'altra zona |
 | ~~Gli adempimenti rimasti del titolare: indirizzo postale, base giuridica del registro di sicurezza, inoltro verso Gmail, conservazione delle richieste, DPA di statichost.eu, due fattori~~ | — | **decisi fra il 1° e il 2 ottobre 2026** (§15.4): nessun indirizzo postale e nessuna PEC, legittimo interesse, `privacy@` su OVHcloud, due anni, DPA firmato e spedito, due fattori fatti; niente parere firmato. Resta la copia controfirmata del DPA (§15.4, punto 1); la firma DKIM è attiva dal 2 ottobre (punto 10) |
@@ -2894,3 +3012,12 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
   «nessun account», corretto con il suo test. Quattro requisiti, quaranta
   rotture, tutte rosse; una era passata verde per una coincidenza di date, e
   il test che non la vedeva è stato corretto.
+- **15 ottobre 2026 — le scelte di preparazione (P-83).** Il punto D.3 del
+  §10.1 di `docs/ridisegno-progetto.md`, con A-5: schema 6 con `abilitazione` e
+  `conseguimento`, facoltativi e nulli, nella descrizione con `campi_profilo`,
+  nella risposta del profilo e nell'export (§7.1, §13.4). Il profilo smette di
+  ignorare un campo che non conosce: è un `422` con il suo nome. Misurato con il
+  codice del tag: `v0.30.0` sul database dello schema 6 parte, non dichiara
+  `campi_profilo`, butta le scelte con un `200`, e cancellando un account le
+  porta via dai byte. Una copia dello schema 5 si ripristina con le scelte
+  nulle. Quattro requisiti proposti (§17), diciotto rotture, tutte rosse.

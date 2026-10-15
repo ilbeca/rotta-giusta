@@ -1132,6 +1132,16 @@ P-80 confronta esigenze e firma finale prima di creare export. Richiesti:
    Non registrare fasi o un obiettivo prospettico. Aggiorna il progetto
    degli account e il client per questo contratto; se la regia lo
    scorpora, P-81 aspetta la sua merge come P-80.
+   *Fatto da P-83 il 15 ottobre 2026, su `main`:* schema 6 con le due
+   colonne; `abilitazione`, `conseguimento` e `campi_profilo` nella
+   descrizione dell'account (`GET /v1/io` e ogni risposta nella sua forma),
+   le due scelte nell'export; un valore o un campo che il profilo non conosce
+   è un `422 {errore, campo, messaggio}` che non scrive niente. Il server di
+   `v0.30.0` non dichiara `campi_profilo` e butta le scelte con un `200`,
+   misurato: è il ramo «scelte temporanee dichiarate». Il contratto per la
+   pagina è nel §11.1 di `account-client-progetto.md`, quello del server nel
+   §7.1 e nel §13.4 di `account-progetto.md`; la riga dell'informativa resta
+   a P-81.
 
 Nessun export per fasi, costanza, «oggi», durata o stima qui. Per la mappa
 `contaStati` basta: i tre campi del quadro restano per azioni/compatibilità,

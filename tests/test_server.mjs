@@ -11,7 +11,7 @@
 // allarmi al titolare; e le statistiche, con chi si oppone fuori da ogni
 // conteggio (P-54); e le letture del titolare, ognuna annotata nel registro
 // (P-55); e l'esito dell'esame, detto da chi studia, che si toglie davvero
-// (P-73). L'altra meta' di questo file e' la
+// (P-73); e le scelte di preparazione nel profilo (P-83). L'altra meta' di questo file e' la
 // copia di sicurezza con il ripristino provato — *un backup mai ripristinato
 // non e' un backup, e' un file* (0.4.6) — con l'epoca del database e il file
 // delle cancellazioni del §2.7.
@@ -1076,9 +1076,9 @@ test('database: uno schema 1 si porta all ultimo aggiungendo, senza togliere nie
   const db = apri(p); t.after(() => db.close());
   assert.equal(SCHEMA, MIGRAZIONI.length);
   assert.equal(db.prepare('PRAGMA user_version').get().user_version, SCHEMA);
-  const a = db.prepare('SELECT email, accessi_falliti, password_disattivata_il, fuori_statistiche_dal FROM account').get();
-  assert.deepEqual({ ...a }, { email: 'a@esempio.it', accessi_falliti: 0, password_disattivata_il: null, fuori_statistiche_dal: null },
-    'e chi c era prima del segno resta nei conteggi: nessuno si e opposto');
+  const a = db.prepare('SELECT email, accessi_falliti, password_disattivata_il, fuori_statistiche_dal, abilitazione, conseguimento FROM account').get();
+  assert.deepEqual({ ...a }, { email: 'a@esempio.it', accessi_falliti: 0, password_disattivata_il: null, fuori_statistiche_dal: null, abilitazione: null, conseguimento: null },
+    'e chi c era prima del segno resta nei conteggi: nessuno si e opposto; e nessuno ha detto che cosa prepara (P-83)');
   const tabelle = db.prepare("SELECT name FROM sqlite_schema WHERE type = 'table'").all().map((r) => r.name);
   for (const nome of ['sessione', 'gettone', 'registro', 'segnali', 'esito']) assert.ok(tabelle.includes(nome), nome);
 
@@ -1603,6 +1603,117 @@ test('profilo: la data d esame facoltativa e i punteggi dei Segnali fusi con il 
   assert.deepEqual(file.segPunti, io.segnali, 'l export porta i punteggi nella forma di esporta() della pagina');
 });
 
+// --- le scelte di preparazione (P-83) ----------------------------------------------
+//
+// docs/ridisegno-progetto.md §10.1 D.3 e §11 A-5, account-progetto.md §7.1 e §13.4.
+// L'onboarding del ridisegno chiede «che cosa stai preparando?»: due campi
+// facoltativi del profilo, separati dalla data d'esame. Il server di prima un
+// campo che non conosce lo butta con un 200 (misurato da P-64): per questo la
+// pagina li manda solo a un server che dichiara `campi_profilo`, e questo server
+// un valore che non conosce lo rifiuta.
+
+const CAMPI_PROFILO = ['data_esame', 'segnali', 'abilitazione', 'conseguimento'];
+
+test('profilo: abilitazione e conseguimento, facoltativi e nulli, assente non modifica, null azzera, e un valore estraneo e un 422 che non scrive niente', async (t) => {
+  // R-ACC-78. Nulli per chi non risponde; ognuno si scrive da solo, accanto
+  // alla data e non dentro; `null` lo toglie. Ogni regola si controlla prima di
+  // scrivere: un valore estraneo — anche quello giusto dell'altro campo, anche
+  // in maiuscolo — e' un 422 con il campo, e non lascia scritti gli altri. Un
+  // campo che il server non conosce e' un 422, mai un 200 che lo ignora.
+  const k = await conti(t);
+  const { cookie, io } = await dentro(k);
+  const altro = await registrato(k, 'altro.profilo@esempio.it');
+  const profilo = (corpo, c = cookie) => k.chiama('PUT', '/v1/profilo', corpo, { cookie: c });
+  const scelte = (x) => [x.data_esame, x.abilitazione, x.conseguimento];
+  assert.equal((await k.chiama('PUT', '/v1/profilo', { abilitazione: 'vela' })).status, 401);
+
+  // Un account nuovo: niente detto, e il server dichiara che cosa il profilo conserva.
+  assert.deepEqual(scelte(io), [null, null, null]);
+  assert.deepEqual(io.campi_profilo, CAMPI_PROFILO, 'la capability, dichiarata e non dedotta dalla versione');
+
+  let r = await profilo({ abilitazione: 'vela' });
+  assert.equal(r.status, 200, JSON.stringify(r.corpo));
+  assert.deepEqual(scelte(r.corpo), [null, 'vela', null], 'uno alla volta: l altro resta nullo');
+  assert.deepEqual(r.corpo, await ioDi(k, cookie), 'la risposta e la descrizione, come GET /v1/io');
+  r = await profilo({ conseguimento: 'estensione_e12' });
+  assert.deepEqual(scelte(r.corpo), [null, 'vela', 'estensione_e12'], 'un campo assente resta com era');
+  r = await profilo({ data_esame: '2026-11-20' });
+  assert.deepEqual(scelte(r.corpo), ['2026-11-20', 'vela', 'estensione_e12'], 'la data e un campo suo, e non tocca le scelte');
+  r = await profilo({ abilitazione: 'motore', conseguimento: 'prima' });
+  assert.deepEqual(scelte(r.corpo), ['2026-11-20', 'motore', 'prima']);
+  assert.deepEqual(scelte(await ioDi(k, altro)), [null, null, null], 'un account non vede e non tocca le scelte di un altro');
+
+  // I valori estranei: uno per volta, accanto a campi buoni che non devono passare.
+  const buoni = { data_esame: '2027-01-10', segnali: { notturni: { migliore: 3, giocate: 1 } } };
+  for (const [campo, valore] of [
+    ['abilitazione', 'Vela'], ['abilitazione', 'entrambe'], ['abilitazione', ''], ['abilitazione', 'prima'],
+    ['abilitazione', 1], ['abilitazione', true], ['abilitazione', {}], ['abilitazione', ['vela']],
+    ['conseguimento', 'estensione'], ['conseguimento', 'Prima'], ['conseguimento', 'motore'], ['conseguimento', 0], ['conseguimento', false],
+  ]) {
+    const no = await profilo({ ...buoni, abilitazione: 'vela', conseguimento: 'estensione_e12', [campo]: valore });
+    assert.equal(no.status, 422, `${campo}: ${JSON.stringify(valore)}`);
+    assert.deepEqual([no.corpo.errore, no.corpo.campo], [campo, campo], JSON.stringify(no.corpo));
+    assert.match(no.corpo.messaggio, /null/, 'il messaggio dice anche come toglierlo');
+  }
+  // Un campo che il server non conosce: un rifiuto, non un 200 che lo butta.
+  for (const ignoto of ['abilitazioni', 'obiettivo', 'fase', 'oggi', 'Abilitazione']) {
+    const no = await profilo({ ...buoni, abilitazione: 'vela', [ignoto]: 'vela' });
+    assert.equal(no.status, 422, ignoto);
+    assert.deepEqual([no.corpo.errore, no.corpo.campo], ['profilo', ignoto], JSON.stringify(no.corpo));
+  }
+  const fermo = await ioDi(k, cookie);
+  assert.deepEqual([...scelte(fermo), fermo.segnali], ['2026-11-20', 'motore', 'prima', {}], 'nessun rifiuto ha scritto niente, nemmeno i campi buoni');
+
+  // null azzera, e solo il campo nominato.
+  r = await profilo({ abilitazione: null });
+  assert.deepEqual(scelte(r.corpo), ['2026-11-20', null, 'prima']);
+  r = await profilo({ abilitazione: 'vela', conseguimento: null, data_esame: null });
+  assert.deepEqual(scelte(r.corpo), [null, 'vela', null]);
+  r = await profilo({});
+  assert.deepEqual(scelte(r.corpo), [null, 'vela', null], 'un corpo vuoto non cambia niente');
+
+  // Nel database, non in memoria; e un azzeramento dei progressi non le tocca.
+  r = await profilo({ conseguimento: 'estensione_e12' });
+  await k.riavvia();
+  assert.deepEqual(scelte(await ioDi(k, cookie)), [null, 'vela', 'estensione_e12']);
+  const az = await k.chiama('POST', '/v1/azzera', { password: BUONA }, { cookie });
+  assert.equal(az.status, 200, JSON.stringify(az.corpo));
+  assert.deepEqual([az.corpo.generazione, ...scelte(az.corpo)], [2, null, 'vela', 'estensione_e12'], 'azzerare e ricominciare a studiare, non cambiare patente');
+  // E la descrizione che porta l'accesso le porta anche lei.
+  const acc = await k.chiama('POST', '/v1/accesso', { email: 'studente@esempio.it', password: BUONA });
+  assert.deepEqual([acc.status, ...scelte(acc.corpo), acc.corpo.campi_profilo], [200, null, 'vela', 'estensione_e12', CAMPI_PROFILO]);
+});
+
+test('esporta: il file porta le scelte di preparazione, e un altro account che lo carica non le riceve', async (t) => {
+  // R-ACC-79, §13.4. Il file e' la portabilita': porta le due scelte com'e' le
+  // vede chi lo scarica. Ma si ricarica in qualunque account, e le scelte sono
+  // di chi le ha dette: come per gli esiti (R-ESITO-08), un altro account che lo
+  // carica — le righe a /v1/righe, i punteggi a /v1/profilo, come fa la pagina —
+  // resta con le sue.
+  const k = await conti(t);
+  const { cookie } = await dentro(k);
+  assert.equal((await k.chiama('POST', '/v1/righe', { generazione: 1, righe: [riga(1), riga(2)] }, { cookie })).status, 200);
+  assert.equal((await k.chiama('PUT', '/v1/profilo', { abilitazione: 'vela', conseguimento: 'prima', segnali: { nebbia: { migliore: 2, giocate: 5 } } }, { cookie })).status, 200);
+  const file = (await k.chiama('GET', '/v1/esporta', undefined, { cookie })).corpo;
+  assert.deepEqual(Object.keys(file).sort(), ['abilitazione', 'app', 'conseguimento', 'esiti', 'esportato', 'righe', 'segPunti', 'versione']);
+  assert.deepEqual([file.abilitazione, file.conseguimento], ['vela', 'prima']);
+  const ricaricato = E.fondiArchivio([], file.righe);
+  assert.deepEqual([ricaricato.nuove, ricaricato.scartate], [2, 0], 'le righe sono le stesse: le scelte non sono righe');
+
+  const altro = await registrato(k, 'altro.import@esempio.it');
+  assert.equal((await k.chiama('PUT', '/v1/profilo', { abilitazione: 'motore' }, { cookie: altro })).status, 200);
+  const r = await k.chiama('POST', '/v1/righe', { generazione: 1, righe: file.righe }, { cookie: altro });
+  assert.deepEqual([r.status, r.corpo.nuove.length], [200, 2]);
+  assert.equal((await k.chiama('PUT', '/v1/profilo', { segnali: file.segPunti }, { cookie: altro })).status, 200);
+  const io = await ioDi(k, altro);
+  assert.deepEqual([io.abilitazione, io.conseguimento, io.segnali], ['motore', null, { nebbia: { migliore: 2, giocate: 5 } }],
+    'le righe e i punteggi entrano, le scelte del file no');
+  // E un file manomesso che mette le scelte fra le righe non le porta: non sono righe.
+  const manomesso = await k.chiama('POST', '/v1/righe', { generazione: 1, righe: [{ abilitazione: 'vela', conseguimento: 'prima' }] }, { cookie: altro });
+  assert.deepEqual([manomesso.corpo.nuove, manomesso.corpo.scartate.length], [[], 1]);
+  assert.deepEqual([(await ioDi(k, altro)).abilitazione, (await ioDi(k, altro)).conseguimento], ['motore', null]);
+});
+
 test('cancellazione: DELETE /v1/account toglie tutto, anche dai byte del file, e un ripristino da una copia di prima non lo riporta', async (t) => {
   // R-ACC-19, §14.1 e §14.4. Con la password; righe, sessioni, gettoni,
   // segnali e account in una transazione, passando prima dal file delle
@@ -1616,11 +1727,14 @@ test('cancellazione: DELETE /v1/account toglie tutto, anche dai byte del file, e
   await k.chiama('POST', '/v1/righe', { generazione: 1, righe: [riga(1, { nota: segno }), riga(2)] }, { cookie });
   await k.chiama('POST', '/v1/righe', { generazione: 1, righe: [riga(3)] }, { cookie: altro });
   await k.chiama('PUT', '/v1/profilo', { data_esame: '2026-12-01', segnali: { nebbia: { migliore: 3, giocate: 9 } } }, { cookie });
+  // Le scelte di preparazione (P-83): `estensione_e12` non sta in nessun altro posto del database.
+  assert.equal((await k.chiama('PUT', '/v1/profilo', { abilitazione: 'vela', conseguimento: 'estensione_e12' }, { cookie })).status, 200);
   // L'esito dell'esame, con un giorno che nel database non c'e' altrove (P-73).
   assert.equal((await k.chiama('PUT', '/v1/esito', { giorno: '2026-07-09', prove: { base: { esito: 'superata', errori: 1 } } }, { cookie })).status, 200);
   await k.chiama('POST', '/v1/email/cambia', { password: BUONA, nuova: 'in.sospeso.qui@esempio.it' }, { cookie });
   const id = idDi(k, email);
   assert.ok(bytesDel(k).includes('2026-07-09'), 'prima, il giorno dell esito e nei byte: la sonda funziona');
+  assert.ok(bytesDel(k).includes('estensione_e12'), 'e anche la scelta di preparazione');
   // Una copia di prima, con il servizio acceso.
   copia(k.opzioni.db, join(k.c, 'copia.db'));
 
@@ -1646,7 +1760,7 @@ test('cancellazione: DELETE /v1/account toglie tutto, anche dai byte del file, e
   assert.deepEqual(file.map((v) => [v.evento, v.account]), [['cancellazione', id]]);
 
   const byte = bytesDel(k);
-  for (const [cosa, valore] of [['l email', email], ['l email in sospeso', 'in.sospeso.qui@esempio.it'], ['una riga', segno], ['l esito dell esame', '2026-07-09']]) {
+  for (const [cosa, valore] of [['l email', email], ['l email in sospeso', 'in.sospeso.qui@esempio.it'], ['una riga', segno], ['l esito dell esame', '2026-07-09'], ['la scelta di preparazione', 'estensione_e12']]) {
     assert.ok(!byte.includes(valore), `${cosa} e ancora nei byte del database`);
   }
 
@@ -1979,7 +2093,7 @@ test('statistiche: chi si e opposto esce da ogni conteggio, e le sue risposte re
   const ric = await k.chiama('GET', '/v1/righe?dopo=0', undefined, { cookie: a });
   assert.deepEqual(ric.corpo.righe.map((r) => r.uid), ['u000001', 'u000002', 'u000003']);
   assert.deepEqual(await esportato(), filePrima, 'l export non cambia, e il segno non ci viaggia');
-  assert.deepEqual(Object.keys(filePrima).sort(), ['app', 'esiti', 'righe', 'segPunti', 'versione']);
+  assert.deepEqual(Object.keys(filePrima).sort(), ['abilitazione', 'app', 'conseguimento', 'esiti', 'righe', 'segPunti', 'versione']);
   assert.deepEqual((await k.chiama('GET', '/v1/io', undefined, { cookie: a })).corpo, ioPrima);
 
   // Annotato nel registro, con l'id interno e il motivo, senza email; e nel
@@ -2498,7 +2612,7 @@ async function chiChiedeAiuto(k) {
   const b = await confermato(k, UN_ALTRO);
   let r = await k.chiama('POST', '/v1/righe', { generazione: 1, righe: RIGHE_DI_CHI_SCRIVE }, { cookie: a });
   assert.deepEqual([r.status, r.corpo.nuove?.length, r.corpo.scartate], [200, RIGHE_DI_CHI_SCRIVE.length, []], JSON.stringify(r.corpo));
-  assert.equal((await k.chiama('PUT', '/v1/profilo', { data_esame: '2026-11-20', segnali: { nebbia: { migliore: 7, giocate: 4 } } }, { cookie: a })).status, 200);
+  assert.equal((await k.chiama('PUT', '/v1/profilo', { data_esame: '2026-11-20', segnali: { nebbia: { migliore: 7, giocate: 4 } }, abilitazione: 'vela', conseguimento: 'estensione_e12' }, { cookie: a })).status, 200);
   assert.equal((await k.chiama('PUT', '/v1/esito', ESITO_DI_CHI_SCRIVE, { cookie: a })).status, 200);
   r = await k.chiama('POST', '/v1/righe', { generazione: 1, righe: RIGHE_DI_UN_ALTRO }, { cookie: b });
   assert.equal((await k.chiama('PUT', '/v1/esito', { giorno: '2026-09-17', prove: { pratica: { esito: 'superata' } } }, { cookie: b })).status, 200);
@@ -2544,6 +2658,7 @@ test('letture: il titolare legge un account dalla riga di comando, con il serviz
   assert.deepEqual(letto.account, {
     id: idA, email: CHI_SCRIVE, creato_il: acc.creato_il, email_verificata_il: acc.email_verificata_il, scade_se_non_verificata: null,
     ultimo_accesso_il: acc.ultimo_accesso_il, avviso_inattivita_il: null, data_esame: '2026-11-20',
+    abilitazione: 'vela', conseguimento: 'estensione_e12',
     generazione: 1, azzerato_il: null, accessi_falliti: 0, password_disattivata_il: null, fuori_statistiche_dal: null,
     sessioni: k.s.db.prepare('SELECT creata_il, scade_il FROM sessione WHERE account_id = ? ORDER BY creata_il').all(idA).map((x) => ({ ...x })),
     segnali: { nebbia: { migliore: 7, giocate: 4 } },
@@ -2606,7 +2721,8 @@ test('letture: il titolare legge un account dalla riga di comando, con il serviz
   for (const atteso of ['annotata nel registro', `account ${idA}`, CHI_SCRIVE, '2026-11-20', 'att-quiz-1', 'att-quiz-2', 'att-prova', 'att-carta', 'att-tec',
     '16 righe', '11 risposte', 'prove avviate 1', 'segnalibri 3', 'PROVE AVVIATE', 'att-prova:a', 'motore 0.30.0', 'regola-semplice-1',
     'SEGNALIBRI', 'base-6', '2/3 esatte', 'coperti 5', 'da ripassare 2', 'mai visti 1465', 'nebbia',
-    'ESAME', '2026-09-03', 'carteggio superata', 'base non superata, 6 errori']) {
+    'ESAME', '2026-09-03', 'carteggio superata', 'base non superata, 6 errori',
+    'abilitazione vela', 'conseguimento estensione_e12']) {
     assert.ok(r.stdout.includes(atteso), `nel testo manca «${atteso}»:\n${r.stdout}`);
   }
   assert.ok(!r.stdout.includes(ATT_QUIZ[0].uid), 'senza --attivita le righe non si elencano');
@@ -3157,7 +3273,7 @@ test('esito: la cancellazione dell account li porta via, anche con il codice di 
   k.s = await avviaDiPrima(k.opzioni);
   const salute = (await k.chiama('GET', '/v1/salute')).corpo;
   assert.deepEqual([salute.versione, salute.schema], ['0.30.0', { codice: 4, database: SCHEMA }], 'e davvero il codice di prima');
-  assert.ok(k.scritto.some((m) => /schema del database 5, del codice 4/.test(m)), k.scritto.join(' | '));
+  assert.ok(k.scritto.some((m) => m.includes(`schema del database ${SCHEMA}, del codice 4`)), k.scritto.join(' | '));
   const ioVecchio = await ioDi(k, cookie);
   assert.ok(!('esiti' in ioVecchio) && !('tipi_riga' in ioVecchio), 'il server di prima non dice esiti: la pagina nuova resta spenta (§6 del progetto)');
   assert.equal((await k.chiama('PUT', '/v1/esito', { giorno: '2026-07-17', prove: {} }, { cookie })).status, 404, 'e la rotta e un 404 che si legge');
@@ -3259,7 +3375,7 @@ test('esporta: il file porta gli esiti, e importa non li carica', async (t) => {
   assert.equal((await k.chiama('PUT', '/v1/esito', { giorno: '2026-09-03', prove: { base: { esito: 'superata', errori: 2 }, pratica: { esito: 'non_sostenuta' } } }, { cookie })).status, 200);
 
   const file = (await k.chiama('GET', '/v1/esporta', undefined, { cookie })).corpo;
-  assert.deepEqual(Object.keys(file).sort(), ['app', 'esiti', 'esportato', 'righe', 'segPunti', 'versione']);
+  assert.deepEqual(Object.keys(file).sort(), ['abilitazione', 'app', 'conseguimento', 'esiti', 'esportato', 'righe', 'segPunti', 'versione']);
   assert.deepEqual(file.esiti, (await ioDi(k, cookie)).esiti, 'gli esiti com e li vede lui');
   assert.deepEqual(vistaEsiti(file.esiti), [['2026-09-03', 'base', 'superata', 2], ['2026-09-03', 'pratica', 'non_sostenuta', null]]);
   const ricaricato = E.fondiArchivio([], file.righe);
@@ -3374,4 +3490,101 @@ test('ripristino: un id riusato non perde gli esiti per il ritiro di chi lo avev
   db = apri(p);
   t.after(() => db.close());
   assert.deepEqual(vistaEsiti(esitiDi(db, b)), [['2026-09-03', 'vela', 'non_superata', null]], 'il ritiro era di a, non di b');
+});
+
+test('ripristino: una copia dello schema 5 si porta allo schema 6, e le scelte dette dopo la copia si perdono, non si inventano', async (t) => {
+  // R-ACC-80, §2.7. La copia che rg-aggiorna fa prima di portare la macchina
+  // allo schema 6 e' dello schema 5, senza le due colonne: il ripristino la
+  // porta allo schema del codice, e chi aveva detto che cosa prepara dopo quella
+  // copia ritrova `null`, cioe' «non detto», non un valore di un altro. Una copia
+  // dello schema 6 le riporta com'erano. E lo strumento del titolare, su un
+  // database dello schema 5, dice `null` e non lascia il campo fuori.
+  const c = cartella(t);
+  const p = join(c, 'conti.db');
+  const f = join(c, 'cancellazioni');
+
+  // Un database com'e' in esercizio dalla v0.30.0 e da P-73: schema 5.
+  let db = new DatabaseSync(p);
+  for (const m of MIGRAZIONI.slice(0, 5)) db.exec(m);
+  db.exec(`INSERT INTO impianto VALUES (1, '${'e'.repeat(32)}', 'x', 'x', 0); PRAGMA user_version = 5;`);
+  const a = creaAccount(db, { email: 'a@esempio.it', password: PHC });
+  const b = creaAccount(db, { email: 'b@esempio.it', password: PHC });
+  aggiungiRighe(db, a, [riga(1), riga(2)]);
+  const letto = leggiAccount(db, 'a@esempio.it', { motivo: 'prova del ripristino, nessuna richiesta' });
+  assert.deepEqual([letto.account.abilitazione, letto.account.conseguimento], [null, null], 'null, non assenti: in JSON un undefined sparisce');
+  db.close();
+  assert.equal(copia(p, join(c, 'copia-schema-5.db')).schema, 5);
+
+  // Il codice nuovo lo porta a 6; A e B dicono che cosa preparano.
+  db = apri(p, { log: () => {} });
+  assert.equal(db.prepare('PRAGMA user_version').get().user_version, SCHEMA);
+  db.prepare("UPDATE account SET abilitazione = 'vela', conseguimento = 'prima' WHERE id = ?").run(a);
+  db.prepare("UPDATE account SET abilitazione = 'motore' WHERE id = ?").run(b);
+  db.close();
+  assert.equal(copia(p, join(c, 'copia-schema-6.db')).schema, SCHEMA);
+
+  let r = ripristina(join(c, 'copia-schema-5.db'), p, { cancellazioni: f });
+  assert.deepEqual([r.schema, r.schemaDellaCopia, r.illeggibili], [SCHEMA, 5, 0]);
+  db = apri(p, { log: () => {} });
+  const scelteDi = (d) => d.prepare('SELECT id, abilitazione, conseguimento FROM account ORDER BY id').all().map((x) => [x.id, x.abilitazione, x.conseguimento]);
+  assert.deepEqual(scelteDi(db), [[a, null, null], [b, null, null]], 'quello detto dopo la copia si perde: la copia non lo aveva');
+  assert.equal(db.prepare('SELECT count(*) n FROM riga WHERE account_id = ?').get(a).n, 2, 'e le righe ci sono');
+  db.close();
+
+  r = ripristina(join(c, 'copia-schema-6.db'), p, { cancellazioni: f });
+  assert.deepEqual([r.schema, r.schemaDellaCopia], [SCHEMA, SCHEMA]);
+  db = apri(p, { log: () => {} });
+  assert.deepEqual(scelteDi(db), [[a, 'vela', 'prima'], [b, 'motore', null]], 'da una copia dello schema 6 tornano com erano');
+  db.close();
+
+  // E il server parte su questo database, e le dice.
+  const s = await avvia({ db: p, cancellazioni: f, porta: 0, argon2: ECONOMICO, log: () => {} });
+  t.after(() => s.chiudi());
+  assert.deepEqual((await (await fetch(`${s.indirizzo}/v1/salute`)).json()).schema, { codice: SCHEMA, database: SCHEMA });
+});
+
+test('profilo: il rilascio di prima sul database di dopo non dice campi_profilo, butta le scelte con un 200, e cancellando le porta via dai byte', async (t) => {
+  // R-ACC-81, §2.7. `v0.30.0`, estratto dal tag e avviato sul database dello
+  // schema 6, e' il caso di rg-torna. Parte e lo dice. Non dichiara
+  // `campi_profilo`, e la pagina nuova accanto a lui non manda le scelte e non
+  // dice «salvate»: e' questa la ragione della capability, misurata qui — un
+  // PUT con `abilitazione` riceve 200 e il valore resta quello di prima. Non
+  // tocca le scelte scritte dal codice nuovo quando cambia la data. Cancellando
+  // l'account la riga se ne va con le colonne che lui non conosce, anche dai byte.
+  const vecchio = rilascioDiPrima(t);
+  const k = await conti(t);
+  const cookie = await confermato(k, 'sceglie.e.va@esempio.it');
+  const altro = await confermato(k, 'resta.con.le.sue@esempio.it');
+  const id = idDi(k, 'sceglie.e.va@esempio.it');
+  assert.equal((await k.chiama('PUT', '/v1/profilo', { abilitazione: 'vela', conseguimento: 'estensione_e12' }, { cookie })).status, 200);
+  assert.equal((await k.chiama('PUT', '/v1/profilo', { abilitazione: 'motore', conseguimento: 'prima' }, { cookie: altro })).status, 200);
+
+  await ferma(k);
+  k.scritto.length = 0;
+  const { avvia: avviaDiPrima } = await import(pathToFileURL(join(vecchio, 'server', 'server.mjs')).href);
+  k.s = await avviaDiPrima(k.opzioni);
+  const salute = (await k.chiama('GET', '/v1/salute')).corpo;
+  assert.deepEqual([salute.versione, salute.schema], ['0.30.0', { codice: 4, database: SCHEMA }], 'e davvero il codice di prima');
+  assert.ok(k.scritto.some((m) => m.includes(`schema del database ${SCHEMA}, del codice 4`)), k.scritto.join(' | '));
+  const io = await ioDi(k, cookie);
+  for (const campo of ['campi_profilo', 'abilitazione', 'conseguimento']) assert.ok(!(campo in io), `il server di prima non dice ${campo}`);
+  // La misura che giustifica la capability: il 200 che butta.
+  const buttato = await k.chiama('PUT', '/v1/profilo', { data_esame: '2026-12-01', abilitazione: 'motore' }, { cookie });
+  assert.equal(buttato.status, 200, 'il server di prima risponde 200 a un campo che non conosce');
+  assert.deepEqual({ ...k.s.db.prepare('SELECT data_esame, abilitazione, conseguimento FROM account WHERE id = ?').get(id) },
+    { data_esame: '2026-12-01', abilitazione: 'vela', conseguimento: 'estensione_e12' }, 'la data cambia, le scelte del codice nuovo restano');
+
+  assert.ok(bytesDel(k).includes('estensione_e12'), 'prima, la scelta e nei byte: la sonda funziona');
+  const via = await k.chiama('DELETE', '/v1/account', { password: BUONA }, { cookie });
+  assert.equal(via.status, 204, JSON.stringify(via.corpo));
+  assert.equal(idDi(k, 'sceglie.e.va@esempio.it'), undefined);
+  assert.ok(!bytesDel(k).includes('estensione_e12'), 'e dopo non c e piu, ne nel database ne nel WAL');
+  assert.deepEqual(leggiCancellazioni(k.opzioni.cancellazioni).voci.map((v) => [v.evento, v.account]), [['cancellazione', id]]);
+
+  // Di nuovo il codice di oggi: l'altro account ha le sue scelte come prima.
+  await ferma(k);
+  k.s = await avvia(k.opzioni);
+  const suo = await ioDi(k, altro);
+  assert.deepEqual([suo.abilitazione, suo.conseguimento, suo.campi_profilo], ['motore', 'prima', CAMPI_PROFILO]);
+  assert.equal((await k.chiama('GET', '/v1/salute')).corpo.versione, VERSION);
 });
