@@ -171,13 +171,20 @@ export async function avviaChrome({ attesaMs = 15000, nomi = [] } = {}) {
     let caricata = 0;
     const ascolta = (m) => {
       if (m.sessionId !== sessionId) return;
-      if (m.method === 'Network.requestWillBeSent') richieste.push({ id: m.params.requestId, url: m.params.request.url, metodo: m.params.request.method });
+      // `tipo` e' quello del protocollo — 'Document' per un caricamento di pagina,
+      // 'Fetch' o 'XHR' per una richiesta dello script —: e' cosi' che il banco
+      // dei tragitti conta i documenti chiesti dopo il primo ingresso (P-82).
+      if (m.method === 'Network.requestWillBeSent') richieste.push({ id: m.params.requestId, url: m.params.request.url, metodo: m.params.request.method, tipo: m.params.type || null });
       // Come e' finita: un'assenza di rete si aspetta cosi', non con un tempo.
       if (m.method === 'Network.loadingFinished' || m.method === 'Network.loadingFailed') {
         for (const r of richieste) if (r.id === m.params.requestId) { r.finita = true; r.fallita = m.method === 'Network.loadingFailed'; }
       }
       if (m.method === 'Page.loadEventFired') caricata++;
-      if (m.method === 'Runtime.exceptionThrown') console_.push(m.params.exceptionDetails?.exception?.description || m.params.exceptionDetails?.text);
+      if (m.method === 'Runtime.exceptionThrown') {
+        console_.push(m.params.exceptionDetails?.exception?.description || m.params.exceptionDetails?.text);
+        // RG_DEBUG=1: le eccezioni della pagina su stderr, per capire un rosso.
+        if (process.env.RG_DEBUG) console.error('[pagina]', console_[console_.length - 1]);
+      }
       if (m.method === 'Fetch.requestPaused') ferma(m.params);
     };
     async function ferma(params) {

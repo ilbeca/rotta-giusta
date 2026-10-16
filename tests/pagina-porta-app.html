@@ -1,0 +1,24 @@
+<!doctype html>
+<!--
+  La porta /app di riferimento, nel regime del ridisegno (ridisegno-progetto
+  §3.2, R-NAV-12): niente banca, archivio o client; il frammento di un link si
+  legge in memoria e si toglie dall'indirizzo prima di andare avanti; poi
+  location.replace() verso Allenati/Quiz, con il frammento indispensabile, che
+  il canonico consuma e toglie subito. Senza script, il link «Apri Allenati».
+
+  Il banco del browser la serve su /app quando guida la pagina di riferimento
+  del client nel regime nuovo (P-82): finche' site/app.html e' l'app di oggi,
+  servirla li' aprirebbe l'app di prima. Alla merge di P-81 la porta vera e'
+  site/app.html, e il banco serve quella.
+-->
+<html lang="it">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Apri Allenati · Rotta Giusta</title>
+<p><a href="/?sezione=allenati&amp;segmento=quiz">Apri Allenati</a></p>
+<script>
+const h = location.hash;
+history.replaceState(null, '', location.pathname);
+location.replace('/?sezione=allenati&segmento=quiz' + h);
+</script>
+</html>

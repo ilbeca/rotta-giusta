@@ -82,12 +82,44 @@ export function funzioni(script) {
   return out;
 }
 
+/**
+ * Il testo senza commenti e senza il contenuto delle stringhe fra apici: un nome
+ * che compare solo li' non e' una chiamata. Le parti di codice dei template
+ * (`${…}`) restano. Fino a P-82 `dipendenze()` cercava anche nelle stringhe, e
+ * in una pagina con una funzione `ripristina()` la stringa 'ripristina' di
+ * navigazioneSito() trascinava mezza pagina, fino a una costante che chiama
+ * il client: un rosso «non si legge» per una pagina giusta, misurato.
+ */
+export function codice(src) {
+  let out = '', prec = '';
+  for (let j = 0; j < src.length; j++) {
+    const c = src[j];
+    if (c === '/' && src[j + 1] === '/') { const f = src.indexOf('\n', j); j = f < 0 ? src.length : f - 1; continue; }
+    if (c === '/' && src[j + 1] === '*') { const f = src.indexOf('*/', j + 2); j = f < 0 ? src.length : f + 1; out += ' '; continue; }
+    if (c === '"' || c === "'") { j = stringa(src, j, c); out += c + c; prec = 'a'; continue; }
+    if (c === '`') {
+      // Le parti letterali si tolgono, le espressioni ${…} restano.
+      let k = j + 1;
+      out += '`';
+      for (; k < src.length && src[k] !== '`'; k++) {
+        if (src[k] === '\\') { k++; continue; }
+        if (src[k] === '$' && src[k + 1] === '{') { const f = chiusa(src, k + 1); if (f < 0) break; out += ' ' + codice(src.slice(k + 2, f)) + ' '; k = f; }
+      }
+      out += '`'; j = k; prec = 'a'; continue;
+    }
+    if (c === '/' && regexQui(src, j, prec)) { j = regex(src, j); out += '/r/'; prec = 'a'; continue; }
+    out += c;
+    if (!/\s/.test(c)) prec = c;
+  }
+  return out;
+}
+
 /** I nomi della funzione `nome` e, per chiusura, delle funzioni di primo livello che nomina. */
 export function dipendenze(tutte, nome) {
   const presi = new Set([nome]);
   const coda = [nome];
   while (coda.length) {
-    const testo = tutte[coda.pop()];
+    const testo = codice(tutte[coda.pop()]);
     for (const altra of Object.keys(tutte)) {
       if (presi.has(altra)) continue;
       // Anche un nome dopo un punto: `...argomenti(conf)` e' una chiamata, e

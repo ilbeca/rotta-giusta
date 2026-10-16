@@ -1459,6 +1459,70 @@ lo stesso: quello è E. Che i raccordi siano **collegati** ai gesti veri — la
 casella di ricerca, il pulsante del segnalibro, Inizia — lo guarda solo il
 collegamento statico (chi li chiama nello script), come per la mappa.
 
+##### E, consegnato da P-82 — 16 ottobre 2026
+
+**Fatto.** Il gruppo N-01 del banco del client (`tests/client_account.mjs`),
+riconosciuto dal regime che `tests/regime_pagina.py` legge e che
+`test_interfaccia.py` passa a ogni prova; la pagina di riferimento del client
+nel regime nuovo, `tests/pagina-client-ridisegno.html`, con la porta
+`tests/pagina-porta-app.html` su `/app`; ventisette rotture in `ROTTURE_NAV` e
+la pagina di P-80 con le due dichiarazioni e senza il grafo, rosse ognuna per
+il suo motivo; i controlli `test_ridisegno_tragitti` (R-NAV-08),
+`test_ridisegno_stati_in_schermata` (R-STATI-06) e
+`test_ridisegno_tragitti_provati_al_contrario` (R-NAV-14), e le parti
+dell'invito e delle scelte sotto R-ACC-03 e R-ACC-55. Sulla pagina di oggi il
+gruppo non si applica, e il controllo lo dice; dalla merge di P-81 gira sulla
+pagina vera, con tutti i gruppi del client, nel regime nuovo. I 108 ID del §9
+sono dodici compiti per tre stati, con un giro condiviso dalle tre persone
+(Z, F, R) che hanno lo stesso percorso: per ognuno una verifica dell'arrivo —
+il titolo, i tocchi attesi e osservati, fino all'arrivo e fino al ritorno — e
+una del ritorno, con la sezione, il segmento, il fuoco sulla porta e, dove il
+§9 lo chiede, lo scorrimento.
+
+**Scostamenti dalla proposta, detti invece di nascosti.**
+
+- **AC è di quattro tocchi, non cinque**: «Email», «Password», «Crea l'account
+  e salva», «Salta per ora». Il §9 conta un «Chiudi» dopo «Salta per ora» che
+  il client non ha — il modulo si chiude alla creazione, §4.3 del progetto del
+  client, e C-04 e C-07 lo tengono fermo. Le formule di 07 e 08 usano AC = 4.
+- **Nella simulazione la risposta si dice** con `aria-pressed` sulla scelta, e
+  «Avanti» porta alla domanda dopo (QB: «n risposte, n−1 Avanti»): nessuna
+  correzione durante la prova, come prima.
+- **`[data-rotta-start]` apre la preparazione**, non la domanda (§5.2: un
+  runner si apre solo da Inizia); i gruppi del client ci passano da Inizia.
+- **I segmenti dicono il loro stato con `aria-selected`**, e il banco legge la
+  tappa da lì; Info è un pannello che si apre dal Profilo sopra ogni
+  superficie, e l'alias `info` porta alla Home come vuole la tabella C.
+- **Rotture della proposta che non ci sono**, perché il gruppo non le vede o le
+  vede un altro controllo: la lista che cambia fra anteprima e Inizia (R-NAV-11,
+  sotto Node); il modulo ricreato senza campi sopra un legale; «salvate» con
+  un 200 parziale (C-10 e C-12 girano sulla stessa pagina); un'attività
+  scomparsa; il segnalibro contato come risposta in schermata; i segnalibri
+  tagliati. E le varianti giuste — domanda corta, nessuna figura, dati
+  parziali, prova vuota — non girano sulla pagina nuova: girano sulla pagina di
+  riferimento di oggi.
+- **Il banco contro sé stesso, una difesa alla volta**, a mano: senza il
+  registro delle chiamate a `pushState` la voce con i dati della tappa passa
+  verde; tre rotture passavano verdi prima di rinforzare il banco — i link con
+  `data-v` saltavano il ramo rotto del gestore, il timer che riparte si
+  confrontava con sé stesso invece che con l'orologio, e gli stati si leggevano
+  dopo la ricezione dal server, che nascondeva un `applica()` senza istante:
+  ora le righe si trattengono mentre si guarda.
+
+**Trovato costruendo la pagina, per P-81** (difetti che una realizzazione del
+ridisegno può ripetere, e che il banco ora vede): dopo la registrazione dal
+risultato, il risultato restava con l'invito e la frase di chi non ha
+l'account (N-01:registrazione); `giroTecniche()` restituisce `{ e, tecniche }`,
+non l'esercizio, e preso per esercizio il giro si apre vuoto (tragitti 03); un
+tocco su un'altra sezione con un'attività in corso chiede di uscire, mentre
+un'attività conclusa si chiude e lascia il suo risultato; e un salto nella
+cronologia è asincrono — un `pushState` durante un `history.go()` in corso
+mescola la pila, quindi i gesti arrivati intanto si rinviano.
+
+**Che cosa resta al collaudo di P-81**, a 375 e 1280 px: la gerarchia e la
+geometria, il `?` della legenda dei cinque stati, i testi che il banco non
+cerca, il tocco vero, Safari.
+
 #### P-81 — ChatGPT, `ui/main`, Local: realizzazione dopo P-80 fuso
 
 Verifica cartella/ramo e un solo scrivente. Leggi AGENTS, questo documento,

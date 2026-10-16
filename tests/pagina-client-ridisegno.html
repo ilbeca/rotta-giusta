@@ -1,0 +1,2887 @@
+<!doctype html>
+<!--
+  La pagina di riferimento del client nel regime del ridisegno:
+  docs/ridisegno-progetto.md §§2–9 e il contratto del §10.1 (P-80, P-82), con
+  il client degli account di docs/account-client-progetto.md §§3–11 che la
+  pagina di riferimento di oggi (tests/pagina-client-account.html) ha gia'.
+  Non e' pubblicata, non e' un prototipo, e non e' la pagina di P-81: e' il
+  metro con cui P-81 si misura. Il banco del browser (tests/client_account.mjs)
+  la guida con tutti i gruppi del client e con il gruppo dei tragitti, N-01; e
+  ognuna delle rotture in ROTTURE_NAV di tests/test_interfaccia.py deve
+  fallire nominando il difetto.
+
+  Che cosa realizza, e che la pagina di oggi non ha: un documento solo su `/`,
+  con le quattro sezioni Home · Allenati · Esame · Progressi e i tre segmenti
+  di Allenati; le due dichiarazioni da cui si legge il regime
+  (navigazioneSito() e VISTE_RIDISEGNO); la cronologia in memoria —
+  `history.state` e' soltanto `{nav: id}`, e il resto sta in una mappa —, con
+  Indietro, Avanti e Chiudi che riportano allo stesso punto, scorrimento e
+  fuoco compresi; i legali sopra il lavoro, caricati nel documento; la
+  preparazione comune, con Inizia (`#start`); la Home in tre stati; l'invito
+  nei tre posti del §7.4 e in nessun altro; Progressi con i cinque stati; i
+  tag «Non lo sapevo» e «Svista», il segnalibro, la ricerca per numero e
+  «Segnala un problema»; l'onboarding con «Che cosa stai preparando?», che
+  dice «Scelte salvate» solo con i valori riletti dal server e solo se il
+  server dichiara i due campi in `campi_profilo`.
+
+  Gli agganci che i gruppi del client conoscevano restano dove la tabella C del
+  §10.1 dice: `[data-rotta-start]` e' la prima porta della Home — «Allenati
+  con 10 domande» senza account, «Apri l'allenamento consigliato» con —, e
+  apre la preparazione, non la domanda; le porte `[data-v]` di oggi sono alias
+  delle sezioni; `#esame-data` sta in Esame; il pallino dei guasti
+  sull'avatar (`[data-avatar]`).
+
+  Senza account non scrive niente nel browser, come quella di oggi; con
+  l'account solo nel suo archivio `rg-account-<chiave>`. Il resto
+  dell'aspetto e' quello del browser, apposta.
+-->
+<html lang="it">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rotta Giusta — quiz e carteggio per la patente nautica</title>
+<style>[hidden]{display:none!important}
+/* Area 6, T-09: ogni controllo almeno 44 × 44 px; un link dentro una frase no (WCAG 2.5.8). */
+button, input, select, textarea, summary, label, a.da-solo {min-height:44px; min-width:44px; box-sizing:border-box}
+a.da-solo, label {display:inline-block}
+.view:not(.on), #quizrun:not(.on), #rivedi:not(.on), #r-fine:not(.on), #cartrun:not(.on), #c-fine:not(.on), #segrun:not(.on), #sr-fine:not(.on) {display:none}
+/* Nel runner la barra delle sezioni sparisce; titolo, uscita e avatar restano (ridisegno §2). */
+body.in-attivita #barra, body.in-attivita main {display:none}
+#quizrun, #cartrun, #segrun, #rivedi {background:#fff}
+[role="tab"][aria-selected="true"] {font-weight:bold}</style>
+<body>
+<header>
+  <a href="/" id="marchio" class="da-solo" data-v="home">Rotta Giusta</a>
+  <nav id="barra" aria-label="Sezioni">
+    <button data-v="home">Home</button><button data-v="allenati">Allenati</button><button data-v="esame">Esame</button><button data-v="progressi">Progressi</button>
+  </nav>
+  <span data-avatar><button id="conto-porta" aria-haspopup="dialog">Accedi</button><span id="info-segnale" hidden> · Salvataggio da controllare</span></span>
+  <p id="conto-stato" role="status"></p>
+  <p id="conto-verifica" role="status" hidden></p>
+  <p id="seg-stato" role="status"></p>
+  <p id="link-esito" role="status"></p>
+  <p id="data-esito" role="status"></p>
+  <p id="destinazione" role="status" hidden></p>
+</header>
+
+<section id="bozza" hidden><p id="bozza-txt"></p>
+  <button data-bozza="riapri">Riapri il lavoro</button><button data-bozza="scarta">Scarta la bozza</button>
+  <div id="bozza-conferma" hidden><p>Il testo scritto e i giudizi di questa attività si perdono. Scarti la bozza?</p>
+    <button data-bozza="scarta-si">Sì, scarta la bozza</button><button data-bozza="scarta-no">Annulla</button></div></section>
+
+<main>
+<section class="view on" id="v-home">
+  <p id="guasto" role="alert" hidden>Non siamo riusciti a salvare le ultime risposte su questo dispositivo. Scarica le risposte adesso.</p>
+  <div id="home-anonima">
+    <h1>Preparati alla patente nautica, un passo alla volta.</h1>
+    <p>Quiz e carteggio per la patente senza limiti dalla costa. Esercitati sui quesiti del decreto e confronta il lavoro sulla carta.</p>
+    <p id="avviso-prova">Senza account le risposte valgono solo finché questa pagina resta aperta. Se la chiudi o la ricarichi, le perdi. Non salviamo niente, nemmeno le tue preferenze.</p>
+    <p id="altrove" hidden>Su questo indirizzo non si può creare un account. Per salvare le risposte vai su <a href="https://rottagiusta.it/">rottagiusta.it</a>.</p>
+    <button data-modo="sim" data-prova="base">Simula il quiz base</button> <span class="condizioni-base"></span>
+    <button data-breve data-rotta-start disabled>Allenati con 10 domande</button>
+    <p>Un allenamento breve, con correzione dopo ogni risposta.</p>
+  </div>
+  <div id="home-conto" hidden>
+    <h1>Che cosa vuoi fare adesso?</h1>
+    <section><h2>Allenamento consigliato</h2>
+      <p>Quiz base selezionati dalle risposte disponibili qui. La selezione non conosce lo studio che hai fatto altrove.</p>
+      <button data-modo="mirata" data-rotta-start disabled>Apri l'allenamento consigliato</button></section>
+    <button data-modo="sim" data-prova="base">Simula il quiz base</button> <span class="condizioni-base"></span>
+    <button data-v="progressi">Vedi i Progressi</button>
+  </div>
+  <section id="invito-home" hidden>
+    <h2>Conserva le risposte.</h2>
+    <p id="invito-home-n"></p>
+    <p>Le risposte saranno legate alla tua email e conservate sul nostro server, in chiaro. Il titolare può leggerle per supporto e statistiche.</p>
+    <button data-account="registra">Conserva le risposte</button>
+    <button data-invito="rinuncia">Continua senza account</button>
+  </section>
+  <section id="rotta-last" hidden><h2 id="rotta-last-titolo">Le attività di questa pagina</h2><p id="rotta-last-txt"></p></section>
+  <section id="esito-riquadro" hidden></section>
+  <section id="anteprime"><h2>Le sezioni</h2>
+    <a class="da-solo" href="/?sezione=allenati&amp;segmento=quiz" data-v="quiz">Quiz</a> ·
+    <a class="da-solo" href="/?sezione=allenati&amp;segmento=carteggio" data-v="cart">Carteggio</a> ·
+    <a class="da-solo" href="/?sezione=allenati&amp;segmento=segnali" data-v="seg">Segnali</a> ·
+    <a class="da-solo" href="/?sezione=esame" data-v="esame">Esame</a> ·
+    <a class="da-solo" href="/?sezione=progressi" data-v="diag">Progressi</a></section>
+  <section id="non-torna"><h2>Che cosa non torna</h2>
+    <p>La banca è del 2022. I limiti si dichiarano, quesito per quesito. All'esame vale la risposta del decreto.</p>
+    <p id="non-torna-n"></p>
+    <p>Il carteggio lo giudichi tu: il sito non corregge il lavoro sulla carta.</p>
+    <a class="da-solo" href="/?sezione=home" data-v="info" data-profilo="info">Note, fonti e riferimenti</a></section>
+</section>
+
+<section class="view" id="v-allenati">
+  <h1>Allenati</h1>
+  <p>Quiz, lavoro sulla carta, riconoscimento dei segnali.</p>
+  <div role="tablist" aria-label="Allenati">
+    <button role="tab" data-segmento="quiz">Quiz</button><button role="tab" data-segmento="carteggio">Carteggio</button><button role="tab" data-segmento="segnali">Segnali</button>
+  </div>
+  <div id="seg-quiz" data-pannello-segmento="quiz">
+    <p>Scegli come esercitarti con i quiz base o vela. Puoi cambiare attività quando vuoi.</p>
+    <button data-modo="mirata">Allenamento consigliato</button>
+    <button data-modo="argomento">Scegli un argomento</button>
+    <button data-modo="sbagliate">Ripassa gli errori</button>
+    <button data-v="esame">Simula la prova</button>
+    <details><summary>Altri modi di esercitarti</summary><button data-modo="screening">Un giro tra gli argomenti</button></details>
+    <h2>Gli argomenti</h2>
+    <div id="temi"></div>
+    <h2>Segnalibri</h2>
+    <button data-segnalibri>Segnalibri</button>
+    <div id="segnalibri-elenco" hidden></div>
+    <h2>Cerca un quesito per numero</h2>
+    <form data-ricerca><label>Numero del decreto <input name="numero" placeholder="1.1.1-24" autocomplete="off"></label>
+      <label>Banca <select name="banca"><option value="">Tutte</option><option value="base">Base</option><option value="vela">Vela</option></select></label>
+      <button>Cerca</button></form>
+    <div id="ricerca-esito" role="status"></div>
+  </div>
+  <div id="seg-carteggio" data-pannello-segmento="carteggio" hidden>
+    <p id="c-giudizio">Tu svolgi gli esercizi sulla carta. Rotta Giusta ti propone una selezione e mostra la risposta ministeriale per confrontare il risultato. Sei tu a giudicare: il sito non corregge il carteggio.</p>
+    <p>Prima di cominciare: per la prova e gli esercizi su carta servono le carte nautiche indicate nella selezione, squadrette nautiche, compasso, matita, gomma e fogli per i calcoli.</p>
+    <button data-cporta="esercizi">Esercizi su carta</button>
+    <button data-cporta="tecniche" data-v="tec">Che tecnica serve?</button>
+    <button data-cporta="prova">Prova di carteggio</button>
+  </div>
+  <div id="seg-segnali" data-pannello-segmento="segnali" hidden>
+    <h2>Riconosci fanali e segnali</h2>
+    <p>Il gioco è extra banca. Non entra nella copertura dei quiz e non registra le singole risposte.</p>
+    <p id="seg-avviso">Senza account anche i punteggi dei Segnali valgono solo per questa pagina.</p>
+    <button id="s-start">Inizia</button>
+  </div>
+</section>
+
+<section class="view" id="v-esame">
+  <h1>Esame</h1>
+  <p>Le prove sono nell'ordine in cui si sostengono. Qui puoi prepararle in parallelo, senza sblocchi.</p>
+  <label>Data d'esame (facoltativa) <input type="date" id="esame-data"></label>
+  <fieldset id="esame-scelte"><legend>Che cosa stai preparando?</legend>
+    <label><input type="radio" name="e-abilitazione" value="motore"> Solo motore</label>
+    <label><input type="radio" name="e-abilitazione" value="vela"> Anche vela</label>
+    <label><input type="radio" name="e-conseguimento" value="prima"> Prima patente</label>
+    <label><input type="radio" name="e-conseguimento" value="estensione_e12"> Estensione dalla entro 12 miglia</label>
+    <button data-scelte="esame">Salva le scelte</button><p id="esame-scelte-esito" role="status"></p></fieldset>
+  <div id="com-e-fatto"><h2>Com'è fatto l'esame</h2><p id="sintesi-esame"></p></div>
+  <button data-cporta="prova">Prova di carteggio</button>
+  <button data-modo="sim" data-prova="base">Simula il quiz base</button>
+  <button data-modo="sim" data-prova="vela">Simula il quiz vela</button>
+  <button data-modo="sim" data-prova="entrambe">Quiz base e vela</button>
+</section>
+
+<section class="view" id="v-progressi">
+  <h1>Progressi</h1>
+  <div id="progressi-anonimi">
+    <p id="progressi-vuoto">Nessuna risposta in questa pagina. Puoi fare tutte le attività senza account e rivederle qui finché la pagina resta aperta.</p>
+    <div id="progressi-pagina" hidden><h2>Le attività di questa pagina</h2><ul id="progressi-attivita"></ul></div>
+    <button data-v="allenati">Vai ad Allenati</button>
+    <details><summary>Perché qui manca lo storico</summary><p>I Progressi nel tempo descrivono le attività salvate nel tuo account. Senza account puoi fare tutte le attività e rivedere quelle della pagina aperta. Con l'account ritrovi le risposte accolte dal server anche quando torni e da un altro dispositivo. Le misure compaiono solo quando ci sono abbastanza dati.</p></details>
+  </div>
+  <div id="progressi-conto" hidden>
+    <p>Le risposte date qui, lette come fatti. Copertura e risultati sono cose diverse.</p>
+    <h2>Quiz base</h2>
+    <p>In base alle ultime risposte. Ogni quesito sta in un solo stato.</p>
+    <ul id="stati"></ul>
+    <p id="stati-totale"></p>
+    <h2>Le sessioni che hai fatto</h2>
+    <ul id="sessioni"></ul>
+  </div>
+</section>
+<footer><a class="da-solo" href="/privacy">Privacy</a> <a class="da-solo" href="/avvertenza#condizioni">Condizioni per l'account</a> <a class="da-solo" href="/avvertenza">Avvertenza</a></footer>
+</main>
+
+<section id="prep" data-preparazione hidden aria-labelledby="prep-titolo">
+  <h1 id="prep-titolo" tabindex="-1"></h1>
+  <p id="prep-testo"></p>
+  <div id="prep-controlli"></div>
+  <p id="prep-accesso"></p>
+  <p id="prep-quanti" role="status"></p>
+  <button id="start">Inizia</button>
+  <button data-prep="chiudi" id="prep-chiudi"></button>
+</section>
+
+<section id="prep-carta" data-preparazione hidden>
+  <h1 id="prep-carta-titolo" tabindex="-1"></h1>
+  <p>Sei tu a giudicare: il sito non corregge il carteggio.</p>
+  <p id="prep-carta-testo"></p>
+  <p id="prep-carta-accesso"></p>
+  <fieldset id="c-modi" hidden><legend>Esercizi</legend>
+    <label><input type="radio" name="c-modo" value="giro" checked> Giro delle tecniche</label>
+    <label><input type="radio" name="c-modo" value="tappeto"> A tappeto</label></fieldset>
+  <button id="c-start" hidden>Inizia la prova</button>
+  <button id="c-esercizi" hidden>Inizia gli esercizi</button>
+  <button id="t-start" hidden>Inizia il riconoscimento</button>
+  <button data-prep="chiudi" id="prep-carta-chiudi"></button>
+</section>
+
+<div id="quizrun">
+  <h1 id="r-titolo"></h1>
+  <span id="r-pos"></span> <span id="r-time" role="timer"></span>
+  <button id="r-close">Termina l'attività</button>
+  <p data-save-warning role="alert" hidden>Non siamo riusciti a salvare le ultime risposte su questo dispositivo. Scarica le risposte adesso.</p>
+  <p id="r-numero"></p>
+  <p id="r-nbp" hidden></p>
+  <div id="r-text"></div>
+  <div id="r-verdict"></div>
+  <div id="r-ans"></div>
+  <div id="r-tag" hidden><p>Se vuoi, indica perché hai sbagliato. Puoi saltare questo passaggio.</p>
+    <button data-tag="N" aria-pressed="false">Non lo sapevo</button><button data-tag="S" aria-pressed="false">Svista</button>
+    <p id="r-tag-motivo" role="status"></p></div>
+  <button id="r-segno" data-segno aria-pressed="false" hidden>Metti un segnalibro</button>
+  <button data-segnala>Segnala un problema</button>
+  <button id="r-next" hidden>Avanti</button>
+  <div id="r-consegna" role="dialog" hidden><p>Consegnare la prova?</p><button data-consegna="si">Consegna</button><button data-consegna="no">Continua la prova</button></div>
+  <div id="r-fine"></div>
+</div>
+
+<div id="cartrun">
+  <span id="c-pos"></span> <span id="c-time" role="timer"></span>
+  <div id="c-testo"></div>
+  <label for="c-input">La tua risposta</label><textarea id="c-input"></textarea>
+  <p id="c-memoria" hidden>Il lavoro e i giudizi di questa attività restano solo nella pagina aperta. Se la chiudi o la ricarichi li perdi.</p>
+  <p id="c-stato" role="status"></p>
+  <div id="c-copia" hidden><button data-bozza="copia">Copia i risultati</button><textarea id="c-copia-testo" readonly hidden></textarea></div>
+  <button id="c-prev">Precedente</button><button id="c-next">Successivo</button>
+  <button id="c-consegna">Consegna</button>
+  <div id="c-fine"></div>
+</div>
+
+<div id="segrun">
+  <span id="sr-pos"></span>
+  <div id="sr-verdict"></div>
+  <div id="sr-ans"></div>
+  <button id="sr-next" hidden>Avanti</button>
+  <div id="sr-fine"></div>
+</div>
+
+<div id="rivedi"><button id="rv-close">Chiudi</button><div id="rv-body"></div></div>
+
+<div id="uscita" role="dialog" aria-labelledby="uscita-testo" hidden><p id="uscita-testo">Vuoi uscire dall'attività? Le risposte date restano in questa pagina.</p>
+  <button data-uscita="si">Esci dall'attività</button><button data-uscita="no">Continua l'attività</button></div>
+
+<section id="info" role="dialog" aria-modal="true" aria-labelledby="info-titolo" hidden>
+  <h2 id="info-titolo" tabindex="-1">Info e diagnostica</h2>
+  <p id="info-conta"></p>
+  <p id="info-pagina">Queste sono le righe della pagina aperta. Il sito non le conserva dopo una chiusura o una ricarica.</p>
+  <h3>Dati</h3>
+  <button data-dati="scarica" id="dati-scarica">Scarica le risposte di questa pagina</button>
+  <label>Importa un file dei progressi <input type="file" id="importa-file" accept=".json,application/json"></label>
+  <p id="importa-esito" role="status"></p>
+  <button data-conto="esporta" id="esporta" hidden>Scarica i tuoi progressi</button>
+  <p id="esporta-esito" role="status"></p>
+  <button data-info="chiudi">Chiudi</button>
+</section>
+
+<section id="account" role="dialog" aria-modal="true" hidden></section>
+
+<section id="legale" role="dialog" aria-modal="true" aria-labelledby="legale-titolo" hidden>
+  <button data-legale="chiudi">Chiudi</button>
+  <div id="legale-testo"></div>
+</section>
+
+<script type="module">
+import * as E from '/engine.js';
+
+/** Dove sta l'API (account-progetto §7.4): la ricava la pagina dal proprio
+ *  indirizzo, e altrove non c'e'. Dichiararla e' il segno del client che il
+ *  controllo statico cerca (R-ACC-58). */
+function indirizzoApi(loc) {
+  if (loc.hostname === 'rottagiusta.it') return 'https://api.rottagiusta.it';
+  if (loc.hostname === 'localhost' || loc.hostname === '127.0.0.1') return `http://${loc.hostname}:8620`;
+  return null;
+}
+const API = indirizzoApi(location);
+
+// Il gettone di un link sta nel frammento: lo si legge in memoria e lo si
+// toglie dall'indirizzo prima di ogni richiesta e di ogni disegno (§6). Mai in
+// uno storage, mai in un log.
+// Il gettone di un link sta nel frammento: lo legge carica(), con
+// navigazioneSito(), in memoria; l'indirizzo diventa quello canonico prima di
+// ogni richiesta e di ogni disegno (§3.2). Mai in uno storage, mai in un log.
+let LINK = null;
+
+// Senza account tutto in memoria (§9.2). Con l'account, S.conto e il suo
+// archivio: S.righe resta la prova della pagina, finche' non si sceglie.
+const S = { banca: [], vela: [], cart: [], righe: [], run: null, esame: '', auto: false, ultima: null, io: null, motore: '',
+  guasto: null, scaduto: false, apertoDa: null,
+  conto: null, db: null, ciclo: 0, ac: null, inVolo: null, ancora: false, rilascia: null, trasf: null, onboarding: false,
+  fatte: [], idQuiz: [], file: null, sospeso: null, erroreInvio: null, postaFallita: false,
+  // Il ridisegno (P-82): lo specchio dalle righe, la tappa, l'attivita', le scelte.
+  prog: {}, progCarta: {}, tappa: null, attivita: null, prova: null, meta: null, contiBanca: null, scelte: {}, rinunciaHome: 0, righeConto: [],
+  prep: null, prepCarta: null };
+const $ = (id) => document.getElementById(id);
+const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+const oggi = () => E.isoLocale().slice(0, 10);
+
+// --- il ridisegno: il regime, la navigazione e i cinque raccordi (§10.1, P-80) -------
+//
+// Le due dichiarazioni da cui si legge il regime: insieme, esattamente questa
+// lista, e mai dal nome di un pulsante (tests/regime_pagina.py).
+const VISTE_RIDISEGNO = ['home', 'allenati', 'esame', 'progressi'];
+const SEGMENTI = ['quiz', 'carteggio', 'segnali'];
+// Gli alias delle porte di oggi (tabella C): quiz/cart/seg/tec/diag/oggi/info.
+const ALIAS = {
+  quiz: { sezione: 'allenati', segmento: 'quiz' },
+  cart: { sezione: 'allenati', segmento: 'carteggio' },
+  seg: { sezione: 'allenati', segmento: 'segnali' },
+  tec: { sezione: 'allenati', segmento: 'carteggio', attivita: 'tecniche' },
+  diag: { sezione: 'progressi' },
+  oggi: { sezione: 'home' },
+  info: { sezione: 'home', pannello: 'info' },
+};
+const PARAMETRI = ['sezione', 'segmento', 'attivita', 'fase', 'banca', 'temi', 'voci', 'n'];
+const LEGALI = { '/privacy': 'privacy', '/avvertenza': 'avvertenza' };
+
+/**
+ * Da un indirizzo e un evento alla destinazione: pura, senza DOM, archivio o
+ * rete. Il contratto e' nel §10.1 del progetto, «Contratto consegnato da P-80»;
+ * questa e' la stessa funzione della pagina di riferimento del ridisegno.
+ */
+function navigazioneSito(richiesta) {
+  const { url, evento, contesto } = richiesta || {};
+  const c = contesto || {};
+  const u = new URL(String(url || '/'), 'http://x');
+  const g = u.hash.match(/^#(verifica|password)=([A-Za-z0-9_-]+)$/);
+  const gettone = g ? { tipo: g[1], valore: g[2] } : null;
+  const base = { sezione: 'home', segmento: null, attivita: null, fase: null, pannello: null,
+    ritorno: c.tappa || null, effetto: 'apri', motivo: null, url: '/', gettone };
+  const indisponibile = (motivo) => ({ ...base, effetto: 'indisponibile', motivo });
+  const path = u.pathname;
+  const legale = path === '/avvertenza' && u.hash === '#condizioni' ? 'condizioni' : LEGALI[path];
+  if (legale) {
+    if (evento === 'carica') return indisponibile('rotta non servita');
+    const t = c.tappa || { sezione: 'home', segmento: null };
+    return { ...base, sezione: t.sezione || 'home', segmento: t.sezione === 'allenati' ? t.segmento || 'quiz' : null,
+      pannello: legale, effetto: evento === 'cronologia' ? 'ripristina' : 'apri', url: path + (legale === 'condizioni' ? '#condizioni' : '') };
+  }
+  if (path !== '/' && path !== '/app') return indisponibile('rotta non servita');
+  let sezione, segmento = null, attivita = null, pannello = null, fase = null;
+  if (path === '/app') {
+    sezione = 'allenati'; segmento = 'quiz';
+  } else {
+    for (const k of u.searchParams.keys()) if (!PARAMETRI.includes(k)) return indisponibile('parametro sconosciuto');
+    sezione = (u.searchParams.get('sezione') || '').toLowerCase();
+    segmento = (u.searchParams.get('segmento') || '').toLowerCase() || null;
+    attivita = u.searchParams.get('attivita') || null;
+    fase = u.searchParams.get('fase');
+    if (ALIAS[sezione]) {
+      const a = ALIAS[sezione];
+      sezione = a.sezione; segmento = a.segmento || segmento; attivita = a.attivita || attivita; pannello = a.pannello || null;
+    }
+    if (!sezione) sezione = attivita ? 'allenati' : 'home';
+    if (!VISTE_RIDISEGNO.includes(sezione)) return indisponibile('parametro sconosciuto');
+    if (sezione === 'allenati') { segmento = segmento || 'quiz'; if (!SEGMENTI.includes(segmento)) return indisponibile('parametro sconosciuto'); }
+    else segmento = null;
+  }
+  if (u.hash === '#profilo') pannello = 'profilo';
+  let effetto = 'apri', motivo = null;
+  if (fase != null && fase !== 'preparazione') { effetto = 'indisponibile'; motivo = 'attivita non disponibile'; }
+  const faseOut = fase != null ? 'preparazione' : null;
+  const pezzi = [['sezione', sezione], segmento && ['segmento', segmento], attivita && ['attivita', attivita], faseOut && ['fase', faseOut]].filter(Boolean);
+  const canon = sezione === 'home' && pezzi.length === 1 ? '/' : '/?' + pezzi.map(([k, v]) => k + '=' + encodeURIComponent(v)).join('&');
+  if (effetto === 'apri' && evento !== 'carica' && !pannello) {
+    if (c.attivita && c.attivita.stato === 'in corso') effetto = 'chiedi-uscita';
+    else if (c.attivita && c.attivita.stato === 'conclusa' && evento === 'cronologia') effetto = 'mostra-risultato';
+    else if (evento === 'cronologia') effetto = 'ripristina';
+  } else if (effetto === 'apri' && evento === 'cronologia') effetto = 'ripristina';
+  return { sezione, segmento, attivita, fase: faseOut, pannello, ritorno: c.tappa || null, effetto, motivo, url: canon, gettone };
+}
+
+/** L'allenamento breve della Home: dieci quiz base, prima i mai visti. */
+function preparaBreve(conf, fonte) {
+  const { items, prog, oggi } = fonte;
+  const pool = E.coda(items, prog, oggi, { kind: 'base', n: 0, includiChiusi: true });
+  const lista = E.estraiNuoviPrima(pool, prog, oggi, 10, conf.seme);
+  return { lista, quanti: lista.length, stato: lista.length === 10 ? 'pronta' : lista.length ? 'ridotta' : 'vuota' };
+}
+
+/** I segnalibri: lista e numero dalla stessa chiamata, senza tetto. */
+function preparaSegnalibri(richiesta) {
+  const { banca, righe, kind } = richiesta;
+  const r = E.codaSegnalibri(banca, righe, { kind });
+  return { lista: r.lista, quanti: r.quanti, fuori: r.fuori, stato: r.quanti ? 'pronta' : 'vuota' };
+}
+
+/** Inizia sui segnalibri: la lista dell'anteprima, se e' ancora quella, id e ordine. */
+function avviaSegnalibri(preparazione, richiesta, avvia) {
+  const adesso = E.codaSegnalibri(richiesta.banca, richiesta.righe, { kind: richiesta.kind }).lista;
+  const stessa = adesso.length === preparazione.lista.length && adesso.every((x, i) => x.id === preparazione.lista[i].id);
+  if (!stessa) return { avviata: false, stato: 'cambiata' };
+  avvia(preparazione.lista, 'segnalibri', { origine: 'quiz' });
+  return { avviata: true, quanti: preparazione.lista.length };
+}
+
+/** Cerca un quesito per numero del decreto: il testo com'e' digitato, il risultato com'e'. */
+function ricercaNumero(richiesta) {
+  const { banca, testo, kind } = richiesta;
+  return E.cercaNumero(banca, testo, { kind });
+}
+
+/** Se un gesto — un tag, un segnalibro — si puo' scrivere con il server che la pagina ha davanti. */
+function permessoGesto(riga, fonte) {
+  const tipi = fonte.accesso === 'account' ? (fonte.io && Array.isArray(fonte.io.tipi_riga) ? fonte.io.tipi_riga : null) : fonte.tipiRiga;
+  const motivo = E.rigaScrivibile(riga, tipi);
+  return { scrivibile: motivo === null, motivo };
+}
+
+// --- la cronologia in memoria (§3.3) -------------------------------------------------
+//
+// `history.state` porta soltanto `{nav: id}`; la tappa — sezione, segmento,
+// preparazione, runner, testo legale, scorrimento, fuoco — sta in NAV, in
+// memoria, e una ricarica non la ricostruisce. PILA e POS dicono dove si e' nella
+// cronologia di questo documento, cosi' «torna all'origine» e' un salto noto.
+const NAV = new Map();
+const PILA = [];
+let POS = -1, navSeq = 0;
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
+function voceQui() { return NAV.get(PILA[POS]); }
+
+/** Prima di lasciare una tappa: dove si era e chi aveva il fuoco. */
+function ricordaQui() {
+  const v = voceQui();
+  if (v) { v.scroll = scrollY; v.fuoco = document.activeElement && document.activeElement !== document.body ? document.activeElement : v.fuoco || null; }
+}
+
+function nuovaVoce(voce, url, { sostituisci = false } = {}) {
+  ricordaQui();
+  const id = ++navSeq;
+  NAV.set(id, voce);
+  if (sostituisci && POS >= 0) { PILA[POS] = id; history.replaceState({ nav: id }, '', url); }
+  else { PILA.splice(POS + 1); PILA.push(id); POS = PILA.length - 1; history.pushState({ nav: id }, '', url); }
+  return id;
+}
+
+/**
+ * Un salto nella cronologia e' asincrono: arriva con popstate. Un gesto che
+ * arriva prima — un tocco subito dopo «Torna a…» — si rinvia a dopo il salto,
+ * altrimenti un pushState si infilerebbe in mezzo e la pila in memoria e
+ * quella del browser direbbero due cose diverse.
+ */
+const RINVIATI = [];
+function salta(delta) {
+  S.salto = true;
+  history.go(delta);
+  setTimeout(() => { if (S.salto) finitoSalto(); }, 1500);
+}
+function finitoSalto() {
+  S.salto = false;
+  while (RINVIATI.length && !S.salto) RINVIATI.shift()();
+}
+/** Torna alla voce `id`, in questo documento: un salto nella cronologia, che popstate ripristina. */
+function tornaA(id) {
+  const k = PILA.indexOf(id);
+  if (k < 0 || k === POS) return false;
+  salta(k - POS);
+  return true;
+}
+function indietro() { salta(-1); }
+
+/** Il posto di una voce: il fuoco a chi l'aveva, senza scorrere, poi lo scorrimento di allora. */
+function ripristina(v) {
+  requestAnimationFrame(() => {
+    if (v.fuoco && v.fuoco.isConnected) v.fuoco.focus({ preventScroll: true });
+    scrollTo(0, v.scroll || 0);
+  });
+}
+
+const TITOLI = { home: null, allenati: 'Allenati', esame: 'Esame', progressi: 'Progressi' };
+const RITORNI = { home: 'Torna alla Home', esame: 'Torna a Esame', progressi: 'Torna ai Progressi' };
+const ritornoDi = (t) => (t.sezione === 'allenati' ? `Torna ad Allenati · ${{ quiz: 'Quiz', carteggio: 'Carteggio', segnali: 'Segnali' }[t.segmento || 'quiz']}` : RITORNI[t.sezione] || 'Torna alla Home');
+
+/** La sezione e il segmento, senza toccare la cronologia. */
+function mostraSezione(sezione, segmento) {
+  chiudiSuperfici();
+  for (const v of VISTE_RIDISEGNO) document.getElementById('v-' + v).classList.toggle('on', v === sezione);
+  for (const b of document.querySelectorAll('#barra [data-v]')) b.setAttribute('aria-current', b.dataset.v === sezione ? 'page' : 'false');
+  if (sezione === 'allenati') {
+    const s = segmento || 'quiz';
+    for (const p of document.querySelectorAll('[data-pannello-segmento]')) p.hidden = p.dataset.pannelloSegmento !== s;
+    for (const t of document.querySelectorAll('[data-segmento]')) t.setAttribute('aria-selected', String(t.dataset.segmento === s));
+  }
+  S.tappa = { sezione, segmento: sezione === 'allenati' ? segmento || 'quiz' : null, pannello: null };
+  document.title = TITOLI[sezione] ? `${TITOLI[sezione]} · Rotta Giusta` : 'Rotta Giusta — quiz e carteggio per la patente nautica';
+  if (sezione === 'home') dipingiHome();
+  if (sezione === 'progressi') dipingiProgressi();
+}
+
+/** Le superfici interne si chiudono quando si cambia sezione: preparazioni e Info. */
+function chiudiSuperfici() {
+  $('prep').hidden = true; $('prep-carta').hidden = true;
+  $('info').hidden = true;
+  $('destinazione').hidden = true;
+}
+
+/** Un tocco su una porta: la destinazione dalla funzione pura, poi la tappa. */
+function vai(url) {
+  const d = navigazioneSito({ url, evento: 'tocco', contesto: { attivita: S.attivita, tappa: S.tappa } });
+  if (d.effetto === 'chiedi-uscita') return chiediUscita(url);
+  // Un'attivita' conclusa lascia il suo risultato quando si va altrove.
+  if (S.attivita && S.attivita.stato === 'conclusa') chiudiAttivita();
+  if (d.effetto === 'indisponibile') return mostraIndisponibile(d);
+  const stessa = S.tappa && S.tappa.sezione === d.sezione && S.tappa.segmento === d.segmento && $('prep').hidden && $('prep-carta').hidden
+    && document.getElementById('v-' + d.sezione).classList.contains('on');
+  if (!stessa) {
+    ricordaQui();
+    mostraSezione(d.sezione, d.segmento);
+    nuovaVoce({ tipo: 'tappa', sezione: d.sezione, segmento: S.tappa.segmento }, d.url);
+    scrollTo(0, 0);
+  }
+  if (d.pannello === 'info') apriInfo();
+  if (d.attivita === 'tecniche') apriPrepCarta('tecniche');
+}
+
+function mostraIndisponibile(d) {
+  mostraSezione('home', null);
+  const p = $('destinazione');
+  p.textContent = d.motivo === 'attivita non disponibile'
+    ? 'Questa attività non è disponibile qui. Puoi iniziarne una nuova.'
+    : 'Questa destinazione non è disponibile. Puoi scegliere un\'attività da Allenati.';
+  p.hidden = false;
+}
+
+/** Il primo caricamento: la destinazione dell'indirizzo, e la prima voce sostituita. */
+function carica() {
+  const d = navigazioneSito({ url: location.pathname + location.search + location.hash, evento: 'carica', contesto: {} });
+  const sezione = d.effetto === 'indisponibile' && d.motivo !== 'attivita non disponibile' ? 'home' : d.sezione;
+  mostraSezione(sezione, d.segmento);
+  const id = ++navSeq;
+  NAV.set(id, { tipo: 'tappa', sezione, segmento: S.tappa.segmento });
+  PILA.push(id); POS = 0;
+  // Il gettone di un link resta in memoria; l'indirizzo e' quello canonico (§3.2).
+  history.replaceState({ nav: id }, '', d.effetto === 'indisponibile' && d.motivo !== 'attivita non disponibile' ? '/' : d.url);
+  if (d.effetto === 'indisponibile') mostraIndisponibile(d);
+  if (d.pannello === 'info') apriInfo();
+  return d.gettone;
+}
+
+window.addEventListener('popstate', (e) => {
+  const id = e.state && e.state.nav;
+  const voce = NAV.get(id);
+  const da = POS;
+  const k = PILA.indexOf(id);
+  // Una voce che questo documento non conosce: si legge l'indirizzo, senza dati.
+  if (!voce || k < 0) {
+    const d = navigazioneSito({ url: location.pathname + location.search, evento: 'cronologia', contesto: {} });
+    chiudiLegale(); mostraSezione(d.sezione, d.segmento);
+    const nid = ++navSeq; NAV.set(nid, { tipo: 'tappa', sezione: d.sezione, segmento: S.tappa.segmento });
+    PILA.splice(POS + 1); PILA.push(nid); POS = PILA.length - 1;
+    history.replaceState({ nav: nid }, '', d.url);
+    return;
+  }
+  const lasciata = NAV.get(PILA[da]);
+  if (lasciata) { lasciata.scroll = scrollY; if (document.activeElement && document.activeElement !== document.body) lasciata.fuoco = document.activeElement; }
+  POS = k;
+  // Indietro durante un'attivita' passa dal gestore di uscita (§3.3): si torna
+  // alla voce del runner, senza accumulare voci, e si chiede.
+  if (lasciata && lasciata.tipo === 'runner' && k < da && S.attivita && S.attivita.stato === 'in corso') {
+    S.tornaAlRunner = true;
+    salta(da - k);
+    return;
+  }
+  if (S.tornaAlRunner && voce.tipo === 'runner') { S.tornaAlRunner = false; gestoreUscita(); return finitoSalto(); }
+  applicaVoce(voce);
+  finitoSalto();
+});
+
+/** Una voce raggiunta con Indietro o Avanti: si ridisegna quello che c'era. */
+function applicaVoce(v) {
+  if (v.tipo === 'legale') { apriLegaleDa(v); return; }
+  chiudiLegale(v);
+  if (v.tipo === 'runner') {
+    // Avanti su un tentativo concluso mostra il riepilogo, mai una prova nuova (§3.3).
+    if (S.ultima && S.ultima.id === v.attivita && $('r-fine').innerHTML) {
+      $('quizrun').classList.add('on'); document.body.classList.add('in-attivita'); $('r-fine').classList.add('on');
+    }
+    return;
+  }
+  if (v.tipo === 'preparazione') { riapriPreparazione(v); return; }
+  if ($('quizrun').classList.contains('on') && !(S.attivita && S.attivita.stato === 'in corso')) chiudiRunner();
+  mostraSezione(v.sezione, v.segmento);
+  ripristina(v);
+}
+
+// Il primo caricamento: la sezione dell'indirizzo, e il gettone in memoria.
+{
+  const g = carica();
+  if (g) LINK = { scopo: g.tipo, gettone: g.valore };
+}
+
+// Nessun service worker e nessuna cache: l'offline e' uscito con l'ADR-005 (C-22).
+
+fetch('/dati/quiz.json').then((r) => r.json()).then((b) => {
+  S.banca = b.filter((q) => q.k === 'base');
+  S.vela = b.filter((q) => q.k === 'vela');
+  S.idQuiz = b.map((q) => q.id);
+  // I numeri di «Che cosa non torna» si contano dalla banca caricata (AGENTS.md).
+  S.contiBanca = { oscurati: b.filter((q) => q.osc).length, note: b.filter((q) => q.nb).length };
+  dipingiHome();
+  if (S.tappa && S.tappa.sezione === 'progressi') dipingiProgressi();
+});
+fetch('/dati/meta.json').then((r) => r.json()).then((m) => { S.motore = String(m.versione || ''); S.meta = m; dipingiHome(); }).catch(() => {});
+const CART = fetch('/dati/carteggio.json').then((r) => r.json()).then((c) => { S.cart = c; }).catch(() => {});
+
+$('esame-data').addEventListener('change', (e) => { S.esame = e.target.value; });
+// Con l'account la data sta sul server; senza, solo in memoria (§11.1).
+$('esame-data').addEventListener('change', (e) => { if (S.conto) api('PUT', '/v1/profilo', { data_esame: e.target.value || null }); });
+const quesiti = () => new Set([...S.idQuiz, ...S.cart.map((e) => e.id)]);
+
+/** Le viste di prima, come alias delle sezioni (tabella C del §10.1). */
+function vista(v) {
+  if (v === 'info') return vai('/?sezione=info');
+  return vai(v === 'oggi' ? '/' : '/?sezione=' + v);
+}
+/** Una porta [data-v]: una sezione, o un alias di prima. */
+function portaV(v) {
+  if (v === 'home' || v === 'oggi') return vai('/');
+  return vai('/?sezione=' + v);
+}
+
+// Area 6: il numero di Info viene dalle righe dell'identita' che c'e' — la
+// copia dell'account, o le risposte della pagina aperta —, non da un
+// contatore suo (R-RIF-03).
+async function dipingiInfo() {
+  // Le prove avviate a parte, senza i numeri dentro (esito-esame §4.6).
+  const righe = S.conto && S.db ? (await tx(() => null)).righe : S.righe.concat(S.prova || []);
+  $('info-conta').textContent = `risposte ai quiz ${righe.filter((r) => r._t === 'q').length} · prove avviate ${righe.filter((r) => r._t === 'a').length}`;
+}
+
+// Una scrittura fallita si dice dove succede, si annuncia, e il segnale su
+// Info resta: non si spegne per pulizia (specifica §8, R-RIF-04).
+function guasto(e) {
+  S.guasto = String(e && e.message || e || 'scrittura fallita');
+  $('guasto').hidden = false;
+  for (const x of document.querySelectorAll('[data-save-warning]')) x.hidden = false;
+  $('info-segnale').hidden = false;
+  $('guasto').hidden = false;
+}
+
+// --- le attivita' dei quiz: Percorso, per argomento, simulazione -----------------
+
+/** La prima porta della Home: il breve senza account, la Mirata con (§5.1). Apre la preparazione. */
+function avvia() {
+  apriPreparazione({ modo: S.conto && !S.scaduto ? 'mirata' : 'breve' });
+}
+
+let rTick = null;
+function cronoRun() {
+  const R = S.run;
+  if (!R || !R.scadenza) return clearInterval(rTick);
+  const s = Math.max(0, Math.round((R.scadenza - Date.now()) / 1000));
+  $('r-time').textContent = mmss(s);
+  if (s === 0) { clearInterval(rTick); $('r-consegna').hidden = true; termina(true); }
+}
+
+function apriRun(lista, mode, sim = false, fase = {}) {
+  // L'origine e' la tappa da cui si e' aperta la preparazione: e' li' che il
+  // ritorno riporta, con scorrimento e fuoco (§3.3). La voce del runner prende
+  // il posto della preparazione, cosi' Avanti su un tentativo concluso porta al
+  // riepilogo e mai a una prova nuova.
+  const qui = voceQui();
+  const origineNav = fase.origineNav || (qui && qui.origineNav) || PILA[POS];
+  const kind = fase.kind || 'base';
+  S.run = { id: fase.id || uid(), lista, i: 0, esiti: [], mode, sim, pronta: Date.now() + 200,
+    kind, prova: fase.prova || null, resto: fase.resto || [], origineNav,
+    scadenza: sim ? Date.now() + ((S.meta && S.meta.prove && S.meta.prove[kind] && S.meta.prove[kind].minuti) || (kind === 'vela' ? 15 : 30)) * 60000 : null };
+  S.attivita = { stato: 'in corso', riferimento: S.run.id };
+  nuovaVoce({ tipo: 'runner', attivita: S.run.id, origineNav }, location.pathname + location.search, { sostituisci: !!qui && (qui.tipo === 'preparazione' || qui.tipo === 'runner') });
+  $('prep').hidden = true; $('prep-carta').hidden = true;
+  document.body.classList.add('in-attivita');
+  $('quizrun').classList.add('on');
+  $('r-fine').classList.remove('on');
+  $('r-titolo').textContent = sim ? `Simulazione quiz ${kind}` : `${TITOLI_MODO[mode] || 'Quiz'} · Quiz ${kind}`;
+  $('r-close').textContent = sim ? 'Consegna la prova' : 'Termina l\'attività';
+  $('r-time').textContent = '';
+  clearInterval(rTick);
+  if (sim) { cronoRun(); rTick = setInterval(cronoRun, 1000); }
+  mostra();
+}
+
+function mostra() {
+  const R = S.run, it = R.lista[R.i];
+  $('r-pos').textContent = `${R.i + 1} / ${R.lista.length}`;
+  $('r-numero').textContent = it.p ? `N. ${it.p}` : '';
+  // La nota di prima si legge prima di rispondere: e' quella dell'oscuramento (§7.1).
+  $('r-nbp').textContent = it.nbp || ''; $('r-nbp').hidden = !it.nbp;
+  $('r-text').textContent = it.d;
+  R.erroreQui = false;
+  dipingiTag();
+  dipingiSegno(it.id);
+  $('r-verdict').textContent = '';
+  $('r-next').hidden = true;
+  $('r-ans').innerHTML = it.r.map((t, j) => `<button class="ans" data-i="${j}">${esc(t)}</button>`).join('');
+}
+
+function rispondi(j) {
+  const R = S.run, it = R.lista[R.i];
+  if (Date.now() < R.pronta || R.esiti.length > R.i) return;
+  const giusta = j === it.x;
+  R.esiti.push(giusta);
+  const riga = { _t: 'q', uid: uid(), item_id: it.id, ts: E.isoLocale(), ms: 5000, mode: R.mode, kind: R.kind, sim_uid: R.id, correct: giusta ? 1 : 0 };
+  R.ultimaUid = riga.uid;
+  // Una risposta costruisce una volta riga, uid e ts, e applica() riceve lo
+  // stesso ts (§7.1, R-STATI-05): la seconda giusta a 12 ore si vede subito.
+  E.applica(S.prog, it.id, giusta, riga.ms, riga.ts.slice(0, 10), riga.ts);
+  S.righe.push(riga);
+  // Il raccordo del riepilogo le legge tutte, anche quelle passate all'account.
+  S.fatte.push(riga);
+  // Con l'account la risposta va nel suo archivio, insieme alla coda (§9.1).
+  if (S.conto) { S.righeConto = S.righeConto.concat(riga); archivia(S.righe.splice(-1, 1)[0]); }
+  if (R.sim) {
+    // Nessuna correzione durante la prova: la scelta si dice, e «Avanti» (§7.1; §9, QB: n−1 Avanti).
+    $('r-ans').children[j].setAttribute('aria-pressed', 'true');
+    if (R.i + 1 < R.lista.length) $('r-next').hidden = false;
+    return;
+  }
+  [...$('r-ans').children].forEach((b, k) => { if (k === it.x) b.classList.add('ok'); else if (k === j) b.classList.add('ko'); });
+  $('r-verdict').textContent = giusta ? 'Risposta esatta.' : 'Risposta errata.';
+  if (!giusta) { R.erroreQui = true; dipingiTag(); }
+  if (R.i + 1 < R.lista.length) $('r-next').hidden = false;
+}
+
+function avanti() {
+  const R = S.run;
+  if (R.esiti.length <= R.i || R.i + 1 >= R.lista.length) return;
+  R.i++; R.pronta = Date.now() + 200; mostra();
+}
+
+function termina(tempo = false) {
+  const R = S.run;
+  if (!R) return;
+  clearInterval(rTick);
+  if (R.tec) { const o = R.origineNav; chiudiRunner(); S.attivita = null; if (!tornaA(o)) vai('/'); return; }
+  // Un allenamento senza risposte torna all'origine senza righe; una
+  // simulazione consegnata anche vuota ha il suo riepilogo (§7.1).
+  if (!R.esiti.length && !R.sim) { const o = R.origineNav; chiudiRunner(); S.attivita = null; if (!tornaA(o)) vai('/'); return; }
+  S.attivita = { stato: 'conclusa', riferimento: R.id };
+  if (R.sim) {
+    // La prova sostenuta: la riga `_t: 's'`, con l'uid della prova (fine() della pagina vera).
+    const corrette = R.esiti.filter(Boolean).length, max = R.kind === 'vela' ? 1 : 4;
+    const prova = { _t: 's', uid: R.id, kind: R.kind, ts: E.isoLocale(), score: corrette, total: R.lista.length,
+      passed: R.esiti.length === R.lista.length && R.lista.length - corrette <= max ? 1 : 0, ms: (R.kind === 'vela' ? 15 : 30) * 60000 };
+    if (S.conto) archivia(prova); else S.righe.push(prova);
+  }
+  S.ultima = { id: R.id, lista: R.lista.slice(0, R.esiti.length), esiti: R.esiti.slice(), sim: R.sim, n: R.lista.length,
+    prova: R.prova, resto: R.resto, origineNav: R.origineNav, mode: R.mode, kind: R.kind, tempo };
+  riepilogo();
+}
+
+// Il raccordo del riepilogo (area-3 §7.1, R-UX-06): i numeri vengono dalle
+// righe di questa attivita', per sim_uid — come riepilogoQuiz() della pagina
+// vera —, non dagli esiti del runner. S.fatte tiene le righe dei quiz date in
+// questa pagina, anche quelle gia' passate alla copia dell'account.
+function riepilogoQuiz(id, totale) {
+  const proprie = S.fatte.filter((r) => r._t === 'q' && r.sim_uid === id);
+  const corrette = proprie.filter((r) => r.correct).length;
+  return { risposte: proprie.length, corrette, errate: proprie.length - corrette, nonAffrontate: totale - proprie.length,
+           errori: proprie.filter((r) => !r.correct).map((r) => r.item_id) };
+}
+
+const plur = (n) => (n === 1 ? '1 domanda' : `${n} domande`);
+
+// Tre affermazioni e nessuna quarta (area-3 §4.2): che cosa e' successo, quali
+// risposte rivedere, che cosa non hai toccato. Nessun voto sulla preparazione.
+/**
+ * Il risultato di un'attivita' dei quiz (§7.2), e l'invito dove e' dovuto
+ * (§7.4): nel risultato di una simulazione con risposte, nel riepilogo delle
+ * altre attivita', senza account, finche' non lo si rinuncia per questo tentativo.
+ */
+function riepilogo() {
+  const u = S.ultima, r = riepilogoQuiz(u.id, u.n), M = r.nonAffrontate;
+  S.ultima.errori = r.errori;
+  const conto = S.conto && !S.scaduto;
+  const o = NAV.get(u.origineNav);
+  const ritorno = o ? ritornoDi(o) : 'Torna alla Home';
+  const conservazione = `<p>${esc(ACCESSO())}</p>`;
+  const privacy = '<p>Le risposte saranno legate alla tua email e conservate sul nostro server, in chiaro. Il titolare può leggerle per supporto e statistiche.</p>';
+  const porte = '<button data-account="registra">Crea un account e salva</button><button data-account="continua">Continua senza account</button>'
+    + '<button data-account="accedi" data-email="">Hai già un account? Accedi</button><a class="da-solo" href="/privacy">Come trattiamo i dati</a>';
+  const invitoDovuto = !conto && !u.rinuncia && r.risposte > 0;
+  const invito = !invitoDovuto ? '' : !API ? '<p>Su questo indirizzo non si può creare un account. Per salvare le risposte vai su <a href="https://rottagiusta.it/">rottagiusta.it</a>.</p>'
+    : u.sim ? `<section class="invito"><h2>Conserva questa prova</h2><p>Conserva questa prova e ritrovala quando torni.</p>${privacy}${porte}</section>`
+      : `<section class="invito"><h2>Vuoi conservare le attività di questa pagina?</h2>
+      <p>Senza account, chiudendo o ricaricando la pagina perdi le risposte e le preferenze. Crea un account per salvare le risposte, ritrovarle su un altro dispositivo e vedere i Progressi quando ci sono abbastanza dati.</p>${privacy}${porte}</section>`;
+  const riprova = r.errate === 1 ? 'Riprova questo quesito' : `Riprova questi ${r.errate} quesiti`;
+  const uscite = `<button data-ciclo="risposte">Rivedi le risposte</button>
+    ${r.errate ? `<button data-ciclo="errori">Rivedi gli errori</button><button data-ciclo="riprova">${riprova}</button>` : ''}
+    ${u.resto && u.resto.length ? `<button data-fase="1">Continua con la ${u.resto[0]}</button>` : ''}
+    <button data-ciclo="altra">Scegli un'altra attività</button>
+    <button data-ciclo="ritorno">${esc(ritorno)}</button>`;
+  if (u.sim) {
+    const prove = S.meta && S.meta.prove && S.meta.prove[u.kind];
+    const max = prove ? prove.errori_max : (u.kind === 'vela' ? 1 : 4);
+    const superata = r.risposte === u.n && u.n - r.corrette <= max;
+    $('r-fine').innerHTML = `<h1 tabindex="-1">Simulazione quiz ${u.kind} conclusa</h1>
+      <p>Esito di questa prova, non una previsione dell'esame.</p>
+      <ul><li>Risposte corrette: ${r.corrette} su ${u.n}</li><li>Risposte errate: ${r.errate}</li><li>Domande senza risposta: ${M}</li><li>Errori ammessi: ${max}</li></ul>
+      <p><strong>${superata ? 'Prova superata' : 'Prova non superata'}</strong></p>
+      <p>${u.tempo ? 'Tempo scaduto. La prova è stata consegnata.' : 'Prova consegnata.'}</p>
+      ${M ? '<p>Le domande senza risposta non entrano nella riprova degli errori. Puoi esercitarle scegliendo un argomento.</p>' : ''}
+      ${uscite}${conservazione}${invito}<p>Puoi concludere qui.</p>`;
+  } else {
+    const nome = `${TITOLI_MODO[u.mode] || 'Quiz'} · Quiz ${u.kind || 'base'}`;
+    $('r-fine').innerHTML = `<h1 tabindex="-1">${M ? 'Attività interrotta' : 'Attività conclusa'}</h1>
+      <p>${esc(nome)}</p>
+      <p>Hai affrontato ${plurDomande(r.risposte)} su ${u.n} ${u.n === 1 ? 'proposta' : 'proposte'}.${M ? ` ${M === 1 ? '1 non è stata affrontata' : `${M} non sono state affrontate`}.` : ''}</p>
+      <ul><li>Risposte corrette: ${r.corrette}</li><li>Risposte errate: ${r.errate}</li></ul>
+      ${r.errate ? '<p>Puoi rivedere le risposte o riprovare gli errori di questa attività.</p>' : r.risposte ? '<p>Tutte le risposte date in questa attività sono corrette.</p>' : ''}
+      ${M ? '<p>Le domande non affrontate non sono conteggiate come errori.</p>' : ''}
+      ${uscite}${conservazione}${invito}<p>Puoi concludere qui.</p>`;
+  }
+  $('r-fine').classList.add('on');
+  $('r-tag').hidden = true; $('r-segno').hidden = true;
+}
+
+function rivedi(soloErrori = false) {
+  const u = S.ultima;
+  $('rv-body').innerHTML = `<h1>Rivedi le risposte</h1>` + u.lista.map((it, k) =>
+    soloErrori && u.esiti[k] ? '' : `<p>${it.p ? `N. ${esc(it.p)} · ` : ''}${esc(it.d)} — ${u.esiti[k] ? 'esatta' : 'errata'}; Risposta ministeriale: ${esc(it.r[it.x])}</p>`).join('');
+  $('rivedi').classList.add('on');
+}
+
+/** Una sessione salvata, riaperta da Progressi: le risposte e le classificazioni, anche quelle di prima (§8.2). */
+function rivediSessione(id) {
+  const righe = righeTutte();
+  const sess = E.sessioni(righe, { confine: 'attivita' }).find((x) => x.id === id);
+  if (!sess) return;
+  const tag = E.tagPerTentativo(righe);
+  const per = new Map(S.banca.concat(S.vela).map((q) => [q.id, q]));
+  const nomi = { N: 'Non lo sapevo', S: 'Svista', L: 'Classificazione precedente: Letto male', C: 'Classificazione precedente: Calcolo' };
+  $('rv-body').innerHTML = `<h1>Rivedi le risposte</h1>` + sess.righe.map((r) => {
+    const it = per.get(r.item_id);
+    return `<p>${it ? esc(it.d) : esc(r.item_id)} — ${r.correct ? 'esatta' : 'errata'}${tag[r.uid] ? ` · <span data-tag-letto="${tag[r.uid]}">${nomi[tag[r.uid]]}</span>` : ''}</p>`;
+  }).join('');
+  $('rivedi').classList.add('on');
+}
+
+// --- il raccordo dell'esito e dell'avvio (P-74, esito-esame-progetto §10.1) ----------
+//
+// Quattro funzioni di primo livello: la pagina che le dichiara e' nel regime
+// dell'esito (domandaEsito, salvaEsito) e dell'avvio (avvioProva, daInviare),
+// e il banco la guida per intero. Il resto — il riquadro, il modulo, la riga
+// d'avvio a Inizia — passa da qui.
+
+/** Il giorno dell'esame da chiedere, o null: le condizioni del §3.2, sulla descrizione dell'account. */
+function domandaEsito(io, oggi) {
+  if (!io || !Array.isArray(io.esiti) || !io.data_esame) return null;
+  const d = io.data_esame;
+  if (oggi < d || oggi > E.addGiorni(d, 90)) return null;
+  const da = E.addGiorni(d, -30);
+  if (io.esiti.some((x) => x.giorno >= da)) return null;
+  return { giorno: d };
+}
+
+/** PUT /v1/esito: l'elenco e' quello della risposta 200, e niente altro (§3.7, punto 6). */
+async function salvaEsito(giorno, prove) {
+  const r = await api('PUT', '/v1/esito', { giorno, prove });
+  return { codice: r.codice, esiti: r.codice === 200 && r.corpo && Array.isArray(r.corpo.esiti) ? r.corpo.esiti : null,
+    messaggio: r.corpo && r.corpo.messaggio };
+}
+
+/** La riga d'avvio di una fase che sta per cominciare, o null: senza account, o se il server non la accoglie (§6). */
+function avvioProva({ simUid, kind, prova, righe, io }) {
+  if (!io || !Array.isArray(io.tipi_riga) || !io.tipi_riga.includes('a')) return null;
+  return E.rigaAvvio({ simUid, kind, prova, ts: E.isoLocale(), motore: S.motore || '0', righe });
+}
+
+/** Le righe in coda, divise: le risposte, gli avvii, il resto (tag e segnalibri). */
+function daInviare(righe, coda) {
+  const u = new Set(coda.daInviare);
+  const out = { risposte: 0, avvii: 0, altre: 0 };
+  for (const r of righe) {
+    if (!u.has(String(r.uid))) continue;
+    if (E.rigaDiRisposta(r)) out.risposte++;
+    else if (r._t === 'a') out.avvii++;
+    else out.altre++;
+  }
+  return out;
+}
+
+// --- la simulazione: le fasi, e la riga d'avvio a Inizia (§4.1, §4.4) -------------------
+
+/** Inizia: una fase dopo l'altra in «Base e vela»; la riga d'avvio prima del runner. */
+async function avviaFase(kind, prova, resto, origineNav) {
+  const simUid = uid();
+  const lista = E.estrai(kind === 'vela' ? S.vela : S.banca, {}, oggi(), kind === 'vela' ? 5 : 20, Date.now() % 991);
+  if (S.conto && S.db) {
+    try {
+      const { righe } = await tx(() => null);
+      const riga = avvioProva({ simUid, kind, prova, righe, io: S.io });
+      if (riga) await archivia(riga);
+    } catch (e) {
+      // Un errore di chi chiama non ferma la prova: si dice, come una scrittura fallita (§10.1, A-1).
+      guasto(e);
+    }
+  }
+  apriRun(lista, 'simulazione', true, { id: simUid, kind, prova, resto, origineNav });
+}
+
+function avviaSim() {
+  const prova = (document.querySelector('#prep [name="quiz-prova"]:checked') || {}).value || 'base';
+  const fasi = prova === 'entrambe' ? ['base', 'vela'] : [prova];
+  return avviaFase(fasi[0], prova, fasi.slice(1));
+}
+
+// --- «com'è andata» (§3.1, §3.2) ---------------------------------------------------------
+
+const giornoMese = (g) => new Date(g + 'T12:00:00Z').toLocaleDateString('it-IT', { day: 'numeric', month: 'long', timeZone: 'Europe/Rome' });
+const giornoLungo = (g) => new Date(g + 'T12:00:00Z').toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Rome' });
+const NOMI_PROVA = { carteggio: 'carteggio', base: 'quiz base', vela: 'quiz vela', pratica: 'pratica' };
+const NOMI_ESITO = { superata: 'superata', non_superata: 'non superata', non_sostenuta: 'non sostenuta' };
+
+/** L'elenco nella forma del §3.5: una riga per giorno, le prove nell'ordine dell'esame. */
+function righeEsito(esiti) {
+  const giorni = new Map();
+  for (const e of esiti) { if (!giorni.has(e.giorno)) giorni.set(e.giorno, []); giorni.get(e.giorno).push(e); }
+  return [...giorni].map(([g, xs]) => {
+    if (xs.every((x) => x.esito === 'non_detto')) return `${giornoLungo(g)} · non ce l'hai detto`;
+    const ordine = ['carteggio', 'base', 'vela', 'pratica'];
+    return [giornoLungo(g), ...xs.filter((x) => x.esito !== 'non_detto').sort((a, b) => ordine.indexOf(a.prova) - ordine.indexOf(b.prova))
+      .map((x) => `${NOMI_PROVA[x.prova]} ${NOMI_ESITO[x.esito]}${x.errori == null ? '' : `, ${x.errori} ${x.errori === 1 ? 'errore' : 'errori'}`}`)].join(' · ');
+  });
+}
+
+/** Il riquadro, nel Percorso e in nessun altro posto: solo se domandaEsito() dice un giorno. */
+function dipingiEsito() {
+  const box = $('esito-riquadro');
+  const q = S.conto ? domandaEsito(S.io, oggi()) : null;
+  if (!q) { box.hidden = true; box.innerHTML = ''; return; }
+  box.innerHTML = `<h2>Com'è andato l'esame del ${esc(giornoMese(q.giorno))}?</h2>
+    <p>Se ti va, dicci com'è andata, prova per prova. Ci serve a capire se le simulazioni di questo sito somigliano all'esame vero. È facoltativo, e puoi cambiarlo o toglierlo quando vuoi.</p>
+    <button data-esito="rispondi" data-giorno="${esc(q.giorno)}">Rispondi</button>
+    <button data-esito="non-ancora">Non l'ho ancora fatto</button>
+    <button data-esito="mai" data-giorno="${esc(q.giorno)}">Non chiedermelo più</button>`;
+  box.hidden = false;
+}
+
+const sceltaProva = (k, sotto) => `<fieldset><legend>${NOMI_PROVA[k][0].toUpperCase() + NOMI_PROVA[k].slice(1)}</legend>
+  ${['superata', 'non_superata', 'non_sostenuta'].map((v) => `<label><input type="radio" name="esito-${k}" value="${v}"> ${v === 'non_sostenuta' ? 'non l\'ho sostenuta' : NOMI_ESITO[v]}</label>`).join('')}
+  ${sotto}</fieldset>`;
+
+function moduloEsito(giorno = '') {
+  const elenco = S.io && Array.isArray(S.io.esiti) && S.io.esiti.length ? `<ul>${righeEsito(S.io.esiti).map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : '';
+  pannello(`<h2>Il tuo esame</h2>${elenco}
+    <label>Giorno della prova scritta <input type="date" name="giorno" value="${esc(giorno)}"></label>
+    ${sceltaProva('carteggio', '<label>Errori, se lo sai <input type="number" name="errori-carteggio" min="0" max="4"></label>')}
+    ${sceltaProva('base', '<label>Errori, se lo sai <input type="number" name="errori-base" min="0" max="20"></label>')}
+    ${sceltaProva('vela', '<label>Errori, se lo sai <input type="number" name="errori-vela" min="0" max="5"></label>')}
+    <p>Se dopo il carteggio non hai proseguito con i quiz, segnali come non sostenuti.</p>
+    ${sceltaProva('pratica', '<label>Giorno della pratica <input type="date" name="giorno-pratica"></label><p>La pratica è in un altro giorno. Se non l\'hai ancora fatta, lascia vuoto: puoi aggiungerla dopo, da Profilo.</p>')}
+    <p>Una prova lasciata vuota non la registriamo.</p>
+    <div id="esito-salvato" role="status"></div>
+    <button data-esito="salva">Salva</button><button data-account="torna">Annulla</button>`);
+}
+
+async function salvaModuloEsito() {
+  const a = $('account'), val = (n) => (a.querySelector(`[name="${n}"]`) || {}).value || '';
+  const scelta = (k) => (a.querySelector(`[name="esito-${k}"]:checked`) || {}).value || null;
+  const giorno = val('giorno'), prove = {};
+  for (const k of ['carteggio', 'base', 'vela']) {
+    const e = scelta(k); if (!e) continue;
+    prove[k] = val('errori-' + k) === '' ? { esito: e } : { esito: e, errori: Number(val('errori-' + k)) };
+  }
+  const out = $('esito-salvato');
+  out.textContent = 'Salvataggio in corso…';
+  let r = Object.keys(prove).length ? await salvaEsito(giorno, prove) : { codice: 200, esiti: S.io.esiti };
+  if (r.codice === 200 && scelta('pratica') && val('giorno-pratica')) r = await salvaEsito(val('giorno-pratica'), { pratica: { esito: scelta('pratica') } });
+  if (r.codice !== 200 || !r.esiti) {
+    out.textContent = r.codice === 404 ? 'Questa funzione non è ancora disponibile.'
+      : r.codice === 0 ? 'Non l\'abbiamo salvato: il server non risponde. Riprova fra poco; finché non lo vedi qui sotto, non è salvato.'
+      : (r.messaggio || 'Non l\'abbiamo salvato. Riprova fra poco.');
+    return;
+  }
+  S.io = { ...S.io, esiti: r.esiti };
+  out.innerHTML = `<p>Salvato. Lo usiamo soltanto in conteggi aggregati.</p><ul>${righeEsito(r.esiti).map((x) => `<li>${esc(x)}</li>`).join('')}</ul>`;
+  dipingiEsito();
+}
+
+async function maiPiuEsito(giorno) {
+  const r = await salvaEsito(giorno, { carteggio: { esito: 'non_detto' }, base: { esito: 'non_detto' }, vela: { esito: 'non_detto' } });
+  if (r.esiti) { S.io = { ...S.io, esiti: r.esiti }; dipingiEsito(); }
+}
+
+function dataEsameDopo() {
+  pannello(`<h2>Quando lo fai?</h2><p>La data serve a dirti quanto resta e a chiederti, dopo, com'è andata.</p>
+    <label>Data d'esame <input type="date" name="data"></label>
+    <button data-conto="data">Salva la data</button><button data-esito="togli-data">Togli la data</button><button data-account="torna">Annulla</button>`);
+}
+
+// --- Che tecnica serve?, il carteggio, i Segnali: il minimo per C-01 --------------
+
+function avviaTec() {
+  const lista = S.cart.slice(0, 5);
+  const qui = voceQui(), origineNav = (qui && qui.origineNav) || PILA[POS];
+  S.run = { id: uid(), tec: true, lista, i: 0, scelte: new Set(), esiti: [], origineNav };
+  S.attivita = { stato: 'in corso', riferimento: S.run.id };
+  nuovaVoce({ tipo: 'runner', attivita: S.run.id, origineNav }, location.pathname + location.search, { sostituisci: !!qui && qui.tipo === 'preparazione' });
+  $('prep-carta').hidden = true;
+  document.body.classList.add('in-attivita');
+  $('r-titolo').textContent = 'Che tecnica serve?';
+  $('r-numero').textContent = ''; $('r-nbp').hidden = true; $('r-tag').hidden = true; $('r-segno').hidden = true;
+  $('quizrun').classList.add('on');
+  $('r-fine').classList.remove('on');
+  $('r-close').textContent = '×';
+  const it = lista[0], tutte = [...new Set(S.cart.flatMap((e) => e.tecniche))];
+  $('r-pos').textContent = `1 / ${lista.length}`;
+  $('r-text').textContent = it.testo;
+  $('r-verdict').textContent = 'Quali tecniche servono?';
+  $('r-ans').innerHTML = tutte.map((t) => `<button class="chip" data-tec="${esc(t)}">${esc(t)}</button>`).join('');
+  $('r-next').textContent = 'Correggi';
+  $('r-next').hidden = false;
+}
+
+function correggiTec() {
+  const it = S.run.lista[S.run.i];
+  $('r-verdict').textContent = 'Servono: ' + it.tecniche.join(' + ');
+  $('r-next').hidden = true;
+}
+
+// --- il carteggio e la sua bozza (§9.4 del progetto del client, P-34) -------------
+//
+// Senza account il testo sta solo in S.cprova, e la pagina lo dice (P-36). Con
+// l'account, a ogni input una bozza nella copia dell'account: `meta`, chiave
+// `bozza-carteggio:<id>`, scritta in una transazione che rilegge la bozza
+// presente e chiede a E.sostituisciBozza() se si puo' scrivere. «Salvato» solo
+// su oncomplete, e solo se nel frattempo non c'e' altro testo da scrivere.
+
+const chiaveBozza = (id) => E.BOZZA_CARTEGGIO.chiave + id;
+const TESTI_BOZZA = {
+  attesa: 'Salvataggio del testo in corso…',
+  salvato: 'Il testo in corso è salvato su questo dispositivo per il tuo account. I giudizi si salvano quando concludi la valutazione.',
+  guasto: 'Non riusciamo a conservare il testo in questo dispositivo. Non chiudere o ricaricare la pagina: copia i risultati prima di uscire.',
+};
+let cTick = null;
+const mmss = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+
+function avviaCart(esercizi = null) {
+  const per = new Map();
+  for (const e of S.cart) if (!per.has(e.argomento)) per.set(e.argomento, e);
+  const lista = esercizi ? (esercizi === 'tappeto' ? E.tappeto(S.cart, S.progCarta, 4) : E.giroTecniche(S.cart, S.progCarta).map((x) => x.e)) : [...per.values()], inizio = Date.now();
+  const qui = voceQui(), origineNav = (qui && qui.origineNav) || PILA[POS];
+  nuovaVoce({ tipo: 'runner', attivita: 'carta', origineNav }, location.pathname + location.search, { sostituisci: !!qui && qui.tipo === 'preparazione' });
+  apriCart({ id: uid(), lista, inizio, scadenza: esercizi ? null : inizio + E.PROVA_CARTEGGIO.minuti * 60000, i: 0, esercizi, origineNav,
+    risp: lista.map(() => ''), esiti: lista.map(() => null), fase: 'lavoro', consegna: null,
+    // La bozza nasce con il runner, e solo con l'account (ADR-004).
+    b: S.conto ? { chiave: S.conto.chiave, ciclo: S.ciclo, revisione: 0, stato: null, inVolo: null, ancora: false } : null });
+}
+
+function apriCart(P) {
+  S.cprova = P;
+  S.attivita = { stato: 'in corso', riferimento: P.id };
+  $('prep-carta').hidden = true;
+  document.body.classList.add('in-attivita');
+  $('cartrun').classList.add('on');
+  $('c-consegna').textContent = 'Consegna';
+  delete $('c-consegna').dataset.sicuro;
+  clearInterval(cTick);
+  cTick = setInterval(cronoCart, 1000);
+  if (P.fase === 'confronto') return correzioneCart();
+  $('c-fine').classList.remove('on');
+  mostraCart();
+  cronoCart();
+}
+
+function cronoCart() {
+  const P = S.cprova;
+  if (!P || P.fase !== 'lavoro') return clearInterval(cTick);
+  if (!P.scadenza) { $('c-time').textContent = ''; return; }
+  const s = Math.max(0, Math.round((P.scadenza - Date.now()) / 1000));
+  $('c-time').textContent = mmss(s);
+  if (s === 0) consegnaCart(true);
+}
+
+function mostraCart() {
+  const P = S.cprova, e = P.lista[P.i];
+  $('c-pos').textContent = `Esercizio ${P.i + 1} di ${P.lista.length}`;
+  $('c-testo').textContent = e.testo;
+  $('c-input').value = P.risp[P.i];
+  $('c-prev').disabled = P.i === 0;
+  $('c-next').disabled = P.i === P.lista.length - 1;
+  dipingiBozza();
+}
+
+function annotaCart() {
+  const P = S.cprova; if (!P || P.fase !== 'lavoro') return;
+  P.risp[P.i] = $('c-input').value;
+  scriviBozza();
+}
+
+function vaiCart(k) {
+  const P = S.cprova; if (!P || P.fase !== 'lavoro') return;
+  P.i = Math.max(0, Math.min(P.lista.length - 1, k));
+  mostraCart();
+  scriviBozza();
+}
+
+function consegnaCart(tempo = false) {
+  const P = S.cprova, b = $('c-consegna');
+  if (!P || P.fase !== 'lavoro') return;
+  P.risp[P.i] = $('c-input').value;
+  // Due tocchi, in pagina (specifica §7.6).
+  if (!tempo && !b.dataset.sicuro) { b.dataset.sicuro = '1'; b.textContent = 'Sicuro? Consegna definitivamente'; return; }
+  P.fase = 'confronto'; P.consegna = tempo ? P.scadenza : Date.now();
+  correzioneCart();
+  scriviBozza();
+}
+
+function correzioneCart(scaduta = false) {
+  const P = S.cprova;
+  clearInterval(cTick);
+  $('c-time').textContent = 'consegnata';
+  const tutti = P.esiti.every((x) => x !== null);
+  $('c-fine').innerHTML = (scaduta ? '<p role="status">Il tempo della prova è scaduto. Confronta i risultati che avevi scritto.</p>' : '')
+    + P.lista.map((e, k) => `<section><h2>Esercizio ${k + 1} · N. ${esc(e.id)}</h2>
+    <p>La tua risposta: ${esc(P.risp[k] || 'non hai risposto')}</p>
+    <p>Risposta ministeriale: ${esc(e.risposta_ufficiale)}</p>
+    <button data-cs="${k}" data-ok="1" class="${P.esiti[k] === 1 ? 'on' : ''}">L'avevo presa</button><button data-cs="${k}" data-ok="0" class="${P.esiti[k] === 0 ? 'on' : ''}">No</button></section>`).join('')
+    + `<button id="c-salva" ${tutti ? '' : 'disabled'}>Salva la prova e chiudi</button>`;
+  $('c-fine').classList.add('on');
+  dipingiBozza();
+}
+
+function giudicaCart(k, ok) {
+  const P = S.cprova; if (!P || P.fase !== 'confronto') return;
+  P.esiti[k] = ok ? 1 : 0;
+  correzioneCart(P.scaduta);
+  scriviBozza();
+}
+
+function chiudiCart() {
+  clearInterval(cTick);
+  S.cprova = null;
+  $('cartrun').classList.remove('on');
+  $('c-fine').classList.remove('on');
+  document.body.classList.remove('in-attivita');
+  if (S.attivita) S.attivita = null;
+  aggiornaUscitaCart();
+}
+
+/** Il risultato della carta, dopo le righe definitive: esiti autovalutati, Rivedi e il ritorno (§7.3). */
+function risultatoCart(P, righe) {
+  clearInterval(cTick);
+  S.attivita = { stato: 'conclusa', riferimento: P.id };
+  const coincide = righe.filter((r) => r._t === 'c' && r.verdict === 1).length, tot = righe.filter((r) => r._t === 'c').length;
+  S.cartUltima = { P, righe };
+  const o = NAV.get(P.origineNav);
+  $('c-fine').innerHTML = `<h1 tabindex="-1">Esiti autovalutati</h1><p>Coincidono ${coincide} su ${tot}. Il giudizio è tuo.</p>
+    <button data-crivedi>Rivedi i risultati</button><button data-cfine="ritorno">${esc(o ? ritornoDi(o) : 'Torna alla Home')}</button>`;
+  $('c-fine').classList.add('on');
+  $('c-fine').querySelector('h1').focus();
+}
+
+/** La bozza di questo runner, dalle regole del motore: lista, tempo e modalita' non cambiano. */
+function bozzaDi(P) {
+  let b = E.nuovaBozza({ id: P.id, modo: 'simulazione', lista: P.lista.map((e) => e.id), inizio: P.inizio, variante: 'cieca' });
+  b = E.modificaBozza(b, { posizione: P.i, testi: P.risp });
+  if (P.fase === 'confronto') b = E.modificaBozza(b, { fase: 'confronto', consegna: P.consegna, giudizi: P.esiti });
+  return b;
+}
+
+/** Una catena di scritture per runner: una in volo, e l'ultimo stato dopo. */
+function scriviBozza() {
+  const P = S.cprova;
+  if (!P || !P.b) { dipingiBozza(); return; }   // senza account: niente, e la pagina lo dice
+  const B = P.b;
+  B.ancora = true;
+  if (B.inVolo) { if (B.stato !== 'guasto') statoBozza('attesa'); return; }
+  statoBozza('attesa');
+  B.inVolo = (async () => {
+    while (B.ancora && S.cprova === P) {
+      B.ancora = false;
+      try {
+        const scritta = await nellaCopiaBozza(B, bozzaDi(P));
+        B.revisione = scritta.revisione;
+        if (!B.ancora) statoBozza('salvato');
+      } catch (e) {
+        B.errore = e.message;
+        statoBozza('guasto');
+        break;
+      }
+    }
+    B.inVolo = null;
+  })();
+}
+
+function nellaCopiaBozza(B, proposta) {
+  return new Promise((ok, ko) => {
+    // Solo nella copia dell'account con cui il runner e' cominciato, e solo se
+    // l'accesso e' ancora quello: una scheda ferma non scrive, e non riapre.
+    if (!S.db || !S.conto || S.conto.chiave !== B.chiave || S.ciclo !== B.ciclo) return ko(new Error('accesso cambiato'));
+    let t;
+    try { t = S.db.transaction('meta', 'readwrite'); } catch (e) { return ko(e); }
+    const meta = t.objectStore('meta'), k = chiaveBozza(proposta.id);
+    let scritta = null, motivo = null;
+    const g = meta.get(k);
+    g.onsuccess = () => {
+      const r = E.sostituisciBozza(g.result ?? null, proposta, B.revisione);
+      if (!r.bozza) { motivo = r.motivo; t.abort(); return; }
+      scritta = r.bozza;
+      meta.put(scritta, k);
+    };
+    t.oncomplete = () => ok(scritta);
+    t.onabort = () => ko(new Error(motivo || (t.error && t.error.message) || 'scrittura annullata'));
+  });
+}
+
+function statoBozza(stato) {
+  const P = S.cprova; if (!P || !P.b) return;
+  P.b.stato = stato;
+  dipingiBozza();
+}
+
+function dipingiBozza() {
+  const P = S.cprova;
+  const conTesto = !!P && P.risp.some((x) => x.trim());
+  $('c-memoria').hidden = !(P && !P.b && conTesto);
+  const stato = P && P.b ? P.b.stato : null;
+  $('c-stato').textContent = stato ? TESTI_BOZZA[stato] : '';
+  $('c-copia').hidden = stato !== 'guasto';
+  // Il c-stato sta nel runner; nel confronto lo si ripete accanto ai giudizi.
+  if (P && P.fase === 'confronto' && stato) {
+    let el = $('c-fine').querySelector('.c-stato');
+    if (!el) { el = document.createElement('p'); el.className = 'c-stato'; $('c-fine').prepend(el); }
+    el.textContent = TESTI_BOZZA[stato];
+  }
+  aggiornaUscitaCart();
+}
+
+// La conferma del browser (P-36) resta finche' il testo non e' al sicuro:
+// senza account sempre, con l'account finche' l'ultima scrittura non e' confermata.
+let cUscita = false;
+const fermaUscita = (e) => { e.preventDefault(); e.returnValue = ''; };
+function aggiornaUscitaCart() {
+  const P = S.cprova;
+  const proteggi = !!P && P.risp.some((x) => x.trim()) && (!P.b ? P.fase === 'lavoro' : P.b.stato !== 'salvato');
+  if (proteggi === cUscita) return;
+  cUscita = proteggi;
+  if (proteggi) window.addEventListener('beforeunload', fermaUscita); else window.removeEventListener('beforeunload', fermaUscita);
+}
+
+async function copiaRisultati() {
+  const P = S.cprova; if (!P) return;
+  const testo = P.lista.map((e, k) => `${e.id}: ${P.risp[k]}`).join('\n');
+  try { await navigator.clipboard.writeText(testo); }
+  catch { const a = $('c-copia-testo'); a.value = testo; a.hidden = false; a.select(); }
+}
+
+/** Salva la prova: righe, coda e via la bozza, nella stessa transazione (§9.4). */
+async function salvaCart() {
+  const P = S.cprova; if (!P || P.esiti.some((x) => x === null)) return;
+  const { righe, motivo } = E.concludiBozza(bozzaDi(P), { ts: E.isoLocale() });
+  if (motivo) { $('c-stato').textContent = 'Non riusciamo a salvare la prova: ' + motivo; return; }
+  if (!P.b) { S.righe.push(...righe); return risultatoCart(P, righe); }
+  if (P.b.inVolo) await P.b.inVolo;
+  try {
+    await concludiNellaCopia(P.b, P.id, righe);
+  } catch (e) {
+    P.b.errore = e.message; statoBozza('guasto'); return;
+  }
+  S.righeConto = S.righeConto.concat(righe);
+  risultatoCart(P, righe);
+  pianifica();
+}
+
+function concludiNellaCopia(B, id, righe) {
+  return new Promise((ok, ko) => {
+    if (!S.db || !S.conto || S.conto.chiave !== B.chiave || S.ciclo !== B.ciclo) return ko(new Error('accesso cambiato'));
+    const t = S.db.transaction(['righe', 'meta'], 'readwrite');
+    const st = t.objectStore('righe'), meta = t.objectStore('meta');
+    let motivo = null;
+    const g = meta.get(chiaveBozza(id)), c = meta.get('coda');
+    c.onsuccess = () => {
+      if (g.result && g.result.revisione !== B.revisione) { motivo = 'bozza cambiata in un\'altra scheda'; t.abort(); return; }
+      let coda = c.result || E.nuovaCoda({ generazione: S.conto.generazione, epocaDb: S.conto.epoca });
+      for (const r of righe) { st.put(r); coda = E.accoda(coda, r.uid); }
+      meta.put(coda, 'coda');
+      meta.delete(chiaveBozza(id));
+    };
+    t.oncomplete = () => ok();
+    t.onabort = () => ko(new Error(motivo || (t.error && t.error.message) || 'scrittura annullata'));
+  });
+}
+
+/** Le bozze nella copia dell'account aperta; una lettura fallita e' un errore, non «nessuna». */
+function bozzeNellaCopia(db) {
+  return new Promise((ok, ko) => {
+    let t;
+    try { t = db.transaction('meta'); } catch (e) { return ko(e); }
+    const pre = E.BOZZA_CARTEGGIO.chiave;
+    const g = t.objectStore('meta').getAll(IDBKeyRange.bound(pre, pre + '￿'));
+    g.onsuccess = () => ok(g.result.filter((b) => E.validaBozza(b) === null));
+    g.onerror = () => ko(g.error);
+  });
+}
+
+async function offriBozze() {
+  $('bozza').hidden = true; $('bozza-conferma').hidden = true;
+  if (!S.db) return;
+  try {
+    const bozze = await bozzeNellaCopia(S.db);
+    S.bozze = bozze.sort((a, b) => b.inizio - a.inizio);
+    if (!bozze.length) return;
+    $('bozza-txt').textContent = 'Hai del lavoro di carteggio in corso su questo dispositivo.';
+  } catch {
+    $('bozza-txt').textContent = 'Non riusciamo a leggere il lavoro di carteggio salvato su questo dispositivo.';
+  }
+  $('bozza').hidden = false;
+}
+
+async function riapriBozza() {
+  const b = S.bozze && S.bozze[0]; if (!b) return;
+  await CART;
+  const per = new Map(S.cart.map((e) => [e.id, e]));
+  const r = E.riprendiBozza(b, Date.now());
+  const x = r.bozza;
+  $('bozza').hidden = true;
+  apriCart({ id: x.id, lista: x.lista.map((id) => per.get(id)), inizio: x.inizio, scadenza: x.scadenza, i: x.posizione,
+    risp: [...x.testi], esiti: [...x.giudizi], fase: x.fase, consegna: x.consegna, scaduta: r.scaduta,
+    b: { chiave: S.conto.chiave, ciclo: S.ciclo, revisione: b.revisione, stato: 'salvato', inVolo: null, ancora: false } });
+  if (r.scaduta) { correzioneCart(true); scriviBozza(); }
+}
+
+function scartaBozza() {
+  const b = S.bozze && S.bozze[0]; if (!b || !S.db) return;
+  const t = S.db.transaction('meta', 'readwrite');
+  const meta = t.objectStore('meta'), g = meta.get(chiaveBozza(b.id));
+  g.onsuccess = () => { if (g.result && g.result.revisione === b.revisione) meta.delete(chiaveBozza(b.id)); };
+  t.oncomplete = () => offriBozze();
+}
+
+function avviaSeg() {
+  const dom = E.domandeSegnali('notturni', E.lunghezzaPartita('notturni'), Date.now() % 997);
+  const origineNav = PILA[POS];
+  S.seg = { dom, i: 0, esatte: 0, risposto: false, origineNav };
+  S.attivita = { stato: 'in corso', riferimento: 'segnali' };
+  nuovaVoce({ tipo: 'runner', attivita: 'segnali', origineNav }, location.pathname + location.search);
+  document.body.classList.add('in-attivita');
+  $('sr-fine').classList.remove('on');
+  $('segrun').classList.add('on');
+  mostraSeg();
+}
+
+function mostraSeg() {
+  const G = S.seg, d = G.dom[G.i];
+  $('sr-pos').textContent = `${G.i + 1} / ${G.dom.length}`;
+  $('sr-verdict').textContent = '';
+  $('sr-next').hidden = true;
+  G.risposto = false;
+  $('sr-ans').innerHTML = d.opzioni.map((o, j) => `<button class="ans" data-si="${j}">${esc(o)}</button>`).join('');
+}
+
+function rispondiSeg(j) {
+  const G = S.seg, d = G.dom[G.i];
+  if (G.risposto) return;
+  G.risposto = true;
+  const giusta = j === d.corretta;
+  if (giusta) G.esatte++;
+  $('sr-verdict').textContent = giusta ? 'Esatto.' : 'No.';
+  // Dopo l'ultima, «Vedi il risultato» (§5.3; §9, SS: «n risposte, n−1 Avanti, risultato, ritorno»).
+  $('sr-next').textContent = G.i + 1 < G.dom.length ? 'Avanti' : 'Vedi il risultato';
+  $('sr-next').hidden = false;
+}
+
+function risultatoSeg() {
+  const G = S.seg;
+  $('sr-next').hidden = true;
+  S.attivita = { stato: 'conclusa', riferimento: 'segnali' };
+  // Il punteggio resta in S: senza account i Segnali non conservano niente.
+  // Senza account l'avviso dei punteggi anche nel risultato (§4: «prima di ogni avvio e nel riepilogo»).
+  const avviso = S.conto && !S.scaduto ? '' : '<p>Senza account le risposte valgono solo finché questa pagina resta aperta. Se la chiudi o la ricarichi, le perdi. Non salviamo niente, nemmeno le tue preferenze.</p><p>Senza account anche i punteggi dei Segnali valgono solo per questa pagina.</p>';
+  $('sr-fine').innerHTML = `<p>${G.esatte} su ${G.dom.length}</p>${avviso}<button id="sr-basta">Torna ad Allenati · Segnali</button>`;
+  $('sr-fine').classList.add('on');
+  if (S.conto) registraPunteggio('notturni', G.esatte);
+}
+
+// --- account: registrazione ed email gia' registrata (§4.2, §5.2) ---------------
+
+// La finestra (area 6 §4, R-RIF-06): ricorda chi l'ha aperta, prende il fuoco
+// sul suo titolo, che le da' anche il nome, lo tiene dentro con Tab, e alla
+// chiusura lo restituisce.
+function pannello(html) {
+  const a = $('account');
+  if (a.hidden) S.apertoDa = document.activeElement;
+  a.innerHTML = html; a.hidden = false;
+  const h = a.querySelector('h2');
+  if (h) { h.id = 'account-titolo'; h.tabIndex = -1; a.setAttribute('aria-labelledby', 'account-titolo'); h.focus(); }
+}
+function chiudiPannello() {
+  $('account').hidden = true; $('account').innerHTML = '';
+  const da = S.apertoDa; S.apertoDa = null;
+  if (da && da.isConnected) da.focus();
+}
+$('account').addEventListener('keydown', (e) => {
+  if (e.key !== 'Tab') return;
+  const f = [...$('account').querySelectorAll('button, a[href], input, select, textarea, [tabindex="0"]')].filter((x) => x.getClientRects().length);
+  if (!f.length) return;
+  const i = f.indexOf(document.activeElement);
+  if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
+  else if (!e.shiftKey && (i === -1 || i === f.length - 1)) { e.preventDefault(); f[0].focus(); }
+});
+
+function moduloRegistrazione(email = '') {
+  const dal = $('r-fine').classList.contains('on') && $('quizrun').classList.contains('on');
+  pannello(`<h2>Crea un account</h2><p>Salva le risposte di questa pagina e ritrovale quando torni.</p>
+    <label>Email <input type="email" name="email" autocomplete="username" value="${esc(email)}"></label>
+    <label>Password <input type="password" name="password" autocomplete="new-password"></label>
+    <p>Almeno 15 caratteri, al massimo 256. Puoi usare una frase di tre o quattro parole.</p>
+    <p>Creando l'account accetti le <a href="/avvertenza#condizioni">condizioni per l'account</a>; l'account è per chi ha compiuto 18 anni.</p>
+    <p id="account-esito" role="status"></p>
+    <button data-account="crea">Crea l'account e salva</button>
+    <button data-account="torna">${dal ? 'Torna al riepilogo' : 'Torna alla Home'}</button>`);
+}
+
+const VOCI_PROFILO = `<h3>Profilo</h3>
+    <button data-profilo="scelte">Data d'esame</button> <button data-profilo="scelte">Che cosa stai preparando?</button>
+    <button data-profilo="info">Dati</button> <button data-profilo="info">Info e diagnostica</button>
+    <a class="da-solo" href="/privacy">Privacy</a> <a class="da-solo" href="/avvertenza#condizioni">Condizioni per l'account</a> <a class="da-solo" href="/avvertenza">Avvertenza</a>`;
+
+function moduloAccesso(email, { voci = false } = {}) {
+  pannello(`<h2>Accedi</h2>
+    <label>Email <input type="email" name="email" autocomplete="username" value="${esc(email)}"></label>
+    <label>Password <input type="password" name="password" autocomplete="current-password"></label>
+    <p id="account-esito" role="status"></p>
+    <button data-account="entra">Accedi</button>
+    <button data-account="dimenticata" data-email="${esc(email)}">Ho dimenticato la password</button>
+    <button data-account="crea-da-accedi">Crea un account</button>
+    <button data-account="torna">Torna all'attività</button>${voci ? VOCI_PROFILO : ''}`);
+}
+
+/** Una chiamata all'API: `{ codice, corpo }`, con codice 0 se la rete non risponde (§9.2). */
+async function api(metodo, percorso, corpo, signal) {
+  try {
+    const r = await fetch(API + percorso, { method: metodo, credentials: 'include', signal,
+      headers: corpo === undefined ? {} : { 'Content-Type': 'application/json' },
+      body: corpo === undefined ? undefined : JSON.stringify(corpo) });
+    return { codice: r.status, corpo: await r.json().catch(() => null), attesa: r.headers.get('Retry-After') };
+  } catch (e) {
+    return { codice: 0, corpo: null, annullata: e.name === 'AbortError' };
+  }
+}
+
+async function registra() {
+  const api = indirizzoApi(location);
+  const email = $('account').querySelector('[name=email]').value;
+  const password = $('account').querySelector('[name=password]').value;
+  const esito = $('account-esito');
+  const bottone = $('account').querySelector('[data-account=crea]');
+  bottone.disabled = true;
+  esito.textContent = 'Creazione dell\'account in corso…';
+  let r, corpo = null;
+  try {
+    r = await fetch(`${api}/v1/registrazione`, { method: 'POST', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
+    corpo = await r.json().catch(() => null);
+  } catch {
+    // La risposta si e' persa: l'account puo' esserci gia', con il suo cookie.
+    // Prima si chiede al server, poi si decide; mai una seconda registrazione
+    // alla cieca (§4.3).
+    return dopoRispostaPersa();
+  }
+  bottone.disabled = false;
+  // Il caso si riconosce dal codice e da `errore`, non dal testo (§5.2).
+  if (r.status === 409 && corpo && corpo.errore === 'email_registrata') {
+    return pannello(`<h2>Crea un account</h2>
+      <p role="alert"><strong>Questa email è già registrata.</strong> Accedi per conservare le risposte di questa pagina, oppure reimposta la password se non la ricordi.</p>
+      <button data-account="accedi" data-email="${esc(email)}">Accedi</button>
+      <button data-account="reimposta" data-email="${esc(email)}">Reimposta la password</button>
+      <button data-account="torna">Torna al riepilogo</button>`);
+  }
+  S.postaFallita = r.status === 503;
+  // Un 503 di posta ha gia' creato account e cookie: vale come un 201 (§4.3).
+  if (r.status === 201 || (r.status === 503 && corpo && corpo.chiave_locale)) return registrato(corpo);
+  esito.textContent = (corpo && corpo.messaggio) || 'La registrazione non è riuscita. Le risposte sono ancora qui: riprova.';
+}
+
+async function dopoRispostaPersa() {
+  const io = await api('GET', '/v1/io');
+  if (io.codice === 200) return registrato(io.corpo);
+  pannello(`<h2>Crea un account</h2>
+    <p role="alert">Non sappiamo se l'account è stato creato. Le risposte sono ancora qui. Riprova a verificare l'accesso o entra con email e password.</p>
+    <button data-account="verifica">Riprova a verificare l'accesso</button>
+    <button data-account="accedi" data-email="">Accedi</button>`);
+}
+
+/** Registrato: l'identita', poi le righe della pagina — tutte, di ogni attivita' —, poi la data (§4.3). */
+async function registrato(io) {
+  await entra(io);
+  // Il modulo si chiude: lo stato dell'invio, e il suo «Riprova», stanno fuori (§4.3).
+  chiudiPannello();
+  S.onboarding = true;
+  await trasferisci(S.righe.splice(0));
+}
+
+// --- l'archivio dell'account: righe e coda insieme (§9.1, §9.2) -------------------
+
+const nomeDb = (chiave) => `rg-account-${chiave}`;
+
+function apriDb(chiave) {
+  return new Promise((ok, ko) => {
+    const q = indexedDB.open(nomeDb(chiave), 1);
+    q.onupgradeneeded = () => { q.result.createObjectStore('righe', { keyPath: 'uid' }); q.result.createObjectStore('meta'); };
+    q.onsuccess = () => { q.result.onversionchange = () => q.result.close(); ok(q.result); };
+    q.onerror = () => ko(q.error);
+  });
+}
+
+/**
+ * Una transazione sola: legge righe, coda e trasferimento, scrive quello che
+ * `fai` restituisce, e restituisce quello che ha letto. Due schede che
+ * scrivono insieme si mettono in fila qui, non si sovrascrivono (§9.1).
+ */
+function tx(fai) {
+  return new Promise((ok, ko) => {
+    const t = S.db.transaction(['righe', 'meta'], 'readwrite');
+    const righe = t.objectStore('righe'), meta = t.objectStore('meta');
+    const qr = righe.getAll(), qc = meta.get('coda'), qs = meta.get('seg'), qt = meta.get('trasf');
+    let stato;
+    t.oncomplete = () => ok(stato);
+    t.onerror = () => ko(t.error);
+    t.onabort = () => ko(t.error || new Error('transazione interrotta'));
+    qt.onsuccess = () => {
+      stato = { righe: qr.result, coda: qc.result || E.nuovaCoda({ generazione: S.conto.generazione, epocaDb: S.conto.epoca }), trasf: qt.result || null,
+        seg: qs.result || null };
+      const out = fai(stato) || {};
+      if (out.svuota) righe.clear();
+      for (const r of out.nuove || []) righe.put(r);
+      if (out.coda) meta.put(out.coda, 'coda');
+      if (out.trasf !== undefined) meta.put(out.trasf, 'trasf');
+      if (out.seg !== undefined) meta.put(out.seg, 'seg');
+    };
+  });
+}
+
+/** Una risposta nuova: la riga e il suo posto in coda nella stessa transazione. */
+async function archivia(riga) {
+  try { await tx((s) => ({ nuove: [riga], coda: E.accoda(s.coda, riga.uid) })); }
+  catch (e) { guasto(e); return; }
+  // Lo stato si ridipinge adesso: la risposta e' in coda, e finche' il server
+  // non l'ha nominata la pagina non dice che e' sul server (R-RIF-02).
+  await dipingiStato();
+  pianifica();
+}
+
+const SCADUTO = 'L\'accesso non è più valido. Entra di nuovo per inviare le risposte rimaste in questo dispositivo.';
+/** Un 401 durante il lavoro: la copia resta di chi c'era, e la porta torna «Accedi» (account-client §3.1). */
+function scaduto() {
+  S.scaduto = true;
+  $('conto-porta').textContent = 'Accedi';
+  $('conto-stato').textContent = SCADUTO;
+}
+
+let timer = null;
+function pianifica() { clearTimeout(timer); timer = setTimeout(catena, 500); }
+
+/** Una catena di invii e ricezioni per scheda (§10). */
+async function catena() {
+  if (S.inVolo) { S.ancora = true; return S.inVolo; }
+  const mio = S.ciclo;
+  S.inVolo = (async () => {
+    do {
+      S.ancora = false;
+      if (!await invia(mio)) break;
+      if (!await ricevi(mio)) break;
+    } while (S.ancora && mio === S.ciclo);
+  })();
+  try { await S.inVolo; } finally { S.inVolo = null; }
+  if (mio === S.ciclo) await dipingiStato();
+}
+
+async function invia(mio) {
+  for (;;) {
+    if (mio !== S.ciclo || S.sospeso) return false;
+    const { righe, coda } = await tx(() => null);
+    const lotto = E.lottoDaInviare(righe, coda);
+    if (!lotto) return true;
+    S.ac = new AbortController();
+    const risposta = await api('POST', '/v1/righe', lotto, S.ac.signal);
+    // Una risposta arrivata dopo l'uscita o un cambio d'account non si scrive (§9.1).
+    if (mio !== S.ciclo || risposta.annullata) return false;
+    if (risposta.codice === 401) { scaduto(); return false; }
+    // La coda si rilegge alla conferma: una risposta data intanto resta in coda.
+    let esito;
+    await tx((s) => {
+      esito = E.dopoInvio(s.coda, lotto, risposta, s.righe);
+      return { coda: esito.coda, trasf: s.trasf ? E.registraEsito(s.trasf, esito) : null };
+    });
+    // Un rifiuto del server si legge: il suo messaggio, non un «salvate» (§4.3).
+    S.erroreInvio = risposta.codice === 200 ? null : (risposta.corpo && risposta.corpo.messaggio) || null;
+    if (esito.conflitto) { mostraConflitto(esito.conflitto); return false; }
+    if (risposta.codice !== 200 || esito.conflitto) return false;
+  }
+}
+
+async function ricevi(mio) {
+  for (;;) {
+    if (mio !== S.ciclo || S.sospeso) return false;
+    const { coda } = await tx(() => null);
+    S.ac = new AbortController();
+    const risposta = await api('GET', `/v1/righe?dopo=${coda.cursore}`, undefined, S.ac.signal);
+    if (mio !== S.ciclo || risposta.annullata) return false;
+    if (risposta.codice === 401) { scaduto(); return false; }
+    let esito;
+    await tx((s) => {
+      esito = E.dopoRicezione(s.coda, risposta, s.righe);
+      return { nuove: esito.righe, coda: esito.coda, trasf: s.trasf ? E.registraEsito(s.trasf, esito) : null };
+    });
+    // Righe arrivate da un altro dispositivo: lo specchio si ricalcola da tutte
+    // le righe con ripiega(), e si ridisegna (§7.1, R-ARCH-01).
+    if (esito.righe && esito.righe.length) await ricalcola();
+    // Una generazione nuova: prima si sceglie, poi si riceve (§10).
+    if (esito.conflitto) { mostraConflitto(esito.conflitto); return false; }
+    // Un'epoca nuova: il motore ha rimesso in coda le righe che il server ha
+    // perso, e la catena le rimanda (R-ACC-24).
+    if (esito.epocaCambiata) S.ancora = true;
+    if (!esito.continua) return risposta.codice === 200;
+  }
+}
+
+/** Un trasferimento: righe e coda insieme, poi la catena (§9.3). */
+async function trasferisci(righe, { quesiti: q, ...extra } = {}) {
+  await tx((s) => {
+    const { trasferimento, coda } = E.nuovoTrasferimento(s.coda, righe, q ? { quesiti: q } : {});
+    const mie = new Set(trasferimento.uid), gia = new Set(s.righe.map((r) => String(r.uid)));
+    const valide = righe.filter((r) => mie.has(String(r.uid)) && !gia.has(String(r.uid)));
+    return { nuove: valide, coda, trasf: { ...trasferimento, ...extra } };
+  });
+  await dipingiStato();
+  await catena();
+  await ricalcola();
+}
+
+/** Lo stato dell'invio, dal motore: «salvate» solo quando il server le ha nominate tutte. */
+async function dipingiStato() {
+  if (!S.conto) { $('conto-stato').textContent = ''; return; }
+  if (S.scaduto) { $('conto-stato').textContent = SCADUTO; return; }
+  // Sospesi da un azzeramento altrove: la scelta resta raggiungibile (§10).
+  if (S.sospeso) {
+    $('conto-stato').innerHTML = 'I progressi sono stati azzerati da un altro dispositivo: scegli che cosa fare delle risposte di qui. <button data-conflitto="riapri">Scegli adesso</button>';
+    return;
+  }
+  const { righe, coda, trasf } = await tx(() => null);
+  const guasto = S.erroreInvio ? ' ' + S.erroreInvio : '';
+  if (!trasf) {
+    const d = daInviare(righe, coda);
+    const avvio = d.avvii ? (d.avvii === 1 ? 'l\'avvio di una simulazione' : `l'avvio di ${d.avvii} simulazioni`) : '';
+    $('conto-stato').textContent = d.risposte ? `${d.risposte} ${d.risposte === 1 ? 'risposta' : 'risposte'} da inviare${avvio ? ' e ' + avvio : ''}.${guasto}`
+      : coda.daInviare.length ? `Da inviare: ${avvio || 'righe di questo dispositivo'}.${guasto}`
+      : 'Le risposte di questo dispositivo sono confermate sul server';
+    return;
+  }
+  const r = E.riepilogoTrasferimento(trasf, coda, righe);
+  await chiudiTrasferimento(trasf, r, coda, righe);
+  if (r.completo) {
+    // Le sole risposte: un file da un account porta anche avvii e tag (P-74).
+    $('conto-stato').textContent = `${r.confermateRisposte} ${r.confermateRisposte === 1 ? 'risposta salvata' : 'risposte salvate'} nel tuo account`;
+    if (S.onboarding) { S.onboarding = false; onboarding(); }
+  } else if (r.stato === 'da verificare') {
+    $('conto-stato').textContent = 'Non chiudere la pagina: le risposte non sono ancora salvate nel tuo account.';
+    S.ancora = true; pianifica();
+  } else if (r.stato === 'con scarti') {
+    $('conto-stato').textContent = `${r.confermateRisposte} risposte salvate · ${r.nonSalvate} righe non salvate`;
+  } else {
+    $('conto-stato').innerHTML = 'Non chiudere la pagina: le risposte non sono ancora salvate nel tuo account. <button data-conto="riprova">Riprova l\'invio</button>' + esc(guasto);
+  }
+}
+
+function onboarding() {
+  // Dopo che le righe della pagina sono nell'account: «Che cosa stai
+  // preparando?», con la data scritta nella pagina proposta e salvata solo al
+  // clic (§6.1, §11.1 del progetto del client).
+  moduloScelte({ onboarding: true });
+}
+
+/** Lo specchio e le viste, da tutte le righe della copia: dopo l'accesso, una ricezione, un import. */
+async function ricalcola() {
+  if (!S.conto || !S.db) return;
+  const { righe } = await tx(() => null);
+  S.righeConto = righe;
+  const sp = E.ripiega(righe);
+  S.prog = sp.quiz; S.progCarta = sp.carteggio;
+  dipingiHome();
+  if (S.tappa && S.tappa.sezione === 'progressi') dipingiProgressi();
+  // Un risultato aperto con l'invito, dopo la registrazione: lo stesso risultato, con la frase
+  // della conservazione con l'account e senza invito (§6.2, «salvataggio riuscito → stesso risultato»).
+  if (S.ultima && $('r-fine').classList.contains('on') && $('r-fine').querySelector('.invito')) riepilogo();
+}
+
+async function salvaData(togli = false) {
+  const v = togli ? '' : $('account').querySelector('[name=data]').value;
+  const r = await api('PUT', '/v1/profilo', { data_esame: v || null });
+  if (r.codice === 200) {
+    S.conto.data = r.corpo.data_esame;
+    S.io = { ...S.io, data_esame: r.corpo.data_esame };
+    dipingiEsito();
+    $('esame-data').value = r.corpo.data_esame || '';
+    chiudiPannello();
+    $('data-esito').textContent = 'Data salvata';
+    return;
+  }
+  $('account-esito').textContent = 'La data non è stata salvata. Riprova oppure continua senza cambiarla';
+}
+
+// --- l'identita': entrare, riconoscersi all'apertura, uscire -------------------------
+
+async function entra(io) {
+  S.ciclo++;
+  S.io = io;
+  S.conto = { email: io.email, chiave: io.chiave_locale, generazione: io.generazione, epoca: io.epoca,
+    verificata: io.verificata, scade: io.scade_se_non_verificata, data: io.data_esame, segnali: io.segnali || {} };
+  S.db = await apriDb(S.conto.chiave);
+  S.scaduto = false;
+  // Un lucchetto condiviso per scheda: chi esce aspetta che ogni scheda lo
+  // lasci, cioe' che abbia fermato le sue richieste (§9.1).
+  const mio = S.ciclo;
+  navigator.locks.request(nomeDb(S.conto.chiave), { mode: 'shared' }, () => (mio !== S.ciclo ? null : new Promise((r) => { S.rilascia = r; })));
+  $('conto-porta').textContent = 'Account';
+  $('avviso-prova').hidden = true;
+  $('esporta').hidden = false;
+  if (io.data_esame !== undefined) $('esame-data').value = io.data_esame || '';
+  if (io.abilitazione !== undefined || io.conseguimento !== undefined) S.scelte = { abilitazione: io.abilitazione ?? null, conseguimento: io.conseguimento ?? null };
+  await ricalcola();
+  dipingiVerifica();
+  await punteggiInSospeso();
+  // Il lavoro di carteggio lasciato su questo dispositivo, per questo account (§9.4).
+  await offriBozze();
+  dipingiEsito();
+}
+
+/** Ferma questa scheda: niente piu' invii, niente scritture, memoria pulita. */
+function fermaQui() {
+  S.ciclo++;
+  // Il runner dell'account si ferma con lui: il suo testo non passa alla prova
+  // anonima ne' a un altro account (area 4 §8.2). Uno cominciato senza account resta.
+  if (S.cprova && S.cprova.b) chiudiCart();
+  $('bozza').hidden = true; S.bozze = null;
+  if (S.ac) S.ac.abort();
+  clearTimeout(timer);
+  if (S.db) S.db.close();
+  if (S.rilascia) S.rilascia();
+  S.db = null; S.conto = null; S.rilascia = null; S.trasf = null; S.scaduto = false; S.io = null;
+  dipingiEsito();
+  $('conto-porta').textContent = 'Accedi';
+  $('conto-stato').textContent = '';
+  $('avviso-prova').hidden = false;
+  $('esporta').hidden = true;
+  $('seg-stato').textContent = '';
+  $('esame-data').value = ''; S.esame = '';
+  S.sospeso = null; S.erroreInvio = null;
+  S.righeConto = []; S.scelte = {};
+  const sp = E.ripiega(S.righe); S.prog = sp.quiz; S.progCarta = sp.carteggio;
+  dipingiVerifica();
+  dipingiHome();
+  if (S.tappa && S.tappa.sezione === 'progressi') dipingiProgressi();
+}
+
+const canale = new BroadcastChannel('rg-account');
+canale.onmessage = (e) => {
+  if (e.data && e.data.tipo === 'uscita' && S.conto && S.conto.chiave === e.data.chiave) fermaQui();
+};
+
+async function accedi() {
+  const email = $('account').querySelector('[name=email]').value;
+  const pw = $('account').querySelector('[name=password]').value;
+  $('account-esito').textContent = 'Accesso in corso…';
+  const r = await api('POST', '/v1/accesso', { email, password: pw });
+  if (r.codice !== 200) return erroreAccesso(r);
+  // Dopo un 401 qui c'e' ancora la copia di chi c'era: si ferma prima, e resta
+  // sua, nel suo archivio (R-RIF-05).
+  if (S.conto) fermaQui();
+  await entra(r.corpo);
+  return dopoIngresso(r.corpo);
+}
+
+/** Dopo l'accesso o una password nuova: le risposte della pagina (§5.1). L'archivio di
+ *  prima degli account non si legge e non si porta: e' rimasto nel browser (ADR-005). */
+async function dopoIngresso(io) {
+  if (!S.righe.length) { chiudiPannello(); return catena(); }
+  // Le risposte della prova entrano solo dopo una domanda esplicita (§5.1).
+  pannello(`<h2>Accedi</h2>
+    <p>Vuoi portare nel tuo account le ${S.righe.length} risposte di questa pagina?</p>
+    <p>Account: ${esc(io.email)}</p>
+    <label><input type="radio" name="porta" value="si" checked> Sì, portale</label>
+    <label><input type="radio" name="porta" value="no"> No, continua senza portarle</label>
+    <button data-conto="scelta">Conferma la scelta</button>`);
+}
+
+async function scelta() {
+  const si = $('account').querySelector('[name=porta]:checked').value === 'si';
+  chiudiPannello();
+  // Il no separa le righe della prova dall'account: restano nel riepilogo di
+  // questa pagina e non entrano nella coda (§5.1).
+  if (si) await trasferisci(S.righe.splice(0));
+  else { S.prova = S.righe; S.righe = []; await catena(); }
+}
+
+async function avvioConto() {
+  // Senza una copia d'account in questo browser non si chiede niente al
+  // server: chi prova non manda richieste (R-ACC-09).
+  const nomi = (await indexedDB.databases()).map((d) => d.name).filter((n) => n && n.startsWith('rg-account-'));
+  if (!nomi.length) return;
+  const io = await api('GET', '/v1/io');
+  if (io.codice !== 200) {
+    $('conto-stato').textContent = 'L\'accesso non è più valido. Entra di nuovo per inviare le risposte rimaste in questo dispositivo.';
+    return;
+  }
+  await entra(io.corpo);
+  await dipingiStato();
+  await catena();
+}
+// All'apertura: l'account e il link (§3.1, §6).
+(async () => {
+  // Su un'origine senza API nessun modulo destinato a fallire: la strada e' il link (§3.1).
+  if (API) await avvioConto();
+  else { $('altrove').hidden = false; for (const b of document.querySelectorAll('#conto-porta, [data-conto="accedi"]')) b.hidden = true; }
+  await seguiLink();
+})();
+
+function pannelloConto() {
+  // «Il tuo esame», in Profilo, solo se il server sa degli esiti (§3.7, punto 2).
+  const esame = S.io && Array.isArray(S.io.esiti) ? '<button data-esito="profilo">Il tuo esame</button>' : '';
+  pannello(`<h2>Il tuo account</h2><p>${esc(S.conto.email)}</p>${esame}<p id="account-esito" role="status"></p>
+    <button data-conto="esci">Esci</button><button data-conto="ovunque">Esci da tutti i dispositivi</button><button data-account="torna">Torna all'attività</button>${VOCI_PROFILO}`);
+}
+
+async function esci(tutti = false) {
+  const esito = $('account-esito'), chiave = S.conto.chiave;
+  esito.textContent = 'Uscita in corso…';
+  // Prima si prova a inviare; con righe che non sono sul server non si esce (§10).
+  await catena();
+  if (!S.conto) return;
+  // Anche i punteggi dei Segnali: uscire con punteggi che il server non ha li perderebbe (§8, P-46).
+  await punteggiInSospeso();
+  if (!S.conto) return;
+  const { righe: tutte, coda, seg } = await tx(() => null);
+  const pendenti = coda.daInviare.length + Object.keys(coda.scartate).length;
+  const segnali = !!(seg && seg.daInviare);
+  if (pendenti || segnali) {
+    // Le risposte si contano con daInviare(); la condizione che blocca resta sulla coda intera (R-ACC-46).
+    const d = daInviare(tutte, { daInviare: [...coda.daInviare, ...Object.keys(coda.scartate)] });
+    const altre = d.avvii + d.altre;
+    const righe = (d.risposte ? `${d.risposte} ${d.risposte === 1 ? 'risposta non è' : 'risposte non sono'} sul server. ` : '')
+      + (altre ? (d.avvii && !d.altre ? (d.avvii === 1 ? 'L\'avvio di una simulazione non è sul server. ' : `L'avvio di ${d.avvii} simulazioni non è sul server. `) : 'Alcune righe di questo dispositivo non sono sul server. ') : '');
+    esito.innerHTML = `${righe}${segnali ? 'Ci sono punteggi dei Segnali che il server non ha ancora accolto. ' : ''}Collegati alla rete e riprova, oppure scaricale prima di uscire. <button data-conto="riprova-uscita">Riprova l'invio</button> <button data-conto="scarica-pendenti">Scarica le risposte non salvate</button>`;
+    S.uscitaTutti = tutti;
+    return;
+  }
+  // Il lavoro di carteggio non concluso, di qualunque scheda: sta nella copia (§9.4).
+  if (!S.scartaBozze) {
+    let bozze = null;
+    try { bozze = await bozzeNellaCopia(S.db); } catch {}
+    const quiInAttesa = S.cprova && S.cprova.b && S.cprova.b.stato !== 'salvato';
+    if (bozze === null || bozze.length || quiInAttesa) {
+      S.uscitaTutti = tutti;
+      esito.innerHTML = USCITA_BOZZA_HTML(bozze === null);
+      return;
+    }
+  }
+  return chiudiAccesso(chiave, tutti);
+}
+
+const USCITA_BOZZA_HTML = (illeggibile) => `${illeggibile ? 'Non riusciamo a leggere il lavoro di carteggio salvato qui. ' : ''}Su questo dispositivo c'è del lavoro di carteggio non concluso: uscendo lo perdi. <button data-conto="resta">Resta qui</button> <button data-conto="copia-uscita">Copia i risultati</button> <button data-conto="scarta-esci">Scarta il lavoro ed esci</button>`;
+
+/** Conta le bozze di una copia chiusa, riaprendola solo per leggere: dentro il lucchetto, con le altre schede ferme. */
+function contaBozzeChiuse(chiave) {
+  return new Promise((ok) => {
+    const q = indexedDB.open(nomeDb(chiave));
+    q.onupgradeneeded = () => q.transaction.abort();
+    q.onerror = () => ok(0);
+    q.onsuccess = () => { const db = q.result; bozzeNellaCopia(db).then((b) => { db.close(); ok(b.length); }, () => { db.close(); ok(null); }); };
+  });
+}
+
+async function copiaBozzeUscita() {
+  let bozze = [];
+  try { bozze = await bozzeNellaCopia(S.db); } catch {}
+  const testo = bozze.map((b) => b.lista.map((id, k) => `${id}: ${b.testi[k]}`).join('\n')).join('\n\n');
+  try { await navigator.clipboard.writeText(testo); } catch { $('account-esito').insertAdjacentHTML('beforeend', `<textarea readonly>${esc(testo)}</textarea>`); }
+}
+
+/**
+ * Chiude l'accesso da qui — o da tutti i dispositivi — e cancella la copia.
+ * Un 401 vuol dire che la sessione non c'era gia' piu': la pulizia locale si fa
+ * lo stesso (§10). Senza rete non si esce per finta.
+ */
+async function chiudiAccesso(chiave, tutti) {
+  const scarta = S.scartaBozze; S.scartaBozze = false;
+  canale.postMessage({ tipo: 'uscita', chiave });
+  const conto = S.conto;
+  fermaQui();
+  try {
+    await navigator.locks.request(nomeDb(chiave), { mode: 'exclusive', signal: AbortSignal.timeout(3000) }, async () => {
+      // Con le altre schede ferme si ricontano le bozze: una scritta dopo il
+      // primo conteggio non si cancella senza la scelta (§9.4).
+      if (!scarta) {
+        const n = await contaBozzeChiuse(chiave);
+        if (n !== 0) {
+          await entra({ email: conto.email, chiave_locale: chiave, generazione: conto.generazione, epoca: conto.epoca, verificata: conto.verificata, scade_se_non_verificata: conto.scade });
+          pannelloConto();
+          $('account-esito').innerHTML = USCITA_BOZZA_HTML(n === null);
+          S.uscitaTutti = tutti;
+          return;
+        }
+      }
+      const r = await api('POST', tutti ? '/v1/uscita/ovunque' : '/v1/uscita');
+      if (r.codice !== 204 && r.codice !== 401) {
+        // Senza rete il server non revoca il cookie: niente falso «sei uscito».
+        await entra({ email: conto.email, chiave_locale: chiave, generazione: conto.generazione, epoca: conto.epoca, verificata: conto.verificata, scade_se_non_verificata: conto.scade });
+        pannelloConto();
+        $('account-esito').textContent = 'Per uscire dall\'account serve la rete. Puoi scaricare le risposte e restare qui; non lasciare il dispositivo condiviso finché l\'uscita non è confermata.';
+        return;
+      }
+      const cancellata = await new Promise((ok) => {
+        const q = indexedDB.deleteDatabase(nomeDb(chiave));
+        q.onsuccess = () => ok(true);
+        q.onerror = () => ok(false);
+        q.onblocked = () => ok(false);
+      });
+      // Uscita completa: si torna al Percorso, in prova vuota (§10).
+      if (cancellata) { chiudiPannello(); vista('oggi'); return; }
+      pannello('<h2>Uscita</h2><p role="alert">L\'accesso è chiuso, ma la copia su questo dispositivo non è stata cancellata. Chiudi le altre schede e riprova.</p>');
+    });
+  } catch {
+    pannello('<h2>Uscita</h2><p role="alert">Un\'altra scheda non si ferma: chiudila e riprova.</p>');
+  }
+}
+
+// --- la verifica dell'email e i link (§6) --------------------------------------------
+
+const quando = (iso) => new Date(iso).toLocaleString('it-IT', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Rome' });
+
+/** L'avviso di conferma: la data e' quella del server, dal primo momento (§6). */
+function dipingiVerifica() {
+  const el = $('conto-verifica');
+  if (!S.conto || S.conto.verificata) { el.hidden = true; el.innerHTML = ''; return; }
+  el.innerHTML = (S.conto.scade
+    ? `Conferma ${esc(S.conto.email)} entro il ${quando(S.conto.scade)}. Se non lo fai, l'account e tutte le sue risposte saranno cancellati. Nel frattempo puoi allenarti, salvare e vedere i Progressi.`
+    : `Conferma ${esc(S.conto.email)}: la scadenza non è disponibile adesso, la stiamo rileggendo.`)
+    + (S.postaFallita ? ' <strong>L\'account è creato, ma non siamo riusciti a spedire la mail di conferma. Riprova fra qualche minuto.</strong>' : '')
+    + ' <button data-conto="rinvia">Rimanda la mail</button> <button data-conto="stato">Ho confermato: verifica lo stato</button> <span id="rinvio-esito"></span>';
+  el.hidden = false;
+}
+
+async function rileggiIo() {
+  const io = await api('GET', '/v1/io');
+  if (io.codice === 200 && S.conto && io.corpo.chiave_locale === S.conto.chiave) {
+    S.conto.verificata = io.corpo.verificata;
+    S.conto.scade = io.corpo.scade_se_non_verificata;
+    dipingiVerifica();
+  }
+  return io;
+}
+
+async function rinvia() {
+  const r = await api('POST', '/v1/verifica/rinvia');
+  if (r.codice === 202) {
+    S.postaFallita = false;
+    dipingiVerifica();
+    $('rinvio-esito').textContent = 'La mail di conferma è stata inviata. Il link vale 24 ore. Usa l\'ultimo link ricevuto. Se dopo cinque minuti non trovi la mail di Rotta Giusta, controlla lo spam.';
+  } else if (r.codice === 200) await rileggiIo();
+  else if (r.codice === 429) $('rinvio-esito').textContent = (r.corpo && r.corpo.messaggio) || 'Troppe richieste: riprova più tardi.';
+  else $('rinvio-esito').textContent = 'Non siamo riusciti a spedire la mail di conferma. Riprova fra qualche minuto.';
+}
+
+async function seguiLink() {
+  if (!LINK || !API) return;
+  if (LINK.scopo === 'password') return moduloNuovaPassword();
+  const e = $('link-esito');
+  const r = await api('POST', '/v1/verifica', { gettone: LINK.gettone });
+  if (r.codice === 200) {
+    // Un link di verifica non e' un accesso, e non cambia l'account di questa scheda.
+    if (S.conto && S.conto.chiave === r.corpo.chiave_locale) { e.textContent = 'Email confermata.'; await rileggiIo(); }
+    else if (!S.conto) e.innerHTML = 'Email confermata. <button data-conto="accedi">Accedi</button>';
+    else e.textContent = 'Email confermata.';
+  } else if (r.codice === 410) e.textContent = 'Il link è scaduto o è già stato usato. Se l\'email non è ancora confermata, entra nel tuo account e chiedi una nuova mail.';
+  else if (r.codice === 0) e.innerHTML = 'La conferma richiede la rete. Lascia aperta questa pagina e riprova quando sei online. <button data-conto="link">Riprova</button>';
+  else e.textContent = (r.corpo && r.corpo.messaggio) || 'La conferma non è riuscita.';
+}
+
+// --- la password: errori dell'accesso, recupero, link (§5.1, §5.3) --------------------
+
+function secondi(n) {
+  const s = Number(n);
+  if (!Number.isFinite(s) || s <= 0) return 'poco';
+  return s < 90 ? `${s} secondi` : `${Math.ceil(s / 60)} minuti`;
+}
+
+function erroreAccesso(r) {
+  const e = $('account-esito');
+  // Email sconosciuta e password sbagliata non si distinguono (§5.1).
+  if (r.codice === 401) e.textContent = 'Email o password non corrette. Riprova oppure reimposta la password.';
+  else if (r.codice === 429) e.textContent = `Troppi tentativi. Puoi riprovare fra ${secondi(r.attesa)}.`;
+  else if (r.codice === 403) {
+    const email = $('account').querySelector('[name=email]').value;
+    e.innerHTML = `${esc((r.corpo && r.corpo.messaggio) || 'La password è disattivata.')} <button data-account="reimposta" data-email="${esc(email)}">Reimposta la password</button>`;
+  } else e.textContent = 'L\'accesso non è riuscito. Riprova.';
+}
+
+function moduloReimposta(email = '') {
+  pannello(`<h2>Reimposta la password</h2>
+    <label>Email <input type="email" name="email" autocomplete="username" value="${esc(email)}"></label>
+    <p id="account-esito" role="status"></p>
+    <button data-account="chiedi">Chiedi il link</button>
+    <button data-account="accedi" data-email="${esc(email)}">Torna all'accesso</button>`);
+}
+
+async function chiediLink() {
+  const email = $('account').querySelector('[name=email]').value;
+  const r = await api('POST', '/v1/password/dimenticata', { email });
+  // Condizionale sempre: la rotta risponde uguale per chi e' iscritto e per chi no (§5.3).
+  $('account-esito').textContent = r.codice === 202
+    ? 'Se questo indirizzo è iscritto, riceverai una mail da Rotta Giusta. Il link vale un\'ora. Se dopo cinque minuti non la trovi, controlla lo spam.'
+    : (r.corpo && r.corpo.messaggio) || 'La richiesta non è partita. Riprova.';
+}
+
+function moduloNuovaPassword() {
+  pannello(`<h2>Scegli una nuova password</h2>
+    <label>Password <input type="password" name="password" autocomplete="new-password"></label>
+    <p>Almeno 15 caratteri, al massimo 256. Puoi usare una frase di tre o quattro parole.</p>
+    <p id="account-esito" role="status"></p>
+    <button data-account="nuova">Salva la nuova password</button>
+    <button data-account="torna">Torna all'attività</button>`);
+}
+
+async function nuovaPassword() {
+  const pw = $('account').querySelector('[name=password]').value;
+  const r = await api('POST', '/v1/password/nuova', { gettone: LINK.gettone, password: pw });
+  if (r.codice === 410) {
+    return pannello(`<h2>Reimposta la password</h2><p role="alert">Questo link è scaduto o è già stato usato. Chiedi un nuovo link per reimpostare la password.</p>
+      <button data-account="reimposta" data-email="">Chiedi un altro link</button><button data-account="torna">Torna all'attività</button>`);
+  }
+  // Un 422 tiene il gettone in memoria: si corregge la password e si riprova.
+  if (r.codice !== 200) { $('account-esito').textContent = (r.corpo && r.corpo.messaggio) || 'La password non è stata cambiata. Riprova.'; return; }
+  if (S.conto && S.conto.chiave !== r.corpo.chiave_locale) fermaQui();
+  await entra(r.corpo);
+  $('link-esito').textContent = 'Password aggiornata. Le sessioni precedenti sono state chiuse.';
+  // Un account che non era confermato puo' avere risposte di chiunque: si chiede (§5.3).
+  if (r.corpo.confermato_ora && r.corpo.righe > 0) {
+    S.pwNuova = pw;
+    return pannello(`<h2>Account confermato</h2>
+      <p>Questo account non era confermato e contiene ${r.corpo.righe} risposte. Vuoi tenerle o cancellarle?</p>
+      <button data-account="tieni">Tienile</button><button data-account="cancella-righe">Cancella queste risposte</button>`);
+  }
+  return dopoIngresso(r.corpo);
+}
+
+async function cancellaRighe() {
+  const r = await api('POST', '/v1/azzera', { password: S.pwNuova });
+  S.pwNuova = null;
+  if (r.codice !== 200) { pannello(`<h2>Account confermato</h2><p role="alert">Le risposte non sono state cancellate. Riprova.</p><button data-account="tieni">Tienile</button>`); return; }
+  const io = await api('GET', '/v1/io');
+  S.conto.generazione = io.corpo.generazione;
+  await tx(() => ({ svuota: true, coda: E.nuovaCoda({ generazione: io.corpo.generazione, epocaDb: io.corpo.epoca }), trasf: null }));
+  return dopoIngresso(io.corpo);
+}
+
+// --- un file dei progressi (§8) ---------------------------------------------------------
+
+$('importa-file').addEventListener('change', async (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  let dati;
+  // Il formato e' quello di esporta(); il campo `app` non si guarda: i nomi di prima valgono.
+  const testo = await f.text();
+  e.target.value = '';
+  try { dati = JSON.parse(testo); if (!dati || !Array.isArray(dati.righe)) throw new Error('formato'); }
+  catch { $('importa-esito').textContent = 'Non riusciamo a leggere questo file di progressi. Scegli un file esportato da Rotta Giusta'; return; }
+  S.file = { nome: f.name, righe: dati.righe, segPunti: dati.segPunti && typeof dati.segPunti === 'object' ? dati.segPunti : null };
+  if (!S.conto) {
+    return pannello(`<h2>Importa un file dei progressi</h2><p>Per conservare le risposte del file, crea un account o accedi.</p>
+      <button data-conto="accedi">Accedi</button><button data-account="torna">Annulla</button>`);
+  }
+  return anteprimaFile();
+});
+
+async function anteprimaFile() {
+  const F = S.file, { righe } = await tx(() => null);
+  const f = E.fondiArchivio(righe, F.righe, { quesiti: quesiti() });
+  F.conti = { nuove: f.nuove, gia: f.gia, scartate: f.scartate };
+  const motivi = Object.entries(f.motivi).map(([m, n]) => `${m}: ${n}`).join(' · ');
+  pannello(`<h2>Importa un file dei progressi</h2><p>File: ${esc(F.nome)}</p><p>Account: ${esc(S.conto.email)}</p>
+    <p>${f.nuove} nuove · ${f.gia} già presenti · ${f.scartate} scartate</p>${motivi ? `<p>Scartate: ${esc(motivi)}</p>` : ''}
+    <p>Carica soltanto un file di progressi che ti appartiene.</p>
+    ${F.segPunti ? '<p>Le partite dei Segnali usano il massimo tra i dispositivi: le partite svolte in parallelo non si sommano.</p>' : ''}
+    <button data-importa="si">Importa nel mio account</button><button data-account="torna">Annulla</button>`);
+}
+
+async function importaFile() {
+  const F = S.file;
+  chiudiPannello();
+  $('importa-esito').textContent = 'Importazione in corso…';
+  await trasferisci(F.righe, { quesiti: quesiti(), fonte: 'file', conti: F.conti });
+  await ricalcola();
+  // I punteggi vanno al profilo, che li fonde per massimo: la pagina non somma (§8).
+  if (F.segPunti && Object.keys(F.segPunti).length) {
+    const r = await api('PUT', '/v1/profilo', { segnali: F.segPunti });
+    $('seg-stato').textContent = r.codice === 200 ? 'Punteggi dei Segnali confermati' : 'Punteggi dei Segnali da inviare';
+  }
+}
+
+/** A trasferimento finito: il riepilogo del file (§8). */
+async function chiudiTrasferimento(trasf, r, coda, righe) {
+  if (trasf.fonte === 'file' && (r.completo || r.stato === 'con scarti')) {
+    const c = trasf.conti || { nuove: 0, gia: 0, scartate: 0 };
+    const scarti = trasf.rifiutate.length + r.scartate.length;
+    $('importa-esito').innerHTML = `${c.nuove} nuove · ${c.gia} già presenti · ${c.scartate} scartate`
+      + (scarti ? ' <button data-importa="scarti">Scarica le righe non importate</button>' : '');
+  }
+}
+
+async function scaricaScarti() {
+  const { trasf, righe } = await tx(() => null);
+  const server = new Set(E.riepilogoTrasferimento(trasf, (await tx(() => null)).coda, righe).scartate.map((x) => x.uid));
+  scarica('rotta-giusta-righe-non-importate.json', { app: 'rotta-giusta', righe: [...trasf.rifiutate.map((x) => x.riga), ...righe.filter((r) => server.has(String(r.uid)))] });
+}
+
+// --- i Segnali con l'account (§8) ---------------------------------------------------
+
+/** Una partita finita: la copia dell'account, poi il profilo; «da inviare» finche' il PUT non riesce. */
+async function registraPunteggio(modo, esatte) {
+  let seg;
+  await tx((s) => {
+    const base = { ...(S.conto.segnali || {}), ...((s.seg && s.seg.punti) || {}) };
+    const p = base[modo] || { migliore: 0, giocate: 0 };
+    seg = { punti: { ...base, [modo]: { migliore: Math.max(p.migliore, esatte), giocate: p.giocate + 1 } }, daInviare: true };
+    return { seg };
+  });
+  await punteggiInSospeso();
+}
+
+async function punteggiInSospeso() {
+  if (!S.conto) return;
+  const { seg } = await tx(() => null);
+  if (!seg || !seg.daInviare) return;
+  $('seg-stato').textContent = 'Punteggi da inviare';
+  const r = await api('PUT', '/v1/profilo', { segnali: seg.punti });
+  if (r.codice !== 200) return;
+  S.conto.segnali = r.corpo.segnali || {};
+  await tx(() => ({ seg: { punti: r.corpo.segnali, daInviare: false } }));
+  $('seg-stato').textContent = 'Punteggi dei Segnali confermati';
+}
+
+// --- scaricare (§10, §11.2) ----------------------------------------------------------
+
+function scarica(nome, dati) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(dati)], { type: 'application/json' }));
+  a.download = nome;
+  document.body.append(a);
+  a.click();
+  a.remove();
+}
+
+async function pendenti() {
+  const { righe, coda } = await tx(() => null);
+  const u = new Set([...coda.daInviare, ...Object.keys(coda.scartate)]);
+  return righe.filter((r) => u.has(String(r.uid)));
+}
+
+async function scaricaPendenti() {
+  const { seg } = await tx(() => null);
+  scarica(`rotta-giusta-recupero-${oggi()}.json`, { app: 'rotta-giusta', recupero: true, righe: await pendenti(), segPunti: seg && seg.daInviare ? seg.punti : {} });
+  // Avviare il download non prova che il file sia al sicuro: si chiede (§10).
+  $('account-esito').innerHTML += ' <button data-conto="esci-comunque">Ho conservato il file: esci e cancella la copia da questo dispositivo</button>';
+}
+
+/** Il file del server, dopo aver provato a inviare; le risposte pendenti a parte, nominate (§11.2). */
+async function esporta() {
+  const e = $('esporta-esito');
+  e.textContent = 'Preparazione del file…';
+  await catena();
+  const { coda } = await tx(() => null);
+  const r = await api('GET', '/v1/esporta');
+  if (r.codice !== 200 || !r.corpo) { e.textContent = 'Il file del server non si è potuto scaricare. Riprova.'; return; }
+  scarica(`rotta-giusta-progressi-${oggi()}.json`, r.corpo);
+  const n = coda.daInviare.length;
+  e.innerHTML = n ? `Il file del server non contiene ancora le ${n} risposte da inviare. <button data-conto="recupero">Scarica le risposte da inviare</button>` : 'File scaricato.';
+}
+
+async function scaricaRecupero() {
+  scarica(`rotta-giusta-recupero-${oggi()}.json`, { app: 'rotta-giusta', recupero: true, righe: await pendenti() });
+}
+
+// --- una generazione diversa: prima si sceglie (§10) ----------------------------------
+
+function mostraConflitto(c) {
+  S.sospeso = c;
+  const giorno = c.azzerato_il ? `Il ${new Date(c.azzerato_il).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })} i progressi sono stati azzerati da un altro dispositivo.` : 'I progressi sono stati azzerati da un altro dispositivo.';
+  if (c.nonSalvate) {
+    return pannello(`<h2>Progressi azzerati</h2><p>${giorno} Qui ci sono ${c.nonSalvateRisposte ?? c.nonSalvate} risposte non salvate. Scaricale oppure scegli di scartarle prima di caricare il nuovo archivio.</p>
+      <button data-conflitto="scarica">Scarica e passa al nuovo archivio</button><button data-conflitto="scarta">Scarta e passa al nuovo archivio</button><button data-conflitto="dopo">Decidi più tardi</button>`);
+  }
+  pannello(`<h2>Progressi azzerati</h2><p>${giorno} La copia di questo dispositivo verrà sostituita.</p>
+    <button data-conflitto="carica">Carica il nuovo archivio</button><button data-conflitto="dopo">Decidi più tardi</button>`);
+}
+
+async function scaricaConflitto() {
+  scarica(`rotta-giusta-recupero-${oggi()}.json`, { app: 'rotta-giusta', recupero: true, righe: await pendenti() });
+  // Avviare il download non prova che il file sia al sicuro: si chiede (§10).
+  pannello(`<h2>Progressi azzerati</h2><p>Il file con le ${S.sospeso.nonSalvate} risposte non salvate è stato scaricato.</p>
+    <label><input type="checkbox" name="conservato"> Ho conservato il file</label><p id="account-esito" role="status"></p>
+    <button data-conflitto="passa-scaricato">Carica il nuovo archivio</button><button data-conflitto="dopo">Decidi più tardi</button>`);
+}
+
+/**
+ * Le risposte non salvate si ricontano al momento della scelta: una data dopo
+ * «Decidi più tardi» e' una perdita da dichiarare, non da buttare con «Carica
+ * il nuovo archivio».
+ */
+async function riapriConflitto(carica) {
+  const { righe, coda } = await tx(() => null);
+  const inCoda = new Set(coda.daInviare);
+  S.sospeso = { ...S.sospeso, nonSalvate: righe.filter((r) => inCoda.has(String(r.uid))).length, nonSalvateRisposte: daInviare(righe, coda).risposte };
+  if (carica && !S.sospeso.nonSalvate) return risolvi();
+  return mostraConflitto(S.sospeso);
+}
+
+/** Solo dopo la scelta: la coda del motore, la copia svuotata, e si riceve da zero. */
+async function risolvi() {
+  const c = S.sospeso;
+  S.sospeso = null;
+  chiudiPannello();
+  await tx((s) => ({ svuota: true, coda: E.risolviConflitto(s.coda, c), trasf: null }));
+  S.conto.generazione = c.generazione;
+  await catena();
+  await ricalcola();
+}
+
+$('c-input').addEventListener('input', annotaCart);
+
+// I pannelli si chiudono con Esc (§12, collaudo).
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  if (!$('legale').hidden) return indietro();
+  if (!$('account').hidden) return chiudiPannello();
+  if (!$('info').hidden) return chiudiInfo();
+});
+
+
+// --- i gesti del ridisegno ----------------------------------------------------------
+//
+// I link interni hanno un href vero e si intercetta soltanto il tocco
+// ordinario (§3.3): con un modificatore, o in una scheda nuova, sono una visita
+// nuova, e la pagina non ci mette niente di suo.
+document.addEventListener('click', (e) => {
+  const a = e.target.closest('a[href]');
+  if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || a.target === '_blank') return;
+  if (S.salto && !a.hasAttribute('download')) { e.preventDefault(); RINVIATI.push(() => a.click()); return; }
+  const u = new URL(a.getAttribute('href'), location.href);
+  if (u.origin !== location.origin) return;
+  if (LEGALI[u.pathname]) { e.preventDefault(); return apriLegale(u.pathname + u.hash, a); }
+  if (a.dataset.v) { e.preventDefault(); return portaV(a.dataset.v); }
+  if (u.pathname === '/') { e.preventDefault(); return vai(u.pathname + u.search + u.hash); }
+});
+
+document.addEventListener('submit', (e) => {
+  const f = e.target.closest('[data-ricerca]');
+  if (!f) return;
+  e.preventDefault();
+  cerca(f);
+});
+
+/** I pulsanti nuovi: true se il gesto e' suo. */
+function gestoNuovo(t) {
+  if (t.dataset.segmento) { vai('/?sezione=allenati&segmento=' + t.dataset.segmento); return true; }
+  if (t.dataset.tema) { apriPreparazione({ modo: 'argomento', temi: [t.dataset.tema] }); return true; }
+  if (t.dataset.prep === 'chiudi') { indietro(); return true; }
+  if (t.dataset.cporta && !t.dataset.v) { apriPrepCarta(t.dataset.cporta); return true; }
+  if (t.id === 'c-esercizi') { avviaCart((document.querySelector('[name="c-modo"]:checked') || {}).value || 'giro'); return true; }
+  if (t.dataset.crivedi !== undefined) { rivediCarta(); return true; }
+  if (t.dataset.cfine === 'ritorno') { const o = S.cartUltima && S.cartUltima.P.origineNav; chiudiCart(); if (!tornaA(o)) vai('/'); return true; }
+  if (t.dataset.segnalibri !== undefined) { apriSegnalibri(); return true; }
+  if (t.dataset.segnalibriAllena !== undefined) { apriPreparazione({ modo: 'segnalibri', preparazione: S.segniPrep }); return true; }
+  if (t.dataset.trovato) {
+    const it = S.banca.concat(S.vela).find((q) => q.id === t.dataset.trovato);
+    if (it) apriPreparazione({ modo: 'numero', lista: [it] });
+    return true;
+  }
+  if (t.dataset.sessione) { rivediSessione(t.dataset.sessione); return true; }
+  if (t.dataset.tag) { tagga(t.dataset.tag); return true; }
+  if (t.dataset.segno !== undefined) { segna(); return true; }
+  if (t.dataset.segnala !== undefined) { segnala(); return true; }
+  if (t.dataset.segnalaCopia !== undefined) { copiaRiferimento(); return true; }
+  if (t.dataset.dati === 'scarica') { scarica(`rotta-giusta-pagina-${oggi()}.json`, { app: 'rotta-giusta', righe: S.righe.concat(S.prova || []) }); return true; }
+  if (t.dataset.info === 'chiudi') { chiudiInfo(); return true; }
+  if (t.dataset.profilo === 'info') { chiudiPannello(); apriInfo(); return true; }
+  if (t.dataset.profilo === 'scelte') { moduloScelte(); return true; }
+  if (t.dataset.scelte === 'esame') { moduloScelte(); return true; }
+  if (t.dataset.legale === 'chiudi') { indietro(); return true; }
+  if (t.dataset.legale === 'riprova') { apriLegaleDa(voceQui()); return true; }
+  if (t.dataset.invito === 'rinuncia') { S.rinunciaHome = S.righe.length; dipingiHome(); return true; }
+  if (t.dataset.uscita === 'no') { $('uscita').hidden = true; S.uscitaVerso = null; return true; }
+  if (t.dataset.uscita === 'si') { confermaUscita(); return true; }
+  if (t.dataset.breve !== undefined && !t.dataset.rottaStart) return false;
+  return false;
+}
+
+/** La revisione della carta: la tua risposta accanto a quella ministeriale, e il giudizio dato. */
+function rivediCarta() {
+  const x = S.cartUltima; if (!x) return;
+  const per = new Map(S.cart.map((e) => [e.id, e]));
+  $('rv-body').innerHTML = '<h1>Rivedi i risultati</h1>' + x.righe.filter((r) => r._t === 'c').map((r) => {
+    const e = per.get(r.item_id);
+    return `<p>N. ${esc(r.item_id)} · ${r.verdict ? 'Coincide' : 'Da rivedere'}${e ? ` · Risposta ministeriale: ${esc(e.risposta_ufficiale)}` : ''}</p>`;
+  }).join('');
+  $('rivedi').classList.add('on');
+}
+
+// Gli argomenti del segmento Quiz, dalla banca: tre tocchi dalla Home alla domanda (A-1).
+fetch('/dati/meta.json').then((r) => r.json()).then((m) => {
+  const temi = (m.temi || []).map((t) => t.tema || t.nome || t).filter((t) => typeof t === 'string');
+  $('temi').innerHTML = temi.map((t) => `<button data-tema="${esc(t)}">${esc(t)}</button>`).join('');
+}).catch(() => {});
+
+const c0 = (t) => t.dataset.conto;
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('button');
+  if (!t) return;
+  // Un tocco durante un salto nella cronologia si rinvia a dopo il salto (§3.3).
+  if (S.salto) { RINVIATI.push(() => t.click()); return; }
+  if (gestoNuovo(t, e)) return;
+  if (t.matches('[data-rotta-start]')) return avvia();
+  if (t.matches('#r-ans .ans')) return rispondi(Number(t.dataset.i));
+  if (t.matches('#r-ans .chip')) return t.classList.toggle('on');
+  if (t.id === 'r-next') return S.run && S.run.tec ? correggiTec() : avanti();
+  if (t.id === 'r-close') return S.run && S.run.sim ? ($('r-consegna').hidden = false) : termina();
+  if (t.dataset.consegna) { $('r-consegna').hidden = true; if (t.dataset.consegna === 'si') termina(); return; }
+  if (t.dataset.ciclo === 'risposte') return rivedi();
+  if (t.dataset.ciclo === 'errori') return rivedi(true);
+  if (t.dataset.ciclo === 'riprova') return apriRun(S.banca.filter((q) => S.ultima.errori.includes(q.id)), 'sbagliate', false, { origineNav: S.ultima.origineNav });
+  if (t.dataset.ciclo === 'ritorno') return ritornoOrigine();
+  if (t.dataset.ciclo === 'altra') { chiudiRunner(); return vai('/?sezione=allenati&segmento=quiz'); }
+  if (t.id === 'rv-close') return $('rivedi').classList.remove('on');
+  if (t.dataset.v) return portaV(t.dataset.v);
+  if (t.dataset.modo) return apriPreparazione({ modo: t.dataset.modo, prova: t.dataset.prova });
+  if (t.id === 'start') return iniziaPreparazione();
+  if (t.dataset.fase) {
+    const u = S.ultima; $('r-fine').classList.remove('on');
+    return avviaFase(u.resto[0], u.prova, u.resto.slice(1), u.origineNav);
+  }
+  const ex = t.dataset.esito;
+  if (ex === 'rispondi') return moduloEsito(t.dataset.giorno);
+  if (ex === 'mai') return maiPiuEsito(t.dataset.giorno);
+  if (ex === 'non-ancora') return dataEsameDopo();
+  if (ex === 'togli-data') { chiudiPannello(); return salvaData(true); }
+  if (ex === 'profilo') return moduloEsito((S.conto && S.conto.data) || '');
+  if (ex === 'salva') return salvaModuloEsito();
+  if (t.id === 't-start') return avviaTec();
+  if (t.id === 'c-start') return avviaCart();
+  if (t.id === 'c-consegna') return consegnaCart();
+  if (t.id === 'c-prev') return vaiCart(S.cprova.i - 1);
+  if (t.id === 'c-next') return vaiCart(S.cprova.i + 1);
+  if (t.dataset.cs !== undefined) return giudicaCart(Number(t.dataset.cs), t.dataset.ok === '1');
+  if (t.id === 'c-salva') return salvaCart();
+  const bz = t.dataset.bozza;
+  if (bz === 'copia') return copiaRisultati();
+  if (bz === 'riapri') return riapriBozza();
+  if (bz === 'scarta') { $('bozza-conferma').hidden = false; return; }
+  if (bz === 'scarta-no') { $('bozza-conferma').hidden = true; return; }
+  if (bz === 'scarta-si') return scartaBozza();
+  if (c0(t) === 'resta') return chiudiPannello();
+  if (c0(t) === 'copia-uscita') return copiaBozzeUscita();
+  if (c0(t) === 'scarta-esci') { S.scartaBozze = true; return esci(S.uscitaTutti); }
+  if (t.id === 's-start') return avviaSeg();
+  if (t.dataset.si !== undefined) return rispondiSeg(Number(t.dataset.si));
+  if (t.id === 'sr-next') { if (S.seg.i + 1 >= S.seg.dom.length) return risultatoSeg(); S.seg.i++; return mostraSeg(); }
+  if (t.id === 'sr-basta') {
+    $('segrun').classList.remove('on'); $('sr-fine').classList.remove('on'); document.body.classList.remove('in-attivita');
+    const o = S.seg.origineNav; S.attivita = null; if (!tornaA(o)) vai('/?sezione=allenati&segmento=segnali'); return;
+  }
+  if (t.id === 'conto-porta') return S.conto && !S.scaduto ? pannelloConto() : moduloAccesso('', { voci: true });
+  const c = t.dataset.conto;
+  if (c === 'accedi') return moduloAccesso('');
+  if (c === 'scelta') return scelta();
+  if (c === 'esci') return esci();
+  if (c === 'ovunque') return esci(true);
+  if (c === 'scarica-pendenti') return scaricaPendenti();
+  if (c === 'riprova-uscita') return esci(S.uscitaTutti);
+  if (c === 'esci-comunque') return chiudiAccesso(S.conto.chiave, S.uscitaTutti);
+  if (c === 'riprova') return catena();
+  if (c === 'data') return salvaScelte();
+  if (c === 'rinvia') return rinvia();
+  if (c === 'stato') return rileggiIo();
+  if (c === 'link') return seguiLink();
+  if (c === 'esporta') return esporta();
+  if (c === 'recupero') return scaricaRecupero();
+  if (t.dataset.importa === 'si') return importaFile();
+  if (t.dataset.importa === 'scarti') return scaricaScarti();
+  const k = t.dataset.conflitto;
+  if (k === 'scarta') return pannello(`<h2>Progressi azzerati</h2><p>Le ${S.sospeso.nonSalvate} risposte non salvate andranno perse.</p><button data-conflitto="passa">Sì, scartale e passa al nuovo archivio</button><button data-conflitto="dopo">Decidi più tardi</button>`);
+  if (k === 'scarica') return scaricaConflitto();
+  if (k === 'passa') return risolvi();
+  if (k === 'passa-scaricato') {
+    if ($('account').querySelector('[name=conservato]').checked) return risolvi();
+    $('account-esito').textContent = 'Spunta «Ho conservato il file» prima di caricare il nuovo archivio.';
+    return;
+  }
+  if (k === 'carica' || k === 'riapri') return riapriConflitto(k === 'carica');
+  if (k === 'dopo') { chiudiPannello(); return dipingiStato(); }
+  const a = t.dataset.account;
+  if (a === 'registra') return moduloRegistrazione();
+  // «Continua senza account» chiude l'invito per questo tentativo: il risultato resta (§7.4).
+  if (a === 'continua') { if (S.ultima) S.ultima.rinuncia = true; if (S.cartUltima) S.cartUltima.rinuncia = true; return riepilogo(); }
+  if (a === 'crea-da-accedi') return moduloRegistrazione();
+  if (a === 'crea') return registra();
+  if (a === 'entra') return accedi();
+  if (a === 'verifica') return dopoRispostaPersa();
+  if (a === 'accedi') return moduloAccesso(t.dataset.email);
+  if (a === 'reimposta' || a === 'dimenticata') return moduloReimposta(t.dataset.email);
+  if (a === 'chiedi') return chiediLink();
+  if (a === 'nuova') return nuovaPassword();
+  if (a === 'tieni') return dopoIngresso(S.conto);
+  if (a === 'cancella-righe') {
+    return pannello(`<h2>Cancella queste risposte</h2><p>Le risposte già presenti sul server saranno cancellate.</p>
+      <label><input type="checkbox" name="conferma"> Confermo la cancellazione</label><p id="account-esito" role="status"></p>
+      <button data-account="cancella-conferma">Cancella queste risposte</button><button data-account="tieni">Tienile</button>`);
+  }
+  if (a === 'cancella-conferma') {
+    if ($('account').querySelector('[name=conferma]').checked) return cancellaRighe();
+    $('account-esito').textContent = 'Spunta «Confermo la cancellazione» prima di cancellare.';
+    return;
+  }
+  if (a === 'torna') return chiudiPannello();
+});
+
+// --- la Home nei tre stati (§5.1) ---------------------------------------------------
+
+const plurDomande = (n) => (n === 1 ? '1 domanda' : `${n} domande`);
+
+/** H0, H1, HA: lo stato d'accesso viene prima, poi le righe della pagina. */
+function dipingiHome() {
+  const conto = !!S.conto && !S.scaduto;
+  $('home-anonima').hidden = conto;
+  $('home-conto').hidden = !conto;
+  const base = S.meta && S.meta.prove && S.meta.prove.base;
+  for (const x of document.querySelectorAll('.condizioni-base')) x.textContent = base ? `${base.n} domande · ${base.minuti} minuti · al più ${base.errori_max} errori` : '';
+  // H1: le attivita' di questa pagina, dal motore, e l'invito finche' non lo si rinuncia per queste righe.
+  const pagina = conto ? null : E.riepilogoPagina(S.righe.concat(S.prova || []), null);
+  const r = pagina && pagina.risposte.totale;
+  $('rotta-last').hidden = !r && !(conto && S.ultima);
+  if (r) {
+    $('rotta-last-titolo').textContent = 'Le attività di questa pagina';
+    $('rotta-last-txt').textContent = `${pagina.attivita.length} ${pagina.attivita.length === 1 ? 'attività' : 'attività'} · ${r} ${r === 1 ? 'risposta' : 'risposte'}`;
+  }
+  const offerte = S.righe.length;
+  const invito = !conto && !!API && r > 0 && offerte > (S.rinunciaHome || 0);
+  $('invito-home').hidden = !invito;
+  if (invito) $('invito-home-n').textContent = `Hai ${r} ${r === 1 ? 'risposta' : 'risposte'} in questa pagina. Con l'account puoi ritrovare quelle accolte dal server quando torni, anche da un altro dispositivo, e scaricarle.`;
+  for (const b of document.querySelectorAll('[data-rotta-start]')) b.disabled = !S.banca.length;
+  const n = S.contiBanca;
+  if (n) $('non-torna-n').textContent = `${n.oscurati} quesiti oscurati: non escono nella simulazione d'esame; l'avviso compare prima della risposta. ${n.note} quesiti con nota dopo la risposta.`;
+}
+
+// --- Progressi nei due accessi (§8.1) -----------------------------------------------
+
+const PAROLE_STATI = [['mai_visto', 'mai visti'], ['debole', 'da rifare'], ['incerto', 'da confermare'], ['sistemato', 'recuperati'], ['ok', 'acquisiti']];
+
+function dipingiProgressi() {
+  const conto = !!S.conto && !S.scaduto;
+  $('progressi-anonimi').hidden = conto;
+  $('progressi-conto').hidden = !conto;
+  if (!conto) {
+    const p = E.riepilogoPagina(S.righe.concat(S.prova || []), null);
+    $('progressi-vuoto').hidden = !p.vuoto;
+    $('progressi-pagina').hidden = p.vuoto;
+    $('progressi-attivita').innerHTML = p.attivita.map((a) => `<li>${a.tipo === 'q' ? 'Quiz' : a.tipo === 'c' ? 'Carteggio' : 'Che tecnica serve?'} · ${a.n} ${a.n === 1 ? 'risposta' : 'risposte'}</li>`).join('');
+    return;
+  }
+  // I cinque stati, dallo specchio che si ricalcola dalle righe (R-ARCH-01): una
+  // contaStati() per aggregato, e le parole di Q-STATI, nell'ordine.
+  const c = E.contaStati(S.banca, S.prog, { kind: 'base' });
+  $('stati').innerHTML = PAROLE_STATI.map(([k, parola]) => `<li data-stato="${k}">${parola} ${c[k]}</li>`).join('');
+  $('stati-totale').textContent = `Quesiti base: ${c.totale}`;
+  // Le sessioni con il confine dell'attivita', ognuna si riapre (§8.1).
+  const sess = E.sessioni(righeTutte(), { confine: 'attivita' }).slice(-10).reverse();
+  $('sessioni').innerHTML = sess.length ? sess.map((s) => `<li>${s.n} ${s.n === 1 ? 'risposta' : 'risposte'} <button data-sessione="${esc(s.id)}">Rivedi</button></li>`).join('')
+    : '<li>Non ci sono sessioni salvate.</li>';
+}
+
+// --- la preparazione comune (§5.2) --------------------------------------------------
+
+const TITOLI_MODO = { breve: 'Allenamento breve', mirata: 'Allenamento consigliato', argomento: 'Quiz per argomento', sbagliate: 'Ripasso degli errori',
+  screening: 'Un giro tra gli argomenti', sim: 'Simulazione', segnalibri: 'I miei segnalibri', numero: 'Quiz' };
+const TESTI_MODO = {
+  breve: 'Un allenamento breve, con correzione dopo ogni risposta. Questa attività non è una simulazione.',
+  mirata: 'Quiz base selezionati dalle risposte disponibili qui e dalla distribuzione dei quesiti per tema. La selezione non conosce lo studio che hai fatto altrove.',
+  argomento: 'Puoi scegliere uno o più argomenti, oppure allenarti su tutti. Vedrai la risposta ufficiale dopo ogni domanda.',
+  sbagliate: 'Rivedi i quesiti sbagliati almeno una volta nelle risposte disponibili qui.',
+  screening: 'Con una domanda per ogni voce incontri tutti gli argomenti della banca scelta.',
+  sim: 'Le domande sono estratte con le regole della prova scelta, senza tener conto delle tue risposte precedenti. La correzione arriva alla fine. Il risultato riguarda questa simulazione: non garantisce l\'esito dell\'esame.',
+  segnalibri: 'I quesiti che hai segnato.',
+  numero: 'Il quesito trovato con il numero del decreto.',
+};
+const ACCESSO = () => (S.conto && !S.scaduto
+  ? 'Con l\'account le risposte vanno nella copia su questo dispositivo e vengono inviate al server. Puoi ritrovarle da un altro dispositivo dopo che il server le ha accolte.'
+  : 'Senza account le risposte valgono solo finché questa pagina resta aperta. Se la chiudi o la ricarichi, le perdi. Non salviamo niente, nemmeno le tue preferenze.');
+
+/** La lista di una preparazione, dal motore e una volta sola: Inizia apre quella. */
+function listaDi(P) {
+  const oggiS = oggi(), prog = S.prog || {};
+  if (P.modo === 'breve') return preparaBreve({ seme: P.seme }, { items: S.banca, prog, oggi: oggiS }).lista;
+  if (P.modo === 'mirata') return E.mirata(S.banca.concat(S.vela), prog, oggiS, { n: 25, kind: 'base' }).map((x) => x.it);
+  if (P.modo === 'argomento') return E.coda(S.banca, prog, oggiS, { kind: 'base', temi: P.temi && P.temi.length ? P.temi : undefined, n: 20, includiChiusi: true });
+  if (P.modo === 'sbagliate') return E.coda(S.banca, prog, oggiS, { kind: 'base', n: 20, soloSbagliate: true });
+  if (P.modo === 'screening') return E.screening(S.banca, prog, oggiS, 1, 'base', P.seme);
+  if (P.modo === 'segnalibri') return P.preparazione.lista;
+  if (P.modo === 'numero') return P.lista;
+  return [];
+}
+
+/**
+ * Una preparazione: titolo, testo, quanti, Inizia e il ritorno nominato. E' una
+ * tappa della cronologia, sopra la sezione da cui si arriva; la sua lista si
+ * calcola qui e Inizia apre quella, senza una seconda pescata.
+ */
+function apriPreparazione(cfg) {
+  const origine = { ...S.tappa };
+  const P = { seme: Date.now() % 997, ...cfg, origine };
+  if (P.modo !== 'sim') P.lista = listaDi(P);
+  S.prep = P;
+  const voce = { tipo: 'preparazione', prep: P, sezione: origine.sezione, segmento: origine.segmento, origineNav: PILA[POS] };
+  const qs = origine.sezione === 'allenati' ? `/?sezione=allenati&segmento=${origine.segmento}` : origine.sezione === 'home' ? '/?sezione=home' : `/?sezione=${origine.sezione}`;
+  nuovaVoce(voce, `${qs}&attivita=${encodeURIComponent(P.modo === 'sim' ? 'quiz-' + (P.prova || 'base') : P.modo)}&fase=preparazione`);
+  riapriPreparazione(voce);
+}
+
+function riapriPreparazione(v) {
+  const P = v.prep;
+  S.prep = P;
+  for (const x of VISTE_RIDISEGNO) document.getElementById('v-' + x).classList.remove('on');
+  $('prep-carta').hidden = true;
+  $('prep').hidden = false;
+  $('prep-titolo').textContent = P.modo === 'sim' ? 'Simulazione' : (TITOLI_MODO[P.modo] || 'Quiz') + ' · Quiz base';
+  $('prep-testo').textContent = TESTI_MODO[P.modo] || '';
+  $('prep-accesso').textContent = ACCESSO();
+  $('prep-chiudi').textContent = ritornoDi(P.origine);
+  const c = $('prep-controlli');
+  if (P.modo === 'sim') {
+    const base = S.meta && S.meta.prove;
+    c.innerHTML = `<fieldset id="q-prova"><legend>Quale prova</legend>
+      <label><input type="radio" name="quiz-prova" value="base"> Quiz base</label>
+      <label><input type="radio" name="quiz-prova" value="vela"> Quiz vela</label>
+      <label><input type="radio" name="quiz-prova" value="entrambe"> Base e vela</label></fieldset>
+      <p>${base ? `Quiz base: ${base.base.n} domande, ${base.base.minuti} minuti, al più ${base.base.errori_max} errori. Quiz vela: ${base.vela.n} domande, ${base.vela.minuti} minuti, al più ${base.vela.errori_max} errore.` : ''}</p>`;
+    const r = c.querySelector(`[value="${P.prova || 'base'}"]`); if (r) r.checked = true;
+    $('prep-quanti').textContent = '';
+    $('start').textContent = 'Inizia la prova';
+    $('start').disabled = !S.banca.length;
+  } else {
+    c.innerHTML = P.modo === 'argomento' ? `<p>${P.temi && P.temi.length ? 'Argomenti: ' + P.temi.map(esc).join(', ') : 'Tutti gli argomenti'}</p>` : '';
+    const n = P.lista.length;
+    $('prep-quanti').textContent = n ? `Ne aprirai ${n}.` : 'Nessun quesito con questi filtri. Modifica i filtri o rimuovili.';
+    $('start').textContent = P.modo === 'breve' || P.modo === 'mirata' ? 'Inizia l\'allenamento' : 'Inizia i quiz';
+    $('start').disabled = !n;
+  }
+  $('prep-titolo').focus({ preventScroll: true });
+  scrollTo(0, 0);
+}
+
+/** Inizia: la lista della preparazione, com'era. */
+function iniziaPreparazione() {
+  const P = S.prep; if (!P) return;
+  if (P.modo === 'sim') return avviaSim();
+  if (P.modo === 'segnalibri') {
+    const r = avviaSegnalibri(P.preparazione, { banca: S.banca.concat(S.vela), righe: righeTutte(), kind: undefined }, (lista, modo) => apriRun(lista, modo));
+    if (!r.avviata) $('prep-quanti').textContent = 'La selezione è cambiata. Torna alla preparazione per vedere la lista aggiornata.';
+    return;
+  }
+  apriRun(P.lista, P.modo === 'breve' ? 'breve' : P.modo);
+}
+
+// --- la carta e le tecniche: le loro preparazioni (§5.3) ------------------------------
+
+function apriPrepCarta(che) {
+  const origine = { ...S.tappa };
+  const voce = { tipo: 'preparazione', carta: che, sezione: origine.sezione, segmento: origine.segmento, origineNav: PILA[POS] };
+  nuovaVoce(voce, `/?sezione=allenati&segmento=carteggio&attivita=${che}&fase=preparazione`);
+  S.prepCarta = { che, origine };
+  mostraPrepCarta();
+}
+
+function mostraPrepCarta() {
+  const { che, origine } = S.prepCarta;
+  for (const x of VISTE_RIDISEGNO) document.getElementById('v-' + x).classList.remove('on');
+  $('prep').hidden = true;
+  $('prep-carta').hidden = false;
+  $('prep-carta-titolo').textContent = { prova: 'Prova di carteggio', esercizi: 'Esercizi su carta', tecniche: 'Che tecnica serve?' }[che];
+  $('prep-carta-testo').textContent = che === 'prova'
+    ? `${E.PROVA_CARTEGGIO.esercizi} esercizi, ${E.PROVA_CARTEGGIO.minuti} minuti, almeno ${E.PROVA_CARTEGGIO.soglia} risultati corretti. ${E.PROVA_CARTEGGIO.assunzione}`
+    : che === 'tecniche' ? 'Riconosci le tecniche necessarie per impostare il problema. La classificazione è del progetto, non del Ministero.'
+      : 'Scegli un giro fra tecniche diverse o prosegui nell\'ordine del foglio.';
+  $('prep-carta-accesso').textContent = S.conto && !S.scaduto ? ACCESSO() : 'Il lavoro e i giudizi di questa attività restano solo nella pagina aperta. Se la chiudi o la ricarichi li perdi.';
+  $('c-modi').hidden = che !== 'esercizi';
+  $('c-start').hidden = che !== 'prova';
+  $('c-esercizi').hidden = che !== 'esercizi';
+  $('t-start').hidden = che !== 'tecniche';
+  $('prep-carta-chiudi').textContent = ritornoDi(origine);
+  $('prep-carta-titolo').focus({ preventScroll: true });
+}
+
+// --- il runner: la sua tappa, il gestore di uscita, il ritorno (§7.1) -----------------
+
+/** L'uscita, comune a «Termina», Esc e Indietro: la simulazione chiede di consegnare. */
+function gestoreUscita() {
+  if (!S.run) return;
+  if (S.run.sim) { $('r-consegna').hidden = false; return; }
+  return termina();
+}
+
+/**
+ * Un tocco su un'altra sezione con un'attivita' in corso (navigazioneSito(),
+ * effetto «chiedi-uscita»): si chiede, e con un si' l'attivita' si chiude con
+ * le righe che ha gia' scritto, e si va dove si voleva.
+ */
+function chiediUscita(verso) {
+  S.uscitaVerso = verso || null;
+  $('uscita').hidden = false;
+  $('uscita').querySelector('button').focus();
+}
+
+function confermaUscita() {
+  $('uscita').hidden = true;
+  if (S.run && !S.run.tec && (S.run.esiti || []).length) { termina(); }
+  chiudiAttivita();
+  const verso = S.uscitaVerso; S.uscitaVerso = null;
+  if (verso) vai(verso);
+}
+
+/** Tutti i runner e i loro risultati chiusi: l'attivita' e' finita, le righe restano. */
+function chiudiAttivita() {
+  chiudiRunner();
+  if (S.cprova) chiudiCart(); else { $('cartrun').classList.remove('on'); $('c-fine').classList.remove('on'); }
+  $('segrun').classList.remove('on'); $('sr-fine').classList.remove('on');
+  $('rivedi').classList.remove('on');
+  document.body.classList.remove('in-attivita');
+  S.attivita = null;
+}
+
+function chiudiRunner() {
+  $('quizrun').classList.remove('on');
+  $('r-fine').classList.remove('on');
+  document.body.classList.remove('in-attivita');
+  clearInterval(rTick);
+  S.run = null;
+  if (S.attivita && S.attivita.stato === 'in corso') S.attivita = null;
+}
+
+/** Dal riepilogo alla porta da cui si e' partiti: la tappa di allora, con scorrimento e fuoco. */
+function ritornoOrigine() {
+  const u = S.ultima;
+  chiudiRunner();
+  if (u && u.origineNav && tornaA(u.origineNav)) return;
+  vai('/');
+}
+
+// --- i testi legali sopra il lavoro (§3.3) -------------------------------------------
+
+/** Un tocco ordinario su un link legale: il testo nel documento, sopra quello che c'e'. */
+function apriLegale(href, da) {
+  const voce = { tipo: 'legale', href, da };
+  nuovaVoce(voce, href);
+  apriLegaleDa(voce);
+}
+
+async function apriLegaleDa(voce) {
+  const box = $('legale'), testo = $('legale-testo');
+  if (box.hidden) S.legaleDa = voce.da || document.activeElement;
+  box.hidden = false;
+  testo.innerHTML = '<p>Caricamento del testo…</p>';
+  const percorso = voce.href.split('#')[0];
+  try {
+    const r = await fetch(percorso);
+    if (!r.ok) throw new Error(String(r.status));
+    const doc = new DOMParser().parseFromString(await r.text(), 'text/html');
+    const corpo = doc.querySelector('main') || doc.body;
+    for (const x of corpo.querySelectorAll('script, link, style, iframe')) x.remove();
+    // Il ritorno del file autonomo («Torna alla Home») qui non serve: si chiude.
+    for (const a of corpo.querySelectorAll('a[href="/"], a[href="/app"]')) a.remove();
+    testo.innerHTML = corpo.innerHTML;
+    const h = testo.querySelector('h1');
+    if (h) { h.id = 'legale-titolo'; h.tabIndex = -1; }
+    const ancora = voce.href.includes('#') ? testo.querySelector('#' + voce.href.split('#')[1]) : null;
+    if (ancora) { ancora.tabIndex = -1; ancora.scrollIntoView(); ancora.focus({ preventScroll: true }); }
+    else if (h) h.focus();
+  } catch {
+    testo.innerHTML = `<h1 id="legale-titolo" tabindex="-1">Testo non disponibile</h1><p role="alert">Non riusciamo ad aprire questo testo. Le risposte sono ancora in questa pagina.</p>
+      <button data-legale="riprova">Riprova</button><a class="da-solo" href="${esc(voce.href)}" target="_blank" rel="noopener">Apri in una nuova scheda</a>`;
+  }
+}
+
+function chiudiLegale() {
+  if ($('legale').hidden) return;
+  $('legale').hidden = true;
+  $('legale-testo').innerHTML = '';
+  const da = S.legaleDa; S.legaleDa = null;
+  if (da && da.isConnected) da.focus({ preventScroll: true });
+}
+
+// --- Info e i dati (§6.3) ----------------------------------------------------------
+
+function apriInfo() {
+  S.infoDa = document.activeElement;
+  $('info').hidden = false;
+  $('info-pagina').hidden = !!S.conto;
+  $('dati-scarica').hidden = !!S.conto;
+  dipingiInfo();
+  $('info-titolo').focus();
+}
+function chiudiInfo() {
+  $('info').hidden = true;
+  const da = S.infoDa; S.infoDa = null;
+  if (da && da.isConnected) da.focus({ preventScroll: true });
+}
+
+// --- tag, segnalibri, segnalazione (§8.2, §8.3) --------------------------------------
+
+/** Le righe che la pagina conosce: la copia dell'account, o quelle della pagina aperta. */
+function righeTutte() { return S.conto ? S.righeConto || [] : S.righe.concat(S.prova || []); }
+
+/** La fonte del permesso: senza account i tipi del motore, con l'account quelli che il server dichiara. */
+const fonteGesto = () => (S.conto ? { accesso: 'account', io: S.io } : { accesso: 'anonimo', tipiRiga: E.TIPI_RIGA });
+
+/** Un gesto — tag o segnalibro — si scrive solo se il server che c'e' lo accoglie. */
+async function scriviGesto(riga, dove) {
+  const p = permessoGesto(riga, fonteGesto());
+  if (!p.scrivibile) {
+    if (dove) dove.textContent = 'Il server collegato non accoglie ancora questo gesto. Puoi continuare l\'attività; riprova dopo l\'aggiornamento.';
+    return false;
+  }
+  if (S.conto) { S.righeConto = (S.righeConto || []).concat(riga); await archivia(riga); }
+  else S.righe.push(riga);
+  return true;
+}
+
+async function tagga(tag) {
+  const R = S.run, auid = R && R.ultimaUid;
+  if (!auid) return;
+  const riga = { _t: 'g', uid: uid(), attempt_uid: auid, tag, ts: E.isoLocale() };
+  if (await scriviGesto(riga, $('r-tag-motivo'))) {
+    for (const b of document.querySelectorAll('#r-tag [data-tag]')) b.setAttribute('aria-pressed', String(b.dataset.tag === tag));
+  }
+}
+
+/** Il pulsante del segnalibro: detto dall'ultimo gesto, e una riga per gesto. */
+function dipingiSegno(id) {
+  const segnato = E.segnalibri(righeTutte()).includes(id);
+  const b = $('r-segno');
+  b.hidden = !id;
+  b.textContent = segnato ? 'Rimuovi segnalibro' : 'Metti un segnalibro';
+  b.setAttribute('aria-pressed', String(segnato));
+  // Con un server che non accoglie il segnalibro il gesto non si offre (R-TAG-02).
+  const prova = { _t: 'b', uid: 'prova', ts: E.isoLocale(), item_id: id || 'x', segnato: 1 };
+  b.disabled = !permessoGesto(prova, fonteGesto()).scrivibile;
+}
+
+async function segna() {
+  const R = S.run; if (!R) return;
+  const id = R.lista[R.i].id;
+  const segnato = E.segnalibri(righeTutte()).includes(id);
+  await scriviGesto({ _t: 'b', uid: uid(), ts: E.isoLocale(), item_id: id, segnato: segnato ? 0 : 1 });
+  dipingiSegno(id);
+}
+
+function dipingiTag() {
+  const R = S.run;
+  const prova = { _t: 'g', uid: 'prova', attempt_uid: 'prova', tag: 'S', ts: E.isoLocale() };
+  const s = document.querySelector('#r-tag [data-tag="S"]');
+  if (s) s.disabled = !permessoGesto(prova, fonteGesto()).scrivibile;
+  $('r-tag-motivo').textContent = s && s.disabled ? 'Il server collegato non accoglie ancora questo gesto. Puoi continuare l\'attività; riprova dopo l\'aggiornamento.' : '';
+  for (const b of document.querySelectorAll('#r-tag [data-tag]')) b.setAttribute('aria-pressed', 'false');
+  $('r-tag').hidden = !(R && R.erroreQui);
+}
+
+function segnala() {
+  const R = S.run, it = R ? R.lista[R.i] : null;
+  const rif = it ? `${it.k} · ${it.id}${it.p ? ' · N. ' + it.p : ''} · versione ${S.motore || '?'}` : `versione ${S.motore || '?'}`;
+  pannello(`<h2>Segnala un problema</h2>
+    <p>Copia il riferimento e descrivi che cosa non torna. Non inserire password o dati dell'account.</p>
+    <p id="segnala-rif">${esc(rif)}</p>
+    <button data-segnala-copia>Copia il riferimento</button><p id="segnala-esito" role="status"></p>
+    <p>indirizzo-da-scegliere@example.invalid — Indirizzo non ancora definito dall'autore: questo è un segnaposto</p>
+    <button data-account="torna">Chiudi</button>`);
+}
+
+async function copiaRiferimento() {
+  const t = $('segnala-rif').textContent;
+  try { await navigator.clipboard.writeText(t); $('segnala-esito').textContent = 'Riferimento copiato'; }
+  catch { $('segnala-esito').textContent = 'Non riusciamo a copiarlo. Seleziona e copia il testo qui sotto'; }
+}
+
+// --- cerca per numero (§8.3) e i segnalibri in Quiz ------------------------------------
+
+function cerca(form) {
+  const kind = form.elements.banca.value || undefined;
+  const r = ricercaNumero({ banca: S.banca.concat(S.vela), testo: form.elements.numero.value, kind });
+  S.ricerca = r;
+  const out = $('ricerca-esito');
+  if (!r.valido) { out.textContent = r.motivo; return; }
+  if (!r.quanti) { out.textContent = 'Nessun quesito con questo numero. Controlla il numero o prova una sua parte.'; return; }
+  const osc = new Set(r.oscurati);
+  const riga = (it) => `<li><button data-trovato="${esc(it.id)}">N. ${esc(it.p)} · ${esc(it.d)}</button>${osc.has(it.id) ? ' <span>Oscurato: all\'esame non esce. Puoi esercitarlo qui</span>' : ''}</li>`;
+  out.innerHTML = `<p>${r.quanti} ${r.quanti === 1 ? 'quesito trovato' : 'quesiti trovati'}</p>`
+    + (r.esatti.length ? `<h3>Numero esatto</h3><ul>${r.esatti.map(riga).join('')}</ul>` : '')
+    + (r.parziali.length ? `<h3>Numeri che lo completano</h3><ul>${r.parziali.map(riga).join('')}</ul>` : '');
+}
+
+function apriSegnalibri() {
+  const richiesta = { banca: S.banca.concat(S.vela), righe: righeTutte(), kind: undefined };
+  const prep = preparaSegnalibri(richiesta);
+  const el = $('segnalibri-elenco');
+  el.hidden = false;
+  el.innerHTML = prep.quanti
+    ? `<p>${prep.quanti} ${prep.quanti === 1 ? 'quesito segnato' : 'quesiti segnati'}</p><button data-segnalibri-allena>Allenati sui ${prep.quanti} segnalibri</button>`
+    : '<p>Non ci sono quesiti segnati con questa banca. Puoi segnare una domanda mentre ti eserciti o la rivedi.</p>';
+  if (prep.fuori.length) el.innerHTML += `<p>Questi riferimenti segnati non sono presenti nella banca caricata: ${prep.fuori.map(esc).join(', ')}</p>`;
+  S.segniPrep = prep;
+}
+
+// --- «Che cosa stai preparando?» (§6.1, P-83) -----------------------------------------
+
+/** Il server dichiara i due campi: solo allora «Scelte salvate» si puo' dire. */
+const campiProfilo = () => !!(S.io && Array.isArray(S.io.campi_profilo) && ['abilitazione', 'conseguimento'].every((c) => S.io.campi_profilo.includes(c)));
+
+function moduloScelte({ onboarding = false } = {}) {
+  const s = S.scelte || {};
+  const sel = (n, v) => (s[n] === v ? ' checked' : '');
+  const conto = S.conto && !S.scaduto;
+  pannello(`<h2>Che cosa stai preparando?</h2>
+    <p>Puoi scegliere adesso o più tardi. Puoi cambiare queste informazioni dal Profilo. Non limitano le attività.</p>
+    <fieldset><legend>Abilitazione</legend><label><input type="radio" name="abilitazione" value="motore"${sel('abilitazione', 'motore')}> Solo motore</label>
+      <label><input type="radio" name="abilitazione" value="vela"${sel('abilitazione', 'vela')}> Anche vela</label></fieldset>
+    <fieldset><legend>Conseguimento</legend><label><input type="radio" name="conseguimento" value="prima"${sel('conseguimento', 'prima')}> Prima patente</label>
+      <label><input type="radio" name="conseguimento" value="estensione_e12"${sel('conseguimento', 'estensione_e12')}> Estensione dalla entro 12 miglia</label></fieldset>
+    <p>Hai una data d'esame?</p>
+    <label>Data d'esame (facoltativa) <input type="date" name="data" value="${esc(onboarding ? S.esame : (S.conto && S.conto.data) || S.esame)}"></label>
+    ${onboarding && S.esame ? '<p>È la data che hai scritto in questa pagina: salvala solo se è quella giusta.</p>' : ''}
+    <p>${conto ? (campiProfilo() ? 'Le scelte vengono conservate nel tuo account solo dopo la conferma del server.' : 'Il server collegato non conserva ancora queste scelte: valgono solo per questa pagina.') : 'Queste scelte valgono solo per questa pagina. Se la chiudi o la ricarichi le perdi.'}</p>
+    <p id="account-esito" role="status"></p>
+    <button data-conto="data">Salva le scelte</button><button data-account="torna">Salta per ora</button>`);
+}
+
+/** Salva le scelte: anonimo in memoria; con l'account solo i campi che il server dichiara, e «salvate» dai valori riletti. */
+async function salvaScelte() {
+  const a = $('account'), val = (n) => (a.querySelector(`[name="${n}"]:checked`) || {}).value || null;
+  const data = (a.querySelector('[name=data]') || {}).value || '';
+  const scelte = { abilitazione: val('abilitazione'), conseguimento: val('conseguimento') };
+  const esito = $('account-esito');
+  if (!S.conto || S.scaduto) {
+    S.scelte = scelte; S.esame = data; $('esame-data').value = data;
+    esito.textContent = 'Scelte applicate a questa pagina';
+    return;
+  }
+  esito.textContent = 'Salvataggio delle scelte in corso…';
+  const corpo = { data_esame: data || null };
+  if (campiProfilo()) Object.assign(corpo, scelte);
+  const r = await api('PUT', '/v1/profilo', corpo);
+  if (r.codice !== 200 || !r.corpo) { esito.textContent = 'Le scelte non sono state salvate. Riprova oppure continua senza cambiarle.'; return; }
+  S.conto.data = r.corpo.data_esame;
+  S.io = { ...S.io, ...r.corpo };
+  $('esame-data').value = r.corpo.data_esame || '';
+  dipingiEsito();
+  // «Salvate» solo con i valori riletti nella risposta, e solo se il server li conserva.
+  const riletti = campiProfilo() && r.corpo.abilitazione === scelte.abilitazione && r.corpo.conseguimento === scelte.conseguimento;
+  S.scelte = riletti ? { abilitazione: r.corpo.abilitazione, conseguimento: r.corpo.conseguimento } : scelte;
+  if (riletti) { chiudiPannello(); $('data-esito').textContent = 'Scelte salvate'; return; }
+  esito.textContent = campiProfilo() ? 'Le scelte non sono state salvate. Riprova oppure continua senza cambiarle.'
+    : 'La data è salvata. Le altre scelte valgono solo per questa pagina: il server collegato non le conserva.';
+}
+</script>
+</body>
+</html>

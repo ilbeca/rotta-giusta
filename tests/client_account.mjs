@@ -203,7 +203,10 @@ const V = 'const V = (e) => !!e && e.getClientRects().length > 0 && getComputedS
 // attiva: i pulsanti e i campi si cercano li' dentro, come li trova chi usa la
 // pagina. Senza, un «Accedi» nell'intestazione e uno nel pannello del 409 sono
 // indistinguibili per testo.
-const M = 'const M = () => [...document.querySelectorAll(\'[aria-modal="true"]\')].find(V) || document;';
+// Nel ridisegno le finestre si impilano — un testo legale sopra il modulo, il
+// modulo sopra Info (ridisegno §3.3, §6.1) —, e quella attiva e' l'ultima nel
+// documento: si prende quella. Con una finestra sola, come oggi, e' la stessa.
+const M = 'const M = () => [...document.querySelectorAll(\'[aria-modal="true"]\')].filter(V).pop() || document;';
 const js = (corpo) => `(() => { ${V} ${M} ${corpo} })()`;
 const q = (s) => JSON.stringify(s);
 
@@ -231,24 +234,96 @@ const ingresso = (ctx) => ctx.ingresso || '/app';
 // alias -> [sezione, segmento, porta dell'attivita'].
 const ALIAS_PORTE = { quiz: ['allenati', 'quiz', null], cart: ['allenati', 'carteggio', null], seg: ['allenati', 'segnali', null],
   tec: ['allenati', 'carteggio', '[data-cporta="tecniche"]'], diag: ['progressi', null, null], oggi: ['home', null, null], info: ['home', null, '[data-profilo="info"]'] };
-/** La vista che la porta `x` apre: la sua di oggi, o la sezione del ridisegno. */
-const vistaDi = (x) => ALIAS_PORTE[x] ? `#v-${x}, #v-${ALIAS_PORTE[x][0]}` : `#v-${x}`;
+/**
+ * Una porta di sezione. Nel ridisegno, con un'attivita' in corso, un tocco su
+ * un'altra sezione chiede di uscire (navigazioneSito(), «chiedi-uscita»): il
+ * banco conferma, come chi studia che ha deciso di andare. Oggi una porta
+ * cambia la vista sotto il runner, senza chiedere.
+ */
+async function clicPorta(tab, sel) {
+  if (!await clic(tab, sel)) return false;
+  if (await tab.valuta(visibile('[data-uscita="si"]'))) await clic(tab, '[data-uscita="si"]');
+  return true;
+}
+/** La vista che la porta `x` apre: la sua di oggi, o la sezione del ridisegno; per
+ *  «Che tecnica serve?» la sua preparazione (`[data-preparazione]`, §5.3). */
+const vistaDi = (x) => (x === 'tec' ? '#v-tec, [data-preparazione]' : ALIAS_PORTE[x] ? `#v-${x}, #v-${ALIAS_PORTE[x][0]}` : `#v-${x}`);
 /** Apre la porta `x`: l'alias se c'e', altrimenti la strada del ridisegno. */
 async function apriPorta(tab, x) {
-  if (await clic(tab, `[data-v="${x}"]`)) return true;
+  if (await clicPorta(tab, `[data-v="${x}"]`)) return true;
   const a = ALIAS_PORTE[x];
   if (!a) return false;
   const [sezione, segmento, attivita] = a;
-  if (!await clic(tab, `[data-v="${sezione}"]`)) return false;
+  if (!await clicPorta(tab, `[data-v="${sezione}"]`)) return false;
   if (segmento && !(await tab.attendi(visibile(`[data-segmento="${segmento}"]`), REAZIONE) && await clic(tab, `[data-segmento="${segmento}"]`))) return false;
   if (attivita) return await tab.attendi(visibile(attivita), REAZIONE) && clic(tab, attivita);
   return true;
 }
+/**
+ * La preparazione della simulazione. Oggi: Quiz → «Simula la prova». Nel
+ * ridisegno la porta sta in Esame (§5.4, P-80: `data-modo="sim"` in #v-esame),
+ * e da li' la stessa preparazione con la scelta della prova.
+ */
+async function portaSim(tab) {
+  if (await clic(tab, '[data-v="esame"]')) {
+    return await tab.attendi(visibile('#v-esame [data-modo="sim"]'), REAZIONE) && clic(tab, '#v-esame [data-modo="sim"]');
+  }
+  return await apriPorta(tab, 'quiz') && await tab.attendi(visibile('[data-modo="sim"]'), REAZIONE) && clic(tab, '[data-modo="sim"]');
+}
+
+/**
+ * Una porta del Carteggio fino al suo Inizia: `#c-start` per la prova, `#t-start`
+ * per le tecniche. Oggi `#c-start` sta nella vista; nel ridisegno il Carteggio ha
+ * tre porte (§5.3), e la prova apre la sua preparazione.
+ */
+async function portaCarteggio(tab, che) {
+  const inizia = che === 'tecniche' ? '#t-start' : '#c-start';
+  if (!await apriPorta(tab, che === 'tecniche' ? 'tec' : 'cart')) return false;
+  if (await tab.valuta(visibile(inizia))) return true;
+  await clic(tab, `[data-cporta="${che}"]`);
+  return tab.attendi(visibile(inizia), REAZIONE);
+}
+
+// I testi che il ridisegno cambia (§6.1, §7.2): il resto del banco li cerca da qui.
+const TESTI = {
+  attuale: { salvaData: 'Salva la data', saltaData: 'Continua senza data', dataSalvata: 'Data salvata',
+    dataNo: 'La data non è stata salvata. Riprova oppure continua senza cambiarla' },
+  ridisegno: { salvaData: 'Salva le scelte', saltaData: 'Salta per ora', dataSalvata: 'Scelte salvate',
+    dataNo: 'Le scelte non sono state salvate. Riprova oppure continua senza cambiarle' },
+};
+const testi = (ctx) => TESTI[ctx && ctx.regime === 'ridisegno' ? 'ridisegno' : 'attuale'];
+
 const passwordVisibile = js(`return [...document.querySelectorAll('input[type=password]')].some(V);`);
 const modaleVisibile = js(`return [...document.querySelectorAll('[aria-modal="true"], dialog[open]')].some(V);`);
 const pausa = (ms) => new Promise((ok) => setTimeout(ok, ms));
 
-const PRONTO = js(`const b = document.querySelector('[data-rotta-start]'); return V(b) && !b.disabled;`);
+// La pagina e' pronta quando la prima porta della Home si puo' premere. Nel
+// ridisegno una ricarica riapre la sezione dell'indirizzo (§3.1), e la Home
+// puo' non essere in vista: la porta c'e' lo stesso, e avviaPrima() ci va.
+const PRONTO = js(`const bs = [...document.querySelectorAll('[data-rotta-start]')]; const b = bs.find(V) || bs[0]; return !!b && !b.disabled;`);
+
+/**
+ * La prima attivita', dalla sua porta: `[data-rotta-start]`. Oggi apre il
+ * quesito; nel ridisegno apre la preparazione comune (`[data-preparazione]`,
+ * ridisegno §5.1: «Entrambi aprono la preparazione, non la domanda»), e il
+ * secondo tocco e' il suo Inizia, `#start`. Il banco fa quello che la pagina
+ * chiede, e lo stesso giro vale nei due regimi (P-82).
+ */
+async function avviaPrima(tab) {
+  if (!await tab.valuta(visibile('[data-rotta-start]'))) await apriPorta(tab, 'oggi');
+  if (!await clic(tab, '[data-rotta-start]')) return false;
+  return preparazioneInizia(tab);
+}
+
+/** Se si e' aperta una preparazione, il suo Inizia; se si e' aperto il runner, niente. */
+async function preparazioneInizia(tab) {
+  const { valore } = await tab.attendiValore(js(`const p = [...document.querySelectorAll('[data-preparazione]')].find(V);
+    const s = p && p.querySelector('#start');
+    if (s && V(s) && !s.disabled) return 'preparazione';
+    return V(document.querySelector('#r-text')) || V(document.querySelector('#c-testo')) ? 'runner' : null;`), Boolean, REAZIONE);
+  if (valore === 'preparazione') return clic(tab, '[data-preparazione] #start');
+  return valore === 'runner';
+}
 // Il quesito e' in schermata quando #r-text mostra il testo di un quesito della
 // banca e sotto ci sono tante risposte visibili quante ne ha. Fino al 29
 // settembre 2026 qui si chiedeva un testo di piu' di 10 caratteri: otto
@@ -280,7 +355,9 @@ async function rispondiQuiz(tab, v, gruppo, prefisso, { sim = false } = {}) {
   // aspetta lo stato; un tocco in piu' dopo la risposta la pagina lo ignora.
   const pos = sim ? await tab.valuta(js(`return document.querySelector('#r-pos')?.textContent.trim() ?? null;`)) : null;
   const effetto = sim
-    ? js(`return document.querySelector('#r-pos')?.textContent.trim() !== ${q(pos)} && !document.querySelector('#r-ans .ans.ok');`)
+    // Oggi la risposta fa avanzare; nel ridisegno compare «Avanti» (§9, QB: «n
+    // risposte, n−1 Avanti»). In tutti e due i casi nessuna correzione.
+    ? js(`return (document.querySelector('#r-pos')?.textContent.trim() !== ${q(pos)} || V(document.querySelector('#r-next'))) && !document.querySelector('#r-ans .ans.ok');`)
     : js(`return !!document.querySelector('#r-ans .ans.ok') && V(document.querySelector('#r-verdict'));`);
   let risposto = false;
   for (let i = 0; i < 20 && !risposto; i++) {
@@ -313,7 +390,7 @@ async function unaRisposta(tab, v, gruppo, prefisso = '') {
   v.push({ gruppo, nome: `${prefisso}l'app si apre e la prima attivita' si puo' avviare`, ok: pronto,
     extra: `nessun [data-rotta-start] abilitato entro ${CARICO / 1000} s` + (tab.errori.length ? ': ' + tab.errori[0] : '') });
   if (!pronto) return null;
-  await clic(tab, '[data-rotta-start]');
+  await avviaPrima(tab);
   const testo = await rispondiQuiz(tab, v, gruppo, prefisso);
   if (!testo) return null;
   return await chiudiQuiz(tab, v, gruppo, prefisso) ? testo : null;
@@ -381,8 +458,8 @@ async function c01(b, ctx, v, parte) {
 
 async function giroQuiz(tab, v, g, prefisso, modo) {
   const sim = modo === 'sim';
-  const porta = await apriPorta(tab, 'quiz') && await tab.attendi(visibile(`[data-modo="${modo}"]`), REAZIONE)
-    && await clic(tab, `[data-modo="${modo}"]`) && await tab.attendi(js(`const b = document.querySelector('#start'); return V(b) && !b.disabled;`), REAZIONE);
+  const porta = (sim ? await portaSim(tab) : await apriPorta(tab, 'quiz') && await tab.attendi(visibile(`[data-modo="${modo}"]`), REAZIONE)
+    && await clic(tab, `[data-modo="${modo}"]`)) && await tab.attendi(js(`const b = [...document.querySelectorAll('#start')].find(V); return !!b && !b.disabled;`), REAZIONE);
   v.push({ gruppo: g, nome: `${prefisso}la porta dei Quiz apre la configurazione con Inizia`, ok: porta,
     extra: `[data-v="quiz"], [data-modo="${modo}"] o #start abilitato non si trovano` });
   if (!porta) return;
@@ -425,7 +502,7 @@ async function giroTecniche(tab, v, g) {
 
 async function giroCarteggio(tab, v, g) {
   const p = 'Carteggio: ';
-  const porta = await apriPorta(tab, 'cart') && await tab.attendi(visibile('#c-start'), REAZIONE);
+  const porta = await portaCarteggio(tab, 'prova');
   v.push({ gruppo: g, nome: `${p}la prova si avvia dalla sua porta`, ok: porta, extra: 'nessun #c-start visibile nel Carteggio' });
   if (!porta) return;
   // Prima di Inizia, e nel testo che si vede: una frase nel DOM ma nascosta,
@@ -476,8 +553,9 @@ async function partitaSegnali(tab, v, g, p) {
     await clic(tab, '#sr-ans button');
     await tab.attendi(js(`return V(document.querySelector('#sr-next')) || V(document.querySelector('#sr-fine'));`), 250);
   }
-  const fine = await tab.attendi(js(`const f = document.querySelector('#sr-fine'); return V(f) && /\\d+\\s*\\/\\s*\\d+/.test(f.innerText);`), REAZIONE);
-  v.push({ gruppo: g, nome: `${p}la partita arriva in fondo e dice il punteggio`, ok: fine, extra: '#sr-fine non si vede, o non porta un punteggio «n / N»' });
+  // «n / N» oggi, «{giuste} su {N}» nel ridisegno (§5.3).
+  const fine = await tab.attendi(js(`const f = document.querySelector('#sr-fine'); return V(f) && /\\d+\\s*(\\/|su)\\s*\\d+/.test(f.innerText);`), REAZIONE);
+  v.push({ gruppo: g, nome: `${p}la partita arriva in fondo e dice il punteggio`, ok: fine, extra: '#sr-fine non si vede, o non porta un punteggio «n / N» o «n su N»' });
   return fine;
 }
 
@@ -666,7 +744,7 @@ async function alPercorso(tab) {
 
 /** Una nuova attivita' dal Percorso, fino a una risposta; senza riepilogo. */
 async function unaDalPercorso(tab, g) {
-  if (!await alPercorso(tab) || !await clic(tab, '[data-rotta-start]')) return null;
+  if (!await alPercorso(tab) || !await avviaPrima(tab)) return null;
   return rispondiQuiz(tab, [], g, '');
 }
 
@@ -675,7 +753,13 @@ const esc = (tab) => tab.valuta(`(document.activeElement || document.body).dispa
 
 /** Accedi dall'intestazione (§3.2): «Accedi», poi il modulo. */
 async function entraCome(tab, conto) {
-  if (!await clicca(tab, 'Accedi')) return false;
+  // Nel ridisegno Info e' un pannello sopra la pagina (§6.3): l'avatar «Accedi»
+  // sta sotto, e chi studia chiude prima il pannello. Oggi Info e' una vista.
+  if (!await clicca(tab, 'Accedi')) {
+    if (!await tab.valuta(modaleVisibile)) return false;
+    await esc(tab);
+    if (!await tab.attendi(`!(${modaleVisibile})`, REAZIONE) || !await clicca(tab, 'Accedi')) return false;
+  }
   if (!await tab.attendi(js(`return V(${campo('Email')});`), REAZIONE)) return false;
   await imposta(tab, 'Email', conto.email);
   await imposta(tab, 'Password', conto.password);
@@ -720,6 +804,7 @@ const richiesteA = (tab, metodo, percorso) => tab.richieste.filter((r) => r.meto
 
 const VISTE = ['oggi', 'quiz', 'cart', 'diag', 'seg', 'info'];
 const PORTA_PROGRESSI = 'I Progressi descrivono le attività salvate nel tuo account.';
+const PROGRESSI_H0 = 'Nessuna risposta in questa pagina.';
 // Il cruscotto di oggi: se uno di questi si vede senza account, Progressi e'
 // una vista di zeri costruita dallo storico temporaneo (§3.2).
 const CRUSCOTTO = ['#d-temi', '#d-voci', '#d-cons', '#sessioni'];
@@ -738,15 +823,29 @@ async function c03(b, ctx, v) {
     for (const x of VISTE) {
       await apriPorta(tab, 'oggi');
       if (!await apriPorta(tab, x) || !await tab.attendi(visibile(vistaDi(x)), REAZIONE)) { mute.push(x); continue; }
-      if (await tab.valuta(passwordVisibile) || await tab.valuta(pulsante('Crea un account e salva')) || await tab.valuta(modaleVisibile)) invadenti.push(x);
+      // Nel ridisegno Info e' un pannello del Profilo, sopra la Home (§2): la sua
+      // finestra e' la porta volontaria, non un invito. Il modulo e l'invito no.
+      const pannelloInfo = ctx.regime === 'ridisegno' && x === 'info';
+      if (await tab.valuta(passwordVisibile) || await tab.valuta(pulsante('Crea un account e salva')) || (!pannelloInfo && await tab.valuta(modaleVisibile))) invadenti.push(x);
     }
     v.push({ gruppo: g, nome: 'ogni vista si apre dal Percorso', ok: !mute.length, extra: 'non si aprono: ' + mute.join(', ') });
     v.push({ gruppo: g, nome: 'in nessuna vista un invito, un modulo o una finestra d\'account', ok: !invadenti.length, extra: 'invito, campo password o finestra modale in: ' + invadenti.join(', ') });
     await apriPorta(tab, 'diag');
     const cruscotto = await tab.valuta(js(`return ${q(CRUSCOTTO)}.filter((s) => V(document.querySelector(s)));`));
-    v.push({ gruppo: g, nome: 'senza account Progressi dice perche\' non c\'e\', con Vai al Percorso e Accedi, senza un cruscotto',
-      ok: await tab.valuta(testoVisibile(PORTA_PROGRESSI)) && await tab.valuta(pulsante('Vai al Percorso')) && await tab.valuta(pulsante('Accedi')) && !cruscotto.length,
-      extra: cruscotto.length ? 'si vede il cruscotto: ' + cruscotto.join(', ') : `manca «${PORTA_PROGRESSI}», «Vai al Percorso» o «Accedi» (§3.2)` });
+    if (ctx.regime === 'ridisegno') {
+      // Nel ridisegno (§8.1) Progressi senza account mostra la pagina aperta —
+      // H0: «Nessuna risposta in questa pagina» e «Vai ad Allenati» —, spiega
+      // perche' manca lo storico, e non ha un invito nel contenuto: i tre posti
+      // dell'invito sono altri (ADR-006, R-ACC-03). «Accedi» resta sull'avatar.
+      const invito = await tab.valuta(js(`const p = document.querySelector('#v-progressi'); return !!p && [...p.querySelectorAll('button, a')].some((b) => V(b) && /Crea un account|Conserva|Accedi/.test(b.textContent));`));
+      v.push({ gruppo: g, nome: 'senza account Progressi dice che non ci sono risposte in questa pagina, con Vai ad Allenati e perche\' manca lo storico, senza un cruscotto ne\' un invito',
+        ok: await tab.valuta(testoVisibile(PROGRESSI_H0)) && await tab.valuta(pulsante('Vai ad Allenati')) && await tab.valuta(testoVisibile('Perché qui manca lo storico')) && !cruscotto.length && !invito,
+        extra: cruscotto.length ? 'si vede il cruscotto: ' + cruscotto.join(', ') : invito ? 'nel contenuto di Progressi c\'e\' un invito o un «Accedi» (ridisegno §8.1)' : `manca «${PROGRESSI_H0}», «Vai ad Allenati» o «Perché qui manca lo storico» (ridisegno §8.1)` });
+    } else {
+      v.push({ gruppo: g, nome: 'senza account Progressi dice perche\' non c\'e\', con Vai al Percorso e Accedi, senza un cruscotto',
+        ok: await tab.valuta(testoVisibile(PORTA_PROGRESSI)) && await tab.valuta(pulsante('Vai al Percorso')) && await tab.valuta(pulsante('Accedi')) && !cruscotto.length,
+        extra: cruscotto.length ? 'si vede il cruscotto: ' + cruscotto.join(', ') : `manca «${PORTA_PROGRESSI}», «Vai al Percorso» o «Accedi» (§3.2)` });
+    }
     await apriPorta(tab, 'oggi');
     if (!await unaRisposta(tab, v, g)) return;
     v.push({ gruppo: g, nome: 'l\'invito e\' nel riepilogo', ok: await tab.valuta(testoVisibile(DOPO)) && await tab.valuta(pulsante('Continua senza account')),
@@ -757,7 +856,7 @@ async function c03(b, ctx, v) {
       extra: via ? 'dopo «Continua senza account» si apre una finestra' : 'l\'invito resta dopo «Continua senza account»' });
     await apriPorta(tab, 'oggi');
     if (!await tab.attendi(PRONTO, REAZIONE)) return;
-    await clic(tab, '[data-rotta-start]');
+    await avviaPrima(tab);
     const giro = [];
     if (!await rispondiQuiz(tab, giro, g, 'attivita\' dopo: ')) {
       v.push({ gruppo: g, nome: 'la seconda attivita\' si avvia', ok: false, extra: giro.filter((x) => !x.ok).map((x) => x.extra).join('; ') });
@@ -821,8 +920,8 @@ async function c04registrazione(b, ctx, v, g) {
     v.push({ gruppo: g, nome: 'le risposte di tutte e due le attivita\' salvate, e il numero e\' quello del server', ok: detto && Number(valore[1]) === 2 && sulServer === 2,
       extra: detto ? `la pagina dice ${valore[0]}, il server ha ${sulServer} righe, le risposte date erano 2` : `«N risposte salvate nel tuo account» non compare; il server ha ${sulServer} righe` });
     const data = await tab.attendi(testoVisibile('Hai una data d\'esame?'), REAZIONE);
-    v.push({ gruppo: g, nome: 'poi la data d\'esame, facoltativa', ok: data && await tab.valuta(pulsante('Continua senza data')),
-      extra: '«Hai una data d\'esame?» con «Continua senza data» non compare dopo il salvataggio (§11.1)' });
+    v.push({ gruppo: g, nome: 'poi la data d\'esame, facoltativa', ok: data && await tab.valuta(pulsante(testi(ctx).saltaData)),
+      extra: `«Hai una data d'esame?» con «${testi(ctx).saltaData}» non compare dopo il salvataggio (§11.1)` });
   } finally { await c.chiudi(); }
 }
 
@@ -908,7 +1007,7 @@ async function c06corsa(b, ctx, v, g, A, B) {
     const t = trattenuta();
     await t1.intercetta(`${ctx.api}/v1/righe*`, t.gestore);
     const prima = ctx.righeDi(A.email);
-    await clic(t1, '[data-rotta-start]');
+    await avviaPrima(t1);
     await rispondiQuiz(t1, [], g, '');
     const inVolo = await Promise.race([t.presa.then(() => true), pausa(REAZIONE).then(() => false)]);
     v.push({ gruppo: g, nome: 'corsa: la risposta di A parte, e resta ferma prima del server', ok: inVolo, extra: 'nessuna POST /v1/righe dalla scheda di A' });
@@ -946,7 +1045,7 @@ async function c06congelata(b, ctx, v, g, A, B) {
     await tab.attendi(pulsante('Account'), REAZIONE);
     const primaA = ctx.righeDi(A.email), primaB = ctx.righeDi(B.email);
     await tab.offline(true);
-    await clic(tab, '[data-rotta-start]');
+    await avviaPrima(tab);
     await rispondiQuiz(tab, [], g, '');
     await pausa(800);
     ctx.revoca(A.email);
@@ -986,7 +1085,7 @@ async function c11volo(b, ctx, v, g) {
     // coda si rilegge alla conferma, non e' quella di inizio invio.
     const t = trattenuta();
     await t1.intercetta(`${ctx.api}/v1/righe*`, t.gestore, { fase: 'Response' });
-    await clic(t1, '[data-rotta-start]');
+    await avviaPrima(t1);
     await rispondiQuiz(t1, [], g, '');
     const inVolo = await Promise.race([t.presa.then(() => true), pausa(REAZIONE).then(() => false)]);
     v.push({ gruppo: g, nome: 'la prima risposta parte, e la sua conferma resta ferma', ok: inVolo, extra: 'nessuna POST /v1/righe' });
@@ -1003,7 +1102,7 @@ async function c11volo(b, ctx, v, g) {
     await t2.attendi(pulsante('Account'), CARICO);
     await chiudiQuiz(t1, [], g, '');
     await alPercorso(t1);
-    const avviate = await Promise.all([t1, t2].map(async (x) => await x.attendi(PRONTO, REAZIONE) && await clic(x, '[data-rotta-start]')
+    const avviate = await Promise.all([t1, t2].map(async (x) => await x.attendi(PRONTO, REAZIONE) && await avviaPrima(x)
       && (await x.attendiValore(QUESITO, quesitoDellaBanca, REAZIONE)).ok));
     // Il clic nello stesso istante in tutte e due, passata la sordita' di
     // 200 ms: con un tocco ripetuto a turno, sotto carico, le due risposte
@@ -1079,7 +1178,7 @@ async function c15uscite(b, ctx, v, g, U) {
     await tab.intercetta(`${ctx.api}/v1/righe*`, (r) => (r.method === 'POST' && rompi ? { fallisci: 'ConnectionReset' } : null));
     await entraCome(tab, U);
     await tab.attendi(pulsante('Account'), REAZIONE);
-    await clic(tab, '[data-rotta-start]');
+    await avviaPrima(tab);
     await rispondiQuiz(tab, [], g, '');
     await chiudiQuiz(tab, [], g, '');
     await finche(() => richiesteA(tab, 'POST', '/v1/righe').length > 0, REAZIONE);
@@ -1134,7 +1233,7 @@ async function c15corsa(b, ctx, v, g, U) {
     await t2.attendi(pulsante('Account'), CARICO);
     const t = trattenuta();
     await t1.intercetta(`${ctx.api}/v1/righe*`, t.gestore, { fase: 'Response' });
-    await clic(t1, '[data-rotta-start]');
+    await avviaPrima(t1);
     await rispondiQuiz(t1, [], g, '');
     const inVolo = await Promise.race([t.presa.then(() => true), pausa(REAZIONE).then(() => false)]);
     const sessU = ctx.sessioniDi(U.email);
@@ -1176,7 +1275,6 @@ const FILE_SENZA = 'Per conservare le risposte del file, crea un account o acced
 const FILE_NO = 'Non riusciamo a leggere questo file di progressi.';
 const DA_INVIARE_SEG = 'Punteggi da inviare';
 const AZZERATI = /i progressi sono stati azzerati da un altro dispositivo/i;
-const DATA_NO = 'La data non è stata salvata. Riprova oppure continua senza cambiarla';
 const NON_VALIDO = 'L\'accesso non è più valido.';
 // Una password dell'elenco delle comuni, lunga abbastanza da passare la lunghezza.
 const COMUNE = readFileSync(join(RADICE, 'server', 'password-comuni.txt'), 'utf8').split('\n').find((x) => x === 'passwordpassword');
@@ -1339,8 +1437,8 @@ async function c07posta(b, ctx, v, g) {
     v.push({ gruppo: g, nome: 'e l\'account creato con la mail rifiutata salva le risposte', ok: salvate, extra: `il server ha ${ctx.righeDi(email)} righe, «salvate» ${salvate ? '' : 'non '}si vede` });
     const spedite = () => ctx.mail.filter((m) => m.a === email).length;
     // Dopo il salvataggio viene la data (§11.1): si salta, e si torna all'avviso.
-    await tab.attendi(pulsante('Continua senza data'), REAZIONE);
-    await clicca(tab, 'Continua senza data');
+    await tab.attendi(pulsante(testi(ctx).saltaData), REAZIONE);
+    await clicca(tab, testi(ctx).saltaData);
     await clicca(tab, 'Rimanda la mail');
     const rifiuto = await tab.attendi(testoVisibile(RINVIO_NO), REAZIONE);
     v.push({ gruppo: g, nome: 'rimandata con il fornitore che rifiuta, nessuna frase di successo', ok: rifiuto && !await tab.valuta(testoVisibile(INVIATA)),
@@ -1585,7 +1683,7 @@ async function c08cancella(b, ctx, v, g) {
     await tab.attendi(js(`return ![...document.querySelectorAll('[aria-modal="true"], dialog[open]')].some(V);`), REAZIONE);
     await apriPorta(tab, 'oggi');
     await tab.attendi(PRONTO, REAZIONE);
-    await clic(tab, '[data-rotta-start]');
+    await avviaPrima(tab);
     await rispondiQuiz(tab, [], g, '');
     v.push({ gruppo: g, nome: 'poi una risposta nuova entra nell\'account', ok: await finche(() => ctx.righeDi(K.email) === 1, REAZIONE) && !await tab.valuta(js(`return new RegExp(${q(AZZERATI.source)}, 'i').test(document.body.innerText);`)),
       extra: `l'account ha ${ctx.righeDi(K.email)} righe; in schermata: ${await tab.valuta(inSchermata)}` });
@@ -1823,8 +1921,9 @@ async function c22passaggio(b, ctx, v, g) {
   try {
     ctx.radice(dir);
     // La 0.29.0, come la trova chi l'ha visitata: installata, e ricaricata, cosi'
-    // che la pagina sia servita dal service worker e dalla sua cache.
-    const t1 = await c.apri(ctx.sito + ingresso(ctx));
+    // che la pagina sia servita dal service worker e dalla sua cache. Era
+    // l'app su /app, in tutti e due i regimi: nel ridisegno /app e' la porta.
+    const t1 = await c.apri(ctx.sito + '/app');
     const installata = await t1.attendi(PRONTO, CARICO) && await guscioPronto(t1);
     v.push({ gruppo: g, nome: 'la 0.29.0 si installa: service worker attivo e guscio in cache', ok: installata, extra: await t1.valuta(SW_E_CACHE) });
     if (!installata) return;
@@ -1844,7 +1943,7 @@ async function c22passaggio(b, ctx, v, g) {
     if (!via) return;
     // Una pagina che si ricarica sotto il banco fa fallire la lettura: anche quello e' una ricarica.
     const resta = await maiPer(async () => {
-      try { return (await t1.valuta('window.__primaDelPassaggio === 1 ? location.pathname : null')) !== ingresso(ctx); } catch { return true; }
+      try { return (await t1.valuta('window.__primaDelPassaggio === 1 ? location.pathname : null')) !== '/app'; } catch { return true; }
     });
     v.push({ gruppo: g, nome: 'e non ricarica le pagine aperte: senza account una ricarica perde le risposte', ok: resta,
       extra: 'la scheda aperta con la 0.29.0 e\' stata ricaricata, o portata altrove' });
@@ -2047,7 +2146,7 @@ async function c12ricezione(b, ctx, v, g) {
     // Un altro dispositivo aggiunge tre righe; poi qui una risposta. La conferma
     // dell'invio dice un'`ultima_seq` che le comprende: non e' un cursore (R-ACC-31).
     ctx.aggiungi(K.email, righeDi(`r${serie}x`, 3));
-    await clic(tab, '[data-rotta-start]');
+    await avviaPrima(tab);
     await rispondiQuiz(tab, [], g, '');
     const tre = await finche(async () => await copia() === 5204, 2 * REAZIONE);
     v.push({ gruppo: g, nome: 'dopo un invio le righe di un altro dispositivo arrivano lo stesso: l\'invio non sposta il cursore', ok: tre && ctx.righeDi(K.email) === 5204,
@@ -2075,7 +2174,7 @@ async function c13invio(b, ctx, v, g) {
     // e' il caso della parte «ricezione», non di questa.
     await tab.intercetta(`${ctx.api}/v1/righe?*`, (r) => (r.method === 'GET' ? { fallisci: 'ConnectionReset' } : null));
     if (!await dentro(tab, K)) { v.push({ gruppo: g, nome: 'invio: si entra', ok: false, extra: 'l\'intestazione non dice «Account»' }); return; }
-    await clic(tab, '[data-rotta-start]');
+    await avviaPrima(tab);
     await rispondiQuiz(tab, [], g, '');
     await finche(() => ctx.righeDi(K.email) === 1, REAZIONE);
     ctx.azzera(K.email);
@@ -2109,7 +2208,7 @@ async function c13ricezione(b, ctx, v, g) {
   try {
     const tab = await c.apri(ctx.sito + ingresso(ctx));
     if (!await dentro(tab, K)) { v.push({ gruppo: g, nome: 'ricezione: si entra', ok: false, extra: 'l\'intestazione non dice «Account»' }); return; }
-    await clic(tab, '[data-rotta-start]');
+    await avviaPrima(tab);
     await rispondiQuiz(tab, [], g, '');
     // L'azzeramento va scoperto dopo la ricarica, ricevendo: prima si aspetta
     // che la pagina abbia finito di parlare con l'API. Senza, a volte la
@@ -2142,7 +2241,7 @@ async function c13ricezione(b, ctx, v, g) {
     // risposta da perdere, e «Carica il nuovo archivio» non la butta in silenzio.
     await clicca(tab, 'Decidi più tardi');
     const rimandata = await tab.attendi(pulsante('Scegli adesso'), REAZIONE);
-    await clic(tab, '[data-rotta-start]');
+    await avviaPrima(tab);
     await rispondiQuiz(tab, [], g, '');
     await clicca(tab, 'Scegli adesso');
     const contata = await tab.attendiValore(js(`const m = M().innerText.match(/Qui ci sono (\\d+) rispost/); return m ? Number(m[1]) : null;`), (x) => x === 1, REAZIONE);
@@ -2169,7 +2268,7 @@ async function c13scarica(b, ctx, v, g) {
     // Come in «invio»: l'azzeramento si scopre inviando, non ricevendo.
     await tab.intercetta(`${ctx.api}/v1/righe?*`, (r) => (r.method === 'GET' ? { fallisci: 'ConnectionReset' } : null));
     if (!await dentro(tab, K)) { v.push({ gruppo: g, nome: 'si entra', ok: false, extra: 'l\'intestazione non dice «Account»' }); return; }
-    await clic(tab, '[data-rotta-start]');
+    await avviaPrima(tab);
     await rispondiQuiz(tab, [], g, '');
     await finche(() => ctx.righeDi(K.email) === 1, REAZIONE);
     // Quelle che il server aveva prima dell'azzeramento erano salvate: l'altro
@@ -2236,7 +2335,7 @@ async function c14giro(b, ctx, v, g) {
   try {
     const tab = await c.apri(ctx.sito + ingresso(ctx));
     if (!await dentro(tab, K)) { v.push({ gruppo: g, nome: 'si entra', ok: false, extra: 'l\'intestazione non dice «Account»' }); return; }
-    await clic(tab, '[data-rotta-start]');
+    await avviaPrima(tab);
     await rispondiQuiz(tab, [], g, '');
     await finche(() => ctx.righeDi(K.email) === 1, REAZIONE);
     const copia = ctx.copia();
@@ -2284,7 +2383,7 @@ async function c15scaduta(b, ctx, v, g) {
     await entraCome(tab, U);
     await tab.attendi(pulsante('Account'), REAZIONE);
     await tab.offline(true);
-    await clic(tab, '[data-rotta-start]');
+    await avviaPrima(tab);
     await rispondiQuiz(tab, [], g, '');
     await pausa(800);
     ctx.revoca(U.email);
@@ -2416,9 +2515,9 @@ async function c16proposta(b, ctx, v, g) {
     if (!x) return;
     v.push({ gruppo: g, nome: 'la data scritta nella pagina si propone', ok: await x.tab.valuta(valoreData) === '2026-01-10', extra: `nel campo «${await x.tab.valuta(valoreData)}»` });
     v.push({ gruppo: g, nome: 'e non si salva prima del clic', ok: await maiPer(() => ctx.conto(x.email).data_esame !== null), extra: `sul server ${ctx.conto(x.email).data_esame}` });
-    await clicca(x.tab, 'Salva la data');
-    v.push({ gruppo: g, nome: 'al clic si salva com\'e\', anche passata, e la pagina lo dice', ok: await finche(() => ctx.conto(x.email).data_esame === '2026-01-10', REAZIONE) && await x.tab.attendi(testoVisibile('Data salvata'), REAZIONE),
-      extra: `sul server ${ctx.conto(x.email).data_esame}; «Data salvata» ${await x.tab.valuta(testoVisibile('Data salvata')) ? '' : 'non '}si vede` });
+    await clicca(x.tab, testi(ctx).salvaData);
+    v.push({ gruppo: g, nome: 'al clic si salva com\'e\', anche passata, e la pagina lo dice', ok: await finche(() => ctx.conto(x.email).data_esame === '2026-01-10', REAZIONE) && await x.tab.attendi(testoVisibile(testi(ctx).dataSalvata), REAZIONE),
+      extra: `sul server ${ctx.conto(x.email).data_esame}; «${testi(ctx).dataSalvata}» ${await x.tab.valuta(testoVisibile(testi(ctx).dataSalvata)) ? '' : 'non '}si vede` });
   } finally { await c.chiudi(); }
 }
 
@@ -2428,9 +2527,9 @@ async function c16salto(b, ctx, v, g) {
     const x = await finoAllaData(b, c, ctx, v, g, 'senza data: ');
     if (!x) return;
     v.push({ gruppo: g, nome: 'senza una data nella pagina il campo e\' vuoto: nessuna data inventata', ok: await x.tab.valuta(valoreData) === '', extra: `nel campo «${await x.tab.valuta(valoreData)}»` });
-    await clicca(x.tab, 'Continua senza data');
+    await clicca(x.tab, testi(ctx).saltaData);
     const chiuso = await x.tab.attendi(js(`return !document.body.innerText.includes(${q(ONBOARDING)});`), REAZIONE);
-    v.push({ gruppo: g, nome: '«Continua senza data» chiude il passo e il server resta senza data', ok: chiuso && await maiPer(() => ctx.conto(x.email).data_esame !== null),
+    v.push({ gruppo: g, nome: `«${testi(ctx).saltaData}» chiude il passo e il server resta senza data`, ok: chiuso && await maiPer(() => ctx.conto(x.email).data_esame !== null),
       extra: chiuso ? `sul server ${ctx.conto(x.email).data_esame}` : 'il passo resta aperto' });
   } finally { await c.chiudi(); }
 }
@@ -2442,10 +2541,10 @@ async function c16fallito(b, ctx, v, g) {
     if (!x) return;
     await x.tab.intercetta(`${ctx.api}/v1/profilo`, (r) => (r.method === 'PUT' ? { fallisci: 'ConnectionReset' } : null));
     await imposta(x.tab, 'Data d\'esame', '2027-06-01');
-    await clicca(x.tab, 'Salva la data');
-    const detto = await x.tab.attendi(testoVisibile(DATA_NO), REAZIONE);
-    v.push({ gruppo: g, nome: 'un salvataggio della data fallito lo dice, e non dice «Data salvata»', ok: detto && !await x.tab.valuta(testoVisibile('Data salvata')) && ctx.conto(x.email).data_esame === null,
-      extra: detto ? `«Data salvata» si vede, o il server ha ${ctx.conto(x.email).data_esame}` : `«${DATA_NO}» non si vede` });
+    await clicca(x.tab, testi(ctx).salvaData);
+    const detto = await x.tab.attendi(testoVisibile(testi(ctx).dataNo), REAZIONE);
+    v.push({ gruppo: g, nome: 'un salvataggio della data fallito lo dice, e non dice «Data salvata»', ok: detto && !await x.tab.valuta(testoVisibile(testi(ctx).dataSalvata)) && ctx.conto(x.email).data_esame === null,
+      extra: detto ? `«${testi(ctx).dataSalvata}» si vede, o il server ha ${ctx.conto(x.email).data_esame}` : `«${testi(ctx).dataNo}» non si vede` });
   } finally { await c.chiudi(); }
 }
 
@@ -2483,7 +2582,7 @@ async function c17export(b, ctx, v, g) {
     let blocca = false;
     await tab.intercetta(`${ctx.api}/v1/righe*`, () => (blocca ? { fallisci: 'ConnectionReset' } : null));
     if (!await dentro(tab, K)) { v.push({ gruppo: g, nome: 'export: si entra', ok: false, extra: 'l\'intestazione non dice «Account»' }); return; }
-    await clic(tab, '[data-rotta-start]');
+    await avviaPrima(tab);
     await rispondiQuiz(tab, [], g, '');
     await finche(() => ctx.righeDi(K.email) === 1, REAZIONE);
     // Da qui la rete delle righe non passa: una riga arriva sul server da un
@@ -2552,6 +2651,9 @@ async function c17origine(b, ctx, v, g) {
 // il nome della parte, e test_interfaccia.py le registra parte per parte.
 
 const MEMORIA = 'Il testo che scrivi resta solo finché questa pagina è aperta.';
+// Nel ridisegno la frase della carta senza account e' quella del §4: «prima, durante e dopo».
+const MEMORIA_RIDISEGNO = 'Il lavoro e i giudizi di questa attività restano solo nella pagina aperta.';
+const memoria = (ctx) => (ctx.regime === 'ridisegno' ? MEMORIA_RIDISEGNO : MEMORIA);
 const SALVATO = 'Il testo in corso è salvato su questo dispositivo per il tuo account.';
 const GUASTO_BOZZA = 'Non riusciamo a conservare il testo in questo dispositivo.';
 const OFFERTA = 'Hai del lavoro di carteggio in corso su questo dispositivo';
@@ -2580,7 +2682,7 @@ const GUASTO_IDB = `(() => { const p = IDBObjectStore.prototype.put; IDBObjectSt
 
 /** La prova dal Carteggio, fino al primo esercizio della banca: restituisce il suo testo, o null. */
 async function apriProvaC(tab) {
-  if (!await apriPorta(tab, 'cart') || !await tab.attendi(visibile('#c-start'), REAZIONE)) return null;
+  if (!await portaCarteggio(tab, 'prova')) return null;
   await clic(tab, '#c-start');
   const { ok, valore } = await tab.attendiValore(esercizioC, (x) => CARTEGGIO.has(x), REAZIONE);
   return ok ? valore : null;
@@ -2639,8 +2741,8 @@ async function c19senza(b, ctx, v, g) {
     v.push({ gruppo: g, nome: 'senza account la prova si apre', ok: !!primo, extra: 'nessun esercizio della banca in #c-testo dopo #c-start' });
     const testo = 'Lat 42°50,1N senza account';
     await scriviC(tab, testo);
-    v.push({ gruppo: g, nome: 'senza account la pagina dice che il testo resta solo finché è aperta', ok: await tab.attendi(testoVisibile(MEMORIA), REAZIONE),
-      extra: `«${MEMORIA}» non si vede con il testo scritto (P-36)` });
+    v.push({ gruppo: g, nome: 'senza account la pagina dice che il testo resta solo finché è aperta', ok: await tab.attendi(testoVisibile(memoria(ctx)), REAZIONE),
+      extra: `«${memoria(ctx)}» non si vede con il testo scritto (P-36)` });
     // Un'assenza: si guarda per tutta la finestra.
     let trovato = [];
     for (const fine = Date.now() + OSSERVAZIONE; !trovato.length && Date.now() < fine;) {
@@ -3126,7 +3228,7 @@ async function superfici(tab, misura) {
     if (!await apriVista(tab, v)) return `la vista ${NOMI_VISTE[v]} non si apre`;
     await misura(NOMI_VISTE[v]);
   }
-  if (!await apriVista(tab, 'oggi') || !await clic(tab, '[data-rotta-start]')) return 'l\'attivita\' del Percorso non parte';
+  if (!await apriVista(tab, 'oggi') || !await avviaPrima(tab)) return 'l\'attivita\' del Percorso non parte';
   if (!await rispondiQuiz(tab, [], 'T', '')) return 'il runner non mostra un quesito della banca';
   await misura('il runner');
   if (!await chiudiQuiz(tab, [], 'T', '')) return 'il riepilogo non si apre';
@@ -3216,8 +3318,13 @@ const QUIZ_IN_INFO = `(() => { const m = document.body.innerText.match(/risposte
 const DA_INVIARE = `(() => { const m = document.body.innerText.match(/(\\d+) rispost[ae] da inviare/); return m ? Number(m[1]) : null; })()`;
 // Il segnale del guasto sulla porta di Info, da qualunque vista (specifica §8).
 const SEGNALE_INFO = 'Salvataggio da controllare';
-const segnaleInInfo = js(`return [...document.querySelectorAll('[data-v="info"]')].filter(V).some((b) => b.innerText.includes(${q(SEGNALE_INFO)}));`);
+// Oggi il segnale sta sulla porta di Info; nel ridisegno sull'avatar, che si
+// vede da ogni superficie (§2: «Il segnale ambra resta finche' il guasto e'
+// risolto»). Il controllo guarda tutte e due le porte.
+const segnaleInInfo = js(`return [...document.querySelectorAll('[data-v="info"], [data-avatar]')].filter(V).some((b) => b.innerText.includes(${q(SEGNALE_INFO)}));`);
 const AVVISO_GUASTO = 'Le ultime risposte potrebbero non essere salvate.';
+// Nel ridisegno il guasto si dice con il testo del §4.
+const avvisoGuasto = (ctx) => (ctx && ctx.regime === 'ridisegno' ? 'Non siamo riusciti a salvare le ultime risposte su questo dispositivo.' : AVVISO_GUASTO);
 
 /** La copia dell'account letta dalla pagina: risposte ai quiz e coda da inviare, dalla fonte e non dalla schermata. */
 const copiaConto = (chiave) => `(async () => {
@@ -3258,7 +3365,7 @@ async function t01(b, ctx, v) {
       };
       w.push({ gruppo: g, nome: 'l\'app si apre senza account', ok: pronto, extra: 'nessun [data-rotta-start] abilitato' });
       await niente('il Percorso');
-      await clic(tab, '[data-rotta-start]');
+      await avviaPrima(tab);
       w.push({ gruppo: g, nome: 'una risposta senza account', ok: !!await rispondiQuiz(tab, [], g, ''), extra: 'il runner non mostra un quesito della banca' });
       await niente('il runner, dopo una risposta,');
       w.push({ gruppo: g, nome: 'il riepilogo si apre', ok: await chiudiQuiz(tab, [], g, ''), extra: 'nessun riepilogo' });
@@ -3292,7 +3399,7 @@ async function t02(b, ctx, v) {
     let avanti = false;
     await fermaAlPrimo(v, async (w) => {
       w.push({ gruppo: g, nome: 'si entra nell\'account', ok: await dentro(tab, U), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
-      await clic(tab, '[data-rotta-start]');
+      await avviaPrima(tab);
       const r1 = await rispondiQuiz(tab, [], g, '') && await chiudiQuiz(tab, [], g, '');
       const sul = r1 && await finche(() => ctx.righeDi(U.email) === 1, CARICO);
       const detto = sul && await tab.attendi(fraseVista(FRASI_SERVER), REAZIONE);
@@ -3346,15 +3453,16 @@ async function t03(b, ctx, v) {
       w.push({ gruppo: g, nome: 'si entra nell\'account', ok: await dentro(tab, U), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
       w.push({ gruppo: g, nome: 'prima del guasto Info non segnala niente', ok: !await tab.valuta(segnaleInInfo), extra: `la porta di Info dice gia' «${SEGNALE_INFO}»` });
       await tab.valuta('window.__guasto = true');
-      await clic(tab, '[data-rotta-start]');
+      await avviaPrima(tab);
       w.push({ gruppo: g, nome: 'con la scrittura che fallisce, una risposta', ok: !!await rispondiQuiz(tab, [], g, ''), extra: 'il runner non mostra un quesito della banca' });
-      const a = await annunciato(tab, /non (sono |è |essere )?(ancora )?salvat/);
+      // Oggi «… non essere salvate»; nel ridisegno «Non siamo riusciti a salvare …» (§4).
+      const a = await annunciato(tab, /non (sono |è |essere )?(ancora )?salvat|non siamo riusciti a salvare/i);
       w.push({ gruppo: g, nome: 'la scrittura fallita si annuncia in una regione viva esposta', ...a });
-      const r = await avvisoVisibile(tab, AVVISO_GUASTO);
+      const r = await avvisoVisibile(tab, avvisoGuasto(ctx));
       w.push({ gruppo: g, nome: 'con il runner aperto, l\'avviso del guasto si vede davvero', ...r });
       w.push({ gruppo: g, nome: 'la porta di Info segnala il guasto', ok: await tab.attendi(segnaleInInfo, REAZIONE), extra: `nessuna porta di Info visibile dice «${SEGNALE_INFO}»` });
       w.push({ gruppo: g, nome: 'il riepilogo si apre', ok: await chiudiQuiz(tab, [], g, ''), extra: 'nessun riepilogo' });
-      const rr = await avvisoVisibile(tab, AVVISO_GUASTO);
+      const rr = await avvisoVisibile(tab, avvisoGuasto(ctx));
       w.push({ gruppo: g, nome: 'nel riepilogo l\'avviso del guasto si vede davvero', ...rr });
       // Tornata la scrittura, una risposta che si scrive davvero: il guasto di
       // prima resta segnalato (AGENTS.md: non spegnerlo mai «per pulizia»).
@@ -3366,7 +3474,7 @@ async function t03(b, ctx, v) {
       for (const x of VISTE_RIF) { await apriVista(tab, x); if (!await tab.valuta(segnaleInInfo)) { spento = NOMI_VISTE[x]; break; } }
       w.push({ gruppo: g, nome: 'dopo una scrittura riuscita, in ogni vista Info segnala ancora il guasto', ok: !spento, extra: `in ${spento} la porta di Info non dice piu' «${SEGNALE_INFO}»` });
       await apriVista(tab, 'oggi');
-      const p = await avvisoVisibile(tab, AVVISO_GUASTO);
+      const p = await avvisoVisibile(tab, avvisoGuasto(ctx));
       w.push({ gruppo: g, nome: 'nel Percorso l\'avviso del guasto si vede davvero', ...p });
     });
   } finally { await c.chiudi(); }
@@ -3474,7 +3582,7 @@ async function t06(b, ctx, v) {
     await fermaAlPrimo(v, async (w) => {
       await tab.attendi(PRONTO, CARICO);
       w.push({ gruppo: g, nome: 'senza account, nel Percorso l\'avviso di prima si vede davvero', ...await avvisoVisibile(tab, PRIMA) });
-      await clic(tab, '[data-rotta-start]');
+      await avviaPrima(tab);
       const ok = await rispondiQuiz(tab, [], g, '') && await chiudiQuiz(tab, [], g, '');
       w.push({ gruppo: g, nome: 'il riepilogo si apre', ok: !!ok, extra: 'nessun riepilogo' });
       w.push({ gruppo: g, nome: 'senza account, nel riepilogo l\'invito si vede davvero', ...await avvisoVisibile(tab, DOPO) });
@@ -3711,6 +3819,27 @@ const FRASI_RIEPILOGO = [
   /^Le risposte saranno legate alla tua email e conservate sul nostro server, in chiaro\. Il titolare può leggerle per supporto e statistiche\.$/,
   /^Puoi concludere qui\.$/,
 ];
+// Nel ridisegno il riepilogo ha i testi del §7.2 di docs/ridisegno-progetto.md
+// (P-82): le stesse tre affermazioni, scritte diversamente, e i ritorni nominati
+// dalla porta. Il resto — conservazione, invito, «Puoi concludere qui» — e'
+// quello di prima, e si prende dall'elenco di sopra.
+const FRASI_RIEPILOGO_RIDISEGNO = [
+  /^(Attività conclusa|Attività interrotta)$/,
+  /^(Allenamento consigliato|Allenamento breve|Quiz per argomento|Ripasso degli errori|Un giro tra gli argomenti|Riprova degli errori|I miei segnalibri|Quiz) · Quiz (base|vela)$/,
+  /^Hai affrontato (1 domanda|\d+ domande) su \d+ propost[ae]\.( (1 non è stata affrontata|\d+ non sono state affrontate)\.)?$/,
+  /^Risposte corrette: \d+$/, /^Risposte errate: \d+$/,
+  /^Puoi rivedere le risposte o riprovare gli errori di questa attività\.?$/,
+  /^Tutte le risposte date in questa attività sono corrette\.?$/,
+  /^Le domande non affrontate non sono conteggiate come errori\.?$/,
+  /^Questa attività è ricostruita dalle risposte: il confine non era registrato\.?$/,
+  /^Con l'account le risposte vanno nella copia su questo dispositivo e vengono inviate al server\. Puoi ritrovarle da un altro dispositivo dopo che il server le ha accolte\.$/,
+  ...FRASI_RIEPILOGO.filter((re) => /Le ultime risposte|Senza account le risposte|Vuoi conservare|Senza account, chiudendo|Le risposte saranno legate|Puoi concludere qui/.test(re.source)),
+];
+const USCITE_RIEPILOGO_RIDISEGNO = [
+  /^Riprova (questo quesito|questi \d+( quesiti)?)$/, /^Rivedi gli errori$/, /^Rivedi le risposte$/, /^Rivedi il quiz base$/,
+  /^Torna (alla Home|ad Allenati · (Quiz|Carteggio|Segnali)|a Esame|ai Progressi)$/, /^Scegli un'altra attività$/,
+  /^Crea un account e salva$/, /^Continua senza account$/, /^Hai già un account\? Accedi$/, /^Come trattiamo i dati$/,
+];
 // Le uscite ammesse (§6.1) e i pulsanti dell'invito (client §4.1).
 const USCITE_RIEPILOGO = [
   /^Riprova (questo quesito|questi \d+ quesiti)$/, /^Rivedi gli errori$/, /^Rivedi le risposte$/, /^Rivedi il quiz base$/,
@@ -3727,7 +3856,9 @@ const RIEPILOGO_VISTO = js(`const f = document.querySelector('#r-fine');
   return { testo: f.innerText, uscite: [...f.querySelectorAll('button, a')].filter(V).map((b) => b.innerText.replace(/\\s+/g, ' ').trim()).filter(Boolean) };`);
 
 /** Le tre affermazioni, lette in quello che si vede, contro quello che il banco ha fatto. */
-async function frasiRiepilogo(tab, v, g, prefisso, atteso) {
+async function frasiRiepilogo(tab, v, g, prefisso, atteso, ctx) {
+  const nuovo = ctx && ctx.regime === 'ridisegno';
+  const frasi = nuovo ? FRASI_RIEPILOGO_RIDISEGNO : FRASI_RIEPILOGO, ammesse = nuovo ? USCITE_RIEPILOGO_RIDISEGNO : USCITE_RIEPILOGO;
   const { testo, uscite } = await tab.valuta(RIEPILOGO_VISTO);
   // Nella pagina vera etichetta e numero stanno sulla stessa riga, in un flex
   // (`.ciclo-valori li`), e innerText li separa: per chi guarda sono
@@ -3740,26 +3871,32 @@ async function frasiRiepilogo(tab, v, g, prefisso, atteso) {
   const ha = (r) => righe.includes(r);
   const { risposte: R, totale: T, corrette: C } = atteso, E = R - C, M = T - R;
   const breve = righe.join(' | ').slice(0, 400);
+  const dom = R === 1 ? '1 domanda' : `${R} domande`;
+  const affrontate = nuovo
+    ? righe.some((r) => r.startsWith(`Hai affrontato ${dom} su ${T} propost`) && (!M || r.includes(M === 1 ? '1 non è stata affrontata' : `${M} non sono state affrontate`)))
+    : ha(`Hai risposto a ${dom} su ${T}.`);
   v.push({ gruppo: g, nome: `${prefisso}il riepilogo dice che cosa e' successo: ${R} su ${T}, ${C} corrette, ${E} errate`,
-    ok: ha(`Hai risposto a ${R === 1 ? '1 domanda' : `${R} domande`} su ${T}.`) && ha(`Risposte corrette: ${C}`) && ha(`Risposte errate: ${E}`),
+    ok: affrontate && ha(`Risposte corrette: ${C}`) && ha(`Risposte errate: ${E}`),
     extra: `in schermata: ${breve}` });
   const riprova = E === 1 ? 'Riprova questo quesito' : `Riprova questi ${E} quesiti`;
+  const haRe = (re) => righe.some((r) => re.test(r));
+  const riprovaOk = nuovo ? uscite.some((u) => u === riprova || u === `Riprova questi ${E}`) : uscite.includes(riprova);
   const rivedere = E
-    ? ha('Puoi rivedere la tua risposta e quella ufficiale, poi riprovare questi quesiti.') && uscite.includes('Rivedi gli errori') && uscite.includes(riprova)
-    : ha('Tutte le risposte date in questa attività sono corrette.') && !uscite.includes('Rivedi gli errori') && !uscite.some((u) => u.startsWith('Riprova'));
+    ? (nuovo ? haRe(/^Puoi rivedere le risposte o riprovare gli errori di questa attività\.?$/) : ha('Puoi rivedere la tua risposta e quella ufficiale, poi riprovare questi quesiti.')) && uscite.includes('Rivedi gli errori') && riprovaOk
+    : haRe(/^Tutte le risposte date in questa attività sono corrette\.?$/) && !uscite.includes('Rivedi gli errori') && !uscite.some((u) => u.startsWith('Riprova'));
   v.push({ gruppo: g, nome: `${prefisso}il riepilogo dice quali rivedere: ${E ? `«${riprova}» e «Rivedi gli errori»` : 'nessuna, tutte corrette'}`,
     ok: rivedere, extra: `in schermata: ${breve}; uscite: ${uscite.join(', ')}` });
   v.push({ gruppo: g, nome: `${prefisso}il riepilogo dice che cosa non hai toccato: ${M} domande non affrontate`,
-    ok: ha(`Domande non affrontate: ${M}`) && (!M || ha('Le domande non affrontate non sono conteggiate come errori.')),
+    ok: (nuovo ? affrontate : ha(`Domande non affrontate: ${M}`)) && (!M || haRe(/^Le domande non affrontate non sono conteggiate come errori\.?$/)),
     extra: `in schermata: ${breve}` });
   const voti = VOTI.map((re) => testo.match(re)).filter(Boolean).map((m) => m[0]);
   v.push({ gruppo: g, nome: `${prefisso}nessun voto sulla preparazione`, ok: !voti.length, extra: `in schermata: ${voti.join(', ')}` });
   const fuori = [];
-  for (const u of uscite) if (!USCITE_RIEPILOGO.some((re) => re.test(u))) fuori.push(`«${u}»`);
+  for (const u of uscite) if (!ammesse.some((re) => re.test(u))) fuori.push(`«${u}»`);
   const lunghe = [...uscite].sort((a, b) => b.length - a.length);
   for (let r of righe) {
     for (const u of lunghe) r = r.split(u).join('\n');
-    for (const pezzo of r.split('\n').map(spazi).filter(Boolean)) if (!FRASI_RIEPILOGO.some((re) => re.test(pezzo))) fuori.push(`«${pezzo}»`);
+    for (const pezzo of r.split('\n').map(spazi).filter(Boolean)) if (!frasi.some((re) => re.test(pezzo))) fuori.push(`«${pezzo}»`);
   }
   v.push({ gruppo: g, nome: `${prefisso}nessuna quarta affermazione`, ok: !fuori.length, extra: `frasi che il §4.2 non ammette: ${fuori.join('; ')}` });
 }
@@ -3776,7 +3913,7 @@ async function f01(b, ctx, v) {
     // Prima attivita': una giusta e una sbagliata, poi «Termina». Con un
     // quesito che la banca non distingue si va avanti finche' ci sono tutte e
     // due, lasciando almeno una domanda non affrontata.
-    await clic(tab, '[data-rotta-start]');
+    await avviaPrima(tab);
     const esiti = [];
     let T1 = null;
     while (!(esiti.includes(true) && esiti.includes(false))) {
@@ -3792,19 +3929,19 @@ async function f01(b, ctx, v) {
       T1 = T1 ?? Number(((await tab.valuta(POSIZIONE)) || '').split('/')[1]);
     }
     if (!await chiudiQuiz(tab, v, g, 'prima attivita\': ')) return;
-    await frasiRiepilogo(tab, v, g, 'prima attivita\': ', { risposte: esiti.length, corrette: esiti.filter(Boolean).length, totale: T1 });
+    await frasiRiepilogo(tab, v, g, 'prima attivita\': ', { risposte: esiti.length, corrette: esiti.filter(Boolean).length, totale: T1 }, ctx);
     // Seconda attivita', nella stessa pagina: una sola risposta, giusta.
     await clic(tab, '[data-ciclo="ritorno"]');
     const pronto2 = await tab.attendi(js(`return !V(document.querySelector('#r-fine'));`), REAZIONE) && await tab.attendi(PRONTO, REAZIONE);
     v.push({ gruppo: g, nome: 'dal riepilogo si torna al Percorso, e un\'altra attivita\' si puo\' avviare', ok: pronto2,
       extra: '[data-ciclo="ritorno"] non chiude il riepilogo, o [data-rotta-start] non torna abilitato' });
     if (!pronto2) return;
-    await clic(tab, '[data-rotta-start]');
+    await avviaPrima(tab);
     const e2 = await rispondiCosi(tab, v, g, 'seconda attivita\': ', true);
     if (e2 === null) return;
     const T2 = Number(((await tab.valuta(POSIZIONE)) || '').split('/')[1]);
     if (!await chiudiQuiz(tab, v, g, 'seconda attivita\': ')) return;
-    await frasiRiepilogo(tab, v, g, 'seconda attivita\': ', { risposte: 1, corrette: e2 ? 1 : 0, totale: T2 });
+    await frasiRiepilogo(tab, v, g, 'seconda attivita\': ', { risposte: 1, corrette: e2 ? 1 : 0, totale: T2 }, ctx);
   } finally { await c.chiudi(); }
 }
 
@@ -4010,7 +4147,7 @@ const RIQUADRO = js(`const re = new RegExp(${q(TITOLO_ESITO.source)});
   return interni.map((e) => ({ giorno: (e.innerText.match(re) || [])[1] || null,
     posto: e.closest('[aria-modal="true"], dialog') ? 'una finestra modale'
       : e.closest('#r-fine, #c-fine, #sr-fine') ? 'un riepilogo' : e.closest('#quizrun, #cartrun, #segrun') ? 'un runner'
-      : e.closest('#rivedi') ? 'la revisione' : !e.closest('#v-oggi') ? 'fuori dal Percorso' : null }));`);
+      : e.closest('#rivedi') ? 'la revisione' : !e.closest('#v-oggi, #v-home') ? 'fuori dal Percorso' : null }));`);
 const fuoriPosto = (xs) => (xs || []).filter((x) => x.posto).map((x) => x.posto);
 
 /** Le richieste a /v1/esito, di qualunque metodo: senza account, o con il server di prima, nessuna. */
@@ -4172,7 +4309,7 @@ async function e01quando(b, ctx, v, g) {
       const altrove = [];
       for (const x of VISTE.filter((x) => x !== 'oggi')) { await apriPorta(tab, x); await pausa(200); altrove.push(...fuoriPosto(await tab.valuta(RIQUADRO)).map((p) => `${x}: ${p}`)); }
       await apriPorta(tab, 'oggi');
-      await clic(tab, '[data-rotta-start]');
+      await avviaPrima(tab);
       const risposto = await rispondiQuiz(tab, [], g, '');
       altrove.push(...fuoriPosto(await tab.valuta(RIQUADRO)).map((p) => `con il runner aperto: ${p}`));
       const riep = risposto && await chiudiQuiz(tab, [], g, '');
@@ -4290,8 +4427,7 @@ async function e01salvato(b, ctx, v, g) {
 
 /** Quiz → Simula la prova → quale prova → Inizia. */
 async function apriSim(tab, prova) {
-  const ok = await apriPorta(tab, 'quiz') && await tab.attendi(visibile('[data-modo="sim"]'), REAZIONE) && await clic(tab, '[data-modo="sim"]');
-  if (!ok) return false;
+  if (!await portaSim(tab)) return false;
   if (prova) {
     const scelta = await tab.attendi(js(`const e = document.querySelector('input[name="quiz-prova"][value="${prova}"]'); if (!e) return false; if (!e.checked) e.click(); return e.checked;`), REAZIONE);
     if (!scelta) return false;
@@ -4413,9 +4549,16 @@ async function p01senza(b, ctx, v, g) {
 // R-PREV-06: la previsione non si vede. La stessa simulazione, consegnata vuota,
 // con il server che accoglie la riga d'avvio e con quello di prima.
 const PREVISIONE = /\d+\s*%|probabilit|previsio|preved|\bstim[ae]\b|regola|possibilit|chance|percentual/i;
+// La frase che il §7.2 del ridisegno impone al risultato di ogni simulazione — e
+// che la pagina vera scrive gia' — nega la previsione: non la dice. Si toglie
+// prima di cercare le parole da previsione, e solo lei (P-82): «non una
+// previsione» in un'altra frase resta un rosso.
+const NEGAZIONE = "Esito di questa prova, non una previsione dell'esame.";
+const senzaNegazione = (t) => String(t || '').split(NEGAZIONE).join('');
 const normale = (t) => String(t || '').replace(/\d+/g, '#').replace(/\b(minut|second|domand|rispost|error)[oaie]\b/gi, '$1*').replace(/\s+/g, ' ').trim();
 const TESTI_SIM = {
-  prep: js(`const v = document.querySelector('#v-quiz'); return V(v) ? v.innerText : null;`),
+  // Nel ridisegno la preparazione e' una superficie sua, comune (§5.2).
+  prep: js(`const v = [...document.querySelectorAll('[data-preparazione], #v-quiz')].find(V); return v ? v.innerText : null;`),
   runner: js(`const r = document.querySelector('#quizrun'); if (!V(r)) return null; let t = r.innerText;
     for (const e of [document.querySelector('#r-text'), ...document.querySelectorAll('#r-ans .ans')]) if (e && e.innerText) t = t.split(e.innerText).join('');
     return t;`),
@@ -4423,7 +4566,7 @@ const TESTI_SIM = {
 };
 async function testiSim(tab) {
   const out = {};
-  if (!await apriPorta(tab, 'quiz') || !await tab.attendi(visibile('[data-modo="sim"]'), REAZIONE) || !await clic(tab, '[data-modo="sim"]')) return null;
+  if (!await portaSim(tab)) return null;
   await tab.attendi(js(`const e = document.querySelector('input[name="quiz-prova"][value="base"]'); if (!e) return false; if (!e.checked) e.click(); return e.checked;`), REAZIONE);
   if (!await tab.attendi(js(`const b = document.querySelector('#start'); return V(b) && !b.disabled;`), REAZIONE)) return null;
   out.prep = await tab.valuta(TESTI_SIM.prep);
@@ -4453,7 +4596,7 @@ async function p01visto(b, ctx, v, g) {
         extra: `righe d'avvio: ${avviiA} e ${avviiB}` });
       for (const k of ['prep', 'runner', 'riepilogo']) {
         const dove = { prep: 'la preparazione', runner: 'il runner', riepilogo: 'il riepilogo' }[k];
-        const parola = (con[k].match(PREVISIONE) || [])[0];
+        const parola = (senzaNegazione(con[k]).match(PREVISIONE) || [])[0];
         w.push({ gruppo: g, nome: `${dove} di una simulazione e' lo stesso con e senza riga d'avvio, e non dice una previsione`, ok: normale(con[k]) === normale(senza[k]) && !parola,
           extra: parola ? `si legge «${parola}»: ${normale(con[k]).slice(0, 200)}` : `con la riga d'avvio «${normale(con[k]).slice(0, 200)}», senza «${normale(senza[k]).slice(0, 200)}»` });
       }
@@ -4502,7 +4645,7 @@ async function p01conti(b, ctx, v, g) {
         extra: n0 !== null ? `si legge «${n0} risposte non sono sul server», e in coda non ce n'e' nessuna` : `con l'avvio in coda la pagina esce: ${uscito ? '«Accedi» nell\'intestazione' : ''} ${copia ? '' : 'la copia non c\'e\' piu\''}` });
       await esc(tab);
       // Una risposta: il numero e' quello delle risposte in coda, non delle righe.
-      await clic(tab, '[data-rotta-start]');
+      await avviaPrima(tab);
       const una = await rispondiQuiz(tab, [], g, '') && await chiudiQuiz(tab, [], g, '');
       const c2 = await tab.valuta(COPIA(U.chiave));
       const d2 = inCoda(c2);
@@ -4567,6 +4710,1124 @@ async function p01errore(b, ctx, v, g) {
   } finally { await c.chiudi(); }
 }
 
+// --- N-01: i tragitti del ridisegno (P-82, docs/ridisegno-progetto.md §9 e §10.1, E) ---
+//
+// Il banco del ridisegno (tests/ridisegno.mjs) prova la navigazione come
+// funzione: un indirizzo entra, una destinazione esce. Qui la stessa cosa si
+// guarda in un browser vero, come la vive chi studia: dopo il primo ingresso il
+// documento resta lo stesso — la stessa finestra JavaScript, nessun documento
+// nuovo chiesto alla rete —, le risposte della pagina restano le stesse
+// attraverso le sezioni e i testi legali, Indietro, Avanti e Chiudi riportano
+// allo stesso punto con scorrimento e fuoco, niente di chi studia finisce in un
+// indirizzo, nella cronologia o in uno storage, l'invito sta nei suoi tre posti
+// e in nessun quarto, la registrazione porta nell'account l'insieme intero delle
+// righe, i cinque stati si leggono con le parole di Q-STATI, i gesti nuovi —
+// tag, segnalibro, ricerca, segnalazione, scelte — fanno quello che dicono con
+// il server che si ha davanti. E i 108 tragitti del §9, uno per stato e compito.
+//
+// Il gruppo si applica solo a una pagina nel regime del ridisegno: sulla pagina
+// di oggi test_interfaccia.py dice che non si applica, come per la mappa (P-80).
+// Una pagina con le due dichiarazioni e senza il grafo e' rossa dal primo passo.
+//
+// I tocchi si contano uno per gesto voluto: un gesto ripetuto perche' la pagina
+// e' sorda per 200 ms dopo un cambio di schermata (specifica §7.5) e' lo stesso
+// tocco. Ogni conteggio si dice con il titolo d'arrivo, mai da solo.
+
+const TESTO_VISTO = (sel) => js(`const e = [...document.querySelectorAll(${q(sel)})].find(V); return e ? e.innerText.replace(/\\s+/g, ' ').trim() : null;`);
+/** Dove si e': la sezione in vista, il segmento selezionato, l'indirizzo, la cronologia. */
+const DOVE = js(`const v = [...document.querySelectorAll('main .view, .view')].find(V);
+  const s = [...document.querySelectorAll('[data-segmento]')].find((b) => b.getAttribute('aria-selected') === 'true');
+  const sezione = v ? v.id.replace('v-', '') : null;
+  return { sezione, segmento: sezione === 'allenati' && s ? s.dataset.segmento : null, url: location.pathname + location.search + location.hash,
+    stato: history.state, lunghezza: history.length, scroll: Math.round(scrollY),
+    fuoco: !!document.activeElement && document.activeElement.hasAttribute('data-banco-porta'),
+    attivo: document.activeElement ? (document.activeElement.innerText || document.activeElement.tagName).trim().slice(0, 40) : null };`);
+const DOC_ATTUALE = `({ segno: window.__rgDoc || null, origine: performance.timeOrigin })`;
+const INVITO = ['Vuoi conservare le attività di questa pagina?', 'Conserva le risposte.', 'Conserva questa prova', 'Crea un account e salva'];
+const NON_PROMETTERE = 'Da queste risposte possiamo proporti da dove iniziare';
+const PAROLE_STATI = ['mai visti', 'da rifare', 'da confermare', 'recuperati', 'acquisiti'];
+const CHIAVI_STATI = ['mai_visto', 'debole', 'incerto', 'sistemato', 'ok'];
+const PARAMETRI_URL = ['sezione', 'segmento', 'attivita', 'fase', 'banca', 'temi', 'voci', 'n'];
+const QUIZ_TUTTI = JSON.parse(readFileSync(join(SITE, 'dati', 'quiz.json'), 'utf8'));
+const QUIZ_BASE = QUIZ_TUTTI.filter((x) => x.k === 'base');
+
+/**
+ * Un tocco su un elemento visibile: lo si porta nello schermo, prende il fuoco
+ * come lo prende un pulsante toccato, e si preme. `porta` lo segna come la porta
+ * da cui si parte, con lo scorrimento di quel momento: il ritorno deve rendere
+ * il fuoco a lei e lo scorrimento di allora (§3.3). `testo` sceglie fra piu'
+ * elementi lo stesso selettore.
+ */
+async function tocca(tab, T, sel, { porta = false, testo = null } = {}) {
+  const ok = await tab.valuta(js(`const tutti = [...document.querySelectorAll(${q(sel)})].filter(V);
+    const e = ${testo ? `tutti.find((x) => x.textContent.replace(/\\s+/g, ' ').trim() === ${q(testo)})` : 'tutti[0]'};
+    if (!e || e.disabled) return false;
+    e.scrollIntoView({ block: 'center' });
+    ${porta ? `for (const x of document.querySelectorAll('[data-banco-porta]')) x.removeAttribute('data-banco-porta');
+    e.setAttribute('data-banco-porta', ''); window.__bancoScroll = Math.round(scrollY);` : ''}
+    e.focus({ preventScroll: true }); e.click(); return true;`));
+  if (ok && T) T.n++;
+  return ok;
+}
+
+/** Un gesto che deve avere un effetto: si ripete finche' l'effetto arriva, e conta una volta. */
+async function gesto(tab, T, sel, effetto, { testo = null, volte = 20 } = {}) {
+  for (let i = 0; i < volte; i++) {
+    if (!await tocca(tab, null, sel, { testo })) { await pausa(60); continue; }
+    if (await tab.attendi(effetto, 300)) { if (T) T.n++; return true; }
+  }
+  return false;
+}
+
+const quesitoVisto = (tab) => tab.attendiValore(QUESITO, quesitoDellaBanca, REAZIONE);
+/** La posizione «i / n» del runner: n e' la lista che la pagina ha aperto. */
+const QUANTI_RUN = js(`const p = document.querySelector('#r-pos'); const m = p && p.textContent.match(/(\\d+)\\s*\\/\\s*(\\d+)/); return m ? [Number(m[1]), Number(m[2])] : null;`);
+
+/** QB e QA (§9): n risposte, n−1 Avanti; poi Consegna e conferma (QB) o Termina (QA); Rivedi, Chiudi, ritorno. */
+async function trattoQuiz(tab, T, { sim, fino = 'ritorno', risposte = null } = {}) {
+  const pos = await tab.attendiValore(QUANTI_RUN, Boolean, REAZIONE);
+  if (!pos.ok) return { ok: false, perche: 'il runner non dice la posizione «i / n»' };
+  const n = pos.valore[1], k = risposte ?? n;
+  for (let i = 0; i < k; i++) {
+    // Nella simulazione nessuna correzione: la risposta scelta si dice con
+    // aria-pressed (o compare «Avanti»); negli allenamenti si accende l'esatta.
+    const effetto = sim ? js(`return V(document.querySelector('#r-next')) || [...document.querySelectorAll('#r-ans .ans')].some((b) => b.getAttribute('aria-pressed') === 'true')`)
+      : js(`return !!document.querySelector('#r-ans .ans.ok')`);
+    if (!await gesto(tab, T, '#r-ans .ans', effetto)) return { ok: false, perche: `la risposta ${i + 1} non ha effetto` };
+    if (i + 1 < k && !await gesto(tab, T, '#r-next', js(`return document.querySelector('#r-pos').textContent.trim().startsWith('${i + 2} /') && !document.querySelector('#r-ans .ans.ok')`))) return { ok: false, perche: `«Avanti» dopo la risposta ${i + 1} non porta al quesito dopo` };
+  }
+  if (sim) {
+    if (!await gesto(tab, T, '#r-close', visibile('[data-consegna="si"]'))) return { ok: false, perche: '«Consegna la prova» non chiede conferma' };
+    if (!await gesto(tab, T, '[data-consegna="si"]', RIEPILOGO)) return { ok: false, perche: 'la conferma non apre il risultato' };
+  } else if (!await gesto(tab, T, '#r-close', RIEPILOGO)) return { ok: false, perche: '«Termina l\'attività» non apre il risultato' };
+  if (fino === 'risultato') return { ok: true, n };
+  return dopoRisultato(tab, T, n);
+}
+
+/** Rivedi → Chiudi → ritorno, dal risultato dei quiz. */
+async function dopoRisultato(tab, T, n) {
+  if (!await gesto(tab, T, '[data-ciclo="risposte"]', js(`return V(document.querySelector('#rv-body'))`))) return { ok: false, perche: '«Rivedi le risposte» non apre la revisione' };
+  if (!await gesto(tab, T, '#rv-close', js(`return !V(document.querySelector('#rv-body')) && V(document.querySelector('#r-fine h1'))`))) return { ok: false, perche: 'Chiudi la revisione non torna al risultato' };
+  if (!await gesto(tab, T, '[data-ciclo="ritorno"]', js(`return !V(document.querySelector('#r-fine'))`))) return { ok: false, perche: 'il ritorno non chiude il risultato' };
+  return { ok: true, n };
+}
+
+/** CC (§9): n−1 Successivo, consegna a due tocchi, n giudizi, Concludi, Rivedi, Chiudi, ritorno. */
+async function trattoCarta(tab, T) {
+  const { ok, valore } = await tab.attendiValore(js(`const p = document.querySelector('#c-pos'); const m = p && p.textContent.match(/(\\d+) di (\\d+)/); return m ? Number(m[2]) : null;`), Boolean, REAZIONE);
+  if (!ok) return { ok: false, perche: 'il runner della carta non dice «Esercizio i di n»' };
+  const n = valore;
+  for (let i = 1; i < n; i++) {
+    if (!await gesto(tab, T, '#c-next', js(`return document.querySelector('#c-pos').textContent.includes('Esercizio ${i + 1} di')`))) return { ok: false, perche: `«Successivo» non porta all'esercizio ${i + 1}` };
+  }
+  if (!await gesto(tab, T, '#c-consegna', js(`return document.querySelector('#c-consegna').textContent.includes('Sicuro') || V(document.querySelector('#c-fine'))`))) return { ok: false, perche: 'il primo tocco di consegna non chiede conferma' };
+  if (!await gesto(tab, T, '#c-consegna', visibile('#c-fine'))) return { ok: false, perche: 'il secondo tocco non apre il confronto' };
+  for (let k = 0; k < n; k++) {
+    if (!await gesto(tab, T, `#c-fine [data-cs="${k}"][data-ok="1"]`, premuto(`#c-fine [data-cs="${k}"][data-ok="1"]`))) return { ok: false, perche: `il giudizio ${k + 1} non si da'` };
+  }
+  if (!await gesto(tab, T, '#c-salva', js(`return /Esiti autovalutati/.test(document.querySelector('#c-fine').innerText)`))) return { ok: false, perche: '«Concludi» non apre il risultato della carta' };
+  if (!await gesto(tab, T, '[data-crivedi]', js(`return V(document.querySelector('#rv-body'))`))) return { ok: false, perche: '«Rivedi i risultati» non apre la revisione' };
+  if (!await gesto(tab, T, '#rv-close', js(`return !V(document.querySelector('#rv-body'))`))) return { ok: false, perche: 'Chiudi la revisione non torna al risultato' };
+  if (!await gesto(tab, T, '[data-cfine="ritorno"]', js(`return !V(document.querySelector('#cartrun'))`))) return { ok: false, perche: 'il ritorno non chiude la carta' };
+  return { ok: true, n };
+}
+
+/** SS (§9): n risposte, n−1 Avanti, «Vedi il risultato», ritorno. */
+async function trattoSegnali(tab, T) {
+  const { ok, valore } = await tab.attendiValore(js(`const p = document.querySelector('#sr-pos'); const m = p && p.textContent.match(/(\\d+)\\s*\\/\\s*(\\d+)/); return m ? Number(m[2]) : null;`), Boolean, REAZIONE);
+  if (!ok) return { ok: false, perche: 'la partita non dice «i / n»' };
+  const n = valore;
+  for (let i = 0; i < n; i++) {
+    if (!await gesto(tab, T, '#sr-ans button', visibile('#sr-next'))) return { ok: false, perche: `la risposta ${i + 1} non ha effetto` };
+    const ultimo = i + 1 === n;
+    if (!await gesto(tab, T, '#sr-next', ultimo ? visibile('#sr-fine') : js(`return document.querySelector('#sr-pos').textContent.trim().startsWith('${i + 2} /')`))) return { ok: false, perche: ultimo ? '«Vedi il risultato» non apre il risultato' : `«Avanti» dopo la risposta ${i + 1} non porta alla situazione dopo` };
+  }
+  if (!await gesto(tab, T, '#sr-basta', js(`return !V(document.querySelector('#segrun'))`))) return { ok: false, perche: 'il ritorno non chiude la partita' };
+  return { ok: true, n };
+}
+
+// I dodici compiti del §9, per stato. Ogni compito parte dalla Home dello
+// stato e restituisce l'arrivo — il titolo e i tocchi per arrivarci —, il
+// totale fino al ritorno, e dove il ritorno ha portato. AC, il ciclo della
+// registrazione a modulo aperto, e' di quattro tocchi qui: «Email», «Password»,
+// «Crea l'account e salva», «Salta per ora». Il §9 ne conta cinque, con un
+// «Chiudi» dopo «Salta per ora» che il client non ha — il modulo si chiude alla
+// creazione (account-client-progetto §4.3), e C-04 e C-07 lo tengono fermo —:
+// e' uno scostamento dichiarato nel §10.1 del progetto, non una scelta del banco.
+const AC = 4;
+const COMPITI = {
+  '01': 'Simulare il quiz base', '02': 'Quiz su un argomento', '03': 'Giro delle tecniche', '04': 'A tappeto',
+  '05': 'Prova di carteggio', '06': 'Segnali', '07': 'Registrarsi dal risultato', '08': 'Registrarsi dalla Home',
+  '09': 'Privacy', '10': 'Condizioni', '11': 'Tornare indietro', '12': 'Trovare i progressi',
+};
+const TEMA_02 = 'METEOROLOGIA';
+
+/** Torna alla Home per il compito dopo: non conta, e' la partenza. */
+async function allaHome(tab) {
+  await tocca(tab, null, '#barra [data-v="home"]');
+  await tab.attendi(js(`return V(document.querySelector('#v-home'))`), REAZIONE);
+  await tab.valuta('scrollTo(0, 0); document.activeElement && document.activeElement.blur(); true');
+}
+
+/** Il modulo di registrazione gia' aperto: AC, quattro tocchi; restituisce l'email o null. */
+async function cicloAC(tab, T, ctx) {
+  const email = `n01-${++serie}@esempio.it`;
+  if (!await tab.attendi(js(`return V(${campo('Email')});`), REAZIONE)) return null;
+  await tab.valuta(js(`${campo('Email')}.focus(); return true;`)); T.n++;
+  await imposta(tab, 'Email', email);
+  await tab.valuta(js(`${campo('Password')}.focus(); return true;`)); T.n++;
+  await imposta(tab, 'Password', PASSWORD);
+  if (!await tocca(tab, T, '[data-account="crea"]')) return null;
+  const salvate = await tab.attendi(testoRe(SALVATE), CARICO);
+  if (!salvate || !await tab.attendi(pulsante(testi(ctx).saltaData), REAZIONE)) return null;
+  if (!await tocca(tab, T, '[data-account="torna"]', { testo: testi(ctx).saltaData })) return null;
+  await tab.attendi(`!(${modaleVisibile})`, REAZIONE);
+  return email;
+}
+
+const LEGALE_VISTO = js(`const l = document.querySelector('#legale'); if (!V(l)) return null; const h = l.querySelector('h1'); return { titolo: h ? h.innerText.trim() : null, url: location.pathname + location.hash,
+  ancora: !!l.querySelector('#condizioni') && V(l.querySelector('#condizioni')) };`);
+
+/** Un compito: { arrivo: {titolo, tocchi}, totale, ritorno: {...}, n } o { errore }. */
+async function compito(tab, ctx, stato, c) {
+  const T = { n: 0 };
+  const arrivo = async (titolo, ok) => (ok ? { titolo, tocchi: T.n } : null);
+  if (c === '01' || (c === '07' && stato === 'HA')) {
+    if (!await tocca(tab, T, '#v-home [data-modo="sim"][data-prova="base"]', { porta: true })) return { errore: '«Simula il quiz base» non c\'e\' nella Home' };
+    if (!await tab.attendi(js(`return V(document.querySelector('[data-preparazione] #start'))`), REAZIONE)) return { errore: 'la preparazione della simulazione non si apre' };
+    await tocca(tab, T, '[data-preparazione] #start');
+    const a = await arrivo('la prima domanda della simulazione', (await quesitoVisto(tab)).ok);
+    if (!a) return { errore: 'Inizia non apre un quesito della banca' };
+    if (c === '07') {
+      const r = await trattoQuiz(tab, T, { sim: true, fino: 'risultato' });
+      if (!r.ok) return { arrivo: a, errore: r.perche };
+      // Gia' registrato: Account → Chiudi → ritorno (§9, 07 HA).
+      if (!await tocca(tab, T, '#conto-porta')) return { arrivo: a, errore: '«Account» non si apre dal risultato' };
+      if (!await tab.attendi(modaleVisibile, REAZIONE) || !await tocca(tab, T, '[data-account="torna"]')) return { arrivo: a, errore: 'il pannello dell\'account non si chiude' };
+      if (!await tab.attendi(RIEPILOGO, REAZIONE)) return { arrivo: a, errore: 'chiuso l\'account, il risultato non c\'e\' piu\'' };
+      const d = await dopoRisultato(tab, T, r.n);
+      return d.ok ? { arrivo: a, totale: T.n, n: r.n } : { arrivo: a, errore: d.perche };
+    }
+    const r = await trattoQuiz(tab, T, { sim: true });
+    return r.ok ? { arrivo: a, totale: T.n, n: r.n } : { arrivo: a, errore: r.perche };
+  }
+  if (c === '02') {
+    await tocca(tab, T, '#barra [data-v="allenati"]');
+    if (!await tab.attendi(visibile('[data-tema]'), REAZIONE)) return { errore: 'in Allenati · Quiz gli argomenti non ci sono (A-1: i temi nel segmento Quiz)' };
+    if (!await tocca(tab, T, '[data-tema]', { porta: true, testo: TEMA_02 })) return { errore: `nessun argomento «${TEMA_02}»` };
+    if (!await tab.attendi(js(`return V(document.querySelector('[data-preparazione] #start'))`), REAZIONE)) return { errore: 'la preparazione dell\'argomento non si apre' };
+    await tocca(tab, T, '[data-preparazione] #start');
+    const a = await arrivo(`la prima domanda di ${TEMA_02}`, (await quesitoVisto(tab)).ok);
+    if (!a) return { errore: 'Inizia non apre un quesito della banca' };
+    const r = await trattoQuiz(tab, T, { sim: false });
+    return r.ok ? { arrivo: a, totale: T.n, n: r.n } : { arrivo: a, errore: r.perche };
+  }
+  if (c === '03' || c === '04') {
+    await tocca(tab, T, '#barra [data-v="allenati"]');
+    await tocca(tab, T, '[data-segmento="carteggio"]');
+    if (!await tocca(tab, T, '[data-cporta="esercizi"]', { porta: true })) return { errore: '«Esercizi su carta» non c\'e\' nel Carteggio' };
+    if (c === '04' && !await tocca(tab, T, 'input[name="c-modo"][value="tappeto"]')) return { errore: '«A tappeto» non si sceglie' };
+    if (!await tocca(tab, T, '#c-esercizi')) return { errore: 'Inizia gli esercizi non c\'e\'' };
+    const { ok } = await tab.attendiValore(js(`const t = document.querySelector('#c-testo'); return V(t) ? t.textContent.trim() : null;`), (x) => CARTEGGIO.has(x), REAZIONE);
+    const a = await arrivo('il primo esercizio sulla carta', ok);
+    if (!a) return { errore: `Inizia non apre un esercizio della banca: ${await tab.valuta(inSchermata)}` };
+    const r = await trattoCarta(tab, T);
+    return r.ok ? { arrivo: a, totale: T.n, n: r.n } : { arrivo: a, errore: r.perche };
+  }
+  if (c === '05') {
+    await tocca(tab, T, '#barra [data-v="esame"]');
+    if (!await tocca(tab, T, '#v-esame [data-cporta="prova"]', { porta: true })) return { errore: '«Prova di carteggio» non c\'e\' in Esame' };
+    if (!await tocca(tab, T, '#c-start')) return { errore: 'Inizia la prova non c\'e\'' };
+    const { ok } = await tab.attendiValore(js(`const t = document.querySelector('#c-testo'); return V(t) ? t.textContent.trim() : null;`), (x) => CARTEGGIO.has(x), REAZIONE);
+    const a = await arrivo('il primo esercizio della prova', ok);
+    if (!a) return { errore: 'Inizia non apre un esercizio della banca' };
+    const r = await trattoCarta(tab, T);
+    return r.ok ? { arrivo: a, totale: T.n, n: r.n } : { arrivo: a, errore: r.perche };
+  }
+  if (c === '06') {
+    await tocca(tab, T, '#barra [data-v="allenati"]');
+    await tocca(tab, T, '[data-segmento="segnali"]');
+    if (!await tocca(tab, T, '#s-start', { porta: true })) return { errore: 'Inizia non c\'e\' nei Segnali' };
+    const a = await arrivo('la prima situazione dei Segnali', await tab.attendi(visibile('#sr-ans button'), REAZIONE));
+    if (!a) return { errore: 'la partita non si apre' };
+    const r = await trattoSegnali(tab, T);
+    return r.ok ? { arrivo: a, totale: T.n, n: r.n } : { arrivo: a, errore: r.perche };
+  }
+  if (c === '07') {
+    await tocca(tab, T, '#v-home [data-modo="sim"][data-prova="base"]', { porta: true });
+    await tab.attendi(js(`return V(document.querySelector('[data-preparazione] #start'))`), REAZIONE);
+    await tocca(tab, T, '[data-preparazione] #start');
+    if (!(await quesitoVisto(tab)).ok) return { errore: 'Inizia non apre un quesito della banca' };
+    const r = await trattoQuiz(tab, T, { sim: true, fino: 'risultato' });
+    if (!r.ok) return { errore: r.perche };
+    if (!await tocca(tab, T, '#r-fine [data-account="registra"]')) return { errore: 'nel risultato della simulazione non c\'e\' «Crea un account e salva»' };
+    const a = await arrivo('il modulo «Crea un account»', await tab.attendi(js(`return V(${campo('Email')});`), REAZIONE));
+    if (!a) return { errore: 'il modulo non si apre' };
+    const email = await cicloAC(tab, T, ctx);
+    if (!email) return { arrivo: a, errore: 'la registrazione non arriva a «salvate» e a «' + testi(ctx).saltaData + '»' };
+    if (!await tab.attendi(RIEPILOGO, REAZIONE)) return { arrivo: a, errore: 'chiuso il modulo, il risultato non c\'e\' piu\' (§6.2: «salvataggio riuscito → stesso risultato»)' };
+    if (!await gesto(tab, T, '[data-ciclo="ritorno"]', js(`return !V(document.querySelector('#r-fine'))`))) return { arrivo: a, errore: 'il risultato non si chiude' };
+    return { arrivo: a, totale: T.n, n: r.n, email };
+  }
+  if (c === '08') {
+    if (stato === 'HA') {
+      await tocca(tab, T, '#conto-porta', { porta: true });
+      const a = await arrivo('il Profilo, «Il tuo account»', await tab.attendi(js(`const m = M(); return m !== document && /Il tuo account/.test(m.innerText);`), REAZIONE));
+      if (!a) return { errore: 'l\'avatar non apre il Profilo' };
+      await tocca(tab, T, '[data-account="torna"]');
+      return { arrivo: a, totale: T.n };
+    }
+    if (stato === 'H1') await tocca(tab, T, '#invito-home [data-account="registra"]', { porta: true });
+    else { await tocca(tab, T, '#conto-porta', { porta: true }); await tab.attendi(modaleVisibile, REAZIONE); await tocca(tab, T, '[data-account="crea-da-accedi"]'); }
+    const a = await arrivo('il modulo «Crea un account»', await tab.attendi(js(`return V(${campo('Email')}) && /Crea un account/.test(M().innerText);`), REAZIONE));
+    if (!a) return { errore: 'il modulo non si apre' };
+    const email = await cicloAC(tab, T, ctx);
+    return email ? { arrivo: a, totale: T.n, email } : { arrivo: a, errore: 'la registrazione non arriva a «salvate»' };
+  }
+  if (c === '09' || c === '10') {
+    const href = c === '09' ? '/privacy' : '/avvertenza#condizioni';
+    if (!await tocca(tab, T, `#v-home a[href="${href}"], footer a[href="${href}"]`, { porta: true })) return { errore: `nessun link ${href} in vista dalla Home` };
+    const { ok, valore } = await tab.attendiValore(LEGALE_VISTO, (x) => !!x && !!x.titolo && x.url === href && (c === '09' || x.ancora), REAZIONE);
+    const a = await arrivo(`${valore && valore.titolo} sopra la Home, su ${href}`, ok);
+    if (!a) return { errore: `il testo legale non si apre sopra la Home: ${JSON.stringify(valore)}` };
+    await tocca(tab, T, '[data-legale="chiudi"]');
+    return { arrivo: a, totale: T.n };
+  }
+  if (c === '11') {
+    await tocca(tab, T, '#v-home [data-rotta-start]', { porta: true });
+    await tab.attendi(js(`return V(document.querySelector('[data-preparazione] #start'))`), REAZIONE);
+    await tocca(tab, T, '[data-preparazione] #start');
+    const a = await arrivo('la prima domanda', (await quesitoVisto(tab)).ok);
+    if (!a) return { errore: 'Inizia non apre un quesito della banca' };
+    if (!await gesto(tab, T, '#r-ans .ans', js(`return !!document.querySelector('#r-ans .ans.ok')`))) return { arrivo: a, errore: 'la risposta non ha effetto' };
+    if (!await gesto(tab, T, '#r-close', RIEPILOGO)) return { arrivo: a, errore: '«Termina» non apre il risultato parziale' };
+    if (!await gesto(tab, T, '[data-ciclo="ritorno"]', js(`return !V(document.querySelector('#r-fine'))`))) return { arrivo: a, errore: 'il ritorno non chiude il risultato' };
+    return { arrivo: a, totale: T.n };
+  }
+  if (c === '12') {
+    await tocca(tab, T, '#barra [data-v="progressi"]', { porta: true });
+    const atteso = stato === 'H0' ? 'Nessuna risposta in questa pagina.' : stato === 'H1' ? 'Le attività di questa pagina' : 'mai visti';
+    const a = await arrivo(`Progressi: «${atteso}»`, await tab.attendi(js(`const p = document.querySelector('#v-progressi'); return V(p) && p.innerText.includes(${q(atteso)});`), REAZIONE));
+    if (!a) return { errore: `Progressi non dice «${atteso}»: ${await tab.valuta(TESTO_VISTO('#v-progressi'))}` };
+    await tocca(tab, T, '#barra [data-v="home"]');
+    return { arrivo: a, totale: T.n };
+  }
+  return { errore: 'compito sconosciuto' };
+}
+
+/** I conteggi del §9, per stato e compito, con n la lista che la pagina ha aperto. */
+function attesi(stato, c, n) {
+  const QB = 2 * n + 4, QA = 2 * n + 3, CC = 2 * n + 5, SS = 2 * n + 1;
+  switch (c) {
+    case '01': return { arrivo: 2, totale: 2 + QB };
+    case '02': return { arrivo: 3, totale: 3 + QA };
+    case '03': return { arrivo: 4, totale: 4 + CC };
+    case '04': return { arrivo: 5, totale: 5 + CC };
+    case '05': return { arrivo: 3, totale: 3 + CC };
+    case '06': return { arrivo: 3, totale: 3 + SS };
+    case '07': return stato === 'HA' ? { arrivo: 2, totale: 2 + QB + 2 } : { arrivo: 2 + n + (n - 1) + 2 + 1, totale: 2 + n + (n - 1) + 2 + 1 + AC + 1 };
+    case '08': return stato === 'HA' ? { arrivo: 1, totale: 2 } : stato === 'H1' ? { arrivo: 1, totale: 1 + AC } : { arrivo: 2, totale: 2 + AC };
+    case '09': case '10': return { arrivo: 1, totale: 2 };
+    case '11': return { arrivo: 2, totale: 5 };
+    case '12': return { arrivo: 1, totale: 2 };
+    default: return null;
+  }
+}
+
+/** Dove il ritorno deve portare (§9, colonna «Ritorno»): sezione, segmento, e se il fuoco torna alla porta. */
+function ritornoAtteso(stato, c) {
+  switch (c) {
+    case '01': case '11': return { sezione: 'home', fuoco: true };
+    case '02': return { sezione: 'allenati', segmento: 'quiz', fuoco: true, scroll: true };
+    case '03': case '04': return { sezione: 'allenati', segmento: 'carteggio', fuoco: true };
+    case '05': return { sezione: 'esame', fuoco: true };
+    case '06': return { sezione: 'allenati', segmento: 'segnali', fuoco: true };
+    case '07': return { sezione: 'home', conto: true, fuoco: stato === 'HA' };
+    case '08': return { sezione: 'home', conto: true, fuoco: stato === 'HA' };
+    case '09': case '10': return { sezione: 'home', fuoco: true, url: '/' };
+    case '12': return { sezione: 'home' };
+    default: return null;
+  }
+}
+
+/** Lo stato di partenza: H0 una pagina nuova; H1 con una risposta della pagina; HA dentro un account. */
+async function preparaStato(b, ctx, stato) {
+  const c = await b.nuovoContesto();
+  const tab = await c.apri(null);
+  await tab.dimensioni(375, 640);
+  await tab.vai(ctx.sito + '/');
+  await tab.attendi(PRONTO, CARICO);
+  if (stato === 'H1') {
+    await avviaPrima(tab);
+    await rispondiQuiz(tab, [], 'N-01', '');
+    await chiudiQuiz(tab, [], 'N-01', '');
+    await clic(tab, '[data-ciclo="ritorno"]');
+    await tab.attendi(visibile('#invito-home'), REAZIONE);
+  }
+  if (stato === 'HA') {
+    const K = await nuovoAccount(ctx, 'n01ha');
+    if (!await dentro(tab, K)) throw new Error('lo stato HA non si prepara: l\'accesso non riesce');
+  }
+  await allaHome(tab);
+  return { c, tab };
+}
+
+/** Un giro per stato: i dodici compiti, ognuno per le tre persone del §9 che lo condividono. */
+async function n01tragitti(b, ctx, v, stato, g = 'N-01') {
+  const ids = (c) => ['Z', 'F', 'R'].map((p) => `${p}-${stato}-${c}`).join(' · ');
+  // 07 e 08 registrano: ognuno parte da un contesto suo, nello stato giusto.
+  // 12 per primo: Progressi deve trovare lo stato com'e', prima delle attivita' degli altri compiti.
+  const gruppi = [['12', '01', '02', '03', '04', '05', '06', '09', '10', '11'], ['07'], ['08']];
+  for (const lista of gruppi) {
+    let x;
+    try { x = await preparaStato(b, ctx, stato); } catch (e) { v.push({ gruppo: g, nome: `${stato}: lo stato di partenza si prepara`, ok: false, extra: e.message }); continue; }
+    try {
+      for (const c of lista) {
+        const r = await compito(x.tab, ctx, stato, c);
+        const att = attesi(stato, c, r.n ?? 0);
+        const nome = `${ids(c)} (${COMPITI[c]})`;
+        if (r.errore || !r.arrivo) {
+          v.push({ gruppo: g, nome: `${nome}: si arriva, e i tocchi sono quelli del §9`, ok: false, extra: r.errore || 'nessun arrivo' });
+          v.push({ gruppo: g, nome: `${nome}: il ritorno riporta alla porta`, ok: false, extra: 'il giro si e\' fermato prima' });
+          await allaHome(x.tab);
+          continue;
+        }
+        const tocchiOk = r.arrivo.tocchi === att.arrivo && r.totale === att.totale;
+        v.push({ gruppo: g, nome: `${nome}: arrivo «${r.arrivo.titolo}» in ${att.arrivo} tocchi attesi e ${r.arrivo.tocchi} osservati, ${att.totale} attesi e ${r.totale} osservati fino al ritorno${r.n ? ` (n = ${r.n})` : ''}`, ok: tocchiOk,
+          extra: `osservati: ${r.arrivo.tocchi} all'arrivo, ${r.totale} fino al ritorno; attesi ${att.arrivo} e ${att.totale}` });
+        const ra = ritornoAtteso(stato, c);
+        const sc = await x.tab.valuta('window.__bancoScroll || 0');
+        const { ok: rOk, valore: dove } = await x.tab.attendiValore(DOVE, (d) => !!d && d.sezione === ra.sezione && (!ra.segmento || d.segmento === ra.segmento)
+          && (!ra.url || d.url === ra.url) && (!ra.fuoco || d.fuoco) && (!ra.scroll || Math.abs(d.scroll - sc) <= 2), REAZIONE);
+        const fuoco = !ra.fuoco || (dove && dove.fuoco);
+        const scroll = !ra.scroll || (dove && Math.abs(dove.scroll - sc) <= 2);
+        const conto = !ra.conto || await x.tab.valuta(nellaPagina('Account'));
+        v.push({ gruppo: g, nome: `${nome}: il ritorno riporta a ${ra.sezione}${ra.segmento ? ' · ' + ra.segmento : ''}${ra.fuoco ? ', con il fuoco sulla porta' : ''}${ra.scroll ? ' e lo scorrimento di prima' : ''}${ra.conto ? ', dentro l\'account' : ''}`,
+          ok: rOk && fuoco && scroll && conto,
+          extra: `dove: ${JSON.stringify(dove && { sezione: dove.sezione, segmento: dove.segmento, url: dove.url, scroll: dove.scroll, fuoco: dove.fuoco, attivo: dove.attivo })}${conto ? '' : '; l\'avatar non dice «Account»'}` });
+        await allaHome(x.tab);
+      }
+    } finally { await x.c.chiudi(); }
+  }
+}
+
+/** Il segno del documento: una proprieta' della finestra JavaScript, che un documento nuovo non ha. */
+async function segnaDocumento(tab) {
+  const segno = `doc-${++serie}`;
+  await tab.valuta(`window.__rgDoc = ${q(segno)}; true`);
+  return { segno, origine: await tab.valuta('performance.timeOrigin') };
+}
+const documenti = (tab) => tab.richieste.filter((r) => r.tipo === 'Document').map((r) => r.url);
+async function stessoDocumento(tab, d, n0) {
+  const ora = await tab.valuta(DOC_ATTUALE).catch(() => ({}));
+  const nuovi = documenti(tab).slice(n0);
+  return { ok: ora.segno === d.segno && ora.origine === d.origine && !nuovi.length,
+    extra: ora.segno !== d.segno ? `la finestra JavaScript e' un'altra: il documento si e' ricaricato${nuovi.length ? ` (${nuovi.join(', ')})` : ''}` : `documenti chiesti dopo il primo ingresso: ${nuovi.join(', ')}` };
+}
+/** Le risposte della pagina, scaricate da Info: gli uid, per confrontarli prima e dopo. */
+async function uidPagina(tab, c) {
+  // Dal Profilo, che si apre sopra ogni superficie (§5.2): l'alias «info» della
+  // tabella C porta alla Home, e chiuderebbe il risultato che si sta guardando.
+  await tocca(tab, null, '#conto-porta');
+  await tab.attendi(modaleVisibile, REAZIONE);
+  await tocca(tab, null, '[aria-modal="true"] [data-profilo="info"]');
+  const n = c.scaricati().length;
+  if (!await clic(tab, '[data-dati="scarica"]')) return null;
+  const f = await scaricato(c, n);
+  await esc(tab);
+  await tab.attendi(`!(${modaleVisibile})`, REAZIONE);
+  return f ? uidDi(f.dati) : null;
+}
+
+/** Il documento resta lo stesso: sezioni, segmenti, Profilo, legali, runner; uid e lavoro identici; il timer non si ferma. */
+async function n01documento(b, ctx, v, g) {
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(null);
+    await tab.dimensioni(375, 640);
+    await tab.vai(ctx.sito + '/');
+    await fermaAlPrimo(v, async (w) => {
+      w.push({ gruppo: g, nome: 'la pagina si apre su / con la Home del ridisegno', ok: await tab.attendi(PRONTO, CARICO) && await tab.valuta(js(`return V(document.querySelector('#v-home'))`)),
+        extra: `in schermata: ${await tab.valuta(inSchermata)} — le due dichiarazioni senza il grafo non bastano` });
+      const n0 = documenti(tab).length;
+      const d = await segnaDocumento(tab);
+      w.push({ gruppo: g, nome: 'il primo ingresso chiede un documento solo', ok: n0 === 1, extra: `documenti: ${documenti(tab).join(', ')}` });
+      w.push({ gruppo: g, nome: 'una risposta nella pagina', ok: !!await unaRisposta(tab, [], g) && await clic(tab, '[data-ciclo="ritorno"]'), extra: 'il primo giro non arriva al riepilogo' });
+      const prima = await uidPagina(tab, c);
+      w.push({ gruppo: g, nome: 'le risposte della pagina si scaricano da Info', ok: !!prima && prima.size >= 1, extra: `uid: ${prima ? prima.size : 'nessun file'}` });
+      const giro = [['#barra [data-v="allenati"]', 'allenati'], ['[data-segmento="carteggio"]', 'allenati'], ['[data-segmento="segnali"]', 'allenati'],
+        ['[data-segmento="quiz"]', 'allenati'], ['#barra [data-v="esame"]', 'esame'], ['#barra [data-v="progressi"]', 'progressi'], ['#marchio', 'home']];
+      const mancati = [];
+      for (const [sel, sez] of giro) {
+        await tocca(tab, null, sel);
+        if (!(await tab.attendiValore(DOVE, (x) => x && x.sezione === sez, REAZIONE)).ok) mancati.push(`${sel} → ${sez}`);
+      }
+      w.push({ gruppo: g, nome: 'la barra, i segmenti e il marchio portano alle sezioni', ok: !mancati.length, extra: 'non arrivano: ' + mancati.join(', ') });
+      const s1 = await stessoDocumento(tab, d, n0);
+      w.push({ gruppo: g, nome: 'attraverso sezioni e segmenti il documento resta lo stesso: la stessa finestra, nessun documento nuovo', ...s1 });
+      // Profilo, poi un testo legale sopra il Profilo, poi sopra la Home.
+      await tocca(tab, null, '#conto-porta');
+      const profilo = await tab.attendi(modaleVisibile, REAZIONE);
+      await tocca(tab, null, '[aria-modal="true"] a[href="/privacy"]');
+      const legale = await tab.attendiValore(LEGALE_VISTO, (x) => !!x && x.titolo === 'Privacy' && x.url === '/privacy', REAZIONE);
+      w.push({ gruppo: g, nome: 'il testo della privacy si apre sopra il Profilo, nel documento, su /privacy', ok: profilo && legale.ok, extra: JSON.stringify(legale.valore) });
+      await tocca(tab, null, '[data-legale="chiudi"]');
+      const sotto = await tab.attendi(js(`return !V(document.querySelector('#legale')) && V(${campo('Email')}) && location.pathname === '/'`), REAZIONE);
+      w.push({ gruppo: g, nome: 'Chiudi riporta al Profilo com\'era, e l\'indirizzo torna quello di prima', ok: sotto, extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+      await esc(tab);
+      await tocca(tab, null, 'footer a[href="/avvertenza#condizioni"]');
+      const cond = await tab.attendiValore(LEGALE_VISTO, (x) => !!x && x.ancora && x.url === '/avvertenza#condizioni', REAZIONE);
+      w.push({ gruppo: g, nome: 'le condizioni si aprono sopra la Home, con l\'ancora in vista', ok: cond.ok, extra: JSON.stringify(cond.valore) });
+      await tocca(tab, null, '[data-legale="chiudi"]');
+      await tab.attendi(js(`return !V(document.querySelector('#legale'))`), REAZIONE);
+      const s2 = await stessoDocumento(tab, d, n0);
+      w.push({ gruppo: g, nome: 'attraverso il Profilo e i testi legali il documento resta lo stesso', ...s2 });
+      const dopo = await uidPagina(tab, c);
+      w.push({ gruppo: g, nome: 'e le risposte della pagina sono le stesse, uid per uid', ok: !!dopo && stessi(prima, dopo), extra: `prima ${prima && prima.size}, dopo ${dopo && dopo.size}` });
+      // La simulazione: il timer continua sopra il Profilo e sopra un testo legale.
+      if (!await portaSim(tab) || !await tab.attendi(visibile('[data-preparazione] #start'), REAZIONE)) { w.push({ gruppo: g, nome: 'la simulazione si prepara', ok: false, extra: 'nessuna preparazione' }); return; }
+      await clic(tab, '[data-preparazione] #start');
+      const q0 = await quesitoVisto(tab);
+      const t0 = await tab.attendiValore(TESTO_VISTO('#r-time'), (x) => /\d+:\d\d/.test(x || ''), REAZIONE);
+      w.push({ gruppo: g, nome: 'la simulazione si apre con il suo timer', ok: q0.ok && t0.ok, extra: `timer ${t0.valore}` });
+      // Qualche secondo prima di aprire i pannelli: un timer che riparte da capo si vede solo se e' gia' sceso.
+      await pausa(3000);
+      const s0 = await tab.valuta(js(`return document.querySelector('#r-time').textContent`)), d0 = Date.now();
+      await tocca(tab, null, '#conto-porta');
+      await tab.attendi(modaleVisibile, REAZIONE);
+      await tocca(tab, null, '[aria-modal="true"] a[href="/privacy"]');
+      await tab.attendi(LEGALE_VISTO, REAZIONE);
+      await pausa(2300);
+      const sec = (t) => { const [m, s] = String(t).split(':').map(Number); return m * 60 + s; };
+      const t1 = await tab.valuta(js(`return document.querySelector('#r-time').textContent`)), trascorsi = (Date.now() - d0) / 1000;
+      // Il timer scende quanto l'orologio: ne' fermo, ne' ripartito, ne' piu' veloce.
+      w.push({ gruppo: g, nome: 'sopra il Profilo e la privacy il timer della prova continua, quanto l\'orologio', ok: Math.abs(sec(s0) - sec(t1) - trascorsi) <= 1.5,
+        extra: `timer ${s0} → ${t1} in ${trascorsi.toFixed(1)} s` });
+      await tocca(tab, null, '[data-legale="chiudi"]');
+      await tab.attendi(js(`return !V(document.querySelector('#legale'))`), REAZIONE);
+      await esc(tab);
+      const stesso = await tab.attendiValore(QUESITO, (x) => !!x && x.testo === q0.valore.testo, REAZIONE);
+      w.push({ gruppo: g, nome: 'chiusi i pannelli, la stessa domanda della stessa prova', ok: stesso.ok, extra: `prima «${q0.valore.testo.slice(0, 40)}», ora ${JSON.stringify(stesso.valore)}` });
+      await clic(tab, '#r-close'); await tab.attendi(visibile('[data-consegna="si"]'), REAZIONE); await clic(tab, '[data-consegna="si"]');
+      await tab.attendi(RIEPILOGO, REAZIONE);
+      await clic(tab, '[data-ciclo="ritorno"]');
+      // La carta: il lavoro scritto resta, e la scadenza continua, sopra i legali.
+      if (!await portaCarteggio(tab, 'prova')) { w.push({ gruppo: g, nome: 'la prova di carteggio si prepara', ok: false, extra: 'nessun #c-start' }); return; }
+      await clic(tab, '#c-start');
+      await tab.attendiValore(esercizioC, (x) => CARTEGGIO.has(x), REAZIONE);
+      const scritto = 'Lat 42°49,9N Long 010°02,3E N-01';
+      await scriviC(tab, scritto);
+      const c0 = await tab.valuta(js(`return document.querySelector('#c-time').textContent`));
+      await tocca(tab, null, '#conto-porta');
+      await tab.attendi(modaleVisibile, REAZIONE);
+      await tocca(tab, null, '[aria-modal="true"] a[href="/privacy"]');
+      await tab.attendi(LEGALE_VISTO, REAZIONE);
+      await pausa(2300);
+      await tocca(tab, null, '[data-legale="chiudi"]');
+      await tab.attendi(js(`return !V(document.querySelector('#legale'))`), REAZIONE);
+      await esc(tab);
+      await tab.attendi(`!(${modaleVisibile})`, REAZIONE);
+      const ora = await tab.valuta(js(`return { testo: document.querySelector('#c-input').value, tempo: document.querySelector('#c-time').textContent }`));
+      w.push({ gruppo: g, nome: 'sopra la privacy il lavoro della carta resta com\'era, e la scadenza continua', ok: ora.testo === scritto && sec(c0) - sec(ora.tempo) >= 2,
+        extra: `testo «${ora.testo}», tempo ${c0} → ${ora.tempo}` });
+      const s3 = await stessoDocumento(tab, d, n0);
+      w.push({ gruppo: g, nome: 'dalla prima risposta alla carta, il documento non e\' mai cambiato', ...s3 });
+    });
+  } finally { await c.chiudi(); }
+}
+
+/** Indietro, Avanti e Chiudi riportano allo stesso punto: sezione, segmento, scorrimento, fuoco; mai una prova nuova. */
+async function n01cronologia(b, ctx, v, g) {
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(null);
+    await tab.dimensioni(375, 640);
+    await tab.vai(ctx.sito + '/');
+    await fermaAlPrimo(v, async (w) => {
+      w.push({ gruppo: g, nome: 'cronologia: la pagina si apre', ok: await tab.attendi(PRONTO, CARICO), extra: 'nessuna porta pronta' });
+      const d = await segnaDocumento(tab), n0 = documenti(tab).length;
+      await tocca(tab, null, '#barra [data-v="allenati"]');
+      await tab.attendi(visibile('[data-tema]'), REAZIONE);
+      await tocca(tab, null, '[data-tema]', { porta: true, testo: TEMA_02 });
+      const prep = await tab.attendiValore(TESTO_VISTO('[data-preparazione]'), (x) => !!x && x.includes(TEMA_02), REAZIONE);
+      w.push({ gruppo: g, nome: 'un argomento apre la sua preparazione, con l\'argomento scelto', ok: prep.ok, extra: String(prep.valore).slice(0, 200) });
+      await tocca(tab, null, '[data-prep="chiudi"]');
+      const chiusa = await tab.attendiValore(DOVE, (x) => x && x.sezione === 'allenati' && x.segmento === 'quiz' && x.fuoco, REAZIONE);
+      const sc = await tab.valuta('window.__bancoScroll');
+      w.push({ gruppo: g, nome: 'Chiudi la preparazione riporta ad Allenati · Quiz, con il fuoco sull\'argomento e lo scorrimento di prima', ok: chiusa.ok && Math.abs(chiusa.valore.scroll - sc) <= 2,
+        extra: JSON.stringify(chiusa.valore) + ` scorrimento atteso ${sc}` });
+      // Inizia, una risposta, «Termina», il ritorno: lo stesso punto.
+      await tocca(tab, null, '[data-tema]', { porta: true, testo: TEMA_02 });
+      await tab.attendi(visibile('[data-preparazione] #start'), REAZIONE);
+      await clic(tab, '[data-preparazione] #start');
+      await rispondiQuiz(tab, [], g, '');
+      const lunghezza = await tab.valuta('history.length');
+      // Indietro durante l'attivita': il gestore di uscita, e la cronologia non cresce.
+      await tab.valuta('history.back(); true');
+      const gestita = await tab.attendi(RIEPILOGO, REAZIONE);
+      w.push({ gruppo: g, nome: 'Indietro durante un allenamento passa dal gestore di uscita: il risultato parziale, senza voci in piu\'', ok: gestita && await tab.valuta('history.length') === lunghezza,
+        extra: gestita ? `history.length ${lunghezza} → ${await tab.valuta('history.length')}` : `in schermata: ${await tab.valuta(inSchermata)}` });
+      await clic(tab, '[data-ciclo="ritorno"]');
+      const tornata = await tab.attendiValore(DOVE, (x) => x && x.sezione === 'allenati' && x.segmento === 'quiz' && x.fuoco, REAZIONE);
+      w.push({ gruppo: g, nome: 'il ritorno riporta ad Allenati · Quiz, con il fuoco sull\'argomento', ok: tornata.ok, extra: JSON.stringify(tornata.valore) });
+      // Avanti su un tentativo concluso: il risultato, mai una prova nuova.
+      await tab.valuta('history.forward(); true');
+      const risultato = await tab.attendi(RIEPILOGO, REAZIONE);
+      const nuova = await tab.valuta(js(`return V(document.querySelector('#r-text')) && !V(document.querySelector('#r-fine'))`));
+      w.push({ gruppo: g, nome: 'Avanti su un tentativo concluso mostra il risultato, non una prova nuova', ok: risultato && !nuova, extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+      await tab.valuta('history.back(); true');
+      await tab.attendiValore(DOVE, (x) => x && x.sezione === 'allenati', REAZIONE);
+      const righe1 = (await uidPagina(tab, c)) || new Set();
+      w.push({ gruppo: g, nome: 'Avanti e Indietro non scrivono righe: la sola risposta data resta l\'unica', ok: righe1.size === 1, extra: `righe della pagina: ${righe1.size}` });
+      // Indietro fino alla Home: il fuoco sulla voce che l'aveva lasciata.
+      await tab.valuta('history.back(); true');
+      const home = await tab.attendiValore(DOVE, (x) => x && x.sezione === 'home', REAZIONE);
+      w.push({ gruppo: g, nome: 'Indietro fino alla Home: la Home, all\'indirizzo /', ok: home.ok && home.valore.url === '/', extra: JSON.stringify(home.valore) });
+      const avanti = await tab.valuta('history.forward(); true') && await tab.attendiValore(DOVE, (x) => x && x.sezione === 'allenati' && x.segmento === 'quiz', REAZIONE);
+      w.push({ gruppo: g, nome: 'Avanti riporta ad Allenati · Quiz', ok: avanti.ok, extra: JSON.stringify(avanti.valore) });
+      // La simulazione: Indietro chiede di consegnare, e «Continua la prova» lascia tutto com'era.
+      await tocca(tab, null, '#barra [data-v="esame"]');
+      await tab.attendi(visibile('#v-esame [data-modo="sim"][data-prova="base"]'), REAZIONE);
+      await tocca(tab, null, '#v-esame [data-modo="sim"][data-prova="base"]', { porta: true });
+      await tab.attendi(visibile('[data-preparazione] #start'), REAZIONE);
+      await clic(tab, '[data-preparazione] #start');
+      const qs = await quesitoVisto(tab);
+      const l2 = await tab.valuta('history.length');
+      await tab.valuta('history.back(); true');
+      const chiede = await tab.attendi(visibile('[data-consegna="si"]'), REAZIONE);
+      await clic(tab, '[data-consegna="no"]');
+      const resta = await tab.attendiValore(QUESITO, (x) => !!x && qs.ok && x.testo === qs.valore.testo, REAZIONE);
+      w.push({ gruppo: g, nome: 'Indietro durante la simulazione chiede di consegnare; continuando, la stessa domanda e la stessa cronologia', ok: chiede && resta.ok && await tab.valuta('history.length') === l2,
+        extra: chiede ? `history.length ${l2} → ${await tab.valuta('history.length')}; ${JSON.stringify(resta.valore)}` : 'nessuna conferma di consegna dopo Indietro' });
+      await clic(tab, '#r-close'); await tab.attendi(visibile('[data-consegna="si"]'), REAZIONE); await clic(tab, '[data-consegna="si"]');
+      await tab.attendi(RIEPILOGO, REAZIONE);
+      await clic(tab, '[data-ciclo="ritorno"]');
+      const esame = await tab.attendiValore(DOVE, (x) => x && x.sezione === 'esame' && x.fuoco, REAZIONE);
+      w.push({ gruppo: g, nome: 'dalla simulazione il ritorno riporta a Esame, alla sua porta', ok: esame.ok, extra: JSON.stringify(esame.valore) });
+      w.push({ gruppo: g, nome: 'cronologia: il documento non e\' mai cambiato', ...await stessoDocumento(tab, d, n0) });
+    });
+  } finally { await c.chiudi(); }
+}
+
+/** Gli indirizzi: le query e la ricarica, /allenati, i parametri sconosciuti, /app e il suo frammento. */
+async function n01indirizzi(b, ctx, v, g) {
+  const http = async (p) => { try { const r = await fetch(ctx.sito + p); return r.status; } catch { return 0; } };
+  for (const p of ['/', '/?sezione=allenati&segmento=quiz', '/?sezione=allenati&segmento=carteggio', '/?sezione=esame', '/?sezione=progressi']) {
+    v.push({ gruppo: g, nome: `${p} risponde 200`, ok: await http(p) === 200, extra: `HTTP ${await http(p)}` });
+  }
+  v.push({ gruppo: g, nome: '/allenati risponde 404: non e\' una rotta del sito', ok: await http('/allenati') === 404, extra: `HTTP ${await http('/allenati')}` });
+  const c = await b.nuovoContesto();
+  try {
+    for (const [p, sez, seg] of [['/?sezione=allenati&segmento=carteggio', 'allenati', 'carteggio'], ['/?sezione=esame', 'esame', null], ['/?sezione=progressi', 'progressi', null]]) {
+      const tab = await c.apri(ctx.sito + p);
+      const d = await tab.attendiValore(DOVE, (x) => x && x.sezione === sez && (!seg || x.segmento === seg), CARICO);
+      v.push({ gruppo: g, nome: `l'ingresso diretto su ${p} apre ${sez}${seg ? ' · ' + seg : ''}, e l'indirizzo resta quello`, ok: d.ok && d.valore.url === p, extra: JSON.stringify(d.valore) });
+      // Una risposta qui, poi la ricarica: la sezione torna, le risposte no (ADR-004).
+      await tab.ricarica();
+      const r = await tab.attendiValore(DOVE, (x) => x && x.sezione === sez, CARICO);
+      const vuota = await tab.valuta(js(`return !V(document.querySelector('#rotta-last')) && !V(document.querySelector('#invito-home'))`));
+      v.push({ gruppo: g, nome: `la ricarica di ${p} riapre la stessa sezione, senza risposte di prima`, ok: r.ok && vuota, extra: JSON.stringify(r.valore) });
+    }
+    // Un alias di prima come sezione (tabella C del §10.1): la destinazione e l'indirizzo canonico.
+    const ta = await c.apri(ctx.sito + '/?sezione=cart');
+    const al = await ta.attendiValore(DOVE, (x) => x && x.sezione === 'allenati' && x.segmento === 'carteggio', CARICO);
+    v.push({ gruppo: g, nome: 'l\'alias «cart» porta ad Allenati · Carteggio, con l\'indirizzo canonico', ok: al.ok && al.valore.url === '/?sezione=allenati&segmento=carteggio', extra: JSON.stringify(al.valore) });
+    const t1 = await c.apri(ctx.sito + '/?parametro=1');
+    const ind = await t1.attendi(testoVisibile('Questa destinazione non è disponibile.'), CARICO);
+    v.push({ gruppo: g, nome: 'un parametro sconosciuto porta alla Home e lo dice, con l\'indirizzo /', ok: ind && await t1.valuta('location.pathname + location.search') === '/', extra: await t1.valuta('location.href') });
+    const t2 = await c.apri(ctx.sito + '/?sezione=allenati&segmento=quiz&attivita=argomento&fase=runner');
+    const nonRunner = await t2.attendi(testoVisibile('Questa attività non è disponibile qui.'), CARICO) && !await t2.valuta(js(`return V(document.querySelector('#r-text'))`));
+    v.push({ gruppo: g, nome: 'un runner non si apre da un indirizzo: «fase=runner» dice che non e\' disponibile', ok: nonRunner, extra: await t2.valuta(inSchermata) });
+    // /app, la porta: Allenati · Quiz, e il frammento letto in memoria e tolto.
+    const t3 = await c.apri(ctx.sito + '/app');
+    const app = await t3.attendiValore(DOVE, (x) => x && x.sezione === 'allenati' && x.segmento === 'quiz', CARICO);
+    v.push({ gruppo: g, nome: '/app porta ad Allenati · Quiz, su /?sezione=allenati&segmento=quiz', ok: app.ok && app.valore.url === '/?sezione=allenati&segmento=quiz', extra: JSON.stringify(app.valore) });
+    const t4 = await c.apri(ctx.sito + '/app#password=GettoneDiProva123');
+    const pw = await t4.attendi(testoVisibile('Scegli una nuova password'), CARICO);
+    const pulito = await t4.valuta(`({ url: location.href, stato: JSON.stringify(history.state) })`);
+    const conservato = personale(await c.conservato(ctx.sito, t4), ctx.api);
+    v.push({ gruppo: g, nome: 'il link della password da /app: il modulo si apre, il gettone non resta nell\'indirizzo, nella cronologia ne\' in uno storage',
+      ok: pw && !pulito.url.includes('Gettone') && !pulito.stato.includes('Gettone') && !conservato.length, extra: `${JSON.stringify(pulito)} ${conservato.join(' · ')}` });
+  } finally { await c.chiudi(); }
+}
+
+/** Lo storage da fuori per tutta la finestra, e la cronologia: niente di chi studia in history.state o nell'indirizzo. */
+const STRUMENTO_STORIA = `(() => {
+  const log = window.__rgStoria = [];
+  for (const m of ['pushState', 'replaceState']) {
+    const f = History.prototype[m];
+    History.prototype[m] = function (stato, t, url) { log.push({ m, stato: JSON.stringify(stato), url: String(url ?? '') }); return f.apply(this, arguments); };
+  }
+  const scrive = window.__rgScritture = [];
+  for (const s of [Storage.prototype]) for (const m of ['setItem', 'removeItem', 'clear']) {
+    const f = s[m]; s[m] = function () { scrive.push(m + ' ' + (arguments[0] ?? '')); return f.apply(this, arguments); };
+  }
+  const o = indexedDB.open.bind(indexedDB);
+  indexedDB.open = (n, ...r) => { scrive.push('indexedDB.open ' + n); return o(n, ...r); };
+  const ck = Object.getOwnPropertyDescriptor(Document.prototype, 'cookie');
+  Object.defineProperty(document, 'cookie', { get() { return ck.get.call(document); }, set(x) { scrive.push('cookie ' + String(x).split('=')[0]); ck.set.call(document, x); } });
+})();`;
+
+async function n01storage(b, ctx, v, g) {
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/', { prima: STRUMENTO_STORIA });
+    await fermaAlPrimo(v, async (w) => {
+      w.push({ gruppo: g, nome: 'storage: la pagina si apre', ok: await tab.attendi(PRONTO, CARICO), extra: 'nessuna porta pronta' });
+      const data = '2026-12-01', numero = '1.1.1-24';
+      const testo = await unaRisposta(tab, [], g);
+      await clic(tab, '[data-ciclo="ritorno"]');
+      await tocca(tab, null, '#barra [data-v="esame"]');
+      await tab.valuta(js(`const d = document.querySelector('#esame-data'); d.value = ${q(data)}; d.dispatchEvent(new Event('change', { bubbles: true })); return true;`));
+      await tocca(tab, null, '#conto-porta'); await tab.attendi(modaleVisibile, REAZIONE);
+      await clicca(tab, 'Che cosa stai preparando?');
+      await tab.attendi(js(`return !!M().querySelector('[name="abilitazione"]')`), REAZIONE);
+      await tab.valuta(js(`M().querySelector('[name="abilitazione"][value="vela"]').click(); M().querySelector('[name="conseguimento"][value="prima"]').click(); return true;`));
+      await clicca(tab, testi(ctx).salvaData);
+      const applicate = await tab.attendi(testoVisibile('Scelte applicate a questa pagina'), REAZIONE) && !await tab.valuta(testoVisibile('Scelte salvate'));
+      w.push({ gruppo: g, nome: 'senza account le scelte valgono per la pagina: «Scelte applicate a questa pagina», mai «Scelte salvate»', ok: applicate, extra: await tab.valuta(inSchermata) });
+      await esc(tab);
+      await tocca(tab, null, '#barra [data-v="allenati"]');
+      await tab.valuta(js(`const f = document.querySelector('[data-ricerca]'); f.elements.numero.value = ${q(numero)}; return true;`));
+      await tocca(tab, null, '[data-ricerca] button');
+      await tab.attendi(testoRe(/quesit[oi] trovat[oi]/), REAZIONE);
+      await tocca(tab, null, 'footer a[href="/privacy"]');
+      await tab.attendi(LEGALE_VISTO, REAZIONE);
+      await tocca(tab, null, '[data-legale="chiudi"]');
+      let trovato = [];
+      for (const fine = Date.now() + OSSERVAZIONE; !trovato.length && Date.now() < fine;) {
+        trovato = personale(await c.conservato(ctx.sito, tab), ctx.api);
+        if (!trovato.length) await pausa(50);
+      }
+      w.push({ gruppo: g, nome: 'storage: per tutta la finestra nessun dato personale nel browser', ok: !trovato.length, extra: trovato.join(' · ') });
+      const scritte = await tab.valuta('window.__rgScritture');
+      w.push({ gruppo: g, nome: 'storage: nessuna scrittura tentata — localStorage, sessionStorage, IndexedDB, cookie', ok: !scritte.length, extra: scritte.join(', ') });
+      const storia = await tab.valuta('window.__rgStoria');
+      const stati = storia.filter((x) => { try { const o = JSON.parse(x.stato); return !(o && typeof o === 'object' && Object.keys(o).length === 1 && 'nav' in o && /^[\w-]+$/.test(String(o.nav))); } catch { return true; } });
+      w.push({ gruppo: g, nome: 'history.state e\' solo {nav: id}, in ogni voce', ok: storia.length > 3 && !stati.length, extra: stati.length ? stati.map((x) => x.stato).join(', ').slice(0, 300) : `${storia.length} voci` });
+      const uid = await uidPagina(tab, c);
+      const sporchi = storia.filter((x) => {
+        const u = new URL(x.url || '/', 'http://x');
+        if (!['/', '/privacy', '/avvertenza'].includes(u.pathname)) return true;
+        if ([...u.searchParams.keys()].some((k) => !PARAMETRI_URL.includes(k))) return true;
+        if (u.hash && u.hash !== '#condizioni') return true;
+        return [data, numero, testo && testo.slice(0, 12), ...(uid || [])].filter(Boolean).some((s) => decodeURIComponent(x.url).includes(s));
+      });
+      w.push({ gruppo: g, nome: 'nessun indirizzo prodotto porta dati di chi studia, una rotta non servita o un parametro estraneo', ok: !sporchi.length, extra: sporchi.map((x) => x.url).join(', ') });
+      w.push({ gruppo: g, nome: 'e nemmeno quello di adesso', ok: !(await tab.valuta('location.href')).includes(data), extra: await tab.valuta('location.href') });
+    });
+  } finally { await c.chiudi(); }
+}
+
+/** I tre posti dell'invito, e nessun quarto; la rinuncia tiene la memoria. */
+const INVITO_IN = (sel) => js(`const e = [...document.querySelectorAll(${q(sel)})].find(V); if (!e) return null; const t = e.innerText;
+  return ${q(INVITO)}.filter((f) => t.includes(f));`);
+async function n01invito(b, ctx, v, g) {
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/');
+    await fermaAlPrimo(v, async (w) => {
+      w.push({ gruppo: g, nome: 'invito: la pagina si apre', ok: await tab.attendi(PRONTO, CARICO), extra: 'nessuna porta pronta' });
+      w.push({ gruppo: g, nome: 'H0: la Home senza risposte non invita', ok: !(await tab.valuta(INVITO_IN('main'))).length, extra: String(await tab.valuta(INVITO_IN('main'))) });
+      await avviaPrima(tab);
+      await rispondiQuiz(tab, [], g, '');
+      const nelRunner = await tab.valuta(INVITO_IN('#quizrun'));
+      w.push({ gruppo: g, nome: 'durante l\'attivita\' nessun invito', ok: !nelRunner.length, extra: nelRunner.join(', ') });
+      await chiudiQuiz(tab, [], g, '');
+      w.push({ gruppo: g, nome: 'il terzo posto: il riepilogo invita, con «Vuoi conservare le attività di questa pagina?»', ok: await tab.valuta(testoVisibile(DOPO)), extra: await tab.valuta(inSchermata) });
+      await clic(tab, '[data-ciclo="risposte"]');
+      await tab.attendi(visibile('#rv-body'), REAZIONE);
+      const rev = await tab.valuta(INVITO_IN('#rivedi'));
+      w.push({ gruppo: g, nome: 'la revisione non invita', ok: !rev.length, extra: rev.join(', ') });
+      await clic(tab, '#rv-close');
+      const prima = await uidPagina(tab, c);
+      await clicca(tab, 'Continua senza account');
+      const rinuncia = await tab.attendi(`!(${testoVisibile(DOPO)})`, REAZIONE) && await tab.valuta(RIEPILOGO);
+      w.push({ gruppo: g, nome: '«Continua senza account» chiude l\'invito, e il risultato resta', ok: rinuncia, extra: await tab.valuta(inSchermata) });
+      await clic(tab, '[data-ciclo="ritorno"]');
+      const h1 = await tab.attendi(js(`const i = document.querySelector('#invito-home'); return V(i) && i.innerText.includes('Conserva le risposte.')`), REAZIONE);
+      w.push({ gruppo: g, nome: 'il primo posto: la Home con risposte senza account invita, «Conserva le risposte.»', ok: h1, extra: await tab.valuta(TESTO_VISTO('#v-home')) });
+      await tocca(tab, null, '#invito-home [data-invito="rinuncia"]');
+      await tocca(tab, null, '#barra [data-v="allenati"]');
+      await tab.valuta('history.back(); true');
+      await tab.attendiValore(DOVE, (x) => x && x.sezione === 'home', REAZIONE);
+      const tenuta = !await tab.valuta(js(`return V(document.querySelector('#invito-home'))`));
+      const dopo = await uidPagina(tab, c);
+      w.push({ gruppo: g, nome: 'la rinuncia nella Home tiene la memoria: Indietro non riapre l\'invito, e le risposte sono le stesse', ok: tenuta && stessi(prima, dopo), extra: `invito ${tenuta ? 'chiuso' : 'riaperto'}, uid ${prima && prima.size} → ${dopo && dopo.size}` });
+      // Il secondo posto: il risultato di una simulazione, con la prima meta' della frase (A-6).
+      await portaSim(tab);
+      await tab.attendi(visibile('[data-preparazione] #start'), REAZIONE);
+      await clic(tab, '[data-preparazione] #start');
+      await rispondiQuiz(tab, [], g, '', { sim: true });
+      await chiudiQuiz(tab, [], g, '', { sim: true });
+      const sim = await tab.valuta(js(`const f = document.querySelector('#r-fine'); return f.innerText;`));
+      w.push({ gruppo: g, nome: 'il secondo posto: il risultato di una simulazione, «Conserva questa prova e ritrovala quando torni.», senza la promessa di P-76', ok: sim.includes('Conserva questa prova e ritrovala quando torni.') && !sim.includes(NON_PROMETTERE),
+        extra: sim.slice(0, 300) });
+      await clic(tab, '[data-ciclo="ritorno"]');
+      await tab.attendi(js(`return !V(document.querySelector('#r-fine'))`), REAZIONE);
+      await allaHome(tab);
+      const torna = await tab.attendi(js(`return V(document.querySelector('#invito-home'))`), REAZIONE);
+      w.push({ gruppo: g, nome: 'con risposte nuove l\'invito della Home torna', ok: torna, extra: 'dopo la simulazione la Home non invita' });
+      // Nessun quarto posto: le sezioni, la preparazione, i legali, il confronto della carta.
+      const quarti = [];
+      for (const [porta, dove] of [['#barra [data-v="allenati"]', '#v-allenati'], ['#barra [data-v="esame"]', '#v-esame'], ['#barra [data-v="progressi"]', '#v-progressi']]) {
+        await tocca(tab, null, porta); await tab.attendi(visibile(dove), REAZIONE);
+        const x = await tab.valuta(INVITO_IN(dove)); if (x && x.length) quarti.push(`${dove}: ${x.join(', ')}`);
+      }
+      await tocca(tab, null, 'footer a[href="/privacy"]'); await tab.attendi(LEGALE_VISTO, REAZIONE);
+      const l = await tab.valuta(INVITO_IN('#legale')); if (l && l.length) quarti.push(`legale: ${l.join(', ')}`);
+      await tocca(tab, null, '[data-legale="chiudi"]');
+      if (await portaCarteggio(tab, 'prova')) {
+        const p = await tab.valuta(INVITO_IN('[data-preparazione]')); if (p && p.length) quarti.push(`preparazione: ${p.join(', ')}`);
+        await clic(tab, '#c-start'); await tab.attendiValore(esercizioC, (x) => CARTEGGIO.has(x), REAZIONE);
+        await consegnaC(tab);
+        const cf = await tab.valuta(INVITO_IN('#cartrun')); if (cf && cf.length) quarti.push(`confronto: ${cf.join(', ')}`);
+      } else quarti.push('la prova di carteggio non si apre');
+      w.push({ gruppo: g, nome: 'nessun quarto posto: Allenati, Esame, Progressi, la preparazione, i legali e il confronto della carta non invitano', ok: !quarti.length, extra: quarti.join('; ') });
+    });
+  } finally { await c.chiudi(); }
+}
+
+/** Una risposta giusta o sbagliata a un quesito preciso, gia' in schermata: la risposta si sceglie dal testo della banca. */
+async function rispondiCome(tab, it, giusta) {
+  const testo = giusta ? it.r[it.x] : it.r.find((_, k) => k !== it.x);
+  return tab.attendi(js(`const b = [...document.querySelectorAll('#r-ans .ans')].filter(V).find((x) => x.textContent.includes(${q(testo)}));
+    if (b && !document.querySelector('#r-ans .ans.ok')) b.click(); return !!document.querySelector('#r-ans .ans.ok');`), REAZIONE);
+}
+/** Un quesito della banca aperto per numero: la ricerca, la preparazione, Inizia. */
+async function apriPerNumero(tab, it) {
+  await tocca(tab, null, '#barra [data-v="allenati"]');
+  await tab.attendi(visibile('[data-ricerca]'), REAZIONE);
+  await tab.valuta(js(`const f = document.querySelector('[data-ricerca]'); f.elements.numero.value = ${q(it.p)}; return true;`));
+  await tocca(tab, null, '[data-ricerca] button');
+  if (!await tab.attendi(visibile(`[data-trovato="${it.id}"]`), REAZIONE)) return false;
+  await tocca(tab, null, `[data-trovato="${it.id}"]`);
+  if (!await tab.attendi(visibile('[data-preparazione] #start'), REAZIONE)) return false;
+  await tocca(tab, null, '[data-preparazione] #start');
+  return tab.attendiValore(QUESITO, (x) => !!x && x.testo === it.d, REAZIONE).then((r) => r.ok);
+}
+/** I quesiti base con un numero che non si ripete e una risposta che la banca non confonde: per i giri a quesito preciso. */
+const UNIVOCI = QUIZ_BASE.filter((it) => !it.osc && /^\d+(\.\d+)*-\d+$/.test(it.p || '')
+  && QUIZ_TUTTI.filter((x) => x.p === it.p).length === 1 && QUIZ_TUTTI.filter((x) => x.d === it.d).length === 1 && it.r.every((t, k) => it.r.every((u, j) => j === k || !u.includes(t))));
+const ORA = 3600e3;
+const rigaQ = (it, giusta, fa, sim = 'n01-storia') => ({ _t: 'q', uid: `n01-${++serie}`, item_id: it.id, ts: E.isoLocale(new Date(Date.now() - fa)), ms: 9000,
+  mode: 'argomento', kind: 'base', sim_uid: sim, correct: giusta ? 1 : 0, chosen: giusta ? it.x : (it.x + 1) % it.r.length });
+
+/** La registrazione porta nell'account l'insieme intero delle righe: dalla Home e dal risultato di una simulazione. */
+async function n01registrazione(b, ctx, v, g) {
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/');
+    await fermaAlPrimo(v, async (w) => {
+      w.push({ gruppo: g, nome: 'registrazione: la pagina si apre', ok: await tab.attendi(PRONTO, CARICO), extra: 'nessuna porta pronta' });
+      // Due attivita' nella pagina, poi la Home: l'invito.
+      await unaRisposta(tab, [], g); await clic(tab, '[data-ciclo="ritorno"]');
+      await tocca(tab, null, '#barra [data-v="allenati"]');
+      await tab.attendi(visibile('[data-tema]'), REAZIONE);
+      await tocca(tab, null, '[data-tema]', { testo: TEMA_02 });
+      await tab.attendi(visibile('[data-preparazione] #start'), REAZIONE); await tocca(tab, null, '[data-preparazione] #start');
+      await rispondiQuiz(tab, [], g, ''); await chiudiQuiz(tab, [], g, ''); await clic(tab, '[data-ciclo="ritorno"]');
+      const pagina = await uidPagina(tab, c);
+      await allaHome(tab);
+      w.push({ gruppo: g, nome: 'dopo due attivita\' la Home invita', ok: await tab.attendi(visibile('#invito-home [data-account="registra"]'), REAZIONE) && !!pagina && pagina.size >= 2,
+        extra: `uid della pagina: ${pagina && pagina.size}` });
+      await tocca(tab, null, '#invito-home [data-account="registra"]');
+      const email = await cicloRegistra(tab);
+      const U = email && { email, chiave: ctx.conto(email).chiave_locale };
+      const detto = U && await tab.valuta(testoRe(SALVATE));
+      w.push({ gruppo: g, nome: 'dalla Home la registrazione arriva a «salvate», con il numero delle risposte della pagina', ok: !!detto && Number(detto[1]) === pagina.size,
+        extra: `«salvate» dice ${JSON.stringify(detto)}, la pagina aveva ${pagina.size} risposte` });
+      const copia = new Set(await uidCopia(tab, U.chiave) || []);
+      const server = new Set(ctx.righeServer(email).map((r) => String(r.uid)));
+      const mancaCopia = [...pagina].filter((u) => !copia.has(u)), mancaServer = [...pagina].filter((u) => !server.has(u));
+      w.push({ gruppo: g, nome: 'ogni riga della pagina e\' nella copia dell\'account e sul server, uid per uid', ok: !mancaCopia.length && !mancaServer.length,
+        extra: `mancano nella copia ${mancaCopia.length}, sul server ${mancaServer.length}, su ${pagina.size}` });
+      // L'onboarding: «Che cosa stai preparando?», e «Scelte salvate» solo dai valori riletti.
+      const scelte = await tab.attendi(js(`return !!M().querySelector('[name="abilitazione"]')`), REAZIONE);
+      await tab.valuta(js(`M().querySelector('[name="abilitazione"][value="vela"]').click(); M().querySelector('[name="conseguimento"][value="estensione_e12"]').click(); return true;`));
+      await clicca(tab, testi(ctx).salvaData);
+      const salvate = await tab.attendi(testoVisibile('Scelte salvate'), REAZIONE);
+      const db = ctx.scelteDi(email);
+      w.push({ gruppo: g, nome: 'l\'onboarding chiede «che cosa stai preparando?», e «Scelte salvate» quando il server le ha', ok: scelte && salvate && db.abilitazione === 'vela' && db.conseguimento === 'estensione_e12',
+        extra: `nel database ${JSON.stringify(db)}; in schermata ${await tab.valuta(inSchermata)}` });
+    });
+    // Dal risultato di una simulazione, in un browser nuovo: la riga della prova e le risposte, e il risultato resta.
+    const c2 = await b.nuovoContesto();
+    const t2 = await c2.apri(null);
+    c.chiudiAnche = c2;
+    await t2.vai(ctx.sito + '/');
+    await fermaAlPrimo(v, async (w) => {
+      await t2.attendi(PRONTO, CARICO);
+      await portaSim(t2); await t2.attendi(visibile('[data-preparazione] #start'), REAZIONE); await clic(t2, '[data-preparazione] #start');
+      await rispondiQuiz(t2, [], g, '', { sim: true }); await chiudiQuiz(t2, [], g, '', { sim: true });
+      const prima = await t2.valuta(js(`return document.querySelector('#r-fine h1').innerText`));
+      w.push({ gruppo: g, nome: 'il risultato della simulazione offre di registrarsi', ok: await t2.attendi(visibile('#r-fine [data-account="registra"]'), REAZIONE), extra: await t2.valuta(inSchermata) });
+      await tocca(t2, null, '#r-fine [data-account="registra"]');
+      const email = await cicloRegistra(t2);
+      w.push({ gruppo: g, nome: 'dal risultato la registrazione arriva a «salvate»', ok: !!email, extra: await t2.valuta(inSchermata) });
+      const server = ctx.righeServer(email);
+      w.push({ gruppo: g, nome: 'sul server la riga della prova e la sua risposta, con lo stesso sim_uid', ok: server.some((r) => r._t === 's') && server.some((r) => r._t === 'q')
+        && new Set(server.filter((r) => r._t === 'q' || r._t === 's').map((r) => r._t === 's' ? r.uid : r.sim_uid)).size === 1, extra: JSON.stringify(server.map((r) => r._t)) });
+      await t2.attendi(pulsante(testi(ctx).saltaData), REAZIONE);
+      await clicca(t2, testi(ctx).saltaData);
+      const resta = await t2.attendi(`!(${modaleVisibile}) && (${js(`return V(document.querySelector('#r-fine h1')) && document.querySelector('#r-fine h1').innerText === ${q(prima)}`)})`, REAZIONE);
+      w.push({ gruppo: g, nome: 'chiuso il modulo, lo stesso risultato, senza piu\' l\'invito', ok: resta && !await t2.valuta(js(`return V(document.querySelector('#r-fine [data-account="registra"]'))`)),
+        extra: await t2.valuta(TESTO_VISTO('[aria-modal="true"]')) + ' || ' + await t2.valuta(TESTO_VISTO('#r-fine')) });
+    });
+  } finally { await c.chiudi(); if (c.chiudiAnche) await c.chiudiAnche.chiudi(); }
+}
+/** Il modulo aperto: email, password, «Crea l'account e salva», fino a «salvate». */
+async function cicloRegistra(tab) {
+  const email = `n01r-${++serie}@esempio.it`;
+  if (!await tab.attendi(js(`return V(${campo('Email')});`), REAZIONE)) return null;
+  await imposta(tab, 'Email', email); await imposta(tab, 'Password', PASSWORD);
+  if (!await tocca(tab, null, '[data-account="crea"]')) return null;
+  return await tab.attendi(testoRe(SALVATE), CARICO) ? email : null;
+}
+
+/** I cinque stati in schermata: le parole di Q-STATI nell'ordine, i numeri del motore, e la seconda giusta a 12 ore senza ricarica. */
+async function n01stati(b, ctx, v, g) {
+  const [A, B, C, D, X] = UNIVOCI.slice(0, 5);
+  const righe = [rigaQ(A, false, 48 * ORA), rigaQ(B, true, ORA), rigaQ(C, false, 72 * ORA), rigaQ(C, true, 48 * ORA), rigaQ(C, true, 24 * ORA),
+    rigaQ(D, true, 48 * ORA), rigaQ(D, true, 24 * ORA), rigaQ(X, true, 13 * ORA)];
+  const atteso = (rr) => E.contaStati(QUIZ_TUTTI, E.ripiega(rr).quiz, { kind: 'base' });
+  const K = await nuovoAccount(ctx, 'n01st');
+  ctx.aggiungi(K.email, righe);
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(null);
+    await tab.vai(ctx.sito + '/');
+    await fermaAlPrimo(v, async (w) => {
+      w.push({ gruppo: g, nome: 'stati: dentro l\'account', ok: await dentro(tab, K), extra: 'l\'accesso non riesce' });
+      const leggi = js(`return [...document.querySelectorAll('#stati li')].filter(V).map((l) => l.innerText.trim());`);
+      const attesi = (cs) => CHIAVI_STATI.map((k, i) => `${PAROLE_STATI[i]} ${cs[k]}`);
+      await tocca(tab, null, '#barra [data-v="progressi"]');
+      const cs = atteso(righe);
+      const visti = await tab.attendiValore(leggi, (x) => JSON.stringify(x) === JSON.stringify(attesi(cs)), CARICO);
+      w.push({ gruppo: g, nome: `i cinque stati con le parole di Q-STATI, nell'ordine, e i numeri del motore (${attesi(cs).join(' · ')})`, ok: visti.ok, extra: JSON.stringify(visti.valore) });
+      const somma = CHIAVI_STATI.reduce((s, k) => s + cs[k], 0);
+      const tot = await tab.valuta(TESTO_VISTO('#stati-totale'));
+      w.push({ gruppo: g, nome: 'i cinque sommano al totale della banca base, e la pagina lo scrive', ok: somma === cs.totale && String(tot).includes(String(cs.totale)), extra: `somma ${somma}, totale ${cs.totale}, «${tot}»` });
+      w.push({ gruppo: g, nome: 'la legenda dice «In base alle ultime risposte»', ok: await tab.valuta(testoVisibile('In base alle ultime risposte')), extra: await tab.valuta(TESTO_VISTO('#v-progressi')) });
+      // La seconda giusta a 13 ore dalla prima: da «da confermare» ad «acquisiti», senza ricarica e
+      // prima che il server risponda — le righe si trattengono, cosi' la vista nuova viene dallo
+      // specchio che applica() ha aggiornato con l'istante della riga, non da una ricezione.
+      let rilascia = () => {}, tieni = false;
+      const fermo = new Promise((ok) => { rilascia = ok; });
+      await tab.intercetta(`${ctx.api}/v1/righe*`, async () => { if (tieni) await fermo; return null; });
+      const d0 = documenti(tab).length, doc = await segnaDocumento(tab);
+      w.push({ gruppo: g, nome: `il quesito ${X.p} si apre per numero`, ok: await apriPerNumero(tab, X), extra: await tab.valuta(inSchermata) });
+      tieni = true;
+      w.push({ gruppo: g, nome: 'e si risponde giusto', ok: await rispondiCome(tab, X, true), extra: 'nessuna risposta si accende come esatta' });
+      await gesto(tab, null, '#r-close', RIEPILOGO); await gesto(tab, null, '[data-ciclo="ritorno"]', js(`return !V(document.querySelector('#r-fine'))`));
+      await tocca(tab, null, '#barra [data-v="progressi"]');
+      const dopo = atteso(righe.concat([{ ...rigaQ(X, true, 0) }]));
+      const mosso = await tab.attendiValore(leggi, (x) => JSON.stringify(x) === JSON.stringify(attesi(dopo)), REAZIONE);
+      w.push({ gruppo: g, nome: `la seconda giusta a 12 ore sposta il quesito ad «acquisiti» senza ricarica, prima che il server risponda (${attesi(dopo).join(' · ')})`,
+        ok: mosso.ok && cs.incerto - 1 === dopo.incerto && cs.ok + 1 === dopo.ok, extra: JSON.stringify(mosso.valore) });
+      tieni = false; rilascia();
+      w.push({ gruppo: g, nome: 'stati: senza ricaricare', ...await stessoDocumento(tab, doc, d0) });
+    });
+  } finally { await c.chiudi(); }
+}
+
+/** I gesti: tag N e S, i tag di prima L e C, il segnalibro che non tocca le risposte, il permesso del server, la segnalazione. */
+const SERVER = {
+  oggi: null,
+  // P-73: dichiara i tipi, ma senza il segnalibro (il main del 4 ottobre, prima di P-71).
+  'P-73': (o) => { o.tipi_riga = ['q', 'c', 't', 's', 'g', 'a']; return o; },
+  // v0.30.0: nessun tipi_riga.
+  'v0.30.0': (o) => { delete o.tipi_riga; delete o.esiti; delete o.campi_profilo; return o; },
+};
+/**
+ * Il server che si imita, dalla descrizione dell'account: `GET /v1/io` con i
+ * campi di quel rilascio. Si entra prima, poi si ricarica, come per E-01 (P-74):
+ * una risposta finta all'accesso perderebbe il cookie della sessione.
+ */
+async function entraImitando(ctx, tab, K, quale) {
+  if (!await dentro(tab, K)) return false;
+  if (!SERVER[quale]) return true;
+  // La descrizione torna anche dalla risposta del profilo (P-83): la stessa del rilascio imitato.
+  for (const [percorso, metodo] of [['/v1/io', 'GET'], ['/v1/profilo', 'PUT']]) {
+    await tab.intercetta(ctx.api + percorso, async (req, params, { corpo }) => {
+      if (req.method !== metodo || params.responseStatusCode !== 200) return null;
+      return finti(ctx, 200, SERVER[quale](JSON.parse(await corpo())));
+    }, { fase: 'Response' });
+  }
+  await tab.ricarica();
+  return tab.attendi(nellaPagina('Account'), CARICO);
+}
+const MOTIVO_GESTO = 'Il server collegato non accoglie ancora questo gesto.';
+
+async function n01gesti(b, ctx, v, g) {
+  const [A, Bq] = UNIVOCI.slice(5, 7);
+  // Un errore di prima, con un tag «Letto male» senza data e uno «Calcolo» datato: si leggono come classificazione precedente.
+  const e1 = rigaQ(A, false, 30 * ORA, 'n01-prima'), e2 = rigaQ(Bq, false, 29 * ORA, 'n01-prima');
+  const storici = [e1, e2, { _t: 'g', uid: `n01-${++serie}`, attempt_uid: e1.uid, tag: 'L' }, { _t: 'g', uid: `n01-${++serie}`, attempt_uid: e2.uid, tag: 'C', ts: E.isoLocale(new Date(Date.now() - 28 * ORA)) }];
+  for (const quale of ['oggi', 'P-73', 'v0.30.0']) {
+    const K = await nuovoAccount(ctx, 'n01g');
+    if (quale === 'oggi') ctx.aggiungi(K.email, storici);
+    const c = await b.nuovoContesto();
+    try {
+      const tab = await c.apri(null);
+      await tab.vai(ctx.sito + '/');
+      await fermaAlPrimo(v, async (w) => {
+        w.push({ gruppo: g, nome: `gesti, server ${quale}: dentro l'account`, ok: await entraImitando(ctx, tab, K, quale), extra: 'l\'accesso non riesce' });
+        const it = UNIVOCI[7 + ['oggi', 'P-73', 'v0.30.0'].indexOf(quale)];
+        w.push({ gruppo: g, nome: `server ${quale}: il quesito ${it.p} si apre per numero, e si sbaglia`, ok: await apriPerNumero(tab, it) && await rispondiCome(tab, it, false), extra: await tab.valuta(inSchermata) });
+        const stato = await tab.attendiValore(js(`const n = document.querySelector('#r-tag [data-tag="N"]'), s = document.querySelector('#r-tag [data-tag="S"]'), b = document.querySelector('#r-segno');
+          return V(n) && V(s) && V(b) ? { N: n.disabled, S: s.disabled, segno: b.disabled, motivo: document.querySelector('#r-tag-motivo').innerText } : null;`), Boolean, REAZIONE);
+        if (quale === 'oggi') {
+          w.push({ gruppo: g, nome: 'dopo un errore: «Non lo sapevo», «Svista» e il segnalibro, tutti offerti', ok: stato.ok && !stato.valore.N && !stato.valore.S && !stato.valore.segno, extra: JSON.stringify(stato.valore) });
+          await gesto(tab, null, '#r-tag [data-tag="N"]', js(`return document.querySelector('#r-tag [data-tag="N"]').getAttribute('aria-pressed') === 'true'`));
+          await gesto(tab, null, '#r-tag [data-tag="S"]', js(`return document.querySelector('#r-tag [data-tag="S"]').getAttribute('aria-pressed') === 'true' && document.querySelector('#r-tag [data-tag="N"]').getAttribute('aria-pressed') === 'false'`));
+          await gesto(tab, null, '#r-segno', js(`return document.querySelector('#r-segno').getAttribute('aria-pressed') === 'true'`));
+          // Si aspetta il contenuto, non un numero di righe: la risposta puo' essere arrivata prima o dopo.
+          const arrivate = await finche(() => { const sv = ctx.righeServer(K.email); const u = sv.filter((r) => r._t === 'q' && r.item_id === it.id).pop();
+            return !!u && sv.filter((r) => r._t === 'g' && r.attempt_uid === u.uid).length === 2 && sv.some((r) => r._t === 'b' && r.item_id === it.id); }, CARICO);
+          const sv = ctx.righeServer(K.email);
+          const tag = E.tagPerTentativo(sv), ultima = sv.filter((r) => r._t === 'q' && r.item_id === it.id).pop();
+          w.push({ gruppo: g, nome: 'N poi S: due righe di tag, vale l\'ultimo, «Svista»; e una riga di segnalibro', ok: arrivate && ultima && tag[ultima.uid] === 'S' && E.segnalibri(sv).includes(it.id),
+            extra: `sul server ${sv.length} righe; tag ${ultima && tag[ultima.uid]}; segnati ${JSON.stringify(E.segnalibri(sv))}` });
+          const conti = E.riepilogoPagina(sv, null).risposte;
+          w.push({ gruppo: g, nome: 'il segnalibro e i tag non sono risposte: le risposte restano quelle date', ok: conti.totale === sv.filter((r) => r._t === 'q' || r._t === 'c' || r._t === 't').length,
+            extra: JSON.stringify(conti) });
+          // La segnalazione: il riferimento del quesito, e l'indirizzo dichiarato segnaposto.
+          await tocca(tab, null, '[data-segnala]');
+          const rif = await tab.attendiValore(TESTO_VISTO('#segnala-rif'), (x) => !!x && x.includes(it.id) && x.includes(it.p), REAZIONE);
+          await tocca(tab, null, '[data-segnala-copia]');
+          const esito = await tab.attendiValore(TESTO_VISTO('#segnala-esito'), Boolean, REAZIONE);
+          w.push({ gruppo: g, nome: '«Segnala un problema» mostra il riferimento del quesito, l\'indirizzo segnaposto dichiarato, e dice se l\'ha copiato', ok: rif.ok && esito.ok && await tab.valuta(testoVisibile('questo è un segnaposto')),
+            extra: `${rif.valore} — ${esito.valore}` });
+          await tocca(tab, null, '[data-account="torna"]');
+          await gesto(tab, null, '#r-close', RIEPILOGO); await gesto(tab, null, '[data-ciclo="ritorno"]', js(`return !V(document.querySelector('#r-fine'))`));
+          // I tag di prima, nella revisione della sessione di prima.
+          await tocca(tab, null, '#barra [data-v="progressi"]');
+          const sess = await tab.attendi(visibile('[data-sessione="n01-prima"]'), REAZIONE);
+          await tocca(tab, null, '[data-sessione="n01-prima"]');
+          const letti = await tab.attendiValore(js(`return [...document.querySelectorAll('#rv-body [data-tag-letto]')].filter(V).map((x) => x.dataset.tagLetto + ':' + x.innerText.trim());`), (x) => x && x.length === 2, REAZIONE);
+          w.push({ gruppo: g, nome: 'i tag di prima, L senza data e C datato, si leggono come classificazione precedente, senza riconvertirli', ok: sess && letti.ok
+            && letti.valore.includes('L:Classificazione precedente: Letto male') && letti.valore.includes('C:Classificazione precedente: Calcolo'), extra: JSON.stringify(letti.valore) });
+          await tocca(tab, null, '#rv-close');
+        } else {
+          w.push({ gruppo: g, nome: `con il server ${quale} «Svista» e il segnalibro non si offrono, e la pagina dice perche'; «Non lo sapevo» si`, ok: stato.ok && !stato.valore.N && stato.valore.S && stato.valore.segno && stato.valore.motivo.includes(MOTIVO_GESTO),
+            extra: JSON.stringify(stato.valore) });
+          await gesto(tab, null, '#r-tag [data-tag="N"]', js(`return document.querySelector('#r-tag [data-tag="N"]').getAttribute('aria-pressed') === 'true'`));
+          await tocca(tab, null, '#r-tag [data-tag="S"]'); await tocca(tab, null, '#r-segno');
+          // Questo account non ha righe di prima: i gesti sono tutte le righe che non sono risposte.
+          await finche(() => ctx.righeServer(K.email).some((r) => r._t === 'g' && r.tag === 'N'), CARICO);
+          await pausa(OSSERVAZIONE);
+          const nuove = ctx.righeServer(K.email).filter((r) => r._t !== 'q');
+          w.push({ gruppo: g, nome: `con il server ${quale} arriva solo il tag N: nessun S e nessun segnalibro`, ok: nuove.some((r) => r._t === 'g' && r.tag === 'N') && !nuove.some((r) => r._t === 'b' || r.tag === 'S'),
+            extra: JSON.stringify(nuove.map((r) => r._t + (r.tag || ''))) });
+        }
+      });
+    } finally { await c.chiudi(); }
+  }
+}
+
+/** Cerca per numero: esatto, parziale, ripetuto, oscurato, assente, non un numero; dal risultato la preparazione e la domanda. */
+async function n01ricerca(b, ctx, v, g) {
+  const ripetuto = QUIZ_TUTTI.find((it) => /^\d+(\.\d+)*-\d+$/.test(it.p || '') && QUIZ_TUTTI.filter((x) => x.p === it.p).length === 2);
+  const oscurato = QUIZ_TUTTI.find((it) => it.osc && /^\d+(\.\d+)*-\d+$/.test(it.p || '') && QUIZ_TUTTI.filter((x) => x.p === it.p).length === 1);
+  const casi = [['1.1.1-24', 'esatto'], ['N. 1.1.1 – 24', 'scritto come lo scrive chi ha il libro'], ['1.1.1-2', 'parziale'], [ripetuto.p, 'ripetuto nel decreto'],
+    [oscurato.p, 'oscurato'], ['9.9.9-999', 'che non c\'e\''], ['flaps', 'non un numero'],
+    // Uno dei tre progressivi che il decreto scrive con un punto (P-77): non si trova per numero.
+    ['1.3.2.113', 'scritto dal decreto con un punto']];
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + '/?sezione=allenati&segmento=quiz');
+    await fermaAlPrimo(v, async (w) => {
+      w.push({ gruppo: g, nome: 'ricerca: la casella c\'e\' in Allenati · Quiz', ok: await tab.attendi(visibile('[data-ricerca]'), CARICO), extra: await tab.valuta(inSchermata) });
+      for (const [testo, che] of casi) {
+        const r = E.cercaNumero(QUIZ_TUTTI, testo);
+        if (!await tab.valuta(js(`const f = document.querySelector('[data-ricerca]'), e = document.querySelector('#ricerca-esito'); if (!f || !f.elements.numero || !e) return false; f.elements.numero.value = ${q(testo)}; if (f.elements.banca) f.elements.banca.value = ''; e.textContent = ''; return true;`))) { w.push({ gruppo: g, nome: 'la casella della ricerca ha il suo campo e il suo esito', ok: false, extra: 'manca [data-ricerca] numero o #ricerca-esito' }); return; }
+        await tocca(tab, null, '[data-ricerca] button');
+        const visto = await tab.attendiValore(js(`const e = document.querySelector('#ricerca-esito'); return V(e) && e.innerText.trim() ? { testo: e.innerText, ids: [...e.querySelectorAll('[data-trovato]')].map((x) => x.dataset.trovato) } : null;`), Boolean, REAZIONE);
+        const ids = [...r.esatti, ...r.parziali].map((x) => x.id);
+        const ok = !r.valido ? visto.ok && visto.valore.testo.includes(r.motivo) && !visto.valore.ids.length
+          : !r.quanti ? visto.ok && visto.valore.testo.includes('Nessun quesito con questo numero')
+          : visto.ok && JSON.stringify(visto.valore.ids) === JSON.stringify(ids) && visto.valore.testo.includes(`${r.quanti} ${r.quanti === 1 ? 'quesito trovato' : 'quesiti trovati'}`)
+            && r.oscurati.every(() => visto.valore.testo.includes('Oscurato: all\'esame non esce'));
+        w.push({ gruppo: g, nome: `«${testo}» (${che}): ${!r.valido ? 'il motivo del motore' : r.quanti ? `${r.quanti} quesiti, quelli di cercaNumero(), nel suo ordine` : 'nessun risultato, detto'}`, ok,
+          extra: JSON.stringify(visto.valore).slice(0, 300) + ` — atteso ${JSON.stringify(ids).slice(0, 120)}` });
+      }
+      // L'oscurato si apre, e lo dice prima della risposta.
+      await tab.valuta(js(`const f = document.querySelector('[data-ricerca]'); f.elements.numero.value = ${q(oscurato.p)}; return true;`));
+      await tocca(tab, null, '[data-ricerca] button');
+      await tab.attendi(visibile(`[data-trovato="${oscurato.id}"]`), REAZIONE);
+      await tocca(tab, null, `[data-trovato="${oscurato.id}"]`, { porta: true });
+      await tab.attendi(visibile('[data-preparazione] #start'), REAZIONE); await tocca(tab, null, '[data-preparazione] #start');
+      const aperto = await tab.attendiValore(js(`const t = document.querySelector('#r-text'); return V(t) ? { testo: t.textContent.trim(), nbp: V(document.querySelector('#r-nbp')) ? document.querySelector('#r-nbp').innerText : null,
+        numero: document.querySelector('#r-numero').innerText, risposto: !!document.querySelector('#r-ans .ans.ok') } : null;`), (x) => !!x && x.testo === oscurato.d, REAZIONE);
+      w.push({ gruppo: g, nome: `il quesito oscurato ${oscurato.p} si apre, con il suo numero, e l'avviso compare prima della risposta`, ok: aperto.ok && !!aperto.valore.nbp && !aperto.valore.risposto && aperto.valore.numero.includes(oscurato.p),
+        extra: JSON.stringify(aperto.valore) });
+      await gesto(tab, null, '#r-close', js(`return !V(document.querySelector('#r-text'))`));
+      const ritorno = await tab.attendiValore(DOVE, (x) => x && x.sezione === 'allenati' && x.segmento === 'quiz' && x.fuoco, REAZIONE);
+      w.push({ gruppo: g, nome: 'senza risposte il ritorno porta ad Allenati · Quiz, con il fuoco sul risultato della ricerca', ok: ritorno.ok, extra: JSON.stringify(ritorno.valore) });
+    });
+  } finally { await c.chiudi(); }
+}
+
+/** Le scelte con l'account: «Scelte salvate» solo con i valori riletti, e nessuna promessa se il server non dichiara i due campi. */
+async function n01scelte(b, ctx, v, g) {
+  for (const caso of ['dichiarati', 'ignorati', 'non dichiarati']) {
+    const K = await nuovoAccount(ctx, 'n01s');
+    const c = await b.nuovoContesto();
+    try {
+      const tab = await c.apri(null);
+      // Un server che risponde 200 e ignora i due campi: li rilegge com'erano.
+      if (caso === 'ignorati') await tab.intercetta(ctx.api + '/v1/profilo', async (req, params, { corpo }) => {
+        if (req.method !== 'PUT' || params.responseStatusCode !== 200) return null;
+        const o = JSON.parse(await corpo()); o.abilitazione = null; o.conseguimento = null; return finti(ctx, 200, o);
+      }, { fase: 'Response' });
+      await tab.vai(ctx.sito + '/');
+      await fermaAlPrimo(v, async (w) => {
+        w.push({ gruppo: g, nome: `scelte, campi ${caso}: dentro l'account`, ok: await entraImitando(ctx, tab, K, caso === 'non dichiarati' ? 'v0.30.0' : 'oggi'), extra: 'l\'accesso non riesce' });
+        await tocca(tab, null, '#conto-porta'); await tab.attendi(modaleVisibile, REAZIONE);
+        await clicca(tab, 'Che cosa stai preparando?');
+        const modulo = await tab.attendiValore(js(`const m = M(); return m.querySelector && m.querySelector('[name="abilitazione"]') ? m.innerText : null;`), Boolean, REAZIONE);
+        const promette = !!modulo.valore && modulo.valore.includes('Le scelte vengono conservate nel tuo account');
+        const dice = !!modulo.valore && modulo.valore.includes('Il server collegato non conserva ancora queste scelte');
+        w.push({ gruppo: g, nome: caso === 'non dichiarati' ? 'senza campi_profilo il modulo non promette la conservazione, e lo dice' : 'il modulo dice che le scelte si conservano dopo la conferma del server',
+          ok: modulo.ok && (caso === 'non dichiarati' ? !promette && dice : promette && !dice), extra: String(modulo.valore).slice(0, 300) });
+        await tab.valuta(js(`M().querySelector('[name="abilitazione"][value="motore"]').click(); M().querySelector('[name="conseguimento"][value="prima"]').click(); return true;`));
+        await clicca(tab, testi(ctx).salvaData);
+        await finche(async () => !await tab.valuta(testoVisibile('Salvataggio delle scelte in corso')), REAZIONE);
+        const salvate = await maiPer(async () => await tab.valuta(testoVisibile('Scelte salvate')), 1500).then((x) => !x);
+        const db = ctx.scelteDi(K.email);
+        if (caso === 'dichiarati') {
+          w.push({ gruppo: g, nome: '«Scelte salvate», e nel database le due scelte', ok: salvate && db.abilitazione === 'motore' && db.conseguimento === 'prima', extra: `${JSON.stringify(db)}; ${await tab.valuta(inSchermata)}` });
+        } else {
+          const motivo = caso === 'ignorati' ? 'Le scelte non sono state salvate' : 'Le altre scelte valgono solo per questa pagina';
+          w.push({ gruppo: g, nome: caso === 'ignorati' ? 'un 200 che rilegge valori diversi non e\' «Scelte salvate»: la pagina lo dice' : 'senza campi_profilo nessun «Scelte salvate», e le scelte non vanno al server',
+            ok: !salvate && await tab.valuta(testoVisibile(motivo)) && (caso === 'ignorati' || (db.abilitazione == null && db.conseguimento == null)), extra: `${JSON.stringify(db)}; ${await tab.valuta(TESTO_VISTO('[aria-modal="true"]'))} ${JSON.stringify(tab.richieste.filter((r) => r.url.includes('/v1/')).map((r) => r.metodo + ' ' + new URL(r.url).pathname + (r.fallita ? ' FALLITA' : '')))}` });
+        }
+      });
+    } finally { await c.chiudi(); }
+  }
+}
+
+/** Il gruppo, per parti: una parte ognuna, e i tragitti per stato. */
+const PARTI_N01 = ['documento', 'cronologia', 'indirizzi', 'storage', 'invito', 'registrazione', 'stati', 'gesti', 'ricerca', 'scelte', 'tragitti-H0', 'tragitti-H1', 'tragitti-HA'];
+const N01_API = new Set(['registrazione', 'stati', 'gesti', 'scelte', 'tragitti-H0', 'tragitti-H1', 'tragitti-HA']);
+async function n01(b, ctx, v, parte) {
+  const g = 'N-01';
+  if (ctx.regime !== 'ridisegno') {
+    v.push({ gruppo: g, nome: 'il gruppo dei tragitti si applica a una pagina nel regime del ridisegno', ok: false, extra: `regime letto: ${ctx.regime}` });
+    return;
+  }
+  const vuole = (x) => !parte || parte === x;
+  const fn = { documento: n01documento, cronologia: n01cronologia, indirizzi: n01indirizzi, storage: n01storage, invito: n01invito,
+    registrazione: n01registrazione, stati: n01stati, gesti: n01gesti, ricerca: n01ricerca, scelte: n01scelte };
+  for (const p of PARTI_N01) {
+    if (!vuole(p)) continue;
+    const gp = `${g}:${p}`;
+    if (p.startsWith('tragitti-')) await n01tragitti(b, ctx, v, p.slice(9), gp);
+    else await fn[p](b, ctx, v, gp);
+  }
+}
+
 const GRUPPI = { 'C-01': c01, 'C-02': c02, 'C-03': c03, 'C-04': c04, 'C-05': c05, 'C-06': c06, 'C-07': c07, 'C-08': c08, 'C-21': c21,
   'C-10': c10, 'C-11': c11, 'C-12': c12, 'C-13': c13, 'C-14': c14, 'C-15': c15, 'C-16': c16, 'C-17': c17, 'C-19': c19,
   // L'area 6 (P-45): la rifinitura trasversale.
@@ -4578,12 +5839,14 @@ const GRUPPI = { 'C-01': c01, 'C-02': c02, 'C-03': c03, 'C-04': c04, 'C-05': c05
   // L'offline se ne va (P-60, ADR-005).
   'C-22': c22,
   // «Com'e' andata» e la riga d'avvio delle simulazioni (P-74, esito-esame-progetto §10.1).
-  'E-01': e01, 'P-01': p01 };
+  'E-01': e01, 'P-01': p01,
+  // I tragitti del ridisegno, in Chrome (P-82, ridisegno-progetto §9 e §10.1, E).
+  'N-01': n01 };
 // I gruppi che parlano con l'API: il server accetta una sola origine (§7.3),
 // quindi girano uno alla volta sul sito principale. Gli altri girano in
 // parallelo, ognuno con il suo sito e quindi con la sua origine.
 const CON_API = new Set(['C-05', 'C-04', 'C-06', 'C-07', 'C-08', 'C-21', 'C-10', 'C-11', 'C-12', 'C-13', 'C-14', 'C-15', 'C-16', 'C-17', 'C-19',
-  'T-02', 'T-03', 'T-04', 'T-07:conto', 'E-01', 'P-01']);
+  'T-02', 'T-03', 'T-04', 'T-07:conto', 'E-01', 'P-01', ...[...N01_API].map((x) => `N-01:${x}`)]);
 const SOLO_ALTRE = new Set(['C-14']);
 // Una parte puo' parlare con l'API anche se il suo gruppo no: T-07:conto entra
 // in un account, T-07:prova no, e gira dove c'e' posto.
@@ -4685,6 +5948,8 @@ async function corsia(k, cartella, portaApi = PORTA_API) {
     segnaliDi: (email) => Object.fromEntries(api.db.prepare('SELECT modo, migliore, giocate FROM segnali s JOIN account a ON a.id = s.account_id WHERE a.email = ?')
       .all(email).map((x) => [x.modo, { migliore: x.migliore, giocate: x.giocate }])),
     dataEsame: (email, d) => api.db.prepare('UPDATE account SET data_esame = ? WHERE email = ?').run(d, email),
+    // --- per N-01 (P-82): le scelte di preparazione nel profilo (P-83).
+    scelteDi: (email) => api.db.prepare('SELECT abilitazione, conseguimento FROM account WHERE email = ?').get(email),
     // --- per E-01 (P-74): gli esiti dell'esame, scritti e letti nel database.
     esito: (email, giorno, prova, esito, errori = null) => api.db.prepare('INSERT INTO esito (account_id, giorno, prova, esito, errori, detto_il, cambiato_il) VALUES (?, ?, ?, ?, ?, ?, ?)')
       .run(ctx.conto(email).id, giorno, prova, esito, errori, new Date(orologio.t).toISOString(), new Date(orologio.t).toISOString()),
@@ -4726,6 +5991,7 @@ async function corsia(k, cartella, portaApi = PORTA_API) {
       corrente.ingresso = p.ingresso || '/app';
       ctx.ingresso = corrente.ingresso;
       ctx.regimi = p.regimi || {};
+      ctx.regime = p.regime || 'attuale';
       orologio.t += 2 * 3600 * 1000;
       return gruppo(b, ctx, g);
     },
@@ -4759,12 +6025,17 @@ export async function esegui(prove, { portaApi = PORTA_API } = {}) {
     const lavora = async () => {
       for (let x; (x = libere.shift());) {
         const inizio = performance.now();
-        const proprio = { pagina: x.p.pagina, sito: x.p.sito };
+        // L'ingresso e il regime sono della prova: fino a P-82 qui si prendevano
+        // quelli che la corsia 0 aveva in quel momento, e la pagina si serviva
+        // sempre su /app — nel ridisegno, un ingresso sbagliato senza un rosso.
+        const proprio = { pagina: x.p.pagina, sito: x.p.sito, ingresso: x.p.ingresso || '/app' };
         const sv = await servi(proprio);
         try {
           // La pagina di questi gruppi non e' riscritta: parla con la 8620, e il
           // banco guarda quell'indirizzo anche se la corsia 0 ascolta altrove.
-          const ctx = { ...corsie[0].ctx, sito: sv.origine, api: `http://localhost:${PORTA_API}`, spegni: (si) => { proprio.spento = si; }, radice: (d) => { proprio.radice = d; } };
+          const ctx = { ...corsie[0].ctx, sito: sv.origine, api: `http://localhost:${PORTA_API}`, spegni: (si) => { proprio.spento = si; }, radice: (d) => { proprio.radice = d; },
+            ingresso: proprio.ingresso, regimi: x.p.regimi || {}, regime: x.p.regime || 'attuale',
+            sostituisci: (percorso, testo) => { proprio.sito = { ...(proprio.sito || {}), [percorso]: testo }; } };
           esiti.get(x.p.nome)[x.g] = await gruppo(b, ctx, x.g);
         } finally { await sv.chiudi(); }
         tempi(inizio, `${x.p.nome} ${x.g}`);

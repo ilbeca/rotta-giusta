@@ -1100,6 +1100,83 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   prima. Guardiano verde. `site/`, il motore e `docs/prossime-sessioni.md` non
   sono stati toccati; la macchina nemmeno.
 
+### Test — P-82: i tragitti del ridisegno, in Chrome, prima della pagina
+
+- **Il punto E del §10.1 di `docs/ridisegno-progetto.md`: il gruppo N-01 del
+  banco del client.** Il banco sotto Node prova la navigazione come funzione;
+  questo guarda in un browser vero quello che chi studia vive. Il documento resta
+  lo stesso dopo il primo ingresso — un segno nella finestra JavaScript e le
+  richieste di tipo `Document`, che `tests/browser.mjs` ora registra —
+  attraverso barra, segmenti, Profilo e testi legali, con gli stessi uid; il
+  timer della simulazione e la scadenza della carta continuano sopra Profilo e
+  privacy quanto l'orologio; Chiudi, Indietro e Avanti riportano allo stesso
+  punto con fuoco e scorrimento, e Avanti su un tentativo concluso mostra il
+  risultato; le query si ricaricano, `/allenati` è 404, un alias come sezione va
+  dove dice la tabella C, `/app` e il suo frammento si puliscono; niente di chi
+  studia in un indirizzo, in `history.state` (registrato a ogni `pushState`) o
+  in uno storage per tutta `OSSERVAZIONE`; i tre posti dell'invito e nessun
+  quarto, e la rinuncia che tiene la memoria; la registrazione dalla Home e dal
+  risultato con l'insieme degli uid nella pagina, nella copia e sul server, e
+  l'onboarding con «che cosa stai preparando?»; i cinque stati con le parole di
+  Q-STATI e i numeri del motore; i tag N e S, L e C di prima, il segnalibro e la
+  segnalazione, con i server di P-73 e della v0.30.0 imitati; la ricerca per
+  numero sui casi di `cercaNumero()`; le scelte con `campi_profilo` dichiarato,
+  ignorato con un 200 e assente. E i **108 tragitti del §9**: dodici compiti per
+  tre stati, una verifica dell'arrivo con il titolo e i tocchi attesi e
+  osservati e una del ritorno, nel nome gli ID delle tre persone che li
+  condividono.
+
+- **La pagina di riferimento del client nel regime nuovo**,
+  `tests/pagina-client-ridisegno.html`, con `tests/pagina-porta-app.html` su
+  `/app`: un documento solo su `/`, le quattro sezioni, i segmenti, il Profilo,
+  la cronologia in memoria con `history.state` uguale a `{nav: id}`, i raccordi
+  di P-80 collegati ai gesti, e il client degli account di sempre. Passa tutti i
+  gruppi del client — C-01…C-22, C-19, F-01, T-01…T-09, E-01 e P-01 — e N-01: è
+  il metro di P-81. **Ventisette rotture**, tutte rosse per il loro motivo, e la
+  pagina di P-80 con le due dichiarazioni e senza il grafo, rossa dal primo
+  passo. Sulla pagina di oggi il gruppo non si applica e il controllo lo dice;
+  dalla merge di P-81 gira anche sulla pagina vera.
+
+- **Il banco contro sé stesso, una difesa alla volta.** Tre rotture passavano
+  verdi alla prima stesura, e il banco è stato rinforzato invece di toglierle: i
+  link con `data-v` saltavano il ramo rotto del gestore, quindi la rottura del
+  link che ricarica non rompeva niente; il timer che riparte si confrontava con
+  sé stesso, e ora con l'orologio; e gli stati si leggevano dopo la ricezione dal
+  server, che ricalcolava tutto e nascondeva un `applica()` senza istante — ora
+  le righe si trattengono mentre si guarda. E senza il registro delle chiamate a
+  `pushState` la voce con i dati della tappa passa verde: misurato.
+
+- **Trovato costruendo la pagina, scritto per P-81**: dopo la registrazione dal
+  risultato, il risultato restava con l'invito e la frase di chi non ha
+  l'account; `giroTecniche()` restituisce `{ e, tecniche }`, e preso per un
+  esercizio il giro si apre vuoto; un salto nella cronologia è asincrono, e un
+  `pushState` durante un `history.go()` mescola la pila. **E un difetto del
+  banco**: `tests/pagina_js.mjs` cercava le dipendenze di una funzione anche nelle
+  stringhe e nei commenti, e una stringa `'ripristina'` trascinava la funzione
+  con quel nome — `ReferenceError` (misurato); ora legge il solo codice.
+
+- **Scostamenti dichiarati** nel §10.1 del progetto: AC è di quattro tocchi e
+  non cinque, perché il modulo si chiude alla creazione; sei rotture della
+  proposta non ci sono, perché il gruppo non le vede o le vede un altro
+  controllo, e le varianti giuste non girano sulla pagina nuova. La specifica:
+  R-NAV-08 e R-STATI-06 da scoperti a coperti, R-NAV-14 nuovo, R-ACC-03 e
+  R-ACC-55 con le parti del ridisegno; il §6.2 e il §9.4 dicono che cosa il
+  banco vede e che cosa resta al collaudo di P-81 a 375 e 1280 px; Q-SUITE con
+  i tempi nuovi. Il §12 del progetto del client ha il gruppo e i suoi limiti.
+
+  Suite: motore 215/219 con i quattro skip previsti; server 85/85; dati 230;
+  specifica **1.012** (erano 988); interfaccia **2.938** (erano 2.604), due
+  giri verdi di fila in 4 min 07 s e 4 min 08 s, con la 8620 guardata libera
+  per 90 s prima di ognuno. **Tre giri prima erano
+  rossi, e non per un difetto**: la macchina aveva un programma al 270 % di CPU,
+  il banco ci ha messo fino a 1.119 s — oltre il tetto di 600 s del
+  sottoprocesso, ora 1.800 — e i rossi erano attese scadute e un Chrome che non
+  rispondeva, anche su gruppi e pagine che questa sessione non tocca; gli stessi
+  gruppi, fatti girare da soli con il banco di `HEAD` estratto in una cartella e
+  con questo, davano gli stessi verdi negli stessi tempi. Il server non è stato
+  toccato, e non è stato rifatto con la LTS 24. Guardiano verde. `site/`,
+  `server/` e `docs/prossime-sessioni.md` non sono stati toccati.
+
 ## [0.30.0] — 2026-10-03
 
 **Il sito più semplice: niente offline.** Rotta Giusta si apre con la rete,

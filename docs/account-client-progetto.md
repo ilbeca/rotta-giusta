@@ -2018,6 +2018,59 @@ macchina. Chi risponde e chi no. Il riepilogo di una simulazione con risposte,
 che con e senza riga d'avvio cambia con le risposte: il confronto si fa sulla
 prova consegnata vuota. Safari.
 
+### I tragitti del ridisegno (P-82, 16 ottobre 2026)
+
+Un gruppo nuovo, **N-01**, e una pagina di riferimento nuova,
+`tests/pagina-client-ridisegno.html`: il client di questo progetto nel regime
+del ridisegno (`docs/ridisegno-progetto.md` §§2–9), con le due dichiarazioni,
+il grafo — un documento solo su `/`, le quattro sezioni, i segmenti, il
+Profilo, la cronologia in memoria con `history.state` uguale a `{nav: id}` —, i
+raccordi di P-80 collegati ai gesti, e `tests/pagina-porta-app.html` come porta
+su `/app`. È il metro con cui P-81 si misura: passa **tutti** i gruppi di
+questo §12 — C-01…C-22, C-19, F-01, T-01…T-09, E-01 e P-01 con il raccordo — e
+N-01. Il banco non si è piegato alla pagina nuova: gli agganci sono quelli
+della tabella C del §10.1 del progetto, e dove il ridisegno cambia un testo il
+banco ha il testo nuovo accanto al vecchio (`TESTI`, `FRASI_RIEPILOGO_RIDISEGNO`,
+l'avviso del guasto), scelto dal regime che `test_interfaccia.py` legge con
+`tests/regime_pagina.py` e passa a ogni prova.
+
+**Le parti di N-01.** *documento*: un segno nella finestra JavaScript e le
+richieste di tipo `Document` (che `tests/browser.mjs` ora registra), attraverso
+barra, segmenti, Profilo e legali, con gli uid della pagina uguali prima e dopo
+e il timer della prova e la scadenza della carta che continuano quanto
+l'orologio; *cronologia*: Chiudi, Indietro e Avanti, il gestore di uscita, il
+fuoco e lo scorrimento; *indirizzi*: query, ricarica, `/allenati`, un alias come
+sezione, un parametro sconosciuto, `fase=runner`, `/app` e il suo frammento;
+*storage*: lo storage da fuori per tutta `OSSERVAZIONE` e, nella scheda, le
+chiamate a `pushState`, `replaceState` e agli storage; *invito*: i tre posti,
+nessun quarto, la rinuncia; *registrazione*: dalla Home e dal risultato, l'insieme
+degli uid nella pagina, nella copia e sul server, e l'onboarding con le scelte;
+*stati*: un account con righe per ogni stato, le parole di Q-STATI, e la
+seconda giusta a 13 ore vista con le righe trattenute; *gesti*: N e S, L e C di
+prima nella revisione, il segnalibro, la segnalazione, e i server di P-73 e
+della v0.30.0 imitati togliendo campi a `GET /v1/io` e alla risposta del
+profilo — dopo l'accesso, perché una risposta finta all'accesso perderebbe il
+cookie; *ricerca*: i casi di `cercaNumero()` sulla banca vera; *scelte*:
+dichiarati, ignorati con un 200, non dichiarati; *tragitti-H0/H1/HA*: i dodici
+compiti del §9, una verifica per l'arrivo con i tocchi attesi e osservati e una
+per il ritorno, con gli ID delle tre persone che li condividono.
+
+**Che cosa è cambiato nel banco per farla girare.** `M()` è l'ultima finestra
+modale visibile, non la prima; le risposte di Info si scaricano dal Profilo,
+perché l'alias `info` porta alla Home e chiuderebbe il risultato; nelle corsie
+senza API ogni prova ha il suo ingresso e il suo regime (prima si prendevano
+quelli della corsia 0). E `tests/pagina_js.mjs` legge le dipendenze di una
+funzione nel codice, non nelle stringhe e nei commenti: una stringa
+`'ripristina'` trascinava la funzione con quel nome, e il banco del ridisegno
+cadeva con un `ReferenceError` (misurato).
+
+**Che cosa non vede.** Quello del §9.4 della specifica: una lista che cambia
+fra anteprima e Inizia, un modulo ricreato sopra un legale, un 200 con scarti
+alla registrazione dentro N-01 (lo tengono C-10 e C-12), la mappa aggiornata da
+un altro dispositivo, la copia negli appunti che fallisce davvero, le varianti
+giuste sulla pagina nuova; e, come tutto il banco, Safari, il gesto vero, il
+lettore di schermo. Il costo è scritto in Q-SUITE.
+
 ## 13. Evidenze e limiti di P-13
 
 Precondizioni: worktree `rotta-giusta-ui`, ramo `ui/main`, albero pulito,

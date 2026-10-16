@@ -2169,13 +2169,28 @@ def banco_client():
         applicate[cosa] = rotto is not None
         if rotto is not None:
             prove.append({'nome': 'rottura: ' + cosa, 'pagina': rif, 'gruppi': ['C-22:passaggio'], 'sito': {'/sw.js': rotto}})
+    # Il ridisegno (P-82): la pagina di riferimento del client nel regime nuovo,
+    # con tutti i gruppi del client e i tragitti, le sue rotture, e la pagina con
+    # le due dichiarazioni e senza il grafo.
+    if ridisegno():
+        prove[0]['gruppi'] = prove[0]['gruppi'] + PARTI_NAV
+    prove += prove_ridisegno(applicate)
     # Il regime di ogni pagina, letto dal suo testo (P-74): il banco guida E-01 e
-    # P-01 con il raccordo o senza.
+    # P-01 con il raccordo o senza. E da P-82 quello del ridisegno, con la regola
+    # di tests/regime_pagina.py: il banco lo riceve, non lo indovina.
     for x in prove:
         x['regimi'] = regimi_di(x['pagina'])
+        x.setdefault('regime', regime_ridisegno(x['pagina'])[0])
     try:
+        # Il tetto era 600 s. Con la pagina di riferimento del ridisegno, i suoi
+        # gruppi e le sue rotture (P-82) il banco fa circa un quarto di lavoro in
+        # piu', che a macchina scarica sta nelle corsie: la suite intera in 4 min
+        # 07 s, misurato il 16 ottobre 2026. Con la macchina occupata da un
+        # programma al 270 % di CPU lo stesso banco ha impiegato 1.119 s, e
+        # 600 s lo troncavano con un rosso per tutto: il tetto serve a non
+        # appendersi, non a misurare.
         p = subprocess.run(['node', str(BANCO_CLIENT)], input=json.dumps({'prove': prove}),
-                           capture_output=True, text=True, timeout=600)
+                           capture_output=True, text=True, timeout=1800)
         out = json.loads(p.stdout) if p.returncode == 0 else None
     except (OSError, ValueError, subprocess.TimeoutExpired) as e:
         out, errore = None, str(e)
@@ -2236,6 +2251,10 @@ def test_client_email_registrata():
 
 def test_client_invito_e_viste():
     registra_client('C-03')
+    # Nel ridisegno i tre posti dell'invito, e nessun quarto (P-82, N-01:invito):
+    # sulla pagina di riferimento sempre, sulla pagina vera quando e' nel ridisegno.
+    registra_nav('riferimento ridisegno', [PARTE_INVITO], 'invito, riferimento')
+    nav_sulla_pagina([PARTE_INVITO], 'i tre posti dell\'invito')
 
 
 def test_client_tutte_le_attivita():
@@ -2640,6 +2659,9 @@ def test_client_ripristino():
 
 def test_client_data():
     registra_client('C-16')
+    # Nel ridisegno «che cosa stai preparando?» (P-83, P-82: N-01:scelte e l'onboarding di N-01:registrazione).
+    registra_nav('riferimento ridisegno', PARTI_SCELTE, 'scelte, riferimento')
+    nav_sulla_pagina(PARTI_SCELTE, 'le scelte di preparazione')
 
 
 def test_client_export():
@@ -2749,6 +2771,235 @@ def test_client_provato_al_contrario():
         check('rottura del client «%s»: il banco diventa rosso' % cosa, bool(rossi), 'e\' passata verde')
         check('rottura del client «%s»: e il rosso nomina il difetto' % cosa, any(atteso in r for r in rossi),
               'rossi: ' + '; '.join(rossi[:3]))
+
+
+# --- 5-quater. I tragitti del ridisegno, in Chrome (P-82) -------------------------------
+#
+# Il punto E del §10.1 di docs/ridisegno-progetto.md: il gruppo N-01 del banco
+# del client guida in Chrome la pagina nel regime del ridisegno e guarda quello
+# che il banco sotto Node non vede — il documento che resta lo stesso, la
+# cronologia, gli indirizzi, lo storage, i tre posti dell'invito, la
+# registrazione, i cinque stati in schermata, i gesti, la ricerca, le scelte —,
+# e i 108 tragitti del §9, uno per stato e compito. La pagina di riferimento
+# del client nel regime nuovo, tests/pagina-client-ridisegno.html, e' il metro
+# con cui P-81 si misura: passa tutti i gruppi del client e il gruppo dei
+# tragitti, e ciascuna delle sue rotture fa fallire la parte che la riguarda
+# nominando il difetto. Sulla pagina di oggi il gruppo non si applica, e il
+# controllo lo dice invece di tacere; da P-81 gira anche sulla pagina vera.
+RIFERIMENTO_RIDISEGNO_CLIENT = RADICE / 'tests' / 'pagina-client-ridisegno.html'
+PORTA_RIFERIMENTO = RADICE / 'tests' / 'pagina-porta-app.html'
+# La pagina di riferimento del banco del ridisegno (P-80): le due dichiarazioni
+# e i raccordi, senza grafo, senza sezioni vere. Il regime letto e' il
+# ridisegno, e il gruppo deve essere rosso dal primo passo.
+SENZA_GRAFO = RADICE / 'tests' / 'pagina-ridisegno.html'
+PARTI_NAV = ['N-01:documento', 'N-01:cronologia', 'N-01:indirizzi', 'N-01:storage', 'N-01:invito', 'N-01:registrazione',
+             'N-01:stati', 'N-01:gesti', 'N-01:ricerca', 'N-01:scelte', 'N-01:tragitti-H0', 'N-01:tragitti-H1', 'N-01:tragitti-HA']
+VERIFICHE_NAV = {'N-01:documento': 16, 'N-01:cronologia': 12, 'N-01:indirizzi': 17, 'N-01:storage': 7, 'N-01:invito': 11,
+                 'N-01:registrazione': 9, 'N-01:stati': 8, 'N-01:gesti': 15, 'N-01:ricerca': 11, 'N-01:scelte': 9,
+                 'N-01:tragitti-H0': 24, 'N-01:tragitti-H1': 24, 'N-01:tragitti-HA': 24}
+# Le parti del tragitto che i controlli dei requisiti nominano uno per uno.
+PARTE_STATI = 'N-01:stati'
+PARTE_INVITO = 'N-01:invito'
+PARTI_SCELTE = ['N-01:scelte', 'N-01:registrazione']
+
+# Rotture della pagina di riferimento del ridisegno: (che cosa, parti da
+# eseguire, sostituzioni, parola che il rosso deve contenere). Ognuna e' un modo
+# in cui il ridisegno puo' sembrare a posto e non esserlo: il punto E del §10.1
+# del progetto e «Che cosa resta a P-82» del §6.2 della specifica.
+_ALTRO_TEMA = "apriPreparazione({ modo: 'argomento', temi: ['METEOROLOGIA'] }); iniziaPreparazione(); return; } if (false) {"
+ROTTURE_NAV = [
+    ('i link interni ricaricano il documento', ['N-01:documento'],
+     [("if (!a || e.defaultPrevented || e.button !== 0", "if (!a || true || e.button !== 0")],
+     'documento'),
+    ('i testi legali si aprono fuori dal documento', ['N-01:documento'],
+     [("if (LEGALI[u.pathname]) { e.preventDefault(); return apriLegale(u.pathname + u.hash, a); }", 'if (LEGALI[u.pathname]) return;')],
+     'privacy'),
+    ('il timer della prova riparte sopra un testo legale', ['N-01:documento'],
+     [('function apriLegale(href, da) {', 'function apriLegale(href, da) {\n  if (S.run && S.run.scadenza) S.run.scadenza = Date.now() + 30 * 60000;')],
+     'timer'),
+    ('Chiudi non rende il fuoco alla porta', ['N-01:cronologia'],
+     [('    if (v.fuoco && v.fuoco.isConnected) v.fuoco.focus({ preventScroll: true });\n', '')],
+     'fuoco'),
+    ('Avanti su un tentativo concluso apre una prova nuova', ['N-01:cronologia'],
+     [("if (S.ultima && S.ultima.id === v.attivita && $('r-fine').innerHTML) {",
+       "if (S.ultima && S.ultima.id === v.attivita && $('r-fine').innerHTML) { " + _ALTRO_TEMA)],
+     'Avanti'),
+    ('un indirizzo di sezione che il server non serve', ['N-01:storage'],
+     [("const canon = sezione === 'home' && pezzi.length === 1 ? '/' : '/?' + pezzi.map(([k, v]) => k + '=' + encodeURIComponent(v)).join('&');",
+       "const canon = sezione === 'home' && pezzi.length === 1 ? '/' : sezione === 'allenati' && evento !== 'carica' ? '/allenati' : '/?' + pezzi.map(([k, v]) => k + '=' + encodeURIComponent(v)).join('&');")],
+     'indirizzo'),
+    ('l\'alias «cart» porta a Quiz', ['N-01:indirizzi'],
+     [("cart: { sezione: 'allenati', segmento: 'carteggio' },", "cart: { sezione: 'allenati', segmento: 'quiz' },")],
+     'cart'),
+    ('il gettone di un link resta nell\'indirizzo', ['N-01:indirizzi'],
+     [("history.replaceState({ nav: id }, '', d.effetto === 'indisponibile' && d.motivo !== 'attivita non disponibile' ? '/' : d.url);",
+       "history.replaceState({ nav: id }, '', (d.effetto === 'indisponibile' && d.motivo !== 'attivita non disponibile' ? '/' : d.url) + location.hash);")],
+     'gettone'),
+    ('la voce della cronologia porta i dati della tappa', ['N-01:storage'],
+     [("history.pushState({ nav: id }, '', url);", "history.pushState({ nav: id, voce: { ...voce, fuoco: null } }, '', url);")],
+     'history.state'),
+    ('la data d\'esame finisce in sessionStorage', ['N-01:storage'],
+     [("esito.textContent = 'Scelte applicate a questa pagina';", "esito.textContent = 'Scelte applicate a questa pagina'; sessionStorage.setItem('rg.esame', data);")],
+     'storage'),
+    ('senza account «Scelte salvate»', ['N-01:storage'],
+     [("esito.textContent = 'Scelte applicate a questa pagina';", "esito.textContent = 'Scelte salvate';")],
+     'applicate'),
+    ('un quarto posto dell\'invito: Progressi senza account', ['N-01:invito'],
+     [('<button data-v="allenati">Vai ad Allenati</button>', '<p>Conserva le risposte.</p><button data-v="allenati">Vai ad Allenati</button>')],
+     'quarto'),
+    ('l\'invito nella revisione', ['N-01:invito'],
+     [("$('rv-body').innerHTML = `<h1>Rivedi le risposte</h1>` + u.lista", "$('rv-body').innerHTML = `<h1>Rivedi le risposte</h1><p>Vuoi conservare le attività di questa pagina?</p>` + u.lista")],
+     'revisione'),
+    ('la rinuncia nella Home non tiene la memoria', ['N-01:invito'],
+     [("if (t.dataset.invito === 'rinuncia') { S.rinunciaHome = S.righe.length; dipingiHome(); return true; }",
+       "if (t.dataset.invito === 'rinuncia') { $('invito-home').hidden = true; return true; }")],
+     'rinuncia'),
+    ('il risultato di una simulazione promette quello che e\' di P-76', ['N-01:invito'],
+     [('<p>Conserva questa prova e ritrovala quando torni.</p>', '<p>Conserva questa prova e ritrovala quando torni. Da queste risposte possiamo proporti da dove iniziare.</p>')],
+     'P-76'),
+    ('la registrazione porta nell\'account solo l\'ultima riga', ['N-01:registrazione'],
+     [("  S.onboarding = true;\n  await trasferisci(S.righe.splice(0));", "  S.onboarding = true;\n  await trasferisci(S.righe.splice(0).slice(-1));")],
+     'uid'),
+    ('«da confermare» e «recuperati» scambiati', ['N-01:stati'],
+     [("['incerto', 'da confermare'], ['sistemato', 'recuperati']", "['incerto', 'recuperati'], ['sistemato', 'da confermare']")],
+     'Q-STATI'),
+    ('applica() senza l\'istante della riga', ['N-01:stati'],
+     [('E.applica(S.prog, it.id, giusta, riga.ms, riga.ts.slice(0, 10), riga.ts);', 'E.applica(S.prog, it.id, giusta, riga.ms, riga.ts.slice(0, 10));')],
+     '12 ore'),
+    ('«Svista» scritto come «Non lo sapevo»', ['N-01:gesti'],
+     [("const riga = { _t: 'g', uid: uid(), attempt_uid: auid, tag, ts: E.isoLocale() };",
+       "const riga = { _t: 'g', uid: uid(), attempt_uid: auid, tag: 'N', ts: E.isoLocale() };")],
+     'Svista'),
+    ('un tag di prima riconvertito', ['N-01:gesti'],
+     [("L: 'Classificazione precedente: Letto male'", "L: 'Svista'")],
+     'precedente'),
+    ('il permesso del gesto ignora il server', ['N-01:gesti'],
+     [("const fonteGesto = () => (S.conto ? { accesso: 'account', io: S.io } : { accesso: 'anonimo', tipiRiga: E.TIPI_RIGA });",
+       "const fonteGesto = () => ({ accesso: 'anonimo', tipiRiga: E.TIPI_RIGA });")],
+     'server'),
+    ('la ricerca perde un numero ripetuto', ['N-01:ricerca'],
+     [('${r.esatti.map(riga).join(\'\')}', '${r.esatti.slice(0, 1).map(riga).join(\'\')}')],
+     'ripetuto'),
+    ('un oscurato trovato senza l\'avviso', ['N-01:ricerca'],
+     [("${osc.has(it.id) ? ' <span>Oscurato: all\\'esame non esce. Puoi esercitarlo qui</span>' : ''}", '')],
+     'oscurato'),
+    ('«Scelte salvate» senza rileggere i valori', ['N-01:scelte'],
+     [('const riletti = campiProfilo() && r.corpo.abilitazione === scelte.abilitazione && r.corpo.conseguimento === scelte.conseguimento;',
+       'const riletti = campiProfilo();')],
+     'rilegge'),
+    ('il modulo promette la conservazione senza campi_profilo', ['N-01:scelte'],
+     [("${conto ? (campiProfilo() ? 'Le scelte vengono conservate", "${conto ? (true ? 'Le scelte vengono conservate")],
+     'campi_profilo'),
+    ('«Simula il quiz base» porta a Esame invece della preparazione', ['N-01:tragitti-H0'],
+     [('<button data-modo="sim" data-prova="base">Simula il quiz base</button>', '<button data-v="esame" data-modo="sim" data-prova="base">Simula il quiz base</button>')],
+     'tocchi'),
+    ('il ritorno della carta porta alla Home', ['N-01:tragitti-H0'],
+     [("if (t.dataset.cfine === 'ritorno') { const o = S.cartUltima && S.cartUltima.P.origineNav; chiudiCart(); if (!tornaA(o)) vai('/'); return true; }",
+       "if (t.dataset.cfine === 'ritorno') { chiudiCart(); vai('/'); return true; }")],
+     'ritorno riporta'),
+]
+
+
+def prove_ridisegno(applicate):
+    """La pagina di riferimento del ridisegno con tutti i gruppi del client e il
+    gruppo dei tragitti; le sue rotture; la pagina con le due dichiarazioni e
+    senza il grafo. Tutte servite su `/`, con la porta di riferimento su `/app`."""
+    rif = RIFERIMENTO_RIDISEGNO_CLIENT.read_text(encoding='utf-8')
+    porta = PORTA_RIFERIMENTO.read_text(encoding='utf-8')
+    base = {'ingresso': '/', 'regime': 'ridisegno', 'sito': {'/app': porta}}
+    out = [{**base, 'nome': 'riferimento ridisegno', 'pagina': rif,
+            'gruppi': GRUPPI_CLIENT + ['C-19'] + GRUPPI_RIFINITURA + gruppi_raccordo(rif) + PARTI_NAV}]
+    for cosa, parti, sostituzioni, _ in ROTTURE_NAV:
+        rotta, ok = rif, True
+        for vecchio, nuovo in sostituzioni:
+            ok = ok and vecchio in rotta
+            rotta = rotta.replace(vecchio, nuovo, 1)
+        applicate['ridisegno: ' + cosa] = ok
+        if ok and rotta != rif:
+            out.append({**base, 'nome': 'rottura del ridisegno: ' + cosa, 'pagina': rotta, 'gruppi': parti})
+    out.append({**base, 'nome': 'senza grafo', 'pagina': SENZA_GRAFO.read_text(encoding='utf-8'), 'gruppi': ['N-01:documento']})
+    return out
+
+
+def registra_nav(nome_prova, parti, etichetta):
+    """Le verifiche di alcune parti di N-01 su una prova, una per una, e il conto."""
+    _, out, _ = banco_client()
+    v = out.get(nome_prova, [])
+    for x in v:
+        if x['gruppo'] in parti or x['gruppo'] == 'banco':
+            check('%s %s: %s' % (etichetta, x['gruppo'], x['nome']), x['ok'], x.get('extra', ''))
+    for g in parti:
+        n = sum(1 for x in v if x['gruppo'] == g)
+        check('%s %s: il giro e\' arrivato in fondo' % (etichetta, g), n >= VERIFICHE_NAV[g],
+              'troppo poche verifiche (%d su %d): il banco non l\'ha eseguito per intero' % (n, VERIFICHE_NAV[g]))
+
+
+def nav_sulla_pagina(parti, cosa):
+    """Sulla pagina vera nel ridisegno le parti si registrano; nel regime di oggi
+    si dice che non si applicano, e il banco non deve averle eseguite."""
+    if not ridisegno():
+        _, out, _ = banco_client()
+        fatte = [x for x in out.get('app', []) if x['gruppo'].startswith('N-01')]
+        check('%s: nel regime attuale non si pretendono — si accendono con il ridisegno, P-81' % cosa, not fatte,
+              'il banco ha eseguito il gruppo dei tragitti su una pagina senza il ridisegno')
+        return
+    registra_nav('app', parti, 'tragitti, pagina vera')
+
+
+def test_ridisegno_tragitti():
+    """R-NAV-08: i tragitti del §9 del progetto in un browser vero, con le misure
+    del punto E del §10.1. Sulla pagina di riferimento del ridisegno sempre, con
+    tutti i gruppi del client — C-19 e le attivita' di C-01 comprese — intatti
+    nel regime nuovo; sulla pagina vera quando e' nel ridisegno."""
+    _, out, _ = banco_client()
+    v = out.get('riferimento ridisegno', [])
+    vecchi = [x for x in v if not x['gruppo'].startswith('N-01')]
+    rossi = [x['gruppo'] + ' ' + x['nome'] + ' — ' + x.get('extra', '') for x in vecchi if not x['ok']]
+    check('tragitti: la pagina di riferimento del ridisegno passa tutti i gruppi del client', bool(vecchi) and not rossi, '; '.join(rossi[:3]))
+    for g in GRUPPI_CLIENT + SCELTE_CLIENT + PARTI_BOZZA + list(VERIFICHE_RIFINITURA):
+        n = sum(1 for x in v if x['gruppo'] == g)
+        check('tragitti: nel regime nuovo il banco del client ha eseguito %s per intero' % g,
+              n >= {**VERIFICHE_CLIENT, **VERIFICHE_RIFINITURA}[g],
+              'troppo poche verifiche (%d)' % n)
+    for a in ATTIVITA_CLIENT:
+        fatte = [x for x in v if x['gruppo'] == 'C-01' and x['nome'].startswith(a)]
+        check('tragitti: nel regime nuovo l\'attivita\' «%s» arriva al suo punto d\'arrivo' % a.rstrip(': '), bool(fatte) and all(x['ok'] for x in fatte),
+              'nessuna verifica' if not fatte else '; '.join(x['nome'] for x in fatte if not x['ok']))
+    # Gli stati, l'invito e le scelte li registrano i controlli dei loro requisiti.
+    parti = [p for p in PARTI_NAV if p not in [PARTE_STATI, PARTE_INVITO] + PARTI_SCELTE]
+    registra_nav('riferimento ridisegno', parti, 'tragitti, riferimento')
+    nav_sulla_pagina(parti, 'tragitti del ridisegno')
+
+
+def test_ridisegno_stati_in_schermata():
+    """R-STATI-06: le parole di Q-STATI nell'ordine dei cinque stati del motore,
+    i numeri di contaStati(), la somma, la legenda, e la seconda giusta a 12 ore
+    che sposta il quesito senza ricarica (N-01:stati)."""
+    registra_nav('riferimento ridisegno', [PARTE_STATI], 'stati, riferimento')
+    nav_sulla_pagina([PARTE_STATI], 'i cinque stati in schermata')
+
+
+def test_ridisegno_tragitti_provati_al_contrario():
+    """R-NAV-14: il gruppo dei tragitti si prova contro se' stesso. Ogni rottura
+    della pagina di riferimento del ridisegno si applica, fa diventare rossa la
+    parte che la riguarda e nomina il difetto; la pagina con le due
+    dichiarazioni e senza il grafo e' rossa."""
+    _, out, applicate = banco_client()
+    for cosa, parti, _, atteso in ROTTURE_NAV:
+        check('rottura del ridisegno «%s»: si applica alla pagina di riferimento' % cosa, applicate.get('ridisegno: ' + cosa),
+              'il testo da sostituire non c\'e\' piu\': la rottura non romperebbe niente')
+        vr = out.get('rottura del ridisegno: ' + cosa)
+        if vr is None:
+            continue
+        rossi = [x['gruppo'] + ' ' + x['nome'] + ' — ' + x.get('extra', '') for x in vr if not x['ok']]
+        check('rottura del ridisegno «%s»: il banco diventa rosso' % cosa, bool(rossi), 'e\' passata verde')
+        check('rottura del ridisegno «%s»: e il rosso nomina il difetto' % cosa, any(atteso in r for r in rossi),
+              'rossi: ' + '; '.join(r[:200] for r in rossi[:3]))
+    sg = out.get('senza grafo', [])
+    check('tragitti: la pagina con le due dichiarazioni e senza il grafo e\' nel regime del ridisegno',
+          regime_ridisegno(SENZA_GRAFO.read_text(encoding='utf-8'))[0] == 'ridisegno')
+    check('tragitti: e il gruppo dei tragitti e\' rosso dal primo passo', any(not x['ok'] and 'senza il grafo' in x.get('extra', '') for x in sg),
+          '; '.join(x['nome'] for x in sg if not x['ok'])[:300] or 'nessun rosso')
 
 
 # --- 5-ter. «com'è andata» e la riga d'avvio (P-74) --------------------------------------
@@ -3845,6 +4096,7 @@ def main():
               test_client_condizioni, test_client_modulo_visto,
               test_client_bozza_senza_account, test_client_bozza,
               test_client_provato_al_contrario,
+              test_ridisegno_tragitti, test_ridisegno_stati_in_schermata, test_ridisegno_tragitti_provati_al_contrario,
               test_rifinitura_senza_account, test_rifinitura_invio, test_rifinitura_guasto, test_rifinitura_identita,
               test_rifinitura_finestra, test_rifinitura_fuoco, test_rifinitura_avvisi, test_rifinitura_larghezze,
               test_rifinitura_contrasto, test_rifinitura_bersagli, test_rifinitura_provata_al_contrario,
