@@ -1613,6 +1613,21 @@ non si può promettere il verde richiesto sulla copia lasciando intatta la
 pagina attuale. Nessuna implementazione, sostituzione o commit parziale;
 nessun controllo adattato e nessuna eccezione aggiunta.
 
+**Il raccordo c'è, dal 17 ottobre 2026 (P-84, `2554a36`).** `RG_SITO=<cartella>`
+sta per `site/` intera — canonico, porta, manifest, pagine legali, dati, figure
+e motore — in `tests/test_interfaccia.py`, nel banco del client in Chrome, nei
+cinque banchi sotto Node (`tests/sito.mjs`) e in `tests/test_dati.py`; il
+regime si legge dalla copia; `RG_PAGINA` resta; le due insieme, una cartella
+che manca o senza `index.html` sono un rosso detto, mai un ripiego su `site/`;
+la riga finale di ogni suite dice che ha misurato una copia e quale. Il
+blocco qui sopra è un test, `test_copia_del_sito`, rosso con il codice di
+prima in 20 verifiche su 22. **Il metro della copia è la pagina intera di
+P-81, non la pagina di riferimento del client**: su quella, con `RG_SITO`,
+restano 86 rossi che sono la pagina di riferimento — non ha `MODI`, i
+raccordi delle aree, `CASA`, i testi di C-18 — e nessuno riguarda la porta,
+N-01 o `RG_SITO`. P-81 misura la sua copia con `RG_SITO=<cartella> python3
+tests/test_interfaccia.py` e `tests/test_dati.py` dalla cartella principale.
+
 ### 10.2 Verifica documentale di P-79 e limiti
 
 Verificati cartella, ramo, albero iniziale pulito e inventario delle chat:

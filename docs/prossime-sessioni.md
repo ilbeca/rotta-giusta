@@ -200,17 +200,21 @@ partito il 17 ottobre e si è fermato senza scrivere niente: il suo
 passo 1 chiede il verde sulla copia con RG_PAGINA, ma RG_PAGINA
 sostituisce il solo canonico e la porta /app resta quella di site/,
 quindi la copia non si misura intera (ridisegno-progetto.md §10.1,
-«P-81 — blocco del collaudo sulla copia»). Pronto: P-84 per Claude,
-RG_SITO=<cartella>, una copia intera del sito per la suite, il banco e
-test_dati; poi P-81 riparte con lo stesso prompt; P-62 con l'autore.
+«P-81 — blocco del collaudo sulla copia»). P-84 l'ha chiuso lo stesso
+giorno: RG_SITO=<cartella> fa misurare una copia intera del sito alla
+suite, al banco e a test_dati. Lo stesso 17 ottobre, in un'altra
+sessione con l'autore, un brainstorming sul miglioramento continuo
+(docs/idee-dopo-gli-account.md, «Le decisioni del 17 ottobre 2026»):
+la misura propria sì, con un ADR, dopo il rilascio — riga 24 —; la
+casella segnalazioni@ la crea l'autore. Pronto: P-81 per ChatGPT, che
+riparte con lo stesso prompt; P-62 con l'autore.
 Alla merge di P-81 la regia toglie il regime di oggi dai controlli, poi
 un rilascio con lo schema 6. P-75 aspetta la base giuridica; P-76 aspetta Q-COSTANZA,
 l'ambito della conclusione (§4, «Dopo P-59», 10) e le fasi (punto 15),
 e il ridisegno parte senza, dichiarandolo.
 
 I prossimi passi, in quest'ordine:
-1. Il resoconto di P-84, RG_SITO; poi P-81 riparte, e il suo
-   resoconto: la merge va
+1. Il resoconto di P-81, ripartito dopo P-84: la merge va
    guardata — tragitti a 375 e 1280 px in Chrome, i tre posti
    dell'invito, il regime letto da tests/regime_pagina.py —, poi un
    prompt per Claude che toglie il regime di oggi dai controlli, come
@@ -277,8 +281,9 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 18 | **La prova con le persone**, sul sito vero, dopo il rilascio del ridisegno — i bot sui mock sono fatti (P-70, 14 ottobre) | l'autore, con Claude | — | il rilascio del ridisegno, e tre-cinque persone, dell'autore | P-70 resta la ricetta; prompt da riscrivere allora |
 | 19 | **Le ricerche**: il parere del professionista sulle donazioni (14 domande, I-11); se all'esame vero si torna indietro fra le domande; Lighthouse su telefono e Safari veri (I-08) | l'autore | — | — | §4, «Dopo P-59» |
 | 20-bis | **I contratti del motore, seconda parte**: Percorso con il «sei qui», costanza, obiettivo, «hai concluso quello che ti avevamo proposto» | Claude | `main` | Q-COSTANZA e la decisione 22 (§4, «Dopo P-59», 3 e 10); e P-68, che disegna il «sei qui» | P-76, da scrivere |
-| 21 | **Il ridisegno**: il progetto (P-79), i raccordi e la specifica (P-80), i due campi del profilo (P-83) e il banco dei tragitti in Chrome (P-82) sono fatti; la realizzazione (P-81) si è fermata il 17 ottobre perché la copia non si può misurare intera; prima `RG_SITO` (P-84), poi P-81, poi la regia toglie il regime di oggi e si fa un rilascio | Claude; ChatGPT | `main`; `ui/main` | P-84 niente; P-81 P-84 fuso | P-84; P-81 |
+| 21 | **Il ridisegno**: il progetto (P-79), i raccordi e la specifica (P-80), i due campi del profilo (P-83) e il banco dei tragitti in Chrome (P-82) sono fatti; la realizzazione (P-81) si è fermata il 17 ottobre perché la copia non si poteva misurare intera, e `RG_SITO` (P-84) lo ha chiuso lo stesso giorno; resta P-81, poi la regia toglie il regime di oggi e si fa un rilascio | ChatGPT | `ui/main` | niente | P-81 |
 | 22 | **Spiegazioni**: il primo lotto di 50, «Segnala un problema», la misura dell'effetto | Claude con l'autore, poi ChatGPT | `main`, `ui/main` | l'indirizzo e la licenza (§4, «Dopo P-59», 2 e 6) | da scrivere |
+| 24 | **La misura propria**: conteggi aggregati di eventi sul server del sito, senza cookie né terzi, a cominciare dal contatore degli ingressi; le registrazioni fra le metriche; MISURA → BRAINSTORM come quinto passo del ciclo (I-19, decisioni 1–3 e 5 del 17 ottobre in `docs/idee-dopo-gli-account.md`) | Claude con l'autore, poi Claude | `main` | un ADR che riscrive «nessun analytics» (specifica §2.1) e R-ACC-09, e la riga nell'informativa; dopo il rilascio del ridisegno | da scrivere |
 | 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | niente dal motore: `PREVISIONI` c'è (P-72), e un modello entra come metodo accanto alla regola semplice; Q-STIMA solo per quando si mostra | da scrivere |
 | 27 | **Esito e previsioni, la pagina e l'informativa** (B-1, B-2), poi un rilascio | ChatGPT | `ui/main` | soltanto la base giuridica (§4, «Dopo P-64», 1–3): P-74 è chiuso | P-75, da scrivere |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo P-59», «Dopo P-64», «Dopo il traguardo» e le voci non barrate |
@@ -299,7 +304,7 @@ Chrome, è chiuso il 17 ottobre. **Per Claude** oggi non c'è un prompt pronto:
 P-75 aspetta la base giuridica, P-76 aspetta Q-COSTANZA e P-68; alla merge di
 P-81 la regia toglie il regime di oggi dai controlli. P-62 con l'autore quando
 vuole.
-**Per Claude** è pronto P-84, `RG_SITO`: la copia intera del sito misurabile dai controlli, che P-81 ha chiesto fermandosi. **Per ChatGPT:** P-81 riparte quando P-84 è fuso, con lo stesso prompt e una riga in più. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
+P-84, `RG_SITO`, è chiuso il 17 ottobre. **Per Claude** oggi non c'è un prompt pronto: la misura propria (riga 24) aspetta il suo ADR, dopo il rilascio. **Per ChatGPT:** P-81 riparte, con lo stesso prompt e la riga su `RG_SITO` al passo 1. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
 che cambiano una promessa (un ADR, la filosofia, la specifica), poi i mock e la
 prova con le persone, poi il codice; «com'è andata» parte presto perché i suoi
 dati arrivano mesi dopo. **Il §5, il §6 e i controlli R-NAV della specifica non
@@ -543,7 +548,12 @@ consuma, non si riprogetta.
      filosofia che P-63 lascia marcata.
   2. **L'indirizzo per le segnalazioni** (C-03): `privacy@` o uno nuovo; la
      proposta è `segnalazioni@`. Ferma «Segnala un problema» (riga 22), e va
-     nell'informativa.
+     nell'informativa. **Deciso dall'autore il 17 ottobre 2026** (I-21,
+     decisione 7 in `docs/idee-dopo-gli-account.md`): `segnalazioni@`, una
+     seconda casella Zimbra Starter su OVH accanto a `privacy@`, non un alias,
+     perché le richieste con scadenze di legge non si mescolino con le
+     segnalazioni. **La crea l'autore**; finché non c'è, in pagina resta il
+     segnaposto (A-3), e l'indirizzo entra nell'informativa dopo P-81.
   3. **Quante risposte fanno un giorno di attività** (I-15): la proposta è
      un'attività conclusa, anche da dieci domande. Ferma la costanza nella
      riga 20.
@@ -691,6 +701,15 @@ consuma, non si riprogetta.
       futura non si pubblica come esistente.* **Deciso dall'autore il 15
       ottobre 2026: solo la prima metà.** L'ADR-006 lo diceva già nel suo
       secondo prezzo; scritto nel §11 del progetto.
+  **Dal brainstorming del 17 ottobre 2026** (`docs/idee-dopo-gli-account.md`,
+  «Il miglioramento continuo»; smistato dalla regia lo stesso giorno): la
+  misura propria è la riga 24 della coda, e aspetta un ADR che riscriva
+  «nessun analytics» e R-ACC-09 — oggi la specifica e l'informativa dicono il
+  contrario, e niente si conta prima che lo dicano loro; **che cosa conta il
+  contatore degli ingressi è da definire**, con la metrica scritta prima;
+  **da dove vengono le persone vere e ogni quanto** resta da decidere
+  (decisione 8), e la classe (I-20) è sospesa finché l'autore non la propone
+  alle scuole. Il file delle idee è uno solo, quello.
   **Da P-79, senza una decisione nuova:** A-2 è il punto 12 (Progressi senza
   account spiega, non invita); A-3 è il punto 2 (l'indirizzo delle
   segnalazioni, con un segnaposto visibile fino ad allora); A-4 è P-76, i
@@ -6091,7 +6110,9 @@ letto il commit, i file nel territorio del motore e le cinque suite.
 
 ### P-81 — ChatGPT: la realizzazione del ridisegno
 
-**Stato:** **fermo, dal 17 ottobre 2026: aspetta P-84.** Lanciato il 17, si è
+**Stato:** **pronto di nuovo, dal 17 ottobre 2026: P-84 è fuso** (`2554a36`),
+e il passo 1 dice `RG_SITO`. Prima era: fermo, dal 17 ottobre 2026, in attesa
+di P-84. Lanciato il 17, si è
 fermato prima di scrivere una riga, come il prompt chiede quando un contratto
 non regge: il passo 1 vuole il verde sulla copia con `RG_PAGINA`, ma
 `RG_PAGINA` sostituisce il solo canonico e `site/app.html` resta la pagina di
@@ -6256,7 +6277,25 @@ una con RG_SITO. Un commit, con la voce in fondo a [Unreleased]; niente
 push. Chiudi con il resoconto di docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** fatto il 17 ottobre 2026, `2554a36` su `main`. `RG_SITO` in
+`test_interfaccia.py`, nel banco in Chrome, nei cinque banchi sotto Node con
+una regola sola (`tests/sito.mjs`) e in `test_dati.py`, dove `serve.py` prende
+la cartella come argomento; il regime letto dalla copia; le due variabili
+insieme, una cartella che manca o senza `index.html` un rosso detto; la riga
+finale che dice la copia. `test_copia_del_sito` rosso prima in 20 su 22, e le
+rotture rosse: la porta senza «Apri Allenati», `site/app.html` di oggi al posto
+della porta, il meccanismo rotto in due modi; N-01:indirizzi sulla copia rosso
+con il banco di prima e verde con questo. **Non fatto, e detto:** la suite
+intera verde con `RG_SITO` sulla pagina di riferimento del client non si
+ottiene senza toccare la pagina — 86 rossi, gli stessi di `RG_PAGINA` meno i
+due che avevano fermato P-81, e sono la pagina di riferimento, non un
+canonico intero —: il metro della copia è la pagina di P-81, scritto nel §10.1
+del progetto. **Trovato:** la prima stesura del test lanciava le suite in
+sottoprocesso e con il codice di prima si richiamava all'infinito, dieci
+processi fermati a mano; ora le sonde provano la guardia (`RG_SONDA`) e a
+tempo scaduto fermano il gruppo. Suite: motore 215/219, server 85/85, dati
+230, specifica 1.012, interfaccia 2.960 in 4 min 16 s sulla pagina vera. La
+regia ha letto il commit, i file nel territorio del motore e le cinque suite.
 
 ### I segnaposto — i prompt che non si possono ancora scrivere
 
@@ -6274,10 +6313,12 @@ il resoconto del precedente, e la regia scrive il suo prompt allora.
 - **P-83**: scritto il 15 ottobre 2026, dopo la decisione A-5, chiuso lo stesso giorno.
 - **P-82**: scritto il 15 ottobre 2026, chiuso il 17.
 - **P-81**: scritto il 17 ottobre 2026, qui sopra; lanciato e fermato lo
-  stesso giorno sul collaudo della copia, aspetta P-84, scritto il 17. Alla sua merge la regia
+  stesso giorno sul collaudo della copia; P-84 scritto e chiuso il 17, e P-81
+  è di nuovo pronto. Alla sua merge la regia
   scrive un prompt per Claude che toglie il regime di oggi dai controlli, come
-  P-12, P-37, P-47 e P-50; poi un rilascio con lo schema 6, e la riga 18: le
-  persone sul sito vero.
+  P-12, P-37, P-47 e P-50 — e che mette una guardia alla lettura di C-22 che
+  la rottura «ricarica le pagine aperte» fa cadere (registro, 17 ottobre) —;
+  poi un rilascio con lo schema 6, e la riga 18: le persone sul sito vero.
 
 **Dopo P-63 e P-64, dal 4 ottobre 2026.**
 
@@ -7063,3 +7104,28 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   P-81 riprodotto come test rosso prima —; il banco serve già una cartella
   intera per C-22, quindi è piccolo. P-81 riparte con lo stesso prompt e la
   riga su `RG_SITO`. Nessuna suite rilanciata qui: nessun codice è cambiato.
+- **17 ottobre 2026 — P-84 chiuso, P-81 di nuovo pronto; il brainstorming
+  del 17 smistato.** Il resoconto letto contro il repo: il commit con il
+  trailer, quattordici file nel territorio del motore più la riga di
+  `AGENTS.md`, la coda non toccata; le cinque suite sullo stato fuso —
+  motore 215/219, server 85/85, dati 230, specifica 1.012, interfaccia 2.960
+  con la 8620 guardata libera per 90 s. Il §10.1 del progetto dice ora che il
+  raccordo c'è e qual è il metro della copia. Sopra P-84 c'era un commit che
+  nessun prompt aveva chiesto, `4ca0228`: un brainstorming con l'autore in
+  un'altra sessione, sul file unico delle idee, con nove decisioni. La regia
+  le ha smistate: la misura propria è la riga 24, che aspetta un ADR; la
+  casella `segnalazioni@` chiude il punto 2 del §4 e la crea l'autore; le
+  persone vere e il contatore restano da definire nel §4. P-84 aveva trovato
+  quel file modificato nel checkout e l'aveva lasciato fuori dal commit,
+  com'è giusto: la sua voce di CHANGELOG è entrata però in stage con quella
+  di P-84, e il commit dopo lo dice. Due sessioni nello stesso checkout nello
+  stesso giorno sono la cosa che `AGENTS.md` chiede di non fare: è andata
+  bene perché i file erano diversi, non perché fosse sicuro.
+  **Un rosso a volte, nel banco e non nel codice:** nel primo giro della suite
+  qui la rottura di C-22 «il sw.js che ricarica le pagine aperte» è uscita
+  rossa per «Inspected target navigated or closed» invece che per il suo
+  motivo — la rottura ricarica la scheda mentre il banco la sta interrogando
+  in `finche()`, e la lettura cade prima del controllo che la prenderebbe; il
+  secondo giro, 2.960 verdi. È la famiglia di P-38: va messa dentro una
+  guardia come la lettura che la segue, nel prossimo prompt del motore, e
+  fino ad allora un rosso con quel testo si rilancia e si dice.
