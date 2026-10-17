@@ -40,10 +40,11 @@
 // che il raccordo sia l'unico a chiedere selezioni, righe e dettaglio.
 
 import { readFileSync } from 'node:fs';
-import * as REALE from '../site/engine.js';
+import { MOTORE, nelSito } from './sito.mjs';
+// Il motore e la banca della cartella del sito: site/, o la copia di RG_SITO (P-84).
+const REALE = await import(MOTORE);
 import { funzioni, conDipendenze, dipendenze, scriptModulo } from './pagina_js.mjs';
 
-const RADICE = new URL('..', import.meta.url);
 const RACCORDO = ['preparaCarteggio', 'avviaCarteggio', 'concludiCarteggio', 'rispostaTecnica', 'riepilogoCarteggio'];
 // Le funzioni del motore che scelgono, contano o scrivono righe. Nel raccordo
 // ci sono, ognuna al suo posto, provaCarteggio, giroTecniche, tappeto e coda
@@ -69,8 +70,8 @@ function congela(x) {
   }
   return x;
 }
-const CART = congela(JSON.parse(readFileSync(new URL('site/dati/carteggio.json', RADICE), 'utf8')));
-const TEC = congela(JSON.parse(readFileSync(new URL('site/dati/tecniche.json', RADICE), 'utf8')));
+const CART = congela(JSON.parse(readFileSync(nelSito('dati/carteggio.json'), 'utf8')));
+const TEC = congela(JSON.parse(readFileSync(nelSito('dati/tecniche.json'), 'utf8')));
 const OGGI = '2026-09-30';
 const ADESSO = Date.parse('2026-09-30T10:00:00+02:00');
 const TS = '2026-09-30T10:50:00+02:00';

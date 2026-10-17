@@ -1177,6 +1177,100 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   toccato, e non è stato rifatto con la LTS 24. Guardiano verde. `site/`,
   `server/` e `docs/prossime-sessioni.md` non sono stati toccati.
 
+### Test — P-84: una copia intera del sito, misurabile dai controlli
+
+- **`RG_SITO=<cartella>` sta per `site/` intera.** P-81 si è fermato il 17
+  ottobre (`docs/ridisegno-progetto.md` §10.1, «P-81 — blocco del collaudo
+  sulla copia»): deve costruire il ridisegno in una copia fuori da `site/` e
+  avere il verde prima di sostituire, e `RG_PAGINA` sostituisce il solo
+  canonico. Con la pagina di riferimento del client del ridisegno al posto del
+  canonico, `test_porta_app` leggeva ancora `site/app.html`, cioè l'app di
+  oggi, e il banco in Chrome serviva `/app` da `site/`. Ora con `RG_SITO` il
+  canonico, la porta, il manifest, le pagine legali, i dati, le figure e il
+  motore vengono da quella cartella: in `tests/test_interfaccia.py`; nel banco
+  del client, che serve la cartella e ne legge la banca per riconoscere i
+  quesiti; nei cinque banchi sotto Node, che ne leggono banca e motore, con una
+  regola sola in `tests/sito.mjs`; e in `tests/test_dati.py`, così anche
+  `test_indirizzi`, il manifest e `strumenti/serve.py` (che prende la cartella
+  come argomento, `site/` di predefinito) si misurano sulla copia. Il regime si
+  legge dalla copia con `regime_pagina.py` com'è; la regola della cartella sta
+  lì accanto, `cartella_del_sito()`, letta dalle due suite. `RG_PAGINA` resta
+  com'è. **Le due insieme sono un errore detto**, non una precedenza muta; una
+  cartella che non esiste o senza `index.html` è un rosso, e la suite non
+  comincia: mai un ripiego su `site/`. La riga finale di tutte e due le suite
+  dice «sulla copia del sito …, NON su site/», verde o rossa.
+
+- **Prima il rosso, poi il meccanismo.** Un controllo nuovo,
+  `test_copia_del_sito`, mette in una copia di `site/` la pagina di
+  riferimento del client del ridisegno e la sua porta — con `start_url` a `/` e
+  le pagine legali che tornano a `/`, come P-81 le scriverà — e pretende, in
+  processi a parte, che `test_interfaccia` legga la copia (regime, canonico,
+  porta, `test_porta_app` verde), che `test_indirizzi` sia verde sulla copia, e
+  che i banchi in Node prendano cartella e motore della copia. Con il codice di
+  prima era **rosso in 20 verifiche su 22**, e quella che conta diceva «la porta
+  letta è site/app.html di oggi». Al contrario: una porta senza «Apri Allenati»
+  è rossa per la porta in tutte e due le suite; `site/app.html` di oggi al posto
+  della porta è rosso come lo era per P-81, «importa /engine.js … dichiara
+  indirizzoApi()»; i tre errori sono rossi detti dalle due suite e dai banchi.
+  Il meccanismo rotto due volte — il ripiego su `site/` per una cartella che
+  manca, i banchi che ignorano `RG_SITO` — fa rosso il controllo, 2 e 5
+  verifiche. **In Chrome**, con il banco di `HEAD` estratto accanto,
+  `N-01:indirizzi` sulla copia è rosso su «/app porta ad Allenati · Quiz», con
+  l'app di oggi in schermata; con il banco nuovo `N-01:indirizzi` e
+  `N-01:documento` fanno 33 verifiche verdi, e una porta che non rimanda e la
+  porta di oggi sono rosse per la porta. Non è un controllo nuovo sulla pagina:
+  prova il meccanismo, ed è lui a non lasciare che torni muto.
+
+- **Trovato scrivendolo:** la prima stesura del controllo lanciava le suite
+  intere in un processo a parte per gli errori, e con il codice di prima — che
+  ignorava `RG_SITO` — ogni suite rilanciava il controllo, senza fine: dieci
+  processi fermati a mano in un minuto, prima che un banco prendesse la 8620.
+  Ora le sonde provano la guardia che `main()` chiama per prima, non la suite,
+  una sonda non rifà le sonde (`RG_SONDA`), e a tempo scaduto si ferma il gruppo
+  intero dei processi. E la pagina di riferimento del client nel ridisegno, su
+  una copia, è rossa in `test_manifest_icone`: non ha la favicon né i meta Open
+  Graph. È il contenuto della pagina, che P-81 scrive; la sonda guarda il solo
+  `test_indirizzi`.
+
+- **La suite intera sulla copia della pagina di riferimento non è verde, e non
+  per `RG_SITO`.** Misurato sulla stessa copia, una volta per variabile:
+  `RG_SITO` dà **86 rossi su 2.826**, `RG_PAGINA` sul suo `index.html` 88, e i
+  due insiemi coincidono **meno esattamente i due che hanno fermato P-81**,
+  «nel ridisegno site/app.html è la porta» e «N-01:indirizzi: /app porta ad
+  Allenati · Quiz». Nessuno degli 86 nomina la porta, N-01 o `RG_SITO`: tutti
+  N-01 sulla pagina della copia sono verdi. Sono la pagina di riferimento del
+  client, che il banco del ridisegno usa per i gruppi del client e non è un
+  canonico intero: non ha `MODI` né i raccordi dei quiz, del ciclo, della mappa
+  e del Carteggio (§10.1 delle aree 2–5), non dichiara `CASA` e `fuoriCasa()`,
+  non ha i testi di C-18 né la verifica di C-03 su Progressi, chiama il motore
+  senza le dichiarazioni di `docs/eccezioni-interfaccia.md`, e la nota
+  dell'oscuramento mostrata nel runner contiene «regola» (P-01:visto). Così
+  `test_dati.py` sulla copia: 5 rossi su 225, la favicon e i meta Open Graph
+  della pagina. È il lavoro di P-81 sul suo canonico, non del meccanismo: il
+  metro della copia è la pagina vera di P-81, non quella di riferimento.
+
+  Suite: motore 215/219 con i quattro skip previsti; server 85/85, non
+  toccato, con Node 25.3; dati 230; specifica 1.012; interfaccia **2.960**
+  (erano 2.938: le 22 di `test_copia_del_sito`) sulla pagina vera, in 4 min
+  16 s, e con `RG_SITO` sulla copia della pagina di riferimento 2.740 su 2.826,
+  in 5 min 07 s, con gli 86 rossi qui sopra; ognuna con la 8620 guardata libera
+  per 90 s prima. Guardiano verde. `site/`, `server/` e
+  `docs/prossime-sessioni.md` non sono stati toccati.
+
+### Progettato — il miglioramento continuo, brainstorming del 17 ottobre
+
+- **Il ciclo prende un quinto passo, la misura**, perché oggi niente torna
+  indietro da chi usa il sito: P-70 non ha avuto persone, e chi entra senza
+  account e se ne va non lascia traccia. Scritto in
+  `docs/idee-dopo-gli-account.md`, che da oggi è **il file unico delle idee**
+  per le prossime release, per decisione dell'autore: nessun file nuovo.
+  Tre idee, I-19 (la misura), I-20 (la classe con la scuola nautica, sospesa) e
+  I-21 (`segnalazioni@` su OVH), e nove decisioni. Le più grosse: per la
+  prossima release una **misura propria**, cioè conteggi aggregati senza cookie
+  sul server del sito, con un ADR che riscriverà «nessun analytics» e R-ACC-09;
+  le registrazioni misurate fra le altre metriche; open source e GitHub restano.
+  Nessun codice, nessuna suite toccata.
+
 ## [0.30.0] — 2026-10-03
 
 **Il sito più semplice: niente offline.** Rotta Giusta si apre con la rete,

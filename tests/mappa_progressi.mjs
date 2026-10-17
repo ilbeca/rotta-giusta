@@ -43,10 +43,11 @@
 // il raccordo sia l'unico a chiedere la mappa, e che Inizia passi da lui.
 
 import { readFileSync } from 'node:fs';
-import * as REALE from '../site/engine.js';
+import { MOTORE, nelSito } from './sito.mjs';
+// Il motore e la banca della cartella del sito: site/, o la copia di RG_SITO (P-84).
+const REALE = await import(MOTORE);
 import { funzioni, conDipendenze, dipendenze, scriptModulo } from './pagina_js.mjs';
 
-const RADICE = new URL('..', import.meta.url);
 const RACCORDO = ['mappaProgressi', 'anteprimaProgressi', 'avviaProgressi'];
 const RACCORDO_ALLENA = ['anteprimaAllenaProgressi', 'avviaAllenaProgressi'];
 // Le funzioni del motore che contano o scelgono. Nel raccordo della mappa ci
@@ -73,8 +74,8 @@ function congela(x) {
   }
   return x;
 }
-const items = congela(JSON.parse(readFileSync(new URL('site/dati/quiz.json', RADICE), 'utf8')));
-const meta = JSON.parse(readFileSync(new URL('site/dati/meta.json', RADICE), 'utf8'));
+const items = congela(JSON.parse(readFileSync(nelSito('dati/quiz.json'), 'utf8')));
+const meta = JSON.parse(readFileSync(nelSito('dati/meta.json'), 'utf8'));
 const OGGI = '2026-09-30';
 const B = items.filter((x) => x.k === 'base');
 const V = items.filter((x) => x.k === 'vela');

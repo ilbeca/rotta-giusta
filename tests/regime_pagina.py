@@ -18,10 +18,43 @@ Il documento canonico: nel ridisegno `site/index.html`, nel regime attuale
 ridisegno vive in `index.html`, e `app.html` e' la porta di compatibilita'.
 `RG_PAGINA=<file>` sostituisce il canonico, qualunque sia: il regime si legge
 dalla copia, e la copia sta per `index.html` o per `app.html` di conseguenza.
+
+`RG_SITO=<cartella>` (P-84) sostituisce site/ intera — canonico, porta,
+manifest, pagine legali, dati, figure —, e il regime si legge dalla cartella
+con la stessa regola. Le due variabili insieme sono un errore, non una
+precedenza: chi le mette tutte e due non sa piu' che cosa sta misurando.
+`cartella_del_sito()` e' la sola che le legge, per le due suite in Python;
+tests/sito.mjs dice lo stesso ai banchi in Node.
 """
 
+import os
 import re
 from pathlib import Path
+
+
+def cartella_del_sito(radice, ambiente=None):
+    """(cartella, copia, errore): la cartella del sito che le suite leggono.
+
+    Senza RG_SITO e' site/ del repo e `copia` e' None. Con RG_SITO e' quella
+    cartella, risolta; `errore` dice perche' non si misura — una cartella che non
+    esiste, una senza index.html, RG_PAGINA accanto —, e chi chiama lo fa
+    diventare un rosso. Mai un ripiego su site/: un verde di site/ scambiato per
+    il verde di una copia e' il guasto muto che RG_SITO deve evitare.
+    """
+    ambiente = os.environ if ambiente is None else ambiente
+    site = Path(radice) / 'site'
+    sito = ambiente.get('RG_SITO')
+    if not sito:
+        return site, None, ''
+    c = Path(sito).expanduser().resolve()
+    if ambiente.get('RG_PAGINA'):
+        return c, sito, ('RG_SITO e RG_PAGINA insieme: la prima sostituisce site/ intera, la seconda il solo '
+                         'canonico, e non si sceglie per te quale valga. Usane una.')
+    if not c.is_dir():
+        return c, sito, 'RG_SITO=%s: la cartella non esiste. Non si ripiega su site/.' % sito
+    if not (c / 'index.html').is_file():
+        return c, sito, 'RG_SITO=%s: nella cartella non c\'e\' index.html, quindi non e\' una copia del sito. Non si ripiega su site/.' % sito
+    return c, sito, ''
 
 VISTE_RIDISEGNO = ['home', 'allenati', 'esame', 'progressi']
 SEGMENTI = ['quiz', 'carteggio', 'segnali']

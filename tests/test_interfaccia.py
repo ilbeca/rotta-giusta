@@ -29,10 +29,18 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from regime_pagina import (regime_ridisegno, canonico as _canonico, VISTE_RIDISEGNO, SEGMENTI,  # noqa: E402
-                           ALIAS_VISTE, INGRESSO, e_porta, senza_commenti)
+                           ALIAS_VISTE, INGRESSO, e_porta, senza_commenti, cartella_del_sito)
 
 RADICE = Path(__file__).resolve().parent.parent
-SITE = RADICE / 'site'
+# RG_SITO=<cartella> (P-84) fa leggere e servire quella cartella al posto di
+# site/, tutta: canonico, porta, manifest, pagine legali, dati, figure — qui, nel
+# banco del client in Chrome (che eredita la variabile, tests/sito.mjs) e nei
+# banchi sotto Node. Serve a P-81, che costruisce il ridisegno in una copia e
+# deve avere il verde prima di sostituire. RG_PAGINA resta com'e'; le due
+# insieme, una cartella che non c'e' o senza index.html sono un rosso detto
+# (fermati_se_il_sito_manca(), la prima cosa di main()). La riga finale dice
+# che si e' misurata una copia, e quale.
+SITE, SITO, ERRORE_SITO = cartella_del_sito(RADICE)
 
 fatti = 0
 falliti = []
@@ -42,7 +50,7 @@ def check(nome, cond, extra=''):
     global fatti
     fatti += 1
     if not cond:
-        falliti.append(nome + (' — ' + extra if extra else ''))
+        falliti.append(nome + (' — ' + (extra if isinstance(extra, str) else repr(extra)) if extra else ''))
 
 
 # RG_PAGINA=<file> fa girare la suite su una copia del documento di studio al
@@ -3612,6 +3620,165 @@ def test_porta_app():
         check('la regola della porta prende una porta %s' % cosa, bool(e_porta(rotta)))
 
 
+# --- RG_SITO, provato contro se' stesso (P-84) -------------------------------------
+#
+# P-81 si e' fermato il 17 ottobre 2026 (ridisegno-progetto §10.1, «P-81 —
+# blocco del collaudo sulla copia»): con RG_PAGINA sulla pagina di riferimento
+# del ridisegno, test_porta_app leggeva ancora site/app.html, cioe' l'app di
+# oggi, e il banco del client serviva /app da site/. Una copia del canonico non
+# si collaudava insieme alla sua porta, al manifest e alle pagine legali. Da qui
+# RG_SITO=<cartella>, che sta per site/ intera; e questo controllo lo tiene fermo
+# a ogni esecuzione: le due suite che leggono il sito lo leggono dalla copia, il
+# regime si legge dalla copia, una porta rotta e la porta di oggi sono rosse per
+# la porta, e una copia che non c'e' e' un rosso detto, non un ripiego su site/.
+
+def copia_del_sito(cartella, index=None, app=None):
+    """Una copia di site/ in `cartella`. Con `index`, una copia nel ridisegno: il
+    canonico e la porta dati, `start_url` a / e le pagine legali che tornano a /,
+    come P-81 le scrivera'. Restituisce la cartella."""
+    import shutil
+    d = Path(cartella)
+    shutil.copytree(RADICE / 'site', d)
+    if index is not None:
+        (d / 'index.html').write_text(index, encoding='utf-8')
+        man = json.loads((d / 'manifest.json').read_text(encoding='utf-8'))
+        man['start_url'] = '/'
+        (d / 'manifest.json').write_text(json.dumps(man, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+        for f in ('privacy.html', 'avvertenza.html'):
+            t = (d / f).read_text(encoding='utf-8')
+            (d / f).write_text(t.replace('href="/app"', 'href="/"'), encoding='utf-8')
+    if app is not None:
+        (d / 'app.html').write_text(app, encoding='utf-8')
+    return d
+
+
+SONDA_INTERFACCIA = r'''
+import json, sys
+sys.path.insert(0, sys.argv[1])
+import test_interfaccia as t
+t.test_porta_app()
+print(json.dumps({'sito': str(t.SITE), 'regime': t.regime(), 'nome': t.nome_canonico(),
+                  'porta': t.leggi('app.html'), 'falliti': t.falliti}))
+'''
+SONDA_DATI = r'''
+import json, sys
+sys.path.insert(0, sys.argv[1])
+import test_dati as t
+t.test_indirizzi()
+print(json.dumps({'sito': str(t.SITE), 'falliti': t.falliti}))
+'''
+SONDA_BANCO = "import('./tests/sito.mjs').then((s) => console.log(JSON.stringify({ sito: s.SITE, motore: s.MOTORE })))" \
+              ".catch((e) => { console.log(JSON.stringify({ errore: e.message })); })"
+
+
+def sonda(comando, ambiente, json_out=True):
+    """Un processo a parte con RG_SITO e RG_PAGINA come dice `ambiente`, e
+    nient'altro di quelli di chi lancia: (codice d'uscita, uscita). Il processo
+    ha un gruppo suo, e a tempo scaduto si ferma tutto il gruppo: un banco in
+    Node rimasto acceso terrebbe la 8620 (misurato, alla prima stesura)."""
+    import signal
+    env = {k: v for k, v in os.environ.items() if k not in ('RG_SITO', 'RG_PAGINA')}
+    env.update(ambiente)
+    env['RG_SONDA'] = '1'
+    try:
+        p = subprocess.Popen(comando, env=env, cwd=str(RADICE), stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                             text=True, start_new_session=True)
+        out, err = p.communicate(timeout=120)
+    except subprocess.TimeoutExpired:
+        os.killpg(p.pid, signal.SIGKILL)
+        p.communicate()
+        return None, ('' if not json_out else {'errore': 'a tempo scaduto: 120 s'})
+    except OSError as e:
+        return None, (str(e) if not json_out else {'errore': str(e)})
+    if not json_out:
+        return p.returncode, out + err
+    try:
+        return p.returncode, json.loads(out.strip().splitlines()[-1])
+    except (ValueError, IndexError):
+        return p.returncode, {'errore': (err or out)[-600:]}
+
+
+SONDA_FERMO = r'''
+import sys
+sys.path.insert(0, sys.argv[1])
+import test_interfaccia as t
+t.fermati_se_il_sito_manca()
+print('nessun errore del sito')
+'''
+
+
+def test_copia_del_sito():
+    import tempfile
+    if os.environ.get('RG_SONDA'):
+        # Dentro una sonda non si rifanno le sonde: alla prima stesura una suite
+        # lanciata in una sonda rilanciava le sue, senza fine.
+        return
+    tests = str(RADICE / 'tests')
+    rif = RIFERIMENTO_RIDISEGNO_CLIENT.read_text(encoding='utf-8')
+    porta = PORTA_RIFERIMENTO.read_text(encoding='utf-8')
+    with tempfile.TemporaryDirectory(prefix='rg-sito-') as tmp:
+        tmp = Path(tmp).resolve()
+        # 1. Il blocco di P-81: la pagina di riferimento del client del ridisegno
+        # e la sua porta in una copia di site/. Tutto si legge dalla copia.
+        copia = copia_del_sito(tmp / 'ridisegno', index=rif, app=porta)
+        _, i = sonda([sys.executable, '-c', SONDA_INTERFACCIA, tests], {'RG_SITO': str(copia)})
+        check('RG_SITO: test_interfaccia legge il sito dalla copia', i.get('sito') == str(copia), i.get('sito') or i.get('errore'))
+        check('RG_SITO: il regime si legge dalla copia, ed e\' il ridisegno', i.get('regime') == 'ridisegno', i.get('regime'))
+        check('RG_SITO: il canonico della copia e\' index.html', i.get('nome') == 'index.html', i.get('nome'))
+        check('RG_SITO: la porta letta e\' quella della copia, non site/app.html', i.get('porta') == porta,
+              'site/app.html di oggi' if i.get('porta') == leggi_repo('app.html') else (i.get('errore') or 'un\'altra'))
+        check('RG_SITO: test_porta_app e\' verde sulla porta della copia', i.get('falliti') == [], i.get('falliti') or i.get('errore'))
+        _, d = sonda([sys.executable, '-c', SONDA_DATI, tests], {'RG_SITO': str(copia)})
+        check('RG_SITO: test_dati legge il sito dalla copia', d.get('sito') == str(copia), d.get('sito') or d.get('errore'))
+        check('RG_SITO: test_indirizzi e\' verde sulla copia, manifest compreso', d.get('falliti') == [], d.get('falliti') or d.get('errore'))
+        _, b = sonda(['node', '-e', SONDA_BANCO], {'RG_SITO': str(copia)})
+        check('RG_SITO: i banchi in Node leggono e servono la copia', b.get('sito') == str(copia), b.get('sito') or b.get('errore'))
+        check('RG_SITO: i banchi in Node prendono il motore della copia',
+              b.get('motore') == (copia / 'engine.js').as_uri(), b.get('motore') or b.get('errore'))
+        # 2. Al contrario: una porta rotta e' rossa per la porta, nelle due suite.
+        rotta = copia_del_sito(tmp / 'porta-rotta', index=rif, app=porta.replace('Apri Allenati</a>', 'Vai</a>'))
+        _, i = sonda([sys.executable, '-c', SONDA_INTERFACCIA, tests], {'RG_SITO': str(rotta)})
+        check('RG_SITO al contrario: una porta senza «Apri Allenati» e\' rossa per la porta',
+              any('porta di compatibilita' in f and 'Apri Allenati' in f for f in i.get('falliti', [])), i.get('falliti') or i.get('errore'))
+        _, d = sonda([sys.executable, '-c', SONDA_DATI, tests], {'RG_SITO': str(rotta)})
+        check('RG_SITO al contrario: e test_indirizzi la nomina',
+              any('porta di compatibilita' in f and 'Apri Allenati' in f for f in d.get('falliti', [])), d.get('falliti') or d.get('errore'))
+        # 3. E la porta di oggi, site/app.html, al posto della porta: rossa come
+        # lo era per P-81, perche' e' l'app e non una porta.
+        oggi = copia_del_sito(tmp / 'porta-di-oggi', index=rif)
+        _, i = sonda([sys.executable, '-c', SONDA_INTERFACCIA, tests], {'RG_SITO': str(oggi)})
+        check('RG_SITO al contrario: con site/app.html di oggi come porta e\' rosso come per P-81',
+              any('porta di compatibilita' in f and 'importa /engine.js' in f and 'indirizzoApi' in f for f in i.get('falliti', [])),
+              i.get('falliti') or i.get('errore'))
+        _, d = sonda([sys.executable, '-c', SONDA_DATI, tests], {'RG_SITO': str(oggi)})
+        check('RG_SITO al contrario: e test_indirizzi lo dice',
+              any('porta di compatibilita' in f for f in d.get('falliti', [])), d.get('falliti') or d.get('errore'))
+        # 4. Una copia che non c'e', una senza index.html, e le due variabili
+        # insieme: un rosso che lo dice, in tutte e due le suite e nei banchi.
+        vuota = tmp / 'senza-index'
+        vuota.mkdir()
+        casi = [('una cartella che non esiste', {'RG_SITO': str(tmp / 'non-esiste')}, 'non esiste'),
+                ('una cartella senza index.html', {'RG_SITO': str(vuota)}, 'index.html'),
+                ('RG_SITO e RG_PAGINA insieme', {'RG_SITO': str(copia), 'RG_PAGINA': str(RIFERIMENTO_RIDISEGNO_CLIENT)}, 'insieme')]
+        for cosa, amb, parola in casi:
+            # test_interfaccia si ferma prima di ogni controllo: si prova la
+            # guardia che main() chiama per prima, non la suite intera.
+            c, out = sonda([sys.executable, '-c', SONDA_FERMO, tests], amb, json_out=False)
+            check('RG_SITO: %s e\' un rosso detto da test_interfaccia' % cosa,
+                  c == 1 and parola in out and 'nessun errore del sito' not in out, '%s: %s' % (c, out[-300:]))
+            c, out = sonda([sys.executable, str(RADICE / 'tests' / 'test_dati.py')], amb, json_out=False)
+            check('RG_SITO: %s e\' un rosso detto da test_dati' % cosa,
+                  c == 1 and parola in out and 'verifiche passate' not in out, '%s: %s' % (c, out[-300:]))
+            _, b = sonda(['node', '-e', SONDA_BANCO], amb)
+            check('RG_SITO: %s e\' un errore detto anche dai banchi in Node' % cosa,
+                  parola in (b.get('errore') or '') and not b.get('sito'), json.dumps(b))
+
+
+def leggi_repo(p):
+    """Un file di site/ del repo, qualunque sia RG_SITO."""
+    return (RADICE / 'site' / p).read_text(encoding='utf-8')
+
+
 def banco_ridisegno(testo):
     """Le verifiche del ridisegno, eseguite sotto Node sulla pagina data (tests/ridisegno.mjs)."""
     try:
@@ -4077,13 +4244,22 @@ def test_trasloco():
           'a[href="/app"]' in vetrina and ('`https://${CASA}/app`' in vetrina or "'https://' + CASA + '/app'" in vetrina))
 
 
+def fermati_se_il_sito_manca():
+    """Il rosso di RG_SITO, prima di ogni controllo: una copia che non si puo'
+    misurare non ripiega su site/, e la suite non comincia nemmeno."""
+    if ERRORE_SITO:
+        print('1 verifica FALLITA, e nessun\'altra eseguita:\n\n  ✗ ' + ERRORE_SITO)
+        sys.exit(1)
+
+
 def main():
+    fermati_se_il_sito_manca()
     for t in (test_viste_dichiarate, test_ogni_vista_ha_una_porta,
               test_voci_barra, test_modalita_quiz, test_selettori,
               test_intenzioni_provate_al_contrario,
               test_ciclo_riepilogo, test_ciclo_riprova, test_ciclo_provato_al_contrario,
               test_mappa_righe, test_mappa_azioni, test_mappa_stati, test_mappa_provata_al_contrario,
-              test_regime_pagina, test_porta_app, test_ridisegno_navigazione, test_ridisegno_raccordi, test_ridisegno_provato_al_contrario,
+              test_regime_pagina, test_porta_app, test_copia_del_sito, test_ridisegno_navigazione, test_ridisegno_raccordi, test_ridisegno_provato_al_contrario,
               test_carteggio_preparazione, test_carteggio_righe, test_carteggio_riepilogo,
               test_carteggio_senza_riprova, test_carteggio_ambito, test_carteggio_provato_al_contrario,
               test_client_nella_pagina, test_client_primo_ingresso, test_client_senza_account, test_client_email_registrata,
@@ -4108,6 +4284,7 @@ def main():
               test_testi_leggibili, test_alt_di_contenuto, test_trasloco):
         t()
     su = (' — sulla copia %s, NON su site/%s' % (PAGINA, nome_canonico())) if PAGINA else ''
+    su += (' — sulla copia del sito %s, NON su site/' % SITE) if SITO else ''
     su += ' (regime %s)' % regime()
     if falliti:
         print('%d verifiche FALLITE su %d%s:\n' % (len(falliti), fatti, su))

@@ -1289,7 +1289,17 @@ sezioni (R-NAV-06), la barra con quattro parole intere e i tre segmenti
 §10.1 del progetto (R-NAV-01, R-NAV-10), e i banchi dei quiz, del ciclo, della
 mappa — con i cinque stati e Allena (R-MAPPA-18) —, del Carteggio e del client
 leggono il canonico e lo servono su `/`. `RG_PAGINA=<file>` vale per il
-canonico di qualunque regime: il regime si legge dalla copia.
+canonico di qualunque regime: il regime si legge dalla copia. Il canonico da
+solo, però: la porta `/app`, il manifest e le pagine legali restano quelli di
+`site/`, ed è così che P-81 si è fermato il 17 ottobre 2026. Per una copia
+intera c'è `RG_SITO=<cartella>` (P-84), che sta per `site/` tutta — canonico,
+porta, manifest, pagine legali, dati, figure — in `test_interfaccia.py`, nel
+banco del client in Chrome e nei banchi sotto Node (`tests/sito.mjs`), e in
+`test_dati.py`, con `test_indirizzi` e il manifest; il regime si legge dalla
+cartella con la stessa regola. Le due variabili insieme sono un errore detto,
+e una cartella che non c'è o senza `index.html` un rosso, mai un ripiego su
+`site/`. La riga finale di ogni suite dice la copia: un verde su una copia
+non è un verde di `main`.
 
 **Il banco dei tragitti, da P-82 (16 ottobre 2026).** Il gruppo N-01 del
 banco del client guida in Chrome una pagina nel regime del ridisegno: il
@@ -2036,7 +2046,10 @@ di nuovo un regime di pagina, quello del ridisegno (§6.2), letto da due
 dichiarazioni e con la scadenza alla merge di P-81: cambia il documento che i
 banchi leggono, non i loro raccordi. Per misurare una bozza senza toccare
 `site/`, `RG_PAGINA=<file>` fa girare la suite dell'interfaccia su una copia del
-canonico — di qualunque regime —, e la riga finale lo dice.
+canonico — di qualunque regime —, e la riga finale lo dice. Per misurare un
+sito intero, porta e manifest compresi, `RG_SITO=<cartella>` (P-84, §6.2) fa
+lo stesso con una copia di `site/`, e lo fa anche `test_dati.py`; il
+controllo `test_copia_del_sito` lo prova contro sé stesso a ogni esecuzione.
 
 ### 9.8 Che cosa non deve sparire, e che cosa si deve leggere
 
@@ -3556,3 +3569,13 @@ successo, ed è il motivo per cui questo file esiste.
   §9.4 dicono che cosa il banco vede e che cosa resta al collaudo di P-81. Un
   regime solo letto, due pagine: la pagina di oggi passa i suoi controlli e
   per lei il gruppo non si applica.
+- **17 ottobre 2026 — una copia intera del sito, per i controlli (P-84).**
+  P-81 si è fermato perché `RG_PAGINA` sostituisce il solo canonico, e la porta,
+  il manifest e le pagine legali restavano quelli di `site/`. `RG_SITO=<cartella>`
+  sostituisce `site/` intera, nelle due suite che leggono il sito e nei banchi;
+  il §6.2 e il §9.6 lo dicono accanto a `RG_PAGINA`. Nessun requisito nuovo, e
+  nessun controllo nuovo sulla pagina: `test_copia_del_sito` prova il
+  meccanismo, non la pagina. Misurato sulla copia della pagina di riferimento
+  del client: con `RG_SITO` gli stessi rossi di `RG_PAGINA` meno la porta e
+  `N-01:indirizzi`; gli 86 che restano sono quella pagina, che non è un
+  canonico intero (CHANGELOG, P-84).

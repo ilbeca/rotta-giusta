@@ -24,10 +24,11 @@
 // non lettura di codice. Il lettore della pagina sta in tests/pagina_js.mjs.
 
 import { readFileSync } from 'node:fs';
-import * as REALE from '../site/engine.js';
+import { MOTORE, nelSito } from './sito.mjs';
+// Il motore e la banca della cartella del sito: site/, o la copia di RG_SITO (P-84).
+const REALE = await import(MOTORE);
 import { funzioni, conDipendenze, scriptModulo } from './pagina_js.mjs';
 
-const RADICE = new URL('..', import.meta.url);
 const INTENZIONI = ['mirata', 'argomento', 'sbagliate', 'sim', 'screening'];
 // Le funzioni del motore che scelgono domande. Solo queste si registrano: le
 // altre (`classifica`, `ritmo`, `isoLocale`…) passano dritte, perche' la pagina
@@ -43,8 +44,8 @@ function check(gruppo, nome, ok, extra = '') {
 
 // --- la fonte: la banca vera, uno storico sintetico ------------------------
 
-const items = JSON.parse(readFileSync(new URL('site/dati/quiz.json', RADICE), 'utf8'));
-const meta = JSON.parse(readFileSync(new URL('site/dati/meta.json', RADICE), 'utf8'));
+const items = JSON.parse(readFileSync(nelSito('dati/quiz.json'), 'utf8'));
+const meta = JSON.parse(readFileSync(nelSito('dati/meta.json'), 'utf8'));
 const OGGI = '2026-09-26';
 const base = items.filter((x) => x.k === 'base');
 const vela = items.filter((x) => x.k === 'vela');

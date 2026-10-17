@@ -30,6 +30,7 @@ node --test tests/test_server.mjs                 # il server degli account, e i
 python3 tests/test_dati.py                        # dati, invarianti, e il guardiano
 python3 tests/test_interfaccia.py                 # le viste, le porte, le modalità, e la pagina in Chrome headless
 RG_PAGINA=<file> python3 tests/test_interfaccia.py  # la stessa suite su una copia dell'app, non su site/app.html
+RG_SITO=<cartella> python3 tests/test_interfaccia.py # la stessa suite su una copia di site/ intera (porta, manifest, legali, dati); anche test_dati.py
 python3 tests/test_specifica.py                   # ogni requisito ha il suo controllo
 python3 strumenti/controlla.py                    # il guardiano da solo
 python3 fonte/verifica.py                         # i testi del carteggio contro il PDF (serve pypdf)

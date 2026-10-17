@@ -76,13 +76,16 @@ import { tmpdir } from 'node:os';
 import { join, dirname, extname, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { avviaChrome } from './browser.mjs';
-import * as E from '../site/engine.js';
+import { SITE, MOTORE } from './sito.mjs';
 import { avvia } from '../server/server.mjs';
 import { aggiungiRighe, azzera as azzeraDb, esitiDi as esitiDb } from '../server/db.mjs';
 import { copia as copiaDb, ripristina as ripristinaDb } from '../server/copie.mjs';
 
 const RADICE = join(dirname(fileURLToPath(import.meta.url)), '..');
-const SITE = join(RADICE, 'site');
+// La cartella del sito che il banco legge e serve: site/, o la copia di RG_SITO
+// (P-84). Il motore viene dalla stessa cartella, perche' i numeri attesi e la
+// pagina servita parlino con lo stesso engine.js.
+const E = await import(MOTORE);
 export const PORTA_API = 8620;
 const ESISTENTE = { email: 'gia@esempio.it', password: 'barca vela e vento' };
 const ECONOMICO = { memory: 1024, passes: 1, parallelism: 1 };

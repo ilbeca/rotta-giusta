@@ -117,11 +117,12 @@ class Statichost(http.server.SimpleHTTPRequestHandler):
             super().log_message(formato, *argomenti)
 
 
-def server(porta, silenzioso=False):
+def server(porta, silenzioso=False, cartella=RADICE):
+    """`cartella` e' site/; tests/test_dati.py passa la copia di RG_SITO (P-84)."""
     gestore = functools.partial(type('Gestore', (Statichost,), {'silenzioso': silenzioso}),
-                                directory=RADICE)
+                                directory=cartella)
     s = http.server.ThreadingHTTPServer(('127.0.0.1', porta), gestore)
-    s.headers_sito = leggi_headers(RADICE)
+    s.headers_sito = leggi_headers(cartella)
     return s
 
 

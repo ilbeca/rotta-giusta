@@ -30,10 +30,11 @@
 // navigazione qui e' una funzione — un indirizzo entra, una destinazione esce.
 
 import { readFileSync } from 'node:fs';
-import * as REALE from '../site/engine.js';
+import { MOTORE, nelSito } from './sito.mjs';
+// Il motore e la banca della cartella del sito: site/, o la copia di RG_SITO (P-84).
+const REALE = await import(MOTORE);
 import { funzioni, dipendenze, scriptModulo, chiusa } from './pagina_js.mjs';
 
-const RADICE = new URL('..', import.meta.url);
 const VISTE = ['home', 'allenati', 'esame', 'progressi'];
 const SEGMENTI = ['quiz', 'carteggio', 'segnali'];
 const ALIAS = { quiz: ['allenati', 'quiz', null], cart: ['allenati', 'carteggio', null], seg: ['allenati', 'segnali', null],
@@ -100,8 +101,8 @@ function check(gruppo, nome, ok, extra = '') {
   verifiche.push({ gruppo, nome, ok: !!ok, extra: ok ? '' : extra });
 }
 
-const items = JSON.parse(readFileSync(new URL('site/dati/quiz.json', RADICE), 'utf8'));
-const meta = JSON.parse(readFileSync(new URL('site/dati/meta.json', RADICE), 'utf8'));
+const items = JSON.parse(readFileSync(nelSito('dati/quiz.json'), 'utf8'));
+const meta = JSON.parse(readFileSync(nelSito('dati/meta.json'), 'utf8'));
 const OGGI = '2026-10-15';
 const base = items.filter((x) => x.k === 'base');
 const vela = items.filter((x) => x.k === 'vela');

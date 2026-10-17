@@ -19,8 +19,6 @@ import sys
 from pathlib import Path
 
 RADICE = Path(__file__).resolve().parent.parent
-SITE = RADICE / 'site'
-DATI = SITE / 'dati'
 
 # Le frasi spia sono una sola cosa, e stanno nel guardiano.
 sys.path.insert(0, str(RADICE / 'strumenti'))
@@ -28,6 +26,18 @@ sys.path.insert(0, str(RADICE / 'tests'))
 from controlla import SPIA, controlla_testo, file_di_testo  # noqa: E402
 import controlla  # noqa: E402
 import regime_pagina  # noqa: E402
+
+# RG_SITO=<cartella> (P-84): i dati, il manifest, le pagine e gli indirizzi si
+# misurano su quella copia di site/, con la regola di tests/regime_pagina.py —
+# perche' test_indirizzi e la versione nel manifest dicano la copia che P-81
+# sta per sostituire, non il sito di oggi. Una copia che non si puo' misurare e'
+# un rosso detto qui, prima di leggere un file: mai un ripiego su site/. Il
+# guardiano e i documenti restano quelli del repo.
+SITE, SITO, ERRORE_SITO = regime_pagina.cartella_del_sito(RADICE)
+if ERRORE_SITO:
+    print('1 verifica FALLITA, e nessun\'altra eseguita:\n   ' + ERRORE_SITO)
+    sys.exit(1)
+DATI = SITE / 'dati'
 
 ok = 0
 falliti = []
@@ -562,7 +572,7 @@ def test_rinomino():
         if not f.is_file() or f.suffix not in ('.html', '.js', '.json'):
             continue
         testo = f.read_text(encoding='utf-8')
-        rel = str(f.relative_to(RADICE))
+        rel = 'site/' + f.relative_to(SITE).as_posix()
         check('%s: nessun "%s"' % (rel, NOME_VECCHIO), NOME_VECCHIO not in testo)
         check('%s: nessun prefisso di cache "%s"' % (rel, PREFISSO_VECCHIO),
               PREFISSO_VECCHIO not in testo)
@@ -718,7 +728,7 @@ def test_serve():
     import http.client
     import threading
     import serve
-    s = serve.server(0, silenzioso=True)
+    s = serve.server(0, silenzioso=True, cartella=str(SITE))
     t = threading.Thread(target=s.serve_forever, daemon=True)
     t.start()
     porta = s.server_address[1]
@@ -777,12 +787,15 @@ def main():
               test_carteggio, test_sw, test_nessuna_risorsa_di_terzi, test_rinomino, test_manifest_icone, test_indirizzi,
               test_serve):
         t()
+    su = (' — sulla copia del sito %s, NON su site/' % SITE) if SITO else ''
     if falliti:
-        print('%d verifiche passate, %d FALLITE:' % (ok, len(falliti)))
+        print('%d verifiche passate, %d FALLITE%s:' % (ok, len(falliti), su))
         for f in falliti:
             print('  ', f)
+        if su:
+            print('\n' + su.lstrip(' —'))
         sys.exit(1)
-    print('%d verifiche passate' % ok)
+    print('%d verifiche passate%s' % (ok, su))
 
 
 if __name__ == '__main__':

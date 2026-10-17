@@ -32,10 +32,11 @@
 // riceve la lista da `avviaRiprova` e che usa l'identita' e l'auto che le passa.
 
 import { readFileSync } from 'node:fs';
-import * as REALE from '../site/engine.js';
+import { MOTORE, nelSito } from './sito.mjs';
+// Il motore e la banca della cartella del sito: site/, o la copia di RG_SITO (P-84).
+const REALE = await import(MOTORE);
 import { funzioni, conDipendenze, dipendenze, scriptModulo } from './pagina_js.mjs';
 
-const RADICE = new URL('..', import.meta.url);
 const RACCORDO = ['riepilogoQuiz', 'anteprimaRiprova', 'avviaRiprova'];
 // Le funzioni del motore che scelgono domande: nessuna, fuori da
 // erroriSessione(), ha un posto nel ciclo. «Riprova questi N» non e' il ripasso
@@ -51,7 +52,7 @@ function check(gruppo, nome, ok, extra = '') {
 
 // --- la banca vera, e uno storico che non e' solo quello dell'attivita' -----
 
-const items = JSON.parse(readFileSync(new URL('site/dati/quiz.json', RADICE), 'utf8'));
+const items = JSON.parse(readFileSync(nelSito('dati/quiz.json'), 'utf8'));
 const B = items.filter((x) => x.k === 'base');
 const V = items.filter((x) => x.k === 'vela');
 const ts = (giorno, ora) => `2026-09-${giorno}T${ora}+02:00`;
