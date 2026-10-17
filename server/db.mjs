@@ -284,7 +284,7 @@ export function creaAccount(db, { email, password, ora = adesso() }) {
  * confronto sta dentro la transazione che scrive: fra la lettura della
  * sessione e l'invio un azzeramento puo' essere arrivato da un'altra scheda.
  */
-export function aggiungiRighe(db, accountId, righe, { quesiti, generazione } = {}) {
+export function aggiungiRighe(db, accountId, righe, { quesiti, generazione, nonRaccolta = () => null } = {}) {
   const nuove = [], gia = [], scartate = [];
   const esiste = db.prepare('SELECT 1 FROM riga WHERE account_id = ? AND uid = ?');
   const inserisci = db.prepare(`
@@ -305,6 +305,13 @@ export function aggiungiRighe(db, accountId, righe, { quesiti, generazione } = {
       const motivo = validaRiga(r, { quesiti });
       if (motivo) { scartate.push({ uid: typeof r?.uid === 'string' ? r.uid : null, motivo, indice }); return; }
       if (esiste.get(accountId, r.uid)) { gia.push(r.uid); return; }
+      // Una riga di una raccolta spenta (P-86, account-progetto §2.7-bis) si
+      // scarta con il suo motivo, come una che validaRiga() rifiuta. Dopo
+      // «gia' presente», non prima: una riga raccolta quando la raccolta era
+      // accesa, e rimandata da un dispositivo, e' sul server, e dirla scartata
+      // farebbe credere a chi la rimanda di averla persa.
+      const spenta = nonRaccolta(r);
+      if (spenta) { scartate.push({ uid: r.uid, motivo: spenta, indice }); return; }
       // Il cursore viene da un contatore che sale sempre, non da MAX(seq):
       // cancellare l'account con le righe piu' recenti farebbe scendere il
       // massimo, e un numero gia' dato tornerebbe in circolo.

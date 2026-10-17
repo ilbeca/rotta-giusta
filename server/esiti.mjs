@@ -18,6 +18,7 @@
 import { readFileSync } from 'node:fs';
 import { esitiDi, scriviEsiti, togliEsiti } from './db.mjs';
 import { PROVA_CARTEGGIO } from '../site/engine.js';
+import { RACCOLTE } from './raccolte.mjs';
 
 const GIORNO_MS = 24 * 3600 * 1000;
 
@@ -99,7 +100,19 @@ function controllaGiorno(giorno, ora) {
   return null;
 }
 
-export function creaEsiti({ db, ora, cancellazioni }) {
+/**
+ * Il rifiuto a raccolta spenta (P-86, account-progetto §2.7-bis): un 403 che
+ * si legge, prima di guardare se il corpo e' giusto — non e' il corpo il
+ * problema. Togliere resta possibile: `DELETE`, e un `PUT` che dice soltanto
+ * `null`.
+ */
+const SPENTA = [403, { errore: 'raccolta_spenta', raccolta: 'esiti_e_previsioni',
+  messaggio: "Questo server non raccoglie ancora l'esito dell'esame: niente è stato salvato. "
+    + "Lo raccoglierà quando l'informativa lo dirà. Un esito già detto resta nell'export, e si può togliere." }];
+const soloTogliere = (corpo) => oggetto(corpo) && oggetto(corpo.prove) && Object.keys(corpo.prove).length > 0
+  && Object.values(corpo.prove).every((p) => p === null);
+
+export function creaEsiti({ db, ora, cancellazioni, raccolte = () => RACCOLTE }) {
   const iso = () => new Date(ora()).toISOString();
 
   return {
@@ -111,6 +124,7 @@ export function creaEsiti({ db, ora, cancellazioni }) {
      * ventunesimo giorno dell'account.
      */
     scrivi({ account, corpo }) {
+      if (!raccolte().esiti_e_previsioni && !soloTogliere(corpo)) return SPENTA;
       if (!oggetto(corpo)) return rifiuto('corpo', 'Il corpo è { giorno, prove: { carteggio, base, vela, pratica } }.');
       const estranei = Object.keys(corpo).filter((x) => x !== 'giorno' && x !== 'prove');
       if (estranei.length) {

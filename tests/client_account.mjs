@@ -80,6 +80,7 @@ import { SITE, MOTORE } from './sito.mjs';
 import { avvia } from '../server/server.mjs';
 import { aggiungiRighe, azzera as azzeraDb, esitiDi as esitiDb } from '../server/db.mjs';
 import { copia as copiaDb, ripristina as ripristinaDb } from '../server/copie.mjs';
+import { RACCOLTE, MOTIVO_AVVIO_SPENTO } from '../server/raccolte.mjs';
 
 const RADICE = join(dirname(fileURLToPath(import.meta.url)), '..');
 // La cartella del sito che il banco legge e serve: site/, o la copia di RG_SITO
@@ -1980,6 +1981,61 @@ async function c10(b, ctx, v, parte) {
   if (vuole('senza')) await fermaAlPrimo(v, (w) => c10senza(b, ctx, w, g));
   if (vuole('file')) await fermaAlPrimo(v, (w) => c10file(b, ctx, w, g));
   if (vuole('segnali')) await fermaAlPrimo(v, (w) => c10segnali(b, ctx, w, g));
+  if (vuole('avvio')) await fermaAlPrimo(v, (w) => c10avvio(b, ctx, w, `${g}:avvio`));
+}
+
+/**
+ * C-10:avvio (P-86, R-ACC-86): un file dei progressi con una riga d'avvio,
+ * importato nell'account dalla pagina. La riga d'avvio e' una raccolta nuova
+ * (P-72), spenta sul server finche' la sua informativa non c'e'
+ * (account-progetto §2.7-bis): con il server com'e' nel codice la riga e'
+ * scartata, la pagina lo dice con il suo motivo, le altre righe arrivano e il
+ * server non la ha; con la raccolta accesa — il server delle pagine di
+ * riferimento — la stessa riga arriva. Il banco legge dal server della corsia
+ * quale dei due casi ha davanti, e fa lo stesso numero di verifiche.
+ */
+async function c10avvio(b, ctx, v, g) {
+  const K = await nuovoAccount(ctx, 'c10a');
+  const quiz = righeDi(`va${serie}`, 2);
+  const avvio = E.rigaAvvio({ simUid: `va${serie}-sim`, kind: 'base', prova: 'base', ts: quiz[0].ts, motore: '0.31.0', righe: [] });
+  const percorso = ctx.file(`avvio-${serie}.json`, JSON.stringify({ app: 'rotta-giusta', righe: [...quiz, avvio] }));
+  const accesa = ctx.raccolte().esiti_e_previsioni;
+  const motivo = `${MOTIVO_AVVIO_SPENTO}: 1`;
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
+    if (!await dentro(tab, K)) { v.push({ gruppo: g, nome: 'avvio: si entra', ok: false, extra: 'l\'intestazione non dice «Account»' }); return; }
+    await apriPorta(tab, 'info');
+    await tab.caricaFile('#importa-file', percorso);
+    if (!await tab.attendi(pulsante('Importa nel mio account'), REAZIONE)) {
+      v.push({ gruppo: g, nome: 'avvio: l\'anteprima offre l\'importazione', ok: false, extra: 'nessun «Importa nel mio account»' }); return;
+    }
+    await clicca(tab, 'Importa nel mio account');
+    const sulServer = () => ctx.righeServer(K.email);
+    const tipi = () => sulServer().map((r) => r._t).sort().join('');
+    if (!accesa) {
+      const arrivate = await finche(() => sulServer().length === 2, REAZIONE) && await maiPer(() => sulServer().length !== 2);
+      v.push({ gruppo: g, nome: 'raccolta spenta: le risposte del file arrivano, la riga d\'avvio no', ok: arrivate && tipi() === 'qq',
+        extra: `sul server ${sulServer().length} righe, tipi «${tipi()}»: attese le due risposte e nessuna riga d'avvio` });
+      const detto = await tab.attendi(testoVisibile(motivo), REAZIONE);
+      v.push({ gruppo: g, nome: 'raccolta spenta: la pagina dice la riga scartata con il suo motivo', ok: detto,
+        extra: `${detto ? '' : `«${motivo}» non si vede. `}Nella finestra: ${JSON.stringify(await tab.valuta(js("const f = document.querySelector('[aria-modal=\"true\"]'); return f ? f.innerText : null;")))}` });
+      const n = c.scaricati().length;
+      await clicca(tab, 'Scarica le righe non importate');
+      const scarti = await scaricato(c, n);
+      v.push({ gruppo: g, nome: 'raccolta spenta: la riga d\'avvio sta fra le righe non importate da scaricare', ok: !!scarti && stessi(uidDi(scarti.dati), new Set([avvio.uid])),
+        extra: scarti ? `nel file ${[...uidDi(scarti.dati)].join(', ') || 'niente'}` : 'nessun file' });
+    } else {
+      const arrivate = await finche(() => sulServer().length === 3, REAZIONE);
+      v.push({ gruppo: g, nome: 'raccolta accesa: le risposte e la riga d\'avvio arrivano', ok: arrivate && tipi() === 'aqq',
+        extra: `sul server ${sulServer().length} righe, tipi «${tipi()}»` });
+      const lei = sulServer().find((r) => r._t === 'a');
+      v.push({ gruppo: g, nome: 'raccolta accesa: la riga d\'avvio sul server e\' quella del file', ok: !!lei && JSON.stringify(lei) === JSON.stringify(avvio),
+        extra: lei ? JSON.stringify(lei).slice(0, 120) : 'non c\'e\'' });
+      v.push({ gruppo: g, nome: 'raccolta accesa: nessuno scarto per la riga d\'avvio', ok: await maiPer(() => tab.valuta(testoVisibile(MOTIVO_AVVIO_SPENTO))),
+        extra: `«${MOTIVO_AVVIO_SPENTO}» si vede` });
+    }
+  } finally { await c.chiudi(); }
 }
 
 async function c10senza(b, ctx, v, g) {
@@ -5898,7 +5954,13 @@ async function corsia(k, cartella, portaApi = PORTA_API) {
   const orologio = { t: Date.now() };
   let api;
   const percorsoDb = join(cartella, `conti-${k}.db`), cancellazioni = join(cartella, `cancellazioni-${k}`);
-  const accendi = (porta) => avvia({ db: percorsoDb, cancellazioni, porta,
+  // Le raccolte nuove (P-86, account-progetto §2.7-bis): la pagina vera parla
+  // con il server com'e' nel codice del tag — oggi spente —, le pagine di
+  // riferimento con le raccolte accese, perche' sono il contratto di quando lo
+  // saranno (E-01, P-01, N-01:scelte). Si fissano a ogni gruppo, e un riavvio
+  // della corsia (C-14) le rimette.
+  let raccolte = { ...RACCOLTE };
+  const accendi = (porta) => avvia({ db: percorsoDb, cancellazioni, porta, raccolte,
     host: '127.0.0.1', ora: () => orologio.t, argon2: ECONOMICO, origine: sp.origine, sito: sp.origine,
     posta: { invia: async (m) => { if (rifiuta.has(m.a)) throw new Error('rifiutata dalla posta del banco'); mail.push(m); } }, log: () => {} });
   let copie = 0;
@@ -5951,6 +6013,8 @@ async function corsia(k, cartella, portaApi = PORTA_API) {
     segnaliDi: (email) => Object.fromEntries(api.db.prepare('SELECT modo, migliore, giocate FROM segnali s JOIN account a ON a.id = s.account_id WHERE a.email = ?')
       .all(email).map((x) => [x.modo, { migliore: x.migliore, giocate: x.giocate }])),
     dataEsame: (email, d) => api.db.prepare('UPDATE account SET data_esame = ? WHERE email = ?').run(d, email),
+    // --- per C-10:avvio (P-86): quali raccolte il server della corsia ha accese.
+    raccolte: () => api.raccolte(),
     // --- per N-01 (P-82): le scelte di preparazione nel profilo (P-83).
     scelteDi: (email) => api.db.prepare('SELECT abilitazione, conseguimento FROM account WHERE email = ?').get(email),
     // --- per E-01 (P-74): gli esiti dell'esame, scritti e letti nel database.
@@ -5995,6 +6059,8 @@ async function corsia(k, cartella, portaApi = PORTA_API) {
       ctx.ingresso = corrente.ingresso;
       ctx.regimi = p.regimi || {};
       ctx.regime = p.regime || 'attuale';
+      raccolte = p.nome === 'app' ? { ...RACCOLTE } : { esiti_e_previsioni: true, scelte_di_preparazione: true };
+      api.cambiaRaccolte(raccolte);
       orologio.t += 2 * 3600 * 1000;
       return gruppo(b, ctx, g);
     },

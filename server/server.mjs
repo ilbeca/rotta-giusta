@@ -23,6 +23,7 @@ import { creaConti, COOKIE } from './conti.mjs';
 import { creaRighe, CORPO_RIGHE } from './righe.mjs';
 import { creaEsiti } from './esiti.mjs';
 import { creaAllarmi } from './allarmi.mjs';
+import { raccolteDa } from './raccolte.mjs';
 import { postaScaleway, postaAssente } from './posta.mjs';
 
 // La versione si legge dalla radice del codice, non dalla cartella dei dati:
@@ -84,15 +85,26 @@ function tokenDalCookie(req) {
  * Tre cose si passano da fuori, e la suite le cambia: `ora`, l'orologio in
  * millisecondi; `posta`, il fornitore (`{ invia(mail) }`); `argon2`, i
  * parametri — `null` o assenti vuol dire quelli del §20.
+ *
+ * E una quarta, dal P-86: `raccolte`, le eccezioni a quello che
+ * server/raccolte.mjs dice acceso. La passano i test e i banchi, mai la
+ * macchina: li' le raccolte sono quelle del codice del tag (§2.7-bis), e il
+ * processo avviato dalla riga di comando non legge niente dall'ambiente per
+ * cambiarle. `cambiaRaccolte()` le cambia a server acceso, per il banco del
+ * client, che sullo stesso server prova pagine diverse.
  */
 export async function avvia({
   db: percorsoDb, cancellazioni, porta = 8620, host = '127.0.0.1', log = (m) => console.error(m),
   ora = Date.now, posta = postaAssente, argon2 = null,
   origine = 'https://rottagiusta.it', sito = 'https://rottagiusta.it', proxy = false, titolare = null,
+  raccolte: eccezioni = {},
 } = {}) {
   if (!percorsoDb) throw new Error('manca il percorso del database (RG_DB)');
   if (!cancellazioni) throw new Error('manca il percorso del file delle cancellazioni (RG_CANCELLAZIONI)');
   const parametri = argon2 ?? PARAMETRI;
+  // Prima di aprire il database: un nome sbagliato si dice subito.
+  let attive = raccolteDa(eccezioni);
+  const raccolte = () => attive;
   const db = apri(percorsoDb, { log });
   // Il segno di chi si oppone alle statistiche (§15.2) vale come lo dice il
   // file: un ripristino fatto con il rilascio di prima non lo rimette.
@@ -111,9 +123,9 @@ export async function avvia({
   // L'hash con cui si controlla la password di un'email che non esiste (§5.3):
   // una volta, adesso, con i parametri veri, cosi' costa quanto uno vero.
   const fittizia = await hashPassword(randomBytes(24).toString('base64'), parametri);
-  const conti = creaConti({ db, ora, argon2: parametri, posta, sito, cancellazioni, fittizia, log });
-  const righe = creaRighe({ db, ora, versione: VERSIONE });
-  const esiti = creaEsiti({ db, ora, cancellazioni });
+  const conti = creaConti({ db, ora, argon2: parametri, posta, sito, cancellazioni, fittizia, log, raccolte });
+  const righe = creaRighe({ db, ora, versione: VERSIONE, raccolte });
+  const esiti = creaEsiti({ db, ora, cancellazioni, raccolte });
   const allarmi = creaAllarmi({ db, ora, titolare, spedisci: conti.spedisci, registra: conti.registra, log });
 
   // Le rotte: [gestore, che cosa chiede, quanto puo' pesare il corpo].
@@ -124,6 +136,8 @@ export async function avvia({
     versione: VERSIONE,
     schema: { codice: SCHEMA, database: versioneSchema(db) },
     epoca: leggiEpoca(db),
+    // Che cosa raccoglie questo server (§2.7-bis): dopo rg-aggiorna si vede da fuori.
+    raccolte: { ...attive },
   }];
   const rotte = {
     '/v1/salute': { GET: [salute] },
@@ -247,6 +261,8 @@ export async function avvia({
     calcoli: calcolati,
     manutenzione: () => conti.manutenzione(),
     allarmi: () => allarmi.controlla(),
+    raccolte: () => ({ ...attive }),
+    cambiaRaccolte: (x) => { attive = raccolteDa(x, attive); return { ...attive }; },
     chiudi: () => new Promise((ok) => server.close(() => { db.close(); ok(); })),
   };
 }
@@ -275,6 +291,9 @@ if (process.argv[1] && realpathSync(process.argv[1]) === fileURLToPath(import.me
     posta,
   });
   if (!process.env.RG_TITOLARE) console.error('titolare non configurato (RG_TITOLARE): gli allarmi andranno solo nel registro e nel log');
+  // Le raccolte sono quelle del codice di questo tag (§2.7-bis): si dicono, non si leggono dall'ambiente.
+  const accese = Object.entries(s.raccolte()).filter(([, v]) => v).map(([k]) => k);
+  console.error(`raccolte accese: ${accese.length ? accese.join(', ') : 'nessuna'} (server/raccolte.mjs)`);
   console.error(`rg-api ${VERSIONE} su ${s.indirizzo}`);
   // Il lavoro quotidiano (§14, §15.3): all'avvio e poi ogni giorno. Gli
   // allarmi ogni ora: un attacco si deve vedere prima di domani (§15.4).

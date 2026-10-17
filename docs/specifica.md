@@ -438,7 +438,9 @@ motore — `confermateRisposte` di un trasferimento, `nonSalvateRisposte` di un
 conflitto (R-PREV-07, 11, 12). Senza account non si scrive, e nemmeno con un
 server che non dichiara `'a'` in `tipi_riga` (R-PREV-05, 09). La pagina di oggi
 non la scrive: la scriverà B-2, e fino ad allora P-01 pretende che non ci sia
-(§9.13).
+(§9.13). **E il server non la raccoglie** finché la sua informativa non c'è
+(P-86, §3.7): a raccolta spenta non dichiara `'a'` e la scarta con il motivo
+«riga d'avvio non raccolta», anche da un import (R-ACC-83, 86).
 
 **Come la pagina sa che il server li accetta.** Il server dice `tipi_riga` in
 `GET /v1/io` (P-73), ed è `TIPI_RIGA` del suo motore: `'b'` c'è solo da P-71.
@@ -674,6 +676,20 @@ vero anche quando l'implementazione cambia.
   assente — il server di prima — spegne la funzione nella pagina, non la accende
   (R-ESITO-03, R-PREV-09). La pagina di oggi non chiede l'esito: lo chiederà
   B-1, e fino ad allora E-01 pretende che non lo faccia (§9.13).
+- **Le tre raccolte nuove sono spente fino alla loro decisione** (deciso
+  dall'autore il 17 ottobre 2026; P-86, `account-progetto.md` §2.7-bis): l'esito
+  dell'esame e la riga d'avvio con la previsione si accendono con la merge di
+  P-75, le scelte di preparazione con il rilascio di P-81, perché base
+  giuridica e informativa vengono prima del trattamento. Spente vuol dire
+  scritture rifiutate sul server con un motivo che si legge — `PUT /v1/esito`
+  un `403`, una riga `'a'` scartata riga per riga anche da un import, le due
+  scelte nel profilo un `422` con il campo —, e capability non dichiarate nella
+  descrizione: niente `esiti`, `'a'` fuori da `tipi_riga`, le scelte fuori da
+  `campi_profilo`, cioè la strada del server di prima. Quello che c'è già resta
+  leggibile, esportabile e cancellabile. L'interruttore sta nel codice,
+  `RACCOLTE` in `server/raccolte.mjs`, così un tag dice che cosa è acceso, e
+  `GET /v1/salute` lo dice da fuori; la v0.31.0 esce con tutte spente
+  (R-ACC-82…86).
 - **Il titolare legge un account da un posto solo**, `server/leggi.mjs`, dalla
   macchina e mai dal web: un'email e un motivo obbligatorio, l'account e le sue
   attività con le funzioni del motore, e una riga nel registro per ogni
@@ -2140,7 +2156,7 @@ controllo in `test_server.mjs`.
 | R-ACC-52 | Un azzeramento fatto altrove, scoperto inviando o ricevendo, sospende invii e ricezioni finché chi studia non sceglie: la pagina dice quante risposte di qui non sono salvate, niente rientra, scartare chiede di confermare la perdita, la scelta rimandata resta raggiungibile e riaperta conta anche le risposte date intanto; dopo, la copia è quella del server e le risposte nuove entrano | `test_interfaccia.py::test_client_azzeramento` |
 | R-ACC-53 | Dopo il ripristino di una copia, la pagina vede l'epoca nuova, rimanda la risposta che il server ha perso, e un altro dispositivo la riceve: R-ACC-24 visto dalla pagina | `test_interfaccia.py::test_client_ripristino` |
 | R-ACC-54 | L'uscita regge anche una sessione che non c'è più: un `401` all'uscita pulisce la copia, non dice che serve la rete; con la sessione revocata e risposte non inviate le fa scaricare e cancella solo dopo una scelta esplicita, senza mandarle a nessun account. «Esci da tutti i dispositivi» chiude ogni sessione sul server e pulisce qui; l'altro dispositivo lo scopre con un `401` e tiene la sua copia, congelata | `test_interfaccia.py::test_client_uscita` |
-| R-ACC-55 | La data d'esame dopo la registrazione è facoltativa e non inventata: la data scritta nella pagina si propone e si salva solo al clic, com'è anche se passata; senza, il campo è vuoto; un salvataggio fallito lo dice; entrando in un account che ha la data, il passo non si ripete, la data resta e la pagina mostra quella del server. Nel ridisegno l'onboarding chiede anche «che cosa stai preparando?», due scelte facoltative senza un default, con le stesse regole: «salvate» solo con i valori riletti dal server, e solo con un server che dichiara i due campi in `campi_profilo` (P-83, A-5, sul server dal 15 ottobre 2026): con uno che non li dichiara nessuna promessa di persistenza. Nel ridisegno lo provano N-01:scelte e l'onboarding di N-01:registrazione (P-82): «Scelte salvate» e il database con i due campi; un 200 che rilegge valori diversi non è «salvate»; senza `campi_profilo` nessuna promessa e niente al server; senza account «Scelte applicate a questa pagina» (N-01:storage) | `test_interfaccia.py::test_client_data` |
+| R-ACC-55 | La data d'esame dopo la registrazione è facoltativa e non inventata: la data scritta nella pagina si propone e si salva solo al clic, com'è anche se passata; senza, il campo è vuoto; un salvataggio fallito lo dice; entrando in un account che ha la data, il passo non si ripete, la data resta e la pagina mostra quella del server. Nel ridisegno l'onboarding chiede anche «che cosa stai preparando?», due scelte facoltative senza un default, con le stesse regole: «salvate» solo con i valori riletti dal server, e solo con un server che dichiara i due campi in `campi_profilo` (P-83, A-5, sul server dal 15 ottobre 2026, e spenti nel server in esercizio fino al rilascio di P-81: P-86, R-ACC-84): con uno che non li dichiara nessuna promessa di persistenza. Nel ridisegno lo provano N-01:scelte e l'onboarding di N-01:registrazione (P-82): «Scelte salvate» e il database con i due campi; un 200 che rilegge valori diversi non è «salvate»; senza `campi_profilo` nessuna promessa e niente al server; senza account «Scelte applicate a questa pagina» (N-01:storage) | `test_interfaccia.py::test_client_data` |
 | R-ACC-56 | «Scarica i tuoi progressi» con l'account è l'export del server, e dice quante risposte da inviare non contiene, scaricabili a parte; su un'origine senza API nessun modulo d'account, nessuna richiesta all'API e niente di personale nel browser: un link a `rottagiusta.it/app` | `test_interfaccia.py::test_client_export` |
 | R-ACC-57 | I testi di `site/` sono quelli della versione con gli account: nessuna delle frasi che gli account rendono false, commenti compresi, e tutte quelle del §11.2 del progetto del client. Il contenuto giuridico dell'informativa resta al gate dell'autore | `test_interfaccia.py::test_client_testi` |
 | R-ACC-58 | La pagina ha il client degli account: dichiara `indirizzoApi()`, e una pagina che non la dichiara — quella di prima di P-18 — è rossa, qui e in ogni gruppo del banco | `test_interfaccia.py::test_client_nella_pagina` |
@@ -2166,6 +2182,11 @@ controllo in `test_server.mjs`.
 | R-ACC-79 | L'export porta le scelte, e un altro account che carica il file come la pagina — righe e punteggi — resta con le sue | `test_server.mjs::esporta: il file porta le scelte di preparazione, e un altro account che lo carica non le riceve` |
 | R-ACC-80 | Una copia dello schema 5 si ripristina allo schema 6 con le scelte nulle, non inventate; una dello schema 6 le riporta; lo strumento del titolare le dice `null` su un database di prima | `test_server.mjs::ripristino: una copia dello schema 5 si porta allo schema 6, e le scelte dette dopo la copia si perdono, non si inventano` |
 | R-ACC-81 | Il rilascio di prima sul database di dopo parte, non dichiara `campi_profilo`, butta le scelte con un `200` — la ragione della capability —, e cancellando un account le porta via anche dai byte | `test_server.mjs::profilo: il rilascio di prima sul database di dopo non dice campi_profilo, butta le scelte con un 200, e cancellando le porta via dai byte` |
+| R-ACC-82 | Le raccolte nuove hanno un interruttore nel codice del server, `RACCOLTE` in `server/raccolte.mjs`, uno per decisione — `esiti_e_previsioni`, `scelte_di_preparazione` —, e il rilascio esce con tutti e due spenti; `GET /v1/salute` dice le raccolte accese, e il processo avviato come sulla macchina le prende dal codice e non dall'ambiente; un nome o un valore sbagliato nell'opzione d'avvio è un errore | `test_server.mjs::raccolte: l interruttore sta nel codice, il rilascio le tiene spente, e la salute lo dice` |
+| R-ACC-83 | Con esiti e previsioni spenti, un `PUT /v1/esito` che dice una prova è un `403 raccolta_spenta` che si legge, prima di guardare il corpo, e niente è scritto; un `PUT` di soli `null` e il `DELETE` tolgono; una riga `'a'` in `POST /v1/righe` è scartata con il motivo «riga d'avvio non raccolta», le altre dello stesso invio entrano, e un trasferimento la conta fra gli scarti; la descrizione non porta `esiti` e `tipi_riga` non porta `'a'` | `test_server.mjs::raccolte: con esiti e previsioni spenti, l esito e la riga d avvio sono rifiutati con il motivo, e niente si scrive` |
+| R-ACC-84 | Con le scelte di preparazione spente, `PUT /v1/profilo` con `abilitazione` o `conseguimento` non nulli è un `422 raccolta_spenta` con il campo, e niente è scritto, nemmeno la data o i punteggi accanto; `null` toglie; la descrizione non porta le scelte e `campi_profilo` è `['data_esame', 'segnali']` | `test_server.mjs::raccolte: con le scelte di preparazione spente, il profilo le rifiuta con il campo e non scrive niente` |
+| R-ACC-85 | Spegnere dopo aver acceso non toglie niente: esiti, riga d'avvio e scelte restano nel database; l'export li porta, la ricezione restituisce la riga d'avvio, lo strumento del titolare li mostra; la riga d'avvio già raccolta, rimandata, è «già presente»; `DELETE /v1/esito`, un `PUT` di soli `null`, `null` su una scelta, l'azzeramento e la cancellazione dell'account li tolgono | `test_server.mjs::raccolte: spegnere dopo aver acceso non toglie niente, e quello che c e si legge, si porta via e si cancella` |
+| R-ACC-86 | Dalla pagina vera, con il server com'è nel codice, un file con una riga d'avvio importato nell'account: le risposte arrivano, la riga d'avvio no, la finestra la dice scartata con il suo motivo, e sta fra le righe non importate da scaricare; con la raccolta accesa — le pagine di riferimento — la stessa riga arriva com'era (C-10:avvio) | `test_interfaccia.py::test_client_import_avvio` |
 
 R-ACC-20 e R-ACC-24 sono i primi requisiti del server con un controllo che si
 esegue, e il giro intero sta in `node server/ripristina.mjs --prova`, che la
@@ -2348,6 +2369,21 @@ P-82); l'informativa, che li nomina con P-81 (§11.2 del progetto del client);
 le statistiche, che non li portano in nessuna fonte finché l'autore non
 decide (§15.2 e §20 di `account-progetto.md`); e che l'export porti la data
 d'esame, che oggi non porta mentre porta le due scelte (§20).
+
+**Le raccolte spente (P-86).** La decisione dell'autore del 17 ottobre 2026
+(§3.7, `account-progetto.md` §2.7-bis): le tre raccolte nuove dalla v0.30.0
+restano spente sul server fino alla loro informativa. R-ACC-82…85 si eseguono
+contro il server vero, nei tre versi — spente, accese, spente dopo l'accensione
+con i dati ancora lì —; R-ACC-86 in Chrome, sulla pagina vera e su quella di
+riferimento. Provati al contrario: ventidue rotture del server, una alla volta,
+tutte rosse nel test che le riguarda, e la parte del banco rossa con il server
+che accoglie la riga d'avvio. **Che cosa non vedono:** la macchina, che riceve
+questo codice con il rilascio; un `PUT /v1/profilo` o una riga mandati da una
+pagina di prima che non legge le capability — oggi non ce n'è —; il segnalibro
+e il tag «Svista», nuovi anche loro e **non** spenti, la cui copertura
+nell'informativa è una domanda per l'autore (§20 di `account-progetto.md`); e
+la riga d'avvio rifiutata che resta nella copia del dispositivo fra le non
+accolte, che è il comportamento della pagina per ogni scarto.
 
 **Le condizioni nel modulo di registrazione (P-57).** L'informativa poggia il
 salvataggio sull'esecuzione del contratto, cioè sulle condizioni per l'account,
@@ -2602,6 +2638,14 @@ Nati da `docs/esito-esame-progetto.md` (P-64), con le decisioni dell'autore del
 controlli della pagina da P-74, che porta qui i requisiti del §9 di quel
 progetto con i nomi dei test che le sessioni hanno scritto. La pagina li avrà
 con B-1 e B-2.
+
+**Il server in esercizio li tiene spenti fino alla merge di P-75** (deciso
+dall'autore il 17 ottobre 2026; P-86, §3.7): `PUT /v1/esito` e la riga d'avvio
+sono rifiutati, e la descrizione non dichiara `esiti` né `'a'`. I requisiti del
+server qui sotto dicono che cosa fa la raccolta **accesa**, e i loro test la
+accendono con l'opzione d'avvio; che cosa fa spenta lo dicono R-ACC-82…86. I
+banchi della pagina accendono le due raccolte sul server delle pagine di
+riferimento e danno alla pagina vera il server com'è nel codice.
 
 | ID | Requisito | Controllo |
 |---|---|---|
@@ -3630,3 +3674,11 @@ successo, ed è il motivo per cui questo file esiste.
   di studio. La riga esce dalle aperte e va fra le chiuse del §10; l'ADR-006 §3
   ha la nota sui Segnali. Nessun requisito nuovo: li scrive P-76 con il
   contratto.
+- **18 ottobre 2026 — le raccolte nuove spente sul server (P-86).** La
+  decisione dell'autore del 17 ottobre: gli esiti, la riga d'avvio con la
+  previsione e le scelte di preparazione si raccolgono solo dopo la loro
+  informativa. Il §3.2, il §3.7, R-ACC-55 e il §9.13 lo dicono; entrano
+  R-ACC-82…86 nel §9.9, quattro sul server e uno sulla pagina vera, con un
+  interruttore nel codice che un tag porta con sé. Il segnalibro e il tag
+  «Svista» restano accesi, e la loro copertura nell'informativa è nel §20 di
+  `account-progetto.md`, per l'autore.

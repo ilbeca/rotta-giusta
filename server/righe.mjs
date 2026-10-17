@@ -14,6 +14,7 @@
 import { readFileSync } from 'node:fs';
 import { aggiungiRighe, righeDopo, leggiEpoca, esitiDi } from './db.mjs';
 import { INVIO_MAX_RIGHE, INVIO_MAX_BYTE } from '../site/engine.js';
+import { RACCOLTE, TIPO_AVVIO, MOTIVO_AVVIO_SPENTO } from './raccolte.mjs';
 
 /** Al piu' tante righe per ricezione (§7.2): il resto con `altre: true`. */
 export const RICEZIONE_MAX_RIGHE = 5000;
@@ -36,7 +37,7 @@ function formatoData(iso) {
   return new Date(iso).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Rome' });
 }
 
-export function creaRighe({ db, ora, versione, quesiti = leggiBanca() }) {
+export function creaRighe({ db, ora, versione, quesiti = leggiBanca(), raccolte = () => RACCOLTE }) {
   const iso = (t = ora()) => new Date(t).toISOString();
   const generazioneDi = (id) => db.prepare('SELECT generazione, azzerato_il FROM account WHERE id = ?').get(id);
 
@@ -52,7 +53,12 @@ export function creaRighe({ db, ora, versione, quesiti = leggiBanca() }) {
         return [413, errore('troppe_righe', `Al più 2.000 righe per invio, qui ce ne sono ${corpo.righe.length}: `
           + 'mandale in più volte. Niente è stato salvato.')];
       }
-      const esito = aggiungiRighe(db, account.id, corpo.righe, { quesiti, generazione: corpo.generazione });
+      // La riga d'avvio a raccolta spenta (P-86): scartata riga per riga, con il
+      // motivo, e contata fra gli scarti — anche quando arriva da un import, che
+      // passa di qui. Le altre righe dello stesso invio entrano.
+      const avvio = raccolte().esiti_e_previsioni;
+      const nonRaccolta = (r) => (!avvio && r._t === TIPO_AVVIO ? MOTIVO_AVVIO_SPENTO : null);
+      const esito = aggiungiRighe(db, account.id, corpo.righe, { quesiti, generazione: corpo.generazione, nonRaccolta });
       const epoca = leggiEpoca(db);
       if (esito.conflitto) {
         const { generazione, azzerato_il } = esito.conflitto;

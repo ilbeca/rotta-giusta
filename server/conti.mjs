@@ -16,7 +16,8 @@ import { Finestra, Fallimenti, DISATTIVA_A } from './limiti.mjs';
 import {
   mailVerifica, mailPassword, mailDisattivata, mailCambioEmail, mailAvvisoEmail, mailCancellato, mailInattivita,
 } from './posta.mjs';
-import { SEGNALI, lunghezzaPartita, TIPI_RIGA } from '../site/engine.js';
+import { SEGNALI, lunghezzaPartita } from '../site/engine.js';
+import { RACCOLTE, CAMPI_SCELTE, tipiAccolti } from './raccolte.mjs';
 
 const MINUTO = 60000;
 const ORA = 60 * MINUTO;
@@ -58,6 +59,13 @@ export const SCELTE_PROFILO = Object.freeze({
  */
 export const CAMPI_PROFILO = Object.freeze(['data_esame', 'segnali', ...Object.keys(SCELTE_PROFILO)]);
 
+/**
+ * I campi che il profilo conserva **adesso**: senza le scelte di preparazione
+ * finche' la loro raccolta e' spenta (P-86, account-progetto §2.7-bis). E'
+ * l'elenco che la descrizione dichiara e che un rifiuto nomina.
+ */
+const campiAccolti = (r) => CAMPI_PROFILO.filter((c) => r.scelte_di_preparazione || !CAMPI_SCELTE.includes(c));
+
 export const COOKIE = '__Host-rg';
 
 const nuovoToken = () => randomBytes(32).toString('base64url');
@@ -85,7 +93,7 @@ const GIA_REGISTRATA = 'Questa email è già registrata. Se è tua, accedi con l
  * controlla la password di un'email che non esiste (§5.3): la calcola `avvia`
  * all'inizio, cosi' nessuna richiesta paga un calcolo in piu'.
  */
-export function creaConti({ db, ora, argon2 = PARAMETRI, posta, sito, cancellazioni, fittizia, log }) {
+export function creaConti({ db, ora, argon2 = PARAMETRI, posta, sito, cancellazioni, fittizia, log, raccolte = () => RACCOLTE }) {
   const iso = (t = ora()) => new Date(t).toISOString();
 
   const limiti = {
@@ -119,6 +127,11 @@ export function creaConti({ db, ora, argon2 = PARAMETRI, posta, sito, cancellazi
 
   function descrivi(a) {
     const r = db.prepare('SELECT count(*) n, COALESCE(MAX(seq), 0) s FROM riga WHERE account_id = ?').get(a.id);
+    const acceso = raccolte();
+    // P-86: una raccolta spenta non si dichiara, e la pagina fa come con il
+    // server di prima. Quello che c'e' gia' non sparisce: l'export lo porta.
+    const scelte = acceso.scelte_di_preparazione
+      ? { abilitazione: a.abilitazione ?? null, conseguimento: a.conseguimento ?? null } : {};
     return {
       email: a.email,
       verificata: Boolean(a.email_verificata_il),
@@ -126,9 +139,8 @@ export function creaConti({ db, ora, argon2 = PARAMETRI, posta, sito, cancellazi
       data_esame: a.data_esame,
       // P-83: null per chi non ha risposto; `campi_profilo` dice che questo
       // server le conserva, e quello di prima non lo manda.
-      abilitazione: a.abilitazione ?? null,
-      conseguimento: a.conseguimento ?? null,
-      campi_profilo: [...CAMPI_PROFILO],
+      ...scelte,
+      campi_profilo: campiAccolti(acceso),
       segnali: segnaliDi(a.id),
       generazione: a.generazione,
       azzerato_il: a.azzerato_il,
@@ -140,8 +152,8 @@ export function creaConti({ db, ora, argon2 = PARAMETRI, posta, sito, cancellazi
       // «com'è andata» solo se c'e' `esiti`, anche vuoto, e scrive una riga
       // d'avvio solo se `tipi_riga` porta 'a'. Il server di prima non li manda,
       // e la pagina nuova accanto a lui resta spenta invece di rompersi.
-      esiti: esitiDi(db, a.id),
-      tipi_riga: [...TIPI_RIGA],
+      ...(acceso.esiti_e_previsioni ? { esiti: esitiDi(db, a.id) } : {}),
+      tipi_riga: tipiAccolti(acceso),
     };
   }
 
@@ -537,12 +549,21 @@ export function creaConti({ db, ora, argon2 = PARAMETRI, posta, sito, cancellazi
      * server non conosce e' un 422 con il suo nome, mai un 200 che lo ignora.
      */
     profilo({ account, corpo, ip }) {
+      const campi = campiAccolti(raccolte());
       if (!corpo || typeof corpo !== 'object' || Array.isArray(corpo)) {
-        return [422, errore('profilo', `Il corpo è { ${CAMPI_PROFILO.join(', ')} }, e ognuno si può omettere.`)];
+        return [422, errore('profilo', `Il corpo è { ${campi.join(', ')} }, e ognuno si può omettere.`)];
       }
       const ignoto = Object.keys(corpo).find((k) => !CAMPI_PROFILO.includes(k));
       if (ignoto !== undefined) {
-        return [422, errore('profilo', `«${ignoto.slice(0, 40)}» non è un campo del profilo: sono ${CAMPI_PROFILO.join(', ')}.`, { campo: ignoto.slice(0, 40) })];
+        return [422, errore('profilo', `«${ignoto.slice(0, 40)}» non è un campo del profilo: sono ${campi.join(', ')}.`, { campo: ignoto.slice(0, 40) })];
+      }
+      // P-86: a raccolta spenta una scelta detta e' un rifiuto con il suo campo,
+      // prima di scrivere qualunque cosa; `null` la toglie, e si puo' sempre.
+      const spenta = CAMPI_SCELTE.find((c) => !campi.includes(c) && c in corpo && corpo[c] !== null);
+      if (spenta) {
+        return [422, errore('raccolta_spenta', `«${spenta}» è una scelta che questo server non conserva ancora: niente è stato salvato. `
+          + `Si conserveranno quando l'informativa lo dirà; intanto il profilo tiene ${campi.join(', ')}.`,
+        { campo: spenta, raccolta: 'scelte_di_preparazione' })];
       }
       const cambi = {};
       for (const [campo, valori] of Object.entries(SCELTE_PROFILO)) {

@@ -1693,7 +1693,10 @@ niente — senza `campi_profilo` l'onboarding non promette la persistenza, ed è
 il ramo che N-01:scelte già prova —, e i banchi accendono i campi sul server
 di prova. Li accende sul server vero il commit di rilascio di P-81, nello
 stesso tag che porta la riga dell'informativa del §11.2 del progetto del
-client; l'interruttore è di P-86.
+client; l'interruttore è di P-86. *(18 ottobre 2026, P-86: fatto. È
+`scelte_di_preparazione` in `RACCOLTE`, `server/raccolte.mjs`; spente, il
+profilo le rifiuta con un `422` e `campi_profilo` dice `['data_esame',
+'segnali']` — `account-progetto.md` §2.7-bis.)*
 
 ### 10.2 Verifica documentale di P-79 e limiti
 

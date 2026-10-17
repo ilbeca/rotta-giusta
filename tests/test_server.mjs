@@ -39,6 +39,7 @@ import { statistica, esclusi, FONTI, personeConEsito, SOGLIA_PERSONE } from '../
 import { PROVE_ESAME } from '../server/esiti.mjs';
 import { leggiAccount, EVENTO_LETTURA } from '../server/letture.mjs';
 import { hashPassword } from '../server/password.mjs';
+import { RACCOLTE } from '../server/raccolte.mjs';
 import * as E from '../site/engine.js';
 
 const { validaRiga } = E;
@@ -531,7 +532,13 @@ const BUONA = 'barca vela e vento';        // 18 caratteri, fuori dall'elenco
 const ALTRA = 'rotta giusta per me';       // 19 caratteri, fuori dall'elenco
 const TITOLARE = 'titolare@esempio.it';    // dove vanno gli allarmi (§15.4)
 
-async function conti(t, { posta, argon2 = ECONOMICO, log } = {}) {
+// Le tre raccolte nuove (P-86, account-progetto §2.7-bis) si accendono per
+// opzione di avvio: i test di cio' che fanno accese le accendono, gli altri
+// girano con il server com'e' nel codice — oggi spente.
+const ACCESE = Object.freeze({ esiti_e_previsioni: true, scelte_di_preparazione: true });
+const SPENTE = Object.freeze({ esiti_e_previsioni: false, scelte_di_preparazione: false });
+
+async function conti(t, { posta, argon2 = ECONOMICO, log, raccolte } = {}) {
   const c = cartella(t);
   const orologio = { t: T0 };
   const mail = [];
@@ -541,6 +548,7 @@ async function conti(t, { posta, argon2 = ECONOMICO, log } = {}) {
     ora: () => orologio.t, argon2, origine: ORIGINE, sito: ORIGINE, proxy: true, titolare: TITOLARE,
     posta: posta ?? { invia: async (m) => { mail.push(m); } },
     log: log ?? ((m) => scritto.push(m)),
+    raccolte,
   };
   const k = { c, orologio, mail, scritto, opzioni, s: await avvia(opzioni) };
   t.after(() => k.s.chiudi());
@@ -1620,7 +1628,7 @@ test('profilo: abilitazione e conseguimento, facoltativi e nulli, assente non mo
   // scrivere: un valore estraneo — anche quello giusto dell'altro campo, anche
   // in maiuscolo — e' un 422 con il campo, e non lascia scritti gli altri. Un
   // campo che il server non conosce e' un 422, mai un 200 che lo ignora.
-  const k = await conti(t);
+  const k = await conti(t, { raccolte: ACCESE });
   const { cookie, io } = await dentro(k);
   const altro = await registrato(k, 'altro.profilo@esempio.it');
   const profilo = (corpo, c = cookie) => k.chiama('PUT', '/v1/profilo', corpo, { cookie: c });
@@ -1690,7 +1698,7 @@ test('esporta: il file porta le scelte di preparazione, e un altro account che l
   // di chi le ha dette: come per gli esiti (R-ESITO-08), un altro account che lo
   // carica — le righe a /v1/righe, i punteggi a /v1/profilo, come fa la pagina —
   // resta con le sue.
-  const k = await conti(t);
+  const k = await conti(t, { raccolte: ACCESE });
   const { cookie } = await dentro(k);
   assert.equal((await k.chiama('POST', '/v1/righe', { generazione: 1, righe: [riga(1), riga(2)] }, { cookie })).status, 200);
   assert.equal((await k.chiama('PUT', '/v1/profilo', { abilitazione: 'vela', conseguimento: 'prima', segnali: { nebbia: { migliore: 2, giocate: 5 } } }, { cookie })).status, 200);
@@ -1719,7 +1727,7 @@ test('cancellazione: DELETE /v1/account toglie tutto, anche dai byte del file, e
   // segnali e account in una transazione, passando prima dal file delle
   // cancellazioni (§2.7); una mail lo conferma; il registro tiene l'evento
   // senza l'email. «Cancella davvero» si misura sui byte del database e del WAL.
-  const k = await conti(t);
+  const k = await conti(t, { raccolte: ACCESE });
   const email = 'da.cancellare.qui@esempio.it';
   const cookie = await confermato(k, email);
   const altro = await confermato(k, 'resta@esempio.it');
@@ -2004,7 +2012,8 @@ test('avvio: lanciati attraverso un collegamento, come sulla macchina, il server
   symlinkSync(RADICE, join(dir, 'attuale'));
 
   const figlio = spawn(process.execPath, [join(dir, 'attuale', 'server', 'server.mjs')], {
-    env: { ...process.env, RG_DB: join(dir, 'conti.db'), RG_CANCELLAZIONI: join(dir, 'cancellazioni'), RG_PORTA: '0' },
+    env: { ...process.env, RG_DB: join(dir, 'conti.db'), RG_CANCELLAZIONI: join(dir, 'cancellazioni'), RG_PORTA: '0',
+      RG_RACCOLTE: 'esiti_e_previsioni,scelte_di_preparazione' },
   });
   t.after(() => figlio.kill('SIGKILL'));
   const esito = await new Promise((ok) => {
@@ -2015,6 +2024,12 @@ test('avvio: lanciati attraverso un collegamento, come sulla macchina, il server
   });
   assert.equal(esito.uscito, null, `il server e' uscito con ${esito.uscito} senza partire: ${esito.err}`);
   assert.match(esito.err, /rg-api \S+ su http:\/\/127\.0\.0\.1:\d+/);
+  // R-ACC-82: avviato come sulla macchina, il server accende le raccolte che
+  // dice il codice del tag, e nient'altro — nemmeno con l'ambiente che prova a
+  // dirgli il contrario (vedi sotto, RG_RACCOLTE nell'ambiente del figlio).
+  const salute = await (await fetch(`${esito.err.match(/su (http:\/\/127\.0\.0\.1:\d+)/)[1]}/v1/salute`)).json();
+  assert.deepEqual(salute.raccolte, { ...RACCOLTE }, 'la salute dice le raccolte del codice');
+  assert.match(esito.err, /raccolte accese: /, 'il log dell avvio dice quali raccolte sono accese');
 
   const r = spawnSync(process.execPath, [join(dir, 'attuale', 'strumenti', 'macchina', 'carica-copia.mjs')], { encoding: 'utf8' });
   assert.equal(r.status, 2, `il caricatore e' uscito con ${r.status}: ${r.stderr}`);
@@ -2218,7 +2233,7 @@ test('statistiche: la fonte risposte ha solo le risposte, e le righe d avvio, i 
   // chi scriveva la statistica non si ricordava di filtrare per tipo. Ora
   // `risposte` ha le righe per cui rigaDiRisposta() del motore dice vero, e
   // `righe` ha tutto, con il suo tipo.
-  const k = await conti(t);
+  const k = await conti(t, { raccolte: ACCESE });
   const { a, b, idA } = await dueStudenti(k);
   assert.equal((await k.chiama('POST', '/v1/righe', { generazione: 1, righe: UNA_PER_TIPO }, { cookie: b })).status, 200);
   assert.equal(k.s.db.prepare('SELECT count(*) n FROM riga').get().n, 5 + UNA_PER_TIPO.length);
@@ -2630,7 +2645,7 @@ test('letture: il titolare legge un account dalla riga di comando, con il serviz
   // un numero, non un'email — e perche'. Quello che lo strumento mostra viene
   // dalle funzioni del motore, le stesse della pagina: chi aiuta vede le
   // attivita' che vede chi chiede aiuto, non una seconda contabilita'.
-  const k = await conti(t);
+  const k = await conti(t, { raccolte: ACCESE });
   const { a, idA } = await chiChiedeAiuto(k);
   const leggi = leggiDa(k.opzioni.db);
   const letture = () => lettureNel(k.s.db);
@@ -2754,7 +2769,7 @@ test('letture: senza motivo, senza account, senza database o senza poter scriver
   // R-ACC-72. Una lettura che non lascia traccia non deve poter esistere: se la
   // riga non si puo' scrivere, non esce niente. E uno strumento chiamato male,
   // o sul database sbagliato, non dice «fatto» e non crea un database vuoto.
-  const k = await conti(t);
+  const k = await conti(t, { raccolte: ACCESE });
   await chiChiedeAiuto(k);
   const leggi = leggiDa(k.opzioni.db);
   const muto = (r, codice, dice, come) => {
@@ -2842,7 +2857,7 @@ test('letture: una lettura non cambia niente dell account, e la sua riga sopravv
   // accesso», che rimanderebbe la cancellazione per inattivita'. La riga della
   // lettura sta nel registro come ogni evento: senza indirizzo, per un anno
   // (§15.3), anche se intanto l'account si cancella.
-  const k = await conti(t);
+  const k = await conti(t, { raccolte: ACCESE });
   const { a, idA } = await chiChiedeAiuto(k);
   const leggi = leggiDa(k.opzioni.db);
   const tutto = () => Object.fromEntries(['impianto', 'account', 'riga', 'sessione', 'gettone', 'segnali', 'esito']
@@ -3008,7 +3023,7 @@ test('esito: si scrive per prova e per giorno, e un campo rotto non lascia scrit
   // scrivere, e un rifiuto dice il campo e non lascia scritto niente — nemmeno
   // le prove buone dello stesso invio. Un campo che il server non conosce e' un
   // rifiuto, non un 200 che lo butta: e' la prima misura del §2 del progetto.
-  const k = await conti(t);
+  const k = await conti(t, { raccolte: ACCESE });
   const { cookie, io } = await dentro(k);
   const put = (corpo, c = cookie) => k.chiama('PUT', '/v1/esito', corpo, { cookie: c });
   const del = (corpo, c = cookie) => k.chiama('DELETE', '/v1/esito', corpo, { cookie: c });
@@ -3160,7 +3175,7 @@ test('esito: togliere cancella davvero, e un ripristino non lo riporta', async (
   // avvio, perche' il ripristina.mjs del rilascio di prima non lo conosce. Un
   // esito detto di nuovo dopo il ritiro, invece, resta.
   const vecchio = rilascioDiPrima(t);
-  const k = await conti(t);
+  const k = await conti(t, { raccolte: ACCESE });
   const cookie = await confermato(k, 'ha.dato.l.esame@esempio.it');
   const altro = await confermato(k, 'un.altro.esame@esempio.it');
   const id = idDi(k, 'ha.dato.l.esame@esempio.it');
@@ -3258,7 +3273,7 @@ test('esito: la cancellazione dell account li porta via, anche con il codice di 
   // e foreign_keys = ON porta via anche gli esiti, e secure_delete con il WAL
   // svuotato li toglie dai byte.
   const vecchio = rilascioDiPrima(t);
-  const k = await conti(t);
+  const k = await conti(t, { raccolte: ACCESE });
   const cookie = await confermato(k, 'esame.e.via@esempio.it');
   const altro = await confermato(k, 'resta.col.suo.esame@esempio.it');
   const id = idDi(k, 'esame.e.via@esempio.it');
@@ -3299,7 +3314,7 @@ test('statistiche: gli esiti passano dalla fonte filtrata', async (t) => {
   // lei fuori dal posto solo e' rossa. E sotto le venti persone in un gruppo un
   // conteggio sugli esiti non esce dalla macchina (§11, punto 11, confermato
   // dall'autore): lo strumento lo ricorda, con quante persone ci sono.
-  const k = await conti(t);
+  const k = await conti(t, { raccolte: ACCESE });
   const { a, b, idA } = await dueStudenti(k);
   const db = k.s.db;
   assert.equal((await k.chiama('PUT', '/v1/esito', { giorno: '2026-09-03', prove: { carteggio: { esito: 'superata' }, base: { esito: 'non_superata', errori: 6 } } }, { cookie: a })).status, 200);
@@ -3368,7 +3383,7 @@ test('esporta: il file porta gli esiti, e importa non li carica', async (t) => {
   // prima, e un altro account che le carica non riceve nessun esito. Che
   // l'anteprima dell'import lo dica e' della pagina (B-1), e il suo controllo
   // del banco del client (A-3).
-  const k = await conti(t);
+  const k = await conti(t, { raccolte: ACCESE });
   const { cookie } = await dentro(k);
   const mie = [riga(1), riga(2), { _t: 'g', uid: 'g1', attempt_uid: 'u000001', tag: 'L', ts: '2026-09-26T10:01:00+02:00' }];
   assert.equal((await k.chiama('POST', '/v1/righe', { generazione: 1, righe: mie }, { cookie })).status, 200);
@@ -3399,7 +3414,7 @@ test('azzera: gli esiti restano', async (t) => {
   // R-ESITO-09, §3.4 del progetto, confermato dall'autore (§11, punto 7):
   // azzerare e' ricominciare a studiare, l'esame resta sostenuto. Vale per
   // l'azzeramento chiesto e per quello che un ripristino rifa' dal file.
-  const k = await conti(t);
+  const k = await conti(t, { raccolte: ACCESE });
   const { cookie } = await dentro(k);
   const id = idDi(k, 'studente@esempio.it');
   assert.equal((await k.chiama('POST', '/v1/righe', { generazione: 1, righe: [riga(1), riga(2)] }, { cookie })).status, 200);
@@ -3552,7 +3567,7 @@ test('profilo: il rilascio di prima sul database di dopo non dice campi_profilo,
   // tocca le scelte scritte dal codice nuovo quando cambia la data. Cancellando
   // l'account la riga se ne va con le colonne che lui non conosce, anche dai byte.
   const vecchio = rilascioDiPrima(t);
-  const k = await conti(t);
+  const k = await conti(t, { raccolte: ACCESE });
   const cookie = await confermato(k, 'sceglie.e.va@esempio.it');
   const altro = await confermato(k, 'resta.con.le.sue@esempio.it');
   const id = idDi(k, 'sceglie.e.va@esempio.it');
@@ -3587,4 +3602,226 @@ test('profilo: il rilascio di prima sul database di dopo non dice campi_profilo,
   const suo = await ioDi(k, altro);
   assert.deepEqual([suo.abilitazione, suo.conseguimento, suo.campi_profilo], ['motore', 'prima', CAMPI_PROFILO]);
   assert.equal((await k.chiama('GET', '/v1/salute')).corpo.versione, VERSION);
+});
+
+// --- le raccolte nuove, spente fino alla loro decisione (P-86) -----------------------
+//
+// docs/account-progetto.md §2.7-bis. Dalla v0.30.0 il server sa conservare tre
+// cose che nessuna pagina usa ancora: le righe d'avvio con la previsione
+// (P-72), gli esiti dell'esame (P-73), le scelte di preparazione (P-83). Base
+// giuridica e informativa vengono prima del trattamento: fino alla loro
+// decisione le scritture sono rifiutate sul server, non soltanto taciute alla
+// pagina, e la descrizione dell'account non le dichiara — la pagina fa come con
+// il server di prima. Quello che c'e' gia' resta accessibile, esportabile e
+// cancellabile. L'interruttore sta nel codice, server/raccolte.mjs: un tag dice
+// che cosa e' acceso, e l'accensione e' un commit che si guarda.
+
+const AVVIO_SPENTO = "riga d'avvio non raccolta";
+const unAvvio = (sim, ts = '2026-10-05T09:00:00+02:00') => E.rigaAvvio({ simUid: sim, kind: 'base', prova: 'base', ts, motore: '0.31.0', righe: [] });
+
+test('raccolte: l interruttore sta nel codice, il rilascio le tiene spente, e la salute lo dice', async (t) => {
+  // R-ACC-82. Il valore del codice e' quello con cui esce il tag: tutte e due
+  // spente fino alla decisione. Un'accensione cambia questa riga, e il commit
+  // che la cambia e' quello che si guarda.
+  assert.deepEqual({ ...RACCOLTE }, { ...SPENTE }, 'il rilascio esce con tutte le raccolte nuove spente (§2.7-bis)');
+  assert.ok(Object.isFrozen(RACCOLTE), 'un modulo che le importa non le accende per sbaglio');
+
+  const spento = await conti(t);
+  const salute = (await spento.chiama('GET', '/v1/salute')).corpo;
+  assert.deepEqual(salute.raccolte, { ...RACCOLTE }, 'senza opzioni il server dice le raccolte del codice');
+
+  // Un'opzione d'avvio le cambia, per i test e per i banchi; un nome che non
+  // esiste non passa in silenzio — accenderebbe niente, con un verde falso.
+  const acceso = await conti(t, { raccolte: { esiti_e_previsioni: true } });
+  assert.deepEqual((await acceso.chiama('GET', '/v1/salute')).corpo.raccolte, { esiti_e_previsioni: true, scelte_di_preparazione: false });
+  // Se parte lo stesso, si chiude e si dice rosso: un server rimasto aperto
+  // appenderebbe la suite invece di farla fallire (misurato, rompendo il controllo).
+  const c = cartella(t);
+  const nonParte = async (nome, raccolte) => {
+    try { await (await avvia({ db: join(c, `${nome}.db`), cancellazioni: join(c, nome), porta: 0, argon2: ECONOMICO, raccolte })).chiudi(); } catch (e) { return e.message; }
+    return null;
+  };
+  assert.match(await nonParte('nome', { esiti: true }) ?? 'e\' partito', /raccolta sconosciuta: esiti/, 'un nome sbagliato e\' un errore, non un interruttore che non accende niente');
+  assert.match(await nonParte('valore', { esiti_e_previsioni: 'si' }) ?? 'e\' partito', /true o false/);
+
+  // E dal processo che gira: il banco del client le cambia fra un gruppo e l'altro.
+  assert.deepEqual(acceso.s.cambiaRaccolte({ scelte_di_preparazione: true, esiti_e_previsioni: false }), { esiti_e_previsioni: false, scelte_di_preparazione: true });
+  assert.deepEqual((await acceso.chiama('GET', '/v1/salute')).corpo.raccolte, { esiti_e_previsioni: false, scelte_di_preparazione: true });
+  assert.throws(() => acceso.s.cambiaRaccolte({ previsioni: true }), /raccolt/i);
+});
+
+test('raccolte: con esiti e previsioni spenti, l esito e la riga d avvio sono rifiutati con il motivo, e niente si scrive', async (t) => {
+  // R-ACC-83. Spente vuol dire scritture impedite sul server: un PUT /v1/esito
+  // che dice una prova e' un 403 che si legge, e una riga 'a' in POST
+  // /v1/righe — quindi anche in un import, che passa di li' — e' scartata con
+  // il suo motivo, contata fra gli scarti come ogni riga che il server non
+  // accoglie, mentre le altre dello stesso invio entrano. La descrizione non
+  // porta `esiti` e `tipi_riga` non porta 'a': la strada di R-ESITO-03 e R-PREV-09.
+  const k = await conti(t);
+  const { cookie, io } = await dentro(k);
+  assert.ok(!('esiti' in io), 'la descrizione non dice esiti: la pagina non accende la domanda');
+  assert.deepEqual(io.tipi_riga, E.TIPI_RIGA.filter((x) => x !== 'a'), 'i tipi accolti, senza la riga d avvio');
+  assert.ok(io.tipi_riga.includes('b'), 'il segnalibro non e\' una di queste raccolte, e resta');
+  assert.equal(E.rigaScrivibile(unAvvio('x'), io.tipi_riga), 'tipo che il server non accoglie', 'per il motore della pagina la riga d avvio non si scrive');
+
+  // L'esito: rifiutato prima di guardare il corpo, anche se e' giusto, e niente nella tabella.
+  const id = idDi(k, 'studente@esempio.it');
+  for (const corpo of [
+    { giorno: '2026-09-03', prove: { base: { esito: 'superata', errori: 1 } } },
+    { giorno: '2026-09-03', prove: { carteggio: { esito: 'non_detto' }, base: null } },
+    { giorno: 'boh', prove: { base: { esito: 'superata' } } },
+  ]) {
+    const r = await k.chiama('PUT', '/v1/esito', corpo, { cookie });
+    assert.equal(r.status, 403, JSON.stringify(r.corpo));
+    assert.equal(r.corpo.errore, 'raccolta_spenta');
+    assert.equal(r.corpo.raccolta, 'esiti_e_previsioni');
+    assert.match(r.corpo.messaggio, /non raccoglie ancora/);
+    assert.match(r.corpo.messaggio, /niente è stato salvato/i);
+  }
+  assert.deepEqual(esitiDi(k.s.db, id), [], 'nessun esito nella tabella');
+  assert.equal(k.s.db.prepare('SELECT count(*) n FROM esito').get().n, 0);
+  // Togliere resta possibile, e su un account senza esiti non cambia niente.
+  assert.deepEqual((await k.chiama('PUT', '/v1/esito', { giorno: '2026-09-03', prove: { base: null } }, { cookie })).corpo, { esiti: [] });
+  assert.deepEqual((await k.chiama('DELETE', '/v1/esito', { giorno: '2026-09-03' }, { cookie })).corpo, { esiti: [] });
+
+  // La riga d'avvio: scartata con il suo motivo, le altre dello stesso lotto entrano.
+  const avvio = unAvvio('spento-1');
+  const r = await k.chiama('POST', '/v1/righe', { generazione: io.generazione, righe: [riga(1), avvio, riga(2)] }, { cookie });
+  assert.equal(r.status, 200, JSON.stringify(r.corpo));
+  assert.deepEqual(r.corpo.nuove, [riga(1).uid, riga(2).uid]);
+  assert.deepEqual(r.corpo.scartate, [{ uid: avvio.uid, motivo: AVVIO_SPENTO, indice: 1 }]);
+  assert.equal(k.s.db.prepare("SELECT count(*) n FROM riga WHERE tipo = 'a'").get().n, 0, 'nessuna riga d avvio nel database');
+  // Rimandata, e' scartata di nuovo: non diventa «gia presente».
+  const ancora = await k.chiama('POST', '/v1/righe', { generazione: io.generazione, righe: [avvio] }, { cookie });
+  assert.deepEqual(ancora.corpo.scartate.map((x) => x.motivo), [AVVIO_SPENTO]);
+  assert.deepEqual(ancora.corpo.gia, []);
+
+  // Che cosa vede chi importa un file con righe 'a': con la contabilita' del
+  // motore che la pagina usa, uno scarto per riga con il suo motivo — «con
+  // scarti», mai «completo» —, e le risposte salvate sono quelle vere.
+  const archivio = [riga(10), riga(11), unAvvio('file-1'), unAvvio('file-2')];
+  let coda = E.nuovaCoda({ generazione: io.generazione, epocaDb: io.epoca });
+  let tr;
+  ({ trasferimento: tr, coda } = E.nuovoTrasferimento(coda, archivio));
+  assert.equal(tr.rifiutate.length, 0, 'per il motore della pagina le righe d avvio sono valide: e\' il server a non accoglierle');
+  for (let lotto; (lotto = E.lottoDaInviare(archivio, coda)); ) {
+    const x = await k.chiama('POST', '/v1/righe', lotto, { cookie });
+    const esito = E.dopoInvio(coda, lotto, { codice: x.status, corpo: x.corpo }, archivio);
+    coda = esito.coda; tr = E.registraEsito(tr, esito);
+  }
+  const fine = E.riepilogoTrasferimento(tr, coda, archivio);
+  assert.equal(fine.stato, 'con scarti');
+  assert.equal(fine.confermateRisposte, 2);
+  assert.equal(fine.nonSalvate, 2);
+  assert.deepEqual(fine.motivi, { [AVVIO_SPENTO]: 2 });
+});
+
+test('raccolte: con le scelte di preparazione spente, il profilo le rifiuta con il campo e non scrive niente', async (t) => {
+  // R-ACC-84. Un PUT /v1/profilo con abilitazione o conseguimento e' un 422 con
+  // il campo, come un campo che il profilo non conosce: niente e' scritto,
+  // nemmeno la data d'esame mandata accanto. La descrizione non le porta, e
+  // `campi_profilo` nomina soltanto quello che questo server conserva adesso:
+  // la pagina del ridisegno non promette la persistenza (R-ACC-55).
+  const k = await conti(t);
+  const { cookie, io } = await dentro(k);
+  assert.deepEqual(io.campi_profilo, ['data_esame', 'segnali']);
+  assert.ok(!('abilitazione' in io) && !('conseguimento' in io), 'la descrizione non porta le scelte');
+  const id = idDi(k, 'studente@esempio.it');
+  const colonne = () => ({ ...k.s.db.prepare('SELECT data_esame, abilitazione, conseguimento FROM account WHERE id = ?').get(id) });
+
+  for (const [corpo, campo] of [
+    [{ data_esame: '2026-11-20', abilitazione: 'vela' }, 'abilitazione'],
+    [{ conseguimento: 'prima' }, 'conseguimento'],
+    [{ segnali: { nebbia: { migliore: 2, giocate: 1 } }, abilitazione: 'motore', conseguimento: 'estensione_e12' }, 'abilitazione'],
+  ]) {
+    const r = await k.chiama('PUT', '/v1/profilo', corpo, { cookie });
+    assert.equal(r.status, 422, JSON.stringify(r.corpo));
+    assert.equal(r.corpo.errore, 'raccolta_spenta');
+    assert.equal(r.corpo.raccolta, 'scelte_di_preparazione');
+    assert.equal(r.corpo.campo, campo);
+    assert.match(r.corpo.messaggio, /non conserva ancora/);
+    assert.match(r.corpo.messaggio, /niente è stato salvato/i);
+  }
+  assert.deepEqual(colonne(), { data_esame: null, abilitazione: null, conseguimento: null }, 'niente scritto, nemmeno la data accanto');
+  assert.equal(k.s.db.prepare('SELECT count(*) n FROM segnali').get().n, 0, 'nemmeno i punteggi accanto');
+
+  // Quello che il profilo conserva funziona come prima; togliere una scelta pure.
+  const ok = await k.chiama('PUT', '/v1/profilo', { data_esame: '2026-11-20', abilitazione: null }, { cookie });
+  assert.equal(ok.status, 200, JSON.stringify(ok.corpo));
+  assert.equal(ok.corpo.data_esame, '2026-11-20');
+  assert.ok(!('abilitazione' in ok.corpo));
+  assert.deepEqual(colonne(), { data_esame: '2026-11-20', abilitazione: null, conseguimento: null });
+  // Un campo che il profilo non conosce resta il rifiuto di prima.
+  const ignoto = await k.chiama('PUT', '/v1/profilo', { obiettivo: 'tutto' }, { cookie });
+  assert.equal(ignoto.status, 422);
+  assert.equal(ignoto.corpo.errore, 'profilo');
+  assert.match(ignoto.corpo.messaggio, /sono data_esame, segnali\./);
+});
+
+test('raccolte: spegnere dopo aver acceso non toglie niente, e quello che c e si legge, si porta via e si cancella', async (t) => {
+  // R-ACC-85. Acceso: un esito, una riga d'avvio, le scelte. Poi il rilascio
+  // dopo le spegne — un riavvio con il codice che le dice spente —, e chi aveva
+  // dato quei dati li ritrova: nell'export, nella ricezione, nello strumento
+  // del titolare; e li toglie: DELETE /v1/esito, un PUT che toglie e basta,
+  // null su una scelta, l'azzeramento, la cancellazione dell'account.
+  const k = await conti(t, { raccolte: { ...ACCESE } });
+  const { cookie, io } = await dentro(k);
+  const id = idDi(k, 'studente@esempio.it');
+  const avvio = unAvvio('acceso-1');
+  assert.deepEqual((await k.chiama('POST', '/v1/righe', { generazione: io.generazione, righe: [riga(1), avvio] }, { cookie })).corpo.nuove, [riga(1).uid, avvio.uid]);
+  assert.equal((await k.chiama('PUT', '/v1/esito', { giorno: '2026-09-03', prove: { carteggio: { esito: 'superata' }, base: { esito: 'superata', errori: 2 } } }, { cookie })).status, 200);
+  assert.equal((await k.chiama('PUT', '/v1/profilo', { abilitazione: 'vela', conseguimento: 'prima' }, { cookie })).status, 200);
+  // Un secondo account, per la cancellazione.
+  const altro = await registrato(k, 'altro@esempio.it');
+  assert.equal((await k.chiama('PUT', '/v1/esito', { giorno: '2026-09-04', prove: { vela: { esito: 'non_superata' } } }, { cookie: altro })).status, 200);
+
+  k.opzioni.raccolte = { ...SPENTE };
+  await k.riavvia();
+  assert.deepEqual((await k.chiama('GET', '/v1/salute')).corpo.raccolte, { ...SPENTE });
+  const spento = await ioDi(k, cookie);
+  assert.ok(!('esiti' in spento) && !('abilitazione' in spento) && !spento.tipi_riga.includes('a'), 'la descrizione non le dichiara piu');
+  assert.equal(spento.righe, 2, 'la descrizione conta tutte le righe dell account, la riga d avvio compresa');
+
+  // Accessibile: l'export porta tutto, la ricezione restituisce la riga d'avvio, il titolare la vede.
+  const file = (await k.chiama('GET', '/v1/esporta', undefined, { cookie })).corpo;
+  assert.deepEqual(vistaEsiti(file.esiti), [['2026-09-03', 'carteggio', 'superata', null], ['2026-09-03', 'base', 'superata', 2]]);
+  assert.equal(file.abilitazione, 'vela');
+  assert.equal(file.conseguimento, 'prima');
+  assert.deepEqual(file.righe.map((x) => x.uid), [riga(1).uid, avvio.uid]);
+  assert.deepEqual((await k.chiama('GET', '/v1/righe?dopo=0', undefined, { cookie })).corpo.righe.map((x) => x._t), ['q', 'a']);
+  const letto = leggiAccount(k.s.db, 'studente@esempio.it', { motivo: 'prova delle raccolte spente, P-86' });
+  assert.equal(letto.conteggi.avviate, 1);
+  assert.equal(letto.esiti.length, 2);
+  assert.equal(letto.account.abilitazione, 'vela');
+  assert.equal(letto.account.conseguimento, 'prima');
+
+  // Rimandata da un dispositivo — dopo un ripristino, che fa rimandare tutto —,
+  // la riga d'avvio che il server ha gia' e' «gia presente», non uno scarto che
+  // farebbe credere di averla persa. Una nuova invece e' scartata.
+  const rinvio = await k.chiama('POST', '/v1/righe', { generazione: io.generazione, righe: [avvio, unAvvio('spento-dopo')] }, { cookie });
+  assert.deepEqual(rinvio.corpo.gia, [avvio.uid]);
+  assert.deepEqual(rinvio.corpo.scartate.map((x) => [x.uid, x.motivo]), [[unAvvio('spento-dopo').uid, AVVIO_SPENTO]]);
+
+  // Spente, le scritture nuove no.
+  assert.equal((await k.chiama('PUT', '/v1/esito', { giorno: '2026-09-03', prove: { vela: { esito: 'superata' } } }, { cookie })).status, 403);
+  assert.equal((await k.chiama('PUT', '/v1/profilo', { abilitazione: 'motore' }, { cookie })).status, 422);
+  assert.equal(k.s.db.prepare('SELECT abilitazione FROM account WHERE id = ?').get(id).abilitazione, 'vela', 'il rifiuto non tocca quello che c e');
+
+  // Cancellabile: una prova, poi il giorno, poi una scelta.
+  const una = await k.chiama('PUT', '/v1/esito', { giorno: '2026-09-03', prove: { carteggio: null } }, { cookie });
+  assert.equal(una.status, 200, JSON.stringify(una.corpo));
+  assert.deepEqual(vistaEsiti(una.corpo.esiti), [['2026-09-03', 'base', 'superata', 2]]);
+  const tutto = await k.chiama('DELETE', '/v1/esito', { giorno: '2026-09-03' }, { cookie });
+  assert.deepEqual(tutto.corpo, { esiti: [] });
+  assert.deepEqual(esitiDi(k.s.db, id), []);
+  assert.equal((await k.chiama('PUT', '/v1/profilo', { abilitazione: null }, { cookie })).status, 200);
+  assert.deepEqual({ ...k.s.db.prepare('SELECT abilitazione, conseguimento FROM account WHERE id = ?').get(id) }, { abilitazione: null, conseguimento: 'prima' });
+  // L'azzeramento porta via la riga d'avvio con le altre.
+  assert.equal((await k.chiama('POST', '/v1/azzera', { password: BUONA }, { cookie })).status, 200);
+  assert.equal(k.s.db.prepare("SELECT count(*) n FROM riga WHERE account_id = ? AND tipo = 'a'").get(id).n, 0);
+  // La cancellazione dell'account porta via i suoi esiti.
+  const idAltro = idDi(k, 'altro@esempio.it');
+  assert.equal(esitiDi(k.s.db, idAltro).length, 1);
+  assert.equal((await k.chiama('DELETE', '/v1/account', { password: BUONA }, { cookie: altro })).status, 204);
+  assert.equal(k.s.db.prepare('SELECT count(*) n FROM esito WHERE account_id = ?').get(idAltro).n, 0);
 });

@@ -448,6 +448,73 @@ prima del trattamento, non dopo il primo dato.
   P-86; il come — dove sta l'interruttore, e che un tag dica che cosa è
   acceso — lo scrive lui qui.
 
+**Fatto il 18 ottobre 2026 (P-86).** Il come, e le scelte che il contratto
+non diceva.
+
+**L'interruttore sta nel codice: `RACCOLTE` in `server/raccolte.mjs`**, la
+proposta della regia, confermata. Due voci, una per decisione:
+`esiti_e_previsioni` (l'esito dell'esame e la riga d'avvio, che si accendono
+insieme con la merge di P-75) e `scelte_di_preparazione` (con il rilascio di
+P-81). Il perché, oltre a quello della proposta: **`rg-torna` riporta anche
+l'interruttore** — tornare al tag di prima rimette le raccolte di quel tag, e
+con una variabile in `/etc/rg/ambiente` un ritorno indietro lascerebbe accesa
+una raccolta che il codice di prima non sa spegnere; un file della macchina si
+cambia a mano, non si rivede in un diff, e non sta in nessun tag. **Il processo
+avviato dalla riga di comando non legge niente dall'ambiente per cambiarle**:
+un test lo lancia attraverso un collegamento, come l'unità `rg-api`, con
+`RG_RACCOLTE` impostata apposta, e la salute dice quelle del codice. I test e i
+banchi le cambiano con l'opzione d'avvio `raccolte` di `avvia()`, e il banco
+del client a server acceso con `cambiaRaccolte()`; un nome che non esiste o un
+valore che non è `true` o `false` è un errore, non un interruttore che non
+accende niente.
+
+**Accenderne una è un commit**: la riga di `RACCOLTE`, il test di R-ACC-82 che
+la tiene ferma, e le righe di questa sezione e della specifica che dicono
+«spenta». Poi il rilascio, `rg-aggiorna`, e `GET /v1/salute`, che porta
+`raccolte: {esiti_e_previsioni, scelte_di_preparazione}`; il log d'avvio dice
+«raccolte accese: …».
+
+**Che cosa fa il server a raccolta spenta**, misurato dai test di R-ACC-83…85:
+
+| | Scrittura | Descrizione dell'account | Quello che c'è già |
+|---|---|---|---|
+| Esito dell'esame | `PUT /v1/esito` che dice una prova: `403 {errore: 'raccolta_spenta', raccolta: 'esiti_e_previsioni', messaggio}`, prima di guardare il corpo — non è il corpo il problema —, e niente scritto. Un `PUT` che dice soltanto `null` toglie, e passa | niente `esiti`: la pagina non accende la domanda (R-ESITO-03) | `GET /v1/esporta` lo porta; `server/leggi.mjs` lo mostra; `DELETE /v1/esito` e un `PUT` di soli `null` lo tolgono, con la voce nel file delle cancellazioni; la cancellazione dell'account lo porta via |
+| Riga d'avvio (`_t: 'a'`) | in `POST /v1/righe` — quindi anche in un import, che passa di lì — scartata riga per riga con il motivo **«riga d'avvio non raccolta»**, fra gli `scartate` come una riga che `validaRiga()` rifiuta; le altre righe dello stesso invio entrano | `tipi_riga` senza `'a'`: la pagina non la scrive (R-PREV-09); per `rigaScrivibile()` del motore è «tipo che il server non accoglie» | la ricezione e l'export la restituiscono com'era; lo strumento del titolare la conta fra le prove avviate; rimandata da un dispositivo è «già presente», non uno scarto; l'azzeramento e la cancellazione la portano via |
+| Scelte di preparazione | `PUT /v1/profilo` con `abilitazione` o `conseguimento` non nulli: `422 {errore: 'raccolta_spenta', raccolta: 'scelte_di_preparazione', campo, messaggio}`, e niente scritto, nemmeno la data o i punteggi mandati accanto. `null` toglie, e passa | niente `abilitazione` né `conseguimento`; `campi_profilo` dice `['data_esame', 'segnali']`, quello che il profilo conserva adesso, e la pagina del ridisegno non promette la persistenza (R-ACC-55) | l'export le porta; lo strumento del titolare le mostra; `null` le toglie; la cancellazione dell'account le porta via |
+
+Tre scelte. **Il `403` dell'esito non è un `404`**, come quello del server di
+prima: la rotta c'è, e togliere funziona; un «non esiste» sarebbe falso.
+**Il profilo dà un `422` e non un `403`**, perché è il contratto che il profilo
+ha già per un campo che non conserva (P-83): un campo, nominato, e niente
+scritto. **La riga d'avvio già sul server, rimandata, è «già presente»**: il
+controllo della raccolta viene dopo quello dell'`uid`. Dopo un ripristino, che
+fa rimandare tutto (§2.7), dirla scartata farebbe credere a chi la rimanda di
+averla persa, e gli bloccherebbe l'uscita.
+
+**Che cosa vede chi importa un file con righe `'a'`**, misurato sulla pagina
+vera in Chrome (C-10:avvio, R-ACC-86): l'anteprima le conta fra le nuove,
+perché per il motore della pagina sono righe valide; dopo l'importazione la
+finestra dice «3 nuove · 0 già presenti · 1 scartate», «L'importazione non è
+completa. Le righe non confermate restano in questo dispositivo.» e
+«riga d'avvio non raccolta: 1», con «Scarica le righe non importate», il cui
+file porta la riga d'avvio. Le risposte del file arrivano sul server, la riga
+d'avvio no. Resta nella copia del dispositivo fra le non accolte: Info dice
+«1 righe non accolte dal server», e l'uscita chiede di scaricare la copia di
+recupero prima di cancellarla — il comportamento della pagina per ogni riga che
+il server scarta, non nuovo. Un file con righe `'a'` oggi può venire solo da un
+server con la raccolta accesa, che in esercizio non c'è mai stato (la v0.30.0
+le rifiuta come «tipo sconosciuto»), o da un file scritto a mano.
+
+**I banchi accendono sul loro server quello che provano**: le suite del server
+le accendono test per test (i quattordici di P-72, P-73, P-78 e P-83, con
+`raccolte: ACCESE`); il banco del client dà alla pagina vera il server com'è nel
+codice — oggi spento, e la pagina di oggi resta verde — e alle pagine di
+riferimento le raccolte accese, perché sono il contratto di quando lo saranno:
+E-01, P-01 e N-01:scelte, provato al contrario, sono rossi con tutto spento.
+Dalla merge di P-75 e di P-81, la pagina vera trova accese le raccolte che il
+codice accende in quel commit, e se il commit non le accende i suoi gruppi lo
+dicono.
+
 ### 2.8 In esercizio — 1° ottobre 2026 (P-15)
 
 La macchina c'è, e risponde su `https://api.rottagiusta.it`. Gli strumenti che
@@ -1180,7 +1247,7 @@ uscirne — vale anche per chi legge la risposta in console.
 | `POST /v1/accesso` `{email, password}` | apre la sessione | `200` + cookie; `401` |
 | `POST /v1/uscita` | chiude questa sessione | `204` |
 | `POST /v1/uscita/ovunque` | chiude tutte | `204` |
-| `GET /v1/io` | chi sono | `{email, verificata, scade_se_non_verificata, data_esame, abilitazione, conseguimento, campi_profilo, segnali, generazione, azzerato_il, epoca, chiave_locale, righe, ultima_seq, esiti, tipi_riga}`; `401` |
+| `GET /v1/io` | chi sono | `{email, verificata, scade_se_non_verificata, data_esame, abilitazione, conseguimento, campi_profilo, segnali, generazione, azzerato_il, epoca, chiave_locale, righe, ultima_seq, esiti, tipi_riga}`; `401`. Dal P-86 `abilitazione` e `conseguimento` solo con le scelte di preparazione accese, `esiti` solo con esiti e previsioni accesi, `tipi_riga` senza `'a'` e `campi_profilo` senza le scelte a raccolta spenta (§2.7-bis) |
 | `POST /v1/verifica` `{gettone}` | conferma l'email | `200`; `410` gettone scaduto o usato |
 | `POST /v1/verifica/rinvia` | nuova mail di verifica | `202` |
 | `POST /v1/password/dimenticata` `{email}` | mail di reimpostazione | sempre `202` |
@@ -1188,10 +1255,10 @@ uscirne — vale anche per chi legge la risposta in console.
 | `POST /v1/password/cambia` `{attuale, nuova}` | cambia | `200`; `401` |
 | `POST /v1/email/cambia` `{password, nuova}` | mail di conferma al nuovo indirizzo, avviso al vecchio | `202`; `401`; `403` indirizzo non ancora confermato (§9.6); `409` nuovo indirizzo già registrato; `422`; `503` se la mail non è partita |
 | `POST /v1/email/conferma` `{gettone}` | il nuovo indirizzo diventa quello dell'account, confermato | `200` nella forma di `GET /v1/io`; `410`; `409` se nel frattempo l'ha preso un altro account |
-| `PUT /v1/profilo` `{data_esame, segnali, abilitazione, conseguimento}` | onboarding e impostazioni (§13); un campo assente resta com'è, `null` toglie la data o una scelta (P-83) | `200` nella forma di `GET /v1/io`; `422 {errore, campo, messaggio}` con il campo che non va — anche un campo che il server non conosce, `errore: 'profilo'` —, e niente scritto |
+| `PUT /v1/profilo` `{data_esame, segnali, abilitazione, conseguimento}` | onboarding e impostazioni (§13); un campo assente resta com'è, `null` toglie la data o una scelta (P-83) | `200` nella forma di `GET /v1/io`; `422 {errore, campo, messaggio}` con il campo che non va — anche un campo che il server non conosce, `errore: 'profilo'`, e dal P-86 una scelta di preparazione a raccolta spenta, `errore: 'raccolta_spenta'` —, e niente scritto |
 | `POST /v1/azzera` `{password}` | cancella le righe, alza la generazione (§8.4) | `200` con la generazione nuova, nella forma di `GET /v1/io`; `401` |
 | `DELETE /v1/account` `{password}` | cancella tutto, adesso (§14.1) | `204`, e il cookie tolto; `401` |
-| `PUT /v1/esito` `{giorno, prove: {carteggio?, base?, vela?, pratica?}}`, ogni prova `{esito, errori?}` o `null` | scrive le prove nominate per quel giorno; una assente resta com'è, `null` la toglie (P-73) | `200 {esiti}`; `422 {errore: 'esito', campo, messaggio}` e niente scritto; `409 {errore: 'troppi_giorni'}` oltre 20 giorni per account; `401` |
+| `PUT /v1/esito` `{giorno, prove: {carteggio?, base?, vela?, pratica?}}`, ogni prova `{esito, errori?}` o `null` | scrive le prove nominate per quel giorno; una assente resta com'è, `null` la toglie (P-73) | `200 {esiti}`; `422 {errore: 'esito', campo, messaggio}` e niente scritto; `409 {errore: 'troppi_giorni'}` oltre 20 giorni per account; `403 {errore: 'raccolta_spenta'}` a raccolta spenta, salvo un corpo di soli `null` (P-86, §2.7-bis); `401` |
 | `DELETE /v1/esito` `{giorno}` | toglie tutte le prove di quel giorno, anche dai byte e da un ripristino futuro (§14.4) | `200 {esiti}`, anche se non c'era niente; `422`; `401` |
 
 **Fatto il 26 settembre 2026 (P-11)**, in `server/conti.mjs`: le rotte che
@@ -1298,7 +1365,7 @@ diceva diversamente:
 
 | Rotta | Che cosa | Risposte |
 |---|---|---|
-| `POST /v1/righe` `{generazione, righe: [...]}` | aggiunge, per `uid` | `200 {nuove: [uid], gia: [uid], scartate: [{uid, motivo, indice}], ultima_seq, epoca, generazione}`; `409 {generazione, azzerato_il, epoca}` generazione vecchia; `413` oltre 2.000 righe o 2 MiB; `422` senza generazione o senza righe |
+| `POST /v1/righe` `{generazione, righe: [...]}` | aggiunge, per `uid` | `200 {nuove: [uid], gia: [uid], scartate: [{uid, motivo, indice}], ultima_seq, epoca, generazione}` — dal P-86 una riga d'avvio a raccolta spenta è fra le `scartate`, «riga d'avvio non raccolta» (§2.7-bis); `409 {generazione, azzerato_il, epoca}` generazione vecchia; `413` oltre 2.000 righe o 2 MiB; `422` senza generazione o senza righe |
 | `GET /v1/righe?dopo=<seq>` | le righe arrivate dopo il cursore, al più 5.000 | `200 {righe, ultima_seq, altre: bool, epoca, generazione, azzerato_il}`; `422` se `dopo` non è un intero da zero in su |
 | `GET /v1/esporta` | **il file dei progressi**, nella forma di `esporta()`, con `segPunti`, dal P-73 `esiti` e dal P-83 `abilitazione` e `conseguimento` | `200`, `Content-Disposition: attachment` |
 
@@ -2796,6 +2863,14 @@ specifica, con la pagina che li consuma (P-81, P-82):
 R-ACC-19 e R-ACC-71 si estendono: la cancellazione cerca anche la scelta nei
 byte, e la lettura del titolare mostra le scelte, in JSON e a schermo.
 
+**Le raccolte spente (P-86, 18 ottobre 2026, §2.7-bis).** Cinque, entrati nel
+§9.9 della specifica con il loro controllo: R-ACC-82, l'interruttore nel
+codice e la salute che lo dice; R-ACC-83, esiti e previsioni spenti; R-ACC-84,
+le scelte spente; R-ACC-85, lo spegnimento dopo l'accensione con i dati ancora
+lì; R-ACC-86, l'import di un file con una riga d'avvio visto dalla pagina vera
+(C-10:avvio). I test di P-72, P-73, P-78 e P-83 girano con le raccolte accese,
+e tengono quello che il server fa quando lo saranno.
+
 ---
 
 ## 18. Che cosa diventa falso — le aggiunte
@@ -2873,7 +2948,8 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
 | ~~Le scelte di preparazione nel profilo~~ | — | **deciso dall'autore il 15 ottobre 2026** (A-5 del §11 di `docs/ridisegno-progetto.md`): due campi facoltativi e nulli nel profilo, `abilitazione` (`motore` o `vela`) e `conseguimento` (`prima` o `estensione_e12`), separati dalla data d'esame, in `GET /v1/io`, nella risposta del profilo e nell'export, con la capability `campi_profilo` dichiarata; valore estraneo `422` con il campo; migrazione additiva. Non sono un obiettivo prospettico né una fase: quelli aspettano P-76. **Fatti da P-83 il 15 ottobre 2026** (§7.1, §13.4, schema 6); l'informativa li nomina fra i dati del profilo con P-81 |
 | Le statistiche vedono le scelte di preparazione? | l'autore | Oggi la fonte `iscritti` porta `data_esame` e non `abilitazione` né `conseguimento` (§15.2, P-83): nessuna statistica le chiede, e una query che le contasse fuori da `statistiche.mjs` è rossa. Metterle è una riga, ma è un uso nuovo di un dato personale e tocca l'informativa, che oggi dice statistiche sulle risposte. *Proposta della regia: no finché non c'è una domanda che le richieda; quel giorno si decide con la riga dell'informativa accanto* |
 | L'export porta anche la data d'esame? | l'autore | Trovato da P-83: `GET /v1/esporta` porta `segPunti`, dal P-73 `esiti` e dal P-83 le due scelte, ma **non** `data_esame`, che sta nel profilo dalla v0.28.0 (§13). È fuori da D.3 e P-83 non l'ha cambiato. Il file è una portabilità (§13), e una data che non viaggia è una cosa in meno da ritrovare su un altro account; l'import non la caricherebbe comunque, come le scelte. *Proposta della regia: sì, nella prima sessione che tocca l'export, con un test come R-ACC-79* |
-| ~~Le raccolte nuove prima della loro decisione~~ | — | **deciso dall'autore il 17 ottobre 2026** (§2.7-bis): spente sul server finché non si decidono — esiti e previsioni con P-75, le scelte di preparazione con P-81 —, con le scritture impedite e non soltanto taciute; quello che c'è resta accessibile, esportabile e cancellabile. La v0.31.0 esce così. Lo fa P-86 |
+| ~~Le raccolte nuove prima della loro decisione~~ | — | **deciso dall'autore il 17 ottobre 2026** (§2.7-bis): spente sul server finché non si decidono — esiti e previsioni con P-75, le scelte di preparazione con P-81 —, con le scritture impedite e non soltanto taciute; quello che c'è resta accessibile, esportabile e cancellabile. La v0.31.0 esce così. **Fatto da P-86 il 18 ottobre 2026**: l'interruttore in `server/raccolte.mjs`, `GET /v1/salute` che lo dice (§2.7-bis) |
+| Il segnalibro (`_t: 'b'`) e il tag «Svista» (`S`), nuovi anche loro dopo la v0.30.0 (P-71), sono coperti da quello che l'informativa dice? | l'autore | Letto il 18 ottobre 2026 (P-86): `site/privacy.html` nomina «le risposte ai quiz e agli esercizi legate all'account, i risultati delle attività e dei Segnali, la data d'esame». **Il tag «Svista»** è della stessa natura dei tag «Non lo sapevo», «Letto male» e «Calcolo» che il server tiene dalla v0.29.0 — una classificazione che chi studia mette su una sua risposta sbagliata —, e l'informativa non nomina nemmeno quelli: è coperto quanto loro, cioè dentro «le risposte» per chi le legge larghe, non per nome. **Il segnalibro** non è una risposta né un risultato: è un segno su un quesito, e l'informativa non dice niente che lo comprenda. Oggi nessuna pagina li scrive — la pagina di oggi ha i tag N/L/C e niente segnalibro —, ma il server li accoglie dalla v0.31.0, anche da un import, come la riga d'avvio prima di P-86. Non sono stati spenti: lo chiede il prompt di P-86. *Proposta: aggiungere all'informativa, con P-81 che li porta nella pagina, «i tag che metti sugli errori e i segnalibri sui quesiti», con la base del salvataggio (6.1.b); oppure spegnerli come le altre tre fino a quella riga, con una voce in più in `RACCOLTE`* |
 | ~~Macchina con SQLite, o container con PostgreSQL gestito~~ | — | **deciso** su delega: macchina, SQLite, Node senza dipendenze (§2.2) |
 | ~~Quale macchina~~ | — | **deciso dall'autore il 26 settembre 2026: STARDUST1-S a `pl-waw-2`**, 5,04 € al mese. Il prezzo che si accetta: i dati stanno a Varsavia (UE), e dopo un guasto la macchina potrebbe non essere ricreabile subito perché le scorte sono incerte. Le copie restano a `nl-ams` (§2.6). L'informativa dirà Polonia. **Si crea alla messa in esercizio, non prima** (dall'autore, il 26 settembre 2026): accesa da subito costerebbe 5,04 € al mese per settimane senza niente sopra, e andrebbe comunque tenuta aggiornata. Il prezzo che si accetta è di trovarla esaurita quel giorno; allora si sceglie fra la DEV1-S a `fr-par` e un'altra zona |
 | ~~Gli adempimenti rimasti del titolare: indirizzo postale, base giuridica del registro di sicurezza, inoltro verso Gmail, conservazione delle richieste, DPA di statichost.eu, due fattori~~ | — | **decisi fra il 1° e il 2 ottobre 2026** (§15.4): nessun indirizzo postale e nessuna PEC, legittimo interesse, `privacy@` su OVHcloud, due anni, DPA firmato e spedito, due fattori fatti; niente parere firmato. Resta la copia controfirmata del DPA (§15.4, punto 1); la firma DKIM è attiva dal 2 ottobre (punto 10) |

@@ -1346,6 +1346,111 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   `server/`, `docs/prossime-sessioni.md` e la copia di P-81 non sono stati
   toccati.
 
+### Cambiato — P-86: le raccolte nuove, spente sul server fino alla loro decisione
+
+- **Tre raccolte nuove dalla v0.30.0 non si raccolgono più, finché la loro
+  informativa non c'è.** Sono le righe d'avvio con la previsione (`_t: 'a'`,
+  P-72), gli esiti dell'esame (`PUT /v1/esito`, P-73) e le scelte di
+  preparazione nel profilo (P-83). Nessuna pagina le usa, ma il server le
+  accettava: una riga `'a'` passa da `fondiArchivio()` e arriva sul server con
+  l'import di un file, e le due rotte rispondono a chiunque abbia una sessione.
+  Base giuridica e informativa vengono prima del trattamento: lo ha deciso
+  l'autore il 17 ottobre (`account-progetto.md` §2.7-bis). La v0.31.0 esce così.
+
+- **L'interruttore sta nel codice, `RACCOLTE` in `server/raccolte.mjs`**: la
+  proposta della regia, confermata. Una voce per decisione:
+  `esiti_e_previsioni` si accende con la merge di P-75,
+  `scelte_di_preparazione` con il rilascio di P-81. Un tag dice che cosa è
+  acceso, `rg-torna` riporta anche l'interruttore, e l'accensione è un commit
+  che si guarda. Una variabile in `/etc/rg/ambiente` si cambierebbe a mano e
+  sopravviverebbe a un ritorno indietro. `GET /v1/salute` dice `raccolte`, e il
+  log d'avvio «raccolte accese: nessuna». I test e i banchi le cambiano con
+  un'opzione d'avvio, mai la macchina: un test lancia il server come l'unità
+  `rg-api`, con `RG_RACCOLTE` impostata apposta, e la salute dice quelle del
+  codice.
+
+- **Spente vuol dire scritture rifiutate, con un motivo che si legge.**
+  - `PUT /v1/esito` che dice una prova risponde `403 raccolta_spenta`, prima
+    di guardare il corpo, e niente è scritto.
+  - Una riga `'a'` in `POST /v1/righe` — quindi anche in un import — è
+    scartata con «riga d'avvio non raccolta». Le altre righe dello stesso
+    invio entrano.
+  - Le due scelte nel profilo sono un `422` con il campo, e niente è scritto,
+    nemmeno la data o i punteggi mandati accanto.
+  - Nessuna di queste è un `200` che butta il valore. La descrizione non
+    dichiara le raccolte spente: niente `esiti`, `'a'` fuori da `tipi_riga`,
+    `campi_profilo` uguale a `['data_esame', 'segnali']`. La pagina fa come
+    con il server di prima, cioè la strada di R-PREV-09, R-ESITO-03 e R-ACC-55.
+  - Togliere resta possibile anche a raccolta spenta: `DELETE /v1/esito`, un
+    `PUT` di soli `null`, `null` su una scelta.
+  - La riga d'avvio già sul server, rimandata, è «già presente» e non uno
+    scarto: dopo un ripristino tutti rimandano tutto, e uno scarto bloccherebbe
+    l'uscita a chi non ha perso niente.
+
+- **Spegnere dopo aver acceso non toglie niente.** Quello che c'è nel
+  database resta accessibile, esportabile e cancellabile:
+  - l'export porta esiti, scelte e righe d'avvio;
+  - la ricezione restituisce le righe d'avvio;
+  - `server/leggi.mjs` mostra tutto;
+  - l'azzeramento e la cancellazione dell'account portano via tutto.
+
+- **Che cosa vede chi importa un file con una riga `'a'`, misurato sulla
+  pagina vera in Chrome.** L'anteprima la conta fra le nuove, perché per il
+  motore della pagina è valida. Dopo l'import la finestra dice «3 nuove · 0 già
+  presenti · 1 scartate», «L'importazione non è completa» e «riga d'avvio non
+  raccolta: 1». Il file di «Scarica le righe non importate» porta la riga
+  d'avvio, e le risposte sono sul server. La riga resta nella copia del
+  dispositivo fra le non accolte: è il comportamento della pagina per ogni
+  scarto.
+
+- **Prima i test, rossi uno per uno.** Sono quattro test nuovi del server
+  (R-ACC-82…85) e il test dell'avvio da collegamento esteso. Ventidue rotture
+  del server, una alla volta, sono tutte rosse nel test che le riguarda: fra
+  le altre il rilascio acceso, la salute muta, un nome sbagliato che passa,
+  l'ambiente letto, l'esito senza cancello o con il corpo guardato prima, la
+  riga `'a'` accolta o buttata in silenzio o scartata prima di «già presente»,
+  le capability dichiarate, il profilo che risponde `200` e butta la scelta,
+  `null` vietato, l'export o la ricezione che tolgono a raccolta spenta.
+  **Una ha appeso la suite invece di farla rossa**: un nome sbagliato accettato
+  lasciava aperto il server del test. Ora il test lo chiude e dice rosso.
+  Quattordici test di prima — di P-72, P-73, P-78 e P-83 — sono diventati
+  rossi con le raccolte spente, ognuno per la ragione giusta, e ora le
+  accendono con `raccolte: ACCESE`: tengono quello che il server fa quando lo
+  saranno.
+
+- **Il banco del client.** Accende le raccolte sul server delle pagine di
+  riferimento, che sono il contratto di quando saranno accese, e dà alla pagina
+  vera il server com'è nel codice: la pagina di oggi resta verde con tutto
+  spento. Provato al contrario: con tutto spento E-01, P-01 e N-01:scelte sono
+  rossi sulle pagine di riferimento. La parte nuova `C-10:avvio` (R-ACC-86)
+  importa il file con la riga d'avvio. Sulla pagina vera la riga è scartata,
+  con il server che la accoglie la parte è rossa, e sulla pagina di
+  riferimento la riga arriva com'era.
+
+- **Letta l'informativa, e una domanda per l'autore** (§20 di
+  `account-progetto.md`). Il tag «Svista» è coperto quanto i tag di prima,
+  che l'informativa non nomina. Il segnalibro non è né una risposta né un
+  risultato, e niente lo comprende. Tutti e due restano accesi, come chiedeva
+  il prompt.
+
+- **Specifica:** il §3.2, il §3.7, R-ACC-55 e il §9.13 dicono le raccolte
+  spente; nel §9.9 entrano R-ACC-82…86. Aggiornati anche il §2.7-bis, il §7, il
+  §17 e il §20 di `account-progetto.md`, e una riga nelle note di
+  `esito-esame-progetto.md` e `ridisegno-progetto.md`.
+
+  Suite: server **89/89** (erano 85), con Node 25.3 e con la **24.21.0 LTS**,
+  il cui archivio coincide con il `SHASUMS256.txt` riscaricato oggi da
+  nodejs.org; `ripristina --prova` 24 controlli, con tutte e due; motore
+  215/219 con i quattro skip previsti, anche con la LTS; dati 230; specifica
+  **1.032** (erano 1.012); interfaccia **3.010** (erano 3.004), in 4 min 16 s,
+  con la 8620 guardata libera per 90 s prima.
+  **Un primo giro dell'interfaccia era rosso in tre verifiche, nessuna di
+  questa sessione**: il rosso falso di C-22 già in coda per P-87, e
+  `N-01:cronologia` sulla pagina di riferimento del ridisegno, una volta
+  sola. Rifatto da solo tre volte, quel gruppo è stato verde tre volte su tre,
+  e il secondo giro intero è verde. Guardiano verde. `site/`,
+  `docs/prossime-sessioni.md` e la macchina non sono stati toccati.
+
 ## [0.30.0] — 2026-10-03
 
 **Il sito più semplice: niente offline.** Rotta Giusta si apre con la rete,

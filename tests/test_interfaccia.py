@@ -1413,11 +1413,16 @@ VERIFICHE_CLIENT = {'C-01': 28, 'C-02': 15, 'C-03': 11, 'C-04': 20, 'C-05': 13, 
                     'C-21': 17, 'C-10': 10, 'C-11': 8, 'C-12': 9, 'C-13': 8, 'C-14': 3, 'C-15': 12, 'C-16': 23, 'C-17': 10,
                     'C-13:scarica': 7, 'C-08:cancella': 8, 'C-15:segnali': 7,
                     'C-19:senza': 4, 'C-19:ricarica': 4, 'C-19:scadenza': 4, 'C-19:guasto': 3, 'C-19:giudizio': 5,
-                    'C-19:uscita': 4, 'C-19:schede': 4, 'F-01': 21, 'C-20': 5, 'C-22': 8}
+                    'C-19:uscita': 4, 'C-19:schede': 4, 'F-01': 21, 'C-20': 5, 'C-22': 8, 'C-10:avvio': 3}
 # Le tre scelte che fino a P-46 nessun gruppo premeva (R-ACC-63): sono parti dei
 # loro gruppi, e girano con loro, ma le verifiche portano il nome della parte e
 # hanno un controllo ciascuna, cosi' la specifica le nomina una per una.
 SCELTE_CLIENT = ['C-13:scarica', 'C-08:cancella', 'C-15:segnali']
+# Le raccolte nuove spente sul server (P-86, account-progetto §2.7-bis): una
+# parte di C-10, che importa un file con una riga d'avvio. Sulla pagina vera il
+# server e' com'e' nel codice, e la riga e' scartata con il suo motivo; sulle
+# pagine di riferimento la raccolta e' accesa, e la riga arriva.
+PARTI_RACCOLTE = ['C-10:avvio']
 # C-19, la bozza del carteggio (P-34, §9.4 del progetto del client): le verifiche
 # portano il nome della parte, e ognuna ha il suo conto. Sulla pagina vera la
 # bozza non c'e' ancora: finche' il difetto e' dichiarato in
@@ -2526,6 +2531,16 @@ def test_client_file():
     registra_client('C-10')
 
 
+def test_client_import_avvio():
+    """R-ACC-86 (P-86): un file con una riga d'avvio importato dalla pagina vera,
+    con il server com'e' nel codice del tag. A raccolta spenta la riga e'
+    scartata con il suo motivo, le risposte arrivano, il server non la ha, e
+    sta fra le righe non importate da scaricare (C-10:avvio). Che la stessa
+    parte, a raccolta accesa, veda la riga arrivare lo pretende
+    test_client_provato_al_contrario sulla pagina di riferimento."""
+    registra_client('C-10:avvio')
+
+
 def test_client_limiti():
     registra_client('C-12')
 
@@ -2847,7 +2862,7 @@ def test_client_provato_al_contrario():
     v = out.get('riferimento', [])
     rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in v if not x['ok']]
     check('la pagina di riferimento del client passa il banco del browser', not rossi, '; '.join(rossi[:3]))
-    for g in GRUPPI_CLIENT + SCELTE_CLIENT + PARTI_BOZZA:
+    for g in GRUPPI_CLIENT + SCELTE_CLIENT + PARTI_RACCOLTE + PARTI_BOZZA:
         n = sum(1 for x in v if x['gruppo'] == g)
         check('il banco del browser ha eseguito %s sulla pagina di riferimento' % g,
               n >= VERIFICHE_CLIENT[g], 'troppo poche verifiche: il giro non e\' arrivato in fondo (%d su %d)' % (n, VERIFICHE_CLIENT[g]))
@@ -3053,7 +3068,7 @@ def test_ridisegno_tragitti():
     vecchi = [x for x in v if not x['gruppo'].startswith('N-01')]
     rossi = [x['gruppo'] + ' ' + x['nome'] + ' — ' + x.get('extra', '') for x in vecchi if not x['ok']]
     check('tragitti: la pagina di riferimento del ridisegno passa tutti i gruppi del client', bool(vecchi) and not rossi, '; '.join(rossi[:3]))
-    for g in GRUPPI_CLIENT + SCELTE_CLIENT + PARTI_BOZZA + list(VERIFICHE_RIFINITURA):
+    for g in GRUPPI_CLIENT + SCELTE_CLIENT + PARTI_RACCOLTE + PARTI_BOZZA + list(VERIFICHE_RIFINITURA):
         n = sum(1 for x in v if x['gruppo'] == g)
         check('tragitti: nel regime nuovo il banco del client ha eseguito %s per intero' % g,
               n >= {**VERIFICHE_CLIENT, **VERIFICHE_RIFINITURA}[g],
@@ -4353,7 +4368,7 @@ def main():
               test_client_nella_pagina, test_client_primo_ingresso, test_client_senza_account, test_client_email_registrata,
               test_client_invito_e_viste, test_client_tutte_le_attivita, test_client_registrazione, test_riepilogo_frasi,
               test_client_dispositivo_condiviso, test_client_coda, test_client_uscita,
-              test_client_verifica, test_client_password, test_client_archivio_di_prima, test_client_offline, test_client_file,
+              test_client_verifica, test_client_password, test_client_archivio_di_prima, test_client_offline, test_client_file, test_client_import_avvio,
               test_client_limiti, test_client_azzeramento, test_client_ripristino, test_client_data,
               test_client_export, test_client_testi,
               test_client_scarica_dopo_azzeramento, test_client_cancella_dopo_recupero, test_client_conferma_mancante, test_client_uscita_segnali,

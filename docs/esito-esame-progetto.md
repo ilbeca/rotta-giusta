@@ -1141,7 +1141,10 @@ ci sono, che è la ragione per cui la decisione 27 dice «presto».
 rifiutate sul server, e la descrizione dell'account non dichiara `esiti` né
 `'a'` in `tipi_riga`, finché la base giuridica e l'informativa non ci sono.
 L'interruttore è di P-86; la merge di P-75 lo accende, nello stesso rilascio
-che porta B-1, B-2 e l'informativa.
+che porta B-1, B-2 e l'informativa. *(18 ottobre 2026, P-86: fatto. È
+`esiti_e_previsioni` in `RACCOLTE`, `server/raccolte.mjs`; accenderlo è un
+commit su quella riga, con il test di R-ACC-82, e `GET /v1/salute` lo dice —
+`account-progetto.md` §2.7-bis.)*
 
 ### 10.2 Evidenze di P-64 e limiti
 
