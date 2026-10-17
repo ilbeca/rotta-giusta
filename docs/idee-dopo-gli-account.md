@@ -15,6 +15,12 @@ dell'autore, ricerche, lavoro di Claude su `main`, lavoro di ChatGPT su
 `ui/main` —; una decisione presa non resta qui, va nella specifica con la sua
 data.
 
+**Il file unico delle idee, dal 17 ottobre 2026.** Deciso dall'autore: le idee
+per le prossime release stanno **qui, e in nessun file nuovo**. Ogni sessione
+di brainstorming aggiunge in fondo una sezione sua, con la data, e le sue righe
+nell'indice. Il nome resta «dopo gli account» perché altri documenti lo
+citano: non è più una descrizione, è un indirizzo.
+
 **Penna.** File **neutro**: lo toccano tutti. Si scrive mentre si discute, non
 alla fine, perché la chat non sopravvive alla sessione.
 
@@ -70,13 +76,17 @@ lavoro che dura settimane e cambia che cosa il sito *è*.
 | N-02 | La raccolta dei dubbi | ChatGPT | non scelta il 4 ottobre |
 | N-03 | La ripresa dopo un'assenza, e «hai concluso» | ChatGPT | sì dell'autore |
 | N-04 | Pagine pubbliche per argomento | ChatGPT | non scelta il 4 ottobre |
-
-**Le decisioni prese, in una riga ciascuna, sono in fondo al file: «Le decisioni
-di P-59».** Le schede qui sotto raccontano come ci si è arrivati, e dove una
-scheda e quella sezione non coincidono vale la sezione.
 | C-01 | Il candidato che ha già la patente entro 12 miglia | Claude | sì dell'autore |
 | C-02 | Spiegare l'esame a chi comincia da zero | Claude | sì dell'autore |
 | C-03 | «Questo quesito non torna»: un modo di segnalarlo | Claude | sì dell'autore; indirizzo da scegliere |
+| I-19 | Il miglioramento continuo: la misura come quinto passo del ciclo | autore e Claude | sì dell'autore, prossima release (17 ottobre) |
+| I-20 | La classe: la scuola nautica e l'istruttore dentro il sito | autore e Claude | sospesa: l'autore la propone alle scuole |
+| I-21 | Una casella per le segnalazioni | Claude | sì dell'autore; casella da creare |
+
+**Le decisioni prese, in una riga ciascuna, sono in fondo al file: «Le decisioni
+di P-59»; quelle del 17 ottobre in «Il miglioramento continuo».** Le schede qui
+sotto raccontano come ci si è arrivati, e dove una scheda e quella sezione non
+coincidono vale la sezione.
 
 ---
 
@@ -2408,3 +2418,129 @@ divieto.
 (stati, percorso, tag, costanza) → ridisegno → primo lotto di spiegazioni,
 segnalazioni, segnalibri → la stima come ricerca parallela, con la raccolta di
 «com'è andata» e delle previsioni avviata **subito** → donazioni dopo il parere.
+
+---
+
+## Il miglioramento continuo — brainstorming del 17 ottobre 2026
+
+**Con l'autore, mentre P-81 è in corso.** Niente codice. Il punto di partenza
+dell'autore: le funzionalità sono buone, l'interfaccia no, perché il sito è nato
+come strumento per una persona sola e non è mai stato pensato per il grande
+pubblico. Due domande: farsi aiutare dai generatori di siti (ChatGPT Sites, la
+modalità design di Claude), o ripensare la UX da zero intorno all'utente.
+
+### La lettura di Claude, accolta
+
+- **Il «da zero intorno all'utente» è già stato fatto**: le persone del §1, le
+  decisioni di P-59, i 108 tragitti di P-65, i mock di P-66…69, il progetto di
+  P-79. Quello che manca è **l'utente vero**: P-70 ha zero persone, i nomi sono
+  chiusi provvisori, Q-PROVE è aperta. Ripartire da zero rifarebbe lo stesso
+  passo con lo stesso buco. Si esce P-81, e da lì si misura.
+- **I generatori servono a monte, mai come fonte del sito.** Sono buoni per
+  varianti visive e prototipi da mettere davanti a una persona. Una pagina
+  generata altrove salterebbe i controlli e quasi certamente rifarebbe i conti in
+  pagina («chi disegna non ricalcola»). Il loro risultato è materiale per un mock
+  o per un prompt su `ui/*`, mai un file che finisce in `site/`.
+
+### I-19 — Il miglioramento continuo: la misura come quinto passo [autore e Claude]
+
+**Il problema.** Il ciclo BRAINSTORM → SPECIFICA → IMPLEMENTA → REVIEW →
+RILASCIO non si chiude: niente torna indietro da chi usa il sito. Il punto cieco
+più grande è chi entra senza account e se ne va: per scelta (ADR-004) non lascia
+traccia, ed è proprio la persona su cui il ridisegno ha lavorato di più.
+
+**Il ciclo proposto.** Si aggiunge **MISURA → BRAINSTORM**. Le osservazioni
+diventano voci con la loro evidenza accanto, non con un'opinione; un triage ogni
+mese o ogni stagione; un problema alla volta, con la metrica scritta **prima** del
+cambio, come `regola-semplice-1`; poi mock, `ui/*`, rilascio, e la misura dopo.
+
+**Le fonti.**
+- **La misura propria** (sotto): conteggi aggregati di eventi sul server del sito.
+- **Le righe delle risposte**, attraverso `server/statistiche.mjs`: prove avviate
+  e non consegnate (le righe `'a'`), attività non concluse, quesiti che sbagliano
+  quasi tutti.
+- **Le segnalazioni** (I-21) e **«com'è andato l'esame»** (P-75).
+- **Le persone vere**: poche, spesso, con il protocollo di `prova-persone.md`.
+  Da dove vengano è ancora da decidere (I-20 è una risposta possibile).
+- **I bot di P-70**, solo come controllo che le cose si trovino ancora, non come
+  verità sulle persone.
+
+**«Migliorare», per l'autore:** l'interfaccia e la pulizia delle funzionalità.
+Pulire non vuol dire per forza togliere: possono entrare prove ed esami nuovi,
+modi nuovi di consigliare la priorità degli argomenti, suggerimenti su quale
+modalità usare. Si misura con le attività concluse, con il ritorno, con l'esito
+dell'esame, **e anche con il numero di registrazioni** (sotto).
+
+**Promesse che tocca.** «Nessun analytics» nel §2.1 della specifica e nella
+filosofia. R-ACC-09, che oggi pretende che senza account la pagina non faccia
+**nessuna richiesta all'API**. `test_nessuna_risorsa_di_terzi`, che resta valido
+se la misura passa dal server del sito. Le due regole diventeranno rosse al primo
+contatore, ed è giusto: la decisione è un ADR che le riscrive, non un passaggio
+in silenzio. L'informativa.
+
+**Grandezza.** L: un ADR, il server, la pagina, la specifica, l'informativa.
+
+### I-20 — La classe: la scuola nautica e l'istruttore dentro il sito [autore e Claude]
+
+**Il problema.** Chi prepara l'esame resta uno-tre mesi, poi se ne va. Una
+community generica (un forum) con venti persone è una stanza vuota, e i contenuti
+scritti dagli utenti portano obblighi di moderazione che una persona sola non
+regge. L'idea di partenza dell'autore: «perché non una community, e non solo un
+sito per l'esame?».
+
+**La forma proposta da Claude.** Un istruttore, o una scuola, crea una classe; gli
+studenti ci entrano con l'account; l'istruttore vede l'avanzamento aggregato: chi
+è indietro, quali argomenti pesano per tutta la classe. Risolve quattro cose
+insieme: le persone vere arrivano ogni stagione da una fonte stabile; entrare in
+una classe è un motivo vero per creare l'account; la community è quella che conta
+in quel momento (compagni e istruttore); una scuola porta una classe intera ogni
+anno.
+
+**Il costo.** L'istruttore vedrebbe dati personali degli studenti: serve una
+base giuridica, il consenso dello studente, una sezione nuova dell'informativa.
+Il motore regge: `quadro()` su più account è un'aggregazione.
+
+**Prima di costruire, si prova la domanda a costo zero**: una scuola, un
+istruttore, la classe successiva, magari con un gruppo di messaggistica accanto.
+Se l'istruttore non lo usa, non si costruisce.
+
+**Dopo, forse:** la discussione per quesito («perché la risposta è questa?»),
+legata alle spiegazioni e alle segnalazioni. **Fuori per ora:** il «dopo la
+patente» (diportisti, uscite), che è un prodotto diverso.
+
+**Stato.** Sospesa ma non persa: l'autore la propone alle scuole nautiche, senza
+una risposta a breve.
+
+### I-21 — Una casella per le segnalazioni [Claude]
+
+**Il problema.** «Segnala un problema» (decisione 30, C-03) ha un segnaposto
+come indirizzo (A-3): finché resta così, il canale qualitativo è spento.
+
+**La proposta.** `segnalazioni@rottagiusta.it`, una seconda casella Zimbra
+Starter su OVH accanto a `privacy@`, che ha già l'accordo sui dati: 0,37 €/mese,
+circa 4,50 € l'anno. Le alternative scartate:
+- un **alias** verso `privacy@` costerebbe zero, ma mescolerebbe le segnalazioni
+  con le richieste che hanno scadenze di legge (un mese, 72 ore), che
+  l'attività programmata cerca proprio lì;
+- le issue di GitHub chiedono a chi segnala un account GitHub;
+- un modulo che scrive sul server vuol dire più lavoro e più dati da custodire.
+
+**Dopo la casella:** l'indirizzo nell'informativa e al posto del segnaposto,
+dopo P-81. L'attività programmata può leggere anche questa casella.
+
+### Le decisioni del 17 ottobre 2026
+
+1. **La misura propria, sì**: conteggi aggregati di eventi, senza cookie, sul
+   server del sito, per la **prossima release**, con un ADR che riscrive «nessun
+   analytics» e R-ACC-09. Niente tracciamento di terzi. P-82 resta com'è.
+2. **Il contatore degli ingressi, sì**, come primo pezzo della misura propria.
+   Che cosa conta di preciso è da definire.
+3. **Le registrazioni si misurano**, insieme alle altre metriche. Non vuol dire
+   dark pattern: la leva è **dare più valore all'account**.
+4. **Open source e GitHub restano come sono.**
+5. **L'interfaccia e la pulizia delle funzionalità** sono il campo del
+   miglioramento (I-19).
+6. **La classe (I-20) è sospesa**: l'autore la propone alle scuole nautiche.
+7. **La casella delle segnalazioni va fatta** (I-21). La crea l'autore su OVH.
+8. **Le persone vere: da decidere** da dove e ogni quanto.
+9. **Questo file è il file unico delle idee** per le prossime release.
