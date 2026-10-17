@@ -117,6 +117,14 @@ manuale.»*
   approvato la proposta di I-15 per intero, e lì non ci sono.
 - **Solo per chi ha l'account**: quattordici giorni sono uno storico
   (decisione 10).
+- *Rivisto il 17 ottobre 2026, dall'autore (Q-COSTANZA, chiusa nel §10 della
+  specifica):* un giorno conta con 10 quesiti distinti fra quiz e tecniche, o
+  con un esercizio di carteggio giudicato, anche negativo; quattordici date,
+  oggi compreso. **I Segnali non contano**, e la schermata lo dice: è una
+  revisione esplicita di «criteri giusti per quiz, carteggio e Segnali» qui
+  sopra, perché i Segnali non lasciano una data (§4.5 della specifica) e
+  contarli vorrebbe una riga nuova o un dato nuovo nel profilo. Si riapre con
+  una domanda e una misura sue.
 
 ### 4. La stima: si calcola e si registra prima di mostrarla (decisioni 23–27)
 
@@ -205,12 +213,15 @@ scriverla a mezza voce.
    Nove giorni su quattordici con una risposta al giorno sono nove giorni di
    niente. Che cosa fa un giorno di attività lo decide l'autore (§4 di
    `docs/prossime-sessioni.md`, «Dopo P-59», punto 3), e finché non c'è la
-   costanza non si costruisce.
+   costanza non si costruisce. *Deciso il 17 ottobre 2026* (Q-COSTANZA): 10 quesiti
+   distinti, o un esercizio di carteggio giudicato.
 3. **I Segnali non lasciano una data.** Non entrano nell'archivio (§4.5,
    R-UX-02): ne restano soltanto il migliore e le giocate per modalità, nel
    profilo. Contarli fra i giorni di attività vuol dire scrivere da qualche
    parte quando si gioca — una riga nuova o un dato nuovo nel profilo —, e
-   nessuna delle due è decisa. È aperto nel §10 della specifica, Q-COSTANZA.
+   nessuna delle due è decisa. *Deciso il 17 ottobre 2026: i Segnali non
+   contano* (Q-COSTANZA, chiusa nel §10 della specifica, e la nota nel §3 qui
+   sopra).
 4. **«Non si azzera» non si dice**: dopo quattordici giorni senza attività il
    numero è zero.
 
@@ -288,5 +299,6 @@ scriverla a mezza voce.
 - **Il motore** avrà la costanza e i quesiti da confermare: i contratti della
   riga 20 della coda. La stima è una ricerca a parte, la riga 23.
 - **Aperto, per l'autore**: la frase della filosofia sulla stima; che cosa fa
-  un giorno di attività, e come si contano i Segnali (Q-COSTANZA); la licenza
+  un giorno di attività, e come si contano i Segnali (Q-COSTANZA, chiusa il
+  17 ottobre 2026); la licenza
   delle spiegazioni; la strada per chiedere «com'è andata».

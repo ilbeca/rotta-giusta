@@ -1685,6 +1685,16 @@ ridisegno hanno i link; il banco del client in Chrome li preme con lo stesso
 clic generico, e la pagina di riferimento del client passa tutti i suoi
 gruppi. La barra della copia di P-81 è verde così com'è.
 
+**Le scelte di preparazione si accendono con il rilascio di P-81** (deciso
+dall'autore il 17 ottobre 2026, `account-progetto.md` §2.7-bis). Fino ad
+allora il server in esercizio non dichiara `campi_profilo` e rifiuta i due
+campi: la v0.31.0 esce così, prima di P-81. Per la pagina di P-81 non cambia
+niente — senza `campi_profilo` l'onboarding non promette la persistenza, ed è
+il ramo che N-01:scelte già prova —, e i banchi accendono i campi sul server
+di prova. Li accende sul server vero il commit di rilascio di P-81, nello
+stesso tag che porta la riga dell'informativa del §11.2 del progetto del
+client; l'interruttore è di P-86.
+
 ### 10.2 Verifica documentale di P-79 e limiti
 
 Verificati cartella, ramo, albero iniziale pulito e inventario delle chat:

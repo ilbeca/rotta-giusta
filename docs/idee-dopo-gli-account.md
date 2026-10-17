@@ -1832,7 +1832,10 @@ soglia di un «giorno di studio» (quante risposte?) va decisa.
    la regia:* una sessione parallela sul menu, riportata dall'autore lo stesso
    giorno, scrive «congelamento della serie scartato, visto che hai deciso che
    si azzera»: è il contrario di questa decisione, e va riallineata.
-2. Quante risposte fanno un «giorno di studio»? — aperto; proposta di quella
+2. ~~Quante risposte fanno un «giorno di studio»?~~ — **deciso dall'autore il
+   17 ottobre 2026** (Q-COSTANZA, chiusa nel §10 della specifica): 10 quesiti
+   distinti fra quiz e tecniche, o un esercizio di carteggio giudicato, anche
+   negativo; i Segnali fuori. Il testo di prima: aperto; proposta di quella
    sessione: un'attività conclusa, anche da dieci domande.
 
 ---

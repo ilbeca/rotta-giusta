@@ -2669,11 +2669,42 @@ Ogni riga dice **chi decide**. Una questione senza un decidente non si chiude ma
 | Q-PROG | Il programma d'esame come dataset | serve una fonte, poi l'autore | Nessuna mappa del programma è possibile: nel repo non c'è (§4.6) |
 | Q-AMBITO | Se `carteggio_e12.json` esce dal cassetto | l'autore | 50 esercizi pubblicati e non usati; cambia il pubblico più di ogni scelta di navigazione. Finché resta aperta, un controllo pretende che la pagina non li carichi (R-UX-07): tirarli fuori è una decisione, non un ritocco |
 | Q-CART4 | «Un esercizio per ciascuno dei quattro argomenti» è un'assunzione | serve la scuola nautica | La composizione della prova resta non confermata, e la 42/D non ha esercizi di carburante. Dal 30 settembre 2026 l'assunzione viaggia con il contratto, `PROVA_CARTEGGIO.assunzione`, e chi compone la prova la riceve con la lista (R-SEL-12). Dal 30 settembre 2026 (P-35) arriva anche alla preparazione della pagina, che la dichiara prima dell'avvio come la dà il motore, e un controllo la segue fino lì (R-SEL-17) |
-| Q-COSTANZA | Che cosa fa un giorno di attività (ADR-006): quante risposte, e come si contano il carteggio e i Segnali — i Segnali oggi non lasciano una data, perché non entrano nell'archivio (§4.5, R-UX-02), e contarli vuol dire una riga nuova o un dato nuovo nel profilo | l'autore (la proposta è un'attività conclusa, anche da dieci domande: `prossime-sessioni.md` §4, «Dopo P-59», punto 3) | La costanza non si costruisce |
 | Q-STIMA | La frase di `docs/filosofia.md` sulla stima (proposta in I-12); chi fissa, prima di vedere i risultati, le soglie con cui la stima si mostra (ADR-006); e se chiedere «com'è andata» anche per email — è un uso dell'email che oggi la filosofia non nomina. **La strada in pagina c'è** (`esito-esame-progetto.md` §3, R-ESITO-01…09): il riquadro nel Percorso e «Il tuo esame», con il server da P-73 e i controlli della pagina da P-74; la porta B-1. Resta l'email, che l'autore ha rimandato il 4 ottobre 2026 (§11, punto 6 di quel progetto) | l'autore | La stima si registra (§3.2) ma non si mostra; la frase di oggi resta; «com'è andata» si chiede solo a chi torna sul sito |
 | Q-PROVE | Verifiche con dispositivi reali e con persone — e Safari, che il banco del browser non raggiunge (rimandato dall'autore il 29 settembre 2026) | l'autore fornisce dispositivi e persone | Nessuna prova su hardware Apple vero, e nessuna prova con persone diverse dall'autore. Safari nel banco vorrebbe «Allow remote automation», un'impostazione dell'autore, e anche così WebDriver non legge lo storage (`account-client-progetto.md` §12): il cookie fra `rottagiusta.it` e `api.` su Safari si prova a mano |
 
 **Chiuse, e non si riaprono senza un motivo nuovo:**
+
+- **Q-COSTANZA: che cosa fa un giorno di attività** (17 ottobre 2026,
+  l'autore, su una proposta della regia rivista dopo un parere di ChatGPT). Per
+  «giorni di attività qui negli ultimi 14» (decisione 19, ADR-006 §3) un giorno
+  conta se in quel giorno ci sono **almeno 10 quesiti distinti**, sommando le
+  risposte ai quiz — simulazione compresa — e quelle del riconoscimento delle
+  tecniche (`_t:'t'`), **oppure almeno un esercizio di carteggio con il
+  giudizio registrato** (`_t:'c'`), **anche negativo**: si conta l'attività,
+  non il successo. Lo stesso quesito ripetuto nel giorno conta una volta; la
+  riga di consegna di una prova (`_t:'s'`) non aggiunge niente; un giudizio
+  rinviato conta il giorno in cui si registra, come lo scrive
+  `concludiBozza()`. I quattordici giorni sono **quattordici date di
+  calendario, oggi compreso**, nel giorno locale del `ts`; una riga vecchia in
+  UTC si conta nel suo giorno UTC, e lo si dice. **Una simulazione vela da sola
+  non basta**, perché sono cinque domande: accettato. **Il 10 è una soglia
+  pratica iniziale, non una misura validata dello studio**: la sua ragione è la
+  coerenza con «Allenati con 10 domande» della Home, e i circa 23 secondi a
+  domanda sono di una persona sola (`prossima-versione.md` §4.2), quindi non si
+  promette una durata. **La schermata dice che cosa viene contato.** **I
+  Segnali restano fuori, ed è una revisione esplicita della decisione 19**, che
+  chiedeva «criteri giusti per quiz, carteggio e Segnali»: i Segnali non
+  lasciano una data (§4.5), contarli vorrebbe una riga nuova o un dato nel
+  profilo, e la misura propria non direbbe da sola chi studia solo coi Segnali;
+  si riapre con una domanda e una misura sue. «N quesiti da confermare oggi»
+  sono gli incerti la cui prima risposta giusta della serie è di almeno 12 ore
+  fa, nella banca pertinente a «che cosa stai preparando?», con lista e numero
+  dalla stessa funzione del motore. Scartate: una risposta sola (il guasto muto
+  dell'ADR-006); dieci risposte anche ripetute; «un'attività conclusa», perché
+  le righe non registrano la conclusione di un'attività (§4.4) e contarla
+  vorrebbe uno stato salvato. Il contratto lo scrive P-76; con questa decisione
+  la costanza non lo ferma più, e restano ferme le fasi e l'ambito di «hai
+  concluso quello che ti avevamo proposto».
 
 - **Q-STATI: le parole dei cinque stati** (13 ottobre 2026, la regia su delega
   dell'autore, «decidi tu e procedi»). Sulla barra e nella legenda, nell'ordine
@@ -3589,3 +3620,13 @@ successo, ed è il motivo per cui questo file esiste.
   R-NAV-03 e R-NAV-10 lo dicono, e il §6.2. Le due pagine di riferimento del
   ridisegno passano ai link; otto rotture della barra, rosse in Python e in
   Node ognuna per il suo motivo. Nessun requisito nuovo.
+- **17 ottobre 2026 — Q-COSTANZA chiusa.** L'autore ha deciso che cosa fa un
+  giorno di attività: 10 quesiti distinti fra quiz e tecniche, oppure un
+  esercizio di carteggio giudicato, anche negativo; quattordici date, oggi
+  compreso; i Segnali fuori, come revisione esplicita della decisione 19. La
+  proposta della regia è stata rivista dopo un parere di ChatGPT, che ha tolto
+  due giustificazioni più forti delle prove — i 23 secondi a domanda di una
+  persona sola, e l'osservazione al giorno del modello come misura di un giorno
+  di studio. La riga esce dalle aperte e va fra le chiuse del §10; l'ADR-006 §3
+  ha la nota sui Segnali. Nessun requisito nuovo: li scrive P-76 con il
+  contratto.

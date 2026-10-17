@@ -414,6 +414,40 @@ della macchina, che la console crea da sola e che va guardato prima di aprire la
 443. *(1° ottobre 2026, P-15: il gruppo di sicurezza è guardato e chiuso, §2.8.
 Le istantanee del disco restano non provate.)*
 
+### 2.7-bis Le raccolte nuove, spente fino alla loro decisione — Deciso il 17 ottobre 2026
+
+**Deciso dall'autore il 17 ottobre 2026**, dopo un parere di ChatGPT che la
+regia aveva mancato. Dalla v0.30.0 il server accetta tre cose che nessuna
+pagina usa ancora: le righe d'avvio con la previsione (`_t:'a'`, P-72), gli
+esiti dell'esame (`PUT /v1/esito`, P-73) e le scelte di preparazione nel
+profilo (`abilitazione`, `conseguimento`, P-83). «La pagina non ha il
+pulsante» non vuol dire che la raccolta non c'è: una riga `'a'` passa da
+`fondiArchivio()` e arriva sul server con l'import di un file, e le due rotte
+rispondono a chiunque abbia una sessione. Base giuridica e informativa vengono
+prima del trattamento, non dopo il primo dato.
+
+- **Due attivazioni, separate.** Esiti e previsioni si accendono con le
+  decisioni di P-75 — la base giuridica, l'informativa (§4, «Dopo P-64», punti
+  1 e 4, di `docs/prossime-sessioni.md`). Le scelte di preparazione si
+  accendono con il rilascio di P-81, che porta la loro riga nell'informativa
+  (§11.2 di `account-client-progetto.md`).
+- **Spente vuol dire scritture impedite sul server**, non soltanto taciute
+  alla pagina: un `PUT /v1/esito`, una riga `'a'` in `POST /v1/righe` o in un
+  import, un `PUT /v1/profilo` con i due campi sono rifiutati con un motivo
+  che si legge, e non scrivono niente. La descrizione dell'account non
+  dichiara la capability spenta (`esiti`, `'a'` in `tipi_riga`,
+  `campi_profilo`), così la pagina si comporta come con il server di prima —
+  la strada che R-PREV-09, R-ESITO-03 e R-ACC-55 già provano.
+- **Spegnere dopo aver acceso non toglie niente a chi ha già dato un dato:**
+  quello che è nel database resta accessibile, esportabile e cancellabile —
+  l'export lo porta, lo strumento del titolare lo mostra, `DELETE /v1/esito` e
+  la cancellazione dell'account funzionano.
+- **Prove nei due versi**: i rifiuti con le funzioni spente, il funzionamento
+  com'è oggi con le funzioni accese, e lo spegnimento dopo l'accensione.
+- **Il rilascio v0.31.0 esce con tutte e tre spente**, prima di P-81. Lo fa
+  P-86; il come — dove sta l'interruttore, e che un tag dica che cosa è
+  acceso — lo scrive lui qui.
+
 ### 2.8 In esercizio — 1° ottobre 2026 (P-15)
 
 La macchina c'è, e risponde su `https://api.rottagiusta.it`. Gli strumenti che
@@ -2300,6 +2334,20 @@ mese** raggiunte (§9.3). Scelte, con il loro perché:
   l'allarme comunque. **Si rilegge dopo trenta giorni di esercizio**, sul
   registro vero: quanti fallimenti fa un giorno normale. È nella coda, dentro il
   traguardo (P-27), per non restare un'intenzione.
+  **Il criterio della rilettura, deciso dall'autore il 17 ottobre 2026, prima
+  di guardare i numeri:** la soglia **resta 100, salvo falsi allarmi
+  documentati dovuti all'uso legittimo**. La rilettura, dal 2 novembre 2026,
+  conta sulle **finestre mobili di 24 ore** che il controllo usa davvero
+  (`server/allarmi.mjs`, `controlla()`), non sui giorni di calendario: sessanta
+  fallimenti prima di mezzanotte e sessanta dopo fanno scattare l'allarme e
+  lasciano sotto 100 tutti e due i giorni. **Un picco apre un'indagine, non alza
+  la soglia**: un massimo osservato può essere un attacco, e una soglia ricavata
+  da lui renderebbe il sistema meno sensibile proprio dopo l'episodio. Scartata
+  la proposta della regia, «cinque volte il massimo», per questo motivo (parere
+  di ChatGPT del 17 ottobre). Le righe delle prove del traguardo si escludono
+  con criteri che si possano dire — l'evento, il motivo che le nomina —, senza
+  cancellarle dal registro e senza scartare giornate intere. L'allarme della
+  password disattivata resta indipendente dalla soglia.
 
 **Deciso dall'autore il 1° ottobre 2026** — i punti che la bozza del registro
 lasciava in sospeso. Sono nella privacy di `ui/main` (`ee4753a`), che resta
@@ -2825,6 +2873,7 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
 | ~~Le scelte di preparazione nel profilo~~ | — | **deciso dall'autore il 15 ottobre 2026** (A-5 del §11 di `docs/ridisegno-progetto.md`): due campi facoltativi e nulli nel profilo, `abilitazione` (`motore` o `vela`) e `conseguimento` (`prima` o `estensione_e12`), separati dalla data d'esame, in `GET /v1/io`, nella risposta del profilo e nell'export, con la capability `campi_profilo` dichiarata; valore estraneo `422` con il campo; migrazione additiva. Non sono un obiettivo prospettico né una fase: quelli aspettano P-76. **Fatti da P-83 il 15 ottobre 2026** (§7.1, §13.4, schema 6); l'informativa li nomina fra i dati del profilo con P-81 |
 | Le statistiche vedono le scelte di preparazione? | l'autore | Oggi la fonte `iscritti` porta `data_esame` e non `abilitazione` né `conseguimento` (§15.2, P-83): nessuna statistica le chiede, e una query che le contasse fuori da `statistiche.mjs` è rossa. Metterle è una riga, ma è un uso nuovo di un dato personale e tocca l'informativa, che oggi dice statistiche sulle risposte. *Proposta della regia: no finché non c'è una domanda che le richieda; quel giorno si decide con la riga dell'informativa accanto* |
 | L'export porta anche la data d'esame? | l'autore | Trovato da P-83: `GET /v1/esporta` porta `segPunti`, dal P-73 `esiti` e dal P-83 le due scelte, ma **non** `data_esame`, che sta nel profilo dalla v0.28.0 (§13). È fuori da D.3 e P-83 non l'ha cambiato. Il file è una portabilità (§13), e una data che non viaggia è una cosa in meno da ritrovare su un altro account; l'import non la caricherebbe comunque, come le scelte. *Proposta della regia: sì, nella prima sessione che tocca l'export, con un test come R-ACC-79* |
+| ~~Le raccolte nuove prima della loro decisione~~ | — | **deciso dall'autore il 17 ottobre 2026** (§2.7-bis): spente sul server finché non si decidono — esiti e previsioni con P-75, le scelte di preparazione con P-81 —, con le scritture impedite e non soltanto taciute; quello che c'è resta accessibile, esportabile e cancellabile. La v0.31.0 esce così. Lo fa P-86 |
 | ~~Macchina con SQLite, o container con PostgreSQL gestito~~ | — | **deciso** su delega: macchina, SQLite, Node senza dipendenze (§2.2) |
 | ~~Quale macchina~~ | — | **deciso dall'autore il 26 settembre 2026: STARDUST1-S a `pl-waw-2`**, 5,04 € al mese. Il prezzo che si accetta: i dati stanno a Varsavia (UE), e dopo un guasto la macchina potrebbe non essere ricreabile subito perché le scorte sono incerte. Le copie restano a `nl-ams` (§2.6). L'informativa dirà Polonia. **Si crea alla messa in esercizio, non prima** (dall'autore, il 26 settembre 2026): accesa da subito costerebbe 5,04 € al mese per settimane senza niente sopra, e andrebbe comunque tenuta aggiornata. Il prezzo che si accetta è di trovarla esaurita quel giorno; allora si sceglie fra la DEV1-S a `fr-par` e un'altra zona |
 | ~~Gli adempimenti rimasti del titolare: indirizzo postale, base giuridica del registro di sicurezza, inoltro verso Gmail, conservazione delle richieste, DPA di statichost.eu, due fattori~~ | — | **decisi fra il 1° e il 2 ottobre 2026** (§15.4): nessun indirizzo postale e nessuna PEC, legittimo interesse, `privacy@` su OVHcloud, due anni, DPA firmato e spedito, due fattori fatti; niente parere firmato. Resta la copia controfirmata del DPA (§15.4, punto 1); la firma DKIM è attiva dal 2 ottobre (punto 10) |
@@ -3023,3 +3072,10 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
   `campi_profilo`, butta le scelte con un `200`, e cancellando un account le
   porta via dai byte. Una copia dello schema 5 si ripristina con le scelte
   nulle. Quattro requisiti proposti (§17), diciotto rotture, tutte rosse.
+- **17 ottobre 2026 — le raccolte spente e la soglia degli allarmi.**
+  L'autore ha deciso, dopo un parere di ChatGPT: le tre raccolte nuove dalla
+  v0.30.0 — previsioni, esiti, scelte di preparazione — restano spente sul
+  server, con le scritture impedite, finché non si decide ciascuna (§2.7-bis,
+  §20); e la rilettura della soglia dal 2 novembre ha il suo criterio scritto
+  prima: resta 100 salvo falsi allarmi documentati, sulle finestre mobili del
+  controllo (§15.4).

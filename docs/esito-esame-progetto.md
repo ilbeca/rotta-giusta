@@ -1136,6 +1136,13 @@ oggi, e il ridisegno le porta con sé — il riquadro nel cruscotto della Home,
 la voce nel Profilo. Aspettare il ridisegno vorrebbe dire mesi di dati che non
 ci sono, che è la ragione per cui la decisione 27 dice «presto».
 
+**Il server le tiene spente fino a P-75** (deciso dall'autore il 17 ottobre
+2026, `account-progetto.md` §2.7-bis). Le righe `'a'` e `PUT /v1/esito` sono
+rifiutate sul server, e la descrizione dell'account non dichiara `esiti` né
+`'a'` in `tipi_riga`, finché la base giuridica e l'informativa non ci sono.
+L'interruttore è di P-86; la merge di P-75 lo accende, nello stesso rilascio
+che porta B-1, B-2 e l'informativa.
+
 ### 10.2 Evidenze di P-64 e limiti
 
 Misurato: le tre risposte del server del §2, sul codice del tag in esercizio;
