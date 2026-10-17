@@ -1573,6 +1573,46 @@ di studio attivi. Alla merge finale la regia chiude il regime precedente
 di P-80; poi rilascio separato su `main`, e prova con persone riga 18.
 Nessun push, tag o pubblicazione in P-81. Chiudi col resoconto della coda.
 
+##### P-81 — blocco del collaudo sulla copia, 17 ottobre 2026
+
+**Fermato prima della realizzazione**, secondo l'istruzione di segnalare un
+contratto che si contraddice senza cambiare i controlli. Il passo 1 pretende
+il verde sulla copia con `RG_PAGINA=<copia>` dalla cartella principale;
+il passo 3 mantiene `site/` intatto fino al collaudo riuscito e alla
+sostituzione simultanea di canonico, porta, manifest e link. Il contratto
+consegnato da P-80 dice però che `RG_PAGINA` sostituisce soltanto il canonico:
+`site/app.html` resta letto dal sito. Non c'è una porta della copia che
+questa variabile possa sostituire.
+
+**Riprodotto**, senza modificare pagine o test, sul checkout principale
+alla base `e626ded` (stessa base di `ui/main`). Copiata la pagina di
+riferimento `tests/pagina-client-ridisegno.html` fuori dal repo; impostato
+`RG_PAGINA` su quella copia; importato `tests/test_interfaccia.py` dalla
+cartella principale ed eseguito il suo `test_porta_app()`: regime
+`ridisegno`, canonico `index.html`, **6 controlli riusciti su 7**. Il rosso
+è «nel ridisegno site/app.html è la porta di compatibilità»: la pagina
+letta importa ancora il motore, dichiara il client, apre IndexedDB e non
+è la porta richiesta. Verificata anche l'uguaglianza fra il testo letto
+da `leggi('app.html')` e quello di `site/app.html` del checkout principale.
+È una prova mirata del blocco, non l'esecuzione della suite intera e non
+un collaudo dell'interfaccia di P-81.
+
+Il medesimo limite riguarda il browser: `banco_client()` passa alla prova
+`app` il solo canonico; il server di `tests/client_account.mjs` serve
+`/app` dal proprio `site/`. N-01:indirizzi pretende invece il passaggio
+da `/app` alla query canonica. La pagina di riferimento del ridisegno
+riceve separatamente la porta tramite `sito`, mentre la prova della copia
+non la riceve. Questo secondo punto è letto nel codice, non rieseguito
+in Chrome in questa verifica.
+
+**Alla regia:** consegnare un modo di collaudare insieme la copia del
+canonico e i suoi file accompagnatori, oppure autorizzare un banco
+isolato dell'intero sito con i controlli invariati. Sono possibilità da
+decidere, non modifiche al contratto approvate qui. Fino a quel raccordo
+non si può promettere il verde richiesto sulla copia lasciando intatta la
+pagina attuale. Nessuna implementazione, sostituzione o commit parziale;
+nessun controllo adattato e nessuna eccezione aggiunta.
+
 ### 10.2 Verifica documentale di P-79 e limiti
 
 Verificati cartella, ramo, albero iniziale pulito e inventario delle chat:

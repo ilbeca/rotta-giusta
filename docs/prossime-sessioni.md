@@ -195,15 +195,22 @@ ridisegno, con il regime di oggi che scade alla merge di P-81 — e P-83
 — i due campi del profilo sul server, schema 6, con la capability
 campi_profilo. Il 17 ottobre è fuso e chiuso P-82, il banco dei
 tragitti in Chrome: la pagina di riferimento del client nel regime
-nuovo è il metro di P-81. Pronto: P-81 per ChatGPT, la realizzazione
-del ridisegno, su una copia e un commit solo; P-62 con l'autore. Alla
-merge di P-81 la regia toglie il regime di oggi dai controlli, poi un
-rilascio con lo schema 6. P-75 aspetta la base giuridica; P-76 aspetta Q-COSTANZA,
+nuovo è il metro di P-81. P-81, la realizzazione per ChatGPT, è
+partito il 17 ottobre e si è fermato senza scrivere niente: il suo
+passo 1 chiede il verde sulla copia con RG_PAGINA, ma RG_PAGINA
+sostituisce il solo canonico e la porta /app resta quella di site/,
+quindi la copia non si misura intera (ridisegno-progetto.md §10.1,
+«P-81 — blocco del collaudo sulla copia»). Pronto: P-84 per Claude,
+RG_SITO=<cartella>, una copia intera del sito per la suite, il banco e
+test_dati; poi P-81 riparte con lo stesso prompt; P-62 con l'autore.
+Alla merge di P-81 la regia toglie il regime di oggi dai controlli, poi
+un rilascio con lo schema 6. P-75 aspetta la base giuridica; P-76 aspetta Q-COSTANZA,
 l'ambito della conclusione (§4, «Dopo P-59», 10) e le fasi (punto 15),
 e il ridisegno parte senza, dichiarandolo.
 
 I prossimi passi, in quest'ordine:
-1. Il resoconto di P-81, la realizzazione del ridisegno: la merge va
+1. Il resoconto di P-84, RG_SITO; poi P-81 riparte, e il suo
+   resoconto: la merge va
    guardata — tragitti a 375 e 1280 px in Chrome, i tre posti
    dell'invito, il regime letto da tests/regime_pagina.py —, poi un
    prompt per Claude che toglie il regime di oggi dai controlli, come
@@ -270,7 +277,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 18 | **La prova con le persone**, sul sito vero, dopo il rilascio del ridisegno — i bot sui mock sono fatti (P-70, 14 ottobre) | l'autore, con Claude | — | il rilascio del ridisegno, e tre-cinque persone, dell'autore | P-70 resta la ricetta; prompt da riscrivere allora |
 | 19 | **Le ricerche**: il parere del professionista sulle donazioni (14 domande, I-11); se all'esame vero si torna indietro fra le domande; Lighthouse su telefono e Safari veri (I-08) | l'autore | — | — | §4, «Dopo P-59» |
 | 20-bis | **I contratti del motore, seconda parte**: Percorso con il «sei qui», costanza, obiettivo, «hai concluso quello che ti avevamo proposto» | Claude | `main` | Q-COSTANZA e la decisione 22 (§4, «Dopo P-59», 3 e 10); e P-68, che disegna il «sei qui» | P-76, da scrivere |
-| 21 | **Il ridisegno**: il progetto (P-79), i raccordi e la specifica (P-80), i due campi del profilo (P-83) e il banco dei tragitti in Chrome (P-82) sono fatti; resta la realizzazione (P-81), poi la regia toglie il regime di oggi e si fa un rilascio | ChatGPT | `ui/main` | niente | P-81 |
+| 21 | **Il ridisegno**: il progetto (P-79), i raccordi e la specifica (P-80), i due campi del profilo (P-83) e il banco dei tragitti in Chrome (P-82) sono fatti; la realizzazione (P-81) si è fermata il 17 ottobre perché la copia non si può misurare intera; prima `RG_SITO` (P-84), poi P-81, poi la regia toglie il regime di oggi e si fa un rilascio | Claude; ChatGPT | `main`; `ui/main` | P-84 niente; P-81 P-84 fuso | P-84; P-81 |
 | 22 | **Spiegazioni**: il primo lotto di 50, «Segnala un problema», la misura dell'effetto | Claude con l'autore, poi ChatGPT | `main`, `ui/main` | l'indirizzo e la licenza (§4, «Dopo P-59», 2 e 6) | da scrivere |
 | 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | niente dal motore: `PREVISIONI` c'è (P-72), e un modello entra come metodo accanto alla regola semplice; Q-STIMA solo per quando si mostra | da scrivere |
 | 27 | **Esito e previsioni, la pagina e l'informativa** (B-1, B-2), poi un rilascio | ChatGPT | `ui/main` | soltanto la base giuridica (§4, «Dopo P-64», 1–3): P-74 è chiuso | P-75, da scrivere |
@@ -292,7 +299,7 @@ Chrome, è chiuso il 17 ottobre. **Per Claude** oggi non c'è un prompt pronto:
 P-75 aspetta la base giuridica, P-76 aspetta Q-COSTANZA e P-68; alla merge di
 P-81 la regia toglie il regime di oggi dai controlli. P-62 con l'autore quando
 vuole.
-**Per ChatGPT:** è pronto P-81, la realizzazione del ridisegno, che consuma P-80, P-82 e P-83, tutti su `main`. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
+**Per Claude** è pronto P-84, `RG_SITO`: la copia intera del sito misurabile dai controlli, che P-81 ha chiesto fermandosi. **Per ChatGPT:** P-81 riparte quando P-84 è fuso, con lo stesso prompt e una riga in più. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
 che cambiano una promessa (un ADR, la filosofia, la specifica), poi i mock e la
 prova con le persone, poi il codice; «com'è andata» parte presto perché i suoi
 dati arrivano mesi dopo. **Il §5, il §6 e i controlli R-NAV della specifica non
@@ -6084,8 +6091,15 @@ letto il commit, i file nel territorio del motore e le cinque suite.
 
 ### P-81 — ChatGPT: la realizzazione del ridisegno
 
-**Stato:** pronto, dal 17 ottobre 2026: P-80, P-82 e P-83 sono su `main`, e
-`ui/main` è allineato. **Dove:** l'app ChatGPT (Codex), progetto
+**Stato:** **fermo, dal 17 ottobre 2026: aspetta P-84.** Lanciato il 17, si è
+fermato prima di scrivere una riga, come il prompt chiede quando un contratto
+non regge: il passo 1 vuole il verde sulla copia con `RG_PAGINA`, ma
+`RG_PAGINA` sostituisce il solo canonico e `site/app.html` resta la pagina di
+oggi, non una porta — misurato con `test_porta_app()` sulla copia della pagina
+di riferimento, 6 su 7, e scritto nel §10.1 del progetto, «P-81 — blocco del
+collaudo sulla copia». Riparte con P-84 fuso, con questo stesso prompt e la
+riga su `RG_SITO` qui sotto. Prima era: pronto, dal 17 ottobre 2026: P-80,
+P-82 e P-83 sono su `main`, e `ui/main` è allineato. **Dove:** l'app ChatGPT (Codex), progetto
 `~/Software/rotta-giusta-ui` in modalità Local, ramo **`ui/main`**, un solo
 thread scrivente. Tocca `site/` fuori dal motore — `index.html`, `app.html`,
 `manifest.json`, `privacy.html`, `_headers` se serve —,
@@ -6127,9 +6141,13 @@ le risposte di chi non ha l'account:
 1. Nella copia: il canonico index.html con le quattro viste e
    VISTE_RIDISEGNO, navigazioneSito() e i raccordi, i segmenti, il
    Profilo e i legali sopra il lavoro, la porta /app, il manifest con
-   start_url su /. Misurala con RG_PAGINA=<copia>
+   start_url su /. La copia è una cartella intera, come site/: il
+   canonico, la porta, il manifest, le pagine legali, e per il resto i
+   file di site/ com'erano. Misurala con RG_SITO=<cartella>
    python3 tests/test_interfaccia.py dalla cartella principale, non da
-   qui, con la 8620 libera da 90 s: il regime deve leggersi «ridisegno»,
+   qui, con la 8620 libera da 90 s — RG_SITO è di P-84: la suite,
+   il banco in Chrome e test_dati.py leggono e servono quella cartella
+   al posto di site/, e la riga finale lo dice —: il regime deve leggersi «ridisegno»,
    e tutti i gruppi — quiz, ciclo, mappa con i cinque stati e Allena,
    Carteggio, client, rifinitura, N-01 dei tragitti — devono passare
    come passano sulla pagina di riferimento.
@@ -6175,6 +6193,71 @@ resoconto di docs/prossime-sessioni.md.
 
 **Esito:** —
 
+### P-84 — Claude: `RG_SITO`, la copia intera del sito sotto i controlli
+
+**Stato:** pronto, dal 17 ottobre 2026. **Dove:** Claude Code,
+`~/Software/rotta-giusta`, ramo **`main`**: tocca `tests/`, `AGENTS.md` (la
+riga dei comandi) e la specifica dove nomina `RG_PAGINA` (§6.2, §9.6). **Nasce
+da:** il blocco di P-81 nel §10.1 di `docs/ridisegno-progetto.md`, «P-81 —
+blocco del collaudo sulla copia». **Sblocca:** P-81.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-84: una copia intera del sito misurabile dai controlli,
+RG_SITO=<cartella>. Serve a P-81, che deve costruire il ridisegno in
+una copia fuori da site/ e avere il verde prima di sostituire, e si è
+fermato perché RG_PAGINA sostituisce il solo canonico: la porta /app,
+il manifest e le pagine legali restano quelli di site/. Non toccare
+site/, server/, docs/prossime-sessioni.md.
+
+Leggi AGENTS.md; in docs/ridisegno-progetto.md il §10.1 da «Contratto
+consegnato da P-80» in giù, e in particolare «P-81 — blocco del
+collaudo sulla copia», con la riproduzione; tests/test_interfaccia.py
+da RG_PAGINA e canonico() in giù, leggi() e banco_client();
+tests/regime_pagina.py; tests/client_account.mjs dove SITE e la
+radice del server del sito stanno (C-22 serve già una cartella intera
+con `radice`); tests/test_dati.py dove legge SITE (test_indirizzi, il
+manifest, i titoli); l'esito di P-51 qui, che ha messo RG_PAGINA.
+
+Che cosa fai: RG_SITO=<cartella> fa leggere e servire quella cartella
+al posto di site/ — canonico, porta, manifest, pagine legali, dati,
+figure, tutto — in tests/test_interfaccia.py, nel banco del client in
+Chrome (la radice del server del sito, e ogni lettura di file del
+sito dal banco: la banca per riconoscere i quesiti, i file che il
+banco confronta) e in tests/test_dati.py, perché anche test_indirizzi
+e la versione nel manifest si misurino sulla copia. Il regime si legge
+dalla copia con regime_pagina.py com'è oggi. RG_PAGINA resta com'è, e
+le due variabili insieme sono un errore detto, non una precedenza
+muta. La riga finale di ogni suite dice che ha misurato una copia e
+quale, verde o rossa: un verde su una copia non è un verde di main. Una
+cartella che non esiste, o senza index.html, è un rosso che lo dice,
+non un ripiego su site/.
+
+Prima il test che fallisce: riproduci il blocco di P-81 com'è scritto
+— la pagina di riferimento del client del ridisegno e la sua porta in
+una cartella copia di site/, RG_SITO su quella cartella —, e pretendi
+che test_porta_app, test_indirizzi, il banco del client con N-01 e la
+suite intera leggano la copia: con il codice di oggi è rosso. Provalo
+al contrario: una copia con la porta rotta è rossa per la porta, e una
+con site/app.html di oggi al posto della porta è rossa come lo era per
+P-81. Poi la suite dell'interfaccia intera con RG_SITO sulla copia
+della pagina di riferimento, e senza niente sulla pagina vera: tutte e
+due verdi, con i loro numeri. Niente altro: non una riga del ridisegno,
+non un controllo nuovo sulla pagina.
+
+AGENTS.md prende la riga del comando accanto a RG_PAGINA; la specifica
+dice RG_SITO dove dice RG_PAGINA (§6.2, §9.6), e il registro. Le cinque
+suite verdi — server non toccato, gira lo stesso —, l'interfaccia con la
+8620 guardata libera per 90 s prima, due volte: una sulla pagina vera,
+una con RG_SITO. Un commit, con la voce in fondo a [Unreleased]; niente
+push. Chiudi con il resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
 ### I segnaposto — i prompt che non si possono ancora scrivere
 
 **Dopo P-59, dal 4 ottobre 2026.** I mock sono cinque passi, tutti in
@@ -6190,7 +6273,8 @@ il resoconto del precedente, e la regia scrive il suo prompt allora.
 - **P-80**: scritto il 15 ottobre 2026, chiuso lo stesso giorno.
 - **P-83**: scritto il 15 ottobre 2026, dopo la decisione A-5, chiuso lo stesso giorno.
 - **P-82**: scritto il 15 ottobre 2026, chiuso il 17.
-- **P-81**: scritto il 17 ottobre 2026, qui sopra. Alla sua merge la regia
+- **P-81**: scritto il 17 ottobre 2026, qui sopra; lanciato e fermato lo
+  stesso giorno sul collaudo della copia, aspetta P-84, scritto il 17. Alla sua merge la regia
   scrive un prompt per Claude che toglie il regime di oggi dai controlli, come
   P-12, P-37, P-47 e P-50; poi un rilascio con lo schema 6, e la riga 18: le
   persone sul sito vero.
@@ -6965,3 +7049,17 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   costruendo la pagina, la misura con `RG_PAGINA` sulla copia, P-75 non
   fuso e la regola di non fondere un frammento. Al rientro del resoconto la
   regia guarda la merge a 375 e 1280 px prima di fonderla.
+- **17 ottobre 2026 — P-81 fermo sul collaudo della copia; P-84 scritto.**
+  ChatGPT ha fatto quello che il prompt chiede quando un contratto non
+  regge: si è fermato prima di scrivere una riga, ha riprodotto il blocco
+  — `test_porta_app()` sulla copia della pagina di riferimento, 6 su 7,
+  perché `RG_PAGINA` sostituisce il solo canonico e `site/app.html` resta la
+  pagina di oggi — e l'ha scritto nel §10.1 del progetto, senza committare.
+  La regia ha portato quella nota su `main` com'era, byte per byte, e ha
+  ripulito il worktree, perché un worktree sporco ferma l'allineamento. È un
+  buco del contratto di P-80 e di chi ha scritto P-81, non di P-81: il
+  rimedio è `tests/`, quindi un prompt per Claude, P-84 — `RG_SITO`, la copia
+  intera del sito per la suite, il banco e `test_dati.py`, con il blocco di
+  P-81 riprodotto come test rosso prima —; il banco serve già una cartella
+  intera per C-22, quindi è piccolo. P-81 riparte con lo stesso prompt e la
+  riga su `RG_SITO`. Nessuna suite rilanciata qui: nessun codice è cambiato.
