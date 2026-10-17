@@ -1628,6 +1628,51 @@ raccordi delle aree, `CASA`, i testi di C-18 — e nessuno riguarda la porta,
 N-01 o `RG_SITO`. P-81 misura la sua copia con `RG_SITO=<cartella> python3
 tests/test_interfaccia.py` e `tests/test_dati.py` dalla cartella principale.
 
+##### P-81 — contratto della barra da chiarire, 17 ottobre 2026
+
+**Fermato sulla copia, prima della sostituzione.** Il §3.3 prescrive «Link
+con `href` reale» e conserva l'apertura in una nuova scheda o con
+modificatori. La barra della copia usa perciò quattro `<a data-v>` con
+`href` `/`, `/?sezione=allenati`, `/?sezione=esame`,
+`/?sezione=progressi`. I controlli `test_voci_barra()` in
+`tests/test_interfaccia.py` e `statica()` in `tests/ridisegno.mjs`
+censiscono invece soltanto `<button data-v>`. La pagina di riferimento
+ha pulsanti, senza questi indirizzi sulla barra. Non decido qui se il
+§3.3 debba essere precisato o il banco debba riconoscere anche i link:
+sostituirli con pulsanti rinuncerebbe al comportamento nativo richiesto;
+affiancare porte duplicate per il controllo non sarebbe il grafo deciso.
+
+**Riprodotto dalla cartella principale**, base `f57459a`, con
+`RG_SITO=/private/tmp/rg-p81/sito`, regime letto **ridisegno**. Dodici
+controlli mirati — navigazione e raccordi del ridisegno, modalità quiz,
+istante in `applica`, righe/azioni/stati della mappa, riepilogo/riprova
+del ciclo, preparazione/righe/riepilogo del Carteggio — danno **798
+verifiche riuscite su 799**. Il rosso è «la barra ha le quattro voci,
+in ordine: Home · Allenati · Esame · Progressi», con «voci:» vuoto.
+Controprova **solo in memoria** sullo stesso HTML: sostituiti i quattro
+link della barra con pulsanti, il banco del ridisegno non ha rossi.
+Nessun controllo modificato; non è il verde della suite intera.
+
+In Chrome la copia si apre senza eccezioni JavaScript; guardata la Home
+H0 a **375 e 1280 px**, con screenshot e stili calcolati: quattro link
+con le parole e gli indirizzi attesi, **0 px di sbordamento orizzontale**
+in entrambe le misure. È la verifica della Home e della barra, non dei
+108 tragitti o dell'intero client. La 8620 è stata osservata libera per
+90 secondi, fino alle 09:17:37 del 17 ottobre (Europe/Rome); nessuna suite
+completa dell'interfaccia è stata avviata dopo il fermo.
+
+**Stato conservato:** copia completa in `/private/tmp/rg-p81/sito`,
+script e nota di ripresa in `/private/tmp/rg-p81/lavoro`, misure in
+`/private/tmp/rg-p81/evidenze`. Predisposti canonico, quattro sezioni,
+segmenti, preparazioni, Profilo/legali, porta e manifest; raccordi e
+consumi P-71/onboarding in lavorazione, **non collaudati nel browser**.
+Restano i gruppi completi dell'interfaccia, tutti i guasti del client e
+N-01, la revisione dei testi e delle chiamate vive, i link ufficiali,
+le tre frasi della privacy, le eccezioni e il collaudo completo di §9.
+`site/` resta intatto; nessuna sostituzione o commit parziale, nessun
+push, tag o rilascio. Il passo successivo richiede prima il chiarimento
+della regia sul contratto della barra; la copia non è pronta da fondere.
+
 ### 10.2 Verifica documentale di P-79 e limiti
 
 Verificati cartella, ramo, albero iniziale pulito e inventario delle chat:

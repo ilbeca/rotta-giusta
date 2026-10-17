@@ -206,15 +206,24 @@ suite, al banco e a test_dati. Lo stesso 17 ottobre, in un'altra
 sessione con l'autore, un brainstorming sul miglioramento continuo
 (docs/idee-dopo-gli-account.md, «Le decisioni del 17 ottobre 2026»):
 la misura propria sì, con un ADR, dopo il rilascio — riga 24 —; la
-casella segnalazioni@ la crea l'autore. Pronto: P-81 per ChatGPT, che
-riparte con lo stesso prompt; P-62 con l'autore.
+casella segnalazioni@ la crea l'autore. P-81 è ripartito e si è
+fermato una seconda volta, sempre il 17, su un altro buco dei
+controlli: il §3.3 del progetto vuole nella barra link con href reale,
+e test_voci_barra() e statica() in tests/ridisegno.mjs censiscono solo
+<button data-v> — 798 verifiche su 799 sulla copia, l'unico rosso è la
+barra (ridisegno-progetto.md §10.1, «P-81 — contratto della barra da
+chiarire»). La regia ha deciso: il progetto è il contratto, i banchi
+imparano i link. Pronto: P-85 per Claude; poi P-81 riparte una terza
+volta, con lo stesso prompt e la copia conservata in
+/private/tmp/rg-p81; P-62 con l'autore.
 Alla merge di P-81 la regia toglie il regime di oggi dai controlli, poi
 un rilascio con lo schema 6. P-75 aspetta la base giuridica; P-76 aspetta Q-COSTANZA,
 l'ambito della conclusione (§4, «Dopo P-59», 10) e le fasi (punto 15),
 e il ridisegno parte senza, dichiarandolo.
 
 I prossimi passi, in quest'ordine:
-1. Il resoconto di P-81, ripartito dopo P-84: la merge va
+1. Il resoconto di P-85, la barra a link nei banchi; poi P-81
+   riparte, e il suo resoconto: la merge va
    guardata — tragitti a 375 e 1280 px in Chrome, i tre posti
    dell'invito, il regime letto da tests/regime_pagina.py —, poi un
    prompt per Claude che toglie il regime di oggi dai controlli, come
@@ -281,7 +290,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 18 | **La prova con le persone**, sul sito vero, dopo il rilascio del ridisegno — i bot sui mock sono fatti (P-70, 14 ottobre) | l'autore, con Claude | — | il rilascio del ridisegno, e tre-cinque persone, dell'autore | P-70 resta la ricetta; prompt da riscrivere allora |
 | 19 | **Le ricerche**: il parere del professionista sulle donazioni (14 domande, I-11); se all'esame vero si torna indietro fra le domande; Lighthouse su telefono e Safari veri (I-08) | l'autore | — | — | §4, «Dopo P-59» |
 | 20-bis | **I contratti del motore, seconda parte**: Percorso con il «sei qui», costanza, obiettivo, «hai concluso quello che ti avevamo proposto» | Claude | `main` | Q-COSTANZA e la decisione 22 (§4, «Dopo P-59», 3 e 10); e P-68, che disegna il «sei qui» | P-76, da scrivere |
-| 21 | **Il ridisegno**: il progetto (P-79), i raccordi e la specifica (P-80), i due campi del profilo (P-83) e il banco dei tragitti in Chrome (P-82) sono fatti; la realizzazione (P-81) si è fermata il 17 ottobre perché la copia non si poteva misurare intera, e `RG_SITO` (P-84) lo ha chiuso lo stesso giorno; resta P-81, poi la regia toglie il regime di oggi e si fa un rilascio | ChatGPT | `ui/main` | niente | P-81 |
+| 21 | **Il ridisegno**: il progetto (P-79), i raccordi e la specifica (P-80), i due campi del profilo (P-83) e il banco dei tragitti in Chrome (P-82) sono fatti; la realizzazione (P-81) si è fermata due volte il 17 ottobre su un buco dei controlli: la copia che non si misurava intera, chiuso da `RG_SITO` (P-84), e la barra a link del §3.3 che i banchi non censiscono, che chiude P-85; poi P-81 riparte, poi la regia toglie il regime di oggi e si fa un rilascio | Claude; ChatGPT | `main`; `ui/main` | P-85 niente; P-81 P-85 fuso | P-85; P-81 |
 | 22 | **Spiegazioni**: il primo lotto di 50, «Segnala un problema», la misura dell'effetto | Claude con l'autore, poi ChatGPT | `main`, `ui/main` | l'indirizzo e la licenza (§4, «Dopo P-59», 2 e 6) | da scrivere |
 | 24 | **La misura propria**: conteggi aggregati di eventi sul server del sito, senza cookie né terzi, a cominciare dal contatore degli ingressi; le registrazioni fra le metriche; MISURA → BRAINSTORM come quinto passo del ciclo (I-19, decisioni 1–3 e 5 del 17 ottobre in `docs/idee-dopo-gli-account.md`) | Claude con l'autore, poi Claude | `main` | un ADR che riscrive «nessun analytics» (specifica §2.1) e R-ACC-09, e la riga nell'informativa; dopo il rilascio del ridisegno | da scrivere |
 | 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | niente dal motore: `PREVISIONI` c'è (P-72), e un modello entra come metodo accanto alla regola semplice; Q-STIMA solo per quando si mostra | da scrivere |
@@ -304,7 +313,7 @@ Chrome, è chiuso il 17 ottobre. **Per Claude** oggi non c'è un prompt pronto:
 P-75 aspetta la base giuridica, P-76 aspetta Q-COSTANZA e P-68; alla merge di
 P-81 la regia toglie il regime di oggi dai controlli. P-62 con l'autore quando
 vuole.
-P-84, `RG_SITO`, è chiuso il 17 ottobre. **Per Claude** oggi non c'è un prompt pronto: la misura propria (riga 24) aspetta il suo ADR, dopo il rilascio. **Per ChatGPT:** P-81 riparte, con lo stesso prompt e la riga su `RG_SITO` al passo 1. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
+P-84, `RG_SITO`, è chiuso il 17 ottobre. **Per Claude** è pronto P-85: i banchi riconoscono la barra a link del §3.3 del progetto, su cui P-81 si è fermato una seconda volta. **Per ChatGPT:** P-81 riparte quando P-85 è fuso, con lo stesso prompt, dalla copia conservata in `/private/tmp/rg-p81`. La misura propria (riga 24) aspetta il suo ADR, dopo il rilascio. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
 che cambiano una promessa (un ADR, la filosofia, la specifica), poi i mock e la
 prova con le persone, poi il codice; «com'è andata» parte presto perché i suoi
 dati arrivano mesi dopo. **Il §5, il §6 e i controlli R-NAV della specifica non
@@ -6110,9 +6119,18 @@ letto il commit, i file nel territorio del motore e le cinque suite.
 
 ### P-81 — ChatGPT: la realizzazione del ridisegno
 
-**Stato:** **pronto di nuovo, dal 17 ottobre 2026: P-84 è fuso** (`2554a36`),
-e il passo 1 dice `RG_SITO`. Prima era: fermo, dal 17 ottobre 2026, in attesa
-di P-84. Lanciato il 17, si è
+**Stato:** **fermo una seconda volta, dal 17 ottobre 2026: aspetta P-85.**
+Ripartito dopo P-84, si è fermato di nuovo prima di sostituire `site/`: il
+§3.3 del progetto vuole nella barra link con `href` reale, e i controlli
+(`test_voci_barra()`, `statica()` in `tests/ridisegno.mjs`) censiscono solo
+`<button data-v>`; sulla copia 798 verifiche su 799, l'unico rosso è la barra
+(§10.1 del progetto, «P-81 — contratto della barra da chiarire»). La copia
+intera è in `/private/tmp/rg-p81/sito`, con la nota di ripresa in
+`/private/tmp/rg-p81/lavoro/fermo.md`: **si riparte da quella**, non da capo.
+Riparte con P-85 fuso, con questo stesso prompt. Prima era: pronto di nuovo,
+dal 17 ottobre 2026, con P-84 fuso (`2554a36`) e il passo 1 che dice
+`RG_SITO`; e prima ancora: fermo, dal 17 ottobre 2026, in attesa di P-84.
+Lanciato il 17, si è
 fermato prima di scrivere una riga, come il prompt chiede quando un contratto
 non regge: il passo 1 vuole il verde sulla copia con `RG_PAGINA`, ma
 `RG_PAGINA` sostituisce il solo canonico e `site/app.html` resta la pagina di
@@ -6216,7 +6234,7 @@ resoconto di docs/prossime-sessioni.md.
 
 ### P-84 — Claude: `RG_SITO`, la copia intera del sito sotto i controlli
 
-**Stato:** pronto, dal 17 ottobre 2026. **Dove:** Claude Code,
+**Stato:** chiuso il 17 ottobre 2026 (`2554a36`). **Dove:** Claude Code,
 `~/Software/rotta-giusta`, ramo **`main`**: tocca `tests/`, `AGENTS.md` (la
 riga dei comandi) e la specifica dove nomina `RG_PAGINA` (§6.2, §9.6). **Nasce
 da:** il blocco di P-81 nel §10.1 di `docs/ridisegno-progetto.md`, «P-81 —
@@ -6297,6 +6315,86 @@ tempo scaduto fermano il gruppo. Suite: motore 215/219, server 85/85, dati
 230, specifica 1.012, interfaccia 2.960 in 4 min 16 s sulla pagina vera. La
 regia ha letto il commit, i file nel territorio del motore e le cinque suite.
 
+### P-85 — Claude: la barra a link del §3.3, nei banchi
+
+**Stato:** pronto, dal 17 ottobre 2026. **Dove:** Claude Code,
+`~/Software/rotta-giusta`, ramo **`main`**: tocca `tests/` e la specifica
+(R-NAV-03, R-NAV-10, §6.2). **Nasce da:** il secondo fermo di P-81 nel §10.1
+di `docs/ridisegno-progetto.md`, «P-81 — contratto della barra da chiarire».
+**Sblocca:** P-81. **Deciso dalla regia il 17 ottobre 2026:** il §3.3 del
+progetto è il contratto — link con `href` reale, così nuova scheda e
+modificatori restano una visita nuova senza una riga di codice —, e sono i
+banchi a dover riconoscere la barra com'è progettata, non la pagina a
+tornare ai pulsanti per farli contenti. È lo stesso verso di P-84.
+
+```
+Questo prompt è per Claude Code, nella cartella principale
+~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
+un'altra cartella, fermati e dillo, senza scrivere niente.
+
+Sessione P-85: i banchi del ridisegno riconoscono la barra a link.
+Il §3.3 di docs/ridisegno-progetto.md prescrive nella barra link con
+href reale — <a data-v="allenati" href="/?sezione=allenati"> —, e
+P-81 l'ha costruita così; test_voci_barra() in tests/test_interfaccia.py
+e statica() in tests/ridisegno.mjs censiscono soltanto <button data-v>,
+quindi la barra giusta è rossa («voci:» vuoto) e una barra di pulsanti,
+che il §3.3 non vuole, è verde. Non toccare site/, server/,
+docs/prossime-sessioni.md, né la copia di P-81 in /private/tmp/rg-p81,
+che è di ChatGPT: leggila soltanto.
+
+Leggi AGENTS.md; in docs/ridisegno-progetto.md il §3.3, il §3 sugli
+indirizzi delle sezioni e nel §10.1 «P-81 — contratto della barra da
+chiarire», con la riproduzione; test_voci_barra() e viste_attese() in
+tests/test_interfaccia.py, statica() e ROTTURE in tests/ridisegno.mjs
+con tests/pagina-ridisegno.html, la barra di
+tests/pagina-client-ridisegno.html e, in tests/client_account.mjs,
+apriPorta() e ogni lettura di [data-v] (la porta si preme con un clic
+generico, quindi un link dovrebbe già andare; verificalo, non darlo
+per fatto); R-NAV-03 e R-NAV-10 nella specifica.
+
+Che cosa fai. Nel regime del ridisegno le quattro voci della barra sono
+<a data-v> con href uguale all'indirizzo canonico della sezione — `/`
+per home, `/?sezione=allenati`, `/?sezione=esame`, `/?sezione=progressi`
+—, con l'etichetta di testo, nell'ordine di VISTE_RIDISEGNO; il
+censimento prende sia <a> sia <button> con data-v, e nel ridisegno un
+pulsante al posto di un link è rosso con il motivo, come un href diverso
+dal canonico, un href con l'estensione o verso una rotta che il server
+non serve (/allenati), o un link senza href. Nel regime di oggi
+app.html ha i pulsanti e resta verde com'è. Le due pagine di riferimento
+del ridisegno passano ai link, perché la pagina di riferimento è il
+contratto e non un'eccezione a sé; le rotture di oggi che toccano la
+barra seguono le righe nuove senza cambiare che cosa rompono. Il banco
+del client in Chrome: prova sulla pagina di riferimento del client, con
+i link, i gruppi che toccano la barra — l'ingresso nelle sezioni, N-01,
+il segnale su Info/avatar —, e correggi quello che legge il tag invece
+del data-v. Niente altro: non un controllo nuovo sui tragitti, che è
+N-01, e non una riga sul contenuto della barra oltre a quello che R-NAV-03
+dice già.
+
+Prima il test che fallisce: la barra della copia di P-81 — copia la
+sola <nav> com'è nel §10.1, o costruiscila uguale — su una copia della
+pagina di riferimento, e pretendi il verde di test_voci_barra() e di
+statica(): con il codice di oggi è rosso per «voci:» vuoto. Provalo al
+contrario con le rotture dette sopra, ognuna rossa per il suo motivo e
+nominata; e una barra di pulsanti nel ridisegno deve essere rossa, non
+verde come oggi. Poi la suite dell'interfaccia intera sulla pagina vera e,
+con RG_SITO=/private/tmp/rg-p81/sito, sulla copia di P-81, letta e non
+toccata: lì la barra deve essere verde, e i rossi che restano sono di
+P-81 — contali e nominali nel resoconto, perché ChatGPT riparte da quella
+copia e deve sapere che cosa lo aspetta, senza che tu corregga niente.
+
+La specifica: R-NAV-03 dice i link con l'href canonico nel ridisegno,
+R-NAV-10 e il §6.2 dove nominano le porte; il registro. Nel §10.1 del
+progetto, sotto la nota di P-81, una riga che dice che il banco li
+riconosce da questo commit. Le cinque suite verdi — server non toccato,
+gira lo stesso —, l'interfaccia con la 8620 guardata libera per 90 s
+prima, due volte come detto. Un commit, con la voce in fondo a
+[Unreleased]; niente push. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
+
+**Esito:** —
+
 ### I segnaposto — i prompt che non si possono ancora scrivere
 
 **Dopo P-59, dal 4 ottobre 2026.** I mock sono cinque passi, tutti in
@@ -6313,8 +6411,9 @@ il resoconto del precedente, e la regia scrive il suo prompt allora.
 - **P-83**: scritto il 15 ottobre 2026, dopo la decisione A-5, chiuso lo stesso giorno.
 - **P-82**: scritto il 15 ottobre 2026, chiuso il 17.
 - **P-81**: scritto il 17 ottobre 2026, qui sopra; lanciato e fermato lo
-  stesso giorno sul collaudo della copia; P-84 scritto e chiuso il 17, e P-81
-  è di nuovo pronto. Alla sua merge la regia
+  stesso giorno sul collaudo della copia; P-84 scritto e chiuso il 17;
+  ripartito e fermato di nuovo il 17 sulla barra a link, aspetta P-85, scritto
+  il 17, e riparte dalla copia in `/private/tmp/rg-p81`. Alla sua merge la regia
   scrive un prompt per Claude che toglie il regime di oggi dai controlli, come
   P-12, P-37, P-47 e P-50 — e che mette una guardia alla lettura di C-22 che
   la rottura «ricarica le pagine aperte» fa cadere (registro, 17 ottobre) —;
@@ -7121,6 +7220,24 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   di P-84, e il commit dopo lo dice. Due sessioni nello stesso checkout nello
   stesso giorno sono la cosa che `AGENTS.md` chiede di non fare: è andata
   bene perché i file erano diversi, non perché fosse sicuro.
+- **17 ottobre 2026 — P-81 fermo una seconda volta, sulla barra; P-85
+  scritto.** Ripartito dopo P-84, ChatGPT ha costruito la copia intera con
+  la barra del §3.3 — quattro link con l'href canonico — e si è fermato
+  sull'unico rosso di 799 verifiche mirate: `test_voci_barra()` e `statica()`
+  censiscono solo `<button data-v>`; controprova in memoria, con i pulsanti
+  il banco è verde. L'ha scritto nel §10.1 del progetto senza committare, e la
+  regia ha portato la nota su `main` com'era e ripulito il worktree, come la
+  prima volta. La decisione è la stessa di P-84: il progetto è il contratto e
+  i banchi lo imparano — P-85, per Claude, con le due pagine di riferimento
+  che passano ai link e una barra di pulsanti rossa nel ridisegno. Due fermi
+  nello stesso giorno sullo stesso prompt dicono una cosa di P-80 e di chi
+  ha scritto P-81: i banchi del ridisegno sono stati scritti sulla pagina di
+  riferimento, non sul §3 del progetto, e la pagina di riferimento era più
+  povera del progetto in due punti. P-85 misura la copia di P-81 intera con
+  `RG_SITO`, letta e non toccata, e nomina i rossi che restano: così il terzo
+  avvio di P-81 sa che cosa lo aspetta. La copia resta in `/private/tmp`, che
+  un riavvio del Mac può svuotare: se sparisce, P-81 riparte da capo e lo
+  dice. Nessuna suite rilanciata qui: nessun codice è cambiato.
   **Un rosso a volte, nel banco e non nel codice:** nel primo giro della suite
   qui la rottura di C-22 «il sw.js che ricarica le pagine aperte» è uscita
   rossa per «Inspected target navigated or closed» invece che per il suo
