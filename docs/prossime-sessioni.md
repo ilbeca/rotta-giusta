@@ -1,6 +1,6 @@
 # Prossime sessioni — la coda, con i prompt
 
-**Aggiornato il 15 ottobre 2026.** Territorio neutro. **Penna: la sessione di regia** (sotto, «Come si usa»).
+**Aggiornato il 17 ottobre 2026.** Territorio neutro. **Penna: la sessione di regia** (sotto, «Come si usa»).
 
 > **Questo file invecchia.** È una coda, non una verità: quando un lavoro è
 > fatto, il suo prompt si chiude con l'esito e resta, la riga della coda si
@@ -193,16 +193,21 @@ ottobre, e lo stesso giorno sono fusi e chiusi P-80 — i raccordi, gli
 export, i due regimi dei banchi e la specifica §5–§7 riscritta sul
 ridisegno, con il regime di oggi che scade alla merge di P-81 — e P-83
 — i due campi del profilo sul server, schema 6, con la capability
-campi_profilo. Pronto: P-82 per Claude, il banco dei tragitti in
-Chrome; P-62 con l'autore. Dopo P-82: P-81 per ChatGPT, la
-realizzazione, poi la regia toglie il regime di oggi dai controlli e
-si fa un rilascio. P-75 aspetta la base giuridica; P-76 aspetta Q-COSTANZA,
+campi_profilo. Il 17 ottobre è fuso e chiuso P-82, il banco dei
+tragitti in Chrome: la pagina di riferimento del client nel regime
+nuovo è il metro di P-81. Pronto: P-81 per ChatGPT, la realizzazione
+del ridisegno, su una copia e un commit solo; P-62 con l'autore. Alla
+merge di P-81 la regia toglie il regime di oggi dai controlli, poi un
+rilascio con lo schema 6. P-75 aspetta la base giuridica; P-76 aspetta Q-COSTANZA,
 l'ambito della conclusione (§4, «Dopo P-59», 10) e le fasi (punto 15),
 e il ridisegno parte senza, dichiarandolo.
 
 I prossimi passi, in quest'ordine:
-1. Il resoconto di P-82, il banco dei tragitti; poi P-81 per ChatGPT,
-   e alla sua merge togliere il regime di oggi dai controlli.
+1. Il resoconto di P-81, la realizzazione del ridisegno: la merge va
+   guardata — tragitti a 375 e 1280 px in Chrome, i tre posti
+   dell'invito, il regime letto da tests/regime_pagina.py —, poi un
+   prompt per Claude che toglie il regime di oggi dai controlli, come
+   P-12, P-37, P-47 e P-50; poi il rilascio.
 2. Le decisioni dell'autore nel §4, «Dopo P-59» e «Dopo P-64»:
    ricordagliele quando il lavoro che le aspetta sta per partire. La
    base giuridica di esito e previsioni ferma P-75;
@@ -265,7 +270,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 18 | **La prova con le persone**, sul sito vero, dopo il rilascio del ridisegno — i bot sui mock sono fatti (P-70, 14 ottobre) | l'autore, con Claude | — | il rilascio del ridisegno, e tre-cinque persone, dell'autore | P-70 resta la ricetta; prompt da riscrivere allora |
 | 19 | **Le ricerche**: il parere del professionista sulle donazioni (14 domande, I-11); se all'esame vero si torna indietro fra le domande; Lighthouse su telefono e Safari veri (I-08) | l'autore | — | — | §4, «Dopo P-59» |
 | 20-bis | **I contratti del motore, seconda parte**: Percorso con il «sei qui», costanza, obiettivo, «hai concluso quello che ti avevamo proposto» | Claude | `main` | Q-COSTANZA e la decisione 22 (§4, «Dopo P-59», 3 e 10); e P-68, che disegna il «sei qui» | P-76, da scrivere |
-| 21 | **Il ridisegno**: il progetto (P-79), i raccordi, gli export, i due regimi e la specifica (P-80) e i due campi del profilo sul server (P-83) sono fatti; restano il banco dei tragitti in Chrome (P-82), la realizzazione (P-81), un rilascio | Claude; ChatGPT | `main`; `ui/main` | P-82 niente; P-81 P-82 fuso | P-82; P-81 da scrivere |
+| 21 | **Il ridisegno**: il progetto (P-79), i raccordi e la specifica (P-80), i due campi del profilo (P-83) e il banco dei tragitti in Chrome (P-82) sono fatti; resta la realizzazione (P-81), poi la regia toglie il regime di oggi e si fa un rilascio | ChatGPT | `ui/main` | niente | P-81 |
 | 22 | **Spiegazioni**: il primo lotto di 50, «Segnala un problema», la misura dell'effetto | Claude con l'autore, poi ChatGPT | `main`, `ui/main` | l'indirizzo e la licenza (§4, «Dopo P-59», 2 e 6) | da scrivere |
 | 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | niente dal motore: `PREVISIONI` c'è (P-72), e un modello entra come metodo accanto alla regola semplice; Q-STIMA solo per quando si mostra | da scrivere |
 | 27 | **Esito e previsioni, la pagina e l'informativa** (B-1, B-2), poi un rilascio | ChatGPT | `ui/main` | soltanto la base giuridica (§4, «Dopo P-64», 1–3): P-74 è chiuso | P-75, da scrivere |
@@ -282,10 +287,12 @@ che conta le risposte come risposte — il 13 ottobre, e le loro righe 26, 28 e
 specifica del ridisegno; i due campi del profilo sul server — il 15 ottobre.
 Pubblicati su GitHub fino alla chiusura di P-79; il server in esercizio è
 ancora la v0.30.0: lo schema 6, con il 5 e la correzione del `500` sulla data
-d'esame, arriva con il prossimo rilascio. **Per Claude** è pronto P-82, il
-banco dei tragitti in Chrome; P-75 aspetta la base giuridica, P-76 aspetta
-Q-COSTANZA e P-68. P-62 con l'autore quando vuole.
-**Per ChatGPT:** niente finché P-82 non è fuso: la realizzazione (P-81) consuma P-80, P-82 e P-83, e i primi due sono già su `main`. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
+d'esame, arriva con il prossimo rilascio; P-82, il banco dei tragitti in
+Chrome, è chiuso il 17 ottobre. **Per Claude** oggi non c'è un prompt pronto:
+P-75 aspetta la base giuridica, P-76 aspetta Q-COSTANZA e P-68; alla merge di
+P-81 la regia toglie il regime di oggi dai controlli. P-62 con l'autore quando
+vuole.
+**Per ChatGPT:** è pronto P-81, la realizzazione del ridisegno, che consuma P-80, P-82 e P-83, tutti su `main`. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
 che cambiano una promessa (un ADR, la filosofia, la specifica), poi i mock e la
 prova con le persone, poi il codice; «com'è andata» parte presto perché i suoi
 dati arrivano mesi dopo. **Il §5, il §6 e i controlli R-NAV della specifica non
@@ -6053,6 +6060,119 @@ fondo a [Unreleased]; niente push. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
 ```
 
+**Esito:** fatto il 16 ottobre 2026, `f805649` su `main`, chiuso dalla regia
+il 17. Il gruppo N-01 del banco del client in tredici parti, acceso dal
+regime di `tests/regime_pagina.py`; i 108 ID del §9 come dodici compiti per
+tre stati, ognuno con l'arrivo — titolo, tocchi attesi e osservati — e il
+ritorno; la pagina di riferimento del client nel regime nuovo,
+`tests/pagina-client-ridisegno.html` con la porta `tests/pagina-porta-app.html`,
+che passa tutti i gruppi del client e N-01 ed è il metro di P-81; ventisette
+rotture rosse per il loro motivo, e la pagina con le due dichiarazioni senza il
+grafo rossa. Specifica: R-NAV-08 e R-STATI-06 coperti, R-NAV-14 nuovo, R-ACC-03
+e R-ACC-55 con le parti del ridisegno. **Scostamenti, nel §10.1 del progetto
+sotto «E, consegnato da P-82»:** AC è di quattro tocchi, non cinque; sei
+rotture della proposta non ci sono perché un altro controllo le vede o il
+gruppo non le può vedere; le varianti giuste girano solo sulla pagina di
+oggi; il `?` della legenda resta al collaudo. **Trovato:** tre rotture
+passavano verdi e il banco è stato rinforzato invece di toglierle;
+`tests/pagina_js.mjs` leggeva dipendenze anche in stringhe e commenti; tre
+difetti che P-81 può ripetere, scritti nel §10.1; tre giri rossi sotto un
+altro programma al 270 % di CPU, con il banco fino a 1.119 s, e il tetto di
+Q-SUITE portato a 1.800 s. Suite: motore 215/219, server 85/85, dati 230,
+specifica 1.012, interfaccia 2.938 in due giri da 4 min 07–08 s. La regia ha
+letto il commit, i file nel territorio del motore e le cinque suite.
+
+### P-81 — ChatGPT: la realizzazione del ridisegno
+
+**Stato:** pronto, dal 17 ottobre 2026: P-80, P-82 e P-83 sono su `main`, e
+`ui/main` è allineato. **Dove:** l'app ChatGPT (Codex), progetto
+`~/Software/rotta-giusta-ui` in modalità Local, ramo **`ui/main`**, un solo
+thread scrivente. Tocca `site/` fuori dal motore — `index.html`, `app.html`,
+`manifest.json`, `privacy.html`, `_headers` se serve —,
+`docs/eccezioni-interfaccia.md` e il CHANGELOG; niente altro. **Nasce da:** il
+§10.1 di `docs/ridisegno-progetto.md`, blocco P-81, con i contratti consegnati
+da P-80 ed E da P-82; il §6.2 della specifica. **Sblocca:** la chiusura del
+regime di oggi, il rilascio, la riga 18.
+
+```
+Questo prompt è per ChatGPT (Codex), nella cartella
+~/Software/rotta-giusta-ui, sul ramo ui/main, in modalità Local. Se sei
+un altro agente o sei in un'altra cartella, fermati e dillo, senza
+scrivere niente. Un solo thread scrive in questa cartella.
+
+Sessione P-81: la realizzazione del ridisegno — Home · Allenati · Esame ·
+Progressi, un documento solo su /, l'avatar con il Profilo, /app ridotto
+a porta. I controlli esistono già e la pagina si misura su di loro: non
+toccare site/engine.js, site/sw.js, site/dati/, site/figure/, server/,
+tests/, docs/specifica.md, docs/prossime-sessioni.md, VERSION né
+meta.json. Niente push, tag o «Build now».
+
+Leggi AGENTS.md; docs/ridisegno-progetto.md per intero, e poi di nuovo il
+§10.1 — il blocco P-81 è il tuo contratto, e sopra di lui i contratti
+consegnati da P-80 (la firma di navigazioneSito(), i cinque raccordi, i
+due di Allena, riepilogoPagina(), il regime letto da due dichiarazioni)
+e da P-82 («E, consegnato da P-82»: gli scostamenti, e «Trovato
+costruendo la pagina, per P-81», tre difetti che una realizzazione può
+ripetere) — e il §11 con A-1, A-5 e A-6 decise; nella specifica §5, §6,
+§7, §9.4 e §9.9 (R-ACC-03, R-ACC-04, R-ACC-55, R-ACC-78…81); in
+docs/account-client-progetto.md il §11.1 (le scelte di preparazione da
+campi_profilo) e la riga di §11.2 sulla privacy; tests/regime_pagina.py,
+tests/pagina-ridisegno.html e tests/pagina-client-ridisegno.html, che sono
+il metro: fanno quello che la tua pagina deve fare, senza essere la tua
+pagina; docs/eccezioni-interfaccia.md.
+
+Lavora come il §10.1 dice, in tre passi su una copia fuori da site/ e con
+un commit solo alla fine, perché un cambio di documento a metà perderebbe
+le risposte di chi non ha l'account:
+1. Nella copia: il canonico index.html con le quattro viste e
+   VISTE_RIDISEGNO, navigazioneSito() e i raccordi, i segmenti, il
+   Profilo e i legali sopra il lavoro, la porta /app, il manifest con
+   start_url su /. Misurala con RG_PAGINA=<copia>
+   python3 tests/test_interfaccia.py dalla cartella principale, non da
+   qui, con la 8620 libera da 90 s: il regime deve leggersi «ridisegno»,
+   e tutti i gruppi — quiz, ciclo, mappa con i cinque stati e Allena,
+   Carteggio, client, rifinitura, N-01 dei tragitti — devono passare
+   come passano sulla pagina di riferimento.
+2. Nella stessa copia i contratti di P-71: i cinque stati con le parole
+   di Q-STATI e il ts in ogni applica(), i tag N e S con L e C storici,
+   il segnalibro, la ricerca per numero, permessoGesto() prima di ogni
+   gesto nuovo; l'onboarding con «che cosa stai preparando?» che dice
+   «Scelte salvate» solo con i valori riletti dal server e solo se
+   GET /v1/io dichiara i due campi in campi_profilo; il riepilogo
+   anonimo da riepilogoPagina(); i tre posti dell'invito e nessun
+   altro, con la frase del risultato a metà (A-6). Tutte le attività e
+   il client con i suoi guasti restano interi. P-75 non è fuso: il
+   raccordo dell'esito e della riga d'avvio non c'è, e E-01 e P-01
+   restano «spento». Fasi, costanza, obiettivo e stima sono P-76: non
+   c'è niente da mostrare.
+3. Il collaudo sulla copia, guardato e non dedotto: i tragitti del §9 a
+   375 e 1280 px, i due accessi, gli stati di errore, il ? della
+   legenda dei cinque stati, la tastiera; screenshot e stili calcolati.
+   Poi la sostituzione, tutta insieme: index.html, app.html come porta,
+   manifest, i link legali; in privacy.html le tre frasi del §11.2 sulle
+   scelte di preparazione, e niente altro; in
+   docs/eccezioni-interfaccia.md contaStati, rigaScrivibile,
+   codaSegnalibri, cercaNumero, estraiNuoviPrima e riepilogoPagina dagli
+   orfani alle chiamate protette, e nessun'altra riga toccata.
+
+Se un contratto non regge sulla pagina vera — un aggancio che i banchi
+chiedono e che il grafo nuovo non può avere, una frase del progetto che
+si contraddice — fermati su quello, scrivilo nel §10.1 del progetto con
+il motivo e dillo nel resoconto: non adattare un test, non cambiare il
+contratto da solo. Se il lavoro non chiude in una sessione, non fondere
+un frammento: lascia la copia dov'è, scrivi nel resoconto a che punto
+sei e che cosa resta, e la regia conserva lo stato.
+
+Prima del commit: le cinque suite dalla cartella principale sulla
+pagina sostituita, con la 8620 libera da 90 s e il tempo scritto
+(Q-SUITE: il tetto è 1.800 s, la misura attesa intorno ai 4 minuti);
+guardiano e controllo della documentazione; git status e git diff
+--cached guardati, stage per nome, mai git add -A. Un commit solo, con
+la voce in fondo a [Unreleased] che dice i numeri misurati e il trailer
+Co-authored-by: ChatGPT <noreply@openai.com>. Niente push. Chiudi con il
+resoconto di docs/prossime-sessioni.md.
+```
+
 **Esito:** —
 
 ### I segnaposto — i prompt che non si possono ancora scrivere
@@ -6069,15 +6189,11 @@ il resoconto del precedente, e la regia scrive il suo prompt allora.
 - **P-79**: scritto il 14 ottobre 2026, chiuso il 15: il progetto del ridisegno.
 - **P-80**: scritto il 15 ottobre 2026, chiuso lo stesso giorno.
 - **P-83**: scritto il 15 ottobre 2026, dopo la decisione A-5, chiuso lo stesso giorno.
-- **P-82**: scritto il 15 ottobre 2026, qui sopra.
-- **P-81 — ChatGPT: la realizzazione del ridisegno**, nei tre passi su una
-  copia e un commit solo del §10.1. Aspetta P-82 fuso; P-80 e P-83 lo sono,
-  A-1, A-5 e A-6 sono decise. Il prompt dovrà dire: il contratto nel §6.2
-  della specifica e nel §10.1 del progetto; i due campi del profilo da
-  `campi_profilo` (§11.1 del progetto del client) e la riga dell'informativa
-  (§11.2); `app.html` ridotto a porta; gli orfani dichiarati di P-71 e P-80 da
-  consumare. Poi la regia toglie il regime di prima, un rilascio con lo schema
-  6, e la riga 18: le persone sul sito vero.
+- **P-82**: scritto il 15 ottobre 2026, chiuso il 17.
+- **P-81**: scritto il 17 ottobre 2026, qui sopra. Alla sua merge la regia
+  scrive un prompt per Claude che toglie il regime di oggi dai controlli, come
+  P-12, P-37, P-47 e P-50; poi un rilascio con lo schema 6, e la riga 18: le
+  persone sul sito vero.
 
 **Dopo P-63 e P-64, dal 4 ottobre 2026.**
 
@@ -6838,3 +6954,14 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   rotture, R-NAV-08 e R-STATI-06 da coprire. La LTS 24 che P-80 chiedeva di
   poter scaricare l'ha riscaricata P-83 nello scratchpad, verificata con
   `SHASUMS256.txt`: il sì resta per sessione, com'è sempre stato.
+- **17 ottobre 2026 — P-82 chiuso; P-81 scritto.** Il resoconto letto contro
+  il repo: il commit su `main` con il trailer, dieci file tutti nel
+  territorio del motore, la coda non toccata; le cinque suite sullo stato
+  fuso — motore 215/219, server 85/85, dati 230, specifica 1.012,
+  interfaccia 2.938 con la 8620 guardata libera per 90 s —, guardiano e
+  documentazione verdi. Gli scostamenti di P-82 stanno nel §10.1 del
+  progetto, sotto E, e l'esito li punta invece di ripeterli. P-81 scritto
+  per ChatGPT dal blocco P-81 del §10.1, con le tre cose che P-82 ha trovato
+  costruendo la pagina, la misura con `RG_PAGINA` sulla copia, P-75 non
+  fuso e la regola di non fondere un frammento. Al rientro del resoconto la
+  regia guarda la merge a 375 e 1280 px prima di fonderla.
