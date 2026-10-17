@@ -139,6 +139,21 @@ function riuscita(g, nome, run) {
 
 // --- 1. la statica: quattro sezioni, la barra, i segmenti, gli alias --------
 
+// L'indirizzo canonico di ogni sezione (§3.1): query su `/`, e la Home `/`.
+const INDIRIZZI = { home: '/', allenati: '/?sezione=allenati', esame: '/?sezione=esame', progressi: '/?sezione=progressi' };
+/** null se `href` e' il canonico della sezione `dest`, altrimenti il motivo. */
+function difettoIndirizzo(dest, href) {
+  const canon = INDIRIZZI[dest];
+  if (href == null) return dest + ': link senza href — non si apre in una scheda nuova e non dice dove porta (§3.3)';
+  const h = href.replace(/&amp;/g, '&');
+  if (h === canon) return null;
+  const u = new URL(h, 'https://rottagiusta.invalid/');
+  if (/\.html$/.test(u.pathname)) return dest + ': href ' + h + ' con l\'estensione — gli indirizzi interni sono quelli puliti (R-ARCH-05)';
+  if (u.origin !== 'https://rottagiusta.invalid' || /^[a-z]+:|^\/\//i.test(h)) return dest + ': href ' + h + ' fuori dal sito, o non relativo — il canonico e\' ' + canon;
+  if (u.pathname !== '/') return dest + ': href ' + h + ', una rotta che il server non serve e che una ricarica paga con un 404 — le sezioni sono query su / (§3.1)';
+  return dest + ': href ' + h + ' diverso dal canonico ' + canon;
+}
+
 function statica(pagina) {
   const G = 'struttura';
   const sezioni = [...pagina.matchAll(/<section class="[^"]*\bview\b[^"]*" id="(v-[a-z]+)"/g)].map((m) => m[1]);
@@ -147,11 +162,21 @@ function statica(pagina) {
   const nav = pagina.match(/<nav[^>]*>([\s\S]*?)<\/nav>/);
   check(G, 'una barra di navigazione', !!nav, 'nessun <nav>');
   if (nav) {
-    const voci = [...nav[1].matchAll(/<button[^>]*data-v="([a-z]+)"[^>]*>([\s\S]*?)<\/button>/g)];
-    check(G, 'la barra ha le quattro voci, in ordine: Home · Allenati · Esame · Progressi', uguale(voci.map((m) => m[1]), VISTE),
-      'voci: ' + voci.map((m) => m[1]).join(', '));
-    const mute = voci.filter((m) => !m[2].replace(/<[^>]+>/g, '').trim()).map((m) => m[1]);
+    // Le voci con data-v, link o pulsanti: il censimento prende tutte e due le
+    // forme, e nel ridisegno pretende i link (P-85). Prima vedeva i soli
+    // pulsanti, e la barra del §3.3 dava «voci:» vuoto.
+    const voci = [...nav[1].matchAll(/<(a|button)\b([^>]*)>([\s\S]*?)<\/\1>/g)]
+      .map((m) => ({ tag: m[1], dest: (m[2].match(/\bdata-v="([a-z]+)"/) || [])[1], href: (m[2].match(/\bhref="([^"]*)"/) || [])[1], dentro: m[3] }))
+      .filter((x) => x.dest);
+    check(G, 'la barra ha le quattro voci, in ordine: Home · Allenati · Esame · Progressi', uguale(voci.map((x) => x.dest), VISTE),
+      'voci: ' + voci.map((x) => x.dest).join(', '));
+    const mute = voci.filter((x) => !x.dentro.replace(/<[^>]+>/g, '').trim()).map((x) => x.dest);
     check(G, 'ogni voce della barra ha la parola intera, non la sola icona', !mute.length, 'solo icona: ' + mute.join(', '));
+    const pulsanti = voci.filter((x) => x.tag !== 'a').map((x) => x.dest);
+    check(G, 'ogni voce della barra e\' un link, non un pulsante', !pulsanti.length,
+      'un pulsante al posto di un link: ' + pulsanti.join(', ') + ' — il §3.3 vuole un href reale, che si apre in una scheda nuova');
+    const storti = voci.filter((x) => x.tag === 'a').map((x) => difettoIndirizzo(x.dest, x.href)).filter(Boolean);
+    check(G, 'ogni link della barra porta all\'indirizzo canonico della sua sezione', !storti.length, storti.join('; '));
   }
   const segmenti = [...pagina.matchAll(/data-segmento="([a-z]+)"/g)].map((m) => m[1]);
   check(G, 'i tre segmenti di Allenati, Quiz · Carteggio · Segnali', SEGMENTI.every((s) => segmenti.includes(s)) && segmenti.every((s) => SEGMENTI.includes(s)),

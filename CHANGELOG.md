@@ -1271,6 +1271,81 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   le registrazioni misurate fra le altre metriche; open source e GitHub restano.
   Nessun codice, nessuna suite toccata.
 
+### Test — P-85: i banchi del ridisegno riconoscono la barra a link
+
+- **La barra giusta era rossa e quella sbagliata verde.** Il §3.3 di
+  `docs/ridisegno-progetto.md` vuole nella barra link con `href` reale, perché
+  una scheda nuova e i modificatori restino una visita nuova; P-81 l'ha
+  costruita così, e si è fermato: `test_voci_barra()` e la statica di
+  `tests/ridisegno.mjs` censivano soltanto `<button data-v>`, quindi quattro
+  `<a data-v>` davano «voci:» vuoto, e una barra di pulsanti — che il §3.3 non
+  vuole — passava. Riprodotto prima di correggere: la barra della copia di P-81,
+  copiata com'è nelle due pagine di riferimento del ridisegno, era rossa in
+  Python e in Node per «voci:» vuoto.
+
+- **Ora il censimento prende link e pulsanti con `data-v`**, e nel ridisegno
+  pretende quattro link, nell'ordine di `VISTE_RIDISEGNO`, con l'indirizzo
+  canonico della sezione: `/`, `/?sezione=allenati`, `/?sezione=esame`,
+  `/?sezione=progressi`. Un pulsante al posto di un link, un link senza
+  `href`, un `href` diverso dal canonico, con l'estensione o verso una rotta
+  che il server non serve (`/allenati`) sono rossi, ognuno con il suo motivo.
+  Nel regime di oggi la barra di `app.html` ha i pulsanti e resta verde
+  com'è. La regola del ridisegno gira a ogni esecuzione anche finché la pagina
+  vera è quella di oggi: `test_voci_barra()` la prova sulle due pagine di
+  riferimento e su otto rotture, che sono anche in `ROTTURE_RIDISEGNO` per il
+  banco in Node. **Provate al contrario, tutte e otto rosse per il loro motivo
+  in Python e in Node**: la voce Esame tolta, con la sola icona, un pulsante al
+  posto di un link, l'intera barra di pulsanti come oggi, un `href` diverso,
+  `/index.html?sezione=allenati`, `/allenati`, un link senza `href`. Le due
+  rotture di prima sulla barra seguono le righe nuove senza cambiare che cosa
+  rompono.
+
+- **Le due pagine di riferimento del ridisegno hanno i link**, perché la
+  pagina di riferimento è il contratto: `tests/pagina-ridisegno.html` con la
+  barra di P-81 così com'è, `tests/pagina-client-ridisegno.html` con la stessa
+  forma e la classe dei bersagli da 44 px. **Il banco del client in Chrome non
+  aveva niente da correggere, misurato e non dedotto**: preme le porte con un
+  clic generico su `[data-v]`, e nessuna lettura guarda il tag. La pagina di
+  riferimento del client con i link, da sola in Chrome, ha fatto 636 verifiche
+  e nessun rosso, ogni gruppo al suo conto — C-01…C-22, C-19, F-01,
+  T-01…T-09, E-01, P-01 e le tredici parti di N-01, compresi l'ingresso nelle
+  sezioni e il segnale sull'avatar.
+
+- **Sulla copia di P-81** (`RG_SITO=/private/tmp/rg-p81/sito`, letta e non
+  toccata, impronta di `index.html` uguale prima e dopo): la barra è verde in
+  Python e in Node; la suite intera dà 119 rossi su 3.358, e nessuno è della
+  barra. Sono di P-81, e sommano a 119: 49 dei tragitti di N-01 (ritorni con il
+  fuoco e lo scorrimento di prima) e 22 delle altre parti di N-01 (scelte,
+  gesti, invito, registrazione, documento, cronologia, ricerca, stati,
+  indirizzi, storage); 7 di F-01, il riepilogo della prima attività; 6 del
+  Carteggio senza `#c-start` alla sua porta (C-01); 14 della rifinitura — Info
+  che non si apre (T-01, T-02, T-04, T-07:conto), l'avviso del guasto che non
+  c'è nel DOM (T-03), «Che tecnica serve?» che sborda di 16 px a 375 px
+  (T-07:prova), un arresto di Tab coperto (T-05), i Segnali che non si aprono
+  (T-08, T-09) —; 13 del client — Info dalle porte (C-03), l'export (C-17),
+  la mail rifiutata (C-07), il testo del carteggio senza account (C-19:senza),
+  la frase dei Segnali (C-02), l'uscita (C-15), i testi di `index.html`
+  (C-18) —; e 8 delle chiamate al motore da dichiarare in
+  `docs/eccezioni-interfaccia.md`: sei orfani che la pagina ora chiama, le
+  chiamate nuove, e `classifica` sparita.
+
+- **Trovato, e non corretto qui:** il primo giro dell'interfaccia sulla pagina
+  vera è stato rosso in tre verifiche, tutte di `P-01:visto` sulla pagina di
+  riferimento del client di oggi, che questa sessione non tocca. Il banco toglie
+  dal testo del runner domanda e risposte con `split`, nell'ordine del DOM, e
+  base-993 ha le risposte «in basso.» e «in alto e in basso.»: tolta la prima,
+  della seconda resta «in alto e». Esce solo quando base-993 apre la
+  simulazione; c'è da P-74. Il secondo giro è verde. La correzione — togliere
+  le risposte dalla più lunga — è un prompt per la regia.
+
+  Suite: motore 215/219 con i quattro skip previsti; server 85/85, non toccato;
+  dati 230; specifica 1.012; interfaccia sulla pagina vera **3.004** (erano 2.960),
+  in 4 min 11 s al secondo giro — il primo è quello di base-993, qui sopra —, e
+  sulla copia di P-81 3.239 su 3.358 in 8 min 38 s, con la 8620 guardata libera
+  per 90 s prima di ogni giro. Guardiano verde. `site/`,
+  `server/`, `docs/prossime-sessioni.md` e la copia di P-81 non sono stati
+  toccati.
+
 ## [0.30.0] — 2026-10-03
 
 **Il sito più semplice: niente offline.** Rotta Giusta si apre con la rete,

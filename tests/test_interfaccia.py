@@ -20,12 +20,14 @@ valgono con quattro destinazioni, con sette e con qualunque altra scelta.
     python3 tests/test_interfaccia.py
 """
 
+import html
 import json
 import os
 import re
 import subprocess
 import sys
 from pathlib import Path
+from urllib.parse import urlsplit
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from regime_pagina import (regime_ridisegno, canonico as _canonico, VISTE_RIDISEGNO, SEGMENTI,  # noqa: E402
@@ -315,33 +317,120 @@ def test_ogni_vista_ha_una_porta():
 
 # --- 3. la barra si legge, e non porta altrove (R-NAV-03) -------------------------
 
-def test_voci_barra():
-    app = pagina()
-    m = re.search(r'<nav[^>]*>(.*?)</nav>', app, flags=re.S)
-    check('la pagina ha una barra di navigazione', m is not None)
+# Nel ridisegno le voci della barra sono link con l'indirizzo canonico della
+# sezione (docs/ridisegno-progetto.md §3.1 e §3.3): un href reale, perche' una
+# scheda nuova e i modificatori restino una visita nuova, come vuole il §3.3.
+# Le sezioni sono query su `/`, e `/allenati` una ricarica la paga con un 404.
+INDIRIZZI_SEZIONI = {'home': '/', 'allenati': '/?sezione=allenati', 'esame': '/?sezione=esame',
+                     'progressi': '/?sezione=progressi'}
+
+
+def voci_della_barra(nav):
+    """Le voci con `data-v` della barra, link o pulsanti: [(tag, dest, href o None, dentro)].
+
+    Il censimento prende tutte e due le forme: oggi la barra di app.html ha i
+    pulsanti, nel ridisegno i link, e un censimento che ne vedesse una sola
+    darebbe «voci:» vuoto alla barra giusta e il verde a quella sbagliata (P-85).
+    """
+    voci = []
+    for tag, attr, dentro in re.findall(r'<(a|button)\b([^>]*)>(.*?)</\1>', nav, flags=re.S):
+        d = re.search(r'\bdata-v="([a-z]+)"', attr)
+        if not d:
+            continue
+        h = re.search(r'\bhref="([^"]*)"', attr)
+        voci.append((tag, d.group(1), html.unescape(h.group(1)) if h else None, dentro))
+    return voci
+
+
+def difetto_indirizzo(dest, href):
+    """None se `href` e' l'indirizzo canonico della sezione, altrimenti il motivo."""
+    canon = INDIRIZZI_SEZIONI.get(dest)
+    if href is None:
+        return 'link senza href: non si apre in una scheda nuova e non dice dove porta (§3.3)'
+    if href == canon:
+        return None
+    u = urlsplit(href)
+    if u.path.endswith('.html'):
+        return 'href %s con l\'estensione: gli indirizzi interni sono quelli puliti (R-ARCH-05)' % href
+    if u.scheme or u.netloc:
+        return 'href %s fuori dal sito, o non relativo: il canonico e\' %s' % (href, canon)
+    if u.path != '/':
+        return 'href %s: una rotta che il server non serve, che una ricarica paga con un 404 — le sezioni sono query su / (§3.1)' % href
+    return 'href %s diverso dal canonico %s' % (href, canon)
+
+
+def verifiche_barra(testo, nel_ridisegno):
+    """Le verifiche della barra sul testo dato: [(nome, ok, extra)]."""
+    out = []
+    m = re.search(r'<nav[^>]*>(.*?)</nav>', testo, flags=re.S)
+    out.append(('la pagina ha una barra di navigazione', m is not None, ''))
     if not m:
-        return
-    voci = re.findall(r'<button[^>]*data-v="([a-z]+)"[^>]*>(.*?)</button>',
-                      m.group(1), flags=re.S)
-    check('la barra ha almeno una voce', len(voci) > 0)
-    for dest, dentro in voci:
-        check('la voce «%s» porta a una vista dichiarata' % dest,
-              'v-' + dest in viste_attese(),
-              'porta a #v-%s, che non e\' nel censimento' % dest)
+        return out
+    voci = voci_della_barra(m.group(1))
+    out.append(('la barra ha almeno una voce', len(voci) > 0, ''))
+    attese = VISTE_NUOVE if nel_ridisegno else VISTE
+    for tag, dest, href, dentro in voci:
+        out.append(('la voce «%s» porta a una vista dichiarata' % dest, 'v-' + dest in attese,
+                    'porta a #v-%s, che non e\' nel censimento' % dest))
         # Un'icona sola non e' un'etichetta: la parola fa tutto il lavoro, e a
         # 375 px la parola c'e' sempre stata. Se sparisse, sparirebbe in
         # silenzio.
-        testo = re.sub(r'<[^>]+>', '', dentro).strip()
-        check('la voce «%s» ha un\'etichetta di testo' % dest, len(testo) > 0,
-              'solo icona: a chi non riconosce il simbolo la voce non dice niente')
-    if ridisegno():
+        etichetta = re.sub(r'<[^>]+>', '', dentro).strip()
+        out.append(('la voce «%s» ha un\'etichetta di testo' % dest, len(etichetta) > 0,
+                    'solo icona: a chi non riconosce il simbolo la voce non dice niente'))
+        if nel_ridisegno:
+            out.append(('nel ridisegno la voce «%s» e\' un link, non un pulsante' % dest, tag == 'a',
+                        'un pulsante al posto di un link: il §3.3 vuole un href reale, che si apre in una scheda nuova'))
+            if tag == 'a':
+                motivo = difetto_indirizzo(dest, href)
+                out.append(('la voce «%s» porta all\'indirizzo canonico %s' % (dest, INDIRIZZI_SEZIONI.get(dest)),
+                            motivo is None, motivo or ''))
+    if nel_ridisegno:
         # Quattro parole intere, in quest'ordine, e i tre segmenti di Allenati
         # raggiungibili (R-NAV-03 nel ridisegno).
-        check('la barra ha le quattro voci del ridisegno, in ordine', [d for d, _ in voci] == VISTE_RIDISEGNO,
-              'voci: ' + ', '.join(d for d, _ in voci))
-        segmenti = re.findall(r'data-segmento="([a-z]+)"', app)
-        check('i tre segmenti di Allenati hanno una porta', all(s in segmenti for s in SEGMENTI) and all(s in SEGMENTI for s in segmenti),
-              'segmenti: ' + ', '.join(sorted(set(segmenti))))
+        out.append(('la barra ha le quattro voci del ridisegno, in ordine', [v[1] for v in voci] == VISTE_RIDISEGNO,
+                    'voci: ' + ', '.join(v[1] for v in voci)))
+        segmenti = re.findall(r'data-segmento="([a-z]+)"', testo)
+        out.append(('i tre segmenti di Allenati hanno una porta', all(s in segmenti for s in SEGMENTI) and all(s in SEGMENTI for s in segmenti),
+                    'segmenti: ' + ', '.join(sorted(set(segmenti)))))
+    return out
+
+
+# Le rotture della barra, sulla pagina di riferimento del ridisegno: (che cosa,
+# sostituzioni, parola che il rosso deve contenere). Le prova test_voci_barra()
+# con la regola in Python, e il banco del ridisegno con statica(): sono in
+# ROTTURE_RIDISEGNO anche loro, e una barra deve essere rossa per tutte e due.
+ROTTURE_BARRA = [
+    ('la barra perde Esame', [('<a href="/?sezione=esame" data-v="esame"><span>Esame</span></a>', '')], 'quattro voci'),
+    ('una voce della barra con la sola icona', [('<a href="/?sezione=esame" data-v="esame"><span>Esame</span></a>', '<a href="/?sezione=esame" data-v="esame"><svg></svg></a>')], 'solo icona'),
+    ('un pulsante al posto di un link', [('<a href="/?sezione=esame" data-v="esame"><span>Esame</span></a>', '<button data-v="esame">Esame</button>')], 'un pulsante al posto di un link'),
+    ('una barra di pulsanti, come quella di oggi', [('<a href="/" data-v="home"><span>Home</span></a><a href="/?sezione=allenati" data-v="allenati"><span>Allenati</span></a><a href="/?sezione=esame" data-v="esame"><span>Esame</span></a><a href="/?sezione=progressi" data-v="progressi"><span>Progressi</span></a>', '<button data-v="home">Home</button><button data-v="allenati">Allenati</button><button data-v="esame">Esame</button><button data-v="progressi">Progressi</button>')], 'un pulsante al posto di un link'),
+    ('un href diverso dal canonico', [('<a href="/?sezione=esame" data-v="esame"><span>Esame</span></a>', '<a href="/?sezione=progressi" data-v="esame"><span>Esame</span></a>')], 'diverso dal canonico'),
+    ('un href con l\'estensione', [('<a href="/?sezione=allenati" data-v="allenati"><span>Allenati</span></a>', '<a href="/index.html?sezione=allenati" data-v="allenati"><span>Allenati</span></a>')], 'con l\'estensione'),
+    ('un href verso /allenati, che il server non serve', [('<a href="/?sezione=allenati" data-v="allenati"><span>Allenati</span></a>', '<a href="/allenati" data-v="allenati"><span>Allenati</span></a>')], '404'),
+    ('un link senza href', [('<a href="/?sezione=esame" data-v="esame"><span>Esame</span></a>', '<a data-v="esame"><span>Esame</span></a>')], 'senza href'),
+]
+
+
+def test_voci_barra():
+    for nome, ok, extra in verifiche_barra(pagina(), ridisegno()):
+        check(nome, ok, extra)
+    # La regola del ridisegno provata a ogni esecuzione, anche finche' la pagina
+    # vera e' quella di oggi: le due pagine di riferimento del ridisegno sono il
+    # contratto, e devono passarla.
+    for rif in (RIFERIMENTO_RIDISEGNO, RIFERIMENTO_RIDISEGNO_CLIENT):
+        rossi = [n + (' — ' + e if e else '') for n, ok, e in verifiche_barra(rif.read_text(encoding='utf-8'), True) if not ok]
+        check('la barra di %s passa la regola del ridisegno' % rif.name, not rossi, '; '.join(rossi[:3]))
+    rif = RIFERIMENTO_RIDISEGNO.read_text(encoding='utf-8')
+    for cosa, sostituzioni, atteso in ROTTURE_BARRA:
+        rotta = rif
+        for vecchio, nuovo in sostituzioni:
+            check('rottura della barra «%s»: si applica alla pagina di riferimento' % cosa, vecchio in rotta,
+                  'il testo da sostituire non c\'e\' piu\': la rottura non romperebbe niente')
+            rotta = rotta.replace(vecchio, nuovo, 1)
+        rossi = [n + (' — ' + e if e else '') for n, ok, e in verifiche_barra(rotta, True) if not ok]
+        check('rottura della barra «%s»: la regola diventa rossa' % cosa, bool(rossi), 'e\' passata verde')
+        check('rottura della barra «%s»: e il rosso nomina il difetto' % cosa, any(atteso in r for r in rossi), 'rossi: ' + '; '.join(rossi[:3]))
 
 
 # --- 4. i quiz: il regime e le sue intenzioni (R-NAV-04, R-NAV-05) ------------
@@ -3899,8 +3988,7 @@ ROTTURE_RIDISEGNO = [
     ('una vista di prima lasciata nel file',
      [('<section class="view" id="v-progressi"><h1>Progressi</h1>', '<section class="view" id="v-quiz"></section>\n<section class="view" id="v-progressi"><h1>Progressi</h1>')],
      'nessun\'altra'),
-    ('la barra perde Esame', [('<button data-v="esame">Esame</button>', '')], 'quattro voci'),
-    ('una voce della barra con la sola icona', [('<button data-v="esame">Esame</button>', '<button data-v="esame"><svg></svg></button>')], 'parola intera'),
+    *ROTTURE_BARRA,
     ('la simulazione fuori da Esame',
      [('<section class="view" id="v-esame"><h1>Esame</h1>\n  <button data-modo="sim" data-prova="base">Simula il quiz base</button>\n  <button data-modo="sim" data-prova="vela">Simula il quiz vela</button>',
        '<section class="view" id="v-esame"><h1>Esame</h1>')],

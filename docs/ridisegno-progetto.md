@@ -1673,6 +1673,18 @@ le tre frasi della privacy, le eccezioni e il collaudo completo di §9.
 push, tag o rilascio. Il passo successivo richiede prima il chiarimento
 della regia sul contratto della barra; la copia non è pronta da fondere.
 
+**Il banco riconosce la barra a link, da P-85 (17 ottobre 2026).** Il
+contratto resta il §3.3: nel ridisegno le quattro voci sono `<a data-v>` con
+l'`href` canonico della sezione — `/`, `/?sezione=allenati`,
+`/?sezione=esame`, `/?sezione=progressi` —, nell'ordine di `VISTE_RIDISEGNO`.
+`test_voci_barra()` e la statica di `tests/ridisegno.mjs` censiscono link e
+pulsanti con `data-v`, e nel ridisegno un pulsante al posto di un link, un
+link senza `href`, un `href` diverso dal canonico, con l'estensione o verso
+`/allenati` sono rossi con il motivo. Le due pagine di riferimento del
+ridisegno hanno i link; il banco del client in Chrome li preme con lo stesso
+clic generico, e la pagina di riferimento del client passa tutti i suoi
+gruppi. La barra della copia di P-81 è verde così com'è.
+
 ### 10.2 Verifica documentale di P-79 e limiti
 
 Verificati cartella, ramo, albero iniziale pulito e inventario delle chat:
