@@ -1993,18 +1993,27 @@ async function c10(b, ctx, v, parte) {
   if (vuole('senza')) await fermaAlPrimo(v, (w) => c10senza(b, ctx, w, g));
   if (vuole('file')) await fermaAlPrimo(v, (w) => c10file(b, ctx, w, g));
   if (vuole('segnali')) await fermaAlPrimo(v, (w) => c10segnali(b, ctx, w, g));
-  if (vuole('avvio')) await fermaAlPrimo(v, (w) => c10avvio(b, ctx, w, `${g}:avvio`));
+  // La riga d'avvio nei due versi, su qualunque pagina (P-88): prima con la
+  // raccolta spenta sul server, poi accesa. Fino a P-88 il verso lo decideva la
+  // pagina — spenta per quella vera, accesa per le pagine di riferimento.
+  if (vuole('avvio')) {
+    for (const acceso of [false, true]) {
+      // Due ore fra i due versi, come fra due gruppi: le cinque registrazioni l'ora per indirizzo (§6.5).
+      if (acceso) ctx.avanza(2 * 3600 * 1000);
+      if (perParte(ctx, v, `${g}:avvio`, { esiti_e_previsioni: acceso })) await fermaAlPrimo(v, (w) => c10avvio(b, ctx, w, `${g}:avvio`));
+    }
+  }
 }
 
 /**
  * C-10:avvio (P-86, R-ACC-86): un file dei progressi con una riga d'avvio,
  * importato nell'account dalla pagina. La riga d'avvio e' una raccolta nuova
  * (P-72), spenta sul server finche' la sua informativa non c'e'
- * (account-progetto §2.7-bis): con il server com'e' nel codice la riga e'
- * scartata, la pagina lo dice con il suo motivo, le altre righe arrivano e il
- * server non la ha; con la raccolta accesa — il server delle pagine di
- * riferimento — la stessa riga arriva. Il banco legge dal server della corsia
- * quale dei due casi ha davanti, e fa lo stesso numero di verifiche.
+ * (account-progetto §2.7-bis): a raccolta spenta la riga e' scartata, la
+ * pagina lo dice con il suo motivo, le altre righe arrivano e il server non la
+ * ha; a raccolta accesa la stessa riga arriva. Il banco legge dal server della
+ * corsia quale dei due casi ha davanti, e fa lo stesso numero di verifiche; dal
+ * P-88 li prova tutti e due su ogni pagina.
  */
 async function c10avvio(b, ctx, v, g) {
   const K = await nuovoAccount(ctx, 'c10a');
@@ -2555,6 +2564,11 @@ const ONBOARDING = 'Hai una data d\'esame?';
 
 async function c16(b, ctx, v, parte) {
   const g = 'C-16';
+  // Nel ridisegno il passo della data e' l'onboarding di «che cosa stai
+  // preparando?», e «Scelte salvate» lo dice solo un server che le raccoglie:
+  // la parte le accende, come N-01:registrazione (P-88). Nel regime di oggi il
+  // passo e' la sola data, e il server resta com'e' nel codice.
+  if (ctx.regime === 'ridisegno' && !perParte(ctx, v, g, SCELTE_ACCESE)) return;
   const vuole = (x) => !parte || parte === x;
   if (vuole('proposta')) await fermaAlPrimo(v, (w) => c16proposta(b, ctx, w, g));
   if (vuole('salto')) await fermaAlPrimo(v, (w) => c16salto(b, ctx, w, g));
@@ -4252,17 +4266,29 @@ function inCoda(copia) {
 const tipo = (copia, t) => (copia ? copia.righe.filter((r) => r._t === t) : []);
 
 /**
- * «Il server di prima» (§6): `GET /v1/io` senza `esiti` e senza `tipi_riga`.
- * Il banco toglie i due campi dalla risposta vera; poi la pagina si ricarica,
- * cosi' l'unica descrizione dell'account che ha visto e' quella.
+ * Le raccolte che E-01 e P-01 provano (P-88): esiti e previsioni accesi sul
+ * server della corsia, su qualunque pagina, perche' quello che si prova e' la
+ * pagina con la raccolta accesa — anche quella senza raccordo, che non deve
+ * chiedere l'esito ne' scrivere righe d'avvio nemmeno quando il server le
+ * accoglierebbe. «Il server di prima» (§6) e' la raccolta spenta davvero: il
+ * server non dichiara `esiti` ne' `'a'` in `tipi_riga`, e rifiuta l'una e
+ * l'altra. Fino a P-88 lo si imitava togliendo i due campi da `GET /v1/io`, e
+ * il server dietro le accoglieva lo stesso.
  */
-async function serverDiPrima(ctx, tab) {
-  await tab.intercetta(ctx.api + '/v1/io', async (req, params, { corpo }) => {
-    if (req.method !== 'GET' || params.responseStatusCode !== 200) return null;
-    const o = JSON.parse(await corpo());
-    delete o.esiti; delete o.tipi_riga;
-    return finti(ctx, 200, o);
-  }, { fase: 'Response' });
+const ESITI_ACCESI = Object.freeze({ esiti_e_previsioni: true });
+const ESITI_SPENTI = Object.freeze({ esiti_e_previsioni: false });
+/**
+ * La parte chiede le raccolte che prova, e guarda che il server della corsia le
+ * abbia davvero (P-88): senza, una parte che prova il verso acceso girerebbe nel
+ * verso spento — o al contrario — e una pagina senza raccordo, o C-10:avvio,
+ * passerebbe verde provando una cosa sola. Falso, e un rosso, se non le ha.
+ */
+function perParte(ctx, v, g, chieste) {
+  const ha = ctx.conRaccolte(chieste);
+  const diverse = Object.entries(chieste).filter(([k, x]) => ha[k] !== x);
+  if (diverse.length) v.push({ gruppo: g, nome: 'la parte ha sul server della corsia le raccolte che prova', ok: false,
+    extra: `chieste ${JSON.stringify(chieste)}, il server ha ${JSON.stringify(ha)}` });
+  return !diverse.length;
 }
 
 /** Entra, e se serve ricarica: l'account si riconosce da GET /v1/io (§3.1 del client). */
@@ -4293,15 +4319,16 @@ function aMeta(v, g, chi, r) {
 async function e01(b, ctx, v, parte) {
   const r = regime(ctx, 'esito');
   if (r !== 'raccordo' && r !== 'spento') return aMeta(v, 'E-01', 'esito', r);
-  if (r === 'spento') return e01spento(b, ctx, v, 'E-01:spento');
+  const con = async (raccolte, fn, g) => { if (perParte(ctx, v, g, raccolte)) await fn(b, ctx, v, g); };
+  if (r === 'spento') return con(ESITI_ACCESI, e01spento, 'E-01:spento');
   const vuole = (x) => !parte || parte === x;
-  if (vuole('senza')) await e01senza(b, ctx, v, 'E-01:senza');
-  if (vuole('quando')) await e01quando(b, ctx, v, 'E-01:quando');
-  if (vuole('prima')) await e01prima(b, ctx, v, 'E-01:prima');
-  if (vuole('salvato')) await e01salvato(b, ctx, v, 'E-01:salvato');
+  if (vuole('senza')) await con(ESITI_ACCESI, e01senza, 'E-01:senza');
+  if (vuole('quando')) await con(ESITI_ACCESI, e01quando, 'E-01:quando');
+  if (vuole('prima')) await con(ESITI_SPENTI, e01prima, 'E-01:prima');
+  if (vuole('salvato')) await con(ESITI_ACCESI, e01salvato, 'E-01:salvato');
 }
 
-/** Senza raccordo: un account con la data di ieri, e niente di «com'è andata». */
+/** Senza raccordo: un account con la data di ieri, e niente di «com'è andata», con il server che lo raccoglierebbe. */
 async function e01spento(b, ctx, v, g) {
   const U = await nuovoAccount(ctx, 'e01s');
   ctx.dataEsame(U.email, E.addGiorni(oggiQui(), -1));
@@ -4413,17 +4440,18 @@ async function e01quando(b, ctx, v, g) {
 }
 
 // R-ESITO-03, l'altra meta': un campo assente spegne la funzione (§3.7, punto 2).
+// Il campo manca perche' la raccolta e' spenta davvero sul server (P-88): e' il
+// server di prima visto dalla pagina, e in piu' rifiuta un esito con un 403.
 async function e01prima(b, ctx, v, g) {
   const U = await nuovoAccount(ctx, 'e01p');
   ctx.dataEsame(U.email, E.addGiorni(oggiQui(), -1));
   const c = await b.nuovoContesto();
   try {
     const tab = await c.apri(ctx.sito + ingresso(ctx));
-    await serverDiPrima(ctx, tab);
     await fermaAlPrimo(v, async (w) => {
-      w.push({ gruppo: g, nome: 'si entra, e la pagina si riapre con GET /v1/io senza esiti', ok: await entraERicarica(tab, U), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+      w.push({ gruppo: g, nome: 'si entra, con la raccolta degli esiti spenta sul server, e la pagina si riapre', ok: await entraERicarica(tab, U), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
       const { ok, visto } = await riquadroNo(tab);
-      w.push({ gruppo: g, nome: 'con il server di prima il riquadro non c\'e\'', ok, extra: `GET /v1/io non porta esiti, e si vede ${JSON.stringify(visto)}` });
+      w.push({ gruppo: g, nome: 'con la raccolta spenta — il server di prima, visto dalla pagina — il riquadro non c\'e\'', ok, extra: `GET /v1/io non porta esiti, e si vede ${JSON.stringify(visto)}` });
       await clicca(tab, 'Account');
       await tab.attendi(modaleVisibile, REAZIONE);
       w.push({ gruppo: g, nome: 'con il server di prima non c\'e\' «Il tuo esame»', ok: !await tab.valuta(pulsante(IL_TUO_ESAME)), extra: 'nella finestra dell\'account c\'e\' «Il tuo esame»' });
@@ -4513,17 +4541,19 @@ const istante = (r) => (r && r.ts ? Date.parse(r.ts) : NaN);
 async function p01(b, ctx, v, parte) {
   const r = regime(ctx, 'avvio');
   if (r !== 'raccordo' && r !== 'spento') return aMeta(v, 'P-01', 'avvio', r);
-  if (r === 'spento') return p01spento(b, ctx, v, 'P-01:spento');
+  const con = async (raccolte, fn, g) => { if (perParte(ctx, v, g, raccolte)) await fn(b, ctx, v, g); };
+  if (r === 'spento') return con(ESITI_ACCESI, p01spento, 'P-01:spento');
   const vuole = (x) => !parte || parte === x;
-  if (vuole('avvio')) await p01avvio(b, ctx, v, 'P-01:avvio');
-  if (vuole('senza')) await p01senza(b, ctx, v, 'P-01:senza');
-  if (vuole('visto')) await p01visto(b, ctx, v, 'P-01:visto');
-  if (vuole('conti')) await p01conti(b, ctx, v, 'P-01:conti');
-  if (vuole('prima')) await p01prima(b, ctx, v, 'P-01:prima');
-  if (vuole('errore')) await p01errore(b, ctx, v, 'P-01:errore');
+  if (vuole('avvio')) await con(ESITI_ACCESI, p01avvio, 'P-01:avvio');
+  if (vuole('senza')) await con(ESITI_ACCESI, p01senza, 'P-01:senza');
+  // P-01:visto comincia accesa e spegne per il secondo account.
+  if (vuole('visto')) await con(ESITI_ACCESI, p01visto, 'P-01:visto');
+  if (vuole('conti')) await con(ESITI_ACCESI, p01conti, 'P-01:conti');
+  if (vuole('prima')) await con(ESITI_SPENTI, p01prima, 'P-01:prima');
+  if (vuole('errore')) await con(ESITI_ACCESI, p01errore, 'P-01:errore');
 }
 
-/** Senza raccordo: una simulazione completa con l'account, e nessuna riga d'avvio. */
+/** Senza raccordo: una simulazione completa con l'account, e nessuna riga d'avvio, con il server che la accoglierebbe. */
 async function p01spento(b, ctx, v, g) {
   const U = await nuovoAccount(ctx, 'p01s');
   const c = await b.nuovoContesto();
@@ -4662,10 +4692,15 @@ async function p01visto(b, ctx, v, g) {
   const ca = await b.nuovoContesto(), cb = await b.nuovoContesto();
   try {
     const ta = await ca.apri(ctx.sito + ingresso(ctx)), tb = await cb.apri(ctx.sito + ingresso(ctx));
-    await serverDiPrima(ctx, tb);
     await fermaAlPrimo(v, async (w) => {
-      w.push({ gruppo: g, nome: 'si entra in due account, il secondo con il server di prima', ok: await dentro(ta, A) && await entraERicarica(tb, B), extra: 'un accesso non riesce' });
-      const con = await testiSim(ta), senza = await testiSim(tb);
+      // Il primo con la raccolta accesa; poi spenta davvero sul server, e il
+      // secondo entra e si ricarica: la sua pagina ha visto solo quella.
+      const entraA = await dentro(ta, A);
+      const con = entraA ? await testiSim(ta) : null;
+      ctx.conRaccolte(ESITI_SPENTI);
+      const entraB = await entraERicarica(tb, B);
+      w.push({ gruppo: g, nome: 'si entra in due account, il secondo con la raccolta spenta sul server, come il server di prima', ok: entraA && entraB, extra: 'un accesso non riesce' });
+      const senza = entraB ? await testiSim(tb) : null;
       w.push({ gruppo: g, nome: 'la simulazione si apre e si consegna vuota, nei due casi', ok: !!con && !!senza && Object.values(con).every((x) => x !== null) && Object.values(senza).every((x) => x !== null),
         extra: `con la riga d'avvio ${JSON.stringify(con)}; senza ${JSON.stringify(senza)}` });
       const avviiA = tipo(await ta.valuta(COPIA(A.chiave)), 'a').length, avviiB = tipo(await tb.valuta(COPIA(B.chiave)), 'a').length;
@@ -4743,9 +4778,9 @@ async function p01prima(b, ctx, v, g) {
   const c = await b.nuovoContesto();
   try {
     const tab = await c.apri(ctx.sito + ingresso(ctx));
-    await serverDiPrima(ctx, tab);
     await fermaAlPrimo(v, async (w) => {
-      w.push({ gruppo: g, nome: 'si entra, e la pagina si riapre con GET /v1/io senza tipi_riga', ok: await entraERicarica(tab, U), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+      // La raccolta spenta davvero (P-88): tipi_riga senza 'a', e il server scarta una riga d'avvio.
+      w.push({ gruppo: g, nome: 'si entra, con la raccolta delle previsioni spenta sul server, e la pagina si riapre', ok: await entraERicarica(tab, U), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
       w.push({ gruppo: g, nome: 'una simulazione base si apre', ok: await apriSim(tab, 'base'), extra: 'non si apre' });
       const ok = await rispondiQuiz(tab, [], g, '', { sim: true }) && await chiudiQuiz(tab, [], g, '', { sim: true });
       w.push({ gruppo: g, nome: 'una risposta e la consegna', ok: !!ok, extra: 'nessun riepilogo' });
@@ -5592,6 +5627,9 @@ const rigaQ = (it, giusta, fa, sim = 'n01-storia') => ({ _t: 'q', uid: `n01-${++
 
 /** La registrazione porta nell'account l'insieme intero delle righe: dalla Home e dal risultato di una simulazione. */
 async function n01registrazione(b, ctx, v, g) {
+  // L'onboarding salva le scelte di preparazione: la raccolta accesa sul server
+  // della corsia, su qualunque pagina (P-88), com'e' dal rilascio di P-81.
+  if (!perParte(ctx, v, g, SCELTE_ACCESE)) return;
   const c = await b.nuovoContesto();
   try {
     const tab = await c.apri(ctx.sito + '/');
@@ -5846,9 +5884,23 @@ async function n01ricerca(b, ctx, v, g) {
   } finally { await c.chiudi(); }
 }
 
-/** Le scelte con l'account: «Scelte salvate» solo con i valori riletti, e nessuna promessa se il server non dichiara i due campi. */
+/**
+ * Le scelte con l'account: «Scelte salvate» solo con i valori riletti, e nessuna
+ * promessa se il server non dichiara i due campi. Dal P-88 la raccolta la
+ * accende la parte, su qualunque pagina: accesa sul server per «dichiarati» e
+ * «ignorati», spenta davvero per «non dichiarati» — `campi_profilo` senza le
+ * scelte, e un 422 a chi le mandasse —, invece di una descrizione dell'account
+ * a cui si tolgono campi.
+ */
+const SCELTE_ACCESE = Object.freeze({ scelte_di_preparazione: true });
+const SCELTE_SPENTE = Object.freeze({ scelte_di_preparazione: false });
+/** Le richieste al profilo che portano una scelta di preparazione non nulla. */
+const scelteMandate = (tab) => tab.richieste.filter((r) => r.metodo === 'PUT' && /\/v1\/profilo$/.test(new URL(r.url).pathname) && (() => {
+  try { const o = JSON.parse(r.corpo || '{}'); return o.abilitazione != null || o.conseguimento != null; } catch { return false; }
+})());
 async function n01scelte(b, ctx, v, g) {
   for (const caso of ['dichiarati', 'ignorati', 'non dichiarati']) {
+    if (!perParte(ctx, v, g, caso === 'non dichiarati' ? SCELTE_SPENTE : SCELTE_ACCESE)) continue;
     const K = await nuovoAccount(ctx, 'n01s');
     const c = await b.nuovoContesto();
     try {
@@ -5860,7 +5912,7 @@ async function n01scelte(b, ctx, v, g) {
       }, { fase: 'Response' });
       await tab.vai(ctx.sito + '/');
       await fermaAlPrimo(v, async (w) => {
-        w.push({ gruppo: g, nome: `scelte, campi ${caso}: dentro l'account`, ok: await entraImitando(ctx, tab, K, caso === 'non dichiarati' ? 'v0.30.0' : 'oggi'), extra: 'l\'accesso non riesce' });
+        w.push({ gruppo: g, nome: `scelte, campi ${caso}: dentro l'account, con la raccolta ${caso === 'non dichiarati' ? 'spenta' : 'accesa'} sul server`, ok: await entraImitando(ctx, tab, K, 'oggi'), extra: 'l\'accesso non riesce' });
         await tocca(tab, null, '#conto-porta'); await tab.attendi(modaleVisibile, REAZIONE);
         await clicca(tab, 'Che cosa stai preparando?');
         const modulo = await tab.attendiValore(js(`const m = M(); return m.querySelector && m.querySelector('[name="abilitazione"]') ? m.innerText : null;`), Boolean, REAZIONE);
@@ -5878,7 +5930,8 @@ async function n01scelte(b, ctx, v, g) {
         } else {
           const motivo = caso === 'ignorati' ? 'Le scelte non sono state salvate' : 'Le altre scelte valgono solo per questa pagina';
           w.push({ gruppo: g, nome: caso === 'ignorati' ? 'un 200 che rilegge valori diversi non e\' «Scelte salvate»: la pagina lo dice' : 'senza campi_profilo nessun «Scelte salvate», e le scelte non vanno al server',
-            ok: !salvate && await tab.valuta(testoVisibile(motivo)) && (caso === 'ignorati' || (db.abilitazione == null && db.conseguimento == null)), extra: `${JSON.stringify(db)}; ${await tab.valuta(TESTO_VISTO('[aria-modal="true"]'))} ${JSON.stringify(tab.richieste.filter((r) => r.url.includes('/v1/')).map((r) => r.metodo + ' ' + new URL(r.url).pathname + (r.fallita ? ' FALLITA' : '')))}` });
+            ok: !salvate && await tab.valuta(testoVisibile(motivo)) && (caso === 'ignorati' || (db.abilitazione == null && db.conseguimento == null && !scelteMandate(tab).length)),
+          extra: `${scelteMandate(tab).length ? `mandate al server che non le raccoglie: ${scelteMandate(tab).map((r) => r.corpo).join('; ')}; ` : ''}${JSON.stringify(db)}; ${await tab.valuta(TESTO_VISTO('[aria-modal="true"]'))} ${JSON.stringify(tab.richieste.filter((r) => r.url.includes('/v1/')).map((r) => r.metodo + ' ' + new URL(r.url).pathname + (r.fallita ? ' FALLITA' : '')))}` });
         }
       });
     } finally { await c.chiudi(); }
@@ -5976,11 +6029,14 @@ async function corsia(k, cartella, portaApi = PORTA_API) {
   const orologio = { t: Date.now() };
   let api;
   const percorsoDb = join(cartella, `conti-${k}.db`), cancellazioni = join(cartella, `cancellazioni-${k}`);
-  // Le raccolte nuove (P-86, account-progetto §2.7-bis): la pagina vera parla
-  // con il server com'e' nel codice del tag — oggi spente —, le pagine di
-  // riferimento con le raccolte accese, perche' sono il contratto di quando lo
-  // saranno (E-01, P-01, N-01:scelte). Si fissano a ogni gruppo, e un riavvio
-  // della corsia (C-14) le rimette.
+  // Le raccolte nuove (P-86, account-progetto §2.7-bis): ogni gruppo comincia
+  // con il server com'e' nel codice del tag — oggi spente —, su qualunque
+  // pagina, e la parte che prova una raccolta la accende, o la spegne davvero,
+  // con `ctx.conRaccolte()` (P-88). Fino a P-88 le accendeva la pagina: quelle
+  // di riferimento tutte, quella vera nessuna, e la pagina vera del ridisegno
+  // non poteva passare N-01:scelte prima del rilascio che le accende sul
+  // server vero (ridisegno-progetto §10.1, «I tre punti», 3). Un riavvio della
+  // corsia (C-14) le rimette come erano.
   let raccolte = { ...RACCOLTE };
   const accendi = (porta) => avvia({ db: percorsoDb, cancellazioni, porta, raccolte,
     host: '127.0.0.1', ora: () => orologio.t, argon2: ECONOMICO, origine: sp.origine, sito: sp.origine,
@@ -6037,6 +6093,10 @@ async function corsia(k, cartella, portaApi = PORTA_API) {
     dataEsame: (email, d) => api.db.prepare('UPDATE account SET data_esame = ? WHERE email = ?').run(d, email),
     // --- per C-10:avvio (P-86): quali raccolte il server della corsia ha accese.
     raccolte: () => api.raccolte(),
+    // --- per la parte che prova una raccolta (P-88): la accende, o la spegne
+    // davvero, sul server di questa corsia, per il resto del gruppo. Un nome o un
+    // valore sbagliato lanciano (raccolteDa), invece di non accendere niente.
+    conRaccolte: (x) => { raccolte = api.cambiaRaccolte(x); return { ...raccolte }; },
     // --- per N-01 (P-82): le scelte di preparazione nel profilo (P-83).
     scelteDi: (email) => api.db.prepare('SELECT abilitazione, conseguimento FROM account WHERE email = ?').get(email),
     // --- per E-01 (P-74): gli esiti dell'esame, scritti e letti nel database.
@@ -6081,8 +6141,8 @@ async function corsia(k, cartella, portaApi = PORTA_API) {
       ctx.ingresso = corrente.ingresso;
       ctx.regimi = p.regimi || {};
       ctx.regime = p.regime || 'attuale';
-      raccolte = p.nome === 'app' ? { ...RACCOLTE } : { esiti_e_previsioni: true, scelte_di_preparazione: true };
-      api.cambiaRaccolte(raccolte);
+      // Per parte, non per pagina (P-88): il gruppo comincia dal codice.
+      raccolte = api.cambiaRaccolte({ ...RACCOLTE });
       orologio.t += 2 * 3600 * 1000;
       return gruppo(b, ctx, g);
     },
@@ -6126,6 +6186,8 @@ export async function esegui(prove, { portaApi = PORTA_API } = {}) {
           // banco guarda quell'indirizzo anche se la corsia 0 ascolta altrove.
           const ctx = { ...corsie[0].ctx, sito: sv.origine, api: `http://localhost:${PORTA_API}`, spegni: (si) => { proprio.spento = si; }, radice: (d) => { proprio.radice = d; },
             ingresso: proprio.ingresso, regimi: x.p.regimi || {}, regime: x.p.regime || 'attuale',
+            // Una parte senza API non tocca il server della corsia 0, che intanto porta un altro gruppo.
+            conRaccolte: () => { throw new Error(`${x.g} non parla con l'API: non accende raccolte`); },
             sostituisci: (percorso, testo) => { proprio.sito = { ...(proprio.sito || {}), [percorso]: testo }; } };
           esiti.get(x.p.nome)[x.g] = await gruppo(b, ctx, x.g);
         } finally { await sv.chiudi(); }

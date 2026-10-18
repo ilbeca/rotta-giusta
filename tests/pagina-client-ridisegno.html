@@ -2119,7 +2119,10 @@ async function chiudiTrasferimento(trasf, r, coda, righe) {
   if (trasf.fonte === 'file' && (r.completo || r.stato === 'con scarti')) {
     const c = trasf.conti || { nuove: 0, gia: 0, scartate: 0 };
     const scarti = trasf.rifiutate.length + r.scartate.length;
-    $('importa-esito').innerHTML = `${c.nuove} nuove · ${c.gia} già presenti · ${c.scartate} scartate`
+    // I motivi degli scarti del server, come la pagina vera (P-88): una riga
+    // d'avvio a raccolta spenta si dice con «riga d'avvio non raccolta».
+    const motivi = Object.entries(r.motivi || {}).map(([m, n]) => `${m}: ${n}`).join(' · ');
+    $('importa-esito').innerHTML = `${c.nuove} nuove · ${c.gia} già presenti · ${c.scartate} scartate${motivi ? ` · ${esc(motivi)}` : ''}`
       + (scarti ? ' <button data-importa="scarti">Scarica le righe non importate</button>' : '');
   }
 }

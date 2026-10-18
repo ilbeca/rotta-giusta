@@ -36,6 +36,84 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 - **Non guardato:** un accesso con l'account vero dopo l'aggiornamento, e gli
   strumenti del titolare sulla macchina con lo schema 6.
 
+### Test — P-88: il banco accende le raccolte per parte, non per pagina
+
+- **La pagina vera del ridisegno non poteva passare N-01:scelte.** Da P-86
+  `corsia().esegui()` dava alla prova chiamata «app» il server com'è nel codice
+  — le scelte di preparazione spente fino al rilascio di P-81 — e accendeva
+  tutto soltanto per le pagine di riferimento. Ma la pagina di P-81 è la pagina
+  vera, e deve passare N-01:scelte prima del rilascio che le accende sul server
+  vero (§10.1 di `ridisegno-progetto.md`, «I tre punti», 3). **Prima il rosso:**
+  la pagina di riferimento del client nel ridisegno, data al banco come «app»,
+  era rossa in tre verifiche — il modulo nei casi «dichiarati» e «ignorati» e
+  l'onboarding di N-01:registrazione — per il server e non per la pagina.
+
+- **Ora ogni gruppo comincia dal codice, su qualunque pagina, e la parte che
+  prova una raccolta la accende, o la spegne davvero**, con
+  `ctx.conRaccolte()` sul server della sua corsia. Parte per parte:
+  N-01:scelte accende le scelte per «dichiarati» e «ignorati» e le spegne per
+  «non dichiarati»; N-01:registrazione le accende, per l'onboarding; **C-16** le
+  accende nel ridisegno, dove il passo della data è l'onboarding e «Scelte
+  salvate» lo dice solo un server che le raccoglie — non era nel prompt, l'ha
+  trovato la suite: era il quarto rosso della stessa causa —; E-01 e P-01
+  accendono esiti e previsioni in ogni parte, **anche nella parte `spento`**,
+  perché una pagina senza raccordo non deve chiedere l'esito né scrivere righe
+  d'avvio nemmeno quando il server le accoglierebbe — da P-86 sulla pagina vera
+  quella verifica era verde per il server —, e le spengono davvero nelle parti
+  `prima`; C-10:avvio prova i due versi su ogni pagina, prima spenta e poi
+  accesa. Tutto il resto gira con il server del codice, pagine di riferimento
+  comprese. Una parte senza API che provasse ad accendere lancia: il server della
+  corsia 0 intanto porta un altro gruppo.
+
+- **Il caso spento con il server spento davvero**, non con una descrizione
+  dell'account a cui si tolgono campi. «Il server di prima» di E-01, P-01 e
+  N-01:scelte era un `GET /v1/io` senza `esiti`, `tipi_riga` o `campi_profilo`,
+  con il server dietro che accoglieva lo stesso; ora è la raccolta spenta, che
+  la pagina vede allo stesso modo e che rifiuta con il suo motivo. **Questo apre
+  un buco, e si chiude:** una pagina che mandasse le scelte a un server spento
+  riceverebbe un `422`, il database resterebbe vuoto, e passerebbe. Il banco
+  guarda ora anche le richieste — `tests/browser.mjs` registra il corpo mandato
+  —, e una rottura nuova, «le scelte mandate a un server che non le raccoglie»,
+  le manda con il testo giusto: rossa per il suo motivo, e verde se si toglie il
+  controllo delle richieste.
+
+- **Il banco contro sé stesso**, una difesa tolta a mano alla volta: senza
+  l'accensione per parte, sulle pagine di riferimento sono rossi N-01:scelte
+  (2), l'onboarding, E-01:quando, E-01:salvato, P-01:avvio, P-01:visto e
+  P-01:conti; ma E-01:spento, P-01:spento e C-10:avvio, sulla pagina vera,
+  **passavano verdi provando un verso solo**. Per questo ogni parte guarda che
+  il server abbia davvero le raccolte che ha chiesto (`perParte()`), e senza
+  l'accensione quelle tre sono rosse: «la parte ha sul server della corsia le
+  raccolte che prova».
+
+- **Trovato: le pagine di riferimento del client non dicevano il motivo di uno
+  scarto del server** dopo un import, perché non avevano mai girato a raccolta
+  spenta. La pagina vera dice «riga d'avvio non raccolta: 1»; ora anche le due
+  di riferimento.
+
+- **Sulla copia di P-81** (`RG_SITO=/private/tmp/rg-p81/sito`, letta e non
+  toccata: la stessa impronta prima e dopo), N-01 intero più E-01, P-01,
+  C-10:avvio e C-16, con il banco di `HEAD` estratto accanto e con questo:
+  spariscono i tre rossi di N-01:scelte e dell'onboarding e i due di C-16;
+  **non ne resta nessuno** in N-01:scelte, N-01:registrazione e C-16. Restano 50
+  rossi di N-01, di P-81: uno in documento (il marchio non porta alla Home), uno
+  in cronologia (Chiudi la preparazione non rende fuoco e scorrimento), uno in
+  gesti (i tag L e C di prima), uno in ricerca (una frase del conteggio), e
+  46 nei tragitti — 16 per H0, 16 per H1, 14 per HA, sul Carteggio, i Segnali e
+  i ritorni. E-01, P-01 e C-10:avvio sono verdi sulla copia.
+
+- Specifica: R-ACC-55, R-ACC-86 e il §9.13 dicono come il banco accende le
+  raccolte; nessun requisito nuovo.
+
+  Suite: motore 215/219 con i quattro skip previsti; server 89/89, non toccato;
+  dati 230; specifica 1.032; interfaccia **3.018** (erano 3.012: i tre di
+  C-10:avvio in più sulla pagina vera e la rottura nuova), in 4 min 16 s, con la
+  8620 guardata libera per 90 s prima. Un primo giro era rosso in quattro
+  verifiche, tutte del banco: il conto di C-10 alzato per sbaglio — le verifiche
+  di C-10:avvio si contano a parte — e C-16 nel ridisegno, qui sopra. Guardiano
+  verde. `site/`, `server/`, `docs/prossime-sessioni.md` e la copia di P-81 non
+  sono stati toccati.
+
 ## [0.31.0] — 2026-10-18
 
 **Un rilascio piccolo, prima del ridisegno.** Per chi studia cambia poco di

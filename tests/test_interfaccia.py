@@ -1413,15 +1413,16 @@ VERIFICHE_CLIENT = {'C-01': 28, 'C-02': 15, 'C-03': 11, 'C-04': 20, 'C-05': 13, 
                     'C-21': 17, 'C-10': 10, 'C-11': 8, 'C-12': 9, 'C-13': 8, 'C-14': 3, 'C-15': 12, 'C-16': 23, 'C-17': 10,
                     'C-13:scarica': 7, 'C-08:cancella': 8, 'C-15:segnali': 7,
                     'C-19:senza': 4, 'C-19:ricarica': 4, 'C-19:scadenza': 4, 'C-19:guasto': 3, 'C-19:giudizio': 5,
-                    'C-19:uscita': 4, 'C-19:schede': 4, 'F-01': 21, 'C-20': 5, 'C-22': 8, 'C-10:avvio': 3}
+                    'C-19:uscita': 4, 'C-19:schede': 4, 'F-01': 21, 'C-20': 5, 'C-22': 8, 'C-10:avvio': 6}
 # Le tre scelte che fino a P-46 nessun gruppo premeva (R-ACC-63): sono parti dei
 # loro gruppi, e girano con loro, ma le verifiche portano il nome della parte e
 # hanno un controllo ciascuna, cosi' la specifica le nomina una per una.
 SCELTE_CLIENT = ['C-13:scarica', 'C-08:cancella', 'C-15:segnali']
 # Le raccolte nuove spente sul server (P-86, account-progetto §2.7-bis): una
-# parte di C-10, che importa un file con una riga d'avvio. Sulla pagina vera il
-# server e' com'e' nel codice, e la riga e' scartata con il suo motivo; sulle
-# pagine di riferimento la raccolta e' accesa, e la riga arriva.
+# parte di C-10, che importa un file con una riga d'avvio. Dal P-88 la prova
+# nei due versi su ogni pagina: a raccolta spenta la riga e' scartata con il
+# suo motivo, a raccolta accesa arriva. Fino a P-88 il verso lo decideva la
+# pagina: spenta per quella vera, accesa per quelle di riferimento.
 PARTI_RACCOLTE = ['C-10:avvio']
 # C-19, la bozza del carteggio (P-34, §9.4 del progetto del client): le verifiche
 # portano il nome della parte, e ognuna ha il suo conto. Sulla pagina vera la
@@ -2545,12 +2546,12 @@ def test_client_file():
 
 
 def test_client_import_avvio():
-    """R-ACC-86 (P-86): un file con una riga d'avvio importato dalla pagina vera,
-    con il server com'e' nel codice del tag. A raccolta spenta la riga e'
-    scartata con il suo motivo, le risposte arrivano, il server non la ha, e
-    sta fra le righe non importate da scaricare (C-10:avvio). Che la stessa
-    parte, a raccolta accesa, veda la riga arrivare lo pretende
-    test_client_provato_al_contrario sulla pagina di riferimento."""
+    """R-ACC-86 (P-86, P-88): un file con una riga d'avvio importato dalla
+    pagina vera, nei due versi del server. A raccolta spenta — oggi quella del
+    codice del tag — la riga e' scartata con il suo motivo, le risposte
+    arrivano, il server non la ha, e sta fra le righe non importate da
+    scaricare; a raccolta accesa la stessa riga arriva com'era (C-10:avvio).
+    Il verso lo accende la parte sul server della sua corsia, non la pagina."""
     registra_client('C-10:avvio')
 
 
@@ -3015,6 +3016,14 @@ ROTTURE_NAV = [
     ('il modulo promette la conservazione senza campi_profilo', ['N-01:scelte'],
      [("${conto ? (campiProfilo() ? 'Le scelte vengono conservate", "${conto ? (true ? 'Le scelte vengono conservate")],
      'campi_profilo'),
+    # Le scelte mandate lo stesso a un server che le ha spente (P-88), con il testo
+    # giusto: il server risponde 422 e il database resta vuoto, quindi la prende
+    # solo la richiesta guardata. Con il server di prima imitato togliendo
+    # campi_profilo, e le scelte accese dietro, il database l'avrebbe detto.
+    ('le scelte mandate a un server che non le raccoglie', ['N-01:scelte'],
+     [('  if (campiProfilo()) Object.assign(corpo, scelte);',
+       "  if (campiProfilo()) Object.assign(corpo, scelte); else api('PUT', '/v1/profilo', scelte).catch(() => {});")],
+     'non le raccoglie'),
     ('«Simula il quiz base» porta a Esame invece della preparazione', ['N-01:tragitti-H0'],
      [('<button data-modo="sim" data-prova="base">Simula il quiz base</button>', '<button data-v="esame" data-modo="sim" data-prova="base">Simula il quiz base</button>')],
      'tocchi'),

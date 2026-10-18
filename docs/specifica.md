@@ -2156,7 +2156,7 @@ controllo in `test_server.mjs`.
 | R-ACC-52 | Un azzeramento fatto altrove, scoperto inviando o ricevendo, sospende invii e ricezioni finché chi studia non sceglie: la pagina dice quante risposte di qui non sono salvate, niente rientra, scartare chiede di confermare la perdita, la scelta rimandata resta raggiungibile e riaperta conta anche le risposte date intanto; dopo, la copia è quella del server e le risposte nuove entrano | `test_interfaccia.py::test_client_azzeramento` |
 | R-ACC-53 | Dopo il ripristino di una copia, la pagina vede l'epoca nuova, rimanda la risposta che il server ha perso, e un altro dispositivo la riceve: R-ACC-24 visto dalla pagina | `test_interfaccia.py::test_client_ripristino` |
 | R-ACC-54 | L'uscita regge anche una sessione che non c'è più: un `401` all'uscita pulisce la copia, non dice che serve la rete; con la sessione revocata e risposte non inviate le fa scaricare e cancella solo dopo una scelta esplicita, senza mandarle a nessun account. «Esci da tutti i dispositivi» chiude ogni sessione sul server e pulisce qui; l'altro dispositivo lo scopre con un `401` e tiene la sua copia, congelata | `test_interfaccia.py::test_client_uscita` |
-| R-ACC-55 | La data d'esame dopo la registrazione è facoltativa e non inventata: la data scritta nella pagina si propone e si salva solo al clic, com'è anche se passata; senza, il campo è vuoto; un salvataggio fallito lo dice; entrando in un account che ha la data, il passo non si ripete, la data resta e la pagina mostra quella del server. Nel ridisegno l'onboarding chiede anche «che cosa stai preparando?», due scelte facoltative senza un default, con le stesse regole: «salvate» solo con i valori riletti dal server, e solo con un server che dichiara i due campi in `campi_profilo` (P-83, A-5, sul server dal 15 ottobre 2026, e spenti nel server in esercizio fino al rilascio di P-81: P-86, R-ACC-84): con uno che non li dichiara nessuna promessa di persistenza. Nel ridisegno lo provano N-01:scelte e l'onboarding di N-01:registrazione (P-82): «Scelte salvate» e il database con i due campi; un 200 che rilegge valori diversi non è «salvate»; senza `campi_profilo` nessuna promessa e niente al server; senza account «Scelte applicate a questa pagina» (N-01:storage) | `test_interfaccia.py::test_client_data` |
+| R-ACC-55 | La data d'esame dopo la registrazione è facoltativa e non inventata: la data scritta nella pagina si propone e si salva solo al clic, com'è anche se passata; senza, il campo è vuoto; un salvataggio fallito lo dice; entrando in un account che ha la data, il passo non si ripete, la data resta e la pagina mostra quella del server. Nel ridisegno l'onboarding chiede anche «che cosa stai preparando?», due scelte facoltative senza un default, con le stesse regole: «salvate» solo con i valori riletti dal server, e solo con un server che dichiara i due campi in `campi_profilo` (P-83, A-5, sul server dal 15 ottobre 2026, e spenti nel server in esercizio fino al rilascio di P-81: P-86, R-ACC-84): con uno che non li dichiara nessuna promessa di persistenza. Nel ridisegno lo provano N-01:scelte e l'onboarding di N-01:registrazione (P-82): «Scelte salvate» e il database con i due campi; un 200 che rilegge valori diversi non è «salvate»; senza `campi_profilo` nessuna promessa e niente al server; senza account «Scelte applicate a questa pagina» (N-01:storage). Dal P-88 la raccolta la accende la parte sul server della sua corsia, su qualunque pagina — accesa per «Scelte salvate», per il 200 che rilegge e per l'onboarding; spenta davvero, e non una descrizione a cui si tolgono campi, per «senza `campi_profilo`», dove il banco guarda anche che nessun `PUT /v1/profilo` porti una scelta —, così la pagina vera del ridisegno passa N-01:scelte prima del rilascio che le accende sul server vero | `test_interfaccia.py::test_client_data` |
 | R-ACC-56 | «Scarica i tuoi progressi» con l'account è l'export del server, e dice quante risposte da inviare non contiene, scaricabili a parte; su un'origine senza API nessun modulo d'account, nessuna richiesta all'API e niente di personale nel browser: un link a `rottagiusta.it/app` | `test_interfaccia.py::test_client_export` |
 | R-ACC-57 | I testi di `site/` sono quelli della versione con gli account: nessuna delle frasi che gli account rendono false, commenti compresi, e tutte quelle del §11.2 del progetto del client. Il contenuto giuridico dell'informativa resta al gate dell'autore | `test_interfaccia.py::test_client_testi` |
 | R-ACC-58 | La pagina ha il client degli account: dichiara `indirizzoApi()`, e una pagina che non la dichiara — quella di prima di P-18 — è rossa, qui e in ogni gruppo del banco | `test_interfaccia.py::test_client_nella_pagina` |
@@ -2186,7 +2186,7 @@ controllo in `test_server.mjs`.
 | R-ACC-83 | Con esiti e previsioni spenti, un `PUT /v1/esito` che dice una prova è un `403 raccolta_spenta` che si legge, prima di guardare il corpo, e niente è scritto; un `PUT` di soli `null` e il `DELETE` tolgono; una riga `'a'` in `POST /v1/righe` è scartata con il motivo «riga d'avvio non raccolta», le altre dello stesso invio entrano, e un trasferimento la conta fra gli scarti; la descrizione non porta `esiti` e `tipi_riga` non porta `'a'` | `test_server.mjs::raccolte: con esiti e previsioni spenti, l esito e la riga d avvio sono rifiutati con il motivo, e niente si scrive` |
 | R-ACC-84 | Con le scelte di preparazione spente, `PUT /v1/profilo` con `abilitazione` o `conseguimento` non nulli è un `422 raccolta_spenta` con il campo, e niente è scritto, nemmeno la data o i punteggi accanto; `null` toglie; la descrizione non porta le scelte e `campi_profilo` è `['data_esame', 'segnali']` | `test_server.mjs::raccolte: con le scelte di preparazione spente, il profilo le rifiuta con il campo e non scrive niente` |
 | R-ACC-85 | Spegnere dopo aver acceso non toglie niente: esiti, riga d'avvio e scelte restano nel database; l'export li porta, la ricezione restituisce la riga d'avvio, lo strumento del titolare li mostra; la riga d'avvio già raccolta, rimandata, è «già presente»; `DELETE /v1/esito`, un `PUT` di soli `null`, `null` su una scelta, l'azzeramento e la cancellazione dell'account li tolgono | `test_server.mjs::raccolte: spegnere dopo aver acceso non toglie niente, e quello che c e si legge, si porta via e si cancella` |
-| R-ACC-86 | Dalla pagina vera, con il server com'è nel codice, un file con una riga d'avvio importato nell'account: le risposte arrivano, la riga d'avvio no, la finestra la dice scartata con il suo motivo, e sta fra le righe non importate da scaricare; con la raccolta accesa — le pagine di riferimento — la stessa riga arriva com'era (C-10:avvio) | `test_interfaccia.py::test_client_import_avvio` |
+| R-ACC-86 | Dalla pagina vera, con il server com'è nel codice, un file con una riga d'avvio importato nell'account: le risposte arrivano, la riga d'avvio no, la finestra la dice scartata con il suo motivo, e sta fra le righe non importate da scaricare; con la raccolta accesa la stessa riga arriva com'era (C-10:avvio). Dal P-88 i due versi girano su ogni pagina, accesi e spenti dalla parte sul server della sua corsia: fino ad allora il verso lo decideva la pagina, spento per quella vera e acceso per quelle di riferimento | `test_interfaccia.py::test_client_import_avvio` |
 
 R-ACC-20 e R-ACC-24 sono i primi requisiti del server con un controllo che si
 esegue, e il giro intero sta in `node server/ripristina.mjs --prova`, che la
@@ -2643,9 +2643,14 @@ con B-1 e B-2.
 dall'autore il 17 ottobre 2026; P-86, §3.7): `PUT /v1/esito` e la riga d'avvio
 sono rifiutati, e la descrizione non dichiara `esiti` né `'a'`. I requisiti del
 server qui sotto dicono che cosa fa la raccolta **accesa**, e i loro test la
-accendono con l'opzione d'avvio; che cosa fa spenta lo dicono R-ACC-82…86. I
-banchi della pagina accendono le due raccolte sul server delle pagine di
-riferimento e danno alla pagina vera il server com'è nel codice.
+accendono con l'opzione d'avvio; che cosa fa spenta lo dicono R-ACC-82…86. Nel
+banco della pagina ogni gruppo comincia con il server com'è nel codice, e dal
+P-88 la parte che prova una raccolta la accende sul server della sua corsia,
+su qualunque pagina: E-01 e P-01 accendono esiti e previsioni — anche nella
+parte `spento`, perché una pagina senza raccordo non deve chiedere l'esito né
+scrivere righe d'avvio nemmeno quando il server le accoglierebbe —, e le loro
+parti `prima` le spengono davvero. Fino a P-88 le accendeva la pagina: tutte
+per quelle di riferimento, nessuna per quella vera.
 
 | ID | Requisito | Controllo |
 |---|---|---|
@@ -2697,7 +2702,11 @@ quattro che tolgono il raccordo, o ne lasciano metà, con la funzione rimasta.
 risponde e chi no, e perché; un manuale aperto accanto a una simulazione;
 l'orologio sbagliato di un dispositivo; un testo che lascia capire la
 previsione senza scriverla né cambiare fra i due casi; il server di prima
-vero, che il banco imita togliendo due campi a `GET /v1/io`; «Non l'ho ancora
+vero, che dal P-88 il banco prova con la raccolta spenta davvero — la pagina
+vede la stessa descrizione, senza `esiti` e senza `'a'`, ma con `tipi_riga`, e
+il server rifiuta con un motivo dove quello di prima rispondeva `404` o «tipo
+sconosciuto» —, e che fino ad allora imitava togliendo due campi a
+`GET /v1/io`, con il server dietro che le accoglieva; «Non l'ho ancora
 fatto», la correzione e il ritiro dell'esito dalla pagina, la pratica in un
 altro giorno; Safari.
 
@@ -3682,3 +3691,10 @@ successo, ed è il motivo per cui questo file esiste.
   interruttore nel codice che un tag porta con sé. Il segnalibro e il tag
   «Svista» restano accesi, e la loro copertura nell'informativa è nel §20 di
   `account-progetto.md`, per l'autore.
+- **18 ottobre 2026 — il banco accende le raccolte per parte (P-88).** Il terzo
+  punto del fermo di P-81 (§10.1 di `ridisegno-progetto.md`): il banco del
+  client decideva le raccolte dalla pagina, e la pagina vera del ridisegno non
+  poteva passare N-01:scelte prima del rilascio che le accende sul server vero.
+  Ora ogni gruppo comincia dal codice, e la parte che prova una raccolta la
+  accende, o la spegne davvero, sul server della sua corsia. R-ACC-55,
+  R-ACC-86 e il §9.13 lo dicono; nessun requisito nuovo.

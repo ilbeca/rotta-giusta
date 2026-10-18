@@ -174,7 +174,9 @@ export async function avviaChrome({ attesaMs = 15000, nomi = [] } = {}) {
       // `tipo` e' quello del protocollo — 'Document' per un caricamento di pagina,
       // 'Fetch' o 'XHR' per una richiesta dello script —: e' cosi' che il banco
       // dei tragitti conta i documenti chiesti dopo il primo ingresso (P-82).
-      if (m.method === 'Network.requestWillBeSent') richieste.push({ id: m.params.requestId, url: m.params.request.url, metodo: m.params.request.method, tipo: m.params.type || null });
+      // `corpo` e' quello mandato, quando il protocollo lo porta: e' cosi' che
+      // N-01:scelte vede le scelte mandate a un server che le ha spente (P-88).
+      if (m.method === 'Network.requestWillBeSent') richieste.push({ id: m.params.requestId, url: m.params.request.url, metodo: m.params.request.method, tipo: m.params.type || null, corpo: m.params.request.postData ?? null });
       // Come e' finita: un'assenza di rete si aspetta cosi', non con un tempo.
       if (m.method === 'Network.loadingFinished' || m.method === 'Network.loadingFailed') {
         for (const r of richieste) if (r.id === m.params.requestId) { r.finita = true; r.fallita = m.method === 'Network.loadingFailed'; }
