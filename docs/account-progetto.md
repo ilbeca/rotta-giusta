@@ -520,8 +520,15 @@ scelte. Il banco accende le raccolte per **parte**: la parte che prova una
 raccolta accesa la accende sul suo server, su qualunque pagina; il caso
 «spento» si prova con il server spento davvero. Lo fa P-88.
 
-**Una terza voce, i segnalibri — deciso dall'autore il 18 ottobre 2026**, dal
-resoconto di P-86 (§20). Il segnalibro (`_t:'b'`, P-71) non è una risposta né
+**I segnalibri restano accesi — deciso dall'autore il 18 ottobre 2026**,
+dal resoconto di P-86 (§20), dopo un primo «spegnili» dello stesso giorno:
+«ancora non abbiamo iscritti», e la strada più semplice. Nessuna pagina ha il
+gesto prima di P-81, quindi un segnalibro arriverebbe al server solo con una
+richiesta costruita a mano; lo scopo è lo stesso delle risposte, salvare lo
+studio, con la stessa base. Il prezzo, accettato: dalla v0.31.0 al rilascio di
+P-81 il server accoglie un dato che l'informativa non nomina. La riga
+dell'informativa arriva con P-81 (§11.2 del progetto del client). *Il testo
+della decisione di poche ore prima, sostituito:* Il segnalibro (`_t:'b'`, P-71) non è una risposta né
 un risultato, e l'informativa non dice niente che lo comprenda: è spento sul
 server come le altre — la riga `'b'` scartata con il suo motivo anche da un
 import, `'b'` fuori da `tipi_riga` — e si accende con il rilascio di P-81, che
@@ -529,7 +536,8 @@ porta nella pagina il gesto e nell'informativa la riga del §11.2 del progetto
 del client. **Il tag «Svista» (`S`) resta acceso**: è una classificazione
 dell'errore come N, L e C, che il server tiene dalla v0.29.0; la stessa riga
 dell'informativa nomina le classificazioni degli errori e i segnalibri. Lo fa
-P-88, con la correzione del banco; la v0.31.0 esce dopo P-88.
+P-88, con la correzione del banco; la v0.31.0 esce dopo P-88. *Fine del testo
+sostituito: P-88 fa solo il banco, e la v0.31.0 non lo aspetta.*
 
 ### 2.8 In esercizio — 1° ottobre 2026 (P-15)
 
@@ -2965,7 +2973,7 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
 | Le statistiche vedono le scelte di preparazione? | l'autore | Oggi la fonte `iscritti` porta `data_esame` e non `abilitazione` né `conseguimento` (§15.2, P-83): nessuna statistica le chiede, e una query che le contasse fuori da `statistiche.mjs` è rossa. Metterle è una riga, ma è un uso nuovo di un dato personale e tocca l'informativa, che oggi dice statistiche sulle risposte. *Proposta della regia: no finché non c'è una domanda che le richieda; quel giorno si decide con la riga dell'informativa accanto* |
 | L'export porta anche la data d'esame? | l'autore | Trovato da P-83: `GET /v1/esporta` porta `segPunti`, dal P-73 `esiti` e dal P-83 le due scelte, ma **non** `data_esame`, che sta nel profilo dalla v0.28.0 (§13). È fuori da D.3 e P-83 non l'ha cambiato. Il file è una portabilità (§13), e una data che non viaggia è una cosa in meno da ritrovare su un altro account; l'import non la caricherebbe comunque, come le scelte. *Proposta della regia: sì, nella prima sessione che tocca l'export, con un test come R-ACC-79* |
 | ~~Le raccolte nuove prima della loro decisione~~ | — | **deciso dall'autore il 17 ottobre 2026** (§2.7-bis): spente sul server finché non si decidono — esiti e previsioni con P-75, le scelte di preparazione con P-81 —, con le scritture impedite e non soltanto taciute; quello che c'è resta accessibile, esportabile e cancellabile. La v0.31.0 esce così. **Fatto da P-86 il 18 ottobre 2026**: l'interruttore in `server/raccolte.mjs`, `GET /v1/salute` che lo dice (§2.7-bis) |
-| ~~Il segnalibro (`_t: 'b'`) e il tag «Svista» (`S`), nuovi anche loro dopo la v0.30.0 (P-71), sono coperti da quello che l'informativa dice?~~ | — | **Deciso dall'autore il 18 ottobre 2026** (§2.7-bis): il segnalibro è una terza voce di `RACCOLTE`, spenta fino al rilascio di P-81; il tag «Svista» resta acceso; la riga dell'informativa di P-81 nomina le classificazioni degli errori e i segnalibri (§11.2 del progetto del client). Lo fa P-88. Il testo di prima: Letto il 18 ottobre 2026 (P-86): `site/privacy.html` nomina «le risposte ai quiz e agli esercizi legate all'account, i risultati delle attività e dei Segnali, la data d'esame». **Il tag «Svista»** è della stessa natura dei tag «Non lo sapevo», «Letto male» e «Calcolo» che il server tiene dalla v0.29.0 — una classificazione che chi studia mette su una sua risposta sbagliata —, e l'informativa non nomina nemmeno quelli: è coperto quanto loro, cioè dentro «le risposte» per chi le legge larghe, non per nome. **Il segnalibro** non è una risposta né un risultato: è un segno su un quesito, e l'informativa non dice niente che lo comprenda. Oggi nessuna pagina li scrive — la pagina di oggi ha i tag N/L/C e niente segnalibro —, ma il server li accoglie dalla v0.31.0, anche da un import, come la riga d'avvio prima di P-86. Non sono stati spenti: lo chiede il prompt di P-86. *Proposta: aggiungere all'informativa, con P-81 che li porta nella pagina, «i tag che metti sugli errori e i segnalibri sui quesiti», con la base del salvataggio (6.1.b); oppure spegnerli come le altre tre fino a quella riga, con una voce in più in `RACCOLTE`* |
+| ~~Il segnalibro (`_t: 'b'`) e il tag «Svista» (`S`), nuovi anche loro dopo la v0.30.0 (P-71), sono coperti da quello che l'informativa dice?~~ | — | **Deciso dall'autore il 18 ottobre 2026, e rivisto lo stesso giorno** (§2.7-bis): il segnalibro **resta acceso**, «perché non abbiamo iscritti» e per la strada più semplice; «Svista» acceso; la riga dell'informativa con P-81. Prima versione, sostituita: il segnalibro è una terza voce di `RACCOLTE`, spenta fino al rilascio di P-81; il tag «Svista» resta acceso; la riga dell'informativa di P-81 nomina le classificazioni degli errori e i segnalibri (§11.2 del progetto del client). Lo fa P-88. Il testo di prima: Letto il 18 ottobre 2026 (P-86): `site/privacy.html` nomina «le risposte ai quiz e agli esercizi legate all'account, i risultati delle attività e dei Segnali, la data d'esame». **Il tag «Svista»** è della stessa natura dei tag «Non lo sapevo», «Letto male» e «Calcolo» che il server tiene dalla v0.29.0 — una classificazione che chi studia mette su una sua risposta sbagliata —, e l'informativa non nomina nemmeno quelli: è coperto quanto loro, cioè dentro «le risposte» per chi le legge larghe, non per nome. **Il segnalibro** non è una risposta né un risultato: è un segno su un quesito, e l'informativa non dice niente che lo comprenda. Oggi nessuna pagina li scrive — la pagina di oggi ha i tag N/L/C e niente segnalibro —, ma il server li accoglie dalla v0.31.0, anche da un import, come la riga d'avvio prima di P-86. Non sono stati spenti: lo chiede il prompt di P-86. *Proposta: aggiungere all'informativa, con P-81 che li porta nella pagina, «i tag che metti sugli errori e i segnalibri sui quesiti», con la base del salvataggio (6.1.b); oppure spegnerli come le altre tre fino a quella riga, con una voce in più in `RACCOLTE`* |
 | ~~Macchina con SQLite, o container con PostgreSQL gestito~~ | — | **deciso** su delega: macchina, SQLite, Node senza dipendenze (§2.2) |
 | ~~Quale macchina~~ | — | **deciso dall'autore il 26 settembre 2026: STARDUST1-S a `pl-waw-2`**, 5,04 € al mese. Il prezzo che si accetta: i dati stanno a Varsavia (UE), e dopo un guasto la macchina potrebbe non essere ricreabile subito perché le scorte sono incerte. Le copie restano a `nl-ams` (§2.6). L'informativa dirà Polonia. **Si crea alla messa in esercizio, non prima** (dall'autore, il 26 settembre 2026): accesa da subito costerebbe 5,04 € al mese per settimane senza niente sopra, e andrebbe comunque tenuta aggiornata. Il prezzo che si accetta è di trovarla esaurita quel giorno; allora si sceglie fra la DEV1-S a `fr-par` e un'altra zona |
 | ~~Gli adempimenti rimasti del titolare: indirizzo postale, base giuridica del registro di sicurezza, inoltro verso Gmail, conservazione delle richieste, DPA di statichost.eu, due fattori~~ | — | **decisi fra il 1° e il 2 ottobre 2026** (§15.4): nessun indirizzo postale e nessuna PEC, legittimo interesse, `privacy@` su OVHcloud, due anni, DPA firmato e spedito, due fattori fatti; niente parere firmato. Resta la copia controfirmata del DPA (§15.4, punto 1); la firma DKIM è attiva dal 2 ottobre (punto 10) |
@@ -3177,3 +3185,7 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
   classificazioni e segnalibri (§2.7-bis, §20). E dal fermo di P-81 la regia ha
   corretto il banco del §2.7-bis: le raccolte si accendono per parte, non per
   pagina. Tutte e due con P-88.
+- **18 ottobre 2026 — i segnalibri restano accesi.** Rivista dall'autore la
+  decisione di poche ore prima: «ancora non abbiamo iscritti», e la strada più
+  semplice. Il segnalibro non è spento sul server; la riga dell'informativa
+  arriva con P-81 (§2.7-bis, §20). Il banco per parte resta, con P-88.

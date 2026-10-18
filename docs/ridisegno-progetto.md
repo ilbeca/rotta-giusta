@@ -1809,11 +1809,11 @@ sì dell'autore; il terzo è P-88.
    del contratto di P-86, non della pagina. P-88 lo chiude in
    `tests/client_account.mjs`: la parte che prova una raccolta accesa la
    accende sul suo server, su qualunque pagina, e il caso spento si prova con
-   il server spento davvero. Con P-88 entra anche la terza raccolta, i
-   **segnalibri**, spenti fino al rilascio di P-81 (`account-progetto.md`
-   §2.7-bis): N-01:gesti li accende come N-01:scelte le scelte, e il rilascio
-   di P-81 accende sul server vero scelte e segnalibri, con le due righe
-   dell'informativa del §11.2 del progetto del client.
+   il server spento davvero. Il rilascio di P-81 accende sul server vero le
+   scelte di preparazione, con le due righe dell'informativa del §11.2 del
+   progetto del client; i **segnalibri** restano accesi dalla v0.31.0 (deciso
+   dall'autore il 18 ottobre, `account-progetto.md` §2.7-bis), e la riga che li
+   nomina arriva con P-81.
 
 P-81 riparte con P-88 fuso, dalla copia, con lo stesso prompt aggiornato.
 

@@ -222,25 +222,26 @@ server con le scritture impedite, finché non si decidono, e un
 rilascio v0.31.0 così, prima di P-81 (account-progetto.md §2.7-bis).
 Il 18 ottobre P-86 (le raccolte spente, RACCOLTE in
 server/raccolte.mjs) e P-87 (due rossi falsi del banco) sono fusi e
-chiusi; l'autore ha deciso che anche il segnalibro è una raccolta
-spenta fino al rilascio di P-81. P-81 si è fermato una terza volta,
+chiusi; l'autore ha deciso di lasciare acceso il segnalibro («non
+abbiamo iscritti»), con la riga dell'informativa che arriva con P-81. P-81 si è fermato una terza volta,
 senza commit, su tre punti del contratto dei controlli, decisi lo
 stesso giorno (ridisegno-progetto.md §10.1, «I tre punti»): la suite si
 lancia dal suo worktree, classifica esce dalle protette, e il banco
 accende le raccolte per parte e non per pagina. Pronto: P-88 per
-Claude (segnalibri spenti e banco per parte); poi la v0.31.0; P-81 per
+Claude (il banco che accende per parte); la v0.31.0, che non lo
+aspetta; P-81 per
 ChatGPT, con P-88 fuso, dalla copia in /private/tmp/rg-p81, con il
 prompt aggiornato, e si fonde dopo la v0.31.0; P-62 con l'autore. Alla
 merge di P-81 la regia toglie il regime di oggi dai controlli, poi un
-rilascio che accende scelte di preparazione e segnalibri.
+rilascio che accende le scelte di preparazione.
 P-75 aspetta la base giuridica e accende esiti e previsioni; P-76
 aspetta l'ambito della conclusione (§4, «Dopo P-59», 10) e le fasi
 (punto 15), e il ridisegno parte senza, dichiarandolo.
 
 I prossimi passi, in quest'ordine:
-1. Il resoconto di P-88; poi il rilascio v0.31.0, con il sì
-   dell'autore per push e pubblicazione — «Build now» e rg-aggiorna,
-   e GET /v1/salute che dice le raccolte spente —; poi P-81 riparte.
+1. Il rilascio v0.31.0, con il sì dell'autore per push e
+   pubblicazione — «Build now» e rg-aggiorna, e GET /v1/salute che
+   dice le raccolte spente —; il resoconto di P-88; poi P-81 riparte.
    Il suo resoconto: la merge va
    guardata — tragitti a 375 e 1280 px in Chrome, i tre posti
    dell'invito, il regime letto da tests/regime_pagina.py —, poi un
@@ -308,8 +309,8 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 18 | **La prova con le persone**, sul sito vero, dopo il rilascio del ridisegno — i bot sui mock sono fatti (P-70, 14 ottobre) | l'autore, con Claude | — | il rilascio del ridisegno, e tre-cinque persone, dell'autore | P-70 resta la ricetta; prompt da riscrivere allora |
 | 19 | **Le ricerche**: il parere del professionista sulle donazioni (14 domande, I-11); se all'esame vero si torna indietro fra le domande; Lighthouse su telefono e Safari veri (I-08) | l'autore | — | — | §4, «Dopo P-59» |
 | 20-bis | **I contratti del motore, seconda parte**: Percorso con il «sei qui», costanza, obiettivo, «hai concluso quello che ti avevamo proposto» | Claude | `main` | l'ambito della decisione 22 e le fasi (§4, «Dopo P-59», 10 e 15); Q-COSTANZA è chiusa il 17 ottobre 2026, e P-68 è fatto | P-76, da scrivere |
-| 21 | **Il ridisegno**: il progetto (P-79), i raccordi e la specifica (P-80), i due campi del profilo (P-83), il banco dei tragitti in Chrome (P-82), la copia intera sotto i controlli (P-84) e la barra a link nei banchi (P-85) sono fatti; la realizzazione (P-81) si è fermata una terza volta il 18 ottobre su tre punti del contratto dei controlli, decisi lo stesso giorno (§10.1 del progetto): riparte con P-88 fuso, dalla sua copia; la sua merge viene dopo la v0.31.0, poi la regia toglie il regime di oggi e si fa un rilascio che accende scelte di preparazione e segnalibri | Claude; ChatGPT; poi Claude | `main`; `ui/main` | P-88 niente; P-81 P-88 fuso | P-88; P-81 |
-| 28 | **Le raccolte nuove spente sul server** — previsioni, esiti e scelte di preparazione fatte da P-86, i segnalibri con P-88 —, poi **il rilascio v0.31.0**, prima di P-81 (`account-progetto.md` §2.7-bis, deciso dall'autore il 17 e il 18 ottobre) | Claude; poi la regia | `main` | il rilascio: P-88 fuso, e il sì dell'autore per push e pubblicazione | P-88 |
+| 21 | **Il ridisegno**: il progetto (P-79), i raccordi e la specifica (P-80), i due campi del profilo (P-83), il banco dei tragitti in Chrome (P-82), la copia intera sotto i controlli (P-84) e la barra a link nei banchi (P-85) sono fatti; la realizzazione (P-81) si è fermata una terza volta il 18 ottobre su tre punti del contratto dei controlli, decisi lo stesso giorno (§10.1 del progetto): riparte con P-88 fuso, dalla sua copia; la sua merge viene dopo la v0.31.0, poi la regia toglie il regime di oggi e si fa un rilascio che accende le scelte di preparazione | Claude; ChatGPT; poi Claude | `main`; `ui/main` | P-88 niente; P-81 P-88 fuso | P-88; P-81 |
+| 28 | **Il rilascio v0.31.0**, prima di P-81: le raccolte nuove spente da P-86 — previsioni, esiti, scelte di preparazione —, i segnalibri accesi (`account-progetto.md` §2.7-bis, deciso dall'autore il 17 e il 18 ottobre) | la regia | `main` | soltanto il sì dell'autore per push e pubblicazione | — |
 | 22 | **Spiegazioni**: il primo lotto di 50, «Segnala un problema», la misura dell'effetto | Claude con l'autore, poi ChatGPT | `main`, `ui/main` | l'indirizzo e la licenza (§4, «Dopo P-59», 2 e 6) | da scrivere |
 | 24 | **La misura propria**: conteggi aggregati di eventi sul server del sito, senza cookie né terzi, a cominciare dal contatore degli ingressi; le registrazioni fra le metriche; MISURA → BRAINSTORM come quinto passo del ciclo (I-19, decisioni 1–3 e 5 del 17 ottobre in `docs/idee-dopo-gli-account.md`) | Claude con l'autore, poi Claude | `main` | un ADR che riscrive «nessun analytics» (specifica §2.1) e R-ACC-09, e la riga nell'informativa; dopo il rilascio del ridisegno | da scrivere |
 | 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | niente dal motore: `PREVISIONI` c'è (P-72), e un modello entra come metodo accanto alla regola semplice; Q-STIMA solo per quando si mostra | da scrivere |
@@ -331,7 +332,7 @@ d'esame, arriva con il prossimo rilascio; P-82, il banco dei tragitti in
 Chrome, è chiuso il 17 ottobre. P-75 aspetta la base giuridica, P-76 aspetta
 l'ambito della decisione 22 e le fasi; alla merge di P-81 la regia toglie il
 regime di oggi dai controlli. P-62 con l'autore quando vuole.
-P-84, `RG_SITO`, è chiuso il 17 ottobre. P-85, la barra a link nei banchi, è chiuso lo stesso giorno. P-86, le raccolte spente sul server, e P-87, due rossi falsi del banco, sono chiusi il 18 ottobre. **Per Claude** è pronto P-88: i segnalibri come terza raccolta spenta, e il banco che accende le raccolte per parte e non per pagina; dopo P-88 la regia rilascia la v0.31.0, con il sì dell'autore. **Per ChatGPT:** P-81, fermo una terza volta il 18, riparte con P-88 fuso, con il prompt aggiornato, dalla copia in `/private/tmp/rg-p81`, e si fonde dopo la v0.31.0. La misura propria (riga 24) aspetta il suo ADR, dopo il rilascio. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
+P-84, `RG_SITO`, è chiuso il 17 ottobre. P-85, la barra a link nei banchi, è chiuso lo stesso giorno. P-86, le raccolte spente sul server, e P-87, due rossi falsi del banco, sono chiusi il 18 ottobre. **Per Claude** è pronto P-88: il banco che accende le raccolte per parte e non per pagina. La v0.31.0 non lo aspetta: la regia la rilascia con il sì dell'autore. **Per ChatGPT:** P-81, fermo una terza volta il 18, riparte con P-88 fuso, con il prompt aggiornato, dalla copia in `/private/tmp/rg-p81`, e si fonde dopo la v0.31.0. La misura propria (riga 24) aspetta il suo ADR, dopo il rilascio. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
 che cambiano una promessa (un ADR, la filosofia, la specifica), poi i mock e la
 prova con le persone, poi il codice; «com'è andata» parte presto perché i suoi
 dati arrivano mesi dopo. **Il §5, il §6 e i controlli R-NAV della specifica non
@@ -746,12 +747,11 @@ consuma, non si riprogetta.
   **da dove vengono le persone vere e ogni quanto** resta da decidere
   (decisione 8), e la classe (I-20) è sospesa finché l'autore non la propone
   alle scuole. Il file delle idee è uno solo, quello.
-  **Dal resoconto di P-86, deciso dall'autore il 18 ottobre 2026:** il
-  segnalibro (`_t:'b'`) è una terza raccolta, spenta sul server fino al
-  rilascio di P-81; il tag «Svista» resta acceso; la riga dell'informativa di
+  **Dal resoconto di P-86, deciso dall'autore il 18 ottobre 2026, e rivisto lo
+  stesso giorno:** il segnalibro (`_t:'b'`) resta acceso — «ancora non abbiamo
+  iscritti», la strada più semplice —; il tag «Svista» resta acceso; la riga dell'informativa di
   P-81 nomina le classificazioni degli errori e i segnalibri
-  (`account-progetto.md` §2.7-bis e §20, §11.2 del progetto del client). Lo fa
-  P-88.
+  (`account-progetto.md` §2.7-bis e §20, §11.2 del progetto del client).
   **Da P-79, senza una decisione nuova:** A-2 è il punto 12 (Progressi senza
   account spiega, non invita); A-3 è il punto 2 (l'indirizzo delle
   segnalazioni, con un segnaposto visibile fino ad allora); A-4 è P-76, i
@@ -6171,7 +6171,7 @@ byte per byte, e ha ripulito il worktree. Lo stato della copia è in
 idempotenti, e i file HTML sono lo stato**. Riparte con P-88 fuso, con questo
 prompt, aggiornato il 18 ottobre sui tre punti: la suite si lancia dal suo
 worktree, `classifica` esce dalle protette, la privacy prende anche la frase
-sui segnalibri. Prima era: **pronto per la terza volta, dal 17 ottobre 2026:
+sui segnalibri, che arriva con lui. Prima era: **pronto per la terza volta, dal 17 ottobre 2026:
 P-85 è fuso (`bb846ad`).** Riparte dalla copia in `/private/tmp/rg-p81/sito`, con lo
 stesso prompt; la barra a link è verde, e i 119 rossi che la copia aveva il 17
 ottobre sono il suo lavoro, elencati per gruppo nella voce P-85 del CHANGELOG.
@@ -6651,72 +6651,58 @@ la regia:** il commit con il trailer, tre file, la coda non toccata, e le
 suite con P-86 (sopra).
 
 
-### P-88 — Claude: i segnalibri spenti sul server, e il banco che accende per parte
+### P-88 — Claude: il banco che accende le raccolte per parte, non per pagina
 
-**Stato:** pronto, dal 18 ottobre 2026. **Dove:** Claude Code,
-`~/Software/rotta-giusta`, ramo **`main`**, a mano: tocca `server/`, `tests/`,
-`docs/account-progetto.md` (§2.7-bis, §17), la specifica (§3.2, §9.9, §9.12) e
-il §10.1 di `docs/ridisegno-progetto.md` per dire che il punto 3 è fatto. La
-macchina non si tocca. **Nasce da:** la decisione dell'autore del 18 ottobre
-sui segnalibri (`account-progetto.md` §2.7-bis e §20) e il terzo fermo di P-81
-(§10.1 del progetto, «I tre punti, decisi il 18 ottobre 2026», punto 3).
-**Sblocca:** il rilascio v0.31.0 e la ripresa di P-81.
+**Stato:** pronto, dal 18 ottobre 2026. Ridotto lo stesso giorno: la prima
+versione spegneva anche i segnalibri, e l'autore ha deciso di lasciarli accesi
+(`account-progetto.md` §2.7-bis). **Dove:** Claude Code,
+`~/Software/rotta-giusta`, ramo **`main`**, a mano: tocca `tests/`, la
+specifica dove serve e il §10.1 di `docs/ridisegno-progetto.md` per dire che il
+punto 3 è fatto. **Nasce da:** il terzo fermo di P-81 (§10.1 del progetto, «I
+tre punti, decisi il 18 ottobre 2026», punto 3). **Sblocca:** la ripresa di
+P-81. La v0.31.0 non lo aspetta.
 
 ```
 Questo prompt è per Claude Code, nella cartella principale
 ~/Software/rotta-giusta, sul ramo main. Se sei un altro agente o sei in
 un'altra cartella, fermati e dillo, senza scrivere niente.
 
-Sessione P-88: due cose piccole sullo stesso interruttore di P-86. La
-prima: il segnalibro diventa la terza raccolta, spenta fino al rilascio
-di P-81. La seconda: il banco del client accende le raccolte per la
-parte che le prova, non per la pagina, perché la pagina del ridisegno è
-la pagina vera e deve passare N-01 prima che il rilascio di P-81 accenda
-scelte e segnalibri. Non toccare site/, docs/prossime-sessioni.md, né la
-copia di P-81 in /private/tmp/rg-p81, che è di ChatGPT: leggila soltanto.
+Sessione P-88: il banco del client accende le raccolte per la parte che
+le prova, non per la pagina. Oggi corsia().esegui() in
+tests/client_account.mjs dà alla pagina chiamata «app» il server com'è
+nel codice — con le raccolte spente da P-86 — e le accende soltanto per
+le pagine di riferimento. Ma la pagina del ridisegno è la pagina vera, e
+deve passare N-01:scelte prima che il rilascio di P-81 accenda le scelte
+sul server vero: oggi non può. Solo tests/, e la specifica se un
+requisito lo nomina; non toccare site/, server/,
+docs/prossime-sessioni.md, né la copia di P-81 in /private/tmp/rg-p81,
+che è di ChatGPT: leggila soltanto.
 
-Leggi AGENTS.md; in docs/account-progetto.md il §2.7-bis per intero —
-con la terza voce e la correzione del banco, decise il 18 ottobre — e il
-§20; l'esito di P-86 in docs/prossime-sessioni.md; server/raccolte.mjs e
-i suoi chiamanti; in docs/ridisegno-progetto.md, in fondo al §10.1, la
-nota del fermo di P-81 del 18 ottobre e «I tre punti»; in
-tests/client_account.mjs corsia().esegui() e le parti di N-01 (scelte,
-registrazione, gesti), E-01, P-01 e C-10:avvio; nella specifica R-ACC-55,
-R-ACC-82…86, §9.12 (R-SEGNO-01…03, R-TAG-02).
+Leggi AGENTS.md; in docs/account-progetto.md il §2.7-bis; l'esito di
+P-86 in docs/prossime-sessioni.md; server/raccolte.mjs; in fondo al
+§10.1 di docs/ridisegno-progetto.md la nota del fermo di P-81 del 18
+ottobre e «I tre punti»; in tests/client_account.mjs corsia().esegui()
+e le parti di N-01 (scelte, registrazione), E-01, P-01 e C-10:avvio;
+nella specifica R-ACC-55 e R-ACC-82…86.
 
-1. La terza voce, `segnalibri`, in RACCOLTE, spenta: una riga 'b' in
-   POST /v1/righe — quindi anche da un import — è scartata con un motivo
-   che si legge, e le altre righe entrano; 'b' fuori da tipi_riga, così
-   permessoGesto() non offre il gesto; GET /v1/salute la dice. Come per
-   la riga d'avvio: una riga 'b' già sul server, rimandata, è «già
-   presente», e quello che c'è resta nell'export, nella ricezione e in
-   leggi.mjs, e l'azzeramento e la cancellazione lo tolgono. Il tag «Svista»
-   resta acceso: non lo tocchi. Si accende con il rilascio di P-81, con la
-   riga dell'informativa del §11.2 del progetto del client.
-2. Il banco accende per parte: la parte che prova una raccolta accesa —
-   N-01:scelte e l'onboarding di N-01:registrazione per le scelte,
-   N-01:gesti per i segnalibri, E-01 e P-01 per esiti e previsioni dove
-   girano per intero — la accende sul suo server, su qualunque pagina; il
-   caso spento si prova con il server spento davvero, non con un GET
-   /v1/io a cui si tolgono campi. Il resto della pagina vera gira con il
-   server com'è nel codice. Elenca nel resoconto, parte per parte, che
-   cosa accendi e perché. La pagina vera di oggi resta verde, e E-01 e
-   P-01 restano «spento» su di lei.
-3. Prove: prima il rosso — con il codice di oggi N-01:scelte sulla pagina
-   di riferimento del client trattata come pagina vera è rosso per il
-   server, e un import con una riga 'b' entra —; poi verde. Ogni test
-   provato al contrario, e il banco contro sé stesso: tolta l'accensione
-   per parte, la rottura che lo dimostra è rossa. Poi N-01 sulla copia di
-   P-81 con RG_SITO, letta e non toccata: di' quali rossi di N-01:scelte,
-   registrazione e gesti spariscono e quali restano, che sono di P-81.
+1. La parte che prova una raccolta accesa — N-01:scelte e l'onboarding
+   di N-01:registrazione per le scelte di preparazione, E-01 e P-01 per
+   esiti e previsioni dove girano per intero — la accende sul suo
+   server, su qualunque pagina; il caso spento si prova con il server
+   spento davvero, non con un GET /v1/io a cui si tolgono campi. Il resto
+   della pagina vera gira con il server com'è nel codice. Elenca nel
+   resoconto, parte per parte, che cosa accendi e perché. La pagina vera
+   di oggi resta verde, e E-01 e P-01 restano «spento» su di lei.
+2. Prima il rosso: con il codice di oggi, N-01:scelte sulla pagina di
+   riferimento del client trattata come pagina vera è rosso per il
+   server; poi verde. Il banco contro sé stesso: tolta l'accensione per
+   parte, la rottura che lo dimostra è rossa. Poi N-01 sulla copia di
+   P-81 con RG_SITO, letta e non toccata: di' quali rossi di N-01:scelte
+   e registrazione spariscono e quali restano, che sono di P-81.
 
-Specifica: i requisiti nuovi nel §9.9 con il loro controllo, e il §3.2 e
-il §9.12 che dicono il segnalibro spento sul server fino al rilascio di
-P-81. Le cinque suite verdi, il server anche con la LTS 24 dal pacchetto
-verificato, node server/ripristina.mjs --prova, l'interfaccia con la 8620
-guardata libera per 90 s prima. Un commit, con la voce in fondo a
-[Unreleased]; niente push, niente numero di versione. Chiudi con il
-resoconto di docs/prossime-sessioni.md.
+Le cinque suite verdi, l'interfaccia con la 8620 guardata libera per 90
+s prima. Un commit, con la voce in fondo a [Unreleased]; niente push.
+Chiudi con il resoconto di docs/prossime-sessioni.md.
 ```
 
 **Esito:** —
@@ -6742,7 +6728,7 @@ il resoconto del precedente, e la regia scrive il suo prompt allora.
   il 17, e P-81 riparte dalla copia in `/private/tmp/rg-p81`. Si fonde dopo la
   v0.31.0 (P-86), e il suo rilascio accende le scelte di preparazione sul
   server. Fermato una terza volta il 18 sul contratto dei controlli; riparte
-  con P-88 fuso. Il suo rilascio accende scelte di preparazione e segnalibri.
+  con P-88 fuso. Il suo rilascio accende le scelte di preparazione.
   Alla sua merge la regia
   scrive un prompt per Claude che toglie il regime di oggi dai controlli, come
   P-12, P-37, P-47 e P-50 — e che mette una guardia alla lettura di C-22 che
@@ -7624,3 +7610,11 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   fino al rilascio di P-81, «Svista» acceso, e la riga dell'informativa che li
   nomina. Il prompt di P-81 è aggiornato sui tre punti e sulla privacy; P-88 è
   scritto, e la v0.31.0 lo aspetta.
+- **18 ottobre 2026 — i segnalibri restano accesi; P-88 ridotto al banco.**
+  L'autore, sulla spiegazione della regia: «ancora non abbiamo iscritti», la
+  strada più semplice, e un buco di tempo limitato va bene. Il segnalibro resta
+  acceso sul server dalla v0.31.0, la riga dell'informativa arriva con P-81
+  (`account-progetto.md` §2.7-bis, §20). P-88 fa soltanto il banco per parte; la
+  v0.31.0 non lo aspetta più e aspetta solo il sì dell'autore per push e
+  pubblicazione. Da qui, su richiesta dell'autore, ogni domanda della regia
+  dice prima in parole semplici che cos'è e che cosa cambia per chi studia.
