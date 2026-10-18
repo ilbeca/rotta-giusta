@@ -1451,6 +1451,56 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   e il secondo giro intero è verde. Guardiano verde. `site/`,
   `docs/prossime-sessioni.md` e la macchina non sono stati toccati.
 
+### Test — P-87: due rossi falsi del banco del client, e un banco che si appendeva
+
+- **base-993 in `P-01:visto`.** Il banco toglie dal testo del runner la domanda
+  e le risposte, e confronta la simulazione con e senza riga d'avvio. Le
+  toglieva nell'ordine del DOM: in base-993 «in basso.» sta dentro «in alto e
+  in basso.», e tolta per prima lasciava «in alto e», quindi i due testi
+  differivano e la verifica era rossa senza che la pagina avesse niente.
+  Ora le toglie dalla più lunga alla più corta (`TESTI_SIM.runner`). **Nella
+  banca**, misurato su `quiz.json`: **20 quesiti su 1.722** hanno una risposta
+  contenuta in un'altra dello stesso quesito, e **9** con la corta prima della
+  lunga, cioè rotti dall'ordine di prima — base-484, 631, 917, 993, 1119, 1344,
+  1380, 1397, 1468, tutti base. Nessuna risposta è contenuta nella sua
+  domanda. Con il primo quesito di una simulazione pescato a caso, il rosso
+  usciva circa una volta su ottanta per ogni pagina che esegue
+  `P-01:visto`.
+  **Prima il rosso:** una variante nuova della pagina di riferimento del
+  client, accanto a quelle di P-38 e P-53, apre con base-993 la sola
+  simulazione col server che dichiara la riga d'avvio — il confronto è fra due
+  simulazioni, e il difetto esce quando base-993 capita in una delle due. Con
+  il codice di prima rossa 2 volte su 2 («Consegna la prova in alto e»), dopo
+  verde 3 volte su 3 con le sue 6 verifiche; resta fra le varianti.
+
+- **C-22, «il sw.js che ricarica le pagine aperte».** La rottura ricarica la
+  scheda della 0.29.0 mentre il banco la legge in `finche()`, e quella lettura
+  non aveva la guardia che ha la lettura dopo: l'eccezione «Inspected target
+  navigated or closed» usciva dal gruppo al posto del rosso. Ora una lettura
+  che cade è una ricarica, e si dice come tale nella verifica «e non ricarica
+  le pagine aperte». **I conti**, sulla sola rottura, un giro alla volta con un
+  tetto di 120 s: **prima**, su 20 giri, 16 rossi per il suo motivo, 3 per
+  l'eccezione e **1 appeso** (e un altro appeso nel tentativo di misura prima
+  di questo); **con la sola guardia**, su 40, 38 per il suo motivo — 6 passati
+  dal ramo nuovo —, nessuno per l'eccezione, e **2 appesi**; **con la
+  correzione qui sotto**, su 40, **40 per il suo motivo** — 8 dal ramo nuovo —
+  e nessuno appeso. Il `sw.js` vero, 10 giri: verde ogni volta.
+
+- **Trovato misurando: il banco si appendeva**, ed è peggio di un rosso,
+  perché la suite aspetta il tetto di 1.800 s e poi è rossa per tutto. Con una
+  traccia temporanea nel gruppo: quando il giro si ferma con la scheda a metà
+  di una navigazione, la chiusura del contesto aspetta i 30 s di scadenza di un
+  comando, e poi `server.close()` del sito servito dal banco non torna più,
+  perché aspetta una connessione che la scheda chiusa ha lasciato aperta.
+  `servi()` chiude ora anche le connessioni (`closeAllConnections()`). Il
+  costo dei 30 s resta, e lo si dice: è una scadenza, non un'attesa infinita.
+
+  Suite: motore 215/219 con i quattro skip previsti; server 89/89, non
+  toccato; dati 230; specifica 1.032; interfaccia **3.012** (erano 3.010: la
+  variante nuova, che si applica e resta verde), due giri verdi in 4 min 18 s
+  ciascuno, ognuno con la 8620 guardata libera per 90 s prima. Guardiano verde. `site/`, `server/` e
+  `docs/prossime-sessioni.md` non sono stati toccati.
+
 ## [0.30.0] — 2026-10-03
 
 **Il sito più semplice: niente offline.** Rotta Giusta si apre con la rete,

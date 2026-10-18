@@ -1941,11 +1941,23 @@ async function c22passaggio(b, ctx, v, g) {
     ctx.radice(null);
     const t2 = await c.apri(ctx.sito + ingresso(ctx));
     await t2.attendi(PRONTO, CARICO);
-    let visto = null;
-    const via = await finche(async () => vuoto(visto = await t1.valuta(SW_E_CACHE)), CARICO);
+    let visto = null, caduta = null;
+    // Una pagina che si ricarica mentre il banco la legge fa cadere la lettura
+    // («Inspected target navigated or closed»): e' una ricarica, e si dice come
+    // tale, con la guardia della lettura che segue (P-87). Senza, una rottura che
+    // ricarica le pagine aperte era rossa a volte per il suo motivo e a volte
+    // per l'eccezione, secondo quando la ricarica cadeva.
+    const via = await finche(async () => {
+      try { return vuoto(visto = await t1.valuta(SW_E_CACHE)); } catch (e) { caduta = e.message; return true; }
+    }, CARICO);
+    if (caduta) {
+      v.push({ gruppo: g, nome: 'e non ricarica le pagine aperte: senza account una ricarica perde le risposte', ok: false,
+        extra: `la scheda aperta con la 0.29.0 si e' ricaricata mentre il banco la leggeva: ${caduta}` });
+      return;
+    }
     v.push({ gruppo: g, nome: 'il sw.js nuovo cancella le cache del sito e si disinstalla', ok: via, extra: `dopo ${CARICO / 1000} s: ${visto}` });
     if (!via) return;
-    // Una pagina che si ricarica sotto il banco fa fallire la lettura: anche quello e' una ricarica.
+    // Anche qui una lettura che cade e' una ricarica.
     const resta = await maiPer(async () => {
       try { return (await t1.valuta('window.__primaDelPassaggio === 1 ? location.pathname : null')) !== '/app'; } catch { return true; }
     });
@@ -4618,8 +4630,14 @@ const normale = (t) => String(t || '').replace(/\d+/g, '#').replace(/\b(minut|se
 const TESTI_SIM = {
   // Nel ridisegno la preparazione e' una superficie sua, comune (§5.2).
   prep: js(`const v = [...document.querySelectorAll('[data-preparazione], #v-quiz')].find(V); return v ? v.innerText : null;`),
+  // Domanda e risposte si tolgono dalla piu' lunga alla piu' corta (P-87): in
+  // base-993 «in basso.» sta dentro «in alto e in basso.», e tolta per prima
+  // lasciava «in alto e», un rosso che non diceva niente della pagina. Nella
+  // banca le risposte contenute in un'altra dello stesso quesito sono 20 quesiti.
   runner: js(`const r = document.querySelector('#quizrun'); if (!V(r)) return null; let t = r.innerText;
-    for (const e of [document.querySelector('#r-text'), ...document.querySelectorAll('#r-ans .ans')]) if (e && e.innerText) t = t.split(e.innerText).join('');
+    const pezzi = [document.querySelector('#r-text'), ...document.querySelectorAll('#r-ans .ans')]
+      .filter((e) => e && e.innerText).map((e) => e.innerText).sort((a, b) => b.length - a.length);
+    for (const p of pezzi) t = t.split(p).join('');
     return t;`),
   riepilogo: js(`const f = document.querySelector('#r-fine'); return V(f) ? f.innerText : null;`),
 };
@@ -5914,7 +5932,11 @@ const usaApi = (gr) => CON_API.has(gr) || CON_API.has(gr.split(':')[0]);
 async function servi(corrente) {
   const s = sito(corrente);
   await new Promise((ok) => s.listen(0, '127.0.0.1', ok));
-  return { s, origine: `http://localhost:${s.address().port}`, chiudi: () => new Promise((ok) => s.close(ok)) };
+  // close() aspetta che ogni connessione finisca, e una scheda chiusa mentre
+  // navigava ne lascia una aperta: misurato il 18 ottobre 2026 (P-87), la
+  // rottura di C-22 che ricarica le pagine aperte appendeva il banco due giri
+  // su venti, qui. Alla fine di una prova le connessioni si chiudono e basta.
+  return { s, origine: `http://localhost:${s.address().port}`, chiudi: () => new Promise((ok) => { s.close(ok); s.closeAllConnections(); }) };
 }
 
 /**

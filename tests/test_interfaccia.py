@@ -2220,6 +2220,19 @@ VARIANTI_CLIENT = [
     ('i primi quesiti hanno un gemello con l\'esatta diversa', ['F-01'],
      [('E.estrai(S.banca, {}, E.isoLocale().slice(0, 10), 10, Date.now() % 997)',
        "S.banca.filter((q) => ['base-181', 'base-182', 'base-564', 'base-565'].includes(q.id)).concat(S.banca.slice(0, 6))")]),
+    # P-01:visto (P-87): il banco toglie dal testo del runner la domanda e le
+    # risposte, e confronta la simulazione con e senza riga d'avvio. In base-993
+    # «in basso.» sta dentro «in alto e in basso.», e toglierla per prima lasciava
+    # «in alto e»: un rosso che non diceva niente della pagina. Nella banca le
+    # risposte contenute in un'altra dello stesso quesito sono 20 quesiti, 9 con
+    # la corta prima della lunga. Il confronto e' fra due simulazioni, quindi
+    # base-993 apre solo quella con il server che dichiara la riga d'avvio, come
+    # quando esce per caso in una delle due.
+    ('la simulazione con la riga d\'avvio si apre con base-993', ['P-01:visto'],
+     [("const lista = E.estrai(kind === 'vela' ? S.vela : S.banca, {}, oggi(), kind === 'vela' ? 5 : 20, Date.now() % 991);",
+       "const lista = kind === 'base' && S.io && Array.isArray(S.io.tipi_riga) && S.io.tipi_riga.includes('a')\n"
+       "    ? S.banca.filter((q) => q.id === 'base-993').concat(E.estrai(S.banca.filter((q) => q.id !== 'base-993'), {}, oggi(), 19, Date.now() % 991))\n"
+       "    : E.estrai(kind === 'vela' ? S.vela : S.banca, {}, oggi(), kind === 'vela' ? 5 : 20, Date.now() % 991);")]),
 ]
 
 _BANCO_CLIENT = None
