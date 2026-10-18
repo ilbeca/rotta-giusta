@@ -184,8 +184,9 @@ per ChatGPT, si è fermata tre volte su buchi del contratto dei
 controlli, l'ultima il 18 ottobre, e i tre punti sono decisi nel §10.1
 («I tre punti, decisi il 18 ottobre 2026»): la suite si lancia dal suo
 worktree, classifica esce dalle protette, il banco accende le raccolte
-per parte — questo è P-88, per Claude, pronto. La copia di P-81 è in
-/private/tmp/rg-p81, con fermo-18.md. Le decisioni dell'autore del
+per parte — fatto da P-88 il 18 ottobre. P-81 è pronto per la quarta
+volta, dalla copia in /private/tmp/rg-p81, con fermo-18.md; restano 50
+rossi di N-01, tutti suoi (§10.1). Le decisioni dell'autore del
 17 e 18 ottobre: Q-COSTANZA chiusa (specifica §10), il criterio della
 soglia degli allarmi (account-progetto.md §15.4), le raccolte spente e
 i segnalibri accesi (§2.7-bis). P-62 con l'autore. P-75 aspetta la
@@ -196,8 +197,7 @@ parole semplici: che cos'è, perché adesso, che cosa cambia per chi
 studia.
 
 I prossimi passi, in quest'ordine:
-1. Il resoconto di P-88; poi P-81 riparte. Il suo resoconto: la
-   merge va
+1. Il resoconto di P-81. La merge va
    guardata — tragitti a 375 e 1280 px in Chrome, i tre posti
    dell'invito, il regime letto da tests/regime_pagina.py —, poi un
    prompt per Claude che toglie il regime di oggi dai controlli, come
@@ -265,7 +265,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 18 | **La prova con le persone**, sul sito vero, dopo il rilascio del ridisegno — i bot sui mock sono fatti (P-70, 14 ottobre) | l'autore, con Claude | — | il rilascio del ridisegno, e tre-cinque persone, dell'autore | P-70 resta la ricetta; prompt da riscrivere allora |
 | 19 | **Le ricerche**: il parere del professionista sulle donazioni (14 domande, I-11); se all'esame vero si torna indietro fra le domande; Lighthouse su telefono e Safari veri (I-08) | l'autore | — | — | §4, «Dopo P-59» |
 | 20-bis | **I contratti del motore, seconda parte**: Percorso con il «sei qui», costanza, obiettivo, «hai concluso quello che ti avevamo proposto» | Claude | `main` | l'ambito della decisione 22 e le fasi (§4, «Dopo P-59», 10 e 15); Q-COSTANZA è chiusa il 17 ottobre 2026, e P-68 è fatto | P-76, da scrivere |
-| 21 | **Il ridisegno**: il progetto (P-79), i raccordi e la specifica (P-80), i due campi del profilo (P-83), il banco dei tragitti in Chrome (P-82), la copia intera sotto i controlli (P-84) e la barra a link nei banchi (P-85) sono fatti; la realizzazione (P-81) si è fermata una terza volta il 18 ottobre su tre punti del contratto dei controlli, decisi lo stesso giorno (§10.1 del progetto): riparte con P-88 fuso, dalla sua copia; la sua merge viene dopo la v0.31.0, poi la regia toglie il regime di oggi e si fa un rilascio che accende le scelte di preparazione | Claude; ChatGPT; poi Claude | `main`; `ui/main` | P-88 niente; P-81 P-88 fuso | P-88; P-81 |
+| 21 | **Il ridisegno**: il progetto (P-79), i raccordi e la specifica (P-80), i due campi del profilo (P-83), il banco dei tragitti in Chrome (P-82), la copia intera sotto i controlli (P-84) e la barra a link nei banchi (P-85) sono fatti; la realizzazione (P-81) si è fermata una terza volta il 18 ottobre su tre punti del contratto dei controlli, decisi lo stesso giorno e chiusi da P-88 (§10.1 del progetto): riparte dalla sua copia; la sua merge viene dopo la v0.31.0, poi la regia toglie il regime di oggi e si fa un rilascio che accende le scelte di preparazione | ChatGPT; poi Claude | `ui/main`; `main` | niente | P-81 |
 | 22 | **Spiegazioni**: il primo lotto di 50, «Segnala un problema», la misura dell'effetto | Claude con l'autore, poi ChatGPT | `main`, `ui/main` | l'indirizzo e la licenza (§4, «Dopo P-59», 2 e 6) | da scrivere |
 | 24 | **La misura propria**: conteggi aggregati di eventi sul server del sito, senza cookie né terzi, a cominciare dal contatore degli ingressi; le registrazioni fra le metriche; MISURA → BRAINSTORM come quinto passo del ciclo (I-19, decisioni 1–3 e 5 del 17 ottobre in `docs/idee-dopo-gli-account.md`) | Claude con l'autore, poi Claude | `main` | un ADR che riscrive «nessun analytics» (specifica §2.1) e R-ACC-09, e la riga nell'informativa; dopo il rilascio del ridisegno | da scrivere |
 | 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | niente dal motore: `PREVISIONI` c'è (P-72), e un modello entra come metodo accanto alla regola semplice; Q-STIMA solo per quando si mostra | da scrivere |
@@ -287,7 +287,7 @@ d'esame, arriva con il prossimo rilascio; P-82, il banco dei tragitti in
 Chrome, è chiuso il 17 ottobre. P-75 aspetta la base giuridica, P-76 aspetta
 l'ambito della decisione 22 e le fasi; alla merge di P-81 la regia toglie il
 regime di oggi dai controlli. P-62 con l'autore quando vuole.
-P-84, `RG_SITO`, è chiuso il 17 ottobre. P-85, la barra a link nei banchi, è chiuso lo stesso giorno. P-86, le raccolte spente sul server, e P-87, due rossi falsi del banco, sono chiusi il 18 ottobre. **Per Claude** è pronto P-88: il banco che accende le raccolte per parte e non per pagina. La v0.31.0 è in linea dal 18 ottobre. **Per ChatGPT:** P-81, fermo una terza volta il 18, riparte con P-88 fuso, con il prompt aggiornato, dalla copia in `/private/tmp/rg-p81`, e si fonde dopo la v0.31.0. La misura propria (riga 24) aspetta il suo ADR, dopo il rilascio. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
+P-84, `RG_SITO`, è chiuso il 17 ottobre. P-85, la barra a link nei banchi, è chiuso lo stesso giorno. P-86, le raccolte spente sul server, e P-87, due rossi falsi del banco, sono chiusi il 18 ottobre. P-88, il banco che accende le raccolte per parte, è chiuso il 18 ottobre, e la v0.31.0 è in linea dallo stesso giorno. **Per Claude** oggi non c'è un prompt pronto. **Per ChatGPT:** P-81 riparte per la quarta volta, con il prompt aggiornato, dalla copia in `/private/tmp/rg-p81`. La misura propria (riga 24) aspetta il suo ADR, dopo il rilascio. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
 che cambiano una promessa (un ADR, la filosofia, la specifica), poi i mock e la
 prova con le persone, poi il codice; «com'è andata» parte presto perché i suoi
 dati arrivano mesi dopo. **Il §5, il §6 e i controlli R-NAV della specifica non
@@ -6115,7 +6115,12 @@ letto il commit, i file nel territorio del motore e le cinque suite.
 
 ### P-81 — ChatGPT: la realizzazione del ridisegno
 
-**Stato:** **fermo una terza volta, dal 18 ottobre 2026: aspetta P-88.**
+**Stato:** **pronto per la quarta volta, dal 18 ottobre 2026: P-88 è fuso
+(`d6fec52`).** Riparte dalla copia in `/private/tmp/rg-p81/sito`, con il prompt
+aggiornato il 18 ottobre e `fermo-18.md`: N-01:scelte, l'onboarding e C-16 sono
+verdi sulla copia con il server com'è nel codice, e restano 50 rossi di N-01,
+tutti suoi, elencati nel §10.1 del progetto e nella voce P-88 del CHANGELOG.
+Prima era: **fermo una terza volta, dal 18 ottobre 2026: aspetta P-88.**
 Ripartito dalla copia, l'ha portata da 121 rossi a un banco mirato con 65
 rossi su 347 e i raccordi a 801/801, e si è fermato senza commit su tre punti
 del contratto dei controlli, scritti nel §10.1 del progetto, «P-81 — collaudo e
@@ -6608,7 +6613,7 @@ suite con P-86 (sopra).
 
 ### P-88 — Claude: il banco che accende le raccolte per parte, non per pagina
 
-**Stato:** pronto, dal 18 ottobre 2026. Ridotto lo stesso giorno: la prima
+**Stato:** chiuso il 18 ottobre 2026 (`d6fec52`). Prima era: pronto, dal 18 ottobre 2026. Ridotto lo stesso giorno: la prima
 versione spegneva anche i segnalibri, e l'autore ha deciso di lasciarli accesi
 (`account-progetto.md` §2.7-bis). **Dove:** Claude Code,
 `~/Software/rotta-giusta`, ramo **`main`**, a mano: tocca `tests/`, la
@@ -6660,7 +6665,27 @@ s prima. Un commit, con la voce in fondo a [Unreleased]; niente push.
 Chiudi con il resoconto di docs/prossime-sessioni.md.
 ```
 
-**Esito:** —
+**Esito:** fatto il 18 ottobre 2026, `d6fec52` su `main`. Ogni gruppo del banco
+del client parte dal server com'è nel codice; la parte che prova una raccolta
+la accende, o la spegne davvero, con `ctx.conRaccolte()`, e `perParte()`
+controlla che il server l'abbia. N-01:scelte, l'onboarding di
+N-01:registrazione e — trovato, non nel prompt — C-16 nel ridisegno accendono
+le scelte; E-01, P-01 e C-10:avvio provano i due versi, e `serverDiPrima`, il
+`GET /v1/io` con i campi tolti, è uscito. Prima il rosso: la pagina di
+riferimento del ridisegno data come pagina vera aveva 3 rossi, dopo 0. Il banco
+contro sé stesso: senza accensione per parte, rossi N-01:scelte, l'onboarding,
+E-01 e P-01; tre parti che passavano verdi provando un verso solo ora sono
+rosse anche loro; una rottura nuova, le scelte mandate a un server che non le
+raccoglie, rossa per il suo motivo. **Trovato:** le due pagine di riferimento
+del client non dicevano il motivo di uno scarto dopo un import, corretto; un
+`422` lasciava il database vuoto anche a una pagina che mandava le scelte, e
+ora il banco guarda le richieste (`tests/browser.mjs` registra i corpi). **Sulla
+copia di P-81** restano 50 rossi di N-01, tutti della pagina (§10.1 del
+progetto). La nota nel §10.1 l'ha scritta la regia, come il resoconto chiedeva.
+**Che cosa ha controllato la regia:** il commit con il trailer, sette file nel
+territorio del motore, la coda non toccata; motore 215/219, server 89/89, dati
+230, specifica 1.032, guardiano verde, e l'interfaccia (registro).
+
 
 ### I segnaposto — i prompt che non si possono ancora scrivere
 
@@ -6683,7 +6708,8 @@ il resoconto del precedente, e la regia scrive il suo prompt allora.
   il 17, e P-81 riparte dalla copia in `/private/tmp/rg-p81`. Si fonde dopo la
   v0.31.0 (P-86), e il suo rilascio accende le scelte di preparazione sul
   server. Fermato una terza volta il 18 sul contratto dei controlli; riparte
-  con P-88 fuso. Il suo rilascio accende le scelte di preparazione.
+  con P-88 fuso; P-88 chiuso il 18. Il suo rilascio accende le scelte di
+  preparazione.
   Alla sua merge la regia
   scrive un prompt per Claude che toglie il regime di oggi dai controlli, come
   P-12, P-37, P-47 e P-50 — e che mette una guardia alla lettura di C-22 che
@@ -7582,3 +7608,11 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   e dodici file del sito identici al tag. L'esito per esteso è nella voce
   «Verificato — la v0.31.0, in linea» del CHANGELOG. La riga 28 esce dalla
   coda.
+- **18 ottobre 2026 — P-88 chiuso; P-81 pronto per la quarta volta.** Il
+  resoconto letto contro il repo: il commit con il trailer, sette file nel
+  territorio del motore, la coda non toccata; motore 215/219, server 89/89,
+  dati 230, specifica 1.032, guardiano verde, interfaccia 3.018 in 4 min 17 s
+  con la 8620 guardata libera per 90 s. La nota «punto 3 fatto» nel §10.1 del
+  progetto, che il prompt non lasciava a P-88, l'ha scritta la regia. Sulla
+  copia di P-81 restano 50 rossi di N-01, tutti della pagina: sono il suo
+  lavoro. Per Claude non c'è un prompt pronto fino al resoconto di P-81.

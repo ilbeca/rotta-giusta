@@ -1817,6 +1817,19 @@ sì dell'autore; il terzo è P-88.
 
 P-81 riparte con P-88 fuso, dalla copia, con lo stesso prompt aggiornato.
 
+**Il punto 3 è fatto da P-88 (`d6fec52`, 18 ottobre 2026).** Ogni gruppo del
+banco del client parte dal server com'è nel codice, su qualunque pagina; la
+parte che prova una raccolta la accende, o la spegne davvero, sul server della
+sua corsia, e il banco controlla che il server l'abbia. N-01:scelte (accese per
+«dichiarati» e «ignorati», spente per «non dichiarati», con nessun `PUT
+/v1/profilo` che porti una scelta), l'onboarding di N-01:registrazione e C-16
+nel ridisegno accendono le scelte; E-01, P-01 e C-10:avvio provano i due versi.
+Sulla copia di P-81, con `RG_SITO`: N-01:scelte, l'onboarding e C-16 sono verdi,
+e restano 50 rossi di N-01, tutti della pagina — documento 1 (il marchio non
+porta alla Home), cronologia 1 (Chiudi la preparazione non rende fuoco e
+scorrimento), gesti 1 (i tag L e C di prima), ricerca 1 («1 quesiti trovati»),
+tragitti 46 (H0 16, H1 16, HA 14) —, elencati nella voce P-88 del CHANGELOG.
+
 ### 10.2 Verifica documentale di P-79 e limiti
 
 Verificati cartella, ramo, albero iniziale pulito e inventario delle chat:
