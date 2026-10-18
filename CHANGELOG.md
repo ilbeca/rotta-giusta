@@ -11,6 +11,31 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+### Verificato — la v0.31.0, in linea
+
+- **Il tag e le suite.** `v0.31.0` è un tag annotato su `6a61436`, fatto dopo
+  le cinque suite sull'albero del rilascio: motore 215/219 con i quattro skip
+  previsti, server 89/89, dati 230, specifica 1.032, interfaccia 3.012 in 4 min
+  17 s con la 8620 libera da 90 s prima, `ripristina --prova` 24 controlli,
+  guardiano verde. Pushati `main` e il tag con il sì dell'autore del 18
+  ottobre.
+- **Il server**, `rg-aggiorna v0.31.0 6a61436…` lanciato dalla regia sulla
+  macchina, su richiesta dell'autore, con `rg-aggiorna` e `rg-torna` uguali a
+  quelli del repo (SHA-256): la copia di prima,
+  `aggiorna-20261018T133127Z.db`, con `integrity_check` ok, 2 righe, 1 account,
+  schema 4; nel log «schema del database portato da 4 a 6» e «raccolte accese:
+  nessuna». Da fuori `GET /v1/salute` dice 0.31.0, schema 6/6, **la stessa
+  epoca** di prima e `raccolte` tutte spente; il CORS espone `Retry-After` al
+  sito. `/var/lib/rg/precedente` dice `v0.30.0`: è lì che torna `rg-torna`.
+- **La pagina.** «Build now» su statichost.eu dalla regia, nel Chrome
+  dell'autore e su sua richiesta, con il commit di rilascio in cima: la build
+  porta l'etichetta «release: v0.31.0». Da fuori `meta.json` dice 0.31.0 su
+  `rottagiusta.it` e su `.pages.dev`; dodici file del sito sono identici byte
+  per byte a `v0.31.0:site/`, e base-8 porta di nuovo 1.1.1-8. `/app` si apre e
+  carica le attività senza account.
+- **Non guardato:** un accesso con l'account vero dopo l'aggiornamento, e gli
+  strumenti del titolare sulla macchina con lo schema 6.
+
 ## [0.31.0] — 2026-10-18
 
 **Un rilascio piccolo, prima del ridisegno.** Per chi studia cambia poco di

@@ -3189,3 +3189,8 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
   decisione di poche ore prima: «ancora non abbiamo iscritti», e la strada più
   semplice. Il segnalibro non è spento sul server; la riga dell'informativa
   arriva con P-81 (§2.7-bis, §20). Il banco per parte resta, con P-88.
+- **18 ottobre 2026 — la v0.31.0 in esercizio.** `rg-aggiorna v0.31.0
+  6a61436…` dalla regia, con il sì dell'autore: copia di prima
+  `aggiorna-20261018T133127Z.db` con `integrity_check` ok, schema portato da 4
+  a 6, «raccolte accese: nessuna»; `GET /v1/salute` dice 0.31.0, schema 6/6, la
+  stessa epoca e le raccolte spente. `/var/lib/rg/precedente` dice `v0.30.0`.
