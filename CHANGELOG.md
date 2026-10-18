@@ -11,6 +11,31 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+## [0.31.0] — 2026-10-18
+
+**Un rilascio piccolo, prima del ridisegno.** Per chi studia cambia poco di
+visibile: il quesito base-8 si trova di nuovo con il suo numero del decreto,
+1.1.1-8, e il motore della pagina porta i contratti che il ridisegno userà —
+cinque stati per quesito, tag, segnalibri, ricerca per numero, il riepilogo
+della pagina —, che la pagina di oggi non chiama ancora. Sul server cambia di
+più, e per questo il rilascio esce da solo, prima di P-81: lo schema del
+database passa da 4 a 6, una data d'esame impossibile non dà più un errore 500,
+un campo sconosciuto nel profilo è rifiutato invece di essere buttato, e le
+statistiche contano le risposte come risposte. **Le raccolte nuove sono
+spente** (`account-progetto.md` §2.7-bis, deciso dall'autore il 17 ottobre): il
+server sa conservare le previsioni, gli esiti dell'esame e le scelte di
+preparazione, ma le rifiuta finché la loro base giuridica e la loro riga
+nell'informativa non ci sono — si accendono con P-75 e con il rilascio di P-81.
+I segnalibri e il tag «Svista» il server li accoglie già, e nessuna pagina li
+scrive ancora; la riga dell'informativa che li nomina arriva con P-81 (deciso
+dall'autore il 18 ottobre: non ci sono iscritti, e il buco è di qualche
+settimana).
+
+Il server si porta allo stesso tag con `rg-aggiorna`, che copia il database
+prima di migrarlo; `GET /v1/salute` dice la versione, lo schema e le raccolte
+accese. Le voci che seguono sono il lavoro di questi giorni, com'è stato
+scritto allora.
+
 ### Verificato — la v0.30.0, in linea
 
 - **La pagina.** `v0.30.0` è un tag annotato su `decdf76`, fatto dopo le
