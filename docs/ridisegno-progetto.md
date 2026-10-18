@@ -1698,6 +1698,125 @@ client; l'interruttore è di P-86. *(18 ottobre 2026, P-86: fatto. È
 profilo le rifiuta con un `422` e `campi_profilo` dice `['data_esame',
 'segnali']` — `account-progetto.md` §2.7-bis.)*
 
+##### P-81 — collaudo e fermo sulle dichiarazioni delle chiamate, 18 ottobre 2026
+
+**Copia conservata, nessuna sostituzione.** Ripresa su `ui/main`, base
+`8e32369`, con i controlli del checkout principale `ab1bb95`. La suite
+intera, eseguita dal checkout principale con
+`RG_SITO=/private/tmp/rg-p81/sito`, legge **ridisegno** e misura **3.245
+verifiche riuscite su 3.366**, **121 rosse**, in **544,07 secondi**.
+La 8620 era libera da 90 secondi alle 14:47:53 (Europe/Rome).
+È la misura della copia all'inizio della sessione, prima delle correzioni
+successive, non un collaudo superato della copia attuale.
+
+**Il contratto di chiusura non è eseguibile così scritto.** Il prompt
+richiede il verde sulla copia prima della sostituzione, eseguendo la suite
+**dalla cartella principale**, e sposta le sei dichiarazioni in
+`docs/eccezioni-interfaccia.md` soltanto nella chiusura del lavoro UI.
+`RG_SITO` sostituisce `site/`, mentre `tests/test_interfaccia.py` legge
+`ECCEZIONI = RADICE / 'docs' / 'eccezioni-interfaccia.md'`, con `RADICE`
+ricavata dal percorso del test. Legge quindi il documento di **main**,
+non quello del worktree UI e non un documento della copia temporanea.
+Le chiamate reali a `contaStati`, `rigaScrivibile`, `codaSegnalibri`,
+`cercaNumero`, `estraiNuoviPrima` e `riepilogoPagina`, richieste da P-81,
+producono sei rossi per gli orfani consumati e uno per le nuove chiamate
+non protette. Anche aggiornare il documento UI non cambierebbe il file
+letto da quel comando. Non si modifica il checkout principale, non si
+spostano i controlli e non si introduce una chiamata finta per ottenere
+il verde. Serve alla regia definire come il collaudo della copia debba
+leggere le dichiarazioni che accompagnano quella stessa copia.
+
+**Un secondo punto da precisare riguarda `classifica`.** L'unico chiamante
+nella pagina attuale è la composizione del testo `rotta-rec-motivo` nella
+vecchia Home; la copia non lo conserva. Il controllo la pretende ancora
+fra le chiamate vive. Questo §10.1 consente di dichiararne chiamanti e
+motivo quando sostituita in tutte le rese; il prompt della ripresa limita
+invece il diff delle eccezioni ai sei spostamenti, «nessun'altra riga
+toccata». La rimozione della protezione di `classifica` non è stata fatta
+né sostituita con un consumo artificiale. La regia deve esplicitare il
+trattamento di questa riga. I due controlli non modificati su orfani e
+protette riproducono **8 rossi su 151 verifiche**; sette riguardano le sei
+nuove chiamate, uno `classifica`. Non spiegano gli altri rossi della pagina.
+
+**Il secondo collaudo evidenzia anche il disallineamento di N-01 con
+P-86.** In `tests/client_account.mjs`, `corsia().esegui()` assegna
+`RACCOLTE` alla prova chiamata `app`, mentre accende entrambe le raccolte
+per le pagine di riferimento. `server/raccolte.mjs` su `ab1bb95` ha
+`scelte_di_preparazione: false`. Per `app`, quindi, il caso «dichiarati»
+di `N-01:scelte` non riceve `campi_profilo`, ma pretende che il modulo
+prometta la conservazione e salvi le due scelte; anche il caso «ignorati»
+parte da questa pretesa. `SERVER.oggi` non altera la risposta del server.
+La pagina che rispetta il controllo della capability non può soddisfare
+quel ramo. Il paragrafo precedente di questo progetto e il prompt dicono
+invece che i banchi accendono le scelte sul server di prova. Il collaudo
+mirato riproduce entrambi i rossi del modulo e quello dell'onboarding
+`N-01:registrazione`. Non si accende il server dal ramo UI, non si rinomina
+la pagina come riferimento, non si elude `campi_profilo`: serve allineare
+il contratto del banco per P-81 conservando la verifica del caso spento.
+
+**Correzioni solo nella copia:** chiusura delle preparazioni e ritorni,
+fuoco e scorrimento, porte degli esercizi, Profilo/Info, controlli e testi
+delle scelte, tag N/S con lettura di L/C, segnalibro, ricerca per numero,
+inviti e testi del riepilogo. I dodici controlli mirati dei raccordi danno
+**801/801**. Nel browser, ritorno alla porta di un argomento con lo stesso
+fuoco e scorrimento (**705 px a 375**, **547 px a 1280**); nessuno
+sbordamento orizzontale. Esercitati ricerca per numero, N poi S,
+segnalibro e riferimento della segnalazione a 375 px: nessun errore
+JavaScript, nessuno sbordamento. Screenshot guardati. Sono prove
+circoscritte: non attestano i 108 tragitti, l'intero client o l'accessibilità
+completa. Il secondo collaudo mirato, già avviato al momento del fermo,
+misura **282 verifiche riuscite su 347**, **65 rosse**, in **359,31 secondi**;
+8620 libera da 90 secondi alle 14:59:02. Il conteggio riguarda soltanto i
+gruppi selezionati, senza le verifiche Python di completezza né riferimenti
+e rotture: non è confrontabile con il totale della suite intera. Restano
+rossi su Carteggio/Segnali, ritorni, client, scelte e gesti; alcuni tragitti
+si fermano prima del termine. La relativa istantanea è conservata,
+separata dalla copia aggiornata dopo l'avvio. Guardiano (**183 file**) e
+controllo documentale passano sul worktree UI.
+
+**Ripresa:** cartella completa `/private/tmp/rg-p81/sito`; istantanea iniziale
+`lavoro/index-inizio-18.html`, istantanea del secondo collaudo
+`lavoro/index-collaudo-18-mirata.html`, script e nota in `lavoro/`, log,
+misure e screenshot in `evidenze/`, sotto `/private/tmp/rg-p81`.
+Il file `evidenze/contratto-eccezioni-18.json` registra anche i percorsi
+realmente letti dalla suite. Restano i difetti della pagina, il collaudo
+completo e la chiusura atomica. `site/`, test, motore, documenti protetti,
+versione e dichiarazioni delle eccezioni restano intatti; nessun commit
+parziale, push, tag o rilascio. Non fondere la copia.
+
+**I tre punti, decisi il 18 ottobre 2026** — i primi due dalla regia, con il
+sì dell'autore; il terzo è P-88.
+
+1. **Le dichiarazioni si leggono dal worktree della copia.** P-81 lancia la
+   suite dal suo worktree, `~/Software/rotta-giusta-ui`, con
+   `RG_SITO=/private/tmp/rg-p81/sito`: `test_interfaccia.py` legge le
+   eccezioni accanto a sé, cioè quelle che accompagnano la copia. Lì sposta
+   prima le sei dichiarazioni, e la riga di `classifica` del punto 2, nel suo
+   `docs/eccezioni-interfaccia.md`, che è fra i file che può toccare. La
+   garanzia che i controlli siano quelli di `main`: `ui/main` allineato a
+   `main` e `git diff main -- tests/ server/ site/engine.js` vuoto prima di
+   ogni misura. Nessun codice nuovo. Fino alla sostituzione la suite lanciata
+   da quel worktree **senza** `RG_SITO` è rossa sulle dichiarazioni, ed è
+   atteso: la pagina che gli corrisponde è la copia.
+2. **`classifica` esce dalle chiamate protette.** L'unica chiamata della pagina
+   di oggi è la frase del motivo nella vecchia Home (`site/app.html`, la
+   `rotta-rec-motivo`), che il ridisegno toglie. `classifica()` resta usata
+   dentro il motore — da `quadro()`, `dovePesa()` e `traccia()` (§4.1 della
+   specifica) —, e il controllo sugli orfani la accetta come `semaforo()`.
+   P-81 toglie la riga con il motivo scritto accanto; è l'unica riga in più
+   oltre ai sei spostamenti.
+3. **N-01 contro P-86: il banco accende per parte, non per pagina.** È un buco
+   del contratto di P-86, non della pagina. P-88 lo chiude in
+   `tests/client_account.mjs`: la parte che prova una raccolta accesa la
+   accende sul suo server, su qualunque pagina, e il caso spento si prova con
+   il server spento davvero. Con P-88 entra anche la terza raccolta, i
+   **segnalibri**, spenti fino al rilascio di P-81 (`account-progetto.md`
+   §2.7-bis): N-01:gesti li accende come N-01:scelte le scelte, e il rilascio
+   di P-81 accende sul server vero scelte e segnalibri, con le due righe
+   dell'informativa del §11.2 del progetto del client.
+
+P-81 riparte con P-88 fuso, dalla copia, con lo stesso prompt aggiornato.
+
 ### 10.2 Verifica documentale di P-79 e limiti
 
 Verificati cartella, ramo, albero iniziale pulito e inventario delle chat:
