@@ -2384,7 +2384,11 @@ def test_client_tutte_le_attivita():
         fatte = [x for x in v if x['gruppo'] == 'C-01' and x['nome'].startswith(a)]
         check('client: l\'attivita\' «%s» guidata senza account' % a.rstrip(': '), bool(fatte) and all(x['ok'] for x in fatte),
               'nessuna verifica' if not fatte else '; '.join(x['nome'] for x in fatte if not x['ok']))
-    porta = [x for x in v if x['gruppo'] == 'C-03' and 'Progressi dice perche\'' in x['nome']]
+    # Il banco scrive due nomi, uno per regime (client_account.mjs, C-03): «dice
+    # perche' non c'e'» nella pagina di oggi, «dice che non ci sono risposte in
+    # questa pagina» nel ridisegno. Fino a P-81 il filtro cercava solo il primo,
+    # e la pagina giusta del ridisegno era rossa qui per un nome, non per lei.
+    porta = [x for x in v if x['gruppo'] == 'C-03' and x['nome'].startswith('senza account Progressi dice ')]
     check('client: senza account Progressi non e\' un cruscotto', bool(porta) and all(x['ok'] for x in porta),
           'la verifica di C-03 su Progressi manca o e\' rossa')
 

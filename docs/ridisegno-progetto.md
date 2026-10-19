@@ -1830,6 +1830,187 @@ porta alla Home), cronologia 1 (Chiudi la preparazione non rende fuoco e
 scorrimento), gesti 1 (i tag L e C di prima), ricerca 1 («1 quesiti trovati»),
 tragitti 46 (H0 16, H1 16, HA 14) —, elencati nella voce P-88 del CHANGELOG.
 
+##### P-81 — ripresa fermata dall'ambiente di collaudo, 19 ottobre 2026
+
+Ripresa su `ui/main`, allineato a `main` su `2604667`, albero iniziale
+pulito e nessun altro scrivente attivo nel worktree. Spostate le sei
+dichiarazioni in `docs/eccezioni-interfaccia.md` e tolta la protezione di
+`classifica`, con il motivo del punto 2: sono modifiche non committate che
+accompagnano la copia, come deciso sopra. Allineato nella copia il solo
+`dati/meta.json` alla base corrente; gli altri file esclusi erano già
+identici al sito. Nessuna modifica a `site/` nel repository.
+
+Sulla copia `/private/tmp/rg-p81/sito`, **998 verifiche mirate su 998**:
+navigazione e raccordi, cinque modalità quiz, istante in `applica`, mappa
+con stati e azioni, riepilogo e riprova quiz, preparazione/righe/riepilogo
+Carteggio, orfani/protette, porta e barra. Regime letto **ridisegno**.
+Motore **215/219**, con quattro skip previsti; specifica **1.032**;
+guardiano **184 file** e controllo documentale verdi. Non sono il collaudo
+del client, dei tragitti o della geometria.
+
+**Blocco dell'ambiente, non un nuovo conflitto del contratto.** La sandbox
+rifiuta l'apertura delle porte locali (`PermissionError: Operation not
+permitted` nell'anteprima, `listen EPERM` nel banco). Due richieste di
+esecuzione autorizzata dell'anteprima sono state rifiutate dal sistema
+perché la revisione automatica non poteva completarsi: «Selected model is
+at capacity». Non è un giudizio di pericolosità del comando. Chiesto
+all'autore di ripristinare l'esecuzione locale autorizzata; nessun aggiramento
+del controllo. La suite intera è stata tentata su una fotografia della copia
+(`misura-19-iniziale`), dopo l'osservazione della 8620 per 90 secondi terminata
+alle **06:12:15 Europe/Rome**, ed è uscita 1 in **15,76 s** per questi errori:
+non fornisce un esito del browser e non vale come misura Q-SUITE. Prima del
+prossimo collaudo va ripetuta l'osservazione della porta con l'ambiente abilitato.
+
+Conservati copia, fotografia iniziale, log e nota di ripresa sotto
+`/private/tmp/rg-p81`. Restano le correzioni dei difetti della pagina già
+elencati da P-88 e il collaudo completo richiesto, poi la sostituzione
+simultanea e le cinque suite. Nessuna nuova modifica all'HTML, sostituzione,
+commit, push, tag o pubblicazione. Non fondere la copia.
+
+##### P-81 — primo collaudo dopo il ripristino dei permessi, 19 ottobre 2026
+
+Dopo il cambio dei permessi da parte dell'autore, l'anteprima locale è
+partita. La suite intera sulla fotografia `misura-19-iniziale`, dalla
+cartella UI con le dichiarazioni aggiornate, ha misurato **3.352 verifiche
+riuscite su 3.421**, **69 rosse**, in **491,23 secondi**. Regime
+**ridisegno**, 8620 osservata libera da 90 secondi alle **06:26:12
+Europe/Rome**; diff rispetto a `main` di test, server e motore vuoto.
+Non è il verde della copia successiva. I rossi sono nel log
+`evidenze/interfaccia-19-browser.log`: alcuni tragitti si arrestano sul
+Carteggio e lasciano rossi a cascata nei compiti dopo.
+
+Riprodotti nell'anteprima e guardati con screenshot il riepilogo della
+carta e le porte a 375 px. Il Carteggio concludeva, ma il CSS trasformava
+«Esiti autovalutati» nel testo maiuscolo letto dal browser; mancavano
+inoltre gli agganci del marchio, del ritorno dalla preparazione e delle
+sessioni storiche. Correzioni **solo nella copia**: agganci sui controlli
+reali, titoli dei riepiloghi senza trasformazione maiuscola, frase sul
+giudizio nella preparazione della prova, singolare della ricerca, bersagli
+dei `summary`, gestione di Indietro e del risultato concluso, strumenti dei
+quesiti anche in revisione, avvisi della verifica email nel pannello e nel
+risultato, link al canonico nei risultati fuori dall'origine degli account,
+sospensione della carta cambiando sezione e pulizia dei runner all'uscita
+confermata dall'account. Applicate nella privacy della copia le frasi
+autorizzate del §11.2 del progetto del client; nessun altro testo legale
+riscritto.
+
+La sintassi dello script è valida e le stesse **998 verifiche mirate sono
+ancora verdi** dopo queste modifiche. Nell'anteprima a 375 px il ritorno
+dall'argomento conserva il controllo e lo scorrimento (**1.106 px**), Info
+si apre e i Segnali partono, senza errori JavaScript. Queste prove
+circoscritte non sostituiscono client, tragitti e collaudo 375/1280 completi.
+
+La fotografia `misura-19-seconda` conserva la copia dopo le correzioni;
+`lavoro/prova-19-seconda.json` prepara i gruppi del prossimo collaudo mirato.
+Il primo tentativo non è partito: l'ambiente era tornato a `auto_review`,
+con timeout e poi «Selected model is at capacity». Dopo il nuovo «riprova»
+dell'autore il banco è partito: **157/163**, 54,61 s. Quella selezione
+conteneva per errore diagnostico `N-01` intero su una corsia senza API:
+non è il collaudo dei tredici gruppi dei tragitti.
+
+Una seconda misura mirata, con le tredici parti esplicite di N-01 e i
+gruppi C-01, C-02, C-07, ha dato **235/241**, 117,18 s, sulla fotografia
+`misura-19-terza`; 8620 libera da 90 s alle **06:55:05 Europe/Rome**.
+Risolti in questa misura il ritorno dal legale al Profilo con i campi
+intatti e Avanti sul risultato concluso. Restano sei rossi della pagina,
+non del contratto: passaggio alle attività dopo le tecniche, avviso di
+perdita Segnali nel risultato, primo rinvio della mail rifiutata, apertura
+del quesito oscurato cercato e registrazione dalla Home senza risposte
+(due esiti del medesimo tragitto). Log e JSON sotto `evidenze/`.
+
+Nella copia successiva, in corso di verifica: barra accessibile durante
+l'attività, spazio per la barra mobile nel runner; strumenti separati dal
+testo del quesito; avviso Segnali nel risultato; avviso email aggiunto al
+risultato anche quando l'account nasce da lì; zero risposte trasferite
+dichiarate nel modulo, senza inventare un trasferimento. Aggiunti gli
+strumenti di segnalazione a carta/tecniche e revisione, riparate le etichette
+dei filtri della revisione di carteggio. Le scelte d'esame sono state
+guardate a 375 px e corrette: radio 20 px in etichette di almeno 44 px.
+Le **998 verifiche mirate restano verdi** dopo queste modifiche.
+
+Il sito del repository, i test e i file esclusi restano intatti. Nessuna
+sostituzione o commit parziale. Restano il collaudo delle correzioni,
+tutti i gruppi completi e la chiusura atomica prevista dal prompt.
+Non fondere la copia.
+
+##### P-81 — nuovo blocco C-03 nell'aggregatore, 19 ottobre 2026
+
+L'ultima suite intera, dalla cartella UI sulla fotografia
+`/private/tmp/rg-p81/misura-19-completa`, ha dato **3.454/3.457** in
+**330,04 s**, regime **ridisegno**. 8620 osservata libera da 90 s alle
+**18:58:23 Europe/Rome**; base `main` e `ui/main` sempre `2604667`, diff di
+`tests/`, `server/`, `site/engine.js` rispetto a `main` vuoto. La copia
+corrente coincide con questa fotografia. Log:
+`evidenze/interfaccia-19-completa.log`. Suite dati sulla stessa fotografia:
+**225** verifiche. Gli altri due rossi di questa misura sono il quesito
+oscurato della ricerca N-01 e la completezza del medesimo gruppo (10/11).
+
+**Blocco del contratto dei controlli, non una richiesta di cambiare il
+prodotto.** `tests/client_account.mjs:845`, nel ramo `ridisegno` di C-03,
+emette il nome «senza account Progressi dice che non ci sono risposte in
+questa pagina, con Vai ad Allenati e perche' manca lo storico, senza un
+cruscotto ne' un invito». `tests/test_interfaccia.py:2387` filtra invece
+soltanto i nomi contenenti «Progressi dice perche'», che è il nome emesso
+nel ramo **attuale** del banco (`client_account.mjs:849`). Poi pretende che
+la lista filtrata non sia vuota. Il nome è scritto dal banco, non arriva
+dalla pagina: nessun HTML corretto nel regime ridisegno può far combaciare
+quel filtro. I due regimi sono letti dalle dichiarazioni consegnate da
+P-80; non si può rimuoverle per tornare al nome vecchio.
+
+Controprova sui risultati già raccolti, senza cambiare né eseguire varianti
+dei test: nella misura mirata `client-19-seconda.json`, **11 esiti C-03
+verdi su 11**, incluso il nuovo esito Progressi; **zero corrispondenze** con
+il filtro dell'aggregatore. Estrazione conservata in
+`evidenze/blocco-c03-19.json`. Nell'ultima suite non ci sono altri rossi
+C-03 oltre a quello dell'aggregatore. Serve alla regia l'allineamento del
+controllo al nome del regime ridisegno, conservando il controllo del regime
+attuale e la pretesa che l'esito esista e sia verde. Non modificato alcun
+test, raccordo o contratto per aggirarlo.
+
+**Gli altri due rossi sono ancora lavoro della pagina.** Il banco della
+ricerca legge `#r-numero` e `#r-nbp` (`client_account.mjs:5876–5877`), come la
+pagina di riferimento; la copia rende il numero in `#r-num` e l'avviso
+con `notaPrima()` in `#r-verdict`. Mancano dunque gli agganci sui due
+contenuti reali. Nessuna contraddizione del progetto su questo punto:
+resta da correggere e riprovare dopo la rimozione del blocco C-03.
+
+**Fermo come richiesto dal prompt.** Nessuna sostituzione di `site/`,
+nessun commit parziale, push, tag o pubblicazione. Modificati nel repo solo
+questo resoconto e le dichiarazioni autorizzate di
+`docs/eccezioni-interfaccia.md`; copia e fotografie rimangono fuori dal sito.
+Chiusi anteprima e processi delle prove; interrotto prima dell'avvio del
+server il collaudo visivo account 375/1280, che quindi **non è eseguito**.
+
+Verifiche visive effettive: sette superfici senza account a **375 e 1280 px**,
+zero sbordo orizzontale in tutte e 14, senza errori JavaScript; radio delle
+scelte d'esame guardati dopo la correzione. Diagnosi a 375 px con account
+fittizio e posta simulata: scadenza, mail rifiutata, rinvio rifiutato e poi
+accettato visibili, nessun errore JavaScript. Queste schermate non sono il
+collaudo integrale dei due accessi, dei guasti e della tastiera. Il rilevatore
+grafico statico segnala il contenitore immagine del dialogo prima che riceva
+una figura e un'ombra ereditata: da valutare nel contesto, non modificati per
+far tacere il rilevatore.
+
+Restano: agganci della ricerca, nuova suite completa dopo il riallineamento
+C-03, verifica visiva dei due accessi/errori/legenda/tastiera a entrambe le
+larghezze, controllo dei testi aggiornati passando da anonimo ad account e
+delle scelte d'esame dopo una modifica dal Profilo, poi sostituzione atomica,
+cinque suite, CHANGELOG e commit unico. Node **24.22.0** scaricato solo in
+`lavoro/`, pacchetto ufficiale con SHA256 confrontato con `SHASUMS256.txt`;
+la suite server su quel runtime **non è eseguita**. Nessun runtime installato
+nel sistema. Non fondere la copia.
+
+**Il blocco C-03 è tolto dalla regia, il 19 ottobre 2026.** Riprodotto:
+nel log `evidenze/interfaccia-19-completa.log` il rosso è «client: senza
+account Progressi non e' un cruscotto», e il filtro di
+`test_client_tutte_le_attivita()` cercava il solo nome del regime di oggi.
+È un buco lasciato da P-80, che ha dato al banco due nomi e all'aggregatore
+uno. Ora il filtro prende i due nomi con il loro prefisso comune, «senza
+account Progressi dice », e pretende ancora che l'esito ci sia e sia verde;
+nessun contratto della pagina cambia. Restano a P-81 i due rossi della
+ricerca: `#r-numero` e `#r-nbp` sono agganci del banco, da dare ai contenuti
+veri del runner.
+
 ### 10.2 Verifica documentale di P-79 e limiti
 
 Verificati cartella, ramo, albero iniziale pulito e inventario delle chat:

@@ -114,6 +114,28 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   verde. `site/`, `server/`, `docs/prossime-sessioni.md` e la copia di P-81 non
   sono stati toccati.
 
+### Test — il filtro di C-03 conosce il nome del ridisegno (fermo di P-81)
+
+- **La pagina giusta del ridisegno era rossa per un nome.** P-81, sulla sua
+  copia, è arrivato a 3.454 verifiche su 3.457 e si è fermato su
+  «client: senza account Progressi non e' un cruscotto». Il banco del client
+  scrive per C-03 due nomi, uno per regime — «dice perche' non c'e'» nella
+  pagina di oggi, «dice che non ci sono risposte in questa pagina» nel
+  ridisegno —, e `test_client_tutte_le_attivita()` cercava soltanto il primo:
+  nessuna pagina del ridisegno poteva passarlo. Un buco lasciato da P-80, che
+  ha dato i due nomi al banco e uno all'aggregatore. Riprodotto nel log di
+  P-81 prima di correggere; ora il filtro prende i due nomi dal loro prefisso
+  comune, e pretende ancora che l'esito ci sia e sia verde. Nessun contratto
+  della pagina cambia, nessun requisito nuovo. La nota di P-81 è nel §10.1 di
+  `docs/ridisegno-progetto.md`, con quella della regia sotto.
+
+  Suite: interfaccia **3.018** sulla pagina vera, in 4 min 16 s, con la 8620
+  libera da 90 s; con `RG_SITO` sulla copia di P-81, letta e non toccata, il
+  rosso di C-03 non c'è più: 3.454 su 3.464, e i dieci rossi sono i due della
+  ricerca, che restano di P-81, e le otto dichiarazioni delle chiamate al
+  motore che P-81 tiene nel suo worktree e `main` non ha ancora. `site/` e la
+  copia non sono stati toccati.
+
 ## [0.31.0] — 2026-10-18
 
 **Un rilascio piccolo, prima del ridisegno.** Per chi studia cambia poco di
