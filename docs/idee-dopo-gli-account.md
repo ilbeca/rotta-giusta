@@ -82,6 +82,8 @@ lavoro che dura settimane e cambia che cosa il sito *è*.
 | I-19 | Il miglioramento continuo: la misura come quinto passo del ciclo | autore e Claude | sì dell'autore, prossima release (17 ottobre) |
 | I-20 | La classe: la scuola nautica e l'istruttore dentro il sito | autore e Claude | sospesa: l'autore la propone alle scuole |
 | I-21 | Una casella per le segnalazioni | Claude | sì dell'autore; casella da creare |
+| I-22 | La lettura da fuori: chi non sa niente del progetto, come controllo ricorrente | autore e Claude | prima prova fatta il 20 ottobre; il metodo è da decidere |
+| I-23 | Che cosa ha trovato la prima lettura da fuori | Claude, dai lettori | da smistare: un difetto grave, poi testi |
 
 **Le decisioni prese, in una riga ciascuna, sono in fondo al file: «Le decisioni
 di P-59»; quelle del 17 ottobre in «Il miglioramento continuo».** Le schede qui
@@ -2547,3 +2549,225 @@ dopo P-81. L'attività programmata può leggere anche questa casella.
 7. **La casella delle segnalazioni va fatta** (I-21). La crea l'autore su OVH.
 8. **Le persone vere: da decidere** da dove e ogni quanto.
 9. **Questo file è il file unico delle idee** per le prossime release.
+
+---
+
+## La lettura da fuori — 20 ottobre 2026
+
+**Con l'autore, dopo il rilascio della v0.32.0.** L'autore ha segnalato quattro
+testi che confondono: «Simula il quiz base», che poi chiede base, vela o tutti e
+due; «Ne aprirai 10» sotto «Allenati con 10 domande»; il riquadro «Che cosa non
+torna» in Home; e «Esame», che non si capisce («Il mio esame»?). Poi ha chiesto
+come fare perché Claude trovi da solo errori di questo tipo. **Il compito, nelle
+sue parole: vedere che cosa capisce un utente che non sa niente del progetto,
+«che poi sarà veramente il caso reale». Dobbiamo lavorare tanto sul rendere il
+progetto più esplicativo e facile da usare.**
+
+### I-22 — La lettura da fuori come controllo ricorrente [autore e Claude]
+
+**Il problema.** I controlli del progetto misurano che un numero e la lista
+che apre vengono dalla stessa fonte, non che una frase si capisca. E chi scrive
+e chi rilegge i testi ha letto la specifica: a Claude «Ne aprirai 10» sembrava
+naturale perché sa da quale regola viene (R-SEL-03, il numero promesso uguale
+alla lista). Due dei quattro esempi dell'autore sono **le nostre regole e la
+nostra filosofia finite in schermata** come frasi: «Ne aprirai 10» è la regola
+del numero promesso, «I limiti si dichiarano, quesito per quesito» è una frase
+di `filosofia.md`.
+
+**Per chi.** Tutte e tre le persone del §1, e soprattutto chi comincia da zero.
+
+**I metodi, e che cosa vede ciascuno.** Nessuno basta da solo.
+
+| Metodo | Che cosa vede | Che cosa non vede | Costo |
+|---|---|---|---|
+| **Lettori senza contesto, al telefono** (fatto, sotto) | dove ci si blocca, i pulsanti che promettono altro, le parole non capite, la differenza fra quello che il lettore si aspetta e quello che succede | un modello capisce più di una persona: un suo fallimento è un segnale forte, un suo successo è debole | 0,15–0,30 $ e 1–2 minuti a giro |
+| **Domande di comprensione a giro chiuso** (fatto) | i fraintendimenti di cui il lettore non si accorge: crede di aver capito e ha capito male | solo le domande che abbiamo pensato di fare | quasi niente, nello stesso giro |
+| **Inventario dei testi** (fatto, da un agente con il contesto) | il glossario incoerente, il gergo, le ripetizioni, i pulsanti che portano altrove, contando su tutta la pagina | non è un lettore da fuori: vede la coerenza, non la comprensione | un agente, una volta |
+| **Primo sguardo di cinque secondi** | che cosa capisce chi apre la Home: che cos'è il sito, per chi, che cosa toccherebbe | tutto quello che sta dopo la prima schermata | minimo; si fa con una schermata e un lettore |
+| **Spiega con parole tue** | si mostra una schermata e si chiede di spiegare ogni elemento; il confronto con il significato voluto è un controllo, non un'opinione | il tragitto | basso |
+| **Il lettore che fa da utente sbagliato**: chi ha già la entro 12, chi fa solo vela, chi non legge bene l'italiano, chi ha 60 anni e non scorre | i testi che danno per scontato chi sei | — | basso, un profilo in più |
+| **Le parole di chi studia**: come chiamano le cose le scuole, i libri, i concorrenti («schede», «simulazione d'esame», «quiz ministeriali») | i nomi nostri che nessuno usa | — | una ricerca |
+| **Persone vere**: la classe dell'autore, due o tre persone, dieci minuti ciascuna, con un compito e senza aiuto | tutto quello che un modello non sa fingere: noia, paura di sbagliare, il gesto vero, Safari | — | il tempo dell'autore; Q-PROVE |
+| **La misura propria** (I-19) e «Segnala un problema» (I-21) | dove la gente vera abbandona, a sito pubblicato | il perché | già deciso |
+
+**La proposta di Claude.** Una **lettura da fuori a ogni cambio di testi o di
+schermate**, prima della merge su `main`: i cinque lettori di oggi più quelli
+che servono a quel cambio, con le stesse domande a giro chiuso, e il confronto
+con il giro precedente. Si legge come frequenza, non come prova: «tre lettori
+su cinque non capiscono "oscurato"» vale, «arrivano tutti» no. Accanto, **un
+elenco di regole per scrivere i testi** (sotto, I-23), da dare a chi scrive
+l'interfaccia, e dove una regola si può verificare, un controllo. E poche
+persone vere ogni tanto, che restano la sola prova che conta.
+
+**Dove sta lo strumento.** `~/bot-ux/`, fuori dal repo, perché i lettori
+partono da una cartella vuota e non ereditano la specifica (misurato il 4
+ottobre: lanciato dal repo, un sotto-agente parte con circa 190.000 token di
+progetto). Il 20 ottobre il banco ha due cose in più: `--istruzioni`, per dare
+al lettore il compito «dimmi che cosa capisci» (`kit/istruzioni-capire.md`)
+invece di «arriva lì», e `--domande`, domande che il lettore vede **solo a
+giro chiuso**, quando il sito non lo vede più. Profili e domande sono in
+`~/bot-ux/rotta-giusta/capire/`, i giri in `capire/giri/`.
+
+**Decisioni dell'autore.** Se la lettura da fuori diventa un passo fisso prima
+della merge; chi la lancia (la regia, chi fa la merge, la sessione che cambia i
+testi); se le regole di scrittura diventano un documento o una sezione della
+specifica.
+
+### I-23 — Che cosa ha trovato la prima lettura da fuori [Claude, dai lettori]
+
+**Come.** Il 20 ottobre, sul sito di `main` (v0.32.0) servito in locale con il
+server degli account accanto, cinque lettori Sonnet senza contesto, a 375 px,
+senza account: un 24enne iscritto da una settimana; un 19enne impaziente; un
+velista di 58 anni che legge tutto; un tedesco che legge l'italiano a livello
+B1; un'infermiera di 28 anni con l'esame fra dieci giorni. Il compito di
+ciascuno era il suo, più «dimmi che cosa capisci»; a giro chiuso, nove domande
+di comprensione. In tutto 1,1 $ e circa otto minuti. Accanto, l'inventario dei
+testi di `site/index.html` fatto da un agente con il contesto, con le righe.
+**Ogni difetto di funzionamento qui sotto è stato riprodotto a mano, nel
+browser, prima di scriverlo.**
+
+**1. Un difetto grave, e non di testo: dopo una risposta sbagliata «Avanti»
+può finire fuori dallo schermo, e niente scorre.** Due lettori su cinque si
+sono fermati lì e sono usciti con «Termina l'attività» («mi è sembrato di aver
+rotto qualcosa»). Riprodotto su `rottagiusta.it` il 20 ottobre: il runner
+`#quizrun` è `position: fixed` alto quanto lo schermo, con `overflow` visibile;
+dopo un errore il verdetto, l'argomento, la frase dei tag e i due tag spingono
+in basso le risposte. A 375×667 (iPhone SE, o un telefono più grande con la
+barra di Safari) «Avanti» sta a 745–797 px, sotto il bordo, e né lo scorrimento
+della pagina né quello del runner lo portano su. A 375×812 basta una domanda
+con tre risposte lunghe (base, 1.8.2-40, la pesca) o la nota di un oscurato.
+Nessun controllo lo vede: R-RIF-09 misura lo sbordamento in larghezza, e i
+banchi del client rispondono con `element.click()`, che preme anche un
+pulsante fuori dallo schermo. **Va corretto prima di tutto il resto**, ed è
+dell'interfaccia; un controllo nel banco del client (dopo un errore, a 375×667,
+il centro di «Avanti» sta nello schermo e niente gli sta sopra, come R-ACC-76)
+è di `main`.
+
+**2. Altri due difetti del runner, visti nelle schermate e misurati.**
+- **Dopo la risposta la domanda sparisce.** Il riquadro della domanda (`.qbody`,
+  che scorre da solo) si riduce a una riga, e resta visibile solo il numero del
+  quesito tagliato a metà: chi ha sbagliato non rilegge che cosa gli era stato
+  chiesto.
+- **«Metti un segnalibro» e «Segnala un problema» stanno sopra le risposte o
+  sopra i tag.** Misurato: «Segnala un problema» a 409–461 px e la prima
+  risposta a 405–498; dopo un errore, i tag a 374–418 sopra «Segnala un
+  problema» a 330–382. Il lettore B1: «una scatola copriva il testo della
+  domanda e delle risposte».
+
+**3. Che cosa hanno capito, dalle domande a giro chiuso.**
+
+| Domanda | Hanno capito | Che cosa vuol dire |
+|---|---|---|
+| È gratis? | 5 su 5 | «Gratis e open source» in Home funziona («open source» no, per due) |
+| Senza account che cosa resta? | 5 su 5 | l'avviso funziona; anzi è ripetuto troppo (sotto) |
+| A che cosa serve registrarsi? | 5 su 5 «a salvare»; che cosa si vede in più lo immaginano, nessuno l'ha visto | il valore dell'account non si vede: l'infermiera ha aperto Progressi cercando dove è scoperta e ha trovato un conteggio; «il momento peggiore» |
+| Com'è fatto il quiz d'esame? | 5 su 5 | le condizioni in Home funzionano |
+| Allenati ed Esame, che differenza c'è? | 0 su 5 sicuri | nessuno ha aperto Esame; il tedesco: «allora che cos'è "Simula il quiz base"?». Conferma l'autore |
+| Che cos'è il carteggio, si fa sul telefono? | 1 su 5, chi l'ha aperto | «Quiz e carteggio» e «confronta il lavoro sulla carta» non spiegano niente a chi non lo sa già |
+| Che cosa sono gli oscurati? | 2 li hanno visti, nessuno ha capito perché ci sono | «Quesito oscurato dal Ministero — circolare 30432 … dopo il DM 133/2024 … In aula compaiono barrati»: «non so se devo rispondere o saltarla» |
+| Il sito ti dice i suoi limiti? | solo il velista, che legge tutto, ricorda «Che cosa non torna» | il riquadro non arriva a chi scorre |
+| Come riprendi domani? | 0 su 5 sicuri | il file da scaricare e ricaricare lo ricorda solo il velista, senza averlo provato; e due su cinque pensano che il sito sia per la patente **entro 12 miglia**, con «senza limiti dalla costa» scritto in testa |
+
+**4. Le frasi e le parole, in ordine di quante volte sono tornate.**
+- **«Tocca una risposta per vedere quella ufficiale.»** (3 lettori su 5):
+  sembra «sbircia la soluzione», non «rispondi». → «Scegli la risposta».
+- **«Ne aprirai 10.»** (3 su 5, i tre che l'hanno vista): «aprirai» è una parola strana per delle
+  domande, e ripete il titolo. Conferma l'autore.
+- **L'avviso «senza account»** (5 su 5 lo ricordano, e 5 su 5 lo trovano
+  ripetuto): l'inventario lo conta in circa otto punti, fino a tre volte prima
+  della prima domanda. R-ACC-02 lo chiede prima e alla fine, non ovunque.
+- **I tag dopo l'errore** (3 su 5): «Se vuoi, indica perché hai sbagliato.
+  Puoi saltare questo passaggio.» — «come lo salto?»; «Non lo sapevo» cambia
+  colore e basta; «Svista, parola da vecchi». Con il difetto del punto 1 il tag
+  sembra il pulsante per andare avanti.
+- **«nuovo»** accanto al numero della domanda (3 su 5): «nuovo che cosa?».
+- **«tasti 1 2 3 oppure A B C»** su un telefono (3 su 5).
+- **«Quiz / Quiz base»** in testa al runner (4 su 5): due righe che dicono la
+  stessa cosa e tolgono spazio.
+- **«Attività interrotta»** e **«Hai affrontato 1 domanda su 10 proposte. 9 non
+  sono state affrontate.»** (2 su 5): sembra un errore, e «affrontate» è
+  burocratico.
+- **«N. 1.8.2-40»** (3 su 5): nessuno sa a che cosa serve il numero del
+  quesito. Serve a chi studia col libro: va detto, o messo più in piccolo.
+- **Il gergo** che l'inventario ha trovato e i lettori hanno confermato:
+  «banca» («per me è dove tengo i soldi»), «quesiti», «decreto», «DM»,
+  «oscurato», «sblocchi», «giro», «foglio», «diagnostica», «avatar», «pallino
+  ambra», «in chiaro» («mi è suonato inquietante»), «Carta 0 · Tecniche 0»,
+  «COLREG», «estratte» («l'ho letto come tolte»).
+- **Un codice interno in schermata**: la preparazione della prova di carteggio
+  mostra «Q-CART4: un esercizio per ciascuno dei quattro argomenti è
+  un'assunzione del sito…» (`site/index.html:4403`, il testo è
+  `PROVA_CARTEGGIO.assunzione` in `site/engine.js:536`). Il codice della
+  domanda aperta va tolto dal testo del motore: è di `main`.
+
+**5. Pulsanti che promettono altro** (inventario e lettori).
+- «Simula il quiz base» apre «Simula la prova», con la scelta fra tre (autore,
+  il tedesco, l'inventario).
+- Due «Simula la prova» in Allenati → Quiz: uno porta alla sezione Esame,
+  l'altro apre la preparazione.
+- Nel Profilo, «Dati» apre «Info e diagnostica», e «Che cosa stai preparando?»
+  e «Data d'esame» aprono lo stesso modulo; il velista ha cercato che cosa il
+  sito fa dei suoi dati ed è finito in un pannello «da tecnici» con «0,0 MB su
+  10240,0».
+- «Note, fonti e riferimenti» in Home apre «Info e diagnostica», con i difetti
+  in fondo, chiusi.
+- «Torna al riepilogo» e «Torna all'attività» anche quando non c'è né l'uno né
+  l'altra.
+- «Vedi un esempio» nel Carteggio apre l'esempio sotto, fuori dallo schermo:
+  «sembrava non succedere nulla».
+- «Allenati con 10 domande» porta a una preparazione e non alla prima domanda
+  (3 su 5 non se l'aspettavano): una schermata in più fra il tocco e la domanda.
+
+**6. Il glossario.** Lo stesso concetto ha molti nomi, e la stessa parola fa
+due mestieri. Dall'inventario, con i conteggi:
+- domanda / quesito / quiz (52 «quesito», 27 «domanda»);
+- prova / simulazione / esame, e «Prova» anche verbo («Prova 155 mai visti»,
+  che è un allenamento);
+- progressi / archivio / copia / righe / dati / storico;
+- Info / Account / Profilo / Dati: «Profilo» compare nei testi e nessun
+  elemento si chiama così;
+- sette etichette per due gesti, rivedere e rifare; e «Riprova» vale sia
+  «rifai l'operazione» sia «rifai le domande sbagliate»;
+- mai visti / mai incontrati / mai fatte / mai provati / «nuovo»;
+- ufficiale / ministeriale;
+- argomento / tema / voce, che si scambiano.
+
+**7. Le regole per scrivere i testi, proposte da Claude.** Ogni testo che si
+vede passa da queste domande:
+1. Il pulsante promette quello che si apre? Il titolo di ciò che si apre è il
+   pulsante, o lo continua.
+2. Il numero dice qualcosa che il titolo non dice? Se no, via.
+3. C'è una parola nostra? Banca, quesito, oscurato, decreto, riga, archivio,
+   copia, attività, sblocco, diagnostica, ufficiale: ognuna o si spiega lì, o si
+   cambia. I codici (Q-…, R-…, P-…, DM, circolari) mai in schermata fuori da un
+   «Approfondisci».
+4. È già stato detto su questa schermata, o su quella prima? Una volta basta.
+5. Si capisce senza aver letto altro? Chi arriva da un link legge da lì.
+6. Dice che cosa fare, non solo che cosa non succede? Niente negazioni in fila.
+7. Una parola, un significato; un significato, una parola (il glossario sopra).
+8. Su un telefono, a 375×667: il pulsante che serve per andare avanti si vede?
+
+Le regole 1, 2, 3 (i codici), 7 e 8 si possono controllare almeno in parte; le
+altre sono lettura.
+
+**Che cosa non ha visto.** La sezione Esame (nessun lettore l'ha aperta, ed è
+già un risultato); l'account; il carteggio oltre l'esempio; la vela; Safari; il
+gesto vero. Un lettore Sonnet non si annoia e non ha paura di rompere qualcosa
+come una persona: le persone vere restano Q-PROVE.
+
+**Decisioni dell'autore, in parole semplici.**
+1. **Chi corregge il blocco su «Avanti»** e quando: è il più urgente, perché chi
+   sbaglia una domanda su un telefono piccolo non può più andare avanti. È un
+   file dell'interfaccia: ChatGPT su `ui/main`, oppure Claude sullo stesso ramo
+   con ChatGPT fermo.
+2. **I nomi.** «Simula il quiz» al posto di «Simula il quiz base» in Home (sì
+   dell'autore, 20 ottobre); «Il mio esame» al posto di «Esame» nella barra
+   (proposta dell'autore: va misurato che le quattro voci stiano a 320 px senza
+   rimpicciolire il testo, §6.3). Più la parola unica per ogni riga del
+   glossario.
+3. **«Che cosa non torna»** in Home: dividerlo. I limiti della banca restano,
+   detti in parole semplici; le due righe sulla privacy vanno con l'avviso
+   «senza account»; il carteggio va nel Carteggio. Le due righe sulla privacy
+   non c'erano nel testo deciso (`ridisegno-progetto.md` §4) e sono entrate
+   durante la realizzazione; mancano invece i benefici che lì erano previsti.
+4. **Il metodo** (I-22): se diventa un passo fisso.

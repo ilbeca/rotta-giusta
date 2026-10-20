@@ -33,6 +33,29 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 - **Non guardato:** un accesso con l'account vero dopo l'aggiornamento, e
   l'onboarding che salva le scelte sul server in esercizio.
 
+### Provato — la lettura da fuori, e un blocco nel runner
+
+- **Che cosa capisce chi non sa niente del progetto.** L'autore ha trovato
+  quattro testi che confondono («Simula il quiz base», «Ne aprirai 10», «Che
+  cosa non torna», «Esame») e nessun controllo poteva vederli: i controlli
+  misurano che un numero e la sua lista vengono dalla stessa fonte, non che una
+  frase si capisca, e chi scrive e chi rilegge ha letto la specifica. Cinque
+  lettori Sonnet senza contesto, dal banco di `~/bot-ux/` adattato al compito
+  «dimmi che cosa capisci», con nove domande di comprensione mostrate solo a
+  giro chiuso, sul sito della v0.32.0 a 375 px: 1,10 $ e 7 minuti e mezzo. Più
+  un inventario dei testi della pagina. I risultati, i metodi possibili e le
+  regole per scrivere i testi sono I-22 e I-23 in
+  `docs/idee-dopo-gli-account.md`.
+- **Trovato, e riprodotto a mano su `rottagiusta.it`: dopo una risposta
+  sbagliata «Avanti» può finire sotto il bordo dello schermo, e niente scorre.**
+  A 375×667 sta a 745–797 px dentro un runner `position: fixed` alto 667; a
+  375×812 basta una domanda con risposte lunghe. Due lettori su cinque sono
+  usciti con «Termina l'attività». Nessun controllo lo vedeva: lo sbordamento si
+  misura in larghezza, e i banchi premono con `element.click()`. Non corretto
+  qui: è dell'interfaccia. Visti accanto, e misurati: la domanda che sparisce
+  dopo la risposta, e i pulsanti del segnalibro sopra le risposte e i tag.
+- Nessun file del sito, dei test o del motore è stato toccato.
+
 ## [0.32.0] — 2026-10-20
 
 **Il ridisegno.** Il sito diventa un documento solo: **Home · Allenati ·
