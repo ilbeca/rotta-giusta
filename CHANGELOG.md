@@ -194,6 +194,38 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   in 4 min 19 s con la 8620 guardata libera per 90 s prima; specifica 1.032;
   guardiano verde. `site/` non è stato toccato.
 
+### Interfaccia — P-81: lo studio resta nello stesso documento
+
+- **Home · Allenati · Esame · Progressi su `/`, con Profilo e legali sopra
+  il lavoro.** I passaggi fra sezioni accompagnano le risposte anonime nella
+  memoria dello stesso documento, dall'avvio al risultato e alla revisione.
+  Allenati comprende Quiz, Carteggio e Segnali; Esame raccoglie le prove senza
+  sblocchi. `/app` è la porta compatibile, il manifest apre la Home e i legali
+  autonomi tornano a `/`. I cinque file sono sostituiti insieme.
+- **Cinque stati, tag N/S con L/C storici, segnalibri, ricerca per numero e
+  riepilogo della pagina** dai contratti del motore. I nuovi gesti rispettano
+  le capacità del server; «Scelte salvate» viene solo dai valori riletti, con
+  i due campi dichiarati. Informativa nelle sole frasi concordate e inviti
+  nei tre posti decisi. Le sei chiamate reali diventano protette;
+  `classifica` ne esce perché il motivo della vecchia Home è sostituito.
+  P-75 resta spento, P-76 non è emulato.
+- **Cinque suite prima sulla copia, poi sul sito sostituito:** motore
+  **215/219**, quattro skip previsti; server **89/89**, anche su Node
+  **24.22.0** ufficiale verificato con SHA256; dati **225**; specifica
+  **1.032**; interfaccia **3.462/3.462** sulla copia e **3.462/3.462** su `site/`,
+  regime **ridisegno**, in **330,43 s** e **331,63 s**, sotto il tetto
+  di 1.800 s. 8620 libera da 90 s prima di entrambe (07:47:13 e 14:21:11,
+  Europe/Rome). Guardiano e controllo documentale verdi. Nessun test,
+  motore, server, banca, service worker o numero di versione modificato.
+- **Chrome a 375 e 1280 px**, due accessi, errori, legenda e tastiera:
+  14 screenshot delle superfici anonime, 40 del giro account/errori;
+  a 1280 px altri **36 giri** dei dodici compiti nei tre stati, condivisi
+  dai 108 ID, con 72 rilevazioni e screenshot di arrivo e ritorno.
+  **0 px di sbordamento orizzontale**, nessun errore JavaScript nei collaudi.
+  Esiti, evidenze datate e limiti nel §10.1 di `docs/ridisegno-progetto.md`.
+  Le prove con persone e su Safari reale restano all'autore; non è un rilascio.
+
+
 ## [0.31.0] — 2026-10-18
 
 **Un rilascio piccolo, prima del ridisegno.** Per chi studia cambia poco di
