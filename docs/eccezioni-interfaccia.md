@@ -50,16 +50,14 @@ dichiarazione che mente.
 | funzione | perché è ancora qui |
 |---|---|
 | `estrai` | La prova di carteggio la chiama nel motore tramite `provaCarteggio()`; la pagina non la passa più come valore. Resta esportata per il motore e i suoi test, senza chiamanti diretti nella pagina |
-| `estraiNuoviPrima` | La variante di allenamento della prova la chiama nel motore tramite `provaCarteggio()`; la pagina non la passa più come valore |
 | `rimescola` | La composizione della prova è nel motore; la pagina non rimescola più la lista |
 | `fondi` | Fusione di due specchi: serviva alla sincronia col server, tolta nella 0.19.0. Resta esportata e testata perché descrive la semantica della fusione, ma nessuno la chiama. Non ha un'area: è storia |
 | `rigaAvvio` | La riga d'avvio di una simulazione, con le previsioni registrate (P-72, A-1 del §10.1 di `docs/esito-esame-progetto.md`). La scrive la pagina a Inizia, con l'account e solo se il server dichiara `'a'` fra i `tipi_riga`: B-2, su `ui/main`. `previsioniProva()` non è qui perché la chiama `rigaAvvio()` |
 | `rigaDiRisposta` | Il predicato con cui la pagina conta le «risposte» senza le righe d'avvio e i tag (§4.3 e §7 di `docs/esito-esame-progetto.md`; i chiamanti sono elencati nel §10.1, A-1): B-2, su `ui/main` |
-| `contaStati` | I cinque stati per quesito, contati sotto una restrizione (decisione 14 di P-59, P-71). Li leggerà la barra del ridisegno al posto dei tre di `classifica()`, con le parole di Q-STATI; `statoQuesito()` non è qui perché la chiama `contaStati()`. Quando la pagina li legge, ogni `E.applica()` deve passare il `ts` della riga come sesto argomento: lo pretende `test_applica_con_istante` |
-| `rigaScrivibile` | Se il server che la pagina ha davanti accoglierebbe una riga — un tag «Svista» (`S`), un segnalibro (`_t: 'b'`) — dal suo `tipi_riga` (P-71). La chiama il ridisegno prima di scrivere un tipo o un tag nuovo; oggi la pagina non ne scrive |
-| `codaSegnalibri` | L'allenamento «i miei segnalibri», con il numero e la lista dalla stessa chiamata (decisione 20 di P-59, P-71). Il ridisegno: il gesto che segna e il pulsante che apre; `segnalibri()` non è qui perché la chiama `codaSegnalibri()` |
-| `cercaNumero` | Cerca un quesito per numero del decreto, base e vela (decisione 8 di P-59, P-71). Il ridisegno, in Allenati → Quiz |
-| `riepilogoPagina` | «Le attività di questa pagina»: le risposte della pagina aperta contate per tipo, con le attività di `sessioni()` e `attivitaCarteggio()`, e i gesti a parte (D.1 del §10.1 di `docs/ridisegno-progetto.md`, P-80). La consuma il ridisegno nella Home H1 e in Progressi senza account: P-81, su `ui/main` |
+
+<!-- P-81: classifica esce dalle protette: l’unico chiamante diretto era il motivo
+     rotta-rec-motivo nella vecchia Home, tolto dal ridisegno. Resta nel motore
+     tramite quadro, dovePesa e traccia (§10.1 del progetto, decisione 18 ottobre). -->
 
 ## Chiamate al motore protette
 
@@ -81,11 +79,16 @@ seconda composizione nella pagina.
 
 | funzione |
 |---|
+| `contaStati` |
+| `rigaScrivibile` |
+| `codaSegnalibri` |
+| `cercaNumero` |
+| `estraiNuoviPrima` |
+| `riepilogoPagina` |
 | `accoda` |
 | `attivitaCarteggio` |
 | `addGiorni` |
 | `applica` |
-| `classifica` |
 | `concludiBozza` |
 | `coda` |
 | `daAllenare` |

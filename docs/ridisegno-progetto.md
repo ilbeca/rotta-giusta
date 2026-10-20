@@ -2334,6 +2334,78 @@ gira anche su di lei; se il suo ritorno usasse lo stesso schema, ora la
 variante dice che cosa guardare. Suite su `main`: interfaccia 3.022,
 specifica 1.032.
 
+##### P-81 — realizzazione conclusa sul ramo UI, 20 ottobre 2026
+
+**Il documento unico è realizzato.** Home · Allenati · Esame · Progressi
+vivono in `index.html` su `/`, con Quiz, Carteggio e Segnali in Allenati,
+Profilo e legali sopra il lavoro. `/app` è soltanto la porta di compatibilità,
+il manifest apre `/` e i due legali autonomi tornano alla Home. I cinque file
+sono stati sostituiti insieme dalla copia collaudata, verificandone le impronte.
+Le sole modifiche alla privacy sono il ritorno e le quattro frasi autorizzate
+dal §11.2 del progetto del client. Le sei chiamate reali passano alle protette;
+`classifica` ne esce con il motivo già deciso. Nessun'altra eccezione cambia.
+
+**Base e misure.** `main` e `ui/main` allineati a `2977392`, un solo scrivente
+attivo nel worktree. Diff rispetto a `main` vuoto di test, server e motore
+prima delle misure; intatti anche `sw.js`, dati, figure, specifica, coda e
+versione. Nessun upstream configurato: è allineamento locale.
+Sulla copia: interfaccia **3.462/3.462** in **330,43 s**, regime
+**ridisegno**; 8620 libera da 90 s alle **07:47:13 Europe/Rome**.
+Motore **215/219** (quattro skip previsti), server **89/89**, dati **225**,
+specifica **1.032**.
+Dopo la sostituzione, senza `RG_SITO`: interfaccia **3.462/3.462** in
+**331,63 s**, regime **ridisegno**; 8620 libera da 90 s alle
+**14:21:11 Europe/Rome**. Le altre quattro suite restano verdi, con gli stessi
+numeri.
+Server anche con Node **24.22.0** ufficiale: **89/89**, SHA256 del pacchetto
+ricontrollato contro `SHASUMS256.txt`. Entrambe le suite interfaccia entro il
+tetto Q-SUITE di 1.800 s, con 8620 osservata libera per 90 s consecutivi prima
+dell'avvio. I gruppi comprendono quiz, ciclo, mappa con i cinque stati e Allena,
+Carteggio, client, rifinitura, N-01, riferimenti e rotture. Nessun controllo
+adattato e nessun rosso escluso. Guardiano (184 file), controllo documentale e diff senza errori; controllo
+del territorio sullo stage e sul diff del ramo alla chiusura.
+
+**Collaudo guardato.** Rimisurate sette superfici anonime a **375 e 1280 px**
+(14 screenshot); nuovo giro con account fittizio, errori e tastiera alle due
+larghezze (40 screenshot, 43 rilevazioni). Legenda aperta con `?`, scelte
+salvate e rilette, Esame aggiornato dopo Profilo, preparazione, risposta,
+risultato, revisione e privacy; scrittura locale fallita, HTTP 401, rete
+assente, banca e legale non disponibili. Nessuno sbordamento orizzontale e
+nessun errore JavaScript nei collaudi visivi. Il pallino resta dopo Info;
+Tab è confinato anche nel legale non disponibile ed Esc rende risultato e
+fuoco al link. Nel browser integrato, risposta da tastiera, «Svista» e
+segnalibro restano tra risultato, privacy e revisione.
+
+**Anche i tragitti desktop:** un collaudo aggiuntivo fuori dal repo guida a
+1280 px dodici compiti per ciascuno di H0/H1/HA: **36 giri condivisi dai 108
+ID**, tutti arrivati e tornati alla sezione/segmento attesi; controllo del
+fuoco sulle porte e dello scorrimento per l'argomento, **72 rilevazioni e
+screenshot**, zero sbordamento e nessun errore JavaScript. I tragitti a 375 px
+e i tocchi sono quelli misurati dal banco ufficiale N-01 nelle due suite
+intere; il collaudo desktop è aggiuntivo, non ne sostituisce alcun esito.
+Il primo script desktop aveva una regexp citata male e un clic prima dei
+200 ms: fermato e corretto solo lo script temporaneo, non la pagina né i test.
+
+**Limiti e consegna alla regia.** I due link ufficiali di Esame sono
+raggiungibili: non è una nuova verifica normativa. Restano le prove con
+persone, Safari reale, zoom nativo e lettore di schermo. A-3 resta il
+segnaposto dichiarato; P-75 e i regimi E-01/P-01 restano spenti, niente fasi,
+costanza, obiettivo o stima di P-76. Nessuna verifica della clipboard di
+sistema. Restano le due regressioni dei conti già prese in carico dalla regia
+nelle note precedenti, da fissare sulla pagina vera dopo la merge.
+La regia verifica il territorio e fonde, elimina il regime di transizione
+conservando riferimenti e rotture, aggiorna i documenti di `main` e prepara il
+rilascio separato con le scelte di preparazione accese nello stesso tag
+dell'informativa (P-86). Nessuna decisione UI nuova necessaria alla merge.
+Nessun push, tag, Build now, account reale o produzione toccati.
+
+**Evidenze locali temporanee:** copia `sito/` e fotografia `misura-20-finale/`
+in `/private/tmp/rg-p81`; `evidenze/p81-copia-20-ottava-suite.json` e
+`p81-finale-20-ottava-suite.json`, con tempi e log accanto;
+`evidenze/visuale-ottava-20.json`, `visuali-ottava-20-KXAJ0B/misure.json`,
+`tragitti-desktop-20-aDwslB/esiti.json` e screenshot nelle rispettive cartelle.
+I file temporanei possono sparire: esiti e limiti sono conservati qui.
+
 ### 10.2 Verifica documentale di P-79 e limiti
 
 Verificati cartella, ramo, albero iniziale pulito e inventario delle chat:
