@@ -226,6 +226,39 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   Le prove con persone e su Safari reale restano all'autore; non è un rilascio.
 
 
+### Corretto — P-90: i percorsi dei dati nei legali e la preparazione dalla Home
+
+- **I legali indicavano porte che il ridisegno ha spostato.** Privacy e
+  condizioni rimandano ora al **Profilo → Dati** per scaricare i progressi e
+  al **Profilo** per cancellare l'account; la scadenza dell'account non
+  confermato è indicata nella **Home**, dove compare davvero. Corretto anche
+  il riferimento a Info nel consiglio di scaricare i progressi delle
+  condizioni. La privacy porta **20 ottobre 2026**, da allineare al giorno
+  del rilascio se diverso. Nessun'altra frase dell'informativa cambia;
+  «questa palestra ti prepara a quell'esame» resta nell'avvertenza.
+- **La preparazione dalla Home lasciava il footer sopra il pannello.**
+  Riprodotto in Chrome a 375 e 1280 px: il pannello cominciava a **319 e
+  247 px**, dopo il footer e il padding del contenitore vuoto. Una sola
+  regola CSS nasconde ora tutto `main.preparazione-sopra`, invece delle
+  sole viste: il pannello comincia a **90 e 108 px**, con **20 px** dopo
+  l'intestazione, senza il footer sopra. Nessun JavaScript modificato.
+  Misurati prima e dopo: fuoco sul titolo della preparazione e ritorno al
+  pulsante della Home con lo stesso scorrimento. Il controllo locale del
+  contenitore nascosto è rosso prima e verde dopo.
+- **Guardato, oltre alle suite:** le due pagine legali e la preparazione a
+  **375 e 1280 px**, con **0 px di sbordamento orizzontale**; con due account
+  temporanei sul server locale, le porte del Profilo, lo scarico in Dati e
+  la scadenza nella Home. Nessun errore JavaScript nei giri conclusi.
+  Evidenze temporanee in `/private/tmp/rg-p90`: `prima-misure.json`,
+  `dopo-misure.json`, `legali-misure.json`, `profilo-misure.json` e screenshot.
+- Suite: motore **215/219**, quattro skip previsti; server **89/89**, anche
+  con **Node 24.22.0 LTS** dal pacchetto verificato con `SHASUMS256.txt`;
+  dati **225**; specifica **1.032**; interfaccia **3.462**, regime ridisegno,
+  in **330,39 s**, con la 8620 osservata libera per **90,1 s** prima
+  dell'avvio (15:00:09, Europe/Rome). Guardiano e documentazione verdi.
+  Versione invariata; nessun push o rilascio.
+
+
 ## [0.31.0] — 2026-10-18
 
 **Un rilascio piccolo, prima del ridisegno.** Per chi studia cambia poco di
