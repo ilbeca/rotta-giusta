@@ -2222,6 +2222,118 @@ non compaia resta, con le sue rotture: una previsione scritta dentro la nota
 del quesito, e soltanto lì, il banco non la vedrebbe più. Suite su `main`:
 interfaccia 3.020, specifica 1.032.
 
+##### P-81 — fermo sul ritorno alla porta di Esame nel riferimento, 20 ottobre 2026
+
+**Nessuna sostituzione e nessun commit.** Ripresa su `ui/main`, allineato a
+`main` alla base `4d8c324`, dopo la stabilizzazione di P-01:visto. Un solo
+scrivente attivo nel worktree; conservate le dichiarazioni autorizzate in
+`docs/eccezioni-interfaccia.md`. Diff rispetto a `main` vuoto di test, server,
+motore e degli altri file esclusi. Nessun upstream impostato.
+
+**Prima misura sulla copia invariata:** regime **ridisegno**, interfaccia
+**3.460/3.460 in 329,65 s**, 8620 libera da 90 s alle **07:15:20 Europe/Rome**.
+È la fotografia `misura-conclusiva/`. Il primo avvio dentro la sandbox era
+fallito per `listen EPERM`: questi numeri vengono dall'esecuzione locale
+autorizzata, non da quel tentativo. Nel giro manuale successivo la Home H1
+mostrava «1 risposte» nel riepilogo, nell'invito e nella riga attività.
+Corrette **solo nella copia** queste rese e il singolare dell'elenco e del
+comando dei segnalibri; accordati «quella accolta» e «scaricarla». Verificati
+in Chrome una e due risposte e un segnalibro a 375 e 1280 px: otto immagini,
+zero sbordamento, nessun errore JavaScript. La nuova fotografia intera è
+`/private/tmp/rg-p81/misura-20-finale/`, identica a `sito/`.
+
+**Nuova suite completa sulla fotografia aggiornata:** interfaccia
+**3.457/3.459 in 331,24 s**, sempre **ridisegno**; 8620 osservata libera per
+90 s fino alle **07:22:53 Europe/Rome**. I due soli rossi sono del riferimento:
+
+- «tragitti, riferimento N-01:cronologia: dalla simulazione il ritorno riporta a Esame, alla sua porta»;
+- «tragitti, riferimento N-01:cronologia: il giro e' arrivato in fondo», 11 verifiche su 12.
+
+L'arrivo misurato è `sezione: esame`, `url: /?sezione=esame`, `nav: 6`,
+`history.length: 5`, `scroll: 0`; il fuoco è su **Accedi**, senza
+`data-banco-porta`. Il banco aveva marcato come porta il pulsante della
+simulazione base. Il primo rosso ferma il gruppo, quindi manca l'ultima
+verifica sul documento. Nessun rosso attribuito alla pagina P-81; il caso
+P-01:visto che aveva fermato la ripresa precedente è verde.
+
+**Riprodotto senza cambiare banco, riferimento o clock.** Ventiquattro
+sessioni isolate con il sorgente identico di
+`tests/pagina-client-ridisegno.html`, ingresso `/`, regime letto dalle sue
+dichiarazioni e il solo gruppo `N-01:cronologia`: **23 prove verdi, una
+rossa**, **286 verifiche riuscite su 287**, in **16,28 s**. Il rosso è di
+nuovo lo stesso ritorno a Esame con il fuoco su Accedi; anche qui si ferma
+prima dell'ultima verifica. Porta 8620 osservata libera da 90 s fino alle
+**07:30:53 Europe/Rome**. È una ripetizione mirata del difetto intermittente,
+non un altro giro completo e non un verde conclusivo di P-81. La suite intera
+precedente lo passava: ripetere finché diventa verde non lo ripara.
+
+**Il punto alla regia.** `n01cronologia()` in `tests/client_account.mjs`
+misura il ritorno alla porta dopo Indietro, annullamento della consegna e
+consegna della simulazione. Nel riferimento il fuoco è ricordato da
+`ricordaQui()`, ripristinato con `requestAnimationFrame` da `ripristina()`;
+i gesti durante un salto vengono rinviati da `RINVIATI`. Sono i punti da
+verificare insieme alla sequenza del banco, **non una causa già dimostrata**:
+l'evidenza certa è il ritorno con il fuoco sbagliato. La pagina P-81 non
+controlla il sorgente o il comportamento del riferimento. Il metro consegnato
+pretende il riferimento verde in tutti i gruppi; modificare la UI non può
+riparare questo esito. Serve stabilizzare quel tragitto conservando la
+verifica di fuoco, scorrimento, documento e le sue rotture. Nessun controllo
+adattato o escluso, nessun timeout alterato, nessun verde sostitutivo dichiarato.
+
+**Altre verifiche della ripresa:** motore **215/219**, quattro skip previsti;
+server **89/89**, anche con Node **24.22.0** ufficiale, SHA256 del pacchetto
+ricontrollato contro `SHASUMS256.txt`; dati sulla copia **225**; specifica
+**1.032**. Guardate e misurate 14 schermate delle superfici anonime a 375 e
+1280 px; 40 immagini e 43 rilevazioni del giro account fittizio/errori/tastiera
+sulla copia aggiornata, più le otto dei singolari: **0 px di sbordamento
+orizzontale**, nessun errore JavaScript nei collaudi visivi. Legenda aperta
+col `?`, scelte salvate/rilette e riflesse in Esame dopo Profilo, preparazione,
+risposta, risultato, revisione, privacy; Tab/Invio, risposta numerica, Esc e
+ritorno del fuoco dal legale anche in errore. Riprodotti scrittura locale
+fallita, HTTP 401, rete assente, banca e legale non disponibili; pallino
+persistente dopo Info. Il giro manuale nel browser integrato ha conservato
+risposta, «Svista» e segnalibro fra risultato, privacy e revisione. I due link
+ufficiali di Esame sono raggiungibili (Gazzetta Ufficiale e MIT): non è una
+nuova verifica normativa. Le prove con persone, Safari reale, zoom nativo e
+lettore di schermo restano all'autore; A-3 resta un segnaposto. P-75 spento,
+nessuna emulazione di P-76.
+
+**Stato conservato.** `git diff -- site/` vuoto; nel repo soltanto questa
+nota e le eccezioni autorizzate, nessuna voce di CHANGELOG o commit parziale.
+Copia corrente `sito/` e fotografia `misura-20-finale/` identiche, impronte in
+`evidenze/impronte-20-finale.json`. Misure complete in
+`evidenze/p81-copia-20-autorizzata-suite.json` e
+`evidenze/p81-copia-20-definitiva-suite.json`, con i log accanto; input della
+ripetizione in `lavoro/prove-cronologia-20.json`, risultati e sintesi in
+`evidenze/cronologia-20-ripetizioni.json` e `cronologia-20-sintesi.json`;
+provenienza e impronte del riferimento in `cronologia-20-provenienza.json`.
+Visuali: `evidenze/visuale-mattina-20.json`, `evidenze/singolari-20.json` e
+`visuali-20-mattina-fnVkhu/misure.json`. Le bozze di chiusura e sostituzione in
+`lavoro/` non sono una consegna verde e non vanno applicate. Anteprima, scheda
+e processi diagnostici terminati; solo account/database locali fittizi,
+posta simulata, nessuna produzione. Nessun push, tag o Build now.
+
+**Restano:** raccordo del riferimento, nuova suite completa sulla copia,
+sostituzione unica e cinque suite finali, guardiano/documentazione,
+CHANGELOG e commit unico. Non fondere la copia sulla base dei soli gruppi
+P-81 verdi. Guardiano e documentazione sulla chiusura di questa ripresa:
+entrambi verdi, con `git diff --check` verde.
+
+**Il ritorno a Esame è stabile dalla regia, il 20 ottobre 2026.** La causa
+era nel riferimento, nel gestore di `popstate`. Indietro durante un'attività
+arriva per un istante alla tappa di prima e rimbalza sul runner; al secondo
+`popstate` la voce «lasciata» è quella tappa, e il gestore ci scriveva fuoco e
+scorrimento del runner. Se nel runner il fuoco era su «Accedi», il ritorno lo
+restituiva lì e non alla porta. Prima il rosso: con il runner aperto e il
+fuoco forzato su «Accedi», N-01:cronologia era rosso 3 volte su 3, con lo
+stesso arrivo misurato da P-81. Ora il rimbalzo non scrive sulla tappa: la
+stessa pagina forzata è verde 4 volte su 4, il riferimento intatto 24 su 24, e
+la forzatura resta fra le varianti che devono restare verdi
+(`VARIANTI_RIDISEGNO`). La pagina di P-81 non ha questo gestore, e il gruppo
+gira anche su di lei; se il suo ritorno usasse lo stesso schema, ora la
+variante dice che cosa guardare. Suite su `main`: interfaccia 3.022,
+specifica 1.032.
+
 ### 10.2 Verifica documentale di P-79 e limiti
 
 Verificati cartella, ramo, albero iniziale pulito e inventario delle chat:

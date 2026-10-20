@@ -177,6 +177,23 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   in 4 min 27 s con la 8620 guardata libera per 90 s prima; specifica 1.032;
   guardiano verde. Motore e server non toccati. `site/` non è stato toccato.
 
+### Test — il ritorno a Esame del riferimento non perde la porta (fermo di P-81)
+
+- **Un rosso a caso di N-01:cronologia sulla pagina di riferimento del
+  ridisegno**, misurato da P-81: 1 giro su 24, il ritorno dalla simulazione a
+  Esame con il fuoco su «Accedi» invece che sulla porta. La causa era nella
+  pagina di riferimento, non nel banco: Indietro durante un'attività arriva
+  per un istante alla tappa di prima e rimbalza sul runner, e al secondo
+  `popstate` il gestore scriveva sulla tappa il fuoco e lo scorrimento del
+  runner. **Prima il rosso:** con il runner aperto e il fuoco forzato su
+  «Accedi», 3 su 3. Ora il rimbalzo non scrive sulla tappa: la stessa pagina
+  forzata 4 su 4 verde, il riferimento intatto 24 su 24, e la forzatura resta
+  fra le varianti che devono restare verdi, `VARIANTI_RIDISEGNO`.
+
+  Suite: interfaccia **3.022** (erano 3.020: le due verifiche della variante),
+  in 4 min 19 s con la 8620 guardata libera per 90 s prima; specifica 1.032;
+  guardiano verde. `site/` non è stato toccato.
+
 ## [0.31.0] — 2026-10-18
 
 **Un rilascio piccolo, prima del ridisegno.** Per chi studia cambia poco di

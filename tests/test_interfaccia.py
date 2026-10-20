@@ -2245,6 +2245,15 @@ VARIANTI_CLIENT = [
 # sola simulazione con il server che dichiara la riga d'avvio, come quando
 # esce per caso in una delle due.
 VARIANTI_RIDISEGNO = [
+    # N-01:cronologia (fermo di P-81, 20 ottobre 2026): Indietro durante
+    # un'attivita' torna per un istante alla tappa di prima e rimbalza sul
+    # runner, e il gestore di popstate scriveva sulla tappa il fuoco del
+    # runner. Con il fuoco su «Accedi» il ritorno lo restituiva li', non alla
+    # porta: 1 giro su 24, sempre. Qui il runner si apre con il fuoco su
+    # «Accedi», come quando capita.
+    ('il runner si apre con il fuoco su «Accedi»', ['N-01:cronologia'],
+     [("  if (sim) { cronoRun(); rTick = setInterval(cronoRun, 1000); }\n  mostra();\n}",
+       "  if (sim) { cronoRun(); rTick = setInterval(cronoRun, 1000); }\n  mostra();\n  $('conto-porta').focus();\n}")]),
     ('la simulazione con la riga d\'avvio si apre con un quesito oscurato', ['P-01:visto'],
      [("const lista = E.estrai(kind === 'vela' ? S.vela : S.banca, {}, oggi(), kind === 'vela' ? 5 : 20, Date.now() % 991);",
        "const lista = kind === 'base' && S.io && Array.isArray(S.io.tipi_riga) && S.io.tipi_riga.includes('a')\n"

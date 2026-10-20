@@ -568,7 +568,12 @@ window.addEventListener('popstate', (e) => {
     return;
   }
   const lasciata = NAV.get(PILA[da]);
-  if (lasciata) { lasciata.scroll = scrollY; if (document.activeElement && document.activeElement !== document.body) lasciata.fuoco = document.activeElement; }
+  // Nel rimbalzo verso il runner la voce di partenza e' quella dove Indietro
+  // era arrivato per un istante, e chi studia non l'ha mai vista: il fuoco e lo
+  // scorrimento sono ancora quelli del runner, e scriverli li' toglierebbe al
+  // ritorno la sua porta (fermo di P-81, 20 ottobre 2026: il ritorno a Esame
+  // con il fuoco su «Accedi»).
+  if (lasciata && !S.tornaAlRunner) { lasciata.scroll = scrollY; if (document.activeElement && document.activeElement !== document.body) lasciata.fuoco = document.activeElement; }
   POS = k;
   // Indietro durante un'attivita' passa dal gestore di uscita (§3.3): si torna
   // alla voce del runner, senza accumulare voci, e si chiede.

@@ -192,8 +192,10 @@ sostituzione si è fermata su una controprova di P-84 che prendeva
 site/app.html come «app di prima», tolta dalla regia lo stesso giorno:
 P-81 si è fermato di nuovo il 20 su un confronto del banco che lasciava
 nel testo la nota di un quesito oscurato, stabilizzato dalla regia lo
-stesso giorno: è pronto per la settima volta, e gli restano una suite
-sulla copia, sostituzione, suite e commit (§10.1). Dopo la merge, due regressioni dei conti che P-81 ha
+stesso giorno, poi ancora su un ritorno a Esame con il fuoco sbagliato nel
+riferimento, corretto dalla regia lo stesso giorno: è pronto per l'ottava
+volta, e gli restano una suite sulla copia, sostituzione, suite e commit
+(§10.1). Dopo la merge, due regressioni dei conti che P-81 ha
 trovato, per Claude. Le decisioni dell'autore del
 17 e 18 ottobre: Q-COSTANZA chiusa (specifica §10), il criterio della
 soglia degli allarmi (account-progetto.md §15.4), le raccolte spente e
@@ -274,7 +276,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 18 | **La prova con le persone**, sul sito vero, dopo il rilascio del ridisegno — i bot sui mock sono fatti (P-70, 14 ottobre) | l'autore, con Claude | — | il rilascio del ridisegno, e tre-cinque persone, dell'autore | P-70 resta la ricetta; prompt da riscrivere allora |
 | 19 | **Le ricerche**: il parere del professionista sulle donazioni (14 domande, I-11); se all'esame vero si torna indietro fra le domande; Lighthouse su telefono e Safari veri (I-08) | l'autore | — | — | §4, «Dopo P-59» |
 | 20-bis | **I contratti del motore, seconda parte**: Percorso con il «sei qui», costanza, obiettivo, «hai concluso quello che ti avevamo proposto» | Claude | `main` | l'ambito della decisione 22 e le fasi (§4, «Dopo P-59», 10 e 15); Q-COSTANZA è chiusa il 17 ottobre 2026, e P-68 è fatto | P-76, da scrivere |
-| 21 | **Il ridisegno**: il progetto (P-79), i raccordi e la specifica (P-80), i due campi del profilo (P-83), il banco dei tragitti in Chrome (P-82), la copia intera sotto i controlli (P-84) e la barra a link nei banchi (P-85) sono fatti; la realizzazione (P-81) si è fermata una quinta e una sesta volta il 20 ottobre, con la copia verde e collaudata, su una controprova di P-84 e su un confronto instabile di P-01:visto, tutti e due tolti dalla regia lo stesso giorno (§10.1 del progetto): riparte dalla sua copia; la sua merge viene dopo la v0.31.0, poi la regia toglie il regime di oggi e si fa un rilascio che accende le scelte di preparazione | ChatGPT; poi Claude | `ui/main`; `main` | niente | P-81 |
+| 21 | **Il ridisegno**: il progetto (P-79), i raccordi e la specifica (P-80), i due campi del profilo (P-83), il banco dei tragitti in Chrome (P-82), la copia intera sotto i controlli (P-84) e la barra a link nei banchi (P-85) sono fatti; la realizzazione (P-81) si è fermata una quinta, una sesta e una settima volta il 20 ottobre, con la copia verde e collaudata, su una controprova di P-84, su un confronto instabile di P-01:visto e su un ritorno del riferimento, tutti tolti dalla regia lo stesso giorno (§10.1 del progetto): riparte dalla sua copia; la sua merge viene dopo la v0.31.0, poi la regia toglie il regime di oggi e si fa un rilascio che accende le scelte di preparazione | ChatGPT; poi Claude | `ui/main`; `main` | niente | P-81 |
 | 22 | **Spiegazioni**: il primo lotto di 50, «Segnala un problema», la misura dell'effetto | Claude con l'autore, poi ChatGPT | `main`, `ui/main` | l'indirizzo e la licenza (§4, «Dopo P-59», 2 e 6) | da scrivere |
 | 24 | **La misura propria**: conteggi aggregati di eventi sul server del sito, senza cookie né terzi, a cominciare dal contatore degli ingressi; le registrazioni fra le metriche; MISURA → BRAINSTORM come quinto passo del ciclo (I-19, decisioni 1–3 e 5 del 17 ottobre in `docs/idee-dopo-gli-account.md`) | Claude con l'autore, poi Claude | `main` | un ADR che riscrive «nessun analytics» (specifica §2.1) e R-ACC-09, e la riga nell'informativa; dopo il rilascio del ridisegno | da scrivere |
 | 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | niente dal motore: `PREVISIONI` c'è (P-72), e un modello entra come metodo accanto alla regola semplice; Q-STIMA solo per quando si mostra | da scrivere |
@@ -296,7 +298,7 @@ d'esame, arriva con il prossimo rilascio; P-82, il banco dei tragitti in
 Chrome, è chiuso il 17 ottobre. P-75 aspetta la base giuridica, P-76 aspetta
 l'ambito della decisione 22 e le fasi; alla merge di P-81 la regia toglie il
 regime di oggi dai controlli. P-62 con l'autore quando vuole.
-P-84, `RG_SITO`, è chiuso il 17 ottobre. P-85, la barra a link nei banchi, è chiuso lo stesso giorno. P-86, le raccolte spente sul server, e P-87, due rossi falsi del banco, sono chiusi il 18 ottobre. P-88, il banco che accende le raccolte per parte, è chiuso il 18 ottobre, e la v0.31.0 è in linea dallo stesso giorno. **Per Claude** oggi non c'è un prompt pronto. **Per ChatGPT:** P-81 riparte per la settima volta, con lo stesso prompt, dalla copia in `/private/tmp/rg-p81`: il 20 ottobre la regia ha tolto su `main` la controprova sulla porta e il confronto instabile di P-01:visto. La misura propria (riga 24) aspetta il suo ADR, dopo il rilascio. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
+P-84, `RG_SITO`, è chiuso il 17 ottobre. P-85, la barra a link nei banchi, è chiuso lo stesso giorno. P-86, le raccolte spente sul server, e P-87, due rossi falsi del banco, sono chiusi il 18 ottobre. P-88, il banco che accende le raccolte per parte, è chiuso il 18 ottobre, e la v0.31.0 è in linea dallo stesso giorno. **Per Claude** oggi non c'è un prompt pronto. **Per ChatGPT:** P-81 riparte per l'ottava volta, con lo stesso prompt, dalla copia in `/private/tmp/rg-p81`: il 20 ottobre la regia ha tolto su `main` la controprova sulla porta, il confronto instabile di P-01:visto e il ritorno a Esame del riferimento. La misura propria (riga 24) aspetta il suo ADR, dopo il rilascio. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
 che cambiano una promessa (un ADR, la filosofia, la specifica), poi i mock e la
 prova con le persone, poi il codice; «com'è andata» parte presto perché i suoi
 dati arrivano mesi dopo. **Il §5, il §6 e i controlli R-NAV della specifica non
@@ -6124,7 +6126,14 @@ letto il commit, i file nel territorio del motore e le cinque suite.
 
 ### P-81 — ChatGPT: la realizzazione del ridisegno
 
-**Stato:** **pronto per la settima volta, dal 20 ottobre 2026: il confronto
+**Stato:** **pronto per l'ottava volta, dal 20 ottobre 2026: il ritorno a
+Esame del riferimento è stabile su `main`.** Dalla base `4d8c324` la copia,
+con i singolari corretti, ha dato **3.457/3.459**: i due rossi erano del
+riferimento, N-01:cronologia, il ritorno a Esame con il fuoco su «Accedi» — 1
+giro su 24 (§10.1 del progetto, «P-81 — fermo sul ritorno alla porta di Esame
+nel riferimento», con la nota della regia sotto). Nessuna sostituzione,
+nessun commit. Riparte con lo stesso prompt.
+Prima era: **pronto per la settima volta, dal 20 ottobre 2026: il confronto
 di P-01:visto è stabile su `main`.** La mattina del 20, dalla base `410b11c`,
 la copia ha dato **3.457/3.458**: l'unico rosso era della pagina di
 riferimento del ridisegno, P-01:visto, che lasciava nel testo confrontato la
@@ -7682,4 +7691,13 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   «regola». Riprodotto con una variante nuova (`VARIANTI_RIDISEGNO`, base-593
   in testa a una sola simulazione), rossa 2 su 2; corretto togliendo anche
   `#r-nbp`, verde 3 su 3; suite su `main` 3.020. P-81 riparte con lo stesso
+  prompt.
+- **20 ottobre 2026 — P-81 fermo una settima volta, e il ritorno a Esame
+  stabile.** Il resoconto letto contro il repo: nessun commit, base `4d8c324`,
+  `site/` com'era; nel worktree la nota del progetto e le dichiarazioni. Il
+  rosso era del riferimento: nel rimbalzo di Indietro durante un'attività il
+  gestore di `popstate` scriveva il fuoco del runner sulla tappa di prima.
+  Riprodotto forzando il fuoco su «Accedi» nel runner, 3 su 3; corretto, 4 su 4
+  e 24 su 24 senza forzatura; la forzatura entra fra le varianti
+  (`VARIANTI_RIDISEGNO`). Suite su `main` 3.022. P-81 riparte con lo stesso
   prompt.
