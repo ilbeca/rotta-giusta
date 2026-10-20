@@ -2406,6 +2406,29 @@ in `/private/tmp/rg-p81`; `evidenze/p81-copia-20-ottava-suite.json` e
 `tragitti-desktop-20-aDwslB/esiti.json` e screenshot nelle rispettive cartelle.
 I file temporanei possono sparire: esiti e limiti sono conservati qui.
 
+**La merge, guardata dalla regia il 20 ottobre 2026.** `03cfefd` è fuso in
+`main` con `ebe2e47`, senza conflitti; il controllo dei territori sul diff del
+ramo è verde. Sulla merge: motore 215/219 con i quattro skip previsti, server
+89/89, dati 225 — erano 230, perché nel ridisegno il controllo delle icone
+guarda la sola `index.html` —, specifica 1.032, interfaccia **3.462** in 325 s,
+regime **ridisegno**, con la 8620 libera da 90 s; guardiano e documentazione
+verdi. **A vista**, nel browser della sessione su `strumenti/serve.py`, senza
+server degli account: a 375 px la Home senza risposte con le quattro sezioni,
+la barra a quattro link con l'indirizzo canonico e nessun invito; un
+allenamento breve con una risposta e «Termina» dà il riepilogo con l'invito
+«Crea un account e salva» e «Continua senza account»; tornati alla Home,
+«Le attività di questa pagina» e «Conserva le risposte»; Allenati, Esame e
+Progressi senza invito, Progressi con il riepilogo della pagina, e la stessa
+finestra JavaScript per tutto il giro. `/app` porta ad Allenati · Quiz con il
+suo titolo, `/allenati` risponde 404, `/privacy` 200. Zero sbordamento a 375 e
+1280 px. **Due cose per P-90**, nessuna ferma la merge: con una preparazione
+aperta dalla Home sopra di lei resta visibile il solo piè di pagina, in alto,
+con una banda vuota fino al pannello (`main.preparazione-sopra` nasconde la
+sezione e lascia il footer); e i legali dicono ancora «schermata Info» e
+«palestra», con la privacy che porta la data del 3 ottobre. **Il regime di oggi
+dei controlli scade adesso** (specifica §6.2): lo toglie P-89, con le due
+regressioni dei conti.
+
 ### 10.2 Verifica documentale di P-79 e limiti
 
 Verificati cartella, ramo, albero iniziale pulito e inventario delle chat:
