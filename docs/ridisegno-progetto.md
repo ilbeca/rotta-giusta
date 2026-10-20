@@ -2522,6 +2522,17 @@ l'uscita, l'export —, che hanno i loro gruppi (T-02, P-01, C-17).
 come pagina di riferimento, e `AGENTS.md` descrive `RG_PAGINA` come «una copia
 dell'app»; sono fuori dal perimetro di questa sessione, per la regia.
 
+**La regia, il 20 ottobre 2026, su P-89 e P-90.** I tre puntatori qui sopra
+sono corretti nel commit della coda: le due pagine di progetto dicono che la
+pagina di riferimento di prima è uscita con P-89, e `AGENTS.md` dice che
+`RG_PAGINA` sostituisce il canonico. P-90 (`d4b8ebf`) è fuso con `44c70b3`:
+privacy e condizioni rimandano al Profilo, la privacy porta il 20 ottobre, e
+`main.preparazione-sopra` si nasconde per intero, così sopra una preparazione
+aperta dalla Home non resta il piè di pagina — guardato a 375 px, pannello a
+90 px, e a 1280 px sulle pagine legali. Sulla merge le cinque suite sono
+verdi, con l'interfaccia a 3.488 in 328 s. Il ridisegno è pronto per il suo rilascio,
+che accende le scelte di preparazione sul server.
+
 ### 10.2 Verifica documentale di P-79 e limiti
 
 Verificati cartella, ramo, albero iniziale pulito e inventario delle chat:

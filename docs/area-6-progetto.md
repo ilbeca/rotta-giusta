@@ -368,7 +368,8 @@ misurano sui colori e sui rettangoli calcolati; un fondo con un'immagine o una
 trasparenza è «non misurabile», e si conta.
 
 **Il banco provato contro sé stesso.** La pagina di riferimento
-(`tests/pagina-client-account.html`) passa tutti i gruppi, e 31 rotture sue
+(`tests/pagina-client-account.html`; da P-89, il 20 ottobre 2026,
+`tests/pagina-client-ridisegno.html`, che ne ha preso le rotture) passa tutti i gruppi, e 31 rotture sue
 sono rosse ognuna per il suo motivo. Sei difese del banco tolte una alla volta
 — che cosa sta sopra un avviso, l'albero di accessibilità, l'opacità, il
 confronto dell'aspetto al fuoco, i contenitori che scorrono, i testi tagliati —

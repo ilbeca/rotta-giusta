@@ -684,7 +684,8 @@ accesso, sincronia o uscita: si aggancia a quelli dei §§3, 9.1 e 10. Le regole
 pure sono nel motore — `nuovaBozza`, `validaBozza`, `modificaBozza`,
 `sostituisciBozza`, `riprendiBozza`, `concludiBozza`, `BOZZA_CARTEGGIO` —, e la
 forma della bozza è nel commento di `validaBozza()`. La pagina di riferimento
-del banco (`tests/pagina-client-account.html`, «il carteggio e la sua bozza») è
+del banco (`tests/pagina-client-account.html`, «il carteggio e la sua bozza»;
+da P-89 `tests/pagina-client-ridisegno.html`, che ne ha preso le rotture) è
 la forma eseguibile di questo paragrafo, e C-19 (§12) la prova.
 
 **Dove sta.** Nell'archivio `meta` della copia dell'account,
@@ -1037,7 +1038,8 @@ di P-06: la pagina che dichiara `function indirizzoApi(` ha il client e passa i
 controlli del progetto; quella che non la dichiara è la pagina di oggi, che
 deve mantenere la promessa di oggi — la risposta resta nel browser e torna dopo
 una ricarica — senza frasi o rotte del client. Finché P-18 non c'è, il regime
-progettato gira su `tests/pagina-client-account.html`, su ventiquattro rotture
+progettato gira su `tests/pagina-client-account.html` (uscita con P-89, il 20
+ottobre 2026: le sue rotture sono passate a `tests/pagina-client-ridisegno.html`), su ventiquattro rotture
 di quella pagina (`ROTTURE_CLIENT`; ventitré da P-29, una da P-38), ognuna rossa
 e con il difetto nominato, e su una variante che deve restare verde
 (`VARIANTI_CLIENT`, P-38).
