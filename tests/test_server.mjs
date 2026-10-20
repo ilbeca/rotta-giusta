@@ -534,9 +534,13 @@ const TITOLARE = 'titolare@esempio.it';    // dove vanno gli allarmi (§15.4)
 
 // Le tre raccolte nuove (P-86, account-progetto §2.7-bis) si accendono per
 // opzione di avvio: i test di cio' che fanno accese le accendono, gli altri
-// girano con il server com'e' nel codice — oggi spente.
+// girano con il server com'e' nel codice — dalla v0.32.0 le scelte di
+// preparazione accese, esiti e previsioni spenti fino a P-75.
 const ACCESE = Object.freeze({ esiti_e_previsioni: true, scelte_di_preparazione: true });
 const SPENTE = Object.freeze({ esiti_e_previsioni: false, scelte_di_preparazione: false });
+// Che cosa accende il codice del rilascio: le scelte con la v0.32.0, che porta
+// la loro riga nell'informativa (§2.7-bis); esiti e previsioni con P-75.
+const DEL_RILASCIO = Object.freeze({ esiti_e_previsioni: false, scelte_di_preparazione: true });
 
 async function conti(t, { posta, argon2 = ECONOMICO, log, raccolte } = {}) {
   const c = cartella(t);
@@ -3619,11 +3623,13 @@ test('profilo: il rilascio di prima sul database di dopo non dice campi_profilo,
 const AVVIO_SPENTO = "riga d'avvio non raccolta";
 const unAvvio = (sim, ts = '2026-10-05T09:00:00+02:00') => E.rigaAvvio({ simUid: sim, kind: 'base', prova: 'base', ts, motore: '0.31.0', righe: [] });
 
-test('raccolte: l interruttore sta nel codice, il rilascio le tiene spente, e la salute lo dice', async (t) => {
-  // R-ACC-82. Il valore del codice e' quello con cui esce il tag: tutte e due
-  // spente fino alla decisione. Un'accensione cambia questa riga, e il commit
-  // che la cambia e' quello che si guarda.
-  assert.deepEqual({ ...RACCOLTE }, { ...SPENTE }, 'il rilascio esce con tutte le raccolte nuove spente (§2.7-bis)');
+test('raccolte: l interruttore sta nel codice, il rilascio dice quali accende, e la salute lo dice', async (t) => {
+  // R-ACC-82. Il valore del codice e' quello con cui esce il tag. La v0.31.0
+  // e' uscita con tutte e due spente; la v0.32.0 accende le scelte di
+  // preparazione, nello stesso tag dell'informativa che le nomina, e tiene
+  // spenti esiti e previsioni fino a P-75. Un'accensione cambia questa riga, e
+  // il commit che la cambia e' quello che si guarda.
+  assert.deepEqual({ ...RACCOLTE }, { ...DEL_RILASCIO }, 'il rilascio accende le sole scelte di preparazione (§2.7-bis)');
   assert.ok(Object.isFrozen(RACCOLTE), 'un modulo che le importa non le accende per sbaglio');
 
   const spento = await conti(t);
@@ -3632,7 +3638,7 @@ test('raccolte: l interruttore sta nel codice, il rilascio le tiene spente, e la
 
   // Un'opzione d'avvio le cambia, per i test e per i banchi; un nome che non
   // esiste non passa in silenzio — accenderebbe niente, con un verde falso.
-  const acceso = await conti(t, { raccolte: { esiti_e_previsioni: true } });
+  const acceso = await conti(t, { raccolte: { esiti_e_previsioni: true, scelte_di_preparazione: false } });
   assert.deepEqual((await acceso.chiama('GET', '/v1/salute')).corpo.raccolte, { esiti_e_previsioni: true, scelte_di_preparazione: false });
   // Se parte lo stesso, si chiude e si dice rosso: un server rimasto aperto
   // appenderebbe la suite invece di farla fallire (misurato, rompendo il controllo).
@@ -3721,8 +3727,10 @@ test('raccolte: con le scelte di preparazione spente, il profilo le rifiuta con 
   // il campo, come un campo che il profilo non conosce: niente e' scritto,
   // nemmeno la data d'esame mandata accanto. La descrizione non le porta, e
   // `campi_profilo` nomina soltanto quello che questo server conserva adesso:
-  // la pagina del ridisegno non promette la persistenza (R-ACC-55).
-  const k = await conti(t);
+  // la pagina del ridisegno non promette la persistenza (R-ACC-55). Dalla
+  // v0.32.0 il codice le accende: qui si spengono per opzione, per provare il
+  // verso spento, che resta la strada di un rilascio che le spegnesse.
+  const k = await conti(t, { raccolte: { scelte_di_preparazione: false } });
   const { cookie, io } = await dentro(k);
   assert.deepEqual(io.campi_profilo, ['data_esame', 'segnali']);
   assert.ok(!('abilitazione' in io) && !('conseguimento' in io), 'la descrizione non porta le scelte');

@@ -11,9 +11,10 @@
 //                           la merge di P-75: B-1, B-2 e l'informativa, dopo le
 //                           decisioni del §4, «Dopo P-64», punti 1 e 4, di
 //                           docs/prossime-sessioni.md.
-//   scelte_di_preparazione  abilitazione e conseguimento nel profilo. Si
-//                           accende con il rilascio di P-81, che porta la loro
-//                           riga nell'informativa (§11.2 del progetto del client).
+//   scelte_di_preparazione  abilitazione e conseguimento nel profilo. Accesa
+//                           con la v0.32.0, il rilascio di P-81, che porta la
+//                           loro riga nell'informativa (§11.2 del progetto del
+//                           client), il 20 ottobre 2026.
 //
 // **L'interruttore sta nel codice, non nell'ambiente della macchina**, ed e'
 // voluto: un tag dice che cosa e' acceso, `rg-aggiorna` e `rg-torna` lo portano
@@ -32,7 +33,7 @@ import { TIPI_RIGA } from '../site/engine.js';
 /** Che cosa e' acceso in questo rilascio. Si cambia con un commit, mai al volo. */
 export const RACCOLTE = Object.freeze({
   esiti_e_previsioni: false,
-  scelte_di_preparazione: false,
+  scelte_di_preparazione: true,
 });
 
 /** Il tipo di riga che la raccolta delle previsioni porta: la riga d'avvio. */

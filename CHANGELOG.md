@@ -11,6 +11,40 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+## [0.32.0] — 2026-10-20
+
+**Il ridisegno.** Il sito diventa un documento solo: **Home · Allenati ·
+Esame · Progressi** su `/`, con il Profilo e le pagine legali che si aprono
+sopra il lavoro invece di sostituirlo. Chi studia senza account non perde più
+le risposte passando da una sezione all'altra o aprendo la privacy: restano
+nella pagina finché è aperta, come prima, ma la pagina non si ricarica più fra
+la Home e le attività. La simulazione del quiz base parte dalla Home in un
+tocco; Allenati raccoglie Quiz, Carteggio e Segnali; Esame mette le prove
+nell'ordine in cui si sostengono. Arrivano i cinque stati per quesito in
+Progressi («mai visti · da rifare · da confermare · recuperati · acquisiti»),
+i tag «Non lo sapevo» e «Svista», i segnalibri, e la ricerca di un quesito per
+numero del decreto. `/app` resta, come porta che manda ad Allenati; l'icona
+sulla schermata Home apre ora `/`.
+
+**Sul server si accendono le scelte di preparazione** — solo motore o anche
+vela, prima patente o estensione —, che l'onboarding chiede dopo la
+registrazione e che la privacy, datata 20 ottobre, nomina: la loro raccolta era
+spenta dalla v0.31.0 in attesa di questa informativa (`account-progetto.md`
+§2.7-bis). Esiti dell'esame e previsioni restano spenti fino a P-75. Il server
+si porta allo stesso tag con `rg-aggiorna`; lo schema resta il 6, e
+`GET /v1/salute` dice le raccolte accese. Le voci che seguono sono il lavoro di
+questi giorni, com'è stato scritto allora.
+
+L'interruttore è passato da test: R-ACC-82 pretende che il rilascio accenda le
+sole scelte di preparazione, rosso con il codice di prima e verde dopo; R-ACC-84
+prova il rifiuto accendendo lo spento con l'opzione d'avvio. Suite sull'albero
+del rilascio: motore 215/219 con i quattro skip previsti; server 89/89;
+`ripristina --prova` 24 controlli; dati 225; specifica 1.040; interfaccia 3.488
+in 337 s, con la 8620 libera da 90 s prima. Un primo giro dell'interfaccia,
+partito con la macchina a un carico medio di 37, ha impiegato 2 h 42 min e ha
+dato 19 rossi, tutti attese del browser scadute: rifatto a macchina scarica,
+come dice Q-SUITE, è verde. Guardiano e controllo della documentazione verdi.
+
 ### Verificato — la v0.31.0, in linea
 
 - **Il tag e le suite.** `v0.31.0` è un tag annotato su `6a61436`, fatto dopo

@@ -446,7 +446,9 @@ prima del trattamento, non dopo il primo dato.
   com'è oggi con le funzioni accese, e lo spegnimento dopo l'accensione.
 - **Il rilascio v0.31.0 esce con tutte e tre spente**, prima di P-81. Lo fa
   P-86; il come — dove sta l'interruttore, e che un tag dica che cosa è
-  acceso — lo scrive lui qui.
+  acceso — lo scrive lui qui. **La v0.32.0, il rilascio di P-81, accende le
+  scelte di preparazione** (20 ottobre 2026), nello stesso tag della privacy
+  che le nomina; esiti e previsioni restano spenti fino a P-75.
 
 **Fatto il 18 ottobre 2026 (P-86).** Il come, e le scelte che il contratto
 non diceva.
