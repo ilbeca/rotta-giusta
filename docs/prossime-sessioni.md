@@ -184,7 +184,10 @@ vista dalla regia (docs/ridisegno-progetto.md §10.1, in fondo). Lo
 stesso giorno P-89 ha tolto dai controlli il regime di prima (la
 suite dell'interfaccia è a 3.488) e P-90 ha allineato privacy e
 avvertenza al Profilo, con la privacy datata 20 ottobre (merge
-44c70b3). Nessun prompt è pronto: il passo dopo è il rilascio. Le decisioni dell'autore del
+44c70b3). La v0.32.0 è in linea dal 20 ottobre 2026: tag su e281865,
+«Build now», rg-aggiorna allo stesso tag, GET /v1/salute con le sole
+scelte di preparazione accese (CHANGELOG, «Verificato — la v0.32.0»).
+Nessun prompt è pronto. Le decisioni dell'autore del
 17 e 18 ottobre: Q-COSTANZA chiusa (specifica §10), il criterio della
 soglia degli allarmi (account-progetto.md §15.4), le raccolte spente e
 i segnalibri accesi (§2.7-bis). P-62 con l'autore. P-75 aspetta la
@@ -195,19 +198,14 @@ parole semplici: che cos'è, perché adesso, che cosa cambia per chi
 studia.
 
 I prossimi passi, in quest'ordine:
-1. Il rilascio del ridisegno, se non è già fatto (guarda il tag e
-   GET /v1/salute): le scelte di preparazione accese in
-   server/raccolte.mjs nello stesso tag dell'informativa che le nomina,
-   la data della privacy uguale al giorno del rilascio, le cinque
-   suite, il tag, il push con il sì dell'autore, «Build now» e
-   rg-aggiorna allo stesso tag.
-2. Le decisioni dell'autore nel §4, «Dopo P-59» e «Dopo P-64»:
+1. Le decisioni dell'autore nel §4, «Dopo P-59» e «Dopo P-64»:
    ricordagliele quando il lavoro che le aspetta sta per partire. La
    base giuridica di esito e previsioni ferma P-75; l'ambito della
    decisione 22 e le fasi fermano P-76. Il resto non ferma niente.
-3. Il §4, «Dopo il traguardo»: il redirect di .pages.dev — con /sw.js
+2. Il §4, «Dopo il traguardo»: il redirect di .pages.dev — con /sw.js
    che deve restare a 200 —, la soglia degli allarmi dal 2 novembre; e
-   dopo il rilascio la riga 18, la prova con le persone sul sito vero.
+   la riga 18, la prova con le persone sul sito vero, ora che il
+   ridisegno è in linea.
 
 Non lanciare niente e non scrivere niente finché non te lo chiedo: da
 lì ti incollerò i resoconti.
@@ -6903,7 +6901,8 @@ il resoconto del precedente, e la regia scrive il suo prompt allora.
   con P-88 fuso; P-88 chiuso il 18. Il suo rilascio accende le scelte di
   preparazione. Fuso il 20 ottobre 2026 (`ebe2e47`); P-89 e P-90 scritti
   lo stesso giorno, qui sopra, e chiusi lo stesso giorno (`46c8583`,
-  `44c70b3`): resta il rilascio, della regia.
+  `44c70b3`). Rilasciato il 20 ottobre con la v0.32.0 (`e281865`), che
+  accende le scelte di preparazione sul server.
   Alla sua merge la regia
   scrive un prompt per Claude che toglie il regime di oggi dai controlli, come
   P-12, P-37, P-47 e P-50 — e che mette una guardia alla lettura di C-22 che

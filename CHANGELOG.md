@@ -11,6 +11,28 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+### Verificato — la v0.32.0, in linea
+
+- **Il tag e la pagina.** `v0.32.0` è un tag annotato su `e281865`, pushato con
+  `main` con il sì dell'autore del 20 ottobre. «Build now» su statichost.eu
+  dalla regia, nel Chrome dell'autore e su sua richiesta, con il commit di
+  rilascio in cima: la build, 48 s, porta l'etichetta «release: v0.32.0». Da
+  fuori `meta.json` dice 0.32.0 su `rottagiusta.it` e su `.pages.dev`; otto
+  file — la Home, la porta `/app`, `engine.js`, privacy, avvertenza, manifest,
+  `meta.json` e `sw.js` — sono identici byte per byte a `v0.32.0:site/`, e
+  `/app` e `/?sezione=allenati` rispondono 200.
+- **Il server**, `rg-aggiorna v0.32.0 e281865…` lanciato dalla regia sulla
+  macchina, su richiesta dell'autore, con `rg-aggiorna` e `rg-torna` uguali a
+  quelli del repo (SHA-256): la copia di prima,
+  `aggiorna-20261020T173549Z.db`, con `integrity_check` ok, 2 righe, 1 account,
+  schema 6; nel log «raccolte accese: scelte_di_preparazione». Da fuori
+  `GET /v1/salute` dice 0.32.0, schema 6/6, la stessa epoca della copia di
+  prima (`278fd81e…`, un aggiornamento e non un ripristino) e le raccolte con
+  le sole scelte di preparazione accese; il CORS espone `Retry-After` al sito.
+  `/var/lib/rg/precedente` dice `v0.31.0`: è lì che torna `rg-torna`.
+- **Non guardato:** un accesso con l'account vero dopo l'aggiornamento, e
+  l'onboarding che salva le scelte sul server in esercizio.
+
 ## [0.32.0] — 2026-10-20
 
 **Il ridisegno.** Il sito diventa un documento solo: **Home · Allenati ·

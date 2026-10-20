@@ -3196,3 +3196,10 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
   `aggiorna-20261018T133127Z.db` con `integrity_check` ok, schema portato da 4
   a 6, «raccolte accese: nessuna»; `GET /v1/salute` dice 0.31.0, schema 6/6, la
   stessa epoca e le raccolte spente. `/var/lib/rg/precedente` dice `v0.30.0`.
+- **20 ottobre 2026 — la v0.32.0 in esercizio.** `rg-aggiorna v0.32.0
+  e281865…` dalla regia, con il sì dell'autore: copia di prima
+  `aggiorna-20261020T173549Z.db` con `integrity_check` ok, schema 6 invariato,
+  «raccolte accese: scelte_di_preparazione»; `GET /v1/salute` dice 0.32.0,
+  schema 6/6, la stessa epoca e le sole scelte di preparazione accese. Esiti e
+  previsioni restano spenti fino a P-75 (§2.7-bis). `/var/lib/rg/precedente`
+  dice `v0.31.0`.
