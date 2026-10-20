@@ -1,16 +1,19 @@
 <!doctype html>
 <!--
-  La pagina di riferimento del client nel regime del ridisegno:
-  docs/ridisegno-progetto.md §§2–9 e il contratto del §10.1 (P-80, P-82), con
-  il client degli account di docs/account-client-progetto.md §§3–11 che la
-  pagina di riferimento di oggi (tests/pagina-client-account.html) ha gia'.
-  Non e' pubblicata, non e' un prototipo, e non e' la pagina di P-81: e' il
-  metro con cui P-81 si misura. Il banco del browser (tests/client_account.mjs)
-  la guida con tutti i gruppi del client e con il gruppo dei tragitti, N-01; e
-  ognuna delle rotture in ROTTURE_NAV di tests/test_interfaccia.py deve
-  fallire nominando il difetto.
+  La pagina di riferimento del client: docs/ridisegno-progetto.md §§2–9 e il
+  contratto del §10.1 (P-80, P-82), con il client degli account di
+  docs/account-client-progetto.md §§3–11. Non e' pubblicata, non e' un
+  prototipo, e non e' la pagina vera: e' il metro con cui la pagina vera si
+  misura, ed e' lei che porta le rotture. Il banco del browser
+  (tests/client_account.mjs) la guida con tutti i gruppi del client e con il
+  gruppo dei tragitti, N-01; e ognuna delle rotture di tests/test_interfaccia.py
+  — ROTTURE_NAV, e da P-89 anche ROTTURE_CLIENT, ROTTURE_RIFINITURA,
+  ROTTURE_RACCORDO, ROTTURE_CONTI e le varianti — deve fallire nominando il
+  difetto. Fino a P-89 le rotture del client stavano su una seconda pagina di
+  riferimento, tests/pagina-client-account.html, nel regime di prima: e' uscita
+  con lui, e le sue rotture sono passate qui (CHANGELOG, P-89).
 
-  Che cosa realizza, e che la pagina di oggi non ha: un documento solo su `/`,
+  Che cosa realizza, e che la pagina di prima non aveva: un documento solo su `/`,
   con le quattro sezioni Home · Allenati · Esame · Progressi e i tre segmenti
   di Allenati; le due dichiarazioni da cui si legge il regime
   (navigazioneSito() e VISTE_RIDISEGNO); la cronologia in memoria —
@@ -27,7 +30,7 @@
   Gli agganci che i gruppi del client conoscevano restano dove la tabella C del
   §10.1 dice: `[data-rotta-start]` e' la prima porta della Home — «Allenati
   con 10 domande» senza account, «Apri l'allenamento consigliato» con —, e
-  apre la preparazione, non la domanda; le porte `[data-v]` di oggi sono alias
+  apre la preparazione, non la domanda; le porte `[data-v]` di prima sono alias
   delle sezioni; `#esame-data` sta in Esame; il pallino dei guasti
   sull'avatar (`[data-avatar]`).
 

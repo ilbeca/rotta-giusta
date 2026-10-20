@@ -225,6 +225,84 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   Esiti, evidenze datate e limiti nel §10.1 di `docs/ridisegno-progetto.md`.
   Le prove con persone e su Safari reale restano all'autore; non è un rilascio.
 
+### Test — P-89: il regime è uno, e i due conti di P-81 hanno il loro controllo
+
+- **Il regime di prima del ridisegno esce dai controlli.** P-81 è fuso
+  (`ebe2e47`), e il regime di transizione di P-80 scadeva lì (specifica §6.2):
+  da qui una pagina senza `navigazioneSito()` e `VISTE_RIDISEGNO` è **di prima**
+  ed è rossa con il motivo, in `test_interfaccia.py` e in `test_dati.py`, dalla
+  regola sola di `tests/regime_pagina.py`. Escono i rami che la tenevano verde:
+  il censimento delle sette viste, la barra a pulsanti, `app.html` come app,
+  `start_url` `/app` e i legali che tornavano a `/app`, il canonico servito su
+  `/app` dal banco del client, i testi della pagina di prima nel banco, la
+  mappa senza i cinque stati, e i gruppi che «non si applicano». È il passo che
+  P-12, P-37, P-47 e P-50 hanno fatto per le aree. Il regime senza raccordo di
+  E-01 e P-01 è un altro, e resta fino a P-75.
+
+- **Misurato prima e dopo, sul sito di `v0.31.0`** — la Home, l'app, il
+  manifest e le pagine legali che P-81 ha sostituito, con `RG_SITO` su una
+  copia di `site/`. Prima: l'interfaccia **3.002 verifiche su 3.015**, e i 13
+  rossi erano tutti delle chiamate al motore che P-81 aveva dichiarato, nessuno
+  del regime; i dati **230 su 230**. Dopo: il sito è rosso al primo controllo, «regime letto: di prima», con il motivo —
+  l'interfaccia **320 rossi su 2.177**, ognuno un difetto della pagina di prima
+  visto dai controlli del ridisegno (141 del banco del client, 103 delle chiamate
+  al motore, il resto dei banchi, delle sezioni, della barra e della porta), i
+  dati **6 su 225**, uno per difetto: il regime, `start_url`, il titolo della
+  porta, `app.html` che non è una porta, i due legali. Un controllo nuovo lo
+  pretende a ogni esecuzione, senza browser: `test_copia_del_sito` mette quei
+  cinque file, letti dal tag, in una copia, e vuole il regime «di prima» e il
+  rosso con il motivo in tutte e due le suite.
+
+- **La pagina di riferimento del client di prima esce**,
+  `tests/pagina-client-account.html`: senza il suo regime il banco non la sa più
+  guidare. Le sue rotture e le sue varianti passano a
+  `tests/pagina-client-ridisegno.html`, che già passava tutti i gruppi del
+  client: delle 235 rotture, 195 com'erano e 40 riscritte sul codice del
+  ridisegno; delle 3 varianti, una com'era e 2 riscritte; le 7 del sito e del
+  service worker girano accanto. Nessuna è tolta. Le altre pagine di
+  riferimento restano: leggono raccordi, e nessuna era del regime di prima.
+
+- **Trovato portandole, due cose che passavano verdi.** Sedici rotture si
+  applicavano al testo e passavano verdi, perché sul ridisegno la stessa frase o
+  lo stesso codice sta anche altrove — il giudizio del Carteggio anche nella
+  preparazione, l'avviso dei Segnali anche nel risultato, il link alle
+  condizioni anche nel piè di pagina, il riepilogo di una simulazione prima di
+  quello di un allenamento, l'onboarding al posto del passo della data,
+  `#v-oggi` che non c'è più —: ora colpiscono il punto giusto. E due rotture
+  dell'uscita di P-01:conti passavano per un **verde falso del banco**: dopo
+  Info, che nel ridisegno è un pannello, «Account» ed «Esci» non si premevano, e
+  «con il solo avvio in coda l'uscita si blocca» era vera senza che l'uscita
+  fosse mai partita. Il banco chiude il pannello e pretende che «Esci» si sia
+  premuto; le due rotture sono rosse, il riferimento verde. Sulla pagina vera
+  P-01 gira spento fino a P-75.
+
+- **Le due regressioni dei conti che P-81 ha trovato e corretto**, nel gruppo
+  nuovo C-23 del banco del client. *C-23:specchio* (R-ARCH-20): senza account,
+  dopo una risposta, lo specchio della pagina è quello di `E.ripiega()` sulle
+  sue righe. Nessun numero in schermata lo dice senza account, quindi il banco
+  lo legge da un aggancio del contratto che la pagina ha già: le righe che passa
+  a `E.riepilogoPagina()` e lo specchio che passa alle selezioni dei quiz, con
+  `/engine.js` servito con cinque funzioni rivestite che registrano gli
+  argomenti; la pagina non si tocca. *C-23:coda* (R-SEGNO-04): con l'account e
+  la rete che non risponde, una risposta e un segnalibro in coda, e in schermata
+  «1 risposta da inviare». **Prima rossi, poi verdi, sulla pagina vera**: con il
+  difetto rimesso in una copia di `site/index.html` le due verifiche sono rosse
+  — `n: 2` contro `n: 1`, e «2 risposte da inviare» —, sulla pagina vera verdi.
+  Una rottura ciascuna della pagina di riferimento, rossa per il suo motivo.
+
+- Specifica: il §5, il §6 e il §7 senza i paragrafi *Nel regime di
+  transizione*; il §6.2 dice che il regime è uno, con le misure; R-ARCH-06 e 09,
+  R-NAV-01, 03, 04, 06, 08, 09, 12 e 14, R-ACC-03, 04 e 55, R-MAPPA-18 per un
+  regime solo; entrano R-ARCH-20 e R-SEGNO-04. Nota nel §10.1 di
+  `docs/ridisegno-progetto.md`.
+
+  Suite: motore 215/219 con i quattro skip previsti; server 89/89, non toccato;
+  dati 225; specifica **1.040** (erano 1.032); interfaccia **3.488** (erano 3.462),
+  in 5 min 29 s, con la 8620 guardata libera per 90 s prima. Un primo giro era
+  rosso in 36 verifiche, tutte delle rotture portate, qui sopra; il secondo è
+  verde. Guardiano e controllo della documentazione verdi. `site/`, `server/` e
+  `docs/prossime-sessioni.md` non sono stati toccati.
+
 
 ## [0.31.0] — 2026-10-18
 

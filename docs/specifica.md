@@ -5,8 +5,9 @@
 offline, dal 3 ottobre 2026. La prima stesura descriveva la v0.22.1 pubblicata,
 più il lavoro allora in corso sul ramo `ui/main`. **Dal 15 ottobre 2026 (P-80)
 il §5, il §6 e il §7 descrivono il ridisegno** deciso dall'autore e progettato da
-P-79, che la pagina avrà con P-81; la pagina pubblicata è ancora quella di prima,
-e il §6.2 dice come i controlli riconoscono l'una e l'altra.
+P-79. La pagina su `main` lo ha dal 20 ottobre 2026 (P-81, merge `ebe2e47`), e
+da P-89 i controlli conoscono soltanto lui (§6.2); il sito pubblicato è ancora
+la v0.31.0, fino al rilascio.
 **Che cos'è:** il documento unico di progetto. Che cosa il sito è, per chi, com'è
 fatto sotto, dove vive ogni funzionalità, e — per ogni garanzia — **il controllo
 che la tiene ferma**.
@@ -318,8 +319,10 @@ pagina), e P-26 ha riscritto le parti per i due stati. Che cosa è cambiato:
 Le righe del §5 che descrivevano le sei modalità dei Quiz e il selettore
 globale le ha riscritte P-12, il 30 settembre 2026, con il regime vecchio dei
 controlli (§9.4). **Il 15 ottobre 2026 P-80 ha riscritto il §5, il §6 e il §7
-sul ridisegno** (`docs/ridisegno-progetto.md`), con la pagina di oggi conservata
+sul ridisegno** (`docs/ridisegno-progetto.md`), con la pagina di prima conservata
 nei paragrafi *Nel regime di transizione* e nel §6.2, fino alla merge di P-81.
+P-81 è fuso il 20 ottobre 2026, e P-89 ha tolto quei paragrafi e, dai
+controlli, il regime di prima.
 
 E una cosa che c'è e resta: **il sito dichiara i propri difetti**, quesito per
 quesito. Fra i concorrenti guardati il 3 ottobre 2026 nessuno lo fa, ma
@@ -1069,15 +1072,14 @@ difetto, non una scelta.
 Colonna «ingresso»: **come ci si arriva partendo da zero**, non dove vive il
 codice.
 
-**Due regimi, dal 15 ottobre 2026 (P-80).** Il §5, il §6 e il §7 descrivono
-il **ridisegno** deciso dall'autore il 3 e 4 ottobre (Q-NAV, §10) e progettato
-da P-79 (`docs/ridisegno-progetto.md`), che la pagina avrà con P-81. Finché
-P-81 non è fuso la pagina pubblicata è quella di prima — sette viste in
-`app.html`, la Home a parte —, e **continua a passare i suoi controlli
-interi**: il regime si legge dalla pagina, con due dichiarazioni insieme (§6.2),
-e ogni controllo di questo documento sa quale pagina ha davanti. Dove la pagina
-di oggi differisce, un paragrafo *Nel regime di transizione* lo dice. Il
-regime di transizione ha una scadenza: **la merge di P-81**.
+**Un regime solo, dal 20 ottobre 2026 (P-89).** Il §5, il §6 e il §7
+descrivono il **ridisegno** deciso dall'autore il 3 e 4 ottobre (Q-NAV, §10),
+progettato da P-79 (`docs/ridisegno-progetto.md`) e realizzato da P-81. Dal 15
+ottobre, per P-80, convivevano due regimi: la pagina di prima — sette viste in
+`app.html`, la Home a parte — continuava a passare i suoi controlli, e dove
+differiva un paragrafo *Nel regime di transizione* lo diceva. Il regime di
+transizione scadeva con la merge di P-81: P-89 ha tolto i paragrafi, e dai
+controlli il ramo che teneva verde la pagina di prima, che ora è rossa (§6.2).
 
 ### 5.1 Le pagine
 
@@ -1086,11 +1088,6 @@ regime di transizione ha una scadenza: **la merge di P-81**.
 | Il documento di studio: Home, Allenati, Esame, Progressi | `site/index.html` | `/` — è la pagina che deve comparire nelle ricerche —, e `/?sezione=allenati`, `/?sezione=esame`, `/?sezione=progressi`; `/app` ci rimanda | R-NAV-01, R-NAV-10, R-ARCH-06 |
 | La porta `/app` | `site/app.html` | `/app`, dai link e dalle icone di prima del ridisegno: una pagina statica senza banca, archivio o client, che manda a `/?sezione=allenati&segmento=quiz` e porta il frammento di un link di verifica o di password in memoria, mai nell'indirizzo | R-NAV-12, R-ARCH-09 |
 | Privacy, Avvertenza | file propri | i link canonici `/privacy`, `/avvertenza`, `/avvertenza#condizioni`, da ogni superficie; toccati dal documento di studio si aprono sopra il lavoro, caricati direttamente sono il file autonomo | R-ARCH-05, R-ARCH-06 |
-
-*Nel regime di transizione:* la Home è `site/index.html` su `/`, l'app è
-`site/app.html` su `/app` e dal pulsante della Home, `start_url` è `/app`, e
-Privacy e Avvertenza stanno nel piè di pagina di ogni schermata e tornano a
-`/app` (R-NAV-01, R-ARCH-06, R-ARCH-09).
 
 ### 5.2 Le sezioni e le superfici
 
@@ -1146,19 +1143,6 @@ vista che non c'è è una porta verso niente, e un controllo la nomina
 (R-NAV-01). Il raccordo `navigazioneSito()` traduce gli alias come la tabella
 dice (R-NAV-10).
 
-*Nel regime di transizione* le schermate sono le sette di `site/app.html`,
-ognuna con la sua porta nella barra o nel Carteggio:
-
-| Schermata | id | Ingresso | Requisito |
-|---|---|---|---|
-| Percorso (già *Rotta*, già *Oggi*) | `v-oggi` | barra, prima voce | R-NAV-02 |
-| Quiz | `v-quiz` | barra | R-NAV-02 |
-| Carteggio | `v-cart` | barra | R-NAV-02 |
-| Progressi (già *Diagnosi*) | `v-diag` | barra | R-NAV-02 |
-| Che tecnica serve? | `v-tec` | la terza porta del Carteggio | R-NAV-03 |
-| Il gioco dei segnali | `v-seg` | la scheda degli extra nel Percorso | R-NAV-03 |
-| Info e diagnostica | `v-info` | l'intestazione | R-NAV-04 |
-
 ### 5.3 Le attività
 
 **Tutte, in tutti e due gli stati d'accesso** (R-ACC-04), ognuna fino al suo
@@ -1194,11 +1178,6 @@ righe storiche restano leggibili. La selezione di ogni intenzione passa da
 Allena passano da raccordi loro, al primo livello e fuori da `MODI`, che il
 controllo esegue allo stesso modo (R-NAV-11, R-MAPPA-18).
 
-*Nel regime di transizione* la Mirata, la scelta per argomento, il ripasso, la
-simulazione e il giro stanno in Quiz; la prova di carteggio, il giro delle
-tecniche, il tappeto e «Che tecnica serve?» nel Carteggio; i Segnali nella
-loro schermata; il breve, i segnalibri, la ricerca e Allena non ci sono.
-
 ### 5.4 I controlli e i riscontri
 
 | Cosa | Dove | Nota |
@@ -1229,13 +1208,6 @@ loro schermata; il breve, i segnalibri, la ricerca e Allena non ci sono.
 | «Com'è fatto l'esame» | Esame | La sintesi con i valori di `PROVA_CARTEGGIO` e `meta.prove`, l'approfondimento con le fonti datate del dossier |
 | Revisione di una sessione | riepilogo di ogni attività; con l'account anche Progressi e Carteggio | La tua risposta accanto a quella esatta. Senza account si rivedono le attività della pagina aperta |
 | Spiegazioni in schermata (`?`) | Progressi, la legenda dei cinque stati | Funzionano col mouse **e al tocco** |
-
-*Nel regime di transizione* la data d'esame sta nel Percorso, le tessere di
-copertura a tre stati nel Percorso con l'account, Scarica / ricarica / azzera
-e lo stato dell'invio in Info, Accedi nell'intestazione e da Info, l'invito nel
-solo riepilogo, il pallino sulla voce Info, i tag `N`/`L`/`C` nel runner e nel
-riepilogo; «che cosa stai preparando?», i cinque stati, i segnalibri, la
-ricerca per numero, «Segnala un problema» e «Com'è fatto l'esame» non ci sono.
 
 ---
 
@@ -1284,60 +1256,74 @@ stanno nel segmento Quiz, tre tocchi dalla Home alla domanda; le scelte di
 risultato di una simulazione l'invito dice «Conserva questa prova e ritrovala
 quando torni», senza la promessa del Percorso fino a P-76.
 
-### 6.2 Il regime di transizione (P-80, 15 ottobre 2026)
+### 6.2 Il regime è uno (P-89, 20 ottobre 2026)
 
-La struttura nuova è decisa e i suoi controlli esistono prima della pagina,
-com'è stato per le aree 2–5; la pagina arriva con P-81. Fino alla sua merge
-convivono due regimi, e **il regime si legge dalla pagina**, con la lezione di
-P-51: una pagina è nel ridisegno se dichiara, al primo livello e fuori dai
-commenti, `navigazioneSito()` **e** `VISTE_RIDISEGNO = ['home', 'allenati',
-'esame', 'progressi']`, insieme, esattamente così; nessuna delle due è il
-regime di oggi; una sola, o una lista diversa, è un rosso con il motivo
-(R-NAV-09). Mai dal nome di un pulsante. La regola sta in un modulo solo,
-`tests/regime_pagina.py`, letto da `test_interfaccia.py` e da `test_dati.py`.
+**Il regime si legge dalla pagina**, con la lezione di P-51: il documento di
+studio è nel ridisegno se dichiara, al primo livello e fuori dai commenti,
+`navigazioneSito()` **e** `VISTE_RIDISEGNO = ['home', 'allenati', 'esame',
+'progressi']`, insieme, esattamente così (R-NAV-09). Mai dal nome di un
+pulsante. Una pagina senza nessuna delle due è quella **di prima** del
+ridisegno, e una con una sola, o con una lista diversa, è **a metà**: tutte e
+due sono un rosso con il motivo, in `test_interfaccia.py` e in `test_dati.py`.
+La regola sta in un modulo solo, `tests/regime_pagina.py`, letto dalle due
+suite.
 
-Nel regime di oggi il documento di studio è `site/app.html` e ogni controllo
-gira com'era, verifica per verifica: **il regime di transizione non è
-«scoperto»**. Nel ridisegno il documento canonico è `site/index.html`,
-`site/app.html` è la porta (R-NAV-12), i controlli pretendono le quattro
-sezioni (R-NAV-06), la barra con quattro parole intere — quattro link, ognuno
-con l'indirizzo canonico della sua sezione, `/` e `/?sezione=…` — e i tre
-segmenti (R-NAV-03), gli alias delle porte di oggi che vanno dove dice la tabella C del
-§10.1 del progetto (R-NAV-01, R-NAV-10), e i banchi dei quiz, del ciclo, della
-mappa — con i cinque stati e Allena (R-MAPPA-18) —, del Carteggio e del client
-leggono il canonico e lo servono su `/`. `RG_PAGINA=<file>` vale per il
-canonico di qualunque regime: il regime si legge dalla copia. Il canonico da
-solo, però: la porta `/app`, il manifest e le pagine legali restano quelli di
-`site/`, ed è così che P-81 si è fermato il 17 ottobre 2026. Per una copia
-intera c'è `RG_SITO=<cartella>` (P-84), che sta per `site/` tutta — canonico,
-porta, manifest, pagine legali, dati, figure — in `test_interfaccia.py`, nel
-banco del client in Chrome e nei banchi sotto Node (`tests/sito.mjs`), e in
-`test_dati.py`, con `test_indirizzi` e il manifest; il regime si legge dalla
-cartella con la stessa regola. Le due variabili insieme sono un errore detto,
-e una cartella che non c'è o senza `index.html` un rosso, mai un ripiego su
-`site/`. La riga finale di ogni suite dice la copia: un verde su una copia
-non è un verde di `main`.
+Il documento canonico è `site/index.html`, su `/`; `site/app.html` è la porta
+(R-NAV-12). I controlli pretendono le quattro sezioni (R-NAV-06), la barra con
+quattro parole intere — quattro link, ognuno con l'indirizzo canonico della sua
+sezione, `/` e `/?sezione=…` — e i tre segmenti (R-NAV-03), gli alias delle
+porte di prima che vanno dove dice la tabella C del §10.1 del progetto
+(R-NAV-01, R-NAV-10); i banchi dei quiz, del ciclo, della mappa — con i cinque
+stati e Allena (R-MAPPA-18) —, del Carteggio e del client leggono il canonico e
+lo servono su `/`. `RG_PAGINA=<file>` sostituisce il canonico, e il regime si
+legge dalla copia; il canonico da solo, però: la porta `/app`, il manifest e
+le pagine legali restano quelli di `site/`, ed è così che P-81 si è fermato il
+17 ottobre 2026. Per una copia intera c'è `RG_SITO=<cartella>` (P-84), che sta
+per `site/` tutta — canonico, porta, manifest, pagine legali, dati, figure — in
+`test_interfaccia.py`, nel banco del client in Chrome e nei banchi sotto Node
+(`tests/sito.mjs`), e in `test_dati.py`, con `test_indirizzi` e il manifest.
+Le due variabili insieme sono un errore detto, e una cartella che non c'è o
+senza `index.html` un rosso, mai un ripiego su `site/`. La riga finale di ogni
+suite dice la copia: un verde su una copia non è un verde di `main`.
 
 **Il banco dei tragitti, da P-82 (16 ottobre 2026).** Il gruppo N-01 del
-banco del client guida in Chrome una pagina nel regime del ridisegno: il
-documento che resta lo stesso, la cronologia, gli indirizzi, i legali sopra il
-lavoro, lo storage e `history.state`, i tre posti dell'invito, la
-registrazione con l'insieme intero delle righe, i cinque stati in schermata, i
-gesti con i server di prima, la ricerca, le scelte, e i 108 tragitti del §9
-del progetto, uno per stato e compito (R-NAV-08, R-NAV-14, R-STATI-06). Lo
-esercita la pagina di riferimento del client nel regime nuovo,
-`tests/pagina-client-ridisegno.html`, con tutti i gruppi del client e le sue
-ventisette rotture: è il metro con cui P-81 si misura. Sulla pagina di oggi il
-gruppo non si applica, e il controllo lo dice; dalla merge di P-81 gira anche
-sulla pagina vera. **Che cosa resta al collaudo di P-81 a 375 e 1280 px**, e
-nessun controllo lo vede: la gerarchia e la geometria delle sezioni, i testi
-che il banco non cerca, il `?` della legenda dei cinque stati, il gesto vero e
-il tocco, Safari.
+banco del client guida in Chrome la pagina: il documento che resta lo stesso,
+la cronologia, gli indirizzi, i legali sopra il lavoro, lo storage e
+`history.state`, i tre posti dell'invito, la registrazione con l'insieme intero
+delle righe, i cinque stati in schermata, i gesti con i server di prima, la
+ricerca, le scelte, e i 108 tragitti del §9 del progetto, uno per stato e
+compito (R-NAV-08, R-NAV-14, R-STATI-06). Gira sulla pagina vera e sulla
+pagina di riferimento del client, `tests/pagina-client-ridisegno.html`, che
+passa tutti i gruppi del client e porta le rotture: le sue e, da P-89, quelle
+della pagina di riferimento di prima. **Che cosa resta al collaudo** — fatto da
+P-81 a 375 e 1280 px, e che nessun controllo ripete —: la gerarchia e la
+geometria delle sezioni, i testi che il banco non cerca, il `?` della legenda
+dei cinque stati, il gesto vero e il tocco, Safari.
 
-**La scadenza.** Alla merge di P-81 la regia toglie dai controlli il ramo del
-regime di oggi — come P-12, P-37, P-47 e P-50 hanno fatto per le aree — e tiene
-pagine di riferimento, rotture e controlli. Una pagina nel regime di oggi, da
-quel giorno, è rossa.
+**Fino al 20 ottobre 2026 i regimi erano due** (P-80, 15 ottobre 2026). La
+struttura nuova era decisa e i suoi controlli esistevano prima della pagina,
+com'è stato per le aree 2–5: senza le due dichiarazioni la pagina era nel
+regime di prima, il documento di studio era `site/app.html` con sette viste, e
+ogni controllo girava com'era, verifica per verifica; nel ridisegno valevano le
+regole di sopra. Il regime di transizione scadeva con la merge di P-81
+(`ebe2e47`, 20 ottobre 2026), e P-89 ha tolto dai controlli il suo ramo — come
+P-12, P-37, P-47 e P-50 hanno fatto per le aree —, tenendo pagine di
+riferimento, rotture e controlli. **Prima di toglierlo, misurato**: il sito di
+v0.31.0 — la Home, l'app, il manifest e le pagine legali che P-81 ha
+sostituito — passava l'interfaccia con 3.002 verifiche su 3.015, e i 13 rossi
+erano tutti delle chiamate al motore che P-81 aveva dichiarato, nessuno del
+regime; i dati con 230 su 230. **Dopo**, lo stesso sito è rosso, e un
+controllo lo pretende a ogni esecuzione (`test_copia_del_sito`): il regime
+letto è «di prima», con il motivo, in tutte e due le suite. La pagina di
+riferimento del client di prima, `tests/pagina-client-account.html`, è uscita:
+le sue 235 rotture e le sue 3 varianti sono passate a quella del ridisegno —
+195 rotture e una variante com'erano, 40 rotture e 2 varianti riscritte sul suo
+codice, nessuna tolta —, e le 7 rotture del sito e del service worker girano
+accanto a lei. Sedici delle riscritte si applicavano al testo e passavano
+verdi, perché sul ridisegno la stessa frase o lo stesso codice sta anche in un
+altro punto; e due rotture dell'uscita di P-01:conti passavano verdi per un
+verde falso del banco — Info, che nel ridisegno è un pannello, restava aperto e
+«Esci» non si premeva —, corretto (CHANGELOG, P-89).
 
 ### 6.3 Gli invarianti, qualunque struttura si scelga
 
@@ -1415,15 +1401,6 @@ offre di scaricare le risposte (R-STA-09).
 
 **Come deve sentirsi chi la usa.** Orientato, non misurato.
 
-*Nel regime di transizione* la prima schermata è il **Percorso** di
-`app.html`, con l'attività consigliata, la scelta libera, la sintesi dei
-progressi, i difetti dichiarati, la data d'esame e la nota su dove restano i
-progressi; la Home di `index.html` presenta il sito e manda a `/app`. Gli
-stati sono quelli descritti qui fino al 15 ottobre 2026: senza account è lo
-stato *archivio vuoto* per costruzione, con l'account niente diagnosi a zero,
-e senza data d'esame niente quota, niente semaforo e nessun numero inventato
-(R-STA-01).
-
 ### 7.2 Allenati → Quiz
 
 **Scopo.** Allenarsi sui 1.722 quesiti, scegliendo l'ambito.
@@ -1448,10 +1425,6 @@ conto. Un numero ripetuto nel decreto apre tutti e due i quesiti; un oscurato si
 trova e lo dice prima di rispondere.
 
 **Come deve sentirsi chi la usa.** In controllo: tre tocchi e parte.
-
-*Nel regime di transizione* la schermata è **Quiz**, con le cinque intenzioni,
-senza segmenti, senza segnalibri e senza ricerca; i temi stanno nella scelta
-per argomento.
 
 ### 7.3 Carteggio
 
@@ -1490,9 +1463,6 @@ su una carta sola. È un'assunzione, non una regola del decreto (§10), e la
 preparazione la dichiara prima dell'avvio con il testo del motore.
 
 **Come deve sentirsi chi la usa.** Come al tavolo, non davanti a un quiz.
-
-*Nel regime di transizione* il Carteggio è la terza voce della barra, con le
-stesse tre porte.
 
 ### 7.4 Progressi
 
@@ -1535,10 +1505,6 @@ viste qui» ed «errori nelle risposte», mai una diagnosi sulle cause.
 al loro posto, e il suo collaudo misura 0 px di sbordamento a 375 px. Che le
 tabelle non tornino lo tiene R-MAPPA-14; lo sbordamento della mappa non lo
 ripete nessun controllo, ed è R-MAPPA-17.
-
-*Nel regime di transizione* la mappa ha i tre stati di `classifica()` con le
-parole «giusti · da rifare · mai visti», senza Allena; senza account Progressi
-dice perché non c'è e porta al Percorso o ad Accedi.
 
 ### 7.5 Il runner dei quiz
 
@@ -1584,10 +1550,6 @@ quella ufficiale — che non scrive niente oltre ai tag e ai segnalibri, e la
 dell'avvio. Base e vela sono due fasi con due riepiloghi e due riprove. È nella
 pagina dalla v0.29.0 (P-19, 26 settembre 2026); dal 30 settembre il controllo
 del ciclo ha un regime solo (P-37, §9.6).
-
-*Nel regime di transizione* i tag sono `N`/`L`/`C`, non c'è il segnalibro né la
-segnalazione, e la croce del runner è «Termina l'attività» o «Consegna la
-prova» com'è dall'area 3.
 
 ### 7.6 Il runner del carteggio
 
@@ -1646,8 +1608,7 @@ questa pagina»; la scadenza continua.
 
 **Scopo.** Riconoscere fanali, segnali diurni e sonori a colpo d'occhio.
 
-**Ci si arriva da.** Allenati → Segnali, il terzo segmento. *Nel regime di
-transizione* dalla scheda degli extra nel Percorso.
+**Ci si arriva da.** Allenati → Segnali, il terzo segmento.
 
 **Vincolo.** È materiale **extra banca** e lo dichiara. La lunghezza della
 partita è `min(10, pool)` e la schermata scrive quella, non 10 fisso: i pool sono
@@ -1695,9 +1656,6 @@ sul server, e il file è l'export, una portabilità.
 difetto: l'import dice quante ne ha prese, quante aveva già e **quante ne ha
 scartate**.
 
-*Nel regime di transizione* Info è la settima vista, dall'intestazione, con
-Scarica / ricarica / azzera e Accedi; l'onboarding chiede la sola data d'esame.
-
 ### 7.9 Esame
 
 **Scopo.** Mettere le prove nell'ordine in cui si sostengono — carteggio, quiz
@@ -1717,9 +1675,6 @@ dall'obiettivo o dall'assenza di data.
 **Vincolo.** La composizione della prova di carteggio è un'assunzione del
 progetto (Q-CART4), e la sintesi lo dice; l'ordine dell'esame non limita la
 libertà di esercitarsi.
-
-*Nel regime di transizione* Esame non c'è: la simulazione sta in Quiz e la prova
-di carteggio nel Carteggio.
 
 ---
 
@@ -1774,9 +1729,9 @@ colonna: «scoperto, perché …» è una risposta accettabile, «—» no.
 | R-ARCH-02 | Coperti + da ripassare + mai visti = totale, sempre | `test_engine.mjs::coperti + da_ripassare + mai_visti === totale` |
 | R-ARCH-03 | La versione è una sola, nei due posti — `VERSION` e `meta.json` —, con la sua voce nel CHANGELOG, e `sw.js` non ne porta una: fino al 3 ottobre 2026 i posti erano tre, con il nome della cache | `test_engine.mjs::la versione e una sola` |
 | R-ARCH-05 | Nessun `href` interno finisce in `.html`, in nessuna pagina: gli indirizzi puliti rendono il sito indifferente all'host | `test_dati.py::test_sw` |
-| R-ARCH-06 | `start_url` è il documento di studio: oggi l'app, `/app`, e la Home rimanda all'app; nel ridisegno `/`, un documento solo, e le pagine legali tornano a `/`. Il regime si legge dalla pagina, con la regola di `tests/regime_pagina.py`, e una pagina a metà è rossa anche qui | `test_dati.py::test_indirizzi` |
+| R-ARCH-06 | `start_url` è il documento di studio, `/`, un documento solo, e le pagine legali tornano a `/`. Il regime si legge dalla pagina, con la regola di `tests/regime_pagina.py`: la pagina di prima del ridisegno, o una a metà, è rossa anche qui. Fino a P-89 valeva anche il regime di prima, con `start_url` `/app` e la Home che rimandava all'app | `test_dati.py::test_indirizzi` |
 | R-ARCH-07 | Il nome del database di prima, `open-patente-nautica`, non si riusa e la pagina non lo nomina: in `site/` compare soltanto nella costante della lettura che l'ADR-005 toglie, e solo finché quella lettura è un difetto aperto dichiarato (C-21 in `docs/eccezioni-interfaccia.md`); tolta la riga, da nessuna parte. Fino al 3 ottobre 2026 diceva che il nome non cambia col nome del progetto, perché la pagina lo cercava per il passaggio | `test_dati.py::test_rinomino` |
-| R-ARCH-09 | I due `<title>` sono diversi, e quello della Home nomina la patente; nel ridisegno il canonico è «Rotta Giusta — quiz e carteggio per la patente nautica» e la porta «Apri Allenati · Rotta Giusta», e la porta passa la regola della porta (R-NAV-12) | `test_dati.py::test_indirizzi` |
+| R-ARCH-09 | I due `<title>` sono diversi: il canonico è «Rotta Giusta — quiz e carteggio per la patente nautica», e nomina la patente, e la porta «Apri Allenati · Rotta Giusta», e la porta passa la regola della porta (R-NAV-12) | `test_dati.py::test_indirizzi` |
 | R-ARCH-12 | `strumenti/serve.py` risponde come l'host di produzione misurato: codici, assenza di redirect, 404, `Cache-Control` da `_headers`, e il 304 di una riconvalida, che senza service worker è ciò che fa arrivare fresche le pagine e la banca | `test_dati.py::test_serve` |
 | R-ARCH-13 | Di un tentativo vale l'ultimo tag N/L/C, per istante: i tag storici senza data prima di ogni tag datato, UTC e offset locale confrontati come istanti, l'ordine dell'archivio a parità di istante — e un ritag aggiunge una riga, non cancella quella di prima | `test_engine.mjs::tagPerTentativo: i tag storici senza data vengono prima di quelli datati` |
 | R-ARCH-14 | Una riga di tag che `validaRiga()` rifiuterebbe — tag fuori da N/L/C, senza tentativo, data rotta — non sovrascrive il tag buono di un tentativo | `test_engine.mjs::tagPerTentativo: una riga che l archivio non accetterebbe non decide un tag` |
@@ -1785,6 +1740,7 @@ colonna: «scoperto, perché …» è una risposta accettabile, «—» no.
 | R-ARCH-17 | `sw.js` non forza la ricarica delle pagine aperte — niente `clients.claim()`, `matchAll()` né `navigate()` —, non ha un gestore di `fetch` e non apre una cache; e se una cache non si cancella, si disinstalla lo stesso | `test_engine.mjs::sw.js: non forza la ricarica` |
 | R-ARCH-18 | `site/sw.js` resta pubblicato, senza guscio, senza nome di cache e senza gestore di `fetch`, e si disinstalla: almeno fino al 3 ottobre 2028 (ADR-005) | `test_dati.py::test_sw` |
 | R-ARCH-19 | «Le attività di questa pagina» vengono da un conto solo, nel motore: `riepilogoPagina()` compone `sessioni()` con il confine dell'attività, `attivitaCarteggio()` per tipo, `rigaDiRisposta()` e `validaRiga()` — nessun secondo ritaglio —; conta le risposte per tipo e a parte i tag e i segnalibri, prende ogni `uid` una volta, conta le righe rotte senza farle entrare, dichiara le attività ricostruite e ambigue e i riferimenti che la banca non ha, e non legge né conta la riga d'avvio (R-PREV-02, R-PREV-08) | `test_engine.mjs::riepilogoPagina: conta risposte e gesti a parte` |
+| R-ARCH-20 | Senza account una risposta entra una volta sola nello specchio della pagina: dopo una risposta, lo specchio che la pagina passa alle selezioni dei quiz — `coda()`, `mirata()`, `daAllenare()`, `estraiNuoviPrima()` — è quello di `E.ripiega()` sulle righe che passa a `riepilogoPagina()`, campo per campo. È R-ARCH-01 vista dalla pagina: P-81 l'aveva trovata applicata due volte, `n: 2` contro `n: 1`, e l'ha corretta prima della merge. Nessun numero in schermata lo dice senza account, e il banco lo legge da quegli argomenti, con `/engine.js` servito con le cinque funzioni rivestite (C-23:specchio, P-89); provato al contrario sulla pagina vera con il difetto rimesso e su una rottura della pagina di riferimento | `test_interfaccia.py::test_client_specchio` |
 
 **L'offline se ne va (P-60).** L'ADR-005 ha tolto l'offline, e con lui
 escono cinque requisiti e i loro controlli, e i loro numeri non si riusano.
@@ -1854,25 +1810,26 @@ ottobre 2026, con `curl` su `rottagiusta.it` (§3.5).
 
 I primi sei non esistevano prima del 9 settembre 2026, e i primi due sono la
 ragione per cui questo documento è stato scritto. Dal 15 ottobre 2026 (P-80)
-ogni riga vale **nei due regimi** del §6.2: sulla pagina di oggi com'era, e sul
-ridisegno come il §5 e il §6 lo descrivono; R-NAV-08…13 sono del ridisegno.
+ogni riga valeva **nei due regimi** del §6.2: sulla pagina di prima com'era, e
+sul ridisegno come il §5 e il §6 lo descrivono. Da P-89, il 20 ottobre, il
+regime è uno, e le righe dicono soltanto il ridisegno.
 
 | ID | Requisito | Controllo |
 |---|---|---|
-| R-NAV-01 | Ogni sezione del §5.2 ha **almeno un ingresso** nella pagina; nel ridisegno ogni `data-v` è una sezione o un alias della tabella C del §10.1 del progetto, e nessuna vista di prima resta nel file. Oggi, ogni schermata delle sette | `test_interfaccia.py::test_ogni_vista_ha_una_porta` |
+| R-NAV-01 | Ogni sezione del §5.2 ha **almeno un ingresso** nella pagina; ogni `data-v` è una sezione o un alias della tabella C del §10.1 del progetto, e nessuna vista di prima resta nel file | `test_interfaccia.py::test_ogni_vista_ha_una_porta` |
 | R-NAV-02 | Ogni funzione esportata dal motore è chiamata dalla pagina, o sta nell'elenco dichiarato delle eccezioni; e nessuna chiamata sparisce in silenzio (R-PRES-01). Nel ridisegno si legge sul canonico, `index.html` | `test_interfaccia.py::test_motore_senza_orfani` |
-| R-NAV-03 | Ogni voce della barra — un `<a>` o un `<button>` con `data-v` — porta a una vista dichiarata e ha un'etichetta di testo, non la sola icona; nel ridisegno le voci sono le quattro, Home · Allenati · Esame · Progressi, in quest'ordine, ognuna un link con l'`href` canonico della sua sezione — `/`, `/?sezione=allenati`, `/?sezione=esame`, `/?sezione=progressi` (progetto §3.1 e §3.3) —, e un pulsante al posto di un link, un link senza `href`, un `href` diverso dal canonico, con l'estensione o verso una rotta che il server non serve (`/allenati`) sono rossi con il motivo; e i tre segmenti di Allenati hanno una porta. Oggi la barra di `app.html` ha i pulsanti, e il controllo la legge com'è. La regola del ridisegno è provata a ogni esecuzione sulle due pagine di riferimento e su otto rotture (P-85) | `test_interfaccia.py::test_voci_barra` |
-| R-NAV-04 | I quiz hanno le cinque intenzioni dell'area 2, ognuna con una porta, nessun ingresso Batteria, e ognuna apre la selezione del §6 di `area-2-progetto.md` — funzione del motore, parametri e lista eseguiti, non letti. Una pagina a sei ingressi, o che fa meno verifiche della pagina di riferimento, è rossa. Nel ridisegno la porta della simulazione sta in Esame | `test_interfaccia.py::test_modalita_quiz` |
+| R-NAV-03 | Ogni voce della barra — un `<a>` o un `<button>` con `data-v` — porta a una vista dichiarata e ha un'etichetta di testo, non la sola icona; le voci sono le quattro, Home · Allenati · Esame · Progressi, in quest'ordine, ognuna un link con l'`href` canonico della sua sezione — `/`, `/?sezione=allenati`, `/?sezione=esame`, `/?sezione=progressi` (progetto §3.1 e §3.3) —, e un pulsante al posto di un link, un link senza `href`, un `href` diverso dal canonico, con l'estensione o verso una rotta che il server non serve (`/allenati`) sono rossi con il motivo; e i tre segmenti di Allenati hanno una porta. La regola è provata a ogni esecuzione sulle due pagine di riferimento e su otto rotture (P-85), fra cui una barra di pulsanti come quella di prima, che fino a P-89 il controllo leggeva com'era | `test_interfaccia.py::test_voci_barra` |
+| R-NAV-04 | I quiz hanno le cinque intenzioni dell'area 2, ognuna con una porta, nessun ingresso Batteria, e ognuna apre la selezione del §6 di `area-2-progetto.md` — funzione del motore, parametri e lista eseguiti, non letti. Una pagina a sei ingressi, o che fa meno verifiche della pagina di riferimento, è rossa. La porta della simulazione sta in Esame | `test_interfaccia.py::test_modalita_quiz` |
 | R-NAV-05 | «Solo mai fatte» e «solo con figura» esistono solo nella scelta per argomento, dove chiedono al motore `stati: ['nuovo']` e `soloFigura`, e nessun'altra intenzione li riceve | `test_interfaccia.py::test_selettori` |
-| R-NAV-06 | L'elenco delle schermate del §5.2 è esattamente quello che sta nel file: nel ridisegno **quattro** `.view` con gli id del progetto, oggi le sette; nessuna aggiunta e nessuna sparizione in silenzio | `test_interfaccia.py::test_viste_dichiarate` |
+| R-NAV-06 | L'elenco delle sezioni del §5.2 è esattamente quello che sta nel file: **quattro** `.view` con gli id del progetto; nessuna aggiunta e nessuna sparizione in silenzio. Fino a P-89 valeva anche il censimento delle sette viste di prima | `test_interfaccia.py::test_viste_dichiarate` |
 | R-NAV-07 | Il controllo dei quiz è provato contro sé stesso a ogni esecuzione: una pagina di riferimento lo passa, e ciascuna delle sue rotture dichiarate lo fa fallire nominando il difetto | `test_interfaccia.py::test_intenzioni_provate_al_contrario` |
-| R-NAV-08 | I tragitti del §9 del progetto, in un browser vero: dopo il primo caricamento il documento resta lo stesso — la stessa finestra JavaScript, nessun documento nuovo chiesto — attraverso sezioni, segmenti, Profilo e legali, con le stesse righe; Indietro, Avanti e Chiudi riportano allo stesso punto con scorrimento e fuoco, e Avanti su un tentativo concluso mostra il risultato; il timer continua sopra il Profilo e i legali; le query si ricaricano, `/allenati` è 404, `/app` e i suoi frammenti si puliscono; niente di chi studia sta nell'indirizzo, in `history.state` o in uno storage; la registrazione porta nell'account ogni riga della pagina; ognuno dei 108 tragitti arriva con i tocchi del §9 e torna alla sua porta; e i gruppi del client, C-19 e le attività di C-01 compresi, passano nel regime nuovo. Sulla pagina di oggi il controllo dice che non si applica | `test_interfaccia.py::test_ridisegno_tragitti` |
-| R-NAV-09 | Il regime della pagina si legge da due dichiarazioni insieme, `navigazioneSito()` e `VISTE_RIDISEGNO = ['home', 'allenati', 'esame', 'progressi']`, mai dal nome di un pulsante; nessuna delle due è il regime di oggi, una sola o una lista diversa è rosso; il ridisegno vive in `index.html` e `app.html` non lo dichiara; la regola è una, in `tests/regime_pagina.py`, e provata al contrario su pagine finte | `test_interfaccia.py::test_regime_pagina` |
+| R-NAV-08 | I tragitti del §9 del progetto, in un browser vero: dopo il primo caricamento il documento resta lo stesso — la stessa finestra JavaScript, nessun documento nuovo chiesto — attraverso sezioni, segmenti, Profilo e legali, con le stesse righe; Indietro, Avanti e Chiudi riportano allo stesso punto con scorrimento e fuoco, e Avanti su un tentativo concluso mostra il risultato; il timer continua sopra il Profilo e i legali; le query si ricaricano, `/allenati` è 404, `/app` e i suoi frammenti si puliscono; niente di chi studia sta nell'indirizzo, in `history.state` o in uno storage; la registrazione porta nell'account ogni riga della pagina; ognuno dei 108 tragitti arriva con i tocchi del §9 e torna alla sua porta; e i gruppi del client, C-19 e le attività di C-01 compresi, passano nel ridisegno. Sulla pagina vera e sulla pagina di riferimento del client; fino a P-89 sulla pagina di prima il controllo diceva che non si applicava | `test_interfaccia.py::test_ridisegno_tragitti` |
+| R-NAV-09 | Il regime della pagina si legge da due dichiarazioni insieme, `navigazioneSito()` e `VISTE_RIDISEGNO = ['home', 'allenati', 'esame', 'progressi']`, mai dal nome di un pulsante; nessuna delle due è la pagina di prima del ridisegno, una sola o una lista diversa è a metà, e tutte e due sono rosse con il motivo; il ridisegno vive in `index.html` e `app.html` non lo dichiara; la regola è una, in `tests/regime_pagina.py`, provata al contrario su pagine finte e, a ogni esecuzione, sul sito di v0.31.0, rosso in tutte e due le suite (`test_copia_del_sito`, P-89) | `test_interfaccia.py::test_regime_pagina` |
 | R-NAV-10 | `navigazioneSito()` è una funzione, eseguita contro i casi del §3 del progetto: le quattro sezioni e i segmenti dalle query su `/`, gli alias delle porte di oggi come dice la tabella C, `/app` come Allenati/Quiz con l'indirizzo canonico, il gettone di un link in memoria e mai nell'indirizzo prodotto, `/allenati` e un parametro sconosciuto «indisponibili» con il motivo, un runner mai aperto da un indirizzo, i legali sopra la tappa quando sono toccati e dal file autonomo quando sono caricati, l'attività in corso che chiede di uscire e quella conclusa che mostra il risultato; nessun indirizzo prodotto è una rotta che il server non serve. E la statica: quattro sezioni, la barra a link con l'`href` canonico come in R-NAV-03, i segmenti, gli alias | `test_interfaccia.py::test_ridisegno_navigazione` |
 | R-NAV-11 | I cinque raccordi aggiuntivi del §10.1 del progetto, eseguiti contro il motore vero con una spia sulle chiamate: `preparaBreve` con una `coda()` sul base intero e una `estraiNuoviPrima()` a dieci, mai una seconda pescata, e lo stato «ridotta» quando sono meno; `preparaSegnalibri` da una `codaSegnalibri()` senza tetto, con i segni fuori banca; `avviaSegnalibri` che rilegge e confronta id e ordine; `ricercaNumero` con il testo com'è digitato e il risultato intero, duplicati e oscurati compresi; `permessoGesto` con `rigaScrivibile()` sui tipi del server che si ha davanti, `null` per un server di prima | `test_interfaccia.py::test_ridisegno_raccordi` |
-| R-NAV-12 | Nel ridisegno `site/app.html` è una porta statica di compatibilità: niente banca, archivio o client, un `location.replace()` verso `/?sezione=allenati&segmento=quiz`, il frammento di un link letto in memoria e tolto con `replaceState`, il link «Apri Allenati» per chi non ha lo script, il titolo «Apri Allenati · Rotta Giusta». Oggi `app.html` è l'app, e il controllo lo dice; la regola è provata al contrario su una porta finta | `test_interfaccia.py::test_porta_app` |
+| R-NAV-12 | `site/app.html` è una porta statica di compatibilità: niente banca, archivio o client, un `location.replace()` verso `/?sezione=allenati&segmento=quiz`, il frammento di un link letto in memoria e tolto con `replaceState`, il link «Apri Allenati» per chi non ha lo script, il titolo «Apri Allenati · Rotta Giusta». La regola è provata al contrario su una porta finta e, in `test_copia_del_sito`, sull'app di v0.31.0 al posto della porta | `test_interfaccia.py::test_porta_app` |
 | R-NAV-13 | Il banco del ridisegno è provato contro sé stesso a ogni esecuzione: la pagina di riferimento lo passa per intero, ciascuna delle sue trenta rotture lo fa fallire nominando il difetto, e sulle rotture che toccano le due dichiarazioni il regime letto da Python coincide con quello del banco | `test_interfaccia.py::test_ridisegno_provato_al_contrario` |
-| R-NAV-14 | Il gruppo dei tragitti è provato contro sé stesso a ogni esecuzione: ciascuna delle ventisette rotture della pagina di riferimento del client nel regime nuovo si applica e fa fallire la parte che la riguarda nominando il difetto, e la pagina con le due dichiarazioni e senza il grafo è rossa dal primo passo | `test_interfaccia.py::test_ridisegno_tragitti_provati_al_contrario` |
+| R-NAV-14 | Il gruppo dei tragitti è provato contro sé stesso a ogni esecuzione: ciascuna delle ventotto rotture dei tragitti sulla pagina di riferimento del client si applica e fa fallire la parte che la riguarda nominando il difetto, e la pagina con le due dichiarazioni e senza il grafo è rossa dal primo passo | `test_interfaccia.py::test_ridisegno_tragitti_provati_al_contrario` |
 
 **Che cosa questi controlli non fanno.** Fino al 4 ottobre 2026 non fissavano
 la composizione della barra, perché era Q-NAV e decideva l'autore; Q-NAV è
@@ -1899,21 +1856,21 @@ pagina deve rispettare è nel §10.1 di quel progetto. Che cosa il controllo non
 vede — la gerarchia, il giro dietro un disclosure, i testi, il focus, i
 ritorni, «Base e vela» come due fasi — resta collaudo a 375 e 1280 px.
 
-**Due regimi per il ridisegno (P-80), e che cosa i controlli non vedono.** Il
-meccanismo è quello delle aree 2–5 con la lezione di P-51: il regime si legge
-dalla pagina, e il canonico cambia con lui (§6.2). Il banco del ridisegno
+**Il ridisegno, e che cosa i controlli non vedono.** Dal 15 al 20 ottobre
+2026 i regimi erano due (P-80), con il meccanismo delle aree 2–5 e la lezione di
+P-51: il regime si legge dalla pagina; P-89 ha tolto quello di prima, e una
+pagina senza le due dichiarazioni è rossa (§6.2). Il banco del ridisegno
 (`tests/ridisegno.mjs`) estrae `navigazioneSito()` e i cinque raccordi con le
 funzioni e le costanti in maiuscolo che nominano — mai lo stato della pagina —
 e li esegue; la pagina di riferimento (`tests/pagina-ridisegno.html`) porta
-trenta rotture, tutte rosse per il loro motivo; il banco della mappa riceve il
-regime e nel ridisegno pretende i cinque stati e Allena (R-MAPPA-18); il banco
-del client serve il canonico al suo ingresso e traduce le porte di oggi con gli
-alias quando la pagina non le tiene. I banchi sotto Node non vedono il DOM, i
+trenta rotture, tutte rosse per il loro motivo; il banco della mappa pretende i
+cinque stati e Allena (R-MAPPA-18); il banco del client serve il canonico su `/`
+e traduce le porte di prima con gli alias quando la pagina non le tiene. I banchi sotto Node non vedono il DOM, i
 testi, il fuoco, i ritorni, la geometria, e che il documento resti lo stesso:
 la navigazione si prova come funzione — un indirizzo entra, una destinazione
 esce. **Lo vede, da P-82, il gruppo dei tragitti in Chrome** (N-01 in
-`tests/client_account.mjs`): sulla pagina di riferimento del client nel regime
-nuovo, con le parti documento, cronologia, indirizzi, storage, invito,
+`tests/client_account.mjs`): sulla pagina vera e sulla pagina di riferimento
+del client, con le parti documento, cronologia, indirizzi, storage, invito,
 registrazione, stati, gesti, ricerca, scelte e i tragitti per stato. Il
 documento si riconosce da un segno nella finestra JavaScript e dalle richieste
 di tipo `Document`: un segno nel DOM la pagina lo ricreerebbe. I tocchi si
@@ -1921,7 +1878,7 @@ contano uno per gesto voluto, e ogni conteggio si dice con il titolo d'arrivo e
 con il ritorno; il ciclo della registrazione è di quattro tocchi e non dei
 cinque del §9, perché il modulo si chiude alla creazione — uno scostamento
 detto nel §10.1 del progetto. Il banco è provato contro sé stesso a ogni
-esecuzione (R-NAV-14): ventisette rotture della pagina di riferimento e la pagina
+esecuzione (R-NAV-14): ventotto rotture della pagina di riferimento e la pagina
 con le due dichiarazioni e senza il grafo, tutte rosse per il loro motivo; e
 una difesa tolta alla volta, a mano: tre rotture passavano verdi prima di
 rinforzare il banco — i link con `data-v` che saltavano il ramo rotto, il
@@ -1932,11 +1889,12 @@ il registro delle chiamate a `pushState` la voce che porta i dati passa verde.
 cambia fra l'anteprima e Inizia (è dei raccordi sotto Node, R-NAV-11); un
 modulo ricreato senza i campi sopra un legale; un 200 con scarti alla
 registrazione (lo tengono C-10 e C-12, che girano sulla stessa pagina); la
-ricezione da un altro dispositivo che aggiorna la mappa; un segnalibro contato
-come risposta in schermata; la copia negli appunti che fallisce davvero, che
-il banco accetta in tutti e due gli esiti; le varianti giuste — domanda corta,
-prova vuota — sulla pagina del ridisegno. Il regime di oggi scade con la merge
-di P-81.
+ricezione da un altro dispositivo che aggiorna la mappa; la copia negli
+appunti che fallisce davvero, che il banco accetta in tutti e due gli esiti. Un
+segnalibro contato come risposta in schermata lo vede da P-89 C-23:coda, nello
+stato dell'invio (R-SEGNO-04); le varianti giuste della pagina di riferimento
+di prima — la domanda più corta, i gemelli con l'esatta diversa — girano da
+P-89 su quella del ridisegno.
 
 ### 9.5 Gli stati
 
@@ -2106,8 +2064,8 @@ controllo in `test_server.mjs`.
 |---|---|---|
 | R-ACC-01 | Si arriva al primo quesito senza registrarsi, anche alla prima visita; fermata dopo una risposta, l'attività ha il suo riepilogo e la sua revisione. Fino al 3 ottobre 2026 anche offline, con il guscio caricato: l'ADR-005 ha tolto l'offline | `test_interfaccia.py::test_client_primo_ingresso` |
 | R-ACC-02 | Senza account nessuna risposta resta dopo la chiusura della pagina, e la pagina lo dice prima di cominciare e alla fine di ogni attività: le due frasi del §4.1 del progetto del client, in testo che si vede; dopo una ricarica non mostra niente di prima | `test_interfaccia.py::test_client_senza_account` |
-| R-ACC-03 | La registrazione si raccomanda con i vantaggi che esistono in **tre posti** e in nessun altro (ADR-006): la Home a chi ha risposto senza account, il risultato di una simulazione — con «Conserva questa prova e ritrovala quando torni», senza la promessa del Percorso fino a P-76 (A-6) —, i riepiloghi delle attività; «Continua senza account» lo chiude senza chiedere altro, e torna solo con risposte nuove; mai durante un'attività, nella revisione, nel confronto, nei legali o nel contenuto di Progressi. Sulla pagina di oggi il banco prova il riepilogo e le viste senza invito (C-03); nel ridisegno i tre posti, la rinuncia che tiene la memoria e nessun quarto posto (N-01:invito, P-82), sulla pagina di riferimento del client nel regime nuovo e, dalla merge di P-81, sulla pagina vera | `test_interfaccia.py::test_client_invito_e_viste` |
-| R-ACC-04 | Senza account si fanno tutte le attività — i Quiz per argomento, la simulazione con la sua consegna, «Che tecnica serve?», la prova di carteggio, i Segnali —, ognuna fino al suo punto d'arrivo; ai registrati restano solo le viste che vivono di uno storico. Progressi senza account non è un cruscotto di zeri: oggi dice perché non c'è e porta al Percorso o ad Accedi; nel ridisegno mostra il riepilogo vero della pagina da `riepilogoPagina()` — «Nessuna risposta in questa pagina» o «Le attività di questa pagina» — e spiega perché manca lo storico, senza un invito nel contenuto | `test_interfaccia.py::test_client_tutte_le_attivita` |
+| R-ACC-03 | La registrazione si raccomanda con i vantaggi che esistono in **tre posti** e in nessun altro (ADR-006): la Home a chi ha risposto senza account, il risultato di una simulazione — con «Conserva questa prova e ritrovala quando torni», senza la promessa del Percorso fino a P-76 (A-6) —, i riepiloghi delle attività; «Continua senza account» lo chiude senza chiedere altro, e torna solo con risposte nuove; mai durante un'attività, nella revisione, nel confronto, nei legali o nel contenuto di Progressi. Il banco prova il riepilogo e le viste senza invito (C-03), e i tre posti, la rinuncia che tiene la memoria e nessun quarto posto (N-01:invito, P-82), sulla pagina di riferimento del client e sulla pagina vera | `test_interfaccia.py::test_client_invito_e_viste` |
+| R-ACC-04 | Senza account si fanno tutte le attività — i Quiz per argomento, la simulazione con la sua consegna, «Che tecnica serve?», la prova di carteggio, i Segnali —, ognuna fino al suo punto d'arrivo; ai registrati restano solo le viste che vivono di uno storico. Progressi senza account non è un cruscotto di zeri: mostra il riepilogo vero della pagina da `riepilogoPagina()` — «Nessuna risposta in questa pagina» o «Le attività di questa pagina» — e spiega perché manca lo storico, senza un invito nel contenuto | `test_interfaccia.py::test_client_tutte_le_attivita` |
 | R-ACC-05 | L'archivio di prima degli account resta nel browser, e la pagina non lo guarda (ADR-005): con un database IndexedDB `open-patente-nautica` e le chiavi `localStorage` `pn.archivio` e `pn.esame` scritti prima, senza account e con — all'avvio, in un'attività fino al riepilogo, dopo una ricarica, all'accesso, all'uscita —, la pagina non apre quel database e non legge, non scrive e non cancella le chiavi `pn.`; non dice niente delle risposte di prima nel Percorso, in Info e dopo l'accesso; niente ne arriva nell'account; e alla fine l'archivio è quello di prima, byte per byte. Fino al 3 ottobre 2026 diceva il contrario — l'archivio si porta nell'account o si scarica —, con C-09. **Difetto aperto dichiarato sulla pagina vera** finché P-61 non toglie il passaggio, che lo legge a ogni avvio | `test_interfaccia.py::test_client_archivio_di_prima` |
 | R-ACC-06 | Le righe della pagina aperta e quelle dell'account si uniscono per `uid`, senza doppioni e senza vincitore | `test_engine.mjs::fondiArchivio: per uid, senza doppioni` |
 | R-ACC-07 | Una riga si accetta o si rifiuta con una regola sola, `validaRiga()`, e il rifiuto dice il motivo | `test_engine.mjs::validaRiga: una riga rotta` |
@@ -2156,7 +2114,7 @@ controllo in `test_server.mjs`.
 | R-ACC-52 | Un azzeramento fatto altrove, scoperto inviando o ricevendo, sospende invii e ricezioni finché chi studia non sceglie: la pagina dice quante risposte di qui non sono salvate, niente rientra, scartare chiede di confermare la perdita, la scelta rimandata resta raggiungibile e riaperta conta anche le risposte date intanto; dopo, la copia è quella del server e le risposte nuove entrano | `test_interfaccia.py::test_client_azzeramento` |
 | R-ACC-53 | Dopo il ripristino di una copia, la pagina vede l'epoca nuova, rimanda la risposta che il server ha perso, e un altro dispositivo la riceve: R-ACC-24 visto dalla pagina | `test_interfaccia.py::test_client_ripristino` |
 | R-ACC-54 | L'uscita regge anche una sessione che non c'è più: un `401` all'uscita pulisce la copia, non dice che serve la rete; con la sessione revocata e risposte non inviate le fa scaricare e cancella solo dopo una scelta esplicita, senza mandarle a nessun account. «Esci da tutti i dispositivi» chiude ogni sessione sul server e pulisce qui; l'altro dispositivo lo scopre con un `401` e tiene la sua copia, congelata | `test_interfaccia.py::test_client_uscita` |
-| R-ACC-55 | La data d'esame dopo la registrazione è facoltativa e non inventata: la data scritta nella pagina si propone e si salva solo al clic, com'è anche se passata; senza, il campo è vuoto; un salvataggio fallito lo dice; entrando in un account che ha la data, il passo non si ripete, la data resta e la pagina mostra quella del server. Nel ridisegno l'onboarding chiede anche «che cosa stai preparando?», due scelte facoltative senza un default, con le stesse regole: «salvate» solo con i valori riletti dal server, e solo con un server che dichiara i due campi in `campi_profilo` (P-83, A-5, sul server dal 15 ottobre 2026, e spenti nel server in esercizio fino al rilascio di P-81: P-86, R-ACC-84): con uno che non li dichiara nessuna promessa di persistenza. Nel ridisegno lo provano N-01:scelte e l'onboarding di N-01:registrazione (P-82): «Scelte salvate» e il database con i due campi; un 200 che rilegge valori diversi non è «salvate»; senza `campi_profilo` nessuna promessa e niente al server; senza account «Scelte applicate a questa pagina» (N-01:storage). Dal P-88 la raccolta la accende la parte sul server della sua corsia, su qualunque pagina — accesa per «Scelte salvate», per il 200 che rilegge e per l'onboarding; spenta davvero, e non una descrizione a cui si tolgono campi, per «senza `campi_profilo`», dove il banco guarda anche che nessun `PUT /v1/profilo` porti una scelta —, così la pagina vera del ridisegno passa N-01:scelte prima del rilascio che le accende sul server vero | `test_interfaccia.py::test_client_data` |
+| R-ACC-55 | La data d'esame dopo la registrazione è facoltativa e non inventata: la data scritta nella pagina si propone e si salva solo al clic, com'è anche se passata; senza, il campo è vuoto; un salvataggio fallito lo dice; entrando in un account che ha la data, il passo non si ripete, la data resta e la pagina mostra quella del server. L'onboarding chiede anche «che cosa stai preparando?», due scelte facoltative senza un default, con le stesse regole: «salvate» solo con i valori riletti dal server, e solo con un server che dichiara i due campi in `campi_profilo` (P-83, A-5, sul server dal 15 ottobre 2026, e spenti nel server in esercizio fino al rilascio di P-81: P-86, R-ACC-84): con uno che non li dichiara nessuna promessa di persistenza. Lo provano N-01:scelte e l'onboarding di N-01:registrazione (P-82): «Scelte salvate» e il database con i due campi; un 200 che rilegge valori diversi non è «salvate»; senza `campi_profilo` nessuna promessa e niente al server; senza account «Scelte applicate a questa pagina» (N-01:storage). Dal P-88 la raccolta la accende la parte sul server della sua corsia, su qualunque pagina — accesa per «Scelte salvate», per il 200 che rilegge e per l'onboarding; spenta davvero, e non una descrizione a cui si tolgono campi, per «senza `campi_profilo`», dove il banco guarda anche che nessun `PUT /v1/profilo` porti una scelta —, così la pagina vera del ridisegno passa N-01:scelte prima del rilascio che le accende sul server vero | `test_interfaccia.py::test_client_data` |
 | R-ACC-56 | «Scarica i tuoi progressi» con l'account è l'export del server, e dice quante risposte da inviare non contiene, scaricabili a parte; su un'origine senza API nessun modulo d'account, nessuna richiesta all'API e niente di personale nel browser: un link a `rottagiusta.it/app` | `test_interfaccia.py::test_client_export` |
 | R-ACC-57 | I testi di `site/` sono quelli della versione con gli account: nessuna delle frasi che gli account rendono false, commenti compresi, e tutte quelle del §11.2 del progetto del client. Il contenuto giuridico dell'informativa resta al gate dell'autore | `test_interfaccia.py::test_client_testi` |
 | R-ACC-58 | La pagina ha il client degli account: dichiara `indirizzoApi()`, e una pagina che non la dichiara — quella di prima di P-18 — è rossa, qui e in ogni gruppo del banco | `test_interfaccia.py::test_client_nella_pagina` |
@@ -2279,7 +2237,10 @@ browser, nessuna frase e nessuna rotta del client — non esiste più, e la pagi
 di prima di P-18, senza `indirizzoApi()`, è rossa in ogni gruppo e nel controllo
 statico di R-ACC-58. La pagina di riferimento del banco resta, perché porta le
 rotture e la variante che tengono il banco onesto (R-ACC-42): sulla pagina vera,
-dell'interfaccia, le sostituzioni si spezzerebbero a ogni suo ritocco. Quello
+dell'interfaccia, le sostituzioni si spezzerebbero a ogni suo ritocco. Da P-89 è
+quella del ridisegno, `tests/pagina-client-ridisegno.html`: la pagina di
+riferimento di prima, `tests/pagina-client-account.html`, è uscita con il
+regime di prima, e le sue rotture e le sue varianti sono passate qui (§6.2). Quello
 che il banco non vede non è più scritto solo in prosa: sono R-ACC-59…63,
 scoperti con il motivo. R-ACC-11 resta sul server e ha la metà della pagina in
 R-ACC-47; R-ACC-30 ha la metà della pagina in R-ACC-41.
@@ -2479,7 +2440,7 @@ P-41, i controlli della pagina di P-44, la pagina di P-23. Dal 30 settembre
 | R-MAPPA-14 | La pagina prende i numeri della mappa e la frase da `quadro()` e `dovePesa()` attraverso il raccordo, senza rifarli: una chiamata a `quadro()` con i dati e i pesi della richiesta e `dovePesa()` sullo stesso oggetto; i temi e le voci nel loro ordine; giusti, da rifare, mai visti e visti del motore; `primo` nullo sotto soglia; nessun peso sulle voci né sulla vela; nessuna frase dove `dovePesa()` non ne dà, e nessun'altra funzione che conti. Una pagina senza il raccordo è rossa, e anche una che tiene le tabelle *Per tema* e *Per voce* o chiama `E.diagnosi()` accanto alla mappa: sarebbero la seconda classifica che Q-DUE ha tolto. La pagina vera fa tante verifiche quante la pagina di riferimento, gruppo per gruppo | `test_interfaccia.py::test_mappa_righe` |
 | R-MAPPA-15 | Dalla pagina, «Rifai N errori» di un tema, di una voce e i pulsanti della frase aprono esattamente la selezione del motore: N è `daRifare`, la lista è `coda()` con `soloDaRifare` e senza tetto — tutti i 35, non 20, e non i 38 di `soloSbagliate` —; mai un pulsante da zero; se fra un clic e l'altro gli errori della riga sono cambiati, l'anteprima dice «cambiata» e Inizia non avvia niente, mentre una risposta altrove o la banca ricaricata non cambiano niente | `test_interfaccia.py::test_mappa_azioni` |
 | R-MAPPA-16 | Il banco della mappa è provato contro sé stesso a ogni esecuzione: una pagina di riferimento lo passa, e ciascuna delle sue rotture dichiarate lo fa fallire nominando il difetto | `test_interfaccia.py::test_mappa_provata_al_contrario` |
-| R-MAPPA-18 | Nel ridisegno la mappa porta i cinque stati sul totale e su ogni riga, da una `contaStati()` per aggregato con il filtro della riga di `quadro()` — mai ricontati in pagina con `statoQuesito()`, mai una sola chiamata spalmata —, i tre di `classifica()` restano per le azioni, e «Allena» passa da `anteprimaAllenaProgressi()` e `avviaAllenaProgressi()`: una `coda()` con il filtro della riga e venti quesiti, non «Rifai», e Inizia rilegge e confronta id e ordine o si ferma su «cambiata». Eseguito sulla pagina di riferimento della mappa, fissata al ridisegno, con dieci rotture; sulla pagina di oggi il controllo dice che non si applica | `test_interfaccia.py::test_mappa_stati` |
+| R-MAPPA-18 | La mappa porta i cinque stati sul totale e su ogni riga, da una `contaStati()` per aggregato con il filtro della riga di `quadro()` — mai ricontati in pagina con `statoQuesito()`, mai una sola chiamata spalmata —, i tre di `classifica()` restano per le azioni, e «Allena» passa da `anteprimaAllenaProgressi()` e `avviaAllenaProgressi()`: una `coda()` con il filtro della riga e venti quesiti, non «Rifai», e Inizia rilegge e confronta id e ordine o si ferma su «cambiata». Eseguito sulla pagina vera e sulla pagina di riferimento della mappa, con dieci rotture; fino a P-89 sulla pagina di prima il controllo diceva che non si applicava | `test_interfaccia.py::test_mappa_stati` |
 | R-MAPPA-17 | La schermata scrive quello che il raccordo restituisce e niente altro: «N domande nella prova» solo con un peso, «Visti Y su N», «X su Y giusti al primo tentativo» o «Troppo poche risposte per dire come va», «Rifai N errori» o «Nessun errore da rifare qui», la frase con il suo titolo, e nessun riquadro dove la frase manca | scoperto — sono testi e disegno, e il banco della mappa esegue il raccordo sotto Node, senza DOM: un disegno che prendesse i numeri da un'altra parte passerebbe. Il collaudo di P-23 li ha guardati in Chrome a 375 e 1280 px, con e senza account, e lo sbordamento a 0 px; nessun controllo lo ripete. Il banco del client guida già la pagina vera in Chrome con un account, ed è da lì che un controllo potrebbe leggerli |
 
 **Un regime solo, e che cosa il controllo non vede** (P-44 e P-47, 30
@@ -2601,8 +2562,9 @@ conforme».
 ### 9.12 I contratti per il ridisegno: stati, tag, segnalibri, numero
 
 Nati dalle decisioni 8, 14, 15 e 20 di P-59, il 4 ottobre 2026 (P-71). Sono del
-motore, e la pagina di oggi non li chiama: stanno fra gli orfani dichiarati di
-`docs/eccezioni-interfaccia.md` finché il ridisegno non lo fa.
+motore. Fino al ridisegno la pagina non li chiamava, e stavano fra gli orfani
+dichiarati di `docs/eccezioni-interfaccia.md`; da P-81 li chiama, e sono fra le
+chiamate protette.
 
 | ID | Requisito | Controllo |
 |---|---|---|
@@ -2617,12 +2579,14 @@ motore, e la pagina di oggi non li chiama: stanno fra gli orfani dichiarati di
 | R-SEGNO-01 | Il segnalibro è un tipo di riga, `_t: 'b'`, con data, quesito e `segnato` 1 o 0, che il server dichiara; non è una risposta | `test_engine.mjs::validaRiga: il segnalibro` |
 | R-SEGNO-02 | Vale l'ultimo gesto per istante, i segni rotti non decidono, e l'allenamento «i miei segnalibri» dà la lista e il numero dalla stessa chiamata, nomina i segni su quesiti che la banca non ha e si restringe per banca | `test_engine.mjs::segnalibri: vale l ultimo gesto` |
 | R-SEGNO-03 | I segnalibri non cambiano niente di quello che il motore seleziona o misura, entrano dall'import per `uid` e viaggiano nella coda | `test_engine.mjs::il segnalibro non e una risposta` |
+| R-SEGNO-04 | Con l'account una coda con una risposta e un segnalibro si dice «1 risposta da inviare», non due: il segnalibro non è una risposta, e il numero conta le sole righe per cui `rigaDiRisposta()` dice vero. In Chrome, con la rete che non risponde, nella coda della copia una risposta e un segnalibro, e in schermata il numero 1 (C-23:coda, P-89). P-81 l'aveva trovata contata riga per riga, e l'ha corretta prima della merge; provato al contrario sulla pagina vera con il difetto rimesso e su una rottura della pagina di riferimento | `test_interfaccia.py::test_client_coda_segnalibro` |
 | R-NUM-01 | Dal progressivo del decreto al quesito, base e vela: scritto come lo scrive chi studia, esatto o parziale per segmenti interi, un numero che non c'è senza risultati, un testo che non è un numero detto, un oscurato trovato e nominato, e ogni quesito con un progressivo leggibile trovato con il suo | `test_engine.mjs::cercaNumero: dal progressivo del decreto al quesito` |
 | R-NUM-02 | La misura dei difetti della banca, riletta sul PDF del decreto (P-77): tre progressivi illeggibili, scritti così nel decreto, che non si trovano né per numero né per somiglianza, e undici numeri ripetuti nel decreto, che aprono tutti i loro quesiti; base-8, l'errore di estrazione, si trova con il suo numero, 1.1.1-8 | `test_engine.mjs::cercaNumero: sulla banca vera tre progressivi` |
 
-**Che cosa questi controlli non vedono.** La pagina: nessuno dei quattro
-contratti ha ancora un gesto, una barra o una casella di ricerca, e i testi —
-le parole degli stati, dei tag, del segnalibro, i messaggi della ricerca — sono
+**Che cosa questi controlli non vedono.** La pagina: i gesti, la barra e la
+casella di ricerca li prova N-01 in Chrome da P-82, sulla pagina vera da P-81, e
+un segnalibro contato fra le risposte da inviare C-23:coda da P-89; i testi — le
+parole degli stati, dei tag, del segnalibro, i messaggi della ricerca — sono
 dell'interfaccia. Il server accoglie già il tag `S` e il segnalibro, perché
 importa `validaRiga()`; dal P-78 lo strumento del titolare li nomina a parte —
 i segnalibri con `segnalibri()`, i tag fra i tag — e la fonte `risposte` delle
@@ -3698,3 +3662,16 @@ successo, ed è il motivo per cui questo file esiste.
   Ora ogni gruppo comincia dal codice, e la parte che prova una raccolta la
   accende, o la spegne davvero, sul server della sua corsia. R-ACC-55,
   R-ACC-86 e il §9.13 lo dicono; nessun requisito nuovo.
+- **20 ottobre 2026 — il regime è uno (P-89).** P-81 è fuso (`ebe2e47`), e il
+  regime di transizione di P-80 è scaduto: il §5, il §6 e il §7 perdono i
+  paragrafi *Nel regime di transizione*, il §6.2 dice che il regime è uno, e i
+  requisiti che dicevano due regimi — R-ARCH-06 e 09, R-NAV-01, 03, 04, 06, 08,
+  09, 12 e 14, R-ACC-03, 04 e 55, R-MAPPA-18 — dicono il solo ridisegno. Dai
+  controlli esce il ramo che teneva verde la pagina di prima, misurato prima di
+  toglierlo: il sito di v0.31.0 passava 3.002 verifiche su 3.015, e ora è rosso
+  con il motivo, in tutte e due le suite, a ogni esecuzione. La pagina di
+  riferimento del client di prima esce, e le sue rotture passano a quella del
+  ridisegno. Entrano R-ARCH-20 e R-SEGNO-04, i due conti che P-81 ha trovato e
+  corretto nella sua copia — una risposta senza account applicata due volte allo
+  specchio, un segnalibro contato fra le risposte da inviare —, con il loro
+  controllo sulla pagina vera e una rottura ciascuno.

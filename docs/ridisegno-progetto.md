@@ -2429,6 +2429,99 @@ sezione e lascia il footer); e i legali dicono ancora «schermata Info» e
 dei controlli scade adesso** (specifica §6.2): lo toglie P-89, con le due
 regressioni dei conti.
 
+##### P-89 — il regime di transizione esce dai controlli, 20 ottobre 2026
+
+**Fatto.** Il regime di prima del ridisegno non c'è più nei controlli, come
+P-12, P-37, P-47 e P-50 hanno fatto per le aree: una pagina senza
+`navigazioneSito()` e `VISTE_RIDISEGNO` è **di prima**, ed è rossa con il motivo
+in `test_interfaccia.py` e in `test_dati.py`, dalla regola sola di
+`tests/regime_pagina.py`. Escono i rami che la tenevano verde: il censimento
+delle sette viste, la barra a pulsanti, `app.html` come app, `start_url`
+`/app` e i legali che tornavano a `/app`, la Home che rimandava all'app, il
+canonico servito su `/app` dal banco del client, i testi e i ritorni della
+pagina di prima nel banco (C-03, C-16, C-19, T-03, F-01), la mappa senza i
+cinque stati, e i gruppi che «non si applicano» — N-01, la mappa degli stati,
+il banco del ridisegno. Il regime senza raccordo di E-01 e P-01 è un altro, e
+resta: scade con la merge di P-75.
+
+**Misurato prima e dopo.** Il sito di `v0.31.0` — la Home, l'app, il manifest e
+le pagine legali che P-81 ha sostituito —, con `RG_SITO` su una copia di
+`site/`: prima di togliere il ramo passava l'interfaccia con **3.002 verifiche
+su 3.015**, e i 13 rossi erano tutti delle chiamate al motore che P-81 aveva
+dichiarato in `docs/eccezioni-interfaccia.md`, nessuno del regime; i dati con
+**230 su 230**. Dopo: lo stesso sito è rosso al primo controllo, «il documento di studio è nel
+ridisegno (regime letto: di prima)», con il motivo: l'interfaccia **320 rossi su
+2.177 verifiche** — 141 del banco del client, che non trova la porta della prima
+attività né «Account»; 103 delle chiamate al motore e degli orfani, perché il
+canonico è la Home di prima, che il motore non lo chiama; i banchi del ridisegno,
+della mappa, del Carteggio, dei quiz e del ciclo, le quattro sezioni, la barra,
+la porta, il trasloco —, in 31 min 34 s, perché ogni gruppo del browser aspetta le
+sue scadenze; i dati **6 rossi su 225**, uno per difetto: il regime, `start_url`
+`/app`, il titolo della porta, `app.html` che non è una porta, i due legali che
+tornano a `/app`. E un controllo nuovo lo pretende a ogni
+esecuzione, senza browser: `test_copia_del_sito` mette quei cinque file, letti
+dal tag, in una copia, e vuole il regime «di prima» e il rosso con il motivo in
+tutte e due le suite.
+
+**Le pagine di riferimento.** Restano tutte quelle dei banchi sotto Node —
+quiz, ciclo, Carteggio, mappa, ridisegno — e la porta di riferimento: nessuna
+era del regime di prima, perché leggono raccordi e non la pagina intera. Esce
+**`tests/pagina-client-account.html`**, la pagina di riferimento del client nel
+regime di prima: senza quel regime il banco non la sa più guidare, e tenerla
+avrebbe voluto dire tenere il ramo. Le sue rotture e le sue varianti sono
+passate a `tests/pagina-client-ridisegno.html`, che da P-82 passava già tutti i
+gruppi del client: delle 235 rotture della pagina, 195 si applicano com'erano e
+40 sono state riscritte sul codice del ridisegno; delle 3 varianti, una com'era
+e 2 riscritte; le 7 rotture del sito e del service worker girano accanto a lei.
+Nessuna è stata tolta. **Sedici delle riscritte si applicavano al testo e
+passavano verdi**, trovato al primo giro: sul ridisegno la stessa frase o lo
+stesso codice sta anche altrove — il giudizio del Carteggio anche nella
+preparazione, l'avviso dei Segnali anche nel risultato, il link alle condizioni
+anche nel piè di pagina, il riepilogo di una simulazione prima di quello di un
+allenamento, l'onboarding al posto del passo della data, `#v-oggi` che non c'è
+—, e la sostituzione colpiva il punto sbagliato. Ora colpiscono quello giusto,
+e sono rosse per il loro motivo. **Due rotture dell'uscita di P-01:conti
+passavano verdi per un verde falso del banco**: dopo Info, che nel ridisegno è
+un pannello sopra la pagina, «Account» ed «Esci» non si premevano, e «con il
+solo avvio in coda l'uscita si blocca» era vera senza che l'uscita fosse
+partita. Il banco chiude ora il pannello e pretende che «Esci» si sia premuto;
+le due rotture sono rosse, la pagina di riferimento verde. Sulla pagina vera
+P-01 gira spento fino a P-75, e quella parte non c'era.
+
+**Le due regressioni dei conti** che P-81 ha trovato e corretto nella sua
+copia, ora C-23 nel banco del client. *C-23:specchio* (R-ARCH-20): senza
+account, dopo una risposta, lo specchio della pagina è quello di `E.ripiega()`
+sulle sue righe, campo per campo. Nessun numero in schermata lo dice senza
+account — la copertura cumulativa è dei registrati, e lo stato è «chiuso» con
+`n: 1` come con `n: 2` —, quindi il banco lo legge da un **aggancio del
+contratto** che la pagina ha già: le righe che passa a `E.riepilogoPagina()`
+(R-ARCH-19) e lo specchio che passa alle selezioni dei quiz come secondo
+argomento (`E.coda()`, `E.mirata()`, `E.daAllenare()`, `E.estraiNuoviPrima()`,
+la `fonte` dei raccordi). Il banco serve `/engine.js` con quelle cinque
+funzioni rivestite, che registrano gli argomenti e chiamano quelle vere; la
+pagina non si tocca. *C-23:coda* (R-SEGNO-04): con l'account e la rete che non
+risponde, un quesito sbagliato con il suo segnalibro; nella coda della copia
+una risposta e un segnalibro, e in schermata «1 risposta da inviare». **Prima
+rossi, poi verdi, sulla pagina vera**: con il difetto rimesso in una copia di
+`site/index.html` — `E.applica()` dopo `archivia()`, che senza account
+ripiega già le righe; la coda contata riga per riga — le due verifiche sono
+rosse, per base-1099 `n: 2` contro `n: 1` e «2 risposte da inviare»; sulla
+pagina vera verdi. Sulla pagina di riferimento verdi, e una rottura ciascuna —
+la risposta applicata due volte, il segnalibro contato fra le risposte — rossa
+per il suo motivo.
+
+**Che cosa non vedono.** Lo specchio dopo più risposte, con l'account, o dopo
+un import: la verifica è sulla prima risposta senza account, il caso di P-81.
+Una pagina che passasse alle selezioni uno specchio diverso da quello che
+usa: l'aggancio legge quello che la pagina dà al motore, non una variabile
+interna. Il numero della coda in punti diversi dallo stato dell'invio — Info,
+l'uscita, l'export —, che hanno i loro gruppi (T-02, P-01, C-17).
+
+**Restano**, e non sono di P-89: `docs/account-client-progetto.md` (§9.4 e
+§12) e `docs/area-6-progetto.md` nominano ancora `pagina-client-account.html`
+come pagina di riferimento, e `AGENTS.md` descrive `RG_PAGINA` come «una copia
+dell'app»; sono fuori dal perimetro di questa sessione, per la regia.
+
 ### 10.2 Verifica documentale di P-79 e limiti
 
 Verificati cartella, ramo, albero iniziale pulito e inventario delle chat:

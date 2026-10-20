@@ -1,23 +1,31 @@
-"""Il regime della pagina di studio: quello di oggi, o quello del ridisegno.
+"""Il regime della pagina di studio: il ridisegno, e nessun altro.
 
 Un modulo solo, letto da `tests/test_interfaccia.py` e da `tests/test_dati.py`:
 due copie della stessa regola divergerebbero, e il giorno in cui una delle due
-riconoscesse il ridisegno e l'altra no, meta' dei controlli guarderebbero la
+riconoscesse la pagina e l'altra no, meta' dei controlli guarderebbero la
 pagina sbagliata senza un rosso.
 
 La regola (docs/ridisegno-progetto.md §10.1, punto A, e il contratto di P-80):
 una pagina e' nel regime del **ridisegno** se il suo script dichiara, al primo
 livello e fuori dai commenti, `function navigazioneSito(` **e** `const
 VISTE_RIDISEGNO = ['home', 'allenati', 'esame', 'progressi']`, esattamente
-quei quattro in quell'ordine. Nessuna delle due: regime **attuale**. Una sola,
-o una lista diversa: **a meta'**, che e' un rosso con il motivo. Mai dal nome
-di un pulsante.
+quei quattro in quell'ordine. Mai dal nome di un pulsante.
 
-Il documento canonico: nel ridisegno `site/index.html`, nel regime attuale
-`site/app.html`. Un `app.html` che dichiara il ridisegno e' rosso: il
-ridisegno vive in `index.html`, e `app.html` e' la porta di compatibilita'.
-`RG_PAGINA=<file>` sostituisce il canonico, qualunque sia: il regime si legge
-dalla copia, e la copia sta per `index.html` o per `app.html` di conseguenza.
+**Un regime solo, dal 20 ottobre 2026 (P-89).** Fino alla merge di P-81 i
+regimi erano due: senza nessuna delle due dichiarazioni la pagina era quella di
+prima — sette viste in `site/app.html`, la Home a parte —, e ogni controllo la
+guidava com'era. P-81 e' fuso con `ebe2e47`, e da qui una pagina senza le due
+dichiarazioni e' **di prima**, cioe' un rosso con il motivo, come una a meta'
+(specifica §6.2). E' il passo che P-12, P-37, P-47 e P-50 hanno fatto per le
+aree: si toglie il ramo che teneva verde la pagina di prima, e restano pagine di
+riferimento, rotture e controlli. Misurata prima di toglierlo, la pagina di
+`v0.31.0` passava l'interfaccia con 3.002 verifiche su 3.015 e i dati con 230 su
+230 (CHANGELOG, P-89).
+
+Il documento canonico e' `site/index.html`, e `site/app.html` la porta di
+compatibilita'. Un `app.html` che dichiara il ridisegno e' rosso: il ridisegno
+vive in `index.html`. `RG_PAGINA=<file>` sostituisce il canonico: il regime si
+legge dalla copia.
 
 `RG_SITO=<cartella>` (P-84) sostituisce site/ intera — canonico, porta,
 manifest, pagine legali, dati, figure —, e il regime si legge dalla cartella
@@ -69,8 +77,9 @@ ALIAS_VISTE = {
     'oggi': ('home', None, None),
     'info': ('home', None, 'info'),
 }
-INGRESSO = {'ridisegno': '/', 'attuale': '/app'}
-CANONICO = {'ridisegno': 'index.html', 'attuale': 'app.html'}
+# La pagina senza le due dichiarazioni: dalla merge di P-81 e' un rosso, non un regime.
+DI_PRIMA = ('senza navigazioneSito() e VISTE_RIDISEGNO: e\' la pagina di prima del ridisegno, che dalla merge di P-81 '
+            '(20 ottobre 2026) non passa piu\' — il documento di studio e\' il ridisegno (specifica §6.2)')
 
 
 def senza_commenti(testo):
@@ -96,12 +105,15 @@ def viste_dichiarate(testo):
 
 
 def regime_ridisegno(testo):
-    """('ridisegno' | 'attuale' | 'a metà', motivo)."""
+    """('ridisegno' | 'di prima' | 'a metà', motivo).
+
+    'di prima' e' la pagina senza nessuna delle due dichiarazioni: non e' piu' un
+    regime, e chi legge lo fa diventare un rosso con il motivo (P-89)."""
     t = senza_commenti(testo)
     nav = re.search(r'^(?:async\s+)?function\s+navigazioneSito\s*\(', t, re.M) is not None
     viste = viste_dichiarate(testo)
     if not nav and viste is None:
-        return 'attuale', ''
+        return 'di prima', DI_PRIMA
     if nav and viste == VISTE_RIDISEGNO:
         return 'ridisegno', ''
     if not nav:
@@ -114,30 +126,26 @@ def regime_ridisegno(testo):
 def canonico(site, pagina_env=None):
     """{nome, testo, regime, motivo, copia} del documento di studio.
 
-    `nome` e' il file di `site/` per cui il testo sta: `index.html` nel
-    ridisegno, `app.html` oggi. `motivo` e' vuoto quando il regime e' pulito;
-    altrimenti dice che cosa non torna, e chi legge lo fa diventare un rosso.
+    `nome` e' sempre `index.html`: il canonico del ridisegno. `motivo` e' vuoto
+    quando la pagina e' nel ridisegno e `app.html` e' la porta; altrimenti dice
+    che cosa non torna — la pagina di prima, una a meta', un app.html che
+    dichiara il ridisegno —, e chi legge lo fa diventare un rosso.
     """
     site = Path(site)
     if pagina_env:
         testo = Path(pagina_env).read_text(encoding='utf-8')
         regime, motivo = regime_ridisegno(testo)
-        nome = CANONICO.get(regime, 'app.html')
-        return {'nome': nome, 'testo': testo, 'regime': regime, 'motivo': motivo, 'copia': pagina_env}
+        return {'nome': 'index.html', 'testo': testo, 'regime': regime,
+                'motivo': (('la copia %s: ' % pagina_env) + motivo) if motivo else '', 'copia': pagina_env}
     index = (site / 'index.html').read_text(encoding='utf-8')
     ri, mi = regime_ridisegno(index)
     app = (site / 'app.html').read_text(encoding='utf-8')
-    ra, ma = regime_ridisegno(app)
-    if ri == 'ridisegno':
-        motivo = '' if ra == 'attuale' else 'anche site/app.html dichiara il ridisegno, e dev\'essere la porta: ' + (ma or 'una pagina sola e\' il documento di studio')
-        return {'nome': 'index.html', 'testo': index, 'regime': 'ridisegno', 'motivo': motivo, 'copia': None}
-    if ri == 'a metà':
-        return {'nome': 'index.html', 'testo': index, 'regime': 'a metà', 'motivo': 'site/index.html: ' + mi, 'copia': None}
-    if ra != 'attuale':
-        motivo = ('site/app.html dichiara il ridisegno: il documento canonico del ridisegno e\' index.html, e app.html la porta'
-                  if ra == 'ridisegno' else 'site/app.html: ' + ma)
-        return {'nome': 'app.html', 'testo': app, 'regime': 'a metà', 'motivo': motivo, 'copia': None}
-    return {'nome': 'app.html', 'testo': app, 'regime': 'attuale', 'motivo': '', 'copia': None}
+    ra, _ = regime_ridisegno(app)
+    if ri != 'ridisegno':
+        return {'nome': 'index.html', 'testo': index, 'regime': ri, 'motivo': 'site/index.html: ' + mi, 'copia': None}
+    motivo = '' if ra != 'ridisegno' else ('anche site/app.html dichiara il ridisegno, e dev\'essere la porta: '
+                                           'una pagina sola e\' il documento di studio')
+    return {'nome': 'index.html', 'testo': index, 'regime': 'ridisegno', 'motivo': motivo, 'copia': None}
 
 
 def e_porta(testo):

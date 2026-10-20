@@ -8,11 +8,13 @@
 //
 // Uso: node tests/client_account.mjs  < {"prove":[{nome,pagina,gruppi,ingresso}]}
 // Stampa {nome: [{gruppo, nome, ok, extra}]}. La pagina sostituisce il suo
-// ingresso — `/app` oggi, `/` nel ridisegno (P-80): e' `ingresso` della prova,
-// e senza e' `/app` —; il resto del sito e' quello di site/, la porta
-// `site/app.html` compresa quando il canonico e' `/`. Ogni pagina e' guidata come una pagina con
-// il client: dal 30 settembre 2026 (P-40) non c'e' piu' il regime della pagina
-// senza account, e una pagina senza client e' rossa in ogni gruppo.
+// ingresso, `/`; il resto del sito e' quello di site/, la porta `site/app.html`
+// compresa. Ogni pagina e' guidata come una pagina con il client: dal 30
+// settembre 2026 (P-40) non c'e' piu' il regime della pagina senza account, e
+// una pagina senza client e' rossa in ogni gruppo. E come una pagina del
+// ridisegno: dal 20 ottobre 2026 (P-89) non c'e' piu' il regime della pagina di
+// prima, con le sette viste su `/app`, e una pagina senza le due dichiarazioni
+// e' rossa in ogni gruppo.
 //
 // **Il contratto che la pagina deve rispettare** (§12 del progetto, «Il banco»
 // e «Il resto dei controlli»), per esteso li'. In breve:
@@ -173,7 +175,7 @@ function sito(corrente) {
     // Una radice diversa da site/, tutta, pagina compresa: e' cosi' che C-22
     // serve la 0.29.0 sulla stessa origine, prima della versione nuova (P-60).
     const radice = corrente.radice || SITE;
-    const ingressoDi = corrente.ingresso || '/app';
+    const ingressoDi = corrente.ingresso || '/';
     if ((p === ingressoDi || (ingressoDi === '/' && p === '/index.html')) && !corrente.radice) {
       res.writeHead(200, { 'Content-Type': TIPI['.html'], 'Cache-Control': 'no-cache' });
       return res.end(corrente.pagina);
@@ -207,9 +209,9 @@ const V = 'const V = (e) => !!e && e.getClientRects().length > 0 && getComputedS
 // attiva: i pulsanti e i campi si cercano li' dentro, come li trova chi usa la
 // pagina. Senza, un «Accedi» nell'intestazione e uno nel pannello del 409 sono
 // indistinguibili per testo.
-// Nel ridisegno le finestre si impilano — un testo legale sopra il modulo, il
-// modulo sopra Info (ridisegno §3.3, §6.1) —, e quella attiva e' l'ultima nel
-// documento: si prende quella. Con una finestra sola, come oggi, e' la stessa.
+// Le finestre si impilano — un testo legale sopra il modulo, il modulo sopra
+// Info (ridisegno §3.3, §6.1) —, e quella attiva e' l'ultima nel documento: si
+// prende quella. Con una finestra sola e' la stessa.
 const M = 'const M = () => [...document.querySelectorAll(\'[aria-modal="true"]\')].filter(V).pop() || document;';
 const js = (corpo) => `(() => { ${V} ${M} ${corpo} })()`;
 const q = (s) => JSON.stringify(s);
@@ -226,32 +228,30 @@ const imposta = (tab, etichetta, valore) => tab.valuta(js(`const c = ${campo(eti
 // piu' viste, e quella nascosta non si tocca.
 const clic = (tab, sel) => tab.valuta(js(`const e = [...document.querySelectorAll(${q(sel)})].find(V); if (!e || e.disabled) return false; e.click(); return true;`));
 
-// --- i due regimi della pagina di studio (P-80, docs/ridisegno-progetto.md §10.1) ---
+// --- la pagina di studio: il ridisegno (docs/ridisegno-progetto.md §10.1) ---
 //
-// Oggi il documento di studio e' `/app`; nel ridisegno e' `/`, con quattro
-// sezioni e tre segmenti, e le porte `[data-v]` di oggi possono restare come
-// alias (tabella C) o no. Il banco non conosce il regime: apre l'ingresso che
-// la prova gli da', e per una porta di oggi prova prima l'alias, poi la strada
-// nuova — la sezione, il segmento, la porta dell'attivita'. Nel regime di oggi
-// l'alias c'e' sempre, e il banco fa esattamente quello che faceva.
-const ingresso = (ctx) => ctx.ingresso || '/app';
+// Il documento di studio e' `/`, con quattro sezioni e tre segmenti, e le
+// porte `[data-v]` di prima possono restare come alias (tabella C) o no. Il
+// banco apre l'ingresso che la prova gli da', e per una porta di prima prova
+// prima l'alias, poi la strada nuova — la sezione, il segmento, la porta
+// dell'attivita'. Fino a P-89 c'era anche la pagina di prima, `/app` con sette
+// viste, che aveva sempre l'alias: da li' vengono i nomi delle porte.
+const ingresso = (ctx) => ctx.ingresso || '/';
 // alias -> [sezione, segmento, porta dell'attivita'].
 const ALIAS_PORTE = { quiz: ['allenati', 'quiz', null], cart: ['allenati', 'carteggio', null], seg: ['allenati', 'segnali', null],
   tec: ['allenati', 'carteggio', '[data-cporta="tecniche"]'], diag: ['progressi', null, null], oggi: ['home', null, null], info: ['home', null, '[data-profilo="info"]'] };
 /**
- * Una porta di sezione. Nel ridisegno, con un'attivita' in corso, un tocco su
- * un'altra sezione chiede di uscire (navigazioneSito(), «chiedi-uscita»): il
- * banco conferma, come chi studia che ha deciso di andare. Oggi una porta
- * cambia la vista sotto il runner, senza chiedere.
+ * Una porta di sezione. Con un'attivita' in corso, un tocco su un'altra
+ * sezione chiede di uscire (navigazioneSito(), «chiedi-uscita»): il banco
+ * conferma, come chi studia che ha deciso di andare.
  */
 async function clicPorta(tab, sel) {
   if (!await clic(tab, sel)) return false;
   if (await tab.valuta(visibile('[data-uscita="si"]'))) await clic(tab, '[data-uscita="si"]');
   return true;
 }
-/** La vista che la porta `x` apre: la sua di oggi, o la sezione del ridisegno; per
- *  «Che tecnica serve?» la sua preparazione (`[data-preparazione]`, §5.3). */
-const vistaDi = (x) => (x === 'tec' ? '#v-tec, [data-preparazione]' : ALIAS_PORTE[x] ? `#v-${x}, #v-${ALIAS_PORTE[x][0]}` : `#v-${x}`);
+/** La sezione che la porta `x` apre; per «Che tecnica serve?» la sua preparazione (`[data-preparazione]`, §5.3). */
+const vistaDi = (x) => (x === 'tec' ? '[data-preparazione]' : ALIAS_PORTE[x] ? `#v-${ALIAS_PORTE[x][0]}` : `#v-${x}`);
 /** Apre la porta `x`: l'alias se c'e', altrimenti la strada del ridisegno. */
 async function apriPorta(tab, x) {
   if (await clicPorta(tab, `[data-v="${x}"]`)) return true;
@@ -264,21 +264,19 @@ async function apriPorta(tab, x) {
   return true;
 }
 /**
- * La preparazione della simulazione. Oggi: Quiz → «Simula la prova». Nel
- * ridisegno la porta sta in Esame (§5.4, P-80: `data-modo="sim"` in #v-esame),
- * e da li' la stessa preparazione con la scelta della prova.
+ * La preparazione della simulazione: la porta sta in Esame (§5.4, P-80:
+ * `data-modo="sim"` in #v-esame), e da li' la stessa preparazione con la
+ * scelta della prova. Fino a P-89 c'era anche Quiz → «Simula la prova», la
+ * strada della pagina di prima.
  */
 async function portaSim(tab) {
-  if (await clic(tab, '[data-v="esame"]')) {
-    return await tab.attendi(visibile('#v-esame [data-modo="sim"]'), REAZIONE) && clic(tab, '#v-esame [data-modo="sim"]');
-  }
-  return await apriPorta(tab, 'quiz') && await tab.attendi(visibile('[data-modo="sim"]'), REAZIONE) && clic(tab, '[data-modo="sim"]');
+  return await clicPorta(tab, '[data-v="esame"]') && await tab.attendi(visibile('#v-esame [data-modo="sim"]'), REAZIONE) && clic(tab, '#v-esame [data-modo="sim"]');
 }
 
 /**
  * Una porta del Carteggio fino al suo Inizia: `#c-start` per la prova, `#t-start`
- * per le tecniche. Oggi `#c-start` sta nella vista; nel ridisegno il Carteggio ha
- * tre porte (§5.3), e la prova apre la sua preparazione.
+ * per le tecniche. Il Carteggio ha tre porte (§5.3), e la prova apre la sua
+ * preparazione.
  */
 async function portaCarteggio(tab, che) {
   const inizia = che === 'tecniche' ? '#t-start' : '#c-start';
@@ -288,30 +286,27 @@ async function portaCarteggio(tab, che) {
   return tab.attendi(visibile(inizia), REAZIONE);
 }
 
-// I testi che il ridisegno cambia (§6.1, §7.2): il resto del banco li cerca da qui.
-const TESTI = {
-  attuale: { salvaData: 'Salva la data', saltaData: 'Continua senza data', dataSalvata: 'Data salvata',
-    dataNo: 'La data non è stata salvata. Riprova oppure continua senza cambiarla' },
-  ridisegno: { salvaData: 'Salva le scelte', saltaData: 'Salta per ora', dataSalvata: 'Scelte salvate',
-    dataNo: 'Le scelte non sono state salvate. Riprova oppure continua senza cambiarle' },
-};
-const testi = (ctx) => TESTI[ctx && ctx.regime === 'ridisegno' ? 'ridisegno' : 'attuale'];
+// I testi dell'onboarding (§6.1, §7.2): il resto del banco li cerca da qui.
+// Fino a P-89 c'erano anche quelli della pagina di prima, che chiedeva la sola
+// data («Salva la data», «Continua senza data»).
+const TESTI = { salvaData: 'Salva le scelte', saltaData: 'Salta per ora', dataSalvata: 'Scelte salvate',
+  dataNo: 'Le scelte non sono state salvate. Riprova oppure continua senza cambiarle' };
+const testi = () => TESTI;
 
 const passwordVisibile = js(`return [...document.querySelectorAll('input[type=password]')].some(V);`);
 const modaleVisibile = js(`return [...document.querySelectorAll('[aria-modal="true"], dialog[open]')].some(V);`);
 const pausa = (ms) => new Promise((ok) => setTimeout(ok, ms));
 
-// La pagina e' pronta quando la prima porta della Home si puo' premere. Nel
-// ridisegno una ricarica riapre la sezione dell'indirizzo (§3.1), e la Home
-// puo' non essere in vista: la porta c'e' lo stesso, e avviaPrima() ci va.
+// La pagina e' pronta quando la prima porta della Home si puo' premere. Una
+// ricarica riapre la sezione dell'indirizzo (§3.1), e la Home puo' non essere
+// in vista: la porta c'e' lo stesso, e avviaPrima() ci va.
 const PRONTO = js(`const bs = [...document.querySelectorAll('[data-rotta-start]')]; const b = bs.find(V) || bs[0]; return !!b && !b.disabled;`);
 
 /**
- * La prima attivita', dalla sua porta: `[data-rotta-start]`. Oggi apre il
- * quesito; nel ridisegno apre la preparazione comune (`[data-preparazione]`,
- * ridisegno §5.1: «Entrambi aprono la preparazione, non la domanda»), e il
- * secondo tocco e' il suo Inizia, `#start`. Il banco fa quello che la pagina
- * chiede, e lo stesso giro vale nei due regimi (P-82).
+ * La prima attivita', dalla sua porta: `[data-rotta-start]`. Apre la
+ * preparazione comune (`[data-preparazione]`, ridisegno §5.1: «Entrambi aprono
+ * la preparazione, non la domanda»), e il secondo tocco e' il suo Inizia,
+ * `#start`. Se la porta aprisse il quesito, il banco lo prende com'e' (P-82).
  */
 async function avviaPrima(tab) {
   if (!await tab.valuta(visibile('[data-rotta-start]'))) await apriPorta(tab, 'oggi');
@@ -359,8 +354,8 @@ async function rispondiQuiz(tab, v, gruppo, prefisso, { sim = false } = {}) {
   // aspetta lo stato; un tocco in piu' dopo la risposta la pagina lo ignora.
   const pos = sim ? await tab.valuta(js(`return document.querySelector('#r-pos')?.textContent.trim() ?? null;`)) : null;
   const effetto = sim
-    // Oggi la risposta fa avanzare; nel ridisegno compare «Avanti» (§9, QB: «n
-    // risposte, n−1 Avanti»). In tutti e due i casi nessuna correzione.
+    // La risposta si dice e compare «Avanti» (§9, QB: «n risposte, n−1
+    // Avanti»), o fa avanzare. In tutti e due i casi nessuna correzione.
     ? js(`return (document.querySelector('#r-pos')?.textContent.trim() !== ${q(pos)} || V(document.querySelector('#r-next'))) && !document.querySelector('#r-ans .ans.ok');`)
     : js(`return !!document.querySelector('#r-ans .ans.ok') && V(document.querySelector('#r-verdict'));`);
   let risposto = false;
@@ -557,7 +552,7 @@ async function partitaSegnali(tab, v, g, p) {
     await clic(tab, '#sr-ans button');
     await tab.attendi(js(`return V(document.querySelector('#sr-next')) || V(document.querySelector('#sr-fine'));`), 250);
   }
-  // «n / N» oggi, «{giuste} su {N}» nel ridisegno (§5.3).
+  // «{giuste} su {N}» (§5.3), o «n / N».
   const fine = await tab.attendi(js(`const f = document.querySelector('#sr-fine'); return V(f) && /\\d+\\s*(\\/|su)\\s*\\d+/.test(f.innerText);`), REAZIONE);
   v.push({ gruppo: g, nome: `${p}la partita arriva in fondo e dice il punteggio`, ok: fine, extra: '#sr-fine non si vede, o non porta un punteggio «n / N» o «n su N»' });
   return fine;
@@ -757,8 +752,8 @@ const esc = (tab) => tab.valuta(`(document.activeElement || document.body).dispa
 
 /** Accedi dall'intestazione (§3.2): «Accedi», poi il modulo. */
 async function entraCome(tab, conto) {
-  // Nel ridisegno Info e' un pannello sopra la pagina (§6.3): l'avatar «Accedi»
-  // sta sotto, e chi studia chiude prima il pannello. Oggi Info e' una vista.
+  // Info e' un pannello sopra la pagina (§6.3): l'avatar «Accedi» sta sotto, e
+  // chi studia chiude prima il pannello.
   if (!await clicca(tab, 'Accedi')) {
     if (!await tab.valuta(modaleVisibile)) return false;
     await esc(tab);
@@ -806,11 +801,12 @@ const richiesteA = (tab, metodo, percorso) => tab.richieste.filter((r) => r.meto
 
 // --- C-03: le viste, e l'invito solo nei riepiloghi ---------------------------------
 
+// Le porte, con i nomi delle sette viste di prima: oggi alias (tabella C del
+// §10.1 del ridisegno), che apriPorta() segue fino alla sezione.
 const VISTE = ['oggi', 'quiz', 'cart', 'diag', 'seg', 'info'];
-const PORTA_PROGRESSI = 'I Progressi descrivono le attività salvate nel tuo account.';
 const PROGRESSI_H0 = 'Nessuna risposta in questa pagina.';
-// Il cruscotto di oggi: se uno di questi si vede senza account, Progressi e'
-// una vista di zeri costruita dallo storico temporaneo (§3.2).
+// Il cruscotto: se uno di questi si vede senza account, Progressi e' una vista
+// di zeri costruita dallo storico temporaneo (§3.2).
 const CRUSCOTTO = ['#d-temi', '#d-voci', '#d-cons', '#sessioni'];
 
 async function c03(b, ctx, v) {
@@ -827,29 +823,25 @@ async function c03(b, ctx, v) {
     for (const x of VISTE) {
       await apriPorta(tab, 'oggi');
       if (!await apriPorta(tab, x) || !await tab.attendi(visibile(vistaDi(x)), REAZIONE)) { mute.push(x); continue; }
-      // Nel ridisegno Info e' un pannello del Profilo, sopra la Home (§2): la sua
-      // finestra e' la porta volontaria, non un invito. Il modulo e l'invito no.
-      const pannelloInfo = ctx.regime === 'ridisegno' && x === 'info';
+      // Info e' un pannello del Profilo, sopra la Home (§2): la sua finestra e'
+      // la porta volontaria, non un invito. Il modulo e l'invito no.
+      const pannelloInfo = x === 'info';
       if (await tab.valuta(passwordVisibile) || await tab.valuta(pulsante('Crea un account e salva')) || (!pannelloInfo && await tab.valuta(modaleVisibile))) invadenti.push(x);
     }
     v.push({ gruppo: g, nome: 'ogni vista si apre dal Percorso', ok: !mute.length, extra: 'non si aprono: ' + mute.join(', ') });
     v.push({ gruppo: g, nome: 'in nessuna vista un invito, un modulo o una finestra d\'account', ok: !invadenti.length, extra: 'invito, campo password o finestra modale in: ' + invadenti.join(', ') });
     await apriPorta(tab, 'diag');
     const cruscotto = await tab.valuta(js(`return ${q(CRUSCOTTO)}.filter((s) => V(document.querySelector(s)));`));
-    if (ctx.regime === 'ridisegno') {
-      // Nel ridisegno (§8.1) Progressi senza account mostra la pagina aperta —
-      // H0: «Nessuna risposta in questa pagina» e «Vai ad Allenati» —, spiega
-      // perche' manca lo storico, e non ha un invito nel contenuto: i tre posti
-      // dell'invito sono altri (ADR-006, R-ACC-03). «Accedi» resta sull'avatar.
-      const invito = await tab.valuta(js(`const p = document.querySelector('#v-progressi'); return !!p && [...p.querySelectorAll('button, a')].some((b) => V(b) && /Crea un account|Conserva|Accedi/.test(b.textContent));`));
-      v.push({ gruppo: g, nome: 'senza account Progressi dice che non ci sono risposte in questa pagina, con Vai ad Allenati e perche\' manca lo storico, senza un cruscotto ne\' un invito',
-        ok: await tab.valuta(testoVisibile(PROGRESSI_H0)) && await tab.valuta(pulsante('Vai ad Allenati')) && await tab.valuta(testoVisibile('Perché qui manca lo storico')) && !cruscotto.length && !invito,
-        extra: cruscotto.length ? 'si vede il cruscotto: ' + cruscotto.join(', ') : invito ? 'nel contenuto di Progressi c\'e\' un invito o un «Accedi» (ridisegno §8.1)' : `manca «${PROGRESSI_H0}», «Vai ad Allenati» o «Perché qui manca lo storico» (ridisegno §8.1)` });
-    } else {
-      v.push({ gruppo: g, nome: 'senza account Progressi dice perche\' non c\'e\', con Vai al Percorso e Accedi, senza un cruscotto',
-        ok: await tab.valuta(testoVisibile(PORTA_PROGRESSI)) && await tab.valuta(pulsante('Vai al Percorso')) && await tab.valuta(pulsante('Accedi')) && !cruscotto.length,
-        extra: cruscotto.length ? 'si vede il cruscotto: ' + cruscotto.join(', ') : `manca «${PORTA_PROGRESSI}», «Vai al Percorso» o «Accedi» (§3.2)` });
-    }
+    // Progressi senza account (ridisegno §8.1) mostra la pagina aperta — H0:
+    // «Nessuna risposta in questa pagina» e «Vai ad Allenati» —, spiega perche'
+    // manca lo storico, e non ha un invito nel contenuto: i tre posti
+    // dell'invito sono altri (ADR-006, R-ACC-03). «Accedi» resta sull'avatar.
+    // Fino a P-89 c'era anche la pagina di prima, che diceva perche' Progressi
+    // non c'era e portava al Percorso o ad Accedi.
+    const invito = await tab.valuta(js(`const p = document.querySelector('#v-progressi'); return !!p && [...p.querySelectorAll('button, a')].some((b) => V(b) && /Crea un account|Conserva|Accedi/.test(b.textContent));`));
+    v.push({ gruppo: g, nome: 'senza account Progressi dice che non ci sono risposte in questa pagina, con Vai ad Allenati e perche\' manca lo storico, senza un cruscotto ne\' un invito',
+      ok: await tab.valuta(testoVisibile(PROGRESSI_H0)) && await tab.valuta(pulsante('Vai ad Allenati')) && await tab.valuta(testoVisibile('Perché qui manca lo storico')) && !cruscotto.length && !invito,
+      extra: cruscotto.length ? 'si vede il cruscotto: ' + cruscotto.join(', ') : invito ? 'nel contenuto di Progressi c\'e\' un invito o un «Accedi» (ridisegno §8.1)' : `manca «${PROGRESSI_H0}», «Vai ad Allenati» o «Perché qui manca lo storico» (ridisegno §8.1)` });
     await apriPorta(tab, 'oggi');
     if (!await unaRisposta(tab, v, g)) return;
     v.push({ gruppo: g, nome: 'l\'invito e\' nel riepilogo', ok: await tab.valuta(testoVisibile(DOPO)) && await tab.valuta(pulsante('Continua senza account')),
@@ -1926,7 +1918,7 @@ async function c22passaggio(b, ctx, v, g) {
     ctx.radice(dir);
     // La 0.29.0, come la trova chi l'ha visitata: installata, e ricaricata, cosi'
     // che la pagina sia servita dal service worker e dalla sua cache. Era
-    // l'app su /app, in tutti e due i regimi: nel ridisegno /app e' la porta.
+    // l'app su /app: oggi /app e' la porta.
     const t1 = await c.apri(ctx.sito + '/app');
     const installata = await t1.attendi(PRONTO, CARICO) && await guscioPronto(t1);
     v.push({ gruppo: g, nome: 'la 0.29.0 si installa: service worker attivo e guscio in cache', ok: installata, extra: await t1.valuta(SW_E_CACHE) });
@@ -2564,11 +2556,11 @@ const ONBOARDING = 'Hai una data d\'esame?';
 
 async function c16(b, ctx, v, parte) {
   const g = 'C-16';
-  // Nel ridisegno il passo della data e' l'onboarding di «che cosa stai
-  // preparando?», e «Scelte salvate» lo dice solo un server che le raccoglie:
-  // la parte le accende, come N-01:registrazione (P-88). Nel regime di oggi il
-  // passo e' la sola data, e il server resta com'e' nel codice.
-  if (ctx.regime === 'ridisegno' && !perParte(ctx, v, g, SCELTE_ACCESE)) return;
+  // Il passo della data e' l'onboarding di «che cosa stai preparando?», e
+  // «Scelte salvate» lo dice solo un server che le raccoglie: la parte le
+  // accende, come N-01:registrazione (P-88). Fino a P-89 c'era anche la pagina
+  // di prima, dove il passo era la sola data e il server restava com'e'.
+  if (!perParte(ctx, v, g, SCELTE_ACCESE)) return;
   const vuole = (x) => !parte || parte === x;
   if (vuole('proposta')) await fermaAlPrimo(v, (w) => c16proposta(b, ctx, w, g));
   if (vuole('salto')) await fermaAlPrimo(v, (w) => c16salto(b, ctx, w, g));
@@ -2735,10 +2727,11 @@ async function c17origine(b, ctx, v, g) {
 // docs/eccezioni-interfaccia.md finche' P-21 non la porta. Le verifiche portano
 // il nome della parte, e test_interfaccia.py le registra parte per parte.
 
-const MEMORIA = 'Il testo che scrivi resta solo finché questa pagina è aperta.';
-// Nel ridisegno la frase della carta senza account e' quella del §4: «prima, durante e dopo».
-const MEMORIA_RIDISEGNO = 'Il lavoro e i giudizi di questa attività restano solo nella pagina aperta.';
-const memoria = (ctx) => (ctx.regime === 'ridisegno' ? MEMORIA_RIDISEGNO : MEMORIA);
+// La frase della carta senza account e' quella del §4 del ridisegno: «prima,
+// durante e dopo». Fino a P-89 c'era anche quella della pagina di prima, «Il
+// testo che scrivi resta solo finché questa pagina è aperta.»
+const MEMORIA = 'Il lavoro e i giudizi di questa attività restano solo nella pagina aperta.';
+const memoria = () => MEMORIA;
 const SALVATO = 'Il testo in corso è salvato su questo dispositivo per il tuo account.';
 const GUASTO_BOZZA = 'Non riusciamo a conservare il testo in questo dispositivo.';
 const OFFERTA = 'Hai del lavoro di carteggio in corso su questo dispositivo';
@@ -3403,13 +3396,14 @@ const QUIZ_IN_INFO = `(() => { const m = document.body.innerText.match(/risposte
 const DA_INVIARE = `(() => { const m = document.body.innerText.match(/(\\d+) rispost[ae] da inviare/); return m ? Number(m[1]) : null; })()`;
 // Il segnale del guasto sulla porta di Info, da qualunque vista (specifica §8).
 const SEGNALE_INFO = 'Salvataggio da controllare';
-// Oggi il segnale sta sulla porta di Info; nel ridisegno sull'avatar, che si
-// vede da ogni superficie (§2: «Il segnale ambra resta finche' il guasto e'
-// risolto»). Il controllo guarda tutte e due le porte.
+// Il segnale sta sull'avatar, che si vede da ogni superficie (§2: «Il segnale
+// ambra resta finche' il guasto e' risolto»). Il controllo guarda anche una
+// porta [data-v="info"], dove stava sulla pagina di prima.
 const segnaleInInfo = js(`return [...document.querySelectorAll('[data-v="info"], [data-avatar]')].filter(V).some((b) => b.innerText.includes(${q(SEGNALE_INFO)}));`);
-const AVVISO_GUASTO = 'Le ultime risposte potrebbero non essere salvate.';
-// Nel ridisegno il guasto si dice con il testo del §4.
-const avvisoGuasto = (ctx) => (ctx && ctx.regime === 'ridisegno' ? 'Non siamo riusciti a salvare le ultime risposte su questo dispositivo.' : AVVISO_GUASTO);
+// Il guasto si dice con il testo del §4 del ridisegno; fino a P-89 c'era anche
+// quello della pagina di prima, «Le ultime risposte potrebbero non essere salvate.»
+const AVVISO_GUASTO = 'Non siamo riusciti a salvare le ultime risposte su questo dispositivo.';
+const avvisoGuasto = () => AVVISO_GUASTO;
 
 /** La copia dell'account letta dalla pagina: risposte ai quiz e coda da inviare, dalla fonte e non dalla schermata. */
 const copiaConto = (chiave) => `(async () => {
@@ -3540,7 +3534,7 @@ async function t03(b, ctx, v) {
       await tab.valuta('window.__guasto = true');
       await avviaPrima(tab);
       w.push({ gruppo: g, nome: 'con la scrittura che fallisce, una risposta', ok: !!await rispondiQuiz(tab, [], g, ''), extra: 'il runner non mostra un quesito della banca' });
-      // Oggi «… non essere salvate»; nel ridisegno «Non siamo riusciti a salvare …» (§4).
+      // «Non siamo riusciti a salvare …» (§4); la forma di prima, «… non essere salvate», resta ammessa.
       const a = await annunciato(tab, /non (sono |è |essere )?(ancora )?salvat|non siamo riusciti a salvare/i);
       w.push({ gruppo: g, nome: 'la scrittura fallita si annuncia in una regione viva esposta', ...a });
       const r = await avvisoVisibile(tab, avvisoGuasto(ctx));
@@ -3880,35 +3874,6 @@ async function avantiQuiz(tab) {
 
 // Le frasi ammesse (area-3 §4.2, §3, §8; client §4.1), riga per riga.
 const FRASI_RIEPILOGO = [
-  /^(Attività conclusa|Ti sei fermato qui)$/,
-  /^(Allenamento consigliato|Quiz per argomento|Ripasso degli errori|Un giro tra gli argomenti|Batteria|Riprova degli errori|Quiz) · Quiz (base|vela)$/,
-  /^Hai risposto a (1 domanda|\d+ domande) su \d+\.$/,
-  /^Risposte corrette: \d+$/, /^Risposte errate: \d+$/, /^Domande non affrontate: \d+$/,
-  /^Puoi rivedere la tua risposta e quella ufficiale, poi riprovare questi quesiti\.$/,
-  /^Tutte le risposte date in questa attività sono corrette\.$/,
-  /^Le domande non affrontate non sono conteggiate come errori\.$/,
-  /^Il raggruppamento di questa attività è ricostruito dalle risposte: inizio e fine non erano registrati\.$/,
-  /^Quiz base mai incontrati qui: \d+\.$/,
-  /^Non possiamo riaprire tutti i quesiti errati: alcuni non sono disponibili nella banca caricata\. Riprova a caricare i quiz\.$/,
-  /^Non possiamo verificare l'elenco degli errori di questa attività\. Puoi rivedere le risposte disponibili o tornare ai Quiz\.$/,
-  /^Questa attività non è più disponibile\.$/,
-  /^Non riusciamo a leggere le risposte di questa attività\. Apri Info per controllare l'archivio\.$/,
-  /^Le ultime risposte potrebbero non essere salvate\./,
-  /^Senza account le risposte valgono solo finché questa pagina resta aperta\. Se la chiudi o la ricarichi, le perdi\. Non salviamo niente, nemmeno le tue preferenze\.$/,
-  /^Le risposte si conservano nel tuo account e in questo dispositivo per l’offline\. Controlla lo stato dell’invio in Info\.$/,
-  // Dall'ADR-005 l'offline non c'e': P-61 cambia la frase in questa (§11.2 del
-  // progetto del client). Tutte e due finche' la pagina vera non e' passata.
-  /^Le risposte si conservano nel tuo account\. Se la rete cade, restano in questo dispositivo finché non arrivano: controlla lo stato dell’invio in Info\.$/,
-  /^Vuoi conservare le attività di questa pagina\?$/,
-  /^Senza account, chiudendo o ricaricando la pagina perdi le risposte e le preferenze\. Crea un account per salvare le risposte, ritrovarle su un altro dispositivo e vedere i Progressi quando ci sono abbastanza dati\.$/,
-  /^Le risposte saranno legate alla tua email e conservate sul nostro server, in chiaro\. Il titolare può leggerle per supporto e statistiche\.$/,
-  /^Puoi concludere qui\.$/,
-];
-// Nel ridisegno il riepilogo ha i testi del §7.2 di docs/ridisegno-progetto.md
-// (P-82): le stesse tre affermazioni, scritte diversamente, e i ritorni nominati
-// dalla porta. Il resto — conservazione, invito, «Puoi concludere qui» — e'
-// quello di prima, e si prende dall'elenco di sopra.
-const FRASI_RIEPILOGO_RIDISEGNO = [
   /^(Attività conclusa|Attività interrotta)$/,
   /^(Allenamento consigliato|Allenamento breve|Quiz per argomento|Ripasso degli errori|Un giro tra gli argomenti|Riprova degli errori|I miei segnalibri|Quiz) · Quiz (base|vela)$/,
   /^Hai affrontato (1 domanda|\d+ domande) su \d+ propost[ae]\.( (1 non è stata affrontata|\d+ non sono state affrontate)\.)?$/,
@@ -3918,17 +3883,17 @@ const FRASI_RIEPILOGO_RIDISEGNO = [
   /^Le domande non affrontate non sono conteggiate come errori\.?$/,
   /^Questa attività è ricostruita dalle risposte: il confine non era registrato\.?$/,
   /^Con l'account le risposte vanno nella copia su questo dispositivo e vengono inviate al server\. Puoi ritrovarle da un altro dispositivo dopo che il server le ha accolte\.$/,
-  ...FRASI_RIEPILOGO.filter((re) => /Le ultime risposte|Senza account le risposte|Vuoi conservare|Senza account, chiudendo|Le risposte saranno legate|Puoi concludere qui/.test(re.source)),
+  /^Le ultime risposte potrebbero non essere salvate\./,
+  /^Senza account le risposte valgono solo finché questa pagina resta aperta\. Se la chiudi o la ricarichi, le perdi\. Non salviamo niente, nemmeno le tue preferenze\.$/,
+  /^Vuoi conservare le attività di questa pagina\?$/,
+  /^Senza account, chiudendo o ricaricando la pagina perdi le risposte e le preferenze\. Crea un account per salvare le risposte, ritrovarle su un altro dispositivo e vedere i Progressi quando ci sono abbastanza dati\.$/,
+  /^Le risposte saranno legate alla tua email e conservate sul nostro server, in chiaro\. Il titolare può leggerle per supporto e statistiche\.$/,
+  /^Puoi concludere qui\.$/,
 ];
-const USCITE_RIEPILOGO_RIDISEGNO = [
+// Le uscite ammesse (ridisegno §7.2, area 3 §6.1) e i pulsanti dell'invito (client §4.1).
+const USCITE_RIEPILOGO = [
   /^Riprova (questo quesito|questi \d+( quesiti)?)$/, /^Rivedi gli errori$/, /^Rivedi le risposte$/, /^Rivedi il quiz base$/,
   /^Torna (alla Home|ad Allenati · (Quiz|Carteggio|Segnali)|a Esame|ai Progressi)$/, /^Scegli un'altra attività$/,
-  /^Crea un account e salva$/, /^Continua senza account$/, /^Hai già un account\? Accedi$/, /^Come trattiamo i dati$/,
-];
-// Le uscite ammesse (§6.1) e i pulsanti dell'invito (client §4.1).
-const USCITE_RIEPILOGO = [
-  /^Riprova (questo quesito|questi \d+ quesiti)$/, /^Rivedi gli errori$/, /^Rivedi le risposte$/, /^Rivedi il quiz base$/,
-  /^Torna (al Percorso|ai Progressi|alla configurazione Quiz|ai Quiz)$/, /^Scegli un'altra attività$/,
   /^Crea un account e salva$/, /^Continua senza account$/, /^Hai già un account\? Accedi$/, /^Come trattiamo i dati$/,
 ];
 // Un voto sulla preparazione, in qualunque punto del riepilogo: una
@@ -3941,9 +3906,8 @@ const RIEPILOGO_VISTO = js(`const f = document.querySelector('#r-fine');
   return { testo: f.innerText, uscite: [...f.querySelectorAll('button, a')].filter(V).map((b) => b.innerText.replace(/\\s+/g, ' ').trim()).filter(Boolean) };`);
 
 /** Le tre affermazioni, lette in quello che si vede, contro quello che il banco ha fatto. */
-async function frasiRiepilogo(tab, v, g, prefisso, atteso, ctx) {
-  const nuovo = ctx && ctx.regime === 'ridisegno';
-  const frasi = nuovo ? FRASI_RIEPILOGO_RIDISEGNO : FRASI_RIEPILOGO, ammesse = nuovo ? USCITE_RIEPILOGO_RIDISEGNO : USCITE_RIEPILOGO;
+async function frasiRiepilogo(tab, v, g, prefisso, atteso) {
+  const frasi = FRASI_RIEPILOGO, ammesse = USCITE_RIEPILOGO;
   const { testo, uscite } = await tab.valuta(RIEPILOGO_VISTO);
   // Nella pagina vera etichetta e numero stanno sulla stessa riga, in un flex
   // (`.ciclo-valori li`), e innerText li separa: per chi guarda sono
@@ -3957,22 +3921,20 @@ async function frasiRiepilogo(tab, v, g, prefisso, atteso, ctx) {
   const { risposte: R, totale: T, corrette: C } = atteso, E = R - C, M = T - R;
   const breve = righe.join(' | ').slice(0, 400);
   const dom = R === 1 ? '1 domanda' : `${R} domande`;
-  const affrontate = nuovo
-    ? righe.some((r) => r.startsWith(`Hai affrontato ${dom} su ${T} propost`) && (!M || r.includes(M === 1 ? '1 non è stata affrontata' : `${M} non sono state affrontate`)))
-    : ha(`Hai risposto a ${dom} su ${T}.`);
+  const affrontate = righe.some((r) => r.startsWith(`Hai affrontato ${dom} su ${T} propost`) && (!M || r.includes(M === 1 ? '1 non è stata affrontata' : `${M} non sono state affrontate`)));
   v.push({ gruppo: g, nome: `${prefisso}il riepilogo dice che cosa e' successo: ${R} su ${T}, ${C} corrette, ${E} errate`,
     ok: affrontate && ha(`Risposte corrette: ${C}`) && ha(`Risposte errate: ${E}`),
     extra: `in schermata: ${breve}` });
   const riprova = E === 1 ? 'Riprova questo quesito' : `Riprova questi ${E} quesiti`;
   const haRe = (re) => righe.some((r) => re.test(r));
-  const riprovaOk = nuovo ? uscite.some((u) => u === riprova || u === `Riprova questi ${E}`) : uscite.includes(riprova);
+  const riprovaOk = uscite.some((u) => u === riprova || u === `Riprova questi ${E}`);
   const rivedere = E
-    ? (nuovo ? haRe(/^Puoi rivedere le risposte o riprovare gli errori di questa attività\.?$/) : ha('Puoi rivedere la tua risposta e quella ufficiale, poi riprovare questi quesiti.')) && uscite.includes('Rivedi gli errori') && riprovaOk
+    ? haRe(/^Puoi rivedere le risposte o riprovare gli errori di questa attività\.?$/) && uscite.includes('Rivedi gli errori') && riprovaOk
     : haRe(/^Tutte le risposte date in questa attività sono corrette\.?$/) && !uscite.includes('Rivedi gli errori') && !uscite.some((u) => u.startsWith('Riprova'));
   v.push({ gruppo: g, nome: `${prefisso}il riepilogo dice quali rivedere: ${E ? `«${riprova}» e «Rivedi gli errori»` : 'nessuna, tutte corrette'}`,
     ok: rivedere, extra: `in schermata: ${breve}; uscite: ${uscite.join(', ')}` });
   v.push({ gruppo: g, nome: `${prefisso}il riepilogo dice che cosa non hai toccato: ${M} domande non affrontate`,
-    ok: (nuovo ? affrontate : ha(`Domande non affrontate: ${M}`)) && (!M || haRe(/^Le domande non affrontate non sono conteggiate come errori\.?$/)),
+    ok: affrontate && (!M || haRe(/^Le domande non affrontate non sono conteggiate come errori\.?$/)),
     extra: `in schermata: ${breve}` });
   const voti = VOTI.map((re) => testo.match(re)).filter(Boolean).map((m) => m[0]);
   v.push({ gruppo: g, nome: `${prefisso}nessun voto sulla preparazione`, ok: !voti.length, extra: `in schermata: ${voti.join(', ')}` });
@@ -4753,13 +4715,19 @@ async function p01conti(b, ctx, v, g) {
       w.push({ gruppo: g, nome: 'in Info «prove avviate» e\' il numero delle righe d\'avvio, e le risposte ai quiz non lo contano', ok: pa.ok && rq === 0,
         extra: `Info dice prove avviate ${pa.valore}, risposte ai quiz ${rq}; la copia ha ${tipo(c1, 'a').length} righe d'avvio e 0 risposte` });
       await apriPorta(tab, 'oggi');
-      await clicca(tab, 'Account'); await tab.attendi(modaleVisibile, REAZIONE); await clicca(tab, 'Esci');
+      // Info e' un pannello sopra la pagina (ridisegno §6.3): si chiude prima di
+      // aprire l'account. Fino a P-89 no, e sul ridisegno «Account» ed «Esci» non
+      // si premevano: la verifica qui sotto era verde senza che l'uscita fosse mai
+      // partita, e l'hanno trovato le rotture portate dalla pagina di prima.
+      if (await tab.valuta(modaleVisibile)) { await esc(tab); await tab.attendi(`!(${modaleVisibile})`, REAZIONE); }
+      const premuto = await clicca(tab, 'Account') && await tab.attendi(modaleVisibile, REAZIONE) && await clicca(tab, 'Esci');
       // Una riga d'avvio non inviata blocca l'uscita come una risposta (R-ACC-46), e non e' «N risposte».
       let n0 = null, uscito = false;
       const ferma = await maiPer(async () => { n0 = await tab.valuta(RESTA_N); uscito = await tab.valuta(nellaPagina('Accedi')); return n0 !== null || uscito; });
       const copia = !!copieAccount(await c.conservato(ctx.sito, tab)).length;
-      w.push({ gruppo: g, nome: 'con il solo avvio in coda l\'uscita si blocca, e non dice «N risposte»', ok: ferma && copia,
-        extra: n0 !== null ? `si legge «${n0} risposte non sono sul server», e in coda non ce n'e' nessuna` : `con l'avvio in coda la pagina esce: ${uscito ? '«Accedi» nell\'intestazione' : ''} ${copia ? '' : 'la copia non c\'e\' piu\''}` });
+      w.push({ gruppo: g, nome: 'con il solo avvio in coda l\'uscita si blocca, e non dice «N risposte»', ok: premuto && ferma && copia,
+        extra: !premuto ? '«Esci» non si preme: l\'uscita non e\' partita, e il blocco non si puo\' dire'
+          : n0 !== null ? `si legge «${n0} risposte non sono sul server», e in coda non ce n'e' nessuna` : `con l'avvio in coda la pagina esce: ${uscito ? '«Accedi» nell\'intestazione' : ''} ${copia ? '' : 'la copia non c\'e\' piu\''}` });
       await esc(tab);
       // Una risposta: il numero e' quello delle risposte in coda, non delle righe.
       await avviaPrima(tab);
@@ -4842,9 +4810,9 @@ async function p01errore(b, ctx, v, g) {
 // tag, segnalibro, ricerca, segnalazione, scelte — fanno quello che dicono con
 // il server che si ha davanti. E i 108 tragitti del §9, uno per stato e compito.
 //
-// Il gruppo si applica solo a una pagina nel regime del ridisegno: sulla pagina
-// di oggi test_interfaccia.py dice che non si applica, come per la mappa (P-80).
-// Una pagina con le due dichiarazioni e senza il grafo e' rossa dal primo passo.
+// Il gruppo si applica a una pagina nel regime del ridisegno, e da P-89 una
+// pagina che non lo e' e' rossa qui, con il regime letto. Una pagina con le due
+// dichiarazioni e senza il grafo e' rossa dal primo passo.
 //
 // I tocchi si contano uno per gesto voluto: un gesto ripetuto perche' la pagina
 // e' sorda per 200 ms dopo un cambio di schermata (specifica §7.5) e' lo stesso
@@ -5963,6 +5931,118 @@ async function n01(b, ctx, v, parte) {
   }
 }
 
+// --- C-23: i due conti che P-81 ha trovato e corretto (P-89) ---------------------------
+//
+// Realizzando il ridisegno, P-81 ha trovato nella sua copia due conti sbagliati
+// e li ha corretti prima della merge (docs/ridisegno-progetto.md §10.1, «Riparato
+// nella copia»): una risposta senza account applicata due volte allo specchio —
+// una riga, `n: 2`, contro `n: 1` di `E.ripiega()` —, e una coda con una risposta
+// e un segnalibro detta «2 risposte da inviare». Erano muti tutti e due, e qui
+// diventano due controlli sulla pagina vera.
+//
+// **Lo specchio non si vede.** Senza account nessun numero in schermata dice
+// quante volte una risposta e' entrata nello specchio: la copertura cumulativa
+// e' dei registrati (ADR-004), e `stato()` dice «chiuso» con `n: 1` come con
+// `n: 2`. Il banco lo legge quindi da un aggancio del contratto, e non da uno
+// stato della pagina, che e' fuori portata in uno script di modulo: la pagina
+// passa le sue righe a `E.riepilogoPagina()` (R-ARCH-19, «Le attivita' di questa
+// pagina») e il suo specchio alle selezioni dei quiz come secondo argomento —
+// `E.coda()`, `E.mirata()`, `E.daAllenare()`, `E.estraiNuoviPrima()`, la
+// `fonte` dei raccordi dei quiz (area 2 §10.1) e di `preparaBreve()`. Il banco
+// serve `/engine.js` con una coda che registra quegli argomenti — il motore
+// com'e', con cinque funzioni rivestite —, e confronta lo specchio visto con
+// `E.ripiega()` sulle righe viste. Il resto della pagina non si tocca.
+const STRUMENTO_SPECCHIO = `
+;{
+  const reg = (globalThis.__specchioBanco = { righe: null, visto: null });
+  const copia = (x) => JSON.parse(JSON.stringify(x));
+  const _riepilogo = riepilogoPagina;
+  riepilogoPagina = function (righe, ...resto) { reg.righe = copia(righe); return _riepilogo(righe, ...resto); };
+  const vedi = (items, progress) => {
+    if (Array.isArray(items) && items.length && items[0] && 'x' in items[0] && progress && typeof progress === 'object') reg.visto = copia(progress);
+  };
+  const _coda = coda; coda = function (items, progress, ...resto) { vedi(items, progress); return _coda(items, progress, ...resto); };
+  const _mirata = mirata; mirata = function (items, progress, ...resto) { vedi(items, progress); return _mirata(items, progress, ...resto); };
+  const _daAllenare = daAllenare; daAllenare = function (items, progress, ...resto) { vedi(items, progress); return _daAllenare(items, progress, ...resto); };
+  const _estrai = estraiNuoviPrima; estraiNuoviPrima = function (items, progress, ...resto) { vedi(items, progress); return _estrai(items, progress, ...resto); };
+}
+`;
+const SPECCHIO_VISTO = `(() => { const r = window.__specchioBanco; return r ? JSON.stringify(r) : null; })()`;
+/** Un oggetto con le chiavi in ordine, per confrontare due specchi senza dipendere dall'ordine d'inserimento. */
+const canonico = (x) => (Array.isArray(x) ? x.map(canonico) : x && typeof x === 'object'
+  ? Object.fromEntries(Object.keys(x).sort().map((k) => [k, canonico(x[k])])) : x);
+
+async function c23(b, ctx, v, parte) {
+  const vuole = (x) => !parte || parte === x;
+  if (vuole('specchio')) await fermaAlPrimo(v, (w) => c23specchio(b, ctx, w, 'C-23:specchio'));
+  if (vuole('coda')) await fermaAlPrimo(v, (w) => c23coda(b, ctx, w, 'C-23:coda'));
+}
+
+/** R-ARCH-20: senza account, dopo una risposta lo specchio della pagina e' quello di E.ripiega() sulle sue righe. */
+async function c23specchio(b, ctx, v, g) {
+  ctx.sostituisci('/engine.js', readFileSync(join(SITE, 'engine.js'), 'utf8') + STRUMENTO_SPECCHIO);
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
+    const pronto = await tab.attendi(PRONTO, CARICO);
+    v.push({ gruppo: g, nome: 'la pagina si apre con il motore del banco, che registra righe e specchio', ok: pronto && !!await tab.valuta(SPECCHIO_VISTO),
+      extra: pronto ? 'window.__specchioBanco non c\'e\': /engine.js non e\' quello servito dal banco' : `nessun [data-rotta-start] abilitato entro ${CARICO / 1000} s` });
+    await avviaPrima(tab);
+    const testo = await rispondiQuiz(tab, [], g, '');
+    v.push({ gruppo: g, nome: 'senza account, una risposta', ok: !!testo, extra: 'il runner non mostra un quesito della banca' });
+    v.push({ gruppo: g, nome: 'e il suo riepilogo', ok: await chiudiQuiz(tab, [], g, ''), extra: 'nessun riepilogo' });
+    // Da qui le chiamate sono tutte dopo la risposta: la Home con le attivita'
+    // della pagina (riepilogoPagina) e la sua proposta, poi la preparazione del
+    // breve (le selezioni). La pagina vera tiene la lista del breve fatta prima;
+    // la proposta della Home, `selezioneQuiz('mirata')`, la rifa' ogni volta.
+    await tab.valuta('window.__specchioBanco.righe = null; window.__specchioBanco.visto = null; true');
+    await clic(tab, '[data-ciclo="ritorno"]');
+    await apriPorta(tab, 'oggi');
+    await tab.attendi(PRONTO, REAZIONE);
+    await clic(tab, '[data-rotta-start]');
+    const letto = await tab.attendiValore(SPECCHIO_VISTO, (x) => { const r = x && JSON.parse(x); return !!r && !!r.righe && !!r.visto; }, REAZIONE);
+    const reg = letto.valore ? JSON.parse(letto.valore) : {};
+    const risposte = (reg.righe || []).filter((r) => r._t === 'q');
+    v.push({ gruppo: g, nome: 'dopo la risposta la pagina passa al motore le sue righe e il suo specchio', ok: letto.ok && risposte.length === 1,
+      extra: !letto.ok ? `righe ${reg.righe ? 'viste' : 'mai passate a riepilogoPagina()'}, specchio ${reg.visto ? 'visto' : 'mai passato a coda()'}` : `fra le righe ${risposte.length} risposte ai quiz, ne aspettava 1` });
+    if (!letto.ok) return;
+    const atteso = E.ripiega(reg.righe).quiz;
+    const id = risposte[0] && risposte[0].item_id;
+    v.push({ gruppo: g, nome: 'senza account una risposta si applica una volta sola: lo specchio della pagina e\' quello di E.ripiega() sulle sue righe',
+      ok: JSON.stringify(canonico(reg.visto)) === JSON.stringify(canonico(atteso)),
+      extra: `per ${id}: la pagina ha ${JSON.stringify(reg.visto[id] || null)}, ripiega() ${JSON.stringify(atteso[id] || null)}` });
+  } finally { await c.chiudi(); }
+}
+
+/** R-SEGNO-04: con l'account una coda con una risposta e un segnalibro si dice «1 risposta da inviare». */
+async function c23coda(b, ctx, v, g) {
+  const U = await nuovoAccount(ctx, 'c23');
+  const c = await b.nuovoContesto();
+  // La rete che non risponde, come in T-02: ogni richiesta all'API resta ferma
+  // finche' il banco non la lascia, e la coda resta com'e'.
+  let tieni = false, lascia;
+  const via = new Promise((r) => { lascia = r; });
+  try {
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
+    await tab.intercetta(ctx.api + '/*', async () => { if (!tieni) return null; await via; return { fallisci: 'InternetDisconnected' }; });
+    v.push({ gruppo: g, nome: 'si entra nell\'account', ok: await dentro(tab, U), extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+    tieni = true;
+    const it = UNIVOCI[3];
+    v.push({ gruppo: g, nome: `il quesito ${it.p} si apre per numero, e si sbaglia`, ok: await apriPerNumero(tab, it) && await rispondiCome(tab, it, false),
+      extra: await tab.valuta(inSchermata) });
+    v.push({ gruppo: g, nome: 'e gli si mette un segnalibro', ok: await gesto(tab, null, '#r-segno', js(`return document.querySelector('#r-segno').getAttribute('aria-pressed') === 'true'`)),
+      extra: 'il segnalibro non si accende' });
+    const fonte = await tab.attendiValore(COPIA(U.chiave), (x) => !!x && x.coda.daInviare.length === 2, REAZIONE);
+    const tipi = fonte.valore ? fonte.valore.righe.filter((r) => fonte.valore.coda.daInviare.includes(String(r.uid))).map((r) => r._t).sort().join(',') : '';
+    v.push({ gruppo: g, nome: 'nella coda della copia ci sono due righe, una risposta e un segnalibro', ok: fonte.ok && tipi === 'b,q',
+      extra: fonte.valore ? `in coda: ${fonte.valore.coda.daInviare.length} righe, tipi ${tipi}` : 'la copia dell\'account non si legge' });
+    const n = await tab.attendiValore(DA_INVIARE, (x) => x === 1, REAZIONE);
+    const due = await tab.valuta(testoRe(/\b2 risposte da inviare/));
+    v.push({ gruppo: g, nome: 'la pagina dice «1 risposta da inviare»: il segnalibro non e\' una risposta', ok: n.ok && !due,
+      extra: `la pagina dice «${n.valore ?? 'nessun numero'} risposte da inviare», con 1 risposta e 1 segnalibro in coda` });
+  } finally { lascia(); await c.chiudi(); }
+}
+
 const GRUPPI = { 'C-01': c01, 'C-02': c02, 'C-03': c03, 'C-04': c04, 'C-05': c05, 'C-06': c06, 'C-07': c07, 'C-08': c08, 'C-21': c21,
   'C-10': c10, 'C-11': c11, 'C-12': c12, 'C-13': c13, 'C-14': c14, 'C-15': c15, 'C-16': c16, 'C-17': c17, 'C-19': c19,
   // L'area 6 (P-45): la rifinitura trasversale.
@@ -5976,12 +6056,14 @@ const GRUPPI = { 'C-01': c01, 'C-02': c02, 'C-03': c03, 'C-04': c04, 'C-05': c05
   // «Com'e' andata» e la riga d'avvio delle simulazioni (P-74, esito-esame-progetto §10.1).
   'E-01': e01, 'P-01': p01,
   // I tragitti del ridisegno, in Chrome (P-82, ridisegno-progetto §9 e §10.1, E).
-  'N-01': n01 };
+  'N-01': n01,
+  // I due conti che P-81 ha trovato e corretto (P-89).
+  'C-23': c23 };
 // I gruppi che parlano con l'API: il server accetta una sola origine (§7.3),
 // quindi girano uno alla volta sul sito principale. Gli altri girano in
 // parallelo, ognuno con il suo sito e quindi con la sua origine.
 const CON_API = new Set(['C-05', 'C-04', 'C-06', 'C-07', 'C-08', 'C-21', 'C-10', 'C-11', 'C-12', 'C-13', 'C-14', 'C-15', 'C-16', 'C-17', 'C-19',
-  'T-02', 'T-03', 'T-04', 'T-07:conto', 'E-01', 'P-01', ...[...N01_API].map((x) => `N-01:${x}`)]);
+  'T-02', 'T-03', 'T-04', 'T-07:conto', 'E-01', 'P-01', 'C-23:coda', ...[...N01_API].map((x) => `N-01:${x}`)]);
 const SOLO_ALTRE = new Set(['C-14']);
 // Una parte puo' parlare con l'API anche se il suo gruppo no: T-07:conto entra
 // in un account, T-07:prova no, e gira dove c'e' posto.
@@ -6142,10 +6224,10 @@ async function corsia(k, cartella, portaApi = PORTA_API) {
     async esegui(b, p, g) {
       corrente.pagina = porta !== PORTA_API ? p.pagina.replaceAll(':8620', `:${porta}`) : p.pagina;
       corrente.sito = p.sito;
-      corrente.ingresso = p.ingresso || '/app';
+      corrente.ingresso = p.ingresso || '/';
       ctx.ingresso = corrente.ingresso;
       ctx.regimi = p.regimi || {};
-      ctx.regime = p.regime || 'attuale';
+      ctx.regime = p.regime || 'di prima';
       // Per parte, non per pagina (P-88): il gruppo comincia dal codice.
       raccolte = api.cambiaRaccolte({ ...RACCOLTE });
       orologio.t += 2 * 3600 * 1000;
@@ -6184,13 +6266,13 @@ export async function esegui(prove, { portaApi = PORTA_API } = {}) {
         // L'ingresso e il regime sono della prova: fino a P-82 qui si prendevano
         // quelli che la corsia 0 aveva in quel momento, e la pagina si serviva
         // sempre su /app — nel ridisegno, un ingresso sbagliato senza un rosso.
-        const proprio = { pagina: x.p.pagina, sito: x.p.sito, ingresso: x.p.ingresso || '/app' };
+        const proprio = { pagina: x.p.pagina, sito: x.p.sito, ingresso: x.p.ingresso || '/' };
         const sv = await servi(proprio);
         try {
           // La pagina di questi gruppi non e' riscritta: parla con la 8620, e il
           // banco guarda quell'indirizzo anche se la corsia 0 ascolta altrove.
           const ctx = { ...corsie[0].ctx, sito: sv.origine, api: `http://localhost:${PORTA_API}`, spegni: (si) => { proprio.spento = si; }, radice: (d) => { proprio.radice = d; },
-            ingresso: proprio.ingresso, regimi: x.p.regimi || {}, regime: x.p.regime || 'attuale',
+            ingresso: proprio.ingresso, regimi: x.p.regimi || {}, regime: x.p.regime || 'di prima',
             // Una parte senza API non tocca il server della corsia 0, che intanto porta un altro gruppo.
             conRaccolte: () => { throw new Error(`${x.g} non parla con l'API: non accende raccolte`); },
             sostituisci: (percorso, testo) => { proprio.sito = { ...(proprio.sito || {}), [percorso]: testo }; } };

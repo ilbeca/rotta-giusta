@@ -615,11 +615,10 @@ def test_manifest_icone():
     # E la pagina deve dichiarare la favicon e l'apple-touch-icon: iOS il
     # manifest non lo legge, quindi senza quel link l'icona sulla Home e' uno
     # screenshot della pagina.
-    # Le pagine che si aprono come documento: oggi la Home e l'app, nel ridisegno
-    # il solo canonico — la porta app.html rimanda e non si installa (P-80).
-    canonico = regime_pagina.canonico(SITE)
-    pagine = ('index.html',) if canonico['regime'] == 'ridisegno' else ('index.html', 'app.html')
-    for pagina in pagine:
+    # La pagina che si apre come documento: il solo canonico — la porta app.html
+    # rimanda e non si installa (P-80). Fino alla merge di P-81 erano due, la Home
+    # e l'app; da P-89 il regime di prima non c'e' piu'.
+    for pagina in ('index.html',):
         testo = (SITE / pagina).read_text(encoding='utf-8')
         for rel in ('icon', 'apple-touch-icon'):
             check('%s: <link rel="%s">' % (pagina, rel), ('rel="%s"' % rel) in testo)
@@ -673,49 +672,35 @@ def test_nessuna_risorsa_di_terzi():
 
 
 def test_indirizzi():
-    """R-ARCH-06 e R-ARCH-09, nei due regimi della pagina (P-80).
+    """R-ARCH-06 e R-ARCH-09 (docs/ridisegno-progetto.md §3.2): un documento solo
+    su `/`, `start_url` `/`, `app.html` una porta di compatibilita' con il suo
+    titolo, e le pagine legali che tornano a `/`. Il regime si legge dalla
+    pagina, con la regola di tests/regime_pagina.py: la pagina di prima del
+    ridisegno, o una a meta', e' rossa anche qui (P-89).
 
-    Oggi: la Home su `/`, l'app su `/app`, `start_url` l'app. Nel ridisegno
-    (docs/ridisegno-progetto.md §3.2): un documento solo su `/`, `start_url`
-    `/`, `app.html` una porta di compatibilita' con il suo titolo, e le pagine
-    legali che tornano a `/`. Il regime si legge dalla pagina, con la regola di
-    tests/regime_pagina.py; una pagina a meta' e' rossa anche qui."""
+    Fino alla merge di P-81 c'era un secondo ramo, quello della pagina di prima:
+    la Home su `/`, l'app su `/app`, `start_url` l'app e i legali che tornavano
+    a `/app`. Misurato prima di toglierlo, la pagina di v0.31.0 lo passava
+    intero; ora e' rossa al primo controllo, con il motivo."""
     import re as _re
     man = json.loads((SITE / 'manifest.json').read_text(encoding='utf-8'))
     canonico = regime_pagina.canonico(SITE)
-    check('il regime della pagina di studio e\' pulito (%s)' % canonico['regime'], not canonico['motivo'], canonico['motivo'])
+    check('il documento di studio e\' nel ridisegno (regime letto: %s)' % canonico['regime'], not canonico['motivo'], canonico['motivo'])
     titolo = lambda f: (_re.search(r'<title>(.*?)</title>',
                         (SITE / f).read_text(encoding='utf-8'), _re.S) or [None, ''])[1].strip()
     tv, tp = titolo('index.html'), titolo('app.html')
     check('manifest: scope copre tutto il sito', man.get('scope') == '/', man.get('scope'))
     check('site/app.html esiste', (SITE / 'app.html').is_file())
-    if canonico['regime'] == 'ridisegno':
-        check('manifest: start_url e\' il documento di studio, /', man.get('start_url') == '/', man.get('start_url'))
-        check('il titolo del canonico e\' «Rotta Giusta — quiz e carteggio per la patente nautica»',
-              tv == 'Rotta Giusta — quiz e carteggio per la patente nautica', tv)
-        check('il titolo della porta e\' «Apri Allenati · Rotta Giusta»', tp == 'Apri Allenati · Rotta Giusta', tp)
-        difetti = regime_pagina.e_porta((SITE / 'app.html').read_text(encoding='utf-8'))
-        check('site/app.html e\' la porta di compatibilita\'', not difetti, '; '.join(difetti))
-        # Le pagine legali tornano al documento di studio, che e' la Home.
-        for f in ('privacy.html', 'avvertenza.html'):
-            testo = (SITE / f).read_text(encoding='utf-8')
-            check('%s: torna a /' % f, 'href="/"' in testo and 'href="/app"' not in testo)
-        return
-    palestra = man.get('start_url')
-    check('manifest: start_url e l\'app, non la Home', palestra == '/app', palestra)
-    # E la Home deve portare all'app, altrimenti e un vicolo cieco.
-    vetrina = (SITE / 'index.html').read_text(encoding='utf-8')
-    check('la Home rimanda a %s' % palestra, ('href="%s"' % palestra) in vetrina)
-    # Due indirizzi, due titoli. Con lo stesso titolo sono due schede
-    # indistinguibili, e per un motore di ricerca due pagine che competono per
-    # la stessa query invece di dividersi il lavoro.
-    check('Home e app hanno titoli diversi', tv != tp and tv and tp, '%r / %r' % (tv, tp))
-    check('il titolo della Home nomina la patente nautica',
-          'patente nautica' in tv.lower(), tv)
-    # Le pagine legali tornano all'app, non alla Home.
+    check('manifest: start_url e\' il documento di studio, /', man.get('start_url') == '/', man.get('start_url'))
+    check('il titolo del canonico e\' «Rotta Giusta — quiz e carteggio per la patente nautica»',
+          tv == 'Rotta Giusta — quiz e carteggio per la patente nautica', tv)
+    check('il titolo della porta e\' «Apri Allenati · Rotta Giusta»', tp == 'Apri Allenati · Rotta Giusta', tp)
+    difetti = regime_pagina.e_porta((SITE / 'app.html').read_text(encoding='utf-8'))
+    check('site/app.html e\' la porta di compatibilita\'', not difetti, '; '.join(difetti))
+    # Le pagine legali tornano al documento di studio, che e' la Home.
     for f in ('privacy.html', 'avvertenza.html'):
         testo = (SITE / f).read_text(encoding='utf-8')
-        check('%s: torna all\'app' % f, 'href="/app"' in testo)
+        check('%s: torna a /' % f, 'href="/"' in testo and 'href="/app"' not in testo)
 
 
 def test_serve():
