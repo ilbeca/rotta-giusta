@@ -2121,6 +2121,107 @@ lo dice. Le due regressioni dei conti trovati da P-81 — la risposta senza
 account applicata due volte allo specchio, e il segnalibro contato come
 risposta nella coda — la regia le scrive dopo la merge, sulla pagina vera.
 
+##### P-81 — fermo sul confronto del runner nella pagina di riferimento, 20 ottobre 2026
+
+**Nessuna sostituzione e nessun commit.** Ripresa nel worktree UI su
+`ui/main`, allineato a `main` alla base `410b11c`, dopo la correzione della
+controprova RG_SITO. La copia `sito/` coincide byte per byte con
+`misura-conclusiva/`; rispetto a `site/` differiscono soltanto canonico,
+porta, manifest e i due legali. Le dichiarazioni autorizzate delle eccezioni
+erano già presenti e sono state conservate. Nell'inventario delle chat non
+c'era un altro scrivente attivo nella cartella; nessun upstream impostato.
+
+**Nuova misura completa sulla copia:** regime **ridisegno**, interfaccia
+**3.457/3.458**, **328,08 s**. Porta 8620 osservata libera per 90 s fino alle
+**06:44:43 del 20 ottobre, Europe/Rome**. Diff rispetto a `main` vuoto di
+`tests/`, `server/` e `site/engine.js` prima della misura. L'unico rosso è
+«tragitti: la pagina di riferimento del ridisegno passa tutti i gruppi del
+client», parte **P-01:visto**, confronto del runner con e senza riga d'avvio.
+Nessun rosso attribuito alla pagina P-81. Nel primo giro il testo normalizzato
+non ha la nota; nel secondo contiene «Quesito oscurato dal Ministero» e
+l'avviso successivo. Log e tempi:
+`/private/tmp/rg-p81/evidenze/p81-copia-20-mattina-interfaccia.log` e
+`p81-copia-20-mattina-suite.json` nella stessa cartella.
+
+**Il confronto può cambiare senza che cambi la pagina.**
+`tests/pagina-client-ridisegno.html`, `avviaFase()`, pesca con
+`E.estrai(S.banca, ..., Date.now() % 991)`, dove `S.banca` comprende tutti i
+quiz base, oscurati inclusi. La pagina di riferimento mostra correttamente
+`it.nbp` in `#r-nbp` prima della risposta. In `tests/client_account.mjs`,
+`TESTI_SIM.runner` toglie domanda e risposte dal testo, ma lascia quella nota;
+`p01visto()` confronta due estrazioni con semi legati ai rispettivi istanti e
+pretende poi l'uguaglianza
+del testo normalizzato. La presenza della nota non dipende dalla riga d'avvio.
+La pagina P-81 non può intervenire sul riferimento né sul suo confronto.
+Non si toglie un avviso corretto dalla pagina per rendere verde il banco.
+
+Eseguita anche l'estrazione vera del motore su tutti i **991** semi usati
+dal riferimento: **23** hanno al primo posto un quesito con `nbp`, **968**
+non l'hanno. Esempi riproducibili: seme **89**, `base-593`, oscurato con nota;
+seme **0**, `base-302`, senza nota. Evidenza `evidenze/p01-20-semi.json`.
+Questa è una verifica del selettore, distinta dalla misura del browser sopra.
+
+**Ripetuto il banco invariato, non una sua variante.** Ventiquattro prove
+con il sorgente identico di `tests/pagina-client-ridisegno.html`, il regime
+letto dalle sue dichiarazioni, i raccordi attivi e il solo gruppo
+`P-01:visto`: **19 prove verdi, 5 rosse**, tutte e cinque sul medesimo confronto
+del runner e con la medesima differenza della nota. **134 verifiche riuscite
+su 139**; il gruppo si ferma al primo rosso, quindi le cinque prove rosse non
+eseguono l'ultima verifica del riepilogo. **15,29 s**, dopo un'altra osservazione
+della 8620 libera per 90 s fino alle **06:53:10 Europe/Rome**. Input, risultato,
+sintesi e semi in `lavoro/prove-p01-20.json`,
+`evidenze/p01-20-ripetizioni.json`, `evidenze/p01-20-sintesi.json` e
+`evidenze/p01-20-semi.json`. Nessun clock, HTML, dato o controllo alterato:
+le prove eseguono il medesimo banco con nuove sessioni e account fittizi.
+È una ripetizione mirata del difetto, non un secondo giro della suite intera.
+
+**Gli altri controlli e il collaudo visivo.** Motore **215/219**, con quattro
+skip previsti; server **89/89**, anche sul Node **24.22.0** ufficiale con SHA256
+del pacchetto ricontrollato contro `SHASUMS256.txt`; dati sulla copia **225**;
+specifica **1.032**. Rimisurate e guardate le sette superfici anonime a
+**375 e 1280 px**: **0 px di sbordamento**, nessun errore JavaScript, screenshot
+e stili in `evidenze/visuale-mattina-20.json`. Il giro manuale nel browser
+integrato ha conservato una risposta, il segnalibro e «Svista» fino alla
+revisione; il risultato distingueva una risposta data e nove non affrontate.
+Restano valide come evidenze datate, sulla stessa copia invariata, le prove
+account/errori/tastiera descritte nella nota precedente; non sono state
+ripetute tutte in questa ripresa. I collegamenti ufficiali di Esame rispondono
+(Gazzetta Ufficiale e MIT): raggiungibilità, non nuova verifica normativa.
+Il rilevatore grafico segnala il contenitore immagine del dialogo prima del
+caricamento e un'ombra ereditata, senza un difetto visibile nel contesto guardato.
+
+**Fermo sul metro consegnato, come richiesto dal prompt.** Nessun test,
+riferimento, motore, server, banca o documento protetto modificato. `site/`
+è rimasto ai byte di `HEAD`; nessuna sostituzione, voce di CHANGELOG,
+commit parziale, push, tag o pubblicazione. La copia completa resta in
+`/private/tmp/rg-p81/sito`, con la fotografia e le evidenze accanto.
+Anteprima e scheda del browser chiuse; nessun account reale o produzione
+toccati. I processi diagnostici sono terminati.
+
+**Alla regia:** rendere stabile il confronto P-01:visto sul riferimento,
+conservando la prova che una previsione non compaia e le sue rotture.
+La simulazione del riferimento e il testo confrontato richiedono una verifica
+insieme; non è una decisione di prodotto assegnata al ramo UI. Dopo il
+raccordo: nuova suite completa sulla copia, sostituzione unica, cinque suite
+finali, guardiano e documentazione, CHANGELOG e commit unico. Nessuna nuova
+decisione UI richiesta all'autore; A-3 e le prove con persone/Safari restano
+nei loro posti. Non fondere la copia sulla base dei soli controlli P-81 verdi.
+
+**Il confronto è stabile dalla regia, il 20 ottobre 2026.** La diagnosi era
+giusta: `TESTI_SIM.runner` in `tests/client_account.mjs` toglieva domanda e
+risposte e lasciava `#r-nbp`, la nota scritta prima di rispondere, che è del
+quesito come la domanda. Con un oscurato in una sola delle due simulazioni il
+testo cambiava, e «regolamento» faceva scattare la parola da previsione
+«regola». Prima il rosso: una variante nuova della pagina di riferimento del
+ridisegno (`VARIANTI_RIDISEGNO` in `tests/test_interfaccia.py`) apre con
+base-593 la sola simulazione con il server che dichiara la riga d'avvio, ed
+era rossa due volte su due con il banco di prima, per «si legge «regola»».
+Ora il banco toglie anche `#r-nbp`: la variante è verde tre volte su tre, e
+resta fra le varianti che devono restare verdi. La prova che una previsione
+non compaia resta, con le sue rotture: una previsione scritta dentro la nota
+del quesito, e soltanto lì, il banco non la vedrebbe più. Suite su `main`:
+interfaccia 3.020, specifica 1.032.
+
 ### 10.2 Verifica documentale di P-79 e limiti
 
 Verificati cartella, ramo, albero iniziale pulito e inventario delle chat:

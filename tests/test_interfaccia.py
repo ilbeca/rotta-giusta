@@ -2236,6 +2236,22 @@ VARIANTI_CLIENT = [
        "    : E.estrai(kind === 'vela' ? S.vela : S.banca, {}, oggi(), kind === 'vela' ? 5 : 20, Date.now() % 991);")]),
 ]
 
+# Le varianti della pagina di riferimento del ridisegno: come quelle del
+# client, devono restare verdi. P-01:visto (fermo di P-81, 20 ottobre 2026): il
+# runner del ridisegno scrive prima di rispondere la nota di un quesito
+# oscurato (#r-nbp), e il banco la lasciava nel testo che confronta fra le due
+# simulazioni. Con 37 oscurati su 1.472 quesiti base usciva una volta su
+# cinque circa: 19 verdi e 5 rossi su 24 giri. Qui base-593, oscurato, apre la
+# sola simulazione con il server che dichiara la riga d'avvio, come quando
+# esce per caso in una delle due.
+VARIANTI_RIDISEGNO = [
+    ('la simulazione con la riga d\'avvio si apre con un quesito oscurato', ['P-01:visto'],
+     [("const lista = E.estrai(kind === 'vela' ? S.vela : S.banca, {}, oggi(), kind === 'vela' ? 5 : 20, Date.now() % 991);",
+       "const lista = kind === 'base' && S.io && Array.isArray(S.io.tipi_riga) && S.io.tipi_riga.includes('a')\n"
+       "    ? S.banca.filter((q) => q.id === 'base-593').concat(E.estrai(S.banca.filter((q) => q.id !== 'base-593'), {}, oggi(), 19, Date.now() % 991))\n"
+       "    : E.estrai(kind === 'vela' ? S.vela : S.banca, {}, oggi(), kind === 'vela' ? 5 : 20, Date.now() % 991);")]),
+]
+
 _BANCO_CLIENT = None
 
 
@@ -2891,6 +2907,14 @@ def test_client_provato_al_contrario():
         rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in vv if not x['ok']]
         check('variante del client «%s»: il banco resta verde' % cosa, bool(vv) and not rossi,
               '; '.join(rossi[:3]) or 'nessuna verifica eseguita')
+    for cosa, gruppi, _ in VARIANTI_RIDISEGNO:
+        check('variante del ridisegno «%s»: si applica alla pagina di riferimento' % cosa,
+              applicate.get('variante del ridisegno: ' + cosa),
+              'il testo da sostituire non c\'e\' piu\': la variante non proverebbe niente')
+        vv = out.get('variante del ridisegno: ' + cosa, [])
+        rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in vv if not x['ok']]
+        check('variante del ridisegno «%s»: il banco resta verde' % cosa, bool(vv) and not rossi,
+              '; '.join(rossi[:3]) or 'nessuna verifica eseguita')
     for cosa, gruppi, _, atteso in ROTTURE_CLIENT:
         check('rottura del client «%s»: si applica alla pagina di riferimento' % cosa, applicate.get(cosa),
               'il testo da sostituire non c\'e\' piu\': la rottura non romperebbe niente')
@@ -3055,6 +3079,14 @@ def prove_ridisegno(applicate):
         applicate['ridisegno: ' + cosa] = ok
         if ok and rotta != rif:
             out.append({**base, 'nome': 'rottura del ridisegno: ' + cosa, 'pagina': rotta, 'gruppi': parti})
+    for cosa, parti, sostituzioni in VARIANTI_RIDISEGNO:
+        variante, ok = rif, True
+        for vecchio, nuovo in sostituzioni:
+            ok = ok and vecchio in variante
+            variante = variante.replace(vecchio, nuovo, 1)
+        applicate['variante del ridisegno: ' + cosa] = ok
+        if ok:
+            out.append({**base, 'nome': 'variante del ridisegno: ' + cosa, 'pagina': variante, 'gruppi': parti})
     out.append({**base, 'nome': 'senza grafo', 'pagina': SENZA_GRAFO.read_text(encoding='utf-8'), 'gruppi': ['N-01:documento']})
     return out
 

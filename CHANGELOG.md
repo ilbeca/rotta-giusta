@@ -156,6 +156,27 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   libera da 90 s; specifica 1.032; guardiano e documentazione verdi. `site/`
   e la copia di P-81 non sono stati toccati.
 
+### Test — P-01:visto non confronta più la nota di un oscurato (fermo di P-81)
+
+- **Un rosso a caso sulla pagina di riferimento del ridisegno.** Il runner del
+  ridisegno scrive prima di rispondere la nota di un quesito oscurato
+  (`#r-nbp`), e il banco, che confronta il runner di due simulazioni con e
+  senza riga d'avvio, toglieva domanda e risposte ma non la nota: con un
+  oscurato in testa a una sola delle due il testo cambiava, e «regolamento»
+  scattava come la parola da previsione «regola». P-81 l'ha misurato: 5 rossi
+  su 24 giri, e 23 semi su 991 che mettono in testa un quesito con la nota.
+  **Prima il rosso:** una variante nuova della pagina di riferimento del
+  ridisegno, `VARIANTI_RIDISEGNO`, apre con base-593 la sola simulazione con
+  il server che dichiara la riga d'avvio: rossa 2 volte su 2 con il banco di
+  prima. Ora il banco toglie anche `#r-nbp`, che è del quesito come la
+  domanda: verde 3 volte su 3, e resta fra le varianti che devono restare
+  verdi. **Che cosa non vede più:** una previsione scritta dentro la nota del
+  quesito, e soltanto lì.
+
+  Suite: interfaccia **3.020** (erano 3.018: le due verifiche della variante),
+  in 4 min 27 s con la 8620 guardata libera per 90 s prima; specifica 1.032;
+  guardiano verde. Motore e server non toccati. `site/` non è stato toccato.
+
 ## [0.31.0] — 2026-10-18
 
 **Un rilascio piccolo, prima del ridisegno.** Per chi studia cambia poco di

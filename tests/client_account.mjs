@@ -4664,8 +4664,13 @@ const TESTI_SIM = {
   // base-993 «in basso.» sta dentro «in alto e in basso.», e tolta per prima
   // lasciava «in alto e», un rosso che non diceva niente della pagina. Nella
   // banca le risposte contenute in un'altra dello stesso quesito sono 20 quesiti.
+  // E la nota che il ridisegno scrive prima di rispondere (#r-nbp) e' del
+  // quesito, come la domanda: un oscurato la porta in una sola delle due
+  // simulazioni, e con lei «regolamento», che la ricerca delle parole da
+  // previsione prendeva per «regola» (fermo di P-81, 20 ottobre 2026: 5 rossi
+  // su 24 giri sulla pagina di riferimento).
   runner: js(`const r = document.querySelector('#quizrun'); if (!V(r)) return null; let t = r.innerText;
-    const pezzi = [document.querySelector('#r-text'), ...document.querySelectorAll('#r-ans .ans')]
+    const pezzi = [document.querySelector('#r-text'), document.querySelector('#r-nbp'), ...document.querySelectorAll('#r-ans .ans')]
       .filter((e) => e && e.innerText).map((e) => e.innerText).sort((a, b) => b.length - a.length);
     for (const p of pezzi) t = t.split(p).join('');
     return t;`),
