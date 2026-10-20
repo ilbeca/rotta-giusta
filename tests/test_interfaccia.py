@@ -3873,11 +3873,21 @@ def test_copia_del_sito():
         _, d = sonda([sys.executable, '-c', SONDA_DATI, tests], {'RG_SITO': str(rotta)})
         check('RG_SITO al contrario: e test_indirizzi la nomina',
               any('porta di compatibilita' in f and 'Apri Allenati' in f for f in d.get('falliti', [])), d.get('falliti') or d.get('errore'))
-        # 3. E la porta di oggi, site/app.html, al posto della porta: rossa come
-        # lo era per P-81, perche' e' l'app e non una porta.
-        oggi = copia_del_sito(tmp / 'porta-di-oggi', index=rif)
+        # 3. E l'app di prima del ridisegno al posto della porta: rossa come lo
+        # era per P-81, perche' e' l'app e non una porta. Si prende dal tag
+        # v0.31.0, l'ultimo rilascio con l'app, e non da site/app.html: dopo la
+        # merge di P-81 site/app.html e' la porta, e la controprova pretendeva
+        # che la porta giusta fosse rossa (§10.1 del progetto, 20 ottobre 2026).
+        try:
+            vecchia = subprocess.run(['git', 'show', 'v0.31.0:site/app.html'], cwd=str(RADICE),
+                                     capture_output=True, text=True, check=True).stdout
+        except (OSError, subprocess.CalledProcessError) as e:
+            vecchia = None
+            check('RG_SITO al contrario: l\'app di prima si legge dal tag v0.31.0', False,
+                  'git show v0.31.0:site/app.html: %s' % (getattr(e, 'stderr', '') or e))
+        oggi = copia_del_sito(tmp / 'porta-di-oggi', index=rif, app=vecchia)
         _, i = sonda([sys.executable, '-c', SONDA_INTERFACCIA, tests], {'RG_SITO': str(oggi)})
-        check('RG_SITO al contrario: con site/app.html di oggi come porta e\' rosso come per P-81',
+        check('RG_SITO al contrario: con l\'app di prima (v0.31.0) come porta e\' rosso come per P-81',
               any('porta di compatibilita' in f and 'importa /engine.js' in f and 'indirizzoApi' in f for f in i.get('falliti', [])),
               i.get('falliti') or i.get('errore'))
         _, d = sonda([sys.executable, '-c', SONDA_DATI, tests], {'RG_SITO': str(oggi)})

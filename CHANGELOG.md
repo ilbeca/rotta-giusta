@@ -136,6 +136,26 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   motore che P-81 tiene nel suo worktree e `main` non ha ancora. `site/` e la
   copia non sono stati toccati.
 
+### Test — la controprova di `RG_SITO` legge l'app di prima da un tag (fermo di P-81)
+
+- **Dopo la sostituzione la porta giusta era rossa.** P-81 ha portato la sua
+  copia a 3.458 verifiche su 3.458 e l'ha collaudata a vista; sostituiti i
+  cinque file di `site/`, la suite ha dato due rossi in
+  `test_copia_del_sito()`. Il terzo passo della controprova di P-84 costruiva
+  la «porta sbagliata» copiando `site/app.html`, cioè l'app di oggi: dopo la
+  merge di P-81 quel file è la porta, e la controprova pretendeva che fosse
+  rifiutata. Riprodotto in un worktree di prova con la porta della copia al
+  posto di `site/app.html`; ora l'app di prima si legge dal tag `v0.31.0`,
+  l'ultimo rilascio con l'app. Provato: verde con l'app di oggi in `site/` e
+  con la porta; rosso, per il suo motivo, con la porta giusta al posto
+  dell'app di prima; un tag che non si legge è un rosso che lo dice. Nessun
+  contratto della pagina cambia. La nota di P-81 è nel §10.1 di
+  `docs/ridisegno-progetto.md`, con quella della regia sotto.
+
+  Suite: interfaccia **3.018** sulla pagina vera, in 4 min 21 s, con la 8620
+  libera da 90 s; specifica 1.032; guardiano e documentazione verdi. `site/`
+  e la copia di P-81 non sono stati toccati.
+
 ## [0.31.0] — 2026-10-18
 
 **Un rilascio piccolo, prima del ridisegno.** Per chi studia cambia poco di

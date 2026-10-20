@@ -2011,6 +2011,116 @@ nessun contratto della pagina cambia. Restano a P-81 i due rossi della
 ricerca: `#r-numero` e `#r-nbp` sono agganci del banco, da dare ai contenuti
 veri del runner.
 
+##### P-81 — blocco della controprova RG_SITO dopo la sostituzione, 20 ottobre 2026
+
+**Fermo dopo il collaudo finale, nessun commit.** Ripresa su `ui/main`,
+allineato a `main` alla base `4369abf`; diff vuoto di `tests/`, `server/`
+e `site/engine.js` prima dei due giri. La copia intera in
+`/private/tmp/rg-p81/misura-conclusiva` passa **3.458/3.458** controlli
+interfaccia, regime **ridisegno**, in **321,80 s**; 8620 libera da 90 s
+alle **01:03:08 del 20 ottobre, Europe/Rome**. Le altre suite sulla copia:
+motore **215/219** (quattro skip previsti), server **89/89**, dati **225**,
+specifica **1.032**. Server anche con Node **24.22.0** ufficiale, SHA256
+verificato contro `SHASUMS256.txt`: **89/89**.
+
+**Dopo la sostituzione simultanea dei cinque file**, la suite interfaccia
+sul sito vero, senza `RG_SITO`, dà **3.456/3.458** in **324,91 s**;
+8620 libera da 90 s alle **01:10:09**. Le altre quattro suite restano verdi,
+con gli stessi numeri. I due soli rossi sono:
+
+- «RG_SITO al contrario: con site/app.html di oggi come porta e' rosso come per P-81»;
+- «RG_SITO al contrario: e test_indirizzi lo dice».
+
+**Il motivo è nella controprova, non nella porta.**
+`tests/test_interfaccia.py:3876–3885`, in `test_copia_del_sito()`, costruisce
+`porta-di-oggi` con `copia_del_sito(..., index=rif)`, senza dare `app`.
+`copia_del_sito()` copia `RADICE/site`: prima della sostituzione prende la
+vecchia app e i due controlli sono verdi perché la rifiutano; dopo prende
+la porta corretta di P-81. Pretende ancora che sia rifiutata come pagina
+con motore, client e archivio, benché il contratto chieda proprio di
+sostituirla con la porta senza questi elementi. È la stessa pagina di
+riferimento, con la stessa porta valida: i due controlli specifici non
+producono errori, ed è la pretesa che ne producano a diventare rossa.
+Nessun HTML conforme di P-81 può soddisfare insieme queste due pretese.
+
+**Controprova mirata, senza modificare test o contratti:** rieseguito
+`test_copia_del_sito()` da solo dopo la sostituzione: gli stessi due rossi.
+Poi i suoi helper e le sue sonde, con la pagina di riferimento e due input
+espliciti: porta nuova → nessun errore in `test_porta_app()` e
+`test_indirizzi()`; vecchia `app.html` letta da `HEAD` → rifiutata da entrambe
+per i motivi attesi (import del motore, client, IndexedDB e assenza del
+reindirizzamento). Il difetto non riguarda la capacità di riconoscere una
+porta rotta; riguarda l'uso del file di prodotto corrente come campione
+che deve rimanere vecchio. Log e confronto sono conservati in
+`evidenze/p81-finale-interfaccia.log` e
+`evidenze/blocco-porta-dopo-sostituzione.json`.
+
+**Alla regia:** rendere stabile il campione della vecchia app nella
+controprova di P-84, conservando le sonde e la prova che una porta sbagliata
+sia rifiutata anche dopo P-81. È una richiesta di raccordo, non una modifica
+approvata o implementata qui. Il prompt impone di fermarsi su un contratto
+che si contraddice e vieta di adattare il test dal ramo UI. Nessun controllo
+cambiato, nessun rosso nascosto con variabili o sostituzioni temporanee.
+
+**Stato conservato.** I cinque file di `site/` sono stati ripristinati
+insieme ai byte di `HEAD`, dopo aver verificato che coincidessero con la
+copia collaudata; `git diff -- site/` è vuoto. La copia corrente completa
+resta in `sito/` e coincide con `misura-conclusiva/`; impronte in
+`evidenze/impronte-conclusive.json`, esiti dei cinque gruppi in
+`evidenze/p81-copia-suite.json` e `evidenze/p81-finale-suite.json`.
+Nel repo restano solo questa nota e le dichiarazioni autorizzate in
+`docs/eccezioni-interfaccia.md`. Nessuna voce di CHANGELOG o commit di
+chiusura; non fondere la copia finché manca il verde dopo la sostituzione.
+
+**Il collaudo visivo ora è eseguito:** Chrome a **375 e 1280 px**, 14
+schermate delle superfici anonime e 40 immagini del giro account fittizio,
+errori e tastiera. **0 px di sbordamento orizzontale**, nessun errore
+JavaScript nelle pagine di quei collaudi. Guardati legenda dei cinque stati,
+scelte salvate e rilette, preparazione, risposta, risultato, revisione e
+legali; Tab/Invio, risposta numerica, Esc e ritorno del fuoco anche dopo un
+legale non disponibile. Riprodotti scrittura locale fallita, HTTP 401,
+banca non disponibile e rete assente. Pallino persistente dopo Info;
+avvisi visibili anche nelle attività senza coprire il quesito. Il giro
+manuale nel browser integrato conserva risposta, tag e segnalibro tra
+risultato, revisione e legale. Osservato «Riferimento copiato», senza
+confermare il contenuto della clipboard del sistema. Misure in
+`evidenze/visuale-ripresa.json` e `visuali-account-XBmBtG/misure.json`.
+
+**Riparato nella copia:** agganci veri `#r-numero`/`#r-nbp`, testata sopra
+Termina (88/76 px prima, 88/100 dopo; a 375 px 70/82), griglia dei comandi,
+Esame dopo una modifica dal Profilo e fuoco al ritorno dai legali. Trovati
+anche due conti: una risposta anonima applicata due volte allo specchio
+(una riga, `n=2`, contro `n=1` di `ripiega`), ora uguale a `E.ripiega()`
+nell'intera struttura confrontata; una coda con risposta e segnalibro
+presentata come due risposte, ora «1 risposta da inviare · segnalibri: 1»
+tramite `riepilogoPagina()`. Trasferimento e conflitto leggono i conteggi
+tipizzati del motore; il recupero continua a proteggere tutte le righe.
+Evidenze: `specchio-confronto.json` e `conti-client.json`; alla regia le
+regressioni di questi due casi su `main`, non scritte nel territorio test.
+
+Guardiano e controllo della documentazione verdi sull’albero ripristinato
+con questa nota; `git diff --check` verde. Non sono il verde conclusivo
+sul sito ridisegnato, che richiede prima il raccordo del banco.
+
+**Restano:** raccordo della controprova, nuova sostituzione dei cinque file
+e cinque suite finali, guardiano/documentazione, CHANGELOG e commit unico.
+P-75 rimane spento; niente previsioni o fasi simulate di P-76. Per l'autore
+restano A-3 e le prove con persone della riga 18, Safari reale e strumenti
+di accessibilità. Anteprime, scheda del browser e server temporanei chiusi;
+nessun account reale o macchina di produzione toccati. Nessun push, tag o
+«Build now». Le bozze di chiusura in `lavoro/` non sono una consegna verde.
+
+**La controprova è tolta dalla regia, il 20 ottobre 2026.** Riprodotta in un
+worktree di prova con la porta della copia al posto di `site/app.html`: gli
+stessi due rossi. Era un buco di P-84, che ha preso come «porta sbagliata» il
+file del prodotto, destinato a diventare la porta giusta. Ora l'app di prima
+si legge dal tag `v0.31.0`, l'ultimo rilascio con l'app; la controprova è
+verde con l'app di oggi in `site/` e con la porta, rossa se al posto dell'app
+di prima si mette la porta giusta, e un tag che non si legge è un rosso che
+lo dice. Le due regressioni dei conti trovati da P-81 — la risposta senza
+account applicata due volte allo specchio, e il segnalibro contato come
+risposta nella coda — la regia le scrive dopo la merge, sulla pagina vera.
+
 ### 10.2 Verifica documentale di P-79 e limiti
 
 Verificati cartella, ramo, albero iniziale pulito e inventario delle chat:

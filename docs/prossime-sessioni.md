@@ -187,8 +187,12 @@ worktree, classifica esce dalle protette, il banco accende le raccolte
 per parte — fatto da P-88 il 18 ottobre. Il 19 P-81 è arrivato a
 3.454 verifiche su 3.457 sulla copia e si è fermato su un buco del
 controllo di C-03, tolto dalla regia lo stesso giorno: è pronto per la
-quinta volta, dalla copia in /private/tmp/rg-p81; restano suoi due
-rossi della ricerca e il collaudo con l'account (§10.1). Le decisioni dell'autore del
+quinta volta. Il 20 la copia è verde intera e collaudata a vista, e la
+sostituzione si è fermata su una controprova di P-84 che prendeva
+site/app.html come «app di prima», tolta dalla regia lo stesso giorno:
+P-81 è pronto per la sesta volta, e gli restano sostituzione, suite e
+commit (§10.1). Dopo la merge, due regressioni dei conti che P-81 ha
+trovato, per Claude. Le decisioni dell'autore del
 17 e 18 ottobre: Q-COSTANZA chiusa (specifica §10), il criterio della
 soglia degli allarmi (account-progetto.md §15.4), le raccolte spente e
 i segnalibri accesi (§2.7-bis). P-62 con l'autore. P-75 aspetta la
@@ -203,7 +207,8 @@ I prossimi passi, in quest'ordine:
    guardata — tragitti a 375 e 1280 px in Chrome, i tre posti
    dell'invito, il regime letto da tests/regime_pagina.py —, poi un
    prompt per Claude che toglie il regime di oggi dai controlli, come
-   P-12, P-37, P-47 e P-50; poi il rilascio.
+   P-12, P-37, P-47 e P-50, e scrive le regressioni dei due conti che
+   P-81 ha trovato (§10.1 del progetto, 20 ottobre); poi il rilascio.
 2. Le decisioni dell'autore nel §4, «Dopo P-59» e «Dopo P-64»:
    ricordagliele quando il lavoro che le aspetta sta per partire. La
    base giuridica di esito e previsioni ferma P-75;
@@ -267,7 +272,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 18 | **La prova con le persone**, sul sito vero, dopo il rilascio del ridisegno — i bot sui mock sono fatti (P-70, 14 ottobre) | l'autore, con Claude | — | il rilascio del ridisegno, e tre-cinque persone, dell'autore | P-70 resta la ricetta; prompt da riscrivere allora |
 | 19 | **Le ricerche**: il parere del professionista sulle donazioni (14 domande, I-11); se all'esame vero si torna indietro fra le domande; Lighthouse su telefono e Safari veri (I-08) | l'autore | — | — | §4, «Dopo P-59» |
 | 20-bis | **I contratti del motore, seconda parte**: Percorso con il «sei qui», costanza, obiettivo, «hai concluso quello che ti avevamo proposto» | Claude | `main` | l'ambito della decisione 22 e le fasi (§4, «Dopo P-59», 10 e 15); Q-COSTANZA è chiusa il 17 ottobre 2026, e P-68 è fatto | P-76, da scrivere |
-| 21 | **Il ridisegno**: il progetto (P-79), i raccordi e la specifica (P-80), i due campi del profilo (P-83), il banco dei tragitti in Chrome (P-82), la copia intera sotto i controlli (P-84) e la barra a link nei banchi (P-85) sono fatti; la realizzazione (P-81) si è fermata una quarta volta il 19 ottobre, a 3.454 verifiche su 3.457, su un buco del controllo di C-03 tolto dalla regia lo stesso giorno (§10.1 del progetto): riparte dalla sua copia; la sua merge viene dopo la v0.31.0, poi la regia toglie il regime di oggi e si fa un rilascio che accende le scelte di preparazione | ChatGPT; poi Claude | `ui/main`; `main` | niente | P-81 |
+| 21 | **Il ridisegno**: il progetto (P-79), i raccordi e la specifica (P-80), i due campi del profilo (P-83), il banco dei tragitti in Chrome (P-82), la copia intera sotto i controlli (P-84) e la barra a link nei banchi (P-85) sono fatti; la realizzazione (P-81) si è fermata una quinta volta il 20 ottobre, con la copia verde e collaudata, su una controprova di P-84 tolta dalla regia lo stesso giorno (§10.1 del progetto): riparte dalla sua copia; la sua merge viene dopo la v0.31.0, poi la regia toglie il regime di oggi e si fa un rilascio che accende le scelte di preparazione | ChatGPT; poi Claude | `ui/main`; `main` | niente | P-81 |
 | 22 | **Spiegazioni**: il primo lotto di 50, «Segnala un problema», la misura dell'effetto | Claude con l'autore, poi ChatGPT | `main`, `ui/main` | l'indirizzo e la licenza (§4, «Dopo P-59», 2 e 6) | da scrivere |
 | 24 | **La misura propria**: conteggi aggregati di eventi sul server del sito, senza cookie né terzi, a cominciare dal contatore degli ingressi; le registrazioni fra le metriche; MISURA → BRAINSTORM come quinto passo del ciclo (I-19, decisioni 1–3 e 5 del 17 ottobre in `docs/idee-dopo-gli-account.md`) | Claude con l'autore, poi Claude | `main` | un ADR che riscrive «nessun analytics» (specifica §2.1) e R-ACC-09, e la riga nell'informativa; dopo il rilascio del ridisegno | da scrivere |
 | 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | niente dal motore: `PREVISIONI` c'è (P-72), e un modello entra come metodo accanto alla regola semplice; Q-STIMA solo per quando si mostra | da scrivere |
@@ -289,7 +294,7 @@ d'esame, arriva con il prossimo rilascio; P-82, il banco dei tragitti in
 Chrome, è chiuso il 17 ottobre. P-75 aspetta la base giuridica, P-76 aspetta
 l'ambito della decisione 22 e le fasi; alla merge di P-81 la regia toglie il
 regime di oggi dai controlli. P-62 con l'autore quando vuole.
-P-84, `RG_SITO`, è chiuso il 17 ottobre. P-85, la barra a link nei banchi, è chiuso lo stesso giorno. P-86, le raccolte spente sul server, e P-87, due rossi falsi del banco, sono chiusi il 18 ottobre. P-88, il banco che accende le raccolte per parte, è chiuso il 18 ottobre, e la v0.31.0 è in linea dallo stesso giorno. **Per Claude** oggi non c'è un prompt pronto. **Per ChatGPT:** P-81 riparte per la quinta volta, con lo stesso prompt, dalla copia in `/private/tmp/rg-p81`: il 19 ottobre il blocco C-03 è stato tolto su `main`. La misura propria (riga 24) aspetta il suo ADR, dopo il rilascio. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
+P-84, `RG_SITO`, è chiuso il 17 ottobre. P-85, la barra a link nei banchi, è chiuso lo stesso giorno. P-86, le raccolte spente sul server, e P-87, due rossi falsi del banco, sono chiusi il 18 ottobre. P-88, il banco che accende le raccolte per parte, è chiuso il 18 ottobre, e la v0.31.0 è in linea dallo stesso giorno. **Per Claude** oggi non c'è un prompt pronto. **Per ChatGPT:** P-81 riparte per la sesta volta, con lo stesso prompt, dalla copia in `/private/tmp/rg-p81`: il 20 ottobre la controprova sulla porta è stata tolta su `main`. La misura propria (riga 24) aspetta il suo ADR, dopo il rilascio. L'ordine è quello deciso con l'autore il 4 ottobre: prima le decisioni
 che cambiano una promessa (un ADR, la filosofia, la specifica), poi i mock e la
 prova con le persone, poi il codice; «com'è andata» parte presto perché i suoi
 dati arrivano mesi dopo. **Il §5, il §6 e i controlli R-NAV della specifica non
@@ -6117,7 +6122,16 @@ letto il commit, i file nel territorio del motore e le cinque suite.
 
 ### P-81 — ChatGPT: la realizzazione del ridisegno
 
-**Stato:** **pronto per la quinta volta, dal 19 ottobre 2026: il blocco C-03
+**Stato:** **pronto per la sesta volta, dal 20 ottobre 2026: la controprova
+sulla porta è tolta dalla regia su `main`.** Il 20 la copia ha passato
+**3.458/3.458**, il collaudo visivo con e senza account a 375 e 1280 px è
+fatto, e i due rossi della ricerca sono chiusi; dopo la sostituzione dei
+cinque file la suite ha dato 3.456/3.458, con due rossi della controprova di
+P-84, che prendeva `site/app.html` come «app di prima» (§10.1 del progetto,
+«P-81 — blocco della controprova RG_SITO dopo la sostituzione», con la nota
+della regia sotto). Ha rimesso `site/` com'era, senza commit. Riparte con lo
+stesso prompt: la sostituzione, le cinque suite, il CHANGELOG e il commit.
+Prima era: **pronto per la quinta volta, dal 19 ottobre 2026: il blocco C-03
 è tolto dalla regia su `main`.** Il 19 ha lavorato sulla copia fino a
 **3.454/3.457** con la suite intera dal suo worktree, e si è fermato senza
 commit su un buco del controllo: l'aggregatore di C-03 cercava il solo nome
@@ -7640,3 +7654,12 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   riga costava più del lavoro. La nota del progetto è su `main` byte per
   byte, con sotto quella della regia; il worktree di `ui/main` è allineato e
   tiene le sole dichiarazioni. P-81 riparte con lo stesso prompt.
+- **20 ottobre 2026 — P-81 fermo una quinta volta, e la controprova tolta
+  dalla regia.** Il resoconto letto contro il repo: nessun commit, base
+  `4369abf`, `site/` com'era; nel worktree la nota del progetto e le
+  dichiarazioni. La copia è verde intera, 3.458/3.458, e collaudata a vista;
+  dopo la sostituzione due rossi di `test_copia_del_sito()`, che prendeva
+  `site/app.html` come l'app da rifiutare. Riprodotto in un worktree di prova
+  con la porta della copia, corretto su `main` leggendo l'app di prima dal tag
+  `v0.31.0`, e provato al contrario. Le due regressioni dei conti che P-81 ha
+  trovato le scrive la regia dopo la merge. P-81 riparte con lo stesso prompt.
