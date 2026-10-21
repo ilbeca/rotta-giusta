@@ -55,6 +55,27 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   qui: è dell'interfaccia. Visti accanto, e misurati: la domanda che sparisce
   dopo la risposta, e i pulsanti del segnalibro sopra le risposte e i tag.
 - Nessun file del sito, dei test o del motore è stato toccato.
+### Osservato — la lettura da fuori indipendente di ChatGPT
+
+I controlli del sito verificano dati e percorsi, non che una frase sia
+compresa da chi arriva: cinque lettori Codex senza contesto di progetto sulla
+v0.32.0, **58 mosse, 63 schermate e 45 risposte** alle stesse nove domande,
+consegnate solo a giro chiuso. Due primi sguardi su immagini e una spiegazione
+per **17 elementi** aggiungono ciò che un percorso concluso non misura.
+Contesto iniziale esportato e controllato: disabilitati anche catalogo globale
+delle skill e memoria. Giri, schermate e trascrizioni restano fuori dal repo.
+
+Le schede **I-24–I-26** di `docs/idee-dopo-gli-account.md` distinguono frequenze,
+limiti del banco e difetti riprodotti: proseguimento fuori schermo dopo errore
+su **375×667** e, con risposte lunghe, anche **375×812**; domanda ridotta a
+22 px o nuova domanda che conserva lo scorrimento interno; porta delle fonti
+che arriva all'inizio della diagnostica. Casi con risposta giusta e quesiti
+più corti funzionano: non si generalizza il blocco a ogni errore. Riscritture
+e metodo sono proposte, confrontate con I-22/I-23 solo dopo avere scritto e
+conservato la lettura indipendente. Nessuna correzione al sito o alla versione.
+Otto esecuzioni: **889 s sommati, 242.914 token input non in cache,
+5.390.336 in cache, 25.330 output**; il CLI non espone un costo monetario.
+Verifica di chiusura: `strumenti/controlla.py`.
 
 ## [0.32.0] — 2026-10-20
 
