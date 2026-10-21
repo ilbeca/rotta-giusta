@@ -2528,6 +2528,7 @@ il regime nuovo.
 | R-RIF-14 | I percorsi completi solo con la tastiera, nei due regimi: primo quiz, configurazione e filtri, runner e riepilogo, revisione e riprova, Carteggio, Progressi, Info e Account, accesso, verifica, import e export, conflitto, azzeramento; le scorciatoie dei quiz spente mentre si scrive in un campo | scoperto — il banco prova la finestra «Accedi» e gli arresti di Tab del Percorso (R-RIF-06, 07), non un percorso intero: i suoi gruppi del client premono con `element.click()` |
 | R-RIF-15 | Un lettore di schermo reale annuncia titoli e gruppi, etichette, la domanda nuova, il riscontro, la scrittura fallita, lo stato dell'invio, il timer senza un annuncio al secondo, i dialoghi e il ritorno del fuoco; le figure dei quiz hanno il limite dichiarato del §6 del progetto | scoperto — l'albero di accessibilità dice che cosa il browser espone (R-RIF-04, 06, 08), non che cosa un lettore dice: la prova è manuale, con la procedura qui sotto |
 | R-RIF-16 | Contrasto, bersagli, fuoco e avvisi anche con l'account e sugli stati del client — verifica dell'email, conflitto, import parziale, uscita con righe pendenti, `401` | scoperto — il banco li misura sulle superfici della prova e sulla finestra «Accedi»; con l'account misura lo sbordo (R-RIF-09) e l'avviso del guasto (R-RIF-04). Estenderlo agli stati del client è lavoro dopo P-25, sullo stesso banco |
+| R-RIF-17 | Il pulsante per proseguire si raggiunge sempre (D-29 di I-27 in `docs/idee-dopo-gli-account.md`): nel runner dei quiz, dopo una risposta giusta e dopo una sbagliata, a 375×812 e a 375×667, con i due quesiti più lunghi della banca — base-1293, e base-829 con la figura — aperti per numero e l'avanzamento automatico spento, «Avanti» o «Vedi il riepilogo» sta nel primo schermo con il centro sotto il dito, oppure `scrollIntoView` lo porta lì muovendo soltanto contenitori che scorrono con il dito (overflow `auto` o `scroll`, o il documento); e niente di fisso gli sta sopra (`elementFromPoint`). Provato al contrario su tre rotture — il runner fisso che taglia, quello che sborda, un velo fisso sopra il pulsante —, e su due difese tolte una alla volta. **Difetto aperto dichiarato sulla pagina vera**, nei quattro casi: il runner è fisso e non scorre, e dopo la risposta la domanda si schiaccia a 22 px; lo chiude P-91 | `test_interfaccia.py::test_rifinitura_proseguire` |
 
 **Che cosa questi controlli non vedono.** L'altezza del testo quando la famiglia
 di caratteri di sistema cambia; un contrasto sopra un'immagine o una
@@ -3684,3 +3685,13 @@ successo, ed è il motivo per cui questo file esiste.
   R-ACC-82 dice che il codice del rilascio accende le sole scelte, e il suo
   test lo tiene fermo; esiti e previsioni restano spenti fino a P-75. Le frasi
   che dicevano «fino al rilascio» dicono il presente.
+
+- **21 ottobre 2026 — R-RIF-17, il pulsante per proseguire (T-10).** Dalla
+  regola D-29 delle regole di disegno (I-27): un gruppo nuovo del banco del
+  client, T-10, misura nel runner dei quiz se «Avanti» si vede o si raggiunge
+  scorrendo con il dito. Sulla pagina vera è rosso nei quattro casi, anche dopo
+  una risposta giusta a 375×812 — misurato e guardato sul sito pubblicato: la
+  domanda a 22 px, «Vedi il riepilogo» a 804–856 px su 812 —, ed è un difetto
+  aperto dichiarato finché P-91 non lo chiude. La pagina di riferimento del
+  client mostra ora «Vedi il riepilogo» anche dopo l'ultima domanda, come la
+  pagina vera.

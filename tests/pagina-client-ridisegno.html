@@ -715,6 +715,7 @@ function mostra() {
   dipingiSegno(it.id);
   $('r-verdict').textContent = '';
   $('r-next').hidden = true;
+  $('r-next').textContent = 'Avanti';
   $('r-ans').innerHTML = it.r.map((t, j) => `<button class="ans" data-i="${j}">${esc(t)}</button>`).join('');
 }
 
@@ -742,12 +743,16 @@ function rispondi(j) {
   [...$('r-ans').children].forEach((b, k) => { if (k === it.x) b.classList.add('ok'); else if (k === j) b.classList.add('ko'); });
   $('r-verdict').textContent = giusta ? 'Risposta esatta.' : 'Risposta errata.';
   if (!giusta) { R.erroreQui = true; dipingiTag(); }
-  if (R.i + 1 < R.lista.length) $('r-next').hidden = false;
+  // Anche dopo l'ultima domanda un pulsante per proseguire, come la pagina vera
+  // (D-29, T-10): «Vedi il riepilogo».
+  $('r-next').textContent = R.i + 1 < R.lista.length ? 'Avanti' : 'Vedi il riepilogo';
+  $('r-next').hidden = false;
 }
 
 function avanti() {
   const R = S.run;
-  if (R.esiti.length <= R.i || R.i + 1 >= R.lista.length) return;
+  if (R.esiti.length <= R.i) return;
+  if (R.i + 1 >= R.lista.length) { if (!R.sim) termina(); return; }
   R.i++; R.pronta = Date.now() + 200; mostra();
 }
 

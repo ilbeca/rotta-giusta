@@ -106,6 +106,32 @@ Verifica di chiusura: `strumenti/controlla.py`.
   `docs/prossime-sessioni.md` con i quesiti per riprodurli (base-400,
   base-1293, base-828, base-829) e che cosa deve essere vero dopo.
 
+### Test — T-10: il pulsante per proseguire si raggiunge sempre (D-29, R-RIF-17)
+
+- **Il difetto che nessun controllo vedeva.** I banchi premono con
+  `element.click()`, che arriva a un pulsante anche fuori dallo schermo: dopo
+  una risposta il runner dei quiz poteva lasciare «Avanti» sotto il bordo, e la
+  suite restava verde. Il gruppo nuovo T-10 del banco del client apre i due
+  quesiti più lunghi della banca per numero — base-1293, e base-829 con la
+  figura —, spegne l'avanzamento automatico, risponde giusto e sbagliato a
+  375×812 e a 375×667, e misura nella pagina: il pulsante è nel primo schermo
+  con il centro sotto il dito, oppure `scrollIntoView` ce lo porta muovendo
+  solo contenitori che scorrono con il dito; e `elementFromPoint` sul suo centro
+  restituisce lui. Un `overflow:hidden` si scorre da programma e non conta.
+- **Sulla pagina vera è rosso in tutti e quattro i casi**, anche dopo una
+  risposta **giusta** a 375×812, più di quanto le letture da fuori avessero
+  visto: con base-1293 la domanda si schiaccia a 22 px e «Vedi il riepilogo»
+  sta a 804–856 px su 812. Misurato dal banco e guardato sul sito pubblicato
+  in una schermata. I quattro casi sono **difetti aperti dichiarati** in
+  `docs/eccezioni-interfaccia.md`: la suite pretende che restino rossi finché
+  la riga c'è, e li chiude P-91, che ora lo dice.
+- **Provato al contrario:** la pagina di riferimento del client passa i quattro
+  casi; tre rotture — il runner fisso che taglia, quello che sborda, un velo
+  fisso sopra il pulsante — sono rosse ognuna per il suo motivo; e tolta una
+  difesa alla volta — il controllo di che cosa si è mosso, `elementFromPoint` —
+  la rottura che la riguarda passa verde. La pagina di riferimento mostra ora
+  «Vedi il riepilogo» anche dopo l'ultima domanda, come la pagina vera.
+
 ## [0.32.0] — 2026-10-20
 
 **Il ridisegno.** Il sito diventa un documento solo: **Home · Allenati ·

@@ -3485,9 +3485,9 @@ ROTTURE_RACCORDO = [
 # Alla merge di P-25 la tabella non deve avere piu' righe `T-*`: e' li' che si
 # esige il regime nuovo, senza un segno da cercare nella pagina.
 GRUPPI_RIFINITURA = ['T-01', 'T-02', 'T-03', 'T-04', 'T-05:finestra', 'T-05:arresti', 'T-06', 'T-07:prova', 'T-07:conto',
-                     'T-08', 'T-09']
+                     'T-08', 'T-09', 'T-10']
 VERIFICHE_RIFINITURA = {'T-01': 9, 'T-02': 9, 'T-03': 11, 'T-04': 6, 'T-05:finestra': 5, 'T-05:arresti': 2, 'T-06': 3,
-                        'T-07:prova': 5, 'T-07:conto': 3, 'T-08': 2, 'T-09': 2}
+                        'T-07:prova': 5, 'T-07:conto': 3, 'T-08': 2, 'T-09': 2, 'T-10': 5}
 
 # Rotture della pagina di riferimento per l'area 6: (che cosa, parti da
 # eseguire, sostituzioni, parola che il rosso deve contenere). Ognuna e' un
@@ -3591,7 +3591,16 @@ ROTTURE_RIFINITURA = [
     # T-08 e T-09
     ('un titolo grigio chiaro', ['T-08'], [(_STILE, _STILE + '\nh1 {color:#aaa}')], 'contrasto minimo'),
     ('un pulsante di 20 px', ['T-09'], [('a.da-solo, label {display:inline-block}', 'a.da-solo, label {display:inline-block}\n#v-home [data-modo="sim"] {min-height:0; height:20px}')], '24 × 24'),
-    ('un pulsante di 36 px', ['T-09'], [('a.da-solo, label {display:inline-block}', 'a.da-solo, label {display:inline-block}\n#v-home [data-modo="sim"] {min-height:0; height:36px}')], '44 × 44'),
+    ('un pulsante di 36 px', ['T-09'], [('a.da-solo, label {display:inline-block}', 'a.da-solo, label {display:inline-block}\n#v-home [data-modo="sim"] {min-height:0; height:36px}')], '44 × 44'),    # T-10 (D-29, R-RIF-17): tre modi in cui il pulsante per proseguire diventa
+    # irraggiungibile. Il primo e' il difetto della pagina vera, misurato il 21
+    # ottobre 2026: un runner fisso che nessun gesto fa scorrere; con
+    # overflow:hidden scrollIntoView lo scorre lo stesso, da programma, ed e'
+    # per questo che la misura guarda che cosa si e' mosso. Sulla pagina di
+    # riferimento, senza stili, il runner entra nello schermo: il margine sotto
+    # la domanda fa la parte di una domanda lunghissima.
+    ('il runner fisso che taglia', ['T-10'], [(_STILE, _STILE + '\n#quizrun.on {position:fixed; inset:0; overflow:hidden} #quizrun.on #r-text {padding-bottom:900px}')], 'da programma'),
+    ('il runner fisso che sborda', ['T-10'], [(_STILE, _STILE + '\n#quizrun.on {position:fixed; inset:0; overflow:visible} #quizrun.on #r-text {padding-bottom:900px}')], 'niente lo porta in vista'),
+    ('un velo fisso sopra il pulsante', ['T-10'], [(_STILE, _STILE + "\n#quizrun.on::after {content:''; position:fixed; inset:0; z-index:5}")], 'ha sopra'),
 ]
 
 
@@ -3688,6 +3697,14 @@ def test_rifinitura_contrasto():
 def test_rifinitura_bersagli():
     """R-RIF-12: i bersagli di tocco, 24 px il minimo AA e 44 l'obiettivo (T-09)."""
     registra_rifinitura('T-09')
+
+
+def test_rifinitura_proseguire():
+    """R-RIF-17 (D-29): nel runner dei quiz, dopo una risposta giusta e dopo una
+    sbagliata, a 375×812 e a 375×667, con i due quesiti piu' lunghi, il
+    pulsante per proseguire si vede o ci si arriva scorrendo, e niente gli sta
+    sopra (T-10)."""
+    registra_rifinitura('T-10')
 
 
 def test_rifinitura_provata_al_contrario():
@@ -4447,7 +4464,7 @@ def main():
               test_ridisegno_tragitti, test_ridisegno_stati_in_schermata, test_ridisegno_tragitti_provati_al_contrario,
               test_rifinitura_senza_account, test_rifinitura_invio, test_rifinitura_guasto, test_rifinitura_identita,
               test_rifinitura_finestra, test_rifinitura_fuoco, test_rifinitura_avvisi, test_rifinitura_larghezze,
-              test_rifinitura_contrasto, test_rifinitura_bersagli, test_rifinitura_provata_al_contrario,
+              test_rifinitura_contrasto, test_rifinitura_bersagli, test_rifinitura_proseguire, test_rifinitura_provata_al_contrario,
               test_raccordo_riconosciuto, test_esito_senza_account, test_esito_quando, test_esito_salvato,
               test_avvio_registrato, test_avvio_non_si_vede, test_avvio_non_e_una_risposta, test_avvio_server_di_prima,
               test_avvio_con_un_errore, test_raccordo_provato_al_contrario,

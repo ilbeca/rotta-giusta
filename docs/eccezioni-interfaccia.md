@@ -160,6 +160,10 @@ sulla pagina vera.
 
 | parte | verifica | perché è ancora qui |
 |---|---|---|
+| T-10 | a 375×812, dopo una risposta giusta, il pulsante per proseguire si vede o si raggiunge scorrendo, e niente gli sta sopra | Il runner dei quiz è fisso e non scorre: dopo la risposta la domanda si schiaccia e il pulsante finisce sotto il bordo (misurato il 21 ottobre 2026: base-1293 a 804–856 px su 812 anche dopo una risposta giusta). Lo chiude P-91, che toglie questa riga nello stesso commit. |
+| T-10 | a 375×812, dopo una risposta sbagliata, il pulsante per proseguire si vede o si raggiunge scorrendo, e niente gli sta sopra | Il runner dei quiz è fisso e non scorre: dopo la risposta la domanda si schiaccia e il pulsante finisce sotto il bordo (misurato il 21 ottobre 2026: base-1293 a 804–856 px su 812 anche dopo una risposta giusta). Lo chiude P-91, che toglie questa riga nello stesso commit. |
+| T-10 | a 375×667, dopo una risposta giusta, il pulsante per proseguire si vede o si raggiunge scorrendo, e niente gli sta sopra | Il runner dei quiz è fisso e non scorre: dopo la risposta la domanda si schiaccia e il pulsante finisce sotto il bordo (misurato il 21 ottobre 2026: base-1293 a 804–856 px su 812 anche dopo una risposta giusta). Lo chiude P-91, che toglie questa riga nello stesso commit. |
+| T-10 | a 375×667, dopo una risposta sbagliata, il pulsante per proseguire si vede o si raggiunge scorrendo, e niente gli sta sopra | Il runner dei quiz è fisso e non scorre: dopo la risposta la domanda si schiaccia e il pulsante finisce sotto il bordo (misurato il 21 ottobre 2026: base-1293 a 804–856 px su 812 anche dopo una risposta giusta). Lo chiude P-91, che toglie questa riga nello stesso commit. |
 
 *P-25 ha chiuso i cinque difetti di fuoco, reflow, contrasto e bersagli: i gruppi T-* girano per intero sulla pagina vera.*
 

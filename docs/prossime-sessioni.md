@@ -6885,9 +6885,10 @@ fuori dalla frase decisa, zero sbordamento.
 **Nasce da:** I-23 e I-24 (le due letture da fuori, Claude e ChatGPT) e
 dall'audit delle schermate principali in I-27 di
 `docs/idee-dopo-gli-account.md`, punti 1 e 2; l'autore ha deciso il 21 ottobre
-che questi due si correggono per primi. **Sblocca:** il resto dell'audit, nell'ordine
+che questi due si correggono per primi. Il controllo del punto 1, T-10
+(R-RIF-17), è su `main` dallo stesso giorno, con il difetto dichiarato. **Sblocca:** il resto dell'audit, nell'ordine
 di I-27 (l'avviso detto una volta, Esame che apre sulle prove, «Inizia» in
-vista), e il controllo di D-29 su `main` (I-27, passo 4).
+vista).
 
 ```
 Questo prompt è per ChatGPT, nel worktree ~/Software/rotta-giusta-ui,
@@ -6921,6 +6922,15 @@ D-02, D-14, D-28, D-29).
    la simulazione senza correzione in corsa, il timer.
    Tieni d'occhio anche il secondo difetto di I-24: la domanda
    successiva non deve aprirsi già scorsa a metà.
+   C'è un controllo che lo misura: T-10 nel banco del client
+   (tests/client_account.mjs, R-RIF-17 della specifica). Oggi è rosso
+   in quattro casi, anche dopo una risposta GIUSTA a 375×812 con
+   base-1293 — la domanda si schiaccia a 22 px e «Vedi il riepilogo»
+   sta a 804–856 px —, e i quattro casi sono dichiarati in
+   docs/eccezioni-interfaccia.md, «Difetti aperti dichiarati», righe
+   T-10. Quando il difetto è chiuso la suite diventa rossa finché
+   quelle righe ci sono: toglile nello stesso commit, e T-10 deve
+   girare verde sulla pagina vera.
 
 2. Nella domanda con figura la figura non si vede. strumentiQuesito()
    mette «Metti un segnalibro» e «Segnala un problema», due pulsanti a

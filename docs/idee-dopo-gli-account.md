@@ -4253,3 +4253,7 @@ specifica (Claude, su `main`), le altre una lista di revisione per chi disegna
 (`ui/*`); le soglie dichiarate «nostre» restano tali finché l'uso non le
 corregge. L'ordine proposto qui sopra è accettato. I punti 1 e 2 li corregge
 ChatGPT con **P-91** (`docs/prossime-sessioni.md`, §6; riga 35 della coda).
+Lo stesso giorno il punto 1 ha il suo controllo, **T-10** (R-RIF-17): misura
+D-29 nel browser, ed è rosso sulla pagina vera nei quattro casi, anche dopo una
+risposta giusta a 375×812 (la domanda a 22 px, «Vedi il riepilogo» a 804–856
+px). I quattro casi sono difetti aperti dichiarati finché P-91 non li chiude.

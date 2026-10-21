@@ -3785,6 +3785,99 @@ async function t09(b, ctx, v) {
   } finally { await c.chiudi(); }
 }
 
+// --- T-10: il pulsante per proseguire si raggiunge sempre (D-29, R-RIF-17) -----------
+//
+// docs/idee-dopo-gli-account.md, I-27, regola D-29: in ogni stato del runner il
+// pulsante per andare avanti si vede, o ci si arriva scorrendo, e niente di
+// fisso gli sta sopra. Nato dal difetto che le due letture da fuori hanno
+// trovato (I-23, I-24) e che nessun controllo vedeva: dopo una risposta
+// sbagliata, a 375×667, «Avanti» stava a 757–809 px dentro un runner fisso alto
+// 667, e niente scorreva. I banchi premono con element.click(), che arriva a
+// un pulsante anche fuori dallo schermo: per questo il difetto passava.
+//
+// La misura, nella pagina: il pulsante e' nel primo schermo con il suo centro
+// sotto il dito (elementFromPoint), oppure scrollIntoView lo porta li' muovendo
+// soltanto contenitori che scorrono davvero — overflow auto o scroll, o il
+// documento —: un overflow:hidden si scorre da programma, non con il dito. Poi
+// lo scorrimento torna com'era. I casi: i due quesiti piu' lunghi della banca,
+// base-1293 e base-829 (il piu' lungo con figura), aperti per numero, con una
+// risposta giusta e una sbagliata, a 375×812 e a 375×667, l'avanzamento
+// automatico spento, perche' con lui una risposta giusta se ne va da sola dopo
+// un secondo. Non vede: il gesto vero sul telefono, Safari, la simulazione e il
+// confronto del Carteggio, e se la domanda resta leggibile accanto al pulsante.
+
+function proseguire(K, sel) {
+  const e = [...document.querySelectorAll(sel)].find(K.V);
+  if (!e) return { stato: 'assente' };
+  const W = innerWidth, H = innerHeight;
+  const sotto = (r) => {
+    const x = (r.left + r.right) / 2, y = (r.top + r.bottom) / 2;
+    if (y < 0 || y >= H || x < 0 || x >= W) return 'fuori';
+    const h = document.elementFromPoint(x, y);
+    return h && (h === e || e.contains(h)) ? null : K.nome(h || document.body);
+  };
+  const r = e.getBoundingClientRect();
+  const dove = { testo: e.textContent.trim().slice(0, 30), top: Math.round(r.top), bottom: Math.round(r.bottom), H };
+  if (r.top >= 0 && r.bottom <= H && !sotto(r)) return { stato: 'primo', ...dove };
+  const radice = document.scrollingElement;
+  const prima = [];
+  for (let p = e.parentElement; p; p = p.parentElement) prima.push([p, p.scrollTop]);
+  if (!prima.some(([p]) => p === radice)) prima.push([radice, radice.scrollTop]);
+  e.scrollIntoView({ block: 'center' });
+  const scorre = (p) => {
+    if (p === radice || p === document.body || p === document.documentElement) {
+      return getComputedStyle(document.documentElement).overflowY !== 'hidden' && getComputedStyle(document.body).overflowY !== 'hidden';
+    }
+    return ['auto', 'scroll'].includes(getComputedStyle(p).overflowY);
+  };
+  const solo = prima.filter(([p, t]) => p.scrollTop !== t && !scorre(p)).map(([p]) => K.nome(p));
+  const r2 = e.getBoundingClientRect(), s2 = sotto(r2);
+  for (const [p, t] of prima) p.scrollTop = t;
+  return { stato: !solo.length && !s2 ? 'scorrendo' : 'no', ...dove, dopo: { top: Math.round(r2.top), bottom: Math.round(r2.bottom) }, sopra: s2, solo };
+}
+
+const CASI_T10 = ['base-1293', 'base-829'];
+const MISURE_T10 = [[375, 812], [375, 667]];
+export const PROSEGUIRE = (W, H, giusta) => `a ${W}×${H}, dopo una risposta ${giusta ? 'giusta' : 'sbagliata'}, il pulsante per proseguire si vede o si raggiunge scorrendo, e niente gli sta sopra`;
+
+async function t10(b, ctx, v) {
+  const g = 'T-10';
+  const c = await b.nuovoContesto();
+  const intoppi = [], per = new Map();
+  try {
+    for (const [W, H] of MISURE_T10) {
+      for (const giusta of [true, false]) {
+        const difetti = [];
+        let misurati = 0;
+        for (const id of CASI_T10) {
+          const it = QUIZ_TUTTI.find((x) => x.id === id);
+          const tab = await c.apri(ctx.sito + ingresso(ctx));
+          await tab.dimensioni(W, H);
+          const caso = `${id} a ${W}×${H}, ${giusta ? 'giusta' : 'sbagliata'}`;
+          if (!await tab.attendi(PRONTO, CARICO)) { intoppi.push(`${caso}: la pagina non si apre`); continue; }
+          if (!await apriPerNumero(tab, it)) { intoppi.push(`${caso}: il quesito non si apre per numero`); continue; }
+          await tab.valuta(js(`const a = document.querySelector('#r-auto'); if (a && V(a) && a.classList.contains('on')) a.click(); return true;`));
+          if (!await rispondiCome(tab, it, giusta)) { intoppi.push(`${caso}: la risposta non ha il suo riscontro`); continue; }
+          if (!await tab.attendi(visibile('#r-next'), REAZIONE)) { intoppi.push(`${caso}: dopo la risposta non c'e' un pulsante per proseguire (#r-next)`); continue; }
+          const m = await tab.valuta(inPagina(proseguire, '#r-next'));
+          misurati++;
+          if (m.stato === 'primo' || m.stato === 'scorrendo') continue;
+          difetti.push(m.stato === 'assente' ? `${id}: il pulsante non si vede`
+            : m.sopra === 'fuori' ? `${id}: «${m.testo}» sta a ${m.top}–${m.bottom} px su ${m.H}, e niente lo porta in vista${m.solo.length ? ` (si scorre solo da programma: ${m.solo.join(', ')})` : ''}`
+            : m.solo.length ? `${id}: «${m.testo}» si raggiunge solo scorrendo da programma ${m.solo.join(', ')}, che non scorre con il dito`
+            : `${id}: «${m.testo}» ha sopra ${m.sopra}`);
+        }
+        per.set(PROSEGUIRE(W, H, giusta), { difetti, misurati });
+      }
+    }
+    v.push({ gruppo: g, nome: 'i due quesiti piu\' lunghi si aprono per numero, ricevono la risposta e mostrano il pulsante per proseguire', ok: !intoppi.length, extra: perDifetto(intoppi) });
+    for (const [nome, { difetti, misurati }] of per) {
+      v.push({ gruppo: g, nome, ok: misurati === CASI_T10.length && !difetti.length,
+        extra: misurati < CASI_T10.length ? `misurati ${misurati} casi su ${CASI_T10.length}` : perDifetto(difetti) });
+    }
+  } finally { await c.chiudi(); }
+}
+
 // --- F-01: le frasi del riepilogo dei quiz (R-UX-06, P-53) -----------------------
 //
 // docs/area-3-progetto.md §4.2: il riepilogo di una breve attivita' fa tre
@@ -6046,7 +6139,7 @@ async function c23coda(b, ctx, v, g) {
 const GRUPPI = { 'C-01': c01, 'C-02': c02, 'C-03': c03, 'C-04': c04, 'C-05': c05, 'C-06': c06, 'C-07': c07, 'C-08': c08, 'C-21': c21,
   'C-10': c10, 'C-11': c11, 'C-12': c12, 'C-13': c13, 'C-14': c14, 'C-15': c15, 'C-16': c16, 'C-17': c17, 'C-19': c19,
   // L'area 6 (P-45): la rifinitura trasversale.
-  'T-01': t01, 'T-02': t02, 'T-03': t03, 'T-04': t04, 'T-05': t05, 'T-06': t06, 'T-07': t07, 'T-08': t08, 'T-09': t09,
+  'T-01': t01, 'T-02': t02, 'T-03': t03, 'T-04': t04, 'T-05': t05, 'T-06': t06, 'T-07': t07, 'T-08': t08, 'T-09': t09, 'T-10': t10,
   // Le frasi del riepilogo dei quiz (P-53, R-UX-06).
   'F-01': f01,
   // Le condizioni per l'account nel modulo di registrazione (P-57, R-ACC-75).
