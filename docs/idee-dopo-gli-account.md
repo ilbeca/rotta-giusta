@@ -82,6 +82,9 @@ lavoro che dura settimane e cambia che cosa il sito *è*.
 | I-19 | Il miglioramento continuo: la misura come quinto passo del ciclo | autore e Claude | sì dell'autore, prossima release (17 ottobre) |
 | I-20 | La classe: la scuola nautica e l'istruttore dentro il sito | autore e Claude | sospesa: l'autore la propone alle scuole |
 | I-21 | Una casella per le segnalazioni | Claude | sì dell'autore; casella da creare |
+| I-24 | La lettura da fuori di ChatGPT: domanda, Avanti e fonti sul telefono | ChatGPT | osservata e misurata; nessuna correzione |
+| I-25 | La lettura da fuori di ChatGPT: comprensione e parole | ChatGPT | cinque lettori, 45 risposte; riscritture proposte |
+| I-26 | La lettura da fuori di ChatGPT: metodo e confronto | ChatGPT | proposta per le verifiche, nessuna regola adottata |
 
 **Le decisioni prese, in una riga ciascuna, sono in fondo al file: «Le decisioni
 di P-59»; quelle del 17 ottobre in «Il miglioramento continuo».** Le schede qui
@@ -2547,3 +2550,563 @@ dopo P-81. L'attività programmata può leggere anche questa casella.
 7. **La casella delle segnalazioni va fatta** (I-21). La crea l'autore su OVH.
 8. **Le persone vere: da decidere** da dove e ogni quanto.
 9. **Questo file è il file unico delle idee** per le prossime release.
+
+---
+
+## 21 ottobre 2026 — La lettura da fuori di ChatGPT
+
+**Autore: ChatGPT. Stato: osservazioni e proposte, nessuna decisione né correzione.**
+Il sito esaminato è la **v0.32.0**, servita in locale dal worktree `ui/main`:
+base `b7d2e2c`, `site/` e `server/` senza differenze rispetto al tag. La
+lettura riguarda ciò che una persona può capire dalla pagina, non la
+conformità della banca né la validità legale dell'esame. I-22 e I-23 non
+sono state lette durante questa prova: il confronto è aggiunto soltanto dopo
+la scrittura di questa sezione. Il mandato anticipava già il possibile
+problema di «Avanti»: la sua verifica è indipendente, la scoperta non può
+essere dichiarata cieca. I lettori non hanno ricevuto questa anticipazione.
+
+### I-24 — Sul telefono: proseguire, leggere la domanda, trovare le fonti
+
+**Autore: ChatGPT.** Questi sono difetti riprodotti nel Chrome locale dal
+coordinatore, con schermate e misure. I racconti dei lettori sono indicati a
+parte. Coordinate e dimensioni qui sono **pixel CSS**; i PNG sono al doppio.
+Non sono prove su un telefono fisico.
+
+**1. Dopo un errore il comando per proseguire può uscire dal telefono.**
+A 375×667, nell'allenamento breve, sul quesito **1.3.3-42** oscurato,
+«Avanti» è a **y=746,20…798,20**, largo 347 e alto 52: nessuna parte è
+sullo schermo. Il runner è alto 667 ma il contenuto arriva a 798;
+`overflow-y` del runner è `visible`. Una rotella da 1.100 px non cambia
+posizione né `scrollTop`. Non è soltanto un bottone più in basso nella pagina.
+
+Controprova ripetibile dalla ricerca pubblica, senza modificare la pagina:
+Allenati → cerca **1.3.3-42** → apri il quesito → Inizia → scegli «due»
+invece dell'ufficiale «tre». Su questa attività di un quesito il comando
+si chiama «Vedi il riepilogo», e ha gli stessi **y=746,20…798,20**.
+Dopo rotella e gesto touch resta fuori. Ripetuto con emulazione touch attiva
+(`hover:none`): stessa posizione, `scrollTop=0`. A **375×812** lo stesso
+quesito e lo stesso errore lasciano tutto il comando in vista, e il tocco
+apre il riepilogo. Non è dunque un blocco su ogni errore o ogni telefono.
+
+Sul quesito **1.1.1-1**, sempre a 375×667, dopo errore il comando è a
+**645,70…697,70**: resta una striscia visibile di circa **21,30 px**. Questo
+è un comando tagliato, non la prova che sia completamente irraggiungibile.
+Dando la risposta giusta sullo stesso quesito, invece, sta a **529…581** e
+il tocco apre il riepilogo. A 375×812 anche l'errore lascia il comando
+integro (**674…726**), azionato con successo. Non ho usato `element.click()`
+per dichiarare funzionante un controllo fuori schermo.
+
+Evidenze esterne: `verifica/errore-667.png`,
+`verifica/errore-scorso-667.png`, `verifica/misure.json`;
+`verifica-casi/1.3.3-42-667-errore-dopo.png`,
+`verifica-casi/1.3.3-42-812-errore-dopo.png` e `verifica-casi/misure.json`;
+`verifica-extra/oscurato-touch-errore.png` e relativo `misure.json`.
+Il giro diagnostico sceglie apposta risposte sbagliate dalla banca: non
+attribuisce al modello la capacità di sbagliare su comando. L'uscita
+«Termina l'attività» resta: è bloccato il proseguimento col dito, non tutto
+il sito. Renderer: `site/index.html:120`, `:127`, `:769`, `:3237`.
+
+**2. La domanda può ridursi a una fessura prima ancora della risposta.**
+Sul medesimo oscurato, a 375×667, `.qbody` misura **347×22**, con **289 px**
+di contenuto interno; la domanda nella schermata iniziale non si legge.
+Sono visibili numero mozzato, avviso e tre risposte. A 375×812 la stessa
+area è alta **161,33 px**. Non sto deducendo l'invisibilità da un selettore:
+la schermata `verifica-casi/1.3.3-42-667-errore-prima.png` la mostra.
+Lo scorrimento interno esiste, ma una fessura di 22 px non restituisce una
+lettura normale. È la stessa famiglia di impaginazione del punto 1, non
+un secondo conteggio di utenti bloccati. Nei due giri casuali di verifica
+l'overflow orizzontale misurato era **0 px** a entrambe le altezze: questo
+non impediva il guasto verticale.
+
+**Un secondo meccanismo, riprodotto dopo la segnalazione di E.** A 375×812,
+segno dalla ricerca i quesiti **1.1.1-24** (figura) e **1.7.5-17** (formula),
+apro l'allenamento sui due segnalibri, scorro la figura, rispondo e premo
+«Avanti». La domanda nuova eredita una posizione interna: `.qbody` è a
+**y=193,48…401,78**, con `scrollTop=160`; il testo comincia a **y=69,66**, e
+l'inizio rimane fuori dall'area che lo ritaglia. La lettrice lo descrive come
+«coperto da Quiz / Quiz base», ma la misura mostra **scorrimento interno
+rimasto sulla domanda successiva**, non prova che il titolo si sovrapponga.
+La rotella del banco a **(187,420)** non cambia nulla: quel punto è sotto la
+fine dell'area scorrevole. Ripetendola **dentro** l'area, a circa **(187,298)**,
+`scrollTop` torna a **0**, il testo comincia a **229,66** e l'inizio ricompare.
+Evidenze: `verifica-scroll-due/seconda.png`, `seconda-scroll-banco.png`,
+`seconda-scroll-interno.png`, `misure.json`; il suo percorso originale è in
+`e-01/bot/schermate/006.png`–`008.png`. Ho riprodotto il taglio, **non** un
+blocco assoluto della lettura su un telefono vero. Il banco aggrava il difetto
+perché non permette al lettore di scegliere dove scorrere. Le otto domande
+di un primo tentativo casuale non l'avevano riprodotto: non bastava ripetere
+un giro diverso. Nessuna risposta è stata cambiata nella banca.
+
+**3. «Note, fonti e riferimenti» apre la diagnostica dall'inizio.**
+C cercava affidabilità e provenienza dei quesiti. Ho ripetuto il tocco dalla
+Home a **375×812**: titolo «Info e diagnostica» a **y=36**, pannello alto
+780 px con `scrollTop=0`; «Che cosa non torna, e lo diciamo» è a
+**y=1229,34**, e il dettaglio sottostante a **1298,94**, **chiuso**.
+Le fonti esistono più sotto: non sono assenti, ma il punto di arrivo non
+corrisponde alla promessa della porta. Evidenza: `verifica-fonti/dopo-tocco.png`
+e `verifica-fonti/misure.json`. Il bottone è in `site/index.html:812`;
+`vaiInfo('difetti')` a `:5127` aprirebbe il dettaglio, ma il gestore in capture
+di `data-v` a `:5816` precede quel percorso. Questa è una spiegazione dal
+codice successiva alla riproduzione, non una riparazione.
+
+Nello stesso pannello ho anche visto e misurato **due copie consecutive** di
+«spazio usato dal sito 0,0 MB su 10240,0 disponibili». È una ripetizione
+riprodotta, di gravità inferiore, non una prova che lo spazio sia calcolato
+male. C l'aveva segnalata; l'evidenza è la stessa schermata.
+
+**L'avvio della simulazione: attrito verificato, non pulsante rotto.**
+«Simula il quiz base» apre una preparazione, come prescrive il §7.1 della
+specifica, non una domanda. In quella preparazione, senza aprire i dettagli,
+«Inizia la prova» comincia a **y=866,88** e finisce a **918,88**, sia a
+375×667 sia a 375×812. Con uno scorrimento diventa accessibile:
+**531,88…583,88** sul basso e **676,88…728,88** sull'alto. B si è fermato
+prima di farlo; D ha trovato l'avvio dopo aver aperto anche la composizione.
+Evidenze: `verifica-extra/sim-667.png`, `sim-812.png`, `sim-scorso-667.png`,
+`sim-scorso-812.png` e `misure.json`. L'interpretazione «parte subito» è
+un disaccordo tra etichetta e aspettativa, anche se il contratto tecnico è
+rispettato; non autorizza da sola a togliere la preparazione.
+
+### I-25 — Che cosa è passato e che cosa no
+
+**Autore: ChatGPT.** I cinque profili e le nove domande sono gli stessi file
+usati dall'altra prova, senza leggerne i risultati. A = 24 anni da zero;
+B = 19 anni impaziente; C = velista di 58 anni con patente entro 12;
+D = 35 anni, italiano B1; E = candidata di 28 anni, esame fra dieci giorni.
+Non sono cinque persone, né cinque modelli diversi: sono cinque esecuzioni
+indipendenti dello stesso modello. Le frequenze qui descrivono questi giri.
+
+| Lettore | Mosse | Tocchi | Scorrimenti | Secondi | Chiusura dichiarata e riscontro reale |
+|---|---:|---:|---:|---:|---|
+| A | 6 | 6 | 0 | 107 | «arrivato»; riepilogo parziale di 2 risposte corrette |
+| B | 1 | 1 | 0 | 28 | abbandona nella preparazione; nessuna domanda affrontata |
+| C | 26 | 10 | 15 | 341 | «arrivato»; privacy, esempio di carteggio e preparazione della simulazione, senza avviarla |
+| D | 5 | 3 | 2 | 109 | «arrivato»; runner reale 1/20 con timer, senza rispondere |
+| E | 20 | 16 | 4 | 245 | «arrivato»; 5 risposte, 3 corrette e 2 errate, Progressi e revisione |
+
+Sono **58 mosse, 36 tocchi, 21 scorrimenti e un Indietro**; 63 schermate,
+zero tocchi classificati a vuoto dal banco e zero eccezioni JavaScript
+registrate. Questi zeri convivono con i difetti di I-24. Quattro «arrivato»
+non dimostrano che quattro persone arriverebbero, né che abbiano capito tutto.
+I profili hanno `traguardo: false`: non ho riciclato quel valore in una
+percentuale di successo. Il riepilogo di A, il timer di D e la revisione di E
+sono riscontri di stato; «ho capito» resta una dichiarazione del modello.
+
+**Le nove domande, accanto al significato voluto.** Le risposte sotto sono
+quelle dei rapporti finali, trascritte senza correggerle. Le domande sono
+state consegnate dal banco soltanto dopo `arrivato`/`abbandona`, quando ogni
+ulteriore azione sul sito viene rifiutata. In ciascun rapporto la chiave
+`domande` contiene tutte e nove le risposte.
+
+**1. Gratis.** Significato voluto: Tutte le attività sono gratuite; l’account serve a conservare, non a sbloccare attività. `index.html:805`, specifica §2.4.
+
+| Lettore | Risposta dopo la chiusura |
+|---|---|
+| A | Sì, nella Home c'era scritto «Gratis e open source» e che potevo provare senza account. |
+| B | Non lo so, ho saltato i paragrafi. |
+| C | Sì. All’inizio c’era scritto Gratis e potevo aprire le attività senza registrarmi. |
+| D | Sì, nella pagina iniziale c’era scritto Gratis. |
+| E | Sì, nella Home c’era scritto Gratis e open source. |
+
+**2. Chiudere senza account.** Significato voluto: Non resta niente: risposte e preferenze solo nella memoria della pagina, perse anche ricaricando. `:806`, §3.2.
+
+| Lettore | Risposta dopo la chiusura |
+|---|---|
+| A | Non resta niente: perdo le risposte e anche le preferenze. |
+| B | Non lo so. |
+| C | Non resta niente: perdo risposte e preferenze anche ricaricando la pagina. |
+| D | Non resta niente: le risposte si perdono chiudendo o ricaricando la pagina. |
+| E | Non resta niente: le risposte si perdono chiudendo o ricaricando la pagina. |
+
+**3. Registrarsi.** Significato voluto: Salvare risposte e ritrovarle nel tempo e su altri dispositivi; mappa e storico dei Progressi. Non equivale a riprendere una simulazione interrotta. `:810`, `:855`, §7.4.
+
+| Lettore | Risposta dopo la chiusura |
+|---|---|
+| A | A salvare i progressi. |
+| B | Non lo so. |
+| C | A conservare risposte, risultati e progressi e ritrovarli in seguito. Serve un’email. |
+| D | A salvare i progressi. |
+| E | A salvare i progressi e ritrovare le risposte quando torno. |
+
+**4. Quiz d’esame.** Significato voluto: Base: 20 domande, 30 minuti, massimo 4 errori. Vela: 5, 15 minuti, massimo 1. Numeri da `meta.prove`, `:2536`; correzione finale.
+
+| Lettore | Risposta dopo la chiusura |
+|---|---|
+| A | 20 domande, 30 minuti, al massimo 4 errori. |
+| B | 20 domande, 30 minuti, massimo 4 errori. |
+| C | Base: 20 domande, 30 minuti, massimo 4 errori. Vela: 5 domande, 15 minuti, massimo un errore. La correzione arriva alla fine. |
+| D | Il quiz base ha 20 domande, 30 minuti e permette al massimo 4 errori. C’erano anche vela e base e vela, ma non so come funzionino. |
+| E | 20 domande, 30 minuti, al massimo 4 errori. |
+
+**5. Allenati / Esame.** Significato voluto: Allenati offre quiz con riscontro immediato, carta e segnali; Esame organizza le prove e le simulazioni a tempo. Il carteggio resta autovalutato in entrambe le porte. `:814`, `:854`, §7.9.
+
+| Lettore | Risposta dopo la chiusura |
+|---|---|
+| A | Nell'allenamento mi corregge dopo ogni risposta; nella simulazione la correzione arriva alla fine. |
+| B | Non lo so. |
+| C | Allenati permette esercizi e quiz anche per argomento, con correzione durante l’allenamento. Esame propone prove a tempo con correzione finale. |
+| D | Non lo so. Ho visto un pulsante per allenarsi con 10 domande; nella simulazione la correzione arriva alla fine. |
+| E | Nell’allenamento scelto erano dieci domande con correzione dopo ogni risposta; nell’esame la correzione arriva alla fine. |
+
+**6. Carteggio e telefono.** Significato voluto: Problemi di navigazione su carta nautica fisica con strumenti; telefono per testo, risultato ufficiale e giudizio proprio. Riconoscimento tecniche possibile senza carte, non equivalente a risolvere. `:820`–`:827`, §7.3.
+
+| Lettore | Risposta dopo la chiusura |
+|---|---|
+| A | Non lo so. Ho visto che c'entra il lavoro sulla carta, ma non ho capito se si fa sul telefono. |
+| B | Non lo so. |
+| C | Sono problemi di navigazione da costruire sulla carta nautica con squadrette e compasso. Il telefono mostra il problema e il risultato ministeriale; il lavoro sulla carta lo giudico io. |
+| D | Non lo so. Ho pensato a un lavoro sulla carta nautica, ma non ho capito se si fa sul telefono. |
+| E | È il lavoro sulla carta nautica. Ricordo che il sito parlava di confrontare il lavoro sulla carta; non so cosa si possa fare direttamente sul telefono. |
+
+**7. Quesiti oscurati.** Significato voluto: Oscurati dal Ministero, non escono all’esame; conservati negli allenamenti con avviso, esclusi dalle simulazioni. La Home dice solo «non escono nella simulazione», il dettaglio spiega il resto. `:2532`, `:2572`, `notaPrima()`, README.
+
+| Lettore | Risposta dopo la chiusura |
+|---|---|
+| A | Non li ho visti. |
+| B | Non li ho visti. |
+| C | Li ho visti nominare: sono 37 e non compaiono nella simulazione. Non ho capito perché siano oscurati. |
+| D | non li ho visti |
+| E | Non li ho visti. |
+
+**8. Limiti dichiarati.** Significato voluto: Il sito affianca scuola e manuale; non è materiale ufficiale né una garanzia di superamento; banca datata con note e oscurati, carteggio autovalutato. `:812`, `:954`, `:978`, §1 e §7.
+
+| Lettore | Risposta dopo la chiusura |
+|---|---|
+| A | Ricordo che l'allenamento non è una simulazione e che senza account non salva niente. Altri limiti non li ricordo. |
+| B | Non lo so, non ho letto le spiegazioni. |
+| C | Dice che la raccolta è del 2022, che alcune domande hanno limiti o note e che manca una figura. Non corregge il lavoro di carteggio e superare la simulazione non garantisce l’esame. |
+| D | Diceva che il risultato della simulazione non garantisce l’esito dell’esame e che senza account non salva niente. |
+| E | Mi ha avvertita che senza account perdevo le risposte e che le misure richiedono abbastanza dati. Non ricordo altri limiti dichiarati. |
+
+**9. Riprendere domani.** Significato voluto: Creare l’account e conservare le risposte prima di chiudere; accedere per ritrovarle. Senza account le risposte chiuse non si recuperano. Una nuova simulazione non riparte dallo stesso timer/lista. `:1410`, `:1740`, §7.5.
+
+| Lettore | Risposta dopo la chiusura |
+|---|---|
+| A | Per riprendere con i progressi salvati dovrei registrarmi. Le risposte fatte oggi senza account le perderei chiudendo la pagina. |
+| B | Non lo so. |
+| C | Mi registrerei per conservare i progressi. Senza registrazione non ritroverei le risposte dopo aver chiuso. Una simulazione interrotta non riprende con lo stesso tempo e la stessa lista. |
+| D | Penso che serva registrarsi per salvare i progressi. Senza account dovrei ricominciare; il tempo e la lista non riprendono da dove ero. |
+| E | Avrei dovuto creare un account per salvare. Avendo provato senza registrarmi, se chiudo domani devo ricominciare. |
+
+**Lettura delle risposte.** Quattro su cinque ricordano gratuità, perdita
+alla chiusura e utilità del salvataggio; B non lo sa perché ha saltato i
+paragrafi. Tutti e cinque ricordano **20/30/4**, ma E conosceva già l'esame
+nel profilo: non significa che il sito lo abbia insegnato a cinque lettori.
+A e D non sanno spiegare il carteggio; E sa che è lavoro sulla carta ma non
+quale parte si faccia sul telefono. Soltanto C ne descrive strumenti e
+autovalutazione, dopo avere visitato l'ambiente. B non sa nulla: sono
+**quattro risposte non complete su cinque**, non quattro interpretazioni
+errate del medesimo testo. Quattro non hanno visto gli oscurati; C li ha
+visti ma ricorda solo l'esclusione dalla simulazione. Non si può concludere
+che cinque persone abbiano letto e frainteso l'avviso completo.
+
+A e D non ricordano una spiegazione completa dei limiti didattici; E nomina
+soprattutto salvataggio e soglie. C coglie più limiti perché legge più
+superfici. E attribuisce uno dei propri errori alla domanda tagliata: il
+taglio è riprodotto in I-24, ma **non è dimostrato** che avrebbe risposto
+correttamente con il testo intero. Il registro ha ricevuto la risposta che
+ha dato: questa prova non autorizza a cambiarla.
+
+**Frasi e parole: frequenza dei segnali espliciti, non voto al testo.**
+Nella prima colonna conto una volta ciascuno dei cinque lettori che ha
+annotato un dubbio, una ripetizione o un'utilità non capita; distinguo questi
+casi. Le citazioni sono riportate nella forma del sorgente quando esiste:
+le apostrofi del rapporto non sono una prova di esatta trascrizione. Non
+conto come comprensione chi non ha incontrato una frase. I due primi sguardi
+e la spiegazione isolata sono un gruppo separato.
+
+| Frequenza | Frase esatta o frammento visibile | Dove | Osservazione |
+|---|---|---|---|
+| 4/5: A,C,D,E | «Senza account le risposte valgono solo finché questa pagina resta aperta. Se la chiudi o la ricarichi, le perdi. Non salviamo niente, nemmeno le tue preferenze.» | `index.html:806`, `:818`, `:915`, costante `:1410` | Capita da tutti e quattro, ma annotata come lunga o ripetuta; E la seconda volta la salta. Non è una frase incomprensibile. |
+| 3/5: C,D,E | «Gratis e open source.» | `:805` | C e D non capiscono il valore di «open source»; E non ne vede utilità per studiare. «Gratis» funziona. |
+| 3/5: A,D,E | «N. 1.5.1-65», «N. 1.4.1-21», «N. 1.1.1-24» | numero dinamico da `:3140`, trasformato in maiuscolo dal CSS | A e D non sanno che uso farne accanto a 1/N; E intuisce un codice ma non lo usa. Il riferimento ha una funzione col libro, non va cancellato per questo. |
+| 2/5: A,D | «confronta il lavoro sulla carta.»; «carteggio» | `:805`; ambiente `:820` | Non descrive a chi comincia il gesto concreto; D ipotizza la carta nautica senza capirne il ruolo. |
+| 2/5: A,E | «Ne aprirai 10.» | `:5779` | Ripete numero nel titolo e descrizione; è ridondanza percepita, non conteggio sbagliato. |
+| 2/5: A,E | «tasti 1 2 3 oppure A B C» / «tasti: 1 2 3 oppure A B C» | `:3158`, `:3159` | Superflui per il telefono impersonato. Il banco emula le dimensioni mobili ma non attiva il touch: non dimostra che compaiano su un telefono reale. |
+| 1/5: C | «Carteggio, quiz base e vela: preparali in parallelo, senza sblocchi.» | `:811` | «Senza sblocchi» presuppone una restrizione che C non si aspettava; la capisce più tardi in Esame. |
+| 1/5: C | «Con l'account ritrovi la mappa e la storia.» | `:811` | Non sa quale mappa né quale storia prima di averle viste. |
+| 1/5: C | «La banca è del 2022. I limiti si dichiarano, quesito per quesito.» | `:812` | Intuisce «banca», non sa se il materiale sia adeguato al proprio esame. |
+| 1/5: C | «37 quesiti oscurati: non escono nella simulazione d'esame; l'avviso compare prima della risposta.» | generata in `:2532` | Resta il dubbio decisivo: escono o no all'esame vero? In questi giri nessuno ha letto l'avviso completo prima di rispondere. |
+| 1/5: C | «4 quesiti con nota dopo la risposta; 3 citano il DM 133/2024.» | generata in `:2532` | Conteggi visibili sulla banca di oggi: C non capisce l'effetto pratico, non contesta il numero. |
+| 1/5: C | «Scegli un giro fra tecniche diverse o prosegui nell'ordine del foglio» | `:826` | Non sa quale foglio. |
+| 1/5: E | «5 risposte in questa pagina · Quiz 5 · Carta 0 · Tecniche 0» | generata in `:5570` | Non sa che cosa sia «Tecniche»; «Carta» abbrevia un'altra attività. |
+| 1/5: E | «Le misure compaiono solo quando ci sono abbastanza dati.» | `:855` | Non sa quali misure né quale soglia; qui la mappa richiede anzitutto l'account, non altre risposte anonime. |
+| 1/5: C | «il pallino ambra sull’avatar si accende da solo.» | `:930` | Non riconosce l'avatar a cui la frase rimanda. |
+| 1/5: D | «La ripartizione ministeriale dei quiz base è per tema.» | `:2926` | Decodifica con fatica; «Quiz vela» e «Base e vela» non gli spiegano l'aggiunta all'esame. |
+| 1/5: C | «issue pubbliche», «sincronia», «in chiaro», «analytics», «indirizzo IP», «sito statico», «posta transazionale» | `privacy.html:45`, `:48`–`:50`, `:53`, `:67` | Alcuni termini li deduce dagli esempi; non vanno tutti letti come fallimenti. «In chiaro» diventa comprensibile leggendo chi può accedere. |
+
+A non capisce «fanale di coronamento»; D annota «condotta», «diportistica»,
+«segnalamento», «scafo», «ormeggi», «concessionario», «natanti» e la risposta
+lunga del quesito **1.4.1-21**. Sono testo della banca o denominazioni dei suoi
+temi, non microcopy da riscrivere liberamente (`site/dati/quiz.json`, una riga
+sola). La prova segnala un bisogno di supporto didattico; **non propone di
+semplificare l'Allegato A**. Avere indovinato due risposte non dimostra che A
+abbia imparato i termini.
+
+**Le porte e ciò che ci si aspettava.**
+
+| Porta | Lettori che annotano lo scarto | Che cosa accade | Valutazione |
+|---|---|---|---|
+| «Allenati con 10 domande» | A,E | Preparazione e «Inizia l’allenamento» | Promessa di avvio percepita; il passaggio intermedio rispetta la specifica ma sorprende. |
+| «Simula il quiz base» | B,D; C osserva il passaggio e lo accetta | Preparazione con «Quale prova» già selezionata e avvio sotto la piega | B abbandona; D prosegue; non è la stessa gravità per tutti. |
+| «Note, fonti e riferimenti» | C | Inizio di Info e diagnostica | Scarto di destinazione verificato in I-24, non semplice gusto. |
+| «Progressi» | E | Attività della pagina, non mappa per argomento senza account | Comportamento intenzionale (§7.4), aspettativa non soddisfatta; la revisione le permette comunque di trovare gli errori. |
+| «Avanti» | E | Inizio della domanda successiva fuori dall'area visibile | Riprodotto in I-24, con il contributo del banco al mancato recupero. |
+
+**Proposte di riscrittura — decide l'autore.** Non sono requisiti adottati,
+né una proposta di rifare Home · Allenati · Esame · Progressi.
+
+| Testo attuale | Proposta da provare | Perché e limite |
+|---|---|---|
+| «Esercitati sui quesiti del decreto e confronta il lavoro sulla carta.» | «Fai pratica con le domande ufficiali. Per il carteggio risolvi problemi di navigazione sulla carta nautica e confronti il tuo risultato con quello ufficiale.» | Spiega un gesto e un oggetto prima del termine; andrebbe provata anche una versione più corta. |
+| «37 quesiti oscurati: non escono nella simulazione d'esame…» | «37 domande escluse dal Ministero: non escono all'esame e nelle nostre simulazioni. Negli allenamenti le trovi con un avviso.» | Dice prima l'effetto sullo studio; il numero resta derivato dalla banca, non scritto a mano. |
+| «Con l'account ritrovi la mappa e la storia.» | «Con l'account ritrovi le risposte dei giorni precedenti e gli errori per argomento.» | Nomina il contenuto; non promette una diagnosi attendibile sotto soglia. |
+| «…preparali in parallelo, senza sblocchi.» | «Puoi esercitarti su ogni prova fin da subito.» | Toglie il concetto estraneo di sblocco mantenendo l'accesso libero. |
+| «Simula il quiz base» / «Allenati con 10 domande» | Se resta il passaggio intermedio: «Prepara la simulazione del quiz base» / «Prepara un allenamento di 10 domande». | Da provare, non necessariamente il testo finale. Un avvio diretto sarebbe una diversa decisione di comportamento, non una correzione silenziosa del copy. |
+| «Le misure compaiono solo quando ci sono abbastanza dati.» | «La mappa per argomento e lo storico richiedono un account. I risultati che non hanno abbastanza risposte restano in attesa.» | Separa la condizione account dalla sufficienza dei dati. Le soglie precise vanno descritte vicino alla misura interessata. |
+| «Quiz 5 · Carta 0 · Tecniche 0» | «Quiz 5 · Esercizi su carta 0 · Riconoscimento delle tecniche 0» | Stessi nomi delle attività; quantità sempre dal riepilogo del motore. |
+| «N. 1.4.1-21» | «Numero nel decreto: 1.4.1-21» | Mantiene il riferimento utile al libro e lo distingue dalla posizione nella prova. |
+| Avviso anonimo lungo ripetuto | Per le ripetizioni: «Le risposte restano finché tieni aperta questa pagina. Chiudendo o ricaricando le perdi.» | Da confrontare con il testo completo, senza togliere l'informazione sulle preferenze dove viene scelta una preferenza. Non propongo di nascondere il costo del mancato salvataggio. |
+
+Per «Note, fonti e riferimenti» non basta un sinonimo: occorre decidere se
+la porta debba arrivare direttamente alle fonti già presenti. Non propongo
+di togliere la diagnostica né il pallino dei guasti. «Gratis» resta ben
+visibile; spostare il dettaglio sul codice libero nelle informazioni è una
+proposta editoriale, non la prova che l'open source sia inutile.
+
+### I-26 — Metodo, limiti e proposta per le prossime verifiche
+
+**Autore: ChatGPT.** Ho usato il banco esistente e aggiunto un gemello
+`giro-codex.mjs` soltanto nella cartella esterna della prova. Il vecchio
+`kit/giro.mjs` e il suo avvio di Claude non sono stati cambiati. Il comando
+`codex` di Homebrew non partiva per un binario mancante; ho usato il CLI
+incluso nell'app desktop, con **gpt-6.1-sol**, ragionamento **medium**.
+Otto processi distinti: cinque giri e tre letture di immagini. Nessun
+riuso della conversazione fra lettori, nessun modello Claude.
+
+**Che cosa entrava nel contesto, verificato.** Ogni processo parte nella
+propria cartella `bot/`, fuori da ogni repository e inizialmente vuota;
+poi vi arrivano le schermate del suo Chrome. Riceve il profilo, il testo di
+`istruzioni-capire.md` (solo «Read» adattato a `view_image`), il percorso di
+`passo.mjs` e le normali istruzioni del CLI e degli strumenti. Non riceve
+questo coordinatore, la specifica, la filosofia, AGENTS del repo o risultati
+altrui. `~/.codex/AGENTS.md` risulta **vuoto, 0 byte**; non mi sono affidato
+soltanto a questo. Ho imposto `project_doc_max_bytes=0`, disattivato memoria,
+plugin, app e hook, ignorato la configurazione utente nell'esecuzione,
+usato `--skip-git-repo-check` e `--ephemeral`. Autenticazione esistente,
+senza copiarla o stamparla.
+
+La prima esportazione `debug prompt-input` mostrava ancora **38 nomi di
+skill globali**, fra cui coordinate nautiche, pur partendo fuori dal repo.
+Li ho disabilitati esplicitamente. Ogni giro conserva un `contesto.json`:
+nessun catalogo di skill, nessun blocco di memoria, nessun AGENTS di progetto;
+restano istruzioni generiche su permessi e agenti, ambiente e prompt del
+lettore. Sono circa **16 KB** di input aggiunto per i cinque giri, oltre al
+prompt base del CLI e alle descrizioni degli strumenti: non è una stima del
+numero di token dell'intera conversazione. Non ho modificato `HOME` o la
+configurazione dell'autore. L'audit delle trascrizioni trova **zero comandi
+esterni a `node …/passo.mjs …`**; le altre letture sono immagini. Questa è
+isolazione del contesto con audit, non una gabbia del filesystem che renda
+materialmente impossibile leggere qualunque altro file.
+
+**Banco.** Prima di ciascuno dei cinque giri e del banco diagnostico:
+`lsof` su **8620, 8787 e 8799**, tutte libere. Un giro alla volta, Chrome e
+database nuovi, account server locale, nessuna email inviata. Pagina e
+conti reali non utilizzati. I giri usano **375×812**, scala 2. Le verifiche
+aggiunte confrontano **375×667 e 375×812**. Il tetto tecnico è 35 azioni,
+ma restano i limiti più stretti e le condizioni di abbandono dei profili.
+Nessuno lo raggiunge: massimo C con 26. La schermata mostra il sito vero,
+non una versione di carta. Il banco non è stato adattato per far passare
+questa interfaccia; il suo punto fisso di scorrimento resta un limite
+misurato in I-24. La ripetizione dei suggerimenti di tastiera è un altro
+segno dell'emulazione incompleta: dimensioni mobili non equivalgono a un
+telefono fisico.
+
+**Gli altri metodi e il loro campo visivo.**
+
+| Metodo | Che cosa ha trovato | Che cosa non poteva vedere |
+|---|---|---|
+| Primo sguardo, due processi nuovi su Home a 375×667 e 375×812 | Entrambi riconoscono gratuità, patente senza limiti, quiz e carteggio; entrambi non sanno spiegare «carteggio» e «quesiti del decreto». Sul basso scelgono «Simula il quiz base», sull'alto «Allenati con 10 domande». | È una consegna di sguardo rapido su PNG, **non un'esposizione umana cronometrata di cinque secondi**. Non misura attenzione reale, salienza statistica o esito del tocco. |
+| Spiega con parole tue, processo nuovo sulla prima schermata Carteggio | 17 elementi spiegati. Capisce che servono carta e strumenti e che giudica lui; non sa come cominciare o valutare un procedimento sconosciuto. «La prova», «risposte valgono», «tracciamento» e l'icona i accanto ad Accedi lasciano dubbi. | Legge soltanto ciò che entra nel PNG: non vede «Vedi un esempio» sotto la piega. Non prova che quella funzione manchi. |
+| Inventario del coordinatore | 216 frammenti HTML letterali con numero di riga, più lettura dei template dinamici attraversati; stessa attività chiamata Carta / carteggio / esercizi su carta, tecniche abbreviate, descrizioni di comportamento con «banca», «voci», «misure». | Non è l'inventario di tutti gli stati autenticati, degli errori e dei template possibili. È un controllo mirato, distinto dalle frequenze dei lettori. |
+| Lettore fuori dall'aspettativa media, già compreso nei cinque | C entra con patente entro 12 e diffidenza sui dati; D legge in italiano B1. Producono rispettivamente dubbi su fonti/aggiornamento e attrito linguistico. | Non c'è un giro dedicato alla sola vela, né una popolazione rappresentativa. |
+
+I due primi sguardi e la lettura per elementi non entrano nel denominatore
+5 delle frequenze. Non ho usato la mia conoscenza della specifica per
+riempire i loro «non lo so». Il questionario è rimasto identico: le domande
+non anticipano il percorso, ma alcune parole («oscurati») sollecitano a
+ricordare una cosa che il lettore potrebbe non avere cercato spontaneamente.
+
+**Costi e tempi misurabili.**
+
+| Esecuzione | Secondi | Input cumulativo | Di cui cache | Output |
+|---|---:|---:|---:|---:|
+| a-01 | 107 | 499.823 | 471.808 | 3.031 |
+| b-01 | 28 | 170.586 | 151.296 | 1.116 |
+| c-01 | 341 | 2.694.029 | 2.635.904 | 9.297 |
+| d-01 | 109 | 421.813 | 379.008 | 3.807 |
+| e-01 | 245 | 1.766.687 | 1.715.456 | 6.198 |
+| sguardo-667 | 8 | 26.959 | 12.288 | 103 |
+| sguardo-812 | 7 | 26.126 | 12.288 | 121 |
+| spiega-carteggio | 44 | 27.227 | 12.288 | 1.657 |
+| **Totale** | **889** | **5.633.250** | **5.390.336** | **25.330** |
+
+Sono **14 minuti e 49 secondi sommati** dei processi, non il tempo di lavoro
+complessivo; le tre letture di PNG sono state eseguite durante il giro C.
+Input non in cache: **242.914 token**; 549 token di ragionamento sono una
+parte dell'output, non un costo da sommare di nuovo. L'input cumulativo
+conta i successivi invii della conversazione e per il **95,7%** è in cache:
+non significa che ai lettori siano entrati cinque milioni di token di
+progetto all'inizio. Il CLI autenticato con l'account riporta uso, **non
+un importo in dollari o euro**. L'importo monetario non è quindi misurato:
+non lo converto con un listino diverso dal contratto di questo account.
+Questi totali non comprendono i token del coordinatore né assegnano un
+prezzo al tempo umano. Preparazione, riproduzioni e scrittura sono lavoro
+aggiuntivo, non nascosto nel tempo dei lettori.
+
+**Il mio parere sul metodo — proposta.** Sì a una lettura da fuori prima
+di ogni merge che cambia testi o schermate, ma **proporzionata al cambiamento**:
+per poche etichette, uno sguardo o una parafrasi indipendente sulla superficie
+toccata e un giro del profilo interessato; per ingresso, navigazione,
+salvataggio o percorso di studio, tutti e cinque i profili e le stesse nove
+domande a giro chiuso. Il pannello di confronto deve conservare anche
+«non l'ho visto», distinguere esposizione da comprensione e confrontare la
+stessa versione. Una frequenza su cinque esecuzioni non è una percentuale
+prevista di utenti in difficoltà e non diventa un test verde di usabilità.
+
+Terrei fissi: principiante da zero, impaziente che salta paragrafi, esperto
+entro 12 che cerca prove e fonti, lettore B1, candidata sotto esame che vuole
+capire gli errori. Sono gli stessi cinque di oggi: tre sotto i trent'anni,
+uno fra 50 e 60, una donna su cinque; la composizione riflette grossolanamente
+il corso riferito dall'autore ma non rende il campione rappresentativo.
+La sola vela va aggiunta quando cambia quel percorso. Per il runner
+aggiungerei sempre una risposta volutamente sbagliata, un quesito con figura
+e lo schermo basso, **con scorrimento che possa indicare il punto**.
+Niente nuova soglia meccanica «passano 4 su 5»: un solo blocco riprodotto
+pesa più di quattro successi dichiarati. Una correzione visibile richiede
+poi la sua verifica su pagina e dispositivo; i bot restano segnali per
+una prova con persone, non la sua sostituzione.
+
+Proporrei queste regole di scrittura: nominare l'effetto prima del meccanismo;
+usare lo stesso nome per un'attività in porta, riepilogo e ritorno; far
+corrispondere il verbo del bottone al passo che apre; spiegare un termine
+nautico necessario al primo incontro; mantenere gratuità e perdita dei dati
+esplicite evitando copie lunghe identiche su ogni passaggio; distinguere
+«hai risposto così» da «sei preparato»; dichiarare un limite con la conseguenza
+pratica e l'azione possibile, invece del solo numero del decreto. Le parole
+ministeriali della banca restano quelle: il supporto si aggiunge intorno,
+non si riscrive il quesito. Nessuna di queste proposte modifica la specifica.
+
+**Che cosa non ha visto questa prova.** Persone e gesti veri, Safari e iOS,
+tastiera virtuale, lettori di schermo, rete lenta o caduta, account e progressi
+con storia reale, ritorno domani, scelta sola vela, pratica nautica,
+affidabilità delle fonti esterne e validità delle risposte ministeriali.
+Nessuno dei cinque ha incontrato il dettaglio completo sugli oscurati; il
+coordinatore lo ha esercitato per il difetto verticale, che è un'altra prova.
+Non ho ripetuto ciascun profilo per stimarne la variabilità: una scelta
+casuale diversa cambia i quesiti incontrati, come si è visto cercando di
+riprodurre E. Il «primo sguardo» non misura cinque secondi di una persona.
+Il mio inventario non può essere chiamato una seconda lettura cieca: ho
+letto specifica, filosofia, sorgente e istruzioni, come richiesto al
+coordinatore. Solo i lettori hanno il contesto isolato.
+
+**Materiale grezzo, fuori dal repository.** Tutto è sotto
+`~/bot-ux/rotta-giusta/capire/chatgpt-2026-10-21/`: cinque cartelle `a-01`…`e-01`
+con prompt, contesto, comando, azioni, schermate, trascrizione, rapporto ed
+esito; `sguardo-667`, `sguardo-812`, `spiega-carteggio`; cartelle `verifica*`
+con immagini e geometria; gemello Codex, script diagnostici, inventario e
+audit. Le domande originali restano nel loro file, non nei prompt iniziali.
+Una copia di questa stesura, prima di aprire I-22/I-23, è conservata come
+`lettura-prima-del-confronto.md`, con hash e data in `indipendenza.json`.
+
+#### Confronto con la lettura di Claude
+
+Aggiunto **dopo** avere scritto I-24–I-26 nel worktree e conservato la copia
+indipendente con hash `c627ba57a96219492310d8972f666144a11c86eb11dad7d27a315b2a977c5aa6`.
+Letto con `git show main:docs/idee-dopo-gli-account.md`, dal `main` locale
+**34bf4ca**. Non ho importato I-22 e I-23 nel mio ramo, né riscritto i risultati
+indipendenti alla luce del confronto. I numeri di Claude qui sono **quelli
+che riporta I-23**, non una mia ri-esecuzione dei suoi giri.
+
+**Trovato da entrambi.** Il blocco del proseguimento dopo errore sullo schermo
+basso; la domanda che si riduce a una riga; le due porte Home che aprono una
+preparazione anziché una domanda; l'avviso anonimo ripetuto; «Ne aprirai 10»;
+il codice del quesito senza spiegazione; il gergo di banca, mappa, storia,
+Tecniche, avatar; difficoltà nel dare senso al carteggio senza aprirlo;
+valore dell'account poco visibile; la porta delle fonti che arriva alla
+diagnostica. Le mie misure confermano quest'ultima, non solo lo scarto di
+aspettativa. Per le parole, i conteggi dei due gruppi vanno mantenuti
+separati: non sono dieci persone indipendenti.
+
+**La verifica richiesta su «Avanti».** I-24 conferma già il blocco basso,
+prima della lettura di I-23. Dopo il confronto ho cercato anche il quesito
+preciso indicato da Claude, **1.8.2-40**, e ho sbagliato apposta. A **375×812**
+il comando finale è a **y=821,77…873,77**: interamente fuori; a **375×667**
+ha le stesse coordinate. Rotella e gesto touch non lo recuperano. Nel giro
+singolo il testo è «Vedi il riepilogo»: è lo stesso controllo `#r-next`,
+mentre il mio giro breve di I-24 ha misurato il testo «Avanti». Evidenze
+aggiunte *dopo* il confronto: `confronto-claude/misure.json` e
+`1.8.2-40-812-errore-dopo.png`. Questo estende la mia verifica a un caso
+che si blocca anche a 812; non invalida i due controlli su quesiti più corti
+che a quell'altezza funzionavano. Concordo con la priorità proposta da Claude:
+il proseguimento va messo davanti alla rifinitura dei testi. Qui non lo
+correggo, come richiesto.
+
+**In più nella mia prova, rispetto a quanto scritto in I-22/I-23.**
+La sequenza di E isola un altro meccanismo: dopo avere scorso una figura,
+la domanda seguente conserva lo scorrimento interno, e il banco prova a
+scorrere fuori da quell'area. Ho separato taglio reale e limite dello
+strumento; non registro come «impossibile leggere» ciò che recupero
+scorrendo nel punto giusto. I due primi sguardi mostrano anche una scelta
+diversa al cambiare della porzione visibile della Home, senza dedurne una
+percentuale di preferenza. La parafrasi del Carteggio capisce carta e
+strumenti ma non il gesto da compiere o come autovalutarsi senza sapere il
+procedimento: è più specifico di «non sa cos'è il carteggio». Sul metodo,
+la sonda ha trovato il catalogo globale delle skill ancora presente fuori
+dal repo, prima di disabilitarlo. Il raddoppio dello spazio disponibile in
+Info è riprodotto e documentato, ma resta un rilievo minore.
+
+**Solo nella lettura di Claude, non emerso spontaneamente nei miei cinque.**
+«Tocca una risposta» inteso come sbirciare; tag che sembrano obbligatori o
+«Svista» non capita; «nuovo» ambiguo; «Attività interrotta» vissuto come un
+errore; il codice **Q-CART4** nella preparazione della prova; «Dati» e i
+ritorni del Profilo; «Vedi un esempio» interpretato come un comando senza
+effetto perché l'esempio si apre sotto. C nei miei giri ha trovato e seguito
+l'esempio: non smentisce chi non l'ha trovato nell'altro gruppo. Non ho
+riprodotto tutti questi ulteriori casi, e non li promuovo a difetti verificati
+da ChatGPT. Anche per la sovrapposizione degli strumenti descritta da Claude
+serve distinguere rettangolo e pittura: nei miei casi i rettangoli degli
+strumenti possono intersecare quelli delle risposte, ma il genitore li
+ritaglia. I soli `getBoundingClientRect` non dimostrano quale controllo si
+veda o riceva il tocco. Il taglio di E è confermato; la sua spiegazione
+«coperto da Quiz / Quiz base» non era il meccanismo misurato.
+
+**Dove differiscono risultati e giudizio.** Claude riporta **5/5** su gratis,
+perdita e salvataggio: qui sono **4/5**, perché B salta quei paragrafi e non
+risponde. Su Allenati/Esame Claude riporta **0/5 sicuri**: qui A, C ed E
+spiegano correttamente la differenza del riscontro immediato/finale, D la
+spiega solo in parte, B non sa. Non equivale a conoscere tutta la struttura
+delle due sezioni: solo C visita Esame. Sul ritorno domani, quattro dei miei
+lettori sanno dire «registrarsi per conservare», B no; nessuno prova davvero
+il ritorno o la ripresa dopo una chiusura. Non ho osservato il fraintendimento
+«sito per la entro 12» riportato da Claude per due lettori: D resta incerto
+su quale patente gli serva, che è diverso. Sono variazioni di modello,
+esposizione, quesiti casuali e criterio di lettura, **non un miglioramento
+tra due versioni del sito**, che è la stessa v0.32.0. Non trasformerei le
+frequenze più favorevoli del mio gruppo in un via libera.
+
+Sul metodo concordo con il controllo prima della merge, ma proporrei la
+scala di I-26 invece di imporre cinque giri completi per ogni piccola
+etichetta. Concordo con parole coerenti, verbo fedele alla destinazione,
+assenza di codici interni e prova sul basso. Non adotterei «una volta basta»
+come divieto assoluto di ripetere: chi entra da un link deve trovare lì le
+informazioni necessarie, e il costo di chiudere va detto vicino alla scelta.
+Né metterei automaticamente ogni riferimento normativo dietro
+«Approfondisci»: **Q-CART4** è un codice interno da togliere dal linguaggio
+utente, una fonte ministeriale può essere utile dopo averne spiegato l'effetto.
+
+I-23 registra già il sì dell'autore a «Simula il quiz» e una proposta su
+«Il mio esame». Questa prova non li applica né li converte in una nuova
+struttura. La mia proposta indipendente «Prepara la simulazione» va letta
+accanto a quella decisione: togliere «base» può semplificare il nome, ma da
+solo non chiarisce che il primo tocco apre una preparazione. La scelta del
+testo e del comportamento resta dell'autore.
