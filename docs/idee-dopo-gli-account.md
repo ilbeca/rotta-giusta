@@ -87,6 +87,7 @@ lavoro che dura settimane e cambia che cosa il sito *è*.
 | I-24 | La lettura da fuori di ChatGPT: domanda, Avanti e fonti sul telefono | ChatGPT | osservata e misurata; nessuna correzione |
 | I-25 | La lettura da fuori di ChatGPT: comprensione e parole | ChatGPT | cinque lettori, 45 risposte; riscritture proposte |
 | I-26 | La lettura da fuori di ChatGPT: metodo e confronto | ChatGPT | proposta per le verifiche, nessuna regola adottata |
+| I-27 | Le regole dai buoni standard, e l'audit delle schermate | autore e Claude | in corso dal 21 ottobre: regole e audit della Home |
 
 **Le decisioni prese, in una riga ciascuna, sono in fondo al file: «Le decisioni
 di P-59»; quelle del 17 ottobre in «Il miglioramento continuo».** Le schede qui
@@ -3334,3 +3335,54 @@ struttura. La mia proposta indipendente «Prepara la simulazione» va letta
 accanto a quella decisione: togliere «base» può semplificare il nome, ma da
 solo non chiarisce che il primo tocco apre una preparazione. La scelta del
 testo e del comportamento resta dell'autore.
+
+---
+
+## Le regole dai buoni standard — 21 ottobre 2026
+
+### I-27 — Le regole dai buoni standard, e l'audit delle schermate [autore e Claude]
+
+**Da dove nasce.** Le due letture da fuori (I-22…I-26) dicono dove chi arriva
+si perde. L'autore vuole di più: pagine e contenuti **più semplici, eleganti e
+curati** — «gli altri siti mi sembrano meglio» — e non ha un campione di
+persone vere. Il 21 ottobre ha scelto di **partire dagli standard e dalle
+buone pratiche**, invece che dal gusto o da siti da imitare.
+
+**La misura che ha orientato la scelta** (Home a 375×812, 20 ottobre, nel
+browser): Rotta Giusta 106 parole nel primo schermo, 247 in tutto, 2,9
+schermi, 7 corpi di carattere, 8,3 parole per frase, Gulpease 73; Nauticalize
+57, 1.371, 12,6 schermi, 13 corpi, 14,2 parole per frase, Gulpease 60. Le
+nostre frasi sono più corte e più leggibili: il problema non è la scrittura
+delle frasi, è **che cosa mettiamo in testa e la gerarchia visiva**.
+L'elemento più evidente del nostro primo schermo è un riquadro bordato che
+avvisa che senza account si perde tutto.
+
+**Le fonti, in tre gradi.**
+- *Standard misurabili*: WCAG 2.2; ISO 24495-1:2023 (linguaggio chiaro);
+  l'indice Gulpease per l'italiano.
+- *Sistemi di design pubblici, provati con le persone*: Designers Italia (AgID),
+  GOV.UK Design System e la sua guida al contenuto, Apple Human Interface
+  Guidelines, Material 3.
+- *Pratiche di mestiere*: Refactoring UI, la tipografia pratica di Butterick,
+  le leggi della UX, le euristiche di Nielsen.
+
+Le regole danno chiarezza, semplicità e coerenza; non danno da sole un
+carattere riconoscibile, che resta una scelta dell'autore. La verità detta dal
+sito non si toglie: si sposta e si dice una volta (filosofia, ADR-004).
+
+**Il piano.**
+1. **Le regole**: una trentina, ognuna con la sua fonte verificata, se si
+   misura e come. *In corso.*
+2. **L'audit della Home** a 375×812, 375×667 e 1280 px: misure, schermate e
+   violazioni, regola per regola. *In corso.*
+3. L'audit della schermata della domanda: dopo la Home.
+4. Le regole misurabili diventano controlli nei test e vincoli nella
+   specifica (Claude, su `main`); le altre una lista di revisione per chi
+   disegna (`ui/*`).
+5. Un piccolo sistema di design nel CSS — scala dei caratteri, scala degli
+   spazi, ruoli dei colori — su `ui/*`.
+6. L'elemento distintivo del marchio: decisione dell'autore, dopo.
+
+**Prima di tutto, a parte:** il blocco su «Avanti» dopo una risposta
+sbagliata, confermato da tutte e due le letture (I-23 e I-24), è un difetto
+di funzionamento e non aspetta le regole.

@@ -55,6 +55,7 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   qui: è dell'interfaccia. Visti accanto, e misurati: la domanda che sparisce
   dopo la risposta, e i pulsanti del segnalibro sopra le risposte e i tag.
 - Nessun file del sito, dei test o del motore è stato toccato.
+
 ### Osservato — la lettura da fuori indipendente di ChatGPT
 
 I controlli del sito verificano dati e percorsi, non che una frase sia
