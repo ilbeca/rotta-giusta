@@ -3386,3 +3386,54 @@ sito non si toglie: si sposta e si dice una volta (filosofia, ADR-004).
 **Prima di tutto, a parte:** il blocco su «Avanti» dopo una risposta
 sbagliata, confermato da tutte e due le letture (I-23 e I-24), è un difetto
 di funzionamento e non aspetta le regole.
+
+### L'audit della Home: le misure — 21 ottobre 2026
+
+**Come.** `rottagiusta.it` (v0.32.0, uguale a `main`), senza account, nel
+browser della sessione a 375×812 e a 1280×800, con stili e rettangoli letti
+dalla pagina e le schermate guardate. Le regole a cui ogni punto si collega
+arrivano dal passo 1; qui stanno le misure, perché restino vere qualunque
+regola si scelga.
+
+**Che cosa non va, dal più grave.**
+1. **Due azioni principali in gara.** «Simula il quiz base» (blu pieno) e
+   «Allenati con 10 domande» (azzurro pieno, con bordo) hanno la stessa
+   larghezza, 343 px, e la stessa altezza, 52 px; a 1280 px stanno affiancate,
+   uguali. Nessuna delle due è la prima.
+2. **Un avviso fra la promessa e l'azione.** Il riquadro bordato ambra
+   «Senza account le risposte valgono solo finché…» è alto 121 px, 26 parole:
+   dopo il titolo è il blocco più grande del primo schermo, e il pulsante
+   comincia a 543 px, sotto di lui. Dei sei blocchi di testo sopra la piega,
+   tre dicono condizioni o limiti (account, avviso, correzione alla fine), uno
+   solo che cosa si ottiene.
+3. **I titoli rovesciati.** I titoli di sezione (`h2`, «Scegli da dove
+   cominciare», «Che cosa non torna») sono a 13 px in maiuscolo, più piccoli
+   del testo (16 px) e dei loro figli (`h3` a 23 px). La gerarchia si legge al
+   contrario.
+4. **Un doppione della barra.** «Scegli da dove cominciare» ripete in tre
+   schede (226, 187 e 187 px) le tre voci della barra in basso — Allenati,
+   Esame, Progressi —, che sono sempre in vista: circa 600 px, quasi tre
+   quarti di uno schermo, per porte che ci sono già.
+5. **Nessuna scala degli spazi.** Dodici valori diversi fra margini e
+   imbottiture: 8, 10, 12, 14, 16, 20, 22, 23, 24, 28, 30, 32 px. Con una scala
+   a passi di 4 o di 8 ne bastano cinque o sei; i valori dispari (23) e quelli
+   fuori passo (10, 14, 22) sono il segno di ritocchi uno per uno.
+6. **Troppi corpi e un peso fuori scala.** Sette corpi nella pagina (11, 12,
+   13, 14, 16, 23, 30 px); la barra a 12 px e «Accedi» a 11. Quattro pesi
+   (400, 600, 650, 700): il 650 non sta in nessuna scala.
+7. **Sul telefono nessuna immagine.** L'unica illustrazione, `paesaggio.svg`,
+   ha `display:none` sotto una certa larghezza: si vede a 1280 px, non a 375.
+   Il dispositivo principale (specifica §1) ha una Home di solo testo.
+8. **«Che cosa non torna»**: sette paragrafi su tre argomenti — la banca, la
+   privacy, il carteggio —, già in I-23 e in I-25.
+9. **Righe lunghe sullo schermo largo**: fino a 88 caratteri (l'avviso, a 1280
+   px). Sul telefono stanno fra 43 e 49.
+
+**Che cosa va già bene, e si tiene.** Interlinea del testo 1,45; quattro
+colori di testo; testo del corpo a 16 px; righe del telefono fra 43 e 49
+caratteri; frasi corte (8,3 parole, Gulpease 73 sui paragrafi); bersagli di
+almeno 44 px e nessuno sbordamento (R-RIF-09, R-RIF-12).
+
+**Che cosa non ha misurato.** La schermata della domanda (passo 3); la Home
+con l'account (stato HA) e con risposte senza account (H1); Safari; il
+giudizio di una persona.
