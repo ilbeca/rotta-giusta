@@ -3437,3 +3437,653 @@ almeno 44 px e nessuno sbordamento (R-RIF-09, R-RIF-12).
 **Che cosa non ha misurato.** La schermata della domanda (passo 3); la Home
 con l'account (stato HA) e con risposte senza account (H1); Safari; il
 giudizio di una persona.
+
+---
+
+## Le regole di disegno e di scrittura, D-01…D-35 — 21 ottobre 2026
+
+**Il passo 1 di I-27.** Le ha scritte una sessione di Claude a parte, aprendo
+ogni fonte il 21 ottobre; la copia di lavoro sta in
+`~/bot-ux/rotta-giusta/regole/regole.md`, questa è quella che fa fede. Sono
+**proposte**: nessuna è un Vincolo finché l'autore non le adotta, e allora le
+misurabili entrano nella specifica con il loro controllo (I-27, passo 4).
+
+**Data:** 21 ottobre 2026. **Che cos'è:** il passo 1 del piano I-27
+(`docs/idee-dopo-gli-account.md`): 35 regole per le pagine di Rotta Giusta,
+ognuna con la sua fonte. **Ogni fonte è stata aperta oggi**, e la frase che
+regge la regola è stata letta nel testo della pagina, non ricordata. Dove non è
+stato possibile c'è scritto, con il perché.
+
+**Come si legge.** Ogni regola ha: la regola in una frase; le fonti (documento,
+punto, indirizzo, e che cosa dice, parafrasato in una riga); il grado
+(*standard*, *sistema di design*, *pratica*); se e come si misura in un browser a
+375×812, e da dove viene la soglia — **«soglia nostra»** quando la fonte non dà
+un numero e lo abbiamo scelto noi; dove si applica. Le regole già tenute ferme
+da un requisito della specifica sono segnate **«già coperta da R-…»** e non
+contano come nuove.
+
+**Le fonti, una volta sola** (aperte il 21/10/2026):
+
+| Sigla | Fonte | Indirizzo |
+|---|---|---|
+| WCAG | W3C, *WCAG 2.2*, Recommendation del 12 dicembre 2024 | https://www.w3.org/TR/WCAG22/ |
+| ISO | *ISO 24495-1:2023 Plain language — Part 1*, letta nell'**estratto pubblico** (iTeh, campione ufficiale di 11 pagine): §4 e §5.1–5.2.3 per intero, il resto solo nell'indice | https://standards.iteh.ai/catalog/standards/iso/5266c5b6-e44a-4e68-9600-82b2a8932fc2/iso-24495-1-2023 |
+| GULP | Indice Gulpease, voce di Wikipedia it (revisione 151557991), che cita Lucisano e Piemontese, *Scuola e città*, XXXIX, n. 3, 1988, pp. 110-24 | https://it.wikipedia.org/wiki/Indice_Gulpease |
+| DI-LING | Designers Italia, design system .italia, *Linguaggio* (aggiornata 14 aprile 2025) | https://designers.italia.it/design-system/fondamenti/linguaggio/ |
+| DI-MICRO | Designers Italia, *Microtesti* (14 aprile 2025) | https://designers.italia.it/design-system/fondamenti/microtesti/ |
+| DI-TIPO | Designers Italia, *Tipografia* (5 novembre 2025) | https://designers.italia.it/design-system/fondamenti/tipografia/ |
+| DI-SPAZI | Designers Italia, *Spaziature* (28 gennaio 2025) | https://designers.italia.it/design-system/fondamenti/spaziature/ |
+| DI-MO | Designers Italia (AgID), *Manuale operativo di design*, §6.5 Scrittura e linguaggio | https://docs.italia.it/italia/designers-italia/manuale-operativo-design-docs/it/versione-corrente/doc/progettazione-dei-contenuti/scrittura-e-linguaggio.html |
+| GOV-W | GOV.UK, *Writing guidelines* (la «guida al content design», oggi su guidance.publishing.service.gov.uk): pagine *Use clear language*, *Create a clear structure*, *Write clear titles*, *Write effective links*, *Write content to meet user needs* | https://guidance.publishing.service.gov.uk/writing-to-gov-uk-standards/writing-guidelines/ |
+| GOV-DS | GOV.UK Design System: *Button*, *Type scale*, *Spacing*, *Layout*, *Colour*, *Error summary*, *Notification banner*, *Inset text*, *Warning text*, *Question pages* | https://design-system.service.gov.uk/ |
+| APPLE | Apple Human Interface Guidelines: *Accessibility*, *Typography*, *Buttons*, *Layout* (letti dai dati della pagina ufficiale) | https://developer.apple.com/design/human-interface-guidelines/ |
+| M3 | Material Design 3: *Designing → Structure* (accessibilità), *Buttons → Guidelines*, *Typography → Applying type* (letti nel browser, la pagina è disegnata da script) | https://m3.material.io/ |
+| RUI | Wathan e Schoger, *Refactoring UI*: la pagina del libro con l'indice e un consiglio per esteso. **Il libro è a pagamento e non è stato aperto**: dei capitoli si è verificato solo il titolo | https://www.refactoringui.com/ |
+| BUTT | Butterick, *Practical Typography*: *Summary of key rules*, *Point size*, *Line spacing*, *Line length*, *Headings*, *Bold or italic* | https://practicaltypography.com/ |
+| LAWS | Laws of UX (Yablonski): *Hick's Law*, *Fitts's Law*, *Von Restorff Effect*, *Law of Proximity* | https://lawsofux.com/ |
+| NNG | Nielsen, *10 Usability Heuristics for User Interface Design* | https://www.nngroup.com/articles/ten-usability-heuristics/ |
+| HOOB | Steven Hoober, *How Do Users Really Hold Mobile Devices?* (UXmatters, 2013) e *Design for Fingers, Touch, and People, Part 1* (2017). Non era fra le fonti chieste: serve alla zona del pollice, che le altre non misurano | https://www.uxmatters.com/mt/archives/2017/03/design-for-fingers-touch-and-people-part-1.php |
+
+**Per chi misura.** Molte regole chiedono di riconoscere «l'azione principale»
+e «un avviso». Dal colore si indovina; un aggancio dichiarato nella pagina —
+per esempio un attributo `data-ruolo="principale"` e `data-ruolo="avviso"` —
+lo dice senza indovinare. È una proposta per il passo 4, non una regola.
+«Primo schermo» vuol dire il rettangolo 0…`innerHeight` a scorrimento zero,
+misurato a 375×812 **e** a 375×667. «Testo visibile» vuol dire i nodi di testo
+con un rettangolo non vuoto, non `hidden`, `opacity > 0`, dentro il primo
+schermo quando la regola parla del primo schermo.
+
+---
+
+### 1. Il contenuto e il linguaggio
+
+#### D-01 — Prima la cosa più importante
+- **Regola.** In cima a ogni schermata c'è quello per cui la persona è lì: che
+  cos'è la pagina e che cosa ci si fa; il resto viene dopo, in ordine di
+  importanza.
+- **Fonti.** ISO §5.2.2 a): mettere il messaggio più importante dove si trova
+  facilmente, di solito all'inizio. GOV-W *Create a clear structure*,
+  «Frontload your content»: le informazioni più importanti per prime, poi i
+  dettagli a scendere (piramide rovesciata). APPLE *Layout*: si legge dall'alto
+  verso il basso, quindi gli elementi più importanti stanno in alto. DI-MO §6.5.2,
+  checklist: lo scopo della pagina è chiaro subito? le informazioni principali si
+  trovano subito?
+- **Grado.** Standard (ISO), sistema di design.
+- **Misura.** Sì. Il titolo principale (`h1`) e l'azione principale hanno il
+  bordo inferiore dentro il primo schermo, a 375×812 e a 375×667. Soglia: della
+  fonte («all'inizio»), tradotta da noi in «nel primo schermo».
+- **Dove.** Tutto il sito; per primi la Home nei tre stati e le preparazioni.
+
+#### D-02 — Solo quello che serve, una cosa per schermata
+- **Regola.** Ogni schermata serve un compito; quello che non serve a quel
+  compito va altrove o non va.
+- **Fonti.** ISO §5.1.6 d): lasciare fuori il contenuto che a chi legge non
+  serve. GOV-W *Write content to meet user needs*: pubblicare solo quello che
+  serve a quel bisogno, niente di più. GOV-DS *Question pages*: una domanda per
+  pagina aiuta a capire che cosa si chiede e a concentrarsi. NNG euristica 8:
+  ogni informazione in più compete con quelle rilevanti e ne riduce la
+  visibilità.
+- **Grado.** Standard, sistema di design, pratica.
+- **Misura.** In parte. Parole del testo visibile nel primo schermo: misurate
+  106 il 20 ottobre (I-27). **Nessuna fonte dà un numero**: la soglia è nostra,
+  da fissare dopo l'audit (proposta: ≤ 60 parole nel primo schermo della Home).
+  Sulla schermata della domanda si misura che ci sia **una** domanda visibile.
+- **Dove.** Home; schermata della domanda; preparazioni.
+
+#### D-03 — Le parole di chi legge, non le nostre
+- **Regola.** In schermata si usano le parole che userebbe chi studia per la
+  patente, non i nomi interni del progetto; un termine tecnico necessario si
+  spiega la prima volta.
+- **Fonti.** NNG euristica 2: parlare la lingua degli utenti, con parole e
+  concetti a loro familiari invece del gergo interno. GOV-W *Use clear
+  language*: usare le parole che gli utenti conoscono e usano; i termini
+  specialistici si possono usare spiegandoli alla prima occorrenza. DI-LING:
+  scoprire quali parole usano gli utenti; il nome ufficiale di un servizio può
+  non essere quello che usano le persone.
+- **Grado.** Sistema di design, pratica.
+- **Misura.** Sì, con un elenco. Nessuna parola di un elenco di termini interni
+  (soglia nostra: zero; l'elenco è nostro e va scritto: per esempio i nomi del
+  codice e dei documenti — «Mirata», «screening», «regime», «specchio»,
+  «vetrina», «palestra» — da confrontare con i nomi decisi in Q-NAV).
+- **Dove.** Tutto il sito.
+
+#### D-04 — Frasi corte
+- **Regola.** Una frase non supera le 25 parole.
+- **Fonti.** GOV-W *Use clear language*, «Keep paragraphs and sentences short»:
+  provare a dividere le frasi oltre le 25 parole. DI-LING: sintassi semplice.
+  ISO §5.3.3–5.3.4 «Write clear sentences», «Write concise sentences»:
+  **verificata solo nell'indice**, il testo non è nell'estratto pubblico.
+- **Grado.** Sistema di design (la soglia), standard (il principio).
+- **Misura.** Sì. Si divide il testo visibile in frasi (punto, punto
+  interrogativo ed esclamativo, a capo di blocco) e si contano le parole: il
+  massimo è ≤ 25. Soglia della fonte (GOV.UK). Misurato il 20 ottobre: media
+  8,3 parole per frase sulla Home.
+- **Dove.** Tutto il sito.
+
+#### D-05 — Paragrafi corti
+- **Regola.** Un paragrafo ha al più cinque frasi.
+- **Fonti.** GOV-W *Use clear language*: i paragrafi non devono avere più di 5
+  frasi. DI-MO §6.5.2, checklist: il testo è breve, diviso in paragrafi ed
+  elenchi?
+- **Grado.** Sistema di design.
+- **Misura.** Sì. Per ogni `p` e ogni blocco di testo continuo, frasi ≤ 5.
+  Soglia della fonte.
+- **Dove.** Tutto il sito; conta soprattutto in «Com'è fatto l'esame», nelle
+  pagine legali e nelle spiegazioni.
+
+#### D-06 — Leggibile per chi ha la licenza media
+- **Regola.** Il testo di ogni schermata ha un indice Gulpease di almeno 60.
+- **Fonti.** GULP: Gulpease = 89 + (300 × frasi − 10 × lettere) / parole; un
+  testo sotto 80 è difficile per chi ha la licenza elementare, sotto 60 per chi
+  ha la licenza media, sotto 40 per chi ha un diploma superiore. **Le soglie sono
+  verificate su fonte secondaria**: l'articolo originale di Lucisano e Piemontese
+  (1988) non è stato aperto, ed è citato dalla voce di Wikipedia; un articolo
+  dell'Unità del 1997 riporta le stesse soglie (trovato con una ricerca, non
+  aperto). DI-LING e DI-MICRO nominano l'indice Gulpease fra i test di
+  leggibilità da usare.
+- **Grado.** Standard (è una misura tarata sull'italiano, non una norma).
+- **Misura.** Sì. Sul testo visibile della schermata, con la formula sopra
+  (lettere = caratteri alfabetici; frasi come in D-04). Soglia: **60 è nostra**,
+  il valore che la fonte associa alla licenza media; il pubblico (I-27, il
+  pubblico della classe) non è misurato per titolo di studio. Misurato il 20
+  ottobre: 73 sulla Home.
+- **Dove.** Tutto il sito.
+
+#### D-07 — Verbi attivi, niente nominalizzazioni
+- **Regola.** Si scrive con verbi attivi e diretti («Scegli un argomento»), non
+  con nomi astratti al posto del verbo («Selezione dell'argomento»).
+- **Fonti.** DI-LING: forme verbali attive, evitare le nominalizzazioni, con
+  esempi «va bene / non va bene». GOV-W *Use clear language*: usare la forma
+  attiva; le parole in «-ion» e «-ment» allungano e complicano le frasi.
+- **Grado.** Sistema di design.
+- **Misura.** Solo come indicatore. Quota di parole in «-zione», «-zioni»,
+  «-mento», «-menti» sul totale delle parole visibili; **soglia nostra**, da
+  fissare dopo l'audit (non è un divieto: «simulazione» è una parola di chi
+  legge). Il passivo non si misura in modo affidabile: lista di revisione.
+- **Dove.** Tutto il sito.
+
+#### D-08 — Una cosa si dice una volta per schermata
+- **Regola.** La stessa informazione non compare due volte sulla stessa
+  schermata; la verità che il sito deve dire si dice una volta, nel posto giusto.
+- **Fonti.** GOV-W *Create a clear structure*, «Do not repeat yourself»: non
+  ripetere il sommario nel primo paragrafo. ISO §5.1.6 d) (lasciare fuori quello
+  che non serve). NNG euristica 8. In I-27: «La verità detta dal sito non si
+  toglie: si sposta e si dice una volta».
+- **Grado.** Sistema di design, standard.
+- **Misura.** Sì. Nessuna coppia di frasi visibili con lo stesso testo
+  normalizzato (minuscole, senza punteggiatura) né quasi uguali (soglia nostra:
+  ≥ 80 % delle parole piene in comune). Fuori dal conto la barra di navigazione.
+- **Dove.** Home; riepiloghi; preparazioni.
+
+#### D-09 — Titoli che dicono di che cosa si parla
+- **Regola.** Ogni titolo dice l'argomento o lo scopo della sezione, con la
+  parola importante in testa; niente titoli generici.
+- **Fonti.** WCAG 2.4.6 *Headings and Labels* (AA): titoli ed etichette
+  descrivono l'argomento o lo scopo. GOV-W *Create a clear structure*: titoli
+  descrittivi, con l'informazione importante in testa, attivi, e **non domande**
+  (difficili da mettere in testa, e gli utenti vogliono risposte). DI-TIPO: i
+  titoli servono a definire le sezioni principali.
+- **Grado.** Standard (2.4.6), sistema di design.
+- **Misura.** In parte. Si misura: nessun `h1`–`h3` che finisce con «?» (soglia
+  di GOV.UK; vedi il disaccordo con Designers Italia in fondo); nessun titolo in
+  un elenco di titoli generici (soglia nostra: «Introduzione», «Informazioni»,
+  «Altro»…). Che il titolo *descriva* non si misura: lista di revisione.
+  **Nota:** oggi la Home e il Carteggio hanno titoli-domanda («Che cosa vuoi
+  fare adesso?», «Che tecnica serve?»).
+- **Dove.** Tutto il sito.
+
+#### D-10 — Pulsanti con un verbo, brevi, su una riga
+- **Regola.** L'etichetta di un pulsante dice l'azione, comincia con un verbo,
+  è breve e non va a capo.
+- **Fonti.** M3 *Buttons → Guidelines*: l'etichetta descrive l'azione, idealmente
+  1–3 parole; non va troncata né mandata a capo, sempre su una riga. GOV-W *Write
+  effective links*: un link che avvia un compito comincia con un verbo. DI-MICRO:
+  orientare verso l'azione primaria; usare lo stesso verbo del titolo nella
+  call-to-action.
+- **Grado.** Sistema di design.
+- **Misura.** Sì. Ogni pulsante visibile ha il testo su una riga (altezza del
+  testo ≤ 1,5 × `line-height`, oppure un solo rettangolo da
+  `Range.getClientRects()`); soglia della fonte. Parole ≤ 4 come avviso: la fonte
+  dice «idealmente 1–3», e «Simula il quiz base» ne ha 4 — **soglia nostra**,
+  allargata di una perché in italiano l'articolo conta.
+- **Dove.** Tutto il sito.
+
+#### D-11 — Link che dicono dove portano
+- **Regola.** Il testo di un link dice la destinazione o l'azione, anche letto da
+  solo; niente «qui», «di più», «clicca».
+- **Fonti.** GOV-W *Write effective links*: link descrittivi, evitare testi
+  generici come «click here» o «more»; non riusare lo stesso testo per pagine
+  diverse. WCAG 2.4.4 *Link Purpose (In Context)* (A) — **non riletto oggi** nel
+  testo: si appoggia a GOV.UK.
+- **Grado.** Sistema di design.
+- **Misura.** Sì. Nessun link o pulsante il cui testo normalizzato sia in un
+  elenco di testi generici (soglia nostra: «qui», «clicca qui», «di più»,
+  «scopri di più», «leggi», «vai», «altro»).
+- **Dove.** Tutto il sito.
+
+---
+
+### 2. La gerarchia e le azioni
+
+#### D-12 — Una sola azione principale per schermata
+- **Regola.** In ogni schermata c'è un solo pulsante con lo stile più forte; le
+  altre azioni hanno uno stile più debole.
+- **Fonti.** GOV-DS *Button*: evitare più pulsanti principali sulla stessa
+  pagina, perché più di una chiamata all'azione principale ne riduce l'effetto e
+  rende più difficile capire che cosa fare. M3 *Buttons*: lo stile pieno va usato
+  con parsimonia, idealmente per una sola azione nella pagina. APPLE *Buttons*:
+  tenere i pulsanti in evidenza a uno o due per vista. DI-MICRO: segnalare come
+  secondarie le altre possibilità.
+- **Grado.** Sistema di design.
+- **Misura.** Sì. Pulsanti visibili con lo stile principale (lo sfondo pieno nel
+  colore d'accento, o l'aggancio dichiarato) ≤ 1 per vista. Soglia di GOV.UK e
+  Material; Apple ne ammette due (vedi in fondo).
+- **Dove.** Tutto il sito; la Home ha due avvii alla pari (simulazione e
+  dieci domande): la regola chiede di sceglierne uno come principale.
+
+#### D-13 — Poche scelte in competizione
+- **Regola.** Nel primo schermo le cose da toccare sono poche, e una è
+  chiaramente raccomandata.
+- **Fonti.** LAWS *Hick's Law*: il tempo per decidere cresce con il numero e la
+  complessità delle scelte; ridurre le scelte, evidenziare le opzioni
+  raccomandate, dividere i compiti complessi. APPLE *Layout*: troppi contenuti e
+  troppe scelte rendono più difficile trovare e capire. NNG euristica 8.
+- **Grado.** Pratica, sistema di design.
+- **Misura.** Sì. Bersagli interattivi nel primo schermo, **esclusa la barra di
+  navigazione e l'avatar**, ≤ 4: **soglia nostra** (nessuna fonte dà un numero).
+- **Dove.** Home; preparazioni.
+
+#### D-14 — L'azione principale è la cosa più evidente del primo schermo
+- **Regola.** Niente nel primo schermo pesa più dell'azione principale: nessun
+  riquadro, avviso o decorazione ha uno sfondo più pieno o un bordo più marcato.
+- **Fonti.** LAWS *Von Restorff Effect*: rendere distinte le informazioni e le
+  azioni chiave, ma con misura, perché gli elementi in evidenza non si facciano
+  concorrenza. ISO §5.2.3 a) 1): rendere più evidenti gli elementi importanti.
+  BUTT *Bold or italic*: se tutto è in evidenza, niente lo è. In I-27, misurato:
+  oggi l'elemento più evidente del primo schermo è il riquadro che avvisa che
+  senza account si perde tutto.
+- **Grado.** Pratica, standard.
+- **Misura.** Sì, con un indice nostro. Per ogni elemento con sfondo o bordo
+  proprio nel primo schermo: peso = area visibile × contrasto (rapporto WCAG) fra
+  il suo sfondo, o il suo bordo, e lo sfondo della pagina. Il massimo è
+  l'azione principale. Indice e soglia **nostri**.
+- **Dove.** Home; preparazioni; riepiloghi.
+
+#### D-15 — Un titolo principale, pochi livelli
+- **Regola.** Ogni schermata ha un solo `h1` e al più tre livelli di titolo.
+- **Fonti.** M3 *Structure*: un solo H1 per il titolo della pagina, livelli
+  senza salti. BUTT *Headings*: limitarsi a tre livelli, meglio due. DI-TIPO: non
+  superare quattro livelli (H1–H4). WCAG 2.4.10 *Section Headings* (AAA): le
+  sezioni sono organizzate da titoli.
+- **Grado.** Sistema di design, pratica.
+- **Misura.** Sì. Nella vista attiva: `h1` visibili = 1; livelli distinti ≤ 3;
+  nessun salto (H2 → H4). Soglia di Butterick (3) dentro quella di Designers
+  Italia (4).
+- **Dove.** Tutto il sito; nel documento solo, per la vista attiva.
+
+---
+
+### 3. La tipografia
+
+#### D-16 — Pochi corpi, tutti da una scala
+- **Regola.** I corpi del testo vengono da una scala dichiarata nel CSS, e una
+  schermata ne usa pochi.
+- **Fonti.** GOV-DS *Type scale*: la scala raccoglie corpi e interlinee provati
+  per la leggibilità; un nuovo stile va allineato a un punto della scala. Sui
+  piccoli schermi la scala ha 6 corpi distinti (53, 32, 27, 21, 19, 16 px),
+  usata da tutto il sistema. DI-TIPO: stili e token per intestazioni, corpo,
+  etichette. RUI: capitolo *Establish a type scale* — **verificato solo il
+  titolo**. APPLE *Typography*: ridurre il numero di caratteri tipografici
+  (*typefaces*, non corpi) per non oscurare la gerarchia.
+- **Grado.** Sistema di design.
+- **Misura.** Sì. `font-size` calcolato dei nodi di testo visibili: (a) ogni
+  valore appartiene alla scala dichiarata (soglia: della fonte, «allinea a un
+  punto della scala»); (b) valori distinti nel primo schermo ≤ 5 (**soglia
+  nostra**: la scala di GOV.UK ne ha 6 per tutto il sistema, una schermata non
+  ne usa tutti). Misurato il 20 ottobre: 7 corpi sulla Home.
+- **Dove.** Tutto il sito.
+
+#### D-17 — Il testo da leggere almeno a 16 px
+- **Regola.** Il testo corrente — paragrafi, risposte, spiegazioni — non scende
+  sotto i 16 px; i corpi più piccoli restano per etichette e note.
+- **Fonti.** BUTT *Point size*: sul web il corpo ottimale è 15–25 px. GOV-DS
+  *Type scale*: il corpo del testo è 19 px anche sui piccoli schermi, il testo
+  piccolo 16 px. APPLE *Accessibility* e *Typography*: su iOS corpo predefinito 17
+  pt, minimo 11 pt.
+- **Grado.** Sistema di design, pratica.
+- **Misura.** Sì. `font-size` ≥ 16 px per `p`, `li`, il testo della domanda e
+  delle risposte. **Soglia nostra**: il punto più basso su cui le fonti
+  concordano (16 di GOV.UK per il testo piccolo, sopra i 15 di Butterick).
+  Diverso da **R-A11Y-01**, che vieta i testi sotto gli 11 px ovunque e resta.
+- **Dove.** Tutto il sito; per prima la schermata della domanda.
+
+#### D-18 — Interlinea comoda
+- **Regola.** Il testo corrente ha un'interlinea fra 1,3 e 1,6 volte il corpo.
+- **Fonti.** BUTT *Line spacing*: 120–145 % del corpo. M3 *Applying type*: per il
+  testo corrente circa 1,5 volte il corpo; troppo stretta rompe la lettura,
+  troppo larga stacca le righe. GOV-DS *Type scale*: 19 px su 25 (1,32). WCAG
+  1.4.8 *Visual Presentation* (AAA): un meccanismo per avere almeno 1,5.
+- **Grado.** Sistema di design, pratica.
+- **Misura.** Sì. `line-height / font-size` dei blocchi di testo corrente in
+  [1,3; 1,6]. **Soglia nostra**: l'intervallo che contiene GOV.UK e Material e
+  tocca Butterick.
+- **Dove.** Tutto il sito.
+
+#### D-19 — Righe non più lunghe di 75 caratteri
+- **Regola.** Una riga di testo corrente non supera i 75 caratteri.
+- **Fonti.** DI-TIPO: lunghezza massima raccomandata 75 caratteri per riga.
+  GOV-DS *Layout*: la colonna dei due terzi evita righe troppo lunghe, di solito
+  non più di 75 caratteri. WCAG 1.4.8 (AAA): non più di 80. BUTT *Line length*:
+  in media 45–90 caratteri, spazi compresi.
+- **Grado.** Sistema di design, standard.
+- **Misura.** Sì. Per ogni blocco di testo, caratteri per riga resa (le righe da
+  `Range.getClientRects()` sui nodi di testo): massimo ≤ 75. Soglia della fonte.
+  A 375 px passa per costruzione; conta a 1280 px.
+- **Dove.** Tutto il sito, misurato a 1280 px.
+
+#### D-20 — Pochi pesi, niente pesi sottili, grassetto per parole chiave
+- **Regola.** Si usano al più tre pesi, mai sotto il regular; il grassetto
+  evidenzia parole chiave, non frasi intere.
+- **Fonti.** APPLE *Typography*: preferire Regular, Medium, Semibold o Bold,
+  evitare Ultralight, Thin e Light, difficili da leggere soprattutto piccoli.
+  BUTT *Bold or italic*: usarli il meno possibile; se tutto è in evidenza,
+  niente lo è. DI-LING: il grassetto rende più difficile la lettura, usarlo solo
+  per parole chiave e non per frasi intere.
+- **Grado.** Sistema di design, pratica.
+- **Misura.** Sì. `font-weight` dei nodi visibili ≥ 400 (soglia della fonte,
+  Apple); pesi distinti ≤ 3 (**nostra**); dentro un paragrafo nessun tratto in
+  grassetto più lungo di 5 parole (**nostra**, da «non frasi intere»).
+- **Dove.** Tutto il sito.
+
+#### D-21 — A sinistra, in minuscolo, non giustificato
+- **Regola.** Il testo è allineato a sinistra, mai giustificato; il maiuscolo
+  intero solo per poche parole; le maiuscole all'inizio della frase, non di ogni
+  parola.
+- **Fonti.** DI-LING: allineare sempre a sinistra, il giustificato è molto
+  difficile da leggere; i testi in maiuscolo sono difficili da leggere, usare
+  il maiuscolo solo per la prima lettera della frase. WCAG 1.4.8 (AAA): testo
+  non giustificato. BUTT *Summary*: maiuscolo intero va bene per meno di una
+  riga; testo centrato con parsimonia.
+- **Grado.** Sistema di design, standard (AAA), pratica.
+- **Misura.** Sì. Nessun blocco con `text-align: justify`; nessun testo con
+  `text-transform: uppercase` o tutto maiuscolo che occupa più di una riga
+  (soglia di Butterick); nessun paragrafo centrato più lungo di 2 righe
+  (**nostra**, da «con parsimonia»).
+- **Dove.** Tutto il sito.
+
+---
+
+### 4. Spazi e colori
+
+#### D-22 — Gli spazi da una scala
+- **Regola.** Margini, spaziature interne e distanze vengono da una scala sola,
+  multipli di 4 px.
+- **Fonti.** DI-SPAZI: base di 4 px, token 4, 8, 16, 24, 32, 40, 48; l'uso
+  coerente delle spaziature rende i layout uniformi. DI-TIPO: la linea di base è
+  4 px, gli spazi fra elementi testuali ne sono multipli. GOV-DS *Spacing*: una
+  scala di spazi (0, 5, 10, 15, 20, 25, 30, 40… sui piccoli schermi). RUI:
+  capitolo *Establish a spacing and sizing system* — **verificato solo il
+  titolo**.
+- **Grado.** Sistema di design.
+- **Misura.** Sì. `margin`, `padding` e `gap` calcolati degli elementi visibili:
+  ogni valore diverso da zero è multiplo di 4 (soglia di Designers Italia; GOV.UK
+  usa il 5: vedi in fondo). Fuori dal conto i bordi da 1 px.
+- **Dove.** Tutto il sito.
+
+#### D-23 — Più spazio fra le sezioni che dentro una sezione
+- **Regola.** Le cose che vanno insieme stanno vicine; fra un gruppo e l'altro
+  c'è più spazio che dentro un gruppo.
+- **Fonti.** DI-SPAZI: spazi più ampi fra le sezioni di una pagina, più stretti
+  dentro una stessa sezione o componente. ISO §5.2.3 a) 2): mettere vicini gli
+  elementi che vanno insieme. LAWS *Law of Proximity*: gli oggetti vicini si
+  percepiscono come un gruppo.
+- **Grado.** Standard, sistema di design, pratica.
+- **Misura.** Sì. Per ogni sezione della vista (`section`, o il gruppo
+  dichiarato): distanza verticale minima dalla sezione accanto > distanza
+  massima fra due figli consecutivi della stessa sezione. Soglia: della fonte
+  («più ampio»), resa con una disuguaglianza stretta.
+- **Dove.** Home; Progressi; preparazioni.
+
+#### D-24 — Pochi bordi e riquadri
+- **Regola.** Si separa con lo spazio prima che con i bordi; i riquadri bordati
+  sono pochi.
+- **Fonti.** RUI, consiglio per esteso sulla pagina del libro: *Use fewer
+  borders* — troppi bordi rendono il disegno affollato; meglio un'ombra, uno
+  sfondo diverso o più spazio. GOV-DS *Inset text*: da usare con molta
+  parsimonia, rende meno se abusato, e non per le informazioni importanti, che
+  vicino ad altri elementi in evidenza non si notano.
+- **Grado.** Pratica, sistema di design.
+- **Misura.** Sì. Elementi nel primo schermo con un bordo visibile su almeno tre
+  lati (larghezza ≥ 1 px e contrasto del bordo con lo sfondo ≥ 1,5): ≤ 2.
+  **Soglia nostra**; esclusi i campi dei moduli e i pulsanti.
+- **Dove.** Home; preparazioni; riepiloghi.
+
+#### D-25 — Ogni colore ha un ruolo
+- **Regola.** Il colore d'accento è delle azioni; il rosso è degli errori; il
+  verde e il rosso del giusto/sbagliato restano lì. Un colore non si usa fuori
+  dal suo ruolo.
+- **Fonti.** GOV-DS *Colour*: i colori funzionali sono legati a scopi precisi e
+  si usano solo nel contesto per cui sono pensati, perché le interazioni siano
+  prevedibili e coerenti. ISO §5.2.3 a) 3): far sembrare simili gli elementi con
+  la stessa funzione. LAWS *Von Restorff*: non affidarsi solo al colore.
+- **Grado.** Sistema di design, standard.
+- **Misura.** Sì, sui token. Gli elementi con sfondo o testo nel colore d'accento
+  sono tutti interattivi (o loro parti); il colore d'errore compare solo in
+  elementi d'errore o di risposta sbagliata. I ruoli e i loro token sono
+  **nostri**: li scrive il passo 5 del piano.
+- **Dove.** Tutto il sito.
+
+#### D-26 — Bordi dei controlli e stati a 3:1, e mai il solo colore
+- **Già coperta da R-RIF-13** (scoperta). Fonte: WCAG 1.4.11 *Non-text
+  Contrast* (AA), almeno 3:1 per i componenti e i loro stati; WCAG 1.4.1 *Use of
+  Color* (A), il colore non è l'unico modo di dare un'informazione.
+- **Come si potrebbe misurare**, per togliere «scoperta» almeno in parte: per
+  ogni campo, casella e pulsante senza sfondo pieno, contrasto fra colore del
+  bordo e sfondo accanto ≥ 3 (soglia della fonte); per ogni stato giusto/sbagliato
+  e del semaforo, la presenza di una parola o di un'icona oltre al colore.
+
+---
+
+### 5. Il telefono
+
+#### D-27 — Bersagli abbastanza grandi
+- **Già coperta da R-RIF-12** (24 px minimo, 44 obiettivo). Fonti rilette oggi:
+  WCAG 2.5.8 (AA) 24×24 px, WCAG 2.5.5 (AAA) 44×44 px; APPLE *Accessibility* e
+  *Buttons*: 44×44 pt; M3 *Structure*: almeno 48×48 dp.
+
+#### D-28 — Spazio fra un bersaglio e l'altro
+- **Regola.** Due cose da toccare vicine sono separate da almeno 8 px.
+- **Fonti.** M3 *Structure*, «Target spacing»: bersagli separati da 8 dp o più.
+  LAWS *Fitts's Law*: i bersagli devono avere ampio spazio fra loro.
+- **Grado.** Sistema di design, pratica.
+- **Misura.** Sì. Per ogni coppia di bersagli visibili, distanza fra i rettangoli
+  ≥ 8 px. Soglia della fonte (dp ≈ px CSS). Esclusi i link dentro una frase, come
+  in R-RIF-12.
+- **Dove.** Tutto il sito; per primi i tag e il segnalibro sotto la domanda.
+
+#### D-29 — Il pulsante per proseguire si raggiunge sempre
+- **Regola.** In ogni stato di un'attività il pulsante per andare avanti
+  («Avanti», «Consegna», «Termina») si vede o si raggiunge scorrendo, e niente
+  di fisso gli sta sopra.
+- **Fonti.** LAWS *Fitts's Law*: i bersagli vanno messi dove si raggiungono
+  facilmente, e la distanza fra il punto di attenzione e il pulsante va tenuta
+  corta. M3 *Structure*: mettere le azioni importanti in cima o in fondo allo
+  schermo. HOOB 2017: il diagramma della «zona del pollice» è sbagliato e le
+  persone toccano anche gli angoli in alto; 2013: 1.333 osservazioni, il 49 % a
+  una mano. WCAG 2.4.11 (AA) per il fuoco: già **R-RIF-07**.
+- **Grado.** Pratica, sistema di design.
+- **Misura.** Sì. A 375×667 e 375×812, dopo una risposta giusta e dopo una
+  sbagliata, con la domanda più lunga della banca: il pulsante è nel primo
+  schermo, oppure un antenato scorre (`scrollHeight > clientHeight` e `overflow`
+  che lo permette) e portato in vista con `scrollIntoView` ha il centro dentro lo
+  schermo e `elementFromPoint` sul centro restituisce lui. Soglia: nostra
+  («raggiungibile»), dal difetto di I-23/I-24, dove «Avanti» stava a 745–797 px
+  dentro un runner fisso alto 667 e niente scorreva.
+- **Dove.** La schermata della domanda, il confronto del Carteggio, i Segnali.
+
+---
+
+### 6. Avvisi ed errori
+
+#### D-30 — Avvisi pochi, vicini, mai più forti dell'azione
+- **Regola.** Un avviso sta accanto a quello che riguarda, si dice una volta, e
+  non è l'elemento più evidente della schermata; viene prima dell'azione solo se
+  avvisa di un danno.
+- **Fonti.** GOV-DS *Notification banner*: da usare con parsimonia, le persone
+  spesso non li vedono e usarli troppo peggiora le cose; se l'informazione
+  riguarda quello che si sta facendo, va nel contenuto. GOV-DS *Warning text*:
+  per conseguenze importanti di un'azione. ISO §5.2.2 e): gli avvisi su che cosa
+  non fare precedono le istruzioni se non seguirle può causare un danno. GOV-DS
+  *Inset text* (vedi D-24).
+- **Grado.** Sistema di design, standard.
+- **Misura.** Sì. Nel primo schermo: avvisi ≤ 1 (**nostra**); peso dell'avviso
+  (indice di D-14) < peso dell'azione principale; area dell'avviso ≤ 15 % del
+  primo schermo (**nostra**).
+- **Vincolo del sito.** **R-ACC-02** pretende che senza account la pagina dica,
+  prima di cominciare, che non resta niente; ADR-004 e la filosofia lo
+  difendono. La regola non lo toglie: dice dove sta e quanto pesa. Perdere le
+  risposte è il «danno» di ISO e): la frase può stare prima dell'avvio, ma
+  accanto a lui, e non come il riquadro più evidente.
+- **Dove.** Home; preparazioni; riepiloghi.
+
+#### D-31 — Un errore dice che cosa è successo e come uscirne
+- **Regola.** Un messaggio d'errore nomina il problema in parole semplici, senza
+  colpe, e propone come rimediare, vicino a dove serve.
+- **Fonti.** WCAG 3.3.1 *Error Identification* (A) e 3.3.3 *Error Suggestion*
+  (AA): l'errore è identificato e descritto a testo, con il suggerimento per
+  correggerlo quando si conosce. NNG euristica 9: linguaggio semplice, problema
+  preciso, soluzione costruttiva. DI-MICRO: titolo che descrive il problema senza
+  incolpare, e una call-to-action per rimediare. GOV-DS *Error summary*: il
+  riepilogo in cima, con gli stessi testi dei messaggi accanto ai campi.
+- **Grado.** Standard, sistema di design.
+- **Misura.** In parte, e **già in parte coperta**: il principio è nel §8 della
+  specifica, e i casi del client da R-ACC-41, 47, 48, 66. Nuovo e misurabile:
+  ogni messaggio d'errore visibile ha accanto un'azione (un pulsante o un link)
+  dentro lo stesso contenitore. Il tono: lista di revisione.
+- **Dove.** Profilo e account; import; Carteggio; stati di rete.
+
+#### D-32 — Gli stati si annunciano senza rubare il fuoco
+- **Già coperta da R-RIF-04** per la scrittura fallita. Fonte: WCAG 4.1.3
+  *Status Messages* (AA). Resta scoperta per gli altri stati (invio, salvato,
+  scelte salvate): stessa misura, nell'albero di accessibilità, su ognuno.
+
+---
+
+### 7. La coerenza
+
+#### D-33 — La stessa cosa con lo stesso nome
+- **Regola.** Una funzione ha un nome solo in tutto il sito; uno stesso nome non
+  porta a due posti diversi.
+- **Fonti.** WCAG 3.2.4 *Consistent Identification* (AA): i componenti con la
+  stessa funzione sono identificati in modo coerente. NNG euristica 4: gli utenti
+  non devono chiedersi se parole diverse vogliono dire la stessa cosa. GOV-W
+  *Write effective links*: più link verso la stessa pagina hanno lo stesso testo;
+  lo stesso testo non porta a pagine diverse. DI-MICRO: definire e applicare in
+  modo coerente terminologia e testi delle call-to-action.
+- **Grado.** Standard, sistema di design.
+- **Misura.** Sì, ed è la più utile da automatizzare. Si raccolgono, nella vista
+  e poi per tutto il sito, le coppie (destinazione, etichetta): la destinazione è
+  l'`href`, il `data-v` o il raccordo che il gesto chiama. Ogni destinazione ha
+  una sola etichetta (normalizzata), e ogni etichetta una sola destinazione.
+  Soglia della fonte. Le differenze volute si dichiarano in un elenco.
+- **Dove.** Tutto il sito; per primi la Home, Esame e Allenati, dove la
+  simulazione ha più porte.
+
+#### D-34 — Etichette di un gruppo con la stessa forma
+- **Regola.** Le etichette di uno stesso gruppo (barra, segmenti, pulsanti di una
+  preparazione) hanno la stessa sintassi — tutte verbi o tutte nomi — e la
+  stessa maiuscolazione.
+- **Fonti.** DI-MO §6.5.3, *I testi come interfacce*: non mescolare nello stesso
+  sistema etichette verbali, nominali e domande; uniformare stile e ortografia
+  («Chi siamo» / «Chi Siamo»); etichette di pari livello di specificità. DI-LING:
+  maiuscola solo all'inizio della frase.
+- **Grado.** Sistema di design.
+- **Misura.** In parte. Per ogni gruppo: tutte le etichette in *sentence case*
+  (nessuna parola dopo la prima con l'iniziale maiuscola, nomi propri a parte);
+  nessuna etichetta che finisce con «?» in un gruppo di non-domande. Verbo o nome:
+  con un elenco di verbi d'azione (**nostro**), tutte o nessuna cominciano con un
+  verbo.
+- **Dove.** Barra, segmenti di Allenati, pulsanti di Esame e della Home.
+
+#### D-35 — La navigazione resta dov'è
+- **Già coperta da R-NAV-03** (le quattro voci, in quell'ordine) e dal gruppo
+  dei tragitti **R-NAV-08**. Fonte: WCAG 3.2.3 *Consistent Navigation* (AA).
+
+---
+
+### Dove le fonti non sono d'accordo
+
+- **Quante azioni principali.** Una per GOV.UK e Material, «una o due» per
+  Apple. D-12 prende una.
+- **Le soglie dei bersagli.** 24 px (WCAG AA), 44 (WCAG AAA, Apple), 48 dp
+  (Material). R-RIF-12 tiene 24 e 44.
+- **Titoli-domanda.** GOV.UK li vieta; Designers Italia li prescrive per le
+  finestre di conferma («Vuoi + verbo»). D-09 li vieta nei titoli di sezione,
+  non nelle conferme.
+- **Livelli di titolo.** Tre per Butterick, quattro per Designers Italia.
+- **Interlinea.** 1,2–1,45 per Butterick, circa 1,5 per Material e WCAG AAA,
+  1,32 nel corpo di GOV.UK. D-18 prende 1,3–1,6.
+- **Lunghezza della riga.** 75 (GOV.UK, Designers Italia), 80 (WCAG AAA),
+  45–90 (Butterick).
+- **La base degli spazi.** 4 px per Designers Italia, 5 per GOV.UK.
+- **La scala dei corpi.** GOV.UK e Designers Italia la vogliono; Butterick
+  rifiuta le scale *modulari* (un rapporto che si ripete) e dice di giudicare a
+  occhio. Non è un no a un insieme fisso di corpi, ma è un no ai numeri come
+  giustificazione.
+- **Le formule di leggibilità.** Designers Italia indica il Gulpease fra i test;
+  ISO 24495-1, nell'introduzione, dice che il linguaggio chiaro guarda a quanto
+  bene le persone usano il documento, **non** a misure meccaniche come le formule
+  di leggibilità. D-06 resta un controllo di minima, non la prova che un testo è
+  chiaro.
+- **La zona del pollice.** I diagrammi diffusi mettono tutto in basso; Hoober,
+  osservando le persone, dice che sono sbagliati, e Material e Apple mettono le
+  cose importanti in alto (Apple) o in alto e in basso (Material). D-29 chiede
+  solo che il pulsante si raggiunga, non dove stia.
+
+### Quali sono solo pratica
+
+D-13 (Hick), D-14 (Von Restorff, con un indice nostro), D-24 (Refactoring UI),
+D-28 in parte (Fitts), D-29 (Fitts, Hoober): reggono su leggi della percezione e
+su osservazioni, non su uno standard. Anche dove la fonte è uno standard, molte
+**soglie sono nostre** e lo dicono: D-02, D-03, D-07, D-08, D-13, D-14, D-16 (b),
+D-17, D-18, D-20, D-21, D-24, D-30. Vanno riviste dopo l'audit della Home, non
+prese per misure.
+
+### Che cosa le regole non coprono
+
+- **Il carattere riconoscibile del marchio**: le regole danno chiarezza,
+  semplicità e coerenza, non un volto (I-27, passo 6, decisione dell'autore).
+  Nemmeno il tono di voce oltre la chiarezza, le illustrazioni, il movimento.
+- **Che il testo sia capito.** Il principio 4 di ISO (i lettori usano
+  l'informazione) chiede di provare con i lettori; nessuna di queste regole lo
+  sostituisce, e il sito non ha un campione di persone (Q-PROVE).
+- **Che cosa mettere in pagina**: le regole dicono come, non quali funzioni
+  esistono; quello resta la specifica.
+- **Il tema scuro** (Q-TEMA), **Safari** e **il gesto vero**, come per i
+  controlli di oggi.
+- **Le fonti non aperte per intero**: il libro di Refactoring UI (solo l'indice
+  e un consiglio), ISO 24495-1 oltre il §5.2.3 (solo l'indice), l'articolo
+  originale del Gulpease (solo la voce di Wikipedia che lo cita), WCAG 2.4.4 (non
+  riletto oggi). Le regole che ci poggiano lo dichiarano.
+
+### La Home contro le regole
+
+Le misure sono quelle dell'audit qui sopra (I-27, 21 ottobre, 375×812). Il
+fondo della pagina è `rgb(243, 246, 246)`.
+
+| Punto dell'audit | Regole | Misura contro la soglia |
+|---|---|---|
+| 1. Due azioni principali in gara | D-12, D-13 | due pulsanti con fondo pieno, uguali per misura (343×52 px); D-12 ne vuole uno. D-13 passa: due bersagli nel primo schermo, fuori dalla barra |
+| 2. L'avviso fra la promessa e l'azione | D-01, D-14, D-30 | l'avviso viene prima del pulsante; occupa il 13,6 % del primo schermo (D-30 vuole ≤ 15 %: passa); **pesa più del pulsante** con l'indice di D-14: 274.868 contro 181.886 (area × contrasto, 6,62 il bordo ambra, 10,2 il blu). L'indice è grossolano — conta l'area intera di un riquadro che ha solo il bordo colorato —, ma va nella direzione di quello che si vede |
+| 3. I titoli rovesciati | D-15 | un `h1`, tre livelli: D-15 così com'è passa. Non dice che un titolo di livello più alto non può essere più piccolo di uno più basso (`h2` 13 px, `h3` 23 px): **da aggiungere** a D-15, soglia nostra |
+| 4. Il doppione della barra | D-02, D-08, D-13 | tre schede che ripetono le tre voci della barra, circa 600 px |
+| 5. Nessuna scala degli spazi | D-22 | 12 valori; non multipli di 4: 10, 14, 22, 23, 30 |
+| 6. Troppi corpi, un peso fuori scala | D-16, D-20 | 7 corpi nella pagina (D-16 (b): ≤ 5 nel primo schermo); pesi 400, 600, 650, 700 |
+| 7. Nessuna immagine sul telefono | nessuna | le regole non coprono il carattere del marchio: I-27, passo 6, decisione dell'autore |
+| 8. «Che cosa non torna» | D-02, D-08, D-09 | tre argomenti in una sezione, e un titolo che non dice di che cosa parla |
+| 9. Righe lunghe sullo schermo largo | D-19 | fino a 88 caratteri a 1280 px; D-19 vuole ≤ 75 |
+
+Le regole che la Home **già rispetta**: D-04 (frasi corte), D-06 (Gulpease 73),
+D-17 (testo a 16 px), D-18 (interlinea 1,45), D-24 (riquadri bordati nel primo
+schermo: uno, fuori dai pulsanti), D-27 e D-28 per quanto misurato da R-RIF-12.
+
