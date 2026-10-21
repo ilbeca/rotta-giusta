@@ -87,7 +87,7 @@ lavoro che dura settimane e cambia che cosa il sito *è*.
 | I-24 | La lettura da fuori di ChatGPT: domanda, Avanti e fonti sul telefono | ChatGPT | osservata e misurata; nessuna correzione |
 | I-25 | La lettura da fuori di ChatGPT: comprensione e parole | ChatGPT | cinque lettori, 45 risposte; riscritture proposte |
 | I-26 | La lettura da fuori di ChatGPT: metodo e confronto | ChatGPT | proposta per le verifiche, nessuna regola adottata |
-| I-27 | Le regole dai buoni standard, e l'audit delle schermate | autore e Claude | in corso dal 21 ottobre: regole e audit della Home |
+| I-27 | Le regole dai buoni standard, e l'audit delle schermate | autore e Claude | in corso dal 21 ottobre: regole D-01…D-35 e audit delle schermate principali fatti; restano i passi 4–6 |
 
 **Le decisioni prese, in una riga ciascuna, sono in fondo al file: «Le decisioni
 di P-59»; quelle del 17 ottobre in «Il miglioramento continuo».** Le schede qui
@@ -3372,10 +3372,11 @@ sito non si toglie: si sposta e si dice una volta (filosofia, ADR-004).
 
 **Il piano.**
 1. **Le regole**: una trentina, ognuna con la sua fonte verificata, se si
-   misura e come. *In corso.*
+   misura e come. *Fatto: D-01…D-35, qui sotto.*
 2. **L'audit della Home** a 375×812, 375×667 e 1280 px: misure, schermate e
-   violazioni, regola per regola. *In corso.*
-3. L'audit della schermata della domanda: dopo la Home.
+   violazioni, regola per regola. *Fatto.*
+3. L'audit della schermata della domanda: *fatto*, con le altre schermate
+   principali («L'audit delle schermate principali», in fondo a I-27).
 4. Le regole misurabili diventano controlli nei test e vincoli nella
    specifica (Claude, su `main`); le altre una lista di revisione per chi
    disegna (`ui/*`).
@@ -3397,7 +3398,8 @@ regola si scelga.
 
 **Che cosa non va, dal più grave.**
 1. **Due azioni principali in gara.** «Simula il quiz base» (blu pieno) e
-   «Allenati con 10 domande» (azzurro pieno, con bordo) hanno la stessa
+   «Allenati con 10 domande» (fondo azzurro chiaro, con bordo: non è uno
+   stile pieno, e la tabella in fondo lo corregge) hanno la stessa
    larghezza, 343 px, e la stessa altezza, 52 px; a 1280 px stanno affiancate,
    uguali. Nessuna delle due è la prima.
 2. **Un avviso fra la promessa e l'azione.** Il riquadro bordato ambra
@@ -4073,9 +4075,9 @@ fondo della pagina è `rgb(243, 246, 246)`.
 
 | Punto dell'audit | Regole | Misura contro la soglia |
 |---|---|---|
-| 1. Due azioni principali in gara | D-12, D-13 | due pulsanti con fondo pieno, uguali per misura (343×52 px); D-12 ne vuole uno. D-13 passa: due bersagli nel primo schermo, fuori dalla barra |
+| 1. Due azioni principali in gara | D-12, D-13, D-14 | **D-12 passa**, corretto il 21 ottobre: lo stile pieno è uno solo, «Simula il quiz base»; «Allenati con 10 domande» ha il fondo azzurro chiaro, contrasto 1,04 con la pagina, sotto la soglia di 3 dell'audit. La gara è di **misura e posizione**: stessa larghezza e altezza (343×52 px), a 1280 px affiancati. Nessuna regola la misura oggi; D-14 la vede solo in parte. D-13 passa: due bersagli nel primo schermo, fuori dalla barra |
 | 2. L'avviso fra la promessa e l'azione | D-01, D-14, D-30 | l'avviso viene prima del pulsante; occupa il 13,6 % del primo schermo (D-30 vuole ≤ 15 %: passa); **pesa più del pulsante** con l'indice di D-14: 274.868 contro 181.886 (area × contrasto, 6,62 il bordo ambra, 10,2 il blu). L'indice è grossolano — conta l'area intera di un riquadro che ha solo il bordo colorato —, ma va nella direzione di quello che si vede |
-| 3. I titoli rovesciati | D-15 | un `h1`, tre livelli: D-15 così com'è passa. Non dice che un titolo di livello più alto non può essere più piccolo di uno più basso (`h2` 13 px, `h3` 23 px): **da aggiungere** a D-15, soglia nostra |
+| 3. I titoli rovesciati | D-15 | un `h1`, tre livelli: D-15 così com'è passa. Non dice che un titolo di livello più alto non può essere più piccolo di uno più basso (`h2` 13 px, `h3` 23 px): **da aggiungere** a D-15, soglia nostra — «nessun titolo è più piccolo di un titolo di livello più basso nella stessa vista». Misurato: 6 coppie rovesciate |
 | 4. Il doppione della barra | D-02, D-08, D-13 | tre schede che ripetono le tre voci della barra, circa 600 px |
 | 5. Nessuna scala degli spazi | D-22 | 12 valori; non multipli di 4: 10, 14, 22, 23, 30 |
 | 6. Troppi corpi, un peso fuori scala | D-16, D-20 | 7 corpi nella pagina (D-16 (b): ≤ 5 nel primo schermo); pesi 400, 600, 650, 700 |
@@ -4087,3 +4089,160 @@ Le regole che la Home **già rispetta**: D-04 (frasi corte), D-06 (Gulpease 73),
 D-17 (testo a 16 px), D-18 (interlinea 1,45), D-24 (riquadri bordati nel primo
 schermo: uno, fuori dai pulsanti), D-27 e D-28 per quanto misurato da R-RIF-12.
 
+
+### L'audit delle schermate principali — 21 ottobre 2026
+
+**Come.** `rottagiusta.it` (v0.32.0), senza account, in Chrome headless, con
+uno script che apre ogni schermata e ne legge stili e rettangoli
+(`~/bot-ux/rotta-giusta/regole/audit.mjs`, fuori dal repo come gli altri
+strumenti dei lettori). Quindici schermate a 375×812, 375×667 e 1280×800, con
+una schermata del primo schermo e una della pagina intera per ciascuna; le
+immagini che contano sono state guardate, non solo misurate. Le schermate:
+Home; Allenati nei tre segmenti; Esame; Progressi; la domanda prima della
+risposta, dopo una giusta e dopo una sbagliata; la simulazione; il riepilogo;
+le preparazioni del breve e della simulazione; la prova di carteggio; Accedi.
+Le soglie sono quelle di D-01…D-35, e quando sono nostre lo dicono le regole.
+
+**Un limite da sapere prima.** Ogni giro pesca le domande a caso: a 375×667 e
+a 375×812 la schermata della domanda non è sempre la stessa domanda, e il
+riepilogo esce con o senza errori secondo come è andata. Dove un risultato
+dipende dalla domanda, il punto lo dice.
+
+**Che cosa non va, dal più grave.**
+
+1. **Dopo una risposta sbagliata «Avanti» non si raggiunge** (D-29). A
+   375×667 sta fra 757 e 809 px, su uno schermo di 667, e la pagina non
+   scorre: «IRRAGGIUNGIBILE» nella misura. Dopo una risposta giusta, nello
+   stesso giro, sta nel primo schermo (529–581). È il difetto di I-23 e I-24,
+   ora visto anche da uno script, e resta il primo da correggere.
+
+2. **Nella domanda con figura la figura non si vede** (D-01, D-02, D-14).
+   A 375×812, con un quesito che dice «il segnale marittimo rappresentato in
+   figura», il primo schermo mostra la domanda, poi «Metti un segnalibro» e
+   «Segnala un problema» a tutta larghezza, e l'area della domanda si taglia
+   a metà del secondo pulsante: la figura sta sotto, nella parte che scorre,
+   e chi legge vede «in figura» senza figura. Il codice mette i due pulsanti
+   fra il testo e la figura (`site/index.html:998-999` e
+   `strumentiQuesito()`). Due pulsanti di servizio, che si usano di rado,
+   occupano il posto della cosa che serve per rispondere. Non visto da
+   nessuna delle due letture, perché nessun lettore ha avuto una domanda con
+   figura.
+
+3. **Lo stesso avviso, in testa a tre schermate** (D-08, D-14, D-30). «Senza
+   account le risposte valgono solo finché…» è il primo blocco dopo il titolo
+   nella Home, in Allenati → Carteggio e, con le parole dei punteggi, in
+   Allenati → Segnali: bordato in ambra, 13,6 % del primo schermo nelle prime
+   due, 8,4 % nella terza. **Pesa più dell'azione** con l'indice di D-14:
+   274.301 contro 181.927 nella Home, 168.953 contro 27.989 nei Segnali; nel
+   Carteggio un'azione forte nel primo schermo non c'è. La regola vuole la
+   verità detta una volta, vicino a quello che riguarda: qui è detta tre
+   volte, prima di tutto, a chi non ha ancora fatto niente.
+
+4. **Esame apre su un modulo, non sulle prove** (D-01, D-09, D-12). Il primo
+   schermo, a 375×812, è «Che cosa stai preparando?»: due gruppi di scelte,
+   «Salva le scelte» e «Azzera le scelte» alla pari, la data d'esame tagliata
+   in fondo. Il sottotitolo dice «Le prove sono nell'ordine in cui si
+   sostengono», e nessuna prova è in vista; nessun pulsante forte. 330 parole
+   in tutto. In I-23 nessun lettore l'ha aperta, e alla domanda «Allenati ed
+   Esame, che differenza c'è?» nessuno su cinque era sicuro: il nome nuovo da
+   solo non basta, se la prima cosa che si vede è un modulo facoltativo.
+
+5. **Carteggio e Segnali: niente da premere nel primo schermo** (D-01, D-02,
+   D-04, D-06). Il Carteggio ha l'avviso, il titolo «CARTEGGIO» a 13 px con
+   la presentazione a 14 — più piccola del riquadro che segue, a 16 —, e il
+   riquadro «Prima di cominciare» sul materiale: 122 parole nel primo
+   schermo, nessuna azione forte. I Segnali hanno l'avviso, un paragrafo di
+   presentazione e le quattro modalità; «Inizia — fanali notturni» sta sotto
+   la piega a 375×812 e a 375×667. 137 parole nel primo schermo, frasi di
+   14,3 parole in media, **Gulpease 59**, sotto la soglia di 60; otto corpi,
+   fra cui 11,5, 12,5, 13,5 e 14,5 px (D-16).
+
+6. **Le preparazioni nascondono «Inizia»** (D-01, D-08, D-21). Nella
+   preparazione della simulazione «Inizia la prova» non è nel primo schermo a
+   375×812; il titolo «SIMULA LA PROVA» è in maiuscolo a 13 px, più piccolo
+   del testo che introduce; «Quiz base: 20 domande» compare due volte; 126
+   parole prima della piega. Nella prova di carteggio 186 parole nel primo
+   schermo, Gulpease 59, frasi di 14,4 parole, e «Inizia la prova» sotto la
+   piega. La preparazione del breve invece passa: 50 parole, Gulpease 76,
+   «Inizia l'allenamento» in vista. È il modello per le altre.
+
+7. **La gerarchia dei titoli, oltre la Home** (D-15, D-21). In Allenati →
+   Quiz otto titoli di sezione (`h2`) sono a 13 px, in maiuscolo, più piccoli
+   del testo (16 px) che introducono; uno è vuoto. Non sono «rovesciati» nel
+   senso della Home (lì un `h3` più grande dell'`h2`), ma il titolo è la cosa
+   più piccola della sezione. La proposta per D-15 della tabella della Home
+   va allargata: **nessun titolo è più piccolo del testo che introduce**.
+
+8. **Bersagli troppo vicini** (D-28, soglia 8 px). «Non lo sapevo» e
+   «Svista», dopo una risposta sbagliata, a 6 px; nel riepilogo «Crea un
+   account e salva» e «Continua senza account» a 5 px, «Continua senza
+   account» e «Hai già un account? Accedi» a 6; nella domanda con figura
+   «Ingrandisci la figura» a 2 px dalla terza risposta. Non misurati come
+   difetti: i segmenti Quiz · Carteggio · Segnali a 1 px, che sono un
+   controllo segmentato e stanno attaccati per costruzione (Material,
+   *Segmented buttons*). D-28 va scritta con questa eccezione.
+
+9. **Il riepilogo, a volte, ha due pulsanti forti** (D-12). Nel giro a
+   375×667 «Riprova questo quesito» e «Crea un account e salva» hanno tutti
+   e due il fondo pieno; nel giro a 375×812, finito senza errori, il forte è
+   uno solo, «Torna alla Home». La regola vale per ogni stato, e
+   uno dei due non la rispetta.
+
+10. **Troppi corpi e pesi nel runner** (D-16, D-20). La domanda ha sette
+    corpi (11, 12, 13, 14, 15,5, 16, 19 px) e cinque pesi (400, 500, 600,
+    650, 700); la simulazione lo stesso. Il testo della domanda a 19 px e le
+    risposte a 15,5 px vanno bene; il resto sono ritocchi.
+
+11. **Spazi senza scala, ovunque** (D-22). Ogni schermata ha fra 5 e 15
+    valori diversi fra margini e imbottiture, e quasi tutte valori che non
+    sono multipli di 4 (2, 3, 5, 7, 10, 11, 14, 18, 22, 26 px, e 12,5 o 5,6
+    nelle preparazioni). È lo stesso punto 5 della Home: va risolto una volta,
+    nel CSS, con il passo 5 del piano, non schermata per schermata.
+
+12. **Righe lunghe sullo schermo largo** (D-19). A 1280 px quasi tutte le
+    schermate arrivano a 88 caratteri per riga; Esame a **123**. La soglia è
+    75.
+
+**Che cosa non è un difetto, o non ancora.**
+- *Bersagli di 20 px* in Esame e nella preparazione della simulazione: è il
+  cerchio di un pulsante d'opzione, e l'etichetta allarga il bersaglio.
+  R-RIF-12, che misura il bersaglio vero, è verde; da guardare a mano.
+- *Accedi* ha 11 cose da toccare nel primo schermo: è un modulo, e D-13 vale
+  per la Home e le preparazioni. Da guardare con il gesto vero (R-ACC-60).
+- *Il suggerimento dei tasti* («tasti 1 2 3 oppure A B C») compare nella
+  domanda a 375 px perché Chrome headless dichiara un puntatore fine: su un
+  telefono vero non c'è. Non è una misura del telefono.
+
+**Che cosa va già bene, e si tiene.**
+- **Progressi senza account** è la schermata più pulita: 83 parole, nessun
+  avviso, nessun bordo, cinque valori di spazio.
+- **La preparazione del breve** (punto 6) e **la domanda prima della
+  risposta**: un titolo che è la domanda, le risposte grandi e numerate, il
+  testo a 19 e 15,5 px.
+- **Il riepilogo** dice che cosa è successo in frasi corte (Gulpease 67), con
+  i numeri in due righe chiare.
+- Ovunque: testo del corpo a 16 px, bersagli di almeno 44 px dove contano,
+  nessuno sbordamento a 375 px.
+
+**Le regole più violate**, contando le schermate: D-22 (spazi, quasi tutte),
+D-16 (più di 5 corpi nel primo schermo in 5 schermate su 15: i Segnali e
+le quattro del runner), D-01 (azione principale fuori
+dal primo schermo: Esame, Carteggio, Segnali, preparazione della simulazione,
+prova di carteggio), D-19 (righe a 1280 px, quasi tutte), D-14 e D-30
+(l'avviso, tre schermate). Le prime due si risolvono insieme con il piccolo
+sistema di design (passo 5); le altre sono scelte di contenuto e di ordine, da
+fare schermata per schermata.
+
+**Che cosa non ha misurato.** Lo stato con l'account e lo stato H1 (risposte
+senza account); Safari e un telefono vero; il gesto vero; il tema scuro; la
+revisione, Profilo, Info e i legali; il giudizio di una persona.
+
+**L'ordine proposto per correggere** — proposta, decide l'autore:
+1. «Avanti» dopo una risposta sbagliata (punto 1) e la figura sotto i due
+   pulsanti (punto 2): sono difetti di funzionamento, non di gusto.
+2. L'avviso detto una volta (punto 3), Esame che apre sulle prove (punto 4),
+   «Inizia» in vista in Carteggio, Segnali e preparazioni (punti 5 e 6).
+3. Il piccolo sistema di design — scala dei corpi, degli spazi, dei pesi e dei
+   titoli —, che chiude i punti 7, 10, 11 e la metà della Home.
+4. Le regole misurabili diventano controlli, così quello che si corregge non
+   torna indietro in silenzio (passo 4 del piano).

@@ -78,6 +78,30 @@ Otto esecuzioni: **889 s sommati, 242.914 token input non in cache,
 5.390.336 in cache, 25.330 output**; il CLI non espone un costo monetario.
 Verifica di chiusura: `strumenti/controlla.py`.
 
+### Provato — le regole dai buoni standard, e l'audit delle schermate (I-27)
+
+- **Perché.** L'autore vuole pagine più semplici ed eleganti e non ha un
+  campione di persone: si parte da standard e sistemi di design pubblici
+  (WCAG 2.2, ISO 24495-1, Gulpease, Designers Italia, GOV.UK, Apple, Material)
+  invece che dal gusto. Trentacinque regole, D-01…D-35, ognuna con la fonte,
+  il grado e, dove si può, la misura e la soglia — dichiarata «nostra» quando
+  nessuna fonte dà un numero. Stanno in `docs/idee-dopo-gli-account.md`, I-27.
+- **L'audit**, su `rottagiusta.it` v0.32.0 senza account: quindici schermate a
+  375×812, 375×667 e 1280×800, misurate da uno script fuori dal repo e
+  guardate. Dal più grave: «Avanti» irraggiungibile dopo un errore a 375×667
+  (757–809 px su 667), visto ora anche da uno script; **nella domanda con
+  figura la figura non si vede**, perché «Metti un segnalibro» e «Segnala un
+  problema» stanno fra il testo e il disegno in un'area che si taglia — non
+  l'aveva visto nessuna lettura; lo stesso avviso «senza account» in testa a
+  Home, Carteggio e Segnali, più pesante dell'azione; Esame che apre su un
+  modulo; «Inizia» sotto la piega in Carteggio, Segnali e due preparazioni.
+  Poi tipografia e spazi senza scala, ovunque.
+- **Corretto nel documento:** la tabella della Home diceva che D-12 non
+  passa; passa — il secondo pulsante ha il fondo chiaro, contrasto 1,04 —, e
+  la gara fra i due è di misura e posizione.
+- Nessun file del sito, dei test o del motore toccato; le correzioni sono
+  proposte, con un ordine, e decide l'autore.
+
 ## [0.32.0] — 2026-10-20
 
 **Il ridisegno.** Il sito diventa un documento solo: **Home · Allenati ·
