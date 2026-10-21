@@ -263,6 +263,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 24 | **La misura propria**: conteggi aggregati di eventi sul server del sito, senza cookie né terzi, a cominciare dal contatore degli ingressi; le registrazioni fra le metriche; MISURA → BRAINSTORM come quinto passo del ciclo (I-19, decisioni 1–3 e 5 del 17 ottobre in `docs/idee-dopo-gli-account.md`) | Claude con l'autore, poi Claude | `main` | un ADR che riscrive «nessun analytics» (specifica §2.1) e R-ACC-09, e la riga nell'informativa; dopo il rilascio del ridisegno | da scrivere |
 | 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | niente dal motore: `PREVISIONI` c'è (P-72), e un modello entra come metodo accanto alla regola semplice; Q-STIMA solo per quando si mostra | da scrivere |
 | 27 | **Esito e previsioni, la pagina e l'informativa** (B-1, B-2), poi un rilascio | ChatGPT | `ui/main` | soltanto la base giuridica (§4, «Dopo P-64», 1–3): P-74 è chiuso | P-75, da scrivere |
+| 35 | **Il runner dei quiz**: «Avanti» raggiungibile dopo un errore, e la figura in vista prima di rispondere (I-27, audit, punti 1 e 2) | ChatGPT | `ui/main` | niente | P-91 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo P-59», «Dopo P-64», «Dopo il traguardo» e le voci non barrate |
 
 **La v0.31.0 è in linea dal 18 ottobre 2026**, sulla pagina e sul server, con le raccolte nuove spente (prima, la v0.30.0 dal 3 ottobre); P-59,
@@ -6876,6 +6877,90 @@ a 90 px con il `main` nascosto e il fuoco sul titolo, «Torna alla Home» la
 rimette; privacy e avvertenza a 1280 px senza «schermata Info» né «palestra»
 fuori dalla frase decisa, zero sbordamento.
 
+
+### P-91 — ChatGPT: il runner dei quiz, «Avanti» raggiungibile e la figura in vista
+
+**Stato:** pronto, dal 21 ottobre 2026. **Dove:** il worktree
+`~/Software/rotta-giusta-ui`, ramo **`ui/main`**, allineato a `main`.
+**Nasce da:** I-23 e I-24 (le due letture da fuori, Claude e ChatGPT) e
+dall'audit delle schermate principali in I-27 di
+`docs/idee-dopo-gli-account.md`, punti 1 e 2; l'autore ha deciso il 21 ottobre
+che questi due si correggono per primi. **Sblocca:** il resto dell'audit, nell'ordine
+di I-27 (l'avviso detto una volta, Esame che apre sulle prove, «Inizia» in
+vista), e il controllo di D-29 su `main` (I-27, passo 4).
+
+```
+Questo prompt è per ChatGPT, nel worktree ~/Software/rotta-giusta-ui,
+sul ramo ui/main, aperto in modalità Local. Se sei in un'altra cartella o
+su un altro ramo, fermati e dillo, senza scrivere niente.
+
+Sessione P-91: il runner dei quiz, due difetti di funzionamento. Allinea
+ui/main a main (git merge --ff-only main) e leggi AGENTS.md, poi in
+docs/idee-dopo-gli-account.md le schede I-23, I-24 e I-27 (in fondo:
+«L'audit delle schermate principali», punti 1 e 2, e le regole D-01,
+D-02, D-14, D-28, D-29).
+
+1. Dopo una risposta sbagliata «Avanti» non si raggiunge. Il runner
+   (#quizrun) è position:fixed alto quanto lo schermo; .qbody, la
+   domanda con la figura, scorre e si restringe; .qfoot (verdetto, tag,
+   risposte, «Avanti») no. Dopo un errore il verdetto e i tag allungano
+   .qfoot, la domanda si schiaccia fino a poche decine di px, e «Avanti»
+   finisce sotto il bordo: misurato a 375×667 fra 757 e 809 px, e niente
+   scorre. Con risposte lunghe succede anche a 375×812. Due lettori su
+   cinque ne sono usciti con «Termina l'attività».
+   Che cosa deve essere vero dopo (D-29): in ogni stato del runner —
+   prima della risposta, dopo una giusta, dopo una sbagliata con i tag,
+   nella simulazione, con la nota prima e dopo la risposta — «Avanti» (o
+   «Consegna la prova») sta nel primo schermo, oppure ci si arriva
+   scorrendo con il gesto normale della pagina, senza dover indovinare
+   un'area interna; e la domanda resta leggibile, non ridotta a una
+   riga. Scegli tu come: lo scorrimento dell'intero runner invece di due
+   aree, «Avanti» fisso in fondo, o altro. Restano com'erano: le
+   risposte sotto il pollice prima di rispondere, i 200 ms di sordità
+   dopo un cambio di schermata, i tasti 1 2 3 / A B C, la modalità auto,
+   la simulazione senza correzione in corsa, il timer.
+   Tieni d'occhio anche il secondo difetto di I-24: la domanda
+   successiva non deve aprirsi già scorsa a metà.
+
+2. Nella domanda con figura la figura non si vede. strumentiQuesito()
+   mette «Metti un segnalibro» e «Segnala un problema», due pulsanti a
+   tutta larghezza, dentro .qtext, cioè fra il testo e .qfig; l'area
+   della domanda si taglia a metà del secondo pulsante, e a 375×812 chi
+   legge «il segnale rappresentato in figura» non vede la figura
+   (base-828, n. 1.5.3-102). Che cosa deve essere vero dopo (D-01, D-02,
+   D-14): prima di rispondere, nel primo schermo a 375×812, ci sono la
+   domanda, la figura intera e l'inizio delle risposte; i due gesti di
+   servizio restano raggiungibili da ogni quesito — runner e revisione —
+   ma non prendono il posto né l'evidenza di quello che serve per
+   rispondere (per esempio dopo la figura, o dopo le risposte, come
+   link o pulsanti secondari). Restano com'erano: il permesso dei gesti
+   (permessoGesto / rigaScrivibile), aria-pressed del segnalibro, il
+   pannello «Segnala un problema».
+
+Dove i bersagli che tocchi stanno vicini, tienili ad almeno 8 px (D-28):
+oggi «Non lo sapevo» e «Svista» sono a 6 px e «Ingrandisci la figura» a
+2 px dalla terza risposta.
+
+Per riprodurre e guardare: i quesiti si aprono da Allenati → Quiz →
+Cerca un quesito per numero. Prima e dopo, a 375×667, 375×812 e
+1280×800, con schermate guardate e i rettangoli letti dalla pagina:
+base-400 (n. 1.3.8-10) risposto sbagliato; base-1293 (n. 1.8.1-5, il
+quesito più lungo della banca) risposto giusto e sbagliato; base-829
+(n. 1.5.3-103, il più lungo con figura) e base-828 prima di rispondere;
+una simulazione del quiz base con un errore; la revisione di
+un'attività. Per ogni caso scrivi dove stanno «Avanti» e la figura, in
+px, prima e dopo. Le figure si vedono nella pagina servita da
+strumenti/serve.py.
+
+Nessun file del motore, dei test o dei dati. Se per fare una delle due
+cose serve un controllo nuovo o un contratto del motore, fermati e
+scrivilo nel §10.1 di docs/ridisegno-progetto.md invece di aggirarlo.
+Le cinque suite verdi, l'interfaccia con la 8620 guardata libera per 90
+s prima (la suite di main e questa si escludono). Voce in fondo a
+[Unreleased] con le misure prima e dopo, un commit con il trailer, la
+versione non si tocca, niente push. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
+```
 
 ### I segnaposto — i prompt che non si possono ancora scrivere
 

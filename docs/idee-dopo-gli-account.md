@@ -87,7 +87,7 @@ lavoro che dura settimane e cambia che cosa il sito *è*.
 | I-24 | La lettura da fuori di ChatGPT: domanda, Avanti e fonti sul telefono | ChatGPT | osservata e misurata; nessuna correzione |
 | I-25 | La lettura da fuori di ChatGPT: comprensione e parole | ChatGPT | cinque lettori, 45 risposte; riscritture proposte |
 | I-26 | La lettura da fuori di ChatGPT: metodo e confronto | ChatGPT | proposta per le verifiche, nessuna regola adottata |
-| I-27 | Le regole dai buoni standard, e l'audit delle schermate | autore e Claude | in corso dal 21 ottobre: regole D-01…D-35 e audit delle schermate principali fatti; restano i passi 4–6 |
+| I-27 | Le regole dai buoni standard, e l'audit delle schermate | autore e Claude | in corso dal 21 ottobre: regole D-01…D-35 e audit fatti, adottati dall'autore; i punti 1–2 a P-91; restano i passi 4–6 |
 
 **Le decisioni prese, in una riga ciascuna, sono in fondo al file: «Le decisioni
 di P-59»; quelle del 17 ottobre in «Il miglioramento continuo».** Le schede qui
@@ -4246,3 +4246,10 @@ revisione, Profilo, Info e i legali; il giudizio di una persona.
    titoli —, che chiude i punti 7, 10, 11 e la metà della Home.
 4. Le regole misurabili diventano controlli, così quello che si corregge non
    torna indietro in silenzio (passo 4 del piano).
+
+**Deciso dall'autore il 21 ottobre 2026.** Le regole si adottano come
+proposte: quelle misurabili diventano controlli nei test e vincoli nella
+specifica (Claude, su `main`), le altre una lista di revisione per chi disegna
+(`ui/*`); le soglie dichiarate «nostre» restano tali finché l'uso non le
+corregge. L'ordine proposto qui sopra è accettato. I punti 1 e 2 li corregge
+ChatGPT con **P-91** (`docs/prossime-sessioni.md`, §6; riga 35 della coda).

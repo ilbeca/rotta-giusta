@@ -101,6 +101,10 @@ Verifica di chiusura: `strumenti/controlla.py`.
   la gara fra i due è di misura e posizione.
 - Nessun file del sito, dei test o del motore toccato; le correzioni sono
   proposte, con un ordine, e decide l'autore.
+- **Deciso il 21 ottobre:** le regole si adottano come proposte e l'ordine è
+  accettato; i punti 1 e 2 vanno a ChatGPT con P-91, scritto in
+  `docs/prossime-sessioni.md` con i quesiti per riprodurli (base-400,
+  base-1293, base-828, base-829) e che cosa deve essere vero dopo.
 
 ## [0.32.0] — 2026-10-20
 
