@@ -6881,7 +6881,8 @@ fuori dalla frase decisa, zero sbordamento.
 ### P-91 — ChatGPT: il runner dei quiz, «Avanti» raggiungibile e la figura in vista
 
 **Stato:** fuso su `main` il 23 ottobre 2026 (merge `c4080f9`), con la
-specifica allineata (R-RIF-17 e 18 senza difetto aperto, §7.5); da rilasciare.
+specifica allineata (R-RIF-17 e 18 senza difetto aperto, §7.5); rilasciato
+nella v0.33.0 il 23 ottobre 2026.
 Realizzato e verificato su `ui/main` il 23 ottobre 2026. Misure, verifiche e limiti in
 [runner-quiz-ux.md](runner-quiz-ux.md); cinque dichiarazioni T-10/T-11 tolte,
 controlli verdi sulla pagina vera. La regia aggiorna dopo la merge il testo

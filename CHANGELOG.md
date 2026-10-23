@@ -11,6 +11,21 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+## [0.33.0] — 2026-10-23
+
+**Il runner dei quiz si scorre, e la figura si vede.** Sul telefono, dopo una
+risposta, il pulsante per andare avanti poteva finire sotto il bordo dello
+schermo senza che niente scorresse, e la domanda si schiacciava fino a
+sparire; nei quesiti con un disegno, la figura stava sotto i pulsanti
+«Metti un segnalibro» e «Segnala un problema» e non si vedeva prima di
+rispondere. Ora scorre l'intero runner, ogni quesito nuovo comincia
+dall'inizio, la figura viene subito dopo la domanda, e segnalibro e
+segnalazione stanno dopo le risposte. Due controlli nuovi del banco, T-10 e
+T-11, lo misurano in Chrome a 375 px. Il server non cambia: si porta allo
+stesso tag con `rg-aggiorna` perché `GET /v1/salute` dica la versione nuova.
+Le voci che seguono sono il lavoro di questi giorni, com'è stato scritto
+allora.
+
 ### Verificato — la v0.32.0, in linea
 
 - **Il tag e la pagina.** `v0.32.0` è un tag annotato su `e281865`, pushato con
