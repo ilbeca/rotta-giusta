@@ -6880,7 +6880,13 @@ fuori dalla frase decisa, zero sbordamento.
 
 ### P-91 — ChatGPT: il runner dei quiz, «Avanti» raggiungibile e la figura in vista
 
-**Stato:** pronto, dal 21 ottobre 2026. **Dove:** il worktree
+**Stato:** realizzato e verificato su `ui/main` il 23 ottobre 2026; attende
+la merge della regia. Misure, verifiche e limiti in
+[runner-quiz-ux.md](runner-quiz-ux.md); cinque dichiarazioni T-10/T-11 tolte,
+controlli verdi sulla pagina vera. La regia aggiorna dopo la merge il testo
+di R-RIF-17 e R-RIF-18 nella specifica, ancora dichiarati aperti: la penna
+di quel documento resta su `main`. Versione invariata, nessun push.
+**Dove:** il worktree
 `~/Software/rotta-giusta-ui`, ramo **`ui/main`**, allineato a `main`.
 **Nasce da:** I-23 e I-24 (le due letture da fuori, Claude e ChatGPT) e
 dall'audit delle schermate principali in I-27 di

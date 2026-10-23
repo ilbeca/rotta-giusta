@@ -771,6 +771,23 @@ summary{min-height:44px;cursor:pointer;align-content:center}#progressi-pagina h2
    risposte: si puo' scorrere il runner mantenendo una zona per la domanda. */
 #quizrun:has(>.runner-warning:not([hidden])),#cartrun:has(>.runner-warning:not([hidden])),#segrun:has(>.runner-warning:not([hidden])){overflow-y:auto}
 #quizrun:has(>.runner-warning:not([hidden])) .qbody,#cartrun:has(>.runner-warning:not([hidden])) .qbody,#segrun:has(>.runner-warning:not([hidden])) .qbody{flex-shrink:0;min-height:180px}
+/* Un solo scorrimento, da qualunque punto della domanda o delle risposte:
+   il piede non deve schiacciare il testo quando arrivano verdetto e tag.
+   Il flex conserva le risposte in basso solo finche' c'e' spazio libero. */
+#quizrun{overflow-y:auto;scroll-padding-top:calc(var(--altezza-testata) + 12px)}
+#quizrun .qbody{flex-shrink:0;overflow:visible}
+#quizrun .qfig:empty{display:none}
+#quizrun .tags,.rv-tags{gap:8px}
+.qfig .fig-zoom{margin-top:8px}
+#r-strumenti{flex:0 0 auto}
+.strumenti-quesito{gap:8px 16px;margin-top:16px}
+.strumenti-quesito .btn{width:auto;min-height:44px;padding:8px 0;
+  background:transparent;border-color:transparent;text-decoration:underline;text-underline-offset:3px}
+@media(max-width:759px){
+  /* Anche con le risposte lunghe si vede la figura intera e l'inizio della
+     prima risposta; l'ingrandimento resta disponibile sotto la figura. */
+  #quizrun .qfig img{max-height:26vh}
+}
 /* Il pallino resta visibile; il suo testo accessibile non copre il timer. */
 [data-avatar] #nav-save-status{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 </style>
@@ -1003,6 +1020,7 @@ summary{min-height:44px;cursor:pointer;align-content:center}#progressi-pagina h2
     <div class="qans" id="r-ans"></div>
     <button class="btn primary" id="r-next" style="display:none;margin-top:10px">Avanti</button>
   </div>
+  <div id="r-strumenti"></div>
   <div class="fine" id="r-fine"></div>
   <!-- La conferma della consegna: in pagina, non un confirm() nativo, e il
        timer intanto continua (area 3, §4.1). -->
@@ -3162,6 +3180,9 @@ function mostra() {
   document.getElementById('r-ans').innerHTML = it.r.map((t, i) =>
     `<button class="ans" data-i="${i}"><span class="k">${KEYS[i]}</span><span>${esc(t)}</span></button>`).join('');
   cronometro(); dipingiStrumenti();
+  // Il quesito nuovo comincia dal testo, anche dopo una risposta in fondo
+  // a un quesito lungo: lo scorrimento appartiene all'intero runner.
+  document.getElementById('quizrun').scrollTop = 0;
 }
 
 /**
@@ -5765,7 +5786,7 @@ function segnato(id) {return E.codaSegnalibri(S.banca,S.archivio,{}).lista.some(
 function strumentiQuesito(it,runner=true) {return `<div class="strumenti-quesito"><button ${runner?'id="r-segno"':''} class="btn" ${disponibileGesto({_t:'b',uid:'anteprima',ts:E.isoLocale(),item_id:it.id,segnato:segnato(it.id)?0:1})?'':'disabled'} data-segno="${esc(it.id)}" aria-pressed="${segnato(it.id)}">${segnato(it.id)?'Rimuovi segnalibro':'Metti un segnalibro'}</button><button class="btn" data-segnala="${esc(it.id)}">Segnala un problema</button></div>`;}
 function dipingiStrumenti() {
   if(!S.run)return; const q=S.run.coda[S.run.i];if(!q)return;
-  let box=el('quizrun').querySelector('#r-strumenti');if(!box){box=document.createElement('div');box.id='r-strumenti';el('quizrun').querySelector('.qtext').append(box);}box.innerHTML=strumentiQuesito(q);
+  el('r-strumenti').innerHTML=strumentiQuesito(q);
 }
 function apriSegnalazione(id) {
   const q=S.banca.find(x=>x.id===id)||S.cart.find(x=>x.id===id)||S.tec.find(x=>x.id===id);
