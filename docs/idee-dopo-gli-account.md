@@ -4257,3 +4257,7 @@ Lo stesso giorno il punto 1 ha il suo controllo, **T-10** (R-RIF-17): misura
 D-29 nel browser, ed è rosso sulla pagina vera nei quattro casi, anche dopo una
 risposta giusta a 375×812 (la domanda a 22 px, «Vedi il riepilogo» a 804–856
 px). I quattro casi sono difetti aperti dichiarati finché P-91 non li chiude.
+
+**Il piano dei passi 2–4 (23 ottobre 2026):** in
+[regole-disegno-progetto.md](regole-disegno-progetto.md), tre giri con il
+metodo di T-10 e P-91, e sei decisioni per l'autore (§11).

@@ -33,6 +33,35 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 - **Non guardato:** il runner nuovo su un telefono vero dopo il rilascio; lo
   hanno misurato P-91 e i gruppi T-10 e T-11 in Chrome.
 
+### Progettato — le regole di disegno nella pagina, i passi 2–4 di I-27
+
+- **Perché un piano prima dei controlli.** L'autore ha accettato il 21 ottobre
+  le regole D-01…D-35 e un ordine in quattro passi; il primo è chiuso con P-91.
+  Per gli altri mancava che cosa si misura, con quale soglia, in che ordine e
+  con quali controlli: senza, la correzione della pagina non avrebbe un rosso
+  da far diventare verde. `docs/regole-disegno-progetto.md`, file neutro, lo
+  scrive in tre giri — l'avviso detto una volta, Esame sulle prove e «Inizia»
+  in vista; le scale di corpi, spazi e pesi; le parole e i nomi —, ognuno con
+  il metodo di T-10 e P-91, il contratto, i controlli, le rotture, i requisiti
+  proposti per il §9.11 e i prompt P-92 e P-93 proposti alla regia.
+- **Trovato leggendo pagina e banchi:** C-02 (R-ACC-02) e T-06 (R-RIF-08)
+  cercano l'avviso «senza account» nella Home, mentre il §7.1 della specifica
+  non lo chiede lì e il §5.4 lo vuole «prima di ogni avvio». Spostarlo accanto
+  a «Inizia», come chiede D-30, li avrebbe fatti rossi per la ragione
+  sbagliata: il giro 1 ne cambia il controllo, non il requisito. La
+  preparazione dei quiz ha già la frase accanto a «Inizia» (`#quiz-storage`).
+  E le risposte del runner sono a 15,5 px, sotto i 16 che D-17 chiede: l'audit
+  le aveva lasciate passare.
+- **Rispetto alla proposta di partenza:** D-14 con tre verifiche discrete al
+  posto dell'indice area × contrasto, che pesava l'area intera di un riquadro
+  colorato solo sul bordo; il banco che incrocia `data-ruolo` con la mappa
+  degli identificatori e trova le azioni anche prima che l'aggancio ci sia;
+  D-28 e D-19 nel giro 2, perché si correggono nella stessa passata sul CSS;
+  il passo 4 distribuito nei tre giri. Sei decisioni per l'autore nel §11,
+  due delle quali (l'avviso, Esame) servono prima di P-92.
+- Nessun file di `site/`, `tests/`, della specifica o della coda toccato;
+  in I-27 una riga che rimanda al file. Guardiano verde.
+
 ## [0.33.0] — 2026-10-23
 
 **Il runner dei quiz si scorre, e la figura si vede.** Sul telefono, dopo una
