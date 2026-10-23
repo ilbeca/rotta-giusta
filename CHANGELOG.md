@@ -168,6 +168,39 @@ Verifica di chiusura: `strumenti/controlla.py`.
   quattro skip previsti; dati 225; server non toccato. Guardiano verde.
   `site/` non è stato toccato.
 
+### Corretto — P-91: il runner si scorre, la figura viene prima dei servizi
+
+- **Perché.** Il piede fisso schiacciava la domanda fino a 22 px e lasciava
+  «Avanti» fuori dal telefono; i due pulsanti di servizio fra testo e figura
+  nascondevano ciò che serviva per rispondere. Ora scorre l'intero runner,
+  la domanda conserva la propria altezza e ogni quesito nuovo riparte da
+  `scrollTop=0`. Le risposte restano in basso quando c'è spazio. Segnalibro
+  e segnalazione vengono dopo risposte e proseguimento, come azioni secondarie;
+  i permessi e `aria-pressed` conservano il loro contratto. Tag separati da
+  8 px e ingrandimento distanziato di 8 px.
+- **Prima e dopo, in px CSS.** Base-400, errore a 375×667: proseguimento
+  **756,9–808,9**, irraggiungibile, → **805,3–857,3** nel contenuto che
+  ora scorre → **469,3–521,3** in vista. Base-1293, giusta a 375×812:
+  **800,8–852,8**, tagliato, → **901,6–953,6** → **613,6–665,6** raggiunto.
+  A 375×812, prima di rispondere, figura base-828 **448,3–724,4**, tagliata
+  da `.qbody` a 414,8, → **322,3–533,4** intera; base-829
+  **500,8–776,8**, con `.qbody` che finiva a 226,5, → **374,8–585,9**
+  intera. Il centro della prima risposta è ora a **705,0 / 788,9** px.
+  [Misure complete](docs/runner-quiz-ux.md): i quattro quesiti a 375×667,
+  375×812 e 1280×800, giusta/sbagliata, note, simulazione e revisione;
+  schermate confrontate e gesti reali in Chrome headless.
+- **Controlli.** Tolte nello stesso cambiamento le quattro dichiarazioni
+  T-10 e quella T-11 da `docs/eccezioni-interfaccia.md`: i gruppi girano
+  verdi per intero sulla pagina vera. Interfaccia **3.524**, con la 8620
+  guardata libera per **90 s** prima; motore **215/219**, quattro skip
+  previsti per le vecchie funzioni ora nel motore; dati **225**;
+  specifica **1.048**; server **89/89** su Node 25 e **89/89** sulla
+  LTS Node 24.22.0 ufficiale verificata con SHASUMS256. Tastiera, protezione
+  dei 200 ms, auto nell'allenamento per argomento e ripartenza dall'inizio
+  provate nella pagina. Motore, dati, test e versione non modificati;
+  niente push o produzione. La regia allinea su `main` il testo di
+  R-RIF-17/R-RIF-18 dopo la merge.
+
 ## [0.32.0] — 2026-10-20
 
 **Il ridisegno.** Il sito diventa un documento solo: **Home · Allenati ·
