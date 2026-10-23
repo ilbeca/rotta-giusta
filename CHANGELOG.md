@@ -11,6 +11,28 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+### Verificato — la v0.33.0, in linea
+
+- **Il tag e la pagina.** `v0.33.0` è un tag annotato su `21e8e11`, pushato con
+  `main` con il sì dell'autore del 23 ottobre. «Build now» su statichost.eu
+  dalla regia, nel Chrome dell'autore e su sua richiesta, con il commit di
+  rilascio in cima: la build, 51 s, porta l'etichetta «release: v0.33.0». Da
+  fuori `meta.json` dice 0.33.0 su `rottagiusta.it` e su `.pages.dev`; otto
+  file — la Home, la porta `/app`, `engine.js`, privacy, avvertenza, manifest,
+  `meta.json` e `sw.js` — sono identici byte per byte a `v0.33.0:site/`, e `/`,
+  `/app` e `/?sezione=allenati` rispondono 200.
+- **Il server**, `rg-aggiorna v0.33.0 21e8e11…` lanciato dalla regia sulla
+  macchina, su richiesta dell'autore, con `rg-aggiorna` e `rg-torna` uguali a
+  quelli del repo (SHA-256): la copia di prima,
+  `aggiorna-20261023T194226Z.db`, con `integrity_check` ok, 2 righe, 1 account,
+  schema 6; nel log «raccolte accese: scelte_di_preparazione». Da fuori
+  `GET /v1/salute` dice 0.33.0, schema 6/6, la stessa epoca della copia di
+  prima (`278fd81e…`) e le raccolte con le sole scelte di preparazione accese;
+  il CORS espone `Retry-After` al sito. `/var/lib/rg/precedente` dice `v0.32.0`:
+  è lì che torna `rg-torna`.
+- **Non guardato:** il runner nuovo su un telefono vero dopo il rilascio; lo
+  hanno misurato P-91 e i gruppi T-10 e T-11 in Chrome.
+
 ## [0.33.0] — 2026-10-23
 
 **Il runner dei quiz si scorre, e la figura si vede.** Sul telefono, dopo una
