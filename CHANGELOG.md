@@ -201,6 +201,32 @@ Verifica di chiusura: `strumenti/controlla.py`.
   niente push o produzione. La regia allinea su `main` il testo di
   R-RIF-17/R-RIF-18 dopo la merge.
 
+### Merge — P-91 su `main`, e la specifica allineata
+
+- **La merge di `ui/main` (P-91) è passata dal controllo dei territori**, ed è
+  stata guardata nel browser locale prima delle suite: base-829 a 375×812 con
+  domanda, figura (375–586 px) e inizio della prima risposta nel primo
+  schermo; dopo una risposta sbagliata la domanda resta alta 131 px e «Vedi il
+  riepilogo», a 1.318 px, si raggiunge scorrendo il runner, con niente sopra.
+- **R-RIF-17 e R-RIF-18 non dicono più «difetto aperto»**, il §7.5 dice il
+  runner com'è — risposte in fondo quando c'è spazio, altrimenti scorre tutto —,
+  e P-91 nella coda è fuso, da rilasciare.
+- **Visto e non corretto:** subito dopo la risposta il pulsante per proseguire
+  può stare uno schermo più giù, e niente invita a scorrere. T-10 lo accetta,
+  perché si raggiunge; se portarlo in vista da solo è una scelta dell'autore.
+- **Due rossi falsi del banco, uno per giro, mai lo stesso.** I primi due giri
+  dell'interfaccia sono finiti a 3.523 su 3.524, ognuno con una rottura della
+  pagina di riferimento del client rossa per il motivo sbagliato: «l'archivio
+  di prima cancellato all'uscita» e «l'avviso è coperto». La merge non tocca né
+  quella pagina né il banco. Fatte girare da sole, quattro volte ciascuna,
+  tutte e due sono rosse per il loro motivo otto volte su otto; il terzo giro
+  intero è verde. Restano da capire: sono rotture che, a suite intera e con la
+  macchina a un carico medio di 2–3, una volta su qualche giro escono rosse per
+  un altro motivo.
+- Suite: interfaccia **3.524**, in 5 min 31 s, con la 8620 guardata libera per
+  90 s prima; specifica **1.048**; motore 215/219 con i quattro skip previsti;
+  dati 225; server non toccato. Guardiano verde.
+
 ## [0.32.0] — 2026-10-20
 
 **Il ridisegno.** Il sito diventa un documento solo: **Home · Allenati ·
