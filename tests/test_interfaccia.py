@@ -3485,9 +3485,9 @@ ROTTURE_RACCORDO = [
 # Alla merge di P-25 la tabella non deve avere piu' righe `T-*`: e' li' che si
 # esige il regime nuovo, senza un segno da cercare nella pagina.
 GRUPPI_RIFINITURA = ['T-01', 'T-02', 'T-03', 'T-04', 'T-05:finestra', 'T-05:arresti', 'T-06', 'T-07:prova', 'T-07:conto',
-                     'T-08', 'T-09', 'T-10']
+                     'T-08', 'T-09', 'T-10', 'T-11']
 VERIFICHE_RIFINITURA = {'T-01': 9, 'T-02': 9, 'T-03': 11, 'T-04': 6, 'T-05:finestra': 5, 'T-05:arresti': 2, 'T-06': 3,
-                        'T-07:prova': 5, 'T-07:conto': 3, 'T-08': 2, 'T-09': 2, 'T-10': 5}
+                        'T-07:prova': 5, 'T-07:conto': 3, 'T-08': 2, 'T-09': 2, 'T-10': 5, 'T-11': 2}
 
 # Rotture della pagina di riferimento per l'area 6: (che cosa, parti da
 # eseguire, sostituzioni, parola che il rosso deve contenere). Ognuna e' un
@@ -3601,6 +3601,14 @@ ROTTURE_RIFINITURA = [
     ('il runner fisso che taglia', ['T-10'], [(_STILE, _STILE + '\n#quizrun.on {position:fixed; inset:0; overflow:hidden} #quizrun.on #r-text {padding-bottom:900px}')], 'da programma'),
     ('il runner fisso che sborda', ['T-10'], [(_STILE, _STILE + '\n#quizrun.on {position:fixed; inset:0; overflow:visible} #quizrun.on #r-text {padding-bottom:900px}')], 'niente lo porta in vista'),
     ('un velo fisso sopra il pulsante', ['T-10'], [(_STILE, _STILE + "\n#quizrun.on::after {content:''; position:fixed; inset:0; z-index:5}")], 'ha sopra'),
+    # T-11 (D-01, D-02, D-14, R-RIF-18): quattro modi in cui la figura di un
+    # quesito non si vede prima di rispondere. Il primo e' la forma del difetto
+    # della pagina vera, misurato il 23 ottobre 2026: un'area che scorre e si
+    # taglia prima della figura, e la figura resta sotto il taglio.
+    ('un\'area che taglia la figura', ['T-11'], [(_STILE, _STILE + '\n#quizrun.on {height:220px; overflow:auto}')], 'tagliata da'),
+    ('la figura sotto il bordo dello schermo', ['T-11'], [(_STILE, _STILE + '\n#quizrun.on #r-text {padding-bottom:900px}')], 'se ne vede 0 px'),
+    ('un velo sopra la figura', ['T-11'], [(_STILE, _STILE + "\n#r-fig {position:relative} #r-fig::after {content:''; position:absolute; inset:0}")], 'la figura ha sopra'),
+    ('la figura nascosta', ['T-11'], [(_STILE, _STILE + '\n#r-fig img {display:none}')], 'non si vede'),
 ]
 
 
@@ -3705,6 +3713,14 @@ def test_rifinitura_proseguire():
     pulsante per proseguire si vede o ci si arriva scorrendo, e niente gli sta
     sopra (T-10)."""
     registra_rifinitura('T-10')
+
+
+def test_rifinitura_figura():
+    """R-RIF-18 (D-01, D-02, D-14): nel runner dei quiz, a 375×812 e prima di
+    rispondere, con base-828 e base-829 aperti per numero, la figura si vede
+    intera nel primo schermo, con l'inizio della domanda e della prima
+    risposta, e niente le sta sopra (T-11)."""
+    registra_rifinitura('T-11')
 
 
 def test_rifinitura_provata_al_contrario():
@@ -4464,7 +4480,7 @@ def main():
               test_ridisegno_tragitti, test_ridisegno_stati_in_schermata, test_ridisegno_tragitti_provati_al_contrario,
               test_rifinitura_senza_account, test_rifinitura_invio, test_rifinitura_guasto, test_rifinitura_identita,
               test_rifinitura_finestra, test_rifinitura_fuoco, test_rifinitura_avvisi, test_rifinitura_larghezze,
-              test_rifinitura_contrasto, test_rifinitura_bersagli, test_rifinitura_proseguire, test_rifinitura_provata_al_contrario,
+              test_rifinitura_contrasto, test_rifinitura_bersagli, test_rifinitura_proseguire, test_rifinitura_figura, test_rifinitura_provata_al_contrario,
               test_raccordo_riconosciuto, test_esito_senza_account, test_esito_quando, test_esito_salvato,
               test_avvio_registrato, test_avvio_non_si_vede, test_avvio_non_e_una_risposta, test_avvio_server_di_prima,
               test_avvio_con_un_errore, test_raccordo_provato_al_contrario,

@@ -50,7 +50,8 @@ a.da-solo, label {display:inline-block}
 /* Nel runner la barra delle sezioni sparisce; titolo, uscita e avatar restano (ridisegno §2). */
 body.in-attivita #barra, body.in-attivita main {display:none}
 #quizrun, #cartrun, #segrun, #rivedi {background:#fff}
-[role="tab"][aria-selected="true"] {font-weight:bold}</style>
+[role="tab"][aria-selected="true"] {font-weight:bold}
+#r-fig img {max-width:100%; max-height:34vh}</style>
 <body>
 <header>
   <a href="/" id="marchio" class="da-solo" data-v="home">Rotta Giusta</a>
@@ -222,6 +223,7 @@ body.in-attivita #barra, body.in-attivita main {display:none}
   <p id="r-numero"></p>
   <p id="r-nbp" hidden></p>
   <div id="r-text"></div>
+  <div id="r-fig"></div>
   <div id="r-verdict"></div>
   <div id="r-ans"></div>
   <div id="r-tag" hidden><p>Se vuoi, indica perché hai sbagliato. Puoi saltare questo passaggio.</p>
@@ -710,6 +712,8 @@ function mostra() {
   // La nota di prima si legge prima di rispondere: e' quella dell'oscuramento (§7.1).
   $('r-nbp').textContent = it.nbp || ''; $('r-nbp').hidden = !it.nbp;
   $('r-text').textContent = it.d;
+  // La figura del quesito, prima delle risposte e intera nel primo schermo (T-11, D-01).
+  $('r-fig').innerHTML = it.f ? `<img src="/figure/${esc(it.f)}" alt="Figura del quesito ${esc(it.p || it.id)}">` : '';
   R.erroreQui = false;
   dipingiTag();
   dipingiSegno(it.id);

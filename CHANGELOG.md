@@ -132,6 +132,42 @@ Verifica di chiusura: `strumenti/controlla.py`.
   la rottura che la riguarda passa verde. La pagina di riferimento mostra ora
   «Vedi il riepilogo» anche dopo l'ultima domanda, come la pagina vera.
 
+### Test — T-11: la figura si vede prima di rispondere (D-01, D-02, D-14, R-RIF-18)
+
+- **Perché adesso.** P-91 chiede a ChatGPT di correggere due difetti del
+  runner dei quiz, e per il secondo — chi legge «il segnale rappresentato in
+  figura» non vede la figura — non c'era un controllo: le letture di testo
+  trovano la figura nel DOM, e nessun banco guarda dove sta. Scritto prima
+  della correzione, così la correzione ha un rosso da far diventare verde,
+  come T-10 per «Avanti».
+- **Che cosa misura.** Il gruppo nuovo T-11 del banco del client apre per
+  numero base-828 e base-829, il quesito più lungo con figura, a 375×812, e
+  prima di rispondere guarda nella pagina, senza scorrere: la figura caricata
+  sta intera nell'area che si vede — la finestra tagliata da ogni contenitore
+  con overflow —, niente le sta sopra (`elementFromPoint`), e nella stessa
+  area ci sono l'inizio della domanda e il centro della prima risposta.
+- **Sulla pagina vera è rosso.** Con base-828 la figura sta a 448–724 px e
+  `.qbody` si taglia a 415, quindi della figura non si vede niente; con
+  base-829 l'area di `.qbody` va da 193 a 226 px, e non si vede nemmeno
+  l'inizio della domanda. La causa è quella dell'audit di I-27: «Metti un
+  segnalibro» e «Segnala un problema» stanno dentro `.qtext`, fra la domanda e
+  la figura. È un **difetto aperto dichiarato** in
+  `docs/eccezioni-interfaccia.md`, e P-91 dice ora che lo chiude e che toglie
+  la riga nello stesso commit.
+- **Provato al contrario.** La pagina di riferimento del client mostra ora la
+  figura fra la domanda e le risposte, e passa. Quattro rotture — un'area che
+  taglia la figura, la figura sotto il bordo dello schermo, un velo sopra la
+  figura, la figura nascosta — sono rosse ognuna per il suo motivo. Tolto
+  `elementFromPoint`, il velo passa verde; tolto il taglio dei contenitori,
+  l'area che taglia resta rossa ma per un altro motivo, e la suite lo
+  prende.
+- **Che cosa non vede:** i 375×667, la revisione e la simulazione, Safari, e se
+  la figura è abbastanza grande da leggerla.
+- Suite: interfaccia **3.534** (erano 3.514), in 5 min 27 s, con la 8620
+  guardata libera per 90 s prima; specifica **1.048**; motore 215/219 con i
+  quattro skip previsti; dati 225; server non toccato. Guardiano verde.
+  `site/` non è stato toccato.
+
 ## [0.32.0] — 2026-10-20
 
 **Il ridisegno.** Il sito diventa un documento solo: **Home · Allenati ·

@@ -3878,6 +3878,103 @@ async function t10(b, ctx, v) {
   } finally { await c.chiudi(); }
 }
 
+// --- T-11: la figura si vede prima di rispondere (D-01, D-02, D-14, R-RIF-18) --------
+//
+// docs/idee-dopo-gli-account.md, I-27, regole D-01, D-02 e D-14: chi legge «il
+// segnale rappresentato in figura» deve vedere la figura, intera, prima di
+// rispondere, e accanto la domanda e l'inizio delle risposte. Nato dall'audit
+// delle schermate (I-27, punto 2): sul sito della v0.32.0 «Metti un segnalibro»
+// e «Segnala un problema» stanno dentro .qtext, fra il testo e la figura, in
+// un'area che si taglia, e a 375×812 la figura di base-828 non si vede. Nessun
+// controllo lo vedeva: le letture di testo trovano la figura nel DOM, e i banchi
+// non guardano dove sta.
+//
+// La misura, nella pagina e com'e' aperta, senza scorrere: l'area visibile e' la
+// finestra intersecata con ogni antenato che taglia (overflow diverso da
+// visible); la figura caricata deve starci intera, con il suo centro sotto il
+// dito (elementFromPoint), e devono starci anche l'inizio della domanda e il
+// centro della prima risposta. I casi: base-828 e base-829, il quesito piu'
+// lungo con figura, aperti per numero, a 375×812, prima di rispondere. Non vede:
+// i 375×667, la revisione, la simulazione, Safari, e se la figura e' leggibile.
+
+function figuraInVista(K) {
+  const W = innerWidth, H = innerHeight;
+  // L'area che si vede di un elemento: la finestra, tagliata da ogni antenato con overflow.
+  const area = (e) => {
+    let a = { top: 0, left: 0, right: W, bottom: H };
+    const tagli = [];
+    for (let p = e.parentElement; p && p !== document.body && p !== document.documentElement; p = p.parentElement) {
+      const cs = getComputedStyle(p);
+      if (cs.overflowX === 'visible' && cs.overflowY === 'visible') continue;
+      const r = p.getBoundingClientRect();
+      const b = { top: Math.max(a.top, r.top), left: Math.max(a.left, r.left), right: Math.min(a.right, r.right), bottom: Math.min(a.bottom, r.bottom) };
+      if (b.top > a.top || b.bottom < a.bottom || b.left > a.left || b.right < a.right) tagli.push(K.nome(p).slice(0, 40));
+      a = b;
+    }
+    return { ...a, tagli };
+  };
+  const sotto = (e, x, y) => { const h = document.elementFromPoint(x, y); return h && (h === e || e.contains(h)) ? null : K.nome(h || document.body); };
+  const px = (r) => `${Math.round(r.top)}–${Math.round(r.bottom)} px`;
+  const difetti = [];
+  const img = [...document.querySelectorAll('#r-fig img')].find(K.V);
+  if (!img) return { difetti: ['la figura (#r-fig img) non si vede'] };
+  if (!img.complete || !img.naturalWidth) return { difetti: ['la figura non e\' caricata'] };
+  const rf = img.getBoundingClientRect(), af = area(img);
+  const tagliata = rf.top < af.top - 1 || rf.bottom > af.bottom + 1 || rf.left < af.left - 1 || rf.right > af.right + 1;
+  if (tagliata) {
+    difetti.push(`la figura sta a ${px(rf)}, e se ne vede ${Math.max(0, Math.round(Math.min(rf.bottom, af.bottom) - Math.max(rf.top, af.top)))} px su ${Math.round(rf.height)}`
+      + ` (area visibile ${px(af)} su ${H}${af.tagli.length ? `, tagliata da ${af.tagli.join(', ')}` : ''})`);
+  } else {
+    const s = sotto(img, (rf.left + rf.right) / 2, (rf.top + rf.bottom) / 2);
+    if (s) difetti.push(`la figura ha sopra ${s}`);
+  }
+  const testo = [...document.querySelectorAll('#r-text')].find(K.V);
+  if (!testo) difetti.push('la domanda (#r-text) non si vede');
+  else {
+    const rt = testo.getBoundingClientRect(), at = area(testo);
+    const riga = parseFloat(getComputedStyle(testo).lineHeight) || parseFloat(getComputedStyle(testo).fontSize) * 1.2;
+    const y = rt.top + Math.min(riga, rt.height) / 2;
+    if (rt.top < at.top - 1 || y > at.bottom) difetti.push(`l'inizio della domanda sta a ${Math.round(rt.top)} px, fuori dall'area visibile ${px(at)}`);
+    else { const s = sotto(testo, rt.left + Math.min(8, rt.width / 2), y); if (s) difetti.push(`l'inizio della domanda ha sopra ${s}`); }
+  }
+  const ans = [...document.querySelectorAll('#r-ans .ans')].find(K.V);
+  if (!ans) difetti.push('la prima risposta non si vede');
+  else {
+    const ra = ans.getBoundingClientRect(), aa = area(ans);
+    const x = (ra.left + ra.right) / 2, y = (ra.top + ra.bottom) / 2;
+    if (y < aa.top || y > aa.bottom || x < aa.left || x > aa.right) difetti.push(`la prima risposta sta a ${px(ra)}, con il centro fuori dall'area visibile ${px(aa)} su ${H}`);
+    else { const s = sotto(ans, x, y); if (s) difetti.push(`la prima risposta ha sopra ${s}`); }
+  }
+  return { difetti, figura: { top: Math.round(rf.top), bottom: Math.round(rf.bottom) } };
+}
+
+const CASI_T11 = ['base-828', 'base-829'];
+export const FIGURA_IN_VISTA = 'a 375×812, prima di rispondere, la figura si vede intera nel primo schermo, con l\'inizio della domanda e della prima risposta, e niente le sta sopra';
+
+async function t11(b, ctx, v) {
+  const g = 'T-11';
+  const c = await b.nuovoContesto();
+  const intoppi = [], difetti = [];
+  let misurati = 0;
+  try {
+    for (const id of CASI_T11) {
+      const it = QUIZ_TUTTI.find((x) => x.id === id);
+      const tab = await c.apri(ctx.sito + ingresso(ctx));
+      await tab.dimensioni(375, 812);
+      if (!await tab.attendi(PRONTO, CARICO)) { intoppi.push(`${id}: la pagina non si apre`); continue; }
+      if (!it || !it.f) { intoppi.push(`${id}: nella banca non ha una figura`); continue; }
+      if (!await apriPerNumero(tab, it)) { intoppi.push(`${id}: il quesito non si apre per numero`); continue; }
+      await tab.attendi(js(`const i = [...document.querySelectorAll('#r-fig img')].find(V); return !!i && i.complete && i.naturalWidth > 0;`), REAZIONE);
+      const m = await tab.valuta(inPagina(figuraInVista));
+      misurati++;
+      for (const d of m.difetti) difetti.push(`${id}: ${d}`);
+    }
+    v.push({ gruppo: g, nome: 'i due quesiti con figura si aprono per numero', ok: !intoppi.length, extra: perDifetto(intoppi) });
+    v.push({ gruppo: g, nome: FIGURA_IN_VISTA, ok: misurati === CASI_T11.length && !difetti.length,
+      extra: misurati < CASI_T11.length ? `misurati ${misurati} casi su ${CASI_T11.length}` : perDifetto(difetti) });
+  } finally { await c.chiudi(); }
+}
+
 // --- F-01: le frasi del riepilogo dei quiz (R-UX-06, P-53) -----------------------
 //
 // docs/area-3-progetto.md §4.2: il riepilogo di una breve attivita' fa tre
@@ -6139,7 +6236,7 @@ async function c23coda(b, ctx, v, g) {
 const GRUPPI = { 'C-01': c01, 'C-02': c02, 'C-03': c03, 'C-04': c04, 'C-05': c05, 'C-06': c06, 'C-07': c07, 'C-08': c08, 'C-21': c21,
   'C-10': c10, 'C-11': c11, 'C-12': c12, 'C-13': c13, 'C-14': c14, 'C-15': c15, 'C-16': c16, 'C-17': c17, 'C-19': c19,
   // L'area 6 (P-45): la rifinitura trasversale.
-  'T-01': t01, 'T-02': t02, 'T-03': t03, 'T-04': t04, 'T-05': t05, 'T-06': t06, 'T-07': t07, 'T-08': t08, 'T-09': t09, 'T-10': t10,
+  'T-01': t01, 'T-02': t02, 'T-03': t03, 'T-04': t04, 'T-05': t05, 'T-06': t06, 'T-07': t07, 'T-08': t08, 'T-09': t09, 'T-10': t10, 'T-11': t11,
   // Le frasi del riepilogo dei quiz (P-53, R-UX-06).
   'F-01': f01,
   // Le condizioni per l'account nel modulo di registrazione (P-57, R-ACC-75).

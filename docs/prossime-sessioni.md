@@ -6886,7 +6886,8 @@ fuori dalla frase decisa, zero sbordamento.
 dall'audit delle schermate principali in I-27 di
 `docs/idee-dopo-gli-account.md`, punti 1 e 2; l'autore ha deciso il 21 ottobre
 che questi due si correggono per primi. Il controllo del punto 1, T-10
-(R-RIF-17), è su `main` dallo stesso giorno, con il difetto dichiarato. **Sblocca:** il resto dell'audit, nell'ordine
+(R-RIF-17), è su `main` dallo stesso giorno, con il difetto dichiarato;
+quello del punto 2, T-11 (R-RIF-18), dal 23 ottobre. **Sblocca:** il resto dell'audit, nell'ordine
 di I-27 (l'avviso detto una volta, Esame che apre sulle prove, «Inizia» in
 vista).
 
@@ -6946,6 +6947,19 @@ D-02, D-14, D-28, D-29).
    link o pulsanti secondari). Restano com'erano: il permesso dei gesti
    (permessoGesto / rigaScrivibile), aria-pressed del segnalibro, il
    pannello «Segnala un problema».
+   C'è un controllo che lo misura: T-11 nel banco del client
+   (R-RIF-18 della specifica). A 375×812, prima di rispondere, con
+   base-828 e base-829 aperti per numero, pretende la figura intera
+   nell'area che si vede — la finestra tagliata da ogni contenitore con
+   overflow —, niente sopra di lei, l'inizio della domanda e il centro
+   della prima risposta. Oggi è rosso: con base-828 la figura sta a
+   448–724 px e .qbody si taglia a 415; con base-829 .qbody va da 193 a
+   226 px, e non si vede nemmeno l'inizio della domanda. È dichiarato in
+   docs/eccezioni-interfaccia.md, riga T-11: toglila nello stesso commit
+   della correzione, e T-11 deve girare verde sulla pagina vera. Attento
+   al punto 1: con base-829 le tre risposte lunghe occupano molto, e
+   tenerle tutte fisse sotto il pollice può non lasciare posto alla
+   figura; il controllo chiede soltanto il centro della prima risposta.
 
 Dove i bersagli che tocchi stanno vicini, tienili ad almeno 8 px (D-28):
 oggi «Non lo sapevo» e «Svista» sono a 6 px e «Ingrandisci la figura» a

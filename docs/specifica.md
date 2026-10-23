@@ -2529,6 +2529,7 @@ il regime nuovo.
 | R-RIF-15 | Un lettore di schermo reale annuncia titoli e gruppi, etichette, la domanda nuova, il riscontro, la scrittura fallita, lo stato dell'invio, il timer senza un annuncio al secondo, i dialoghi e il ritorno del fuoco; le figure dei quiz hanno il limite dichiarato del §6 del progetto | scoperto — l'albero di accessibilità dice che cosa il browser espone (R-RIF-04, 06, 08), non che cosa un lettore dice: la prova è manuale, con la procedura qui sotto |
 | R-RIF-16 | Contrasto, bersagli, fuoco e avvisi anche con l'account e sugli stati del client — verifica dell'email, conflitto, import parziale, uscita con righe pendenti, `401` | scoperto — il banco li misura sulle superfici della prova e sulla finestra «Accedi»; con l'account misura lo sbordo (R-RIF-09) e l'avviso del guasto (R-RIF-04). Estenderlo agli stati del client è lavoro dopo P-25, sullo stesso banco |
 | R-RIF-17 | Il pulsante per proseguire si raggiunge sempre (D-29 di I-27 in `docs/idee-dopo-gli-account.md`): nel runner dei quiz, dopo una risposta giusta e dopo una sbagliata, a 375×812 e a 375×667, con i due quesiti più lunghi della banca — base-1293, e base-829 con la figura — aperti per numero e l'avanzamento automatico spento, «Avanti» o «Vedi il riepilogo» sta nel primo schermo con il centro sotto il dito, oppure `scrollIntoView` lo porta lì muovendo soltanto contenitori che scorrono con il dito (overflow `auto` o `scroll`, o il documento); e niente di fisso gli sta sopra (`elementFromPoint`). Provato al contrario su tre rotture — il runner fisso che taglia, quello che sborda, un velo fisso sopra il pulsante —, e su due difese tolte una alla volta. **Difetto aperto dichiarato sulla pagina vera**, nei quattro casi: il runner è fisso e non scorre, e dopo la risposta la domanda si schiaccia a 22 px; lo chiude P-91 | `test_interfaccia.py::test_rifinitura_proseguire` |
+| R-RIF-18 | La figura si vede prima di rispondere (D-01, D-02 e D-14 di I-27 in `docs/idee-dopo-gli-account.md`): nel runner dei quiz, a 375×812 e prima di rispondere, con i due quesiti con figura base-828 e base-829 — il più lungo con figura — aperti per numero, la figura caricata sta intera nell'area visibile, cioè nella finestra tagliata da ogni antenato con overflow diverso da `visible`, senza scorrere; niente le sta sopra (`elementFromPoint` sul suo centro); e nella stessa area ci sono l'inizio della domanda e il centro della prima risposta, sotto il dito. Provato al contrario su quattro rotture — un'area che taglia la figura, la figura sotto il bordo dello schermo, un velo sopra la figura, la figura nascosta —, e su due difese tolte una alla volta. **Difetto aperto dichiarato sulla pagina vera**: i gesti di servizio stanno fra la domanda e la figura, e `.qbody` si taglia prima della figura; lo chiude P-91 | `test_interfaccia.py::test_rifinitura_figura` |
 
 **Che cosa questi controlli non vedono.** L'altezza del testo quando la famiglia
 di caratteri di sistema cambia; un contrasto sopra un'immagine o una
@@ -3695,3 +3696,13 @@ successo, ed è il motivo per cui questo file esiste.
   aperto dichiarato finché P-91 non lo chiude. La pagina di riferimento del
   client mostra ora «Vedi il riepilogo» anche dopo l'ultima domanda, come la
   pagina vera.
+
+- **23 ottobre 2026 — R-RIF-18, la figura prima di rispondere (T-11).** Dalle
+  regole D-01, D-02 e D-14 (I-27): un gruppo nuovo del banco del client, T-11,
+  misura nel runner dei quiz, a 375×812 e prima di rispondere, se la figura si
+  vede intera nel primo schermo, con l'inizio della domanda e della prima
+  risposta. Sulla pagina vera è rosso: con base-828 la figura sta a 448–724 px
+  e `.qbody` si taglia a 415; con base-829 l'area di `.qbody` va da 193 a 226
+  px, e non si vede nemmeno l'inizio della domanda. È un difetto aperto
+  dichiarato finché P-91 non lo chiude. La pagina di riferimento del client
+  mostra ora la figura del quesito, fra la domanda e le risposte.
