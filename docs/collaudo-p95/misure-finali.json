@@ -1,0 +1,1104 @@
+{
+  "pagina_sha256": "3e23cdb7b19a3d98bb7841497801695ed329160806bb4718668db167d90d6b72",
+  "banco": "tests/client_account.mjs, T-13 e tragitti N-01 su ui/main dopo 25ea918",
+  "esiti": [
+    {
+      "gruppo": "T-13:corpi",
+      "nome": "i corpi calcolati del testo visibile appartengono alla scala",
+      "ok": true
+    },
+    {
+      "gruppo": "T-13:corpi",
+      "nome": "nel primo schermo al piu' cinque corpi (soglia nostra)",
+      "ok": true
+    },
+    {
+      "gruppo": "T-13:titoli",
+      "nome": "un h1 per vista, al piu' tre livelli e nessun titolo piu' piccolo del testo o dei sottotitoli (soglia nostra per le dimensioni)",
+      "ok": true
+    },
+    {
+      "gruppo": "T-13:testo",
+      "nome": "testo corrente e risposte almeno 16 px, interlinea 1,45 e titoli 1,2 (soglie nostre), senza giustificato o maiuscolo su piu' righe",
+      "ok": true
+    },
+    {
+      "gruppo": "T-13:spazi",
+      "nome": "gli spazi calcolati appartengono alla scala",
+      "ok": true
+    },
+    {
+      "gruppo": "T-13:spazi",
+      "nome": "fra due sezioni piu' spazio che fra i figli della stessa sezione",
+      "ok": true
+    },
+    {
+      "gruppo": "T-13:pesi",
+      "nome": "pesi 400, 600, 700 e grassetto al piu' cinque parole nel paragrafo (soglia nostra)",
+      "ok": true
+    },
+    {
+      "gruppo": "T-13:distanze",
+      "nome": "fra due bersagli dello stesso strato almeno 8 px, esclusi segmenti e link nella frase; con un dialogo aperto, solo nel dialogo",
+      "ok": true
+    },
+    {
+      "gruppo": "T-13:righe",
+      "nome": "a 1280 px le righe di testo corrente hanno al piu' 75 caratteri",
+      "ok": true
+    },
+    {
+      "gruppo": "T-13:colori",
+      "nome": "i colori di ruolo sono riservati ad azioni, errori e avvisi (ruoli nostri)",
+      "ok": true
+    },
+    {
+      "gruppo": "T-13:home",
+      "nome": "Home senza risposte a 375×812: al piu' 78 parole nel primo schermo (soglia nostra)",
+      "ok": true
+    }
+  ],
+  "misure": [
+    {
+      "dove": "Home senza risposte",
+      "w": 375,
+      "corpi": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "primo": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": 77,
+      "righe": 0,
+      "testi": 40,
+      "sezioni": 3,
+      "distanzaMin": 8,
+      "bersagli": 19,
+      "strati": 2
+    },
+    {
+      "dove": "Home senza risposte",
+      "w": 1280,
+      "corpi": [
+        12,
+        14,
+        16,
+        24,
+        40
+      ],
+      "primo": [
+        14,
+        16,
+        24,
+        40
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 72,
+      "testi": 40,
+      "sezioni": 3,
+      "distanzaMin": 8,
+      "bersagli": 19,
+      "strati": 1
+    },
+    {
+      "dove": "Quiz",
+      "w": 375,
+      "corpi": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "primo": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 0,
+      "testi": 45,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 27,
+      "strati": 2
+    },
+    {
+      "dove": "Quiz",
+      "w": 1280,
+      "corpi": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "primo": [
+        14,
+        16,
+        24,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 68,
+      "testi": 45,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 27,
+      "strati": 1
+    },
+    {
+      "dove": "Carteggio",
+      "w": 375,
+      "corpi": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "primo": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 0,
+      "testi": 34,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 17,
+      "strati": 2
+    },
+    {
+      "dove": "Carteggio",
+      "w": 1280,
+      "corpi": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "primo": [
+        14,
+        16,
+        24,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 68,
+      "testi": 34,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 17,
+      "strati": 1
+    },
+    {
+      "dove": "Progressi",
+      "w": 375,
+      "corpi": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "primo": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 0,
+      "testi": 18,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 12,
+      "strati": 2
+    },
+    {
+      "dove": "Progressi",
+      "w": 1280,
+      "corpi": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "primo": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 62,
+      "testi": 18,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 12,
+      "strati": 1
+    },
+    {
+      "dove": "Che tecnica serve?",
+      "w": 375,
+      "corpi": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "primo": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 0,
+      "testi": 89,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 8,
+      "strati": 2
+    },
+    {
+      "dove": "Che tecnica serve?",
+      "w": 1280,
+      "corpi": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "primo": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 68,
+      "testi": 89,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 8,
+      "strati": 1
+    },
+    {
+      "dove": "Segnali",
+      "w": 375,
+      "corpi": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "primo": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 0,
+      "testi": 48,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 15,
+      "strati": 2
+    },
+    {
+      "dove": "Segnali",
+      "w": 1280,
+      "corpi": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "primo": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 70,
+      "testi": 48,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 15,
+      "strati": 1
+    },
+    {
+      "dove": "Info",
+      "w": 375,
+      "corpi": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "primo": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 0,
+      "testi": 69,
+      "sezioni": 3,
+      "distanzaMin": 8,
+      "bersagli": 8,
+      "strati": 1
+    },
+    {
+      "dove": "Info",
+      "w": 1280,
+      "corpi": [
+        12,
+        14,
+        16,
+        24,
+        40
+      ],
+      "primo": [
+        14,
+        16,
+        24,
+        40
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 72,
+      "testi": 69,
+      "sezioni": 3,
+      "distanzaMin": 8,
+      "bersagli": 8,
+      "strati": 1
+    },
+    {
+      "dove": "Esame",
+      "w": 375,
+      "corpi": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "primo": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 0,
+      "testi": 31,
+      "sezioni": 3,
+      "distanzaMin": 8,
+      "bersagli": 16,
+      "strati": 2
+    },
+    {
+      "dove": "Esame",
+      "w": 1280,
+      "corpi": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "primo": [
+        14,
+        16,
+        24,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 71,
+      "testi": 31,
+      "sezioni": 3,
+      "distanzaMin": 8,
+      "bersagli": 16,
+      "strati": 1
+    },
+    {
+      "dove": "la preparazione della simulazione",
+      "w": 375,
+      "corpi": [
+        12,
+        14,
+        16,
+        30
+      ],
+      "primo": [
+        12,
+        14,
+        16,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 0,
+      "testi": 22,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 13,
+      "strati": 2
+    },
+    {
+      "dove": "la preparazione della simulazione",
+      "w": 1280,
+      "corpi": [
+        14,
+        16,
+        30
+      ],
+      "primo": [
+        14,
+        16,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 68,
+      "testi": 22,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 13,
+      "strati": 1
+    },
+    {
+      "dove": "la preparazione del breve",
+      "w": 375,
+      "corpi": [
+        12,
+        14,
+        16,
+        30
+      ],
+      "primo": [
+        12,
+        14,
+        16,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 0,
+      "testi": 14,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 9,
+      "strati": 2
+    },
+    {
+      "dove": "la preparazione del breve",
+      "w": 1280,
+      "corpi": [
+        14,
+        16,
+        30
+      ],
+      "primo": [
+        14,
+        16,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 62,
+      "testi": 14,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 9,
+      "strati": 1
+    },
+    {
+      "dove": "la preparazione di «Scegli un argomento»",
+      "w": 375,
+      "corpi": [
+        12,
+        14,
+        16,
+        30
+      ],
+      "primo": [
+        12,
+        14,
+        16,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 0,
+      "testi": 26,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 17,
+      "strati": 2
+    },
+    {
+      "dove": "la preparazione di «Scegli un argomento»",
+      "w": 1280,
+      "corpi": [
+        14,
+        16,
+        30
+      ],
+      "primo": [
+        14,
+        16,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 72,
+      "testi": 26,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 17,
+      "strati": 1
+    },
+    {
+      "dove": "la preparazione della prova di carteggio",
+      "w": 375,
+      "corpi": [
+        12,
+        14,
+        16,
+        30
+      ],
+      "primo": [
+        12,
+        14,
+        16,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 0,
+      "testi": 19,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 9,
+      "strati": 2
+    },
+    {
+      "dove": "la preparazione della prova di carteggio",
+      "w": 1280,
+      "corpi": [
+        14,
+        16,
+        30
+      ],
+      "primo": [
+        14,
+        16,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 72,
+      "testi": 19,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 9,
+      "strati": 1
+    },
+    {
+      "dove": "la preparazione degli esercizi su carta",
+      "w": 375,
+      "corpi": [
+        12,
+        14,
+        16,
+        30
+      ],
+      "primo": [
+        12,
+        14,
+        16,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 0,
+      "testi": 21,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 10,
+      "strati": 2
+    },
+    {
+      "dove": "la preparazione degli esercizi su carta",
+      "w": 1280,
+      "corpi": [
+        14,
+        16,
+        30
+      ],
+      "primo": [
+        14,
+        16,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 71,
+      "testi": 21,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 10,
+      "strati": 1
+    },
+    {
+      "dove": "la preparazione di «Che tecnica serve?»",
+      "w": 375,
+      "corpi": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "primo": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 0,
+      "testi": 89,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 8,
+      "strati": 2
+    },
+    {
+      "dove": "la preparazione di «Che tecnica serve?»",
+      "w": 1280,
+      "corpi": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "primo": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 68,
+      "testi": 89,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 8,
+      "strati": 1
+    },
+    {
+      "dove": "preparazione tecniche",
+      "w": 375,
+      "corpi": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "primo": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 0,
+      "testi": 89,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 8,
+      "strati": 2
+    },
+    {
+      "dove": "preparazione tecniche",
+      "w": 1280,
+      "corpi": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "primo": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 68,
+      "testi": 89,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 8,
+      "strati": 1
+    },
+    {
+      "dove": "runner dopo risposta errata",
+      "w": 375,
+      "corpi": [
+        12,
+        14,
+        16,
+        19
+      ],
+      "primo": [
+        12,
+        14,
+        16,
+        19
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 0,
+      "testi": 25,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 11,
+      "strati": 2
+    },
+    {
+      "dove": "runner dopo risposta errata",
+      "w": 1280,
+      "corpi": [
+        12,
+        14,
+        16,
+        19
+      ],
+      "primo": [
+        12,
+        14,
+        16,
+        19
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 57,
+      "testi": 25,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 11,
+      "strati": 2
+    },
+    {
+      "dove": "riepilogo con errore",
+      "w": 375,
+      "corpi": [
+        12,
+        14,
+        16,
+        19,
+        24,
+        30
+      ],
+      "primo": [
+        12,
+        14,
+        16,
+        19,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 0,
+      "testi": 29,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 15,
+      "strati": 3
+    },
+    {
+      "dove": "riepilogo con errore",
+      "w": 1280,
+      "corpi": [
+        14,
+        16,
+        19,
+        24,
+        30
+      ],
+      "primo": [
+        14,
+        16,
+        19,
+        24,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 68,
+      "testi": 29,
+      "sezioni": 0,
+      "distanzaMin": 8,
+      "bersagli": 15,
+      "strati": 2
+    },
+    {
+      "dove": "Accedi",
+      "w": 375,
+      "corpi": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "primo": [
+        12,
+        14,
+        16,
+        24,
+        30
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 0,
+      "testi": 64,
+      "sezioni": 5,
+      "distanzaMin": 8,
+      "bersagli": 14,
+      "strati": 1
+    },
+    {
+      "dove": "Accedi",
+      "w": 1280,
+      "corpi": [
+        12,
+        14,
+        16,
+        24,
+        40
+      ],
+      "primo": [
+        14,
+        16,
+        24,
+        40
+      ],
+      "pesi": [
+        400,
+        700,
+        600
+      ],
+      "parole": null,
+      "righe": 72,
+      "testi": 64,
+      "sezioni": 5,
+      "distanzaMin": 8,
+      "bersagli": 14,
+      "strati": 1
+    }
+  ]
+}

@@ -125,6 +125,39 @@ coerente. Nessun file di `site/` è cambiato; versione 0.34.0 invariata.
   conto. Costi stimati, non misurati: 2–3 centesimi a piano con Sonnet 5.5,
   circa 5 con Opus 5.5. Sette decisioni per l'autore nella scheda.
 - Nessun file di `site/`, `server/` o `tests/` toccato; guardiano verde.
+### Corretto — P-95: la scala di corpi, spazi e pesi nella pagina
+
+Titoli a 13 px sopra testo a 16 e risposte a 15,5 rendevano la gerarchia
+incoerente: la pagina applica ora il contratto del giro 2, senza cambiare
+selezione o contabilità. Versione 0.34.0 invariata.
+
+- Un solo `:root` con scale, interlinee e colori di ruolo; CSS, attributi e
+  stili generati dagli script usano i token. Titoli di sezione a 24 px,
+  preparazioni e runner con h1, risposte a 16 e 40 solo per il titolo Home
+  sopra 900 px. Testo corrente limitato a 480 px; accento sui controlli,
+  distanza esplicita nella barra, nel footer e negli inviti. Il riepilogo
+  dei quiz è una superficie fissa autonoma; l'esperimento di sfondo
+  trasparente dei dialoghi è eliminato. Le quattordici dichiarazioni di
+  difetto escono; «Valori fuori scala» resta identica.
+- **Prima e dopo:** 24 schermate guardate, sei superfici a 375×812 e
+  1280×800, citate una per una in `docs/collaudo-p95/README.md`. I 480 px
+  restano la proposta del contratto: approvazione visiva dell'autore aperta.
+  T-13 misura 36 combinazioni: massimo 72 caratteri per riga, al più cinque
+  corpi nel primo schermo, Home H0 a 77 parole e distanze almeno 8 px nello
+  stesso strato. Il primo fermo e le sue evidenze restano nel §10.1 del piano.
+- **Verificato:** interfaccia **3.849/3.849**, comprese T-13, T-12, T-10,
+  T-11, C-02, T-06 e N-01; prima dell'ultimo avvio, 8620 libera per
+  **90,170 s consecutivi**. Motore 215/219 (quattro salti previsti), server
+  89/89 su Node di sistema e su Node 24.22.0 ufficiale, archivio verificato
+  con SHASUMS256.txt, dati 225, specifica 1.096; guardiano e documentazione
+  verdi. Il primo giro completo aveva 42 rossi N-01: corretta l'estensione
+  al Carteggio della regola che nasconde i controlli del runner concluso,
+  con la riproduzione e la verifica della correzione nel collaudo.
+- Nessun file di motore, test o dati modificato, nessun tag o push. Restano
+  fuori dal collaudo visivo Safari, dispositivi reali, persone, tema scuro
+  e gli stati con account (§12 del piano). Le prove degli account nella
+  suite conservano il proprio perimetro.
+
 
 ## [0.34.0] — 2026-10-24
 
