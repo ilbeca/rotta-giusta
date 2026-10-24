@@ -704,6 +704,11 @@ il conteggio misurato a 375×812 nella Home senza risposte, tolto l'avviso
 (stima: circa 80 parole, 106 meno le 26 dell'avviso), diventa un tetto che non
 si supera; nel giro 3 la soglia è ≤ 60 parole, nostra, quella che I-27
 proponeva, raggiunta con la riscrittura di F.
+*Misurato da P-93 il 24 ottobre 2026: 99 parole prima, **78 dopo**, a 375×812
+nella Home senza risposte (criterio in `docs/regole-disegno-ux.md`, «Parole
+della Home e limite del giro 1»). Il tetto del giro 1 è 78. Fino al giro 2
+nessun controllo lo teneva: P-94 lo porta nel banco, perché la scala dei corpi
+cambia quante parole stanno nel primo schermo.*
 
 **F. Le tre schede che ripetono la barra, e «Che cosa non torna»** (Home,
 punti 4 e 8 dell'audit). Le schede sono nella specifica — §7.1, *H0*: «le

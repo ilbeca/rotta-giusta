@@ -7087,8 +7087,9 @@ v0.34.0. **Sblocca:** P-95, la pagina del giro 2, per ChatGPT su `ui/main`.
 
 ```
 Sessione P-94, su main, nel checkout principale. Leggi AGENTS.md,
-docs/regole-disegno-progetto.md (§3, §5, §9, §10.1 «Giro 2» e la
-decisione C del §11, con i numeri), e in docs/idee-dopo-gli-account.md la
+docs/regole-disegno-progetto.md (§3, §5, §7 per il tempo della suite, §9,
+§10.1 «Giro 2», §12, e le decisioni C ed E del §11, con i numeri), e in
+docs/idee-dopo-gli-account.md la
 scheda I-27 (le regole D-15…D-23, D-25, D-28 e «L'audit delle schermate
 principali», punti 7, 8, 10, 11, 12). Guarda come P-92 ha fatto T-12 nel
 banco del client: il metodo è lo stesso.
@@ -7107,7 +7108,10 @@ banco del client: il metodo è lo stesso.
    contrario su frammenti di CSS scritti nel test.
 3. T-13 nel banco del client, con le parti del §10.1: corpi, titoli, testo,
    spazi, pesi, distanze, righe, colori, sui valori calcolati, a 375×812 e
-   1280×800. Una soglia nostra si dice nel nome della verifica.
+   1280×800. Una soglia nostra si dice nel nome della verifica. Più una
+   parte per la decisione E: nella Home senza risposte, a 375×812, al più
+   78 parole nel primo schermo, con il criterio di P-93
+   (docs/regole-disegno-ux.md); la scala dei corpi cambia quante ne stanno.
 4. La pagina di riferimento del client con la scala, verde per intero; le
    rotture del §10.1 e le difese tolte una alla volta, ognuna rossa per il
    suo motivo.

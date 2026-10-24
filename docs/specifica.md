@@ -1668,13 +1668,15 @@ scartate**.
 base, quiz vela —, con le condizioni del decreto, e prepararle in parallelo,
 senza sblocchi.
 
-**Cosa si vede.** La data d'esame e «che cosa stai preparando?»; **Com'è
-fatto l'esame**, una sintesi con i valori di `PROVA_CARTEGGIO` e `meta.prove`
-e l'approfondimento con le fonti del dossier, datate; le prove che servono
-all'obiettivo scelto, e il quiz base ad **accesso libero** anche per
-l'estensione; **Simula il quiz base**, **Simula il quiz vela**, **Quiz base e
-vela**, **Prova di carteggio**, che aprono le stesse preparazioni di Allenati;
-le prove fatte, con l'esito e la data, dal motore, «Esiti autovalutati» sulla
+**Cosa si vede**, in quest'ordine dal 24 ottobre 2026 (P-93, decisione B del
+§11 di `docs/regole-disegno-progetto.md`): **Le prove** — **Prova di
+carteggio**, **Simula il quiz base**, **Simula il quiz vela**, **Quiz base e
+vela**, che aprono le stesse preparazioni di Allenati —, le prove che servono
+all'obiettivo scelto e il quiz base ad **accesso libero** anche per
+l'estensione; poi «che cosa stai preparando?» e la data d'esame, in un
+`details` chiuso il cui sommario dice la scelta e la data, o «Non l'hai detto»;
+**Com'è fatto l'esame**, una sintesi con i valori di `PROVA_CARTEGGIO` e
+`meta.prove` e l'approfondimento con le fonti del dossier, datate; le prove fatte, con l'esito e la data, dal motore, «Esiti autovalutati» sulla
 carta; senza account «Prove di questa pagina». Nessuna attività è disabilitata
 dall'obiettivo o dall'assenza di data.
 
