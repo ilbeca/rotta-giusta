@@ -264,7 +264,8 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | niente dal motore: `PREVISIONI` c'è (P-72), e un modello entra come metodo accanto alla regola semplice; Q-STIMA solo per quando si mostra | da scrivere |
 | 27 | **Esito e previsioni, la pagina e l'informativa** (B-1, B-2), poi un rilascio | ChatGPT | `ui/main` | soltanto la base giuridica (§4, «Dopo P-64», 1–3): P-74 è chiuso | P-75, da scrivere |
 | 37 | **Le regole di disegno, giro 2**: la scala di corpi, spazi e pesi, le distanze fra i bersagli, la lunghezza delle righe (D-15…D-23, D-25, D-28; `docs/regole-disegno-progetto.md` §5, decisione C) | regia | `main` | l'approvazione dell'autore sulle 24 schermate di `docs/collaudo-p95/` (decisione C) | P-95 fuso, da rilasciare |
-| 38 | **Le regole di disegno, giro 3**: le parole e i nomi (`docs/regole-disegno-progetto.md`, giro 3) — prima il controllo su `main`, poi la pagina | Claude, poi ChatGPT | `main`, `ui/main` | niente: il giro 2 è fuso | da scrivere |
+| 38 | **Le regole di disegno, giro 3**: le parole e i nomi (`docs/regole-disegno-progetto.md`, giro 3) — prima il controllo su `main`, poi la pagina | Claude, poi ChatGPT | `main`, `ui/main` | sospeso dall'autore il 24 ottobre 2026: prima la direzione del ridisegno (riga 39), perché le parole e i nomi possono cambiare con lei | da scrivere |
+| 39 | **Ripensare il disegno da capo**: perché il sito è brutto, tre direzioni con tre mock ciascuna, una raccomandata — due proposte indipendenti, Claude e ChatGPT, che la regia confronta | Claude (sessione `redesign-claude`), ChatGPT | ramo della sessione, `ui/main` | niente | P-96 per ChatGPT; Claude avviato il 24 ottobre |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo P-59», «Dopo P-64», «Dopo il traguardo» e le voci non barrate |
 
 **La v0.31.0 è in linea dal 18 ottobre 2026**, sulla pagina e sul server, con le raccolte nuove spente (prima, la v0.30.0 dal 3 ottobre); P-59,
@@ -7276,6 +7277,64 @@ vela» su tre colonne strette, una parola per riga; il riepilogo dice «1
 domanda su 1 proposte». **Resta all'autore** l'approvazione delle 24
 schermate prima/dopo citate in `docs/collaudo-p95/README.md`, con i 480 px:
 fino ad allora il giro 2 non si rilascia.
+
+### P-96 — ChatGPT: ripensare il disegno da capo
+
+**Dove:** il worktree `~/Software/rotta-giusta-ui`, ramo **`ui/main`**,
+allineato a `main`.
+**Nasce da:** l'autore, il 24 ottobre 2026, dopo il giro 2: «il sito è
+davvero brutto, non riesco a spiegarmi perché». Lo stesso lavoro lo fa in
+parallelo una sessione Claude (`redesign-claude`, in un suo worktree): le due
+proposte nascono indipendenti, e la regia le confronta. **Sblocca:** la
+decisione dell'autore sulla direzione, poi il giro 3 e il ridisegno.
+
+```
+Questo prompt è per ChatGPT, nel worktree ~/Software/rotta-giusta-ui,
+sul ramo ui/main, aperto in modalità Local. Se sei Claude, o sei nella
+cartella principale ~/Software/rotta-giusta, o su un altro ramo, fermati e
+dillo, senza scrivere niente.
+
+Sessione P-96: ripensare il disegno dell'app da capo. È un brainstorm:
+nessun file di site/ cambia. Allinea ui/main a main (git merge --ff-only
+main) e leggi AGENTS.md, docs/specifica.md (§1 per chi è, §2.1 i vincoli,
+§5–§7 l'app), docs/filosofia.md, docs/regole-disegno-progetto.md e la
+scheda I-27 in docs/idee-dopo-gli-account.md.
+
+L'autore, dopo tre giri di regole di disegno, dice che il sito è davvero
+brutto e non sa spiegare perché. Il pubblico è una classe tipica: per lo più
+uomini sotto i 30 anni, quattro donne su venti, e i 50–60enni che fanno il
+carteggio sul serio. Si usa al telefono in verticale con una mano; il
+carteggio si fa al tavolo, con la carta.
+
+1. Guarda l'app com'è, servita con python3 strumenti/serve.py: Home,
+   Allenati (Quiz, Carteggio, Segnali), Esame, Progressi, una preparazione,
+   il runner dopo una risposta, il riepilogo e Accedi, a 375×812 e
+   1280×800, con schermate guardate. Le schermate dell'ultimo giro sono in
+   docs/collaudo-p95/.
+2. Diagnosi: perché è brutto, in termini concreti — identità, gerarchia,
+   densità, ritmo, illustrazioni, colore, tipografia, componenti che
+   sembrano moduli. Di' quali regole D-01…D-35 aiutano, e quali possono aver
+   prodotto una pagina corretta ma senza vita.
+3. Tre direzioni diverse fra loro, ognuna con un nome, i riferimenti e che
+   cosa cambia per chi studia. Per OGNUNA mock HTML statici autoconsistenti
+   di almeno Home, Allenati/Quiz, runner e riepilogo, a 375×812 e 1280×800.
+   Poi quale raccomandi, e perché.
+4. Tutto in docs/prototipi/redesign-2026-10-chatgpt/: un README con la
+   diagnosi, le tre direzioni, le schermate citate una per una e in fondo le
+   decisioni da chiedere all'autore; una sottocartella per direzione.
+
+Restano fermi i vincoli di prodotto: niente build step, bundler o
+dipendenze nella pagina, nessuna risorsa da altri host (il carattere è
+servito dal sito), WCAG AA, i difetti dichiarati, niente gamification che
+punisce. Tutto il visivo è aperto, compresa la scala del giro 2 se lo
+argomenti. In parallelo Claude fa lo stesso lavoro: non leggere
+docs/prototipi/redesign-2026-10-claude/ né la scheda I-29, se compaiono.
+
+Nessun file di site/, tests/, server/, motore o dati, né docs/specifica.md,
+docs/prossime-sessioni.md o docs/idee-dopo-gli-account.md. Guardiano verde.
+Voce in fondo a [Unreleased], un commit con il trailer, versione invariata,
+niente push. Chiudi con il resoconto di docs/prossime-sessioni.md.
+```
 
 ### I segnaposto — i prompt che non si possono ancora scrivere
 
