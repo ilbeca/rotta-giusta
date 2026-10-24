@@ -2366,6 +2366,12 @@ def sw_rotto(sostituzioni):
 # fino al 29 settembre 2026 un quesito dal testo corto dava un rosso che non
 # c'era nello 0,5 % degli avvii (P-38, §12 del progetto del client): qui la
 # pesca comincia sempre dal testo piu' corto della banca, «I flaps:».
+# P-95: la pagina di riferimento non ha superfici sovrapposte. Queste due le
+# danno: la barra fissa in alto, sopra il marchio e l'avatar che scorrono, e il
+# dialogo «Accedi» steso sopra la pagina, nello stesso strato (absolute).
+_BARRA_FISSA = '#barra{position:fixed;top:0;left:0;right:0;z-index:5;background:#fff}'
+_DIALOGO_SOPRA = '#account:not([hidden]){position:absolute;top:0;left:0;right:0;min-height:100vh;z-index:6;background:#fff}'
+
 VARIANTI_CLIENT = [
     ('il primo quesito e\' il piu\' corto della banca', ['C-01'],
      [('  const lista = E.estraiNuoviPrima(pool, prog, oggi, 10, conf.seme);', '  const lista = pool.slice().sort((a, b) => a.d.trim().length - b.d.trim().length).slice(0, 10);')]),
@@ -2388,6 +2394,17 @@ VARIANTI_CLIENT = [
        "const lista = kind === 'base' && S.io && Array.isArray(S.io.tipi_riga) && S.io.tipi_riga.includes('a')\n"
        "    ? S.banca.filter((q) => q.id === 'base-993').concat(E.estrai(S.banca.filter((q) => q.id !== 'base-993'), {}, oggi(), 19, Date.now() % 991))\n"
        "    : E.estrai(kind === 'vela' ? S.vela : S.banca, {}, oggi(), kind === 'vela' ? 5 : 20, Date.now() % 991);")]),
+    # T-13:distanze (fermo di P-95, 24 ottobre 2026): a 375×812 la porta
+    # «Allenati» della Home passa sotto «Home» della barra fissa, e il banco
+    # confrontava i due rettangoli interi: 0 px, mentre in quel punto si tocca
+    # solo la barra. Due superfici sovrapposte, e il banco deve restare verde:
+    # una barra fissa sopra il contenuto che scorre, e un dialogo modale steso
+    # sopra la pagina nello stesso strato. Le coppie vere dentro la barra e
+    # dentro il dialogo le tengono rosse due rotture di ROTTURE_RIFINITURA.
+    ('una barra fissa sopra il contenuto che scorre', ['T-13:distanze'],
+     [('/* P-94: punto delle rotture */', _BARRA_FISSA + '\n/* P-94: punto delle rotture */')]),
+    ('il dialogo «Accedi» steso sopra la pagina', ['T-13:distanze'],
+     [('/* P-94: punto delle rotture */', _DIALOGO_SOPRA + '\n/* P-94: punto delle rotture */')]),
 ]
 
 # Le varianti della pagina di riferimento del ridisegno: come quelle del
@@ -3857,6 +3874,10 @@ ROTTURE_RIFINITURA += [
     rottura_scala('verde senza risposta giusta', 'colori', '#home-anonima>p{color:var(--ok)}', 'colore giusto fuori ruolo'),
     rottura_scala('ambra senza avviso', 'colori', '#home-anonima>p{color:var(--warn)}', 'ambra fuori avviso'),
     ('la Home supera 78 parole', ['T-13:home'], [('<div id="home-anonima">', '<div id="home-anonima"><p>' + 'Parola ' * 79 + '</p>')], 'parole nel primo schermo'),
+    # P-95: lo strato e il dialogo non diventano un lasciapassare. Dentro la
+    # barra fissa e dentro il dialogo una coppia vicina resta rossa.
+    rottura_scala('due voci della barra fissa a 2 px', 'distanze', _BARRA_FISSA + '#barra a{margin:0 2px 0 0}', '«Home» / a.da-solo «Allenati»: 2.00 px'),
+    rottura_scala('i pulsanti del dialogo senza margine', 'distanze', _DIALOGO_SOPRA + '#account button{margin:0}', '«Accedi» / button «Ho dimenticato'),
 ]
 
 

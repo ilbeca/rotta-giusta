@@ -7212,6 +7212,51 @@ verdi, l'interfaccia con la 8620 guardata libera per 90 s. Voce in fondo a
 Chiudi con il resoconto di docs/prossime-sessioni.md.
 ```
 
+**Fermato il 24 ottobre 2026, e il controllo corretto su `main`.** ChatGPT si
+è fermato prima di consegnare, com'era scritto: `T-13:distanze` segnalava
+0 px fra «Home» della barra fissa e la porta «Allenati» della Home, a
+375×812, perché confrontava i rettangoli interi anche dove la barra copre la
+porta (`elementFromPoint(55, 810)` dà «Home»). Riprodotto dalla regia sulla
+sua candidata (`/private/tmp/rg-p95/index-candidata.html`, SHA-256
+`9f224f8c…ef9a5f`). **La risposta, nel banco:** due bersagli si confrontano
+solo nello stesso strato — la pagina che scorre, o lo stesso contenitore
+`position:fixed` —, e con un dialogo modale aperto solo dentro il dialogo.
+Non porzioni visibili campionate: il confronto dipenderebbe dalla piega di
+ogni viewport. Provato al contrario: due varianti della pagina di
+riferimento che devono restare verdi (una barra fissa sopra il contenuto che
+scorre, il dialogo «Accedi» steso sopra la pagina) e due rotture che devono
+restare rosse (due voci della barra fissa a 2 px, i pulsanti del dialogo
+senza margine), e ognuna delle due difese, tolta, fa rossa la sua variante.
+R-RIF-28 lo dice, e dice che cosa non vede. **Sulla candidata**, con il
+controllo nuovo, la coppia barra/porta non c'è più; restano distanze vere a
+0 px fra «Inizia» e le modalità dei Segnali e fra «Chiudi» e «Vedi i
+progressi» in Info, che sono lavoro della pagina. Lo sfondo trasparente dei
+dialoghi della candidata non serve più al controllo: se resta, ha bisogno di
+un motivo suo. Sulla pagina vera la riga dichiarata `T-13:distanze` ha il
+nome nuovo della verifica, e resta vera.
+
+**Per riprendere**, la stessa sessione o una nuova:
+
+```
+Questo prompt è per ChatGPT, nel worktree ~/Software/rotta-giusta-ui,
+sul ramo ui/main, aperto in modalità Local. Se sei Claude, o sei nella
+cartella principale ~/Software/rotta-giusta, o su un altro ramo, fermati e
+dillo, senza scrivere niente.
+
+Riprendi P-95. Su main T-13:distanze confronta ora i bersagli solo nello
+stesso strato (la pagina che scorre, o lo stesso contenitore position:fixed)
+e, con un dialogo modale aperto, solo nel dialogo: leggi la nota «Fermato il
+24 ottobre» sotto P-95 in docs/prossime-sessioni.md e R-RIF-28 in
+docs/specifica.md. Allinea ui/main a main (git merge --ff-only main; la tua
+nota nel §10.1 del piano e docs/collaudo-p95/ restano, non sono toccati da
+main). Riparti dalla candidata in /private/tmp/rg-p95/ se c'è ancora e ha lo
+SHA-256 del collaudo, altrimenti dal canonico. Togli l'esperimento dello
+sfondo trasparente dei dialoghi, se non ha un motivo suo. Il resto è il
+prompt di P-95 com'è, compresi prima e dopo con le schermate e le cinque
+suite. Se una distanza rossa che resta ti sembra ancora del controllo e non
+della pagina, fermati di nuovo, con la misura.
+```
+
 ### I segnaposto — i prompt che non si possono ancora scrivere
 
 **Dopo P-59, dal 4 ottobre 2026.** I mock sono cinque passi, tutti in

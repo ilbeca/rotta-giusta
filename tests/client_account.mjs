@@ -4312,7 +4312,7 @@ const T13 = {
   spazi: 'gli spazi calcolati appartengono alla scala',
   sezioni: 'fra due sezioni piu\' spazio che fra i figli della stessa sezione',
   pesi: 'pesi 400, 600, 700 e grassetto al piu\' cinque parole nel paragrafo (soglia nostra)',
-  distanze: 'fra due bersagli almeno 8 px, esclusi segmenti e link nella frase',
+  distanze: 'fra due bersagli dello stesso strato almeno 8 px, esclusi segmenti e link nella frase; con un dialogo aperto, solo nel dialogo',
   righe: 'a 1280 px le righe di testo corrente hanno al piu\' 75 caratteri',
   colori: 'i colori di ruolo sono riservati ad azioni, errori e avvisi (ruoli nostri)',
   home: 'Home senza risposte a 375×812: al piu\' 78 parole nel primo schermo (soglia nostra)',
@@ -4433,12 +4433,26 @@ function scalaT13(K, cfg) {
     }
   }
   num.distanzaMin = null;
+  // P-95: D-28 misura i bersagli che si toccano insieme. Con un dialogo modale
+  // aperto la superficie e' il dialogo: la pagina sotto non si tocca. E due
+  // bersagli si confrontano solo nello stesso strato — la pagina che scorre, o
+  // lo stesso contenitore position:fixed (barra, runner, pannello): fra la
+  // barra fissa e la porta che le passa sotto la distanza dipende dallo
+  // scorrimento, non dal disegno (a 375×812 la porta «Allenati» della Home
+  // sotto «Home» della barra, 0 px, nel fermo di P-95). Le coppie dentro la
+  // barra, dentro il dialogo e nella pagina restano misurate per intero.
+  const modale = [...document.querySelectorAll('[role="dialog"][aria-modal="true"], dialog[open]')].filter(vis).at(-1);
+  const strato = (e) => { for (let p = e; p && p !== document.body; p = p.parentElement) if (getComputedStyle(p).position === 'fixed') return p; return null; };
   const bersagli = [...new Set(tutti.filter((e) => e.matches('button,a[href],input:not([type=hidden]),select,textarea,summary,[role=button]') && !e.disabled)
     .filter((e) => !(cfg.segmenti && e.closest('[role="tablist"]')) && !(e.tagName === 'A' && e.closest('p')))
-    .map((e) => e.matches('input[type=checkbox],input[type=radio]') ? e.closest('label') || e.labels[0] || e : e))];
+    .map((e) => e.matches('input[type=checkbox],input[type=radio]') ? e.closest('label') || e.labels[0] || e : e))]
+    .filter((e) => !modale || modale.contains(e));
+  const strati = new Map(bersagli.map((e) => [e, strato(e)]));
+  num.bersagli = bersagli.length; num.strati = new Set(strati.values()).size;
   for (let i = 0; i < bersagli.length; i++) for (let j = i+1; j < bersagli.length; j++) {
     const a = bersagli[i], b = bersagli[j];
     if (a.contains(b) || b.contains(a)) continue;
+    if (strati.get(a) !== strati.get(b)) continue;
     const r = a.getBoundingClientRect(), s = b.getBoundingClientRect();
     const dx = Math.max(0, r.left-s.right, s.left-r.right), dy = Math.max(0, r.top-s.bottom, s.top-r.bottom), d = Math.hypot(dx,dy);
     num.distanzaMin = num.distanzaMin === null ? d : Math.min(num.distanzaMin,d);

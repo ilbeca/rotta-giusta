@@ -73,6 +73,35 @@ coerente. Nessun file di `site/` è cambiato; versione 0.34.0 invariata.
   delle persone, Safari, gesto vero, tema scuro e CSS dei legali (§12 del piano).
 
 
+### Test — T-13:distanze misura nello stesso strato (fermo di P-95)
+
+- **Il controllo delle distanze dava un rosso che non c'era.** ChatGPT,
+  costruendo la pagina del giro 2, si è fermato su `T-13:distanze`: a 375×812
+  la porta «Allenati» della Home passa sotto «Home» della barra fissa, e il
+  banco confrontava i due rettangoli interi — 0 px — mentre in quel punto si
+  tocca soltanto la barra. Riprodotto dalla regia sulla sua candidata. Ora due
+  bersagli si confrontano solo nello stesso strato, la pagina che scorre o lo
+  stesso contenitore `position:fixed`, e con un dialogo modale aperto solo
+  dentro il dialogo. Scartato il campionamento delle porzioni visibili: il
+  risultato dipenderebbe dalla piega di ogni schermo. Che cosa non vede più:
+  la vicinanza vera fra due strati, per esempio un bottone in fondo alla
+  pagina subito sopra la barra a fine scorrimento; R-RIF-28 lo dice.
+- **Provato al contrario.** Due varianti della pagina di riferimento che
+  devono restare verdi — una barra fissa sopra il contenuto che scorre, il
+  dialogo «Accedi» steso sopra la pagina — e due rotture che devono restare
+  rosse — due voci della barra fissa a 2 px, i pulsanti del dialogo senza
+  margine. Tolta la difesa dello strato, la prima variante è rossa
+  («#marchio / Home: 0.00 px»); tolta quella del dialogo, la seconda («Home /
+  input: 0.00 px»). Sulla pagina vera resta rossa solo la riga dichiarata, le
+  voci della barra a 0 px fra loro, con il nome nuovo della verifica in
+  `docs/eccezioni-interfaccia.md`. Sulla candidata di ChatGPT la coppia
+  barra/porta sparisce; restano distanze vere della pagina.
+- Suite: interfaccia **3.873** (erano 3.863: quattro delle varianti, sei delle
+  rotture) in 5 min 38 s, con la 8620 guardata libera per 90 s; motore 215/219
+  con i quattro skip previsti, dati 225, specifica 1.096, guardiano verde.
+  Server non toccato e non rifatto. `site/` non toccato. Nella coda la nota
+  del fermo e il prompt per riprendere P-95.
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la
