@@ -1,0 +1,62 @@
+/* Direzione C — «Il quaderno a colori».
+   Bianco pieno, un blu saturo per l'azione e per il riquadro che conta, un
+   arancio come segno del sito, riquadri molto arrotondati, pulsanti a pillola,
+   ogni sezione con il suo colore. */
+:root{
+  --carta:#FFFFFF;--carta-2:#F4F7FF;--terra:#FFF1D6;--terra-scura:#E29A00;
+  --acqua:#E3EEFF;--acqua-2:#C9DCFF;--acqua-3:#8FB4F5;
+  --ink:#14213D;--ink-2:#3A4664;--ink-3:#5B6585;--filo:#14213D1F;--filo-2:#14213D0F;
+  --rotta:#C2410C;--rotta-chiara:#FFEDD5;
+  --azione:#1D5FD1;--su-azione:#fff;--attivo:#1D5FD1;--su-attivo:#fff;
+  --forte:#1E2A44;--su-forte:#fff;--campo:#F4F7FF;--marchio:#14213D;
+  --r:18px;
+}
+.btn{border-radius:999px}
+.btn-pieno{box-shadow:0 6px 0 #154AA6}
+.btn-pieno:active{transform:translateY(3px);box-shadow:0 3px 0 #154AA6}
+h1,h2,h3{letter-spacing:-.025em}
+/* Il riquadro che conta è un blocco blu, con un sole che sporge */
+.carta{position:relative;overflow:hidden;background:#1D5FD1;color:#fff;border:0;outline:0;border-radius:28px}
+.carta::after{content:"";position:absolute;right:-46px;top:-46px;width:100px;height:100px;border-radius:50%;background:#FFC93C;z-index:0}
+.carta>*{position:relative;z-index:1}
+.carta .occhiello,.carta .nota,.carta p,.carta .scandaglio span{color:#E3EEFF}
+.carta h2,.carta .scandaglio b{color:#fff}
+.carta .btn-pieno{background:#fff;color:#1D5FD1;box-shadow:0 6px 0 #0F3F96}
+.carta .btn-pieno .ico{stroke:#1D5FD1}
+/* Il riepilogo resta chiaro: verde e rosso non si leggono sul blu */
+.diario.carta{background:var(--carta-2);color:var(--ink)}
+.diario.carta::after{background:#FFE7A3;width:80px;height:80px;right:-40px;top:-40px}
+.diario.carta .scandaglio span,.diario.carta p{color:var(--ink-3)}
+.diario.carta .scandaglio.ok b{color:var(--ok)}.diario.carta .scandaglio.ko b{color:var(--ko)}.diario.carta .scandaglio.no b{color:var(--ink-3)}
+.scala,.figura-grande::before{display:none!important}
+.striscia,.figura-grande{border:0!important;outline:0!important;border-radius:24px!important}
+.occhiello{letter-spacing:.06em}
+/* Le righe diventano tessere colorate */
+.righe{border:0;display:grid;gap:10px}
+.righe>li>a,.righe>li>.riga{border:0;background:var(--carta-2);border-radius:20px;padding:var(--s-12) var(--s-16)}
+.righe .ico-tondo{background:#fff}
+.cosa .righe>li:nth-child(1)>a{background:#E3EEFF}
+.cosa .righe>li:nth-child(2)>a{background:#FFF1D6}
+.cosa .righe>li:nth-child(3)>a{background:#1E2A44;color:#fff}
+.cosa .righe>li:nth-child(3) small{color:#C9D4E8}
+.cosa .righe>li:nth-child(3) .freccia{stroke:#C9D4E8}
+.cosa .righe>li:nth-child(4)>a{background:#FFE4E8}
+.cosa .righe .ico-tondo{background:#fff!important;color:var(--ink)!important}
+.peso i{background:#FFB020}
+.peso i.v{border-color:#14213D33}
+.nota-carta{border-left:0;border-radius:24px}
+.link-freccia{border-bottom-width:3px}
+.segmenti{background:var(--carta-2);border:0}
+.barra{border-top-color:#14213D14}
+.barra a[aria-current]{color:#1D5FD1}
+.barra a[aria-current]::before{background:#1D5FD1}
+/* L'avanzamento come una barra a segmenti */
+.rotta{gap:6px}
+.rotta::before,.rotta::after{display:none}
+.tappa{flex:1;width:auto;height:10px;border:0;border-radius:99px;background:#E6EBF5}
+.tappa.ko{background:var(--ko)}.tappa.ok{background:var(--ok)}
+.tappa.ora{background:#1D5FD1;box-shadow:none}
+.risposta{border-width:2px;border-radius:20px;box-shadow:0 3px 0 #14213D14}
+.tasto{border-radius:10px}
+.chip{border-width:2px}
+.cerca input,.cerca button{border-radius:999px}

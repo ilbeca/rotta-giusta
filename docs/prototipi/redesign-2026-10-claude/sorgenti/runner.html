@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>La domanda, dopo un errore · mock «La carta nautica»</title>
+<title>La domanda, dopo un errore · mock «@@NOME@@»</title>
 <style>@@CSS@@
 body{background:var(--carta)}
 .r-testata{position:sticky;top:0;z-index:5;background:var(--carta);border-bottom:1px solid var(--filo-2)}
@@ -25,14 +25,14 @@ body{background:var(--carta)}
 .numero{font-weight:800;font-size:var(--t-14);color:var(--rotta);letter-spacing:.02em}
 .domanda{font-size:22px;font-weight:700;line-height:1.3;letter-spacing:-.01em;margin:var(--s-12) 0 var(--s-24)}
 .risposte{display:grid;gap:var(--s-12);list-style:none;padding:0;margin:0}
-.risposta{display:flex;gap:var(--s-12);align-items:flex-start;padding:var(--s-16);border-radius:var(--r);border:1.5px solid var(--filo);background:#fff;font-size:var(--t-16);line-height:1.4}
+.risposta{display:flex;gap:var(--s-12);align-items:flex-start;padding:var(--s-16);border-radius:var(--r);border:1.5px solid var(--filo);background:var(--campo);font-size:var(--t-16);line-height:1.4}
 .tasto{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--ink-3);display:grid;place-items:center;font-weight:800;font-size:var(--t-14);flex:none}
 .risposta .stato{display:block;font-size:var(--t-12);font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
 .risposta.tua{border-color:var(--ko);background:var(--ko-chiaro)}
-.risposta.tua .tasto{background:var(--ko);border-color:var(--ko);color:#fff}
+.risposta.tua .tasto{background:var(--ko);border-color:var(--ko);color:var(--su-esito,#fff)}
 .risposta.tua .stato{color:var(--ko)}
 .risposta.esatta{border-color:var(--ok);background:var(--ok-chiaro)}
-.risposta.esatta .tasto{background:var(--ok);border-color:var(--ok);color:#fff}
+.risposta.esatta .tasto{background:var(--ok);border-color:var(--ok);color:var(--su-esito,#fff)}
 .risposta.esatta .stato{color:var(--ok)}
 .risposta.spenta{color:var(--ink-3)}
 .perche{margin-top:var(--s-24);padding-top:var(--s-16);border-top:1px solid var(--filo)}
@@ -50,6 +50,7 @@ body{background:var(--carta)}
   .domanda{font-size:28px}
   .r-main{padding-top:var(--s-48)}
 }
+@@TEMA@@
 </style></head>
 <body>
 @@ICONE@@

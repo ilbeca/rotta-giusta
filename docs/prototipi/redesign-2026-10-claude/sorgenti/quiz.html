@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Allenati · Quiz · mock «La carta nautica»</title>
+<title>Allenati · Quiz · mock «@@NOME@@»</title>
 <style>@@CSS@@
 h1.pagina{font-size:var(--t-32);font-weight:800}
 .segmenti{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;margin:var(--s-16) 0 var(--s-24);background:var(--carta-2);border:1px solid var(--filo);border-radius:999px}
 .segmenti a{display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;border-radius:999px;text-decoration:none;font-weight:700;font-size:var(--t-14);color:var(--ink-2)}
 .segmenti a .ico{width:18px;height:18px}
-.segmenti a[aria-current]{background:var(--ink);color:#fff}
+.segmenti a[aria-current]{background:var(--attivo);color:var(--su-attivo)}
 .consigliato{padding:var(--s-24) var(--s-16) var(--s-16);display:grid;gap:var(--s-12)}
 .consigliato h2{font-size:var(--t-24);font-weight:800}
 .consigliato p{color:var(--ink-2);font-size:var(--t-16)}
@@ -14,7 +14,7 @@ h1.pagina{font-size:var(--t-32);font-weight:800}
 .blocco h2{font-size:var(--t-20);font-weight:800;margin:var(--s-8) 0 var(--s-12)}
 .cerca{display:flex;gap:var(--s-8);margin-top:var(--s-8)}
 .cerca label{position:absolute;left:-9999px}
-.cerca input{flex:1;min-width:0;height:52px;border:1.5px solid var(--ink-3);border-radius:var(--r);background:#fff;padding:0 var(--s-16);font:500 var(--t-16) Manrope,sans-serif;color:var(--ink)}
+.cerca input{flex:1;min-width:0;height:52px;border:1.5px solid var(--ink-3);border-radius:var(--r);background:var(--campo);padding:0 var(--s-16);font:500 var(--t-16) Manrope,sans-serif;color:var(--ink)}
 .cerca button{width:52px;height:52px;border-radius:var(--r);border:1.5px solid var(--ink);background:transparent;display:grid;place-items:center;color:var(--ink)}
 .temi .testo b{font-weight:700}
 .peso{display:flex;gap:3px;align-items:center;flex:none}
@@ -29,6 +29,7 @@ h1.pagina{font-size:var(--t-32);font-weight:800}
   .griglia .blocco:first-child{margin-top:0}
   .consigliato{padding:var(--s-32)}
 }
+@@TEMA@@
 </style></head>
 <body>
 @@ICONE@@

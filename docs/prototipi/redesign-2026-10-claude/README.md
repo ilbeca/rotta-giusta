@@ -1,34 +1,41 @@
 # Il ridisegno visivo — i mock di Claude, 24 ottobre 2026
 
-La diagnosi, le tre direzioni e le decisioni per l'autore stanno nella scheda
-**I-29** di [`docs/idee-dopo-gli-account.md`](../../idee-dopo-gli-account.md).
-Qui ci sono i mock della direzione raccomandata, **A — La carta nautica**, la
-tavola con le tre direzioni, e le schermate: di oggi e dei mock.
+La diagnosi, le tre direzioni, la raccomandazione e le decisioni per l'autore
+stanno nella scheda **I-29** di
+[`docs/idee-dopo-gli-account.md`](../../idee-dopo-gli-account.md). Qui ci sono i
+mock di **tutte e tre le direzioni**, la tavola che le mette a confronto, e le
+schermate: di oggi e dei mock.
 
 Sono **mock**: HTML statici, non il sito. Nessun file di `site/` è stato
-toccato. I dati sono quelli veri della banca (1.722 quesiti, i pesi d'esame, il
-quesito 1.7.6-19), il resto è un esempio senza account.
+toccato. Le tre direzioni hanno le stesse quattro schermate con **gli stessi
+testi**, perché si confronti il volto e non il contenuto. I dati sono quelli
+veri della banca (1.722 quesiti, i pesi d'esame, il quesito 1.7.6-19), il resto
+è un esempio senza account.
 
 ## I file
 
 | File | Che cosa mostra |
 |---|---|
-| [`direzioni.html`](direzioni.html) | Le tre direzioni a confronto: la stessa Home in A, B e C |
-| [`home.html`](home.html) | La Home senza risposte, direzione A |
-| [`quiz.html`](quiz.html) | Allenati · Quiz, direzione A |
-| [`runner.html`](runner.html) | La domanda dopo una risposta sbagliata, direzione A |
-| [`riepilogo.html`](riepilogo.html) | Il riepilogo di un allenamento breve fermato dopo 2 domande su 10 |
-| [`sorgenti/`](sorgenti/) | Da dove sono composti: `comune.css`, le icone, la carta disegnata, `build.py`, e i due script di cattura |
+| [`direzioni.html`](direzioni.html) | Le tre direzioni affiancate, con i link ai loro mock, e la raccomandazione in fondo |
+| [`a-carta-nautica/`](a-carta-nautica/) | **A — La carta nautica**: `home.html`, `quiz.html`, `runner.html`, `riepilogo.html` |
+| [`b-plancia-di-notte/`](b-plancia-di-notte/) | **B — La plancia di notte**: le stesse quattro schermate |
+| [`c-quaderno-a-colori/`](c-quaderno-a-colori/) | **C — Il quaderno a colori**: le stesse quattro schermate |
+| [`sorgenti/`](sorgenti/) | Da dove sono composti: le quattro pagine comuni, `comune.css`, un `tema.css` e un'illustrazione per direzione, le icone, `build.py`, e i due script di cattura |
+
+Le quattro schermate di ogni direzione: `home.html`, la Home senza risposte;
+`quiz.html`, Allenati · Quiz; `runner.html`, la domanda 1.7.6-19 dopo una
+risposta sbagliata; `riepilogo.html`, un allenamento breve fermato dopo 2
+domande su 10.
 
 Ogni HTML è **autoconsistente**: il carattere Manrope (licenza SIL OFL 1.1, il
 testo in `site/caratteri/OFL.txt`) è incorporato in base64, stile e icone sono
 nel file, nessuna risorsa da altri host. Si aprono con un doppio clic, e si
 adattano da 375 a 1280 px.
 
-Per rifarli dalle sorgenti:
+Per rifarli dalle sorgenti, da questa cartella:
 
 ```bash
-python3 docs/prototipi/redesign-2026-10-claude/sorgenti/build.py docs/prototipi/redesign-2026-10-claude site/caratteri/manrope-latin-wght-normal.woff2
+python3 sorgenti/build.py . ../../../site/caratteri/manrope-latin-wght-normal.woff2
 ```
 
 ## Le schermate di oggi — `oggi/`
@@ -56,32 +63,75 @@ Sono quelle su cui poggia la diagnosi di I-29; tutte guardate.
 | [`oggi/riepilogo-1280.png`](oggi/riepilogo-1280.png) | Il riepilogo al computer: cinque pulsanti di pari peso su tre righe |
 | [`oggi/accedi-375.png`](oggi/accedi-375.png) | Il pannello Accedi: dieci pulsanti in colonna, l'accesso sembra un menu (punto 2) |
 
-## Le schermate dei mock — `schermate/`
+## Le schermate dei mock
 
 Prese con `sorgenti/cattura.mjs` dagli HTML di questa cartella, Chrome headless,
-24 ottobre 2026; tutte guardate. Accanto, quello che lo script ha misurato:
-sbordamento orizzontale e il fondo dell'unico `data-ruolo="principale"`.
+24 ottobre 2026; tutte guardate. Su ognuna lo script ha misurato: nessuno
+sbordamento orizzontale, un solo `data-ruolo="principale"`, Manrope caricato;
+«Simula il quiz base» finisce fra 551 e 552 px a 375×812 e resta sopra la barra
+a 375×667 (603 px utili); «Avanti» resta nel primo schermo a 375×667.
 
-| Schermata | Che cosa mostra | Misura |
-|---|---|---|
-| [`schermate/direzioni-1280-intera.png`](schermate/direzioni-1280-intera.png) | Le tre direzioni affiancate, con riferimenti, che cosa cambia per chi studia e il rischio | sbordamento 0 |
-| [`schermate/direzioni-375-intera.png`](schermate/direzioni-375-intera.png) | Le stesse, una sotto l'altra al telefono | sbordamento 0 |
-| [`schermate/home-375.png`](schermate/home-375.png) | Home, primo schermo a 375×812: titolo, striscia di carta, i tre numeri della prova, «Simula il quiz base» | principale a 552 px |
-| [`schermate/home-375x667.png`](schermate/home-375x667.png) | Home su un telefono piccolo: il pulsante resta sopra la barra | principale a 552 px su 603 utili |
-| [`schermate/home-375-intera.png`](schermate/home-375-intera.png) | Home intera: le quattro righe con i numeri, «I limiti, detti prima» come nota di carta, la barra con le icone | sbordamento 0 |
-| [`schermate/home-1280.png`](schermate/home-1280.png) | Home al computer: due colonne vere, la carta disegnata con il bordo a scala | principale a 553 px |
-| [`schermate/home-1280-intera.png`](schermate/home-1280-intera.png) | Home intera al computer | sbordamento 0 |
-| [`schermate/quiz-375-intera.png`](schermate/quiz-375-intera.png) | Allenati · Quiz: segmenti a pillola, l'unico riquadro con il reticolo, righe al posto dei pulsanti, il peso d'esame a pallini | principale a 458 px |
-| [`schermate/quiz-1280.png`](schermate/quiz-1280.png) | Allenati al computer: i modi a sinistra, gli argomenti a destra | principale a 487 px |
-| [`schermate/quiz-1280-intera.png`](schermate/quiz-1280-intera.png) | Allenati intera al computer | sbordamento 0 |
-| [`schermate/runner-375.png`](schermate/runner-375.png) | La domanda dopo un errore: la rotta delle dieci tappe, «La tua risposta» e «Risposta del decreto», l'esito sopra «Avanti» | «Avanti» a 800 px su 812 |
-| [`schermate/runner-375x667.png`](schermate/runner-375x667.png) | La stessa su un telefono piccolo: «Avanti» resta nel primo schermo (D-29), la terza risposta scorre | «Avanti» nel primo schermo |
-| [`schermate/runner-1280.png`](schermate/runner-1280.png) | La domanda al computer, in una colonna da 760 px | sbordamento 0 |
-| [`schermate/riepilogo-375-intera.png`](schermate/riepilogo-375-intera.png) | Il riepilogo: il fatto come titolo, tre numeri grandi, la traccia, un pulsante e due link, l'invito in una nota | principale a 558 px |
-| [`schermate/riepilogo-1280.png`](schermate/riepilogo-1280.png) | Il riepilogo al computer | principale a 639 px |
+| Schermata | Che cosa mostra |
+|---|---|
+| [`schermate/direzioni-1280-intera.png`](schermate/direzioni-1280-intera.png) | Le tre direzioni affiancate, con riferimenti, che cosa cambia per chi studia, il rischio, e la raccomandazione dopo |
+| [`schermate/direzioni-375-intera.png`](schermate/direzioni-375-intera.png) | Le stesse, una sotto l'altra al telefono |
+
+### A — La carta nautica: fondo caldo, reticolo, bordo a scala, la rotta magenta
+
+| Schermata | Che cosa mostra |
+|---|---|
+| [`a-carta-nautica/schermate/home-375.png`](a-carta-nautica/schermate/home-375.png) | Home, primo schermo a 375×812 |
+| [`a-carta-nautica/schermate/home-375x667.png`](a-carta-nautica/schermate/home-375x667.png) | Home su un telefono piccolo: «Simula il quiz base» sopra la barra |
+| [`a-carta-nautica/schermate/home-375-intera.png`](a-carta-nautica/schermate/home-375-intera.png) | Home intera al telefono |
+| [`a-carta-nautica/schermate/home-1280.png`](a-carta-nautica/schermate/home-1280.png) | Home al computer, primo schermo |
+| [`a-carta-nautica/schermate/home-1280-intera.png`](a-carta-nautica/schermate/home-1280-intera.png) | Home intera al computer |
+| [`a-carta-nautica/schermate/quiz-375-intera.png`](a-carta-nautica/schermate/quiz-375-intera.png) | Allenati · Quiz intera al telefono |
+| [`a-carta-nautica/schermate/quiz-1280.png`](a-carta-nautica/schermate/quiz-1280.png) | Allenati · Quiz al computer, primo schermo |
+| [`a-carta-nautica/schermate/quiz-1280-intera.png`](a-carta-nautica/schermate/quiz-1280-intera.png) | Allenati · Quiz intera al computer |
+| [`a-carta-nautica/schermate/runner-375.png`](a-carta-nautica/schermate/runner-375.png) | La domanda dopo un errore, a 375×812 |
+| [`a-carta-nautica/schermate/runner-375x667.png`](a-carta-nautica/schermate/runner-375x667.png) | La stessa su un telefono piccolo: «Avanti» nel primo schermo |
+| [`a-carta-nautica/schermate/runner-1280.png`](a-carta-nautica/schermate/runner-1280.png) | La domanda al computer |
+| [`a-carta-nautica/schermate/riepilogo-375-intera.png`](a-carta-nautica/schermate/riepilogo-375-intera.png) | Il riepilogo intero al telefono |
+| [`a-carta-nautica/schermate/riepilogo-1280.png`](a-carta-nautica/schermate/riepilogo-1280.png) | Il riepilogo al computer |
+
+### B — La plancia di notte: fondo navy scurissimo, azione ambra, segno ciano, la fila di luci
+
+| Schermata | Che cosa mostra |
+|---|---|
+| [`b-plancia-di-notte/schermate/home-375.png`](b-plancia-di-notte/schermate/home-375.png) | Home, primo schermo a 375×812 |
+| [`b-plancia-di-notte/schermate/home-375x667.png`](b-plancia-di-notte/schermate/home-375x667.png) | Home su un telefono piccolo: «Simula il quiz base» sopra la barra |
+| [`b-plancia-di-notte/schermate/home-375-intera.png`](b-plancia-di-notte/schermate/home-375-intera.png) | Home intera al telefono |
+| [`b-plancia-di-notte/schermate/home-1280.png`](b-plancia-di-notte/schermate/home-1280.png) | Home al computer, primo schermo |
+| [`b-plancia-di-notte/schermate/home-1280-intera.png`](b-plancia-di-notte/schermate/home-1280-intera.png) | Home intera al computer |
+| [`b-plancia-di-notte/schermate/quiz-375-intera.png`](b-plancia-di-notte/schermate/quiz-375-intera.png) | Allenati · Quiz intera al telefono |
+| [`b-plancia-di-notte/schermate/quiz-1280.png`](b-plancia-di-notte/schermate/quiz-1280.png) | Allenati · Quiz al computer, primo schermo |
+| [`b-plancia-di-notte/schermate/quiz-1280-intera.png`](b-plancia-di-notte/schermate/quiz-1280-intera.png) | Allenati · Quiz intera al computer |
+| [`b-plancia-di-notte/schermate/runner-375.png`](b-plancia-di-notte/schermate/runner-375.png) | La domanda dopo un errore, a 375×812 |
+| [`b-plancia-di-notte/schermate/runner-375x667.png`](b-plancia-di-notte/schermate/runner-375x667.png) | La stessa su un telefono piccolo: «Avanti» nel primo schermo |
+| [`b-plancia-di-notte/schermate/runner-1280.png`](b-plancia-di-notte/schermate/runner-1280.png) | La domanda al computer |
+| [`b-plancia-di-notte/schermate/riepilogo-375-intera.png`](b-plancia-di-notte/schermate/riepilogo-375-intera.png) | Il riepilogo intero al telefono |
+| [`b-plancia-di-notte/schermate/riepilogo-1280.png`](b-plancia-di-notte/schermate/riepilogo-1280.png) | Il riepilogo al computer |
+
+### C — Il quaderno a colori: bianco, blu saturo con il sole, tessere colorate, la barra a segmenti
+
+| Schermata | Che cosa mostra |
+|---|---|
+| [`c-quaderno-a-colori/schermate/home-375.png`](c-quaderno-a-colori/schermate/home-375.png) | Home, primo schermo a 375×812 |
+| [`c-quaderno-a-colori/schermate/home-375x667.png`](c-quaderno-a-colori/schermate/home-375x667.png) | Home su un telefono piccolo: «Simula il quiz base» sopra la barra |
+| [`c-quaderno-a-colori/schermate/home-375-intera.png`](c-quaderno-a-colori/schermate/home-375-intera.png) | Home intera al telefono |
+| [`c-quaderno-a-colori/schermate/home-1280.png`](c-quaderno-a-colori/schermate/home-1280.png) | Home al computer, primo schermo |
+| [`c-quaderno-a-colori/schermate/home-1280-intera.png`](c-quaderno-a-colori/schermate/home-1280-intera.png) | Home intera al computer |
+| [`c-quaderno-a-colori/schermate/quiz-375-intera.png`](c-quaderno-a-colori/schermate/quiz-375-intera.png) | Allenati · Quiz intera al telefono |
+| [`c-quaderno-a-colori/schermate/quiz-1280.png`](c-quaderno-a-colori/schermate/quiz-1280.png) | Allenati · Quiz al computer, primo schermo |
+| [`c-quaderno-a-colori/schermate/quiz-1280-intera.png`](c-quaderno-a-colori/schermate/quiz-1280-intera.png) | Allenati · Quiz intera al computer |
+| [`c-quaderno-a-colori/schermate/runner-375.png`](c-quaderno-a-colori/schermate/runner-375.png) | La domanda dopo un errore, a 375×812 |
+| [`c-quaderno-a-colori/schermate/runner-375x667.png`](c-quaderno-a-colori/schermate/runner-375x667.png) | La stessa su un telefono piccolo: «Avanti» nel primo schermo |
+| [`c-quaderno-a-colori/schermate/runner-1280.png`](c-quaderno-a-colori/schermate/runner-1280.png) | La domanda al computer |
+| [`c-quaderno-a-colori/schermate/riepilogo-375-intera.png`](c-quaderno-a-colori/schermate/riepilogo-375-intera.png) | Il riepilogo intero al telefono |
+| [`c-quaderno-a-colori/schermate/riepilogo-1280.png`](c-quaderno-a-colori/schermate/riepilogo-1280.png) | Il riepilogo al computer |
 
 ## Che cosa non è stato controllato
 
 T-12 e T-13 misurano la pagina vera, non questi file; nessuna persona li ha
-visti; Safari e il gesto vero; il tema scuro; gli stati con l'account, i
-Segnali, il Carteggio e Progressi, che non hanno un mock.
+visti; Safari e il gesto vero; gli stati con l'account, i Segnali, il Carteggio,
+Esame e Progressi, che non hanno un mock in nessuna direzione.

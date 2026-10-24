@@ -38,13 +38,13 @@ main{max-width:1200px}
 .dB .luci{display:flex;gap:10px;margin-top:14px}
 .dB .luci i{width:12px;height:12px;border-radius:50%;box-shadow:0 0 12px currentColor}
 .dB .pan{margin-top:16px;padding:14px;border-radius:14px;background:#0D2234;border:1px solid #1E3A52}
-.dB .num{display:flex;gap:18px;font-family:ui-monospace,Menlo,monospace}.dB .num b{font-size:24px;display:block;color:#F5F9FB}.dB .num span{font-size:10px;color:#8FB0C4;font-family:Manrope}
-.dB .bt{margin-top:12px;background:#4ADE80;color:#06121F;border-radius:10px;height:42px;display:grid;place-items:center;font-weight:800;font-size:13px}
+.dB .num{display:flex;gap:18px}.dB .num b{font-size:24px;display:block;color:#F5F9FB}.dB .num span{font-size:10px;color:#8FB0C4}
+.dB .bt{margin-top:12px;background:#FFB547;color:#06121F;border-radius:10px;height:42px;display:grid;place-items:center;font-weight:800;font-size:13px}
 .dB .rg{margin-top:14px;display:grid;gap:8px}
 .dB .rg div{padding:10px 12px;border-radius:10px;background:#0D2234;font-size:12px;color:#B8CEDB;display:flex;justify-content:space-between}
 .dB .rg b{color:#fff;font-size:13px}
 .dB .barra-m{background:#06121F;border-top:1px solid #1E3A52;color:#8FB0C4}
-.dB .barra-m span:first-child{color:#4ADE80}
+.dB .barra-m span:first-child{color:#FFB547}
 
 /* C — Il quaderno a colori */
 .dC{background:#FFFFFF;color:#14213D;padding:18px}
@@ -60,6 +60,8 @@ main{max-width:1200px}
 .dC .tiles span{font-size:22px}
 .dC .barra-m{background:#fff;border-top:1px solid #E5E7EB;color:#6B7280}
 .dC .barra-m span:first-child{color:#1D5FD1}
+.mock{margin-top:var(--s-16);font-size:var(--t-14);font-weight:600}.mock a{color:var(--ink)}
+.racc-sez{margin-top:var(--s-48);padding-top:var(--s-24);border-top:1px solid var(--filo);max-width:44em}.racc-sez h2{font-size:var(--t-24);font-weight:800;margin:var(--s-8) 0}.racc-sez p{color:var(--ink-2)}
 .racc{display:inline-block;margin-left:6px;padding:1px 8px;line-height:1.5;border-radius:999px;background:var(--rotta);color:#fff;font-size:var(--t-12);font-weight:800;letter-spacing:.06em}
 @media (min-width:900px){.tre{grid-template-columns:repeat(3,1fr);gap:var(--s-32)}.titolo h1{font-size:var(--t-44)}}
 </style></head>
@@ -69,11 +71,11 @@ main{max-width:1200px}
 <div class="titolo">
   <p class="occhiello rotta">Ridisegno · tre direzioni</p>
   <h1>Tre modi di dare un volto a Rotta Giusta</h1>
-  <p>La stessa Home, con lo stesso contenuto, in tre direzioni diverse. Le schermate complete sono solo per la direzione raccomandata, la A.</p>
+  <p>La stessa Home, con lo stesso contenuto, in tre direzioni diverse. Ogni direzione ha quattro schermate complete — Home, Allenati · Quiz, la domanda dopo un errore, il riepilogo —, con gli stessi testi: cambia solo il volto.</p>
 </div>
 <div class="tre">
   <section class="dir">
-    <p class="occhiello">Direzione A <span class="racc">raccomandata</span></p>
+    <p class="occhiello">Direzione A</p>
     <h2>La carta nautica</h2>
     <p class="rif">Le carte dell'Istituto Idrografico e dell'Ammiragliato, i portolani, le guide Imray.</p>
     <div class="tel dA" aria-hidden="true">
@@ -85,7 +87,7 @@ main{max-width:1200px}
       <div class="rg"><div><i></i><span><b>1.722</b> quesiti del decreto</span></div><div><i style="background:#EFE3C4"></i><span><b>135</b> esercizi di carteggio</span></div></div>
       <div class="barra-m"><span>Home</span><span>Allenati</span><span>Esame</span><span>Progressi</span></div>
     </div>
-    <ul><li>Per chi studia: riconosce la carta che userà al tavolo; i numeri dell'esame sono grandi e chiari.</li><li>Rischio: diventare una carta decorata; si tiene a bada con poche firme ripetute.</li></ul>
+    <p class="mock">Le schermate: <a href="a-carta-nautica/home.html">Home</a> · <a href="a-carta-nautica/quiz.html">Allenati</a> · <a href="a-carta-nautica/runner.html">La domanda</a> · <a href="a-carta-nautica/riepilogo.html">Il riepilogo</a></p><ul><li>Per chi studia: riconosce la carta che userà al tavolo; i numeri dell'esame sono grandi e chiari.</li><li>Rischio: diventare una carta decorata; si tiene a bada con poche firme ripetute.</li></ul>
   </section>
 
   <section class="dir">
@@ -95,12 +97,12 @@ main{max-width:1200px}
     <div class="tel dB" aria-hidden="true">
       <div class="t"><span>ROTTA GIUSTA</span><span>Accedi</span></div>
       <div class="luci"><i style="color:#4ADE80;background:#4ADE80"></i><i style="color:#F87171;background:#F87171"></i><i style="color:#F5F9FB;background:#F5F9FB"></i></div>
-      <h3>Rotta per l'esame: <em>tutto in vista</em>.</h3>
+      <h3>Preparati alla patente nautica, un passo alla volta.</h3>
       <div class="pan"><div class="num"><div><b>20</b><span>domande</span></div><div><b>30:00</b><span>minuti</span></div><div><b>≤4</b><span>errori</span></div></div><div class="bt">Simula il quiz base</div></div>
       <div class="rg"><div><span>Quiz del decreto</span><b>1.722</b></div><div><span>Carteggio</span><b>135</b></div><div><span>Fanali e segnali</span><b>27</b></div></div>
       <div class="barra-m"><span>Home</span><span>Allenati</span><span>Esame</span><span>Progressi</span></div>
     </div>
-    <ul><li>Per chi studia: concentrazione, aria «da bordo», perfetta per i Segnali.</li><li>Rischio: testi lunghi faticosi al sole; cambia la decisione del 9 settembre sul tema chiaro.</li></ul>
+    <p class="mock">Le schermate: <a href="b-plancia-di-notte/home.html">Home</a> · <a href="b-plancia-di-notte/quiz.html">Allenati</a> · <a href="b-plancia-di-notte/runner.html">La domanda</a> · <a href="b-plancia-di-notte/riepilogo.html">Il riepilogo</a></p><ul><li>Per chi studia: concentrazione, aria «da bordo», perfetta per i Segnali.</li><li>Rischio: testi lunghi faticosi al sole; cambia la decisione del 9 settembre sul tema chiaro. L'azione è ambra, come le luci di plancia di notte, per non confondersi con il verde del giusto.</li></ul>
   </section>
 
   <section class="dir">
@@ -109,13 +111,14 @@ main{max-width:1200px}
     <p class="rif">Duolingo, Brilliant, Headspace; le app di studio per il telefono.</p>
     <div class="tel dC" aria-hidden="true">
       <div class="t"><span>Rotta Giusta</span><span>Accedi</span></div>
-      <h3>Studia per la patente, dieci domande alla volta.</h3>
+      <h3>Preparati alla patente nautica, un passo alla volta.</h3>
       <div class="pan"><b>Simula il quiz base</b><small>20 domande · 30 minuti · al più 4 errori</small><div class="bt">Inizia</div></div>
       <div class="tiles"><div style="background:#DCEBFF;color:#1D5FD1">Quiz<span>1.722</span></div><div style="background:#FFEBC7;color:#9A5B00">Carteggio<span>135</span></div><div style="background:#1E2A44;color:#fff">Segnali<span>27</span></div><div style="background:#FFE1E6;color:#B4233C">Esame<span>3 prove</span></div></div>
       <div class="barra-m"><span>Home</span><span>Allenati</span><span>Esame</span><span>Progressi</span></div>
     </div>
-    <ul><li>Per chi studia: allegro, ogni sezione ha un colore; invoglia i ventenni.</li><li>Rischio: sembra un gioco, e il sito promette onestà; ai cinquantenni del carteggio può sembrare poco serio.</li></ul>
+    <p class="mock">Le schermate: <a href="c-quaderno-a-colori/home.html">Home</a> · <a href="c-quaderno-a-colori/quiz.html">Allenati</a> · <a href="c-quaderno-a-colori/runner.html">La domanda</a> · <a href="c-quaderno-a-colori/riepilogo.html">Il riepilogo</a></p><ul><li>Per chi studia: allegro, ogni sezione ha un colore; invoglia i ventenni.</li><li>Rischio: sembra un gioco, e il sito promette onestà; ai cinquantenni del carteggio può sembrare poco serio.</li></ul>
   </section>
 </div>
+<section class="racc-sez"><p class="occhiello rotta">Dopo il confronto</p><h2>La raccomandazione: A, la carta nautica</h2><p>È l'unica delle tre che nasce dalla materia dell'esame invece che da un'altra app, e parla sia ai ventenni sia a chi fa il carteggio sul serio. Da B si può prendere più avanti il tema scuro. Il perché per esteso è nella scheda I-29.</p></section>
 </main>
 </body></html>

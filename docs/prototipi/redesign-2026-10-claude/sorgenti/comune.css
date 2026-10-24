@@ -12,6 +12,8 @@
   --t-12:12px;--t-14:14px;--t-16:16px;--t-20:20px;--t-24:24px;--t-32:32px;--t-44:44px;--t-64:64px;
   --s-4:4px;--s-8:8px;--s-12:12px;--s-16:16px;--s-24:24px;--s-32:32px;--s-48:48px;--s-64:64px;
   --r:12px;--colonna:1120px;
+  /* Ruoli: l'azione piena, la voce attiva, una superficie forte */
+  --azione:var(--ink);--su-azione:#fff;--attivo:var(--ink);--su-attivo:#fff;--forte:var(--ink);--su-forte:#fff;--campo:#fff;--marchio:#0B1F33;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
@@ -30,7 +32,7 @@ p{margin:0}
 .marchio span b{font-weight:800}.marchio span{font-weight:500}
 .nav-alta{display:none;margin-left:auto;gap:var(--s-4)}
 .nav-alta a{display:flex;align-items:center;gap:8px;height:44px;padding:0 var(--s-16);border-radius:999px;text-decoration:none;font-weight:600;font-size:var(--t-14);color:var(--ink-2)}
-.nav-alta a[aria-current]{background:var(--ink);color:#fff}
+.nav-alta a[aria-current]{background:var(--attivo);color:var(--su-attivo)}
 .accedi{margin-left:auto;display:flex;align-items:center;gap:8px;min-height:44px;padding:0 var(--s-12);border-radius:999px;text-decoration:none;font-weight:600;font-size:var(--t-14);color:var(--ink)}
 .accedi .ico{width:22px;height:22px}
 
@@ -56,8 +58,8 @@ main{max-width:var(--colonna);margin:0 auto;padding:var(--s-24) var(--s-16) 112p
 
 /* Pulsanti: uno pieno per schermata; il resto sono righe con la freccia */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s-8);min-height:56px;padding:0 var(--s-24);border-radius:var(--r);font:700 var(--t-16)/1.2 Manrope,sans-serif;text-decoration:none;border:0;cursor:pointer}
-.btn-pieno{background:var(--ink);color:#fff;box-shadow:0 1px 0 #0003,0 6px 16px -8px #0B1F3399}
-.btn-pieno .ico{stroke:#fff}
+.btn-pieno{background:var(--azione);color:var(--su-azione);box-shadow:0 1px 0 #0003,0 6px 16px -8px #0B1F3399}
+.btn-pieno .ico{stroke:var(--su-azione)}
 .btn-largo{width:100%}
 .link-freccia{display:inline-flex;align-items:center;gap:6px;min-height:44px;font-weight:700;text-decoration:none;color:var(--ink);border-bottom:2px solid var(--rotta);padding-bottom:2px;line-height:1.2}
 .link-freccia .ico{width:18px;height:18px;stroke:var(--rotta)}

@@ -4454,7 +4454,8 @@ l'autore dice: «il sito è davvero brutto, non riesco a spiegarmi perché». Le
 regole hanno fatto quello che promettevano — un solo pulsante pieno, «Avanti»
 sempre raggiungibile, una scala di corpi e di spazi, l'avviso detto una volta —
 e la pagina è più ordinata di prima. Non è diventata più bella. Questa scheda
-dice perché, propone tre direzioni e ne raccomanda una, con i mock. È la casella
+dice perché, propone tre direzioni con i mock di tutte e tre, e dopo il
+confronto ne raccomanda una. È la casella
 BRAINSTORM: niente in `site/`, niente è deciso.
 
 **Come ho guardato.** Il 24 ottobre, `main` a `3e64758` (v0.34.0 con il giro 2
@@ -4575,13 +4576,22 @@ carattere, ed è quello che è successo.
     dei componenti: le schede si allargano e il testo no. *Proposta:* la colonna
     vale per i paragrafi; al computer la pagina si dispone su due colonne vere.
 
-#### Tre direzioni
+#### Tre direzioni, con i mock
 
 Le tre direzioni tengono la struttura (Home · Allenati · Esame · Progressi), i
 testi di oggi, Manrope come unico carattere, nessuna risorsa da altri host,
 WCAG AA, i difetti dichiarati e nessuna gamification che punisce. Cambia il
-volto. La tavola che le mette a confronto è
-`docs/prototipi/redesign-2026-10-claude/direzioni.html`.
+volto. Per confrontarle davvero, **ognuna ha gli stessi quattro mock con gli
+stessi testi** — Home, Allenati · Quiz, la domanda dopo una risposta sbagliata
+(il quesito 1.7.6-19) e il riepilogo di un allenamento breve fermato dopo 2
+domande su 10 —, in tre sottocartelle di `docs/prototipi/redesign-2026-10-claude/`:
+`a-carta-nautica/`, `b-plancia-di-notte/`, `c-quaderno-a-colori/`. La tavola
+`direzioni.html` le mette una accanto all'altra; il README della cartella cita
+le schermate una per una. In tutte e tre cambia, rispetto a oggi, la stessa
+ossatura: le azioni secondarie diventano righe e link invece di pulsanti
+pallidi, i numeri dell'esame si scrivono grandi, la domanda ha un segno di
+avanzamento e l'esito sopra «Avanti», il riepilogo dice il fatto invece di
+«Attività interrotta». Cambia il volto che la veste.
 
 **A — La carta nautica.** *Riferimenti:* le carte dell'Istituto Idrografico e
 dell'Ammiragliato (la 5/D che si usa all'esame), i portolani, le guide Imray; per
@@ -4597,90 +4607,77 @@ riepilogo. I numeri dell'esame diventano grandi come gli scandagli di una carta.
 che oggi è una scheda fra le altre, diventa il linguaggio del sito; i numeri che
 contano si leggono da lontano. *Rischio:* una carta decorata e affollata. Si
 tiene a bada con tre firme e basta, e con il reticolo solo dove serve.
+*Nei mock:* in Home una striscia di carta alta 96 px sotto il titolo (il limite
+della decisione D), poi il riquadro della prova con **20 · 30′ · 4** e «Simula
+il quiz base»; al computer due colonne vere, con la carta disegnata e il bordo a
+scala. In Allenati il solo allenamento consigliato ha il reticolo, il peso
+d'esame di ogni argomento si vede con dei pallini magenta (uno per domanda della
+prova da 20). Nella domanda la rotta ha dieci tappe, la prima rossa.
 
 **B — La plancia di notte.** *Riferimenti:* i plotter cartografici (Garmin,
-B&G), l'ECDIS, gli strumenti di bordo; Apple Meteo. Fondo navy scurissimo, testo
-chiaro, i colori dei fanali — verde, rosso, bianco — come sistema, numeri in
-cifre larghe come su uno strumento. *Per chi studia:* concentrazione, un'aria
-«da bordo», ed è il volto naturale dei Segnali, che sono già notturni.
-*Rischio:* testi lunghi e note normative faticose da leggere al sole; il verde
-d'azione si confonde con il verde del giusto; e cambia una decisione presa (la
-direzione chiara, confermata il 9 settembre; il tema scuro è un'opzione futura,
-Q-TEMA). Funziona meglio come **tema scuro della direzione A** che come volto.
+B&G), l'ECDIS, gli strumenti di bordo; Apple Meteo. Fondo navy scurissimo
+(`#07131F`), testo chiaro; l'azione in **ambra**, il colore che le plance usano
+di notte per non abbagliare — e così non si confonde con il verde del giusto —;
+il **ciano** dei tracciati come segno del sito; i riquadri come schermi di
+bordo, con i cerchi del radar in un angolo. *Per chi studia:* concentrazione,
+un'aria «da bordo», ed è il volto naturale dei Segnali, che sono già notturni.
+*Rischio:* testi lunghi e note normative faticose da leggere al sole; e cambia
+una decisione presa (la direzione chiara, confermata il 9 settembre; il tema
+scuro è un'opzione futura, Q-TEMA). *Nei mock:* il faro e una nave con i fanali
+rosso, verde e bianco nella striscia della Home; l'avanzamento della domanda è
+una fila di dieci luci, la prima rossa e quella corrente ciano.
 
 **C — Il quaderno a colori.** *Riferimenti:* Duolingo, Brilliant, Headspace.
-Bianco pieno, un colore saturo per sezione (blu i Quiz, sabbia il Carteggio,
-notte i Segnali, rosso l'Esame), riquadri molto arrotondati, illustrazioni
-allegre, pulsanti a pillola. *Per chi studia:* invogliante, soprattutto per i
+Bianco pieno, il blu saturo per l'azione e per il riquadro che conta, con un
+sole giallo che sporge; un arancio come segno del sito; un colore per ogni
+riga della Home (azzurro i quiz, sabbia il carteggio, notte i segnali, rosa le
+prove); riquadri molto arrotondati, pulsanti a pillola con lo spessore sotto,
+un'illustrazione allegra. *Per chi studia:* invogliante, soprattutto per i
 ventenni che sono la maggior parte della classe; ogni sezione si riconosce dal
 colore. *Rischio:* sembra un gioco, e il sito promette di non esserlo (nessuna
 gamification, la verità prima della rassicurazione); ai cinquantenni che fanno
 il carteggio sul serio può sembrare poco serio; e il colore per sezione si
-scontra con i ruoli di D-25.
+scontra con i ruoli di D-25. *Nei mock:* l'avanzamento è una barra a dieci
+segmenti; nel riepilogo il riquadro torna chiaro, perché il verde e il rosso
+non si leggono sul blu.
 
-**Raccomandata: A, la carta nautica.** È l'unica delle tre che nasce dalla
-materia dell'esame invece che da un'altra app: il pubblico è misto per età, e
-la carta parla a tutti e due i gruppi, perché è quello che studiano. Tiene il
-tema chiaro già deciso, si regge con un carattere solo e con SVG fatti in casa,
-e dà a tre cose del sito una forma che oggi non hanno: l'esame (i tre numeri
-grandi), l'avanzamento (la rotta) e il carteggio (il reticolo). Da B si può
-prendere più avanti il tema scuro, e con lui la schermata dei Segnali.
+**Controllato su tutti e dodici i mock** (a 375×812, 375×667 e 1280×800): un
+solo `data-ruolo="principale"`, nessuno sbordamento, Manrope caricato, il
+pulsante principale nel primo schermo anche a 375×667 — «Simula il quiz base»
+finisce fra 551 e 552 px, «Avanti» resta sopra il bordo. Contrasti calcolati sui
+colori dei temi: A, testo secondario da 4,89 a 5,88:1, magenta 5,4–6,2:1; B,
+testo secondario 7,0–8,0:1, ambra con il testo scuro 10,7:1, rosso e verde sui
+loro fondi 5,8 e 8,4:1; C, testo secondario 4,8–5,8:1, bianco sul blu 5,8:1,
+arancio 4,8–5,2:1. **Non controllato:** i mock non passano per T-12 e T-13, che
+misurano la pagina vera; la frase d'introduzione della Home è accorciata; nessuna
+persona li ha visti; Safari; il gesto vero.
 
-#### I mock della direzione A
+#### La raccomandazione, dopo il confronto
 
-In `docs/prototipi/redesign-2026-10-claude/`: `home.html`, `quiz.html`
-(Allenati · Quiz), `runner.html` (la domanda dopo una risposta sbagliata) e
-`riepilogo.html`, ognuno autoconsistente — carattere, stile e icone dentro il
-file — e responsivo da 375 a 1280 px; più `direzioni.html`. Il README della
-cartella cita le schermate una per una. Che cosa cambia rispetto a oggi:
+**A, la carta nautica.** È l'unica delle tre che nasce dalla materia dell'esame
+invece che da un'altra app: il pubblico è misto per età, e la carta parla a
+tutti e due i gruppi, perché è quello che studiano. Tiene il tema chiaro già
+deciso, si regge con un carattere solo e con SVG fatti in casa, e dà a tre cose
+del sito una forma che oggi non hanno: l'esame (i tre numeri grandi),
+l'avanzamento (la rotta) e il carteggio (il reticolo). B funziona meglio come
+**tema scuro della A**, più avanti, e come volto dei Segnali; C è la più
+invitante per i ventenni e la più lontana dalla promessa del sito.
 
-- **Home.** Il titolo cresce (32 px al telefono, 56 al computer); sotto, una
-  striscia di carta alta 96 px (il limite della decisione D); poi il riquadro
-  della prova con **20 · 30′ · 4** grandi e «Simula il quiz base»; «Oppure
-  allenati con 10 domande» diventa un link sottolineato in magenta. Le tre schede
-  che ripetono la barra diventano quattro **righe** con un numero grande
-  (1.722 quesiti, 135 esercizi, 27 segnali, le prove); «Che cosa non torna»
-  diventa «I limiti, detti prima», una nota color cuoio come le note a margine
-  delle carte. Al computer, due colonne vere con la carta disegnata a destra.
-  Misurato: «Simula il quiz base» finisce a 552 px a 375×812 e resta nel primo
-  schermo a 375×667.
-- **Allenati · Quiz.** I segmenti diventano una pillola con le icone; l'allenamento
-  consigliato è l'unico riquadro, con il reticolo; gli altri modi e gli argomenti
-  sono **righe**, non pulsanti. Gli argomenti sono in ordine di peso all'esame, e
-  il peso si vede con dei pallini magenta (uno per domanda della prova da 20).
-  Un pulsante pieno, nessun pulsante pallido (15 e 14 oggi).
-- **La domanda.** In cima solo «Termina», il tempo, «1 di 10» e **la rotta**:
-  dieci tappe, la prima rossa. Il numero del decreto in magenta; la domanda a
-  22 px (28 al computer); le risposte con il tasto 1-2-3 in un tondo; dopo la
-  risposta «La tua risposta» in rosso e «Risposta del decreto» in verde, con la
-  parola oltre al colore. L'esito («Sbagliata. Era la 2.») sta sopra «Avanti», in
-  basso, sotto il pollice. Misurato a 375×667: «Avanti» nel primo schermo.
-- **Il riepilogo.** Il titolo dice il fatto («Hai risposto a 2 domande su 10.»)
-  invece di «Attività interrotta»; tre numeri grandi con ✓ ✗; la **traccia**
-  delle dieci tappe; «Riprova l'errore» pieno, gli altri come link; l'invito a
-  conservare le risposte in una nota color cuoio, con «Continua senza account».
-
-Controllato su ogni mock: un solo `data-ruolo="principale"`, nessuno sbordamento
-a 375 e a 1280 px, Manrope caricato; contrasti calcolati — testo secondario
-`#4E6375` da 4,89 a 5,88:1 sui quattro fondi, magenta 5,4–6,2:1, verde e rosso
-sui loro fondi 5,9 e 6,2:1. **Non controllato:** i mock non passano per T-12 e
-T-13, che misurano la pagina vera; con l'avviso «senza account» il riepilogo è
-fedele, la Home no (la frase di introduzione è accorciata); nessuna persona li
-ha visti; Safari; il gesto vero.
-
-**Che cosa costerebbe.** Un giro di interfaccia grande quanto P-81 su
-`index.html`, e un giro di regole su `main`: D-14, D-16, D-24 e D-25 riscritte
-come proposto sopra, la scala dei corpi con due gradini in più (32 e 56, più 44
-per i numeri), il colore del segno nei ruoli di T-13, e la tabella dei valori
-fuori scala per il bordo a scala e il reticolo. Le regole non si buttano: si
-aggiunge che cosa una pagina **deve** avere, non solo che cosa non deve.
+**Che cosa costerebbe.** Per qualunque direzione: un giro di interfaccia grande
+quanto P-81 su `index.html`, e un giro di regole su `main`: D-14, D-16, D-24 e
+D-25 riscritte come proposto sopra, la scala dei corpi con due gradini in più
+(32 e 56, più 44 per i numeri), il colore del segno nei ruoli di T-13, e la
+tabella dei valori fuori scala per il bordo a scala e il reticolo. Le regole non
+si buttano: si aggiunge che cosa una pagina **deve** avere, non solo che cosa
+non deve.
 
 #### Decisioni per l'autore
 
 1. **La direzione.** A, B o C — o A con il tema scuro di B più avanti.
    *Raccomandazione:* A.
-2. **Il magenta come segno del sito**, fuori dalle azioni e dagli esiti: un
-   colore in più nei ruoli di D-25. *Raccomandazione:* sì.
+2. **Un colore come segno del sito** — il magenta in A, il ciano in B,
+   l'arancio in C —, fuori dalle azioni e dagli esiti: un colore in più nei
+   ruoli di D-25. *Raccomandazione:* sì.
 3. **D-14 riscritta** perché un'immagine o una superficie possano pesare più del
    pulsante, purché nessun'altra cosa **interattiva** lo faccia.
    *Raccomandazione:* sì; senza, nessuna direzione si può fare.
@@ -4689,8 +4686,9 @@ aggiunge che cosa una pagina **deve** avere, non solo che cosa non deve.
    guardando i mock come la decisione C.
 5. **Le azioni secondarie come righe e link**, non pulsanti pallidi: tocca ogni
    schermata e il pannello Accedi. *Raccomandazione:* sì.
-6. **L'immagine sul telefono** (decisione D, passo 6 di I-27): la striscia di
-   carta da 96 px sotto il titolo della Home. *Raccomandazione:* sì.
+6. **L'immagine sul telefono** (decisione D, passo 6 di I-27): la striscia da
+   96 px sotto il titolo della Home, che ogni direzione disegna a modo suo.
+   *Raccomandazione:* sì.
 7. **Il titolo del riepilogo** e le altre parole toccate dai mock («Attività
    interrotta» → «Hai risposto a N domande su M»): sono del giro 3, che aspettava
    una direzione. *Raccomandazione:* far ripartire il giro 3 dentro la direzione

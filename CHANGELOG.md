@@ -203,6 +203,26 @@ selezione o contabilità. Versione 0.34.0 invariata.
 - Nessun file di `site/`, `tests/`, `server/`, della specifica o della coda
   toccato; nessuna suite rifatta, guardiano verde.
 
+### Progettato — I-29: i mock di tutte e tre le direzioni
+
+- **Perché.** L'autore vuole confrontare le tre direzioni guardandole, non
+  leggendole: la regia ha chiesto i mock di tutte e tre, con la raccomandazione
+  dopo. Ora `docs/prototipi/redesign-2026-10-claude/` ha tre sottocartelle —
+  `a-carta-nautica/`, `b-plancia-di-notte/`, `c-quaderno-a-colori/` — con le
+  stesse quattro schermate e gli stessi testi (Home, Allenati · Quiz, la domanda
+  dopo un errore, il riepilogo): cambia solo il volto. Le pagine sono comuni, e
+  ogni direzione ha un tema e un'illustrazione suoi (`sorgenti/`).
+- **Scelte nate facendo i mock.** In B l'azione è ambra, come le luci di plancia
+  di notte, e non verde, che si confondeva con il giusto; i numeri restano in
+  Manrope, senza un secondo carattere. In C il riquadro del riepilogo torna
+  chiaro, perché verde e rosso non si leggono sul blu, e il sole è stato
+  rimpicciolito dopo averlo visto coprire «Allenamento consigliato».
+- **Guardati e misurati** tutti e dodici a 375×812, 375×667 e 1280×800: un solo
+  pulsante principale, sbordamento 0, il pulsante principale nel primo schermo
+  anche a 375×667, contrasti calcolati sopra 4,5:1 sui colori dei tre temi. 39
+  schermate dei mock più le 2 della tavola e le 16 di oggi, citate nel README.
+  In I-29 la raccomandazione (A) sta dopo i tre mock.
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la
