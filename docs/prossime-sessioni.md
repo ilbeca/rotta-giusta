@@ -1,6 +1,6 @@
 # Prossime sessioni — la coda, con i prompt
 
-**Aggiornato il 17 ottobre 2026.** Territorio neutro. **Penna: la sessione di regia** (sotto, «Come si usa»).
+**Aggiornato il 24 ottobre 2026.** Territorio neutro. **Penna: la sessione di regia** (sotto, «Come si usa»).
 
 > **Questo file invecchia.** È una coda, non una verità: quando un lavoro è
 > fatto, il suo prompt si chiude con l'esito e resta, la riga della coda si
@@ -263,7 +263,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 24 | **La misura propria**: conteggi aggregati di eventi sul server del sito, senza cookie né terzi, a cominciare dal contatore degli ingressi; le registrazioni fra le metriche; MISURA → BRAINSTORM come quinto passo del ciclo (I-19, decisioni 1–3 e 5 del 17 ottobre in `docs/idee-dopo-gli-account.md`) | Claude con l'autore, poi Claude | `main` | un ADR che riscrive «nessun analytics» (specifica §2.1) e R-ACC-09, e la riga nell'informativa; dopo il rilascio del ridisegno | da scrivere |
 | 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | niente dal motore: `PREVISIONI` c'è (P-72), e un modello entra come metodo accanto alla regola semplice; Q-STIMA solo per quando si mostra | da scrivere |
 | 27 | **Esito e previsioni, la pagina e l'informativa** (B-1, B-2), poi un rilascio | ChatGPT | `ui/main` | soltanto la base giuridica (§4, «Dopo P-64», 1–3): P-74 è chiuso | P-75, da scrivere |
-| 36 | **Le regole di disegno, giro 1**: l'avviso «senza account» detto una volta accanto a «Inizia», Esame che apre sulle prove, «Inizia» nel primo schermo (I-27, audit, punti 3–6; `docs/regole-disegno-progetto.md` §4) | ChatGPT | `ui/main` | niente: le decisioni A e B sono prese, T-12 è su `main` (P-92) | P-93 |
+| 37 | **Le regole di disegno, giro 2**: la scala di corpi, spazi e pesi (D-17, D-19, D-28; `docs/regole-disegno-progetto.md` §10.2, decisione C) — prima il controllo su `main`, poi la pagina | Claude, poi ChatGPT | `main`, poi `ui/main` | il rilascio del giro 1, se l'autore lo vuole prima | P-94, da scrivere |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo P-59», «Dopo P-64», «Dopo il traguardo» e le voci non barrate |
 
 **La v0.31.0 è in linea dal 18 ottobre 2026**, sulla pagina e sul server, con le raccolte nuove spente (prima, la v0.30.0 dal 3 ottobre); P-59,
@@ -7055,6 +7055,27 @@ la 8620 guardata libera per 90 s. Voce in fondo a [Unreleased], un commit
 con il trailer, versione invariata, niente push. Chiudi con il resoconto
 di docs/prossime-sessioni.md.
 ```
+
+**Esito:** fatto il 24 ottobre 2026, `e5d79f9` su `ui/main`, fuso con
+`d147e66`. L'avviso «senza account» sta accanto a «Inizia» in ogni
+preparazione, come testo, ed è uscito dalla Home, dal segmento Carteggio e
+dalla testa dei Segnali e di «Che tecnica serve?»; Esame apre su «Le prove»,
+con il modulo in un `details` chiuso; le azioni principali stanno nel primo
+schermo e portano `data-ruolo`; nel riepilogo «Crea un account e salva» è
+diventato secondario. Home H0 da 99 a 78 parole. Le undici righe `T-12:*`
+sono uscite da `docs/eccezioni-interfaccia.md` nello stesso commit. Misure in
+`docs/regole-disegno-ux.md`. **Che cosa ha controllato la regia:** il diff
+letto — quattro file, `site/index.html` solo HTML, CSS e la disposizione delle
+preparazioni —, `check_territories --range main...ui/main` verde, merge senza
+conflitti. A vista nel browser, servito dal worktree: la Home a 375×812 senza
+avviso in testa, Esame che apre su «Le prove», i Segnali a 375×667 con avviso
+e «Inizia» sopra la barra, il Carteggio con le tre porte in testa, la
+preparazione della simulazione con l'avviso accanto a «Inizia la prova». Sulla
+merge: motore 215/219 con i quattro skip previsti, server 89/89, dati 225,
+specifica 1.064, interfaccia **3.612** in 5 min 32 s con la 8620 libera da 90 s,
+guardiano verde. **Visto e non corretto**, per il giro 3: il sommario del
+modulo di Esame dice soltanto «Non l'hai detto», e chi non l'apre non sa che
+cosa; nelle schede di Esame il quiz vela va su tre colonne strette a 375 px.
 
 ### I segnaposto — i prompt che non si possono ancora scrivere
 

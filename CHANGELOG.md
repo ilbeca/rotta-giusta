@@ -162,6 +162,26 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   sono dichiarati nel collaudo. Nessun motore, test, dato o versione cambiato;
   nessun push o rilascio.
 
+### Merge — P-93 su `main`, e la specifica allineata
+
+- **La merge di `ui/main` (P-93) è passata dal controllo dei territori**, ed è
+  stata guardata nel browser prima delle suite, con l'app servita dal worktree
+  dell'interfaccia: a 375×812 la Home senza avviso in testa ed Esame che apre su
+  «Le prove»; a 375×667 i Segnali con l'avviso e «Inizia» sopra la barra, il
+  Carteggio con le tre porte in testa, la preparazione della simulazione con
+  l'avviso accanto a «Inizia la prova».
+- **R-RIF-20, 21 e 22 non dicono più «difetto aperto»**, e P-93 nella coda è
+  fuso, da rilasciare; la riga del giro 2 prende il suo posto.
+- **Visto e non corretto**, per il giro delle parole: il sommario chiuso del
+  modulo di Esame dice soltanto «Non l'hai detto», senza dire che cosa; e a
+  375 px la scheda del quiz vela in Esame va su tre colonne strette.
+- `.claude/launch.json` ha `sito-ui`, che serve l'app dal worktree
+  dell'interfaccia sulla porta 8788: è quello con cui la regia guarda un ramo
+  prima di fonderlo.
+- Suite: motore 215/219 con i quattro skip previsti; server 89/89; dati 225;
+  specifica 1.064; interfaccia **3.612**, in 5 min 32 s, con la 8620 guardata
+  libera per 90 s prima. Guardiano verde.
+
 ## [0.33.0] — 2026-10-23
 
 **Il runner dei quiz si scorre, e la figura si vede.** Sul telefono, dopo una

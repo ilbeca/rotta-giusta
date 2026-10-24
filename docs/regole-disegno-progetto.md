@@ -565,6 +565,11 @@ resoconto di docs/prossime-sessioni.md.
 *La versione che vale è quella di `docs/prossime-sessioni.md`, scritta dopo
 P-92 con lo stato dei controlli; questa è la stessa.*
 
+*Fatto il 24 ottobre 2026 (`e5d79f9` su `ui/main`, fuso su `main`): le undici
+verifiche di T-12 girano verdi sulla pagina vera, e le righe dichiarate sono
+uscite. Le misure di prima e dopo, con le coordinate, stanno in
+`docs/regole-disegno-ux.md`.*
+
 ```
 Questo prompt è per ChatGPT, nel worktree ~/Software/rotta-giusta-ui,
 sul ramo ui/main, aperto in modalità Local. Se sei in un'altra cartella o

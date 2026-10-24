@@ -6,6 +6,12 @@
       "runtimeExecutable": "python3",
       "runtimeArgs": ["strumenti/serve.py", "8787"],
       "port": 8787
+    },
+    {
+      "name": "sito-ui",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["../rotta-giusta-ui/strumenti/serve.py", "8788"],
+      "port": 8788
     }
   ]
 }
