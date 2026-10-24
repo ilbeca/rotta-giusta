@@ -7073,7 +7073,7 @@ e «Inizia» sopra la barra, il Carteggio con le tre porte in testa, la
 preparazione della simulazione con l'avviso accanto a «Inizia la prova». Sulla
 merge: motore 215/219 con i quattro skip previsti, server 89/89, dati 225,
 specifica 1.064, interfaccia **3.612** in 5 min 32 s con la 8620 libera da 90 s,
-guardiano verde. **Visto e non corretto**, per il giro 3: il sommario del
+guardiano verde. Rilasciato nella v0.34.0 il 24 ottobre 2026. **Visto e non corretto**, per il giro 3: il sommario del
 modulo di Esame dice soltanto «Non l'hai detto», e chi non l'apre non sa che
 cosa; nelle schede di Esame il quiz vela va su tre colonne strette a 375 px.
 

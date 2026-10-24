@@ -11,6 +11,20 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+## [0.34.0] — 2026-10-24
+
+**L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la
+frase che avverte che le risposte valgono solo finché la pagina è aperta non
+apre più la Home, il Carteggio e i Segnali: sta una volta sola, come testo,
+accanto a «Inizia» in ogni preparazione. Esame apre sulle quattro prove, con
+«Che cosa stai preparando?» chiuso sotto; il pulsante per cominciare, o la
+prima porta, sta nel primo schermo anche su un telefono piccolo; e la Home
+passa da 99 a 78 parole. È il primo dei tre giri delle regole di disegno di
+I-27: il controllo nuovo del banco, T-12, lo misura in Chrome a 375 px. Il
+server non cambia: si porta allo stesso tag con `rg-aggiorna` perché
+`GET /v1/salute` dica la versione nuova. Le voci che seguono sono il lavoro di
+questi giorni, com'è stato scritto allora.
+
 ### Verificato — la v0.33.0, in linea
 
 - **Il tag e la pagina.** `v0.33.0` è un tag annotato su `21e8e11`, pushato con
