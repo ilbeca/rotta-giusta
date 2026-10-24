@@ -178,6 +178,31 @@ selezione o contabilità. Versione 0.34.0 invariata.
   guardata libera per 90 s; motore 215/219 con i quattro skip previsti, dati
   225, specifica 1.096, guardiano verde. Server non toccato.
 
+### Progettato — il volto del sito: perché è brutto, e tre direzioni (I-29)
+
+- **Perché.** Dopo i giri 1 e 2 delle regole di disegno l'autore trova il sito
+  «davvero brutto» senza saper dire perché. Guardato il 24 ottobre su `main`
+  (`3e64758`), senza account, a 375×812 e 1280×800: Home, Allenati (Quiz,
+  Carteggio, Segnali), Esame, Progressi, una preparazione, la domanda, il
+  riepilogo e Accedi. La diagnosi, in `docs/idee-dopo-gli-account.md`, I-29:
+  nessuna immagine al telefono in quattro viste; in Allenati · Quiz 14 pulsanti
+  su 15 dello stesso azzurro pallido e 21 riquadri bordati; tre bianchi a
+  contrasto 1,04–1,13 fra loro; titolo e testo in rapporto 1,9; al computer
+  schede da 1056 px con il testo a 480. Le regole D-01…D-35 sono quasi tutte
+  vincoli negativi: D-12 e D-14 insieme, D-24, la scala 12–30 e i ruoli di D-25
+  hanno prodotto una pagina corretta e senza volto. Per ognuna una proposta.
+- **Tre direzioni**: A, la carta nautica (raccomandata); B, la plancia di
+  notte; C, il quaderno a colori. Mock della A in
+  `docs/prototipi/redesign-2026-10-claude/` — Home, Allenati · Quiz, la domanda
+  dopo un errore, il riepilogo, e la tavola delle tre direzioni —, HTML
+  autoconsistenti con Manrope incorporato, guardati a 375, 375×667 e 1280 px:
+  un solo pulsante pieno, sbordamento 0, il pulsante principale nel primo
+  schermo anche a 375×667, contrasti calcolati sopra 4,5:1. Il README cita le
+  31 schermate, di oggi e dei mock. Dieci decisioni per l'autore in fondo alla
+  scheda. La lettura parallela di ChatGPT non è stata aperta.
+- Nessun file di `site/`, `tests/`, `server/`, della specifica o della coda
+  toccato; nessuna suite rifatta, guardiano verde.
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la
