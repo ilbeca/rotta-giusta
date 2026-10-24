@@ -624,6 +624,11 @@ verde.
 I numeri e la riga della coda li dà la regia; qui ci sono le proposte complete
 del giro 1 e lo schema dei giri 2 e 3.
 
+*Ogni prompt, quando diventa un P-NN in `docs/prossime-sessioni.md`, comincia
+con la riga che dice per quale agente è e in quale cartella (regola 7 del «Come
+si usa» della coda). P-92 qui sotto non l'aveva, e ricalcandolo P-94 è partito
+in ChatGPT il 24 ottobre 2026.*
+
 #### P-92 — Claude, `main`: il contratto e T-12 per il giro 1
 
 ```

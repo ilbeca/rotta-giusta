@@ -263,7 +263,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 24 | **La misura propria**: conteggi aggregati di eventi sul server del sito, senza cookie né terzi, a cominciare dal contatore degli ingressi; le registrazioni fra le metriche; MISURA → BRAINSTORM come quinto passo del ciclo (I-19, decisioni 1–3 e 5 del 17 ottobre in `docs/idee-dopo-gli-account.md`) | Claude con l'autore, poi Claude | `main` | un ADR che riscrive «nessun analytics» (specifica §2.1) e R-ACC-09, e la riga nell'informativa; dopo il rilascio del ridisegno | da scrivere |
 | 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | niente dal motore: `PREVISIONI` c'è (P-72), e un modello entra come metodo accanto alla regola semplice; Q-STIMA solo per quando si mostra | da scrivere |
 | 27 | **Esito e previsioni, la pagina e l'informativa** (B-1, B-2), poi un rilascio | ChatGPT | `ui/main` | soltanto la base giuridica (§4, «Dopo P-64», 1–3): P-74 è chiuso | P-75, da scrivere |
-| 37 | **Le regole di disegno, giro 2**: la scala di corpi, spazi e pesi, le distanze fra i bersagli, la lunghezza delle righe (D-15…D-23, D-25, D-28; `docs/regole-disegno-progetto.md` §5, decisione C) — prima il controllo su `main`, poi la pagina | Claude, poi ChatGPT | `main`, poi `ui/main` | niente: la decisione C è presa, il giro 1 è nella v0.34.0 | P-94; P-95 dopo |
+| 37 | **Le regole di disegno, giro 2**: la scala di corpi, spazi e pesi, le distanze fra i bersagli, la lunghezza delle righe (D-15…D-23, D-25, D-28; `docs/regole-disegno-progetto.md` §5, decisione C) — prima il controllo su `main`, poi la pagina | ChatGPT | `ui/main` | niente: il controllo è su `main` (P-94) | P-95 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo P-59», «Dopo P-64», «Dopo il traguardo» e le voci non barrate |
 
 **La v0.31.0 è in linea dal 18 ottobre 2026**, sulla pagina e sul server, con le raccolte nuove spente (prima, la v0.30.0 dal 3 ottobre); P-59,
@@ -7086,6 +7086,10 @@ piano, con i numeri di partenza), e il giro 1 chiuso e rilasciato nella
 v0.34.0. **Sblocca:** P-95, la pagina del giro 2, per ChatGPT su `ui/main`.
 
 ```
+Questo prompt è per Claude, nel checkout principale ~/Software/rotta-giusta,
+sul ramo main. Se sei ChatGPT o Codex, o sei in un'altra cartella, fermati e
+dillo, senza scrivere niente.
+
 Sessione P-94, su main, nel checkout principale. Leggi AGENTS.md,
 docs/regole-disegno-progetto.md (§3, §5, §7 per il tempo della suite, §9,
 §10.1 «Giro 2», §12, e le decisioni C ed E del §11, con i numeri), e in
@@ -7127,6 +7131,84 @@ banco del client: il metodo è lo stesso.
 Niente in site/. Le cinque suite verdi, l'interfaccia con la 8620 guardata
 libera per 90 s; misura il tempo di T-13 con RG_TEMPI=1 e scrivilo. Voce in
 fondo a [Unreleased], un commit con i soli file toccati, niente push.
+Chiudi con il resoconto di docs/prossime-sessioni.md.
+```
+
+**Esito:** fatto il 24 ottobre 2026, `d3172d7` su `main` — **da ChatGPT, non
+da Claude**: l'autore ha incollato il prompt nell'app sbagliata, e il prompt
+non aveva la riga d'ingresso della regola 7 del «Come si usa» (l'ha scritto la
+regia ricalcando P-92 del piano, che non l'aveva; ora ce l'ha). ChatGPT ha
+lavorato nel checkout principale mentre la regia era ferma: nessuna seconda
+penna in contemporanea, nessun worktree o ramo nuovo, il trailer
+`Co-authored-by: ChatGPT` c'è. Il contratto `SCALA_CSS` in
+`tests/test_interfaccia.py` con i numeri della decisione C, più
+`--testo-max: 480px`, misurato (520 px davano 76 caratteri, 480 al più 72) e
+da mostrare all'autore con la pagina; `test_scala_css`; T-13 con dieci parti,
+fra cui `T-13:home`, il tetto di 78 parole della decisione E, verde; la tabella
+«Valori fuori scala»; venti rotture e tre difese tolte; quattordici difetti
+dichiarati; R-RIF-23…30. **Che cosa ha controllato la regia**, perché chi ha
+scritto il metro sarà anche chi corregge la pagina (P-95): il diff letto, il
+contratto che sta nel test e arriva al banco da Python — il banco non legge i
+valori attesi dalla pagina —, i numeri di C uno per uno, le righe dichiarate
+una per verifica con le misure; le cinque suite rifatte sullo stato vero:
+motore 215/219 con i quattro skip previsti, server 89/89, dati 225, specifica
+1.096, interfaccia **3.863** in 5 min 30 s con la 8620 libera da 90 s,
+guardiano verde. **Non controllato:** le difese tolte, rifatte una per una;
+la regia si fida del collaudo scritto nel §10.1 del piano.
+
+### P-95 — ChatGPT: le regole di disegno, giro 2 — la scala nella pagina
+
+**Dove:** il worktree `~/Software/rotta-giusta-ui`, ramo **`ui/main`**,
+allineato a `main`.
+**Nasce da:** P-94, che il 24 ottobre 2026 ha messo su `main` il contratto della
+scala (`SCALA_CSS`), `test_scala_css` e T-13, con quattordici difetti dichiarati;
+la decisione C dell'autore (§11 del piano). **Sblocca:** il giro 3, le parole.
+
+```
+Questo prompt è per ChatGPT, nel worktree ~/Software/rotta-giusta-ui,
+sul ramo ui/main, aperto in modalità Local. Se sei Claude, o sei nella
+cartella principale ~/Software/rotta-giusta, o su un altro ramo, fermati e
+dillo, senza scrivere niente.
+
+Sessione P-95: la scala di corpi, spazi e pesi nella pagina. Allinea
+ui/main a main (git merge --ff-only main) e leggi AGENTS.md,
+docs/regole-disegno-progetto.md (§5, §10.1 «Giro 2» con il «Contratto
+consegnato da P-94», §11 C ed E, §12) e in docs/idee-dopo-gli-account.md la
+scheda I-27.
+
+Che cosa deve essere vero dopo, in site/index.html:
+- un solo :root con i token del contratto (--t-*, --s-*, --w-*, --lh-testo,
+  --lh-titoli, --testo-max, i colori di ruolo), e una passata sul CSS
+  perché corpi, spazi e pesi vengano dalla scala, con l'arrotondamento
+  della decisione C; le risposte del runner a 16 px; il 40 solo per il
+  titolo della Home sopra i 900 px.
+- gli h2 che oggi sono occhielli a 13 px diventano titoli veri o smettono
+  di essere titoli (§5, «I titoli»).
+- a 1280 px nessuna riga di testo corrente oltre i 75 caratteri; fra due
+  bersagli almeno 8 px; l'accento solo su ciò che si tocca (D-25).
+- la Home senza risposte resta entro 78 parole nel primo schermo, e tutto
+  quello che il giro 1 ha portato resta: T-12, T-10, T-11, C-02, T-06, N-01.
+
+I controlli sono test_scala_css e T-13. Sulla pagina vera sono rossi in
+quattordici verifiche, dichiarate in docs/eccezioni-interfaccia.md: togli
+le righe nello stesso commit della correzione; i gruppi devono girare verdi
+per intero. La tabella «Valori fuori scala» resta com'è, salvo una riga
+che non serve più.
+
+La larghezza di 480 px l'ha proposta P-94, non l'autore. Se a 1280 px la
+colonna del testo sembra sbagliata, fermati e scrivilo nel §11 del piano
+con le schermate, invece di cambiare il numero: i numeri stanno nel
+controllo, su main.
+
+Prima e dopo, con schermate guardate, a 375×812 e 1280×800: Home, Allenati,
+Esame, il runner con una risposta, il riepilogo e una preparazione. Mettile
+in una cartella del repo accanto al collaudo e citale una per una: l'autore
+approva guardando quelle (decisione C).
+
+Nessun file del motore, dei test o dei dati. Se serve un controllo nuovo o
+un valore diverso, fermati e scrivilo nel §10 del piano. Le cinque suite
+verdi, l'interfaccia con la 8620 guardata libera per 90 s. Voce in fondo a
+[Unreleased], un commit con il trailer, versione invariata, niente push.
 Chiudi con il resoconto di docs/prossime-sessioni.md.
 ```
 
