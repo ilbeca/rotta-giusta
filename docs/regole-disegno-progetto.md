@@ -406,6 +406,22 @@ esercizi su carta e di «Che tecnica serve?». Misure a 375×812 e 375×667.
 - `T-12:aggancio` — le superfici dichiarano `data-ruolo`: sulla pagina vera è un
   difetto dichiarato fino a P-93, e le altre parti girano intanto con la mappa.
 
+*Precisato scrivendo il banco (P-92, 24 ottobre 2026).* Le parti principale,
+primo-schermo, esame, avviso e scelte misurano con la mappa e per testo, e
+**non leggono l'aggancio**; è `T-12:aggancio` a dire che `data-ruolo` manca o
+sta sul pulsante sbagliato, e che un avviso non sta dentro un
+`data-ruolo="avviso"`. Così sulla pagina vera, dove l'aggancio non c'è ancora,
+le altre parti dicono il loro difetto invece di essere tutte rosse per lo
+stesso motivo. Nel conteggio dei fondi pieni restano fuori, oltre a barra e
+avatar, i segmenti (`role="tab"`: uno stato, non un'azione) e gli elementi
+trasparenti (`#sync`, il messaggio dell'invio, sta lì con opacità zero). Nel
+conteggio dei bersagli resta fuori il ritorno della preparazione, se porta
+`data-prep="chiudi"`: «Cambia attività» nella preparazione dei quiz oggi non
+lo porta, e conta. Il riepilogo con un errore misura soltanto la principale:
+la conservazione e l'invito hanno le loro frasi (R-ACC-02, R-ACC-03). Esame
+ha due verifiche: le prove prima del modulo, e il modulo chiuso con la scelta
+nel sommario (decisione B).
+
 **I due controlli che cambiano.** C-02 (R-ACC-02) non cerca più la frase alla
 prima schermata: apre la preparazione della simulazione e quella dei Segnali e
 la cerca lì, prima di «Inizia»; il resto di C-02 — la frase alla fine, nessuna
@@ -546,6 +562,9 @@ resoconto di docs/prossime-sessioni.md.
 
 #### P-93 — ChatGPT, `ui/main`: la pagina del giro 1
 
+*La versione che vale è quella di `docs/prossime-sessioni.md`, scritta dopo
+P-92 con lo stato dei controlli; questa è la stessa.*
+
 ```
 Questo prompt è per ChatGPT, nel worktree ~/Software/rotta-giusta-ui,
 sul ramo ui/main, aperto in modalità Local. Se sei in un'altra cartella o
@@ -567,10 +586,18 @@ Che cosa deve essere vero dopo, senza account, a 375×812 e a 375×667:
   deciso l'autore (§11, B).
 - in ogni superficie del §10.1 l'azione principale è nel primo schermo, ed
   è l'unica con il fondo pieno, anche nel riepilogo con un errore.
-- gli agganci data-ruolo="principale" e data-ruolo="avviso" del §10.1.
+- gli agganci data-ruolo="principale" e data-ruolo="avviso" del §10.1;
+  il ritorno di ogni preparazione porta data-prep="chiudi" — nella
+  preparazione dei quiz «Cambia attività» oggi non lo porta, e T-12:scelte
+  lo conta fra i bersagli.
+- nella Home esce «Tutte le attività sono disponibili. Senza account non
+  conserviamo risposte o preferenze.» (decisione F del §11): tolto l'avviso,
+  la direbbe due volte; C-18 non la pretende più dal P-92.
 
-I controlli sono T-12, C-02 e T-06 nel banco del client: oggi sono rossi e
-dichiarati in docs/eccezioni-interfaccia.md. Togli le righe nello stesso
+I controlli sono T-12, C-02 e T-06 nel banco del client. C-02 e T-06
+sono verdi sulla pagina vera; T-12 e' rosso in undici verifiche, dichiarate
+in docs/eccezioni-interfaccia.md (le righe T-12:*), e T-12:principale e'
+verde gia' oggi. Togli le righe nello stesso
 commit della correzione; i gruppi devono girare verdi per intero sulla
 pagina vera. Restano com'erano: R-ACC-02 (la frase prima di cominciare e
 alla fine), R-UX-03 («Sei tu a giudicare» prima di Inizia nel Carteggio),
@@ -608,7 +635,8 @@ di docs/prossime-sessioni.md.
 
 ## 11. Decisioni per l'autore
 
-Ognuna con la raccomandazione; A e B servono prima di P-92.
+Ognuna con la raccomandazione; A e B servono prima di P-92, e l'autore le ha
+prese il 24 ottobre 2026.
 
 **A. L'avviso «senza account» accanto a «Inizia», invece che in testa alla
 Home?** R-ACC-02 vuole la frase «prima di cominciare»; il §5.4 della specifica
@@ -620,6 +648,7 @@ cominciare legge la frase nel momento in cui decide. È più vicino alla filosof
 («una perdita che scegli tu è una scelta») di un riquadro che parla a chi non ha
 ancora fatto niente, e il controllo diventa più stretto di oggi: la frase in
 ogni preparazione, non in una sola schermata.
+*Deciso dall'autore il 24 ottobre 2026, come raccomandato.*
 
 **B. Esame: le prove in testa, e «Che cosa stai preparando?» sotto o chiuso?**
 *Raccomandazione: sotto, chiuso*, in un `details` il cui sommario dice la scelta
@@ -627,6 +656,7 @@ e la data («Stai preparando: motore, prima patente · esame il 12 dicembre», o
 «Non l'hai detto»), e si apre toccando il sommario. Le scelte filtrano quali prove mostrare, quindi
 il riassunto accanto alle prove serve; il modulo intero no. «Che cosa stai
 preparando?» resta anche nel Profilo e nell'onboarding.
+*Deciso dall'autore il 24 ottobre 2026, come raccomandato.*
 
 **C. Chi fissa i numeri delle scale?** *Raccomandazione:* Claude li propone nel
 contratto del giro 2, partendo dalle misure di oggi (§5) e scegliendo i valori
@@ -635,6 +665,18 @@ li prova sulla pagina e mostra prima e dopo a 375 e 1280 px; **l'autore approva
 guardando le schermate, non leggendo i numeri**; poi i numeri stanno nel
 controllo, su `main`. Un numero cambiato dopo è una decisione nuova, non un
 ritocco.
+*Deciso dall'autore il 24 ottobre 2026, come raccomandato, con questi numeri
+come proposta di partenza del giro 2:* corpi 12 · 14 · 16 · 19 · 24 · 30, più 40
+per il solo titolo della Home sopra i 900 px al posto del `clamp()`; le
+risposte del runner da 15,5 a 16 px (D-17); arrotondamento al valore più
+vicino — 11–12,5 → 12, 13–15 → 14, 15,5–17 → 16, 18–21 → 19, 22–26 → 24, 28 e
+oltre → 30. Spazi 4 · 8 · 12 · 16 · 24 · 32 · 48, al più vicino e a parità
+verso l'alto (10 → 12, 14 → 16, 20 → 24, 28 → 32); fuori scala, con il motivo
+in una tabella, l'altezza della testata e il margine di 90 px sotto la barra.
+Pesi 400 · 600 · 700 (500, 550, 650 → 600; 750, 800 → 700). Interlinea 1,45 il
+testo, 1,2 i titoli; una larghezza massima del testo misurata perché dia al più
+75 caratteri per riga con Manrope a 1280 px. ChatGPT mostra prima e dopo
+Home, Allenati, Esame, runner, riepilogo e una preparazione, a 375 e 1280 px.
 
 **D. Il punto 7 della Home: l'immagine sul telefono.** È del carattere del
 marchio, I-27 passo 6. *Raccomandazione:* fuori da questi tre giri, deciso con
@@ -642,11 +684,21 @@ il passo 6; e intanto un vincolo per quando si deciderà: un'immagine sul
 telefono non deve spingere l'azione principale fuori dal primo schermo a
 375×667, che T-12 misurerà. Tolto il riquadro dell'avviso (121 px), nella Home
 c'è posto.
+*Deciso dall'autore il 24 ottobre 2026, come raccomandato:* fino al passo 6 la
+Home sul telefono resta senza immagine. Il limite per quando si deciderà:
+una striscia decorativa (`alt=""`) sotto il titolo, alta al più 96 px, e
+«Simula il quiz base» nel primo schermo a 375×667. Il posto liberato
+dall'avviso (circa 145 px, margini compresi) è una stima: lo misura il giro 1.
 
 **E. La soglia di D-02 (parole nel primo schermo della Home).** I-27 proponeva
 ≤ 60, da fissare dopo l'audit; oggi 106. *Raccomandazione:* rimandare a dopo il
 giro 1, quando l'avviso è uscito, e fissarla sulla misura di allora; fino ad
 allora resta nella lista di revisione.
+*Deciso dall'autore il 24 ottobre 2026:* due soglie, una per giro. Nel giro 1
+il conteggio misurato a 375×812 nella Home senza risposte, tolto l'avviso
+(stima: circa 80 parole, 106 meno le 26 dell'avviso), diventa un tetto che non
+si supera; nel giro 3 la soglia è ≤ 60 parole, nostra, quella che I-27
+proponeva, raggiunta con la riscrittura di F.
 
 **F. Le tre schede che ripetono la barra, e «Che cosa non torna»** (Home,
 punti 4 e 8 dell'audit). Le schede sono nella specifica — §7.1, *H0*: «le
@@ -655,6 +707,20 @@ ritocco. *Raccomandazione:* nel giro 3, ridotte a una riga per sezione (la barra
 le nomina già) e «Che cosa non torna» in tre frasi, una per argomento, con il
 §7.1 riscritto da chi fa la merge; non nel giro 1, che deve restare piccolo e
 misurabile.
+*Deciso dall'autore il 24 ottobre 2026, come raccomandato.* Nel giro 3 le tre
+schede diventano tre righe di link — Allenati, Esame, Progressi, ognuna con
+una frase — più «Come funziona»; escono «Apri Carteggio» e «Apri Segnali»,
+che ripetono Allenati. Il §7.1, *H0*, passa da «le anteprime delle quattro
+sezioni» a «una riga per sezione». «Che cosa non torna» diventa «I limiti,
+detti prima», in tre frasi: la banca del decreto del 2022 con i numeri contati
+dalla banca caricata (oscurati, note dopo la risposta, figura mancante); il
+lavoro sulla carta giudicato da chi studia; nessuna newsletter e nessun cookie
+di tracciamento; sotto, il link alle note e alle fonti. **Un pezzo va nel
+giro 1:** tolto l'avviso, la Home direbbe due volte che senza account non resta
+niente (D-08), quindi esce la frase «Tutte le attività sono disponibili. Senza
+account non conserviamo risposte o preferenze.». È fra le frasi che C-18
+(R-ACC-57) pretende nella pagina: prima della correzione, su `main`, Claude la
+toglie dall'elenco di C-18 e dal §11.2 del progetto del client.
 
 ---
 

@@ -217,6 +217,11 @@ const js = (corpo) => `(() => { ${V} ${M} ${corpo} })()`;
 const q = (s) => JSON.stringify(s);
 
 const visibile = (sel) => js(`return [...document.querySelectorAll(${q(sel)})].some(V);`);
+/** La frase si vede, e viene prima del pulsante `inizia` nell'ordine del documento. */
+const frasePrima = (frase, inizia) => js(`const s = [...document.querySelectorAll(${q(inizia)})].find(V); if (!s) return false;
+  const ha = (x) => x.textContent.includes(${q(frase)});
+  const f = [...document.querySelectorAll('body *')].filter((x) => ha(x) && ![...x.children].some(ha)).find(V);
+  return !!f && !!(f.compareDocumentPosition(s) & Node.DOCUMENT_POSITION_FOLLOWING);`);
 const testoVisibile = (frase) => js(`return document.body.innerText.includes(${q(frase)});`);
 const testoRe = (re) => js(`const m = document.body.innerText.match(new RegExp(${q(re.source)})); return m ? m.slice(0) : null;`);
 const pulsante = (testo) => js(`return [...M().querySelectorAll('button, a')].some((b) => V(b) && b.textContent.trim() === ${q(testo)});`);
@@ -591,9 +596,19 @@ async function c02(b, ctx, v) {
   try {
     const tab = await c.apri(ctx.sito + ingresso(ctx));
     const pronto = await tab.attendi(PRONTO, CARICO);
-    const prima = pronto && await tab.valuta(testoVisibile(PRIMA));
-    v.push({ gruppo: g, nome: 'prima di cominciare la pagina dice che senza account non resta niente', ok: prima,
-      extra: `la frase del §4.1 «${PRIMA}» non si vede accanto all'avvio` });
+    // «Prima di cominciare» e' la preparazione, prima di «Inizia» (specifica §5.4,
+    // «prima di ogni avvio»; decisione A del giro 1 delle regole di disegno, 24
+    // ottobre 2026): fino ad allora la frase si cercava nella Home. Dove sta,
+    // accanto all'azione e una volta sola, lo misura T-12.
+    const prep = pronto && await preparazioneDa(tab, SIM_HOME);
+    const prima = prep && await tab.valuta(frasePrima(PRIMA, INIZIA));
+    v.push({ gruppo: g, nome: 'prima di cominciare, nella preparazione della simulazione, la pagina dice che senza account non resta niente', ok: prima,
+      extra: prep ? `la frase del §4.1 «${PRIMA}» non si vede nella preparazione prima di «Inizia»` : 'dalla Home la preparazione della simulazione non si apre' });
+    const seg = await apriPorta(tab, 'seg') && await tab.attendi(visibile('#s-start'), REAZIONE);
+    v.push({ gruppo: g, nome: 'prima di cominciare i Segnali dicono che senza account i punteggi valgono per questa pagina', ok: seg && await tab.valuta(frasePrima(SEG_PRIMA, '#s-start')),
+      extra: seg ? `la frase del §4.1 «${SEG_PRIMA}» non si vede prima di «Inizia»` : 'i Segnali non si aprono' });
+    await apriPorta(tab, 'oggi');
+    await tab.attendi(PRONTO, REAZIONE);
     // I Segnali prima dell'attivita': la finestra d'osservazione dopo il
     // riepilogo copre anche una scrittura dei loro punteggi.
     if (await partitaSegnali(tab, v, g, 'Segnali: ')) {
@@ -3660,8 +3675,12 @@ async function t06(b, ctx, v) {
     await tab.dimensioni(375, 800);
     await fermaAlPrimo(v, async (w) => {
       await tab.attendi(PRONTO, CARICO);
-      w.push({ gruppo: g, nome: 'senza account, nel Percorso l\'avviso di prima si vede davvero', ...await avvisoVisibile(tab, PRIMA) });
-      await avviaPrima(tab);
+      // L'avviso di prima sta nella preparazione, accanto a «Inizia» (giro 1 delle
+      // regole di disegno): fino al 24 ottobre 2026 si misurava quello della Home.
+      const prep = await preparazioneDa(tab, '[data-rotta-start]');
+      w.push({ gruppo: g, nome: 'la preparazione dell\'allenamento breve si apre', ok: prep, extra: 'dalla Home [data-rotta-start] non apre la preparazione' });
+      w.push({ gruppo: g, nome: 'senza account, nella preparazione l\'avviso di prima si vede davvero', ...await avvisoVisibile(tab, PRIMA) });
+      await preparazioneInizia(tab);
       const ok = await rispondiQuiz(tab, [], g, '') && await chiudiQuiz(tab, [], g, '');
       w.push({ gruppo: g, nome: 'il riepilogo si apre', ok: !!ok, extra: 'nessun riepilogo' });
       w.push({ gruppo: g, nome: 'senza account, nel riepilogo l\'invito si vede davvero', ...await avvisoVisibile(tab, DOPO) });
@@ -3974,6 +3993,315 @@ async function t11(b, ctx, v) {
       extra: misurati < CASI_T11.length ? `misurati ${misurati} casi su ${CASI_T11.length}` : perDifetto(difetti) });
   } finally { await c.chiudi(); }
 }
+
+// --- T-12: l'azione principale, l'avviso detto una volta, Esame sulle prove ------------------
+//
+// Il giro 1 delle regole di disegno (docs/regole-disegno-progetto.md §4 e
+// §10.1; I-27, D-01, D-12, D-13, D-14, D-24, D-30). Senza account, a 375×812 e
+// a 375×667, superficie per superficie: la Home prima e dopo una risposta,
+// Esame, i segmenti Carteggio e Segnali, il riepilogo con un errore, e sei
+// preparazioni. Su ognuna il banco sa da se' qual e' l'azione principale — un
+// pulsante, o il contenitore di un gruppo di porte alla pari — con gli
+// identificatori che conosce gia', e misura con quella: le parti principale,
+// primo-schermo, esame, avviso e scelte non leggono l'aggancio. La parte
+// aggancio guarda che la pagina dica la stessa cosa con `data-ruolo`, e un
+// avviso si trova per testo, mai per aggancio: una frase senza aggancio e' un
+// rosso di aggancio, non un avviso che sparisce dalla misura.
+//
+// D-14 non e' un indice ma tre verifiche discrete (§4 del progetto): nel primo
+// schermo un solo fondo pieno, l'azione principale (contrasto ≥ 3:1 con la
+// pagina, la soglia di WCAG 1.4.11 presa a prestito); un avviso e' testo, non
+// un riquadro (fondo < 1,5:1 e bordo su meno di tre lati, soglie nostre); e
+// occupa al piu' il 15 % del primo schermo (soglia nostra). L'indice dell'audit
+// del 21 ottobre — area × contrasto — resta nell'extra, come numero.
+//
+// Che cosa non vede: la «gara di misura» fra due azioni di forma uguale e fondo
+// diverso; l'ordine giusto per una persona; lo stato con l'account; Safari e il
+// gesto vero.
+
+const PARTI_T12 = ['principale', 'primo-schermo', 'esame', 'avviso', 'scelte', 'aggancio'];
+const AVVISI_T12 = [PRIMA, SEG_PRIMA];
+const PORTE_ESAME = ['#v-esame [data-cporta="prova"]', '#v-esame [data-modo="sim"][data-prova="base"]', '#v-esame [data-modo="sim"][data-prova="vela"]',
+  '#v-esame [data-modo="sim"][data-prova="entrambe"]'];
+const PORTE_CARTEGGIO = ['#seg-carteggio [data-cporta="prova"]', '#seg-carteggio [data-cporta="esercizi"]', '#seg-carteggio [data-cporta="tecniche"][data-v="tec"]'];
+const SIM_HOME = '#v-home [data-modo="sim"][data-prova="base"]';
+const INIZIA = '[data-preparazione] #start';
+
+/** Apre una preparazione dalla sua porta: true quando il suo Inizia si vede. */
+async function preparazioneDa(tab, porta, inizia = INIZIA) {
+  return await clic(tab, porta) && tab.attendi(visibile(inizia), REAZIONE);
+}
+async function sezioneT12(tab, x, dove) {
+  return await apriPorta(tab, x) && tab.attendi(visibile(dove), REAZIONE);
+}
+
+// Le superfici, nell'ordine in cui il banco le visita. `apri` porta la pagina
+// alla superficie; `porta` o `gruppo` e' l'azione principale; `avviso` la frase
+// che ci deve stare accanto, oppure null: allora non ce ne deve essere nessuna.
+const SUPERFICI_T12 = [
+  { dove: 'la Home', apri: (tab) => sezioneT12(tab, 'oggi', SIM_HOME), porta: SIM_HOME, avviso: null, scelte: true },
+  { dove: 'Esame', apri: (tab) => sezioneT12(tab, 'esame', PORTE_ESAME[0]), gruppo: PORTE_ESAME, avviso: null, esame: true },
+  { dove: 'Allenati · Carteggio', apri: (tab) => sezioneT12(tab, 'cart', PORTE_CARTEGGIO[0]), gruppo: PORTE_CARTEGGIO, avviso: null },
+  { dove: 'Allenati · Segnali', apri: (tab) => sezioneT12(tab, 'seg', '#s-start'), porta: '#s-start', avviso: SEG_PRIMA },
+  { dove: 'la preparazione della simulazione', apri: async (tab) => await sezioneT12(tab, 'oggi', SIM_HOME) && preparazioneDa(tab, SIM_HOME),
+    porta: INIZIA, avviso: PRIMA, scelte: true },
+  { dove: 'la preparazione del breve', apri: async (tab) => await sezioneT12(tab, 'oggi', '[data-rotta-start]') && preparazioneDa(tab, '[data-rotta-start]'),
+    porta: INIZIA, avviso: PRIMA, scelte: true },
+  { dove: 'la preparazione di «Scegli un argomento»', apri: async (tab) => await sezioneT12(tab, 'quiz', '#seg-quiz [data-modo="argomento"]')
+    && preparazioneDa(tab, '#seg-quiz [data-modo="argomento"]'), porta: INIZIA, avviso: PRIMA, scelte: true },
+  { dove: 'la preparazione della prova di carteggio', apri: async (tab) => await sezioneT12(tab, 'cart', PORTE_CARTEGGIO[0])
+    && preparazioneDa(tab, PORTE_CARTEGGIO[0], '#c-start'), porta: '#c-start', avviso: PRIMA, scelte: true },
+  { dove: 'la preparazione degli esercizi su carta', apri: async (tab) => await sezioneT12(tab, 'cart', PORTE_CARTEGGIO[1])
+    && preparazioneDa(tab, PORTE_CARTEGGIO[1], '#c-esercizi'), porta: '#c-esercizi', avviso: PRIMA, scelte: true },
+  { dove: 'la preparazione di «Che tecnica serve?»', apri: async (tab) => await sezioneT12(tab, 'cart', PORTE_CARTEGGIO[2])
+    && preparazioneDa(tab, PORTE_CARTEGGIO[2], '#t-start'), porta: '#t-start', avviso: PRIMA, scelte: true },
+];
+
+/**
+ * La misura di una superficie, nella pagina, a scorrimento zero. Restituisce
+ * per ogni parte un elenco di difetti (vuoto se va bene) e i numeri per l'extra.
+ */
+function disegnoT12(K, cfg) {
+  scrollTo(0, 0);
+  for (const e of document.querySelectorAll('*')) if (e.scrollTop && getComputedStyle(e).overflowY !== 'visible') e.scrollTop = 0;
+  // Il riepilogo comincia dal suo titolo: e' li' che il primo schermo di chi lo apre
+  // comincia, anche dove sta sotto il runner (la pagina di riferimento, senza stili).
+  const inizio = cfg.inizio && [...document.querySelectorAll(cfg.inizio)].find(K.V);
+  if (inizio) inizio.scrollIntoView({ block: 'start' });
+  const H = innerHeight, W = innerWidth;
+  const primo = (sel) => [...document.querySelectorAll(sel)].find(K.V) || null;
+  const out = { principale: [], primo: [], esame: [], avviso: [], scatola: [], scelte: [], aggancioP: [], aggancioA: [], vicino: [], numeri: {} };
+  const porte = cfg.gruppo ? cfg.gruppo.map(primo) : [primo(cfg.porta)];
+  if (porte.some((x) => !x)) return { manca: cfg.gruppo ? `manca la porta ${cfg.gruppo[porte.findIndex((x) => !x)]}` : `manca ${cfg.porta}` };
+  // Il gruppo: il piu' piccolo antenato comune delle porte.
+  let P = porte[0];
+  if (cfg.gruppo) while (P && !porte.every((x) => P.contains(x))) P = P.parentElement;
+  const dentroP = (e) => P.contains(e) || e.contains(P);
+  const escluso = (e) => !!e.closest('header, #barra, [data-avatar], [role="tab"]');
+  const pagina = K.fondo(document.body) || [255, 255, 255, 1];
+  const lumC = (c) => { const f = (x) => { x /= 255; return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4; }; return 0.2126 * f(c[0]) + 0.7152 * f(c[1]) + 0.0722 * f(c[2]); };
+  const rapporto = (a, b) => { const x = lumC(a), y = lumC(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+  const rgba = (t) => { const m = String(t).match(/rgba?\(([^)]+)\)/); if (!m) return [0, 0, 0, 0]; const p = m[1].split(/[\s,/]+/).filter(Boolean).map(Number); return [p[0], p[1], p[2], p.length > 3 ? p[3] : 1]; };
+  // Il fondo proprio di un elemento, composto su quello che ha dietro, contro il fondo della pagina.
+  const fondoProprio = (e) => {
+    const c = rgba(getComputedStyle(e).backgroundColor);
+    if (c[3] === 0) return 1;
+    const dietro = (e.parentElement && K.fondo(e.parentElement)) || pagina;
+    const comp = [0, 1, 2].map((i) => c[i] * c[3] + dietro[i] * (1 - c[3]));
+    return rapporto(comp, pagina);
+  };
+  const inCima = (e, r) => { const t = document.elementFromPoint(Math.min(W - 1, Math.max(0, r.left + r.width / 2)), Math.min(H - 1, Math.max(0, r.top + r.height / 2))); return !!t && (e.contains(t) || t.contains(e)); };
+  const nelPrimo = (r) => r.bottom > 0 && r.top < H && r.width >= 8 && r.height >= 8;
+
+  // principale: un solo fondo pieno nel primo schermo, ed e' l'azione principale.
+  const pieni = [];
+  for (const e of document.querySelectorAll('body *')) {
+    // Un elemento trasparente non pesa: #sync, il messaggio dell'invio, sta li' con opacita' zero.
+    if (!K.V(e) || escluso(e) || dentroP(e) || K.opacita(e) < 0.1) continue;
+    const r = e.getBoundingClientRect();
+    if (!nelPrimo(r) || getComputedStyle(e).backgroundImage !== 'none') continue;
+    if (fondoProprio(e) >= 3 && inCima(e, r)) pieni.push(K.nome(e));
+  }
+  for (const x of pieni) out.principale.push(`${x} ha il fondo pieno fuori dall'azione principale`);
+  if (!cfg.gruppo) {
+    const f = fondoProprio(P);
+    if (f < 3) out.principale.push(`l'azione principale ${K.nome(P)} non ha il fondo pieno (${f.toFixed(2)}:1 con la pagina)`);
+  }
+
+  // primo schermo: l'azione principale (o la prima porta) intera, sotto il dito.
+  const a = porte[0], ra = a.getBoundingClientRect();
+  if (ra.top < 0 || ra.bottom > H) out.primo.push(`${K.nome(a)} sta a ${Math.round(ra.top)}–${Math.round(ra.bottom)} px su ${H}`);
+  else if (!inCima(a, ra)) { const r = ra, t = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); out.primo.push(`${K.nome(a)} ha sopra ${t ? K.nome(t) : 'niente'}`); }
+
+  // Esame: «Le prove» e la prima porta prima del modulo, nel primo schermo; il modulo chiuso.
+  if (cfg.esame) {
+    const s = document.querySelector('#v-esame');
+    const titolo = [...s.querySelectorAll('h2, h3')].find((h) => K.V(h) && h.textContent.trim() === 'Le prove');
+    const porta = porte.slice().sort((x, y) => (x.compareDocumentPosition(y) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1))[0];
+    const campi = [...s.querySelectorAll('input, select, textarea')];
+    if (!titolo) out.esame.push('nessun titolo «Le prove» in Esame');
+    for (const [nome, e] of [['il titolo «Le prove»', titolo], [`la prima porta ${K.nome(porta)}`, porta]]) {
+      if (!e) continue;
+      const prima = campi.find((c) => c.compareDocumentPosition(e) & Node.DOCUMENT_POSITION_FOLLOWING);
+      if (prima) out.esame.push(`${nome} viene dopo il campo ${K.nome(prima)}`);
+      const r = e.getBoundingClientRect();
+      if (r.bottom > H) out.esame.push(`${nome} sta sotto il primo schermo (${Math.round(r.top)}–${Math.round(r.bottom)} px su ${H})`);
+    }
+    const aperti = campi.filter((c) => { const d = c.closest('details'); return !d || d.open || !s.contains(d); });
+    const sommari = [...new Set(campi.map((c) => c.closest('details')).filter(Boolean))].map((d) => (d.querySelector('summary') || {}).textContent || '');
+    out.numeri.modulo = { aperti: aperti.map(K.nome), sommari };
+    out.modulo = [];
+    if (!campi.length) out.modulo.push('in Esame non c\'e\' il modulo');
+    if (aperti.length) out.modulo.push(`campi del modulo fuori da un details chiuso: ${aperti.slice(0, 3).map(K.nome).join(', ')}`);
+    if (campi.length && !sommari.some((t) => /Stai preparando|Non l'hai detto/.test(t))) out.modulo.push(`il sommario non dice la scelta: «${(sommari[0] || '').trim().slice(0, 60)}»`);
+  }
+
+  // Gli avvisi, per testo: l'elemento piu' interno che contiene la frase.
+  const foglie = (frase) => {
+    const ha = (x) => x.textContent.includes(frase);
+    return [...document.querySelectorAll('body *')].filter((x) => ha(x) && ![...x.children].some(ha)).filter(K.V);
+  };
+  const trovati = cfg.frasi.flatMap((f) => foglie(f).map((e) => ({ f, e })));
+  out.numeri.avvisi = trovati.length;
+  if (!cfg.avviso) {
+    for (const { f, e } of trovati) out.avviso.push(`c'e' l'avviso «${f.slice(0, 40)}…» (${K.nome(e)})`);
+  } else {
+    const miei = trovati.filter((x) => x.f === cfg.avviso);
+    if (!miei.length) out.avviso.push(`manca l'avviso «${cfg.avviso.slice(0, 40)}…»`);
+    if (trovati.length > 1) out.avviso.push(`gli avvisi sono ${trovati.length}, non uno`);
+    for (const { e } of trovati) if (!e.closest('[data-ruolo="avviso"]')) out.aggancioA.push(`${K.nome(e)} non sta in un data-ruolo="avviso"`);
+    const n = miei[0] && miei[0].e;
+    if (n) {
+      // La scatola dell'avviso: lui e i suoi antenati che non contengono l'azione.
+      const catena = [];
+      for (let x = n; x && !x.contains(P) && x !== document.body; x = x.parentElement) catena.push(x);
+      const B = catena[catena.length - 1] || n;
+      for (const x of catena) {
+        const f = fondoProprio(x);
+        if (f >= 1.5) out.scatola.push(`${K.nome(x)} ha un fondo ${f.toFixed(2)}:1 con la pagina`);
+        const cs = getComputedStyle(x);
+        const lati = ['Top', 'Right', 'Bottom', 'Left'].filter((l) => parseFloat(cs[`border${l}Width`]) >= 1 && !/none|hidden/.test(cs[`border${l}Style`]) && rgba(cs[`border${l}Color`])[3] > 0);
+        if (lati.length >= 3) out.scatola.push(`${K.nome(x)} ha un bordo su ${lati.length} lati`);
+      }
+      const rb = B.getBoundingClientRect(), rp = P.getBoundingClientRect();
+      const vis = Math.max(0, Math.min(rb.bottom, H) - Math.max(rb.top, 0)) * Math.max(0, Math.min(rb.right, W) - Math.max(rb.left, 0));
+      const quota = vis / (W * H);
+      out.numeri.quota = Math.round(quota * 100);
+      // L'indice dell'audit del 21 ottobre: area × contrasto, come numero.
+      out.numeri.indice = Math.round(rb.width * rb.height * fondoProprio(B));
+      if (quota > 0.15) out.scatola.push(`${K.nome(B)} occupa il ${Math.round(quota * 100)} % del primo schermo`);
+      const sopra = rb.bottom <= rp.top, sotto = rb.top >= rp.bottom;
+      const da = sopra ? rb.bottom : sotto ? rp.bottom : null, a2 = sopra ? rp.top : sotto ? rb.top : null;
+      const dist = da === null ? 0 : a2 - da;
+      out.numeri.distanza = Math.round(dist);
+      if (dist > 48) out.vicino.push(`${K.nome(B)} sta a ${Math.round(dist)} px dall'azione principale`);
+      if (da !== null) {
+        const mezzo = [...document.querySelectorAll('button, a[href], input:not([type=hidden]), select, textarea, summary, [role=button], [role=tab]')]
+          .filter((e) => K.V(e) && !escluso(e) && K.opacita(e) >= 0.1 && !P.contains(e) && !B.contains(e)).filter((e) => { const r = e.getBoundingClientRect(), y = r.top + r.height / 2; return r.width > 1 && y > da && y < a2; });
+        for (const e of mezzo) out.vicino.push(`fra l'avviso e l'azione principale c'e' ${K.nome(e)}`);
+      }
+    }
+  }
+
+  // scelte: i bersagli nel primo schermo, barra, avatar e ritorno della preparazione esclusi.
+  if (cfg.scelte) {
+    const visti = new Set();
+    for (let e of document.querySelectorAll('button, a[href], summary, select, textarea, input:not([type=hidden]), [role=button]')) {
+      if (!K.V(e) || escluso(e) || K.opacita(e) < 0.1 || e.closest('[data-prep="chiudi"]')) continue;
+      if (e.tagName === 'A' && [...e.parentElement.childNodes].some((x) => x !== e && x.nodeType === 3 && x.textContent.trim())) continue;
+      if (e.matches('input[type=checkbox], input[type=radio]')) e = e.closest('label') || e;
+      const r = e.getBoundingClientRect();
+      if (!nelPrimo(r) || r.top + r.height / 2 > H || !inCima(e, r)) continue;
+      visti.add(e);
+    }
+    out.numeri.scelte = visti.size;
+    if (visti.size > 4) out.scelte.push(`${visti.size} bersagli nel primo schermo: ${[...visti].slice(0, 6).map(K.nome).join(', ')}`);
+  }
+
+  // aggancio: un solo data-ruolo="principale" visibile, ed e' l'azione della mappa.
+  const ganci = [...document.querySelectorAll('[data-ruolo="principale"]')].filter(K.V);
+  if (ganci.length !== 1) out.aggancioP.push(`${ganci.length} elementi data-ruolo="principale" visibili${ganci.length ? ': ' + ganci.slice(0, 3).map(K.nome).join(', ') : ''}`);
+  else if (cfg.gruppo ? !(porte.every((x) => ganci[0].contains(x)) && !ganci[0].querySelector('input, select, textarea')) : ganci[0] !== P) {
+    out.aggancioP.push(`data-ruolo="principale" sta su ${K.nome(ganci[0])}, non su ${K.nome(P)}`);
+  }
+  return out;
+}
+
+async function t12(b, ctx, v, parte) {
+  const vuole = (p) => !parte || parte === p;
+  const per = {};
+  for (const p of PARTI_T12) per[p] = [];
+  const extra = { modulo: [], avvisoVisto: [], scatola: [], vicino: [], intoppi: [], numeri: [], avvisoGancio: [] };
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
+    await tab.dimensioni(375, 812);
+    if (!await tab.attendi(PRONTO, CARICO)) { extra.intoppi.push('la pagina non si apre'); }
+    const misura = async (s, dimensioni = [812, 667]) => {
+      // Le parti che la superficie chiede: il riepilogo solo la principale e il suo aggancio.
+      const chiede = (p) => !s.parti || s.parti.includes(p);
+      for (const h of dimensioni) {
+        await tab.dimensioni(375, h);
+        await pausa(80);
+        const m = await tab.valuta(inPagina(disegnoT12, { inizio: s.inizio, porta: s.porta, gruppo: s.gruppo, avviso: s.avviso, frasi: AVVISI_T12, scelte: s.scelte, esame: s.esame }));
+        const dove = `${s.dove} a 375×${h}`;
+        if (!m || m.manca) { extra.intoppi.push(`${dove}: ${m ? m.manca : 'la misura non gira'}`); continue; }
+        for (const x of m.principale) per.principale.push(`${dove}: ${x}`);
+        for (const x of m.aggancioP) per.aggancio.push(`${dove}: ${x}`);
+        if (h === 812) extra.numeri.push(`${s.dove}: ${JSON.stringify(m.numeri)}`);
+        if (!chiede('avviso')) continue;
+        for (const x of m.primo) per['primo-schermo'].push(`${dove}: ${x}`);
+        if (s.esame) { for (const x of m.esame) per.esame.push(`${dove}: ${x}`); for (const x of m.modulo) extra.modulo.push(`${dove}: ${x}`); }
+        for (const x of m.avviso) per.avviso.push(`${dove}: ${x}`);
+        for (const x of m.scatola) extra.scatola.push(`${dove}: ${x}`);
+        for (const x of m.vicino) extra.vicino.push(`${dove}: ${x}`);
+        for (const x of m.scelte) per.scelte.push(`${dove}: ${x}`);
+        for (const x of m.aggancioA) extra.avvisoGancio.push(`${dove}: ${x}`);
+      }
+      // Che l'avviso si veda davvero lo dicono le misure di T-06; scorre la pagina, quindi dopo.
+      if (s.avviso && chiede('avviso')) {
+        await tab.dimensioni(375, 812);
+        const a = await avvisoVisibile(tab, s.avviso);
+        if (!a.ok) extra.avvisoVisto.push(`${s.dove}: ${a.extra}`);
+      }
+    };
+    for (const s of SUPERFICI_T12) {
+      await tab.dimensioni(375, 812);
+      if (!await s.apri(tab)) { extra.intoppi.push(`${s.dove} non si apre`); continue; }
+      await misura(s);
+    }
+    // Il riepilogo con un errore, poi la Home con una risposta (H1).
+    await tab.dimensioni(375, 812);
+    if (await sezioneT12(tab, 'oggi', '[data-rotta-start]') && await preparazioneDa(tab, '[data-rotta-start]') && await clic(tab, INIZIA)
+      && await rispondiCosi(tab, [], 'T-12', '', false) === false && await chiudiQuiz(tab, [], 'T-12', '')) {
+      // Nel riepilogo l'invito e la conservazione hanno le loro frasi (R-ACC-02, R-ACC-03):
+      // qui conta solo la principale, il punto 9 dell'audit.
+      await misura({ dove: 'il riepilogo con un errore', porta: '#r-fine [data-ciclo="riprova"]', inizio: '#r-fine h1', avviso: null, parti: ['principale'] }, [812]);
+      if (await alPercorso(tab)) await misura({ dove: 'la Home dopo una risposta', porta: SIM_HOME, avviso: null });
+      else extra.intoppi.push('dal riepilogo non si torna alla Home');
+    } else extra.intoppi.push('il riepilogo con un errore non si apre');
+  } finally { await c.chiudi(); }
+  const ok = (xs) => !extra.intoppi.length && !xs.length;
+  const dire = (xs) => extra.intoppi.length ? lista(extra.intoppi) : perDifetto(xs, 8);
+  const g = (p) => `T-12:${p}`;
+  if (vuole('principale')) v.push({ gruppo: g('principale'), nome: T12.principale, ok: ok(per.principale), extra: dire(per.principale) });
+  if (vuole('primo-schermo')) {
+    for (const h of [812, 667]) {
+      const xs = per['primo-schermo'].filter((x) => x.includes(`a 375×${h}:`));
+      v.push({ gruppo: g('primo-schermo'), nome: T12.primo(h), ok: ok(xs), extra: dire(xs) });
+    }
+  }
+  if (vuole('esame')) {
+    v.push({ gruppo: g('esame'), nome: T12.esame, ok: ok(per.esame), extra: dire(per.esame) });
+    v.push({ gruppo: g('esame'), nome: T12.modulo, ok: ok(extra.modulo), extra: dire(extra.modulo) });
+  }
+  if (vuole('avviso')) {
+    const fuori = per.avviso.filter((x) => /c'e' l'avviso/.test(x)), dentro = per.avviso.filter((x) => !/c'e' l'avviso/.test(x));
+    v.push({ gruppo: g('avviso'), nome: T12.fuori, ok: ok(fuori), extra: dire(fuori) });
+    v.push({ gruppo: g('avviso'), nome: T12.accanto, ok: ok([...dentro, ...extra.vicino]), extra: dire([...dentro, ...extra.vicino]) });
+    v.push({ gruppo: g('avviso'), nome: T12.testo, ok: ok(extra.scatola), extra: dire(extra.scatola) + ` — misure: ${lista(extra.numeri, 12)}` });
+    v.push({ gruppo: g('avviso'), nome: T12.visto, ok: ok(extra.avvisoVisto), extra: dire(extra.avvisoVisto) });
+  }
+  if (vuole('scelte')) v.push({ gruppo: g('scelte'), nome: T12.scelte, ok: ok(per.scelte), extra: dire(per.scelte) });
+  if (vuole('aggancio')) {
+    v.push({ gruppo: g('aggancio'), nome: T12.ganci, ok: ok(per.aggancio), extra: dire(per.aggancio) });
+    v.push({ gruppo: g('aggancio'), nome: T12.gancioAvviso, ok: ok(extra.avvisoGancio), extra: dire(extra.avvisoGancio) });
+  }
+}
+// I nomi delle verifiche di T-12: i difetti dichiarati li citano (docs/eccezioni-interfaccia.md).
+const T12 = {
+  principale: 'nel primo schermo un solo fondo pieno, ed e\' l\'azione principale',
+  primo: (h) => `a 375×${h} l'azione principale sta nel primo schermo, sotto il dito`,
+  esame: 'in Esame «Le prove» e la prima porta vengono prima del modulo, nel primo schermo',
+  modulo: 'in Esame il modulo sta in un details chiuso, e il sommario dice la scelta',
+  fuori: 'nessun avviso nella Home, in Esame e nel segmento Carteggio',
+  accanto: 'in ogni preparazione l\'avviso sta accanto all\'azione principale, uno solo e senza niente in mezzo',
+  testo: 'l\'avviso e\' testo, non un riquadro, e occupa al piu\' il 15 % del primo schermo',
+  visto: 'in ogni preparazione l\'avviso si vede davvero',
+  scelte: 'al piu\' quattro bersagli nel primo schermo della Home e delle preparazioni',
+  ganci: 'ogni superficie dichiara la sua azione principale con data-ruolo="principale"',
+  gancioAvviso: 'ogni avviso sta dentro un data-ruolo="avviso"',
+};
 
 // --- F-01: le frasi del riepilogo dei quiz (R-UX-06, P-53) -----------------------
 //
@@ -6236,7 +6564,7 @@ async function c23coda(b, ctx, v, g) {
 const GRUPPI = { 'C-01': c01, 'C-02': c02, 'C-03': c03, 'C-04': c04, 'C-05': c05, 'C-06': c06, 'C-07': c07, 'C-08': c08, 'C-21': c21,
   'C-10': c10, 'C-11': c11, 'C-12': c12, 'C-13': c13, 'C-14': c14, 'C-15': c15, 'C-16': c16, 'C-17': c17, 'C-19': c19,
   // L'area 6 (P-45): la rifinitura trasversale.
-  'T-01': t01, 'T-02': t02, 'T-03': t03, 'T-04': t04, 'T-05': t05, 'T-06': t06, 'T-07': t07, 'T-08': t08, 'T-09': t09, 'T-10': t10, 'T-11': t11,
+  'T-01': t01, 'T-02': t02, 'T-03': t03, 'T-04': t04, 'T-05': t05, 'T-06': t06, 'T-07': t07, 'T-08': t08, 'T-09': t09, 'T-10': t10, 'T-11': t11, 'T-12': t12,
   // Le frasi del riepilogo dei quiz (P-53, R-UX-06).
   'F-01': f01,
   // Le condizioni per l'account nel modulo di registrazione (P-57, R-ACC-75).

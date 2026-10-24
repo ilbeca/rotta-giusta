@@ -263,7 +263,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 24 | **La misura propria**: conteggi aggregati di eventi sul server del sito, senza cookie né terzi, a cominciare dal contatore degli ingressi; le registrazioni fra le metriche; MISURA → BRAINSTORM come quinto passo del ciclo (I-19, decisioni 1–3 e 5 del 17 ottobre in `docs/idee-dopo-gli-account.md`) | Claude con l'autore, poi Claude | `main` | un ADR che riscrive «nessun analytics» (specifica §2.1) e R-ACC-09, e la riga nell'informativa; dopo il rilascio del ridisegno | da scrivere |
 | 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | niente dal motore: `PREVISIONI` c'è (P-72), e un modello entra come metodo accanto alla regola semplice; Q-STIMA solo per quando si mostra | da scrivere |
 | 27 | **Esito e previsioni, la pagina e l'informativa** (B-1, B-2), poi un rilascio | ChatGPT | `ui/main` | soltanto la base giuridica (§4, «Dopo P-64», 1–3): P-74 è chiuso | P-75, da scrivere |
-| 35 | **Il runner dei quiz**: «Avanti» raggiungibile dopo un errore, e la figura in vista prima di rispondere (I-27, audit, punti 1 e 2) | ChatGPT | `ui/main` | niente | P-91 |
+| 36 | **Le regole di disegno, giro 1**: l'avviso «senza account» detto una volta accanto a «Inizia», Esame che apre sulle prove, «Inizia» nel primo schermo (I-27, audit, punti 3–6; `docs/regole-disegno-progetto.md` §4) | ChatGPT | `ui/main` | niente: le decisioni A e B sono prese, T-12 è su `main` (P-92) | P-93 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo P-59», «Dopo P-64», «Dopo il traguardo» e le voci non barrate |
 
 **La v0.31.0 è in linea dal 18 ottobre 2026**, sulla pagina e sul server, con le raccolte nuove spente (prima, la v0.30.0 dal 3 ottobre); P-59,
@@ -6992,6 +6992,68 @@ s prima (la suite di main e questa si escludono). Voce in fondo a
 [Unreleased] con le misure prima e dopo, un commit con il trailer, la
 versione non si tocca, niente push. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
+```
+
+### P-93 — ChatGPT: le regole di disegno, giro 1 — l'avviso una volta, Esame sulle prove, «Inizia» in vista
+
+**Dove:** il worktree `~/Software/rotta-giusta-ui`, ramo **`ui/main`**,
+allineato a `main`.
+**Nasce da:** il piano dei passi 2–4 di I-27 (`docs/regole-disegno-progetto.md`,
+commit `8c4d3d5`), le decisioni A e B dell'autore del 24 ottobre 2026 (§11 del
+piano), e P-92, che lo stesso giorno ha messo su `main` il controllo T-12 con
+i suoi difetti dichiarati e la pagina di riferimento del client nella forma
+del giro 1. **Sblocca:** il giro 2, la scala (decisione C).
+
+```
+Questo prompt è per ChatGPT, nel worktree ~/Software/rotta-giusta-ui,
+sul ramo ui/main, aperto in modalità Local. Se sei in un'altra cartella o
+su un altro ramo, fermati e dillo, senza scrivere niente.
+
+Sessione P-93: l'avviso detto una volta, Esame che apre sulle prove,
+«Inizia» in vista. Allinea ui/main a main (git merge --ff-only main) e
+leggi AGENTS.md, docs/regole-disegno-progetto.md (§4, §10.1 «Giro 1» e le
+decisioni del §11), e in docs/idee-dopo-gli-account.md la scheda I-27.
+
+Che cosa deve essere vero dopo, senza account, a 375×812 e a 375×667:
+- l'avviso «Senza account le risposte valgono solo finché…» sta in ogni
+  preparazione accanto all'azione principale, senza un altro bersaglio in
+  mezzo, come testo e non come riquadro bordato; non sta in testa alla
+  Home, al segmento Carteggio, ai Segnali, a «Che tecnica serve?». Per i
+  Segnali, la frase dei punteggi accanto a «Inizia». La Home dice il
+  fatto una volta, con la frase dell'introduzione.
+- Esame apre sulle prove; «Che cosa stai preparando?» e la data come ha
+  deciso l'autore (§11, B).
+- in ogni superficie del §10.1 l'azione principale è nel primo schermo, ed
+  è l'unica con il fondo pieno, anche nel riepilogo con un errore.
+- gli agganci data-ruolo="principale" e data-ruolo="avviso" del §10.1;
+  il ritorno di ogni preparazione porta data-prep="chiudi" — nella
+  preparazione dei quiz «Cambia attività» oggi non lo porta, e T-12:scelte
+  lo conta fra i bersagli.
+- nella Home esce «Tutte le attività sono disponibili. Senza account non
+  conserviamo risposte o preferenze.» (decisione F del §11): tolto l'avviso,
+  la direbbe due volte; C-18 non la pretende più dal P-92.
+
+I controlli sono T-12, C-02 e T-06 nel banco del client. C-02 e T-06
+sono verdi sulla pagina vera; T-12 e' rosso in undici verifiche, dichiarate
+in docs/eccezioni-interfaccia.md (le righe T-12:*), e T-12:principale e'
+verde gia' oggi. Togli le righe nello stesso
+commit della correzione; i gruppi devono girare verdi per intero sulla
+pagina vera. Restano com'erano: R-ACC-02 (la frase prima di cominciare e
+alla fine), R-UX-03 («Sei tu a giudicare» prima di Inizia nel Carteggio),
+i tre posti dell'invito, la porta della simulazione in un tocco dalla Home,
+i tragitti di N-01.
+
+Prima e dopo, con schermate guardate e rettangoli letti dalla pagina, a
+375×667, 375×812 e 1280×800: Home, Esame, Carteggio, Segnali e le
+preparazioni del §10.1. Scrivi in px dove stanno l'avviso e l'azione
+principale.
+
+Nessun file del motore, dei test o dei dati. Se serve un controllo nuovo o
+un aggancio diverso, fermati e scrivilo nel §10 di
+docs/regole-disegno-progetto.md. Le cinque suite verdi, l'interfaccia con
+la 8620 guardata libera per 90 s. Voce in fondo a [Unreleased], un commit
+con il trailer, versione invariata, niente push. Chiudi con il resoconto
+di docs/prossime-sessioni.md.
 ```
 
 ### I segnaposto — i prompt che non si possono ancora scrivere

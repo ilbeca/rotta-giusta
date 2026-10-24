@@ -160,6 +160,17 @@ sulla pagina vera.
 
 | parte | verifica | perché è ancora qui |
 |---|---|---|
+| T-12:primo-schermo | a 375×812 l'azione principale sta nel primo schermo, sotto il dito | «Inizia», o la prima porta, sta sotto lo schermo in Esame, nel Carteggio, nei Segnali, nella simulazione, in «Scegli un argomento» e nelle tre preparazioni del carteggio: misurato il 24 ottobre 2026, la prima prova di Esame a 923–995 px su 812. Lo chiude P-93 (giro 1 delle regole di disegno, `docs/regole-disegno-progetto.md` §10.1) |
+| T-12:primo-schermo | a 375×667 l'azione principale sta nel primo schermo, sotto il dito | Le stesse superfici a 375×667; nella Home e nella preparazione del breve l'azione resta in vista. Lo chiude P-93 (giro 1 delle regole di disegno, `docs/regole-disegno-progetto.md` §10.1) |
+| T-12:esame | in Esame «Le prove» e la prima porta vengono prima del modulo, nel primo schermo | Esame apre su «Che cosa stai preparando?»: «Le prove» a 880 px, dopo i campi del modulo. Lo chiude P-93 (giro 1 delle regole di disegno, `docs/regole-disegno-progetto.md` §10.1), decisione B |
+| T-12:esame | in Esame il modulo sta in un details chiuso, e il sommario dice la scelta | Il modulo è aperto e non ha un sommario. Lo chiude P-93 (giro 1 delle regole di disegno, `docs/regole-disegno-progetto.md` §10.1), decisione B |
+| T-12:avviso | nessun avviso nella Home, in Esame e nel segmento Carteggio | L'avviso «senza account» è in testa alla Home, prima e dopo una risposta, e al segmento Carteggio. Lo chiude P-93 (giro 1 delle regole di disegno, `docs/regole-disegno-progetto.md` §10.1), decisione A |
+| T-12:avviso | in ogni preparazione l'avviso sta accanto all'azione principale, uno solo e senza niente in mezzo | Manca nelle preparazioni della prova e degli esercizi su carta; nei Segnali e in «Che tecnica serve?» sta in testa, a 482 e 548 px da «Inizia», con i modi e la barra in mezzo. Lo chiude P-93 (giro 1 delle regole di disegno, `docs/regole-disegno-progetto.md` §10.1) |
+| T-12:avviso | l'avviso e' testo, non un riquadro, e occupa al piu' il 15 % del primo schermo | Nei Segnali e in «Che tecnica serve?» è un riquadro bordato su quattro lati (`.account-warning`), e a 375×667 in «Che tecnica serve?» occupa il 17 % dello schermo. Lo chiude P-93 (giro 1 delle regole di disegno, `docs/regole-disegno-progetto.md` §10.1) |
+| T-12:avviso | in ogni preparazione l'avviso si vede davvero | Nelle preparazioni della prova e degli esercizi su carta la frase c'è soltanto nel segmento nascosto sotto. Lo chiude P-93 (giro 1 delle regole di disegno, `docs/regole-disegno-progetto.md` §10.1) |
+| T-12:scelte | al piu' quattro bersagli nel primo schermo della Home e delle preparazioni | 5 bersagli nella simulazione e 8 in «Scegli un argomento»; «Cambia attività» conta finché non porta `data-prep="chiudi"`. Lo chiude P-93 (giro 1 delle regole di disegno, `docs/regole-disegno-progetto.md` §10.1) |
+| T-12:aggancio | ogni superficie dichiara la sua azione principale con data-ruolo="principale" | La pagina non porta ancora `data-ruolo`. Lo chiude P-93 (giro 1 delle regole di disegno, `docs/regole-disegno-progetto.md` §10.1) |
+| T-12:aggancio | ogni avviso sta dentro un data-ruolo="avviso" | La pagina non porta ancora `data-ruolo="avviso"`. Lo chiude P-93 (giro 1 delle regole di disegno, `docs/regole-disegno-progetto.md` §10.1) |
 
 *P-91 ha chiuso T-10 e T-11: proseguimento raggiungibile scorrendo il runner
 e figura in vista prima della risposta. I gruppi girano per intero sulla

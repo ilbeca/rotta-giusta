@@ -62,6 +62,69 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 - Nessun file di `site/`, `tests/`, della specifica o della coda toccato;
   in I-27 una riga che rimanda al file. Guardiano verde.
 
+### Test — P-92: le regole di disegno, giro 1, nel banco (T-12)
+
+- **Perché adesso.** Il 24 ottobre l'autore ha preso le decisioni A e B del
+  piano: l'avviso «senza account» sta accanto a «Inizia» in ogni
+  preparazione, non in testa alla Home; Esame apre sulle prove, con «Che cosa
+  stai preparando?» chiuso in un `details` che dice la scelta. Il controllo
+  viene prima della pagina, come per T-10 e T-11, così la correzione di
+  ChatGPT (P-93) ha un rosso da far diventare verde. Nello stesso file l'autore
+  ha preso anche C–F (la scala del giro 2, l'immagine della Home, le soglie
+  delle parole, le schede della Home), scritte da un'altra sessione ed entrate
+  in questo commit.
+- **T-12, nel banco del client.** Senza account, a 375×812 e 375×667: la Home
+  prima e dopo una risposta, Esame, i segmenti Carteggio e Segnali, sei
+  preparazioni e il riepilogo con un errore. Sei parti: un solo fondo pieno nel
+  primo schermo, ed è l'azione principale (D-12); l'azione nel primo schermo,
+  sotto il dito (D-01); in Esame le prove prima del modulo, e il modulo chiuso
+  con la scelta nel sommario; l'avviso una volta, accanto a «Inizia», come
+  testo e non come riquadro, entro il 15 % dello schermo (D-14, D-24, D-30);
+  al più quattro bersagli nella Home e nelle preparazioni (D-13); e gli
+  agganci `data-ruolo`. Le misure usano la mappa del banco e trovano l'avviso
+  per testo: l'aggancio lo legge solo la sua parte. D-14 è misurata con tre
+  verifiche discrete al posto dell'indice area × contrasto dell'audit, che
+  resta nell'extra come numero.
+- **C-02 e T-06 guardano la preparazione, non la Home.** Il testo di R-ACC-02
+  e R-RIF-08 non cambia: «prima di cominciare» è la preparazione della
+  simulazione e quella dei Segnali, prima di «Inizia». Sulla pagina vera tutti
+  e due sono verdi.
+- **Sulla pagina vera T-12 è rosso in undici verifiche, dichiarate** in
+  `docs/eccezioni-interfaccia.md`, una riga per verifica. Misurato: l'avviso in
+  testa alla Home e al Carteggio; nei Segnali e in «Che tecnica serve?» un
+  riquadro bordato a 482 e 548 px da «Inizia»; nelle preparazioni della prova e
+  degli esercizi su carta la frase non si vede; «Inizia» sotto il primo schermo
+  anche a 812 in otto superfici (la prima prova di Esame a 923 px, il
+  Carteggio a 1.056); Esame apre sul modulo; 5 e 8 bersagli nelle preparazioni
+  della simulazione e di «Scegli un argomento»; nessun `data-ruolo`.
+  **Verde già oggi, e non dichiarato:** un solo fondo pieno ovunque, anche nel
+  riepilogo con un errore, dove a 375 px l'invito sta sotto il primo schermo —
+  il punto 9 dell'audit del 21 ottobre non si ripete.
+- **Provato al contrario.** La pagina di riferimento del client prende la forma
+  del giro 1 — gli agganci, l'avviso accanto a «Inizia» e non nella Home, Esame
+  con «Le prove» in testa e il modulo chiuso, le tre porte del Carteggio in un
+  gruppo, la sezione nascosta sotto una preparazione — e passa T-12 per intero.
+  Diciassette rotture, ognuna rossa per il suo motivo. Cinque difese tolte a
+  mano, una alla volta: l'avviso cercato per aggancio, i fondi pieni contati
+  dall'aggancio, «niente in mezzo», la distanza e la misura a 667. Ogni volta la
+  rottura che la riguarda passa verde. **Trovato provando:** la rottura del
+  riepilogo era instabile, perché sulla pagina di riferimento il riepilogo sta
+  sotto il runner e un pulsante ci entrava o no a seconda del quesito. Ora la
+  misura parte dal titolo del riepilogo, e la rottura è rossa tre volte su tre.
+  Quattro rotture vecchie seguono il testo nuovo della pagina di riferimento.
+- **Per la decisione F:** C-18 non pretende più «Tutte le attività sono
+  disponibili. Senza account non conserviamo risposte o preferenze.», che esce
+  dalla Home con il giro 1; scritto anche nel §11.2 del progetto del client.
+- Specifica: R-RIF-19…22 nel §9.11; R-ACC-02 e R-RIF-08 dicono dove guarda il
+  controllo. Nel piano, le precisazioni del contratto scritte facendo il
+  banco; in coda P-93 per ChatGPT, riga 36, e la riga di P-91 esce.
+- Suite: interfaccia **3.634** (erano 3.524) in 349 s, con la 8620 guardata
+  libera per 90 s; T-12 da solo costa circa 17 s sulla pagina vera. Motore
+  215/219 con i quattro skip previsti, server 89/89 con Node 25, dati 225,
+  specifica **1.064** (erano 1.048), guardiano verde. Il server non è stato
+  toccato e non è stato rifatto con la LTS 24, che non è più sul disco. `site/`
+  non è stato toccato.
+
 ## [0.33.0] — 2026-10-23
 
 **Il runner dei quiz si scorre, e la figura si vede.** Sul telefono, dopo una

@@ -1396,7 +1396,7 @@ GRUPPI_CLIENT = ['C-01', 'C-02', 'C-03', 'C-04', 'C-05', 'C-06', 'C-07', 'C-08',
 # Quante verifiche fa ogni gruppo quando arriva in fondo, sulla pagina di
 # riferimento: meno vuol dire che il giro si e' fermato prima e che una parte
 # dei controlli non e' stata eseguita, cioe' un verde a copertura parziale.
-VERIFICHE_CLIENT = {'C-01': 28, 'C-02': 15, 'C-03': 11, 'C-04': 20, 'C-05': 13, 'C-06': 15, 'C-07': 17, 'C-08': 18,
+VERIFICHE_CLIENT = {'C-01': 28, 'C-02': 16, 'C-03': 11, 'C-04': 20, 'C-05': 13, 'C-06': 15, 'C-07': 17, 'C-08': 18,
                     'C-21': 17, 'C-10': 10, 'C-11': 8, 'C-12': 9, 'C-13': 8, 'C-14': 3, 'C-15': 12, 'C-16': 23, 'C-17': 10,
                     'C-13:scarica': 7, 'C-08:cancella': 8, 'C-15:segnali': 7,
                     'C-19:senza': 4, 'C-19:ricarica': 4, 'C-19:scadenza': 4, 'C-19:guasto': 3, 'C-19:giudizio': 5,
@@ -1493,7 +1493,7 @@ ROTTURE_CLIENT = [
      [("function avvia() {", "function avvia() { indexedDB.open('open-patente-nautica');")],
      'IndexedDB: open-patente-nautica'),
     ('la data d\'esame in localStorage', ['C-02'],
-     [("S.esame = e.target.value; });", "S.esame = e.target.value; localStorage.setItem('pn.esame', S.esame); });")],
+     [("S.esame = e.target.value; sommarioEsame(); });", "S.esame = e.target.value; sommarioEsame(); localStorage.setItem('pn.esame', S.esame); });")],
      'localStorage: pn.esame'),
     ('una preferenza in sessionStorage', ['C-02'],
      [("function avvia() {", "function avvia() { sessionStorage.setItem('pn.auto', '0');")],
@@ -1513,11 +1513,11 @@ ROTTURE_CLIENT = [
      [('function termina(tempo = false) {', "function termina(tempo = false) { fetch(indirizzoApi(location) + '/v1/righe', { method: 'POST', credentials: 'include', body: JSON.stringify({ righe: S.righe }) }).catch(() => {});")],
      'nessuna richiesta all\'API'),
     ('la data d\'esame riletta dopo la ricarica', ['C-02'],
-     [("S.esame = e.target.value; });",
-       "S.esame = e.target.value; sessionStorage.setItem('pn.esame', S.esame); });\n$('esame-data').value = sessionStorage.getItem('pn.esame') || '';")],
+     [("S.esame = e.target.value; sommarioEsame(); });",
+       "S.esame = e.target.value; sommarioEsame(); sessionStorage.setItem('pn.esame', S.esame); });\n$('esame-data').value = sessionStorage.getItem('pn.esame') || '';")],
      'dopo la ricarica non restano'),
     ('nessun avviso prima di cominciare', ['C-02'],
-     [('<p id="avviso-prova">', '<p id="avviso-prova" hidden>')],
+     [('<p id="prep-accesso" data-ruolo="avviso">', '<p id="prep-accesso" data-ruolo="avviso" hidden>')],
      'prima di cominciare'),
     ('il riepilogo che non dice che cosa si perde', ['C-02'],
      [('<p>Senza account, chiudendo o ricaricando la pagina perdi le risposte e le preferenze. ', '<p>')],
@@ -1590,7 +1590,7 @@ ROTTURE_CLIENT = [
        "  $('sr-fine').classList.add('on'); localStorage.setItem('pn.segPunti', JSON.stringify({ notturni: { migliore: G.esatte, giocate: 1 } }));")],
      'localStorage: pn.segPunti'),
     ('i Segnali senza l\'avviso', ['C-02'],
-     [('<p id="seg-avviso">', '<p id="seg-avviso" hidden>'), ("<p>Senza account anche i punteggi dei Segnali valgono solo per questa pagina.</p>';", "';")],
+     [('<p id="seg-avviso" data-ruolo="avviso">', '<p id="seg-avviso" data-ruolo="avviso" hidden>'), ("<p>Senza account anche i punteggi dei Segnali valgono solo per questa pagina.</p>';", "';")],
      'i punteggi valgono per questa pagina'),
     # C-03 (P-39)
     ('una finestra d\'account all\'apertura', ['C-03'],
@@ -2861,11 +2861,15 @@ FRASI_FALSE = [
     ('privacy.html', 'Nessun dato personale viene trattato'),
 ]
 # (file, frase, quante volte almeno): «Come funziona» ha due copie (§11.2).
+# «Tutte le attività sono disponibili. Senza account non conserviamo risposte o
+# preferenze.» non si pretende piu' dal 24 ottobre 2026: tolto l'avviso dalla Home,
+# la Home direbbe due volte che senza account non resta niente (D-08), e la frase
+# esce con il giro 1 delle regole di disegno (decisione F del §11 di
+# docs/regole-disegno-progetto.md).
 FRASI_NUOVE = [
     ('index.html', 'Prova quiz e carteggio senza account; crea un account per salvare i progressi.', 1),
     ('app.html', 'Prova quiz e carteggio senza account; crea un account per salvare i progressi.', 1),
     ('index.html', 'Prova senza account', 1),
-    ('index.html', 'Tutte le attività sono disponibili. Senza account non conserviamo risposte o preferenze.', 1),
     ('index.html', 'Nessuna newsletter e nessun cookie di tracciamento.', 1),
     ('app.html', 'Non serve un account per provare.', 2),
     ('privacy.html', 'privacy@rottagiusta.it', 1),
@@ -3071,7 +3075,7 @@ ROTTURE_NAV = [
        "  if (campiProfilo()) Object.assign(corpo, scelte); else api('PUT', '/v1/profilo', scelte).catch(() => {});")],
      'non le raccoglie'),
     ('«Simula il quiz base» porta a Esame invece della preparazione', ['N-01:tragitti-H0'],
-     [('<button data-modo="sim" data-prova="base">Simula il quiz base</button>', '<button data-v="esame" data-modo="sim" data-prova="base">Simula il quiz base</button>')],
+     [('<button data-modo="sim" data-prova="base" data-ruolo="principale">Simula il quiz base</button>', '<button data-v="esame" data-modo="sim" data-prova="base" data-ruolo="principale">Simula il quiz base</button>')],
      'tocchi'),
     ('il ritorno della carta porta alla Home', ['N-01:tragitti-H0'],
      [("if (t.dataset.cfine === 'ritorno') { const o = S.cartUltima && S.cartUltima.P.origineNav; chiudiCart(); if (!tornaA(o)) vai('/'); return true; }",
@@ -3485,16 +3489,24 @@ ROTTURE_RACCORDO = [
 # Alla merge di P-25 la tabella non deve avere piu' righe `T-*`: e' li' che si
 # esige il regime nuovo, senza un segno da cercare nella pagina.
 GRUPPI_RIFINITURA = ['T-01', 'T-02', 'T-03', 'T-04', 'T-05:finestra', 'T-05:arresti', 'T-06', 'T-07:prova', 'T-07:conto',
-                     'T-08', 'T-09', 'T-10', 'T-11']
-VERIFICHE_RIFINITURA = {'T-01': 9, 'T-02': 9, 'T-03': 11, 'T-04': 6, 'T-05:finestra': 5, 'T-05:arresti': 2, 'T-06': 3,
-                        'T-07:prova': 5, 'T-07:conto': 3, 'T-08': 2, 'T-09': 2, 'T-10': 5, 'T-11': 2}
+                     'T-08', 'T-09', 'T-10', 'T-11', 'T-12']
+# T-12 (il giro 1 delle regole di disegno) si esegue una volta, e le sue
+# verifiche portano il nome della parte: e' per parte che si contano e si
+# dichiarano (docs/regole-disegno-progetto.md §10.1).
+PARTI_T12 = ['T-12:principale', 'T-12:primo-schermo', 'T-12:esame', 'T-12:avviso', 'T-12:scelte', 'T-12:aggancio']
+PARTI_RIFINITURA = [g for g in GRUPPI_RIFINITURA if g != 'T-12'] + PARTI_T12
+VERIFICHE_RIFINITURA = {'T-01': 9, 'T-02': 9, 'T-03': 11, 'T-04': 6, 'T-05:finestra': 5, 'T-05:arresti': 2, 'T-06': 4,
+                        'T-07:prova': 5, 'T-07:conto': 3, 'T-08': 2, 'T-09': 2, 'T-10': 5, 'T-11': 2,
+                        'T-12:principale': 1, 'T-12:primo-schermo': 2, 'T-12:esame': 2, 'T-12:avviso': 4, 'T-12:scelte': 1,
+                        'T-12:aggancio': 2}
 
 # Rotture della pagina di riferimento per l'area 6: (che cosa, parti da
 # eseguire, sostituzioni, parola che il rosso deve contenere). Ognuna e' un
 # modo in cui una pagina puo' sembrare a posto e non esserlo.
 _STILE = 'a.da-solo, label {display:inline-block}'
 _TEC = '<section class="view" id="v-tec">\n  <h1>Che tecnica serve?</h1>'
-_PRIMA = '<p id="avviso-prova">'
+_PRIMA = '<p id="prep-accesso" data-ruolo="avviso">'
+_PRIMA_CON = lambda attr: _PRIMA[:-1] + ' ' + attr + '>'
 _INFO = ("  const righe = S.conto && S.db ? (await tx(() => null)).righe : S.righe.concat(S.prova || []);\n"
          "  $('info-conta').textContent = `risposte ai quiz ${righe.filter((r) => r._t === 'q').length} · prove avviate ${righe.filter((r) => r._t === 'a').length}`;")
 ROTTURE_RIFINITURA = [
@@ -3503,7 +3515,7 @@ ROTTURE_RIFINITURA = [
      [('      <p>Hai affrontato ${plurDomande(r.risposte)}', '      <p>Risposte salvate: ${r.risposte}.</p><p>Hai affrontato ${plurDomande(r.risposte)}')],
      'il riepilogo non dice'),
     ('senza account il Percorso dice che le risposte sono salvate su questo dispositivo', ['T-01'],
-     [(_PRIMA + 'Senza account', _PRIMA + 'Le tue risposte sono salvate su questo dispositivo. Senza account')],
+     [('<p>Quiz e carteggio per la patente senza limiti dalla costa.', '<p>Le tue risposte sono salvate su questo dispositivo. Quiz e carteggio per la patente senza limiti dalla costa.')],
      'il Percorso non dice'),
     # T-02: con l'account, da inviare e non sul server; i numeri dalla coda
     ('lo stato dell\'invio non si ridipinge quando una risposta entra in coda', ['T-02'],
@@ -3561,10 +3573,10 @@ ROTTURE_RIFINITURA = [
      [('<body>\n<header>', '<body>\n<div style="position:fixed;top:0;left:0;right:0;height:150px;background:#fff"></div>\n<header>')],
      'coperto'),
     # T-06: un avviso nel DOM ma occultato
-    ('l\'avviso e\' trasparente', ['T-06'], [(_PRIMA, '<p id="avviso-prova" style="opacity:0">')], 'trasparente'),
-    ('l\'avviso e\' nascosto ai lettori di schermo', ['T-06'], [(_PRIMA, '<p id="avviso-prova" aria-hidden="true">')], 'ignora'),
-    ('l\'avviso e\' fuori dallo schermo', ['T-06'], [(_PRIMA, '<p id="avviso-prova" style="position:absolute;left:-9999px">')], 'fuori dallo schermo'),
-    ('l\'avviso ha il colore del fondo', ['T-06'], [(_PRIMA, '<p id="avviso-prova" style="color:#fff">')], 'contrasto'),
+    ('l\'avviso e\' trasparente', ['T-06'], [(_PRIMA, _PRIMA_CON('style="opacity:0"'))], 'trasparente'),
+    ('l\'avviso e\' nascosto ai lettori di schermo', ['T-06'], [(_PRIMA, _PRIMA_CON('aria-hidden="true"'))], 'ignora'),
+    ('l\'avviso e\' fuori dallo schermo', ['T-06'], [(_PRIMA, _PRIMA_CON('style="position:absolute;left:-9999px"'))], 'fuori dallo schermo'),
+    ('l\'avviso ha il colore del fondo', ['T-06'], [(_PRIMA, _PRIMA_CON('style="color:#fff"'))], 'contrasto'),
     ('l\'avviso e\' coperto', ['T-06'],
      [(_PRIMA, '<div style="position:absolute;top:0;left:0;right:0;height:900px;background:#fff"></div>' + _PRIMA)],
      'ha sopra'),
@@ -3609,6 +3621,48 @@ ROTTURE_RIFINITURA = [
     ('la figura sotto il bordo dello schermo', ['T-11'], [(_STILE, _STILE + '\n#quizrun.on #r-text {padding-bottom:900px}')], 'se ne vede 0 px'),
     ('un velo sopra la figura', ['T-11'], [(_STILE, _STILE + "\n#r-fig {position:relative} #r-fig::after {content:''; position:absolute; inset:0}")], 'la figura ha sopra'),
     ('la figura nascosta', ['T-11'], [(_STILE, _STILE + '\n#r-fig img {display:none}')], 'non si vede'),
+    # T-12 (il giro 1 delle regole di disegno, R-RIF-19…22): l'azione principale,
+    # l'avviso detto una volta accanto a «Inizia», Esame sulle prove. Il primo e'
+    # la forma della pagina vera prima di P-93: l'avviso in testa alla Home.
+    ('l\'avviso rimesso in testa alla Home', ['T-12:avviso'],
+     [('<p>Quiz e carteggio per la patente senza limiti dalla costa.', '<p>Senza account le risposte valgono solo finché questa pagina resta aperta.</p><p>Quiz e carteggio per la patente senza limiti dalla costa.')],
+     'c\'e\' l\'avviso'),
+    ('l\'avviso in un riquadro bordato', ['T-12:avviso'], [(_PRIMA, _PRIMA_CON('style="border:2px solid #b45309; padding:12px"'))], 'bordo su 4 lati'),
+    ('l\'avviso su un fondo colorato', ['T-12:avviso'], [(_PRIMA, _PRIMA_CON('style="background:#f5b942"'))], 'ha un fondo'),
+    ('l\'avviso lontano da «Inizia»', ['T-12:avviso'], [(_PRIMA, _PRIMA_CON('style="margin-bottom:90px"'))], 'px dall\'azione principale'),
+    ('«Cambia attività» fra l\'avviso e «Inizia»', ['T-12:avviso'],
+     [('  <p id="prep-accesso" data-ruolo="avviso"></p>\n  <button id="start"',
+       '  <p id="prep-accesso" data-ruolo="avviso" style="margin-bottom:4px"></p>\n  <button data-quiz-menu style="display:block; min-height:0; height:20px; margin:0">Cambia attività</button>\n  <button id="start"')],
+     'fra l\'avviso e l\'azione principale'),
+    ('l\'avviso tolto dalla preparazione della simulazione', ['T-12:avviso', 'C-02'],
+     [("  $('prep-accesso').textContent = ACCESSO();", "  $('prep-accesso').textContent = P.modo === 'sim' ? '' : ACCESSO();")],
+     'manca l\'avviso'),
+    ('l\'avviso con visibility:hidden', ['T-12:avviso'], [(_PRIMA, _PRIMA_CON('style="visibility:hidden"'))], 'visibility:hidden'),
+    ('l\'avviso grande come mezzo schermo', ['T-12:avviso'], [(_PRIMA, _PRIMA_CON('style="padding:0 0 300px"'))], '% del primo schermo'),
+    ('la frase senza data-ruolo', ['T-12:aggancio'], [(_PRIMA, '<p id="prep-accesso">')], 'non sta in un data-ruolo'),
+    ('data-ruolo="principale" sul pulsante sbagliato', ['T-12:aggancio'],
+     [('  <button id="start" data-ruolo="principale">Inizia</button>\n  <button data-prep="chiudi" id="prep-chiudi"></button>',
+       '  <button id="start">Inizia</button>\n  <button data-prep="chiudi" id="prep-chiudi" data-ruolo="principale"></button>')],
+     'non su'),
+    ('due pulsanti pieni nel riepilogo con un errore', ['T-12:principale'],
+     [('<button data-ciclo="errori">Rivedi gli errori</button>', '<button data-ciclo="errori" style="background:#123e63; color:#fff">Rivedi gli errori</button>')],
+     'fondo pieno fuori'),
+    ('l\'azione principale senza fondo pieno', ['T-12:principale'],
+     [('button[data-ruolo="principale"] {background:#123e63; color:#fff; border:1px solid #123e63}', '')],
+     'non ha il fondo pieno'),
+    ('Esame con il modulo prima delle prove', ['T-12:esame'],
+     [('  <h2>Le prove</h2>\n', '  <label>Data d\'esame (facoltativa) <input type="date" name="data-sopra"></label>\n  <h2>Le prove</h2>\n')],
+     'viene dopo il campo'),
+    ('Esame con il modulo aperto', ['T-12:esame'], [('<details id="esame-modulo">', '<details id="esame-modulo" open>')], 'details chiuso'),
+    ('«Inizia» sotto la piega anche a 375×812', ['T-12:primo-schermo'],
+     [('  <h1 id="prep-titolo" tabindex="-1"></h1>', '  <h1 id="prep-titolo" tabindex="-1" style="margin-bottom:900px"></h1>')],
+     'su 812'),
+    ('cinque bersagli nella preparazione', ['T-12:scelte'],
+     [('  <div id="prep-controlli"></div>', '  <div id="prep-controlli"></div>\n  <button>Quiz base</button><button>Quiz vela</button><button>Argomenti</button><button>Filtri</button>')],
+     'bersagli nel primo schermo'),
+    ('«Inizia» dei Segnali sotto la piega a 375×667', ['T-12:primo-schermo'],
+     [('    <h2>Riconosci fanali e segnali</h2>', '    <h2 style="margin-top:260px">Riconosci fanali e segnali</h2>')],
+     'su 667'),
 ]
 
 
@@ -3723,6 +3777,35 @@ def test_rifinitura_figura():
     registra_rifinitura('T-11')
 
 
+def test_disegno_principale():
+    """R-RIF-19 (D-12): in ogni superficie della prova un solo fondo pieno nel
+    primo schermo, ed e' l'azione principale; anche nel riepilogo con un errore
+    (T-12:principale)."""
+    registra_rifinitura('T-12:principale')
+
+
+def test_disegno_primo_schermo():
+    """R-RIF-20 (D-01): a 375×812 e a 375×667 l'azione principale sta nel primo
+    schermo, sotto il dito; in Esame le prove vengono prima del modulo, che sta
+    chiuso con la scelta nel sommario (T-12:primo-schermo, T-12:esame)."""
+    registra_rifinitura('T-12:primo-schermo')
+    registra_rifinitura('T-12:esame')
+
+
+def test_disegno_avviso():
+    """R-RIF-21 (D-14, D-24, D-30): l'avviso «senza account» detto una volta,
+    accanto a «Inizia», come testo e non come riquadro; e la pagina lo
+    dichiara con data-ruolo (T-12:avviso, T-12:aggancio)."""
+    registra_rifinitura('T-12:avviso')
+    registra_rifinitura('T-12:aggancio')
+
+
+def test_disegno_scelte():
+    """R-RIF-22 (D-13): al piu' quattro bersagli nel primo schermo della Home e
+    delle preparazioni (T-12:scelte)."""
+    registra_rifinitura('T-12:scelte')
+
+
 def test_rifinitura_provata_al_contrario():
     """Il banco dell'area 6 contro sé stesso: la pagina di riferimento passa
     ogni parte per intero, ogni rottura e' rossa per il suo motivo, e ogni
@@ -3730,7 +3813,7 @@ def test_rifinitura_provata_al_contrario():
     riferimento passa e che una rottura fa diventare rossa."""
     _, out, applicate = banco_client()
     rif = out.get('riferimento', [])
-    for g in GRUPPI_RIFINITURA:
+    for g in PARTI_RIFINITURA:
         vg = [x for x in rif if x['gruppo'] == g]
         rossi = [x['nome'] + ' — ' + x.get('extra', '') for x in vg if not x['ok']]
         check('rifinitura %s: la pagina di riferimento la passa' % g, not rossi, '; '.join(rossi[:3]))
@@ -4480,7 +4563,8 @@ def main():
               test_ridisegno_tragitti, test_ridisegno_stati_in_schermata, test_ridisegno_tragitti_provati_al_contrario,
               test_rifinitura_senza_account, test_rifinitura_invio, test_rifinitura_guasto, test_rifinitura_identita,
               test_rifinitura_finestra, test_rifinitura_fuoco, test_rifinitura_avvisi, test_rifinitura_larghezze,
-              test_rifinitura_contrasto, test_rifinitura_bersagli, test_rifinitura_proseguire, test_rifinitura_figura, test_rifinitura_provata_al_contrario,
+              test_rifinitura_contrasto, test_rifinitura_bersagli, test_rifinitura_proseguire, test_rifinitura_figura,
+              test_disegno_principale, test_disegno_primo_schermo, test_disegno_avviso, test_disegno_scelte, test_rifinitura_provata_al_contrario,
               test_raccordo_riconosciuto, test_esito_senza_account, test_esito_quando, test_esito_salvato,
               test_avvio_registrato, test_avvio_non_si_vede, test_avvio_non_e_una_risposta, test_avvio_server_di_prima,
               test_avvio_con_un_errore, test_raccordo_provato_al_contrario,

@@ -34,6 +34,14 @@
   delle sezioni; `#esame-data` sta in Esame; il pallino dei guasti
   sull'avatar (`[data-avatar]`).
 
+  Dal P-92 (24 ottobre 2026) ha anche la forma del giro 1 delle regole di
+  disegno (docs/regole-disegno-progetto.md §10.1), che T-12 misura: un solo
+  `data-ruolo="principale"` per superficie, l'unico con il fondo pieno; l'avviso
+  «senza account» accanto a «Inizia», con `data-ruolo="avviso"`, e non nella
+  Home; Esame con «Le prove» in testa e il modulo in un `details` chiuso, il
+  cui sommario dice la scelta; le tre porte del Carteggio in un gruppo. Sotto
+  una preparazione la sezione non si vede, come nella pagina vera.
+
   Senza account non scrive niente nel browser, come quella di oggi; con
   l'account solo nel suo archivio `rg-account-<chiave>`. Il resto
   dell'aspetto e' quello del browser, apposta.
@@ -51,7 +59,13 @@ a.da-solo, label {display:inline-block}
 body.in-attivita #barra, body.in-attivita main {display:none}
 #quizrun, #cartrun, #segrun, #rivedi {background:#fff}
 [role="tab"][aria-selected="true"] {font-weight:bold}
-#r-fig img {max-width:100%; max-height:34vh}</style>
+#r-fig img {max-width:100%; max-height:34vh}
+/* Il giro 1 delle regole di disegno (T-12): una sola azione con il fondo pieno per
+   superficie, ed e' quella con data-ruolo="principale"; l'avviso e' testo. */
+button[data-ruolo="principale"] {background:#123e63; color:#fff; border:1px solid #123e63}
+/* Una preparazione sta sopra la sezione da cui si arriva, e la sezione non si vede
+   (main.preparazione-sopra della pagina vera). */
+body:has(> [data-preparazione]:not([hidden])) main {display:none}</style>
 <body>
 <header>
   <a href="/" id="marchio" class="da-solo" data-v="home">Rotta Giusta</a>
@@ -78,9 +92,8 @@ body.in-attivita #barra, body.in-attivita main {display:none}
   <div id="home-anonima">
     <h1>Preparati alla patente nautica, un passo alla volta.</h1>
     <p>Quiz e carteggio per la patente senza limiti dalla costa. Esercitati sui quesiti del decreto e confronta il lavoro sulla carta.</p>
-    <p id="avviso-prova">Senza account le risposte valgono solo finché questa pagina resta aperta. Se la chiudi o la ricarichi, le perdi. Non salviamo niente, nemmeno le tue preferenze.</p>
     <p id="altrove" hidden>Su questo indirizzo non si può creare un account. Per salvare le risposte vai su <a href="https://rottagiusta.it/">rottagiusta.it</a>.</p>
-    <button data-modo="sim" data-prova="base">Simula il quiz base</button> <span class="condizioni-base"></span>
+    <button data-modo="sim" data-prova="base" data-ruolo="principale">Simula il quiz base</button> <span class="condizioni-base"></span>
     <button data-breve data-rotta-start disabled>Allenati con 10 domande</button>
     <p>Un allenamento breve, con correzione dopo ogni risposta.</p>
   </div>
@@ -141,21 +154,31 @@ body.in-attivita #barra, body.in-attivita main {display:none}
   <div id="seg-carteggio" data-pannello-segmento="carteggio" hidden>
     <p id="c-giudizio">Tu svolgi gli esercizi sulla carta. Rotta Giusta ti propone una selezione e mostra la risposta ministeriale per confrontare il risultato. Sei tu a giudicare: il sito non corregge il carteggio.</p>
     <p>Prima di cominciare: per la prova e gli esercizi su carta servono le carte nautiche indicate nella selezione, squadrette nautiche, compasso, matita, gomma e fogli per i calcoli.</p>
-    <button data-cporta="esercizi">Esercizi su carta</button>
-    <button data-cporta="tecniche" data-v="tec">Che tecnica serve?</button>
-    <button data-cporta="prova">Prova di carteggio</button>
+    <div data-ruolo="principale">
+      <button data-cporta="esercizi">Esercizi su carta</button>
+      <button data-cporta="tecniche" data-v="tec">Che tecnica serve?</button>
+      <button data-cporta="prova">Prova di carteggio</button>
+    </div>
   </div>
   <div id="seg-segnali" data-pannello-segmento="segnali" hidden>
     <h2>Riconosci fanali e segnali</h2>
     <p>Il gioco è extra banca. Non entra nella copertura dei quiz e non registra le singole risposte.</p>
-    <p id="seg-avviso">Senza account anche i punteggi dei Segnali valgono solo per questa pagina.</p>
-    <button id="s-start">Inizia</button>
+    <p id="seg-avviso" data-ruolo="avviso">Senza account anche i punteggi dei Segnali valgono solo per questa pagina.</p>
+    <button id="s-start" data-ruolo="principale">Inizia</button>
   </div>
 </section>
 
 <section class="view" id="v-esame">
   <h1>Esame</h1>
   <p>Le prove sono nell'ordine in cui si sostengono. Qui puoi prepararle in parallelo, senza sblocchi.</p>
+  <h2>Le prove</h2>
+  <div data-ruolo="principale">
+    <button data-cporta="prova">Prova di carteggio</button>
+    <button data-modo="sim" data-prova="base">Simula il quiz base</button>
+    <button data-modo="sim" data-prova="vela">Simula il quiz vela</button>
+    <button data-modo="sim" data-prova="entrambe">Quiz base e vela</button>
+  </div>
+  <details id="esame-modulo"><summary id="esame-sommario">Stai preparando: Non l'hai detto</summary>
   <label>Data d'esame (facoltativa) <input type="date" id="esame-data"></label>
   <fieldset id="esame-scelte"><legend>Che cosa stai preparando?</legend>
     <label><input type="radio" name="e-abilitazione" value="motore"> Solo motore</label>
@@ -163,11 +186,8 @@ body.in-attivita #barra, body.in-attivita main {display:none}
     <label><input type="radio" name="e-conseguimento" value="prima"> Prima patente</label>
     <label><input type="radio" name="e-conseguimento" value="estensione_e12"> Estensione dalla entro 12 miglia</label>
     <button data-scelte="esame">Salva le scelte</button><p id="esame-scelte-esito" role="status"></p></fieldset>
+  </details>
   <div id="com-e-fatto"><h2>Com'è fatto l'esame</h2><p id="sintesi-esame"></p></div>
-  <button data-cporta="prova">Prova di carteggio</button>
-  <button data-modo="sim" data-prova="base">Simula il quiz base</button>
-  <button data-modo="sim" data-prova="vela">Simula il quiz vela</button>
-  <button data-modo="sim" data-prova="entrambe">Quiz base e vela</button>
 </section>
 
 <section class="view" id="v-progressi">
@@ -195,9 +215,9 @@ body.in-attivita #barra, body.in-attivita main {display:none}
   <h1 id="prep-titolo" tabindex="-1"></h1>
   <p id="prep-testo"></p>
   <div id="prep-controlli"></div>
-  <p id="prep-accesso"></p>
   <p id="prep-quanti" role="status"></p>
-  <button id="start">Inizia</button>
+  <p id="prep-accesso" data-ruolo="avviso"></p>
+  <button id="start" data-ruolo="principale">Inizia</button>
   <button data-prep="chiudi" id="prep-chiudi"></button>
 </section>
 
@@ -205,13 +225,13 @@ body.in-attivita #barra, body.in-attivita main {display:none}
   <h1 id="prep-carta-titolo" tabindex="-1"></h1>
   <p>Sei tu a giudicare: il sito non corregge il carteggio.</p>
   <p id="prep-carta-testo"></p>
-  <p id="prep-carta-accesso"></p>
   <fieldset id="c-modi" hidden><legend>Esercizi</legend>
     <label><input type="radio" name="c-modo" value="giro" checked> Giro delle tecniche</label>
     <label><input type="radio" name="c-modo" value="tappeto"> A tappeto</label></fieldset>
-  <button id="c-start" hidden>Inizia la prova</button>
-  <button id="c-esercizi" hidden>Inizia gli esercizi</button>
-  <button id="t-start" hidden>Inizia il riconoscimento</button>
+  <p id="prep-carta-accesso" data-ruolo="avviso"></p>
+  <button id="c-start" data-ruolo="principale" hidden>Inizia la prova</button>
+  <button id="c-esercizi" data-ruolo="principale" hidden>Inizia gli esercizi</button>
+  <button id="t-start" data-ruolo="principale" hidden>Inizia il riconoscimento</button>
   <button data-prep="chiudi" id="prep-carta-chiudi"></button>
 </section>
 
@@ -493,7 +513,16 @@ const RITORNI = { home: 'Torna alla Home', esame: 'Torna a Esame', progressi: 'T
 const ritornoDi = (t) => (t.sezione === 'allenati' ? `Torna ad Allenati · ${{ quiz: 'Quiz', carteggio: 'Carteggio', segnali: 'Segnali' }[t.segmento || 'quiz']}` : RITORNI[t.sezione] || 'Torna alla Home');
 
 /** La sezione e il segmento, senza toccare la cronologia. */
+/** Il sommario del modulo di Esame: la scelta e la data, o «Non l'hai detto» (decisione B). */
+function sommarioEsame() {
+  const sc = S.scelte || {}, d = $('esame-data').value;
+  const parti = [sc.abilitazione === 'vela' ? 'motore e vela' : sc.abilitazione === 'motore' ? 'motore' : '',
+    sc.conseguimento === 'prima' ? 'prima patente' : sc.conseguimento === 'estensione_e12' ? 'estensione dalla entro 12 miglia' : ''].filter(Boolean);
+  $('esame-sommario').textContent = `Stai preparando: ${parti.length ? parti.join(', ') : 'Non l\'hai detto'}${d ? ' · esame il ' + d : ''}`;
+}
+
 function mostraSezione(sezione, segmento) {
+  if (sezione === 'esame') sommarioEsame();
   chiudiSuperfici();
   for (const v of VISTE_RIDISEGNO) document.getElementById('v-' + v).classList.toggle('on', v === sezione);
   for (const b of document.querySelectorAll('#barra [data-v]')) b.setAttribute('aria-current', b.dataset.v === sezione ? 'page' : 'false');
@@ -629,7 +658,7 @@ fetch('/dati/quiz.json').then((r) => r.json()).then((b) => {
 fetch('/dati/meta.json').then((r) => r.json()).then((m) => { S.motore = String(m.versione || ''); S.meta = m; dipingiHome(); }).catch(() => {});
 const CART = fetch('/dati/carteggio.json').then((r) => r.json()).then((c) => { S.cart = c; }).catch(() => {});
 
-$('esame-data').addEventListener('change', (e) => { S.esame = e.target.value; });
+$('esame-data').addEventListener('change', (e) => { S.esame = e.target.value; sommarioEsame(); });
 // Con l'account la data sta sul server; senza, solo in memoria (§11.1).
 $('esame-data').addEventListener('change', (e) => { if (S.conto) api('PUT', '/v1/profilo', { data_esame: e.target.value || null }); });
 const quesiti = () => new Set([...S.idQuiz, ...S.cart.map((e) => e.id)]);
@@ -818,7 +847,7 @@ function riepilogo() {
       <p>Senza account, chiudendo o ricaricando la pagina perdi le risposte e le preferenze. Crea un account per salvare le risposte, ritrovarle su un altro dispositivo e vedere i Progressi quando ci sono abbastanza dati.</p>${privacy}${porte}</section>`;
   const riprova = r.errate === 1 ? 'Riprova questo quesito' : `Riprova questi ${r.errate} quesiti`;
   const uscite = `<button data-ciclo="risposte">Rivedi le risposte</button>
-    ${r.errate ? `<button data-ciclo="errori">Rivedi gli errori</button><button data-ciclo="riprova">${riprova}</button>` : ''}
+    ${r.errate ? `<button data-ciclo="errori">Rivedi gli errori</button><button data-ciclo="riprova" data-ruolo="principale">${riprova}</button>` : ''}
     ${u.resto && u.resto.length ? `<button data-fase="1">Continua con la ${u.resto[0]}</button>` : ''}
     <button data-ciclo="altra">Scegli un'altra attività</button>
     <button data-ciclo="ritorno">${esc(ritorno)}</button>`;
@@ -1748,7 +1777,6 @@ async function entra(io) {
   const mio = S.ciclo;
   navigator.locks.request(nomeDb(S.conto.chiave), { mode: 'shared' }, () => (mio !== S.ciclo ? null : new Promise((r) => { S.rilascia = r; })));
   $('conto-porta').textContent = 'Account';
-  $('avviso-prova').hidden = true;
   $('esporta').hidden = false;
   if (io.data_esame !== undefined) $('esame-data').value = io.data_esame || '';
   if (io.abilitazione !== undefined || io.conseguimento !== undefined) S.scelte = { abilitazione: io.abilitazione ?? null, conseguimento: io.conseguimento ?? null };
@@ -1775,7 +1803,6 @@ function fermaQui() {
   dipingiEsito();
   $('conto-porta').textContent = 'Accedi';
   $('conto-stato').textContent = '';
-  $('avviso-prova').hidden = false;
   $('esporta').hidden = true;
   $('seg-stato').textContent = '';
   $('esame-data').value = ''; S.esame = '';
@@ -2625,7 +2652,8 @@ function mostraPrepCarta() {
     ? `${E.PROVA_CARTEGGIO.esercizi} esercizi, ${E.PROVA_CARTEGGIO.minuti} minuti, almeno ${E.PROVA_CARTEGGIO.soglia} risultati corretti. ${E.PROVA_CARTEGGIO.assunzione}`
     : che === 'tecniche' ? 'Riconosci le tecniche necessarie per impostare il problema. La classificazione è del progetto, non del Ministero.'
       : 'Scegli un giro fra tecniche diverse o prosegui nell\'ordine del foglio.';
-  $('prep-carta-accesso').textContent = S.conto && !S.scaduto ? ACCESSO() : 'Il lavoro e i giudizi di questa attività restano solo nella pagina aperta. Se la chiudi o la ricarichi li perdi.';
+  // Senza account la frase del §4.1, come in ogni preparazione (T-12), e quella del lavoro sulla carta.
+  $('prep-carta-accesso').textContent = S.conto && !S.scaduto ? ACCESSO() : ACCESSO() + ' Il lavoro e i giudizi di questa attività restano solo nella pagina aperta. Se la chiudi o la ricarichi li perdi.';
   $('c-modi').hidden = che !== 'esercizi';
   $('c-start').hidden = che !== 'prova';
   $('c-esercizi').hidden = che !== 'esercizi';
