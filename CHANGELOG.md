@@ -178,6 +178,35 @@ selezione o contabilità. Versione 0.34.0 invariata.
   guardata libera per 90 s; motore 215/219 con i quattro skip previsti, dati
   225, specifica 1.096, guardiano verde. Server non toccato.
 
+
+### Progettato — P-96: tre direzioni visive prima di scegliere
+
+Il rispetto della scala e delle regole di disegno non basta a dare carattere
+all’app: il brainstorming in `docs/prototipi/redesign-2026-10-chatgpt/`
+confronta **Atlante**, **Linea di rotta** e **Circolo**, con diagnosi delle
+superfici attuali e lettura critica di D-01…D-35. Galleria e 21 mock HTML
+statici, sette per direzione, comprendono Home, Quiz, preparazioni, runner
+breve e lungo e riepilogo. Raccomandata Linea di rotta, decisione all’autore.
+Nessun file del sito, del motore, dei dati, dei test o del server cambia;
+versione 0.34.0 invariata.
+
+- Guardate 20 catture dell’app attuale e 51 dei mock, a 375×812 e 1280×800;
+  riferimenti e ogni immagine sono elencati nel README. 84 visite dei mock
+  anche a 320 e 640 px: zero overflow, 3.470 confronti di contrasto del testo
+  senza fallimenti, minimo 5,33:1; nessuna risorsa da altri host. Verificati
+  anche lo scorrimento delle risposte lunghe e il fuoco sui tag con tastiera.
+  Le prime tre catture del fuoco, respinte perché non lo mostravano, sono
+  sostituite. Revisione indipendente conclusiva favorevole al brainstorm.
+- Suite sul canonico invariato: motore **215/219** (4 salti previsti), dati
+  **225**, interfaccia **3.849**, specifica **1.096**, server **89/89** con
+  Node 25.3.0 e **89/89** con Node 24.22.0 LTS, archivio ufficiale verificato
+  contro SHASUMS256. Guardiano e documentazione verdi. `verifiche.md`
+  distingue questi esiti dai 15 warning del detector visivo, motivati.
+- Restano da scegliere la direzione e la sua scala, poi completare gli stati
+  e le superfici mancanti prima di implementare. Nessuna approvazione estetica
+  dedotta dai test, nessuna prova con persone o telefono fisico. Niente push.
+
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la
