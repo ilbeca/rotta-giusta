@@ -263,7 +263,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 24 | **La misura propria**: conteggi aggregati di eventi sul server del sito, senza cookie né terzi, a cominciare dal contatore degli ingressi; le registrazioni fra le metriche; MISURA → BRAINSTORM come quinto passo del ciclo (I-19, decisioni 1–3 e 5 del 17 ottobre in `docs/idee-dopo-gli-account.md`) | Claude con l'autore, poi Claude | `main` | un ADR che riscrive «nessun analytics» (specifica §2.1) e R-ACC-09, e la riga nell'informativa; dopo il rilascio del ridisegno | da scrivere |
 | 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | niente dal motore: `PREVISIONI` c'è (P-72), e un modello entra come metodo accanto alla regola semplice; Q-STIMA solo per quando si mostra | da scrivere |
 | 27 | **Esito e previsioni, la pagina e l'informativa** (B-1, B-2), poi un rilascio | ChatGPT | `ui/main` | soltanto la base giuridica (§4, «Dopo P-64», 1–3): P-74 è chiuso | P-75, da scrivere |
-| 37 | **Le regole di disegno, giro 2**: la scala di corpi, spazi e pesi (D-17, D-19, D-28; `docs/regole-disegno-progetto.md` §10.2, decisione C) — prima il controllo su `main`, poi la pagina | Claude, poi ChatGPT | `main`, poi `ui/main` | il rilascio del giro 1, se l'autore lo vuole prima | P-94, da scrivere |
+| 37 | **Le regole di disegno, giro 2**: la scala di corpi, spazi e pesi, le distanze fra i bersagli, la lunghezza delle righe (D-15…D-23, D-25, D-28; `docs/regole-disegno-progetto.md` §5, decisione C) — prima il controllo su `main`, poi la pagina | Claude, poi ChatGPT | `main`, poi `ui/main` | niente: la decisione C è presa, il giro 1 è nella v0.34.0 | P-94; P-95 dopo |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo P-59», «Dopo P-64», «Dopo il traguardo» e le voci non barrate |
 
 **La v0.31.0 è in linea dal 18 ottobre 2026**, sulla pagina e sul server, con le raccolte nuove spente (prima, la v0.30.0 dal 3 ottobre); P-59,
@@ -7076,6 +7076,55 @@ specifica 1.064, interfaccia **3.612** in 5 min 32 s con la 8620 libera da 90 s,
 guardiano verde. Rilasciato nella v0.34.0 il 24 ottobre 2026. **Visto e non corretto**, per il giro 3: il sommario del
 modulo di Esame dice soltanto «Non l'hai detto», e chi non l'apre non sa che
 cosa; nelle schede di Esame il quiz vela va su tre colonne strette a 375 px.
+
+### P-94 — Claude: le regole di disegno, giro 2 — la scala nel contratto, `test_scala_css` e T-13
+
+**Dove:** il checkout principale, `main`.
+**Nasce da:** il piano dei passi 2–4 di I-27 (`docs/regole-disegno-progetto.md`
+§5, §10.1 «Giro 2»), la decisione C dell'autore del 24 ottobre 2026 (§11 del
+piano, con i numeri di partenza), e il giro 1 chiuso e rilasciato nella
+v0.34.0. **Sblocca:** P-95, la pagina del giro 2, per ChatGPT su `ui/main`.
+
+```
+Sessione P-94, su main, nel checkout principale. Leggi AGENTS.md,
+docs/regole-disegno-progetto.md (§3, §5, §9, §10.1 «Giro 2» e la
+decisione C del §11, con i numeri), e in docs/idee-dopo-gli-account.md la
+scheda I-27 (le regole D-15…D-23, D-25, D-28 e «L'audit delle schermate
+principali», punti 7, 8, 10, 11, 12). Guarda come P-92 ha fatto T-12 nel
+banco del client: il metodo è lo stesso.
+
+1. Il contratto della scala nel §10.1 del piano, con i numeri della
+   decisione C: corpi 12 · 14 · 16 · 19 · 24 · 30, e 40 per il solo titolo
+   della Home sopra i 900 px; spazi 4 · 8 · 12 · 16 · 24 · 32 · 48; pesi
+   400 · 600 · 700; interlinea 1,45 il testo e 1,2 i titoli; la larghezza
+   massima del testo corrente, misurata perché con Manrope a 1280 px dia al
+   più 75 caratteri per riga; i nomi dei token in :root (--t-*, --s-*) e i
+   ruoli dei colori (D-25). I valori stanno nel controllo, non nella pagina.
+2. test_scala_css in tests/test_interfaccia.py, statico: i blocchi <style>,
+   gli attributi style= e le stringhe degli script che scrivono stili, con
+   la tabella «Valori fuori scala» in docs/eccezioni-interfaccia.md (la
+   testata e il margine di 90 px sotto la barra, con il motivo). Provato al
+   contrario su frammenti di CSS scritti nel test.
+3. T-13 nel banco del client, con le parti del §10.1: corpi, titoli, testo,
+   spazi, pesi, distanze, righe, colori, sui valori calcolati, a 375×812 e
+   1280×800. Una soglia nostra si dice nel nome della verifica.
+4. La pagina di riferimento del client con la scala, verde per intero; le
+   rotture del §10.1 e le difese tolte una alla volta, ognuna rossa per il
+   suo motivo.
+5. Misura la pagina vera. Quello che è rosso per il motivo giusto va nei
+   «Difetti aperti dichiarati», una riga per verifica e non per valore, con
+   i numeri misurati nel perché; quello che è verde si scrive e non si
+   dichiara. Se un numero della decisione C, misurato, non regge (per
+   esempio la larghezza massima), fermati e scrivilo nel §11 del piano per
+   l'autore, invece di cambiarlo.
+6. Nella specifica, §9.11: R-RIF-23…30 (proposti nel §9 del piano), con il
+   nome dei test letti in tests/, e «difetto aperto» dove lo è.
+
+Niente in site/. Le cinque suite verdi, l'interfaccia con la 8620 guardata
+libera per 90 s; misura il tempo di T-13 con RG_TEMPI=1 e scrivilo. Voce in
+fondo a [Unreleased], un commit con i soli file toccati, niente push.
+Chiudi con il resoconto di docs/prossime-sessioni.md.
+```
 
 ### I segnaposto — i prompt che non si possono ancora scrivere
 
