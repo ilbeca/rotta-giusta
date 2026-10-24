@@ -790,6 +790,14 @@ summary{min-height:44px;cursor:pointer;align-content:center}#progressi-pagina h2
 }
 /* Il pallino resta visibile; il suo testo accessibile non copre il timer. */
 [data-avatar] #nav-save-status{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+/* Giro 1: l’avvio precede i dettagli, l’avviso resta testo accanto all’azione. */
+[data-preparazione] > [data-ruolo="avviso"], [data-preparazione] > div > [data-ruolo="avviso"]{margin:12px 0;color:var(--dim)}
+#quiz-configurazione{margin-top:16px}
+#c-preparazione > [data-prep="chiudi"]{display:block;margin-top:12px}
+#c-prep{margin-top:16px}
+#esame-modulo{margin-top:24px}#esame-sommario{font-weight:600}
+#seg-segnali .sub{margin-bottom:12px}#s-modi{margin-bottom:4px}
 </style>
 </head>
 <body>
@@ -820,55 +828,54 @@ summary{min-height:44px;cursor:pointer;align-content:center}#progressi-pagina h2
 <main><section class="view on rotta-view" id="v-home">
 <div class="rotta-alerts" id="rotta-alerts" aria-live="polite"></div><div class="account-warning" id="conto-verifica" hidden></div>
 <section class="rotta-hero"><div class="rotta-intro"><h1 id="rotta-titolo">Preparati alla patente nautica, un passo alla volta.</h1><p id="rotta-intro">Quiz e carteggio per la patente senza limiti dalla costa. Esercitati sui quesiti del decreto e confronta il lavoro sulla carta.</p><p>Gratis e open source. Prova quiz e carteggio senza account; crea un account per salvare i progressi.</p></div><img class="rotta-scene" src="/paesaggio.svg" alt=""></section>
-<p class="prova-avviso account-warning">Senza account le risposte valgono solo finché questa pagina resta aperta. Se la chiudi o la ricarichi, le perdi. Non salviamo niente, nemmeno le tue preferenze.</p>
-<section class="home-avvii"><div><button class="btn primary" data-modo="sim" data-prova="base">Simula il quiz base</button><p class="condizioni-base"></p><p>La correzione arriva alla fine, come all'esame.</p></div><div><button class="btn" data-rotta-start disabled>Allenati con 10 domande</button><p id="home-breve-testo">Un allenamento breve, con correzione dopo ogni risposta.</p></div></section>
+<section class="home-avvii"><div><button class="btn primary" data-ruolo="principale" data-modo="sim" data-prova="base">Simula il quiz base</button><p class="condizioni-base"></p><p>La correzione arriva alla fine, come all'esame.</p></div><div><button class="btn" data-rotta-start disabled>Allenati con 10 domande</button><p id="home-breve-testo">Un allenamento breve, con correzione dopo ogni risposta.</p></div></section>
 <section id="home-consiglio" hidden><h2>Allenamento consigliato</h2><p>Quiz base selezionati dalle risposte disponibili qui. La selezione non conosce lo studio che hai fatto altrove.</p><p id="home-consiglio-n"></p><details><summary>Come vengono scelte le domande?</summary><p>La selezione può includere domande da ripassare, domande mai incontrate qui e conferme. Il motivo di ciascuna compare durante l'attività.</p></details><button class="btn" data-v="progressi">Vedi i Progressi</button></section>
 <section class="route-section" id="rotta-last" hidden><h2 id="rotta-last-title">Le attività di questa pagina</h2><div id="rotta-last-card"></div></section>
 <section id="invito-home" class="account-invite" hidden><h2>Conserva le risposte.</h2><p id="invito-home-n"></p><p>Le risposte saranno legate alla tua email e conservate sul nostro server, in chiaro. Il titolare può leggerle per supporto e statistiche.</p><button class="btn primary" data-account="registra">Conserva le risposte</button><button class="btn" data-invito-rinuncia data-invito="rinuncia">Continua senza account</button></section>
 <section class="route-section" id="route-choice"><h2>Scegli da dove cominciare</h2><div class="home-porte"><a href="/?sezione=allenati" data-v="allenati"><h3>Allenati</h3><p>Quiz · Carteggio · Segnali</p><p>Domande con correzione, lavoro sulla carta e riconoscimento.</p></a><a href="/?sezione=esame" data-v="esame"><h3>Esame</h3><p>Carteggio, quiz base e vela: preparali in parallelo, senza sblocchi.</p></a><a href="/?sezione=progressi" data-v="progressi"><h3>Progressi</h3><p>Rivedi le attività di questa pagina. Con l'account ritrovi la mappa e la storia.</p></a></div><div class="row"><a class="text-btn" href="/?sezione=allenati&amp;segmento=carteggio" data-v="cart">Apri Carteggio</a><a class="text-btn" href="/?sezione=allenati&amp;segmento=segnali" data-v="seg">Apri Segnali</a><button class="text-btn" data-come-funziona>Come funziona</button></div></section>
-<section class="route-section"><h2>Che cosa non torna</h2><p>La banca è del 2022. I limiti si dichiarano, quesito per quesito. All'esame vale la risposta del decreto.</p><p>Tutte le attività sono disponibili. Senza account non conserviamo risposte o preferenze.</p><p>Nessuna newsletter e nessun cookie di tracciamento.</p><div id="home-limiti"></div><p>Il carteggio lo giudichi tu: il sito non corregge il lavoro sulla carta.</p><button class="text-btn" data-info-section="difetti" data-v="info" data-profilo="info">Note, fonti e riferimenti</button></section>
+<section class="route-section"><h2>Che cosa non torna</h2><p>La banca è del 2022. I limiti si dichiarano, quesito per quesito. All'esame vale la risposta del decreto.</p><p>Nessuna newsletter e nessun cookie di tracciamento.</p><div id="home-limiti"></div><p>Il carteggio lo giudichi tu: il sito non corregge il lavoro sulla carta.</p><button class="text-btn" data-info-section="difetti" data-v="info" data-profilo="info">Note, fonti e riferimenti</button></section>
 </section><section class="view" id="v-allenati"><h1>Allenati</h1><p class="sub">Quiz, lavoro sulla carta, riconoscimento dei segnali.</p><div class="segmenti" role="tablist" aria-label="Allenati"><a role="tab" href="/?sezione=allenati&amp;segmento=quiz" data-segmento="quiz" aria-selected="true">Quiz</a><a role="tab" href="/?sezione=allenati&amp;segmento=carteggio" data-segmento="carteggio" aria-selected="false">Carteggio</a><a role="tab" href="/?sezione=allenati&amp;segmento=segnali" data-segmento="segnali" aria-selected="false">Segnali</a></div><div id="quiz-alerts" aria-live="polite"></div><div id="seg-quiz" data-pannello-segmento="quiz"><p>Scegli come esercitarti con i quiz base o vela. Puoi cambiare attività quando vuoi.</p>    <div id="quiz-menu">
       <div id="f-modo"></div>
       <details id="quiz-altri"><summary>Altri modi di esercitarti</summary><div id="quiz-giro-porta"></div></details>
     </div>
 <h2>Gli argomenti</h2><div id="temi" class="temi-porte"></div><h2>Segnalibri</h2><button class="btn" data-segnalibri>Segnalibri</button><div id="segnalibri-elenco" hidden></div><h2>Cerca un quesito per numero</h2><form data-ricerca><label>Numero del decreto<input name="numero" placeholder="1.1.1-24" autocomplete="off"></label><label>Banca<select name="banca"><option value="">Tutte</option><option value="base">Base</option><option value="vela">Vela</option></select></label><button class="btn" type="submit">Cerca</button></form><div id="ricerca-esito" role="status"></div></div>  <div id="seg-carteggio" data-pannello-segmento="carteggio" hidden>
-    <p class="account-warning prova-avviso">Senza account le risposte valgono solo finché questa pagina resta aperta. Se la chiudi o la ricarichi, le perdi. Non salviamo niente, nemmeno le tue preferenze.</p>
     <h2>Carteggio</h2>
     <p class="sub">Tu svolgi gli esercizi sulla carta. Rotta Giusta ti propone una selezione e mostra la risposta ministeriale per confrontare il risultato. <strong>Sei tu a giudicare: il sito non corregge il carteggio.</strong></p>
-    <div class="card"><h2>Prima di cominciare</h2><p>Per la prova e gli esercizi su carta servono le carte nautiche indicate nella selezione, squadrette nautiche, compasso, matita, gomma e fogli per i calcoli. Il sito mostra il problema: il tracciamento si fa sulla carta.</p><p>Verifica con la tua scuola il materiale e le condizioni della prova.</p></div>
-    <div class="row cart-actions"><button class="btn" data-cguida>Come funziona</button><button class="btn" data-cesempio>Vedi un esempio</button><button class="btn" data-cporta="giro-tecniche">Ho carta e strumenti</button><button class="btn" data-cporta="tecniche">Sono senza strumenti</button></div>
-    <div id="c-guida" class="card" hidden></div>
-    <div class="cart-doors" id="c-doors">
+    <div class="cart-doors" id="c-doors" data-ruolo="principale">
       <button class="go" data-cporta="prova"><b>Prova di carteggio</b><span>Quattro esercizi a tempo, poi confronto e giudizio tuo</span></button>
       <button class="go" data-cporta="esercizi"><b>Esercizi su carta</b><span>Scegli un giro fra tecniche diverse o prosegui nell'ordine del foglio</span></button>
       <button class="go" data-cporta="tecniche" data-v="tec"><b>Che tecnica serve?</b><span>Riconosci come impostare il problema, senza carte. Non equivale a svolgerlo</span></button>
     </div>
+    <div class="card"><h2>Prima di cominciare</h2><p>Per la prova e gli esercizi su carta servono le carte nautiche indicate nella selezione, squadrette nautiche, compasso, matita, gomma e fogli per i calcoli. Il sito mostra il problema: il tracciamento si fa sulla carta.</p><p>Verifica con la tua scuola il materiale e le condizioni della prova.</p></div>
+    <div class="row cart-actions"><button class="btn" data-cguida>Come funziona</button><button class="btn" data-cesempio>Vedi un esempio</button><button class="btn" data-cporta="giro-tecniche">Ho carta e strumenti</button><button class="btn" data-cporta="tecniche">Sono senza strumenti</button></div>
+    <div id="c-guida" class="card" hidden></div>
     <div id="c-stat"></div>
     <section id="c-bozze" class="card" hidden></section>
     <section id="c-storico" class="card" hidden></section>
   </div>
 
   <div id="seg-segnali" data-pannello-segmento="segnali" hidden>
-    <p class="account-warning prova-avviso">Senza account anche i punteggi dei Segnali valgono solo per questa pagina.</p>
     <h2>Riconosci fanali e segnali</h2>
     <p class="sub">Fanali, segnali diurni e segnali sonori del Regolamento per prevenire gli
       abbordi in mare, da riconoscere a colpo d'occhio: un'immagine, tre risposte.
-      <b>Extra banca</b>: schede di allenamento scritte sulle regole COLREG, non quesiti
-      ministeriali — e non entrano nello storico.</p>
+      </p>
 
     <div class="modi" id="s-modi"></div>
 
-    <div class="card"><p class="note" id="s-nota">…</p></div>
 
-    <div style="margin-top:16px">
-      <button class="btn primary" id="s-start">Inizia</button>
+
+    <div style="margin-top:8px">
+      <p class="note prova-avviso" data-ruolo="avviso">Senza account anche i punteggi dei Segnali valgono solo per questa pagina.</p>
+      <button class="btn primary" id="s-start" data-ruolo="principale">Inizia</button>
     </div>
 
+    <p class="sub"><b>Extra banca</b>: schede di allenamento scritte sulle regole COLREG, non quesiti ministeriali — e non entrano nello storico.</p>
+    <div class="card"><p class="note" id="s-nota">…</p></div>
     <h2>Come sta andando</h2>
     <div class="card" id="s-punti"></div>
   </div>
 
-</section><section class="view" id="v-esame"><h1>Esame</h1><p class="sub">Le prove sono nell'ordine in cui si sostengono. Qui puoi prepararle in parallelo, senza sblocchi.</p><div class="card"><h2>Che cosa stai preparando?</h2><p>Le scelte sono facoltative e non limitano le attività.</p><div id="esame-scelte"></div><label for="esame-data">Data d'esame (facoltativa)</label><div class="row"><input type="date" id="esame-data"><button class="btn" id="esame-rimuovi" hidden>Togli la data</button></div><p id="esame-sub"></p><p id="esame-scelte-esito" role="status"></p></div><div><h2>Le prove</h2><div class="exam-porte"><button class="go" data-cporta="prova"><b>Prova di carteggio</b><span>Il lavoro è sulla carta, il giudizio è tuo.</span></button><button class="go" data-modo="sim" data-prova="base"><b>Simula il quiz base</b><span class="condizioni-base"></span><span id="base-facoltativo"></span></button><button class="go" data-modo="sim" data-prova="vela"><b>Simula il quiz vela</b><span class="condizioni-vela"></span><span>Se prepari anche la vela</span></button><button class="go" data-modo="sim" data-prova="entrambe"><b>Quiz base e vela</b><span>Prima i quiz base, poi i quiz vela. Due prove, con timer ed esito separati. Il carteggio non è incluso.</span></button></div></div><div><h2>Com'è fatto l'esame</h2><p id="sintesi-esame">Stiamo caricando le condizioni delle prove…</p><details><summary>Approfondisci</summary><p>Le condizioni dei quiz e il ruolo propedeutico del carteggio sono descritti nel DM 10 agosto 2021 n. 323, art. 6 e Allegato C; le estensioni nell'art. 7. Il programma della categoria A è nell'Allegato A. La banca dei quesiti è l'Allegato A al DD 131/2022. La composizione della prova di carteggio del sito, un esercizio per argomento, è un'assunzione del progetto: verifica con la tua scuola. Le carte e il materiale richiesto possono dipendere dalla sede. Il sito non certifica il procedimento svolto né la preparazione alla prova pratica.</p><p>Fonti controllate nel dossier il 9 settembre 2026.</p><ul id="fonti-esame"><li><a href="https://www.gazzettaufficiale.it/eli/id/2021/09/28/21A05657/sg" target="_blank" rel="noopener">DM 10 agosto 2021 n. 323 — Gazzetta Ufficiale</a></li><li><a href="https://www.mit.gov.it/normativa/decreto-dirigenziale-numero-131-del-31052022" target="_blank" rel="noopener">DD 131 del 31 maggio 2022 — banca dei quesiti</a></li></ul></details></div><div><h2 id="esame-fatte-title">Prove di questa pagina</h2><div id="esame-fatte"></div></div></section>  <section class="view" id="v-progressi">
+</section><section class="view" id="v-esame"><h1>Esame</h1><p class="sub">Le prove sono nell'ordine in cui si sostengono. Qui puoi prepararle in parallelo, senza sblocchi.</p><div><h2>Le prove</h2><div class="exam-porte" data-ruolo="principale"><button class="go" data-cporta="prova"><b>Prova di carteggio</b><span>Il lavoro è sulla carta, il giudizio è tuo.</span></button><button class="go" data-modo="sim" data-prova="base"><b>Simula il quiz base</b><span class="condizioni-base"></span><span id="base-facoltativo"></span></button><button class="go" data-modo="sim" data-prova="vela"><b>Simula il quiz vela</b><span class="condizioni-vela"></span><span>Se prepari anche la vela</span></button><button class="go" data-modo="sim" data-prova="entrambe"><b>Quiz base e vela</b><span>Prima i quiz base, poi i quiz vela. Due prove, con timer ed esito separati. Il carteggio non è incluso.</span></button></div></div><details class="card" id="esame-modulo"><summary id="esame-sommario">Non l'hai detto</summary><h2>Che cosa stai preparando?</h2><p>Le scelte sono facoltative e non limitano le attività.</p><div id="esame-scelte"></div><label for="esame-data">Data d'esame (facoltativa)</label><div class="row"><input type="date" id="esame-data"><button class="btn" id="esame-rimuovi" hidden>Togli la data</button></div><p id="esame-sub"></p><p id="esame-scelte-esito" role="status"></p></details><div><h2>Com'è fatto l'esame</h2><p id="sintesi-esame">Stiamo caricando le condizioni delle prove…</p><details><summary>Approfondisci</summary><p>Le condizioni dei quiz e il ruolo propedeutico del carteggio sono descritti nel DM 10 agosto 2021 n. 323, art. 6 e Allegato C; le estensioni nell'art. 7. Il programma della categoria A è nell'Allegato A. La banca dei quesiti è l'Allegato A al DD 131/2022. La composizione della prova di carteggio del sito, un esercizio per argomento, è un'assunzione del progetto: verifica con la tua scuola. Le carte e il materiale richiesto possono dipendere dalla sede. Il sito non certifica il procedimento svolto né la preparazione alla prova pratica.</p><p>Fonti controllate nel dossier il 9 settembre 2026.</p><ul id="fonti-esame"><li><a href="https://www.gazzettaufficiale.it/eli/id/2021/09/28/21A05657/sg" target="_blank" rel="noopener">DM 10 agosto 2021 n. 323 — Gazzetta Ufficiale</a></li><li><a href="https://www.mit.gov.it/normativa/decreto-dirigenziale-numero-131-del-31052022" target="_blank" rel="noopener">DD 131 del 31 maggio 2022 — banca dei quesiti</a></li></ul></details></div><div><h2 id="esame-fatte-title">Prove di questa pagina</h2><div id="esame-fatte"></div></div></section>  <section class="view" id="v-progressi">
     <div id="progressi-porta"><h1>Progressi</h1><div id="progressi-pagina"></div><button class="btn" data-v="allenati">Vai ad Allenati</button><details><summary>Perché qui manca lo storico</summary><p>I Progressi nel tempo descrivono le attività salvate nel tuo account. Senza account puoi fare tutte le attività e rivedere quelle della pagina aperta. Con l'account ritrovi le risposte accolte dal server anche quando torni e da un altro dispositivo. Le misure compaiono solo quando ci sono abbastanza dati.</p></details></div>
     <div id="progressi-contenuto" hidden>
       <h1>Progressi</h1>
@@ -901,9 +908,16 @@ summary{min-height:44px;cursor:pointer;align-content:center}#progressi-pagina h2
 
 <footer class="foot">Rotta Giusta <span id="foot-ver"></span> · <a href="https://github.com/ilbeca/rotta-giusta">codice sorgente</a> · <a href="/privacy">Privacy</a> · <a href="/avvertenza#condizioni">Condizioni per l'account</a> · <a href="/avvertenza">Avvertenza</a></footer></main>
     <section data-preparazione id="quiz-conf" hidden aria-labelledby="quiz-title">
-      <button class="text-btn" data-quiz-menu>Cambia attività</button>
+      <button class="text-btn" data-quiz-menu data-prep="chiudi">Cambia attività</button>
       <h2 id="quiz-title" tabindex="-1"></h2>
       <p id="modo-sub"></p>
+      <p id="prev" aria-live="polite" aria-atomic="true"></p>
+      <div class="row" id="quiz-vuoto"></div>
+      <p id="quiz-durata" class="note"></p>
+      <p id="quiz-storage" class="note" data-ruolo="avviso"></p>
+      <button class="btn primary" id="start" data-ruolo="principale">Inizia</button>
+      <button class="text-btn" id="quiz-return" data-prep="chiudi" hidden></button>
+      <div id="quiz-configurazione">
       <div id="quiz-bank"></div>
       <div id="quiz-personalizza" hidden>
         <p id="quiz-gruppi"></p>
@@ -916,26 +930,20 @@ summary{min-height:44px;cursor:pointer;align-content:center}#progressi-pagina h2
       <aside class="colreg-extra" id="colreg-extra" hidden>
         <div><b>Allenamento visivo su fanali e segnali</b><p>È un extra scritto da noi: non conta nella copertura dei quiz.</p></div><button class="btn" data-v="seg">Apri Segnali</button>
       </aside>
-      <p id="prev" aria-live="polite" aria-atomic="true"></p>
-      <div class="row" id="quiz-vuoto"></div>
-      <p id="quiz-durata" class="note"></p>
-      <p id="quiz-storage" class="note"></p>
-      <button class="btn primary" id="start">Inizia</button>
-      <button class="text-btn" id="quiz-return" data-prep="chiudi" hidden></button>
+      </div>
     </section>
     <dialog id="quiz-panel" aria-labelledby="quiz-panel-title">
       <h2 id="quiz-panel-title" tabindex="-1"></h2>
       <div id="quiz-panel-body"></div>
       <div class="row"><button class="btn primary" data-quiz-apply>Applica</button><button class="btn" data-quiz-cancel>Annulla</button></div>
-    </dialog>    <section data-preparazione id="c-preparazione" hidden class="card" aria-live="polite"><h2 id="c-prep-title" tabindex="-1">Prova di carteggio</h2><div id="c-prep">Caricamento degli esercizi di carteggio…</div><button class="btn primary" id="c-start" disabled>Inizia la prova</button><button class="btn primary" id="c-esercizi" hidden disabled>Inizia gli esercizi</button><button class="btn" data-ctorna data-prep="chiudi">Cambia attività</button></section>
+    </dialog>    <section data-preparazione id="c-preparazione" hidden class="card" aria-live="polite"><h2 id="c-prep-title" tabindex="-1">Prova di carteggio</h2><div id="c-prep-intro">Caricamento degli esercizi di carteggio…</div><p class="note prova-avviso" data-ruolo="avviso">Senza account le risposte valgono solo finché questa pagina resta aperta. Se la chiudi o la ricarichi, le perdi. Non salviamo niente, nemmeno le tue preferenze.</p><button class="btn primary" id="c-start" data-ruolo="principale" disabled>Inizia la prova</button><button class="btn primary" id="c-esercizi" data-ruolo="principale" hidden disabled>Inizia gli esercizi</button><button class="btn" data-ctorna data-prep="chiudi">Cambia attività</button><div id="c-prep"></div></section>
   <section id="prep-tecniche" data-preparazione hidden>
-    <p class="account-warning prova-avviso">Senza account le risposte valgono solo finché questa pagina resta aperta. Se la chiudi o la ricarichi, le perdi. Non salviamo niente, nemmeno le tue preferenze.</p>
     <h1>Che tecnica serve?</h1>
     <p class="sub">Leggi il problema e scegli tutte le tecniche che ritieni necessarie, anche più di una. Il riscontro confronta le scelte con la classificazione di Rotta Giusta: non è un elenco ministeriale di procedimenti. Non svolgi il problema sulla carta e questa attività non conta come esercizio risolto.</p>
-    <div class="card" id="t-prep" aria-live="polite"></div>
-    <div id="t-stat"></div>
-    <div style="margin-top:16px"><button class="btn primary" id="t-start">Inizia il riconoscimento</button><button class="btn" data-prep="chiudi">Torna ad Allenati · Carteggio</button></div>
+    <div style="margin-top:16px"><p class="note prova-avviso" data-ruolo="avviso">Senza account le risposte valgono solo finché questa pagina resta aperta. Se la chiudi o la ricarichi, le perdi. Non salviamo niente, nemmeno le tue preferenze.</p><button class="btn primary" id="t-start" data-ruolo="principale">Inizia il riconoscimento</button><button class="btn" data-prep="chiudi">Torna ad Allenati · Carteggio</button></div>
 
+    <div id="t-stat"></div>
+    <div class="card" id="t-prep" aria-live="polite"></div>
     <h2>Per tecnica</h2>
     <div class="card" id="t-diag"></div>
   </section>
@@ -2112,7 +2120,7 @@ function invitoAccount(sim = false) {
   return `<section class="account-invite"><h2>${sim ? 'Conserva questa prova' : 'Vuoi conservare le attività di questa pagina?'}</h2>${sim ? '<p>Conserva questa prova e ritrovala quando torni.</p>' : ''}
     <p>Senza account, chiudendo o ricaricando la pagina perdi le risposte e le preferenze. Crea un account per salvare le risposte, ritrovarle su un altro dispositivo e vedere i Progressi quando ci sono abbastanza dati.</p>
     <p>Le risposte saranno legate alla tua email e conservate sul nostro server, in chiaro. Il titolare può leggerle per supporto e statistiche.</p>
-    <button class="btn primary" data-account="registra">Crea un account e salva</button><button class="btn" data-account="continua">Continua senza account</button>
+    <button class="btn" data-account="registra">Crea un account e salva</button><button class="btn" data-account="continua">Continua senza account</button>
     <button class="text-btn" data-account="accedi">Hai già un account? Accedi</button><a href="/privacy">Come trattiamo i dati</a></section>`;
 }
 
@@ -2557,6 +2565,9 @@ function dipingi() {
   document.getElementById('sintesi-esame').textContent = `Per la patente senza limiti dalla costa, il carteggio apre la prova teorica ed è propedeutico ai quiz. La prova proposta qui ha ${c.esercizi} esercizi, ${c.minuti} minuti e richiede almeno ${c.soglia} risultati corretti: il giudizio nel sito è tuo. Il quiz base ha ${base.n} domande, ${base.minuti} minuti e ammette al più ${base.errori_max} errori. Se prepari anche la vela, il quiz vela ha ${vela.n} domande, ${vela.minuti} minuti e ammette al più ${vela.errori_max} errore. La pratica si prepara con la scuola: questo sito non la simula. Per l'estensione dalla entro 12, controlla le prove pertinenti qui sotto. L'ordine dell'esame non limita la libertà di esercitarti.`;
   document.getElementById('esame-data').value = S.conto?.data_esame || LS.get('esame','') || '';
   document.getElementById('esame-rimuovi').hidden = !document.getElementById('esame-data').value;
+  const scelta = scelteConfermate(), preparazione = [scelta.abilitazione === 'motore' ? 'motore' : scelta.abilitazione === 'vela' ? 'motore e vela' : '', scelta.conseguimento === 'prima' ? 'prima patente' : scelta.conseguimento === 'estensione_e12' ? 'estensione dalla entro 12 miglia' : ''].filter(Boolean).join(', ');
+  const dataEsame = document.getElementById('esame-data').value;
+  document.getElementById('esame-sommario').textContent = (preparazione ? 'Stai preparando: ' + preparazione : "Non l'hai detto") + (dataEsame ? ' · esame il ' + giornoIt(dataEsame) : '');
   document.getElementById('esame-sub').textContent = S.conto ? 'La data è facoltativa; il valore è quello confermato dal server.' : 'Questa data vale soltanto per la pagina aperta.';
   // Ridisegna solo se cambiano i valori confermati o l'account: una ricezione
   // identica non deve cancellare le scelte ancora in bozza nella sezione.
@@ -3484,13 +3495,13 @@ function htmlRiepilogo(ctx, r) {
 function azioniRiepilogo(ctx, r) {
   const p = r.riprova;
   const fase = ctx.fasi && ctx.fasi[0];
-  const b = (azione, testo, primaria) => `<button class="btn${primaria ? ' primary' : ''}" data-ciclo="${azione}">${testo}</button>`;
+  const b = (azione, testo, primaria) => `<button class="btn${primaria ? ' primary' : ''}" ${primaria ? 'data-ruolo="principale"' : ''} data-ciclo="${azione}">${testo}</button>`;
   const riprova = p.stato === 'pronta'
     ? (p.quanti === 1 ? 'Riprova questo quesito' : `Riprova questi ${p.quanti} quesiti`) : '';
   const out = [];
   let nota = '';
   if (fase) {
-    out.push(`<button class="btn primary" data-fase="1">${r.superata ? `Continua con la ${fase.nome}` : 'Prosegui comunque con la vela'}</button>`);
+    out.push(`<button class="btn primary" data-ruolo="principale" data-fase="1">${r.superata ? `Continua con la ${fase.nome}` : 'Prosegui comunque con la vela'}</button>`);
     if (!r.superata) nota = '<p class="note">Il quiz base non è superato. Puoi proseguire con la vela per esercitarti; all\'esame il quiz base deve essere superato per proseguire.</p>';
     if (riprova) out.push(b('riprova', riprova));
   } else if (riprova) out.push(b('riprova', riprova, true));
@@ -4407,7 +4418,8 @@ function scegliCarteggio(attivita, controllo = null, nuoviPrima = false) {
     document.getElementById('t-prep').innerHTML = `<h2>Prima di iniziare</h2><p>Non servono carte o strumenti. Leggi il problema e scegli tutte le tecniche che ritieni necessarie, anche più di una. Il riscontro usa la classificazione del progetto, non una risposta ministeriale.</p><p>${p.quanti} esercizi da riconoscere</p>${p.stato === 'pronta' ? '' : '<p role="alert">Il riconoscimento non è disponibile con la banca caricata.</p>'}`;
     document.getElementById('t-start').disabled = p.stato !== 'pronta';
     document.querySelector('#t-prep h2')?.setAttribute('tabindex', '-1');
-    document.querySelector('#t-prep h2')?.focus();
+    document.querySelector('#prep-tecniche h1').tabIndex = -1;
+    document.querySelector('#prep-tecniche h1').focus();
     return;
   }
   dipingiPreparazioneCart(); apriSuperficie('c-preparazione');
@@ -4439,6 +4451,8 @@ function dipingiPreparazioneCart() {
   if (p.attivita !== 'tecniche') parti.push(`<p>${testoMateriali()}</p>`);
   if (!S.conto) parti.push('<p class="cart-memoria">Il testo che scrivi resta solo finché questa pagina è aperta. Non ricaricare la pagina e non chiudere la scheda fino alla consegna.</p>');
   if (p.stato !== 'pronta') parti.push(`<p role="alert">${p.stato === 'corta' ? 'Non riusciamo a preparare quattro esercizi. Riprova il caricamento o scegli un allenamento.' : p.stato === 'foglio finito' ? 'Foglio finito: hai già valutato tutti gli esercizi nelle risposte disponibili qui. Puoi rifare un giro delle tecniche o preparare una prova.' : p.stato === 'illeggibile' ? 'Le risposte disponibili non si leggono. Riprova il caricamento.' : 'Non ci sono esercizi disponibili per questa attività.'}</p>`);
+  const quanti = parti.findIndex(x => x.startsWith('<p><strong>'));
+  document.getElementById('c-prep-intro').innerHTML = parti.shift() + parti.splice(quanti - 1, 1)[0];
   document.getElementById('c-prep').innerHTML = parti.join('');
   document.getElementById('c-start').hidden=p.attivita!=='prova';
   document.getElementById('c-esercizi').hidden=p.attivita==='prova';
