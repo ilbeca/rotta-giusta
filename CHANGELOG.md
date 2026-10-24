@@ -31,6 +31,48 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 - **Non guardato:** l'app pubblicata su un telefono vero; l'ha guardata la
   regia prima della merge, servita in locale, a 375×812 e 375×667.
 
+### Test — P-94: la scala CSS nel contratto e T-13 sui valori calcolati
+
+Il giro 2 delle regole di disegno mette il metro prima della correzione:
+una pagina non può scegliere da sola la scala con cui viene dichiarata
+coerente. Nessun file di `site/` è cambiato; versione 0.34.0 invariata.
+
+- **Contratto in `tests/test_interfaccia.py`:** corpi 12, 14, 16, 19, 24,
+  30 e 40 solo per il titolo della Home sopra 900 px; spazi 4, 8, 12, 16,
+  24, 32, 48; pesi 400, 600, 700; interlinee 1,45 e 1,2; token e ruoli
+  dei colori. Larghezza misurata con Manrope realmente caricato: a 520 px
+  una risposta dava ancora 76 caratteri; a **480 px il riferimento arriva
+  al massimo a 72**, sotto il limite di 75. I numeri della decisione C
+  non sono stati sostituiti; l'approvazione sulle schermate resta al giro UI.
+- **Statico e browser.** `test_scala_css` legge fogli, attributi e stili
+  negli script, con controprove sui frammenti; la tabella «Valori fuori
+  scala» motiva le eccezioni geometriche della testata e dei 90 px sotto
+  la barra. T-13 misura corpi, titoli, testo, spazi, pesi, distanze, righe
+  e colori a 375×812 e 1280×800, sulle viste, preparazioni, runner con un
+  errore, riepilogo e Accedi. **Home H0: 78 parole, verde**, con il criterio
+  di P-93; il tetto della decisione E è ora un controllo.
+- **Provato al contrario.** Il riferimento passa l'intero banco; **20
+  rotture T-13**, ciascuna rossa per il proprio motivo. Tolte una alla
+  volta le difese sugli script e sui valori calcolati, le rotture passano
+  verdi; tolta l'eccezione dei segmenti, il riferimento diventa rosso per
+  le distanze di 0 px. La nuova tipografia aveva rotto il primo schermo
+  e il reflow del riferimento: corretti disposizione degli avvii e campo
+  file, senza togliere verifiche. Il §10.1 del piano registra le misure.
+- **Pagina vera:** dieci verifiche T-13 e quattro statiche rosse per il
+  motivo giusto, dichiarate una per verifica con i numeri: sette corpi
+  nella Home, h2 a 13 sopra testo a 16, risposte a 15,5, pesi 650/800,
+  spazi fuori scala, bersagli a 0 px, righe fino a 110 caratteri e accento
+  fuori ruolo. R-RIF-23…30 nella specifica dicono «difetto aperto»;
+  la Home a 78 parole non ha una dichiarazione da togliere.
+- **Verificato:** interfaccia 3.863 in 5 min 42.4 s (342.444 s); T-13 sulla pagina vera 2111 ms, sul riferimento 983 ms; le venti rotture sommano
+  32229 ms nelle corsie parallele. Porta 8620 osservata libera per
+  90 s prima della suite. Motore 215/219 (quattro salti previsti), server
+  89/89 con Node di sistema e Node 24.22.0 ufficiale, SHA-256 verificato
+  contro SHASUMS256.txt; dati 225, specifica 1.096, guardiano e controllo
+  della documentazione verdi. Niente push. Non coperti: bellezza, comprensione
+  delle persone, Safari, gesto vero, tema scuro e CSS dei legali (§12 del piano).
+
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la

@@ -264,6 +264,164 @@ def tabella(titolo, colonne):
 
 # --- 1. il censimento e' completo -----------------------------------------------
 
+# P-94: il contratto viene da qui, mai dalla pagina sotto misura.
+SCALA_CSS = {
+    'corpi': [12, 14, 16, 19, 24, 30], 'home': 40,
+    'spazi': [4, 8, 12, 16, 24, 32, 48], 'pesi': [400, 600, 700],
+    'testo': 1.45, 'titoli': 1.2, 'larghezza': 480,
+    'colori': {'--acc': '#076f99', '--ko': '#a4261d', '--warn': '#765000', '--ok': '#126832'},
+}
+NOMI_SCALA = {
+    'corpi': 'i corpi scritti negli stili appartengono alla scala',
+    'spazi': 'gli spazi scritti negli stili appartengono alla scala',
+    'pesi': 'i pesi scritti negli stili appartengono alla scala',
+    'token': 'in :root i token dichiarano il contratto della scala e dei colori',
+}
+
+
+def stili_scala(testo, script=True):
+    """CSS dei fogli, attributi HTML e letterali JS, anche template multilinea.
+    Non esegue JavaScript. I valori costruiti concatenando variabili vengono
+    misurati da T-13; le assegnazioni letterali .style e setProperty sono qui.
+    """
+    from html.parser import HTMLParser
+
+    class Stili(HTMLParser):
+        def __init__(self):
+            super().__init__(convert_charrefs=True)
+            self.dentro = None
+            self.css, self.js = [], []
+
+        def handle_starttag(self, tag, attrs):
+            self.dentro = tag if tag in ('style', 'script') else self.dentro
+            for k, v in attrs:
+                if k == 'style':
+                    self.css.append(('style=', v or ''))
+
+        def handle_endtag(self, tag):
+            if tag == self.dentro:
+                self.dentro = None
+
+        def handle_data(self, data):
+            if self.dentro == 'style':
+                self.css.append(('<style>', data))
+            elif self.dentro == 'script':
+                self.js.append(data)
+
+    p = Stili()
+    p.feed(testo)
+    if script:
+        for js in p.js:
+            # I letterali contengono anche HTML con style= e CSS in cssText.
+            for m in re.finditer(r"(['\"`])((?:\\.|(?!\1)[\s\S])*?)\1", js):
+                p.css.append(('script', html.unescape(m[2]).replace('\\"', '"').replace("\\'", "'")))
+            prop = r'(fontSize|fontWeight|margin(?:[A-Z][a-z]*)*|padding(?:[A-Z][a-z]*)*|gap|rowGap|columnGap)'
+            for m in re.finditer(r'\.style\.' + prop + r'\s*=\s*([\'"`])([^\'"`]+)\2', js):
+                nome = re.sub(r'[A-Z]', lambda x: '-' + x[0].lower(), m[1])
+                p.css.append(('script', nome + ':' + m[3] + ';'))
+            for m in re.finditer(r'\.style\[\s*[\'"]([\w-]+)[\'"]\s*\]\s*=\s*[\'"`]([^\'"`]+)[\'"`]', js):
+                nome = re.sub(r'[A-Z]', lambda x: '-' + x[0].lower(), m[1])
+                p.css.append(('script', nome + ':' + m[2] + ';'))
+            for m in re.finditer(r'\.style\.setProperty\(\s*[\'"]([^\'"]+)[\'"]\s*,\s*[\'"`]([^\'"`]+)[\'"`]', js):
+                p.css.append(('script', m[1] + ':' + m[2] + ';'))
+    return p.css
+
+
+def verifiche_scala_css(testo, eccezioni=(), script=True, token=True):
+    errori = {k: [] for k in NOMI_SCALA}
+    font = {'--t-' + str(x) for x in SCALA_CSS['corpi'] + [SCALA_CSS['home']]}
+    spazio = {'--s-' + str(x) for x in SCALA_CSS['spazi']}
+    pesi = {'--w-' + str(x) for x in SCALA_CSS['pesi']}
+    eccezioni = {(p, re.sub(r'\s+', '', v)) for p, v in eccezioni}
+    dichiarazioni = r'(?<![\w-])(font-size|font-weight|margin(?:-[a-z-]+)?|padding(?:-[a-z-]+)?|(?:row-|column-)?gap)\s*:\s*([^;{}<>"\']+)'
+    for origine, css in stili_scala(testo, script):
+        css = re.sub(r'/\*[\s\S]*?\*/', '', css)
+        css = re.sub(r'@font-face\s*\{[^}]*\}', '', css)  # descrittore del file, non peso del testo
+        for m in re.finditer(dichiarazioni, css, re.I):
+            prop, valore = m[1].lower(), re.sub(r'!important\s*$', '', m[2].strip(), flags=re.I).strip()
+            parte = 'corpi' if prop == 'font-size' else 'pesi' if prop == 'font-weight' else 'spazi'
+            if (prop, re.sub(r'\s+', '', valore)) in eccezioni:
+                continue
+            ammessi = font if parte == 'corpi' else pesi if parte == 'pesi' else spazio
+            residuo = valore
+            for v in re.findall(r'var\(\s*(--[\w-]+)\s*\)', valore):
+                if v in ammessi:
+                    residuo = re.sub(r'var\(\s*' + re.escape(v) + r'\s*\)', '0', residuo)
+            # calc di soli token, zero e operatori: nessun numero letterale.
+            if residuo.startswith('calc('):
+                valido = bool(re.fullmatch(r'calc\([0\s()+*/.\-]+\)', residuo))
+            else:
+                validi = SCALA_CSS[parte] + ([SCALA_CSS['home']] if parte == 'corpi' else [])
+                valido = True
+                for v in residuo.split():
+                    if v in ('0', '0px', 'auto', 'inherit'):
+                        continue
+                    n = re.fullmatch(r'(\d+(?:\.\d+)?)(px)?', v)
+                    if not n or float(n[1]) not in validi or (parte != 'pesi' and not n[2]):
+                        valido = False
+            if not valido:
+                errori[parte].append('%s %s:%s' % (origine, prop, valore))
+    if token:
+        roots = re.findall(r':root\s*\{([^}]+)\}', '\n'.join(c for o, c in stili_scala(testo) if o == '<style>'))
+        if len(roots) != 1:
+            errori['token'].append('%d blocchi :root invece di uno' % len(roots))
+        attesi = {**{'--t-' + str(x): str(x) + 'px' for x in SCALA_CSS['corpi'] + [SCALA_CSS['home']]},
+                  **{'--s-' + str(x): str(x) + 'px' for x in SCALA_CSS['spazi']},
+                  **{'--w-' + str(x): str(x) for x in SCALA_CSS['pesi']},
+                  '--lh-testo': '1.45', '--lh-titoli': '1.2', '--testo-max': str(SCALA_CSS['larghezza']) + 'px', **SCALA_CSS['colori']}
+        for k, v in attesi.items():
+            valori = re.findall(re.escape(k) + r'\s*:\s*([^;}]+)', ';'.join(roots))
+            letto = valori[0].strip().lower() if len(valori) == 1 else None
+            # I colori possono mantenere gli alias gia' presenti, ma il valore
+            # risolto deve essere quello del controllo, non scelto dalla pagina.
+            for _ in range(8):
+                alias = re.fullmatch(r'var\((--[\w-]+)\)', letto or '')
+                if not alias:
+                    break
+                vs = re.findall(re.escape(alias[1]) + r'\s*:\s*([^;}]+)', ';'.join(roots))
+                letto = vs[0].strip().lower() if len(vs) == 1 else None
+            if len(valori) != 1 or letto != v:
+                errori['token'].append('%s atteso %s, letto %s' % (k, v, valori))
+    return [{'gruppo': 'scala-css', 'nome': NOMI_SCALA[k], 'ok': not xs, 'extra': '; '.join(xs[:24])} for k, xs in errori.items()]
+
+
+def test_scala_css():
+    """R-RIF-23/25/26: fogli, attributi e script; contratto indipendente."""
+    righe = tabella('Valori fuori scala', 3) or []
+    check('scala CSS: le eccezioni geometriche hanno un motivo', len(righe) >= 2 and all(m.strip() for _, _, m in righe))
+    eccezioni = [(p.strip('` '), v.strip('` ')) for p, v, _ in righe]
+    vs = verifiche_scala_css(pagina(), eccezioni)
+    dichiarate = [(p, x) for p, x in difetti_dichiarati() if p == 'scala-css']
+    for p, nome in dichiarate:
+        check('scala CSS: la dichiarazione nomina una verifica eseguita', nome in NOMI_SCALA.values(), nome)
+    for v in vs:
+        dichiarata = ('scala-css', v['nome']) in dichiarate
+        check('scala CSS: ' + v['nome'], not v['ok'] if dichiarata else v['ok'],
+              'difetto chiuso: togli la dichiarazione' if dichiarata else v['extra'])
+    rif = RIFERIMENTO_CLIENT.read_text(encoding='utf-8')
+    for v in verifiche_scala_css(rif, eccezioni):
+        check('scala CSS del riferimento: ' + v['nome'], v['ok'], v['extra'])
+    for vecchio, nuovo in [('--t-16:16px', '--t-16:13px'), ('--s-8:8px', '--s-8:10px'), ('--acc:#076f99', '--acc:#ff0000')]:
+        check('il contratto non accetta la scala cambiata dalla pagina: ' + vecchio,
+              not verifiche_scala_css(rif.replace(vecchio, nuovo))[3]['ok'])
+    buoni = ['font-size:var(--t-16)', 'margin:0 auto 12px', 'padding:calc(var(--s-8) + var(--s-4))', 'font-weight:600']
+    cattivi = [('font-size:13px', 'corpi'), ('margin:10px', 'spazi'), ('font-weight:650', 'pesi'),
+               ('padding:calc(var(--s-8) + 10px)', 'spazi'), ('font-size:var(--s-16)', 'corpi')]
+    for css in buoni:
+        vs = verifiche_scala_css('<style>p{' + css + ';}</style>', token=False)
+        check('scala CSS accetta ' + css, all(x['ok'] for x in vs), vs)
+    for css, parte in cattivi:
+        for frammento in ['<style>p{' + css + ';}</style>', '<p style="' + css + '">Testo</p>',
+                          '<script>e.innerHTML = `<p style="' + css + '">Testo</p>`;</script>']:
+            vs = verifiche_scala_css(frammento, token=False)
+            check('scala CSS rifiuta ' + frammento, any(x['nome'] == NOMI_SCALA[parte] and not x['ok'] for x in vs), vs)
+    for scrittura in ["e.style.marginTop='10px'", "e.style.setProperty('margin-top','10px')", "e.style.cssText='margin-top:10px'", "e.style.fontSize='13px'", "e.style['margin-top']='10px'", "e.style.marginInlineStart='10px'"]:
+        f = '<script>' + scrittura + '</script>'
+        check('scala CSS legge ' + scrittura, any(not x['ok'] for x in verifiche_scala_css(f, token=False)))
+        check('difesa script tolta: la rottura passa verde', all(x['ok'] for x in verifiche_scala_css(f, script=False, token=False)))
+
+
+
 def test_viste_dichiarate():
     app = pagina()
     attese = viste_attese()
@@ -2273,8 +2431,8 @@ def banco_client():
     # (P-80). La pagina di riferimento e' quella del ridisegno, con la sua porta
     # su `/app`: fino a P-89 c'era anche quella di prima, servita su `/app`, che
     # portava le rotture del client; ora le porta questa (CHANGELOG, P-89).
-    base = {'ingresso': '/', 'regime': 'ridisegno', 'sito': {'/app': porta}}
-    prove = [{'nome': 'app', 'pagina': app, 'ingresso': '/',
+    base = {'ingresso': '/', 'regime': 'ridisegno', 'sito': {'/app': porta}, 'scala': SCALA_CSS, 'eccezioniScala': ECCEZIONI_SCALA}
+    prove = [{'nome': 'app', 'pagina': app, 'ingresso': '/', 'scala': SCALA_CSS, 'eccezioniScala': ECCEZIONI_SCALA,
               'gruppi': GRUPPI_CLIENT + gruppi_bozza_app() + GRUPPI_RIFINITURA + gruppi_raccordo(app) + PARTI_NAV + PARTI_CONTI},
              {**base, 'nome': 'riferimento', 'pagina': rif,
               'gruppi': GRUPPI_CLIENT + ['C-19'] + GRUPPI_RIFINITURA + gruppi_raccordo(rif) + PARTI_NAV + PARTI_CONTI}]
@@ -2335,6 +2493,8 @@ def banco_client():
         # Un banco caduto deve dire perche': l'avviso sperimentale di node:sqlite
         # riempiva da solo le ultime righe, e il rosso non diceva niente (P-43).
         righe = [r for r in (p.stderr or '').splitlines() if 'ExperimentalWarning' not in r and '--trace-warnings' not in r]
+        if os.environ.get('RG_TEMPI'):
+            print('\n'.join(righe), file=sys.stderr)
         errore = 'uscito con %s: %s' % (p.returncode, '\n'.join(righe)[-1200:] or 'nessun messaggio')
     if out is None:
         out = {x['nome']: [{'gruppo': 'banco', 'nome': 'il banco del browser parte', 'ok': False, 'extra': errore}]
@@ -3091,7 +3251,7 @@ def prove_ridisegno(applicate):
     tutti i gruppi del client e i tragitti, la mette banco_client()."""
     rif = RIFERIMENTO_RIDISEGNO_CLIENT.read_text(encoding='utf-8')
     porta = PORTA_RIFERIMENTO.read_text(encoding='utf-8')
-    base = {'ingresso': '/', 'regime': 'ridisegno', 'sito': {'/app': porta}}
+    base = {'ingresso': '/', 'regime': 'ridisegno', 'sito': {'/app': porta}, 'scala': SCALA_CSS, 'eccezioniScala': ECCEZIONI_SCALA}
     out = []
     for cosa, parti, sostituzioni, _ in ROTTURE_NAV:
         rotta, ok = rif, True
@@ -3489,16 +3649,20 @@ ROTTURE_RACCORDO = [
 # Alla merge di P-25 la tabella non deve avere piu' righe `T-*`: e' li' che si
 # esige il regime nuovo, senza un segno da cercare nella pagina.
 GRUPPI_RIFINITURA = ['T-01', 'T-02', 'T-03', 'T-04', 'T-05:finestra', 'T-05:arresti', 'T-06', 'T-07:prova', 'T-07:conto',
-                     'T-08', 'T-09', 'T-10', 'T-11', 'T-12']
+                     'T-08', 'T-09', 'T-10', 'T-11', 'T-12', 'T-13']
 # T-12 (il giro 1 delle regole di disegno) si esegue una volta, e le sue
 # verifiche portano il nome della parte: e' per parte che si contano e si
 # dichiarano (docs/regole-disegno-progetto.md §10.1).
 PARTI_T12 = ['T-12:principale', 'T-12:primo-schermo', 'T-12:esame', 'T-12:avviso', 'T-12:scelte', 'T-12:aggancio']
-PARTI_RIFINITURA = [g for g in GRUPPI_RIFINITURA if g != 'T-12'] + PARTI_T12
+PARTI_T13 = ['T-13:' + p for p in ['corpi','titoli','testo','spazi','pesi','distanze','righe','colori','home']]
+ECCEZIONI_SCALA = [
+    {'selettore':'#quizrun,#cartrun,#segrun,#rivedi', 'proprieta':'paddingTop', 'valore':x+12} for x in [70,88]
+] + [{'selettore':'main', 'proprieta':'paddingBottom', 'valore':90}]
+PARTI_RIFINITURA = [g for g in GRUPPI_RIFINITURA if g not in ('T-12','T-13')] + PARTI_T12 + PARTI_T13
 VERIFICHE_RIFINITURA = {'T-01': 9, 'T-02': 9, 'T-03': 11, 'T-04': 6, 'T-05:finestra': 5, 'T-05:arresti': 2, 'T-06': 4,
                         'T-07:prova': 5, 'T-07:conto': 3, 'T-08': 2, 'T-09': 2, 'T-10': 5, 'T-11': 2,
                         'T-12:principale': 1, 'T-12:primo-schermo': 2, 'T-12:esame': 2, 'T-12:avviso': 4, 'T-12:scelte': 1,
-                        'T-12:aggancio': 2}
+                        'T-12:aggancio': 2, **{p: (2 if p in ('T-13:corpi','T-13:spazi') else 1) for p in PARTI_T13}}
 
 # Rotture della pagina di riferimento per l'area 6: (che cosa, parti da
 # eseguire, sostituzioni, parola che il rosso deve contenere). Ognuna e' un
@@ -3666,6 +3830,36 @@ ROTTURE_RIFINITURA = [
 ]
 
 
+
+# Frammenti indipendenti dalla pagina vera: ogni rottura chiede solo la parte.
+_SCALA_FINE = '/* P-94: punto delle rotture */'
+def rottura_scala(cosa, parte, css, motivo):
+    return (cosa, ['T-13:' + parte], [(_SCALA_FINE, css + '\n' + _SCALA_FINE)], motivo)
+
+ROTTURE_RIFINITURA += [
+    rottura_scala('un corpo a 13 px', 'corpi', '#home-anonima>p{font-size:13px}', 'corpo 13 px'),
+    rottura_scala('un clamp fuori scala', 'corpi', '#home-anonima>p{font-size:clamp(13px,1vw,13px)}', 'corpo 13 px'),
+    ('sei corpi nel primo schermo', ['T-13:corpi'], [('<div id="home-anonima">', '<div id="home-anonima"><span style="font-size:12px">Uno</span><span style="font-size:14px">Due</span><span style="font-size:19px">Tre</span><span style="font-size:24px">Quattro</span>')], '6 corpi'),
+    rottura_scala('un titolo di sezione a 13 sopra testo a 16', 'titoli', '#anteprime h2{font-size:13px}', '13 px introduce'),
+    rottura_scala('testo corrente a 14 px', 'testo', '#home-anonima>p{font-size:14px}', '14 px < 16'),
+    rottura_scala('interlinea troppo stretta', 'testo', '#home-anonima>p{line-height:1.1}', 'interlinea 1.100'),
+    rottura_scala('un paragrafo giustificato', 'testo', '#home-anonima>p{text-align:justify}', 'giustificato'),
+    rottura_scala('maiuscolo su piu righe', 'testo', '#home-anonima>p{text-transform:uppercase;max-width:180px}', 'maiuscolo oltre una riga'),
+    rottura_scala('un margine CSS a 10 px', 'spazi', '#home-anonima>p{margin-top:10px}', 'margin-top 10 px'),
+    ('un margine a 10 scritto da script', ['T-13:spazi'], [('<body>', '<body><script>addEventListener("load",()=>{document.querySelector("#home-anonima p").style.marginTop="10px"})</script>')], 'margin-top 10 px'),
+    rottura_scala('sezioni attaccate con figli distanziati', 'spazi', '#anteprime,#non-torna{margin:0;padding:8px}', 'fra sezioni 0.0 px'),
+    rottura_scala('un peso 650', 'pesi', '#home-anonima>p{font-weight:650}', 'peso 650'),
+    rottura_scala('una frase intera in grassetto', 'pesi', '#home-anonima>p{font-weight:700}', 'grassetto'),
+    rottura_scala('i tag a 6 px', 'distanze', '#r-tag button{margin:0}#r-tag button+button{margin-left:6px}', '6.00 px'),
+    rottura_scala('una riga oltre 90 caratteri', 'righe', '#home-anonima>p{max-width:none;width:900px}', 'caratteri per riga'),
+    rottura_scala('accento sul testo non interattivo', 'colori', '#home-anonima>p{color:var(--acc)}', 'accento su testo non interattivo'),
+    rottura_scala('rosso senza errore', 'colori', '#home-anonima>p{color:var(--ko)}', 'colore errore fuori ruolo'),
+    rottura_scala('verde senza risposta giusta', 'colori', '#home-anonima>p{color:var(--ok)}', 'colore giusto fuori ruolo'),
+    rottura_scala('ambra senza avviso', 'colori', '#home-anonima>p{color:var(--warn)}', 'ambra fuori avviso'),
+    ('la Home supera 78 parole', ['T-13:home'], [('<div id="home-anonima">', '<div id="home-anonima"><p>' + 'Parola ' * 79 + '</p>')], 'parole nel primo schermo'),
+]
+
+
 def dichiarati_rifinitura(parte=None):
     """[(parte, verifica)] dei difetti dichiarati dell'area 6, o di una parte sola."""
     return [(p, x) for p, x in (difetti_dichiarati() or []) if p.startswith('T-') and (parte is None or p == parte)]
@@ -3776,6 +3970,42 @@ def test_rifinitura_figura():
     risposta, e niente le sta sopra (T-11)."""
     registra_rifinitura('T-11')
 
+
+def test_scala_corpi():
+    """P-94: T-13:corpi sui valori calcolati, con difetti nominati."""
+    registra_rifinitura('T-13:corpi')
+
+def test_scala_titoli():
+    """P-94: T-13:titoli sui valori calcolati, con difetti nominati."""
+    registra_rifinitura('T-13:titoli')
+
+def test_scala_testo():
+    """P-94: T-13:testo sui valori calcolati, con difetti nominati."""
+    registra_rifinitura('T-13:testo')
+
+def test_scala_spazi():
+    """P-94: T-13:spazi sui valori calcolati, con difetti nominati."""
+    registra_rifinitura('T-13:spazi')
+
+def test_scala_pesi():
+    """P-94: T-13:pesi sui valori calcolati, con difetti nominati."""
+    registra_rifinitura('T-13:pesi')
+
+def test_scala_distanze():
+    """P-94: T-13:distanze sui valori calcolati, con difetti nominati."""
+    registra_rifinitura('T-13:distanze')
+
+def test_scala_righe():
+    """P-94: T-13:righe sui valori calcolati, con difetti nominati."""
+    registra_rifinitura('T-13:righe')
+
+def test_scala_colori():
+    """P-94: T-13:colori sui valori calcolati, con difetti nominati."""
+    registra_rifinitura('T-13:colori')
+
+def test_scala_home():
+    """P-94: T-13:home sui valori calcolati, con difetti nominati."""
+    registra_rifinitura('T-13:home')
 
 def test_disegno_principale():
     """R-RIF-19 (D-12): in ogni superficie della prova un solo fondo pieno nel
@@ -4542,7 +4772,7 @@ def fermati_se_il_sito_manca():
 def main():
     fermati_se_il_sito_manca()
     for t in (test_viste_dichiarate, test_ogni_vista_ha_una_porta,
-              test_voci_barra, test_modalita_quiz, test_selettori,
+              test_voci_barra, test_scala_css, test_modalita_quiz, test_selettori,
               test_intenzioni_provate_al_contrario,
               test_ciclo_riepilogo, test_ciclo_riprova, test_ciclo_provato_al_contrario,
               test_mappa_righe, test_mappa_azioni, test_mappa_stati, test_mappa_provata_al_contrario,
@@ -4564,7 +4794,7 @@ def main():
               test_rifinitura_senza_account, test_rifinitura_invio, test_rifinitura_guasto, test_rifinitura_identita,
               test_rifinitura_finestra, test_rifinitura_fuoco, test_rifinitura_avvisi, test_rifinitura_larghezze,
               test_rifinitura_contrasto, test_rifinitura_bersagli, test_rifinitura_proseguire, test_rifinitura_figura,
-              test_disegno_principale, test_disegno_primo_schermo, test_disegno_avviso, test_disegno_scelte, test_rifinitura_provata_al_contrario,
+              test_scala_corpi, test_scala_titoli, test_scala_testo, test_scala_spazi, test_scala_pesi, test_scala_distanze, test_scala_righe, test_scala_colori, test_scala_home, test_disegno_principale, test_disegno_primo_schermo, test_disegno_avviso, test_disegno_scelte, test_rifinitura_provata_al_contrario,
               test_raccordo_riconosciuto, test_esito_senza_account, test_esito_quando, test_esito_salvato,
               test_avvio_registrato, test_avvio_non_si_vede, test_avvio_non_e_una_risposta, test_avvio_server_di_prima,
               test_avvio_con_un_errore, test_raccordo_provato_al_contrario,

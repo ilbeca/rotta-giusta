@@ -4303,6 +4303,220 @@ const T12 = {
   gancioAvviso: 'ogni avviso sta dentro un data-ruolo="avviso"',
 };
 
+// P-94: valori attesi ricevuti dal contratto Python, mai ricavati da :root.
+const T13 = {
+  corpi: 'i corpi calcolati del testo visibile appartengono alla scala',
+  cinque: 'nel primo schermo al piu\' cinque corpi (soglia nostra)',
+  titoli: 'un h1 per vista, al piu\' tre livelli e nessun titolo piu\' piccolo del testo o dei sottotitoli (soglia nostra per le dimensioni)',
+  testo: 'testo corrente e risposte almeno 16 px, interlinea 1,45 e titoli 1,2 (soglie nostre), senza giustificato o maiuscolo su piu\' righe',
+  spazi: 'gli spazi calcolati appartengono alla scala',
+  sezioni: 'fra due sezioni piu\' spazio che fra i figli della stessa sezione',
+  pesi: 'pesi 400, 600, 700 e grassetto al piu\' cinque parole nel paragrafo (soglia nostra)',
+  distanze: 'fra due bersagli almeno 8 px, esclusi segmenti e link nella frase',
+  righe: 'a 1280 px le righe di testo corrente hanno al piu\' 75 caratteri',
+  colori: 'i colori di ruolo sono riservati ad azioni, errori e avvisi (ruoli nostri)',
+  home: 'Home senza risposte a 375×812: al piu\' 78 parole nel primo schermo (soglia nostra)',
+};
+const PARTI_T13 = ['corpi', 'titoli', 'testo', 'spazi', 'pesi', 'distanze', 'righe', 'colori', 'home'];
+
+function scalaT13(K, cfg) {
+  const C = cfg.scala;
+  if (!C) throw new Error('manca il contratto della scala dal controllo Python');
+  scrollTo(0, 0);
+  for (const e of document.querySelectorAll('*')) if (e.scrollTop) e.scrollTop = 0;
+  const vis = (e) => {
+    if (!K.V(e) || K.opacita(e) === 0 || e.closest('script,style,noscript')) return false;
+    for (let p=e.parentElement;p;p=p.parentElement) if (p.tagName==='DETAILS' && !p.open && !p.querySelector('summary')?.contains(e)) return false;
+    return true;
+  };
+  const tutti = [...document.querySelectorAll('body *')].filter(vis);
+  const testo = tutti.filter(K.haTesto);
+  const out = Object.fromEntries([...['corpi','cinque','titoli','testo','spazi','sezioni','pesi','distanze','righe','colori','home']].map((k) => [k, []]));
+  const num = { corpi: [], primo: [], pesi: [], parole: null, righe: 0, testi: testo.length, sezioni: 0 };
+  const vicino = (a, b) => Math.abs(a - b) < 0.06;
+  const taglia = (e) => parseFloat(getComputedStyle(e).fontSize);
+  const nome = (e) => K.nome(e);
+  const size = new Set(), weights = new Set();
+  const primo = new Set();
+  const heading = 'h1,h2,h3,h4,h5,h6';
+  const inPrimo = (e) => { const r = e.getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0 && r.left < innerWidth && r.right > 0; };
+  for (const e of testo) {
+    const cs = getComputedStyle(e), px = parseFloat(cs.fontSize), w = Number(cs.fontWeight);
+    size.add(px); weights.add(w);
+    if (inPrimo(e)) primo.add(px);
+    const home40 = innerWidth > 900 && e.closest('#v-home h1, #v-oggi h1');
+    if (!C.corpi.some((x) => vicino(px, x)) && !(home40 && vicino(px, C.home))) out.corpi.push(`${nome(e)} corpo ${px} px`);
+    if (!C.pesi.includes(w)) out.pesi.push(`${nome(e)} peso ${w}`);
+  }
+  if (primo.size > 5) out.cinque.push(`${primo.size} corpi: ${[...primo].sort((a,b)=>a-b).join(', ')} px`);
+  num.corpi = [...size].sort((a,b)=>a-b); num.primo = [...primo].sort((a,b)=>a-b); num.pesi = [...weights];
+  // La superficie attiva: modalita' e preparazioni prima delle viste sotto.
+  const superficie = [...document.querySelectorAll('[role="dialog"][aria-modal="true"], dialog[open]')].find(vis)
+    || [...document.querySelectorAll('[data-preparazione]')].find(vis)
+    || [...document.querySelectorAll('#r-fine.on,#quizrun.on,.view.on')].filter(vis).at(-1);
+  const titoli = tutti.filter((e) => e.matches(heading) && (!superficie || superficie.contains(e)) && e.textContent.trim());
+  const livelli = [...new Set(titoli.map((e) => Number(e.tagName[1])))].sort();
+  // I pannelli Info/Accedi sono dialoghi con h2: il titolo della vista e' sotto.
+  const dialogo = tutti.some((e) => e.matches('[role="dialog"][aria-modal="true"],dialog[open]'));
+  if (!dialogo && titoli.filter((e) => e.tagName === 'H1').length !== 1) out.titoli.push(`${titoli.filter((e) => e.tagName === 'H1').length} h1 nella vista`);
+  if (livelli.length > 3 || livelli.some((n, i) => i && n > livelli[i-1] + 1)) out.titoli.push(`livelli ${livelli.join(', ')}`);
+  for (const h of titoli) {
+    const n = Number(h.tagName[1]);
+    const dopo = testo.find((e) => !e.matches(heading) && !h.contains(e) && (h.compareDocumentPosition(e) & Node.DOCUMENT_POSITION_FOLLOWING)
+      && (!superficie || superficie.contains(e)));
+    if (dopo && taglia(dopo) > taglia(h) + 0.06) out.titoli.push(`${nome(h)} ${taglia(h)} px introduce ${nome(dopo)} ${taglia(dopo)} px`);
+    for (const altro of titoli.filter((e) => Number(e.tagName[1]) > n)) if (taglia(altro) > taglia(h) + 0.06) out.titoli.push(`${nome(h)} ${taglia(h)} px sopra ${nome(altro)} ${taglia(altro)} px`);
+  }
+  const correnti = tutti.filter((e) => e.matches('p,li,#r-text,#r-ans button,.ans,.spiegazione') && e.textContent.trim());
+  const righeDi = (e) => {
+    const righe = new Map(), walker = document.createTreeWalker(e, NodeFilter.SHOW_TEXT);
+    for (let n; (n = walker.nextNode());) {
+      if (!vis(n.parentElement)) continue;
+      // Range per carattere: non divide una riga quando cambia il nodo (strong/link).
+      for (let i = 0; i < n.length; i++) {
+        const r = document.createRange(); r.setStart(n, i); r.setEnd(n, i + 1);
+        const rect = r.getClientRects()[0];
+        if (!rect || !rect.height) continue;
+        const y = Math.round(rect.top / 2) * 2;
+        righe.set(y, (righe.get(y) || '') + n.data[i]);
+      }
+    }
+    return [...righe.values()].map((s) => s.replace(/\s+/g, ' ').trim()).filter(Boolean);
+  };
+  for (const e of correnti) {
+    const cs = getComputedStyle(e), px = taglia(e), rapporto = parseFloat(cs.lineHeight) / px;
+    if (px < 16 - 0.06) out.testo.push(`${nome(e)} testo ${px} px < 16`);
+    if (Math.abs(rapporto-C.testo) > 0.005) out.testo.push(`${nome(e)} interlinea ${rapporto.toFixed(3)} invece di ${C.testo}`);
+    if (cs.textAlign === 'justify') out.testo.push(`${nome(e)} giustificato`);
+    if (innerWidth === 1280 || cs.textAlign === 'center' || cs.textTransform === 'uppercase' || /^[^a-zà-ü]*[A-ZÀ-Ü]/.test(e.textContent)) {
+      const righe = righeDi(e);
+      if (innerWidth === 1280) {
+        const max = Math.max(0, ...righe.map((s) => s.length)); num.righe = Math.max(num.righe, max);
+        if (max > 75) out.righe.push(`${nome(e)} ${max} caratteri per riga`);
+      }
+      if (cs.textAlign === 'center' && righe.length > 2) out.testo.push(`${nome(e)} centrato su ${righe.length} righe (soglia nostra: 2)`);
+    }
+  }
+  for (const e of testo) {
+    const cs = getComputedStyle(e), t = e.textContent.trim();
+    if ((cs.textTransform === 'uppercase' || (!['lowercase','capitalize'].includes(cs.textTransform) && /[A-ZÀ-Ü]/.test(t) && t === t.toUpperCase())) && righeDi(e).length > 1) out.testo.push(`${nome(e)} maiuscolo oltre una riga`);
+    if (e.matches(heading) && Math.abs(parseFloat(cs.lineHeight) / taglia(e)-C.titoli) > 0.005) out.testo.push(`${nome(e)} interlinea titolo ${(parseFloat(cs.lineHeight)/taglia(e)).toFixed(3)} invece di ${C.titoli}`);
+    if (Number(cs.fontWeight) >= 600 && e.closest('p') && t.split(/\s+/).length > 5) out.pesi.push(`${nome(e)} grassetto ${t.split(/\s+/).length} parole`);
+  }
+  for (const e of tutti) {
+    const cs = getComputedStyle(e);
+    for (const p of ['marginTop','marginRight','marginBottom','marginLeft','paddingTop','paddingRight','paddingBottom','paddingLeft','rowGap','columnGap']) {
+      const css = p.replace(/[A-Z]/g, (c) => '-' + c.toLowerCase());
+      const typed = e.computedStyleMap && e.computedStyleMap().get(css);
+      if (typed && typed.toString() === 'auto') continue;
+      const px = parseFloat(cs[p]);
+      if (!Number.isFinite(px) || vicino(px, 0)) continue;
+      // Solo le eccezioni geometriche decise, non un lasciapassare sui numeri.
+      if (cfg.eccezioni.some((x) => e.matches(x.selettore) && p === x.proprieta && vicino(px, x.valore))) continue;
+      if (!C.spazi.some((s) => vicino(px, s))) out.spazi.push(`${nome(e)} ${css} ${px} px`);
+    }
+  }
+  const gruppi = tutti.filter((e) => e.matches('.view.on, [data-preparazione]:not([hidden])'));
+  for (const g of gruppi) {
+    const sezioni = [...g.children].filter((e) => vis(e) && (e.matches('section') || e.querySelector('h2')));
+    for (let i = 1; i < sezioni.length; i++) {
+      const a = sezioni[i-1], b = sezioni[i], spazio = b.getBoundingClientRect().top - a.getBoundingClientRect().bottom;
+      const ra=a.getBoundingClientRect(), rb=b.getBoundingClientRect();
+      if (Math.min(ra.right,rb.right) <= Math.max(ra.left,rb.left)+0.06) continue; // affiancate
+      let interno = 0;
+      for (const s of [a,b]) {
+        const figli = [...s.children].filter(vis);
+        for (let k = 1; k < figli.length; k++) interno = Math.max(interno, figli[k].getBoundingClientRect().top - figli[k-1].getBoundingClientRect().bottom);
+      }
+      num.sezioni++;
+      if (spazio <= interno + 0.06) out.sezioni.push(`${nome(a)} → ${nome(b)}: fra sezioni ${spazio.toFixed(1)} px, dentro ${interno.toFixed(1)} px`);
+    }
+  }
+  num.distanzaMin = null;
+  const bersagli = [...new Set(tutti.filter((e) => e.matches('button,a[href],input:not([type=hidden]),select,textarea,summary,[role=button]') && !e.disabled)
+    .filter((e) => !(cfg.segmenti && e.closest('[role="tablist"]')) && !(e.tagName === 'A' && e.closest('p')))
+    .map((e) => e.matches('input[type=checkbox],input[type=radio]') ? e.closest('label') || e.labels[0] || e : e))];
+  for (let i = 0; i < bersagli.length; i++) for (let j = i+1; j < bersagli.length; j++) {
+    const a = bersagli[i], b = bersagli[j];
+    if (a.contains(b) || b.contains(a)) continue;
+    const r = a.getBoundingClientRect(), s = b.getBoundingClientRect();
+    const dx = Math.max(0, r.left-s.right, s.left-r.right), dy = Math.max(0, r.top-s.bottom, s.top-r.bottom), d = Math.hypot(dx,dy);
+    num.distanzaMin = num.distanzaMin === null ? d : Math.min(num.distanzaMin,d);
+    if (d < 8 - 0.06) out.distanze.push(`${nome(a)} / ${nome(b)}: ${d.toFixed(2)} px`);
+  }
+  // Colori calcolati, equivalenze incluse: il valore del token e' fissato dal contratto.
+  const rgb = (hex) => `rgb(${hex.slice(1).match(/../g).map((x)=>parseInt(x,16)).join(', ')})`;
+  for (const e of tutti) {
+    const cs = getComputedStyle(e);
+    const ha = (colore) => cs.backgroundColor === colore || (K.haTesto(e) && cs.color === colore);
+    if (ha(rgb(C.colori['--acc'])) && !e.closest('button,a[href],input,select,textarea,summary,[role=button],[role=tab]') && !e.matches('[role=tablist]')) out.colori.push(`${nome(e)} accento su testo non interattivo`);
+    if (ha(rgb(C.colori['--ok'])) && !e.closest('.ok,.success,.giusta,[data-esito=corretto]')) out.colori.push(`${nome(e)} colore giusto fuori ruolo`);
+    if (ha(rgb(C.colori['--ko'])) && !e.closest('[role=alert],.ko,.error,.errore,.sbagliata,[data-esito="errato"]')) out.colori.push(`${nome(e)} colore errore fuori ruolo`);
+    if (ha(rgb(C.colori['--warn'])) && !e.closest('[role=alert],[data-ruolo=avviso],.warn,.warning,.nb,.crono')) out.colori.push(`${nome(e)} ambra fuori avviso`);
+  }
+  if (cfg.home && innerWidth === 375 && innerHeight === 812) {
+    const w = document.createTreeWalker(document.querySelector('#v-home'), NodeFilter.SHOW_TEXT); let parole = 0;
+    for (let n; (n = w.nextNode());) {
+      const e = n.parentElement;
+      if (!/[\p{L}]/u.test(n.textContent) || !vis(e) || e.closest('header,nav,#barra')) continue;
+      const r=e.getBoundingClientRect();
+      if (r.width && r.height && r.top<innerHeight && r.bottom>0) parole += n.textContent.trim().split(/\s+/).filter((x)=>/\p{L}/u.test(x)).length;
+    }
+    num.parole = parole;
+    if (parole > 78) out.home.push(`${parole} parole nel primo schermo, tetto 78`);
+  }
+  return { out, num };
+}
+
+async function t13(b, ctx, v, parte) {
+  const errori = Object.fromEntries(Object.keys(T13).map((k) => [k, []])), numeri = [], intoppi = [];
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
+    await tab.dimensioni(375,812);
+    if (!await tab.attendi(PRONTO, CARICO)) throw new Error('la pagina non si apre');
+    await tab.valuta('document.fonts.ready.then(() => true)');
+    const misura = async (dove, home=false) => {
+      for (const [w,h] of [[375,812],[1280,800]]) {
+        await tab.dimensioni(w,h);
+        const m = await tab.valuta(inPagina(scalaT13, { scala:ctx.scala, eccezioni:ctx.eccezioniScala || [], home, segmenti:true }));
+        if (!m || !m.num.testi) { intoppi.push(`${dove} a ${w}: nessun testo misurato`); continue; }
+        for (const [k,xs] of Object.entries(m.out)) for (const x of xs) errori[k].push(`${dove} a ${w}×${h}: ${x}`);
+        numeri.push({dove,w,...m.num});
+      }
+    };
+    // Prima delle risposte: il criterio della decisione E si applica solo a H0.
+    if (await apriVista(tab,'oggi')) await misura('Home senza risposte',true);
+    else intoppi.push('Home H0 non si apre');
+    if (parte !== 'home') {
+      for (const x of VISTE_RIF.filter((x)=>x!=='oggi')) {
+        if (await apriVista(tab,x)) await misura(NOMI_VISTE[x]); else intoppi.push(`${x} non si apre`);
+      }
+      if (await sezioneT12(tab,'esame',PORTE_ESAME[0])) await misura('Esame'); else intoppi.push('Esame non si apre');
+      // Chiude Info, visita tutte le preparazioni, poi runner dopo errore e riepilogo.
+      for (const s of SUPERFICI_T12.filter((s)=>s.scelte && s.avviso)) {
+        if (await s.apri(tab)) await misura(s.dove); else intoppi.push(`${s.dove} non si apre`);
+      }
+      if (await sezioneT12(tab,'cart',PORTE_CARTEGGIO[2]) && await preparazioneDa(tab,PORTE_CARTEGGIO[2],'#t-start')) await misura('preparazione tecniche');
+      else intoppi.push('preparazione tecniche non si apre');
+      const it = QUIZ_TUTTI.find((x)=>x.id==='base-1293');
+      await sezioneT12(tab,'quiz','[data-ricerca]');
+      if (await apriPerNumero(tab,it) && await rispondiCome(tab,it,false)) {
+        await misura('runner dopo risposta errata');
+        if (await chiudiQuiz(tab, [], 'T-13','')) await misura('riepilogo con errore'); else intoppi.push('riepilogo non si apre');
+        if (await alPercorso(tab) && await apriAccedi(tab)) await misura('Accedi'); else intoppi.push('Accedi non si apre');
+      } else intoppi.push('runner non si apre');
+    }
+  } finally { await c.chiudi(); }
+  v.push({gruppo:'banco',nome:'T-13 misura le superfici richieste senza intoppi',ok:!intoppi.length && numeri.length >= (parte==='home'?2:32),extra:lista(intoppi)});
+  for (const p of PARTI_T13.filter((p)=>!parte || parte===p)) {
+    const keys = p==='corpi' ? ['corpi','cinque'] : p==='spazi' ? ['spazi','sezioni'] : [p];
+    for (const k of keys) v.push({ gruppo:'T-13:'+p, nome:T13[k], ok:!intoppi.length && !errori[k].length,
+      extra: intoppi.length ? lista(intoppi) : perDifetto(errori[k],12) + ' — misure: ' + JSON.stringify(numeri) });
+  }
+}
+
+
 // --- F-01: le frasi del riepilogo dei quiz (R-UX-06, P-53) -----------------------
 //
 // docs/area-3-progetto.md §4.2: il riepilogo di una breve attivita' fa tre
@@ -6564,7 +6778,7 @@ async function c23coda(b, ctx, v, g) {
 const GRUPPI = { 'C-01': c01, 'C-02': c02, 'C-03': c03, 'C-04': c04, 'C-05': c05, 'C-06': c06, 'C-07': c07, 'C-08': c08, 'C-21': c21,
   'C-10': c10, 'C-11': c11, 'C-12': c12, 'C-13': c13, 'C-14': c14, 'C-15': c15, 'C-16': c16, 'C-17': c17, 'C-19': c19,
   // L'area 6 (P-45): la rifinitura trasversale.
-  'T-01': t01, 'T-02': t02, 'T-03': t03, 'T-04': t04, 'T-05': t05, 'T-06': t06, 'T-07': t07, 'T-08': t08, 'T-09': t09, 'T-10': t10, 'T-11': t11, 'T-12': t12,
+  'T-01': t01, 'T-02': t02, 'T-03': t03, 'T-04': t04, 'T-05': t05, 'T-06': t06, 'T-07': t07, 'T-08': t08, 'T-09': t09, 'T-10': t10, 'T-11': t11, 'T-12': t12, 'T-13': t13,
   // Le frasi del riepilogo dei quiz (P-53, R-UX-06).
   'F-01': f01,
   // Le condizioni per l'account nel modulo di registrazione (P-57, R-ACC-75).
@@ -6790,7 +7004,7 @@ export async function esegui(prove, { portaApi = PORTA_API } = {}) {
           // La pagina di questi gruppi non e' riscritta: parla con la 8620, e il
           // banco guarda quell'indirizzo anche se la corsia 0 ascolta altrove.
           const ctx = { ...corsie[0].ctx, sito: sv.origine, api: `http://localhost:${PORTA_API}`, spegni: (si) => { proprio.spento = si; }, radice: (d) => { proprio.radice = d; },
-            ingresso: proprio.ingresso, regimi: x.p.regimi || {}, regime: x.p.regime || 'di prima',
+            scala:x.p.scala, eccezioniScala:x.p.eccezioniScala, ingresso: proprio.ingresso, regimi: x.p.regimi || {}, regime: x.p.regime || 'di prima',
             // Una parte senza API non tocca il server della corsia 0, che intanto porta un altro gruppo.
             conRaccolte: () => { throw new Error(`${x.g} non parla con l'API: non accende raccolte`); },
             sostituisci: (percorso, testo) => { proprio.sito = { ...(proprio.sito || {}), [percorso]: testo }; } };

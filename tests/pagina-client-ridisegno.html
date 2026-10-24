@@ -43,8 +43,9 @@
   una preparazione la sezione non si vede, come nella pagina vera.
 
   Senza account non scrive niente nel browser, come quella di oggi; con
-  l'account solo nel suo archivio `rg-account-<chiave>`. Il resto
-  dell'aspetto e' quello del browser, apposta.
+  l'account solo nel suo archivio `rg-account-<chiave>`. Dal P-94 usa anche
+  la scala e Manrope, per T-13; la disposizione resta quella minima che
+  serve a provare i contratti, senza riprodurre il disegno del sito.
 -->
 <html lang="it">
 <meta charset="utf-8">
@@ -58,14 +59,48 @@ a.da-solo, label {display:inline-block}
 /* Nel runner la barra delle sezioni sparisce; titolo, uscita e avatar restano (ridisegno §2). */
 body.in-attivita #barra, body.in-attivita main {display:none}
 #quizrun, #cartrun, #segrun, #rivedi {background:#fff}
-[role="tab"][aria-selected="true"] {font-weight:bold}
+[role="tab"][aria-selected="true"] {font-weight:700}
 #r-fig img {max-width:100%; max-height:34vh}
 /* Il giro 1 delle regole di disegno (T-12): una sola azione con il fondo pieno per
    superficie, ed e' quella con data-ruolo="principale"; l'avviso e' testo. */
 button[data-ruolo="principale"] {background:#123e63; color:#fff; border:1px solid #123e63}
 /* Una preparazione sta sopra la sezione da cui si arriva, e la sezione non si vede
    (main.preparazione-sopra della pagina vera). */
-body:has(> [data-preparazione]:not([hidden])) main {display:none}</style>
+body:has(> [data-preparazione]:not([hidden])) main {display:none}
+/* P-94: il riferimento usa la scala; non e' il disegno del sito. Valori fissati dal controllo. */
+@font-face{font-family:Manrope;src:url(/caratteri/manrope-latin-wght-normal.woff2);font-weight:200 800}
+:root{--t-12:12px;--t-14:14px;--t-16:16px;--t-19:19px;--t-24:24px;--t-30:30px;--t-40:40px;--s-4:4px;--s-8:8px;--s-12:12px;--s-16:16px;--s-24:24px;--s-32:32px;--s-48:48px;--w-400:400;--w-600:600;--w-700:700;--lh-testo:1.45;--lh-titoli:1.2;--testo-max:480px;--acc:#076f99;--ko:#a4261d;--warn:#765000;--ok:#126832;}
+*{box-sizing:border-box}
+body{font-family:Manrope,sans-serif;font-size:var(--t-16);font-weight:var(--w-400);line-height:var(--lh-testo);margin:var(--s-8);color:#111;background:#fff}
+button,input,select,textarea,summary{font:inherit;color:inherit;background:#fff;border:1px solid #444;padding:var(--s-4);margin:var(--s-4);vertical-align:middle}
+a{color:var(--acc)}
+h1,h2,h3,h4,h5,h6{font-weight:var(--w-700);line-height:var(--lh-titoli);margin:var(--s-16) 0 var(--s-8)}
+h1{font-size:var(--t-30)}h2{font-size:var(--t-24)}h3,h4,h5,h6{font-size:var(--t-19)}
+p,li,#r-text,#r-ans button{font-size:var(--t-16);line-height:var(--lh-testo);max-width:var(--testo-max);text-align:left}
+p,ul,ol{margin:var(--s-8) 0;padding:0}ul,ol{padding-left:var(--s-24)}
+strong,b{font-weight:var(--w-400)}
+.view>section,.view>div:has(h2){margin-top:var(--s-48);margin-bottom:var(--s-48)}
+header p:empty{display:none}header a,header button{margin:var(--s-4)}
+[role="tablist"]{display:flex;gap:0;margin:var(--s-8) 0}
+[role="tablist"] button{margin:0}
+[role="tab"][aria-selected="true"]{font-weight:var(--w-700)}
+#r-tag button{margin:var(--s-4)}
+#v-home #home-anonima>h1{max-width:var(--testo-max)}
+#v-home #anteprime{margin-top:var(--s-48)}
+@media(min-width:901px){#v-home h1{font-size:var(--t-40)}}
+
+fieldset,legend{margin:0;padding:var(--s-8)}
+a.da-solo{margin:var(--s-4)}
+#temi button{text-transform:lowercase}
+
+label{margin:var(--s-4)}
+
+input[type=file],label{max-width:100%}
+#prep-carta-accesso{font-size:var(--t-14);line-height:var(--lh-testo);max-width:var(--testo-max);margin:var(--s-8) 0}
+label:has(input[type=file]){display:block;margin:var(--s-4) 0}
+input[type=file]{width:calc(100% - 8px);min-width:0}
+/* P-94: punto delle rotture */
+</style>
 <body>
 <header>
   <a href="/" id="marchio" class="da-solo" data-v="home">Rotta Giusta</a>
@@ -214,25 +249,26 @@ body:has(> [data-preparazione]:not([hidden])) main {display:none}</style>
 <section id="prep" data-preparazione hidden aria-labelledby="prep-titolo">
   <h1 id="prep-titolo" tabindex="-1"></h1>
   <p id="prep-testo"></p>
-  <div id="prep-controlli"></div>
   <p id="prep-quanti" role="status"></p>
   <p id="prep-accesso" data-ruolo="avviso"></p>
   <button id="start" data-ruolo="principale">Inizia</button>
   <button data-prep="chiudi" id="prep-chiudi"></button>
+  <div id="prep-controlli"></div>
 </section>
 
 <section id="prep-carta" data-preparazione hidden>
   <h1 id="prep-carta-titolo" tabindex="-1"></h1>
   <p>Sei tu a giudicare: il sito non corregge il carteggio.</p>
   <p id="prep-carta-testo"></p>
-  <fieldset id="c-modi" hidden><legend>Esercizi</legend>
-    <label><input type="radio" name="c-modo" value="giro" checked> Giro delle tecniche</label>
-    <label><input type="radio" name="c-modo" value="tappeto"> A tappeto</label></fieldset>
-  <p id="prep-carta-accesso" data-ruolo="avviso"></p>
+
+  <div id="prep-carta-accesso" data-ruolo="avviso"></div>
   <button id="c-start" data-ruolo="principale" hidden>Inizia la prova</button>
   <button id="c-esercizi" data-ruolo="principale" hidden>Inizia gli esercizi</button>
   <button id="t-start" data-ruolo="principale" hidden>Inizia il riconoscimento</button>
   <button data-prep="chiudi" id="prep-carta-chiudi"></button>
+  <fieldset id="c-modi" hidden><legend>Esercizi</legend>
+    <label><input type="radio" name="c-modo" value="giro" checked> Giro delle tecniche</label>
+    <label><input type="radio" name="c-modo" value="tappeto"> A tappeto</label></fieldset>
 </section>
 
 <div id="quizrun">

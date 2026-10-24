@@ -8,11 +8,11 @@ principali», in fondo). Il passo 1 — «Avanti» raggiungibile e la figura in
 vista — è fatto: P-91, rilasciato nella v0.33.0, con T-10 e T-11 (R-RIF-17 e
 18) verdi sulla pagina vera.
 
-**Stato:** progetto. Nessun codice, nessun controllo, nessuna modifica alla
-pagina o alla specifica: questo file e la voce di CHANGELOG sono l'intera
-modifica della sessione che l'ha scritto. **File neutro**, come gli altri
-`*-progetto.md`: lo legge chi scrive i controlli su `main` e chi corregge la
-pagina su `ui/*`.
+**Stato al 24 ottobre 2026:** giro 1 realizzato (P-92 e P-93, v0.34.0).
+Il giro 2 ha il contratto e i controlli di P-94 (§10.1), con i difetti della
+pagina vera dichiarati; la correzione su ui/* e il giro 3 restano da fare.
+**File neutro**, come gli altri `*-progetto.md`: lo legge chi scrive i
+controlli su `main` e chi corregge la pagina su `ui/*`.
 
 **Le regole fanno fede in I-27**, dove sono state copiate il 21 ottobre; la
 copia di lavoro in `~/bot-ux/rotta-giusta/regole/regole.md`, con lo script
@@ -466,6 +466,61 @@ pesi, e la pagina la dichiara in `:root` con i nomi che il contratto fissa
 scala dalla pagina accetterebbe qualunque scala: è il controllo che rassicura.
 Cambiare un numero è un commit su `main` e uno su `ui/*`, ed è voluto.
 
+**Contratto consegnato da P-94 (24 ottobre 2026).** La sorgente dei numeri
+è `SCALA_CSS` in `tests/test_interfaccia.py`; il banco riceve quel contratto,
+non legge i valori attesi dalla pagina. In un unico `:root`:
+
+- `--t-12`, `--t-14`, `--t-16`, `--t-19`, `--t-24`, `--t-30`, `--t-40`,
+  ciascuno nel numero di px del nome. 40 è ammesso sui valori calcolati solo
+  negli h1 della Home sopra 900 px; nessun altro testo lo può usare.
+- `--s-4`, `--s-8`, `--s-12`, `--s-16`, `--s-24`, `--s-32`, `--s-48`, in px;
+  `--w-400`, `--w-600`, `--w-700` per i pesi.
+- `--lh-testo:1.45`, `--lh-titoli:1.2`, `--testo-max:480px`.
+- `--acc:#076f99` per le azioni e le loro parti; `--ko:#a4261d` per gli
+  errori e le risposte sbagliate; `--warn:#765000` per gli avvisi. Sono
+  ammessi alias che risolvono esattamente a questi valori; il verde del
+  giusto (`--ok:#126832`) rimane nel suo ruolo, misurato anche lui. I ruoli sono nostri (D-25).
+
+**La larghezza è stata misurata**, non scelta in ch: con Manrope caricato,
+testo a 16 e viewport 1280×800, 520 px sul riferimento davano ancora 76
+caratteri in una risposta; **480 px danno al massimo 72** nel giro completo,
+contro il limite di 75. La larghezza non era un numero già fissato da C:
+questo è il valore proposto dal controllo, da mostrare all'autore con il
+prima/dopo della pagina. Gli altri numeri di C non cambiano.
+
+Il descrittore `font-weight` dentro `@font-face` descrive quali pesi contiene
+il file variabile: non è uno stile usato e non entra nel conteggio statico.
+Gli spazi `auto` sono ammessi: T-13 legge il valore tipizzato per distinguerli
+dal margine in px risultante dal centraggio. Bordi, dimensioni e posizioni
+non sono spazi della scala. Le eccezioni geometriche esatte della testata e
+della riserva di 90 px per la barra stanno in «Valori fuori scala»; nel
+browser sono limitate a selettore, proprietà e valore, non al solo numero.
+
+**Il perimetro del testo.** Il banco misura nodi di testo visibili, anche
+fuori dal primo schermo; non conta i figli di un details chiuso. D-17 si
+applica a paragrafi, elementi di elenco, domanda e risposte; note ed etichette
+fuori da questi blocchi possono usare 12 o 14. D-18 è fissata dalla decisione C a 1,45,
+non al solo intervallo di I-27; i titoli a 1,2. D-20 controlla anche i tratti
+in grassetto oltre cinque parole; D-21 anche il paragrafo centrato oltre due
+righe (soglia nostra). Le righe si uniscono per coordinata fra nodi di testo,
+così un link o un strong non spezza artificialmente il conto. Gli h1 sono
+richiesti nelle viste e nelle preparazioni; i pannelli Info e Accedi hanno
+un titolo h2, coerente con il loro ruolo di dialogo sopra la vista.
+
+La distanza D-28 è la minima fra i rettangoli (euclidea sulle diagonali),
+con i radio e le caselle misurati sulla loro etichetta; non si confrontano
+un controllo e il suo discendente. D-23 confronta sezioni consecutive e
+gruppi diretti con h2, se disposti verticalmente. Le misure incomplete sono
+un rosso del banco distinto dai difetti dichiarabili.
+
+**Decisione E nel controllo.** `T-13:home`, verde già su main: **78 parole**
+nella Home H0 a 375×812. Il criterio è quello di P-93: nodi di testo sotto
+`#v-home`, token con almeno una lettera, rettangolo del genitore che
+interseca il viewport, intestazione e navigazione escluse. Non si contano
+solo le righe completamente libere dalla barra. Il riferimento ne ha 77;
+una rottura aggiunge 79 parole e deve fallire. Nessuna dichiarazione di
+difetto per questo controllo.
+
 **`test_scala_css`, statico, senza browser.** In `site/index.html` (i blocchi
 `<style>`, gli attributi `style=` e le stringhe degli script che scrivono
 stili), ogni `font-size`, `margin*`, `padding*`, `gap`, `font-weight` vale `0`,
@@ -498,6 +553,49 @@ browser; l'eccezione dei segmenti (diventano rossi i segmenti giusti).
 **Sulla pagina vera** è rosso quasi tutto, per l'audit: corpi, spazi, pesi,
 titoli, distanze, righe, e le risposte a 15,5. Il giro 2 è il più largo da
 dichiarare e il più semplice da chiudere: una passata sul CSS.
+
+**Collaudo di P-94.** La pagina di riferimento passa il banco per intero.
+Venti rotture nuove di T-13 sono rosse ciascuna per il suo motivo: corpi e
+clamp, sei corpi nel primo schermo, titolo sotto il testo, testo piccolo,
+interlinea, giustificato, maiuscolo, margine nel foglio e nello script,
+sezioni senza separazione, peso 650 e frase in grassetto, tag a 6 px,
+riga oltre 90 caratteri, accento/rosso/verde/ambra fuori ruolo, Home oltre 78
+parole. Lo statico prova frammenti in fogli, attributi e script, le scritture
+con punto, parentesi quadre, proprietà logiche, setProperty e cssText; tre
+controprove cambiano i token del riferimento, che il contratto deve rifiutare.
+
+**Difese tolte una alla volta.** Nello statico, senza le stringhe e le
+assegnazioni degli script le sei scritture fuori scala passano verdi.
+Su copie temporanee del banco, senza la verifica dei valori calcolati il
+clamp a 13 px passa verde; senza l'eccezione dei segmenti il riferimento è
+rosso per Quiz/Carteggio/Segnali a 0 px. Il banco originale non è stato
+indebolito. Manrope è stato verificato anche separatamente: famiglia del
+body Manrope, FontFace loaded, document.fonts.check vero, max-width 480 px.
+
+**Sulla pagina vera:** dieci verifiche T-13 rosse e quattro statiche, ognuna
+con la propria riga e i numeri misurati nei «Difetti aperti dichiarati».
+Home H0: 78 parole, verde senza dichiarazione. I valori delle scale di C
+restano quelli decisi; l'approvazione visiva della pagina resta alla
+correzione su ui/*, come dice il §11. C'è un solo quesito fisso nel runner,
+base-1293 dopo una risposta errata: rende ripetibili tipografia e riepilogo,
+non è una verifica dell'intera banca. I limiti del §12 restano.
+
+**Trovato sul riferimento, non sul sito.** La tipografia nuova aveva
+spinto l'avvio della simulazione a 692–736 px su 667 e ingrandito l'avviso
+del carteggio fino al 16 % del primo schermo. Nel riferimento gli avvii
+precedono ora le opzioni; la nota del carteggio ha un blocco suo, a 14 px.
+Il campo file rientra a 320 px, con la larghezza del controllo misurata,
+senza nascondere lo sbordo. È stata tolta una seconda regola di fondo pieno
+che mascherava una rottura di T-12. Tutti i controlli precedenti passano.
+
+**Tempo e suite (RG_TEMPI=1):** interfaccia 3.863 in 5 min 42.4 s (342.444 s); T-13 sulla pagina vera 2111 ms, sul riferimento 983 ms. Le venti rotture sommano
+32229 ms di lavoro nelle corsie parallele: non sono secondi da
+sommare alla durata della suite. Prima dell'avvio definitivo la 8620 è
+stata osservata libera per 90 s consecutivi. Motore 215/219 (quattro salti
+previsti), server 89/89 con Node di sistema e con Node 24.22.0 ufficiale,
+archivio verificato contro SHASUMS256.txt, dati 225, specifica 1.096;
+guardiano e documentazione verdi. Nessun file in site/, nessun numero di
+versione o tag cambiato, nessun push.
 
 #### Giro 3 — T-14
 
@@ -766,3 +864,8 @@ o nome nello stesso gruppo; la gara di misura fra le due azioni della Home.
   R-RIF-08 nel giro 1. D-14 misurata con tre verifiche discrete al posto
   dell'indice area × contrasto; D-28 e D-19 spostate nel giro 2; il giro 3 fatto
   delle parole e dei nomi. Sei decisioni per l'autore, A e B prima di P-92.
+
+- **24 ottobre 2026 — P-94, il giro 2 nei controlli.** Contratto numerico,
+  test_scala_css, T-13 e R-RIF-23…30; venti rotture e difese provate al
+  contrario; quattordici difetti dichiarati. Misure, tempi e limiti nel
+  §10.1, «Giro 2». Nessuna modifica alla pagina vera.
