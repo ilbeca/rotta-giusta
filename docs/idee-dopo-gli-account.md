@@ -88,6 +88,7 @@ lavoro che dura settimane e cambia che cosa il sito *è*.
 | I-25 | La lettura da fuori di ChatGPT: comprensione e parole | ChatGPT | cinque lettori, 45 risposte; riscritture proposte |
 | I-26 | La lettura da fuori di ChatGPT: metodo e confronto | ChatGPT | proposta per le verifiche, nessuna regola adottata |
 | I-27 | Le regole dai buoni standard, e l'audit delle schermate | autore e Claude | in corso dal 21 ottobre: regole D-01…D-35 e audit fatti, adottati dall'autore; i punti 1–2 a P-91; restano i passi 4–6 |
+| I-28 | Il piano dagli errori, raggruppati da un modello | autore e Claude | proposta del 24 ottobre: regole, privacy e costi; sette decisioni per l'autore |
 
 **Le decisioni prese, in una riga ciascuna, sono in fondo al file: «Le decisioni
 di P-59»; quelle del 17 ottobre in «Il miglioramento continuo».** Le schede qui
@@ -4261,3 +4262,183 @@ px). I quattro casi sono difetti aperti dichiarati finché P-91 non li chiude.
 **Il piano dei passi 2–4 (23 ottobre 2026):** in
 [regole-disegno-progetto.md](regole-disegno-progetto.md), tre giri con il
 metodo di T-10 e P-91, e sei decisioni per l'autore (§11).
+
+---
+
+## L'IA in pagina — 24 ottobre 2026
+
+**Con l'autore.** Il punto di partenza: l'autore ha circa **50–100 $ al mese di
+crediti Claude Platform** (l'API di Anthropic) e chiede come usarli per chi
+studia. **Si aspetta pochissimi utenti.** Niente codice in questa sessione.
+
+**Prima, il lavoro che non chiede crediti.** Quattro cose si preparano con calma
+nelle sessioni di Claude Code, e non in pagina: le bozze delle spiegazioni di
+I-10, verificate dall'autore prima di uscire, cominciando dalla prova sui 50
+quesiti; un **audit della banca**, in cui un modello risponde da solo ai 1.722
+quesiti e si guardano quelli in cui non è d'accordo col decreto (candidati a una
+nota, come il flap di base-405; la risposta non cambia); i **quesiti collegati
+per concetto**, un file statico che il motore legge e che serve anche alla
+misura di I-16; le **letture da fuori** di I-22 prima di ogni rilascio. Sono
+proposte, da smistare; i crediti restano per quello che succede in pagina.
+
+**Due cose scartate in sessione, per ora.** Un tutor in chat libero, che
+risponderebbe senza la verifica dell'autore (il guasto muto di I-10, in tempo
+reale). E un piano di studio scritto da un modello a partire dalle misure del
+motore: sarebbe un numero promesso che non viene dalla fonte della lista che si
+apre. La scheda qui sotto è la forma che regge.
+
+### I-28 — Il piano dagli errori [autore e Claude]
+
+**Il problema.** Il motore sa **quali** errori sono aperti — per tema, per voce,
+con i tag «Non lo sapevo» e «Svista» — ma non sa leggere il testo. Chi ha
+trenta errori sparsi vede trenta quesiti, non le due o tre cose che li tengono
+insieme: «sei errori su sette sono fanali visti di poppa», «confondi la nave che
+non governa con quella a manovrabilità limitata». Oggi «Rifai N errori» li
+riapre tutti, nell'ordine della banca.
+
+**Per chi.** *Chi ripassa sotto esame* prima di tutti: ha molti errori e poco
+tempo. Poi *chi è in formazione*, fra una lezione e l'altra.
+
+**Che cosa cambia per chi studia.** In Progressi, accanto a «Rifai N errori»,
+una voce «Raggruppa i miei errori». Il modello legge i quesiti sbagliati e li
+divide in pochi gruppi, ognuno con un titolo e una frase che dice che cosa i
+quesiti hanno in comune. Sotto ogni gruppo ci sono i suoi quesiti, e un
+pulsante «Allena questo gruppo» che li apre nel runner di sempre.
+
+**Le regole che lo tengono onesto.**
+1. **La lista la dà il motore, il modello la divide e basta.** La pagina prende
+   gli errori aperti da `coda({ soloDaRifare })`, la stessa lista di «Rifai N
+   errori», e manda quella. Il modello risponde in un formato fisso (output
+   strutturato: gruppi con titolo, frase e id dei quesiti). Un raccordo della
+   pagina, eseguito sotto Node dal banco come gli altri, controlla la risposta:
+   ogni id viene dalla lista mandata, nessuno compare due volte, i gruppi non
+   sono vuoti. Una risposta che non passa non si mostra, e la pagina lo dice.
+2. **I numeri li conta la pagina, mai il modello.** Titolo e frase non portano
+   cifre: il controllo le rifiuta. «Allena questo gruppo (6)» conta gli id del
+   gruppo, e il runner apre esattamente quelli, da una selezione del motore su
+   quegli id (un export nuovo: `coda()` oggi non prende un elenco di id). È la regola «un
+   numero promesso e la lista che si apre vengono dalla stessa fonte».
+3. **Dice che cosa i quesiti hanno in comune, non perché sbagli.** Il §7.4 della
+   specifica vieta oggi «una diagnosi sulle cause»: «riguardano tutti i fanali
+   di poppa» descrive i quesiti, «non hai capito i fanali» è una diagnosi. Il
+   prompt lo chiede, e la frase si dichiara come lettura del modello.
+4. **Si ricalcola, non si salva.** Il piano non diventa uno stato che il motore
+   rilegge per scegliere (R-ARCH-01). Dopo una ricarica si rifà, se lo si chiede.
+5. **Una soglia**, come le altre del §4.3: sotto un minimo di errori aperti —
+   proposta: 10 — la voce non c'è, e dice perché.
+6. **Accanto, sempre la fonte.** Ogni quesito del gruppo si apre con la risposta
+   del decreto; dove la banca ha una nota (`nb`, gli oscurati, i divergenti dal
+   DM 133/2024) la nota vale più della frase del modello.
+7. **Si dice che è un modello**, nella voce e nel risultato. Lo chiede la nostra
+   filosofia, e la trasparenza dell'AI Act.
+8. **Un errore non è un piano vuoto.** Rete assente, quota finita, rifiuto del
+   modello, risposta scartata dal controllo: ognuno ha la sua frase e un modo di
+   uscirne. Nessuno diventa «nessun gruppo trovato».
+
+**Dove gira.** La pagina non chiama Anthropic: la chiave API non deve stare nel
+browser, e `test_nessuna_risorsa_di_terzi` resta vero. Chiama il **server degli
+account**, che fa da tramite: tiene la chiave in `/etc/rg/ambiente` come gli
+altri segreti, aggiunge i testi dalla banca che ha già, conta i tetti, inoltra e
+restituisce. Non seleziona e non salva il piano: il §3.7 («il server non
+seleziona quesiti») resta vero, ma la riga «che cosa fa» si allunga, perché per
+la prima volta il server parla con un terzo per conto di chi studia. Il server
+non ha dipendenze npm, quindi la chiamata va con `fetch` di Node, senza SDK.
+
+**Solo con l'account.** Senza account la pagina non fa nessuna richiesta al
+server (R-ACC-09, ADR-004), e la funzione non c'è. In più l'account è per chi ha
+compiuto 18 anni.
+
+**La privacy** — verificata il 24 ottobre 2026, non un parere legale.
+- **Che cosa va ad Anthropic:** per ogni errore il testo della domanda, le
+  risposte, quale ha dato chi studia e quale è giusta, tema e voce, e il tag se
+  c'è. **Mai** l'email, il numero dell'account o l'IP di chi studia (la chiamata
+  parte dal server). Per Anthropic è difficile risalire a una persona; per noi
+  resta un dato personale, e va trattato come tale.
+- **Il contratto.** Accettando i termini commerciali dell'API si accetta il DPA
+  di Anthropic, che comprende le clausole contrattuali standard per i
+  trasferimenti fuori dall'UE
+  ([Anthropic](https://privacy.claude.com/en/articles/7996862-how-do-i-view-and-sign-your-data-processing-addendum-dpa)).
+- **Quanto resta e a che cosa serve.** Con l'API, domande e risposte si
+  cancellano entro 30 giorni, salvo violazioni delle regole d'uso o accordi
+  diversi
+  ([Anthropic](https://privacy.claude.com/en/articles/7996866-is-my-data-used-for-model-training)).
+  Che i dati dell'API non addestrino i modelli lo dicono le fonti, comprese
+  alcune di terzi: da rileggere nei termini commerciali al momento dell'ADR.
+- **Dove.** Con l'API diretta l'elaborazione è negli **Stati Uniti**: secondo
+  fonti di terzi non c'è un'opzione solo europea
+  ([compound.law](https://compound.law/en-DE/tools/anthropic-api/),
+  [Microsoft Learn](https://learn.microsoft.com/en-us/answers/a/12741058)).
+  Bedrock o Vertex in una regione europea terrebbero i dati in UE, ma lì i
+  crediti Claude Platform non valgono. Se Anthropic sia iscritta al Data Privacy
+  Framework **non è verificato**: la lista ufficiale non si è lasciata leggere.
+  La base solida sono le clausole standard.
+- **Che cosa cambia nell'informativa** (`site/privacy.html`, territorio
+  dell'interfaccia: passa da `ui/*`). Un responsabile in più, Anthropic, con il
+  Paese, le clausole standard, i 30 giorni, i dati mandati e lo scopo. La frase
+  «I dati non escono dall'Unione europea» diventa «tranne quelli che mandi,
+  quando lo chiedi, per raggruppare i tuoi errori». La base giuridica proposta è
+  l'esecuzione del contratto (un servizio che chiedi tu); il consenso è
+  l'alternativa. Tutte e due da far confermare nel parere già in conto (§15.4 di
+  `account-progetto.md`).
+- **E farlo scegliere.** La funzione è spenta finché chi studia non la accende,
+  con accanto la frase «le risposte che raggruppi vanno ad Anthropic, negli
+  Stati Uniti». Spegnerla non toglie niente dall'account.
+
+**I costi**, stimati e non misurati (prezzi del 6 ottobre 2026: Opus 5.5 4 $ e
+20 $ per milione di token in entrata e in uscita, Sonnet 5.5 2 $ e 10 $, Haiku
+5.5 0,10 $ e 0,50 $). Un piano con circa 40 errori sono 6–8.000 token in
+entrata e circa 1.000 in uscita: **Sonnet 2–3 centesimi a piano, Opus circa 5,
+Haiku meno di uno.** Con 50 $ al mese sono fra 1.000 e 2.500 piani: per pochi
+utenti è molto più del bisogno. Due tetti lo stesso, perché un abuso non costi
+l'intero mese: uno nel server — proposta: 3 piani al giorno per persona e un
+totale mensile, oltre il quale la voce dice che per questo mese è finita — e un
+limite di spesa nella Console di Anthropic, se lo si imposta. Il server conta
+chiamate e token, non i contenuti.
+
+**Che cosa c'è già.** Gli errori aperti per contratto (`soloDaRifare`, R-MAPPA-01
+e 02); la risposta data (`chosen`) in ogni riga dei quiz; i tag N e S (R-TAG-01);
+la banca sul server; i segreti in `/etc/rg/ambiente`; la forma dei raccordi
+eseguiti dal banco; i cinque stati, se un giorno il piano volesse guardare anche
+i «da confermare».
+
+**Grandezza.** L: un ADR, il server (rotta, chiave, tetti), il motore (la
+selezione su un gruppo di id), il raccordo e il suo controllo, la
+pagina su `ui/*`, l'informativa, i requisiti nel §9. I test non chiamano mai
+Anthropic: il banco serve un Anthropic finto, con risposte buone e rotte.
+
+**Rischi — il guasto muto per primo.**
+- **Un raggruppamento sbagliato** («tutti fanali di poppa» quando due non lo
+  sono) insegna una lettura sbagliata dei propri errori, con l'aria di essere
+  giusta. Lo attenuano i quesiti mostrati sotto il titolo, che si vedono subito,
+  un «questo gruppo non torna» (C-03), e una prova prima del rilascio: l'autore
+  guarda una ventina di piani su archivi veri o sintetici, e da lì decide.
+- **Un numero o un id inventati**: li ferma il controllo del raccordo, e un
+  requisito lo tiene fermo.
+- **Un piano vuoto che sembra una risposta**: regola 8.
+- **La spesa che scappa**: i due tetti.
+- **Un modello ritirato**: l'id del modello sta in un posto solo, e cambiarlo è
+  un commit con la prova rifatta.
+
+**Accanto, dopo I-10: «Chiedi perché».** Sullo stesso tramite, una domanda su un
+singolo quesito, con la spiegazione già verificata come base: meno di un
+centesimo a domanda con Sonnet. Ha senso solo quando le spiegazioni ci sono, e
+porta le stesse regole sulla privacy.
+
+**Decisioni per l'autore.**
+1. Se farlo, e se l'IA in pagina resta **solo con l'account**. Serve un ADR
+   (ADR-007), perché tocca la filosofia («stanno in Europa») e il §3.7.
+2. La riga nuova dell'informativa: questi dati vanno negli Stati Uniti, solo
+   quando lo chiedi.
+3. Il §7.4, «mai una diagnosi sulle cause»: è ammessa una frase su che cosa i
+   quesiti hanno in comune, dichiarata come lettura del modello?
+4. Quale modello — Sonnet, Opus o Haiku —, da scegliere dopo la prova sui piani,
+   confrontandoli sugli stessi archivi.
+5. La base giuridica, contratto o consenso, nel parere.
+6. La soglia (proposta: 10 errori aperti) e i tetti (proposta: 3 piani al giorno
+   per persona, e un totale mensile sotto i crediti).
+7. L'ordine rispetto a I-10: il piano non ha bisogno delle spiegazioni, il
+   «Chiedi perché» sì.
+
+**Domande aperte (sessione).** Solo gli errori aperti, o anche i quesiti «da
+confermare»? Proposta: solo gli errori, per cominciare. Solo i quiz, come I-10,
+e non il carteggio. La vela entra se ha errori aperti, con i suoi gruppi a parte.

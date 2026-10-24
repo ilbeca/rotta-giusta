@@ -102,6 +102,30 @@ coerente. Nessun file di `site/` è cambiato; versione 0.34.0 invariata.
   Server non toccato e non rifatto. `site/` non toccato. Nella coda la nota
   del fermo e il prompt per riprendere P-95.
 
+### Progettato — il piano dagli errori, con un modello in pagina (I-28)
+
+- **Perché.** L'autore ha 50–100 $ al mese di crediti dell'API di Anthropic e
+  si aspetta pochissimi utenti: il vincolo vero non è la spesa ma la privacy.
+  Il lavoro preparatorio — bozze delle spiegazioni di I-10, audit della banca,
+  quesiti collegati, letture da fuori — si fa nelle sessioni; i crediti restano
+  per la pagina. Scritta in `docs/idee-dopo-gli-account.md` una scheda nuova,
+  I-28: un modello divide gli errori aperti in gruppi con un titolo e una
+  frase, e «Allena questo gruppo» li apre nel runner di sempre.
+- **Le regole.** La lista la dà il motore (`soloDaRifare`), il modello la
+  divide e basta, un raccordo controlla la risposta e i numeri li conta la
+  pagina; si dice che cosa i quesiti hanno in comune, non perché si sbaglia
+  (§7.4); non si salva; solo con l'account, accesa da chi studia, con il server
+  degli account come tramite e la chiave fuori dal browser.
+- **Verificato il 24 ottobre, sulle pagine di Anthropic:** il DPA con le
+  clausole standard è compreso nei termini commerciali, e l'API cancella
+  domande e risposte entro 30 giorni. Secondo fonti di terzi l'elaborazione è
+  negli Stati Uniti senza un'opzione solo europea; l'iscrizione al Data Privacy
+  Framework non è verificata. L'informativa perderebbe «i dati non escono
+  dall'Unione europea» per questi soli dati: serve un ADR e il parere già in
+  conto. Costi stimati, non misurati: 2–3 centesimi a piano con Sonnet 5.5,
+  circa 5 con Opus 5.5. Sette decisioni per l'autore nella scheda.
+- Nessun file di `site/`, `server/` o `tests/` toccato; guardiano verde.
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la
