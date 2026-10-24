@@ -125,6 +125,43 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   toccato e non è stato rifatto con la LTS 24, che non è più sul disco. `site/`
   non è stato toccato.
 
+### Fixed — P-93: l’avviso una volta, Esame sulle prove, l’avvio in vista
+
+- L’avviso senza account accompagna l’avvio in ogni preparazione: testo senza
+  riquadro, con `data-ruolo="avviso"`, senza altri bersagli in mezzo. Esce
+  dalla Home e dal segmento Carteggio; nei Segnali parla dei punteggi e sta
+  accanto a Inizia. La Home conserva la frase dell’introduzione e perde
+  «Tutte le attività…», come deciso nel giro 1: il fatto si dice una volta.
+- Esame mostra le quattro prove prima del modulo, ora chiuso in un dettaglio
+  il cui sommario dice la scelta e la data. Le porte del Carteggio precedono
+  materiali e aiuti. Gli avvii dei quiz e del carteggio precedono le opzioni
+  e gli approfondimenti, mantenendo i conteggi dalla stessa preparazione.
+  Le opzioni dei quiz restano aperte: nasconderle rompeva N-01:cronologia.
+- L’azione principale porta il ruolo del contratto; i ritorni portano
+  `data-prep="chiudi"`, anche «Cambia attività» dei quiz. Nel riepilogo il
+  pulsante dell’invito è secondario: a 1280 px competeva con Riprova.
+  Restano frasi di conservazione, tre inviti, giudizio personale del
+  carteggio, porta della simulazione dalla Home e tragitti di N-01.
+- **Misurato e guardato:** 72 schermate prima/dopo, senza account, a 375×667,
+  375×812 e 1280×800. In Esame la prima porta passa da 923–995 a 230–303 px
+  sul telefono; nei Segnali l’avviso è a 494–531 e Inizia a 544–596 px,
+  interamente sopra la barra. Rettangoli, coordinate degli avvisi e delle
+  azioni, limiti e giri di verifica in `docs/regole-disegno-ux.md`. Home H0
+  a 375×812: 99 → **78 parole**, tetto misurato del giro 1 (decisione E).
+- **Controlli:** le undici verifiche T-12 inizialmente rosse ora passano;
+  tolte le undici dichiarazioni nello stesso commit. T-12, C-02 e T-06
+  verdi per intero sulla pagina vera, **32/32** nel giro mirato. La suite
+  dell’interfaccia finale è **3612/3612** in 341,1 secondi, dopo 91 s di
+  8620 libera. Le 22 verifiche in meno rispetto a P-92 sono le due verifiche
+  di ciascuna dichiarazione rimossa; nessun controllo è stato escluso.
+  Motore **215/219**, quattro skip previsti; dati **225**, specifica **1064**;
+  server **89/89** con Node 25.3.0 e **89/89** con la LTS 24.22.0, pacchetto
+  ufficiale verificato con `SHASUMS256.txt`. Guardiano e documentazione verdi.
+  Nei giri precedenti: due rossi di N-01 corretti lasciando le opzioni
+  leggibili, poi due rossi nelle controprove del riferimento; giri e limiti
+  sono dichiarati nel collaudo. Nessun motore, test, dato o versione cambiato;
+  nessun push o rilascio.
+
 ## [0.33.0] — 2026-10-23
 
 **Il runner dei quiz si scorre, e la figura si vede.** Sul telefono, dopo una
