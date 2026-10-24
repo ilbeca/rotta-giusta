@@ -1,0 +1,627 @@
+{
+  "data": "2026-10-24",
+  "browser": "Chrome headless, protocollo CDP tramite tests/browser.mjs",
+  "sorgente_commit": "9244f02176418934b1c19a9df3387377f2c968ca",
+  "sorgenti_sha256": {
+    "docs/prototipi/redesign-2026-10-claude/direzioni.html": "7d852022af83cb59249d6f378f6e1154fe90d53fe23e3d4c1cb0309c3e18510c",
+    "docs/prototipi/redesign-2026-10-claude/a-carta-nautica/home.html": "c49097da92c3de6b3d0a2d70278c82ee2071a54b6b472fc3b5acb11299fea6bd",
+    "docs/prototipi/redesign-2026-10-claude/a-carta-nautica/quiz.html": "28ff0fb574500c582cffea8085e5766b488d4bfeaedd0bc3b32a5664e84ee9cc",
+    "docs/prototipi/redesign-2026-10-claude/a-carta-nautica/runner.html": "101c692e8b649638a4e7f6ffbc30739d2eb73c4b77ebf356f4a08608883fbd2c",
+    "docs/prototipi/redesign-2026-10-claude/a-carta-nautica/riepilogo.html": "c7c13e58f18bf1c1a39517357a1f89dac29689a107ad9b1dbb55b64b8ae7828a"
+  },
+  "misure": [
+    {
+      "name": "a-home",
+      "w": 375,
+      "h": 812,
+      "width": 375,
+      "height": 812,
+      "overflow": 0,
+      "heightDoc": 1826,
+      "primary": [
+        {
+          "text": "Simula il quiz base",
+          "x": 33,
+          "y": 495.5625,
+          "w": 309,
+          "h": 56,
+          "bottom": 551.5625,
+          "font": "16px",
+          "color": "rgb(255, 255, 255)",
+          "bg": "rgb(11, 31, 51)"
+        }
+      ],
+      "smallTargets": [
+        {
+          "text": "ROTTA GIUSTA",
+          "x": 16,
+          "y": 15,
+          "w": 152.765625,
+          "h": 34,
+          "bottom": 49,
+          "font": "14px",
+          "color": "rgb(11, 31, 51)",
+          "bg": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "codice sorgente",
+          "x": 155.84375,
+          "y": 1655.734375,
+          "w": 104.421875,
+          "h": 21,
+          "bottom": 1676.734375,
+          "font": "14px",
+          "color": "rgb(54, 80, 106)",
+          "bg": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Privacy",
+          "x": 276.265625,
+          "y": 1655.734375,
+          "w": 46.109375,
+          "h": 21,
+          "bottom": 1676.734375,
+          "font": "14px",
+          "color": "rgb(54, 80, 106)",
+          "bg": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Condizioni per l'account",
+          "x": 16,
+          "y": 1692.734375,
+          "w": 154.609375,
+          "h": 21,
+          "bottom": 1713.734375,
+          "font": "14px",
+          "color": "rgb(54, 80, 106)",
+          "bg": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Avvertenza",
+          "x": 186.609375,
+          "y": 1692.734375,
+          "w": 71.890625,
+          "h": 21,
+          "bottom": 1713.734375,
+          "font": "14px",
+          "color": "rgb(54, 80, 106)",
+          "bg": "rgba(0, 0, 0, 0)"
+        }
+      ]
+    },
+    {
+      "name": "a-home",
+      "w": 375,
+      "h": 667,
+      "width": 375,
+      "height": 667,
+      "overflow": 0,
+      "heightDoc": 1826,
+      "primary": [
+        {
+          "text": "Simula il quiz base",
+          "x": 33,
+          "y": 495.5625,
+          "w": 309,
+          "h": 56,
+          "bottom": 551.5625,
+          "font": "16px",
+          "color": "rgb(255, 255, 255)",
+          "bg": "rgb(11, 31, 51)"
+        }
+      ],
+      "smallTargets": [
+        {
+          "text": "ROTTA GIUSTA",
+          "x": 16,
+          "y": 15,
+          "w": 152.765625,
+          "h": 34,
+          "bottom": 49,
+          "font": "14px",
+          "color": "rgb(11, 31, 51)",
+          "bg": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "codice sorgente",
+          "x": 155.84375,
+          "y": 1655.734375,
+          "w": 104.421875,
+          "h": 21,
+          "bottom": 1676.734375,
+          "font": "14px",
+          "color": "rgb(54, 80, 106)",
+          "bg": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Privacy",
+          "x": 276.265625,
+          "y": 1655.734375,
+          "w": 46.109375,
+          "h": 21,
+          "bottom": 1676.734375,
+          "font": "14px",
+          "color": "rgb(54, 80, 106)",
+          "bg": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Condizioni per l'account",
+          "x": 16,
+          "y": 1692.734375,
+          "w": 154.609375,
+          "h": 21,
+          "bottom": 1713.734375,
+          "font": "14px",
+          "color": "rgb(54, 80, 106)",
+          "bg": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Avvertenza",
+          "x": 186.609375,
+          "y": 1692.734375,
+          "w": 71.890625,
+          "h": 21,
+          "bottom": 1713.734375,
+          "font": "14px",
+          "color": "rgb(54, 80, 106)",
+          "bg": "rgba(0, 0, 0, 0)"
+        }
+      ]
+    },
+    {
+      "name": "a-home",
+      "w": 1280,
+      "h": 800,
+      "width": 1280,
+      "height": 800,
+      "overflow": -15,
+      "heightDoc": 1280,
+      "primary": [
+        {
+          "text": "Simula il quiz base",
+          "x": 137.5,
+          "y": 496.703125,
+          "w": 483.8125,
+          "h": 56,
+          "bottom": 552.703125,
+          "font": "16px",
+          "color": "rgb(255, 255, 255)",
+          "bg": "rgb(11, 31, 51)"
+        }
+      ],
+      "smallTargets": [
+        {
+          "text": "ROTTA GIUSTA",
+          "x": 104.5,
+          "y": 19,
+          "w": 152.765625,
+          "h": 34,
+          "bottom": 53,
+          "font": "14px",
+          "color": "rgb(11, 31, 51)",
+          "bg": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "codice sorgente",
+          "x": 244.34375,
+          "y": 1195.125,
+          "w": 104.421875,
+          "h": 21,
+          "bottom": 1216.125,
+          "font": "14px",
+          "color": "rgb(54, 80, 106)",
+          "bg": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Privacy",
+          "x": 364.765625,
+          "y": 1195.125,
+          "w": 46.109375,
+          "h": 21,
+          "bottom": 1216.125,
+          "font": "14px",
+          "color": "rgb(54, 80, 106)",
+          "bg": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Condizioni per l'account",
+          "x": 426.875,
+          "y": 1195.125,
+          "w": 154.609375,
+          "h": 21,
+          "bottom": 1216.125,
+          "font": "14px",
+          "color": "rgb(54, 80, 106)",
+          "bg": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Avvertenza",
+          "x": 597.484375,
+          "y": 1195.125,
+          "w": 71.890625,
+          "h": 21,
+          "bottom": 1216.125,
+          "font": "14px",
+          "color": "rgb(54, 80, 106)",
+          "bg": "rgba(0, 0, 0, 0)"
+        }
+      ]
+    },
+    {
+      "name": "a-quiz",
+      "w": 375,
+      "h": 812,
+      "width": 375,
+      "height": 812,
+      "overflow": 0,
+      "heightDoc": 1781,
+      "primary": [
+        {
+          "text": "Inizia l'allenamento",
+          "x": 33,
+          "y": 401.578125,
+          "w": 309,
+          "h": 56,
+          "bottom": 457.578125,
+          "font": "16px",
+          "color": "rgb(255, 255, 255)",
+          "bg": "rgb(11, 31, 51)"
+        }
+      ],
+      "smallTargets": [
+        {
+          "text": "ROTTA GIUSTA",
+          "x": 16,
+          "y": 15,
+          "w": 152.765625,
+          "h": 34,
+          "bottom": 49,
+          "font": "14px",
+          "color": "rgb(11, 31, 51)",
+          "bg": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Privacy",
+          "x": 155.84375,
+          "y": 1648.28125,
+          "w": 46.109375,
+          "h": 21,
+          "bottom": 1669.28125,
+          "font": "14px",
+          "color": "rgb(54, 80, 106)",
+          "bg": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Avvertenza",
+          "x": 217.953125,
+          "y": 1648.28125,
+          "w": 71.890625,
+          "h": 21,
+          "bottom": 1669.28125,
+          "font": "14px",
+          "color": "rgb(54, 80, 106)",
+          "bg": "rgba(0, 0, 0, 0)"
+        }
+      ]
+    },
+    {
+      "name": "a-quiz",
+      "w": 375,
+      "h": 667,
+      "width": 375,
+      "height": 667,
+      "overflow": 0,
+      "heightDoc": 1781,
+      "primary": [
+        {
+          "text": "Inizia l'allenamento",
+          "x": 33,
+          "y": 401.578125,
+          "w": 309,
+          "h": 56,
+          "bottom": 457.578125,
+          "font": "16px",
+          "color": "rgb(255, 255, 255)",
+          "bg": "rgb(11, 31, 51)"
+        }
+      ],
+      "smallTargets": [
+        {
+          "text": "ROTTA GIUSTA",
+          "x": 16,
+          "y": 15,
+          "w": 152.765625,
+          "h": 34,
+          "bottom": 49,
+          "font": "14px",
+          "color": "rgb(11, 31, 51)",
+          "bg": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Privacy",
+          "x": 155.84375,
+          "y": 1648.28125,
+          "w": 46.109375,
+          "h": 21,
+          "bottom": 1669.28125,
+          "font": "14px",
+          "color": "rgb(54, 80, 106)",
+          "bg": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Avvertenza",
+          "x": 217.953125,
+          "y": 1648.28125,
+          "w": 71.890625,
+          "h": 21,
+          "bottom": 1669.28125,
+          "font": "14px",
+          "color": "rgb(54, 80, 106)",
+          "bg": "rgba(0, 0, 0, 0)"
+        }
+      ]
+    },
+    {
+      "name": "a-quiz",
+      "w": 1280,
+      "h": 800,
+      "width": 1280,
+      "height": 800,
+      "overflow": -15,
+      "heightDoc": 1119,
+      "primary": [
+        {
+          "text": "Inizia l'allenamento",
+          "x": 137.5,
+          "y": 430.78125,
+          "w": 392.171875,
+          "h": 56,
+          "bottom": 486.78125,
+          "font": "16px",
+          "color": "rgb(255, 255, 255)",
+          "bg": "rgb(11, 31, 51)"
+        }
+      ],
+      "smallTargets": [
+        {
+          "text": "ROTTA GIUSTA",
+          "x": 104.5,
+          "y": 19,
+          "w": 152.765625,
+          "h": 34,
+          "bottom": 53,
+          "font": "14px",
+          "color": "rgb(11, 31, 51)",
+          "bg": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Privacy",
+          "x": 244.34375,
+          "y": 1034.109375,
+          "w": 46.109375,
+          "h": 21,
+          "bottom": 1055.109375,
+          "font": "14px",
+          "color": "rgb(54, 80, 106)",
+          "bg": "rgba(0, 0, 0, 0)"
+        },
+        {
+          "text": "Avvertenza",
+          "x": 306.453125,
+          "y": 1034.109375,
+          "w": 71.890625,
+          "h": 21,
+          "bottom": 1055.109375,
+          "font": "14px",
+          "color": "rgb(54, 80, 106)",
+          "bg": "rgba(0, 0, 0, 0)"
+        }
+      ]
+    },
+    {
+      "name": "a-runner",
+      "w": 375,
+      "h": 812,
+      "width": 375,
+      "height": 812,
+      "overflow": 0,
+      "heightDoc": 903,
+      "primary": [
+        {
+          "text": "Avanti",
+          "x": 16,
+          "y": 744,
+          "w": 343,
+          "h": 56,
+          "bottom": 800,
+          "font": "16px",
+          "color": "rgb(255, 255, 255)",
+          "bg": "rgb(11, 31, 51)"
+        }
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "a-runner",
+      "w": 375,
+      "h": 667,
+      "width": 375,
+      "height": 667,
+      "overflow": 0,
+      "heightDoc": 903,
+      "primary": [
+        {
+          "text": "Avanti",
+          "x": 16,
+          "y": 599,
+          "w": 343,
+          "h": 56,
+          "bottom": 655,
+          "font": "16px",
+          "color": "rgb(255, 255, 255)",
+          "bg": "rgb(11, 31, 51)"
+        }
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "a-runner",
+      "w": 1280,
+      "h": 800,
+      "width": 1280,
+      "height": 800,
+      "overflow": -15,
+      "heightDoc": 854,
+      "primary": [
+        {
+          "text": "Avanti",
+          "x": 252.5,
+          "y": 732,
+          "w": 760,
+          "h": 56,
+          "bottom": 788,
+          "font": "16px",
+          "color": "rgb(255, 255, 255)",
+          "bg": "rgb(11, 31, 51)"
+        }
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "a-riepilogo",
+      "w": 375,
+      "h": 812,
+      "width": 375,
+      "height": 812,
+      "overflow": 0,
+      "heightDoc": 1125,
+      "primary": [
+        {
+          "text": "Riprova l'errore",
+          "x": 16,
+          "y": 501.859375,
+          "w": 343,
+          "h": 56,
+          "bottom": 557.859375,
+          "font": "16px",
+          "color": "rgb(255, 255, 255)",
+          "bg": "rgb(11, 31, 51)"
+        }
+      ],
+      "smallTargets": [
+        {
+          "text": "ROTTA GIUSTA",
+          "x": 16,
+          "y": 15,
+          "w": 152.765625,
+          "h": 34,
+          "bottom": 49,
+          "font": "14px",
+          "color": "rgb(11, 31, 51)",
+          "bg": "rgba(0, 0, 0, 0)"
+        }
+      ]
+    },
+    {
+      "name": "a-riepilogo",
+      "w": 375,
+      "h": 667,
+      "width": 375,
+      "height": 667,
+      "overflow": 0,
+      "heightDoc": 1125,
+      "primary": [
+        {
+          "text": "Riprova l'errore",
+          "x": 16,
+          "y": 501.859375,
+          "w": 343,
+          "h": 56,
+          "bottom": 557.859375,
+          "font": "16px",
+          "color": "rgb(255, 255, 255)",
+          "bg": "rgb(11, 31, 51)"
+        }
+      ],
+      "smallTargets": [
+        {
+          "text": "ROTTA GIUSTA",
+          "x": 16,
+          "y": 15,
+          "w": 152.765625,
+          "h": 34,
+          "bottom": 49,
+          "font": "14px",
+          "color": "rgb(11, 31, 51)",
+          "bg": "rgba(0, 0, 0, 0)"
+        }
+      ]
+    },
+    {
+      "name": "a-riepilogo",
+      "w": 1280,
+      "h": 800,
+      "width": 1280,
+      "height": 800,
+      "overflow": -15,
+      "heightDoc": 1012,
+      "primary": [
+        {
+          "text": "Riprova l'errore",
+          "x": 312.5,
+          "y": 582.703125,
+          "w": 640,
+          "h": 56,
+          "bottom": 638.703125,
+          "font": "16px",
+          "color": "rgb(255, 255, 255)",
+          "bg": "rgb(11, 31, 51)"
+        }
+      ],
+      "smallTargets": [
+        {
+          "text": "ROTTA GIUSTA",
+          "x": 104.5,
+          "y": 19,
+          "w": 152.765625,
+          "h": 34,
+          "bottom": 53,
+          "font": "14px",
+          "color": "rgb(11, 31, 51)",
+          "bg": "rgba(0, 0, 0, 0)"
+        }
+      ]
+    }
+  ],
+  "scroll_runner_375x667": {
+    "prima": {
+      "terza_top": 513.734375,
+      "terza_bottom": 592.515625,
+      "piede_top": 554
+    },
+    "dopo": {
+      "scrollY": 236,
+      "terza_top": 277.734375,
+      "terza_bottom": 356.515625,
+      "piede_top": 554
+    }
+  },
+  "schermate_sha256": {
+    "a-home-1280x800.png": "3b478315bf672a0f75887f835726e783ea808496b5300e660b209cd4cc2774b0",
+    "a-home-375x667.png": "cc9a921180b6f031daede3f0011c383f3eaab7f07f72a9868e38789ece00823d",
+    "a-home-375x812.png": "4c7485df518f19409b50645d7ec2fc246656177c4e85ae60af3c87aa7dd595b6",
+    "a-quiz-1280x800.png": "d126c765228ef2e30fa274da81ecc31a4398e6d41f488e7dda92718fb5ed17f7",
+    "a-quiz-375x667.png": "3a0c2e99c1f6260ae296803b730e5cea690e7efbdb5f1c732fe7a181388b8b17",
+    "a-quiz-375x812-fondo.png": "2e6ab8bf4d8477df7119e9916bcc9cbea3efc19a2df538a429de6c4c1352ae4e",
+    "a-quiz-375x812.png": "802c3285d04e46d0636d7cd5fbd204b894b747ea3aacc2d579b070ad86711589",
+    "a-riepilogo-1280x800.png": "a3fd1af6f54822d39a068808744b48d42f8dd8ac72a53fdfb1c456a9af3dfc3f",
+    "a-riepilogo-375x667-fondo.png": "a101e30861b7605f473af5ef2a3b9d6d91449ed9650f91ee8cf400a2c9d7fe48",
+    "a-riepilogo-375x667.png": "25f6ad427ca60933bc6739848f6fa3641fce504e781cc4719b937e1a6dbe6106",
+    "a-riepilogo-375x812.png": "a4bb1d8a57cbc57da92e927c3b3d62151509e31609ee33a99a61ea56f6848502",
+    "a-runner-1280x800.png": "9528e165e4f8c897a3513542a85a08dbf65345f727e668095a771f513367011e",
+    "a-runner-375x667-fondo.png": "5a015c2227b364e6541ca8a3b0bb367b2bdada668c7fbe3877da303a9c09cbec",
+    "a-runner-375x667.png": "4b46dd898f42250847ced7c9f66bfc7ef71089ab556bca0baef3a42f84ea6b5a",
+    "a-runner-375x812.png": "3bf27e729cc57d3281e5de0b8be2867789976b1e1b7502a609131a290a5d520e",
+    "direzioni-1280x800.png": "00b70818c8e3c85ad432ceaf15fbc104bc1a094a94f469fa1550dc5d681ee057"
+  }
+}

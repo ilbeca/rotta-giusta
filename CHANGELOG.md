@@ -207,6 +207,34 @@ versione 0.34.0 invariata.
   dedotta dai test, nessuna prova con persone o telefono fisico. Niente push.
 
 
+### Progettato — Parere sulla direzione A, «La carta nautica»
+
+Il confronto richiesto dall'autore con I-29 di Claude è in
+`docs/prototipi/redesign-2026-10-chatgpt/parere-su-A.md`: raccomandata la A
+come identità di Rotta Giusta, con meno reticolo e cornici e senza lo zigzag
+del riepilogo, perché durante lo studio la decorazione deve lasciare spazio
+alla domanda. Il parere distingue il consenso alla direzione dai dettagli
+ancora da correggere, confronta Atlante, Linea di rotta e Circolo e indica
+costi e garanzie da mantenere in T-10…T-13. Nessuna direzione viene approvata
+al posto dell'autore e nessun codice del sito cambia.
+
+- Tavola delle direzioni e quattro mock A aperti in Chrome headless a
+  375×812, 375×667 e 1280×800: dodici viste della A senza sbordamento
+  orizzontale positivo, un comando principale per vista; sedici nuove
+  schermate conservate con misure e impronte. A 375×667 la terza risposta
+  è parzialmente coperta dal piede fisso; scorrendo torna tutta visibile.
+  Segnalate la tappa corrente incoerente con «1 di 10», la frase «fermato a
+  metà» dopo 2 risposte su 10 e l'uso del magenta anche su azioni e navigazione.
+- Suite sul canonico invariato: motore **215/219** (4 salti previsti),
+  dati **225**, interfaccia **3.849**, specifica **1.096**, server **89/89**
+  con Node 25.3.0 e **89/89** con Node 24.22.0 LTS, archivio ricontrollato
+  contro SHASUMS256. Guardiano, documentazione, 19 link locali e 16 impronte
+  delle schermate verificati. Questi esiti non approvano il disegno dei mock.
+- Nessuna prova con persone, Safari o telefono fisico; i mock non sono un
+  collaudo della pagina futura. Restano da progettare preparazioni, figura,
+  domande lunghe e stati con account. Versione invariata, niente push.
+
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la
