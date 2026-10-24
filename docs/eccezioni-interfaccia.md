@@ -160,20 +160,10 @@ sulla pagina vera.
 
 | parte | verifica | perché è ancora qui |
 |---|---|---|
-| T-13:corpi | i corpi calcolati del testo visibile appartengono alla scala | P-94, giro 2: Home a 375: 7 corpi, compreso Accedi a 11 px e h2 a 13; a 1280 il titolo Home è 48 px, fuori dal 40 previsto. Correzione su ui/* |
-| T-13:corpi | nel primo schermo al piu' cinque corpi (soglia nostra) | P-94, giro 2: Home H0: 7 corpi a entrambe le larghezze; Segnali arriva a 9 a 375 e 10 a 1280, contro il massimo di 5. Correzione su ui/* |
-| T-13:titoli | un h1 per vista, al piu' tre livelli e nessun titolo piu' piccolo del testo o dei sottotitoli (soglia nostra per le dimensioni) | P-94, giro 2: Home: h2 a 13 px sopra h3 a 23 e testo a 16; in Allenati gli h2 introducono testo più grande. Correzione su ui/* |
-| T-13:testo | testo corrente e risposte almeno 16 px, interlinea 1,45 e titoli 1,2 (soglie nostre), senza giustificato o maiuscolo su piu' righe | P-94, giro 2: Paragrafi a 13 e 14 px, risposte del runner a 15,5; titoli con interlinea 1,45 invece di 1,2; testo a 1,55 invece di 1,45. Correzione su ui/* |
-| T-13:spazi | gli spazi calcolati appartengono alla scala | P-94, giro 2: Testata a 375 con padding 10 e 14 px e gap del marchio di 6; la scala ammette 4, 8, 12, 16, 24, 32, 48. Correzione su ui/* |
-| T-13:spazi | fra due sezioni piu' spazio che fra i figli della stessa sezione | P-94, giro 2: In Esame a 375 fra prove e modulo 24 px, dentro le prove 24; a 1280 dentro 30, maggiore dei 24 esterni. Correzione su ui/* |
-| T-13:pesi | pesi 400, 600, 700 e grassetto al piu' cinque parole nel paragrafo (soglia nostra) | P-94, giro 2: Marchio a 800, altri testi a 650, 550 e 500; la decisione C ammette solo 400, 600 e 700. Correzione su ui/* |
-| T-13:distanze | fra due bersagli dello stesso strato almeno 8 px, esclusi segmenti e link nella frase; con un dialogo aperto, solo nel dialogo | P-94, giro 2: Voci della barra a 0 px; la soglia è 8 px. Solo i figli di tablist e i link dentro un paragrafo sono esclusi. Correzione su ui/* |
-| T-13:righe | a 1280 px le righe di testo corrente hanno al piu' 75 caratteri | P-94, giro 2: A 1280 la Home arriva a 105 caratteri per riga, il massimo del giro è 110; soglia 75. Correzione su ui/* |
-| T-13:colori | i colori di ruolo sono riservati ad azioni, errori e avvisi (ruoli nostri) | P-94, giro 2: Il colore di accento #076f99 compare sui segni informativi non interattivi delle tecniche; il ruolo è riservato a ciò che si tocca. Correzione su ui/* |
-| scala-css | i corpi scritti negli stili appartengono alla scala | P-94, giro 2: Nei fogli 11, 12,5, 13, 15,5 e altri valori; i corpi contrattuali sono 12, 14, 16, 19, 24, 30 e il 40 limitato alla Home larga. Correzione su ui/* |
-| scala-css | gli spazi scritti negli stili appartengono alla scala | P-94, giro 2: Margini e padding da 1, 2, 3, 5, 6, 10, 14, 18 e 22 px, più valori in em e calc con numeri fuori scala. Correzione su ui/* |
-| scala-css | i pesi scritti negli stili appartengono alla scala | P-94, giro 2: Dichiarazioni 500, 550, 650, 750, 800 invece di 400, 600, 700; il descrittore @font-face è escluso perché dichiara il file, non un peso usato. Correzione su ui/* |
-| scala-css | in :root i token dichiarano il contratto della scala e dei colori | P-94, giro 2: Cinque blocchi :root, nessun --t-* o --s-*; mancano i token delle interlinee, dei pesi e della larghezza. Correzione su ui/* |
+
+*P-95 ha chiuso le dieci verifiche T-13 e le quattro della scala CSS.
+I gruppi girano per intero sulla pagina vera; confronto visivo e limiti
+in [collaudo-p95/README.md](collaudo-p95/README.md).*
 
 *P-91 ha chiuso T-10 e T-11: proseguimento raggiungibile scorrendo il runner
 e figura in vista prima della risposta. I gruppi girano per intero sulla

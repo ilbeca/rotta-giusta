@@ -9,8 +9,9 @@ vista — è fatto: P-91, rilasciato nella v0.33.0, con T-10 e T-11 (R-RIF-17 e
 18) verdi sulla pagina vera.
 
 **Stato al 24 ottobre 2026:** giro 1 realizzato (P-92 e P-93, v0.34.0).
-Il giro 2 ha il contratto e i controlli di P-94 (§10.1), con i difetti della
-pagina vera dichiarati; la correzione su ui/* e il giro 3 restano da fare.
+Il giro 2 è realizzato su `ui/main` (P-95), con i controlli di P-94 e il
+perimetro delle distanze corretto su main dopo il primo fermo (§10.1).
+Restano la merge, l'approvazione visiva della decisione C e il giro 3.
 **File neutro**, come gli altri `*-progetto.md`: lo legge chi scrive i
 controlli su `main` e chi corregge la pagina su `ui/*`.
 
@@ -596,6 +597,98 @@ previsti), server 89/89 con Node di sistema e con Node 24.22.0 ufficiale,
 archivio verificato contro SHASUMS256.txt, dati 225, specifica 1.096;
 guardiano e documentazione verdi. Nessun file in site/, nessun numero di
 versione o tag cambiato, nessun push.
+
+**P-95 fermo sul perimetro delle distanze (24 ottobre 2026).**
+Il fast-forward di `ui/main` a `main` è passato, base `3a96f29`, versione
+0.34.0. Una candidata del giro 2 è stata costruita e misurata, ma **non è
+la pagina consegnata**: il prompt chiede di fermarsi quando serve un
+controllo nuovo o diverso. `site/index.html` è stato riportato alla base;
+le quattordici dichiarazioni e «Valori fuori scala» sono intatte. Nessun
+commit, tag o push.
+
+**Il punto da risolvere su main.** In `scalaT13()`, la lista dei bersagli
+prende elementi con rettangoli e `visibility` visibile; la loro distanza è
+calcolata sui rettangoli interi, senza distinguere la parte coperta dalla
+barra fissa o da una superficie sovrapposta. Nel giro della candidata,
+`T-13:distanze` segnala 0 px fra «Home» della barra e la porta «Allenati»
+della Home: a 375×812 il rettangolo di Home è y=759…817, quello della porta
+y=806,67…1034,03. Al punto (55, 810), `elementFromPoint()` restituisce il
+link Home: la porta sotto **non è il bersaglio toccabile in quel punto**.
+La [schermata a scorrimento zero](collaudo-p95/diagnosi-distanze-home-375.png),
+la [stessa porta dopo lo scorrimento](collaudo-p95/diagnosi-distanze-home-375-scorrimento.png)
+e i [rettangoli e i punti campionati](collaudo-p95/diagnosi-distanze-home-375.json)
+conservano la riproduzione. La candidata ha anche un difetto proprio:
+i link della barra sporgono di 5 px dal viewport; va corretto alla ripresa,
+ma il controllo dei rettangoli coperti resta un problema distinto.
+
+La stessa lettura di elementi coperti compare nello sfondo dei dialoghi.
+Una prova con `visibility:hidden` sullo sfondo rompe l'apertura di Info nel
+banco: `apriVista('info')` aspetta visibile `#v-home`, cioè la vista sotto il
+dialogo. La candidata contiene poi un esperimento con lo sfondo a opacità
+zero, che evita quel rosso: **non è una soluzione consegnata** e va rivisto,
+insieme al perimetro delle superfici, prima di proseguire.
+
+**Richiesta per il controllo, non cambio fatto da P-95.** Chiarire e provare
+su main come D-28 misura i bersagli di superfici fisse e sovrapposte:
+rettangoli interi oppure porzioni effettivamente visibili/toccabili, e quale
+superficie è attiva con un dialogo. Servono controprove con la barra fissa e
+un dialogo sovrapposto; una coppia realmente affiancata a meno di 8 px deve
+restare rossa. P-95 non modifica il banco né aggiunge eccezioni; non sposta
+le porte in funzione della piega di uno specifico viewport per farlo passare.
+
+**Che cosa era già misurato sulla candidata.** I quattro esiti di
+`verifiche_scala_css()` verdi; T-10 5/5, T-11 2/2, T-12 12/12. T-13 ha
+36 misure: corpi, cinque corpi nel primo schermo, titoli, pesi, righe,
+colori e Home verdi; massimo 72 caratteri a 1280 px, al più cinque corpi,
+Home H0 a 77 parole. Restano rossi testo, spazi e distanze: non sono tutti
+attribuiti al banco. Due paragrafi `.cart-memoria` sono ancora a 14 px,
+i radio degli esercizi conservano margini del browser, il runner ha 90 px
+di padding non ammessi dalla sua eccezione e restano distanze realmente
+nulle fra controlli. Sono lavoro della pagina, da completare dopo il punto
+sopra. Le cinque suite complete, C-02, T-06 e N-01 **non sono state
+rilanciate**: non c'è un collaudo finale né una consegna approvabile.
+
+**Confronto visivo e conservazione.** Le 24 schermate prima/candidata sono
+state guardate, sei superfici a 375×812 e 1280×800, e sono citate una per una
+nel [collaudo P-95](collaudo-p95/README.md). Il prefisso `dopo-` indica la
+candidata incompleta, non un esito finale. I 480 px non sono stati cambiati:
+la colonna appare leggibile nei confronti desktop, ma l'approvazione visiva
+dell'autore resta aperta. La candidata e i log sono temporaneamente in
+`/private/tmp/rg-p95/` (SHA-256 e limiti nel collaudo); possono sparire a un
+riavvio. Nel worktree restano solo questa nota e le evidenze, non codice
+incompleto in `site/`. Guardiano e controllo condiviso della documentazione
+verdi dopo il ripristino. La coda resta penna della regia.
+
+**Ripresa e conclusione di P-95 (24 ottobre 2026).** Il fermo sopra è
+storico. Il fast-forward a `25ea918` conserva nota ed evidenze; la candidata
+è stata recuperata con lo SHA-256 atteso. R-RIF-28 e la nota di ripresa sotto
+P-95 nella coda fissano il nuovo perimetro: stesso strato e, con un dialogo
+modale, solo i suoi bersagli. Nessun controllo è stato cambiato da ui/main.
+L'esperimento che rendeva trasparente lo sfondo dei dialoghi è stato tolto.
+
+Il canonico porta ora la scala, i titoli veri e i limiti di lettura. Le
+quattordici dichiarazioni chiuse escono con la correzione; la tabella
+«Valori fuori scala» resta identica. Il riepilogo dei quiz è una superficie
+fissa autonoma sotto la testata e nasconde solo i propri controlli precedenti.
+La prima estensione della regola al Carteggio aveva rotto N-01: 42 rossi su
+3.849 nel primo giro completo. Rimossa l'estensione, T-13 e i tre gruppi dei
+tragitti passano 84/84; la suite completa finale passa **3.849/3.849**.
+
+Il [collaudo finale](collaudo-p95/README.md) cita le 24 schermate prima/dopo,
+sei superfici a 375×812 e 1280×800, tutte guardate, e conserva separatamente
+quelle della candidata interrotta. I 480 px restano quelli del contratto:
+leggibili nel confronto desktop, in attesa dell'approvazione dell'autore.
+Le [36 misure T-13](collaudo-p95/misure-finali.json) danno massimo 72
+caratteri per riga, al più cinque corpi nel primo schermo, 77 parole nella
+Home H0 e almeno 8 px fra bersagli confrontabili.
+
+Cinque suite verdi: motore 215/219 (quattro salti previsti), server 89/89
+con Node di sistema e Node 24.22.0 ufficiale, archivio SHA-256 verificato,
+dati 225, specifica 1.096, interfaccia 3.849. Prima dell'ultimo avvio,
+8620 libera per 90,170 s consecutivi. Guardiano e documentazione verdi.
+Nessun cambiamento a motore, test, dati o versione; niente tag o push.
+R-RIF-23…30 restano da allineare dalla regia dopo la merge. Il perimetro
+non coperto del §12 e l'approvazione visiva della decisione C restano tali.
 
 #### Giro 3 — T-14
 
