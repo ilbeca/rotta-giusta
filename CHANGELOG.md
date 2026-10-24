@@ -125,6 +125,7 @@ coerente. Nessun file di `site/` è cambiato; versione 0.34.0 invariata.
   conto. Costi stimati, non misurati: 2–3 centesimi a piano con Sonnet 5.5,
   circa 5 con Opus 5.5. Sette decisioni per l'autore nella scheda.
 - Nessun file di `site/`, `server/` o `tests/` toccato; guardiano verde.
+
 ### Corretto — P-95: la scala di corpi, spazi e pesi nella pagina
 
 Titoli a 13 px sopra testo a 16 e risposte a 15,5 rendevano la gerarchia
@@ -158,6 +159,24 @@ selezione o contabilità. Versione 0.34.0 invariata.
   e gli stati con account (§12 del piano). Le prove degli account nella
   suite conservano il proprio perimetro.
 
+
+### Merge — P-95 su `main`, e la specifica allineata
+
+- **La merge di `ui/main` (P-95) è passata dal controllo dei territori**, e
+  prima delle suite sono state guardate otto schermate del collaudo: la Home a
+  375 e 1280 px prima e dopo, il runner e Esame a 375, il riepilogo a 1280.
+  Da `eccezioni-interfaccia.md` escono soltanto le quattordici righe della
+  scala; «Valori fuori scala» resta identica.
+- **R-RIF-23…30 non dicono più «difetto aperto»**, e il registro della
+  specifica ha la voce del giro 2; nella coda P-95 è fuso e il giro 3 ha la
+  sua riga. **Non si rilascia** finché l'autore non approva le 24 schermate di
+  `docs/collaudo-p95/`, con i 480 px (decisione C).
+- **Visto e non corretto, per il giro 3:** a 375 px le schede di Esame
+  mettono «Simula il quiz vela» e «Quiz base e vela» su tre colonne strette,
+  una parola per riga; il riepilogo dice «1 domanda su 1 proposte».
+- Suite sul `main` fuso: interfaccia **3.849** in 5 min 37 s, con la 8620
+  guardata libera per 90 s; motore 215/219 con i quattro skip previsti, dati
+  225, specifica 1.096, guardiano verde. Server non toccato.
 
 ## [0.34.0] — 2026-10-24
 

@@ -263,7 +263,8 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 24 | **La misura propria**: conteggi aggregati di eventi sul server del sito, senza cookie né terzi, a cominciare dal contatore degli ingressi; le registrazioni fra le metriche; MISURA → BRAINSTORM come quinto passo del ciclo (I-19, decisioni 1–3 e 5 del 17 ottobre in `docs/idee-dopo-gli-account.md`) | Claude con l'autore, poi Claude | `main` | un ADR che riscrive «nessun analytics» (specifica §2.1) e R-ACC-09, e la riga nell'informativa; dopo il rilascio del ridisegno | da scrivere |
 | 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | niente dal motore: `PREVISIONI` c'è (P-72), e un modello entra come metodo accanto alla regola semplice; Q-STIMA solo per quando si mostra | da scrivere |
 | 27 | **Esito e previsioni, la pagina e l'informativa** (B-1, B-2), poi un rilascio | ChatGPT | `ui/main` | soltanto la base giuridica (§4, «Dopo P-64», 1–3): P-74 è chiuso | P-75, da scrivere |
-| 37 | **Le regole di disegno, giro 2**: la scala di corpi, spazi e pesi, le distanze fra i bersagli, la lunghezza delle righe (D-15…D-23, D-25, D-28; `docs/regole-disegno-progetto.md` §5, decisione C) — prima il controllo su `main`, poi la pagina | ChatGPT | `ui/main` | niente: il controllo è su `main` (P-94) | P-95 |
+| 37 | **Le regole di disegno, giro 2**: la scala di corpi, spazi e pesi, le distanze fra i bersagli, la lunghezza delle righe (D-15…D-23, D-25, D-28; `docs/regole-disegno-progetto.md` §5, decisione C) | regia | `main` | l'approvazione dell'autore sulle 24 schermate di `docs/collaudo-p95/` (decisione C) | P-95 fuso, da rilasciare |
+| 38 | **Le regole di disegno, giro 3**: le parole e i nomi (`docs/regole-disegno-progetto.md`, giro 3) — prima il controllo su `main`, poi la pagina | Claude, poi ChatGPT | `main`, `ui/main` | niente: il giro 2 è fuso | da scrivere |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo P-59», «Dopo P-64», «Dopo il traguardo» e le voci non barrate |
 
 **La v0.31.0 è in linea dal 18 ottobre 2026**, sulla pagina e sul server, con le raccolte nuove spente (prima, la v0.30.0 dal 3 ottobre); P-59,
@@ -7256,6 +7257,25 @@ prompt di P-95 com'è, compresi prima e dopo con le schermate e le cinque
 suite. Se una distanza rossa che resta ti sembra ancora del controllo e non
 della pagina, fermati di nuovo, con la misura.
 ```
+
+**Esito, 24 ottobre 2026.** Ripreso dopo la correzione del controllo, P-95
+ha consegnato `f65311c` su `ui/main`: un solo `:root` con i token del
+contratto, corpi, spazi e pesi dalla scala, titoli di sezione a 24 px, gli h1
+nelle preparazioni e nel runner, risposte a 16 px, testo a 480 px, l'accento
+sui soli controlli, il riepilogo dei quiz come superficie fissa, via lo sfondo
+trasparente dei dialoghi; le quattordici righe dichiarate escono nello stesso
+commit. Trovata e corretta da ChatGPT una regressione di N-01 (42 rossi al
+primo giro: la regola che nasconde i controlli del runner concluso non valeva
+per il Carteggio). **Che cosa ha controllato la regia:** il controllo dei
+territori sul diff (uscita 0), le righe tolte da `eccezioni-interfaccia.md` —
+soltanto le quattordici, «Valori fuori scala» identica —, e otto schermate
+del collaudo guardate (Home a 375 e 1280 prima e dopo, runner e Esame a 375,
+riepilogo a 1280). Fuso in `2fe7041`. **Visto e non corretto, per il giro
+3:** a 375 px le schede di Esame mettono «Simula il quiz vela» e «Quiz base e
+vela» su tre colonne strette, una parola per riga; il riepilogo dice «1
+domanda su 1 proposte». **Resta all'autore** l'approvazione delle 24
+schermate prima/dopo citate in `docs/collaudo-p95/README.md`, con i 480 px:
+fino ad allora il giro 2 non si rilascia.
 
 ### I segnaposto — i prompt che non si possono ancora scrivere
 
