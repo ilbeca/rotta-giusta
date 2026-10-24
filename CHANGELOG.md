@@ -11,6 +11,26 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+### Verificato — la v0.34.0, in linea
+
+- **Il tag e la pagina.** `v0.34.0` è un tag annotato su `1af43f6`, pushato con
+  `main` con il sì dell'autore del 24 ottobre. «Build now» su statichost.eu
+  dalla regia, nel Chrome dell'autore e su sua richiesta, con il commit di
+  rilascio in cima: la build, 49 s, porta l'etichetta «release: v0.34.0». Da
+  fuori `meta.json` dice 0.34.0 su `rottagiusta.it` e su `.pages.dev`; otto
+  file — la Home, la porta `/app`, `engine.js`, privacy, avvertenza, manifest,
+  `meta.json` e `sw.js` — sono identici byte per byte a `v0.34.0:site/`, e `/`,
+  `/app` e `/?sezione=esame` rispondono 200.
+- **Il server**, `rg-aggiorna v0.34.0 1af43f6…` lanciato dalla regia sulla
+  macchina, con `rg-aggiorna` e `rg-torna` uguali a quelli del repo (SHA-256):
+  la copia di prima, `aggiorna-20261024T072711Z.db`, con `integrity_check` ok,
+  2 righe, 1 account, schema 6. Da fuori `GET /v1/salute` dice 0.34.0, schema
+  6/6, la stessa epoca della copia di prima (`278fd81e…`) e le raccolte con le
+  sole scelte di preparazione accese; il CORS espone `Retry-After` al sito.
+  `/var/lib/rg/precedente` dice `v0.33.0`.
+- **Non guardato:** l'app pubblicata su un telefono vero; l'ha guardata la
+  regia prima della merge, servita in locale, a 375×812 e 375×667.
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la

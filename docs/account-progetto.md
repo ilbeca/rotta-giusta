@@ -3203,3 +3203,10 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
   schema 6/6, la stessa epoca e le sole scelte di preparazione accese. Esiti e
   previsioni restano spenti fino a P-75 (§2.7-bis). `/var/lib/rg/precedente`
   dice `v0.31.0`.
+- **24 ottobre 2026 — la v0.34.0 in esercizio.** `rg-aggiorna v0.34.0
+  1af43f6…` dalla regia, su richiesta dell'autore, con `rg-aggiorna` e
+  `rg-torna` uguali a quelli del repo (SHA-256): copia di prima
+  `aggiorna-20261024T072711Z.db` con `integrity_check` ok, 2 righe, 1 account,
+  schema 6 invariato, «raccolte accese: scelte_di_preparazione»;
+  `GET /v1/salute` dice 0.34.0, schema 6/6, la stessa epoca. Il server non
+  cambia dalla v0.33.0. `/var/lib/rg/precedente` dice `v0.33.0`.
