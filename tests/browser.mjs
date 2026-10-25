@@ -280,7 +280,20 @@ export async function avviaChrome({ attesaMs = 15000, nomi = [] } = {}) {
         if (!larghezza) return cmd('Emulation.clearDeviceMetricsOverride', {}, sessionId);
         await cmd('Emulation.setDeviceMetricsOverride', { width: larghezza, height: altezza, deviceScaleFactor: 1, mobile: larghezza < 768 }, sessionId);
       },
-      /** Quello che la scheda mostra, in PNG: per guardare, non per confrontare pixel. */
+      /**
+       * Il movimento ridotto del sistema, emulato: `prefers-reduced-motion`
+       * risponde `reduce` con `ridotto` vero, `no-preference` con falso (volto
+       * §6.5, T-15:movimento). E' la preferenza, non un comando della pagina:
+       * che un comando fermi le luci lo prova il banco a parte (WCAG 2.2.2).
+       */
+      async movimento(ridotto) {
+        await cmd('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: ridotto ? 'reduce' : 'no-preference' }] }, sessionId);
+      },
+      /**
+       * Quello che la scheda mostra, in PNG: per guardare, e per una misura sola —
+       * la luminanza dietro un testo sopra la carta della Home (T-15:velo, decisione
+       * 14 del volto), letta con tests/png.mjs. Non si confrontano immagini.
+       */
       async schermata() {
         const { data } = await cmd('Page.captureScreenshot', { format: 'png' }, sessionId);
         return Buffer.from(data, 'base64');

@@ -69,13 +69,14 @@ button[data-ruolo="principale"] {background:#123e63; color:#fff; border:1px soli
 body:has(> [data-preparazione]:not([hidden])) main {display:none}
 /* P-94: il riferimento usa la scala; non e' il disegno del sito. Valori fissati dal controllo. */
 @font-face{font-family:Manrope;src:url(/caratteri/manrope-latin-wght-normal.woff2);font-weight:200 800}
-:root{--t-12:12px;--t-14:14px;--t-16:16px;--t-19:19px;--t-24:24px;--t-30:30px;--t-40:40px;--s-4:4px;--s-8:8px;--s-12:12px;--s-16:16px;--s-24:24px;--s-32:32px;--s-48:48px;--w-400:400;--w-600:600;--w-700:700;--lh-testo:1.45;--lh-titoli:1.2;--testo-max:480px;--acc:#076f99;--ko:#a4261d;--warn:#765000;--ok:#126832;}
+:root{--t-12:12px;--t-14:14px;--t-16:16px;--t-20:20px;--t-24:24px;--t-32:32px;--t-44:44px;--t-56:56px;--s-4:4px;--s-8:8px;--s-12:12px;--s-16:16px;--s-24:24px;--s-32:32px;--s-48:48px;--s-64:64px;--w-400:400;--w-600:600;--w-700:700;--w-800:800;--lh-testo:1.45;--lh-titoli:1.2;--lh-titoli-grandi:1.05;--testo-max:480px;--acc:#0a4f6e;--ko:#b3261e;--warn:#765000;--ok:#12663a;--boa:#ff6a1a;--rotta:#b23f00;--terra:#f2e6cf;
+  --ink:#0b2530;--ink-3:#4d6772;--carta-2:#eef4f6;--costa:max(10vw,132px);--pannello:704px;--colonna:768px;}
 *{box-sizing:border-box}
 body{font-family:Manrope,sans-serif;font-size:var(--t-16);font-weight:var(--w-400);line-height:var(--lh-testo);margin:var(--s-8);color:#111;background:#fff}
 button,input,select,textarea,summary{font:inherit;color:inherit;background:#fff;border:1px solid #444;padding:var(--s-4);margin:var(--s-4);vertical-align:middle}
 a{color:var(--acc)}
 h1,h2,h3,h4,h5,h6{font-weight:var(--w-700);line-height:var(--lh-titoli);margin:var(--s-16) 0 var(--s-8)}
-h1{font-size:var(--t-30)}h2{font-size:var(--t-24)}h3,h4,h5,h6{font-size:var(--t-19)}
+h1{font-size:var(--t-32)}h2{font-size:var(--t-24)}h3,h4,h5,h6{font-size:var(--t-20)}
 p,li,#r-text,#r-ans button{font-size:var(--t-16);line-height:var(--lh-testo);max-width:var(--testo-max);text-align:left}
 p,ul,ol{margin:var(--s-8) 0;padding:0}ul,ol{padding-left:var(--s-24)}
 strong,b{font-weight:var(--w-400)}
@@ -87,7 +88,80 @@ header p:empty{display:none}header a,header button{margin:var(--s-4)}
 #r-tag button{margin:var(--s-4)}
 #v-home #home-anonima>h1{max-width:var(--testo-max)}
 #v-home #anteprime{margin-top:var(--s-48)}
-@media(min-width:901px){#v-home h1{font-size:var(--t-40)}}
+#v-home>#tappa-1{margin-top:0}
+/* P-97: la Home al computer «U — Terra beige» (docs/volto-progetto.md §5.2–§5.4),
+   solo sopra la soglia della decisione 9 e solo con la Home aperta: la classe
+   html[data-volto="carta"] la scrive aggiornaVolto(), mai un selettore globale.
+   Sotto la soglia la Home e' quella di prima, e il volto non c'e'. */
+.solo-volto,#carta,#percorso,#luci{display:none}
+html[data-volto="carta"] .solo-volto{display:block}
+html[data-volto="carta"]{scroll-snap-type:y proximity}
+html[data-volto="carta"] body{background:var(--acc);color:#fff;margin:0}
+html[data-volto="carta"] main{position:relative;z-index:1}
+html[data-volto="carta"] header{position:relative;z-index:2}
+html[data-volto="carta"] header{padding:var(--s-16) var(--s-64);display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-16)}
+html[data-volto="carta"] header>*{margin:0}
+html[data-volto="carta"] header a,html[data-volto="carta"] main a,html[data-volto="carta"] footer a{color:#fff}
+html[data-volto="carta"] header button{color:var(--ink)}
+html[data-volto="carta"] footer{padding:var(--s-24) var(--s-64)}
+html[data-volto="carta"] #v-home>section{margin:0;padding:var(--s-64) 0 var(--s-64) var(--s-64);width:var(--pannello);min-height:100vh;scroll-snap-align:start;position:relative;left:var(--s-64)}
+html[data-volto="carta"] #v-home #home-anonima>h1{max-width:640px}
+/* La prima tappa sta sotto la testata: niente scatto li', se no la testata esce
+   dallo schermo; e il fondo della pagina e' un punto d'arrivo. */
+html[data-volto="carta"] #v-home>#tappa-1{scroll-snap-align:none;padding-top:var(--s-32)}
+html[data-volto="carta"] footer{scroll-snap-align:end}
+html[data-volto="carta"] #v-home h1{font-size:var(--t-56);font-weight:var(--w-800);line-height:var(--lh-titoli-grandi);max-width:640px;margin:0 0 var(--s-24)}
+html[data-volto="carta"] #v-home h2{font-size:var(--t-32);font-weight:var(--w-800);max-width:640px}
+html[data-volto="carta"] #v-home h2.grande{font-size:var(--t-44);line-height:var(--lh-titoli-grandi)}
+html[data-volto="carta"] #v-home section>p,html[data-volto="carta"] #v-home li,html[data-volto="carta"] #home-anonima>p{font-size:var(--t-20)}
+html[data-volto="carta"] .scheda{background:#fff;color:var(--ink);border-radius:14px;padding:var(--s-24);max-width:var(--testo-max);margin:var(--s-24) 0}
+html[data-volto="carta"] #v-home button:not([data-ruolo="principale"]){color:var(--ink)}
+html[data-volto="carta"] .scandagli{display:flex}
+/* Sopra una preparazione o un'attivita' la carta non c'e' (main e' nascosto): il fondo torna chiaro. */
+html[data-volto="carta"] body:has(> [data-preparazione]:not([hidden])),html[data-volto="carta"] body.in-attivita{background:#fff;color:#111}
+html[data-volto="carta"]:has(body.in-attivita),html[data-volto="carta"]:has(body > [data-preparazione]:not([hidden])){scroll-snap-type:none}
+html[data-volto="carta"] #v-home .scheda h2{font-size:var(--t-16);font-weight:var(--w-700);margin:0 0 var(--s-8)}
+html[data-volto="carta"] .scheda p{font-size:var(--t-16)}
+.scandagli{gap:var(--s-24);margin:0 0 var(--s-16)}
+.scandagli b{display:block;font-size:var(--t-44);font-weight:var(--w-800);line-height:var(--lh-titoli)}
+.scandagli span{font-size:var(--t-14)}
+/* La carta: ferma dietro la pagina, larga quanto lo schermo, senza un posto dove
+   arrivi il fuoco (overflow:clip). La costa e' ancorata al bordo destro. */
+html[data-volto="carta"] #carta{display:block;position:fixed;inset:0;z-index:-1;overflow:clip;pointer-events:none}
+#carta .cifra{position:absolute;font-size:var(--t-14);font-style:italic;color:rgba(255,255,255,.8)}
+#velo{position:absolute;left:0;top:0;bottom:0;width:calc(var(--colonna) + 32px + 160px);background:linear-gradient(to right,rgba(10,79,110,.92) calc(100% - 160px),rgba(10,79,110,0))}
+#terra{position:absolute;top:0;bottom:0;right:0;width:var(--costa);background:var(--terra);border-left:2px solid var(--ink)}
+#faro-disegno{position:absolute;right:calc(var(--costa) - 12px);top:calc(22% - 12px);width:24px;height:24px}
+#settori{position:absolute;right:var(--costa);top:calc(22% - 80px);width:160px;height:160px}
+#boa-disegno{position:absolute;right:calc(var(--costa) + 160px);top:calc(58% - 22px);width:24px;height:44px}
+#rotta-disegno{position:absolute;right:calc(var(--costa) + 16px);top:22%;width:160px;height:36%}
+.lampo{position:absolute;width:56px;height:56px;border-radius:50%;background:radial-gradient(#fff,rgba(255,231,168,.9) 35%,rgba(255,231,168,0) 70%)}
+#lampo-faro{right:calc(var(--costa) - 28px);top:calc(22% - 28px)}
+#lampo-boa{right:calc(var(--costa) + 144px);top:calc(58% - 50px)}
+@keyframes lampeggio{0%,100%{opacity:.15}4%{opacity:1}8%{opacity:.15}12%{opacity:1}16%{opacity:.15}}
+@keyframes traccia{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+[data-luce]{animation:lampeggio 10s infinite}
+[data-rotta]{stroke-dasharray:1;stroke-dashoffset:0;animation:traccia 2s ease-out both}
+.luci-ferme [data-luce]{animation:none;opacity:1}
+@media (prefers-reduced-motion: reduce){[data-luce],[data-rotta]{animation:none}[data-luce]{opacity:1}}
+/* Il percorso: undici tappe sulla terra, una navigazione (volto §5.3). */
+html[data-volto="carta"] #percorso{display:flex;flex-direction:column;gap:var(--s-8);position:fixed;z-index:3;right:calc((var(--costa) - 44px) / 2);top:50%;transform:translateY(-50%)}
+#percorso a{display:flex;align-items:center;justify-content:center;width:44px;height:44px;margin:0;position:relative}
+#percorso svg{width:13px;height:13px;overflow:visible}
+#percorso polygon{fill:none;stroke:var(--ink-3);stroke-width:2}
+#percorso a.passata polygon,#percorso a[aria-current] polygon{fill:var(--rotta);stroke:var(--rotta)}
+#percorso a[aria-current] svg{transform:scale(1.4)}
+#percorso .nome{display:none}
+#percorso a:hover .nome,#percorso a:focus-visible .nome{display:block;position:absolute;right:52px;white-space:nowrap;background:#fff;color:var(--ink);font-size:var(--t-14);padding:var(--s-4) var(--s-8)}
+/* Le luci: due pulsanti sopra il faro e la boa, e la scheda con la sigla in testo vero. */
+html[data-volto="carta"] #luci{display:block;position:fixed;inset:0;z-index:2;pointer-events:none}
+#luci button{position:absolute;width:48px;height:48px;margin:0;padding:0;background:transparent;border:2px solid transparent;border-radius:50%;pointer-events:auto}
+#luce-faro{right:calc(var(--costa) - 24px);top:calc(22% - 24px)}
+#luce-boa{right:calc(var(--costa) + 148px);top:calc(58% - 24px)}
+#scheda-luce{position:absolute;right:calc(var(--costa) + 8px);bottom:var(--s-24);width:256px;pointer-events:auto}
+#scheda-luce>div{background:var(--carta-2);color:var(--ink);border-radius:14px;padding:var(--s-16)}
+#scheda-luce p{font-size:var(--t-16);margin:0 0 var(--s-8)}
+#scheda-luce button{position:static;width:auto;height:auto;min-height:44px;border-radius:0;border:1px solid var(--ink);background:#fff;color:var(--ink);padding:var(--s-4) var(--s-12)}
 
 fieldset,legend{margin:0;padding:var(--s-8)}
 a.da-solo{margin:var(--s-4)}
@@ -123,32 +197,126 @@ input[type=file]{width:calc(100% - 8px);min-width:0}
 
 <main>
 <section class="view on" id="v-home">
-  <p id="guasto" role="alert" hidden>Non siamo riusciti a salvare le ultime risposte su questo dispositivo. Scarica le risposte adesso.</p>
-  <div id="home-anonima">
-    <h1>Preparati alla patente nautica, un passo alla volta.</h1>
-    <p>Quiz e carteggio per la patente senza limiti dalla costa. Esercitati sui quesiti del decreto e confronta il lavoro sulla carta.</p>
-    <p id="altrove" hidden>Su questo indirizzo non si può creare un account. Per salvare le risposte vai su <a href="https://rottagiusta.it/">rottagiusta.it</a>.</p>
-    <button data-modo="sim" data-prova="base" data-ruolo="principale">Simula il quiz base</button> <span class="condizioni-base"></span>
-    <button data-breve data-rotta-start disabled>Allenati con 10 domande</button>
-    <p>Un allenamento breve, con correzione dopo ogni risposta.</p>
+  <div id="carta" aria-hidden="true">
+    <span class="cifra" style="left:8%;top:20%">42</span>
+    <span class="cifra" style="left:22%;top:45%">37</span>
+    <span class="cifra" style="left:14%;top:70%">51</span>
+    <span class="cifra" style="left:30%;top:85%">28</span>
+    <span class="cifra" style="left:47%;top:19%">46</span>
+    <span class="cifra" style="left:49%;top:22%">23</span>
+    <span class="cifra" style="left:50%;top:26%">31</span>
+    <span class="cifra" style="left:46%;top:30%">17</span>
+    <span class="cifra" style="left:48%;top:62%">25</span>
+    <span class="cifra" style="left:55%;top:15%">14</span>
+    <span class="cifra" style="left:55%;top:25%">19</span>
+    <span class="cifra" style="left:66%;top:40%">33</span>
+    <span class="cifra" style="left:70%;top:75%">12</span>
+    <span class="cifra" style="left:62%;top:90%">9</span>
+    <div id="velo"></div>
+    <div id="terra"></div>
+    <svg id="settori" viewBox="0 0 160 160"><path d="M160 80 L40 150 A140 140 0 0 1 20 110 Z" fill="#3dbe78" fill-opacity=".25"/><path d="M160 80 L20 110 A140 140 0 0 1 20 50 Z" fill="#fff" fill-opacity=".12"/><path d="M160 80 L20 50 A140 140 0 0 1 40 10 Z" fill="#ff5a55" fill-opacity=".25"/><text x="30" y="40" font-size="12" font-weight="700" fill="#fff">Lam.(2) BRV 10s</text></svg>
+    <svg id="rotta-disegno" viewBox="0 0 100 100" preserveAspectRatio="none"><path data-rotta pathLength="1" d="M8 100 L40 70 L30 32 L96 4" fill="none" stroke="#ff6a1a" stroke-width="3" vector-effect="non-scaling-stroke"/></svg>
+    <svg id="faro-disegno" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7" fill="#0b2530"/><circle cx="12" cy="12" r="3" fill="#fff"/></svg>
+    <div class="lampo" id="lampo-faro" data-luce></div>
+    <svg id="boa-disegno" viewBox="-12 -44 24 54"><path d="M-6-36 0-44 6-36Z M-6-34 0-26 6-34Z" fill="#0b2530"/><path d="M-9 8h18l-3-28h-12Z" fill="#f2c200" stroke="#0b2530"/><path d="M-9.7 8h19.4l-.9-8h-17.6Z M-8 -12h16l-1-8h-14Z" fill="#0b2530"/></svg>
+    <div class="lampo" id="lampo-boa" data-luce></div>
   </div>
-  <div id="home-conto" hidden>
-    <h1>Che cosa vuoi fare adesso?</h1>
-    <section><h2>Allenamento consigliato</h2>
-      <p>Quiz base selezionati dalle risposte disponibili qui. La selezione non conosce lo studio che hai fatto altrove.</p>
-      <button data-modo="mirata" data-rotta-start disabled>Apri l'allenamento consigliato</button></section>
-    <button data-modo="sim" data-prova="base">Simula il quiz base</button> <span class="condizioni-base"></span>
-    <button data-v="progressi">Vedi i Progressi</button>
-  </div>
-  <section id="invito-home" hidden>
-    <h2>Conserva le risposte.</h2>
-    <p id="invito-home-n"></p>
-    <p>Le risposte saranno legate alla tua email e conservate sul nostro server, in chiaro. Il titolare può leggerle per supporto e statistiche.</p>
-    <button data-account="registra">Conserva le risposte</button>
-    <button data-invito="rinuncia">Continua senza account</button>
+  <section id="tappa-1">
+    <p id="guasto" role="alert" hidden>Non siamo riusciti a salvare le ultime risposte su questo dispositivo. Scarica le risposte adesso.</p>
+    <div id="home-anonima">
+      <h1>Preparati alla patente nautica, un passo alla volta.</h1>
+      <p>Quiz e carteggio per la patente senza limiti dalla costa. Esercitati sui quesiti del decreto e confronta il lavoro sulla carta.</p>
+      <p id="altrove" hidden>Su questo indirizzo non si può creare un account. Per salvare le risposte vai su <a href="https://rottagiusta.it/">rottagiusta.it</a>.</p>
+      <div class="scheda" id="scheda-prova">
+      <h2 class="solo-volto">La prova d'esame dei quiz</h2>
+      <div class="scandagli solo-volto" id="scandagli"></div>
+      <button data-modo="sim" data-prova="base" data-ruolo="principale">Simula il quiz base</button> <span class="condizioni-base"></span>
+      <button data-breve data-rotta-start disabled>Allenati con 10 domande</button>
+      <p>Un allenamento breve, con correzione dopo ogni risposta.</p>
+      </div>
+    </div>
+    <div id="home-conto" hidden>
+      <h1>Che cosa vuoi fare adesso?</h1>
+      <section><h2>Allenamento consigliato</h2>
+        <p>Quiz base selezionati dalle risposte disponibili qui. La selezione non conosce lo studio che hai fatto altrove.</p>
+        <button data-modo="mirata" data-rotta-start disabled>Apri l'allenamento consigliato</button></section>
+      <button data-modo="sim" data-prova="base">Simula il quiz base</button> <span class="condizioni-base"></span>
+      <button data-v="progressi">Vedi i Progressi</button>
+    </div>
+    <section id="rotta-last" hidden><h2 id="rotta-last-titolo">Le attività di questa pagina</h2><p id="rotta-last-txt"></p></section>
+    <section id="invito-home" hidden>
+      <h2>Conserva le risposte.</h2>
+      <p id="invito-home-n"></p>
+      <p>Le risposte saranno legate alla tua email e conservate sul nostro server, in chiaro. Il titolare può leggerle per supporto e statistiche.</p>
+      <button data-account="registra">Conserva le risposte</button>
+      <button data-invito="rinuncia">Continua senza account</button>
+    </section>
+    <section id="esito-riquadro" hidden></section>
   </section>
-  <section id="rotta-last" hidden><h2 id="rotta-last-titolo">Le attività di questa pagina</h2><p id="rotta-last-txt"></p></section>
-  <section id="esito-riquadro" hidden></section>
+  <nav id="percorso" aria-label="Le tappe della Home">
+    <a href="#tappa-1" aria-label="La prova d'esame"><svg aria-hidden="true" viewBox="0 0 13 13"><polygon points="6.5,1 12,12 1,12"/></svg><span class="nome">La prova d'esame</span></a>
+    <a href="#tappa-2" aria-label="Si prova senza account"><svg aria-hidden="true" viewBox="0 0 13 13"><polygon points="6.5,1 12,12 1,12"/></svg><span class="nome">Si prova senza account</span></a>
+    <a href="#tappa-3" aria-label="La simulazione, come all'esame"><svg aria-hidden="true" viewBox="0 0 13 13"><polygon points="6.5,1 12,12 1,12"/></svg><span class="nome">La simulazione, come all'esame</span></a>
+    <a href="#tappa-4" aria-label="Dieci domande, con la correzione"><svg aria-hidden="true" viewBox="0 0 13 13"><polygon points="6.5,1 12,12 1,12"/></svg><span class="nome">Dieci domande, con la correzione</span></a>
+    <a href="#tappa-5" aria-label="L'allenamento consigliato"><svg aria-hidden="true" viewBox="0 0 13 13"><polygon points="6.5,1 12,12 1,12"/></svg><span class="nome">L'allenamento consigliato</span></a>
+    <a href="#tappa-6" aria-label="Un argomento alla volta"><svg aria-hidden="true" viewBox="0 0 13 13"><polygon points="6.5,1 12,12 1,12"/></svg><span class="nome">Un argomento alla volta</span></a>
+    <a href="#tappa-7" aria-label="Gli errori tornano"><svg aria-hidden="true" viewBox="0 0 13 13"><polygon points="6.5,1 12,12 1,12"/></svg><span class="nome">Gli errori tornano</span></a>
+    <a href="#tappa-8" aria-label="Il carteggio, sulla carta vera"><svg aria-hidden="true" viewBox="0 0 13 13"><polygon points="6.5,1 12,12 1,12"/></svg><span class="nome">Il carteggio, sulla carta vera</span></a>
+    <a href="#tappa-9" aria-label="Fanali e segnali"><svg aria-hidden="true" viewBox="0 0 13 13"><polygon points="6.5,1 12,12 1,12"/></svg><span class="nome">Fanali e segnali</span></a>
+    <a href="#tappa-10" aria-label="L'esame, in ordine"><svg aria-hidden="true" viewBox="0 0 13 13"><polygon points="6.5,1 12,12 1,12"/></svg><span class="nome">L'esame, in ordine</span></a>
+    <a href="#tappa-11" aria-label="Con l'account, le risposte restano"><svg aria-hidden="true" viewBox="0 0 13 13"><polygon points="6.5,1 12,12 1,12"/></svg><span class="nome">Con l'account, le risposte restano</span></a>
+  </nav>
+  <div id="luci">
+    <button id="luce-faro" data-luce-pulsante="faro" aria-expanded="false" aria-label="Il faro: leggi la sua sigla"></button>
+    <button id="luce-boa" data-luce-pulsante="boa" aria-expanded="false" aria-label="La boa: leggi la sua sigla"></button>
+    <div id="scheda-luce" aria-live="polite"></div>
+  </div>
+  <section id="tappa-2" class="solo-volto">
+    <h2 class="grande" tabindex="-1">Come funziona</h2>
+    <p>Scendi lungo la rotta: ogni pannello è un modo di prepararsi, e il suo triangolo, qui a lato, si accende quando ci arrivi.</p>
+    <h2>Si prova senza account</h2>
+    <p>Apri una domanda e rispondi: non serve registrarsi.</p>
+  </section>
+  <section id="tappa-3" class="solo-volto">
+    <h2 tabindex="-1">La simulazione, come all'esame</h2>
+    <p id="volto-sim"></p>
+  </section>
+  <section id="tappa-4" class="solo-volto">
+    <h2 tabindex="-1">Dieci domande, con la correzione</h2>
+    <p>Dieci quiz base, con la correzione dopo ogni risposta: la tua accanto a quella del decreto. Puoi fermarti quando vuoi.</p>
+  </section>
+  <section id="tappa-5" class="solo-volto">
+    <h2 tabindex="-1">L'allenamento consigliato</h2>
+    <p id="volto-mirata"></p>
+  </section>
+  <section id="tappa-6" class="solo-volto">
+    <h2 tabindex="-1">Un argomento alla volta</h2>
+    <p id="volto-temi"></p>
+  </section>
+  <section id="tappa-7" class="solo-volto">
+    <h2 tabindex="-1">Gli errori tornano</h2>
+    <p>Riapri le domande che hai sbagliato. Dopo un errore puoi segnare perché: non lo sapevi, o è stata una svista.</p>
+  </section>
+  <section id="tappa-8" class="solo-volto">
+    <h2 tabindex="-1">Il carteggio, sulla carta vera</h2>
+    <p id="volto-carta"></p>
+  </section>
+  <section id="tappa-9" class="solo-volto">
+    <h2 tabindex="-1">Fanali e segnali</h2>
+    <p id="volto-segnali"></p>
+  </section>
+  <section id="tappa-10" class="solo-volto">
+    <h2 tabindex="-1">L'esame, in ordine</h2>
+    <p>Carteggio, quiz base, quiz vela: con le condizioni del decreto. Le prepari quando vuoi, senza sblocchi.</p>
+  </section>
+  <section id="tappa-11" class="solo-volto">
+    <h2 tabindex="-1">Con l'account, le risposte restano</h2>
+    <p>Ritrovi le tue risposte quando torni, anche da un altro telefono, e vedi i Progressi.</p>
+  </section>
+  <section id="trovi" class="solo-volto">
+    <h2>Che cosa trovi qui</h2>
+    <ul id="trovi-elenco"><li>Sto contando dalla banca.</li></ul>
+  </section>
   <section id="anteprime"><h2>Le sezioni</h2>
     <a class="da-solo" href="/?sezione=allenati&amp;segmento=quiz" data-v="quiz">Quiz</a> ·
     <a class="da-solo" href="/?sezione=allenati&amp;segmento=carteggio" data-v="cart">Carteggio</a> ·
@@ -499,6 +667,9 @@ function voceQui() { return NAV.get(PILA[POS]); }
 /** Prima di lasciare una tappa: dove si era e chi aveva il fuoco. */
 function ricordaQui() {
   const v = voceQui();
+  // Una tappa si ricorda solo mentre e' in vista: dopo che la sezione e' gia'
+  // cambiata lo scorrimento e' quello della sezione nuova (P-97, T-15:documento).
+  if (v && v.tipo === 'tappa' && S.tappa && v.sezione !== S.tappa.sezione) return;
   if (v) { v.scroll = scrollY; v.fuoco = document.activeElement && document.activeElement !== document.body ? document.activeElement : v.fuoco || null; }
 }
 
@@ -571,6 +742,81 @@ function mostraSezione(sezione, segmento) {
   document.title = TITOLI[sezione] ? `${TITOLI[sezione]} · Rotta Giusta` : 'Rotta Giusta — quiz e carteggio per la patente nautica';
   if (sezione === 'home') dipingiHome();
   if (sezione === 'progressi') dipingiProgressi();
+  aggiornaVolto();
+}
+
+// --- il volto: la Home al computer «U — Terra beige» (P-97, volto §5.2–§5.4) ------------
+//
+// Sopra la soglia della decisione 9 (1.200 × 680 px) e solo con la Home aperta:
+// la carta ferma dietro, il percorso sulla terra, le luci. La classe sul
+// documento la scrive solo questa funzione, dalla sezione che c'e' (§5.2).
+const VOLTO = matchMedia('(min-width: 1200px) and (min-height: 680px)');
+function aggiornaVolto() {
+  const su = VOLTO.matches && !!S.tappa && S.tappa.sezione === 'home';
+  if (su) document.documentElement.dataset.volto = 'carta'; else delete document.documentElement.dataset.volto;
+  segnaTappa();
+}
+VOLTO.addEventListener('change', aggiornaVolto);
+/** La tappa del pannello in vista: aria-current="location", e le passate piene (§5.3). */
+function segnaTappa() {
+  if (document.documentElement.dataset.volto !== 'carta') return;
+  const as = [...document.querySelectorAll('#percorso a')];
+  let k = 0;
+  as.forEach((a, i) => { const p = document.getElementById(a.getAttribute('href').slice(1)); if (p && p.getBoundingClientRect().top <= innerHeight * 0.4) k = i; });
+  as.forEach((a, i) => { if (i === k) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current'); a.classList.toggle('passata', i < k); });
+}
+addEventListener('scroll', segnaTappa, { passive: true });
+// Un tocco porta al pannello e al suo titolo; l'indirizzo e la cronologia non
+// cambiano (§5.3): il frammento e' gia' della pagina, per i gettoni dei link.
+document.getElementById('percorso').addEventListener('click', (e) => {
+  const a = e.target.closest('a[href^="#"]');
+  if (!a) return;
+  e.preventDefault(); e.stopPropagation();
+  const p = document.getElementById(a.getAttribute('href').slice(1));
+  if (!p) return;
+  p.scrollIntoView({ block: 'start' });
+  const t = [...p.querySelectorAll('h1, h2')].find((x) => x.offsetParent);
+  if (t) { t.tabIndex = -1; t.focus({ preventScroll: true }); }
+  segnaTappa();
+});
+// Le luci: la sigla in testo vero nella scheda, e un comando che le ferma (WCAG 2.2.2, decisione 10).
+const LUCI = {
+  faro: ['Faro · Lam.(2) BRV 10s', 'Due lampi ravvicinati ogni 10 secondi. Il colore dice dove sei: nel settore bianco la rotta è libera, nel rosso e nel verde no.'],
+  boa: ['Boa cardinale est · Sc.(3) 10s', 'Tre luci scintillanti ogni 10 secondi. Coni base contro base, nero giallo nero: si passa a est della boa.'],
+};
+document.getElementById('luci').addEventListener('click', (e) => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  e.stopPropagation();
+  const radice = document.documentElement;
+  if (b.dataset.ferma !== undefined) {
+    const ferme = radice.classList.toggle('luci-ferme');
+    b.textContent = ferme ? 'Riaccendi le luci' : 'Ferma le luci';
+    return;
+  }
+  const chi = b.dataset.lucePulsante, aperto = b.getAttribute('aria-expanded') === 'true';
+  for (const x of document.querySelectorAll('[data-luce-pulsante]')) x.setAttribute('aria-expanded', 'false');
+  const sc = $('scheda-luce');
+  if (aperto) { sc.innerHTML = ''; return; }
+  b.setAttribute('aria-expanded', 'true');
+  const ferme = radice.classList.contains('luci-ferme');
+  sc.innerHTML = `<div><p><b>${esc(LUCI[chi][0])}</b></p><p>${esc(LUCI[chi][1])}</p><button data-ferma>${ferme ? 'Riaccendi le luci' : 'Ferma le luci'}</button></div>`;
+});
+const fmt = (n) => Number(n).toLocaleString('it-IT');
+/** I numeri della Home al computer, dalla banca caricata e dal motore (§7, 11). */
+function dipingiVolto() {
+  const base = S.meta && S.meta.prove && S.meta.prove.base;
+  $('scandagli').innerHTML = base ? `<div><b>${base.n}</b><span>domande</span></div><div><b>${base.minuti}′</b><span>minuti</span></div><div><b>${base.errori_max}</b><span>errori al più</span></div>` : '';
+  $('volto-sim').textContent = base ? `${base.n} domande in ${base.minuti} minuti, al più ${base.errori_max} errori. Nessuna correzione durante la prova: l'esito arriva alla fine.`
+    : 'Le condizioni della prova si leggono dalla banca, che non risponde.';
+  $('volto-mirata').textContent = S.banca.length ? `Fino a ${E.mirata(S.banca, S.prog, oggi()).length} quiz base scelti dalle tue risposte. Ogni domanda dice perché è lì.` : 'Quiz base scelti dalle tue risposte. Ogni domanda dice perché è lì.';
+  const pesi = S.meta && S.meta.pesi_esame;
+  $('volto-temi').textContent = pesi && base ? `Base o vela, uno o più argomenti. Navigazione e Manovra portano ${pesi['NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA']} delle ${base.n} domande ciascuna.` : 'Base o vela, uno o più argomenti.';
+  $('volto-carta').textContent = `${S.cart.length ? S.cart.length + ' esercizi' : 'Gli esercizi'}: tracci sulla carta nautica con squadrette e compasso, poi confronti con la risposta ministeriale.`;
+  $('volto-segnali').textContent = `${E.SEGNALI.length} segnali da riconoscere a colpo d'occhio: fanali, segnali diurni e suoni. Il faro e la boa sulla carta hanno la loro sigla: toccali per leggerla.`;
+  $('trovi-elenco').innerHTML = S.banca.length
+    ? `<li>${fmt(S.banca.length + S.vela.length)} quesiti del decreto</li>${S.cart.length ? `<li>${S.cart.length} esercizi di carteggio</li>` : ''}<li>${E.SEGNALI.length} segnali da riconoscere</li>`
+    : S.bancaKo ? '<li>La banca non risponde: i numeri si contano da lì, e senza non li scriviamo.</li>' : '<li>Sto contando dalla banca.</li>';
 }
 
 /** Le superfici interne si chiudono quando si cambia sezione: preparazioni e Info. */
@@ -687,12 +933,14 @@ fetch('/dati/quiz.json').then((r) => r.json()).then((b) => {
   S.vela = b.filter((q) => q.k === 'vela');
   S.idQuiz = b.map((q) => q.id);
   // I numeri di «Che cosa non torna» si contano dalla banca caricata (AGENTS.md).
-  S.contiBanca = { oscurati: b.filter((q) => q.osc).length, note: b.filter((q) => q.nb).length };
+  S.contiBanca = { oscurati: b.filter((q) => q.osc).length, note: b.filter((q) => q.nb).length, senzaFigura: b.filter((q) => q.fm).length };
   dipingiHome();
   if (S.tappa && S.tappa.sezione === 'progressi') dipingiProgressi();
-});
+}).catch(() => { S.bancaKo = true; dipingiHome(); });
 fetch('/dati/meta.json').then((r) => r.json()).then((m) => { S.motore = String(m.versione || ''); S.meta = m; dipingiHome(); }).catch(() => {});
 const CART = fetch('/dati/carteggio.json').then((r) => r.json()).then((c) => { S.cart = c; }).catch(() => {});
+// I numeri della Home al computer contano anche gli esercizi (P-97).
+CART.then(() => dipingiHome());
 
 $('esame-data').addEventListener('change', (e) => { S.esame = e.target.value; sommarioEsame(); });
 // Con l'account la data sta sul server; senza, solo in memoria (§11.1).
@@ -2547,7 +2795,8 @@ function dipingiHome() {
   if (invito) $('invito-home-n').textContent = `Hai ${r} ${r === 1 ? 'risposta' : 'risposte'} in questa pagina. Con l'account puoi ritrovare quelle accolte dal server quando torni, anche da un altro dispositivo, e scaricarle.`;
   for (const b of document.querySelectorAll('[data-rotta-start]')) b.disabled = !S.banca.length;
   const n = S.contiBanca;
-  if (n) $('non-torna-n').textContent = `${n.oscurati} quesiti oscurati: non escono nella simulazione d'esame; l'avviso compare prima della risposta. ${n.note} quesiti con nota dopo la risposta.`;
+  if (n) $('non-torna-n').textContent = `${n.oscurati} quesiti oscurati: non escono nella simulazione d'esame; l'avviso compare prima della risposta. ${n.note} quesiti con nota dopo la risposta. ${n.senzaFigura} ${n.senzaFigura === 1 ? 'quesito' : 'quesiti'} senza figura: il disegno del decreto non si legge.`;
+  dipingiVolto();
 }
 
 // --- Progressi nei due accessi (§8.1) -----------------------------------------------

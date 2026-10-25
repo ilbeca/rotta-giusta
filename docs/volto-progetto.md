@@ -10,8 +10,8 @@ poi la pagina su `ui/main` (ChatGPT), con il metodo di
 
 **Stato al 25 ottobre 2026:** le decisioni 1–14 del §12 sono prese
 dall'autore, tutte come raccomandato; restano le 15–18, che servono prima del
-giro B. Niente è ancora nei controlli né nella pagina: il prossimo passo è
-A-controlli, con il prompt proposto nel §11.1. **File
+giro B. I controlli del giro A sono scritti (P-97, su un ramo per `main`; la
+nota di consegna nel §11.1); la pagina no: il prossimo passo è A-pagina, P-98. **File
 neutro**, come gli altri `*-progetto.md`: lo legge chi scrive i controlli su
 `main` e chi rifà la pagina su `ui/*`.
 
@@ -798,6 +798,88 @@ nel §11.1 di docs/volto-progetto.md; voce in fondo a [Unreleased]; un
 commit, niente push. Chiudi con il resoconto di docs/prossime-sessioni.md.
 ```
 
+**Consegnato da P-97 (25 ottobre 2026): il contratto per P-98.** I controlli
+stanno su `main` prima della pagina, come per i giri 1 e 2. Che cosa la pagina
+deve fare per passarli, oltre al §5 e al §6, lo dicono gli agganci e le misure
+qui sotto; il metro e' `tests/pagina-client-ridisegno.html`, che ha la Home U
+sopra la soglia e passa tutto il banco.
+
+- **La scala e i colori** (`SCALA_CSS` in `tests/test_interfaccia.py`): in un
+  solo `:root` `--t-12`, `--t-14`, `--t-16`, `--t-20`, `--t-24`, `--t-32`,
+  `--t-44`, `--t-56`; `--s-4`…`--s-64`; `--w-400`, `--w-600`, `--w-700`,
+  `--w-800`; `--lh-testo:1.45`, `--lh-titoli:1.2`, `--lh-titoli-grandi:1.05`,
+  `--testo-max:480px`; `--acc:#0a4f6e`, `--ko:#b3261e`, `--warn:#765000`,
+  `--ok:#12663a`, `--boa:#ff6a1a`, `--rotta:#b23f00`, `--terra:#f2e6cf` (alias
+  ammessi se risolvono a questi valori). 19, 30 e 40 non ci sono piu'. I ruoli,
+  che T-13:corpi legge: 56 solo nell'`h1` di `#v-home` da 1.200×680 px; 44 solo
+  nell'`h2` di `#v-home` il cui testo e' esattamente «Come funziona», da
+  1.200×680, e in un blocco di sole cifre sopra i 900 px. 800 solo su un titolo
+  da 24 px in su o su un blocco di sole cifre.
+- **La soglia** si legge dalle dimensioni: la carta c'e' da 1.200×680 in su, e
+  solo con la Home aperta; il banco misura dopo un cambio di dimensioni, quindi
+  la pagina deve rispondere a un `matchMedia` che cambia, non solo al primo carico.
+- **La carta** e' uno strato `position:fixed` dentro `#v-home` che copre lo
+  schermo: il banco la riconosce cosi', senza un aggancio. Dentro, i testi stanno
+  in un `svg[role="img"]` o sotto `aria-hidden` (fuori dal conto dei corpi). Il
+  contenitore non prende il fuoco. Ogni elemento della carta sta tutto dentro lo
+  schermo (T-07 misura gli sbordi anche a 1280×900, e ora li' c'e' la U).
+- **Due agganci, gli unici nuovi:** `data-luce` su ciascun lampo (faro e boa) e
+  `data-rotta` sul tracciato della rotta. Con il movimento ridotto un'animazione
+  spenta non dice piu' che cos'era, e il banco li cerca per controllare che le
+  luci siano accese ferme (opacita' ≥ 0,9) e la rotta intera
+  (`stroke-dashoffset` 0).
+- **Il percorso** e' la `<nav>` di `#v-home`, con un `aria-label`, e undici link
+  con un nome (testo o `aria-label`) e `href="#<id del pannello>"`: e' dall'href
+  che il banco trova i pannelli. Il tocco non cambia l'indirizzo ne' la
+  cronologia, e porta il fuoco al primo titolo del pannello. `aria-current="location"`
+  si aggiorna scorrendo. Il triangolo e' la prima forma SVG del link: vuoto si
+  misura sul contorno, pieno sul riempimento, a 3:1 sul beige.
+- **Le luci** sono due pulsanti di `#v-home` il cui nome contiene «faro» e «boa»,
+  con `aria-expanded`; la sigla — «Lam.(2)», «Sc.(3)» — sta in testo vero, fuori
+  da `svg` e `aria-hidden`, dentro un `aria-live="polite"`; «Ferma le luci» e' un
+  pulsante con quel testo, visibile almeno con la scheda del faro aperta.
+- **La colonna del testo** per il banco e' l'unione dei testi visibili della Home
+  fuori dagli strati fissi: la scheda della sigla, il faro e la boa non la
+  toccano.
+- **I numeri** che T-15:numeri cerca nel testo visibile della Home al computer:
+  «1722 quesiti» (con o senza il punto), «135 esercizi», «53 …segnali» (o
+  fanali), gli oscurati, «4 … note», «1 … figura», le condizioni della prova
+  (20 … domande, 30 … minuti, 4 … errori) e «25 … quiz» dell'allenamento
+  consigliato. Con la banca che non risponde: nessuno di questi conti della
+  banca, nessuno zero, e una frase con «banca non risponde» o «non si possono
+  contare».
+- **Il primo pannello** e' la destinazione del primo link del percorso: li'
+  stanno «Le attivita' di questa pagina» e l'invito in H1, la proposta in HA, e
+  ogni `[role="alert"]` della Home, prima del titolo.
+
+**Le rotture e le difese.** Le diciotto del §6.6 sono in `ROTTURE_RIFINITURA`,
+piu' due: «un corpo a 19 px» (il giro 2 rifatto sui numeri nuovi, con «sei corpi
+nel primo schermo» che passa da 19 a 20) e un numero scritto a mano con la banca
+che non risponde, perche' T-15:stati avesse la sua. Ognuna e' rossa per il suo
+motivo; la terra in percentuale solo a 1280×1024 e il velo in percentuale solo a
+1200×700, come nel mock. Le cinque difese tolte a mano, una alla volta, sul banco
+copiato e rimesso com'era: con il contrasto composto dagli antenati (il numero
+che `kitPagina().contrasto` dice) al posto dei pixel la cifra sotto l'h1 passa
+verde; senza 1280×1024 la terra in percentuale passa verde; senza la misura con
+il movimento ridotto le luci che lampeggiano lo stesso passano verdi; senza il
+confronto dell'indirizzo e della cronologia il link che cambia l'indirizzo passa
+verde; senza l'esclusione delle cifre in T-13:titoli il riferimento giusto e'
+rosso («La prova d'esame dei quiz», 16 px, introdurrebbe «20» a 44).
+
+**Tre cose del banco trovate scrivendo.** T-13 misurava subito dopo il cambio di
+dimensioni, e una pagina che risponde con `matchMedia` era misurata nello stato di
+prima: ora aspetta 100 ms. Con un dialogo modale aperto il primo schermo per i
+cinque corpi e' il dialogo, come per le distanze dal P-95: «Accedi» sopra la Home
+al computer contava i corpi della Home dietro. E la rottura del percorso con
+`href` era prima scritta togliendo `preventDefault`: il salto al frammento toglie
+anche il fuoco, e la rottura restava rossa per il fuoco anche senza il confronto
+dell'indirizzo; ora cambia l'indirizzo con `pushState`, e la difesa si prova.
+
+**Sulla pagina vera** quattordici verifiche rosse, ognuna dichiarata in
+`docs/eccezioni-interfaccia.md` con i numeri: le due della scala statica, T-13:corpi,
+T-12:scelte (5 bersagli a 1280×800) e le dieci di T-15. Tutto il resto, T-12 al
+computer compreso, gira verde.
+
 ---
 
 ## 12. Decisioni per l'autore
@@ -923,3 +1005,9 @@ raccomandato; le altre servono prima del giro B.
   raccomandato, presentate a gruppi nella sessione del progetto. Segnate nel
   §12; il titolo della tappa 10 nel §10; la soglia in T-15:soglia; il prompt
   proposto per A-controlli nel §11.1.
+
+- **25 ottobre 2026 — i controlli del giro A (P-97).** `SCALA_CSS` della Regata,
+  T-12 e T-13 come nel §6.2–§6.3, T-15 nuovo, `movimento()` e il lettore di PNG
+  nel banco, la Home U nella pagina di riferimento, R-VOLTO-01…11 nella
+  specifica, i rossi della pagina vera dichiarati. La nota di consegna, con gli
+  agganci per P-98, nel §11.1.

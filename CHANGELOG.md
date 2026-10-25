@@ -499,6 +499,68 @@ selezione o contabilità. Versione 0.34.0 invariata.
   `test_dati.py`. Sparisce quando i worktree si chiudono. Il guardiano
   dovrebbe saltarli.
 
+### Test — P-97: il volto, giro A, i controlli prima della pagina
+
+La Home al computer «U — Terra beige» e i colori della Regata, scelti
+dall'autore il 25 ottobre, entrano nei controlli prima che nella pagina, con il
+metodo dei giri 1 e 2: un controllo che nasce dopo la pagina dimostra soltanto
+che la pagina fa quello che fa. Le decisioni 1–14 di `docs/volto-progetto.md`
+diventano numeri del contratto. Nessun file di `site/`; versione 0.34.0
+invariata.
+
+- **La scala della Regata** in `SCALA_CSS`: corpi 12, 14, 16, 20, 24, 32, e 44
+  e 56 solo per ruolo — 56 nell'h1 della Home sopra la soglia, 44 in «Come
+  funziona» e nei numeri dell'esame —; spazi con 64; pesi con 800 solo per titoli
+  da 24 px e numeri; interlinea 1,05 per i titoli grandi; `--acc #0a4f6e`,
+  `--ko #b3261e`, `--ok #12663a`, `--warn` che resta, e i ruoli «segno»
+  (`--boa`, `--rotta`) e «terra». L'arancio delle boe su un testo o un comando,
+  sottolineatura compresa, e' rosso. Le rotture del giro 2 rifatte: 19 e' rosso.
+- **T-12 al computer**: la Home a 1280×800 e a 1200×700, il fondo pieno contro la
+  superficie che sta dietro e solo fra le cose che si toccano (D-14 riscritta), il
+  percorso escluso come navigazione, l'avviso cercato anche **per significato** —
+  la tappa 1 del mock diceva la frase della conservazione con due parole in meno,
+  e la frase esatta non la prendeva. **T-13**: i testi della carta fuori dal conto,
+  i blocchi di sole cifre fuori da «il testo che il titolo introduce», i pannelli
+  contigui misurati fra i contenuti.
+- **T-15, nuovo**, in dieci parti, a 1200×700, 1280×800, 1280×1024, 1440×900,
+  1920×1080 e sotto la soglia: la carta solo sopra 1.200×680 e solo nella Home,
+  la terra sotto i triangoli e il faro fuori dalla colonna, il percorso come
+  navigazione, il fuoco, le luci con la sigla in testo vero, il movimento ridotto
+  e «Ferma le luci», i numeri dalla banca, gli stati H1/HA, Indietro. **Il
+  contrasto sopra la carta si legge sui pixel** (decisione 14): la carta non e' un
+  antenato del testo, e la composizione degli antenati direbbe 8,91:1 sul mare
+  uniforme qualunque cifra ci sia dietro. Nel banco `movimento()` e
+  `tests/png.mjs`, un lettore di PNG senza dipendenze per questa misura sola.
+- **Il mock aveva gia' un numero sbagliato, e ora c'e' un controllo:** «27 fanali
+  e segnali», mentre la banca dei Segnali ne ha 53. T-15:numeri cerca nel testo i
+  conti fatti dal banco sui dati che serve.
+- **Provato al contrario.** La pagina di riferimento del client ha la Home U
+  sopra la soglia e passa il banco intero; le diciotto rotture del §6.6, piu' «un
+  corpo a 19 px» e un numero inventato con la banca che non risponde, sono rosse
+  ciascuna per il suo motivo — la terra in percentuale solo a 1280×1024, il velo in
+  percentuale solo a 1200×700. Le cinque difese tolte a mano una alla volta fanno
+  passare verde la loro rottura, o rosso il riferimento giusto. Tre cose del banco
+  corrette strada facendo: T-13 aspetta che la pagina risponda al cambio di
+  dimensioni; con un dialogo aperto i cinque corpi si contano nel dialogo; la
+  rottura del link che cambia l'indirizzo non toglie anche il fuoco.
+- **Sulla pagina vera** quattordici verifiche rosse per il motivo giusto, una riga
+  ciascuna in `docs/eccezioni-interfaccia.md`: la scala statica (24 dichiarazioni
+  a 19 e 30, `:root` del giro 2), T-13:corpi, T-12:scelte (5 bersagli a 1280×800)
+  e T-15 tranne il fuoco. Le toglie P-98. Specifica: R-RIF-19, 21…27, 30 e
+  R-ACC-02 cambiano, R-VOLTO-01…10 coperti e R-VOLTO-11 scoperto; la nota di
+  consegna, con gli agganci per la pagina (`data-luce`, `data-rotta`, il percorso
+  con `href="#id"`), nel §11.1 del progetto.
+- **Verificato:** interfaccia **4.892** in 341 s (erano 3.849), con la 8620
+  guardata libera per 90 s; con `RG_TEMPI=1` le parti di T-15 sommano 36 s sulla
+  pagina vera e 37 s sul riferimento — le piu' lunghe il velo sul riferimento,
+  18,2 s, e gli stati sulla pagina vera, 13,2 s —, e le sedici rotture di T-15
+  58 s, nelle corsie libere. Motore 215/219 con i quattro skip
+  previsti, server 89/89 con Node di sistema, dati 225, specifica **1.138** (erano
+  1.096), guardiano verde. Server e motore non toccati, e la LTS 24 non rifatta:
+  il pacchetto non e' piu' sul disco. Non coperti: la bellezza, il gesto vero,
+  un lettore di schermo, Safari e un iPad, le prestazioni dello strato fisso
+  (§13 del progetto).
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la

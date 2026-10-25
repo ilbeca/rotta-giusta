@@ -78,6 +78,7 @@ import { tmpdir } from 'node:os';
 import { join, dirname, extname, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { avviaChrome } from './browser.mjs';
+import { leggiPng, rapporto as rapportoPng } from './png.mjs';
 import { SITE, MOTORE } from './sito.mjs';
 import { avvia } from '../server/server.mjs';
 import { aggiungiRighe, azzera as azzeraDb, esitiDi as esitiDb } from '../server/db.mjs';
@@ -4021,6 +4022,13 @@ async function t11(b, ctx, v) {
 
 const PARTI_T12 = ['principale', 'primo-schermo', 'esame', 'avviso', 'scelte', 'aggancio'];
 const AVVISI_T12 = [PRIMA, SEG_PRIMA];
+// L'avviso per significato, non solo per testo esatto (volto §6.2, decisione A
+// del giro 1, D-08): la tappa 1 del mock della U dice «Senza account le risposte
+// valgono finche' la pagina resta aperta», due parole meno di PRIMA, e la frase
+// esatta non la prenderebbe. Una frase che dice «senza account» e, nella stessa
+// frase, che le risposte non restano, e' un avviso di conservazione dove non ci
+// deve essere. Non vede una parafrasi che non nomina l'account.
+const SIGNIFICATO_AVVISO = 'senza account[^.;]*?(valgono|finch[eé]|si perdono|perdi|non rest|restano solo|non (si )?conserv|non (si )?salv)';
 const PORTE_ESAME = ['#v-esame [data-cporta="prova"]', '#v-esame [data-modo="sim"][data-prova="base"]', '#v-esame [data-modo="sim"][data-prova="vela"]',
   '#v-esame [data-modo="sim"][data-prova="entrambe"]'];
 const PORTE_CARTEGGIO = ['#seg-carteggio [data-cporta="prova"]', '#seg-carteggio [data-cporta="esercizi"]', '#seg-carteggio [data-cporta="tecniche"][data-v="tec"]'];
@@ -4040,6 +4048,11 @@ async function sezioneT12(tab, x, dove) {
 // che ci deve stare accanto, oppure null: allora non ce ne deve essere nessuna.
 const SUPERFICI_T12 = [
   { dove: 'la Home', apri: (tab) => sezioneT12(tab, 'oggi', SIM_HOME), porta: SIM_HOME, avviso: null, scelte: true },
+  // La Home al computer, sopra la soglia della U (volto §6.2, decisione 9): la
+  // principale contro la superficie che ha dietro, al piu' quattro bersagli con
+  // il percorso escluso come navigazione, nessun avviso nemmeno parafrasato, e
+  // l'azione nel primo schermo anche a 1200×700.
+  { dove: 'la Home al computer', dims: [[1280, 800], [1200, 700]], apri: (tab) => sezioneT12(tab, 'oggi', SIM_HOME), porta: SIM_HOME, avviso: null, scelte: true },
   { dove: 'Esame', apri: (tab) => sezioneT12(tab, 'esame', PORTE_ESAME[0]), gruppo: PORTE_ESAME, avviso: null, esame: true },
   { dove: 'Allenati · Carteggio', apri: (tab) => sezioneT12(tab, 'cart', PORTE_CARTEGGIO[0]), gruppo: PORTE_CARTEGGIO, avviso: null },
   { dove: 'Allenati · Segnali', apri: (tab) => sezioneT12(tab, 'seg', '#s-start'), porta: '#s-start', avviso: SEG_PRIMA },
@@ -4077,19 +4090,29 @@ function disegnoT12(K, cfg) {
   let P = porte[0];
   if (cfg.gruppo) while (P && !porte.every((x) => P.contains(x))) P = P.parentElement;
   const dentroP = (e) => P.contains(e) || e.contains(P);
-  const escluso = (e) => !!e.closest('header, #barra, [data-avatar], [role="tab"]');
+  // Il percorso della Home al computer e' una navigazione, come la barra (volto
+  // §5.3, decisione 6): ogni <nav> e' esclusa.
+  const escluso = (e) => !!e.closest('header, nav, #barra, [data-avatar], [role="tab"]');
   const pagina = K.fondo(document.body) || [255, 255, 255, 1];
   const lumC = (c) => { const f = (x) => { x /= 255; return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4; }; return 0.2126 * f(c[0]) + 0.7152 * f(c[1]) + 0.0722 * f(c[2]); };
   const rapporto = (a, b) => { const x = lumC(a), y = lumC(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
   const rgba = (t) => { const m = String(t).match(/rgba?\(([^)]+)\)/); if (!m) return [0, 0, 0, 0]; const p = m[1].split(/[\s,/]+/).filter(Boolean).map(Number); return [p[0], p[1], p[2], p.length > 3 ? p[3] : 1]; };
-  // Il fondo proprio di un elemento, composto su quello che ha dietro, contro il fondo della pagina.
+  // Il fondo proprio di un elemento, composto su quello che ha dietro, contro la
+  // superficie che ha dietro (volto §6.2, decisione 7): con la pagina scura della
+  // Home al computer il pulsante pieno dentro la scheda bianca si misura contro
+  // la scheda, non contro il mare del body. Sulle superfici chiare dietro e'
+  // la pagina, e la misura e' quella del giro 1.
   const fondoProprio = (e) => {
     const c = rgba(getComputedStyle(e).backgroundColor);
     if (c[3] === 0) return 1;
     const dietro = (e.parentElement && K.fondo(e.parentElement)) || pagina;
     const comp = [0, 1, 2].map((i) => c[i] * c[3] + dietro[i] * (1 - c[3]));
-    return rapporto(comp, pagina);
+    return rapporto(comp, dietro);
   };
+  // D-14 riscritta (decisione 7): l'azione principale e' la cosa interattiva piu'
+  // evidente. Le superfici che non si toccano — la carta, il velo, le schede che
+  // contengono testo — non sono un secondo fondo pieno.
+  const interattivo = (e) => e.matches('button, a[href], input:not([type=hidden]), select, textarea, summary, [role=button], [role=link]');
   const inCima = (e, r) => { const t = document.elementFromPoint(Math.min(W - 1, Math.max(0, r.left + r.width / 2)), Math.min(H - 1, Math.max(0, r.top + r.height / 2))); return !!t && (e.contains(t) || t.contains(e)); };
   const nelPrimo = (r) => r.bottom > 0 && r.top < H && r.width >= 8 && r.height >= 8;
 
@@ -4100,7 +4123,7 @@ function disegnoT12(K, cfg) {
     if (!K.V(e) || escluso(e) || dentroP(e) || K.opacita(e) < 0.1) continue;
     const r = e.getBoundingClientRect();
     if (!nelPrimo(r) || getComputedStyle(e).backgroundImage !== 'none') continue;
-    if (fondoProprio(e) >= 3 && inCima(e, r)) pieni.push(K.nome(e));
+    if (interattivo(e) && fondoProprio(e) >= 3 && inCima(e, r)) pieni.push(K.nome(e));
   }
   for (const x of pieni) out.principale.push(`${x} ha il fondo pieno fuori dall'azione principale`);
   if (!cfg.gruppo) {
@@ -4142,6 +4165,12 @@ function disegnoT12(K, cfg) {
     return [...document.querySelectorAll('body *')].filter((x) => ha(x) && ![...x.children].some(ha)).filter(K.V);
   };
   const trovati = cfg.frasi.flatMap((f) => foglie(f).map((e) => ({ f, e })));
+  // Dove non ci deve essere nessun avviso, anche per significato (§6.2).
+  if (!cfg.avviso && cfg.significato) {
+    const re = new RegExp(cfg.significato, 'i');
+    const tutte = [...document.querySelectorAll('body *')].filter((x) => re.test(x.textContent.replace(/\s+/g, ' ')) && ![...x.children].some((y) => re.test(y.textContent.replace(/\s+/g, ' ')))).filter(K.V);
+    for (const e of tutte) if (!trovati.some((t) => t.e === e)) trovati.push({ f: e.textContent.trim().replace(/\s+/g, ' '), e });
+  }
   out.numeri.avvisi = trovati.length;
   if (!cfg.avviso) {
     for (const { f, e } of trovati) out.avviso.push(`c'e' l'avviso «${f.slice(0, 40)}…» (${K.nome(e)})`);
@@ -4217,18 +4246,18 @@ async function t12(b, ctx, v, parte) {
     const tab = await c.apri(ctx.sito + ingresso(ctx));
     await tab.dimensioni(375, 812);
     if (!await tab.attendi(PRONTO, CARICO)) { extra.intoppi.push('la pagina non si apre'); }
-    const misura = async (s, dimensioni = [812, 667]) => {
+    const misura = async (s, dimensioni = s.dims || [[375, 812], [375, 667]]) => {
       // Le parti che la superficie chiede: il riepilogo solo la principale e il suo aggancio.
       const chiede = (p) => !s.parti || s.parti.includes(p);
-      for (const h of dimensioni) {
-        await tab.dimensioni(375, h);
+      for (const [w, h] of dimensioni) {
+        await tab.dimensioni(w, h);
         await pausa(80);
-        const m = await tab.valuta(inPagina(disegnoT12, { inizio: s.inizio, porta: s.porta, gruppo: s.gruppo, avviso: s.avviso, frasi: AVVISI_T12, scelte: s.scelte, esame: s.esame }));
-        const dove = `${s.dove} a 375×${h}`;
+        const m = await tab.valuta(inPagina(disegnoT12, { inizio: s.inizio, porta: s.porta, gruppo: s.gruppo, avviso: s.avviso, frasi: AVVISI_T12, significato: SIGNIFICATO_AVVISO, scelte: s.scelte, esame: s.esame }));
+        const dove = `${s.dove} a ${w}×${h}`;
         if (!m || m.manca) { extra.intoppi.push(`${dove}: ${m ? m.manca : 'la misura non gira'}`); continue; }
         for (const x of m.principale) per.principale.push(`${dove}: ${x}`);
         for (const x of m.aggancioP) per.aggancio.push(`${dove}: ${x}`);
-        if (h === 812) extra.numeri.push(`${s.dove}: ${JSON.stringify(m.numeri)}`);
+        if (h === 812 || w > 900) extra.numeri.push(`${s.dove} a ${w}×${h}: ${JSON.stringify(m.numeri)}`);
         if (!chiede('avviso')) continue;
         for (const x of m.primo) per['primo-schermo'].push(`${dove}: ${x}`);
         if (s.esame) { for (const x of m.esame) per.esame.push(`${dove}: ${x}`); for (const x of m.modulo) extra.modulo.push(`${dove}: ${x}`); }
@@ -4256,7 +4285,7 @@ async function t12(b, ctx, v, parte) {
       && await rispondiCosi(tab, [], 'T-12', '', false) === false && await chiudiQuiz(tab, [], 'T-12', '')) {
       // Nel riepilogo l'invito e la conservazione hanno le loro frasi (R-ACC-02, R-ACC-03):
       // qui conta solo la principale, il punto 9 dell'audit.
-      await misura({ dove: 'il riepilogo con un errore', porta: '#r-fine [data-ciclo="riprova"]', inizio: '#r-fine h1', avviso: null, parti: ['principale'] }, [812]);
+      await misura({ dove: 'il riepilogo con un errore', porta: '#r-fine [data-ciclo="riprova"]', inizio: '#r-fine h1', avviso: null, parti: ['principale'] }, [[375, 812]]);
       if (await alPercorso(tab)) await misura({ dove: 'la Home dopo una risposta', porta: SIM_HOME, avviso: null });
       else extra.intoppi.push('dal riepilogo non si torna alla Home');
     } else extra.intoppi.push('il riepilogo con un errore non si apre');
@@ -4266,9 +4295,9 @@ async function t12(b, ctx, v, parte) {
   const g = (p) => `T-12:${p}`;
   if (vuole('principale')) v.push({ gruppo: g('principale'), nome: T12.principale, ok: ok(per.principale), extra: dire(per.principale) });
   if (vuole('primo-schermo')) {
-    for (const h of [812, 667]) {
-      const xs = per['primo-schermo'].filter((x) => x.includes(`a 375×${h}:`));
-      v.push({ gruppo: g('primo-schermo'), nome: T12.primo(h), ok: ok(xs), extra: dire(xs) });
+    for (const [w, h] of [[375, 812], [375, 667], [1280, 800], [1200, 700]]) {
+      const xs = per['primo-schermo'].filter((x) => x.includes(`a ${w}×${h}:`));
+      v.push({ gruppo: g('primo-schermo'), nome: T12.primo(h, w), ok: ok(xs), extra: dire(xs) });
     }
   }
   if (vuole('esame')) {
@@ -4290,15 +4319,16 @@ async function t12(b, ctx, v, parte) {
 }
 // I nomi delle verifiche di T-12: i difetti dichiarati li citano (docs/eccezioni-interfaccia.md).
 const T12 = {
-  principale: 'nel primo schermo un solo fondo pieno, ed e\' l\'azione principale',
-  primo: (h) => `a 375×${h} l'azione principale sta nel primo schermo, sotto il dito`,
+  principale: 'nel primo schermo un solo fondo pieno fra le cose che si toccano, misurato contro la superficie dietro, ed e\' l\'azione principale',
+  primo: (h, w = 375) => w === 375 ? `a 375×${h} l'azione principale sta nel primo schermo, sotto il dito`
+    : `a ${w}×${h} l'azione principale della Home al computer sta nel primo schermo, sotto il dito`,
   esame: 'in Esame «Le prove» e la prima porta vengono prima del modulo, nel primo schermo',
   modulo: 'in Esame il modulo sta in un details chiuso, e il sommario dice la scelta',
-  fuori: 'nessun avviso nella Home, in Esame e nel segmento Carteggio',
+  fuori: 'nessun avviso nella Home, in Esame e nel segmento Carteggio, nemmeno parafrasato',
   accanto: 'in ogni preparazione l\'avviso sta accanto all\'azione principale, uno solo e senza niente in mezzo',
   testo: 'l\'avviso e\' testo, non un riquadro, e occupa al piu\' il 15 % del primo schermo',
   visto: 'in ogni preparazione l\'avviso si vede davvero',
-  scelte: 'al piu\' quattro bersagli nel primo schermo della Home e delle preparazioni',
+  scelte: 'al piu\' quattro bersagli nel primo schermo della Home e delle preparazioni, anche al computer con il percorso escluso',
   ganci: 'ogni superficie dichiara la sua azione principale con data-ruolo="principale"',
   gancioAvviso: 'ogni avviso sta dentro un data-ruolo="avviso"',
 };
@@ -4330,7 +4360,17 @@ function scalaT13(K, cfg) {
     return true;
   };
   const tutti = [...document.querySelectorAll('body *')].filter(vis);
-  const testo = tutti.filter(K.haTesto);
+  // I testi dentro la carta della Home al computer sono disegno (volto §5.2,
+  // §6.3): in unita' del disegno, e quello che dicono e' anche nella scheda, in
+  // testo vero. Non si contano fra i corpi ne' fra i pesi.
+  const disegno = (e) => !!e.closest('svg[role="img"], [aria-hidden="true"]');
+  const testo = tutti.filter(K.haTesto).filter((e) => !disegno(e));
+  // Un blocco fatto di sole cifre («20», «30′», «4»): i numeri dell'esame (§6.3).
+  const cifre = (e) => { const t = e.textContent.trim(); return /\d/.test(t) && /^[\d\s.,:′'’%·×/+\-−]+$/.test(t); };
+  // I corpi per ruolo (decisione 1): 56 solo nel titolo della Home al computer,
+  // 44 solo in «Come funziona» al computer e nei numeri dell'esame sopra i 900 px.
+  const diRuolo = (e, px) => (C.ruoli || []).some((r) => vicino(px, r.corpo) && innerWidth >= r.larghezza && innerHeight >= (r.altezza || 0)
+    && (!r.cifre || cifre(e)) && (!r.selettore || [...document.querySelectorAll(r.selettore)].some((x) => x.contains(e) && (!r.testo || x.textContent.trim() === r.testo))));
   const out = Object.fromEntries([...['corpi','cinque','titoli','testo','spazi','sezioni','pesi','distanze','righe','colori','home']].map((k) => [k, []]));
   const num = { corpi: [], primo: [], pesi: [], parole: null, righe: 0, testi: testo.length, sezioni: 0 };
   const vicino = (a, b) => Math.abs(a - b) < 0.06;
@@ -4339,14 +4379,19 @@ function scalaT13(K, cfg) {
   const size = new Set(), weights = new Set();
   const primo = new Set();
   const heading = 'h1,h2,h3,h4,h5,h6';
-  const inPrimo = (e) => { const r = e.getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0 && r.left < innerWidth && r.right > 0; };
+  // Con un dialogo modale aperto il primo schermo e' il dialogo (come per D-28,
+  // P-95): la Home al computer che resta dietro «Accedi» non e' una sua scelta
+  // di corpi (P-97).
+  const modaleAperto = [...document.querySelectorAll('[role="dialog"][aria-modal="true"], dialog[open]')].filter((e) => K.V(e)).at(-1);
+  const inPrimo = (e) => { const r = e.getBoundingClientRect(); return (!modaleAperto || modaleAperto.contains(e)) && r.top < innerHeight && r.bottom > 0 && r.left < innerWidth && r.right > 0; };
   for (const e of testo) {
     const cs = getComputedStyle(e), px = parseFloat(cs.fontSize), w = Number(cs.fontWeight);
     size.add(px); weights.add(w);
     if (inPrimo(e)) primo.add(px);
-    const home40 = innerWidth > 900 && e.closest('#v-home h1, #v-oggi h1');
-    if (!C.corpi.some((x) => vicino(px, x)) && !(home40 && vicino(px, C.home))) out.corpi.push(`${nome(e)} corpo ${px} px`);
+    if (!C.corpi.some((x) => vicino(px, x)) && !diRuolo(e, px)) out.corpi.push(`${nome(e)} corpo ${px} px${(C.ruoli || []).some((r) => vicino(px, r.corpo)) ? ' fuori dal suo ruolo' : ''}`);
     if (!C.pesi.includes(w)) out.pesi.push(`${nome(e)} peso ${w}`);
+    // 800 solo per i titoli da 24 px in su e per i numeri (decisione 4).
+    else if (w === C.pesoForte && !(e.matches(heading) && px >= C.forteDa - 0.06) && !cifre(e)) out.pesi.push(`${nome(e)} peso ${w} su un testo che non e' un titolo da ${C.forteDa} px ne' un numero`);
   }
   if (primo.size > 5) out.cinque.push(`${primo.size} corpi: ${[...primo].sort((a,b)=>a-b).join(', ')} px`);
   num.corpi = [...size].sort((a,b)=>a-b); num.primo = [...primo].sort((a,b)=>a-b); num.pesi = [...weights];
@@ -4362,7 +4407,8 @@ function scalaT13(K, cfg) {
   if (livelli.length > 3 || livelli.some((n, i) => i && n > livelli[i-1] + 1)) out.titoli.push(`livelli ${livelli.join(', ')}`);
   for (const h of titoli) {
     const n = Number(h.tagName[1]);
-    const dopo = testo.find((e) => !e.matches(heading) && !h.contains(e) && (h.compareDocumentPosition(e) & Node.DOCUMENT_POSITION_FOLLOWING)
+    // Un blocco di sole cifre non e' il testo che il titolo introduce (§6.3).
+    const dopo = testo.find((e) => !e.matches(heading) && !h.contains(e) && !cifre(e) && (h.compareDocumentPosition(e) & Node.DOCUMENT_POSITION_FOLLOWING)
       && (!superficie || superficie.contains(e)));
     if (dopo && taglia(dopo) > taglia(h) + 0.06) out.titoli.push(`${nome(h)} ${taglia(h)} px introduce ${nome(dopo)} ${taglia(dopo)} px`);
     for (const altro of titoli.filter((e) => Number(e.tagName[1]) > n)) if (taglia(altro) > taglia(h) + 0.06) out.titoli.push(`${nome(h)} ${taglia(h)} px sopra ${nome(altro)} ${taglia(altro)} px`);
@@ -4400,7 +4446,9 @@ function scalaT13(K, cfg) {
   for (const e of testo) {
     const cs = getComputedStyle(e), t = e.textContent.trim();
     if ((cs.textTransform === 'uppercase' || (!['lowercase','capitalize'].includes(cs.textTransform) && /[A-ZÀ-Ü]/.test(t) && t === t.toUpperCase())) && righeDi(e).length > 1) out.testo.push(`${nome(e)} maiuscolo oltre una riga`);
-    if (e.matches(heading) && Math.abs(parseFloat(cs.lineHeight) / taglia(e)-C.titoli) > 0.005) out.testo.push(`${nome(e)} interlinea titolo ${(parseFloat(cs.lineHeight)/taglia(e)).toFixed(3)} invece di ${C.titoli}`);
+    // 1,05 per i titoli da 44 e 56 px, 1,2 per gli altri (decisione 3).
+    const lhT = taglia(e) >= C.grandiDa - 0.06 ? C.titoliGrandi : C.titoli;
+    if (e.matches(heading) && Math.abs(parseFloat(cs.lineHeight) / taglia(e)-lhT) > 0.005) out.testo.push(`${nome(e)} interlinea titolo ${(parseFloat(cs.lineHeight)/taglia(e)).toFixed(3)} invece di ${lhT}`);
     if (Number(cs.fontWeight) >= 600 && e.closest('p') && t.split(/\s+/).length > 5) out.pesi.push(`${nome(e)} grassetto ${t.split(/\s+/).length} parole`);
   }
   for (const e of tutti) {
@@ -4420,9 +4468,17 @@ function scalaT13(K, cfg) {
   for (const g of gruppi) {
     const sezioni = [...g.children].filter((e) => vis(e) && (e.matches('section') || e.querySelector('h2')));
     for (let i = 1; i < sezioni.length; i++) {
-      const a = sezioni[i-1], b = sezioni[i], spazio = b.getBoundingClientRect().top - a.getBoundingClientRect().bottom;
+      const a = sezioni[i-1], b = sezioni[i];
       const ra=a.getBoundingClientRect(), rb=b.getBoundingClientRect();
+      let spazio = rb.top - ra.bottom;
       if (Math.min(ra.right,rb.right) <= Math.max(ra.left,rb.left)+0.06) continue; // affiancate
+      // I pannelli alti uno schermo sono contigui, con lo spazio dentro (volto
+      // §6.3): fra due pannelli si misura lo spazio fra i contenuti.
+      const contenuti = (s) => [...s.children].filter(vis).map((x) => x.getBoundingClientRect()).filter((r) => r.height > 0);
+      if (spazio <= 0.06 && ra.height >= innerHeight * 0.8 && rb.height >= innerHeight * 0.8) {
+        const ca = contenuti(a), cb = contenuti(b);
+        if (ca.length && cb.length) spazio = Math.min(...cb.map((r) => r.top)) - Math.max(...ca.map((r) => r.bottom));
+      }
       let interno = 0;
       for (const s of [a,b]) {
         const figli = [...s.children].filter(vis);
@@ -4460,9 +4516,21 @@ function scalaT13(K, cfg) {
   }
   // Colori calcolati, equivalenze incluse: il valore del token e' fissato dal contratto.
   const rgb = (hex) => `rgb(${hex.slice(1).match(/../g).map((x)=>parseInt(x,16)).join(', ')})`;
+  const comando = 'button,a[href],input,select,textarea,summary,[role=button],[role=tab],[role=link]';
   for (const e of tutti) {
     const cs = getComputedStyle(e);
     const ha = (colore) => cs.backgroundColor === colore || (K.haTesto(e) && cs.color === colore);
+    // Il segno del sito, l'arancio delle boe: solo disegni e segni, mai un
+    // testo, un comando o un esito (volto §5.1, decisione 8).
+    if (C.colori['--boa']) {
+      const boa = rgb(C.colori['--boa']);
+      if (K.haTesto(e) && !disegno(e) && cs.color === boa) out.colori.push(`${nome(e)} segno del sito su un testo`);
+      if (e.matches(comando)) {
+        const linea = (l) => parseFloat(cs[`border${l}Width`]) > 0 && !/none|hidden/.test(cs[`border${l}Style`]) && cs[`border${l}Color`] === boa;
+        if (cs.backgroundColor === boa || cs.color === boa || ['Top','Right','Bottom','Left'].some(linea)
+          || (cs.textDecorationLine !== 'none' && cs.textDecorationColor === boa)) out.colori.push(`${nome(e)} segno del sito su un comando`);
+      }
+    }
     if (ha(rgb(C.colori['--acc'])) && !e.closest('button,a[href],input,select,textarea,summary,[role=button],[role=tab]') && !e.matches('[role=tablist]')) out.colori.push(`${nome(e)} accento su testo non interattivo`);
     if (ha(rgb(C.colori['--ok'])) && !e.closest('.ok,.success,.giusta,[data-esito=corretto]')) out.colori.push(`${nome(e)} colore giusto fuori ruolo`);
     if (ha(rgb(C.colori['--ko'])) && !e.closest('[role=alert],.ko,.error,.errore,.sbagliata,[data-esito="errato"]')) out.colori.push(`${nome(e)} colore errore fuori ruolo`);
@@ -4493,6 +4561,9 @@ async function t13(b, ctx, v, parte) {
     const misura = async (dove, home=false) => {
       for (const [w,h] of [[375,812],[1280,800]]) {
         await tab.dimensioni(w,h);
+        // La pagina risponde al cambio di dimensioni (matchMedia, la soglia della
+        // Home al computer): si misura dopo che ha risposto (P-97).
+        await pausa(100);
         const m = await tab.valuta(inPagina(scalaT13, { scala:ctx.scala, eccezioni:ctx.eccezioniScala || [], home, segmenti:true }));
         if (!m || !m.num.testi) { intoppi.push(`${dove} a ${w}: nessun testo misurato`); continue; }
         for (const [k,xs] of Object.entries(m.out)) for (const x of xs) errori[k].push(`${dove} a ${w}×${h}: ${x}`);
@@ -4527,6 +4598,518 @@ async function t13(b, ctx, v, parte) {
     const keys = p==='corpi' ? ['corpi','cinque'] : p==='spazi' ? ['spazi','sezioni'] : [p];
     for (const k of keys) v.push({ gruppo:'T-13:'+p, nome:T13[k], ok:!intoppi.length && !errori[k].length,
       extra: intoppi.length ? lista(intoppi) : perDifetto(errori[k],12) + ' — misure: ' + JSON.stringify(numeri) });
+  }
+}
+
+
+// --- T-15: il volto, la Home al computer «U — Terra beige» (P-97) ------------------------
+//
+// docs/volto-progetto.md §6.4 e §6.5, con le decisioni 1–14 del §12. Senza
+// account — tranne HA in T-15:stati —, sulla pagina vera e su quella di
+// riferimento, alle dimensioni dove la U si rompe e non solo dove regge: 1200×700,
+// 1280×800, 1280×1024, 1440×900, 1920×1080, e 1199×800 e 1440×679, dove la U
+// non deve esserci (decisione 9: da 1.200 px di larghezza e 680 di altezza).
+// Le misure si fanno con il movimento ridotto emulato, cosi' i lampi non
+// cambiano i pixel fra una lettura e l'altra; T-15:movimento misura anche
+// senza.
+//
+// Il banco non si fida degli agganci, dove puo' farne a meno: la carta e' lo
+// strato fisso dentro la Home che copre lo schermo; il percorso e' la <nav>
+// della Home, i suoi pannelli le destinazioni dei suoi link (href="#id"); il
+// faro e la boa sono i pulsanti della Home con quel nome; la colonna del testo
+// e' l'unione dei testi della Home fuori dagli strati fissi. Due agganci
+// servono, e sono nel contratto (§11.1 del progetto): `data-luce` sui lampi e
+// `data-rotta` sulla rotta, perche' con il movimento ridotto un'animazione
+// spenta non dice piu' chi era.
+//
+// Il contrasto sopra la carta si misura sui pixel (decisione 14, tests/png.mjs):
+// i testi della Home resi trasparenti, una schermata, e per ogni testo il pixel
+// peggiore dietro di lui, contro il suo colore. Non si confrontano immagini.
+//
+// Che cosa non vede: la bellezza; il gesto vero e un lettore di schermo; Safari
+// e un iPad; le prestazioni dello strato fisso; un testo dentro la carta che
+// dice una cosa diversa dalla scheda.
+
+const T15 = {
+  soglia: 'sotto la soglia della U (1.200 × 680 px) nessuno strato fisso, nessun fondo scuro e nessuno scorrimento a scatti; sopra, la carta c\'e\'',
+  costa: 'a ogni dimensione del contratto gli undici triangoli stanno sulla terra, e il faro e la boa dentro lo schermo e fuori dalla colonna del testo',
+  velo: 'ogni testo sopra la carta ha il contrasto minimo contro il pixel peggiore dietro di lui, pannello per pannello',
+  percorso: 'il percorso e\' una navigazione: undici link con un nome, aria-current sul pannello in vista, un tocco porta al pannello e al suo titolo senza cambiare l\'indirizzo ne\' la cronologia, bersagli di 44 px a 8 px, triangoli a 3:1 sulla terra',
+  fuoco: 'dopo la testata il primo fuoco e\' l\'azione principale, e nessun fuoco va su cio\' che non si vede o non fa niente',
+  luci: 'il faro e la boa sono pulsanti di almeno 44 px con aria-expanded; toccati, la scheda dice la sigla in testo vero e non copre la colonna ne\' l\'azione principale',
+  ridotto: 'con il movimento ridotto niente si muove: nessuna animazione, le luci accese ferme, la rotta disegnata intera',
+  ferma: 'senza il movimento ridotto le luci lampeggiano, e «Ferma le luci» le ferma',
+  numeri: 'i numeri della Home al computer vengono dalla banca e dal motore',
+  stati: 'la Home al computer tiene H1, HA, gli avvisi sopra il titolo e la banca non raggiungibile senza numeri inventati',
+  documento: 'dalla Home al computer ad Allenati e Indietro: lo stesso documento, la carta via in Allenati e di nuovo nella Home, lo scorrimento tornato al pannello di prima',
+};
+const PARTI_T15 = ['soglia', 'costa', 'velo', 'percorso', 'fuoco', 'luci', 'movimento', 'numeri', 'stati', 'documento'];
+const CHIAVI_T15 = { movimento: ['ridotto', 'ferma'] };
+const DIMS_U = [[1200, 700], [1280, 800], [1280, 1024], [1440, 900], [1920, 1080]];
+const SOTTO_U = [[1199, 800], [1440, 679]];
+// Le sigle che la scheda dice in testo vero (volto §10, da far verificare all'autore).
+const SIGLE = { faro: 'Lam.(2)', boa: 'Sc.(3)' };
+const TAPPE_U = 11;
+const META_SITO = JSON.parse(readFileSync(join(SITE, 'dati', 'meta.json'), 'utf8'));
+const N_CARTEGGIO = JSON.parse(readFileSync(join(SITE, 'dati', 'carteggio.json'), 'utf8')).length;
+
+/**
+ * Quello che il banco legge della Home al computer, nella pagina: la carta,
+ * il fondo, lo scorrimento a scatti, il percorso, le luci, la colonna. Con
+ * `segna` mette sulla carta l'attributo con cui la schermata della costa
+ * nasconde il resto; con `trasparente` rende trasparenti i testi fuori dalla
+ * carta (e toglie ogni stile messo prima, con `pulisci`).
+ */
+function voltoT15(K, cfg) {
+  const W = innerWidth, H = innerHeight;
+  const vecchio = document.getElementById('t15-stile');
+  if (vecchio) vecchio.remove();
+  for (const x of document.querySelectorAll('[data-t15-carta]')) x.removeAttribute('data-t15-carta');
+  for (const x of document.querySelectorAll('[data-t15-colore]')) { x.style.removeProperty('color'); x.style.removeProperty('-webkit-text-fill-color'); x.removeAttribute('data-t15-colore'); }
+  if (cfg.pulisci) return true;
+  const home = document.querySelector('#v-home');
+  const fisso = (e) => { for (let p = e; p && p !== document.body; p = p.parentElement) if (getComputedStyle(p).position === 'fixed') return p; return null; };
+  const copre = (e) => { const r = e.getBoundingClientRect(); return Math.max(0, Math.min(r.right, W) - Math.max(r.left, 0)) * Math.max(0, Math.min(r.bottom, H) - Math.max(r.top, 0)) >= 0.9 * W * H; };
+  const strati = [...document.querySelectorAll('body *')].filter((e) => K.V(e) && getComputedStyle(e).position === 'fixed' && copre(e) && !e.closest('[aria-modal="true"], dialog'));
+  const carta = strati.find((e) => home && home.contains(e)) || null;
+  const lumC = (c) => { const f = (x) => { x /= 255; return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4; }; return 0.2126 * f(c[0]) + 0.7152 * f(c[1]) + 0.0722 * f(c[2]); };
+  const fondoBody = K.fondo(document.body) || [255, 255, 255, 1];
+  const snap = [document.documentElement, document.body].map((e) => getComputedStyle(e).scrollSnapType).filter((x) => x && x !== 'none').join(' ');
+  const nomeDi = (e) => (e.getAttribute('aria-label') || e.textContent || '').trim().replace(/\s+/g, ' ');
+  const rect = (e) => { if (!e) return null; const q = e.getBoundingClientRect(); return { l: q.left, t: q.top, r: q.right, b: q.bottom, w: q.width, h: q.height }; };
+  const homeVista = !!home && K.V(home);
+  const nav = homeVista ? [...home.querySelectorAll('nav')].find(K.V) || null : null;
+  const links = nav ? [...nav.querySelectorAll('a[href], button')].filter(K.V) : [];
+  const pulsanti = homeVista ? [...home.querySelectorAll('button')].filter(K.V) : [];
+  const faro = pulsanti.find((b) => /\bfaro\b/i.test(nomeDi(b))) || null, boa = pulsanti.find((b) => /\bboa\b/i.test(nomeDi(b))) || null;
+  const principale = homeVista ? [...home.querySelectorAll('[data-modo="sim"][data-prova="base"]')].find(K.V) || null : null;
+  // La colonna: l'unione dei testi della Home fuori dagli strati fissi, quelli
+  // nello schermo, a scorrimento corrente.
+  const testi = homeVista ? [...home.querySelectorAll('*')].filter((e) => K.V(e) && K.haTesto(e) && !fisso(e) && K.opacita(e) > 0.1) : [];
+  let col = null;
+  for (const e of testi) {
+    const q = e.getBoundingClientRect();
+    if (q.width < 1 || q.bottom < 0 || q.top > H) continue;
+    col = col ? { l: Math.min(col.l, q.left), r: Math.max(col.r, q.right), t: Math.min(col.t, q.top), b: Math.max(col.b, q.bottom) } : { l: q.left, r: q.right, t: q.top, b: q.bottom };
+  }
+  if (cfg.segna && carta) {
+    carta.setAttribute('data-t15-carta', '');
+    const st = document.createElement('style'); st.id = 't15-stile';
+    st.textContent = '*{visibility:hidden!important;transition:none!important}[data-t15-carta],[data-t15-carta] *{visibility:visible!important}';
+    document.head.append(st);
+  }
+  // I testi sopra la carta, con il loro colore e le loro righe, prima di
+  // renderli trasparenti per la schermata.
+  let righe = null;
+  if (cfg.trasparente) {
+    righe = [];
+    for (const e of testi) {
+      const cs = getComputedStyle(e), px = parseFloat(cs.fontSize);
+      const rs = [];
+      for (const n of e.childNodes) {
+        if (n.nodeType !== 3 || !n.textContent.trim()) continue;
+        const rg = document.createRange(); rg.selectNodeContents(n);
+        for (const q of rg.getClientRects()) {
+          const r = { l: Math.max(0, q.left), t: Math.max(0, q.top), r: Math.min(W, q.right), b: Math.min(H, q.bottom) };
+          if (r.r - r.l >= 1 && r.b - r.t >= 1) rs.push(r);
+        }
+      }
+      // `antenati`: il contrasto che la composizione degli antenati direbbe
+      // (kitPagina().contrasto) — e' la misura che i pixel sostituiscono, e serve
+      // a provare la difesa (§6.6: con lei la cifra sotto l'h1 passa verde).
+      if (rs.length) righe.push({ nome: K.nome(e), colore: cs.color, grande: px >= 24 || (px >= 18.66 && Number(cs.fontWeight) >= 700), righe: rs, antenati: (K.contrasto(e) || {}).r ?? null });
+    }
+    if (carta) {
+      carta.setAttribute('data-t15-carta', '');
+      // Il colore si eredita: i testi della carta tengono il loro, fissato qui,
+      // mentre quelli fuori diventano trasparenti (e lo passerebbero alla carta).
+      for (const x of [carta, ...carta.querySelectorAll('*')]) {
+        const cs = getComputedStyle(x);
+        x.setAttribute('data-t15-colore', '');
+        x.style.setProperty('color', cs.color, 'important');
+        x.style.setProperty('-webkit-text-fill-color', cs.webkitTextFillColor || cs.color, 'important');
+      }
+    }
+    const st = document.createElement('style'); st.id = 't15-stile';
+    st.textContent = 'body *:not([data-t15-carta]):not([data-t15-carta] *){color:transparent!important;-webkit-text-fill-color:transparent!important;text-shadow:none!important;outline:none!important;caret-color:transparent!important;transition:none!important}'
+      + 'body svg:not([data-t15-carta] svg), body img:not([data-t15-carta] img){visibility:hidden!important}';
+    document.head.append(st);
+  }
+  return {
+    W, H, carta: carta ? K.nome(carta) : null, strati: strati.map(K.nome), scuro: lumC(fondoBody) < 0.2, fondo: fondoBody.slice(0, 3).map(Math.round), snap,
+    homeVista, nav: nav ? { nome: nav.getAttribute('aria-label') || '' } : null,
+    links: links.map((a) => ({ nome: nomeDi(a), href: a.getAttribute('href') || '', corrente: a.getAttribute('aria-current'), rect: rect(a),
+      forma: (() => { const f = a.querySelector('polygon, path, polyline, rect, circle'); if (!f) return null; const cs = getComputedStyle(f);
+        return { fill: cs.fill, stroke: cs.stroke, strokeWidth: parseFloat(cs.strokeWidth) || 0, fillOpacity: Number(cs.fillOpacity) }; })() })),
+    faro: faro ? { rect: rect(faro), espanso: faro.getAttribute('aria-expanded') } : null,
+    boa: boa ? { rect: rect(boa), espanso: boa.getAttribute('aria-expanded') } : null,
+    principale: rect(principale), colonna: col, righe, scrollY,
+  };
+}
+
+/** Il colore di una stringa CSS rgb()/rgba() come [r, g, b], composto sul `sotto`. */
+const coloreCss = (t, sotto = [255, 255, 255]) => {
+  const m = String(t).match(/rgba?\(([^)]+)\)/);
+  if (!m) return null;
+  const p = m[1].split(/[\s,/]+/).filter(Boolean).map(Number), a = p.length > 3 ? p[3] : 1;
+  return [0, 1, 2].map((i) => p[i] * a + sotto[i] * (1 - a));
+};
+const esa = (h) => h.slice(1).match(/../g).map((x) => parseInt(x, 16));
+const sopraX = (a, b) => Math.min(a.r, b.r) - Math.max(a.l, b.l) > 0.5;
+const sopraR = (a, b) => sopraX(a, b) && Math.min(a.b, b.b) - Math.max(a.t, b.t) > 0.5;
+
+/** Apre la pagina a una dimensione, con il movimento ridotto, e aspetta la Home pronta. */
+async function apriT15(c, ctx, w, h, { ridotto = true } = {}) {
+  const tab = await c.apri('about:blank');
+  await tab.dimensioni(w, h);
+  await tab.movimento(ridotto);
+  await tab.vai(ctx.sito + ingresso(ctx));
+  const pronta = await tab.attendi(PRONTO, CARICO);
+  await tab.valuta('document.fonts.ready.then(() => true)');
+  await pausa(150);
+  return { tab, pronta };
+}
+const statoT15 = (tab, cfg = {}) => tab.valuta(inPagina(voltoT15, cfg));
+
+async function t15(b, ctx, v, parte) {
+  const vuole = (p) => !parte || parte === p;
+  const err = Object.fromEntries(Object.keys(T15).map((k) => [k, []]));
+  const intoppi = [], numeri = [];
+  const scala = ctx.scala || {};
+  const terra = esa((scala.colori && scala.colori['--terra']) || '#f2e6cf');
+  const c = await b.nuovoContesto();
+  try {
+    // --- soglia: sotto niente carta, sopra la carta ---------------------------------
+    if (vuole('soglia')) {
+      for (const [w, h] of [...SOTTO_U, [1280, 800]]) {
+        const { tab, pronta } = await apriT15(c, ctx, w, h);
+        if (!pronta) { intoppi.push(`a ${w}×${h} la pagina non si apre`); continue; }
+        const s = await statoT15(tab);
+        const sotto = w < 1200 || h < 680;
+        numeri.push(`soglia ${w}×${h}: carta ${s.carta || 'no'}, fondo ${s.fondo}, scatti «${s.snap || 'no'}»`);
+        if (sotto) {
+          if (s.strati.length) err.soglia.push(`a ${w}×${h} c'e' uno strato fisso che copre lo schermo: ${s.strati.join(', ')}`);
+          if (s.scuro) err.soglia.push(`a ${w}×${h} il fondo della pagina e' scuro (${s.fondo})`);
+          if (s.snap) err.soglia.push(`a ${w}×${h} c'e' lo scorrimento a scatti (${s.snap})`);
+        } else if (!s.carta) err.soglia.push(`a ${w}×${h} la Home non ha la carta: nessuno strato fisso dentro #v-home che copre lo schermo`);
+      }
+    }
+    // --- costa, velo e luci: alle cinque dimensioni della U --------------------------
+    if (vuole('costa') || vuole('velo') || vuole('luci')) {
+      for (const [w, h] of DIMS_U) {
+        const { tab, pronta } = await apriT15(c, ctx, w, h);
+        const dove = `a ${w}×${h}`;
+        if (!pronta) { intoppi.push(`${dove} la pagina non si apre`); continue; }
+        const s = await statoT15(tab);
+        if (!s.carta) { for (const k of ['costa', 'velo', 'luci']) if (vuole(k)) err[k].push(`${dove} la Home non ha la carta`); continue; }
+        if (vuole('costa')) {
+          if (s.links.length !== TAPPE_U) err.costa.push(`${dove} il percorso ha ${s.links.length} tappe, non ${TAPPE_U}`);
+          await statoT15(tab, { segna: true });
+          await pausa(60);
+          const png = leggiPng(await tab.schermata());
+          await statoT15(tab, { pulisci: true });
+          const fuori = [];
+          s.links.forEach((l, i) => {
+            const p = png.pixel((l.rect.l + l.rect.r) / 2, (l.rect.t + l.rect.b) / 2);
+            const d = Math.abs(p[0] - terra[0]) + Math.abs(p[1] - terra[1]) + Math.abs(p[2] - terra[2]);
+            if (d > 30) fuori.push(`${i + 1} (rgb ${p.slice(0, 3).join(',')})`);
+          });
+          if (fuori.length) err.costa.push(`${dove} triangoli fuori dalla terra: ${fuori.join(', ')}`);
+          for (const [nome, x] of [['il faro', s.faro], ['la boa', s.boa]]) {
+            if (!x) { err.costa.push(`${dove} manca il pulsante del${nome === 'il faro' ? ' faro' : 'la boa'}`); continue; }
+            const r = x.rect;
+            if (r.l < 0 || r.t < 0 || r.r > s.W || r.b > s.H) err.costa.push(`${dove} ${nome} esce dallo schermo (${Math.round(r.l)}–${Math.round(r.r)} × ${Math.round(r.t)}–${Math.round(r.b)})`);
+            if (s.colonna && sopraX(r, s.colonna)) err.costa.push(`${dove} ${nome} sta nella colonna del testo (${Math.round(r.l)}–${Math.round(r.r)} contro ${Math.round(s.colonna.l)}–${Math.round(s.colonna.r)})`);
+          }
+          numeri.push(`costa ${dove}: colonna ${s.colonna ? Math.round(s.colonna.l) + '–' + Math.round(s.colonna.r) : '?'}, faro ${s.faro ? Math.round(s.faro.rect.l) : '?'}, boa ${s.boa ? Math.round(s.boa.rect.l) : '?'}`);
+        }
+        if (vuole('velo')) {
+          // Pannello per pannello: le destinazioni del percorso; senza percorso, a scatti di uno schermo.
+          const ids = s.links.map((l) => (l.href.startsWith('#') ? l.href.slice(1) : null)).filter(Boolean);
+          const passi = ids.length ? ids : [...Array(12).keys()].map(String);
+          let peggiore = Infinity, misurati = 0;
+          for (const id of passi) {
+            await tab.valuta(ids.length ? `(() => { const e = document.getElementById(${q(id)}); if (e) { document.documentElement.style.scrollBehavior = 'auto'; e.scrollIntoView({ block: 'start' }); } return !!e; })()`
+              : `(scrollTo(0, ${Number(id)} * innerHeight), true)`);
+            await pausa(120);
+            const st = await statoT15(tab, { trasparente: true });
+            await pausa(40);
+            const grezzo = await tab.schermata();
+            // RG_T15_PNG=<cartella>: le schermate della misura, per guardarle.
+            if (process.env.RG_T15_PNG) writeFileSync(join(process.env.RG_T15_PNG, `velo-${w}x${h}-${id}.png`), grezzo);
+            const png = leggiPng(grezzo);
+            await statoT15(tab, { pulisci: true });
+            for (const t of st.righe || []) {
+              const fg = coloreCss(t.colore);
+              if (!fg) continue;
+              let min = Infinity;
+              for (const r of t.righe) for (let y = Math.floor(r.t); y < Math.ceil(r.b); y++) for (let x = Math.floor(r.l); x < Math.ceil(r.r); x++) {
+                const k = rapportoPng(fg, png.pixel(x, y)); if (k < min) min = k;
+              }
+              misurati++;
+              peggiore = Math.min(peggiore, min);
+              const soglia = t.grande ? 3 : 4.5;
+              if (min < soglia) err.velo.push(`${dove}, pannello «${id}»: ${t.nome} ${min.toFixed(2)}:1 sotto ${soglia}:1`);
+            }
+          }
+          numeri.push(`velo ${dove}: ${misurati} testi, il peggiore ${Number.isFinite(peggiore) ? peggiore.toFixed(2) : '—'}:1`);
+          if (!misurati) err.velo.push(`${dove} nessun testo misurato sopra la carta`);
+          await tab.valuta('(scrollTo(0, 0), true)');
+        }
+        if (vuole('luci')) {
+          for (const [nome, chi] of [['faro', 'faro'], ['boa', 'boa']]) {
+            const x = s[chi];
+            if (!x) { err.luci.push(`${dove} manca il pulsante ${nome === 'faro' ? 'del faro' : 'della boa'}`); continue; }
+            if (x.rect.w < 44 - 0.5 || x.rect.h < 44 - 0.5) err.luci.push(`${dove} il pulsante ${nome === 'faro' ? 'del faro' : 'della boa'} misura ${Math.round(x.rect.w)}×${Math.round(x.rect.h)} px`);
+            if (x.espanso === null) err.luci.push(`${dove} il pulsante ${nome === 'faro' ? 'del faro' : 'della boa'} non ha aria-expanded`);
+            await tab.valuta(`(() => { const b = [...document.querySelectorAll('#v-home button')].find((b) => /\\b${chi}\\b/i.test((b.getAttribute('aria-label') || b.textContent || ''))); if (b) b.click(); return !!b; })()`);
+            await pausa(150);
+            const dopo = await statoT15(tab);
+            // La sigla in testo vero: un nodo di testo che la dice, fuori dal disegno
+            // (svg e aria-hidden), in un elemento che si vede.
+            const scheda = await tab.valuta(js(`const s = ${q(SIGLE[chi])};
+              const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let e = null;
+              for (let n; (n = w.nextNode());) { const p = n.parentElement; if (n.textContent.includes(s) && p && !p.closest('svg, [aria-hidden="true"]') && V(p)) { e = p; break; } }
+              if (!e) return null; const vivo = e.closest('[aria-live]'); const box = vivo || e; const r = box.getBoundingClientRect();
+              return { vivo: vivo ? vivo.getAttribute('aria-live') : null, rect: { l: r.left, t: r.top, r: r.right, b: r.bottom } };`));
+            if ((dopo[chi] || {}).espanso !== 'true') err.luci.push(`${dove} toccato ${nome === 'faro' ? 'il faro' : 'la boa'}, aria-expanded e' «${(dopo[chi] || {}).espanso}»`);
+            if (!scheda) err.luci.push(`${dove} toccato ${nome === 'faro' ? 'il faro' : 'la boa'}, nessun testo vero dice «${SIGLE[chi]}»`);
+            else {
+              if (scheda.vivo !== 'polite') err.luci.push(`${dove} la scheda ${nome === 'faro' ? 'del faro' : 'della boa'} non sta in un aria-live="polite"`);
+              if (dopo.colonna && sopraR(scheda.rect, dopo.colonna)) err.luci.push(`${dove} la scheda ${nome === 'faro' ? 'del faro' : 'della boa'} copre la colonna del testo (${Math.round(scheda.rect.l)}–${Math.round(scheda.rect.r)} contro ${Math.round(dopo.colonna.l)}–${Math.round(dopo.colonna.r)})`);
+              if (dopo.principale && sopraR(scheda.rect, dopo.principale)) err.luci.push(`${dove} la scheda copre l'azione principale`);
+            }
+            await tab.valuta(`(() => { const b = [...document.querySelectorAll('#v-home button')].find((b) => /\\b${chi}\\b/i.test((b.getAttribute('aria-label') || b.textContent || ''))); if (b && b.getAttribute('aria-expanded') === 'true') b.click(); return true; })()`);
+            await pausa(80);
+          }
+        }
+      }
+    }
+    // --- percorso, a 1280×800 -------------------------------------------------------
+    if (vuole('percorso')) {
+      const { tab, pronta } = await apriT15(c, ctx, 1280, 800);
+      if (!pronta) intoppi.push('a 1280×800 la pagina non si apre');
+      else {
+        const s = await statoT15(tab);
+        if (!s.nav) err.percorso.push('nella Home al computer non c\'e\' una <nav>');
+        else if (!s.nav.nome) err.percorso.push('la <nav> del percorso non ha un nome (aria-label)');
+        if (s.links.length !== TAPPE_U) err.percorso.push(`il percorso ha ${s.links.length} link, non ${TAPPE_U}`);
+        s.links.forEach((l, i) => {
+          if (!l.nome) err.percorso.push(`la tappa ${i + 1} non ha un nome`);
+          if (l.rect.w < 44 - 0.5 || l.rect.h < 44 - 0.5) err.percorso.push(`la tappa ${i + 1} misura ${Math.round(l.rect.w)}×${Math.round(l.rect.h)} px, non 44×44`);
+          if (i) { const p = s.links[i - 1].rect, d = Math.max(0, l.rect.t - p.b, p.t - l.rect.b); if (d < 8 - 0.06) err.percorso.push(`fra le tappe ${i} e ${i + 1} ${d.toFixed(1)} px, non 8`); }
+          const f = l.forma;
+          if (!f) { err.percorso.push(`la tappa ${i + 1} non ha un triangolo`); return; }
+          const pieno = f.fill !== 'none' && (coloreCss(f.fill) && !/rgba\([^)]*,\s*0\)/.test(f.fill)) && f.fillOpacity > 0.5;
+          const segno = pieno ? f.fill : f.stroke;
+          const col = coloreCss(segno, terra);
+          const k = col ? rapportoPng(col, terra) : 0;
+          if (k < 3) err.percorso.push(`il triangolo ${pieno ? 'pieno' : 'vuoto'} della tappa ${i + 1} ha ${k.toFixed(2)}:1 sulla terra (${segno})`);
+        });
+        const ids = s.links.map((l) => (l.href.startsWith('#') ? l.href.slice(1) : null));
+        if (ids.some((x) => !x)) err.percorso.push('un link del percorso non porta a un pannello (href="#id")');
+        // aria-current mentre si scorre
+        for (const k of [0, 4, 10]) {
+          if (!ids[k]) continue;
+          await tab.valuta(`(() => { document.documentElement.style.scrollBehavior = 'auto'; const e = document.getElementById(${q(ids[k])}); if (e) e.scrollIntoView({ block: 'start' }); return true; })()`);
+          const r = await tab.attendiValore(`(() => [...document.querySelectorAll('#v-home nav a, #v-home nav button')].findIndex((a) => a.getAttribute('aria-current') === 'location'))()`, (x) => x === k, 1500);
+          if (!r.ok) err.percorso.push(`con il pannello ${k + 1} in vista aria-current="location" sta sulla tappa ${r.valore >= 0 ? r.valore + 1 : 'nessuna'}`);
+        }
+        // un tocco: il pannello, il fuoco al suo titolo, l'indirizzo e la cronologia fermi
+        await tab.valuta('(scrollTo(0, 0), true)'); await pausa(200);
+        const prima = await tab.valuta('({ href: location.href, n: history.length })');
+        const k = 3;
+        await tab.valuta(`(() => { const a = [...document.querySelectorAll('#v-home nav a, #v-home nav button')][${k}]; if (a) a.click(); return !!a; })()`);
+        await pausa(500);
+        const dopo = await tab.valuta(`(() => { const p = document.getElementById(${q(ids[k] || '')}); const a = document.activeElement;
+          return { href: location.href, n: history.length, top: p ? p.getBoundingClientRect().top : null, H: innerHeight,
+            fuoco: a ? (a.id ? '#' + a.id : a.tagName.toLowerCase()) : null, titolo: !!(p && a && p.contains(a) && /^H[1-6]$/.test(a.tagName)) }; })()`);
+        if (dopo.top === null || Math.abs(dopo.top) > dopo.H / 4) err.percorso.push(`toccata la tappa ${k + 1}, il pannello sta a ${dopo.top === null ? '—' : Math.round(dopo.top)} px dalla cima`);
+        if (!dopo.titolo) err.percorso.push(`toccata la tappa ${k + 1}, il fuoco e' su ${dopo.fuoco}, non sul titolo del pannello`);
+        if (dopo.href !== prima.href) err.percorso.push(`toccata la tappa ${k + 1}, l'indirizzo cambia: ${prima.href} → ${dopo.href}`);
+        if (dopo.n !== prima.n) err.percorso.push(`toccata la tappa ${k + 1}, la cronologia cresce: ${prima.n} → ${dopo.n} voci`);
+      }
+    }
+    // --- fuoco, da pagina appena aperta ---------------------------------------------
+    if (vuole('fuoco')) {
+      const { tab, pronta } = await apriT15(c, ctx, 1280, 800);
+      if (!pronta) intoppi.push('a 1280×800 la pagina non si apre');
+      else {
+        const visti = [];
+        let primo = null;
+        for (let i = 0; i < 40; i++) {
+          await tab.tasto('Tab');
+          const a = await tab.valuta(js(`const a = document.activeElement; if (!a || a === document.body) return null;
+            const r = a.getBoundingClientRect(), p = [...document.querySelectorAll('#v-home [data-modo="sim"][data-prova="base"]')].find(V);
+            return { nome: (a.id ? '#' + a.id : a.tagName.toLowerCase()) + ' «' + (a.getAttribute('aria-label') || a.textContent || '').trim().slice(0, 24) + '»',
+              testa: !!a.closest('header'), principale: a === p, home: !!a.closest('#v-home'),
+              r: [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height), innerWidth, innerHeight, scrollY],
+              visibile: V(a) && r.width >= 1 && r.height >= 1 && r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth && getComputedStyle(a).opacity !== '0',
+              fa: a.matches('button, a[href], input:not([type=hidden]), select, textarea, summary, [role=button], [role=link], [role=tab], [contenteditable=true]') };`));
+          if (!a) break;
+          if (visti.length && a.nome === visti[0].nome) break;
+          visti.push(a);
+          if (!a.testa && !primo) primo = a;
+          if (!a.visibile) err.fuoco.push(`il fuoco va su ${a.nome}, che non si vede (${a.r.join(',')})`);
+          if (!a.fa) err.fuoco.push(`il fuoco va su ${a.nome}, che non fa niente`);
+        }
+        if (!primo) err.fuoco.push('dopo la testata il fuoco non arriva da nessuna parte');
+        else if (!primo.principale) err.fuoco.push(`dopo la testata il primo fuoco e' ${primo.nome}, non l'azione principale`);
+        numeri.push(`fuoco: ${visti.slice(0, 14).map((x) => x.nome).join(' → ')}`);
+      }
+    }
+    // --- movimento ------------------------------------------------------------------
+    if (vuole('movimento')) {
+      const { tab, pronta } = await apriT15(c, ctx, 1280, 800, { ridotto: true });
+      if (!pronta) intoppi.push('a 1280×800 la pagina non si apre');
+      else {
+        await pausa(1000);
+        const m = await tab.valuta(`(() => ({ emulato: matchMedia('(prefers-reduced-motion: reduce)').matches,
+          animazioni: document.getAnimations().filter((a) => a.playState === 'running').map((a) => (a.animationName || a.transitionProperty || 'animazione') + ' su ' + ((a.effect && a.effect.target && (a.effect.target.id || a.effect.target.getAttribute('class') || a.effect.target.tagName)) || '?')),
+          luci: [...document.querySelectorAll('#v-home [data-luce]')].map((e) => { let o = 1; for (let p = e; p; p = p.parentElement) o *= Number(getComputedStyle(p).opacity); return o; }),
+          rotta: [...document.querySelectorAll('#v-home [data-rotta]')].map((e) => getComputedStyle(e).strokeDashoffset) }))()`);
+        if (!m.emulato) intoppi.push('il movimento ridotto non risulta emulato');
+        if (m.animazioni.length) err.ridotto.push(`con il movimento ridotto si muovono ancora: ${m.animazioni.slice(0, 4).join(', ')}`);
+        if (!m.luci.length) err.ridotto.push('nella Home non ci sono luci [data-luce]');
+        m.luci.forEach((o, i) => { if (o < 0.9) err.ridotto.push(`la luce ${i + 1} non e' accesa ferma (opacita' ${o.toFixed(2)})`); });
+        if (!m.rotta.length) err.ridotto.push('nella Home non c\'e\' la rotta [data-rotta]');
+        m.rotta.forEach((o, i) => { if (Math.abs(parseFloat(o) || 0) > 0.5) err.ridotto.push(`la rotta ${i + 1} non e' disegnata intera (stroke-dashoffset ${o})`); });
+        await tab.movimento(false);
+        await pausa(800);
+        const luciMosse = () => tab.valuta(`[...document.querySelectorAll('#v-home [data-luce]')].flatMap((e) => e.getAnimations()).filter((a) => a.playState === 'running').length`);
+        const prima = await luciMosse();
+        if (!prima) err.ferma.push('senza il movimento ridotto le luci non lampeggiano');
+        await tab.valuta(`(() => { const b = [...document.querySelectorAll('#v-home button')].find((b) => /\\bfaro\\b/i.test(b.getAttribute('aria-label') || b.textContent || '')); if (b) b.click(); return true; })()`);
+        await pausa(150);
+        const ferma = await tab.valuta(js(`const b = [...document.querySelectorAll('button')].find((b) => V(b) && /Ferma le luci/.test(b.textContent)); if (b) b.click(); return !!b;`));
+        await pausa(400);
+        if (!ferma) err.ferma.push('non c\'e\' un comando visibile «Ferma le luci», nemmeno con la scheda del faro aperta');
+        else if (await luciMosse()) err.ferma.push('premuto «Ferma le luci», le luci lampeggiano ancora');
+      }
+    }
+    // --- numeri ---------------------------------------------------------------------
+    if (vuole('numeri')) {
+      const { tab, pronta } = await apriT15(c, ctx, 1280, 800);
+      if (!pronta) intoppi.push('a 1280×800 la pagina non si apre');
+      else {
+        const fmt = (n) => n.toLocaleString('it-IT');
+        const base = META_SITO.prove.base;
+        const mirata = E.mirata(QUIZ_TUTTI.filter((x) => x.k === 'base'), {}, E.isoLocale().slice(0, 10)).length;
+        const attesi = [
+          // Con o senza il punto delle migliaia: l'italiano di Intl non lo mette sotto i 10.000.
+          [`${fmt(QUIZ_TUTTI.length)} quesiti`, `\\b${String(QUIZ_TUTTI.length).replace(/\B(?=(\d{3})+$)/g, '\\.?')}\\s+quesiti`],
+          [`${N_CARTEGGIO} esercizi`, `\\b${N_CARTEGGIO}\\s+esercizi`],
+          [`${E.SEGNALI.length} segnali`, `\\b${E.SEGNALI.length}\\s+[^\\s]*\\s?(segnal|fanal)`],
+          [`${QUIZ_TUTTI.filter((x) => x.osc).length} oscurati`, `\\b${QUIZ_TUTTI.filter((x) => x.osc).length}\\b[^.]{0,24}oscurat`],
+          [`${QUIZ_TUTTI.filter((x) => x.nb).length} con la nota dopo la risposta`, `\\b${QUIZ_TUTTI.filter((x) => x.nb).length}\\b[^.]{0,30}not[ae]`],
+          [`${QUIZ_TUTTI.filter((x) => x.fm).length} senza figura`, `\\b${QUIZ_TUTTI.filter((x) => x.fm).length}\\b[^.]{0,30}figur`],
+          [`${base.n} domande della prova`, `\\b${base.n}\\b[\\s\\S]{0,40}domand`],
+          [`${base.minuti} minuti della prova`, `\\b${base.minuti}\\b[\\s\\S]{0,40}minut`],
+          [`al piu' ${base.errori_max} errori`, `\\b${base.errori_max}\\b[\\s\\S]{0,40}error`],
+          [`fino a ${mirata} quiz nell'allenamento consigliato`, `\\b${mirata}\\b[^.]{0,30}quiz`],
+        ];
+        const testo = await tab.attendiValore(`(document.querySelector('#v-home') || {}).innerText || ''`, (t) => new RegExp(attesi[0][1]).test(t), REAZIONE);
+        const t = (testo.valore || '').replace(/[ \t]+/g, ' ');
+        for (const [cosa, re] of attesi) if (!new RegExp(re, 'i').test(t)) err.numeri.push(`nel testo visibile della Home manca «${cosa}», dalla banca e dal motore`);
+        // I pesi dei temi nominati: chi dice «N delle 20» deve dire il peso del decreto.
+        for (const riga of t.split(/\n+/)) {
+          const m = riga.match(/\b(\d+)\s+(?:delle|su)\s+(\d+)\s+domande/i);
+          if (!m) continue;
+          for (const [tema, peso] of Object.entries(META_SITO.pesi_esame)) {
+            const parola = tema.split(' ')[0].toLowerCase();
+            if (new RegExp(`\\b${parola}`, 'i').test(riga) && Number(m[1]) !== peso) err.numeri.push(`«${riga.trim().slice(0, 60)}»: ${parola} porta ${peso} domande, non ${m[1]}`);
+          }
+        }
+        numeri.push(`numeri: ${attesi.map((x) => x[0]).join(', ')}`);
+      }
+    }
+    // --- stati ----------------------------------------------------------------------
+    if (vuole('stati')) {
+      // Il primo pannello: la destinazione del primo link del percorso; senza, la sezione della principale.
+      const PRIMO = `(() => { const a = document.querySelector('#v-home nav a[href^="#"]'); const p = a && document.getElementById(a.getAttribute('href').slice(1));
+        return p || ([...document.querySelectorAll('#v-home [data-modo="sim"][data-prova="base"]')].find(V) || { closest: () => null }).closest('section'); })()`;
+      const dentroPrimo = (sel) => js(`const p = ${PRIMO}; return !!p && [...p.querySelectorAll(${q(sel)})].some(V);`);
+      // H1: una risposta senza account, poi la Home al computer.
+      {
+        const { tab, pronta } = await apriT15(c, ctx, 1280, 800);
+        if (!pronta) intoppi.push('a 1280×800 la pagina non si apre');
+        else if (await avviaPrima(tab) && await rispondiQuiz(tab, [], 'T-15', '') && await chiudiQuiz(tab, [], 'T-15', '') && await alPercorso(tab)) {
+          await pausa(150);
+          const att = await tab.valuta(js(`const p = ${PRIMO}; return !!p && V(p) && /Le attività di questa pagina/.test(p.innerText);`));
+          const inv = await tab.attendi(js(`const p = ${PRIMO}; return !!p && [...p.querySelectorAll('button')].some((b) => V(b) && /Conserva le risposte/.test(b.textContent));`), REAZIONE);
+          if (!att) err.stati.push('in H1 «Le attività di questa pagina» non sta nel primo pannello');
+          if (!inv) err.stati.push('in H1 l\'invito «Conserva le risposte» non sta nel primo pannello');
+        } else intoppi.push('H1: la prima attivita\' non arriva al riepilogo e alla Home');
+        // Gli avvisi sopra il titolo: ogni [role=alert] della Home sta nel primo pannello, prima del suo h1.
+        if (pronta) {
+          const av = await tab.valuta(js(`const p = ${PRIMO}; const h = p && p.querySelector('h1'); const xs = [...document.querySelectorAll('#v-home [role="alert"]')];
+            return { n: xs.length, fuori: xs.filter((x) => !p || !p.contains(x) || !h || !(x.compareDocumentPosition(h) & Node.DOCUMENT_POSITION_FOLLOWING)).map((x) => x.id || x.tagName) };`));
+          if (!av.n) err.stati.push('nella Home non c\'e\' un avviso [role="alert"] da mettere sopra il titolo');
+          for (const x of av.fuori) err.stati.push(`l'avviso ${x} non sta nel primo pannello prima del titolo`);
+        }
+      }
+      // HA: con l'account, la proposta nel primo pannello.
+      if (ctx.apiInterno) {
+        const U = await nuovoAccount(ctx, 't15');
+        const { tab, pronta } = await apriT15(c, ctx, 1280, 800);
+        if (!pronta || !await dentro(tab, U)) intoppi.push('HA: l\'accesso non riesce');
+        else if (!await tab.attendi(dentroPrimo('[data-modo="mirata"][data-rotta-start]'), REAZIONE)) err.stati.push('in HA la proposta consigliata non sta nel primo pannello');
+      } else intoppi.push('HA: il banco non ha l\'API in questa corsia');
+      // La banca non raggiungibile: nessun numero inventato, e lo si dice.
+      {
+        const tab = await c.apri('about:blank');
+        await tab.dimensioni(1280, 800); await tab.movimento(true);
+        await tab.intercetta('*/dati/quiz.json', () => ({ fallisci: 'Failed' }));
+        await tab.intercetta('*/dati/meta.json', () => ({ fallisci: 'Failed' }));
+        await tab.intercetta('*/dati/carteggio.json', () => ({ fallisci: 'Failed' }));
+        await tab.vai(ctx.sito + ingresso(ctx));
+        await pausa(1500);
+        const t = await tab.valuta(`(document.querySelector('#v-home') || {}).innerText || ''`);
+        // I segnali vengono dal motore, non dalla banca: restano anche senza banca.
+        const finti = [String(QUIZ_TUTTI.length).replace(/\B(?=(\d{3})+$)/g, '\\.?'), `${N_CARTEGGIO} esercizi`].filter((x) => new RegExp(x).test(t)).map((x) => x.replace('\\.?', '.'));
+        if (finti.length) err.stati.push(`con la banca che non risponde la Home scrive ${finti.join(', ')}`);
+        if (/\b0\s+(quesiti|esercizi|segnali|oscurati)/.test(t)) err.stati.push('con la banca che non risponde la Home scrive zero dove non sa');
+        if (!/banca non risponde|non (si )?(possono|riusciamo|può|puo')[^.]{0,30}contar|non si contano/i.test(t)) err.stati.push('con la banca che non risponde la Home non dice che i numeri non si possono contare');
+      }
+    }
+    // --- documento ------------------------------------------------------------------
+    if (vuole('documento')) {
+      const { tab, pronta } = await apriT15(c, ctx, 1280, 800);
+      if (!pronta) intoppi.push('a 1280×800 la pagina non si apre');
+      else {
+        await tab.valuta('(window.__t15 = 1, true)');
+        const s = await statoT15(tab);
+        const id = s.links[4] && s.links[4].href.slice(1);
+        if (!s.carta) err.documento.push('la Home al computer non ha la carta');
+        if (id) { await tab.valuta(`(() => { document.documentElement.style.scrollBehavior = 'auto'; document.getElementById(${q(id)}).scrollIntoView({ block: 'start' }); return true; })()`); await pausa(400); }
+        if (!await clicPorta(tab, '#barra [data-v="allenati"]') || !await tab.attendi(visibile('#v-allenati'), REAZIONE)) intoppi.push('Allenati non si apre dalla barra');
+        else {
+          await pausa(200);
+          const a = await statoT15(tab);
+          if (!await tab.valuta('window.__t15 === 1')) err.documento.push('passando ad Allenati il documento cambia');
+          if (a.strati.length) err.documento.push(`in Allenati resta uno strato fisso che copre lo schermo: ${a.strati.join(', ')}`);
+          if (a.scuro) err.documento.push(`in Allenati resta il fondo scuro della carta (${a.fondo})`);
+          if (a.snap) err.documento.push(`in Allenati resta lo scorrimento a scatti (${a.snap})`);
+          await tab.valuta('(history.back(), true)');
+          if (!await tab.attendi(visibile('#v-home'), REAZIONE)) err.documento.push('con Indietro la Home non torna');
+          else {
+            await pausa(500);
+            const h = await statoT15(tab);
+            if (!await tab.valuta('window.__t15 === 1')) err.documento.push('con Indietro il documento cambia');
+            if (!h.carta) err.documento.push('tornati alla Home, la carta non c\'e\'');
+            if (id) {
+              const top = await tab.valuta(`document.getElementById(${q(id)}).getBoundingClientRect().top`);
+              if (Math.abs(top) > h.H / 4) err.documento.push(`tornati alla Home il pannello 5 sta a ${Math.round(top)} px dalla cima, non dov'era`);
+            }
+          }
+        }
+      }
+    }
+  } finally { await c.chiudi(); }
+  v.push({ gruppo: 'banco', nome: 'T-15 misura la Home al computer senza intoppi', ok: !intoppi.length, extra: lista(intoppi) });
+  for (const p of PARTI_T15.filter((p) => !parte || parte === p)) {
+    for (const k of CHIAVI_T15[p] || [p]) v.push({ gruppo: 'T-15:' + p, nome: T15[k], ok: !intoppi.length && !err[k].length,
+      extra: intoppi.length ? lista(intoppi) : perDifetto(err[k], 10) + ' — misure: ' + lista(numeri, 12) });
   }
 }
 
@@ -6793,6 +7376,8 @@ const GRUPPI = { 'C-01': c01, 'C-02': c02, 'C-03': c03, 'C-04': c04, 'C-05': c05
   'C-10': c10, 'C-11': c11, 'C-12': c12, 'C-13': c13, 'C-14': c14, 'C-15': c15, 'C-16': c16, 'C-17': c17, 'C-19': c19,
   // L'area 6 (P-45): la rifinitura trasversale.
   'T-01': t01, 'T-02': t02, 'T-03': t03, 'T-04': t04, 'T-05': t05, 'T-06': t06, 'T-07': t07, 'T-08': t08, 'T-09': t09, 'T-10': t10, 'T-11': t11, 'T-12': t12, 'T-13': t13,
+  // Il volto, la Home al computer «U — Terra beige» (P-97, volto-progetto §6.4).
+  'T-15': t15,
   // Le frasi del riepilogo dei quiz (P-53, R-UX-06).
   'F-01': f01,
   // Le condizioni per l'account nel modulo di registrazione (P-57, R-ACC-75).
@@ -6809,7 +7394,7 @@ const GRUPPI = { 'C-01': c01, 'C-02': c02, 'C-03': c03, 'C-04': c04, 'C-05': c05
 // quindi girano uno alla volta sul sito principale. Gli altri girano in
 // parallelo, ognuno con il suo sito e quindi con la sua origine.
 const CON_API = new Set(['C-05', 'C-04', 'C-06', 'C-07', 'C-08', 'C-21', 'C-10', 'C-11', 'C-12', 'C-13', 'C-14', 'C-15', 'C-16', 'C-17', 'C-19',
-  'T-02', 'T-03', 'T-04', 'T-07:conto', 'E-01', 'P-01', 'C-23:coda', ...[...N01_API].map((x) => `N-01:${x}`)]);
+  'T-02', 'T-03', 'T-04', 'T-07:conto', 'T-15:stati', 'E-01', 'P-01', 'C-23:coda', ...[...N01_API].map((x) => `N-01:${x}`)]);
 const SOLO_ALTRE = new Set(['C-14']);
 // Una parte puo' parlare con l'API anche se il suo gruppo no: T-07:conto entra
 // in un account, T-07:prova no, e gira dove c'e' posto.
