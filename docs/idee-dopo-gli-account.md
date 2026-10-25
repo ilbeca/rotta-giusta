@@ -4885,3 +4885,10 @@ andature escono; con loro esce dalla G il testo didattico da verificare, e
 restano da verificare le sigle e le frasi della RC, le stesse. Misure di nuovo
 sulle 18 combinazioni: sbordamento 0, un principale, «Simula il quiz base»
 a 594 px a 375×667, «Avanti» e la figura come prima. La RC non è stata toccata.
+
+**Candidata a nuova release candidate (25 ottobre).** L'autore, guardata la G
+aggiornata: «mi piace, potrebbe essere la nuova release candidate». Non è
+ancora deciso: «La carta che vive» resta la RC finché l'autore non dice
+altrimenti. La G aggiornata sta in `g-regata/`, commit `1b273ab`, ramo
+`idee/regata-rc`. Altri design si provano in una sessione a parte, con le
+skill taste e ui-ux-pro-max, in cartelle nuove accanto a queste.
