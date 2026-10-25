@@ -438,6 +438,31 @@ selezione o contabilità. Versione 0.34.0 invariata.
   Non provate altre larghezze; il telefono non è disegnato. Decisione 18 in
   fondo a I-29. Nessun file di `site/`, `tests/`, della specifica o della coda.
 
+### Progettato — il volto del sito nella pagina: la U al computer, la Regata per il resto
+
+- **Perché un progetto prima dei controlli.** L'autore ha scelto la U, «Terra
+  beige», come Home al computer, e la Regata (G) per il resto del sito, e ha
+  chiesto un contratto da cui scrivere i prompt. `docs/volto-progetto.md`, file
+  neutro, lo scrive con il metodo di `regole-disegno-progetto.md`: i token della
+  Regata confrontati con il `:root` di oggi, la carta e il percorso come
+  componenti, gli stati della Home che il mock non disegna, il contratto di T-15
+  e i cambi a `SCALA_CSS`, T-12 e T-13, diciotto rotture, i requisiti R-VOLTO
+  proposti, i due giri e diciotto decisioni per l'autore.
+- **Misurato, non dedotto**, in Chrome headless con `tests/browser.mjs`, la Home
+  `u-terra-beige/` a otto dimensioni, con il contrasto letto sui pixel dietro
+  ogni testo. A 1280×800, 1366×768, 1440×900 e 1920×1080 regge; a 900×700,
+  1024×768 e 1280×1024 la terra esce dallo schermo e il percorso finisce sul
+  mare (a 1280×1024 anche il faro); a 900, 1024 e 1200 px il testo passa sopra
+  le cifre di scandaglio, fino a 1,28:1. «Simula il quiz base» arriva al
+  ventesimo Tab. I controlli di oggi non vedrebbero niente di tutto questo: T-12
+  misura solo a 375 px, il contrasto si compone dagli antenati e direbbe 8,91:1
+  ovunque, e il banco gira a 756×469.
+- **Trovato:** il mock scrive «27 fanali e segnali», ma la banca dei Segnali ne
+  ha 53 (27 sono i soli fanali); e le luci che lampeggiano da sole vogliono un
+  comando per fermarle (WCAG 2.2.2). Script e numeri fuori dal repo, nella
+  cartella delle note delle sessioni. Una riga in fondo a I-29 rimanda al file.
+  Nessun file di `site/`, `tests/`, della specifica, della coda o dei mock.
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la

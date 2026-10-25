@@ -5074,3 +5074,8 @@ sigla e i settori, che sono di fantasia come il faro.
 18. **T o U.** *Raccomandazione:* U, perché il beige dice «terra» meglio del
     bianco e separa la carta dalle schede; T se si vuole restare ai tre colori
     della Regata. Prima di decidere, guardarle a 1440 e a 1024 px.
+
+**La scelta, e il progetto (25 ottobre).** L'autore ha scelto la **U** come Home
+al computer e la Regata per tutto il resto. Il piano per portarle nel sito —
+token, carta, percorso, i conflitti con le regole e i controlli, i giri e
+diciotto decisioni — è in [volto-progetto.md](volto-progetto.md).
