@@ -22,7 +22,12 @@ base_css = (QUI / 'base.css').read_text()
 STILI = [('d', 'd-segnalamento', 'Il segnalamento'),
          ('e', 'e-bandiere', 'Le bandiere'),
          ('f', 'f-manuale-a-schede', 'Il manuale a schede'),
-         ('g', 'g-regata', 'La regata')]
+         ('g', 'g-regata', 'La regata'),
+         # Le direzioni nate con le skill taste e ui-ux-pro-max (25 ottobre 2026)
+         ('h', 'h-frase-e-faro', 'La frase e il faro'),
+         ('i', 'i-giornale-di-bordo', 'Il giornale di bordo'),
+         ('j', 'j-tessere', 'Le tessere'),
+         ('k', 'k-due-colori', 'La stampa a due colori')]
 PROTETTE = {'a-carta-nautica', 'b-plancia-di-notte', 'c-quaderno-a-colori', 'a-carta-viva'}
 PAGINE = ['home', 'quiz', 'preparazione', 'runner', 'runner-figura', 'riepilogo']
 CUR = ' aria-current="page"'

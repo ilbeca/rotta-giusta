@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Home · mock «@@NOME@@»</title>
+<style>@@CSS@@
+/* Home */
+.eroe{display:grid;gap:var(--s-24)}
+.eroe h1{font-size:var(--t-32);font-weight:800;margin-top:var(--s-8)}
+.eroe .lead{font-size:var(--t-16);color:var(--ink-2);max-width:34em}
+.striscia{position:relative;height:96px;overflow:hidden;border-radius:var(--r)}
+.striscia .illustrazione{display:block;width:100%;height:100%}
+.prova{padding:var(--s-24) var(--s-16) var(--s-16);display:grid;gap:var(--s-16)}
+.prova .scandagli{gap:var(--s-24)}
+.prova .nota{margin-top:-4px}
+.breve{display:flex;flex-direction:column;gap:2px}
+.breve small{font-size:var(--t-14);color:var(--ink-3)}
+.figura-grande{display:none}
+.titolo-prova{font-size:var(--t-16);font-weight:800;letter-spacing:0}
+.leggi .tocca{position:relative;border-radius:var(--r);overflow:hidden;border:1px solid var(--filo)}
+.sezione{margin-top:var(--s-48)}
+.sezione h2{font-size:var(--t-24);font-weight:800;margin:var(--s-8) 0 var(--s-16)}
+.cosa .righe .num{font-size:var(--t-24)}
+.limiti p+p{margin-top:var(--s-8)}
+.limiti ul{margin:var(--s-8) 0 var(--s-12);padding-left:20px}
+.gratis{font-size:var(--t-14);color:var(--ink-3)}
+@media (min-width:900px){
+  .eroe{grid-template-columns:6fr 5fr;gap:var(--s-48);align-items:center}
+  .eroe h1{font-size:var(--t-56);line-height:1.04}
+  .eroe .lead{font-size:var(--t-20)}
+  .striscia{display:none}
+  .leggi{display:none}
+  .figura-grande{display:block;border:1px solid var(--filo);border-radius:var(--r);overflow:hidden}
+  .figura-grande .illustrazione{display:block;width:100%;height:auto}
+  .prova{padding:var(--s-32)}
+  .prova .scandaglio b{font-size:var(--t-44)}
+  .azioni{display:flex;align-items:center;gap:var(--s-32)}
+  .cosa .righe{display:grid;grid-template-columns:1fr 1fr;column-gap:var(--s-48)}
+  .colonne{display:grid;grid-template-columns:3fr 2fr;gap:var(--s-48);align-items:start}
+}
+@@TEMA@@
+/* H: il titolo è la pagina */
+.eroe h1{font-size:34px;line-height:1.02;letter-spacing:-.05em;margin-top:0}
+.frase .legenda-luce{border:0;background:none;padding:var(--s-8) 0 0;min-height:0;display:block;font-size:var(--t-14)}
+.frase .legenda-luce b{display:block;font-size:var(--t-16)}
+.frase .legenda-luce .invito{color:var(--ink-3)}
+.slot{font:inherit;position:relative;display:inline-block;vertical-align:-.08em;width:1.6em;height:.82em;margin:0;border-radius:0;overflow:hidden}
+.slot svg{display:block;width:100%;height:100%}
+.slot::after{inset:-3px!important;border-radius:0!important;border:3px solid var(--luce)!important;transform:none!important}
+@media (min-width:900px){
+  .eroe{grid-template-columns:1fr 1fr!important;align-items:start!important}
+  .eroe h1{font-size:84px;line-height:.98}
+  .eroe-sx{display:contents!important}
+  .eroe-sx>.frase{grid-column:1/-1}
+  .eroe .prova .scandaglio b{font-size:72px}
+  .eroe-sx>.prova{grid-column:1;grid-row:2}
+  .eroe-sx>.breve{grid-column:1}
+  .eroe-sx>.gratis{grid-column:1}
+  .figura-grande{grid-column:2;grid-row:2/span 3}
+}
+</style></head>
+<body>
+@@ICONE@@
+@@TESTATA:home@@
+<main>
+  <section class="eroe">
+    <div class="eroe-sx" style="display:grid;gap:var(--s-24)">
+      <div class="tocca frase">
+        <h1>Preparati alla patente <button class="luce slot" data-voce="faro" aria-expanded="false" aria-label="Il faro: leggi la sua sigla"><svg viewBox="0 0 120 64" aria-hidden="true"><defs><radialGradient id="slot-alone"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#FFB38F"/><stop offset="1" stop-color="#FF5A1F" stop-opacity="0"/></radialGradient></defs><rect width="120" height="64" fill="#0E1113"/><path d="M78 64V40l6-6h8l6 6v24Z" fill="#2E3236"/><path d="M88 34 26 14a68 68 0 0 0 0 40Z" fill="#FF5A1F" fill-opacity=".22"/><circle class="lampo lampo-faro" cx="88" cy="34" r="26" fill="url(#slot-alone)"/><circle cx="88" cy="34" r="4" fill="#fff"/><path d="M0 54c14-4 26 4 40 0s26-4 40 0" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2"/></svg></button> nautica, un passo alla volta.</h1>
+        <p class="lead" style="margin-top:var(--s-12)">Quiz e carteggio per la patente senza limiti dalla costa.</p>
+        <p class="legenda-luce" aria-live="polite"><span class="invito">Il faro nel titolo lampeggia con la sua sigla. Toccalo per leggerla.</span></p>
+      </div>
+      <div class="carta prova">
+        <h2 class="titolo-prova">La prova d'esame dei quiz</h2>
+        <div class="scandagli" aria-label="20 domande, 30 minuti, al più 4 errori">
+          <div class="scandaglio"><b>20</b><span>domande</span></div>
+          <div class="scandaglio"><b>30′</b><span>minuti</span></div>
+          <div class="scandaglio"><b>4</b><span>errori al più</span></div>
+        </div>
+        @@PROVA_EXTRA@@
+        <div class="azioni">
+          <a class="btn btn-pieno btn-largo vt-avvio" href="runner.html" data-ruolo="principale">Simula il quiz base<svg class="ico"><use href="#i-freccia"/></svg></a>
+        </div>
+        <p class="nota">La correzione arriva alla fine, come all'esame.</p>
+      </div>
+      <div class="breve">
+        <a class="link-freccia" href="runner.html" style="align-self:flex-start">Oppure allenati con 10 domande<svg class="ico"><use href="#i-freccia"/></svg></a>
+        <small>Con la correzione dopo ogni risposta.</small>
+      </div>
+      <p class="gratis">Gratis e open source. Si prova senza account; con l'account salvi i progressi.</p>
+    </div>
+    <div class="figura-grande"><div class="tocca"><div class="mappa">@@CARTA@@@@TOCCA_BOTTONI@@</div>
+        <p class="legenda-luce" aria-live="polite"><span class="invito">@@TOCCA_INVITO@@</span></p>
+      </div></div>
+  </section>
+
+  <div class="colonne">
+  <section class="sezione cosa">
+    <h2>Che cosa trovi qui</h2>
+    <ul class="righe">
+      <li><a href="quiz.html"><span class="ico-tondo"><svg class="ico"><use href="#i-quiz"/></svg></span><span class="testo"><b><span class="num">1.722</span> quesiti del decreto</b><small>Base e vela, con il numero per ritrovarli sul libro</small></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="quiz.html"><span class="ico-tondo" style="background:var(--terra)"><svg class="ico"><use href="#i-compasso"/></svg></span><span class="testo"><b><span class="num">135</span> esercizi di carteggio</b><small>Tracci sulla carta, poi confronti con la risposta ministeriale</small></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="quiz.html"><span class="ico-tondo" style="background:var(--forte);color:var(--su-forte)"><svg class="ico"><use href="#i-fanale"/></svg></span><span class="testo"><b><span class="num">27</span> fanali e segnali</b><small>Da riconoscere a colpo d'occhio, come di notte in mare</small></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="#esame"><span class="ico-tondo" style="background:var(--rotta-chiara);color:var(--rotta)"><svg class="ico"><use href="#i-esame"/></svg></span><span class="testo"><b>Le prove, in ordine</b><small>Carteggio, quiz base, quiz vela: con le condizioni del decreto</small></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+    </ul>
+  </section>
+
+  <section class="sezione leggi">
+    <h2>@@TOCCA_TITOLO@@</h2>
+    <p class="nota" style="margin:calc(var(--s-8) * -1) 0 var(--s-16)">@@TOCCA_INTRO@@</p>
+    <div class="tocca"><div class="mappa">@@CARTA@@@@TOCCA_BOTTONI@@</div>
+      <p class="legenda-luce" aria-live="polite"><span class="invito">@@TOCCA_INVITO@@</span></p>
+    </div>
+  </section>
+
+  <section class="sezione limiti">
+    <h2>I limiti, detti prima</h2>
+    <div class="nota-carta nota">
+      <p>La banca è l'Allegato A del decreto del 2022, e all'esame vale lui. Ti diciamo quesito per quesito che cosa non torna:</p>
+      <ul><li>37 quesiti oscurati, mai nella simulazione</li><li>4 quesiti con una nota dopo la risposta</li><li>1 quesito con la figura mancante</li></ul>
+      <p>Il lavoro sulla carta lo giudichi tu. Nessuna newsletter e nessun cookie di tracciamento.</p>
+      <p style="margin-top:var(--s-12)"><a class="link-freccia" href="#note">Note, fonti e riferimenti<svg class="ico"><use href="#i-freccia"/></svg></a></p>
+    </div>
+  </section>
+  </div>
+
+  <footer class="piede"><span>Rotta Giusta · mock</span><a href="#">codice sorgente</a><a href="#">Privacy</a><a href="#">Condizioni per l'account</a><a href="#">Avvertenza</a></footer>
+</main>
+@@BARRA:home@@
+<script>
+// Il disegno da toccare: un tocco, il significato spiegato. Il testo è didattico: va verificato dall'autore.
+const VOCI = @@TOCCA_VOCI@@;
+document.querySelectorAll('.tocca').forEach((carta) => {
+  const legenda = carta.querySelector('.legenda-luce');
+  carta.querySelectorAll('.luce').forEach((luce) => luce.addEventListener('click', () => {
+    const aperta = luce.getAttribute('aria-expanded') === 'true';
+    carta.querySelectorAll('.luce').forEach((l) => l.setAttribute('aria-expanded', 'false'));
+    if (aperta) { legenda.innerHTML = '<span class="invito">@@TOCCA_INVITO@@</span>'; return; }
+    luce.setAttribute('aria-expanded', 'true');
+    const [titolo, testo] = VOCI[luce.dataset.voce];
+    legenda.innerHTML = `<b data-voce>${titolo}</b><span data-voce>${testo}</span>`;
+  }));
+});
+</script>
+</body></html>

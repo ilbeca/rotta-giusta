@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Home · mock «@@NOME@@»</title>
+<style>@@CSS@@
+/* J: la Home a tessere. Ogni tessera è grande quanto conta; al telefono si impilano */
+.bento{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.t{grid-column:1/-1;border-radius:var(--r);background:#fff;padding:var(--s-24) var(--s-16);display:grid;gap:var(--s-12);align-content:start;text-decoration:none}
+.t-titolo{background:none;padding:var(--s-8) 0 0}
+.t-titolo h1{font-size:var(--t-32);font-weight:800;line-height:1.08}
+.t-titolo .lead{font-size:var(--t-16);color:var(--ink-2)}
+.striscia{height:80px;border-radius:16px;overflow:hidden}
+.striscia .illustrazione{display:block;width:100%;height:100%}
+.titolo-prova{font-size:var(--t-16);font-weight:800;letter-spacing:0}
+.t-prova{padding:var(--s-24) var(--s-16) var(--s-16)}
+.t-num{grid-column:span 1;gap:4px;padding:var(--s-16)}
+.t-num b{font-size:var(--t-32);font-weight:800;letter-spacing:-.045em;line-height:1}
+.t-num span{font-weight:700;line-height:1.25}
+.t-num small{font-size:var(--t-14);color:var(--ink-3);line-height:1.35}
+.t-num:hover,.t-prove:hover{box-shadow:inset 0 0 0 2px var(--azione)}
+.t-num .ico,.t-prove .ico{width:28px;height:28px;color:var(--azione);margin-bottom:var(--s-8)}
+.t-prove{grid-column:span 1;padding:var(--s-16)}
+.t-prove b{font-size:var(--t-20);font-weight:800}
+.t-prove small{font-size:var(--t-14);color:var(--ink-3)}
+.t-faro{background:var(--notte);color:#fff;padding:var(--s-24) var(--s-16) var(--s-16)}
+.t-faro h2{font-size:var(--t-24);font-weight:800}
+.t-faro p{color:#D5DEE5;font-size:var(--t-14)}
+.t-faro .mappa{position:relative;border-radius:14px;overflow:hidden}
+.t-faro .illustrazione{display:block;width:100%;height:auto}
+.t-faro .legenda-luce{background:#132838;border:0;border-radius:14px;color:#fff}
+.t-faro .legenda-luce span,.t-faro .legenda-luce .invito{color:#D5DEE5}
+.t-breve{background:none;padding:0;gap:2px}
+.t-breve small{font-size:var(--t-14);color:var(--ink-3)}
+.t-limiti{gap:var(--s-8)}
+.t-limiti h2{font-size:var(--t-20);font-weight:800}
+.t-limiti p,.t-limiti li{font-size:var(--t-14);color:var(--ink-2)}
+.t-limiti ul{margin:0;padding-left:20px}
+.gratis{font-size:var(--t-14);color:var(--ink-3)}
+@media (min-width:900px){
+  .bento{grid-template-columns:repeat(12,1fr);gap:16px}
+  .t{padding:var(--s-32)}
+  .t-titolo{grid-column:1/8;padding:var(--s-16) 0 var(--s-8)}
+  .t-titolo h1{font-size:var(--t-56);line-height:1.02}
+  .t-titolo .lead{font-size:var(--t-20)}
+  .striscia{display:none}
+  .t-prova{grid-column:1/8}
+  .t-prova .scandaglio b{font-size:var(--t-44)}
+  .t-faro{grid-column:8/13;grid-row:1/span 2;padding:var(--s-24);display:flex;flex-direction:column;gap:var(--s-12);justify-content:center}
+  .t-breve{grid-column:1/8;grid-row:3;padding:0 0 var(--s-8);align-self:center}
+  .t-num.t-27{grid-column:8/13;grid-row:3}
+  .t-num:not(.t-27){grid-column:span 4}
+  .t-prove{grid-column:span 4!important}
+  .t-num{grid-column:span 3;padding:var(--s-24)}
+  .t-num b{font-size:var(--t-44)}
+  .t-prove{grid-column:span 3;padding:var(--s-24)}
+  .t-limiti{grid-column:1/13;grid-template-columns:2fr 3fr;column-gap:var(--s-48)}
+  .t-limiti h2{grid-row:1/span 4}
+}
+@@TEMA@@
+</style></head>
+<body>
+@@ICONE@@
+@@TESTATA:home@@
+<main>
+  <section class="bento" aria-label="Rotta Giusta">
+    <div class="t t-titolo">
+      <h1>Preparati alla patente nautica, un passo alla volta.</h1>
+      <p class="lead">Quiz e carteggio per la patente senza limiti dalla costa.</p>
+      <div class="striscia" aria-hidden="true">@@CARTA@@</div>
+    </div>
+    <div class="t t-prova carta prova">
+      <h2 class="titolo-prova">La prova d'esame dei quiz</h2>
+      <div class="scandagli" aria-label="20 domande, 30 minuti, al più 4 errori">
+        <div class="scandaglio"><b>20</b><span>domande</span></div>
+        <div class="scandaglio"><b>30′</b><span>minuti</span></div>
+        <div class="scandaglio"><b>4</b><span>errori al più</span></div>
+      </div>
+      <a class="btn btn-pieno btn-largo vt-avvio" href="runner.html" data-ruolo="principale">Simula il quiz base<svg class="ico"><use href="#i-freccia"/></svg></a>
+      <p class="nota">La correzione arriva alla fine, come all'esame.</p>
+    </div>
+    <div class="t t-breve">
+      <a class="link-freccia" href="runner.html" style="justify-self:start">Oppure allenati con 10 domande<svg class="ico"><use href="#i-freccia"/></svg></a>
+      <small>Con la correzione dopo ogni risposta.</small>
+    </div>
+    <a class="t t-num" href="quiz.html"><svg class="ico"><use href="#i-quiz"/></svg><b>1.722</b><span>quesiti del decreto</span><small>Base e vela, con il numero per ritrovarli sul libro</small></a>
+    <a class="t t-num" href="quiz.html"><svg class="ico"><use href="#i-compasso"/></svg><b>135</b><span>esercizi di carteggio</span><small>Tracci sulla carta, poi confronti con la risposta ministeriale</small></a>
+    <a class="t t-num t-27" href="quiz.html"><svg class="ico"><use href="#i-fanale"/></svg><b>27</b><span>fanali e segnali</span><small>Da riconoscere a colpo d'occhio, come di notte in mare</small></a>
+    <a class="t t-prove" href="#esame"><svg class="ico"><use href="#i-esame"/></svg><b>Le prove, in ordine</b><small>Carteggio, quiz base, quiz vela: con le condizioni del decreto</small></a>
+    <section class="t t-faro tocca figura-grande" aria-label="@@TOCCA_TITOLO@@">
+      <h2>@@TOCCA_TITOLO@@</h2>
+      <p>@@TOCCA_INTRO@@</p>
+      <div class="mappa">@@CARTA@@@@TOCCA_BOTTONI@@</div>
+      <p class="legenda-luce" aria-live="polite"><span class="invito">@@TOCCA_INVITO@@</span></p>
+    </section>
+    <section class="t t-limiti">
+      <h2>I limiti, detti prima</h2>
+      <p>La banca è l'Allegato A del decreto del 2022, e all'esame vale lui. Ti diciamo quesito per quesito che cosa non torna:</p>
+      <ul><li>37 quesiti oscurati, mai nella simulazione</li><li>4 quesiti con una nota dopo la risposta</li><li>1 quesito con la figura mancante</li></ul>
+      <p>Il lavoro sulla carta lo giudichi tu. Nessuna newsletter e nessun cookie di tracciamento. <a class="link-freccia" href="#note" style="min-height:44px">Note, fonti e riferimenti<svg class="ico"><use href="#i-freccia"/></svg></a></p>
+    </section>
+  </section>
+  <p class="gratis" style="margin-top:var(--s-24)">Gratis e open source. Si prova senza account; con l'account salvi i progressi.</p>
+  <footer class="piede"><span>Rotta Giusta · mock</span><a href="#">codice sorgente</a><a href="#">Privacy</a><a href="#">Condizioni per l'account</a><a href="#">Avvertenza</a></footer>
+</main>
+@@BARRA:home@@
+<script>
+// Il disegno da toccare: un tocco, il significato spiegato. Il testo è didattico: va verificato dall'autore.
+const VOCI = @@TOCCA_VOCI@@;
+document.querySelectorAll('.tocca').forEach((carta) => {
+  const legenda = carta.querySelector('.legenda-luce');
+  carta.querySelectorAll('.luce').forEach((luce) => luce.addEventListener('click', () => {
+    const aperta = luce.getAttribute('aria-expanded') === 'true';
+    carta.querySelectorAll('.luce').forEach((l) => l.setAttribute('aria-expanded', 'false'));
+    if (aperta) { legenda.innerHTML = '<span class="invito">@@TOCCA_INVITO@@</span>'; return; }
+    luce.setAttribute('aria-expanded', 'true');
+    const [titolo, testo] = VOCI[luce.dataset.voce];
+    legenda.innerHTML = `<b data-voce>${titolo}</b><span data-voce>${testo}</span>`;
+  }));
+});
+</script>
+</body></html>

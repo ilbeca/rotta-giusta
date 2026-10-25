@@ -4892,3 +4892,47 @@ ancora deciso: «La carta che vive» resta la RC finché l'autore non dice
 altrimenti. La G aggiornata sta in `g-regata/`, commit `1b273ab`, ramo
 `idee/regata-rc`. Altri design si provano in una sessione a parte, con le
 skill taste e ui-ux-pro-max, in cartelle nuove accanto a queste.
+
+**Altre quattro direzioni, con le skill taste e ui-ux-pro-max (25 ottobre).**
+Una sessione a parte, sul ramo `claude/design-taste-uiux-dba7dd`, partito da
+`idee/regata-rc`. La RC e la G non sono state toccate. Le proposte questa volta
+vengono da due skill e non dall'istinto della sessione: lo script di **taste**
+ha estratto tre modi di comporre per un sito di studio («la frase è la
+pagina», «solo tipografia», «la pagina è l'oggetto del suo mondo»), e
+**ui-ux-pro-max** ha proposto il minimalismo esagerato, la griglia editoriale e
+le tessere. Il suo primo suggerimento, la «claymorphism» viola con caratteri di
+Google, è stato scartato: il viola è il colore di default dei modelli, e qui si
+usa solo Manrope dal sito. L'autore ha scelto le tre proposte e ha chiesto una
+sorpresa. I mock sono in `docs/prototipi/redesign-2026-10-claude/`, con le
+stesse sei schermate e gli stessi testi; le schermate una per una e le misure
+sono nel README della cartella.
+
+| | La direzione | Che cosa cambia per chi studia | L'oggetto che insegna | Il rischio |
+|---|---|---|---|---|
+| **H** | La frase e il faro: bianco, nero pieno, l'arancio della luce; angoli vivi | Tutto più grande e più leggibile, niente decorazioni; la domanda a 22 px al telefono; il meno «sito di quiz» dei quattro | Il faro che lampeggia **dentro il titolo**, al posto di una parola; si tocca per leggerne la sigla | Il più freddo, poco mare; la finestrella è un bersaglio piccolo (54×28 px al telefono) |
+| **I** | Il giornale di bordo: fogli verde pallido da registro, inchiostro blu, il margine rosso | Lo storico ha già la forma di un registro: i numeri stanno in colonna sotto la loro intestazione, il riepilogo ha il timbro del giorno, le tappe sono tacche contate a mano | Una riga del giornale di bordo con le colonne Ora, Pb, Pv, V, Miglia da toccare: le sigle del carteggio | Vicino alla RC (la carta) e alla F (il libro); le voci di Pb e Pv sono contenuto didattico da verificare |
+| **J** | Le tessere: fondo grigio-azzurro, tessere bianche, una tessera scura; il verde petrolio per l'azione | Tutto a colpo d'occhio al computer; in Allenati gli argomenti sono tessere e quelli che valgono 4 domande sono larghi il doppio; la domanda ha una barra a dieci tratti | Il faro e la boa della RC, di notte, in una tessera scura | Il più «app» e il meno legato alla materia; la griglia si regge sull'ordine delle tessere, che a ogni contenuto nuovo va ripensato |
+| **K** | La stampa a due colori: blu e arancio fluorescente, il secondo colore fuori registro di 3 px | Il più allegro e il più riconoscibile, senza diventare un gioco: sembra un manifesto di regata stampato a mano | Un piccolo manifesto: il sole, il mare, un faro a strisce che lampeggia, la boa cardinale est nei suoi colori veri | Il registro sfalsato sotto i titoli può sembrare un difetto di stampa a chi non lo riconosce; l'arancio vicino al rosso degli errori |
+
+**Misurato** sulle 72 combinazioni: nessuno sbordamento, un solo principale,
+«Simula il quiz base» sopra la barra a 375×667 (da 527 a 593 px; in I al primo
+giro era a 611, sotto la barra), «Avanti» raggiungibile e scoperto, la figura
+intera prima di rispondere, l'avviso a 12 px da «Inizia». Un controllo dei
+contrasti sui colori calcolati di ogni testo visibile non trova niente sotto
+AA. **Non controllato:** nessuna persona, Safari, il gesto vero, il testo dentro
+i disegni.
+
+**La lettura della sessione, non una raccomandazione.** Nessuna delle quattro
+sposta la RC o la G per quello che conta di più: nascere dalla materia
+dell'esame. Due portano qualcosa che si potrebbe prendere senza cambiare
+volto: da **I**, i numeri in colonna con l'intestazione sopra e il riepilogo come
+una riga di registro, che rendono lo storico leggibile quando ci saranno gli
+account; da **H**, la domanda più grande e il nero pieno sui bordi delle
+risposte, che si leggono meglio al sole. **K** è la più personale: se piace,
+il registro sfalsato e il retino sono un vestito che si può mettere anche alla
+carta della RC.
+
+14. **Le direzioni H, I, J, K.** Tenerle come riserva, sceglierne una, o
+    prendere da loro dei pezzi? *Raccomandazione:* guardarle accanto alla RC e
+    alla G; se una sola cosa entra, i numeri in colonna di I nel riepilogo e in
+    Progressi.

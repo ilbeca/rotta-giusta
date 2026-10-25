@@ -335,6 +335,34 @@ selezione o contabilità. Versione 0.34.0 invariata.
   README sono quelle nuove. Il primo settore del faro, arancio sul blu, veniva
   fangoso: ora è una luce bianca calda. Nessun file di `site/`.
 
+### Progettato — I-29: quattro direzioni nate con le skill taste e ui-ux-pro-max
+
+- **Perché.** La regia ha chiesto altre direzioni accanto alla release
+  candidate e alla Regata, che restano il metro di confronto e non sono state
+  toccate, usando due skill invece dell'istinto della sessione. Lo script di
+  taste ha estratto tre modi di comporre; ui-ux-pro-max ha proposto il
+  minimalismo esagerato e le tessere, e prima ancora una «claymorphism» viola
+  con caratteri di Google, scartata. L'autore ha scelto le tre proposte e ha
+  chiesto una sorpresa: quattro mock in `docs/prototipi/redesign-2026-10-claude/`,
+  con le stesse sei schermate e gli stessi testi degli altri stili.
+- **H, la frase e il faro**: bianco e nero, l'arancio della luce, il faro che
+  lampeggia dentro il titolo. **I, il giornale di bordo**: fogli da registro, i
+  numeri in colonna, una riga del giornale (Ora, Pb, Pv, V, Miglia) da toccare.
+  **J, le tessere**: la Home a tessere di misure diverse, il faro di notte in una
+  tessera scura. **K, la stampa a due colori**: blu e arancio fluorescente, il
+  secondo colore fuori registro di 3 px, un piccolo manifesto da toccare.
+- **Il costruttore** `sorgenti/stili/build.py` ha quattro lettere in più; si
+  chiama con `h i j k` e scrive solo le loro cartelle. H e J hanno una Home loro.
+- **Misurato** sulle 72 combinazioni con `cattura-stili.mjs`: sbordamento 0, un
+  solo principale, «Simula il quiz base» sopra la barra a 375×667 (in I al primo
+  giro era a 611 px, sotto: corretto), «Avanti» scoperto, la figura intera,
+  l'avviso a 12 px. Contrasti AA su ogni testo visibile fuori dai disegni, con
+  un controllo a parte non committato. Trovati guardando e corretti: la
+  finestrella del faro minuscola in H, la tessera sola e i buchi della griglia
+  in J, il riflesso nero del sole in K. Da verificare dall'autore: le voci del
+  giornale di bordo in I. Decisione 14 in fondo a I-29. Nessun file di `site/`,
+  `tests/`, della specifica o della coda toccato; nessuna suite rifatta.
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la

@@ -1,0 +1,74 @@
+/* K — «La stampa a due colori». La sorpresa della sessione: i manifesti di
+   regata e le carte da diporto stampati con due inchiostri, il blu e
+   l'arancio fluorescente, su carta bianca. Tutto è blu: testo, unico
+   pulsante, disegno. L'arancio è il secondo passaggio di stampa: un retino
+   nel disegno, un fondo chiaro nel riquadro che conta, e un registro
+   sfalsato di pochi pixel sotto i titoli e i numeri grandi, come quando la
+   seconda lastra non cade esatta. Mai su un comando né su un esito. */
+:root{
+  --carta:#FAFAF7;--carta-2:#EEF1FA;--terra:#FFE6DF;--terra-scura:#1B2E73;
+  --acqua:#E3E8F7;--acqua-2:#C3CDEE;--acqua-3:#7C88BF;
+  --ink:#1B2E73;--ink-2:#2E3F86;--ink-3:#46528F;--filo:#1B2E7330;--filo-2:#1B2E7318;
+  --blu:#2340A2;--arancio:#FF6A4D;--arancio-chiaro:#FFE6DF;
+  --rotta:#2340A2;--rotta-chiara:#FFE6DF;--evidenza:#FFD3C8;
+  --ok:#12662F;--ok-chiaro:#E2F1E6;--ko:#B3261E;--ko-chiaro:#FBE8E6;
+  --azione:#2340A2;--su-azione:#fff;--attivo:#2340A2;--su-attivo:#fff;--forte:#2340A2;--su-forte:#fff;
+  --campo:#fff;--marchio:#1B2E73;--link:#2340A2;--fuoco:#2340A2;
+  --r:6px;
+  --registro:3px 3px 0 var(--arancio);
+}
+h1,h2,h3{letter-spacing:-.035em}
+/* Il registro sfalsato: il secondo inchiostro sotto il primo */
+.eroe h1,h1.pagina,.prep h1,.rp h1{font-weight:800;text-shadow:var(--registro)}
+.scandaglio b,.peso b,.righe .num{text-shadow:2px 2px 0 var(--arancio)}
+.scandaglio.ok b,.scandaglio.ko b,.scandaglio.no b{text-shadow:none}
+.testata{background:var(--carta);backdrop-filter:none;border-bottom:2px solid var(--blu)}
+.btn{border-radius:var(--r)}
+.btn-pieno{box-shadow:4px 4px 0 var(--arancio)}
+.btn-pieno:hover{background:#1B3488}
+.btn-pieno:active{box-shadow:1px 1px 0 var(--arancio);transform:translate(3px,3px)}
+.link-freccia{border-bottom-width:3px;border-bottom-color:var(--arancio)}
+.carta{background:var(--arancio-chiaro);border:0;border-radius:var(--r)}
+.nota-carta{background:var(--carta-2);border:0;border-radius:var(--r)}
+.righe{border-top:2px solid var(--blu)}
+.righe .ico-tondo{background:var(--arancio-chiaro);color:var(--blu)}
+.barra{border-top:2px solid var(--blu);background:var(--carta)}
+.piede{border-top:2px solid var(--blu)}
+.scandaglio b{color:var(--blu)}
+@media (min-width:900px){ .scandaglio b{font-size:var(--t-56)!important} }
+/* Allenati */
+.segmenti{background:var(--carta-2)!important;border:0!important}
+.peso b{color:var(--blu)}
+.cerca input,.cerca button{border-color:var(--blu)!important;border-width:2px!important}
+/* La domanda */
+.r-testata{border-bottom:2px solid var(--blu)!important}
+.risposta{border:2px solid var(--acqua-2)!important;border-radius:var(--r)!important}
+.risposta.tua{border-color:var(--ko)!important}.risposta.esatta{border-color:var(--ok)!important}
+.tasto{border-color:var(--blu)!important;color:var(--blu)}
+.risposta.tua .tasto,.risposta.esatta .tasto{color:#fff}
+.chip{border:2px solid var(--blu)!important}
+.rotta::before{border-top:2px dotted var(--acqua-3)!important}
+.tappa{border-color:var(--acqua-3)!important}
+.anello{border-color:var(--blu)!important}
+.compatta span{background:var(--blu)!important}
+.figura{border:2px solid var(--acqua-2)!important}
+.piede-runner{border-top:2px solid var(--blu)!important}
+/* Il riepilogo: un campo di blu pieno, i numeri in bianco */
+.diario{background:var(--blu)!important;color:#fff;box-shadow:6px 6px 0 var(--arancio)}
+.diario .scandaglio span{color:#E3E8F7}
+.diario .scandaglio.ok b{color:#9BEBB6!important}.diario .scandaglio.ko b{color:#FFB3A6!important}.diario .scandaglio.no b{color:#D4DBF3!important}
+.diario .scandaglio b{text-shadow:none}
+/* Il disegno: il faro e la boa lampeggiano con la loro sigla, la rotta si disegna */
+.lampo{opacity:0;transform-box:fill-box;transform-origin:center}
+@media (prefers-reduced-motion:no-preference){
+  .lampo-faro{animation:lam2 10s linear infinite}
+  .lampo-boa{animation:sc3 10s linear infinite 1.2s}
+  .rotta-maschera{stroke-dasharray:1;stroke-dashoffset:1;animation:traccia 2.4s cubic-bezier(.65,0,.35,1) .4s forwards}
+}
+@media (prefers-reduced-motion:reduce){ .lampo{opacity:.85} }
+@keyframes lam2{0%,5%{opacity:1;transform:scale(1)}6%{opacity:0;transform:scale(.6)}14%{opacity:0;transform:scale(.6)}15%,20%{opacity:1;transform:scale(1)}21%,100%{opacity:0;transform:scale(.6)}}
+@keyframes sc3{0%,2%{opacity:1}3%,5%{opacity:0}6%,8%{opacity:1}9%,11%{opacity:0}12%,14%{opacity:1}15%,100%{opacity:0}}
+@keyframes traccia{to{stroke-dashoffset:0}}
+.luce::after{border-color:var(--blu);box-shadow:0 0 0 2px #fff}
+.legenda-luce{border-top:2px solid var(--blu);background:var(--carta)}
+.figura-grande,.leggi .tocca{border:2px solid var(--blu)!important;box-shadow:6px 6px 0 var(--arancio)}
