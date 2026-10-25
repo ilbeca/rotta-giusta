@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Home · mock «@@NOME@@»</title>
+<style>@@CSS@@
+/* Q: la Home della Regata, con la carta ferma dietro e due finestre */
+.eroe h1{font-size:var(--t-32);font-weight:800;line-height:1.06}
+.eroe .lead{margin-top:var(--s-8)}
+.eroe .q-in{display:grid;gap:var(--s-24)}
+.prova{padding:var(--s-16)!important;display:grid;gap:var(--s-12);color:var(--ink)}
+.titolo-prova{font-size:var(--t-16)!important;font-weight:800}
+.breve{display:flex;flex-direction:column;gap:2px}
+.breve small{font-size:var(--t-14)}
+.legenda-luce.legenda-eroe{display:none}
+.luce-finestra{min-height:clamp(400px,64svh,560px);padding-top:var(--s-24)}
+.scheda{background:#fff;color:var(--ink);border-radius:var(--r);padding:var(--s-16);max-width:360px;box-shadow:0 18px 40px -20px #0B2530aa}
+.scheda h2{font-size:var(--t-20);font-weight:800}
+.scheda .nota{margin-top:var(--s-4)}
+.scheda .legenda-luce{margin:var(--s-12) calc(var(--s-16) * -1) calc(var(--s-16) * -1);border-radius:0 0 var(--r) var(--r)}
+.bianco h2{font-size:var(--t-24);font-weight:800;margin-bottom:var(--s-12)}
+.cosa .righe .num{font-size:var(--t-24)}
+.limiti ul{margin:var(--s-8) 0;padding-left:20px}
+.limiti p+p{margin-top:var(--s-8)}
+.gratis{font-size:var(--t-14);color:var(--ink-3);margin-top:var(--s-24)}
+@media (min-width:900px){
+  .luce-finestra{min-height:clamp(420px,80svh,640px)}
+  .eroe{min-height:calc(100vh - 72px);display:grid;align-content:center}
+  .eroe .q-in{grid-template-columns:minmax(0,560px) 1fr;width:100%}
+  .eroe .q-in>div{grid-column:1}
+  .eroe h1{font-size:var(--t-56);line-height:1.02}
+  .eroe .lead{font-size:var(--t-20)}
+  .prova{padding:var(--s-32)!important}
+  .legenda-luce.legenda-eroe{display:grid;position:absolute;right:var(--s-32);bottom:var(--s-32);width:340px;border-radius:var(--r);pointer-events:auto;color:var(--ink)}
+  .eroe{position:relative}
+  .colonne{display:grid;grid-template-columns:3fr 2fr;gap:var(--s-48);align-items:start}
+}
+@@TEMA@@
+</style></head>
+<body>
+@@ICONE@@
+<div class="figura-grande tocca">
+<div class="mare-fisso">@@CARTA@@
+  <button class="luce" data-voce="faro" data-x="392" data-y="150" aria-expanded="false" aria-label="Il faro: leggi la sua sigla"></button>
+  <button class="luce" data-voce="boa" data-x="250" data-y="250" aria-expanded="false" aria-label="La boa cardinale: leggi la sua sigla"></button>
+</div>
+@@TESTATA:home@@
+<main class="q-main">
+  <section class="finestra testa eroe">
+    <div class="q-in">
+      <div>
+        <h1>Preparati alla patente nautica, un passo alla volta.</h1>
+        <p class="lead">Quiz e carteggio per la patente senza limiti dalla costa.</p>
+      </div>
+      <div style="display:grid;gap:var(--s-16)">
+        <section class="carta prova">
+          <h2 class="titolo-prova">La prova d'esame dei quiz</h2>
+          <div class="scandagli" aria-label="20 domande, 30 minuti, al più 4 errori">
+            <div class="scandaglio"><b>20</b><span>domande</span></div>
+            <div class="scandaglio"><b>30′</b><span>minuti</span></div>
+            <div class="scandaglio"><b>4</b><span>errori al più</span></div>
+          </div>
+          <a class="btn btn-pieno btn-largo vt-avvio" href="runner.html" data-ruolo="principale">Simula il quiz base<svg class="ico"><use href="#i-freccia"/></svg></a>
+          <p class="nota">La correzione arriva alla fine, come all'esame.</p>
+        </section>
+        <div class="breve">
+          <a class="link-freccia" href="runner.html" style="align-self:flex-start">Oppure allenati con 10 domande<svg class="ico"><use href="#i-freccia"/></svg></a>
+          <small>Con la correzione dopo ogni risposta.</small>
+        </div>
+      </div>
+    </div>
+    <p class="legenda-luce legenda-eroe" aria-live="polite"><span class="invito">@@TOCCA_INVITO@@</span></p>
+  </section>
+  <div class="bianco cosa"><div class="q-in">
+    <h2>Che cosa trovi qui</h2>
+    <ul class="righe">
+      <li><a href="quiz.html"><span class="ico-tondo"><svg class="ico"><use href="#i-quiz"/></svg></span><span class="testo"><b><span class="num">1.722</span> quesiti del decreto</b><small>Base e vela, con il numero per ritrovarli sul libro</small></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="quiz.html"><span class="ico-tondo" style="background:var(--terra)"><svg class="ico"><use href="#i-compasso"/></svg></span><span class="testo"><b><span class="num">135</span> esercizi di carteggio</b><small>Tracci sulla carta, poi confronti con la risposta ministeriale</small></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="quiz.html"><span class="ico-tondo" style="background:var(--forte);color:var(--su-forte)"><svg class="ico"><use href="#i-fanale"/></svg></span><span class="testo"><b><span class="num">27</span> fanali e segnali</b><small>Da riconoscere a colpo d'occhio, come di notte in mare</small></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="#esame"><span class="ico-tondo" style="background:var(--rotta-chiara);color:var(--rotta)"><svg class="ico"><use href="#i-esame"/></svg></span><span class="testo"><b>Le prove, in ordine</b><small>Carteggio, quiz base, quiz vela: con le condizioni del decreto</small></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+    </ul>
+  </div></div>
+  <section class="finestra luce-finestra"><div class="q-in">
+    <div class="scheda">
+      <h2>@@TOCCA_TITOLO@@</h2>
+      <p class="nota">@@TOCCA_INTRO@@</p>
+      <p class="legenda-luce" aria-live="polite"><span class="invito">@@TOCCA_INVITO@@</span></p>
+    </div>
+  </div></section>
+  <div class="bianco limiti"><div class="q-in">
+    <h2>I limiti, detti prima</h2>
+    <div class="nota-carta nota">
+      <p>La banca è l'Allegato A del decreto del 2022, e all'esame vale lui. Ti diciamo quesito per quesito che cosa non torna:</p>
+      <ul><li>37 quesiti oscurati, mai nella simulazione</li><li>4 quesiti con una nota dopo la risposta</li><li>1 quesito con la figura mancante</li></ul>
+      <p>Il lavoro sulla carta lo giudichi tu. Nessuna newsletter e nessun cookie di tracciamento.</p>
+      <p style="margin-top:var(--s-12)"><a class="link-freccia" href="#note">Note, fonti e riferimenti<svg class="ico"><use href="#i-freccia"/></svg></a></p>
+    </div>
+    <p class="gratis">Gratis e open source. Si prova senza account; con l'account salvi i progressi.</p>
+    <footer class="piede"><span>Rotta Giusta · mock</span><a href="#">codice sorgente</a><a href="#">Privacy</a><a href="#">Condizioni per l'account</a><a href="#">Avvertenza</a></footer>
+  </div></div>
+</main>
+</div>
+@@BARRA:home@@
+<script>
+// La carta copre lo schermo; al telefono si inquadra la costa, dove stanno il faro e la boa
+const mare = document.querySelector('.mare-fisso'), disegno = mare.querySelector('.illustrazione');
+function posiziona() {
+  const W = mare.clientWidth, H = mare.clientHeight, tel = W < 900;
+  // Al telefono la carta occupa il 70% dell'altezza (sopra e sotto c'è mare pieno), così si vedono faro e boa insieme
+  const s = tel ? Math.max(W / 600, 0.7 * H / 380) : Math.max(W / 600, H / 380);
+  const fuoco = tel ? 345 : 300;
+  const ox = Math.min(0, Math.max(W - 600 * s, W / 2 - fuoco * s)), oy = tel ? H - 380 * s - H * 0.04 : (H - 380 * s) / 2;
+  Object.assign(disegno.style, { width: 600 * s + 'px', height: 380 * s + 'px', left: ox + 'px', top: oy + 'px' });
+  mare.querySelectorAll('.luce').forEach((b) => { b.style.left = (+b.dataset.x * s + ox) + 'px'; b.style.top = (+b.dataset.y * s + oy) + 'px'; });
+}
+posiziona(); addEventListener('resize', posiziona);
+const VOCI = @@TOCCA_VOCI@@;
+const legende = document.querySelectorAll('.legenda-luce');
+document.querySelectorAll('.luce').forEach((luce) => luce.addEventListener('click', () => {
+  const aperta = luce.getAttribute('aria-expanded') === 'true';
+  document.querySelectorAll('.luce').forEach((l) => l.setAttribute('aria-expanded', 'false'));
+  if (aperta) { legende.forEach((l) => { l.innerHTML = '<span class="invito">@@TOCCA_INVITO@@</span>'; }); return; }
+  luce.setAttribute('aria-expanded', 'true');
+  const [titolo, testo] = VOCI[luce.dataset.voce];
+  legende.forEach((l) => { l.innerHTML = `<b data-voce>${titolo}</b><span data-voce>${testo}</span>`; });
+}));
+</script>
+</body></html>

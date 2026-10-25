@@ -1,0 +1,21 @@
+<svg class="svg-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<symbol id="marchio" viewBox="0 0 400 400"><g transform="translate(-434.65 -31.0)"><g style="fill:var(--marchio,#0B1F33)"><path d="M626 49 605 88Q626 81 647 88Z"/><path d="M545 132C578 87 674 79 710 133Q628 81 545 132Z"/><path d="M542 143Q577 121 626 117L617 144Q566 160 522 189Z"/><path d="M626 117Q674 120 709 143L727 186Q681 159 632 144Z"/><path d="M477 233Q539 181 617 156V169Q539 195 485 246Z"/><path d="M632 156Q711 180 768 226L754 235Q699 193 632 169Z"/><path d="M490 254Q548 207 617 180L624 342 632 180Q695 201 746 240Q733 248 742 261L625 351Z"/></g><circle cx="477" cy="174" r="17" fill="#22C55E"/><circle cx="768" cy="174" r="17" fill="#EF4444"/><path fill="#3BA7DB" d="M499 282 621 380 775 251 760 244 807 227Q810 226 809 230L792 275 784 259 620 413Z"/></g></symbol>
+<symbol id="i-rosa" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><path d="m12 7 2 5-2 5-2-5z"/></symbol>
+<symbol id="i-allenati" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></symbol>
+<symbol id="i-esame" viewBox="0 0 24 24"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></symbol>
+<symbol id="i-progressi" viewBox="0 0 24 24"><path d="M3 18c4-1 5-6 9-6s5-6 9-7"/><circle cx="3" cy="18" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="21" cy="5" r="1.5"/></symbol>
+<symbol id="i-utente" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></symbol>
+<symbol id="i-freccia" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+<symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+<symbol id="i-chiudi" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+<symbol id="i-segno" viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"/></symbol>
+<symbol id="i-bandiera" viewBox="0 0 24 24"><path d="M5 21V4h12l-3 4 3 4H5"/></symbol>
+<symbol id="i-ok" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></symbol>
+<symbol id="i-ko" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+<symbol id="i-cerca" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+<symbol id="i-orologio" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+<symbol id="i-compasso" viewBox="0 0 24 24"><circle cx="12" cy="4" r="1.5"/><path d="M11 5 6 21M13 5l5 16M8 15h8"/></symbol>
+<symbol id="i-fanale" viewBox="0 0 24 24"><path d="M9 21h6M10 21V11h4v10M8 11h8l-1-4H9z"/><path d="M12 4V2M5 6 3.5 4.5M19 6l1.5-1.5"/></symbol>
+<symbol id="i-errori" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.3"/><path d="M4 4v4h4"/></symbol>
+<symbol id="i-quiz" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17.5v.01"/></symbol>
+</svg>

@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Home · mock «@@NOME@@»</title>
+<style>@@CSS@@
+/* Home */
+.eroe{display:grid;gap:var(--s-24)}
+.eroe h1{font-size:var(--t-32);font-weight:800;margin-top:var(--s-8)}
+.eroe .lead{font-size:var(--t-16);color:var(--ink-2);max-width:34em}
+.striscia{position:relative;height:96px;overflow:hidden;border:1px solid var(--ink);border-radius:2px}
+.striscia::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;z-index:1;border-bottom:1px solid var(--ink);background:repeating-linear-gradient(90deg,var(--ink) 0 16px,var(--carta) 16px 32px)}
+.striscia .illustrazione{display:block;width:100%;height:100%}
+.prova{padding:var(--s-24) var(--s-16) var(--s-16);display:grid;gap:var(--s-16)}
+.prova .scandagli{gap:var(--s-24)}
+.prova .nota{margin-top:-4px}
+.breve{display:flex;flex-direction:column;gap:2px}
+.breve small{font-size:var(--t-14);color:var(--ink-3)}
+.figura-grande{display:none}
+.sezione{margin-top:var(--s-48)}
+.sezione h2{font-size:var(--t-24);font-weight:800;margin:var(--s-8) 0 var(--s-16)}
+.cosa .righe .num{font-size:var(--t-24)}
+.limiti p+p{margin-top:var(--s-8)}
+.limiti ul{margin:var(--s-8) 0 var(--s-12);padding-left:20px}
+.gratis{font-size:var(--t-14);color:var(--ink-3)}
+@media (min-width:900px){
+  .eroe{grid-template-columns:6fr 5fr;gap:var(--s-48);align-items:center}
+  .eroe h1{font-size:var(--t-56);line-height:1.04}
+  .eroe .lead{font-size:var(--t-20)}
+  .striscia{display:none}
+  .figura-grande::before{content:'';display:block;height:8px;border-bottom:1px solid var(--ink);background:repeating-linear-gradient(90deg,var(--ink) 0 20px,var(--carta) 20px 40px)}
+  .figura-grande{display:block;border:1px solid var(--ink);border-radius:2px;overflow:hidden}
+  .figura-grande .illustrazione{display:block;width:100%;height:auto}
+  .prova{padding:var(--s-32)}
+  .prova .scandaglio b{font-size:var(--t-44)}
+  .azioni{display:flex;align-items:center;gap:var(--s-32)}
+  .cosa .righe{display:grid;grid-template-columns:1fr 1fr;column-gap:var(--s-48)}
+  .colonne{display:grid;grid-template-columns:3fr 2fr;gap:var(--s-48);align-items:start}
+}
+@@TEMA@@
+</style></head>
+<body>
+@@ICONE@@
+@@TESTATA:home@@
+<main>
+  <section class="eroe">
+    <div style="display:grid;gap:var(--s-24)">
+      <div>
+        <p class="occhiello rotta">Patente nautica senza limiti dalla costa</p>
+        <h1>Preparati alla patente nautica, un passo alla volta.</h1>
+      </div>
+      <div class="striscia" aria-hidden="true">@@CARTA@@</div>
+      <div class="carta prova">
+        <p class="occhiello">La prova d'esame dei quiz</p>
+        <div class="scandagli" aria-label="20 domande, 30 minuti, al più 4 errori">
+          <div class="scandaglio"><b>20</b><span>domande</span></div>
+          <div class="scandaglio"><b>30′</b><span>minuti</span></div>
+          <div class="scandaglio"><b>4</b><span>errori al più</span></div>
+        </div>
+        <div class="azioni">
+          <a class="btn btn-pieno btn-largo" href="runner.html" data-ruolo="principale">Simula il quiz base<svg class="ico"><use href="#i-freccia"/></svg></a>
+        </div>
+        <p class="nota">La correzione arriva alla fine, come all'esame.</p>
+      </div>
+      <div class="breve">
+        <a class="link-freccia" href="runner.html" style="align-self:flex-start">Oppure allenati con 10 domande<svg class="ico"><use href="#i-freccia"/></svg></a>
+        <small>Con la correzione dopo ogni risposta.</small>
+      </div>
+      <p class="gratis">Gratis e open source. Si prova senza account; con l'account salvi i progressi.</p>
+    </div>
+    <div class="figura-grande">@@CARTA@@</div>
+  </section>
+
+  <div class="colonne">
+  <section class="sezione cosa">
+    <p class="occhiello">Che cosa trovi qui</p>
+    <h2>Tutto quello che c'è all'esame</h2>
+    <ul class="righe">
+      <li><a href="quiz.html"><span class="ico-tondo"><svg class="ico"><use href="#i-quiz"/></svg></span><span class="testo"><b><span class="num">1.722</span> quesiti del decreto</b><small>Base e vela, con il numero per ritrovarli sul libro</small></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="quiz.html"><span class="ico-tondo" style="background:var(--terra)"><svg class="ico"><use href="#i-compasso"/></svg></span><span class="testo"><b><span class="num">135</span> esercizi di carteggio</b><small>Tracci sulla carta, poi confronti con la risposta ministeriale</small></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="quiz.html"><span class="ico-tondo" style="background:var(--forte);color:var(--su-forte)"><svg class="ico"><use href="#i-fanale"/></svg></span><span class="testo"><b><span class="num">27</span> fanali e segnali</b><small>Da riconoscere a colpo d'occhio, come di notte in mare</small></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="#esame"><span class="ico-tondo" style="background:var(--rotta-chiara);color:var(--rotta)"><svg class="ico"><use href="#i-esame"/></svg></span><span class="testo"><b>Le prove, in ordine</b><small>Carteggio, quiz base, quiz vela: con le condizioni del decreto</small></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+    </ul>
+  </section>
+
+  <section class="sezione limiti">
+    <p class="occhiello">I limiti, detti prima</p>
+    <div class="nota-carta nota">
+      <p>La banca è l'Allegato A del decreto del 2022, e all'esame vale lui. Ti diciamo quesito per quesito che cosa non torna:</p>
+      <ul><li>37 quesiti oscurati, mai nella simulazione</li><li>4 quesiti con una nota dopo la risposta</li><li>1 quesito con la figura mancante</li></ul>
+      <p>Il lavoro sulla carta lo giudichi tu. Nessuna newsletter e nessun cookie di tracciamento.</p>
+      <p style="margin-top:var(--s-12)"><a class="link-freccia" href="#note">Note, fonti e riferimenti<svg class="ico"><use href="#i-freccia"/></svg></a></p>
+    </div>
+  </section>
+  </div>
+
+  <footer class="piede"><span>Rotta Giusta · mock</span><a href="#">codice sorgente</a><a href="#">Privacy</a><a href="#">Condizioni per l'account</a><a href="#">Avvertenza</a></footer>
+</main>
+@@BARRA:home@@
+</body></html>

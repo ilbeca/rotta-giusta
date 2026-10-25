@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>La preparazione · mock «@@NOME@@»</title>
+<style>@@CSS@@
+.prep{max-width:560px;margin:0 auto}
+.indietro{display:inline-flex;align-items:center;gap:6px;min-height:44px;font-weight:600;font-size:var(--t-14);color:var(--ink-2);text-decoration:none}
+.indietro .ico{width:18px;height:18px;transform:scaleX(-1)}
+.prep h1{font-size:var(--t-32);font-weight:800;margin:var(--s-4) 0 var(--s-12)}
+.prep .cosa{color:var(--ink-2)}
+.prep .riq{margin-top:var(--s-24);padding:var(--s-24) var(--s-16);display:grid;gap:var(--s-16)}
+/* L'avviso sta accanto a «Inizia», come testo e non come riquadro (decisione A del 24 ottobre) */
+.avviso{font-size:var(--t-14);color:var(--ink-2);line-height:1.45;margin-bottom:calc(var(--s-4) * -1)}
+@media (min-width:900px){ .prep h1{font-size:var(--t-44)} .prep .riq{padding:var(--s-32)} }
+@@TEMA@@
+/* L: le dieci domande sono dieci boe sulla rotta; quelle fatte hanno il loro colore */
+.dieci{list-style:none;margin:0;padding:0;display:flex;justify-content:space-between;align-items:center;position:relative;height:40px}
+.dieci::before{content:"";position:absolute;left:10px;right:10px;top:50%;border-top:3px dashed var(--acqua-3)}
+.dieci li{position:relative;width:22px;height:20px;background:var(--acqua-2);clip-path:polygon(50% 0,100% 100%,0 100%)}
+.dieci li.ok{background:var(--ok)}.dieci li.ko{background:var(--ko)}
+.dieci li.ok,.dieci li.ko{transform:scale(1.3)}
+@media (min-width:900px){ .dieci{height:56px} .dieci li{width:30px;height:28px} }
+</style></head>
+<body>
+@@ICONE@@
+@@TESTATA:home@@
+<main>
+<div class="prep">
+  <a class="indietro" href="home.html" data-prep="chiudi"><svg class="ico"><use href="#i-freccia"/></svg>Torna alla Home</a>
+  <h1>Allenati con 10 domande</h1>
+  <p class="cosa">Dieci quiz base, con la correzione dopo ogni risposta. Non è una simulazione: puoi fermarti quando vuoi.</p>
+  <section class="carta riq">
+    <ol class="dieci" aria-hidden="true"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ol>
+    <div class="scandagli">
+      <div class="scandaglio"><b>10</b><span>domande</span></div>
+      <div class="scandaglio"><b>Subito</b><span>la correzione</span></div>
+    </div>
+    <p class="avviso" data-ruolo="avviso">Senza account le risposte valgono solo finché questa pagina resta aperta. Se la chiudi o la ricarichi, le perdi.</p>
+    <a class="btn btn-pieno btn-largo vt-avvio" href="runner-figura.html" data-ruolo="principale">Inizia l'allenamento<svg class="ico"><use href="#i-freccia"/></svg></a>
+  </section>
+</div>
+</main>
+@@BARRA:home@@
+</body></html>

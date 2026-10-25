@@ -1,0 +1,56 @@
+<svg class="illustrazione" viewBox="0 0 600 380" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Una secca in mezzo al mare, segnalata da quattro boe cardinali: nord, est, sud e ovest, ognuna con i suoi colori, i suoi coni e la sua luce">
+<defs>
+<radialGradient id="dis-alone"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".35" stop-color="#FFF6CC" stop-opacity=".95"/><stop offset="1" stop-color="#FFF6CC" stop-opacity="0"/></radialGradient>
+<pattern id="dis-onde" width="48" height="16" patternUnits="userSpaceOnUse"><path d="M0 10q6-5 12 0t12 0 12 0 12 0" fill="none" stroke="#141518" stroke-opacity=".07" stroke-width="1.5"/></pattern>
+<!-- Una boa cardinale: lo stesso corpo, colori e coni diversi -->
+<path id="dis-corpo" d="M-9 8h18l-3-30h-12Z"/>
+</defs>
+<rect width="600" height="380" fill="#E4EBEE"/>
+<rect width="600" height="380" fill="url(#dis-onde)"/>
+<!-- La secca: il pericolo che le boe circondano -->
+<g transform="translate(300 200)">
+<path d="M-70-6c8-26 40-40 72-34 34 6 66 22 64 44-2 24-40 36-74 34-36-2-70-18-62-44Z" fill="#CFDCE1" stroke="#141518" stroke-opacity=".45" stroke-dasharray="3 5" stroke-width="1.5"/>
+<path d="M-14 4l8-12 7 6 9-10 9 16Z" fill="#141518" fill-opacity=".75"/>
+<text y="30" text-anchor="middle" font-family="Manrope,sans-serif" font-size="13" font-weight="700" font-style="italic" fill="#141518" fill-opacity=".7">secca</text>
+</g>
+<g font-family="Manrope,sans-serif" font-weight="800" font-size="15" fill="#141518">
+<!-- Nord: coni con le punte in alto, nero sopra e giallo sotto -->
+<g transform="translate(300 102) scale(1.75)">
+<circle class="lampo lampo-n" cy="-52" r="16" fill="url(#dis-alone)"/>
+<path d="M0-22v-5" stroke="#141518" stroke-width="2"/>
+<path d="M-6-27 0-35 6-27ZM-6-37 0-45 6-37Z" fill="#141518"/>
+<use href="#dis-corpo" fill="#F2C200" stroke="#141518" stroke-width="1.2"/>
+<path d="M-7.5-7h15l-1.5-15h-12Z" fill="#141518"/>
+<text x="14" y="-30" font-size="11">N</text>
+</g>
+<!-- Est: coni base contro base, nero giallo nero -->
+<g transform="translate(470 208) scale(1.75)">
+<circle class="lampo lampo-e" cy="-54" r="16" fill="url(#dis-alone)"/>
+<path d="M0-22v-5" stroke="#141518" stroke-width="2"/>
+<path d="M-6-38 0-46 6-38ZM-6-36 0-28 6-36Z" fill="#141518"/>
+<use href="#dis-corpo" fill="#F2C200" stroke="#141518" stroke-width="1.2"/>
+<path d="M-7-12h14l-1-10h-12ZM-8-2h16l1 10h-18Z" fill="#141518"/>
+<text x="14" y="-30" font-size="11">E</text>
+</g>
+<!-- Sud: coni con le punte in basso, giallo sopra e nero sotto -->
+<g transform="translate(300 340) scale(1.75)">
+<circle class="lampo lampo-s" cy="-52" r="16" fill="url(#dis-alone)"/>
+<path d="M0-22v-5" stroke="#141518" stroke-width="2"/>
+<path d="M-6-45 0-37 6-45ZM-6-35 0-27 6-35Z" fill="#141518"/>
+<use href="#dis-corpo" fill="#F2C200" stroke="#141518" stroke-width="1.2"/>
+<path d="M-7.5-7h15l1.5 15h-18Z" fill="#141518"/>
+<text x="14" y="-30" font-size="11">S</text>
+</g>
+<!-- Ovest: coni vertice contro vertice, giallo nero giallo -->
+<g transform="translate(130 208) scale(1.75)">
+<circle class="lampo lampo-o" cy="-54" r="16" fill="url(#dis-alone)"/>
+<path d="M0-22v-5" stroke="#141518" stroke-width="2"/>
+<path d="M-6-46 0-38 6-46ZM-6-28 0-36 6-28Z" fill="#141518"/>
+<use href="#dis-corpo" fill="#F2C200" stroke="#141518" stroke-width="1.2"/>
+<path d="M-7-12h14l1 10h-16Z" fill="#141518"/>
+<text x="-22" y="-30" font-size="11">O</text>
+</g>
+</g>
+<!-- La rosa: solo il nord, fermo -->
+<g transform="translate(548 58)" font-family="Manrope,sans-serif"><circle r="22" fill="none" stroke="#141518" stroke-opacity=".35"/><path d="M0-20 5 0 0 20-5 0Z" fill="#141518" fill-opacity=".85"/><text y="-28" text-anchor="middle" font-size="11" font-weight="800" fill="#141518">N</text></g>
+</svg>

@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Allenati · Quiz · mock «@@NOME@@»</title>
+<style>@@CSS@@
+h1.pagina{font-size:var(--t-32);font-weight:800}
+.segmenti{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;margin:var(--s-16) 0 var(--s-24);background:var(--carta-2);border:1px solid var(--filo);border-radius:999px}
+.segmenti a{display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;border-radius:999px;text-decoration:none;font-weight:700;font-size:var(--t-14);color:var(--ink-2)}
+.segmenti a .ico{width:18px;height:18px}
+.segmenti a[aria-current]{background:var(--attivo);color:var(--su-attivo)}
+.consigliato{padding:var(--s-24) var(--s-16) var(--s-16);display:grid;gap:var(--s-12)}
+.consigliato h2{font-size:var(--t-24);font-weight:800}
+.consigliato p{color:var(--ink-2);font-size:var(--t-16)}
+.blocco{margin-top:var(--s-32)}
+.blocco h2{font-size:var(--t-20);font-weight:800;margin:var(--s-8) 0 var(--s-12)}
+.cerca{display:flex;gap:var(--s-8);margin-top:var(--s-8)}
+.cerca label{position:absolute;left:-9999px}
+.cerca input{flex:1;min-width:0;height:52px;border:1.5px solid var(--ink-3);border-radius:var(--r);background:var(--campo);padding:0 var(--s-16);font:500 var(--t-16) Manrope,sans-serif;color:var(--ink)}
+.cerca button{width:52px;height:52px;border-radius:var(--r);border:1.5px solid var(--ink);background:transparent;display:grid;place-items:center;color:var(--ink)}
+.temi .testo b{font-weight:700}
+/* Il peso all'esame in parole, su ogni riga: non è un voto su quattro */
+.peso{flex:none;white-space:nowrap;font-size:var(--t-14);color:var(--ink-2)}
+.peso b{font-size:var(--t-20);font-weight:800;color:var(--ink)}
+.temi .sotto{font-size:var(--t-14);color:var(--ink-2);margin:calc(var(--s-8) * -1) 0 var(--s-12)}
+@media (min-width:900px){
+  h1.pagina{font-size:var(--t-44)}
+  .segmenti{max-width:520px}
+  .griglia{display:grid;grid-template-columns:5fr 6fr;gap:var(--s-48);align-items:start}
+  .griglia .blocco:first-child{margin-top:0}
+  .consigliato{padding:var(--s-32)}
+}
+@@TEMA@@
+/* N: le attività sono carte da sfogliare di lato; la prima è quella consigliata */
+.carosello{display:grid;grid-auto-flow:column;grid-auto-columns:84%;gap:var(--s-12);overflow-x:auto;scroll-snap-type:x mandatory;margin:0 calc(var(--s-16) * -1);padding:4px var(--s-16) var(--s-16);scroll-padding:0 var(--s-16);scrollbar-width:none}
+.foglio{scroll-snap-align:start;display:flex;flex-direction:column;gap:var(--s-8);min-height:260px;padding:var(--s-24)!important;border-radius:22px;background:var(--acqua);text-decoration:none;position:relative}
+.foglio.carta{background:#fff}
+.foglio h2,.foglio b{font-size:var(--t-24);font-weight:800;line-height:1.15}
+.foglio small,.foglio p{font-size:var(--t-16);color:var(--ink-2)}
+.foglio .btn{margin-top:auto}
+.foglio .ico-tondo{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:#fff;margin-bottom:var(--s-8)}
+.foglio.carta .ico-tondo{background:var(--acqua)}
+.foglio .num{position:absolute;right:var(--s-24);bottom:var(--s-16);font-size:72px;font-weight:800;letter-spacing:-.05em;line-height:1;color:var(--mare)}
+.foglio:not(.carta):hover{box-shadow:inset 0 0 0 2px var(--mare)}
+.cerca{margin-top:var(--s-8)!important}
+/* Gli argomenti: il peso in grande, prima del nome */
+.temi .righe>li>a{gap:var(--s-16)}
+.temi .peso{order:-1;width:64px;font-size:var(--t-12)!important}
+.temi .peso b{display:block;font-size:44px!important;line-height:1;color:var(--mare)!important;letter-spacing:-.05em}
+.temi{margin-top:var(--s-32)}
+@media (min-width:900px){
+  .carosello{grid-auto-columns:calc((100% - 3 * var(--s-12)) / 3.3);margin:0;padding:4px 0 var(--s-16)}
+  .cerca{max-width:520px}
+  .temi .righe{display:grid;grid-template-columns:1fr 1fr;column-gap:var(--s-48)}
+}
+</style></head>
+<body>
+@@ICONE@@
+@@TESTATA:allenati@@
+<main>
+  <h1 class="pagina">Allenati</h1>
+  <nav class="segmenti" aria-label="Che cosa allenare">
+    <a href="quiz.html" aria-current="page"><svg class="ico"><use href="#i-quiz"/></svg>Quiz</a>
+    <a href="#carteggio"><svg class="ico"><use href="#i-compasso"/></svg>Carteggio</a>
+    <a href="#segnali"><svg class="ico"><use href="#i-fanale"/></svg>Segnali</a>
+  </nav>
+  <div class="carosello" role="list" aria-label="Che cosa allenare">
+    <section class="carta foglio consigliato" role="listitem">
+      <span class="ico-tondo"><svg class="ico"><use href="#i-quiz"/></svg></span>
+      <h2>Allenamento consigliato</h2>
+      <p>25 quiz base scelti dalle risposte di questa pagina. Ogni domanda dice perché è lì.</p>
+      <a class="btn btn-pieno btn-largo vt-avvio" href="runner.html" data-ruolo="principale">Inizia l'allenamento<svg class="ico"><use href="#i-freccia"/></svg></a>
+    </section>
+    <a class="foglio" role="listitem" href="#argomento"><span class="ico-tondo"><svg class="ico"><use href="#i-allenati"/></svg></span><b>Scegli un argomento</b><small>Base o vela, uno o più argomenti</small></a>
+    <a class="foglio" role="listitem" href="#errori"><span class="ico-tondo"><svg class="ico"><use href="#i-errori"/></svg></span><b>Ripassa gli errori</b><small>Nessun errore in questa pagina, per ora</small><span class="num">0</span></a>
+    <a class="foglio" role="listitem" href="#segnalibri"><span class="ico-tondo"><svg class="ico"><use href="#i-segno"/></svg></span><b>I tuoi segnalibri</b><small>Nessun quesito segnato</small><span class="num">0</span></a>
+    <a class="foglio" role="listitem" href="#esame"><span class="ico-tondo" style="background:var(--rotta-chiara);color:var(--rotta)"><svg class="ico"><use href="#i-esame"/></svg></span><b>Simula la prova</b><small>In Esame, con il timer e l'esito alla fine</small></a>
+  </div>
+  <form class="cerca" role="search" onsubmit="return false"><label for="n">Numero del quesito</label><input id="n" placeholder="Cerca per numero, es. 1.1.1-24" inputmode="decimal"><button aria-label="Cerca"><svg class="ico"><use href="#i-cerca"/></svg></button></form>
+  <div>
+  <section class="blocco temi">
+    <h2>Dove pesa di più all'esame</h2>
+    <p class="sotto">Gli argomenti dei quiz base, e accanto quante delle 20 domande della prova ne parlano.</p>
+    <ul class="righe">
+      <li data-tema="1"><a href="#t"><span class="testo"><b>Navigazione cartografica</b><small>322 quesiti</small></span><span class="peso" aria-label="4 domande su 20 all'esame"><b>4</b> su 20</span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li data-tema="2"><a href="#t"><span class="testo"><b>Manovra e condotta</b><small>155 quesiti</small></span><span class="peso" aria-label="4 domande su 20 all'esame"><b>4</b> su 20</span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li data-tema="3"><a href="#t"><span class="testo"><b>Sicurezza della navigazione</b><small>215 quesiti</small></span><span class="peso" aria-label="3 domande su 20 all'esame"><b>3</b> su 20</span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li data-tema="4"><a href="#t"><span class="testo"><b>Normativa diportistica</b><small>184 quesiti</small></span><span class="peso" aria-label="3 domande su 20 all'esame"><b>3</b> su 20</span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li data-tema="5"><a href="#t"><span class="testo"><b>Colreg e segnalamento</b><small>247 quesiti</small></span><span class="peso" aria-label="2 domande su 20 all'esame"><b>2</b> su 20</span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li data-tema="6"><a href="#t"><span class="testo"><b>Meteorologia</b><small>120 quesiti</small></span><span class="peso" aria-label="2 domande su 20 all'esame"><b>2</b> su 20</span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li data-tema="7"><a href="#t"><span class="testo"><b>Teoria dello scafo</b><small>125 quesiti</small></span><span class="peso" aria-label="1 domanda su 20 all'esame"><b>1</b> su 20</span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li data-tema="8"><a href="#t"><span class="testo"><b>Motori</b><small>104 quesiti</small></span><span class="peso" aria-label="1 domanda su 20 all'esame"><b>1</b> su 20</span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+    </ul>
+    <p class="nota" style="margin-top:var(--s-12)">La vela ha 250 quesiti e una prova sua da 5 domande: la trovi in «Scegli un argomento».</p>
+  </section>
+  </div>
+  <footer class="piede"><span>Rotta Giusta · mock</span><a href="#">Privacy</a><a href="#">Avvertenza</a></footer>
+</main>
+@@BARRA:allenati@@
+</body></html>

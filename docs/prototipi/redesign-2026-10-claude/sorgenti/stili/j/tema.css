@@ -1,0 +1,81 @@
+/* J — «Le tessere». Nata dalla skill ui-ux-pro-max (la griglia a tessere, il
+   «bento») e tenuta onesta dalla skill taste: nessuna fila di riquadri uguali,
+   ogni tessera è grande quanto conta. Fondo grigio-azzurro chiaro, tessere
+   bianche, una tessera scura per la notte in mare dove il faro lampeggia con
+   la sua sigla. Il verde petrolio per l'unico pulsante; il giallo della luce
+   come segno, solo nella tessera scura e nel disegno. Niente ombre: le
+   superfici si separano con un gradino di tono. */
+:root{
+  --carta:#EDF1F4;--carta-2:#F6F8FA;--terra:#FFF4D6;--terra-scura:#0F1E2B;
+  --acqua:#E1E8EE;--acqua-2:#C9D4DD;--acqua-3:#7C8D9B;
+  --ink:#0F1E2B;--ink-2:#33475A;--ink-3:#4C5F70;--filo:#0F1E2B24;--filo-2:#0F1E2B12;
+  --notte:#0B1A26;--luce:#FFC845;
+  --rotta:#0D5C63;--rotta-chiara:#DDEFEF;--evidenza:#CDEBEA;
+  --ok:#12662F;--ok-chiaro:#E2F1E6;--ko:#B3261E;--ko-chiaro:#FBE8E6;
+  --azione:#0D5C63;--su-azione:#fff;--attivo:#0F1E2B;--su-attivo:#fff;--forte:#0B1A26;--su-forte:#FFC845;
+  --campo:#fff;--marchio:#0F1E2B;--link:#0D5C63;--fuoco:#0D5C63;
+  --r:22px;
+}
+h1,h2,h3{letter-spacing:-.03em}
+.testata{background:color-mix(in srgb,var(--carta) 94%,transparent);border-bottom:0}
+.barra{background:#fff;border-top:0;box-shadow:0 -1px 0 var(--filo-2)}
+.btn{border-radius:14px}
+.btn-pieno{box-shadow:none}
+.btn-pieno:hover{background:#0A4A50}
+.link-freccia{border-bottom:0;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
+.carta{background:#fff;border:0;border-radius:var(--r)}
+.nota-carta{background:#fff;border:0;border-radius:var(--r);padding:var(--s-24)}
+.righe .ico-tondo{background:var(--acqua);border-radius:14px}
+.scandaglio b{letter-spacing:-.045em}
+/* Allenati: gli altri modi e gli argomenti diventano tessere; quelle dei temi grandi quanto pesano */
+.segmenti{background:#fff!important;border:0!important}
+.blocco .righe{border-top:0;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.blocco .righe>li>a{flex-direction:column;align-items:flex-start;gap:var(--s-8);height:100%;min-height:0;padding:var(--s-16);border:0;border-radius:18px;background:#fff;position:relative}
+.blocco .righe>li>a:hover{background:#fff;box-shadow:inset 0 0 0 2px var(--azione)}
+.blocco .righe .freccia{position:absolute;right:14px;top:16px}
+.blocco .righe .num{position:absolute;right:14px;bottom:12px;font-size:var(--t-24)}
+.blocco .righe .testo{padding-right:var(--s-16)}
+.temi .righe>li>a{justify-content:space-between}
+.temi .righe .peso{font-size:var(--t-14)}
+.temi .righe .peso b{font-size:var(--t-32);letter-spacing:-.04em}
+.temi .righe li[data-tema="1"],.temi .righe li[data-tema="2"]{grid-column:span 2}
+.temi .righe li[data-tema="1"]>a,.temi .righe li[data-tema="2"]>a{background:var(--notte);color:#fff}
+.temi .righe li[data-tema="1"] small,.temi .righe li[data-tema="2"] small,.temi .righe li[data-tema="1"] .peso,.temi .righe li[data-tema="2"] .peso{color:#D5DEE5}
+.temi .righe li[data-tema="1"] .peso b,.temi .righe li[data-tema="2"] .peso b{color:var(--luce)}
+.temi .righe li[data-tema="1"] .freccia,.temi .righe li[data-tema="2"] .freccia{stroke:#D5DEE5}
+.cerca input{border:0!important;background:#fff!important;border-radius:14px!important}
+.cerca button{border-radius:14px!important;border:0!important;background:#fff!important}
+@media (min-width:900px){ .temi .righe{grid-template-columns:repeat(4,1fr)} }
+/* La domanda: le risposte sono tessere, l'avanzamento è una barra a dieci tratti */
+.r-testata{border-bottom:0!important}
+.r-main,body{background:var(--carta)}
+.risposta{border:2px solid transparent!important;background:#fff!important;border-radius:18px!important}
+.risposta.tua{border-color:var(--ko)!important;background:var(--ko-chiaro)!important}
+.risposta.esatta{border-color:var(--ok)!important;background:var(--ok-chiaro)!important}
+.risposta.spenta{background:#F6F8FA!important}
+.rotta{gap:4px;height:14px!important}
+.rotta::before{display:none}
+.tappa{flex:1;width:auto!important;height:6px!important;border:0!important;border-radius:3px!important;background:var(--acqua-2)!important}
+.tappa.ok{background:var(--ok)!important}.tappa.ko{background:var(--ko)!important}
+.anello{width:calc((100% - 36px) / 10 + 6px)!important;height:14px!important;margin:-7px 0 0 -3px!important;left:calc((100% - 36px) / 10 * var(--i, 0) + 4px * var(--i, 0))!important;border-radius:7px!important;border:2px solid var(--ink)!important}
+.compatta{background:var(--acqua-2)!important}.compatta span{background:var(--azione)!important}
+.figura{border:0!important;border-radius:18px!important}
+.chip{border:0!important;background:#fff!important}
+.chip[aria-pressed="true"]{background:var(--ink)!important}
+.piede-runner{border-top:0!important;background:#fff!important;border-radius:22px 22px 0 0}
+.diario{background:var(--notte)!important;color:#fff}
+.diario .scandaglio span{color:#D5DEE5}
+.diario .scandaglio.ok b{color:#86E0A6!important}.diario .scandaglio.ko b{color:#FF9D90!important}.diario .scandaglio.no b{color:#C3CED7!important}
+.prep .riq{background:#fff}
+/* Il faro e la boa lampeggiano con la loro sigla, come nella release candidate */
+.lampo{opacity:0;transform-box:fill-box;transform-origin:center}
+@media (prefers-reduced-motion:no-preference){
+  .lampo-faro{animation:lam2 10s linear infinite}
+  .lampo-boa{animation:sc3 10s linear infinite 1.2s}
+  .rotta-maschera{stroke-dasharray:1;stroke-dashoffset:1;animation:traccia 2.4s cubic-bezier(.65,0,.35,1) .4s forwards}
+}
+@media (prefers-reduced-motion:reduce){ .lampo{opacity:.85} }
+@keyframes lam2{0%,5%{opacity:1;transform:scale(1)}6%{opacity:0;transform:scale(.6)}14%{opacity:0;transform:scale(.6)}15%,20%{opacity:1;transform:scale(1)}21%,100%{opacity:0;transform:scale(.6)}}
+@keyframes sc3{0%,2%{opacity:1}3%,5%{opacity:0}6%,8%{opacity:1}9%,11%{opacity:0}12%,14%{opacity:1}15%,100%{opacity:0}}
+@keyframes traccia{to{stroke-dashoffset:0}}
+.luce::after{border-color:#fff;box-shadow:0 0 0 2px var(--notte)}

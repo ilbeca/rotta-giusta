@@ -1,0 +1,86 @@
+/* H — «La frase e il faro». Nata dalla skill taste («la frase è la pagina») e
+   dal minimalismo esagerato di ui-ux-pro-max. Bianco, nero pieno, un colore
+   solo: l'arancio della luce, che sta nel disegno e nel lampo e mai su un
+   comando né su un esito. Il titolo è la composizione, e al posto di una
+   parola c'è una finestrella dove il faro lampeggia con la sua sigla vera.
+   Angoli vivi, niente ombre, niente righe sottili: le superfici si separano
+   con un gradino di tono o con il nero pieno. */
+:root{
+  --carta:#FFFFFF;--carta-2:#F2F2EF;--terra:#F2F2EF;--terra-scura:#0E1113;
+  --acqua:#F2F2EF;--acqua-2:#DADAD5;--acqua-3:#8A8C8F;
+  --ink:#0E1113;--ink-2:#2E3236;--ink-3:#565B60;--filo:#0E111333;--filo-2:#0E11131A;
+  --luce:#FF5A1F;
+  --rotta:#B33A00;--rotta-chiara:#FFE6DA;--evidenza:#FFD9C8;
+  --ok:#11672F;--ok-chiaro:#E3F1E7;--ko:#B3261E;--ko-chiaro:#FBE7E5;
+  --azione:#0E1113;--su-azione:#fff;--attivo:#0E1113;--su-attivo:#fff;--forte:#0E1113;--su-forte:#fff;
+  --campo:#fff;--marchio:#0E1113;--link:#0E1113;--fuoco:#0E1113;
+  --r:0px;
+}
+h1,h2,h3{letter-spacing:-.035em}
+.testata{background:#fff;backdrop-filter:none;border-bottom:0;box-shadow:inset 0 -2px 0 var(--ink)}
+.nav-alta a{border-radius:0}
+.nav-alta a[aria-current]{background:var(--ink)}
+.accedi{border-radius:0}
+.btn{border-radius:0;font-weight:800}
+.btn-pieno{box-shadow:none}
+.btn-pieno:hover{background:#2E3236}
+.link-freccia{border-bottom-width:3px}
+.carta{background:var(--carta-2);border:0;border-radius:0}
+.nota-carta{background:var(--carta-2);border:0}
+.righe{border-top:2px solid var(--ink)}
+.righe>li>a,.righe>li>.riga{border-bottom:1px solid var(--filo)}
+.righe .ico-tondo{background:var(--carta-2);border-radius:0}
+.barra{border-top:2px solid var(--ink)}
+.barra a[aria-current]::before{border-radius:0;height:4px;top:-2px;left:20%;right:20%}
+.piede{border-top:2px solid var(--ink)}
+/* I numeri dell'esame come un manifesto */
+.scandaglio b{font-size:var(--t-44);letter-spacing:-.05em}
+.scandaglio span{font-size:var(--t-14);color:var(--ink-2)}
+@media (min-width:900px){ .scandaglio b{font-size:88px} }
+/* Allenati: i segmenti come interruttori neri */
+.segmenti{border-radius:0!important;background:var(--carta-2)!important;border:0!important}
+.segmenti a{border-radius:0!important}
+.peso b{font-size:var(--t-24)!important}
+.cerca input,.cerca button{border-radius:0!important;border-width:2px!important}
+.cerca input{border-color:var(--ink)!important}
+h1.pagina{font-size:var(--t-44)!important;letter-spacing:-.045em}
+@media (min-width:900px){ h1.pagina{font-size:88px!important} }
+/* La domanda: più grande, risposte a bordo nero, tappe quadrate */
+.domanda{font-size:22px!important;line-height:1.35!important;letter-spacing:-.02em!important}
+@media (min-width:900px){ .domanda{font-size:30px!important} }
+.risposta{border-radius:0!important;border:2px solid var(--ink)!important}
+.risposta.tua{border-color:var(--ko)!important}
+.risposta.esatta{border-color:var(--ok)!important}
+.risposta.spenta{border-color:var(--acqua-2)!important}
+.tasto{border-radius:0!important;border-width:2px!important}
+.chip{border-radius:0!important;border:2px solid var(--ink)!important}
+.r-testata{box-shadow:inset 0 -2px 0 var(--ink);border-bottom:0!important}
+.piede-runner{border-top:2px solid var(--ink)!important}
+.rotta::before{border-top:2px solid var(--acqua-2)!important}
+.tappa{border-radius:0!important;width:12px!important;height:12px!important;border:2px solid var(--acqua-3)!important;background:#fff!important}
+.tappa.ok{background:var(--ok)!important;border-color:var(--ok)!important}
+.tappa.ko{background:var(--ko)!important;border-color:var(--ko)!important}
+.anello{border-radius:0!important;border-color:var(--ink)!important;width:22px!important;height:22px!important;margin:-11px 0 0 -11px!important}
+.compatta{border-radius:0!important}.compatta span{border-radius:0!important;background:var(--ink)!important}
+.compatta i{border-radius:0!important}
+.figura{border-radius:0!important;border:2px solid var(--ink)!important}
+.prep h1,.rp h1{letter-spacing:-.045em}
+@media (min-width:900px){ .prep h1,.rp h1{font-size:64px!important;line-height:1.02} }
+.diario{background:var(--ink)!important;color:#fff}
+.diario .scandaglio span{color:#E6E7E8}
+.diario .scandaglio.ok b{color:#7EE2A0!important}.diario .scandaglio.ko b{color:#FF9B8E!important}.diario .scandaglio.no b{color:#BFC3C6!important}
+.diario .scandaglio b{font-size:56px}
+@media (min-width:900px){ .diario .scandaglio b{font-size:88px} }
+/* Il disegno e il lampo, come nella release candidate */
+.lampo{opacity:0;transform-box:fill-box;transform-origin:center}
+@media (prefers-reduced-motion:no-preference){
+  .lampo-faro{animation:lam2 10s linear infinite}
+  .lampo-boa{animation:sc3 10s linear infinite 1.2s}
+  .rotta-maschera{stroke-dasharray:1;stroke-dashoffset:1;animation:traccia 2.4s cubic-bezier(.65,0,.35,1) .4s forwards}
+}
+@media (prefers-reduced-motion:reduce){ .lampo{opacity:.85} }
+@keyframes lam2{0%,5%{opacity:1;transform:scale(1)}6%{opacity:0;transform:scale(.6)}14%{opacity:0;transform:scale(.6)}15%,20%{opacity:1;transform:scale(1)}21%,100%{opacity:0;transform:scale(.6)}}
+@keyframes sc3{0%,2%{opacity:1}3%,5%{opacity:0}6%,8%{opacity:1}9%,11%{opacity:0}12%,14%{opacity:1}15%,100%{opacity:0}}
+@keyframes traccia{to{stroke-dashoffset:0}}
+.luce::after{border-color:var(--ink);border-radius:0}
+.legenda-luce{border-top:2px solid var(--ink);background:#fff}

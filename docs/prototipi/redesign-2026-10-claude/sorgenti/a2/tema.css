@@ -1,0 +1,67 @@
+/* «La carta che vive» — la A spinta oltre (impeccable, overdrive, 25 ottobre 2026).
+   Due momenti, e solo due: la carta della Home vive e insegna; la rotta tiene
+   insieme le schermate. Tutto il resto è la A ridotta, con le superfici del
+   browser disegnate e senza occhielli sopra i titoli. */
+
+/* Le superfici che il browser disegna da solo */
+::selection{background:var(--rotta-chiara);color:var(--ink)}
+html{scrollbar-color:var(--ink-3) var(--carta);caret-color:var(--ink);accent-color:var(--ink)}
+:focus-visible{outline:3px solid var(--ink);outline-offset:3px;border-radius:6px}
+a{text-underline-offset:.2em;text-decoration-thickness:1px}
+.btn-pieno:focus-visible{outline-offset:4px}
+.btn-pieno{transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s}
+.btn-pieno:hover{transform:translateY(-1px);box-shadow:0 2px 0 #0003,0 12px 24px -12px #0B1F33AA}
+.btn-pieno:active{transform:translateY(1px)}
+.righe>li>a{transition:background-color .15s}
+.righe>li>a:hover{background:linear-gradient(90deg,var(--carta-2),transparent)}
+
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+
+/* La nota a margine: un fondo color cuoio, senza la striscia laterale */
+.nota-carta{border-left:0;border-radius:var(--r);padding:var(--s-24)}
+
+/* ---- Primo momento: la carta che vive ---- */
+.lampo{opacity:0;transform-box:fill-box;transform-origin:center}
+@media (prefers-reduced-motion:no-preference){
+  /* Lam.(2) 10s: un gruppo di due lampi ogni 10 secondi */
+  .lampo-faro{animation:lam2 10s linear infinite}
+  /* Sc.(3) 10s: tre luci scintillanti, poi buio, ogni 10 secondi */
+  .lampo-boa{animation:sc3 10s linear infinite 1.2s}
+  /* La rotta si disegna una volta, all'apertura */
+  .rotta-maschera{stroke-dasharray:1;stroke-dashoffset:1;animation:traccia 2.4s cubic-bezier(.65,0,.35,1) .4s forwards}
+}
+@media (prefers-reduced-motion:reduce){ .lampo{opacity:.85} }
+@keyframes lam2{0%,5%{opacity:1;transform:scale(1)}6%{opacity:0;transform:scale(.6)}14%{opacity:0;transform:scale(.6)}15%,20%{opacity:1;transform:scale(1)}21%,100%{opacity:0;transform:scale(.6)}}
+@keyframes sc3{0%,2%{opacity:1}3%,5%{opacity:0}6%,8%{opacity:1}9%,11%{opacity:0}12%,14%{opacity:1}15%,100%{opacity:0}}
+@keyframes traccia{to{stroke-dashoffset:0}}
+
+/* Le luci si toccano: un pulsante sopra ogni luce, e la sua sigla spiegata */
+.carta-viva .mappa{position:relative}
+.carta-viva .illustrazione{display:block;width:100%;height:auto}
+.luce{position:absolute;width:48px;height:48px;margin:-24px 0 0 -24px;border-radius:50%;border:0;background:transparent;cursor:pointer;padding:0}
+.luce::after{content:"";position:absolute;inset:12px;border-radius:50%;border:2px solid var(--ink);opacity:0;transform:scale(.6);transition:opacity .2s,transform .3s cubic-bezier(.2,.8,.2,1)}
+.luce:hover::after,.luce:focus-visible::after,.luce[aria-expanded="true"]::after{opacity:1;transform:scale(1)}
+.luce:focus-visible{outline:none}
+.legenda-luce{margin:0;padding:var(--s-12) var(--s-16);background:var(--carta);border-top:1px solid var(--ink);min-height:4.6em;display:grid;gap:2px;align-content:center}
+.legenda-luce b{font-size:var(--t-16);font-weight:800}
+.legenda-luce span{font-size:var(--t-14);color:var(--ink-2)}
+.legenda-luce .invito{color:var(--ink-3)}
+@media (prefers-reduced-motion:no-preference){
+  .legenda-luce [data-voce]{animation:entra .35s cubic-bezier(.2,.8,.2,1)}
+}
+@keyframes entra{from{opacity:0;transform:translateY(4px)}}
+/* Al telefono la carta da toccare è una sezione sua; la rotta si disegna quando entra in vista */
+@supports (animation-timeline: view()){
+  @media (prefers-reduced-motion:no-preference){
+    .leggi .rotta-maschera{animation:traccia linear both;animation-timeline:view();animation-range:entry 20% cover 55%}
+  }
+}
+
+/* ---- Secondo momento: la rotta come filo fra le schermate ---- */
+@view-transition{navigation:auto}
+.testata{view-transition-name:testata}
+.barra{view-transition-name:barra}
+.vt-avvio{view-transition-name:avvio}
+::view-transition-group(avvio){animation-duration:.45s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.3s}
+@media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}

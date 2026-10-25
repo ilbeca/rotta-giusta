@@ -1,0 +1,58 @@
+/* F — «Il manuale a schede». Il libro della scuola nautica, aperto: pagina
+   bianca, inchiostro quasi nero per il testo e per l'unico pulsante, e otto
+   colori di capitolo, uno per tema d'esame. I colori dei capitoli sono
+   etichette: mai un comando, mai un esito. La firma è la linguetta: sul bordo
+   delle righe, lunga quanto il tema pesa all'esame; sul riquadro che conta,
+   come il divisorio di un capitolo; nella domanda, il capitolo in cui sei. */
+:root{
+  --carta:#FFFFFF;--carta-2:#F3F4F6;--terra:#F1F2F8;--terra-scura:#2E3FA8;
+  --acqua:#EEF0F7;--acqua-2:#D9DDEB;--acqua-3:#8B93B5;
+  --ink:#1B1D21;--ink-2:#3E424A;--ink-3:#5A5F68;--filo:#1B1D2229;--filo-2:#1B1D2214;
+  --rotta:#2E3FA8;--rotta-chiara:#E8EAF7;--evidenza:#D9DDF5;
+  --ok:#12663A;--ok-chiaro:#E3F2E8;--ko:#B3261E;--ko-chiaro:#FBE8E6;
+  --azione:#1B1D21;--su-azione:#fff;--attivo:#1B1D21;--su-attivo:#fff;--forte:#1B1D21;--su-forte:#fff;
+  --campo:#fff;--marchio:#1B1D21;--link:#1B1D21;--fuoco:#2E3FA8;
+  --r:8px;
+  --t1:#2E3FA8;--t2:#0B6E73;--t3:#B4470E;--t4:#5E3F96;--t5:#8A6100;--t6:#1A6FA3;--t7:#8A3E26;--t8:#4A5562;
+}
+h1,h2,h3{letter-spacing:-.025em}
+.btn-pieno{box-shadow:0 1px 0 #0004,0 8px 18px -10px #1B1D21aa}
+.btn-pieno:hover{background:#30333A}
+/* Il riquadro che conta è un divisorio: una linguetta del primo capitolo sporge in alto */
+.carta{background:#fff;border:1px solid var(--filo);border-radius:var(--r);box-shadow:0 1px 2px #1B1D2110,0 12px 28px -18px #1B1D2240;position:relative}
+.carta::before{content:"";position:absolute;right:24px;top:-11px;width:56px;height:11px;border-radius:8px 8px 0 0;background:var(--t1)}
+.striscia,.figura-grande,.leggi .tocca{border:1px solid var(--filo)!important;border-radius:var(--r)!important}
+.striscia{height:80px}
+@media (min-width:900px){ .carta{margin-top:14px} }
+/* Le 20 domande della prova, divise per tema: una barra fatta di capitoli */
+.composizione{display:flex;gap:3px;height:10px;margin-top:-8px}
+.composizione i{display:block;background:var(--c);border-radius:3px}
+.scandaglio b{font-size:var(--t-32);letter-spacing:-.04em}
+@media (min-width:900px){ .titolo-prova{font-size:var(--t-20)!important} }
+.righe .ico-tondo{border-radius:var(--r)}
+.nota-carta{background:var(--terra)}
+/* Le righe dei temi: la linguetta sul bordo, lunga quanto pesa all'esame */
+.temi .righe>li{position:relative}
+.temi .righe>li::after{content:"";position:absolute;right:-16px;top:50%;height:26px;margin-top:-13px;width:calc(var(--peso) * 9px + 6px);border-radius:6px 0 0 6px;background:var(--c)}
+.temi .righe>li>a{padding-right:calc(var(--peso) * 9px + 2px)}
+.temi .righe .freccia{display:none}
+@media (min-width:900px){ .temi .righe>li::after{right:-32px} }
+li[data-tema="1"]{--c:var(--t1);--peso:4} li[data-tema="2"]{--c:var(--t2);--peso:4} li[data-tema="3"]{--c:var(--t3);--peso:3} li[data-tema="4"]{--c:var(--t4);--peso:3}
+li[data-tema="5"]{--c:var(--t5);--peso:2} li[data-tema="6"]{--c:var(--t6);--peso:2} li[data-tema="7"]{--c:var(--t7);--peso:1} li[data-tema="8"]{--c:var(--t8);--peso:1}
+main{overflow-x:clip}
+.segmenti{border-radius:var(--r)!important}
+.segmenti a{border-radius:6px!important}
+/* La domanda: il capitolo in cui sei, come una linguetta prima del numero */
+body[data-tema="1"]{--c:var(--t1);--capitolo:"Navigazione"} body[data-tema="2"]{--c:var(--t2);--capitolo:"Manovra"}
+body[data-tema="5"]{--c:var(--t5);--capitolo:"Colreg"}
+.meta .numero::before{content:var(--capitolo);display:inline-block;margin-right:var(--s-12);padding:2px 10px;border-radius:6px;background:var(--c);color:#fff;font-weight:800;font-size:var(--t-12);letter-spacing:.04em;vertical-align:1px}
+.r-testata{border-bottom:3px solid var(--c,var(--filo))!important}
+.anello{border-color:var(--ink)!important}
+/* Il disegno da toccare: ogni riga del sommario con la sua linguetta */
+.luce.zona{border-radius:6px}
+.luce.zona::after{inset:0;border-radius:6px;transform:none}
+@media (prefers-reduced-motion:no-preference){
+  .lingua{animation:lingua .6s cubic-bezier(.16,1,.3,1) backwards;animation-delay:calc(.2s + var(--i) * .07s)}
+}
+@keyframes lingua{from{translate:-40px 0}}
+@media (min-width:900px){ .scandaglio b{font-size:var(--t-44)} }

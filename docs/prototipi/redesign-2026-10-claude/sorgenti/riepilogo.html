@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Il riepilogo · mock «@@NOME@@»</title>
+<style>@@CSS@@
+.rp{max-width:640px;margin:0 auto}
+.rp h1{font-size:var(--t-32);font-weight:800;margin-top:var(--s-8)}
+.rp .sotto{color:var(--ink-2);margin-top:var(--s-8)}
+.diario{margin-top:var(--s-24);padding:var(--s-24) var(--s-16)}
+.diario .scandagli{justify-content:space-between}
+.scandaglio .ico{width:20px;height:20px;stroke-width:2.5;vertical-align:-2px;margin-right:4px}
+.scandaglio.ok b{color:var(--ok)}.scandaglio.ko b{color:var(--ko)}.scandaglio.no b{color:var(--ink-3)}
+.azioni{margin-top:var(--s-24);display:grid;gap:var(--s-16)}
+.altre{display:flex;flex-wrap:wrap;gap:var(--s-8) var(--s-24)}
+.avviso{font-size:var(--t-14);color:var(--ink-3);margin-top:var(--s-8)}
+.conserva{margin-top:var(--s-48);display:flex;gap:var(--s-16);align-items:flex-start}
+.conserva h2{font-size:var(--t-20);font-weight:800;margin-bottom:var(--s-8)}
+.conserva p{font-size:var(--t-14);color:var(--ink-2);margin-bottom:var(--s-8)}
+@media (min-width:900px){ .rp h1{font-size:var(--t-44)} .diario{padding:var(--s-32)} .scandaglio b{font-size:var(--t-44)} }
+@@TEMA@@
+</style></head>
+<body>
+@@ICONE@@
+@@TESTATA:home@@
+<main>
+<div class="rp">
+  <p class="occhiello rotta">Allenamento breve</p>
+  <h1>Hai risposto a 2 domande su 10.</h1>
+  <p class="sotto">Le 8 che non hai affrontato non contano come errori.</p>
+
+  <section class="carta diario" aria-label="Com'è andata">
+    <div class="scandagli">
+      <div class="scandaglio ok"><b><svg class="ico"><use href="#i-ok"/></svg>1</b><span>giusta</span></div>
+      <div class="scandaglio ko"><b><svg class="ico"><use href="#i-ko"/></svg>1</b><span>sbagliata</span></div>
+      <div class="scandaglio no"><b>8</b><span>non affrontate</span></div>
+    </div>
+  </section>
+
+  <div class="azioni">
+    <a class="btn btn-pieno btn-largo" href="runner.html" data-ruolo="principale">Riprova l'errore<svg class="ico"><use href="#i-errori"/></svg></a>
+    <div class="altre">
+      <a class="link-freccia" href="#rivedi">Rivedi le risposte<svg class="ico"><use href="#i-freccia"/></svg></a>
+      <a class="link-freccia" href="quiz.html">Scegli un'altra attività<svg class="ico"><use href="#i-freccia"/></svg></a>
+    </div>
+    <p class="avviso">Senza account queste risposte restano finché la pagina è aperta.</p>
+  </div>
+
+  <section class="conserva nota-carta">
+    <div>
+      <h2>Vuoi conservarle?</h2>
+      <p>Con un account ritrovi queste risposte quando torni, anche da un altro telefono, e vedi i Progressi.</p>
+      <div class="altre"><button class="link-freccia" type="button">Crea un account<svg class="ico"><use href="#i-freccia"/></svg></button><button class="link-freccia" type="button" style="border-bottom-color:var(--filo)">Continua senza account</button></div>
+    </div>
+  </section>
+</div>
+</main>
+@@BARRA:home@@
+</body></html>

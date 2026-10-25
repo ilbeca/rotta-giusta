@@ -1,0 +1,84 @@
+/* L — «Il percorso a boe». Un impianto, non un vestito: i colori sono quelli
+   della Regata (sotto, copiati da g/tema.css), cambia la disposizione. La Home
+   non è un menu ma una rotta che scende di boa in boa; in Allenati gli
+   argomenti sono zone di una carta, grandi quanto pesano all'esame; la
+   domanda, al computer, ha la rotta in verticale accanto; il riepilogo
+   ridisegna le dieci boe della lista. */
+/* G — «La regata». Il campo di regata visto dalla barca del comitato: bianco
+   come una vela, il blu del mare aperto per il testo forte e per l'unico
+   pulsante, e l'arancio delle boe di regata come segno del sito, solo nel
+   disegno e nei segni, mai su un comando né su un esito. La firma è il mare a
+   tutta larghezza in testa alla Home, con la carta che vive della release
+   candidate ridipinta nei colori della regata, e il percorso a boe: le tappe della
+   domanda sono boe da girare, i numeri dell'esame hanno la loro boa. */
+:root{
+  --carta:#FFFFFF;--carta-2:#EEF4F6;--terra:#FFF0E5;--terra-scura:#B23F00;
+  --acqua:#E3EEF2;--acqua-2:#C3DAE3;--acqua-3:#6E9AAB;
+  --ink:#0B2530;--ink-2:#33505B;--ink-3:#4D6772;--filo:#0B253029;--filo-2:#0B253014;
+  --mare:#0A4F6E;--boa:#FF6A1A;
+  --rotta:#B23F00;--rotta-chiara:#FFE8DA;--evidenza:#CFE6EE;
+  --ok:#12663A;--ok-chiaro:#E3F2E8;--ko:#B3261E;--ko-chiaro:#FBE8E6;
+  --azione:#0A4F6E;--su-azione:#fff;--attivo:#0A4F6E;--su-attivo:#fff;--forte:#0A4F6E;--su-forte:#fff;
+  --campo:#fff;--marchio:#0B2530;--link:#0A4F6E;--fuoco:#0A4F6E;
+  --r:14px;
+}
+h1,h2,h3{letter-spacing:-.03em}
+.eroe h1,h1.pagina,.prep h1,.rp h1{font-weight:800}
+.btn-pieno{box-shadow:0 1px 0 #0004,0 10px 22px -12px #0A4F6Ecc}
+.btn-pieno:hover{background:#083F59}
+/* Il mare a tutta larghezza, in testa alla Home */
+.striscia{height:100px;border:0;border-radius:0;margin:0 calc(var(--s-16) * -1)}
+.leggi .tocca{border:0!important;border-radius:var(--r);overflow:hidden}
+.figura-grande{border:0!important;border-radius:var(--r)!important}
+.legenda-luce{border-top:0;background:var(--carta-2)}
+.carta{background:#fff;border:1px solid var(--filo);border-radius:var(--r);box-shadow:0 14px 30px -22px #0A4F6E80}
+/* I numeri dell'esame, grandi come i numeri sulle vele, ognuno con la sua boa */
+.scandaglio b{font-size:var(--t-32);color:var(--mare);letter-spacing:-.045em}
+.scandaglio>span::before{content:"";display:inline-block;width:9px;height:9px;margin-right:6px;background:var(--boa);clip-path:polygon(50% 0,100% 100%,0 100%);vertical-align:0}
+.titolo-prova{font-size:var(--t-20)!important}
+.righe .ico-tondo{background:var(--acqua);color:var(--mare)}
+.nota-carta{background:var(--carta-2)}
+.link-freccia{border-bottom-color:var(--boa)}
+.segmenti a[aria-current]{background:var(--mare)!important}
+.barra a[aria-current]{color:var(--mare)}
+/* La domanda: il percorso a boe. Le tappe sono boe da girare; l'anello è la barca che ci arriva */
+.rotta::before{border-top:2px dashed var(--acqua-3)!important}
+.tappa{width:16px!important;height:14px!important;border:0!important;border-radius:0!important;background:var(--acqua-2)!important;clip-path:polygon(50% 0,100% 100%,0 100%)}
+.tappa.ko{background:var(--ko)!important}
+.tappa.ok{background:var(--ok)!important}
+.anello{border-color:var(--mare)!important}
+.compatta span{background:var(--mare)!important}
+.compatta i{box-shadow:0 0 0 3px var(--mare)!important}
+/* La carta che vive, come nella release candidate: il faro lampeggia con la sua
+   sigla, la boa con la sua, e la rotta si disegna una volta all'apertura */
+.lampo{opacity:0;transform-box:fill-box;transform-origin:center}
+@media (prefers-reduced-motion:no-preference){
+  .lampo-faro{animation:lam2 10s linear infinite}
+  .lampo-boa{animation:sc3 10s linear infinite 1.2s}
+  .rotta-maschera{stroke-dasharray:1;stroke-dashoffset:1;animation:traccia 2.4s cubic-bezier(.65,0,.35,1) .4s forwards}
+}
+@media (prefers-reduced-motion:reduce){ .lampo{opacity:.85} }
+@keyframes lam2{0%,5%{opacity:1;transform:scale(1)}6%{opacity:0;transform:scale(.6)}14%{opacity:0;transform:scale(.6)}15%,20%{opacity:1;transform:scale(1)}21%,100%{opacity:0;transform:scale(.6)}}
+@keyframes sc3{0%,2%{opacity:1}3%,5%{opacity:0}6%,8%{opacity:1}9%,11%{opacity:0}12%,14%{opacity:1}15%,100%{opacity:0}}
+@keyframes traccia{to{stroke-dashoffset:0}}
+/* Al telefono la carta da toccare è una sezione sua: la rotta si disegna quando entra in vista */
+@supports (animation-timeline: view()){
+  @media (prefers-reduced-motion:no-preference){
+    .leggi .rotta-maschera{animation:traccia linear both;animation-timeline:view();animation-range:entry 20% cover 55%}
+  }
+}
+/* Sul mare scuro l'anello del tocco è bianco, con un filo scuro che lo stacca anche dalla terra */
+.luce::after{border-color:#fff;box-shadow:0 0 0 2px var(--ink)}
+@media (min-width:900px){ .scandaglio b{font-size:var(--t-44)} }
+.prova{padding-top:var(--s-16)!important}
+@media (min-width:900px){ .prova{padding-top:var(--s-32)!important} }
+.scandaglio.ok b{color:var(--ok)}.scandaglio.ko b{color:var(--ko)}.scandaglio.no b{color:var(--ink-3)}
+.scandaglio.ok>span::before,.scandaglio.ko>span::before,.scandaglio.no>span::before{display:none}
+/* ——— L: l'impianto ——— */
+/* La domanda: al computer la rotta delle dieci domande scende accanto al testo */
+@media (min-width:1100px){
+  .r-testata .rotta{position:fixed;left:calc(50% - 380px - 72px);top:120px;height:420px;width:20px;flex-direction:column;justify-content:space-between;margin:0}
+  .r-testata .rotta::before{left:50%!important;right:auto!important;top:8px!important;bottom:8px;border-top:0!important;border-left:2px dashed var(--acqua-3)!important}
+  .r-testata .anello{left:50%!important;top:calc((100% - 14px) * var(--i, 0) / 9 + 7px)!important}
+  @media (prefers-reduced-motion:no-preference){ .r-testata .anello{transition:top .55s cubic-bezier(.16,1,.3,1)} }
+}

@@ -178,6 +178,304 @@ selezione o contabilità. Versione 0.34.0 invariata.
   guardata libera per 90 s; motore 215/219 con i quattro skip previsti, dati
   225, specifica 1.096, guardiano verde. Server non toccato.
 
+### Progettato — il volto del sito: perché è brutto, e tre direzioni (I-29)
+
+- **Perché.** Dopo i giri 1 e 2 delle regole di disegno l'autore trova il sito
+  «davvero brutto» senza saper dire perché. Guardato il 24 ottobre su `main`
+  (`3e64758`), senza account, a 375×812 e 1280×800: Home, Allenati (Quiz,
+  Carteggio, Segnali), Esame, Progressi, una preparazione, la domanda, il
+  riepilogo e Accedi. La diagnosi, in `docs/idee-dopo-gli-account.md`, I-29:
+  nessuna immagine al telefono in quattro viste; in Allenati · Quiz 14 pulsanti
+  su 15 dello stesso azzurro pallido e 21 riquadri bordati; tre bianchi a
+  contrasto 1,04–1,13 fra loro; titolo e testo in rapporto 1,9; al computer
+  schede da 1056 px con il testo a 480. Le regole D-01…D-35 sono quasi tutte
+  vincoli negativi: D-12 e D-14 insieme, D-24, la scala 12–30 e i ruoli di D-25
+  hanno prodotto una pagina corretta e senza volto. Per ognuna una proposta.
+- **Tre direzioni**: A, la carta nautica (raccomandata); B, la plancia di
+  notte; C, il quaderno a colori. Mock della A in
+  `docs/prototipi/redesign-2026-10-claude/` — Home, Allenati · Quiz, la domanda
+  dopo un errore, il riepilogo, e la tavola delle tre direzioni —, HTML
+  autoconsistenti con Manrope incorporato, guardati a 375, 375×667 e 1280 px:
+  un solo pulsante pieno, sbordamento 0, il pulsante principale nel primo
+  schermo anche a 375×667, contrasti calcolati sopra 4,5:1. Il README cita le
+  31 schermate, di oggi e dei mock. Dieci decisioni per l'autore in fondo alla
+  scheda. La lettura parallela di ChatGPT non è stata aperta.
+- Nessun file di `site/`, `tests/`, `server/`, della specifica o della coda
+  toccato; nessuna suite rifatta, guardiano verde.
+
+### Progettato — I-29: i mock di tutte e tre le direzioni
+
+- **Perché.** L'autore vuole confrontare le tre direzioni guardandole, non
+  leggendole: la regia ha chiesto i mock di tutte e tre, con la raccomandazione
+  dopo. Ora `docs/prototipi/redesign-2026-10-claude/` ha tre sottocartelle —
+  `a-carta-nautica/`, `b-plancia-di-notte/`, `c-quaderno-a-colori/` — con le
+  stesse quattro schermate e gli stessi testi (Home, Allenati · Quiz, la domanda
+  dopo un errore, il riepilogo): cambia solo il volto. Le pagine sono comuni, e
+  ogni direzione ha un tema e un'illustrazione suoi (`sorgenti/`).
+- **Scelte nate facendo i mock.** In B l'azione è ambra, come le luci di plancia
+  di notte, e non verde, che si confondeva con il giusto; i numeri restano in
+  Manrope, senza un secondo carattere. In C il riquadro del riepilogo torna
+  chiaro, perché verde e rosso non si leggono sul blu, e il sole è stato
+  rimpicciolito dopo averlo visto coprire «Allenamento consigliato».
+- **Guardati e misurati** tutti e dodici a 375×812, 375×667 e 1280×800: un solo
+  pulsante principale, sbordamento 0, il pulsante principale nel primo schermo
+  anche a 375×667, contrasti calcolati sopra 4,5:1 sui colori dei tre temi. 39
+  schermate dei mock più le 2 della tavola e le 16 di oggi, citate nel README.
+  In I-29 la raccomandazione (A) sta dopo i tre mock.
+
+### Progettato — I-29: la A ridotta, dopo il parere di ChatGPT
+
+- **Perché.** All'autore piace la A e ha chiesto il giudizio di ChatGPT
+  (`parere-su-A.md` su `ui/main`, `f40eadc`): sceglie anche lui la A, con meno
+  segni durante lo studio, e trova errori veri nei mock e nella scheda. Entrano
+  tutti, in tutte e tre le direzioni perché il confronto resti alla pari.
+- **Nei mock.** Il magenta esce da link, barra e avanzamento, che prendono il
+  colore dei comandi; il reticolo resta solo nella carta disegnata, la doppia
+  cornice diventa un bordo semplice, il bordo a scala una volta. La domanda
+  corrente resta cerchiata finché non si preme «Avanti»; con 25 domande una
+  traccia compatta e «5 di 25». Il riepilogo perde lo zigzag, che sembrava un
+  andamento, e «fermato a metà»; il peso d'esame si legge «4 su 20» invece di
+  pallini che sembravano un voto; «Crea un account» e «Continua senza account»
+  sono pulsanti. Due schermate nuove per direzione: la preparazione con l'avviso
+  «senza account» 12 px sopra «Inizia» a 375×667, e la domanda più lunga con
+  figura (base-829), con la figura intera fra 323 e 534 px e il centro della
+  prima risposta a 678 a 375×812 (`sorgenti/misura-stati.mjs`).
+- **Nella scheda.** Corretti il «90 %» (una stima, non una misura), «D-16 +
+  D-23» (D-23 parla degli spazi), il rapporto fra titolo e testo preso come
+  soglia, «sembra un gioco» detto della C; l'inventario della scala dichiarato
+  per intero. Nuova sezione sul parere e una decisione in più: link navy o
+  magenta.
+- 18 mock guardati a 375×812, 375×667 e 1280×800: un pulsante principale,
+  sbordamento 0. 51 schermate dei mock e 2 della tavola, citate nel README.
+
+### Progettato — I-29: «La carta che vive», una copia della A spinta oltre
+
+- **Perché.** All'autore piace la A ridotta e ha chiesto di non toccarla: una
+  copia, `docs/prototipi/redesign-2026-10-claude/a-carta-viva/`, è stata
+  lavorata con impeccable in modalità «overdrive», sulle due direzioni che ha
+  scelto lui. La A, la B e la C restano identiche, byte per byte.
+- **La carta che vive.** Il faro della Home lampeggia con il ritmo della sua
+  sigla, Lam.(2) 10s, e una boa cardinale est con Sc.(3) 10s; toccando una
+  luce si legge che cosa vuol dire. La rotta si disegna all'apertura, e al
+  telefono quando la sezione «Una luce, una sigla» entra in vista. Scartata la
+  rosa dei venti che ruota: il nord di una carta non si muove.
+- **La rotta come filo.** View Transitions fra documenti: l'avvio diventa la
+  testata della domanda, la testata il riepilogo; provate in http con Chrome a
+  375 e 1280 px (`pagereveal` con la transizione su domanda e riepilogo). La
+  domanda si gioca con tre quesiti veri e i tasti, l'anello passa alla tappa
+  dopo solo con «Avanti», il riepilogo conta quello che hai fatto. Fermo con
+  `prefers-reduced-motion`.
+- **La critica di impeccable.** Tolti occhielli e pastiglia sopra i titoli e la
+  striscia laterale della nota; disegnate selezione, fuoco, barra di
+  scorrimento e cursore; tolte le molle con il rimbalzo che il rilevatore aveva
+  trovato nella domanda. Restano segnalazioni volute o lette sul CSS comune.
+  Trovati guardando e corretti: il cerchio della boa fuori posto, i numeri del
+  riepilogo minuscoli, il bordo di fuoco sul titolo della seconda domanda.
+- Da verificare dall'autore: le sigle e le due frasi che le spiegano. 23
+  schermate nel README. Nessun file di `site/`.
+
+### Deciso — «La carta che vive» è la release candidate del ridisegno
+
+- L'autore, il 25 ottobre: la copia `a-carta-viva/` è la versione di
+  riferimento e non si tocca; gli altri stili si provano in cartelle nuove.
+  Scritto nel README della cartella e in I-29; i file della versione no.
+
+### Progettato — I-29: quattro altri stili accanto alla release candidate
+
+- **Perché.** L'autore ha chiesto di provare altri vestiti per lo stesso sito,
+  per confrontarli con «La carta che vive» guardandoli. Quattro mock, uno per
+  ogni stile proposto: **D — Il segnalamento** (bianco, nero, il giallo delle
+  boe cardinali), **E — Le bandiere** (il Codice internazionale dei segnali),
+  **F — Il manuale a schede** (una linguetta colorata per tema, lunga quanto
+  pesa all'esame), **G — La regata** (il mare aperto, le vele, le boe arancio).
+  Stanno in `docs/prototipi/redesign-2026-10-claude/`, accanto alla RC, con le
+  stesse sei schermate e gli stessi testi; ognuno ha nella Home un disegno da
+  toccare che insegna: le quattro cardinali, cinque bandiere, il peso dei temi,
+  le andature.
+- **La RC non è stata toccata**, né le direzioni A, B, C né le loro sorgenti:
+  le cinque pagine comuni sono copiate in `sorgenti/stili/base/`, e un
+  costruttore suo, `sorgenti/stili/build.py`, scrive soltanto le quattro
+  cartelle nuove e rifiuta i nomi di quelle esistenti. `git status` dopo ogni
+  costruzione: solo file nuovi.
+- **Scelti con impeccable 4.7.1:** sette candidati dal mondo di chi studia, e il
+  suo tiro di dadi ha assegnato il segnalamento; il manuale a schede viene da
+  uno sfidante che ha retto. Per il tiro serve un `PRODUCT.md`, scritto dalla
+  specifica e dalla filosofia e non committato.
+- **Misurato** su 72 combinazioni (quattro stili, sei schermate, 375×812,
+  375×667, 1280×800) con `sorgenti/stili/cattura-stili.mjs`: nessuno
+  sbordamento, un solo pulsante principale, Manrope caricato, «Avanti»
+  raggiungibile e scoperto a 375×667, la figura intera prima di rispondere
+  (323–534 px), l'avviso a 12 px da «Inizia», contrasti AA (testo secondario
+  6,0–6,9:1). **Trovato e corretto guardando:** al primo giro, nella Home a
+  375×667, «Simula il quiz base» finiva sotto la barra in tutti e quattro
+  (629–664 px contro 601): strisce e numeri ridotti al telefono, ora 594–596
+  px; nel riepilogo lo stile delle etichette finiva sui numeri (E, G); in D la
+  striscia del telefono restava al computer; in G la striscia tagliava via le
+  barche, ridisegnate in fila. 100 schermate, guardate e citate nel README.
+- Confronto e decisione 13 in fondo a I-29. Da verificare dall'autore: i testi
+  didattici delle cardinali, delle bandiere e delle andature. Nessun file di
+  `site/`, `tests/`, `server/`, della specifica o della coda toccato; nessuna
+  suite rifatta.
+
+### Progettato — I-29: la Regata con l'animazione della release candidate
+
+- **Perché.** Guardati i quattro stili, all'autore piacciono i colori della G,
+  la Regata, e l'animazione della Home della RC più delle quattro andature. La
+  Home della G ha ora la carta che vive della RC — il faro che lampeggia
+  Lam.(2) 10s, la boa cardinale est con Sc.(3) 10s, la rotta che si disegna,
+  le due luci da toccare con le stesse frasi — ridipinta nei colori della G:
+  il mare blu, la terra bianca, la rotta e il settore del faro nell'arancio e
+  nel bianco caldo, un bordo bianco che stacca la boa dal mare scuro. Cambiano
+  solo le sorgenti della G (`sorgenti/stili/g/`) e le pagine che ne escono; la
+  RC, le direzioni A, B, C e gli stili D, E, F non sono stati toccati.
+- **Misurato di nuovo** sulle 18 combinazioni della G: sbordamento 0, un solo
+  principale, «Simula il quiz base» a 594 px a 375×667, l'avviso a 12 px da
+  «Inizia», «Avanti» scoperto, la figura a 323–534 px. Guardate la Home al
+  telefono e al computer, con il faro toccato. Le sei schermate della Home nel
+  README sono quelle nuove. Il primo settore del faro, arancio sul blu, veniva
+  fangoso: ora è una luce bianca calda. Nessun file di `site/`.
+
+### Progettato — I-29: quattro direzioni nate con le skill taste e ui-ux-pro-max
+
+- **Perché.** La regia ha chiesto altre direzioni accanto alla release
+  candidate e alla Regata, che restano il metro di confronto e non sono state
+  toccate, usando due skill invece dell'istinto della sessione. Lo script di
+  taste ha estratto tre modi di comporre; ui-ux-pro-max ha proposto il
+  minimalismo esagerato e le tessere, e prima ancora una «claymorphism» viola
+  con caratteri di Google, scartata. L'autore ha scelto le tre proposte e ha
+  chiesto una sorpresa: quattro mock in `docs/prototipi/redesign-2026-10-claude/`,
+  con le stesse sei schermate e gli stessi testi degli altri stili.
+- **H, la frase e il faro**: bianco e nero, l'arancio della luce, il faro che
+  lampeggia dentro il titolo. **I, il giornale di bordo**: fogli da registro, i
+  numeri in colonna, una riga del giornale (Ora, Pb, Pv, V, Miglia) da toccare.
+  **J, le tessere**: la Home a tessere di misure diverse, il faro di notte in una
+  tessera scura. **K, la stampa a due colori**: blu e arancio fluorescente, il
+  secondo colore fuori registro di 3 px, un piccolo manifesto da toccare.
+- **Il costruttore** `sorgenti/stili/build.py` ha quattro lettere in più; si
+  chiama con `h i j k` e scrive solo le loro cartelle. H e J hanno una Home loro.
+- **Misurato** sulle 72 combinazioni con `cattura-stili.mjs`: sbordamento 0, un
+  solo principale, «Simula il quiz base» sopra la barra a 375×667 (in I al primo
+  giro era a 611 px, sotto: corretto), «Avanti» scoperto, la figura intera,
+  l'avviso a 12 px. Contrasti AA su ogni testo visibile fuori dai disegni, con
+  un controllo a parte non committato. Trovati guardando e corretti: la
+  finestrella del faro minuscola in H, la tessera sola e i buchi della griglia
+  in J, il riflesso nero del sole in K. Da verificare dall'autore: le voci del
+  giornale di bordo in I. Decisione 14 in fondo a I-29. Nessun file di `site/`,
+  `tests/`, della specifica o della coda toccato; nessuna suite rifatta.
+
+### Progettato — I-29: quattro impianti davvero diversi, nei colori della Regata
+
+- **Perché.** Guardate H, I, J e K, l'autore ha notato che cambiava il vestito
+  ma la disposizione restava quella della RC. Quattro impianti nuovi, scelti da
+  lui fra quattro proposte, tutti nei colori della Regata perché si veda solo la
+  disposizione; contenuti e testi restano quelli. **L, il percorso a boe**: la
+  Home è una rotta di tappe, gli argomenti sono zone di mare grandi quanto
+  pesano. **M, la carta e il pannello**: la carta ferma dietro, il contenuto in
+  un pannello. **N, una cosa per schermo**: schermate intere, carte da sfogliare,
+  risposte a tutta larghezza e la correzione come un foglio. **O, il banco a due
+  colonne**: a sinistra la cosa su cui lavori, a destra il resto.
+- **Misurato** sulle 72 combinazioni con `cattura-stili.mjs` e con il controllo
+  dei contrasti a parte: sbordamento 0, un principale, «Simula» sopra la barra a
+  375×667, «Avanti» scoperto, la figura intera, l'avviso a 12 px, contrasti AA.
+  Trovati guardando e corretti: in M «Avanti» coperto dal pannello e la scheda
+  del faro sopra la sigla; in L il vuoto sotto la prova; in N i puntini sopra il
+  testo e i numeri del riepilogo piccoli; in O l'avviso sopra «Inizia» e la
+  domanda con figura in una colonna sola. Per N le schermate della Home e del
+  riepilogo sono fotografate una per una, scorrendo: la foto «intera» del
+  misuratore allunga la finestra e con lei le schermate. Decisione 15 in fondo
+  a I-29. Nessun file di `site/`, `tests/`, della specifica o della coda.
+
+### Progettato — I-29: la rotta che si accende, e la Regata sulla carta
+
+- **Perché.** Guardati gli impianti, l'autore ha preso il percorso a boe, ma come
+  animazione della Home che spiega come funziona il sito, e la carta come
+  sfondo, senza il pannello, nella Regata. Due mock separati in
+  `docs/prototipi/redesign-2026-10-claude/`, nei colori della Regata; G e L non
+  toccate. **P, la rotta che si accende**: sotto la testa della Regata, dieci
+  tappe su una rotta che si riempie scorrendo, con la barca in punta e i
+  triangoli che si accendono; ogni tappa spiega una modalità. **Q, la Regata
+  sulla carta**: la carta ferma dietro la pagina, vista da due finestre, e il
+  faro e la boa da toccare sulla carta stessa.
+- **Misurato** sulle 36 combinazioni: sbordamento 0, un principale, «Simula»
+  sopra la barra a 375×667, «Avanti» scoperto, la figura intera, l'avviso a 12
+  px, contrasti AA. Corretti guardando: le tappe di P troppo distanti e centrate,
+  la carta di Q troppo ingrandita al telefono, la legenda del computer visibile
+  al telefono, «Avanti» più stretto, e — trovato dal controllo dei contrasti — la
+  domanda di Q al telefono con il fondo blu. Le frasi delle tappe di P sono
+  nuove, da verificare. Decisione 16 in fondo a I-29.
+
+### Progettato — I-29: la Home al computer, terra a sinistra e terra a destra
+
+- **Perché.** Guardata la Regata sulla carta, l'autore ha chiesto due Home per il
+  computer: la terra bianca come fondo dei testi in blu scuro, oppure la terra
+  spostata molto più a destra; in tutte e due il percorso dei triangoli di lato,
+  che si illumina scorrendo. Il telefono resta la Regata com'è. Due mock in
+  `docs/prototipi/redesign-2026-10-claude/`: **R, terra a sinistra** (la carta
+  specchiata, il mare con il faro e la boa a destra) e **S, terra a destra** (il
+  mare come fondo con un velo sotto il testo bianco, la terra nell'ultimo
+  quinto). Undici pannelli che si fermano uno alla volta, con le frasi di P; il
+  triangolo del pannello in vista si accende, i passati restano arancio.
+- **Misurato** a 1280×800: sbordamento 0, un principale, «Simula il quiz base»
+  con il fondo a 582 px, la sigla del faro letta, contrasti AA su 24 testi su
+  24; corretto in S il testo chiaro su bianco al telefono. Non provate altre
+  larghezze del computer, e il telefono non è disegnato. Decisione 17 in fondo a
+  I-29. Nessun file di `site/`, `tests/`, della specifica o della coda.
+
+### Progettato — I-29: la terra in fondo, bianca o beige, con i settori del faro
+
+- **Perché.** Guardata la S, l'autore ha chiesto la terra ancora più a destra, il
+  percorso più piccolo e fine e poi sulla terra, la rotta lontana dal titolo, i
+  settori rosso e verde al faro, e una prova con la terra beige. Due mock in
+  `docs/prototipi/redesign-2026-10-claude/`, nati dalla S, che resta com'è:
+  **T, terra in fondo** (bianca, nell'ultimo decimo dello schermo) e **U, terra
+  beige**. Il faro ha i settori verde, bianco e rosso con i loro limiti, e la
+  sigla «Lam.(2) BRV 10s»; la rotta passa a est della boa cardinale ed entra
+  nel settore bianco, tutta nella metà destra; il percorso è un filo con
+  triangoli piccoli, fermo sulla terra.
+- **Misurato** a 1280×800: sbordamento 0, un principale fino a 582 px, la sigla
+  letta dopo il tocco, contrasti AA su 24 testi su 24. Trovato guardando e
+  corretto: la sigla della boa coperta dalla rotta, poi spostata sotto la boa.
+  Non provate altre larghezze; il telefono non è disegnato. Decisione 18 in
+  fondo a I-29. Nessun file di `site/`, `tests/`, della specifica o della coda.
+
+### Progettato — il volto del sito nella pagina: la U al computer, la Regata per il resto
+
+- **Perché un progetto prima dei controlli.** L'autore ha scelto la U, «Terra
+  beige», come Home al computer, e la Regata (G) per il resto del sito, e ha
+  chiesto un contratto da cui scrivere i prompt. `docs/volto-progetto.md`, file
+  neutro, lo scrive con il metodo di `regole-disegno-progetto.md`: i token della
+  Regata confrontati con il `:root` di oggi, la carta e il percorso come
+  componenti, gli stati della Home che il mock non disegna, il contratto di T-15
+  e i cambi a `SCALA_CSS`, T-12 e T-13, diciotto rotture, i requisiti R-VOLTO
+  proposti, i due giri e diciotto decisioni per l'autore.
+- **Misurato, non dedotto**, in Chrome headless con `tests/browser.mjs`, la Home
+  `u-terra-beige/` a otto dimensioni, con il contrasto letto sui pixel dietro
+  ogni testo. A 1280×800, 1366×768, 1440×900 e 1920×1080 regge; a 900×700,
+  1024×768 e 1280×1024 la terra esce dallo schermo e il percorso finisce sul
+  mare (a 1280×1024 anche il faro); a 900, 1024 e 1200 px il testo passa sopra
+  le cifre di scandaglio, fino a 1,28:1. «Simula il quiz base» arriva al
+  ventesimo Tab. I controlli di oggi non vedrebbero niente di tutto questo: T-12
+  misura solo a 375 px, il contrasto si compone dagli antenati e direbbe 8,91:1
+  ovunque, e il banco gira a 756×469.
+- **Trovato:** il mock scrive «27 fanali e segnali», ma la banca dei Segnali ne
+  ha 53 (27 sono i soli fanali); e le luci che lampeggiano da sole vogliono un
+  comando per fermarle (WCAG 2.2.2). Script e numeri fuori dal repo, nella
+  cartella delle note delle sessioni. Una riga in fondo a I-29 rimanda al file.
+  Nessun file di `site/`, `tests/`, della specifica, della coda o dei mock.
+
+### Deciso — il volto: le prime 14 decisioni, come raccomandato
+
+- **L'autore ha preso il 25 ottobre le decisioni 1–14** di
+  `docs/volto-progetto.md`, presentate a gruppi: la scala dei mock (fino a 56
+  px, con i ruoli), il tetto di cinque corpi con la carta esclusa, l'interlinea
+  1,05 dei titoli grandi, il peso 800, lo spazio da 64, il percorso escluso dal
+  conto dei bersagli, D-14 riscritta, i colori della Regata, la U da 1.200×680,
+  le luci con «Ferma le luci», gli stati nel primo pannello, la tappa 10 «Con
+  l'account, le risposte restano», i triangoli da 44 px in arancio scuro, il
+  contrasto letto sui pixel. Servivano prima dei controlli, perché ognuna
+  cambia un numero del contratto. Nel progetto anche il prompt proposto per
+  A-controlli. Restano le decisioni 15–18, per il giro B.
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la

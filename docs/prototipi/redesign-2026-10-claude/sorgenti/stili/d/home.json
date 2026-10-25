@@ -1,0 +1,49 @@
+{
+  "titolo": "Quattro boe, una secca",
+  "intro": "Le boe cardinali dicono da che parte passare. Queste lampeggiano davvero così: tocca una boa per leggerla.",
+  "invito": "Tocca una delle quattro boe per leggerla.",
+  "bottoni": [
+    [
+      "n",
+      "50%",
+      "20.4%",
+      "La boa cardinale nord: leggila"
+    ],
+    [
+      "e",
+      "78.33%",
+      "48.3%",
+      "La boa cardinale est: leggila"
+    ],
+    [
+      "s",
+      "50%",
+      "83%",
+      "La boa cardinale sud: leggila"
+    ],
+    [
+      "o",
+      "21.67%",
+      "48.3%",
+      "La boa cardinale ovest: leggila"
+    ]
+  ],
+  "voci": {
+    "n": [
+      "Cardinale nord · Sc. continua",
+      "Coni con le punte in alto, nero sopra e giallo sotto. Le acque sicure sono a nord: si passa a nord della boa."
+    ],
+    "e": [
+      "Cardinale est · Sc.(3) 10s",
+      "Coni base contro base, nero giallo nero. Si passa a est della boa."
+    ],
+    "s": [
+      "Cardinale sud · Sc.(6) e un lampo lungo, 15s",
+      "Coni con le punte in basso, giallo sopra e nero sotto. Si passa a sud della boa."
+    ],
+    "o": [
+      "Cardinale ovest · Sc.(9) 15s",
+      "Coni vertice contro vertice, giallo nero giallo. Si passa a ovest della boa."
+    ]
+  }
+}

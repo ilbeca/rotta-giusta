@@ -4442,3 +4442,640 @@ porta le stesse regole sulla privacy.
 **Domande aperte (sessione).** Solo gli errori aperti, o anche i quesiti «da
 confermare»? Proposta: solo gli errori, per cominciare. Solo i quiz, come I-10,
 e non il carteggio. La vela entra se ha errori aperti, con i suoi gruppi a parte.
+
+---
+
+## Il volto del sito — 24 ottobre 2026
+
+### I-29 — Perché il sito è brutto, e tre direzioni per ridisegnarlo [autore e Claude]
+
+**Da dove nasce.** Dopo i giri 1 e 2 delle regole di disegno (I-27, P-92…P-95)
+l'autore dice: «il sito è davvero brutto, non riesco a spiegarmi perché». Le
+regole hanno fatto quello che promettevano — un solo pulsante pieno, «Avanti»
+sempre raggiungibile, una scala di corpi e di spazi, l'avviso detto una volta —
+e la pagina è più ordinata di prima. Non è diventata più bella. Questa scheda
+dice perché, propone tre direzioni con i mock di tutte e tre, e dopo il
+confronto ne raccomanda una. È la casella
+BRAINSTORM: niente in `site/`, niente è deciso.
+
+**Come ho guardato.** Il 24 ottobre, `main` a `3e64758` (v0.34.0 con il giro 2
+fuso), servito con `strumenti/serve.py`, senza account, in Chrome headless con
+il carattere vero. Home, Allenati (Quiz, Carteggio, Segnali), Esame, Progressi,
+la preparazione dell'allenamento breve, la domanda prima e dopo una risposta, il
+riepilogo e il pannello Accedi, a 375×812 e a 1280×800, pagine intere comprese.
+Le schermate che servono a seguire la diagnosi sono in
+`docs/prototipi/redesign-2026-10-claude/oggi/`; le ho guardate una per una,
+insieme a quelle di `docs/collaudo-p95/`. Accanto, poche misure dalla pagina.
+La lettura indipendente di ChatGPT sullo stesso compito non l'ho aperta.
+
+#### La diagnosi: che cosa si vede
+
+Per chi studia, in parole semplici: **il sito sembra un modulo da compilare,
+non un posto dove ci si prepara al mare.** Tutto è giusto e niente si ricorda.
+Nei dettagli, dal più pesante.
+
+1. **Non ha un volto.** Fuori dal marchio da 34 px, nessuna schermata dice
+   «mare», «carta nautica» o «esame». Al telefono non c'è **nessuna immagine**
+   in Home, Allenati, Carteggio ed Esame (misurato: zero `img` o `svg` più larghi
+   di 40 px nella vista); l'unica illustrazione, `paesaggio.svg`, si vede solo
+   sopra i 900 px. Il materiale che il sito ha in casa — le carte 5/D e 42/D, la
+   rosa dei venti, i fanali rossi e verdi, le 102 figure del decreto, i numeri
+   della banca — non è mai usato come immagine. I-27 l'aveva scritto: le regole
+   danno chiarezza, «non danno da sole un carattere riconoscibile».
+
+2. **Tutto è lo stesso pulsante.** In Allenati · Quiz al telefono ci sono 15
+   pulsanti, e **14 hanno lo stesso fondo azzurro pallido** (`#E6F3F7`) con il
+   bordo e il testo centrato: «Scegli un argomento», «Ripassa gli errori»,
+   «Simula la prova», gli otto argomenti, «Segnalibri», «Cerca». Nel pannello
+   Accedi sono dieci in colonna, così il modulo d'accesso sembra un menu. Un
+   elenco fatto di pulsanti uguali si legge come un modulo: niente dice che cosa
+   conta, che cosa porta lontano, che cosa è un numero.
+
+3. **Tre bianchi quasi uguali.** Il fondo della pagina (`#F3F6F6`, grigio
+   verdino), le schede (`#FFFFFF`) e i pulsanti secondari (`#E6F3F7`) hanno la
+   stessa luminosità a meno di un soffio: contrasto fra loro 1,04–1,13. L'occhio
+   non trova piani diversi, e il colore che resta — il navy dei pulsanti pieni e
+   dei titoli — è uno solo. L'effetto è «grigio da ospedale»: pulito, spento.
+
+4. **Riquadri dentro riquadri, e la stessa frase due volte.** In Allenati ·
+   Quiz ci sono 21 elementi con il bordo su tre lati o più. «Scegli un
+   argomento» è il titolo di una scheda bordata e il testo del pulsante dentro
+   la stessa scheda; così «Ripassa gli errori» e «Segnalibri». Nel Carteggio
+   «Prima di cominciare» è una scheda con l'ombra, seguita da quattro pulsanti
+   pallidi. La scheda è diventata il modo di dire «questa è una cosa», invece
+   che un'eccezione.
+
+5. **Una gerarchia piatta.** Il titolo più grande al telefono è 30 px contro un
+   testo di 16: meno del doppio. I titoli di sezione stanno tutti a 24, i numeri
+   (1.722 quesiti, 20 domande, 30 minuti) sono scritti nel testo alla stessa
+   altezza delle parole. Non c'è un momento in cui la pagina «alza la voce», e
+   quindi nemmeno uno in cui si riposa.
+
+6. **Il computer è un telefono allargato.** A 1280 px le schede di Allenati
+   sono larghe 1056 px con dentro una colonna di testo da 480: metà vuota a
+   destra, in ogni scheda. In Esame le schede delle prove dividono il testo in tre
+   colonne strette («Quiz / base / e / vela», una parola per riga). Nella domanda
+   il testo fluttua a sinistra in mezzo allo spazio, e la riga con l'esito
+   («Sbagliata · COLREG E SEGNALAMENTO MARITTIMO › …») finisce in fondo a
+   sinistra, staccata dalle risposte.
+
+7. **Le schermate che contano di più sono le più povere.** La domanda — dove chi
+   studia passa la maggior parte del tempo (una stima, non una misura) — ha in cima tre pastiglie («1/10», «nuovo»,
+   «0:01») e una striscia bianca «Quiz / Quiz base» che non dice niente; non c'è
+   un segno di avanzamento oltre il numero. Il riepilogo si apre con «Attività
+   interrotta», un titolo che suona come un errore, e mostra i risultati in due
+   caselle che sembrano campi di un modulo («Risposte corrette: 1»).
+
+8. **Molto testo grigio.** Al telefono la Home fa 206 parole, Esame 208, e gran
+   parte è testo secondario in grigio: spiegazioni sul funzionamento («Ogni
+   domanda dice perché è stata proposta», «Puoi cambiare attività quando vuoi»,
+   «Le domande non affrontate non sono conteggiate come errori»). Ognuna è vera;
+   insieme fanno una pagina che spiega sé stessa invece di mostrarsi. È il giro 3,
+   le parole, e qui si vede quanto pesa sul disegno.
+
+**Che cosa va bene, e si tiene.** Le frasi corte e leggibili; la Home che parte
+dalla simulazione; «Avanti» sempre raggiungibile; i bersagli di 44 px; un solo
+pulsante pieno per schermata; il marchio, che è bello e non è usato; Manrope,
+che regge pesi pesanti e numeri grandi.
+
+#### Le regole: quali aiutano, quali hanno spento la pagina
+
+Le regole D-01…D-35 non sono sbagliate. Sono quasi tutte **vincoli negativi**
+(«al più», «non più di», «niente sopra») misurati elemento per elemento; nessuna
+chiede qualcosa di positivo alla composizione — un punto focale, un'immagine,
+un contrasto di scala. Una pagina può rispettarle tutte ed essere vuota di
+carattere, ed è quello che è successo.
+
+- **Aiutano, e restano:** D-01 (prima la cosa importante), D-04…D-06 (frasi e
+  leggibilità), D-12 (un solo pulsante pieno), D-15 (titoli in ordine), D-17
+  (16 px), D-22 (spazi da una scala), D-27…D-29 (il telefono), D-30 (avvisi
+  vicini all'azione), D-31…D-35.
+- **Hanno prodotto una pagina corretta ma senza vita, nel modo in cui sono
+  state applicate:**
+  - **D-12 + D-14 insieme.** «Un solo pulsante pieno» e «niente pesa più
+    dell'azione principale» lasciano un solo modo di mettere in evidenza: il
+    pulsante navy. Tutto il resto deve restare pallido, quindi tutto è pallido.
+    D-14 vieta, letta alla lettera, una fascia scura, un'immagine grande, una
+    zona di colore: proprio gli strumenti con cui una pagina prende un volto.
+    *Proposta:* tenere D-12, e riscrivere D-14 come «l'azione principale è la
+    cosa **interattiva** più evidente», lasciando libere immagini e superfici.
+  - **D-24 (pochi bordi) applicata a metà.** I bordi sono rimasti sulle schede
+    e sono comparsi sui pulsanti secondari, che per non essere «pieni» sono
+    diventati azzurri con il bordo. *Proposta:* le azioni secondarie diventano
+    **righe** (un elenco con la freccia) o **link sottolineati**, non pulsanti.
+  - **D-16, la scala 12–30.** Fine in basso (12, 14, 16, 19) e corta in
+    alto: 30 px al telefono, 40 solo sulla Home al computer; il titolo è meno del
+    doppio del testo. *Proposta:* la stessa disciplina con due gradini in più in
+    alto, e i numeri come elementi di disegno. *Corretto il 25 ottobre, dopo il
+    parere di ChatGPT:* qui c'era scritto «D-16 + D-23», ma D-23 parla degli
+    spazi, non dei corpi; e il rapporto 2,5–3,5 fra titolo e testo, citato come
+    regola delle pagine editoriali, non è una soglia da adottare: una domanda di
+    sei righe non deve diventare un manifesto.
+  - **D-25, i ruoli dei colori.** L'accento è delle azioni, il verde e il rosso
+    del giusto e dello sbagliato: non resta nessun colore per l'identità.
+    *Proposta:* un colore in più con un ruolo suo, il **segno del sito** — mai
+    un'azione, mai un esito.
+  - **D-19, la colonna da 480 px.** Giusta per il testo, sbagliata come larghezza
+    dei componenti: le schede si allargano e il testo no. *Proposta:* la colonna
+    vale per i paragrafi; al computer la pagina si dispone su due colonne vere.
+
+#### Tre direzioni, con i mock
+
+Le tre direzioni tengono la struttura (Home · Allenati · Esame · Progressi), i
+testi di oggi, Manrope come unico carattere, nessuna risorsa da altri host,
+WCAG AA, i difetti dichiarati e nessuna gamification che punisce. Cambia il
+volto. Per confrontarle davvero, **ognuna ha gli stessi quattro mock con gli
+stessi testi** — Home, Allenati · Quiz, la domanda dopo una risposta sbagliata
+(il quesito 1.7.6-19) e il riepilogo di un allenamento breve fermato dopo 2
+domande su 10 —, in tre sottocartelle di `docs/prototipi/redesign-2026-10-claude/`:
+`a-carta-nautica/`, `b-plancia-di-notte/`, `c-quaderno-a-colori/`. La tavola
+`direzioni.html` le mette una accanto all'altra; il README della cartella cita
+le schermate una per una. In tutte e tre cambia, rispetto a oggi, la stessa
+ossatura: le azioni secondarie diventano righe e link invece di pulsanti
+pallidi, i numeri dell'esame si scrivono grandi, la domanda ha un segno di
+avanzamento e l'esito sopra «Avanti», il riepilogo dice il fatto invece di
+«Attività interrotta». Cambia il volto che la veste.
+
+**A — La carta nautica.** *Riferimenti:* le carte dell'Istituto Idrografico e
+dell'Ammiragliato (la 5/D che si usa all'esame), i portolani, le guide Imray; per
+l'ordine, il sito di GOV.UK. Il fondo è caldo come la carta (`#FBF8F1`); la
+terra color cuoio, l'acqua bassa azzurra; il navy del marchio per il testo e
+l'unico pulsante pieno; il **magenta** delle carte — i settori dei fari, le
+rotte raccomandate — come segno del sito. Tre firme ripetute: il **reticolo** di
+meridiani e paralleli con la cornice doppia, sui riquadri che contano; il
+**bordo a scala** bianco e nero delle carte; **la rotta**, una linea tratteggiata
+magenta con le tappe, che è anche l'avanzamento della domanda e la traccia del
+riepilogo. I numeri dell'esame diventano grandi come gli scandagli di una carta.
+*Nella versione ridotta del 25 ottobre* le firme si stringono: il reticolo solo
+nella carta disegnata, il bordo a scala una volta, il magenta fuori dai comandi
+e dall'avanzamento, nessuna traccia nel riepilogo.
+*Per chi studia:* riconosce il materiale che userà al tavolo; il carteggio,
+che oggi è una scheda fra le altre, diventa il linguaggio del sito; i numeri che
+contano si leggono da lontano. *Rischio:* una carta decorata e affollata. Si
+tiene a bada con tre firme e basta, e con il reticolo solo dove serve.
+*Nei mock (versione ridotta del 25 ottobre, sotto):* in Home una striscia di
+carta alta 96 px sotto il titolo (il limite della decisione D), con il bordo a
+scala, poi il riquadro della prova con **20 · 30′ · 4** e «Simula il quiz
+base»; al computer due colonne vere, con la carta disegnata. Il reticolo sta solo
+nell'illustrazione. In Allenati il peso d'esame di ogni argomento è scritto
+(«4 su 20»). Nella domanda dieci tappe, la prima rossa e cerchiata finché non si
+preme «Avanti».
+
+**B — La plancia di notte.** *Riferimenti:* i plotter cartografici (Garmin,
+B&G), l'ECDIS, gli strumenti di bordo; Apple Meteo. Fondo navy scurissimo
+(`#07131F`), testo chiaro; l'azione in **ambra**, il colore che le plance usano
+di notte per non abbagliare — e così non si confonde con il verde del giusto —;
+il **ciano** dei tracciati come segno del sito; i riquadri come schermi di
+bordo, con i cerchi del radar in un angolo. *Per chi studia:* concentrazione,
+un'aria «da bordo», ed è il volto naturale dei Segnali, che sono già notturni.
+*Rischio:* testi lunghi e note normative faticose da leggere al sole; e cambia
+una decisione presa (la direzione chiara, confermata il 9 settembre; il tema
+scuro è un'opzione futura, Q-TEMA). *Nei mock:* il faro e una nave con i fanali
+rosso, verde e bianco nella striscia della Home; l'avanzamento della domanda è
+una fila di dieci luci, la prima rossa e quella corrente ciano.
+
+**C — Il quaderno a colori.** *Riferimenti:* Duolingo, Brilliant, Headspace.
+Bianco pieno, il blu saturo per l'azione e per il riquadro che conta, con un
+sole giallo che sporge; un arancio come segno del sito; un colore per ogni
+riga della Home (azzurro i quiz, sabbia il carteggio, notte i segnali, rosa le
+prove); riquadri molto arrotondati, pulsanti a pillola con lo spessore sotto,
+un'illustrazione allegra. *Per chi studia:* invogliante, soprattutto per i
+ventenni che sono la maggior parte della classe; ogni sezione si riconosce dal
+colore. *Rischio:* il tono di un gioco, lontano da quello che il sito vuole avere — i
+colori allegri non sono di per sé gamification, che sta nelle ricompense e nelle
+promesse (corretto il 25 ottobre) —; ai cinquantenni che fanno il carteggio sul
+serio può sembrare poco serio; e il colore per sezione si
+scontra con i ruoli di D-25. *Nei mock:* l'avanzamento è una barra a dieci
+segmenti; nel riepilogo il riquadro torna chiaro, perché il verde e il rosso
+non si leggono sul blu.
+
+**Controllato su tutti e diciotto i mock** — sei schermate per direzione, dal 25
+ottobre — a 375×812, 375×667 e 1280×800: un solo `data-ruolo="principale"`,
+nessuno sbordamento, Manrope caricato, il pulsante principale nel primo schermo
+anche a 375×667 — «Simula il quiz base» finisce fra 551 e 552 px, «Avanti» resta
+sopra il bordo. Nella domanda con figura (sotto) la figura sta intera fra 323 e
+534 px a 375×812, con l'inizio della domanda a 124 e il centro della prima
+risposta a 678; nella preparazione l'avviso finisce 12 px sopra «Inizia», a
+375×667, senza niente da toccare in mezzo. Contrasti calcolati sui
+colori dei temi: A, testo secondario da 4,89 a 5,88:1, magenta 5,4–6,2:1; B,
+testo secondario 7,0–8,0:1, ambra con il testo scuro 10,7:1, rosso e verde sui
+loro fondi 5,8 e 8,4:1; C, testo secondario 4,8–5,8:1, bianco sul blu 5,8:1,
+arancio 4,8–5,2:1. **Non controllato:** i mock non passano per T-12 e T-13, che
+misurano la pagina vera; la frase d'introduzione della Home è accorciata; nessuna
+persona li ha visti; Safari; il gesto vero.
+
+#### La raccomandazione, dopo il confronto
+
+**A, la carta nautica.** È l'unica delle tre che nasce dalla materia dell'esame
+invece che da un'altra app: il pubblico è misto per età, e la carta parla a
+tutti e due i gruppi, perché è quello che studiano. Tiene il tema chiaro già
+deciso, si regge con un carattere solo e con SVG fatti in casa, e dà a tre cose
+del sito una forma che oggi non hanno: l'esame (i tre numeri grandi),
+l'avanzamento (la rotta) e il carteggio (il reticolo). B funziona meglio come
+**tema scuro della A**, più avanti, e come volto dei Segnali; C ha il tono più
+allegro, e che inviti di più i ventenni resta un'ipotesi.
+
+#### Il parere di ChatGPT, e la A ridotta — 25 ottobre 2026
+
+L'autore ha chiesto il giudizio di ChatGPT sulla A. Il parere è
+`docs/prototipi/redesign-2026-10-chatgpt/parere-su-A.md`, sul ramo `ui/main`
+(`f40eadc`). **ChatGPT sceglie la A**, al posto della sua «Linea di rotta», con
+meno segni durante lo studio: «la carta deve accogliere; durante una domanda
+deve lasciarti leggere». Le sue correzioni giuste sono entrate nei mock, in
+tutte e tre le direzioni perché il confronto resti alla pari:
+
+- **Il colore del segno non tocca i comandi.** Il magenta stava su link, frecce,
+  voce attiva della barra e domanda corrente: contraddiceva «mai un'azione». Ora
+  link, frecce, barra e domanda corrente sono nel colore dei comandi (il navy in
+  A); il magenta resta nell'illustrazione e nei richiami da leggere.
+- **Il reticolo solo nell'illustrazione**, mai dietro testo da leggere; la
+  doppia cornice dei riquadri diventa un bordo semplice; il bordo a scala una
+  volta, sulla carta disegnata.
+- **La domanda corrente è quella che leggi.** L'anello resta sulla prima tappa
+  finché non si preme «Avanti». Con 25 domande o più non si moltiplicano i
+  pallini: una traccia compatta e «5 di 25» (nuova schermata `runner-figura`).
+  In una simulazione nessun rosso o verde prima della consegna: non c'è un mock,
+  è una regola per il giro di interfaccia.
+- **Il riepilogo senza zigzag:** le altezze non volevano dire niente e
+  sembravano un andamento. Restano i tre numeri con le parole; via «fermato a
+  metà», inesatto per 2 domande su 10.
+- **Il peso all'esame in parole** («4 su 20») invece di quattro pallini, che
+  sembravano un voto.
+- **Un'azione resta un pulsante** anche con l'aspetto di un link («Crea un
+  account», «Continua senza account»); il link è per andare in un'altra pagina.
+- **Gli stati difficili, almeno due:** `preparazione.html`, l'allenamento breve
+  con l'avviso «senza account» accanto a «Inizia», e `runner-figura.html`, il
+  quesito 1.5.3-103 (base-829, il più lungo con figura) prima di rispondere, con
+  la figura 79 del decreto. Misure qui sopra.
+- **L'inventario della scala, dichiarato per intero** — i primi mock avevano
+  anche 22 e 28 px e un peso 500 —: corpi 12, 14, 16, 20, 24, 32, 44, 56; pesi
+  400, 600, 700, e 800 per i titoli grandi e i numeri; interlinea 1,45 per il
+  testo da leggere, domanda e risposte comprese; i titoli fra 1,04 e 1,1, da
+  fissare. Rispetto al giro 2 cambiano 19 → 20, 30 → 32, e arrivano 44 e 56: è la
+  decisione 4.
+
+**Dove ChatGPT ha corretto la diagnosi, e ha ragione:** le regole non hanno
+causato da sole la bruttezza, l'uso ripetitivo dei componenti è una scelta
+nostra; D-14 e D-24 valgono per Home, preparazioni e riepiloghi, non per ogni
+elemento; un'immagine è una scelta pertinente qui, non un obbligo da trasformare
+in regola; alcune frasi di spiegazione («le domande non affrontate non contano
+come errori») risolvono un dubbio nel punto in cui serve, e restano.
+
+**Che cosa resta da provare,** per lui come per me: la domanda dopo lo
+scorrimento a 375×667 (la terza risposta parte sotto il piede ed è
+raggiungibile scorrendo), le revisioni, l'Esame, il salvataggio fallito, gli
+stati con l'account; e la prova con persone. Le misure dei mock non sono T-10…T-13
+superati.
+
+**Dove resta una scelta, non un disaccordo:** link in navy (più chiari come «si
+tocca») o in magenta (più riconoscibili). ChatGPT preferisce il navy, ed è
+quello dei mock; è la decisione 11.
+
+**Che cosa costerebbe.** Per qualunque direzione: un giro di interfaccia grande
+quanto P-81 su `index.html`, e un giro di regole su `main`: D-14, D-16, D-24 e
+D-25 riscritte come proposto sopra, la scala dei corpi con due gradini in più
+(l'inventario dei mock: 12, 14, 16, 20, 24, 32, 44, 56), il colore del segno nei ruoli di T-13, e la
+tabella dei valori fuori scala per il bordo a scala e il reticolo. Le regole non
+si buttano: si aggiunge che cosa una pagina **deve** avere, non solo che cosa
+non deve.
+
+#### La carta che vive — 25 ottobre 2026
+
+**È la release candidate** (l'autore, 25 ottobre): la versione di riferimento,
+che non si tocca; gli altri stili si provano accanto.
+
+All'autore piace la A ridotta e ha chiesto di non cambiarla: una **copia**,
+`a-carta-viva/`, è stata spinta oltre con impeccable (modalità «overdrive»), in
+due momenti scelti da lui. **La carta che vive:** nella Home il faro lampeggia
+con il suo ritmo vero, Lam.(2) 10s, e una boa cardinale est con Sc.(3) 10s;
+toccando una luce compare che cosa vuol dire la sigla — l'illustrazione insegna
+quello che c'è all'esame. **La rotta come filo:** gli avvii si trasformano nella
+testata della domanda e la testata nel riepilogo (View Transitions fra
+documenti, provate in Chrome a 375 e 1280 px; su Firefox si passa senza
+animazione); la domanda si gioca, con l'anello che passa alla tappa dopo solo
+con «Avanti». La rosa dei venti in rotazione, proposta, è stata scartata: il
+nord di una carta non si muove. Chi chiede meno movimento vede tutto fermo.
+Accanto, i ritocchi della critica: nessun occhiello sopra i titoli, la nota
+senza striscia laterale, le superfici del browser disegnate. **Da verificare
+dall'autore:** le sigle all'italiana e le due frasi che le spiegano, perché
+sono contenuto didattico. Le schermate e le misure sono nel README della
+cartella. Decisione 12, sotto.
+
+#### Decisioni per l'autore
+
+1. **La direzione.** A, B o C — o A con il tema scuro di B più avanti.
+   *Raccomandazione:* A.
+2. **Un colore come segno del sito** — il magenta in A, il ciano in B,
+   l'arancio in C —, fuori dalle azioni e dagli esiti: un colore in più nei
+   ruoli di D-25. *Raccomandazione:* sì.
+3. **D-14 riscritta** perché un'immagine o una superficie possano pesare più del
+   pulsante, purché nessun'altra cosa **interattiva** lo faccia.
+   *Raccomandazione:* sì; senza, nessuna direzione si può fare.
+4. **La scala dei corpi**: 12, 14, 16, 20, 24, 32, 44, 56, con i pesi fino a
+   800 per titoli e numeri. Cambia una decisione del giro 2 (C).
+   *Raccomandazione:* sì, approvata guardando i mock come la decisione C.
+5. **Le azioni secondarie come righe e link**, non pulsanti pallidi: tocca ogni
+   schermata e il pannello Accedi. *Raccomandazione:* sì.
+6. **L'immagine sul telefono** (decisione D, passo 6 di I-27): la striscia da
+   96 px sotto il titolo della Home, che ogni direzione disegna a modo suo.
+   *Raccomandazione:* sì.
+7. **Il titolo del riepilogo** e le altre parole toccate dai mock («Attività
+   interrotta» → «Hai risposto a N domande su M»): sono del giro 3, che aspettava
+   una direzione. *Raccomandazione:* far ripartire il giro 3 dentro la direzione
+   scelta.
+8. **Le icone nella barra in basso**, accanto alle parole. *Raccomandazione:* sì,
+   le parole restano (R-NAV-03).
+9. **Chi lo fa e in che ordine.** *Raccomandazione:* prima le regole e i
+   controlli su `main` (come per i giri 1 e 2), poi ChatGPT su `ui/*` schermata
+   per schermata, cominciando dalla domanda e dal riepilogo, dove chi studia
+   passa più tempo; la Home per ultima.
+10. **Il confronto con la lettura di ChatGPT**: fatto il 25 ottobre, sopra.
+    ChatGPT sceglie la A ridotta.
+11. **I link: navy o magenta?** Navy è più chiaro come «si può toccare», magenta
+    più riconoscibile; la regola dice quale e basta. *Raccomandazione:* navy,
+    come nei mock e nel parere di ChatGPT.
+12. **La carta che vive: tenerla?** Le luci che lampeggiano con la sigla vera e
+    la rotta che unisce le schermate costano poco (SVG, CSS e un po' di
+    JavaScript, nessuna libreria) e funzionano anche ferme. *Raccomandazione:*
+    sì per la carta della Home, che insegna; la rotta come filo dopo, quando la
+    domanda e il riepilogo veri sono rifatti, perché le transizioni toccano la
+    navigazione del documento solo (§6 della specifica).
+
+#### Gli altri stili, accanto alla release candidate — 25 ottobre 2026
+
+L'autore ha chiesto di provare altri «stili» accanto a «La carta che vive», che
+resta la release candidate e non è stata toccata. Per stile qui si intende il
+vestito: colori, disegni, forma dei riquadri e dei numeri, tono. Contenuto,
+schermate, testi e funzioni restano quelli della RC. La sessione ha proposto
+quattro stili, e l'autore ha chiesto un mock per ognuno. Sono in
+`docs/prototipi/redesign-2026-10-claude/`, accanto alla RC: `d-segnalamento/`,
+`e-bandiere/`, `f-manuale-a-schede/`, `g-regata/`. Ognuno ha le stesse sei
+schermate con gli stessi testi. Le schermate, una per una, e le misure sono nel
+README della cartella.
+
+**Come sono nati.** Con il metodo di impeccable 4.7.1: sette candidati presi
+dal mondo di chi studia, non dagli strumenti di bordo (la B, la plancia,
+mostrava che uno strumento diventa un costume). In ordine di risonanza: le
+bandiere, la regata, il manuale della scuola, il segnalamento, il manifesto da
+cantiere, il giornale di bordo, il bollettino del mare. Il tiro di dadi di
+impeccable ha assegnato il quarto, **il segnalamento**. Fra i suoi sfidanti uno ha retto,
+l'indice a schede di un manuale, ed è diventato F. Il tiro vuole un
+`PRODUCT.md`: la sessione l'ha scritto dalla specifica e dalla filosofia,
+senza chiederlo all'autore, e non l'ha committato. Gli altri sfidanti sono
+stati scartati: la copertina con il codice a colori, la cassetta scritta a
+mano, il sito giapponese fitto, la notazione della danza e il campionario di un
+carattere. Due discipline sono state prese da loro senza i loro vestiti: dalla
+notazione, «la lunghezza è la misura», che è la linguetta di F; dal
+campionario, la gerarchia fatta con un carattere solo e i suoi pesi.
+
+Come la RC, ognuno ha **un oggetto che insegna**, da toccare nella Home:
+
+| | Lo stile | Che cosa cambia per chi studia | L'oggetto che insegna | Il rischio |
+|---|---|---|---|---|
+| **RC** | La carta che vive: fondo color carta, la carta nautica, il navy | Riconosce il materiale del carteggio; il sito parla la lingua della prova eliminatoria | Il faro e la boa che lampeggiano con le loro sigle | Il crema e la carta sono il primo istinto di chi disegna con un modello; regge perché la carta è proprio la materia d'esame |
+| **D** | Il segnalamento: bianco, nero pieno, il giallo delle cardinali solo nelle fasce e nel disegno | Il più deciso e il più leggibile al sole; il segnale diventa il modo di orientarsi, e i numeri dell'esame hanno sotto una banda gialla, come una cifra dipinta | Una secca con le quattro boe cardinali, ognuna con i suoi coni e la sua luce, che dicono da che parte passare (32 quesiti della banca parlano di AISM-IALA) | Giallo e nero ricordano «cantiere, pericolo»: tenuti a fasce sottili, mai a campiture. È il più vicino a un'app generica, se le boe si tolgono |
+| **E** | Le bandiere: bianco, blu bandiera, angoli vivi, il giallo come segno; il rosso solo dentro le bandiere | Il più giovane e sportivo senza diventare un gioco; la Home ha un colore pieno da bordo a bordo | Cinque bandiere sulla drizza, che si alzano all'apertura: Alfa, Charlie, November, Oscar e quella del subacqueo. La Alfa e la bandiera del subacqueo sono nella banca | Le bandiere non sono il cuore dell'esame; il rosso delle bandiere vive accanto al rosso dello sbagliato |
+| **F** | Il manuale a schede: pagina bianca, inchiostro quasi nero, otto colori di capitolo usati solo come etichette | Il più utile per orientarsi: il colore dice in che tema sei, anche nella domanda («Navigazione», «Colreg»); la linguetta lunga quanto pesa il tema rende visibile la composizione delle 20 domande | Il sommario di un manuale aperto: toccando un capitolo, quante domande porta e fra quanti quesiti | Il più scolastico e il meno «mare»; otto colori in più nei ruoli di D-25; al telefono le scritte dentro il disegno sono minuscole |
+| **G** | La regata: bianco come una vela, il blu del mare aperto, l'arancio delle boe di regata | Aria aperta ed energia; il mare a tutta larghezza in testa alla Home; le tappe della domanda sono boe da girare | Le quattro andature rispetto al vento (bolina, traverso, lasco, poppa), materia del quiz vela | Il blu saturo lo avvicina alla C; parla soprattutto a chi fa la vela, mentre la prova di tutti è il base |
+
+**Che cosa hanno in comune, e regge:** la domanda e il riepilogo restano calmi
+in tutti e quattro, come chiedeva ChatGPT: cambiano soltanto la forma delle
+tappe (quadrati in D, bandierine in E, la linguetta del capitolo in F, boe
+triangolari in G) e il colore del pulsante. Lo stile si vede nella Home, in
+Allenati e nei riquadri che contano. Il colore del segno resta fuori dai
+comandi e dagli esiti in tutti e quattro.
+
+**Misurato**, sulle 72 combinazioni (quattro stili, sei schermate, tre
+misure): nessuno sbordamento; un solo pulsante principale; il principale nel
+primo schermo anche a 375×667; «Avanti» raggiungibile e scoperto; la figura
+intera prima di rispondere; l'avviso a 12 px da «Inizia»; contrasti AA. Il primo
+giro aveva «Simula il quiz base» sotto la barra a 375×667 in tutti e quattro:
+le strisce disegnate e i numeri al telefono sono stati ridotti. **Non
+controllato:** nessuna persona li ha visti, Safari e il gesto vero, le
+animazioni guardate solo ferme.
+
+**Da verificare dall'autore**, perché è contenuto didattico: le frasi delle
+quattro cardinali e i loro ritmi (D), i significati delle bandiere (E), gli
+angoli e le frasi delle andature (G).
+
+**La lettura della sessione, non una raccomandazione che sposta la RC.** Nessuno
+dei quattro batte la carta su quello per cui la carta è stata scelta: nasce
+dalla prova eliminatoria. Due però portano qualcosa che la RC non ha. **F**
+rende visibile dove sei e quanto pesa un tema: è un'idea di struttura più che
+di vestito, e potrebbe entrare nella RC (la linguetta del capitolo nella
+domanda, la barra delle 20 domande) senza cambiarle il volto. **D** è il più
+forte come immagine, e le sue quattro boe sarebbero un buon secondo oggetto da
+toccare, accanto al faro e alla boa della RC. E è il più giovane, G il più
+arioso; tutti e due si tengono meglio come volto di una parte del sito (i
+Segnali per E, la vela per G) che di tutto.
+
+13. **Gli altri stili.** Tenere la RC, sostituirla con uno dei quattro, o
+    prendere da loro dei pezzi? *Raccomandazione:* tenere la RC; portarci da F
+    la linguetta del capitolo nella domanda e la barra delle 20 domande, e da D
+    le quattro cardinali come secondo disegno da toccare. Ma solo dopo averli
+    guardati: sono mock, e la decisione è dell'autore.
+
+**Aggiornato il 25 ottobre: la G con l'animazione della RC.** L'autore ha
+guardato i quattro mock: gli piacciono i colori della Regata, ma l'animazione
+della Home della RC più delle andature. La Home della G ha ora la carta che
+vive della RC — il faro che lampeggia Lam.(2) 10s, la boa cardinale est con
+Sc.(3) 10s, la rotta che si disegna, le due luci da toccare con le stesse frasi
+— nei colori della G: il mare blu, la terra bianca, la rotta arancio. Le
+andature escono; con loro esce dalla G il testo didattico da verificare, e
+restano da verificare le sigle e le frasi della RC, le stesse. Misure di nuovo
+sulle 18 combinazioni: sbordamento 0, un principale, «Simula il quiz base»
+a 594 px a 375×667, «Avanti» e la figura come prima. La RC non è stata toccata.
+
+**Candidata a nuova release candidate (25 ottobre).** L'autore, guardata la G
+aggiornata: «mi piace, potrebbe essere la nuova release candidate». Non è
+ancora deciso: «La carta che vive» resta la RC finché l'autore non dice
+altrimenti. La G aggiornata sta in `g-regata/`, commit `1b273ab`, ramo
+`idee/regata-rc`. Altri design si provano in una sessione a parte, con le
+skill taste e ui-ux-pro-max, in cartelle nuove accanto a queste.
+
+**Altre quattro direzioni, con le skill taste e ui-ux-pro-max (25 ottobre).**
+Una sessione a parte, sul ramo `claude/design-taste-uiux-dba7dd`, partito da
+`idee/regata-rc`. La RC e la G non sono state toccate. Le proposte questa volta
+vengono da due skill e non dall'istinto della sessione: lo script di **taste**
+ha estratto tre modi di comporre per un sito di studio («la frase è la
+pagina», «solo tipografia», «la pagina è l'oggetto del suo mondo»), e
+**ui-ux-pro-max** ha proposto il minimalismo esagerato, la griglia editoriale e
+le tessere. Il suo primo suggerimento, la «claymorphism» viola con caratteri di
+Google, è stato scartato: il viola è il colore di default dei modelli, e qui si
+usa solo Manrope dal sito. L'autore ha scelto le tre proposte e ha chiesto una
+sorpresa. I mock sono in `docs/prototipi/redesign-2026-10-claude/`, con le
+stesse sei schermate e gli stessi testi; le schermate una per una e le misure
+sono nel README della cartella.
+
+| | La direzione | Che cosa cambia per chi studia | L'oggetto che insegna | Il rischio |
+|---|---|---|---|---|
+| **H** | La frase e il faro: bianco, nero pieno, l'arancio della luce; angoli vivi | Tutto più grande e più leggibile, niente decorazioni; la domanda a 22 px al telefono; il meno «sito di quiz» dei quattro | Il faro che lampeggia **dentro il titolo**, al posto di una parola; si tocca per leggerne la sigla | Il più freddo, poco mare; la finestrella è un bersaglio piccolo (54×28 px al telefono) |
+| **I** | Il giornale di bordo: fogli verde pallido da registro, inchiostro blu, il margine rosso | Lo storico ha già la forma di un registro: i numeri stanno in colonna sotto la loro intestazione, il riepilogo ha il timbro del giorno, le tappe sono tacche contate a mano | Una riga del giornale di bordo con le colonne Ora, Pb, Pv, V, Miglia da toccare: le sigle del carteggio | Vicino alla RC (la carta) e alla F (il libro); le voci di Pb e Pv sono contenuto didattico da verificare |
+| **J** | Le tessere: fondo grigio-azzurro, tessere bianche, una tessera scura; il verde petrolio per l'azione | Tutto a colpo d'occhio al computer; in Allenati gli argomenti sono tessere e quelli che valgono 4 domande sono larghi il doppio; la domanda ha una barra a dieci tratti | Il faro e la boa della RC, di notte, in una tessera scura | Il più «app» e il meno legato alla materia; la griglia si regge sull'ordine delle tessere, che a ogni contenuto nuovo va ripensato |
+| **K** | La stampa a due colori: blu e arancio fluorescente, il secondo colore fuori registro di 3 px | Il più allegro e il più riconoscibile, senza diventare un gioco: sembra un manifesto di regata stampato a mano | Un piccolo manifesto: il sole, il mare, un faro a strisce che lampeggia, la boa cardinale est nei suoi colori veri | Il registro sfalsato sotto i titoli può sembrare un difetto di stampa a chi non lo riconosce; l'arancio vicino al rosso degli errori |
+
+**Misurato** sulle 72 combinazioni: nessuno sbordamento, un solo principale,
+«Simula il quiz base» sopra la barra a 375×667 (da 527 a 593 px; in I al primo
+giro era a 611, sotto la barra), «Avanti» raggiungibile e scoperto, la figura
+intera prima di rispondere, l'avviso a 12 px da «Inizia». Un controllo dei
+contrasti sui colori calcolati di ogni testo visibile non trova niente sotto
+AA. **Non controllato:** nessuna persona, Safari, il gesto vero, il testo dentro
+i disegni.
+
+**La lettura della sessione, non una raccomandazione.** Nessuna delle quattro
+sposta la RC o la G per quello che conta di più: nascere dalla materia
+dell'esame. Due portano qualcosa che si potrebbe prendere senza cambiare
+volto: da **I**, i numeri in colonna con l'intestazione sopra e il riepilogo come
+una riga di registro, che rendono lo storico leggibile quando ci saranno gli
+account; da **H**, la domanda più grande e il nero pieno sui bordi delle
+risposte, che si leggono meglio al sole. **K** è la più personale: se piace,
+il registro sfalsato e il retino sono un vestito che si può mettere anche alla
+carta della RC.
+
+14. **Le direzioni H, I, J, K.** Tenerle come riserva, sceglierne una, o
+    prendere da loro dei pezzi? *Raccomandazione:* guardarle accanto alla RC e
+    alla G; se una sola cosa entra, i numeri in colonna di I nel riepilogo e in
+    Progressi.
+
+**Quattro impianti davvero diversi (25 ottobre).** Guardate H, I, J e K,
+l'autore: «ha cambiato lo stile ma sostanzialmente è rimasto tutto il layout
+uguale, si può provare qualcosa di veramente diverso?». Aveva ragione: cambiava
+il vestito, non la disposizione. Quattro impianti nuovi, scelti dall'autore fra
+quattro proposte, tutti **nei colori della Regata** perché si veda solo la
+disposizione; contenuti e testi sono quelli di sempre. Le schermate e le misure
+sono nel README della cartella.
+
+| | L'impianto | Che cosa cambia per chi studia | Il rischio |
+|---|---|---|---|
+| **L** | Il percorso a boe: la Home è una rotta verticale di tappe; gli argomenti sono zone di mare grandi quanto pesano; le dieci domande sono dieci boe | Sa da dove parte e che cosa viene dopo; vede a colpo d'occhio che Navigazione e Manovra valgono quanto i quattro argomenti piccoli messi insieme | La rotta suggerisce un ordine che il sito non impone (§6.1: niente sblocchi); con l'account dovrebbe dire «sei qui» davvero, cioè il Percorso della decisione 16 |
+| **M** | La carta e il pannello: la carta ferma dietro, i comandi che galleggiano, il contenuto in un pannello dal basso o di lato | Si entra nella materia prima che nei menu; il carteggio è di casa; al computer la domanda ha la carta accanto | Al telefono la carta è una striscia sopra il pannello; un pannello da trascinare davvero vorrebbe un gesto che oggi non c'è |
+| **N** | Una cosa per schermo: schermate intere, carte da sfogliare, risposte a tutta larghezza, la correzione come un foglio | Niente da cercare e niente distrazioni; nella domanda tutto sta sotto il pollice, e «Avanti» è nel foglio con l'esito | La Home lunga otto schermate chiede di scorrere molto; le carte di lato nascondono quello che non si vede (si vede solo il bordo della seconda) |
+| **O** | Il banco a due colonne: a sinistra, ferma, la cosa su cui lavori; a destra il resto | Al computer la domanda e la figura grande restano davanti mentre si leggono le risposte; la prova resta in vista mentre si scorre il resto | Vale soprattutto al computer; al telefono è una fascia colorata in cima e poco altro |
+
+**Misurato** sulle 72 combinazioni: sbordamento 0, un solo principale,
+«Simula il quiz base» sopra la barra a 375×667 (da 429 a 533 px), «Avanti»
+scoperto (in M era coperto dal pannello: corretto), la figura intera prima di
+rispondere, l'avviso a 12 px da «Inizia», contrasti AA. **Non controllato:**
+nessuna persona, Safari, il gesto vero, lo scorrimento a scatti e il pannello
+mossi con il dito.
+
+**La lettura della sessione.** Due impianti toccano cose che la RC non
+risolve. **N**, nella domanda, è il più comodo al telefono: le risposte a tutta
+larghezza e il foglio con esito e «Avanti» sono un'idea che si può portare in
+qualunque vestito, e risponde al problema di «Avanti» fuori schermo (P-91). **L**,
+in Allenati, rende il peso dei temi una cosa che si vede e non un numero da
+leggere. M è il più nuovo e il più legato al mare, ma è un'app diversa, non una
+pagina rifatta; O è un miglioramento per il computer.
+
+15. **Gli impianti L, M, N, O.** Uno di loro come ossatura nuova, o dei pezzi
+    dentro la RC? *Raccomandazione:* dei pezzi — da N la domanda (risposte a
+    tutta larghezza, il foglio della correzione), da L le zone di mare degli
+    argomenti —, e M da guardare a parte se l'autore vuole un'app più che un sito.
+
+**La scelta dell'autore sugli impianti, e due mock nuovi (25 ottobre).**
+Guardati L, M, N e O, l'autore ha preso due cose. **Il percorso a boe, ma come
+animazione della Home**: scorrendo il triangolo si riempie o si illumina, e i
+pannelli che si susseguono spiegano come funziona il sito e le modalità di
+allenamento. **La carta come sfondo, senza il pannello, nella Regata.** Due mock
+separati, nei colori della Regata; la G e la L non sono state toccate.
+
+- **P — La rotta che si accende** (`p-rotta-che-si-accende/`). Sotto la testa
+  della Regata, «Come funziona»: dieci tappe su una rotta che si riempie
+  d'arancio scorrendo, con la barca in punta; ogni triangolo superato si accende
+  e resta acceso, e il disegno della tappa prende colore. Le tappe dicono come
+  si prova senza account, la simulazione, le dieci domande, l'allenamento
+  consigliato, gli argomenti (con le zone di mare della L), gli errori, il
+  carteggio, fanali e segnali (con la carta del faro da toccare), l'esame in
+  ordine e l'account. *Per chi studia:* chi arriva capisce in una discesa che
+  cosa può fare qui, e ogni modalità ha il suo posto prima di cercarla nei
+  menu. *Il rischio:* la Home si allunga; e le frasi delle tappe sono nuove,
+  **da verificare dall'autore**.
+- **Q — La Regata sulla carta** (`q-regata-sulla-carta/`). La carta ferma dietro
+  tutta la pagina, vista da finestre: la testa (con un velo di mare sotto il
+  testo) e una fascia dove il faro e la boa si toccano sulla carta stessa. Il
+  resto è pagina bianca che scorre sopra. *Per chi studia:* il mare c'è sempre,
+  senza un pannello fra lui e il contenuto. *Il rischio:* lo sfondo fermo su
+  iPhone, non provato; al telefono si vede solo un tratto di costa.
+
+**Misurato** sulle 36 combinazioni: sbordamento 0, un principale, «Simula il
+quiz base» a 446 px a 375×667, «Avanti» scoperto, la figura intera, l'avviso a
+12 px, contrasti AA (il velo della testa di Q, nel caso peggiore, a 5,9:1 con
+il bianco). Il controllo dei contrasti ha trovato un difetto vero, corretto: in
+Q la domanda al telefono aveva il fondo blu sotto il testo scuro.
+
+16. **P e Q.** La Home di P come Home della Regata (o della RC), e lo sfondo di Q
+    come vestito della Regata? *Raccomandazione:* sì per la discesa di P, dopo
+    aver verificato le frasi delle tappe; Q da provare su un iPhone vero prima
+    di decidere, per lo sfondo fermo.
+
+**La Home al computer: terra a sinistra e terra a destra (25 ottobre).** Guardata
+la Q, l'autore ha chiesto due Home per il computer, sulla Regata sulla carta: in
+una il mare e la terra si scambiano di posto, così la terra bianca fa da fondo al
+titolo e ai testi, scritti in blu scuro; nell'altra la terra bianca va molto più a
+destra. In tutte e due, di lato, il percorso dei triangoli, che si illumina
+scorrendo fra i pannelli. Al telefono resta la Regata com'è: questi due mock non
+la toccano, e lì mostrano soltanto i pannelli uno sotto l'altro.
+
+- **R — Terra a sinistra** (`r-terra-a-sinistra/`). La carta della Regata
+  specchiata: la terra bianca a sinistra, dietro i testi in blu scuro, e il mare
+  a destra, con il faro sulla costa e la boa al largo. *Per chi studia:* si legge
+  su un fondo chiaro, e la carta resta accanto senza passare sotto le parole.
+  *Il rischio:* la metà sinistra è pagina bianca, e la carta pesa meno che in Q.
+- **S — Terra a destra** (`s-terra-a-destra/`). Il mare è il fondo, con il testo
+  bianco su un velo di mare, e la terra bianca entra solo nell'ultimo quinto, a
+  destra. *Per chi studia:* la pagina è tutta mare, com'era la Regata. *Il
+  rischio:* testo chiaro su fondo scuro per tutta la discesa, che stanca più di
+  R se i pannelli si leggono tutti.
+- **In tutte e due:** undici pannelli che si fermano uno alla volta (la testa e
+  le dieci tappe di P, con le stesse frasi), la carta ferma dietro, il percorso
+  fisso a sinistra: il triangolo del pannello in vista si ingrandisce e si
+  accende, quelli già passati restano arancio, e un tocco su un triangolo porta
+  al suo pannello. Il faro e la boa si toccano sulla carta, e la loro sigla si
+  legge in un riquadro fisso in basso a destra.
+
+**Misurato** a 1280×800: sbordamento 0 (i 15 px sono la barra di scorrimento),
+un principale, «Simula il quiz base» con il fondo a 582 px, la sigla del faro
+letta dopo il tocco, contrasti AA su 24 testi su 24. Il controllo dei contrasti
+ha trovato un difetto vero, corretto: in S, al telefono, i colori del computer
+davano testo chiaro su fondo bianco. **Non provato:** altre larghezze del
+computer (1440, 1920, uno schermo basso), e il telefono, che qui non è
+disegnato.
+
+17. **R o S per la Home al computer.** *Raccomandazione:* R, perché i testi delle
+    dieci tappe si leggono meglio sul bianco, e la carta accanto basta a dare il
+    mare; S se l'autore vuole che la Home sia tutta mare come la Regata. Prima di
+    decidere, guardarle su uno schermo largo vero, e scrivere al telefono la
+    stessa discesa nella Regata com'è.
+
+**La terra in fondo: T e U (25 ottobre).** Guardata la S, l'autore ha chiesto la
+terra ancora più a destra, il percorso più piccolo e fine e poi sulla terra, la
+rotta lontana dal titolo, i settori rosso e verde al faro, e una prova con la
+terra beige chiaro. Due mock nati dalla S, che resta com'è.
+
+- **T — Terra in fondo** (`t-terra-in-fondo/`). La terra bianca solo
+  nell'ultimo decimo dello schermo; il faro con i tre settori delle carte —
+  verde, bianco, rosso, con i limiti tratteggiati —, la sigla «Lam.(2) BRV 10s»
+  e una scheda che dice che nel settore bianco la rotta è libera; la rotta che
+  passa a est della boa cardinale est ed entra nel settore bianco, tutta nella
+  metà destra; il percorso sottile, a triangoli vuoti che si riempiono, fermo
+  sulla terra. *Per chi studia:* la Home mostra già due regole vere — da che
+  parte si passa una cardinale, che cosa vuol dire un settore — senza
+  spiegarle a parole. *Il rischio:* il percorso sulla terra sta dove la terra
+  c'è: a schermi più stretti la costa si sposta, e va provato.
+- **U — Terra beige** (`u-terra-beige/`). La T con la terra beige chiaro, il
+  colore della terra sulle carte: stacca dalle schede bianche e scalda la
+  pagina. *Il rischio:* un colore in più, accanto al bianco, al blu e
+  all'arancio.
+
+**Misurato** a 1280×800: nessuno sbordamento, un principale fino a 582 px,
+contrasti AA su 24 testi su 24. Da verificare dall'autore la notazione della
+sigla e i settori, che sono di fantasia come il faro.
+
+18. **T o U.** *Raccomandazione:* U, perché il beige dice «terra» meglio del
+    bianco e separa la carta dalle schede; T se si vuole restare ai tre colori
+    della Regata. Prima di decidere, guardarle a 1440 e a 1024 px.
+
+**La scelta, e il progetto (25 ottobre).** L'autore ha scelto la **U** come Home
+al computer e la Regata per tutto il resto. Il piano per portarle nel sito —
+token, carta, percorso, i conflitti con le regole e i controlli, i giri e
+diciotto decisioni — è in [volto-progetto.md](volto-progetto.md).

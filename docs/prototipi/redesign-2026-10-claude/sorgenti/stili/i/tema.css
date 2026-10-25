@@ -1,0 +1,71 @@
+/* I — «Il giornale di bordo». Nata dalla skill taste («la pagina è l'oggetto»):
+   l'oggetto che esiste già nel mondo di chi va per mare è il registro che si
+   tiene a bordo. Fogli verde pallido da libro mastro, inchiostro blu-nero
+   per il testo, il blu della stilografica per l'unico pulsante, il filo rosso
+   del margine come segno del sito, solo sui fogli e mai su un comando né su un
+   esito. I numeri stanno in colonna sotto la loro intestazione, come in un
+   registro, e le tappe della domanda sono tacche contate a mano. */
+:root{
+  --carta:#FFFFFF;--carta-2:#F1F5EC;--terra:#F1F5EC;--terra-scura:#173F7A;
+  --acqua:#E4ECF4;--acqua-2:#C6D5E4;--acqua-3:#7F93AD;
+  --ink:#14234B;--ink-2:#34426A;--ink-3:#4E5A7C;--filo:#14234B2E;--filo-2:#14234B17;
+  --margine:#D2463F;--righe:#D3E0EC;
+  --rotta:#173F7A;--rotta-chiara:#E4ECF4;--evidenza:#DCE7F5;
+  --ok:#12662F;--ok-chiaro:#E3F1E6;--ko:#B3261E;--ko-chiaro:#FBE8E6;
+  --azione:#173F7A;--su-azione:#fff;--attivo:#14234B;--su-attivo:#fff;--forte:#173F7A;--su-forte:#fff;
+  --campo:#fff;--marchio:#14234B;--link:#173F7A;--fuoco:#173F7A;
+  --r:4px;
+}
+h1,h2,h3{letter-spacing:-.025em}
+.eroe h1,h1.pagina,.prep h1,.rp h1{font-weight:800}
+.btn{border-radius:var(--r)}
+.btn-pieno{box-shadow:0 2px 0 #0B1F4A}
+.btn-pieno:hover{background:#12325F}
+/* Il foglio del registro: verde pallido, il margine rosso a sinistra, l'intestazione a doppio filo */
+.carta{background:var(--carta-2);border:1px solid var(--acqua-2);border-radius:var(--r);box-shadow:inset 3px 0 0 var(--carta-2),inset 5px 0 0 var(--margine)}
+.carta h2,.titolo-prova{padding-bottom:var(--s-8);border-bottom:3px double var(--ink-3)}
+/* I numeri dell'esame in colonna: l'intestazione sopra, il valore scritto sotto */
+.scandagli{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:0!important}
+.scandaglio{display:flex;flex-direction:column-reverse;justify-content:flex-end;padding:0 var(--s-12);border-left:1px solid var(--acqua-2)}
+.scandaglio:first-child{border-left:0;padding-left:0}
+.scandaglio>span{margin:0 0 var(--s-8)!important;font-size:var(--t-12);font-weight:700;color:var(--ink-2);padding-bottom:4px;border-bottom:1px solid var(--acqua-2)}
+.scandaglio b{color:var(--azione);font-style:italic;letter-spacing:-.04em}
+.diario .scandaglio b{font-style:normal}
+.nota-carta{background:var(--carta-2);border-left:0;box-shadow:inset 3px 0 0 var(--carta-2),inset 5px 0 0 var(--margine)}
+.righe .ico-tondo{background:var(--carta-2);border:1px solid var(--acqua-2);border-radius:var(--r)}
+.link-freccia{border-bottom-style:double;border-bottom-width:4px}
+/* Allenati */
+.segmenti{border-radius:var(--r)!important;background:var(--carta-2)!important}
+.segmenti a{border-radius:3px!important}
+.cerca input,.cerca button{border-radius:var(--r)!important}
+.peso b{color:var(--azione);font-style:italic}
+/* La domanda: tacche contate a mano al posto delle tappe */
+.rotta::before{display:none}
+.rotta{justify-content:flex-start!important;gap:12px}
+.tappa{width:3px!important;height:18px!important;border:0!important;border-radius:2px!important;background:var(--acqua-2)!important}
+.tappa.ok{background:var(--ok)!important}.tappa.ko{background:var(--ko)!important}
+.anello{width:15px!important;height:26px!important;margin:-13px 0 0 -6px!important;border-radius:3px!important;border:2px solid var(--ink)!important;left:calc(var(--i, 0) * 15px)!important}
+.compatta{background:var(--acqua-2)!important}.compatta span{background:var(--ink)!important}
+.risposta{border:1px solid var(--acqua-2)!important;border-radius:var(--r)!important}
+.risposta.tua{border:1.5px solid var(--ko)!important}.risposta.esatta{border:1.5px solid var(--ok)!important}
+.tasto{border-radius:3px!important}
+.chip{border-radius:var(--r)!important}
+.figura{border-radius:var(--r)!important}
+/* Il riepilogo come una riga del registro, con il timbro del giorno */
+.diario{position:relative}
+.rp .diario::after{content:"25 OTT 2026";position:absolute;right:12px;top:-16px;padding:2px 8px;border:2px solid var(--azione);outline:1px solid var(--azione);outline-offset:2px;border-radius:3px;font:800 12px/1.4 Manrope,sans-serif;letter-spacing:.08em;color:var(--azione);background:var(--carta);transform:rotate(-4deg)}
+/* Il disegno: le cifre della riga si scrivono una alla volta, come a penna */
+@media (prefers-reduced-motion:no-preference){
+  .scritto{opacity:0;animation:penna .5s ease-out forwards}
+  .scritto{animation-delay:.2s}.scritto:nth-of-type(2){animation-delay:.45s}.scritto:nth-of-type(3){animation-delay:.7s}.scritto:nth-of-type(4){animation-delay:.95s}.scritto:nth-of-type(5){animation-delay:1.2s}.scritto:nth-of-type(6){animation-delay:1.45s}
+}
+@keyframes penna{from{opacity:0;clip-path:inset(0 100% 0 0)}to{opacity:1;clip-path:inset(0 0 0 0)}}
+.luce.zona::after{border-radius:4px;border-color:var(--azione);inset:0}
+.legenda-luce{border-top:3px double var(--ink-3);background:var(--carta)}
+.leggi .tocca,.figura-grande{background:var(--carta-2)}
+/* Al telefono il riquadro della prova resta sopra la barra anche a 667 px */
+@media (max-width:899px){
+  .striscia{height:72px!important}
+  .carta h2,.titolo-prova{padding-bottom:4px}
+  .scandaglio>span{margin-bottom:4px!important}
+}

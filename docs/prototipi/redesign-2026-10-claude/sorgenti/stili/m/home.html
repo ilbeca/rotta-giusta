@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Home · mock «@@NOME@@»</title>
+<style>@@CSS@@
+/* M: la Home è la carta; il pannello dice che cosa fare */
+.pannello h1{font-size:var(--t-24);font-weight:800;line-height:1.12}
+.pannello .lead{font-size:var(--t-16);color:var(--ink-2);margin-top:var(--s-8)}
+.prova{margin-top:var(--s-16);padding:var(--s-16)!important;display:grid;gap:var(--s-12)}
+.titolo-prova{font-size:var(--t-16)!important;font-weight:800}
+.prova .scandaglio b{font-size:var(--t-32)!important}
+.breve{margin-top:var(--s-16);display:flex;flex-direction:column;gap:2px}
+.breve small,.gratis{font-size:var(--t-14);color:var(--ink-3)}
+.sulla-carta{margin-top:var(--s-32)}
+.sulla-carta h2,.sezione h2{font-size:var(--t-20);font-weight:800;margin-bottom:var(--s-8)}
+.sulla-carta .legenda-luce{margin-top:var(--s-12);border-radius:14px}
+.sezione{margin-top:var(--s-32)}
+.limiti ul{margin:var(--s-8) 0;padding-left:20px}
+.limiti p+p{margin-top:var(--s-8)}
+.gratis{margin-top:var(--s-24)}
+@media (min-width:900px){
+  .pannello h1{font-size:var(--t-44);line-height:1.04}
+  .pannello .lead{font-size:var(--t-20)}
+  /* Al computer quello che il disegno spiega sta sopra la carta, in alto a destra */
+  .sulla-carta{position:fixed;bottom:32px;right:32px;width:360px;margin:0;z-index:2;background:#fff;border-radius:22px;padding:var(--s-24);box-shadow:0 18px 40px -20px #0B2530aa}
+}
+@@TEMA@@
+</style></head>
+<body>
+@@ICONE@@
+<div class="figura-grande tocca">
+<div class="mare-fisso">@@CARTA@@
+  <button class="luce" data-voce="faro" data-x="392" data-y="150" aria-expanded="false" aria-label="Il faro: leggi la sua sigla"></button>
+  <button class="luce" data-voce="boa" data-x="250" data-y="250" aria-expanded="false" aria-label="La boa cardinale: leggi la sua sigla"></button>
+</div>
+@@TESTATA:home@@
+<main class="pannello">
+  <h1>Preparati alla patente nautica, un passo alla volta.</h1>
+  <p class="lead">Quiz e carteggio per la patente senza limiti dalla costa.</p>
+  <section class="carta prova">
+    <h2 class="titolo-prova">La prova d'esame dei quiz</h2>
+    <div class="scandagli" aria-label="20 domande, 30 minuti, al più 4 errori">
+      <div class="scandaglio"><b>20</b><span>domande</span></div>
+      <div class="scandaglio"><b>30′</b><span>minuti</span></div>
+      <div class="scandaglio"><b>4</b><span>errori al più</span></div>
+    </div>
+    <a class="btn btn-pieno btn-largo vt-avvio" href="runner.html" data-ruolo="principale">Simula il quiz base<svg class="ico"><use href="#i-freccia"/></svg></a>
+    <p class="nota">La correzione arriva alla fine, come all'esame.</p>
+  </section>
+  <div class="breve">
+    <a class="link-freccia" href="runner.html" style="align-self:flex-start">Oppure allenati con 10 domande<svg class="ico"><use href="#i-freccia"/></svg></a>
+    <small>Con la correzione dopo ogni risposta.</small>
+  </div>
+  <section class="sulla-carta">
+    <h2>@@TOCCA_TITOLO@@</h2>
+    <p class="nota">@@TOCCA_INTRO@@</p>
+    <p class="legenda-luce" aria-live="polite"><span class="invito">@@TOCCA_INVITO@@</span></p>
+  </section>
+  <section class="sezione cosa">
+    <h2>Che cosa trovi qui</h2>
+    <ul class="righe">
+      <li><a href="quiz.html"><span class="ico-tondo"><svg class="ico"><use href="#i-quiz"/></svg></span><span class="testo"><b><span class="num">1.722</span> quesiti del decreto</b><small>Base e vela, con il numero per ritrovarli sul libro</small></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="quiz.html"><span class="ico-tondo" style="background:var(--terra)"><svg class="ico"><use href="#i-compasso"/></svg></span><span class="testo"><b><span class="num">135</span> esercizi di carteggio</b><small>Tracci sulla carta, poi confronti con la risposta ministeriale</small></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="quiz.html"><span class="ico-tondo" style="background:var(--forte);color:var(--su-forte)"><svg class="ico"><use href="#i-fanale"/></svg></span><span class="testo"><b><span class="num">27</span> fanali e segnali</b><small>Da riconoscere a colpo d'occhio, come di notte in mare</small></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="#esame"><span class="ico-tondo" style="background:var(--rotta-chiara);color:var(--rotta)"><svg class="ico"><use href="#i-esame"/></svg></span><span class="testo"><b>Le prove, in ordine</b><small>Carteggio, quiz base, quiz vela: con le condizioni del decreto</small></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+    </ul>
+  </section>
+  <section class="sezione limiti">
+    <h2>I limiti, detti prima</h2>
+    <div class="nota-carta nota">
+      <p>La banca è l'Allegato A del decreto del 2022, e all'esame vale lui. Ti diciamo quesito per quesito che cosa non torna:</p>
+      <ul><li>37 quesiti oscurati, mai nella simulazione</li><li>4 quesiti con una nota dopo la risposta</li><li>1 quesito con la figura mancante</li></ul>
+      <p>Il lavoro sulla carta lo giudichi tu. Nessuna newsletter e nessun cookie di tracciamento.</p>
+      <p style="margin-top:var(--s-12)"><a class="link-freccia" href="#note">Note, fonti e riferimenti<svg class="ico"><use href="#i-freccia"/></svg></a></p>
+    </div>
+  </section>
+  <p class="gratis">Gratis e open source. Si prova senza account; con l'account salvi i progressi.</p>
+  <footer class="piede"><span>Rotta Giusta · mock</span><a href="#">codice sorgente</a><a href="#">Privacy</a><a href="#">Condizioni per l'account</a><a href="#">Avvertenza</a></footer>
+</main>
+</div>
+@@BARRA:home@@
+<script>
+// La carta riempie il suo spazio tagliando i bordi (slice): i punti da toccare seguono il disegno
+const mare = document.querySelector('.mare-fisso');
+function posiziona() {
+  const W = mare.clientWidth, H = mare.clientHeight, s = Math.max(W / 600, H / 380);
+  const ox = (W - 600 * s) / 2, oy = (H - 380 * s) / 2;
+  mare.querySelectorAll('.luce').forEach((b) => { b.style.left = (+b.dataset.x * s + ox) + 'px'; b.style.top = (+b.dataset.y * s + oy) + 'px'; });
+}
+posiziona(); addEventListener('resize', posiziona);
+const VOCI = @@TOCCA_VOCI@@;
+const legenda = document.querySelector('.legenda-luce');
+document.querySelectorAll('.luce').forEach((luce) => luce.addEventListener('click', () => {
+  const aperta = luce.getAttribute('aria-expanded') === 'true';
+  document.querySelectorAll('.luce').forEach((l) => l.setAttribute('aria-expanded', 'false'));
+  if (aperta) { legenda.innerHTML = '<span class="invito">@@TOCCA_INVITO@@</span>'; return; }
+  luce.setAttribute('aria-expanded', 'true');
+  const [titolo, testo] = VOCI[luce.dataset.voce];
+  legenda.innerHTML = `<b data-voce>${titolo}</b><span data-voce>${testo}</span>`;
+}));
+</script>
+</body></html>

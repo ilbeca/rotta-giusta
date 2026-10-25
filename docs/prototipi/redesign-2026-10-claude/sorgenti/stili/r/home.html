@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Home · mock «@@NOME@@»</title>
+<style>@@CSS@@
+/* R — la Home al computer: la carta ferma dietro, i pannelli che scorrono, il percorso di lato.
+   La terra, bianca, fa da sfondo a sinistra: titolo e testi sono in blu scuro. Il mare, con il faro e la boa, sta a destra. */
+:root{--testo:var(--ink);--testo-2:var(--ink-2);--link-carta:var(--mare);--vuota:var(--acqua-2)}
+html{scroll-snap-type:y proximity;scroll-padding-top:72px}
+.prova{padding:var(--s-24)!important;display:grid;gap:var(--s-12);color:var(--ink)}
+.titolo-prova{font-size:var(--t-16)!important;font-weight:800}
+.breve{display:flex;flex-direction:column;gap:2px}
+.breve small{font-size:var(--t-14)}
+.pannello{display:grid;align-content:center;padding:var(--s-32) var(--s-16)}
+.contenuto{display:grid;gap:var(--s-16);max-width:520px}
+.eroe h1{font-size:var(--t-32);font-weight:800;line-height:1.06}
+.come{font-size:var(--t-32);font-weight:800}
+.come-intro{color:var(--testo-2)}
+.testo-tappa h3{font-size:var(--t-24);font-weight:800;line-height:1.15}
+.testo-tappa p{color:var(--testo-2);margin-top:var(--s-8)}
+.testo-tappa .link-freccia{margin-top:var(--s-12)}
+/* I disegni delle tappe: piccoli, nei colori della Regata, solo forme */
+.disegno{background:var(--acqua);border-radius:var(--r);padding:var(--s-16);min-height:150px;display:grid;place-items:center}
+.mini-domanda{width:100%;max-width:280px;display:grid;gap:6px}
+.mini-domanda i{display:block;height:10px;border-radius:5px;background:var(--acqua-3);opacity:.5}
+.mini-domanda i:nth-child(2){width:70%}
+.mini-domanda b{display:flex;align-items:center;gap:8px;height:30px;border-radius:8px;background:#fff;padding:0 10px;font-size:var(--t-14);font-weight:700;color:var(--ink-2)}
+.mini-domanda b.ko{background:var(--ko-chiaro);color:var(--ko)}.mini-domanda b.ok{background:var(--ok-chiaro);color:var(--ok)}
+.mini-venti{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;width:100%;max-width:280px}
+.mini-venti i{aspect-ratio:1;border-radius:4px;background:#fff}
+.mini-venti i:nth-child(-n+7){background:var(--mare)}
+.mini-orologio{display:flex;align-items:baseline;gap:8px;margin-top:10px;font-weight:800;color:var(--mare)}
+.mini-orologio b{font-size:var(--t-44);letter-spacing:-.04em}
+.mini-perche{background:#fff;border-radius:12px;padding:12px 14px;width:100%;max-width:280px;display:grid;gap:8px}
+.mini-perche span{justify-self:start;font-size:var(--t-12);font-weight:800;color:var(--mare);background:var(--acqua);border-radius:99px;padding:3px 10px}
+.mini-perche i{display:block;height:9px;border-radius:5px;background:var(--acqua-2)}
+.mini-perche i+i{width:60%}
+.mini-temi{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:26px;gap:3px;width:100%;max-width:280px;border-radius:8px;overflow:hidden}
+.mini-temi i{background:var(--acqua-2)}
+.mini-temi .a{grid-column:span 2;grid-row:span 2;background:var(--mare)}.mini-temi .b{grid-column:span 3;background:#2F7896}.mini-temi .c{grid-column:span 2}
+.mini-chip{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.mini-chip b{font-size:var(--t-14);font-weight:700;color:var(--ink);background:#fff;border-radius:99px;padding:8px 14px}
+.mini-chip b:first-child{background:var(--ink);color:#fff}
+.mini-prove{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;font-weight:800;color:var(--mare)}
+.mini-prove b{background:#fff;border-radius:10px;padding:10px 12px;font-size:var(--t-14)}
+.mini-prove i{width:14px;height:12px;background:var(--boa);clip-path:polygon(0 0,100% 50%,0 100%)}
+.disegno svg.carteggio{width:100%;max-width:300px;height:auto}
+.disegno{border-radius:var(--r)}
+.scheda-luce{background:var(--acqua);min-height:0;padding:var(--s-16) var(--s-24);place-items:start}
+.bianco{background:#fff;color:var(--ink);padding:var(--s-48) var(--s-16)}
+.bianco .dentro{max-width:1120px;margin:0 auto}
+.bianco h2{font-size:var(--t-24);font-weight:800;margin-bottom:var(--s-12)}
+.limiti ul{margin:var(--s-8) 0;padding-left:20px}
+.limiti p+p{margin-top:var(--s-8)}
+.gratis{font-size:var(--t-14);color:var(--ink-3);margin-top:var(--s-24)}
+.mare-fisso,.percorso,.legenda-fissa{display:none}
+main.carta-viva{max-width:none;padding:0 0 64px}
+/* Al computer: la carta dietro, il percorso a sinistra, i pannelli alti uno schermo */
+@media (min-width:900px){
+  :root{--testo:var(--ink);--testo-2:var(--ink-2);--link-carta:var(--mare);--vuota:var(--acqua-2)}
+  body{background:#FFFFFF}
+  .scheda-luce{min-height:0!important}
+  .mare-fisso{display:block;position:fixed;inset:0;z-index:0;overflow:hidden;background:#FFFFFF}
+  .mare-fisso .illustrazione{position:absolute;display:block}
+  .mare-fisso .luce{position:absolute;z-index:1}
+  main.carta-viva{position:relative;z-index:1;padding:0;pointer-events:none}
+  main.carta-viva a,main.carta-viva button,main.carta-viva .carta,main.carta-viva .disegno,main.carta-viva .bianco{pointer-events:auto}
+  .pannello{min-height:calc(100vh - 72px);padding:var(--s-48) var(--s-32) var(--s-48) 168px;scroll-snap-align:start;color:var(--testo)}
+  .pannello .link-freccia{color:var(--link-carta);border-bottom-color:var(--boa)}
+  .pannello .link-freccia .ico{stroke:var(--link-carta)}
+  .eroe h1{font-size:var(--t-56);line-height:1.02}
+  .eroe .lead{font-size:var(--t-20);color:var(--testo-2)}
+  .eroe .breve small{color:var(--testo-2)}
+  .come{font-size:var(--t-44)}
+  .come-intro{font-size:var(--t-20)}
+  .testo-tappa h3{font-size:var(--t-32)}
+  .testo-tappa p{font-size:var(--t-20)}
+  .disegno{min-height:200px}
+  .bianco{padding:var(--s-64) var(--s-32) var(--s-48) 168px}
+  .bianco .dentro{margin:0;display:grid;grid-template-columns:3fr 2fr;gap:var(--s-48);align-items:start}
+  /* Il percorso: fermo a sinistra, un triangolo per pannello; quello dove sei si illumina */
+  .percorso{display:grid;position:fixed;left:40px;top:50%;transform:translateY(-50%);z-index:3;gap:18px;padding:6px 0}
+  .percorso::before{content:"";position:absolute;left:12px;top:14px;bottom:14px;border-left:3px dashed var(--vuota)}
+  .percorso .pieno{position:absolute;left:12px;top:14px;width:3px;height:var(--fino,0px);background:var(--boa);transition:height .4s cubic-bezier(.2,.8,.2,1)}
+  .tappa-nav{position:relative;display:flex;align-items:center;gap:12px;height:26px;text-decoration:none;color:var(--testo)}
+  .tappa-nav .tri{display:block;width:26px;height:24px;background:var(--vuota);clip-path:polygon(50% 0,100% 100%,0 100%);transition:background-color .3s,transform .4s cubic-bezier(.2,1.6,.4,1)}
+  .tappa-nav.passata .tri{background:var(--boa)}
+  .tappa-nav.qui .tri{background:var(--boa);transform:scale(1.35)}
+  .tappa-nav.qui{filter:drop-shadow(0 0 7px #FF6A1Ae6)}
+  .tappa-nav .nome{position:absolute;left:40px;white-space:nowrap;font-size:var(--t-14);font-weight:700;opacity:0;transform:translateX(-4px);transition:opacity .2s,transform .2s;pointer-events:none;background:#fff;color:var(--ink);padding:4px 10px;border-radius:99px;box-shadow:0 6px 16px -8px #0B253080}
+  .tappa-nav:hover .nome,.tappa-nav:focus-visible .nome{opacity:1;transform:none}
+  .tappa-nav.eroe-nav .tri{clip-path:none;border-radius:50%;width:26px;height:26px;background:var(--mare);display:grid;place-items:center;box-shadow:0 0 0 3px #FFFFFF}
+  .tappa-nav.eroe-nav .tri svg{width:18px;height:18px}
+  .tappa-nav.eroe-nav.qui .tri,.tappa-nav.eroe-nav.passata .tri{background:var(--mare)}
+  
+  .legenda-luce.legenda-fissa{display:grid;position:fixed;right:32px;bottom:32px;width:340px;z-index:3;border-radius:var(--r);box-shadow:0 18px 40px -20px #0B2530aa;background:#fff;border:0}
+}
+@media (prefers-reduced-motion:reduce){ .tappa-nav .tri,.percorso .pieno{transition:none} }
+@@TEMA@@
+</style></head>
+<body>
+@@ICONE@@
+<div class="figura-grande tocca">
+<div class="mare-fisso">@@CARTA@@
+  <button class="luce" data-voce="faro" data-x="208" data-y="150" aria-expanded="false" aria-label="Il faro: leggi la sua sigla"></button>
+  <button class="luce" data-voce="boa" data-x="350" data-y="250" aria-expanded="false" aria-label="La boa cardinale: leggi la sua sigla"></button>
+</div>
+<p class="legenda-luce legenda-fissa" aria-live="polite"><span class="invito">@@TOCCA_INVITO@@</span></p>
+@@TESTATA:home@@
+<nav class="percorso" aria-label="Le tappe della Home"><span class="pieno" aria-hidden="true"></span><a class="tappa-nav eroe-nav qui" href="#t-0" data-k="0"><span class="tri" aria-hidden="true"><svg><use href="#marchio"/></svg></span><span class="nome">La prova d'esame</span></a><a class="tappa-nav" href="#t-1" data-k="1"><span class="tri" aria-hidden="true"></span><span class="nome">Si prova senza account</span></a><a class="tappa-nav" href="#t-2" data-k="2"><span class="tri" aria-hidden="true"></span><span class="nome">La simulazione, come all'esame</span></a><a class="tappa-nav" href="#t-3" data-k="3"><span class="tri" aria-hidden="true"></span><span class="nome">Dieci domande, con la correzione</span></a><a class="tappa-nav" href="#t-4" data-k="4"><span class="tri" aria-hidden="true"></span><span class="nome">L'allenamento consigliato</span></a><a class="tappa-nav" href="#t-5" data-k="5"><span class="tri" aria-hidden="true"></span><span class="nome">Un argomento alla volta</span></a><a class="tappa-nav" href="#t-6" data-k="6"><span class="tri" aria-hidden="true"></span><span class="nome">Gli errori tornano</span></a><a class="tappa-nav" href="#t-7" data-k="7"><span class="tri" aria-hidden="true"></span><span class="nome">Il carteggio, sulla carta vera</span></a><a class="tappa-nav" href="#t-8" data-k="8"><span class="tri" aria-hidden="true"></span><span class="nome">Fanali e segnali</span></a><a class="tappa-nav" href="#t-9" data-k="9"><span class="tri" aria-hidden="true"></span><span class="nome">L'esame, in ordine</span></a><a class="tappa-nav" href="#t-10" data-k="10"><span class="tri" aria-hidden="true"></span><span class="nome">Con l'account, la rotta resta</span></a></nav>
+<main class="carta-viva">
+  <section class="pannello eroe" id="t-0" aria-label="La prova d'esame">
+    <div class="contenuto">
+      <div>
+        <h1>Preparati alla patente nautica, un passo alla volta.</h1>
+        <p class="lead" style="margin-top:var(--s-12)">Quiz e carteggio per la patente senza limiti dalla costa.</p>
+      </div>
+      <section class="carta prova">
+        <h2 class="titolo-prova">La prova d'esame dei quiz</h2>
+        <div class="scandagli" aria-label="20 domande, 30 minuti, al più 4 errori">
+          <div class="scandaglio"><b>20</b><span>domande</span></div>
+          <div class="scandaglio"><b>30′</b><span>minuti</span></div>
+          <div class="scandaglio"><b>4</b><span>errori al più</span></div>
+        </div>
+        <a class="btn btn-pieno btn-largo vt-avvio" href="runner.html" data-ruolo="principale">Simula il quiz base<svg class="ico"><use href="#i-freccia"/></svg></a>
+        <p class="nota">La correzione arriva alla fine, come all'esame.</p>
+      </section>
+      <div class="breve">
+        <a class="link-freccia" href="runner.html" style="align-self:flex-start">Oppure allenati con 10 domande<svg class="ico"><use href="#i-freccia"/></svg></a>
+        <small>Con la correzione dopo ogni risposta.</small>
+      </div>
+    </div>
+  </section>
+  <section class="pannello" id="t-1" aria-label="Si prova senza account">
+    <div class="contenuto">
+      <h2 class="come">Come funziona</h2>
+      <p class="come-intro">Scendi lungo la rotta: ogni pannello è un modo di prepararsi, e il suo triangolo, qui a lato, si accende quando ci arrivi.</p>
+      <div class="testo-tappa"><h3>Si prova senza account</h3><p>Apri una domanda e rispondi: non serve registrarsi. Senza account le risposte valgono finché la pagina resta aperta.</p></div>
+      <div class="disegno" aria-hidden="true"><div class="mini-domanda"><i></i><i></i><b>1</b><b>2</b><b>3</b></div></div>
+    </div>
+  </section>
+  <section class="pannello" id="t-2" aria-label="La simulazione, come all'esame">
+    <div class="contenuto">
+      <div class="testo-tappa"><h3>La simulazione, come all'esame</h3><p>20 domande in 30 minuti, al più 4 errori. Nessuna correzione durante la prova: l'esito arriva alla fine.</p></div>
+      <div class="disegno" aria-hidden="true"><div><div class="mini-venti"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="mini-orologio"><b>30′</b>minuti</div></div></div>
+    </div>
+  </section>
+  <section class="pannello" id="t-3" aria-label="Dieci domande, con la correzione">
+    <div class="contenuto">
+      <div class="testo-tappa"><h3>Dieci domande, con la correzione</h3><p>Dieci quiz base, con la correzione dopo ogni risposta: la tua accanto a quella del decreto. Puoi fermarti quando vuoi.</p><a class="link-freccia" href="runner.html">Allenati con 10 domande<svg class="ico"><use href="#i-freccia"/></svg></a></div>
+      <div class="disegno" aria-hidden="true"><div class="mini-domanda"><i></i><i></i><b class="ko">✕ La tua risposta</b><b class="ok">✓ Risposta del decreto</b><b>3</b></div></div>
+    </div>
+  </section>
+  <section class="pannello" id="t-4" aria-label="L'allenamento consigliato">
+    <div class="contenuto">
+      <div class="testo-tappa"><h3>L'allenamento consigliato</h3><p>25 quiz base scelti dalle tue risposte. Ogni domanda dice perché è lì.</p><a class="link-freccia" href="quiz.html">Vai ad Allenati<svg class="ico"><use href="#i-freccia"/></svg></a></div>
+      <div class="disegno" aria-hidden="true"><div class="mini-perche"><span>Ogni domanda dice perché è lì</span><i></i><i></i></div></div>
+    </div>
+  </section>
+  <section class="pannello" id="t-5" aria-label="Un argomento alla volta">
+    <div class="contenuto">
+      <div class="testo-tappa"><h3>Un argomento alla volta</h3><p>Base o vela, uno o più argomenti. Navigazione e Manovra portano 4 delle 20 domande ciascuna: vale la pena cominciare da lì.</p></div>
+      <div class="disegno" aria-hidden="true"><div class="mini-temi"><i class="a"></i><i class="a"></i><i class="b"></i><i></i><i class="b"></i><i></i><i class="c"></i><i class="c"></i></div></div>
+    </div>
+  </section>
+  <section class="pannello" id="t-6" aria-label="Gli errori tornano">
+    <div class="contenuto">
+      <div class="testo-tappa"><h3>Gli errori tornano</h3><p>Riapri le domande che hai sbagliato. Dopo un errore puoi segnare perché: non lo sapevi, o è stata una svista.</p></div>
+      <div class="disegno" aria-hidden="true"><div class="mini-chip"><b>Non lo sapevo</b><b>Svista</b></div></div>
+    </div>
+  </section>
+  <section class="pannello" id="t-7" aria-label="Il carteggio, sulla carta vera">
+    <div class="contenuto">
+      <div class="testo-tappa"><h3>Il carteggio, sulla carta vera</h3><p>135 esercizi: tracci sulla carta nautica con squadrette e compasso, poi confronti con la risposta ministeriale. Sei tu a giudicare.</p></div>
+      <div class="disegno" aria-hidden="true"><svg class="carteggio" viewBox="0 0 300 150"><rect width="300" height="150" rx="10" fill="#fff"/><path d="M0 50H300M0 100H300M75 0V150M150 0V150M225 0V150" stroke="#C3DAE3"/><path d="M40 120 140 40 250 90" fill="none" stroke="#0A4F6E" stroke-width="3"/><circle cx="140" cy="40" r="5" fill="#FF6A1A"/><path d="M60 130h120l-120-70Z" fill="#0A4F6E" fill-opacity=".14" stroke="#0A4F6E" stroke-width="2"/><path d="M230 30l-14 70M230 30l18 68" stroke="#33505B" stroke-width="3" stroke-linecap="round"/></svg></div>
+    </div>
+  </section>
+  <section class="pannello" id="t-8" aria-label="Fanali e segnali">
+    <div class="contenuto">
+      <div class="testo-tappa"><h3>Fanali e segnali</h3><p>27 segnali da riconoscere a colpo d'occhio, come di notte in mare. Sulla carta ogni luce ha la sua sigla: toccala per leggerla.</p></div>
+      <div class="disegno scheda-luce"><p class="nota">Il faro e la boa sono qui, sulla carta: lampeggiano con la loro sigla.</p></div>
+    </div>
+  </section>
+  <section class="pannello" id="t-9" aria-label="L'esame, in ordine">
+    <div class="contenuto">
+      <div class="testo-tappa"><h3>L'esame, in ordine</h3><p>Carteggio, quiz base, quiz vela: con le condizioni del decreto. Le prepari quando vuoi, senza sblocchi.</p><a class="link-freccia" href="#esame">Vai a Esame<svg class="ico"><use href="#i-freccia"/></svg></a></div>
+      <div class="disegno" aria-hidden="true"><div class="mini-prove"><b>Carteggio</b><i></i><b>Quiz base</b><i></i><b>Quiz vela</b></div></div>
+    </div>
+  </section>
+  <section class="pannello" id="t-10" aria-label="Con l'account, la rotta resta">
+    <div class="contenuto">
+      <div class="testo-tappa"><h3>Con l'account, la rotta resta</h3><p>Ritrovi le tue risposte quando torni, anche da un altro telefono, e vedi i Progressi.</p></div>
+      <div class="disegno" aria-hidden="true"><div class="mini-domanda"><b class="ok">✓ 1 giusta</b><b class="ko">✕ 1 sbagliata</b><b>8 non affrontate</b></div></div>
+    </div>
+  </section>
+  <div class="bianco"><div class="dentro">
+    <section class="cosa">
+      <h2>Che cosa trovi qui</h2>
+      <ul class="righe">
+        <li><a href="quiz.html"><span class="ico-tondo"><svg class="ico"><use href="#i-quiz"/></svg></span><span class="testo"><b><span class="num">1.722</span> quesiti del decreto</b><small>Base e vela, con il numero per ritrovarli sul libro</small></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+        <li><a href="quiz.html"><span class="ico-tondo" style="background:var(--terra)"><svg class="ico"><use href="#i-compasso"/></svg></span><span class="testo"><b><span class="num">135</span> esercizi di carteggio</b><small>Tracci sulla carta, poi confronti con la risposta ministeriale</small></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+        <li><a href="quiz.html"><span class="ico-tondo" style="background:var(--forte);color:var(--su-forte)"><svg class="ico"><use href="#i-fanale"/></svg></span><span class="testo"><b><span class="num">27</span> fanali e segnali</b><small>Da riconoscere a colpo d'occhio, come di notte in mare</small></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+        <li><a href="#esame"><span class="ico-tondo" style="background:var(--rotta-chiara);color:var(--rotta)"><svg class="ico"><use href="#i-esame"/></svg></span><span class="testo"><b>Le prove, in ordine</b><small>Carteggio, quiz base, quiz vela: con le condizioni del decreto</small></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      </ul>
+    </section>
+    <section class="limiti">
+      <h2>I limiti, detti prima</h2>
+      <div class="nota-carta nota">
+        <p>La banca è l'Allegato A del decreto del 2022, e all'esame vale lui. Ti diciamo quesito per quesito che cosa non torna:</p>
+        <ul><li>37 quesiti oscurati, mai nella simulazione</li><li>4 quesiti con una nota dopo la risposta</li><li>1 quesito con la figura mancante</li></ul>
+        <p>Il lavoro sulla carta lo giudichi tu. Nessuna newsletter e nessun cookie di tracciamento.</p>
+        <p style="margin-top:var(--s-12)"><a class="link-freccia" href="#note">Note, fonti e riferimenti<svg class="ico"><use href="#i-freccia"/></svg></a></p>
+      </div>
+    </section>
+  </div>
+    <p class="gratis">Gratis e open source. Si prova senza account; con l'account salvi i progressi.</p>
+    <footer class="piede"><span>Rotta Giusta · mock</span><a href="#">codice sorgente</a><a href="#">Privacy</a><a href="#">Condizioni per l'account</a><a href="#">Avvertenza</a></footer>
+  </div>
+</main>
+</div>
+@@BARRA:home@@
+<script>
+// La carta ferma dietro: la si sposta di lato, e il bordo libero continua con il colore del fondo
+const mare = document.querySelector('.mare-fisso'), disegno = mare.querySelector('.illustrazione');
+function posiziona() {
+  const W = mare.clientWidth, H = mare.clientHeight;
+  if (!W) return;
+  const s = Math.max(W / 600, H / 380), ox = W * 0.26, oy = (H - 380 * s) / 2;
+  Object.assign(disegno.style, { width: 600 * s + 'px', height: 380 * s + 'px', left: ox + 'px', top: oy + 'px' });
+  
+  mare.querySelectorAll('.luce').forEach((b) => { b.style.left = (+b.dataset.x * s + ox) + 'px'; b.style.top = (+b.dataset.y * s + oy) + 'px'; });
+}
+posiziona(); addEventListener('resize', posiziona);
+const VOCI = @@TOCCA_VOCI@@;
+const legende = document.querySelectorAll('.legenda-luce');
+document.querySelectorAll('.luce').forEach((luce) => luce.addEventListener('click', () => {
+  const aperta = luce.getAttribute('aria-expanded') === 'true';
+  document.querySelectorAll('.luce').forEach((x) => x.setAttribute('aria-expanded', 'false'));
+  if (aperta) { legende.forEach((x) => { x.innerHTML = '<span class="invito">@@TOCCA_INVITO@@</span>'; }); return; }
+  luce.setAttribute('aria-expanded', 'true');
+  const [titolo, testo] = VOCI[luce.dataset.voce];
+  legende.forEach((x) => { x.innerHTML = `<b data-voce>${titolo}</b><span data-voce>${testo}</span>`; });
+}));
+// Il percorso: il pannello che occupa il centro dello schermo accende il suo triangolo; quelli prima restano accesi
+const pannelli = [...document.querySelectorAll('.pannello')], voci = [...document.querySelectorAll('.tappa-nav')];
+const percorso = document.querySelector('.percorso');
+let attesa = false;
+function segui() {
+  attesa = false;
+  let qui = 0;
+  pannelli.forEach((p, k) => { if (p.getBoundingClientRect().top <= innerHeight * 0.5) qui = k; });
+  voci.forEach((v, k) => { v.classList.toggle('qui', k === qui); v.classList.toggle('passata', k < qui); if (k === qui) v.setAttribute('aria-current', 'step'); else v.removeAttribute('aria-current'); });
+  const t = voci[qui];
+  percorso.style.setProperty('--fino', (t.offsetTop + t.offsetHeight / 2 - 14) + 'px');
+}
+addEventListener('scroll', () => { if (!attesa) { attesa = true; requestAnimationFrame(segui); } }, { passive: true });
+segui();
+</script>
+</body></html>

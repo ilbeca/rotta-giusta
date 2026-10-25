@@ -1,0 +1,39 @@
+/* Gli altri stili, accanto alla release candidate (25 ottobre 2026).
+   Quello che hanno in comune con «La carta che vive», e che non è il suo volto:
+   le superfici del browser disegnate, il filo fra le schermate, l'oggetto da
+   toccare che insegna. Il volto sta nel tema.css di ogni stile, dopo questo. */
+
+::selection{background:var(--evidenza,var(--rotta-chiara));color:var(--ink)}
+html{scrollbar-color:var(--ink-3) var(--carta);caret-color:var(--ink);accent-color:var(--azione)}
+:focus-visible{outline:3px solid var(--fuoco,var(--ink));outline-offset:3px;border-radius:6px}
+a{text-underline-offset:.2em;text-decoration-thickness:1px}
+.btn-pieno:focus-visible{outline-offset:4px}
+.btn-pieno{transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s,background-color .2s}
+.btn-pieno:active{transform:translateY(1px)}
+.righe>li>a{transition:background-color .15s}
+.righe>li>a:hover{background:var(--carta-2)}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--carta)}
+.nota-carta{border-left:0;border-radius:var(--r);padding:var(--s-24)}
+
+/* L'oggetto da toccare: un pulsante sopra ogni elemento del disegno, e il suo significato sotto */
+.tocca .mappa{position:relative}
+.tocca .illustrazione{display:block;width:100%;height:auto}
+.luce{position:absolute;width:48px;height:48px;margin:-24px 0 0 -24px;border-radius:50%;border:0;background:transparent;cursor:pointer;padding:0}
+.luce::after{content:"";position:absolute;inset:8px;border-radius:50%;border:2px solid var(--ink);opacity:0;transform:scale(.6);transition:opacity .2s,transform .3s cubic-bezier(.2,.8,.2,1)}
+.luce:hover::after,.luce:focus-visible::after,.luce[aria-expanded="true"]::after{opacity:1;transform:scale(1)}
+.luce:focus-visible{outline:none}
+.legenda-luce{margin:0;padding:var(--s-12) var(--s-16);background:var(--carta);border-top:1px solid var(--ink);min-height:4.6em;display:grid;gap:2px;align-content:center}
+.legenda-luce b{font-size:var(--t-16);font-weight:800}
+.legenda-luce span{font-size:var(--t-14);color:var(--ink-2)}
+.legenda-luce .invito{color:var(--ink-3)}
+@media (prefers-reduced-motion:no-preference){ .legenda-luce [data-voce]{animation:entra .35s cubic-bezier(.2,.8,.2,1)} }
+@keyframes entra{from{opacity:0;transform:translateY(4px)}}
+
+/* Il filo fra le schermate: l'avvio diventa la testata della domanda, la testata il riepilogo */
+@view-transition{navigation:auto}
+.testata{view-transition-name:testata}
+.barra{view-transition-name:barra}
+.vt-avvio{view-transition-name:avvio}
+::view-transition-group(avvio){animation-duration:.45s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.3s}
+@media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}

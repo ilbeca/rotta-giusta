@@ -1,0 +1,55 @@
+<svg class="illustrazione" viewBox="0 0 600 380" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Cinque bandiere su una drizza: Alfa, Charlie, November, Oscar e la bandiera del subacqueo">
+<defs>
+<pattern id="dis-onde" width="40" height="14" patternUnits="userSpaceOnUse"><path d="M0 9q5-5 10 0t10 0 10 0 10 0" fill="none" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.5"/></pattern>
+</defs>
+<rect width="600" height="380" fill="#0B3D91"/>
+<rect y="300" width="600" height="80" fill="#082E6E"/>
+<rect y="300" width="600" height="80" fill="url(#dis-onde)"/>
+<!-- La barca, dal marchio: una sagoma bianca sull'acqua -->
+<path d="M220 300h160l-22 22H244Z" fill="#FFFFFF" fill-opacity=".9"/>
+<path d="M300 300V40" stroke="#FFFFFF" stroke-width="3"/>
+<!-- La drizza -->
+<path d="M0 112C120 104 200 100 300 100s180 4 300 12" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+<g font-family="Manrope,sans-serif" font-size="13" font-weight="800" fill="#FFFFFF" text-anchor="middle">
+<!-- A, Alfa: bianco al ghindante, blu a coda di rondine -->
+<g class="alza" style="--i:0" transform="translate(24 124)">
+<path d="M48 0V-14" stroke="#fff" stroke-width="1.5"/>
+<rect width="48" height="72" fill="#FFFFFF"/>
+<path d="M48 0h48L76 36l20 36H48Z" fill="#0B3D91" stroke="#FFFFFF" stroke-width="2.5" stroke-linejoin="round"/>
+<text x="48" y="98">A · Alfa</text>
+</g>
+<!-- C, Charlie: blu bianco rosso bianco blu -->
+<g class="alza" style="--i:1" transform="translate(138 124)">
+<path d="M48 0V-18" stroke="#fff" stroke-width="1.5"/>
+<rect width="96" height="72" fill="#FFFFFF"/>
+<path d="M0 0h96v14.4H0ZM0 57.6h96V72H0Z" fill="#0B3D91"/>
+<path d="M0 28.8h96v14.4H0Z" fill="#C8102E"/>
+<rect width="96" height="72" fill="none" stroke="#FFFFFF" stroke-width="2.5"/>
+<text x="48" y="98">C · Charlie</text>
+</g>
+<!-- N, November: scacchiera blu e bianca -->
+<g class="alza" style="--i:2" transform="translate(252 124)">
+<path d="M48 0V-24" stroke="#fff" stroke-width="1.5"/>
+<rect width="96" height="72" fill="#FFFFFF"/>
+<path d="M0 0h24v18H0ZM48 0h24v18H48ZM24 18h24v18H24ZM72 18h24v18H72ZM0 36h24v18H0ZM48 36h24v18H48ZM24 54h24v18H24ZM72 54h24v18H72Z" fill="#0B3D91"/>
+<rect width="96" height="72" fill="none" stroke="#FFFFFF" stroke-width="2.5"/>
+<text x="48" y="98">N · November</text>
+</g>
+<!-- O, Oscar: rosso e giallo, divisi in diagonale -->
+<g class="alza" style="--i:3" transform="translate(366 124)">
+<path d="M48 0V-18" stroke="#fff" stroke-width="1.5"/>
+<path d="M0 0h96v72Z" fill="#C8102E"/>
+<path d="M0 0v72h96Z" fill="#FFC72C"/>
+<rect width="96" height="72" fill="none" stroke="#FFFFFF" stroke-width="2.5"/>
+<text x="48" y="98">O · Oscar</text>
+</g>
+<!-- La bandiera del subacqueo: rossa con una banda bianca diagonale -->
+<g class="alza" style="--i:4" transform="translate(480 124)">
+<path d="M48 0V-14" stroke="#fff" stroke-width="1.5"/>
+<rect width="96" height="72" fill="#C8102E"/>
+<path d="M0 0h16l80 58v14H80L0 14Z" fill="#FFFFFF"/>
+<rect width="96" height="72" fill="none" stroke="#FFFFFF" stroke-width="2.5"/>
+<text x="48" y="98">Subacqueo</text>
+</g>
+</g>
+</svg>

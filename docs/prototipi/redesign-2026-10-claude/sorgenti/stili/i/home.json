@@ -1,0 +1,69 @@
+{
+ "titolo": "Una riga del giornale di bordo",
+ "intro": "A bordo si scrive, a ogni ora, dove va la barca. Le stesse sigle le ritrovi negli esercizi di carteggio.",
+ "invito": "Tocca una colonna per leggere che cosa vuol dire.",
+ "bottoni": [
+  [
+   "ora",
+   "16.83%",
+   "56.32%",
+   "Ora: leggi che cosa si annota",
+   "11.67%",
+   "35.79%"
+  ],
+  [
+   "pb",
+   "28.50%",
+   "56.32%",
+   "Pb: leggi che cosa vuol dire",
+   "11.67%",
+   "35.79%"
+  ],
+  [
+   "pv",
+   "40.17%",
+   "56.32%",
+   "Pv: leggi che cosa vuol dire",
+   "11.67%",
+   "35.79%"
+  ],
+  [
+   "v",
+   "51.00%",
+   "56.32%",
+   "V: leggi che cosa vuol dire",
+   "10.00%",
+   "35.79%"
+  ],
+  [
+   "miglia",
+   "62.67%",
+   "56.32%",
+   "Miglia: leggi che cosa vuol dire",
+   "13.33%",
+   "35.79%"
+  ]
+ ],
+ "voci": {
+  "ora": [
+   "Ora",
+   "Si annota a ogni cambio di prora o di velocità, e a ogni punto nave: da qui si ricostruisce la navigazione."
+  ],
+  "pb": [
+   "Pb · prora bussola",
+   "La prora letta sulla bussola di bordo, senza correzioni."
+  ],
+  "pv": [
+   "Pv · prora vera",
+   "La prora riferita al nord vero: la prora bussola corretta di deviazione e declinazione."
+  ],
+  "v": [
+   "V · velocità",
+   "In nodi, cioè miglia all'ora: a 6 nodi, in un'ora si fanno 6 miglia."
+  ],
+  "miglia": [
+   "Miglia",
+   "Le miglia percorse dalla partenza: fra le 10 e le 11, a 6 nodi, sono passate da 12 a 18."
+  ]
+ }
+}

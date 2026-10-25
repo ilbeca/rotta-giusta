@@ -1,0 +1,35 @@
+/* Direzione B — «La plancia di notte».
+   Fondo navy scurissimo come un plotter in modalità notte; l'azione è ambra,
+   il colore che le plance usano di notte per non abbagliare; il segno del sito
+   è il ciano dei tracciati. Verde e rosso restano del giusto e dello sbagliato. */
+:root{
+  --carta:#07131F;--carta-2:#0D2132;--terra:#132A3D;--terra-scura:#FFB547;
+  --acqua:#10283B;--acqua-2:#163550;--acqua-3:#2A5574;
+  --ink:#E8F1F6;--ink-2:#B8CCD9;--ink-3:#93ADBF;--filo:#FFFFFF2E;--filo-2:#FFFFFF14;
+  --rotta:#5CC8E8;--rotta-chiara:#0E3344;
+  --ok:#4ADE80;--ok-chiaro:#0F2E1D;--ko:#F87171;--ko-chiaro:#3A1517;
+  --azione:#FFB547;--su-azione:#07131F;--attivo:#FFB547;--su-attivo:#07131F;
+  --forte:#FFB547;--su-forte:#07131F;--campo:#0D2132;--marchio:#E8F1F6;--su-esito:#07131F;
+  --r:14px;
+}
+body{color-scheme:dark}
+.btn-pieno{box-shadow:0 0 0 1px #FFB54766,0 8px 24px -10px #FFB547AA}
+.occhiello{color:var(--ink-3)}
+/* Il riquadro: uno schermo di bordo, con i cerchi del radar in un angolo */
+.carta{background:radial-gradient(circle at 100% 0,transparent 0 60px,#5CC8E81A 61px 62px,transparent 63px 110px,#5CC8E81A 111px 112px,transparent 113px 160px,#5CC8E812 161px 162px,transparent 163px),var(--carta-2);border:1px solid #1E3A52;outline:0;border-radius:18px}
+.scala,.figura-grande::before,.striscia::before{display:none!important}
+.striscia,.figura-grande{border:1px solid #1E3A52!important;outline:0!important;border-radius:18px!important}
+.scandaglio b{color:#F5F9FB;font-weight:700;letter-spacing:0}
+.nota-carta{border-left-color:var(--terra-scura);border-radius:0 14px 14px 0}
+.righe .ico-tondo{background:var(--acqua);color:var(--rotta)}
+.barra a[aria-current]::before{background:var(--azione)}
+.testata{border-bottom-color:#1E3A52}
+/* L'avanzamento come una fila di luci */
+.rotta::before,.rotta::after{display:none}
+.tappa{width:12px;height:12px;border:0;background:#1E3A52}
+.tappa.ko{background:var(--ko);box-shadow:0 0 10px var(--ko)}
+.tappa.ok{background:var(--ok);box-shadow:0 0 10px var(--ok)}
+.tappa.ko.ora{box-shadow:0 0 0 3px var(--carta),0 0 0 5px var(--ink),0 0 10px var(--ko)}
+.risposta{border-color:#1E3A52}
+.chip{border-color:var(--ink-3);color:var(--ink)}
+.cerca button{border-color:var(--ink-3)}

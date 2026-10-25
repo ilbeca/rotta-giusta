@@ -1,0 +1,13 @@
+<svg class="illustrazione" viewBox="0 0 600 380" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Una pagina del giornale di bordo: le colonne Ora, Prora bussola, Prora vera, Velocità, Miglia e Note, con due righe scritte a penna">
+<rect width="600" height="380" fill="#F1F5EC"/>
+<g stroke="#C6D5E4" stroke-width="1"><path d="M0 52H600"/><path d="M0 84H600"/><path d="M0 116H600"/><path d="M0 148H600"/><path d="M0 180H600"/><path d="M0 212H600"/><path d="M0 244H600"/><path d="M0 276H600"/><path d="M0 308H600"/><path d="M0 340H600"/><path d="M0 372H600"/></g>
+<path d="M50 0V380M54 0V380" stroke="#D2463F" stroke-width="1.5" fill="none"/>
+<text x="66" y="116" font-family="Manrope,sans-serif" font-size="15" font-weight="800" fill="#14234B">Giornale di bordo</text>
+<text x="590" y="116" text-anchor="end" font-family="Manrope,sans-serif" font-size="13" font-weight="600" fill="#4E5A7C">25 ottobre · pagina 12</text>
+<rect x="66" y="148" width="524" height="40" fill="#E4ECF4"/>
+<path d="M66 148H590M66 188H590M66 191H590" stroke="#14234B" stroke-opacity=".55" fill="none"/>
+<g stroke="#7F93AD" stroke-width="1" fill="none"><path d="M136 148V380"/><path d="M206 148V380"/><path d="M276 148V380"/><path d="M336 148V380"/><path d="M416 148V380"/></g>
+<g font-family="Manrope,sans-serif" font-size="14" font-weight="800" fill="#34426A"><text x="101" y="174" text-anchor="middle">Ora</text><text x="171" y="174" text-anchor="middle">Pb</text><text x="241" y="174" text-anchor="middle">Pv</text><text x="306" y="174" text-anchor="middle">V</text><text x="376" y="174" text-anchor="middle">Miglia</text><text x="503" y="174" text-anchor="middle">Note</text></g>
+<g font-family="Manrope,sans-serif" font-size="19" font-style="italic" font-weight="600" fill="#34426A"><text class="" x="101" y="224" text-anchor="middle">10.00</text><text class="" x="171" y="224" text-anchor="middle">087°</text><text class="" x="241" y="224" text-anchor="middle">090°</text><text class="" x="306" y="224" text-anchor="middle">6</text><text class="" x="376" y="224" text-anchor="middle">12,0</text><text class="" x="503" y="224" text-anchor="middle" font-size="15">Partenza</text></g>
+<g font-family="Manrope,sans-serif" font-size="19" font-style="italic" font-weight="700" fill="#173F7A"><text class="scritto" x="101" y="256" text-anchor="middle">11.00</text><text class="scritto" x="171" y="256" text-anchor="middle">087°</text><text class="scritto" x="241" y="256" text-anchor="middle">090°</text><text class="scritto" x="306" y="256" text-anchor="middle">6</text><text class="scritto" x="376" y="256" text-anchor="middle">18,0</text><text class="scritto" x="503" y="256" text-anchor="middle" font-size="15">Faro al traverso</text></g>
+</svg>
