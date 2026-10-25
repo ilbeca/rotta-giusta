@@ -280,6 +280,43 @@ selezione o contabilità. Versione 0.34.0 invariata.
   riferimento e non si tocca; gli altri stili si provano in cartelle nuove.
   Scritto nel README della cartella e in I-29; i file della versione no.
 
+### Progettato — I-29: quattro altri stili accanto alla release candidate
+
+- **Perché.** L'autore ha chiesto di provare altri vestiti per lo stesso sito,
+  per confrontarli con «La carta che vive» guardandoli. Quattro mock, uno per
+  ogni stile proposto: **D — Il segnalamento** (bianco, nero, il giallo delle
+  boe cardinali), **E — Le bandiere** (il Codice internazionale dei segnali),
+  **F — Il manuale a schede** (una linguetta colorata per tema, lunga quanto
+  pesa all'esame), **G — La regata** (il mare aperto, le vele, le boe arancio).
+  Stanno in `docs/prototipi/redesign-2026-10-claude/`, accanto alla RC, con le
+  stesse sei schermate e gli stessi testi; ognuno ha nella Home un disegno da
+  toccare che insegna: le quattro cardinali, cinque bandiere, il peso dei temi,
+  le andature.
+- **La RC non è stata toccata**, né le direzioni A, B, C né le loro sorgenti:
+  le cinque pagine comuni sono copiate in `sorgenti/stili/base/`, e un
+  costruttore suo, `sorgenti/stili/build.py`, scrive soltanto le quattro
+  cartelle nuove e rifiuta i nomi di quelle esistenti. `git status` dopo ogni
+  costruzione: solo file nuovi.
+- **Scelti con impeccable 4.7.1:** sette candidati dal mondo di chi studia, e il
+  suo tiro di dadi ha assegnato il segnalamento; il manuale a schede viene da
+  uno sfidante che ha retto. Per il tiro serve un `PRODUCT.md`, scritto dalla
+  specifica e dalla filosofia e non committato.
+- **Misurato** su 72 combinazioni (quattro stili, sei schermate, 375×812,
+  375×667, 1280×800) con `sorgenti/stili/cattura-stili.mjs`: nessuno
+  sbordamento, un solo pulsante principale, Manrope caricato, «Avanti»
+  raggiungibile e scoperto a 375×667, la figura intera prima di rispondere
+  (323–534 px), l'avviso a 12 px da «Inizia», contrasti AA (testo secondario
+  6,0–6,9:1). **Trovato e corretto guardando:** al primo giro, nella Home a
+  375×667, «Simula il quiz base» finiva sotto la barra in tutti e quattro
+  (629–664 px contro 601): strisce e numeri ridotti al telefono, ora 594–596
+  px; nel riepilogo lo stile delle etichette finiva sui numeri (E, G); in D la
+  striscia del telefono restava al computer; in G la striscia tagliava via le
+  barche, ridisegnate in fila. 100 schermate, guardate e citate nel README.
+- Confronto e decisione 13 in fondo a I-29. Da verificare dall'autore: i testi
+  didattici delle cardinali, delle bandiere e delle andature. Nessun file di
+  `site/`, `tests/`, `server/`, della specifica o della coda toccato; nessuna
+  suite rifatta.
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la

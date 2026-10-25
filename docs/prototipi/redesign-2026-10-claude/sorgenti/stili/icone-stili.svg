@@ -1,0 +1,6 @@
+<svg class="svg-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<!-- I segni degli stili nuovi, nello stesso tratto delle icone comuni -->
+<symbol id="i-boa" viewBox="0 0 24 24"><path d="M9 4h6M10 4l2-2 2 2M8 22h8l-1-12H9z"/><path d="M8.6 14h6.8M8.3 18h7.4"/></symbol>
+<symbol id="i-vela" viewBox="0 0 24 24"><path d="M12 3v15M12 4c4 4 6 8 6 13h-6M11 7c-3 3-5 6-5 10h5"/><path d="M4 20c2.7 1.3 5.3 1.3 8 0s5.3-1.3 8 0"/></symbol>
+<symbol id="i-scheda" viewBox="0 0 24 24"><path d="M4 4h12v16H4zM16 6h4v4h-4M16 12h3v4h-3"/></symbol>
+</svg>

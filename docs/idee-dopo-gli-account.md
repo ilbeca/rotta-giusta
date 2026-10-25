@@ -4800,3 +4800,77 @@ cartella. Decisione 12, sotto.
     sì per la carta della Home, che insegna; la rotta come filo dopo, quando la
     domanda e il riepilogo veri sono rifatti, perché le transizioni toccano la
     navigazione del documento solo (§6 della specifica).
+
+#### Gli altri stili, accanto alla release candidate — 25 ottobre 2026
+
+L'autore ha chiesto di provare altri «stili» accanto a «La carta che vive», che
+resta la release candidate e non è stata toccata. Per stile qui si intende il
+vestito: colori, disegni, forma dei riquadri e dei numeri, tono. Contenuto,
+schermate, testi e funzioni restano quelli della RC. La sessione ha proposto
+quattro stili, e l'autore ha chiesto un mock per ognuno. Sono in
+`docs/prototipi/redesign-2026-10-claude/`, accanto alla RC: `d-segnalamento/`,
+`e-bandiere/`, `f-manuale-a-schede/`, `g-regata/`. Ognuno ha le stesse sei
+schermate con gli stessi testi. Le schermate, una per una, e le misure sono nel
+README della cartella.
+
+**Come sono nati.** Con il metodo di impeccable 4.7.1: sette candidati presi
+dal mondo di chi studia, non dagli strumenti di bordo (la B, la plancia,
+mostrava che uno strumento diventa un costume). In ordine di risonanza: le
+bandiere, la regata, il manuale della scuola, il segnalamento, il manifesto da
+cantiere, il giornale di bordo, il bollettino del mare. Il tiro di dadi di
+impeccable ha assegnato il quarto, **il segnalamento**. Fra i suoi sfidanti uno ha retto,
+l'indice a schede di un manuale, ed è diventato F. Il tiro vuole un
+`PRODUCT.md`: la sessione l'ha scritto dalla specifica e dalla filosofia,
+senza chiederlo all'autore, e non l'ha committato. Gli altri sfidanti sono
+stati scartati: la copertina con il codice a colori, la cassetta scritta a
+mano, il sito giapponese fitto, la notazione della danza e il campionario di un
+carattere. Due discipline sono state prese da loro senza i loro vestiti: dalla
+notazione, «la lunghezza è la misura», che è la linguetta di F; dal
+campionario, la gerarchia fatta con un carattere solo e i suoi pesi.
+
+Come la RC, ognuno ha **un oggetto che insegna**, da toccare nella Home:
+
+| | Lo stile | Che cosa cambia per chi studia | L'oggetto che insegna | Il rischio |
+|---|---|---|---|---|
+| **RC** | La carta che vive: fondo color carta, la carta nautica, il navy | Riconosce il materiale del carteggio; il sito parla la lingua della prova eliminatoria | Il faro e la boa che lampeggiano con le loro sigle | Il crema e la carta sono il primo istinto di chi disegna con un modello; regge perché la carta è proprio la materia d'esame |
+| **D** | Il segnalamento: bianco, nero pieno, il giallo delle cardinali solo nelle fasce e nel disegno | Il più deciso e il più leggibile al sole; il segnale diventa il modo di orientarsi, e i numeri dell'esame hanno sotto una banda gialla, come una cifra dipinta | Una secca con le quattro boe cardinali, ognuna con i suoi coni e la sua luce, che dicono da che parte passare (32 quesiti della banca parlano di AISM-IALA) | Giallo e nero ricordano «cantiere, pericolo»: tenuti a fasce sottili, mai a campiture. È il più vicino a un'app generica, se le boe si tolgono |
+| **E** | Le bandiere: bianco, blu bandiera, angoli vivi, il giallo come segno; il rosso solo dentro le bandiere | Il più giovane e sportivo senza diventare un gioco; la Home ha un colore pieno da bordo a bordo | Cinque bandiere sulla drizza, che si alzano all'apertura: Alfa, Charlie, November, Oscar e quella del subacqueo. La Alfa e la bandiera del subacqueo sono nella banca | Le bandiere non sono il cuore dell'esame; il rosso delle bandiere vive accanto al rosso dello sbagliato |
+| **F** | Il manuale a schede: pagina bianca, inchiostro quasi nero, otto colori di capitolo usati solo come etichette | Il più utile per orientarsi: il colore dice in che tema sei, anche nella domanda («Navigazione», «Colreg»); la linguetta lunga quanto pesa il tema rende visibile la composizione delle 20 domande | Il sommario di un manuale aperto: toccando un capitolo, quante domande porta e fra quanti quesiti | Il più scolastico e il meno «mare»; otto colori in più nei ruoli di D-25; al telefono le scritte dentro il disegno sono minuscole |
+| **G** | La regata: bianco come una vela, il blu del mare aperto, l'arancio delle boe di regata | Aria aperta ed energia; il mare a tutta larghezza in testa alla Home; le tappe della domanda sono boe da girare | Le quattro andature rispetto al vento (bolina, traverso, lasco, poppa), materia del quiz vela | Il blu saturo lo avvicina alla C; parla soprattutto a chi fa la vela, mentre la prova di tutti è il base |
+
+**Che cosa hanno in comune, e regge:** la domanda e il riepilogo restano calmi
+in tutti e quattro, come chiedeva ChatGPT: cambiano soltanto la forma delle
+tappe (quadrati in D, bandierine in E, la linguetta del capitolo in F, boe
+triangolari in G) e il colore del pulsante. Lo stile si vede nella Home, in
+Allenati e nei riquadri che contano. Il colore del segno resta fuori dai
+comandi e dagli esiti in tutti e quattro.
+
+**Misurato**, sulle 72 combinazioni (quattro stili, sei schermate, tre
+misure): nessuno sbordamento; un solo pulsante principale; il principale nel
+primo schermo anche a 375×667; «Avanti» raggiungibile e scoperto; la figura
+intera prima di rispondere; l'avviso a 12 px da «Inizia»; contrasti AA. Il primo
+giro aveva «Simula il quiz base» sotto la barra a 375×667 in tutti e quattro:
+le strisce disegnate e i numeri al telefono sono stati ridotti. **Non
+controllato:** nessuna persona li ha visti, Safari e il gesto vero, le
+animazioni guardate solo ferme.
+
+**Da verificare dall'autore**, perché è contenuto didattico: le frasi delle
+quattro cardinali e i loro ritmi (D), i significati delle bandiere (E), gli
+angoli e le frasi delle andature (G).
+
+**La lettura della sessione, non una raccomandazione che sposta la RC.** Nessuno
+dei quattro batte la carta su quello per cui la carta è stata scelta: nasce
+dalla prova eliminatoria. Due però portano qualcosa che la RC non ha. **F**
+rende visibile dove sei e quanto pesa un tema: è un'idea di struttura più che
+di vestito, e potrebbe entrare nella RC (la linguetta del capitolo nella
+domanda, la barra delle 20 domande) senza cambiarle il volto. **D** è il più
+forte come immagine, e le sue quattro boe sarebbero un buon secondo oggetto da
+toccare, accanto al faro e alla boa della RC. E è il più giovane, G il più
+arioso; tutti e due si tengono meglio come volto di una parte del sito (i
+Segnali per E, la vela per G) che di tutto.
+
+13. **Gli altri stili.** Tenere la RC, sostituirla con uno dei quattro, o
+    prendere da loro dei pezzi? *Raccomandazione:* tenere la RC; portarci da F
+    la linguetta del capitolo nella domanda e la barra delle 20 domande, e da D
+    le quattro cardinali come secondo disegno da toccare. Ma solo dopo averli
+    guardati: sono mock, e la decisione è dell'autore.

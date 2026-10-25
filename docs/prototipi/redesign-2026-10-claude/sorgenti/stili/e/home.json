@@ -1,0 +1,19 @@
+{
+  "titolo": "Una bandiera, un messaggio",
+  "intro": "Ogni bandiera del Codice internazionale dei segnali, da sola, dice una frase intera. Tocca una bandiera per leggerla.",
+  "invito": "Tocca una bandiera per leggere che cosa dice.",
+  "bottoni": [
+    ["a", "12%", "42.1%", "La bandiera Alfa: leggila"],
+    ["c", "31%", "42.1%", "La bandiera Charlie: leggila"],
+    ["n", "50%", "42.1%", "La bandiera November: leggila"],
+    ["o", "69%", "42.1%", "La bandiera Oscar: leggila"],
+    ["sub", "88%", "42.1%", "La bandiera del subacqueo: leggila"]
+  ],
+  "voci": {
+    "a": ["A · Alfa", "Ho un palombaro in immersione: tenetevi lontani e procedete adagio. È fra i quesiti d'esame."],
+    "c": ["C · Charlie", "Sì: affermativo."],
+    "n": ["N · November", "No: negativo."],
+    "o": ["O · Oscar", "Uomo in mare."],
+    "sub": ["La bandiera del subacqueo", "Rossa con una banda bianca diagonale, sul galleggiante: c'è un subacqueo in immersione, sta' alla larga. È fra i quesiti d'esame."]
+  }
+}

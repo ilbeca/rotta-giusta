@@ -26,7 +26,11 @@ veri della banca (1.722 quesiti, i pesi d'esame, il quesito 1.7.6-19), il resto
 | [`b-plancia-di-notte/`](b-plancia-di-notte/) | **B — La plancia di notte**: le stesse sei schermate |
 | [`c-quaderno-a-colori/`](c-quaderno-a-colori/) | **C — Il quaderno a colori**: le stesse sei schermate |
 | [`a-carta-viva/`](a-carta-viva/) | **A — La carta che vive, release candidate**: una copia della A spinta oltre con impeccable (overdrive), 25 ottobre. La A resta com'è |
-| [`sorgenti/`](sorgenti/) | Da dove sono composti: le quattro pagine comuni, `comune.css`, un `tema.css` e un'illustrazione per direzione, le icone, `build.py`, e i due script di cattura |
+| [`d-segnalamento/`](d-segnalamento/) | **D — Il segnalamento**, 25 ottobre: le boe cardinali, nero e giallo. Uno dei quattro stili provati accanto alla RC |
+| [`e-bandiere/`](e-bandiere/) | **E — Le bandiere**: il Codice internazionale dei segnali, blu bandiera e colori piatti |
+| [`f-manuale-a-schede/`](f-manuale-a-schede/) | **F — Il manuale a schede**: il libro della scuola nautica, una linguetta colorata per tema |
+| [`g-regata/`](g-regata/) | **G — La regata**: il mare aperto, le vele, le boe arancio del percorso |
+| [`sorgenti/`](sorgenti/) | Da dove sono composti: le quattro pagine comuni, `comune.css`, un `tema.css` e un'illustrazione per direzione, le icone, `build.py`, e i due script di cattura; in `stili/` le sorgenti, il costruttore e lo script di cattura dei quattro stili del 25 ottobre |
 
 Le sei schermate di ogni direzione: `home.html`, la Home senza risposte;
 `quiz.html`, Allenati · Quiz; `preparazione.html`, l'allenamento breve con
@@ -231,9 +235,184 @@ il rimbalzo, che il rilevatore aveva segnalato nella domanda, sono state tolte.
 | [`a-carta-viva/schermate/riepilogo-1280.png`](a-carta-viva/schermate/riepilogo-1280.png) | Il riepilogo al computer |
 | [`a-carta-viva/schermate/riepilogo-1280-intera.png`](a-carta-viva/schermate/riepilogo-1280-intera.png) | Il riepilogo intero al computer |
 
+## Gli altri stili — 25 ottobre 2026
+
+Chiesti dall'autore il 25 ottobre: altri vestiti per lo stesso sito, accanto
+alla release candidate, che non è stata toccata. Quattro stili, scelti fra le
+proposte della sessione: **D — Il segnalamento**, **E — Le bandiere**, **F — Il
+manuale a schede**, **G — La regata**. Il confronto con la RC, che cosa cambia
+per chi studia e i rischi stanno nella scheda I-29, in fondo.
+
+Ogni stile ha **le stesse sei schermate e gli stessi testi della RC**: le cinque
+pagine dopo la Home sono una copia di quelle della RC (`sorgenti/stili/base/`),
+e la Home cambia soltanto il disegno da toccare, il suo titolo e le sue voci.
+Ognuno ha il suo oggetto che insegna, come le luci della RC: le boe cardinali
+(D), cinque bandiere, fra cui la Alfa e quella del subacqueo, che sono nella
+banca (E), il peso di ogni tema all'esame (F), le andature rispetto al vento
+(G). In F la Home ha in più, nel riquadro della prova, una barra con le 20
+domande divise per tema, senza testo visibile (la dice l'etichetta per i
+lettori di schermo). Il filo fra le schermate della RC (View Transitions) c'è
+anche qui.
+
+**Da verificare dall'autore**, perché è contenuto didattico: i testi delle
+quattro cardinali (D), dei significati delle bandiere (E) e delle andature (G),
+e i ritmi delle luci in D (Sc. continua, Sc.(3) 10s, Sc.(6) e un lampo lungo
+15s, Sc.(9) 15s) scritti in parole dove la sigla italiana non è sicura.
+
+Per rifarli, da questa cartella (scrive soltanto le quattro cartelle nuove; le
+direzioni A, B, C e la RC le scrive `sorgenti/build.py`, che qui non si chiama):
+
+```bash
+python3 sorgenti/stili/build.py . ../../../site/caratteri/manrope-latin-wght-normal.woff2
+node sorgenti/stili/cattura-stili.mjs "$PWD"
+```
+
+**Misurato** da `sorgenti/stili/cattura-stili.mjs` su tutte le 72 combinazioni
+(quattro stili, sei schermate, 375×812, 375×667 e 1280×800): nessuno
+sbordamento orizzontale, un solo `data-ruolo="principale"` visibile, Manrope
+caricato. Nella Home a 375×667 «Simula il quiz base» finisce fra 594 e 596 px,
+sopra la barra (600–602): al primo giro finiva fra 629 e 664, sotto la barra,
+e le strisce e i numeri al telefono sono stati ridotti. «Avanti» dopo un errore
+a 375×667 sta fra 599 e 655 px, e il suo centro è suo (`elementFromPoint`). La
+figura della domanda lunga sta intera fra 323 e 534 px a 375×812 (326–537 in
+F), con la domanda da 124 e il centro della prima risposta a 678. L'avviso della
+preparazione finisce 12 px sopra «Inizia», sopra la barra. Contrasti calcolati
+sui colori dei temi: testo secondario da 6,0 a 6,9:1 sul bianco, testo sui
+pulsanti pieni da 8,9 a 16,9:1, bianco sulle otto linguette di F da 5,5 a
+8,8:1, verde e rosso degli esiti sui loro fondi da 5,5 a 5,9:1. Il rilevatore di
+impeccable non trova niente da correggere: le strisce ripetute e il bordo
+laterale che segnala sono nel CSS comune della A, non usati qui; i «bordi a
+filo» sono i disegni che riempiono la loro cornice. Tutte le schermate sono
+state guardate.
+
+**Non controllato:** nessuna persona li ha visti; Safari e il gesto vero; le
+transizioni sono state guardate solo nelle schermate, non in movimento; al
+telefono in F le scritte del sommario dentro il disegno sono troppo piccole per
+leggerle (le dice la legenda, toccando).
+
+### D — Il segnalamento: fondo bianco, nero pieno, il giallo segnale nelle fasce; la secca con le quattro boe cardinali che lampeggiano con i loro ritmi
+
+| Schermata | Che cosa mostra |
+|---|---|
+| [`d-segnalamento/schermate/home-375.png`](d-segnalamento/schermate/home-375.png) | Home, primo schermo a 375×812 |
+| [`d-segnalamento/schermate/home-375x667.png`](d-segnalamento/schermate/home-375x667.png) | Home su un telefono piccolo: «Simula il quiz base» sopra la barra |
+| [`d-segnalamento/schermate/home-375-intera.png`](d-segnalamento/schermate/home-375-intera.png) | Home intera al telefono, con il disegno da toccare |
+| [`d-segnalamento/schermate/home-1280.png`](d-segnalamento/schermate/home-1280.png) | Home al computer, primo schermo |
+| [`d-segnalamento/schermate/home-tocca-1280.png`](d-segnalamento/schermate/home-tocca-1280.png) | Home al computer con il primo elemento del disegno toccato: sotto, che cosa vuol dire |
+| [`d-segnalamento/schermate/home-1280-intera.png`](d-segnalamento/schermate/home-1280-intera.png) | Home intera al computer |
+| [`d-segnalamento/schermate/quiz-375.png`](d-segnalamento/schermate/quiz-375.png) | Allenati · Quiz, primo schermo al telefono |
+| [`d-segnalamento/schermate/quiz-375x667.png`](d-segnalamento/schermate/quiz-375x667.png) | Allenati · Quiz su un telefono piccolo |
+| [`d-segnalamento/schermate/quiz-375-intera.png`](d-segnalamento/schermate/quiz-375-intera.png) | Allenati · Quiz intera al telefono |
+| [`d-segnalamento/schermate/quiz-1280.png`](d-segnalamento/schermate/quiz-1280.png) | Allenati · Quiz al computer |
+| [`d-segnalamento/schermate/quiz-1280-intera.png`](d-segnalamento/schermate/quiz-1280-intera.png) | Allenati · Quiz intera al computer |
+| [`d-segnalamento/schermate/preparazione-375.png`](d-segnalamento/schermate/preparazione-375.png) | La preparazione al telefono |
+| [`d-segnalamento/schermate/preparazione-375x667.png`](d-segnalamento/schermate/preparazione-375x667.png) | La preparazione su un telefono piccolo: l'avviso «senza account» 12 px sopra «Inizia», sopra la barra |
+| [`d-segnalamento/schermate/preparazione-1280.png`](d-segnalamento/schermate/preparazione-1280.png) | La preparazione al computer |
+| [`d-segnalamento/schermate/runner-375.png`](d-segnalamento/schermate/runner-375.png) | La domanda 1.7.6-19 dopo una risposta sbagliata, a 375×812 |
+| [`d-segnalamento/schermate/runner-375x667.png`](d-segnalamento/schermate/runner-375x667.png) | La stessa su un telefono piccolo: «Avanti» nel primo schermo |
+| [`d-segnalamento/schermate/runner-1280.png`](d-segnalamento/schermate/runner-1280.png) | La domanda dopo l'errore, al computer |
+| [`d-segnalamento/schermate/runner-figura-375.png`](d-segnalamento/schermate/runner-figura-375.png) | La domanda più lunga con figura, prima di rispondere: domanda, figura intera e prima risposta nel primo schermo |
+| [`d-segnalamento/schermate/runner-figura-375x667.png`](d-segnalamento/schermate/runner-figura-375x667.png) | La stessa su un telefono piccolo |
+| [`d-segnalamento/schermate/runner-figura-1280.png`](d-segnalamento/schermate/runner-figura-1280.png) | La stessa al computer |
+| [`d-segnalamento/schermate/riepilogo-375.png`](d-segnalamento/schermate/riepilogo-375.png) | Il riepilogo di due domande, primo schermo |
+| [`d-segnalamento/schermate/riepilogo-375x667.png`](d-segnalamento/schermate/riepilogo-375x667.png) | Il riepilogo su un telefono piccolo |
+| [`d-segnalamento/schermate/riepilogo-375-intera.png`](d-segnalamento/schermate/riepilogo-375-intera.png) | Il riepilogo intero al telefono |
+| [`d-segnalamento/schermate/riepilogo-1280.png`](d-segnalamento/schermate/riepilogo-1280.png) | Il riepilogo al computer |
+| [`d-segnalamento/schermate/riepilogo-1280-intera.png`](d-segnalamento/schermate/riepilogo-1280-intera.png) | Il riepilogo intero al computer |
+
+### E — Le bandiere: bianco, blu bandiera, angoli vivi; la drizza con cinque bandiere che si alzano e si leggono toccandole
+
+| Schermata | Che cosa mostra |
+|---|---|
+| [`e-bandiere/schermate/home-375.png`](e-bandiere/schermate/home-375.png) | Home, primo schermo a 375×812 |
+| [`e-bandiere/schermate/home-375x667.png`](e-bandiere/schermate/home-375x667.png) | Home su un telefono piccolo: «Simula il quiz base» sopra la barra |
+| [`e-bandiere/schermate/home-375-intera.png`](e-bandiere/schermate/home-375-intera.png) | Home intera al telefono, con il disegno da toccare |
+| [`e-bandiere/schermate/home-1280.png`](e-bandiere/schermate/home-1280.png) | Home al computer, primo schermo |
+| [`e-bandiere/schermate/home-tocca-1280.png`](e-bandiere/schermate/home-tocca-1280.png) | Home al computer con il primo elemento del disegno toccato: sotto, che cosa vuol dire |
+| [`e-bandiere/schermate/home-1280-intera.png`](e-bandiere/schermate/home-1280-intera.png) | Home intera al computer |
+| [`e-bandiere/schermate/quiz-375.png`](e-bandiere/schermate/quiz-375.png) | Allenati · Quiz, primo schermo al telefono |
+| [`e-bandiere/schermate/quiz-375x667.png`](e-bandiere/schermate/quiz-375x667.png) | Allenati · Quiz su un telefono piccolo |
+| [`e-bandiere/schermate/quiz-375-intera.png`](e-bandiere/schermate/quiz-375-intera.png) | Allenati · Quiz intera al telefono |
+| [`e-bandiere/schermate/quiz-1280.png`](e-bandiere/schermate/quiz-1280.png) | Allenati · Quiz al computer |
+| [`e-bandiere/schermate/quiz-1280-intera.png`](e-bandiere/schermate/quiz-1280-intera.png) | Allenati · Quiz intera al computer |
+| [`e-bandiere/schermate/preparazione-375.png`](e-bandiere/schermate/preparazione-375.png) | La preparazione al telefono |
+| [`e-bandiere/schermate/preparazione-375x667.png`](e-bandiere/schermate/preparazione-375x667.png) | La preparazione su un telefono piccolo: l'avviso «senza account» 12 px sopra «Inizia», sopra la barra |
+| [`e-bandiere/schermate/preparazione-1280.png`](e-bandiere/schermate/preparazione-1280.png) | La preparazione al computer |
+| [`e-bandiere/schermate/runner-375.png`](e-bandiere/schermate/runner-375.png) | La domanda 1.7.6-19 dopo una risposta sbagliata, a 375×812 |
+| [`e-bandiere/schermate/runner-375x667.png`](e-bandiere/schermate/runner-375x667.png) | La stessa su un telefono piccolo: «Avanti» nel primo schermo |
+| [`e-bandiere/schermate/runner-1280.png`](e-bandiere/schermate/runner-1280.png) | La domanda dopo l'errore, al computer |
+| [`e-bandiere/schermate/runner-figura-375.png`](e-bandiere/schermate/runner-figura-375.png) | La domanda più lunga con figura, prima di rispondere: domanda, figura intera e prima risposta nel primo schermo |
+| [`e-bandiere/schermate/runner-figura-375x667.png`](e-bandiere/schermate/runner-figura-375x667.png) | La stessa su un telefono piccolo |
+| [`e-bandiere/schermate/runner-figura-1280.png`](e-bandiere/schermate/runner-figura-1280.png) | La stessa al computer |
+| [`e-bandiere/schermate/riepilogo-375.png`](e-bandiere/schermate/riepilogo-375.png) | Il riepilogo di due domande, primo schermo |
+| [`e-bandiere/schermate/riepilogo-375x667.png`](e-bandiere/schermate/riepilogo-375x667.png) | Il riepilogo su un telefono piccolo |
+| [`e-bandiere/schermate/riepilogo-375-intera.png`](e-bandiere/schermate/riepilogo-375-intera.png) | Il riepilogo intero al telefono |
+| [`e-bandiere/schermate/riepilogo-1280.png`](e-bandiere/schermate/riepilogo-1280.png) | Il riepilogo al computer |
+| [`e-bandiere/schermate/riepilogo-1280-intera.png`](e-bandiere/schermate/riepilogo-1280-intera.png) | Il riepilogo intero al computer |
+
+### F — Il manuale a schede: pagina bianca, inchiostro quasi nero, otto colori di capitolo; il sommario con le linguette lunghe quanto pesa il tema
+
+| Schermata | Che cosa mostra |
+|---|---|
+| [`f-manuale-a-schede/schermate/home-375.png`](f-manuale-a-schede/schermate/home-375.png) | Home, primo schermo a 375×812 |
+| [`f-manuale-a-schede/schermate/home-375x667.png`](f-manuale-a-schede/schermate/home-375x667.png) | Home su un telefono piccolo: «Simula il quiz base» sopra la barra |
+| [`f-manuale-a-schede/schermate/home-375-intera.png`](f-manuale-a-schede/schermate/home-375-intera.png) | Home intera al telefono, con il disegno da toccare |
+| [`f-manuale-a-schede/schermate/home-1280.png`](f-manuale-a-schede/schermate/home-1280.png) | Home al computer, primo schermo |
+| [`f-manuale-a-schede/schermate/home-tocca-1280.png`](f-manuale-a-schede/schermate/home-tocca-1280.png) | Home al computer con il primo elemento del disegno toccato: sotto, che cosa vuol dire |
+| [`f-manuale-a-schede/schermate/home-1280-intera.png`](f-manuale-a-schede/schermate/home-1280-intera.png) | Home intera al computer |
+| [`f-manuale-a-schede/schermate/quiz-375.png`](f-manuale-a-schede/schermate/quiz-375.png) | Allenati · Quiz, primo schermo al telefono |
+| [`f-manuale-a-schede/schermate/quiz-375x667.png`](f-manuale-a-schede/schermate/quiz-375x667.png) | Allenati · Quiz su un telefono piccolo |
+| [`f-manuale-a-schede/schermate/quiz-375-intera.png`](f-manuale-a-schede/schermate/quiz-375-intera.png) | Allenati · Quiz intera al telefono |
+| [`f-manuale-a-schede/schermate/quiz-1280.png`](f-manuale-a-schede/schermate/quiz-1280.png) | Allenati · Quiz al computer |
+| [`f-manuale-a-schede/schermate/quiz-1280-intera.png`](f-manuale-a-schede/schermate/quiz-1280-intera.png) | Allenati · Quiz intera al computer |
+| [`f-manuale-a-schede/schermate/preparazione-375.png`](f-manuale-a-schede/schermate/preparazione-375.png) | La preparazione al telefono |
+| [`f-manuale-a-schede/schermate/preparazione-375x667.png`](f-manuale-a-schede/schermate/preparazione-375x667.png) | La preparazione su un telefono piccolo: l'avviso «senza account» 12 px sopra «Inizia», sopra la barra |
+| [`f-manuale-a-schede/schermate/preparazione-1280.png`](f-manuale-a-schede/schermate/preparazione-1280.png) | La preparazione al computer |
+| [`f-manuale-a-schede/schermate/runner-375.png`](f-manuale-a-schede/schermate/runner-375.png) | La domanda 1.7.6-19 dopo una risposta sbagliata, a 375×812 |
+| [`f-manuale-a-schede/schermate/runner-375x667.png`](f-manuale-a-schede/schermate/runner-375x667.png) | La stessa su un telefono piccolo: «Avanti» nel primo schermo |
+| [`f-manuale-a-schede/schermate/runner-1280.png`](f-manuale-a-schede/schermate/runner-1280.png) | La domanda dopo l'errore, al computer |
+| [`f-manuale-a-schede/schermate/runner-figura-375.png`](f-manuale-a-schede/schermate/runner-figura-375.png) | La domanda più lunga con figura, prima di rispondere: domanda, figura intera e prima risposta nel primo schermo |
+| [`f-manuale-a-schede/schermate/runner-figura-375x667.png`](f-manuale-a-schede/schermate/runner-figura-375x667.png) | La stessa su un telefono piccolo |
+| [`f-manuale-a-schede/schermate/runner-figura-1280.png`](f-manuale-a-schede/schermate/runner-figura-1280.png) | La stessa al computer |
+| [`f-manuale-a-schede/schermate/riepilogo-375.png`](f-manuale-a-schede/schermate/riepilogo-375.png) | Il riepilogo di due domande, primo schermo |
+| [`f-manuale-a-schede/schermate/riepilogo-375x667.png`](f-manuale-a-schede/schermate/riepilogo-375x667.png) | Il riepilogo su un telefono piccolo |
+| [`f-manuale-a-schede/schermate/riepilogo-375-intera.png`](f-manuale-a-schede/schermate/riepilogo-375-intera.png) | Il riepilogo intero al telefono |
+| [`f-manuale-a-schede/schermate/riepilogo-1280.png`](f-manuale-a-schede/schermate/riepilogo-1280.png) | Il riepilogo al computer |
+| [`f-manuale-a-schede/schermate/riepilogo-1280-intera.png`](f-manuale-a-schede/schermate/riepilogo-1280-intera.png) | Il riepilogo intero al computer |
+
+### G — La regata: bianco e blu mare, l'arancio delle boe; il mare a tutta larghezza, le quattro andature da toccare, le tappe come boe
+
+| Schermata | Che cosa mostra |
+|---|---|
+| [`g-regata/schermate/home-375.png`](g-regata/schermate/home-375.png) | Home, primo schermo a 375×812 |
+| [`g-regata/schermate/home-375x667.png`](g-regata/schermate/home-375x667.png) | Home su un telefono piccolo: «Simula il quiz base» sopra la barra |
+| [`g-regata/schermate/home-375-intera.png`](g-regata/schermate/home-375-intera.png) | Home intera al telefono, con il disegno da toccare |
+| [`g-regata/schermate/home-1280.png`](g-regata/schermate/home-1280.png) | Home al computer, primo schermo |
+| [`g-regata/schermate/home-tocca-1280.png`](g-regata/schermate/home-tocca-1280.png) | Home al computer con il primo elemento del disegno toccato: sotto, che cosa vuol dire |
+| [`g-regata/schermate/home-1280-intera.png`](g-regata/schermate/home-1280-intera.png) | Home intera al computer |
+| [`g-regata/schermate/quiz-375.png`](g-regata/schermate/quiz-375.png) | Allenati · Quiz, primo schermo al telefono |
+| [`g-regata/schermate/quiz-375x667.png`](g-regata/schermate/quiz-375x667.png) | Allenati · Quiz su un telefono piccolo |
+| [`g-regata/schermate/quiz-375-intera.png`](g-regata/schermate/quiz-375-intera.png) | Allenati · Quiz intera al telefono |
+| [`g-regata/schermate/quiz-1280.png`](g-regata/schermate/quiz-1280.png) | Allenati · Quiz al computer |
+| [`g-regata/schermate/quiz-1280-intera.png`](g-regata/schermate/quiz-1280-intera.png) | Allenati · Quiz intera al computer |
+| [`g-regata/schermate/preparazione-375.png`](g-regata/schermate/preparazione-375.png) | La preparazione al telefono |
+| [`g-regata/schermate/preparazione-375x667.png`](g-regata/schermate/preparazione-375x667.png) | La preparazione su un telefono piccolo: l'avviso «senza account» 12 px sopra «Inizia», sopra la barra |
+| [`g-regata/schermate/preparazione-1280.png`](g-regata/schermate/preparazione-1280.png) | La preparazione al computer |
+| [`g-regata/schermate/runner-375.png`](g-regata/schermate/runner-375.png) | La domanda 1.7.6-19 dopo una risposta sbagliata, a 375×812 |
+| [`g-regata/schermate/runner-375x667.png`](g-regata/schermate/runner-375x667.png) | La stessa su un telefono piccolo: «Avanti» nel primo schermo |
+| [`g-regata/schermate/runner-1280.png`](g-regata/schermate/runner-1280.png) | La domanda dopo l'errore, al computer |
+| [`g-regata/schermate/runner-figura-375.png`](g-regata/schermate/runner-figura-375.png) | La domanda più lunga con figura, prima di rispondere: domanda, figura intera e prima risposta nel primo schermo |
+| [`g-regata/schermate/runner-figura-375x667.png`](g-regata/schermate/runner-figura-375x667.png) | La stessa su un telefono piccolo |
+| [`g-regata/schermate/runner-figura-1280.png`](g-regata/schermate/runner-figura-1280.png) | La stessa al computer |
+| [`g-regata/schermate/riepilogo-375.png`](g-regata/schermate/riepilogo-375.png) | Il riepilogo di due domande, primo schermo |
+| [`g-regata/schermate/riepilogo-375x667.png`](g-regata/schermate/riepilogo-375x667.png) | Il riepilogo su un telefono piccolo |
+| [`g-regata/schermate/riepilogo-375-intera.png`](g-regata/schermate/riepilogo-375-intera.png) | Il riepilogo intero al telefono |
+| [`g-regata/schermate/riepilogo-1280.png`](g-regata/schermate/riepilogo-1280.png) | Il riepilogo al computer |
+| [`g-regata/schermate/riepilogo-1280-intera.png`](g-regata/schermate/riepilogo-1280-intera.png) | Il riepilogo intero al computer |
+
 ## Che cosa non è stato controllato
 
-T-12 e T-13 misurano la pagina vera, non questi file; nessuna persona li ha
+Vale per tutti i mock, anche per i quattro stili del 25 ottobre. T-12 e T-13 misurano la pagina vera, non questi file; nessuna persona li ha
 visti; Safari e il gesto vero; gli stati con l'account, i Segnali, il Carteggio,
 Esame, Progressi, la revisione e il salvataggio fallito, che non hanno un mock in
 nessuna direzione; la domanda dopo lo scorrimento a 375×667.

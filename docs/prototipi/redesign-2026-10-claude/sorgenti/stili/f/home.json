@@ -1,0 +1,106 @@
+{
+ "titolo": "Otto capitoli, venti domande",
+ "intro": "Come nel manuale della scuola: un colore per tema, e la linguetta lunga quanto pesa all'esame. Tocca un capitolo per leggerlo.",
+ "invito": "Tocca un capitolo del sommario per leggerlo.",
+ "bottoni": [
+  [
+   "navigazione",
+   "68.17%",
+   "11.58%",
+   "Navigazione cartografica: leggi quante domande porta",
+   "48.33%",
+   "9.47%"
+  ],
+  [
+   "manovra",
+   "68.17%",
+   "22.11%",
+   "Manovra e condotta: leggi quante domande porta",
+   "48.33%",
+   "9.47%"
+  ],
+  [
+   "sicurezza",
+   "66.83%",
+   "32.63%",
+   "Sicurezza della navigazione: leggi quante domande porta",
+   "45.67%",
+   "9.47%"
+  ],
+  [
+   "normativa",
+   "66.83%",
+   "43.16%",
+   "Normativa diportistica: leggi quante domande porta",
+   "45.67%",
+   "9.47%"
+  ],
+  [
+   "colreg",
+   "65.50%",
+   "53.68%",
+   "Colreg e segnalamento: leggi quante domande porta",
+   "43.00%",
+   "9.47%"
+  ],
+  [
+   "meteo",
+   "65.50%",
+   "64.21%",
+   "Meteorologia: leggi quante domande porta",
+   "43.00%",
+   "9.47%"
+  ],
+  [
+   "scafo",
+   "64.17%",
+   "74.74%",
+   "Teoria dello scafo: leggi quante domande porta",
+   "40.33%",
+   "9.47%"
+  ],
+  [
+   "motori",
+   "64.17%",
+   "85.26%",
+   "Motori: leggi quante domande porta",
+   "40.33%",
+   "9.47%"
+  ]
+ ],
+ "voci": {
+  "navigazione": [
+   "Navigazione cartografica · 4 domande su 20",
+   "In ogni prova ne escono 4, scelte fra i 322 quesiti del tema. La linguetta è lunga quanto pesa."
+  ],
+  "manovra": [
+   "Manovra e condotta · 4 domande su 20",
+   "In ogni prova ne escono 4, scelte fra i 155 quesiti del tema. La linguetta è lunga quanto pesa."
+  ],
+  "sicurezza": [
+   "Sicurezza della navigazione · 3 domande su 20",
+   "In ogni prova ne escono 3, scelte fra i 215 quesiti del tema. La linguetta è lunga quanto pesa."
+  ],
+  "normativa": [
+   "Normativa diportistica · 3 domande su 20",
+   "In ogni prova ne escono 3, scelte fra i 184 quesiti del tema. La linguetta è lunga quanto pesa."
+  ],
+  "colreg": [
+   "Colreg e segnalamento · 2 domande su 20",
+   "In ogni prova ne escono 2, scelte fra i 247 quesiti del tema. La linguetta è lunga quanto pesa."
+  ],
+  "meteo": [
+   "Meteorologia · 2 domande su 20",
+   "In ogni prova ne escono 2, scelte fra i 120 quesiti del tema. La linguetta è lunga quanto pesa."
+  ],
+  "scafo": [
+   "Teoria dello scafo · 1 domanda su 20",
+   "In ogni prova ne escono 1, scelte fra i 125 quesiti del tema. La linguetta è lunga quanto pesa."
+  ],
+  "motori": [
+   "Motori · 1 domanda su 20",
+   "In ogni prova ne escono 1, scelte fra i 104 quesiti del tema. La linguetta è lunga quanto pesa."
+  ]
+ },
+ "extra": "<div class=\"composizione\" role=\"img\" aria-label=\"Le 20 domande per tema: Navigazione 4, Manovra 4, Sicurezza 3, Normativa 3, Colreg 2, Meteorologia 2, Teoria dello scafo 1, Motori 1\"><i style=\"--c:#2E3FA8;flex:4\"></i><i style=\"--c:#0B6E73;flex:4\"></i><i style=\"--c:#B4470E;flex:3\"></i><i style=\"--c:#5E3F96;flex:3\"></i><i style=\"--c:#8A6100;flex:2\"></i><i style=\"--c:#1A6FA3;flex:2\"></i><i style=\"--c:#8A3E26;flex:1\"></i><i style=\"--c:#4A5562;flex:1\"></i></div>"
+}

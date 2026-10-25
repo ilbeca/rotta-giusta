@@ -1,0 +1,69 @@
+/* E — «Le bandiere». Il Codice internazionale dei segnali: bianco pieno, il blu
+   bandiera per il testo forte e per l'unico pulsante, il giallo come segno del
+   sito, mai su un comando né su un esito; il rosso delle bandiere resta nel
+   disegno, perché fuori dal disegno è dello sbagliato. Forme piatte e tagli
+   netti, angoli vivi; la firma è la drizza con le bandiere che si alzano, e la
+   coda di rondine della Alfa sul riquadro che conta. */
+:root{
+  --carta:#FFFFFF;--carta-2:#EEF2FA;--terra:#FFF2CC;--terra-scura:#0B3D91;
+  --acqua:#E6ECF7;--acqua-2:#C9D6EE;--acqua-3:#7F98C8;
+  --ink:#0E1A33;--ink-2:#36435E;--ink-3:#525E78;--filo:#0E1A3329;--filo-2:#0E1A3314;
+  --blu:#0B3D91;--giallo:#FFC72C;
+  --rotta:#0B3D91;--rotta-chiara:#FFF2CC;--evidenza:#FFE08A;
+  --ok:#12663A;--ok-chiaro:#E3F2E8;--ko:#B3261E;--ko-chiaro:#FBE8E6;
+  --azione:#0B3D91;--su-azione:#fff;--attivo:#0B3D91;--su-attivo:#fff;--forte:#0B3D91;--su-forte:#fff;
+  --campo:#fff;--marchio:#0E1A33;--link:#0B3D91;--fuoco:#0B3D91;
+  --r:0px;
+}
+h1,h2,h3{letter-spacing:-.03em}
+.eroe h1,h1.pagina,.prep h1,.rp h1{font-weight:800}
+.btn{border-radius:0}
+.btn-pieno{box-shadow:none}
+.btn-pieno:hover{background:#082E6E}
+/* La drizza: al telefono la striscia corre da bordo a bordo, sul blu bandiera */
+.striscia{height:88px;border:0;margin:0 calc(var(--s-16) * -1)}
+.figura-grande,.leggi .tocca{border:0!important}
+.leggi .tocca{margin:0 calc(var(--s-16) * -1)}
+@media (min-width:900px){ .leggi .tocca{margin:0} }
+/* Il riquadro che conta: un bordo blu pieno, e la coda di rondine della Alfa in alto a destra */
+.carta{background:#fff;border:3px solid var(--blu);border-radius:0;position:relative}
+.carta::after{content:"";position:absolute;top:-3px;right:-3px;width:44px;height:28px;background:var(--blu);clip-path:polygon(0 0,100% 0,100% 100%,50% 60%,0 100%)}
+/* I numeri dell'esame, in blu bandiera, e ogni unità su una tacca gialla */
+.scandaglio b{font-size:var(--t-32);color:var(--blu);letter-spacing:-.04em}
+.scandaglio>span{display:inline-block;margin-top:6px;padding:2px 6px;background:var(--giallo);color:var(--ink);font-weight:700}
+.titolo-prova{font-size:var(--t-20)!important;font-weight:800}
+.righe{border-top:3px solid var(--ink)}
+.righe .ico-tondo{border-radius:0;background:var(--acqua);color:var(--blu)}
+.righe>li>a:hover{background:var(--carta-2)}
+.link-freccia{border-bottom-width:3px}
+.nota-carta{background:var(--terra)}
+.segmenti{border-radius:0!important;background:#fff!important;border:2px solid var(--blu)!important;padding:0!important;gap:0!important}
+.segmenti a{border-radius:0!important;color:var(--blu)!important}
+.segmenti a[aria-current]{color:#fff!important}
+.chip{border-radius:0!important;border-color:var(--blu)!important}
+.cerca input,.cerca button{border-radius:0!important;border-width:2px!important}
+.nav-alta a{border-radius:0}
+.barra{border-top:3px solid var(--blu)}
+.barra a[aria-current]{color:var(--blu)}
+.barra a[aria-current]::before{left:30%;right:30%;height:5px;top:-3px;border-radius:0;background:var(--giallo)}
+.legenda-luce{border-top:3px solid var(--blu)}
+/* La domanda: le tappe sono bandierine sulla drizza */
+.risposta{border-radius:0!important}
+.tasto{border-radius:0!important}
+.rotta::before{border-top:2px solid var(--ink-3)!important}
+.tappa{width:14px!important;height:11px!important;border-radius:0!important;transform-origin:left center}
+.anello{width:24px!important;height:21px!important;margin:-10.5px 0 0 -12px!important;border-radius:0!important;border-color:var(--blu)!important}
+.compatta,.compatta span{border-radius:0!important}
+.compatta span{background:var(--blu)!important}
+.compatta i{border-radius:0!important;box-shadow:0 0 0 3px var(--blu)!important}
+.figura{border-radius:0!important}
+.piede-runner{border-top:3px solid var(--blu)!important}
+.luce::after{border-radius:0!important;border-color:#fff!important;border-width:3px!important}
+.luce{width:56px;height:56px;margin:-28px 0 0 -28px}
+/* Le bandiere si alzano sulla drizza, una dopo l'altra, all'apertura */
+@media (prefers-reduced-motion:no-preference){
+  .alza{animation:alza .7s cubic-bezier(.16,1,.3,1) backwards;animation-delay:calc(.25s + var(--i) * .12s)}
+}
+@keyframes alza{from{opacity:0;translate:0 -36px}}
+@media (min-width:900px){ .scandaglio b{font-size:var(--t-44)} }
+.scandaglio.ok b{color:var(--ok)}.scandaglio.ko b{color:var(--ko)}.scandaglio.no b{color:var(--ink-3)}

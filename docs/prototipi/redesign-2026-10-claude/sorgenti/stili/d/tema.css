@@ -1,0 +1,78 @@
+/* D — «Il segnalamento». Le boe e le mede del sistema AISM-IALA: fondo bianco,
+   nero pieno per il testo e per l'unico pulsante, il giallo segnale come segno
+   del sito, solo nelle fasce e nel disegno, mai su un comando né su un esito.
+   La firma è la fascia della cardinale est, nero giallo nero; i numeri
+   dell'esame hanno sotto una banda gialla, come una cifra dipinta su una meda. */
+:root{
+  --carta:#FFFFFF;--carta-2:#F2F3F1;--terra:#FFF5CF;--terra-scura:#141518;
+  --acqua:#EAEEF0;--acqua-2:#D5DEE2;--acqua-3:#8FA3AC;
+  --ink:#141518;--ink-2:#3B3E44;--ink-3:#565A61;--filo:#14151833;--filo-2:#1415181A;
+  --giallo:#F2C200;
+  --rotta:#7A5E00;--rotta-chiara:#FFF3C4;--evidenza:#FFE680;
+  --ok:#13692F;--ok-chiaro:#E4F2E8;--ko:#B3261E;--ko-chiaro:#FBE8E6;
+  --azione:#141518;--su-azione:#fff;--attivo:#141518;--su-attivo:#fff;--forte:#141518;--su-forte:#F2C200;
+  --campo:#fff;--marchio:#141518;--link:#141518;--fuoco:#141518;
+  --r:4px;
+  --fascia:linear-gradient(var(--ink) 0 33.4%,var(--giallo) 33.4% 66.6%,var(--ink) 66.6%);
+}
+h1,h2,h3{letter-spacing:-.025em}
+.eroe h1,h1.pagina,.prep h1,.rp h1{font-weight:800;letter-spacing:-.035em}
+.btn{border-radius:var(--r)}
+.btn-pieno{box-shadow:0 2px 0 #0006,0 10px 20px -12px #141518cc}
+.btn-pieno:hover{background:#2A2C31}
+/* La fascia cardinale: sopra il riquadro che conta, sopra la carta disegnata */
+.carta{background:#fff;border:2px solid var(--ink);border-radius:var(--r);overflow:hidden}
+.carta::before,.striscia::before,.figura-grande::before,.leggi .tocca::before{content:"";display:block;height:12px;background:var(--fascia)}
+.carta{position:relative}
+.carta::before{position:absolute;left:0;right:0;top:0}
+.carta{padding-top:calc(var(--s-12) + 12px)!important}
+@media (min-width:900px){ .carta{padding-top:calc(var(--s-32) + 12px)!important} }
+.striscia{border:2px solid var(--ink);border-radius:var(--r);height:96px;display:flex;flex-direction:column}
+.striscia .illustrazione{flex:1;min-height:0}
+.leggi .tocca,.figura-grande{border:2px solid var(--ink)!important;border-radius:var(--r)!important}
+/* I numeri dell'esame: grandi, con la banda gialla sotto */
+.scandaglio b{font-size:var(--t-32);letter-spacing:-.04em;display:inline-block;padding:0 .06em;background:linear-gradient(transparent 62%,var(--giallo) 62% 90%,transparent 90%)}
+.scandaglio>span{font-weight:700;color:var(--ink-2);text-transform:uppercase;letter-spacing:.08em;font-size:var(--t-12)}
+.titolo-prova{text-transform:uppercase;letter-spacing:.06em!important;font-size:var(--t-14)!important}
+/* Le righe: un segnale quadrato al posto del tondo */
+.righe{border-top:2px solid var(--ink)}
+.righe .ico-tondo{border-radius:var(--r);background:var(--acqua)}
+.righe>li>a:hover{background:linear-gradient(90deg,var(--terra),transparent 70%)}
+.link-freccia{border-bottom-width:3px}
+.link-freccia:hover{background:linear-gradient(transparent 70%,var(--evidenza) 70%)}
+.nota-carta{background:var(--terra)}
+.segmenti{border-radius:var(--r)!important;background:var(--carta-2)!important;border:2px solid var(--ink)!important;padding:3px!important}
+.segmenti a{border-radius:2px!important}
+.chip{border-radius:var(--r)!important}
+.cerca input,.cerca button{border-radius:var(--r)!important;border-width:2px!important}
+.barra{border-top:2px solid var(--ink)}
+.barra a[aria-current]::before{height:4px;background:var(--fascia)}
+.nav-alta a{border-radius:var(--r)}
+/* La domanda: calma, per leggere. Le tappe sono segnali quadrati */
+.risposta{border-radius:var(--r)!important}
+.tasto{border-radius:var(--r)!important}
+.tappa{border-radius:2px!important}
+.anello{border-radius:6px!important}
+.rotta::before{border-top-style:solid!important;border-top-width:2px!important}
+.compatta,.compatta span{border-radius:0!important}
+.compatta i{border-radius:2px!important}
+.figura{border-radius:var(--r)!important}
+.piede-runner{border-top:2px solid var(--ink)!important}
+/* Le luci delle quattro boe, con i loro ritmi veri */
+.lampo{opacity:0}
+@media (prefers-reduced-motion:no-preference){
+  .lampo-n{animation:sc-n 1.1s linear infinite}
+  .lampo-e{animation:sc-e 10s linear infinite .4s}
+  .lampo-s{animation:sc-s 15s linear infinite 1.1s}
+  .lampo-o{animation:sc-o 15s linear infinite 2.3s}
+}
+@media (prefers-reduced-motion:reduce){ .lampo{opacity:.85} }
+.luce::after{border-radius:var(--r)!important}
+@keyframes sc-n{0%{opacity:0}0.00%{opacity:0}1.82%,40.91%{opacity:1}42.73%{opacity:0}100%{opacity:0}}
+@keyframes sc-e{0%{opacity:0}0.00%{opacity:0}0.20%,4.50%{opacity:1}4.70%{opacity:0}10.00%{opacity:0}10.20%,14.50%{opacity:1}14.70%{opacity:0}20.00%{opacity:0}20.20%,24.50%{opacity:1}24.70%{opacity:0}100%{opacity:0}}
+@keyframes sc-s{0%{opacity:0}0.00%{opacity:0}0.13%,3.00%{opacity:1}3.13%{opacity:0}6.67%{opacity:0}6.80%,9.67%{opacity:1}9.80%{opacity:0}13.33%{opacity:0}13.47%,16.33%{opacity:1}16.47%{opacity:0}20.00%{opacity:0}20.13%,23.00%{opacity:1}23.13%{opacity:0}26.67%{opacity:0}26.80%,29.67%{opacity:1}29.80%{opacity:0}33.33%{opacity:0}33.47%,36.33%{opacity:1}36.47%{opacity:0}40.00%{opacity:0}40.13%,54.67%{opacity:1}54.80%{opacity:0}100%{opacity:0}}
+@keyframes sc-o{0%{opacity:0}0.00%{opacity:0}0.13%,3.00%{opacity:1}3.13%{opacity:0}6.67%{opacity:0}6.80%,9.67%{opacity:1}9.80%{opacity:0}13.33%{opacity:0}13.47%,16.33%{opacity:1}16.47%{opacity:0}20.00%{opacity:0}20.13%,23.00%{opacity:1}23.13%{opacity:0}26.67%{opacity:0}26.80%,29.67%{opacity:1}29.80%{opacity:0}33.33%{opacity:0}33.47%,36.33%{opacity:1}36.47%{opacity:0}40.00%{opacity:0}40.13%,43.00%{opacity:1}43.13%{opacity:0}46.67%{opacity:0}46.80%,49.67%{opacity:1}49.80%{opacity:0}53.33%{opacity:0}53.47%,56.33%{opacity:1}56.47%{opacity:0}100%{opacity:0}}
+@media (min-width:900px){ .scandaglio b{font-size:var(--t-44)} }
+/* Nel riepilogo i numeri sono esiti, verde e rosso: niente banda gialla sotto */
+.scandaglio.ok b,.scandaglio.ko b,.scandaglio.no b{background:none;padding:0}
+@media (min-width:900px){ .striscia{display:none} }
