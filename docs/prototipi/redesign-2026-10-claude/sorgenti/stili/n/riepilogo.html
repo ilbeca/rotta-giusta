@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Il riepilogo · mock «@@NOME@@»</title>
+<style>@@CSS@@
+.rp{max-width:640px;margin:0 auto}
+.rp h1{font-size:var(--t-32);font-weight:800;margin-top:var(--s-8)}
+.rp .sotto{color:var(--ink-2);margin-top:var(--s-8)}
+.diario{margin-top:var(--s-24);padding:var(--s-24) var(--s-16)}
+.diario .scandagli{justify-content:space-between}
+.scandaglio .ico{width:20px;height:20px;stroke-width:2.5;vertical-align:-2px;margin-right:4px}
+.scandaglio.ok b{color:var(--ok)}.scandaglio.ko b{color:var(--ko)}.scandaglio.no b{color:var(--ink-3)}
+.azioni{margin-top:var(--s-24);display:grid;gap:var(--s-16)}
+.altre{display:flex;flex-wrap:wrap;gap:var(--s-8) var(--s-24)}
+.avviso{font-size:var(--t-14);color:var(--ink-3);margin-top:var(--s-8)}
+.conserva{margin-top:var(--s-48);display:flex;gap:var(--s-16);align-items:flex-start}
+.conserva h2{font-size:var(--t-20);font-weight:800;margin-bottom:var(--s-8)}
+.conserva p{font-size:var(--t-14);color:var(--ink-2);margin-bottom:var(--s-8)}
+@media (min-width:900px){ .rp h1{font-size:var(--t-44)} .diario{padding:var(--s-32)} .scandaglio b{font-size:var(--t-44)} }
+.scandaglio b .conta{display:inline;margin:0;font:inherit;color:inherit;letter-spacing:inherit}
+@@TEMA@@
+/* N: il riepilogo è una pila di tre schermate: com'è andata, che cosa fare, conservarle */
+html{scroll-snap-type:y proximity;scroll-padding-top:64px}
+.rp{scroll-snap-align:start}
+.rp-1{min-height:calc(100svh - 64px - 64px - 48px)}
+.rp-2,.rp-3{min-height:50svh;display:grid;align-content:center}
+.rp-3 .conserva{margin-top:0}
+.diario{background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
+.diario .scandagli{flex-direction:column;gap:var(--s-8)!important}
+.diario .scandaglio{display:flex;align-items:baseline;gap:var(--s-12);padding:var(--s-8) 0;border-bottom:2px solid var(--filo)}
+.diario .scandaglio b{font-size:64px!important;line-height:1;min-width:1.4em}
+.diario .scandaglio>span{font-size:var(--t-24);font-weight:700;color:var(--ink)}
+@media (min-width:900px){ .diario .scandaglio b{font-size:88px!important} }
+</style></head>
+<body>
+@@ICONE@@
+@@TESTATA:home@@
+<main>
+<div class="rp rp-1">
+  <h1>Hai risposto a <span id="r-fatte">2</span> domande su 10.</h1>
+  <p class="sotto">Allenamento breve. Le <span id="r-non">8</span> che non hai affrontato non contano come errori.</p>
+
+  <section class="carta diario vt-avvio" aria-label="Com'è andata">
+    <div class="scandagli">
+      <div class="scandaglio ok"><b><svg class="ico"><use href="#i-ok"/></svg><span class="conta" id="r-g">1</span></b><span>giusta</span></div>
+      <div class="scandaglio ko"><b><svg class="ico"><use href="#i-ko"/></svg><span class="conta" id="r-s">1</span></b><span>sbagliata</span></div>
+      <div class="scandaglio no"><b><span class="conta" id="r-n">8</span></b><span>non affrontate</span></div>
+    </div>
+  </section>
+
+  <div class="azioni">
+    <a class="btn btn-pieno btn-largo" href="runner.html" data-ruolo="principale">Riprova l'errore<svg class="ico"><use href="#i-errori"/></svg></a>
+  </div>
+</div>
+<div class="rp rp-2">
+  <div class="azioni">
+    <div class="altre">
+      <a class="link-freccia" href="#rivedi">Rivedi le risposte<svg class="ico"><use href="#i-freccia"/></svg></a>
+      <a class="link-freccia" href="quiz.html">Scegli un'altra attività<svg class="ico"><use href="#i-freccia"/></svg></a>
+    </div>
+    <p class="avviso">Senza account queste risposte restano finché la pagina è aperta.</p>
+  </div>
+</div>
+<div class="rp rp-3">
+  <section class="conserva nota-carta">
+    <div>
+      <h2>Vuoi conservarle?</h2>
+      <p>Con un account ritrovi queste risposte quando torni, anche da un altro telefono, e vedi i Progressi.</p>
+      <div class="altre"><button class="link-freccia" type="button">Crea un account<svg class="ico"><use href="#i-freccia"/></svg></button><button class="link-freccia" type="button" style="border-bottom-color:var(--filo)">Continua senza account</button></div>
+    </div>
+  </section>
+</div>
+</main>
+@@BARRA:home@@
+<script>
+// Il riepilogo legge che cosa è successo nella domanda (mock) e fa salire i numeri, una volta.
+const q = new URLSearchParams(location.search);
+const g = +(q.get('g') ?? 1), s = +(q.get('s') ?? 1), fatte = g + s, non = 10 - fatte;
+document.getElementById('r-fatte').textContent = fatte;
+document.getElementById('r-non').textContent = non;
+document.querySelector('#r-g').closest('.scandaglio').querySelector('b + span').textContent = g === 1 ? 'giusta' : 'giuste';
+document.querySelector('#r-s').closest('.scandaglio').querySelector('b + span').textContent = s === 1 ? 'sbagliata' : 'sbagliate';
+const valori = { 'r-g': g, 'r-s': s, 'r-n': non };
+const calma = matchMedia('(prefers-reduced-motion: reduce)').matches;
+for (const [id, v] of Object.entries(valori)) {
+  const el = document.getElementById(id);
+  if (calma) { el.textContent = v; continue; }
+  const t0 = performance.now(), durata = 700;
+  const passo = (t) => { const p = Math.min(1, (t - t0) / durata), e = 1 - Math.pow(1 - p, 4); el.textContent = Math.round(v * e); if (p < 1) requestAnimationFrame(passo); };
+  el.textContent = 0; requestAnimationFrame(passo);
+}
+document.querySelector('.btn-pieno').textContent = '';
+document.querySelector('.btn-pieno').insertAdjacentHTML('afterbegin', (s === 1 ? "Riprova l'errore" : s > 1 ? `Riprova i ${s} errori` : 'Continua ad allenarti') + '<svg class="ico"><use href="#i-errori"/></svg>');
+</script>
+</body></html>

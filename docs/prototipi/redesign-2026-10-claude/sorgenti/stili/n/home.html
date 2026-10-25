@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Home · mock «@@NOME@@»</title>
+<style>@@CSS@@
+/* N: la Home è una pila di schermate intere; ognuna dice una cosa sola */
+html{scroll-snap-type:y proximity;scroll-padding-top:64px}
+main.pila{max-width:none;padding:0 0 64px}
+.schermo{min-height:calc(100svh - 128px);scroll-snap-align:start;display:grid;align-content:center;gap:var(--s-16);padding:var(--s-32) max(var(--s-16),calc((100% - 1120px) / 2))}
+.s-titolo{align-content:start;padding-top:var(--s-24)}
+.s-titolo h1{font-size:var(--t-32);font-weight:800;line-height:1.06}
+.s-titolo .lead{color:var(--ink-2)}
+.prova{padding:var(--s-16)!important;display:grid;gap:var(--s-12)}
+.titolo-prova{font-size:var(--t-16)!important;font-weight:800}
+.prova .scandaglio b{font-size:var(--t-32)!important}
+.s-mare{background:var(--mare);color:#fff}
+.s-mare .link-freccia{color:#fff;border-bottom-color:var(--boa);font-size:var(--t-32);line-height:1.15;align-items:flex-end;gap:12px}
+.s-mare .link-freccia .ico{stroke:#fff;width:32px;height:32px;flex:none}
+.s-mare small{font-size:var(--t-20);color:#E3EEF2}
+.s-boa{background:var(--terra)}.s-acqua{background:var(--acqua)}
+.grande{text-decoration:none;display:grid;gap:var(--s-8)}
+.grande .num{display:block;font-size:clamp(88px,26vw,200px);font-weight:800;letter-spacing:-.06em;line-height:.9;color:var(--mare)}
+.grande b{font-size:var(--t-32);font-weight:800;line-height:1.1}
+.grande small{font-size:var(--t-20);color:var(--ink-2);max-width:22em}
+.grande:hover b{text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:6px}
+.s-carta h2,.s-limiti h2,.s-prove h2{font-size:var(--t-32);font-weight:800}
+.s-carta .tocca{border-radius:var(--r);overflow:hidden;max-width:720px}
+.s-carta .mappa{position:relative}
+.s-carta .illustrazione{display:block;width:100%;height:auto}
+.s-limiti ul{margin:var(--s-8) 0;padding-left:20px}
+.s-limiti p+p{margin-top:var(--s-8)}
+.s-limiti .nota{font-size:var(--t-16);max-width:40em}
+.chiusa{padding:var(--s-32) max(var(--s-16),calc((100% - 1120px) / 2))}
+.gratis{font-size:var(--t-14);color:var(--ink-3)}
+/* I punti a destra: dove sei nella pila */
+.punti{position:fixed;right:8px;top:50%;transform:translateY(-50%);display:grid;gap:8px;z-index:9;list-style:none;margin:0;padding:6px 4px;border-radius:99px;background:#ffffffcc}
+.punti li{width:6px;height:6px;border-radius:50%;background:var(--acqua-3);transition:transform .2s,background-color .2s}
+.punti li.qui{background:var(--boa);transform:scale(1.6)}
+@media (max-width:899px){ .punti{display:none} }
+@media (min-width:900px){
+  html{scroll-padding-top:72px}
+  .schermo{min-height:calc(100svh - 72px)}
+  .s-titolo{align-content:center;grid-template-columns:7fr 5fr;column-gap:var(--s-48);align-items:center}
+  .s-titolo>div:first-child h1{font-size:72px;line-height:1}
+  .s-titolo .lead{font-size:var(--t-20);margin-top:var(--s-16)}
+  .prova{padding:var(--s-32)!important}
+  .s-mare .link-freccia{font-size:var(--t-56)}
+  .grande b{font-size:var(--t-44)}
+  .s-carta{grid-template-columns:5fr 7fr;column-gap:var(--s-48);align-items:center}
+  .s-carta .tocca{grid-column:2;grid-row:1/span 3}
+  .s-carta h2,.s-limiti h2,.s-prove h2{font-size:var(--t-44)}
+  .punti{right:20px}
+  .schermo,.chiusa{padding-left:max(var(--s-32),calc((100% - 1120px) / 2 + var(--s-32)));padding-right:max(var(--s-32),calc((100% - 1120px) / 2 + var(--s-32)))}
+}
+@@TEMA@@
+</style></head>
+<body>
+@@ICONE@@
+@@TESTATA:home@@
+<main class="pila">
+  <section class="schermo s-titolo">
+    <div>
+      <h1>Preparati alla patente nautica, un passo alla volta.</h1>
+      <p class="lead">Quiz e carteggio per la patente senza limiti dalla costa.</p>
+    </div>
+    <div class="carta prova">
+      <h2 class="titolo-prova">La prova d'esame dei quiz</h2>
+      <div class="scandagli" aria-label="20 domande, 30 minuti, al più 4 errori">
+        <div class="scandaglio"><b>20</b><span>domande</span></div>
+        <div class="scandaglio"><b>30′</b><span>minuti</span></div>
+        <div class="scandaglio"><b>4</b><span>errori al più</span></div>
+      </div>
+      <a class="btn btn-pieno btn-largo vt-avvio" href="runner.html" data-ruolo="principale">Simula il quiz base<svg class="ico"><use href="#i-freccia"/></svg></a>
+      <p class="nota">La correzione arriva alla fine, come all'esame.</p>
+    </div>
+  </section>
+  <section class="schermo s-mare">
+    <a class="link-freccia" href="runner.html" style="justify-self:start">Oppure allenati con 10 domande<svg class="ico"><use href="#i-freccia"/></svg></a>
+    <small>Con la correzione dopo ogni risposta.</small>
+  </section>
+  <section class="schermo"><a class="grande" href="quiz.html"><span class="num">1.722</span><b>quesiti del decreto</b><small>Base e vela, con il numero per ritrovarli sul libro</small></a></section>
+  <section class="schermo s-boa"><a class="grande" href="quiz.html"><span class="num">135</span><b>esercizi di carteggio</b><small>Tracci sulla carta, poi confronti con la risposta ministeriale</small></a></section>
+  <section class="schermo s-acqua"><a class="grande" href="quiz.html"><span class="num">27</span><b>fanali e segnali</b><small>Da riconoscere a colpo d'occhio, come di notte in mare</small></a></section>
+  <section class="schermo s-carta">
+    <h2>@@TOCCA_TITOLO@@</h2>
+    <p class="nota">@@TOCCA_INTRO@@</p>
+    <div class="tocca figura-grande"><div class="mappa">@@CARTA@@@@TOCCA_BOTTONI@@</div>
+      <p class="legenda-luce" aria-live="polite"><span class="invito">@@TOCCA_INVITO@@</span></p>
+    </div>
+  </section>
+  <section class="schermo s-prove s-acqua"><a class="grande" href="#esame"><b>Le prove, in ordine</b><small>Carteggio, quiz base, quiz vela: con le condizioni del decreto</small></a></section>
+  <section class="schermo s-limiti">
+    <h2>I limiti, detti prima</h2>
+    <div class="nota">
+      <p>La banca è l'Allegato A del decreto del 2022, e all'esame vale lui. Ti diciamo quesito per quesito che cosa non torna:</p>
+      <ul><li>37 quesiti oscurati, mai nella simulazione</li><li>4 quesiti con una nota dopo la risposta</li><li>1 quesito con la figura mancante</li></ul>
+      <p>Il lavoro sulla carta lo giudichi tu. Nessuna newsletter e nessun cookie di tracciamento.</p>
+      <p style="margin-top:var(--s-12)"><a class="link-freccia" href="#note">Note, fonti e riferimenti<svg class="ico"><use href="#i-freccia"/></svg></a></p>
+    </div>
+  </section>
+  <div class="chiusa">
+    <p class="gratis">Gratis e open source. Si prova senza account; con l'account salvi i progressi.</p>
+    <footer class="piede"><span>Rotta Giusta · mock</span><a href="#">codice sorgente</a><a href="#">Privacy</a><a href="#">Condizioni per l'account</a><a href="#">Avvertenza</a></footer>
+  </div>
+</main>
+<ol class="punti" aria-hidden="true"><li class="qui"></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ol>
+@@BARRA:home@@
+<script>
+const VOCI = @@TOCCA_VOCI@@;
+document.querySelectorAll('.tocca').forEach((carta) => {
+  const legenda = carta.querySelector('.legenda-luce');
+  carta.querySelectorAll('.luce').forEach((luce) => luce.addEventListener('click', () => {
+    const aperta = luce.getAttribute('aria-expanded') === 'true';
+    carta.querySelectorAll('.luce').forEach((l) => l.setAttribute('aria-expanded', 'false'));
+    if (aperta) { legenda.innerHTML = '<span class="invito">@@TOCCA_INVITO@@</span>'; return; }
+    luce.setAttribute('aria-expanded', 'true');
+    const [titolo, testo] = VOCI[luce.dataset.voce];
+    legenda.innerHTML = `<b data-voce>${titolo}</b><span data-voce>${testo}</span>`;
+  }));
+});
+// I punti seguono la schermata che hai davanti
+const punti = [...document.querySelectorAll('.punti li')];
+const schermi = [...document.querySelectorAll('.schermo')];
+const io = new IntersectionObserver((voci) => voci.forEach((v) => { if (v.isIntersecting) punti.forEach((p, k) => p.classList.toggle('qui', k === schermi.indexOf(v.target))); }), { threshold: .55 });
+schermi.forEach((s) => io.observe(s));
+</script>
+</body></html>

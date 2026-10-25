@@ -4936,3 +4936,38 @@ carta della RC.
     prendere da loro dei pezzi? *Raccomandazione:* guardarle accanto alla RC e
     alla G; se una sola cosa entra, i numeri in colonna di I nel riepilogo e in
     Progressi.
+
+**Quattro impianti davvero diversi (25 ottobre).** Guardate H, I, J e K,
+l'autore: «ha cambiato lo stile ma sostanzialmente è rimasto tutto il layout
+uguale, si può provare qualcosa di veramente diverso?». Aveva ragione: cambiava
+il vestito, non la disposizione. Quattro impianti nuovi, scelti dall'autore fra
+quattro proposte, tutti **nei colori della Regata** perché si veda solo la
+disposizione; contenuti e testi sono quelli di sempre. Le schermate e le misure
+sono nel README della cartella.
+
+| | L'impianto | Che cosa cambia per chi studia | Il rischio |
+|---|---|---|---|
+| **L** | Il percorso a boe: la Home è una rotta verticale di tappe; gli argomenti sono zone di mare grandi quanto pesano; le dieci domande sono dieci boe | Sa da dove parte e che cosa viene dopo; vede a colpo d'occhio che Navigazione e Manovra valgono quanto i quattro argomenti piccoli messi insieme | La rotta suggerisce un ordine che il sito non impone (§6.1: niente sblocchi); con l'account dovrebbe dire «sei qui» davvero, cioè il Percorso della decisione 16 |
+| **M** | La carta e il pannello: la carta ferma dietro, i comandi che galleggiano, il contenuto in un pannello dal basso o di lato | Si entra nella materia prima che nei menu; il carteggio è di casa; al computer la domanda ha la carta accanto | Al telefono la carta è una striscia sopra il pannello; un pannello da trascinare davvero vorrebbe un gesto che oggi non c'è |
+| **N** | Una cosa per schermo: schermate intere, carte da sfogliare, risposte a tutta larghezza, la correzione come un foglio | Niente da cercare e niente distrazioni; nella domanda tutto sta sotto il pollice, e «Avanti» è nel foglio con l'esito | La Home lunga otto schermate chiede di scorrere molto; le carte di lato nascondono quello che non si vede (si vede solo il bordo della seconda) |
+| **O** | Il banco a due colonne: a sinistra, ferma, la cosa su cui lavori; a destra il resto | Al computer la domanda e la figura grande restano davanti mentre si leggono le risposte; la prova resta in vista mentre si scorre il resto | Vale soprattutto al computer; al telefono è una fascia colorata in cima e poco altro |
+
+**Misurato** sulle 72 combinazioni: sbordamento 0, un solo principale,
+«Simula il quiz base» sopra la barra a 375×667 (da 429 a 533 px), «Avanti»
+scoperto (in M era coperto dal pannello: corretto), la figura intera prima di
+rispondere, l'avviso a 12 px da «Inizia», contrasti AA. **Non controllato:**
+nessuna persona, Safari, il gesto vero, lo scorrimento a scatti e il pannello
+mossi con il dito.
+
+**La lettura della sessione.** Due impianti toccano cose che la RC non
+risolve. **N**, nella domanda, è il più comodo al telefono: le risposte a tutta
+larghezza e il foglio con esito e «Avanti» sono un'idea che si può portare in
+qualunque vestito, e risponde al problema di «Avanti» fuori schermo (P-91). **L**,
+in Allenati, rende il peso dei temi una cosa che si vede e non un numero da
+leggere. M è il più nuovo e il più legato al mare, ma è un'app diversa, non una
+pagina rifatta; O è un miglioramento per il computer.
+
+15. **Gli impianti L, M, N, O.** Uno di loro come ossatura nuova, o dei pezzi
+    dentro la RC? *Raccomandazione:* dei pezzi — da N la domanda (risposte a
+    tutta larghezza, il foglio della correzione), da L le zone di mare degli
+    argomenti —, e M da guardare a parte se l'autore vuole un'app più che un sito.

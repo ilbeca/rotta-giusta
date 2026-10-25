@@ -27,8 +27,13 @@ STILI = [('d', 'd-segnalamento', 'Il segnalamento'),
          ('h', 'h-frase-e-faro', 'La frase e il faro'),
          ('i', 'i-giornale-di-bordo', 'Il giornale di bordo'),
          ('j', 'j-tessere', 'Le tessere'),
-         ('k', 'k-due-colori', 'La stampa a due colori')]
-PROTETTE = {'a-carta-nautica', 'b-plancia-di-notte', 'c-quaderno-a-colori', 'a-carta-viva'}
+         ('k', 'k-due-colori', 'La stampa a due colori'),
+         # Gli impianti diversi: stessi contenuti, un'altra disposizione; i colori della Regata
+         ('l', 'l-percorso-a-boe', 'Il percorso a boe'),
+         ('m', 'm-carta-e-pannello', 'La carta e il pannello'),
+         ('n', 'n-una-cosa-per-schermo', 'Una cosa per schermo'),
+         ('o', 'o-banco-a-due-colonne', 'Il banco a due colonne')]
+PROTETTE = {'a-carta-nautica', 'b-plancia-di-notte', 'c-quaderno-a-colori', 'a-carta-viva'}  # e g-regata: le lettere nuove la copiano, non la riscrivono
 PAGINE = ['home', 'quiz', 'preparazione', 'runner', 'runner-figura', 'riepilogo']
 CUR = ' aria-current="page"'
 VOCI = [('home', 'Home', 'i-rosa', 'home.html'), ('allenati', 'Allenati', 'i-allenati', 'quiz.html'),

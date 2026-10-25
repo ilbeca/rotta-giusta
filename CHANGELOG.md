@@ -363,6 +363,28 @@ selezione o contabilità. Versione 0.34.0 invariata.
   giornale di bordo in I. Decisione 14 in fondo a I-29. Nessun file di `site/`,
   `tests/`, della specifica o della coda toccato; nessuna suite rifatta.
 
+### Progettato — I-29: quattro impianti davvero diversi, nei colori della Regata
+
+- **Perché.** Guardate H, I, J e K, l'autore ha notato che cambiava il vestito
+  ma la disposizione restava quella della RC. Quattro impianti nuovi, scelti da
+  lui fra quattro proposte, tutti nei colori della Regata perché si veda solo la
+  disposizione; contenuti e testi restano quelli. **L, il percorso a boe**: la
+  Home è una rotta di tappe, gli argomenti sono zone di mare grandi quanto
+  pesano. **M, la carta e il pannello**: la carta ferma dietro, il contenuto in
+  un pannello. **N, una cosa per schermo**: schermate intere, carte da sfogliare,
+  risposte a tutta larghezza e la correzione come un foglio. **O, il banco a due
+  colonne**: a sinistra la cosa su cui lavori, a destra il resto.
+- **Misurato** sulle 72 combinazioni con `cattura-stili.mjs` e con il controllo
+  dei contrasti a parte: sbordamento 0, un principale, «Simula» sopra la barra a
+  375×667, «Avanti» scoperto, la figura intera, l'avviso a 12 px, contrasti AA.
+  Trovati guardando e corretti: in M «Avanti» coperto dal pannello e la scheda
+  del faro sopra la sigla; in L il vuoto sotto la prova; in N i puntini sopra il
+  testo e i numeri del riepilogo piccoli; in O l'avviso sopra «Inizia» e la
+  domanda con figura in una colonna sola. Per N le schermate della Home e del
+  riepilogo sono fotografate una per una, scorrendo: la foto «intera» del
+  misuratore allunga la finestra e con lei le schermate. Decisione 15 in fondo
+  a I-29. Nessun file di `site/`, `tests/`, della specifica o della coda.
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Una domanda lunga con figura · mock «@@NOME@@»</title>
+<style>@@CSS@@
+body{background:var(--carta)}
+.r-testata{position:sticky;top:0;z-index:5;background:var(--carta);border-bottom:1px solid var(--filo-2)}
+.r-in{max-width:760px;margin:0 auto;padding:var(--s-8) var(--s-16) var(--s-12)}
+.r-riga{display:flex;align-items:center;gap:var(--s-12);min-height:44px}
+.termina{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding-right:var(--s-8);font-weight:700;font-size:var(--t-14);text-decoration:none;color:var(--ink-2)}
+.termina .ico{width:20px;height:20px}
+.pos{margin-left:auto;font-weight:800;font-size:var(--t-14)}
+.pos span{color:var(--ink-3);font-weight:600}
+.tempo{display:inline-flex;align-items:center;gap:4px;font-size:var(--t-14);font-weight:600;color:var(--ink-3)}
+.tempo .ico{width:16px;height:16px}
+/* Con 25 domande o più non si moltiplicano i pallini: una traccia compatta e «N di M» */
+.compatta{position:relative;height:6px;margin-top:var(--s-8);border-radius:99px;background:var(--filo-2)}
+.compatta span{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:var(--ink-3)}
+.compatta i{position:absolute;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--carta);box-shadow:0 0 0 3px var(--ink)}
+.figura{margin:0 0 var(--s-16);background:#fff;border:1px solid var(--filo);border-radius:var(--r);padding:var(--s-8);display:flex;justify-content:center}
+.figura img{display:block;max-height:26vh;max-width:100%;width:auto}
+.ingrandisci{display:inline-flex;min-height:44px;align-items:center;font-size:var(--t-14);font-weight:600;color:var(--link);margin:calc(var(--s-8) * -1) 0 var(--s-8)}
+/* La rotta come avanzamento: dieci tappe */
+.rotta{position:relative;display:flex;justify-content:space-between;align-items:center;margin-top:var(--s-8);height:20px}
+.rotta::before{content:"";position:absolute;left:8px;right:8px;top:50%;border-top:2px dashed var(--filo)}
+.tappa{position:relative;z-index:1;width:14px;height:14px;border-radius:50%;background:var(--carta);border:2px solid var(--filo)}
+.tappa.ko{border-color:var(--ko);background:var(--ko)}
+.tappa.ok{border-color:var(--ok);background:var(--ok)}
+/* La domanda corrente: un anello del colore dei comandi, sulla domanda che stai leggendo */
+.tappa.ora{box-shadow:0 0 0 3px var(--carta),0 0 0 5px var(--ink)}
+.r-main{max-width:760px;margin:0 auto;padding:var(--s-16) var(--s-16) var(--s-48)}
+.meta{display:flex;flex-wrap:wrap;gap:4px var(--s-12);align-items:baseline}
+.numero{font-weight:700;font-size:var(--t-14);color:var(--ink-2);letter-spacing:.02em}
+.domanda{font-size:var(--t-20);font-weight:700;line-height:1.45;letter-spacing:-.01em;margin:var(--s-8) 0 var(--s-16)}
+.risposte{display:grid;gap:var(--s-12);list-style:none;padding:0;margin:0}
+.risposta{display:flex;gap:var(--s-12);align-items:flex-start;padding:var(--s-16);border-radius:var(--r);border:1.5px solid var(--filo);background:var(--campo);font-size:var(--t-16);line-height:1.45}
+.tasto{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--ink-3);display:grid;place-items:center;font-weight:800;font-size:var(--t-14);flex:none}
+.risposta .stato{display:block;font-size:var(--t-12);font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
+.risposta.tua{border-color:var(--ko);background:var(--ko-chiaro)}
+.risposta.tua .tasto{background:var(--ko);border-color:var(--ko);color:var(--su-esito,#fff)}
+.risposta.tua .stato{color:var(--ko)}
+.risposta.esatta{border-color:var(--ok);background:var(--ok-chiaro)}
+.risposta.esatta .tasto{background:var(--ok);border-color:var(--ok);color:var(--su-esito,#fff)}
+.risposta.esatta .stato{color:var(--ok)}
+.risposta.spenta{color:var(--ink-3)}
+.perche{margin-top:var(--s-24);padding-top:var(--s-16);border-top:1px solid var(--filo)}
+.perche p{font-size:var(--t-14);color:var(--ink-2)}
+.chips{display:flex;gap:var(--s-8);margin-top:var(--s-8);flex-wrap:wrap}
+.chip{min-height:44px;padding:0 var(--s-16);border-radius:999px;border:1.5px solid var(--ink-3);background:transparent;font:600 var(--t-14) Manrope,sans-serif;color:var(--ink)}
+.servizio{display:flex;gap:var(--s-24);margin-top:var(--s-16)}
+.servizio a{display:inline-flex;align-items:center;gap:6px;min-height:44px;font-size:var(--t-14);font-weight:600;color:var(--ink-2);text-decoration:none}
+.servizio .ico{width:20px;height:20px}
+.piede-runner{position:fixed;left:0;right:0;bottom:0;background:var(--carta);border-top:1px solid var(--filo);padding:var(--s-12) var(--s-16) calc(var(--s-12) + env(safe-area-inset-bottom))}
+.piede-runner .in{max-width:760px;margin:0 auto}
+.esito{display:flex;align-items:center;gap:var(--s-8);font-weight:800;color:var(--ko);font-size:var(--t-16);margin-bottom:var(--s-8)}
+.esito .ico{width:22px;height:22px;stroke-width:2.5}
+@media (min-width:900px){
+  .domanda{font-size:var(--t-24)}
+  .r-main{padding-top:var(--s-48)}
+}
+.r-testata{view-transition-name:avvio}
+.voce{font-size:var(--t-14);font-weight:600;color:var(--ink-3)}
+@@TEMA@@
+</style></head>
+<body class="domanda-banco" data-tema="5">
+@@ICONE@@
+<header class="r-testata"><div class="r-in">
+  <div class="r-riga">
+    <a class="termina" href="riepilogo.html"><svg class="ico"><use href="#i-chiudi"/></svg>Termina</a>
+    <span class="tempo"><svg class="ico"><use href="#i-orologio"/></svg>3:12</span>
+    <span class="pos">5 <span>di 25</span></span>
+  </div>
+  <div class="compatta" role="progressbar" aria-valuemin="1" aria-valuemax="25" aria-valuenow="5" aria-label="Domanda 5 di 25"><span style="width:calc(100% * 4 / 25)"></span><i style="left:calc(100% * 4.5 / 25)"></i></div>
+</div></header>
+<main class="r-main">
+  <div class="meta"><span class="numero">N. 1.5.3-103</span><span class="voce">Fanali e sistema IALA</span></div>
+  <h1 class="domanda">Con riferimento alle caratteristiche dei segnalamenti marittimi riportate in una carta nautica, cosa indica la sigla alfanumerica posta lateralmente alla boa luminosa di fianco rappresentata?</h1>
+  <figure class="figura"><img src="data:image/png;base64,@@FIGURA@@" width="438" height="398" alt="Figura del quesito 1.5.3-103: una boa cardinale con due coni neri a punte opposte, la sigla Sc. (3) 10s5M accanto e la scritta n.g.n. sotto, con il settore della luce in magenta"></figure>
+  <a class="ingrandisci" href="#zoom">Ingrandisci la figura</a>
+  <ol class="risposte">
+    <li class="risposta" data-ruolo="principale"><span class="tasto">1</span><span>che la boa luminosa, facente parte dei segnali cardinali del sistema AISM-IALA, emette 10 lampi ogni 3 secondi, ed è visibile a una portata nominale di 5 miglia nautiche.</span></li>
+    <li class="risposta"><span class="tasto">2</span><span>che la boa luminosa, facente parte dei segnali cardinali del sistema AISM-IALA, emette luci scintillanti a gruppi di 3 ogni 10 secondi, ed è visibile a una portata nominale di 5 miglia nautiche.</span></li>
+    <li class="risposta"><span class="tasto">3</span><span>che la boa luminosa, facente parte dei segnali cardinali del sistema AISM-IALA, emette 10 lampi ogni 5 minuti , ed è visibile ad una portata geografica di 3 miglia nautiche.</span></li>
+  </ol>
+  <div class="servizio">
+    <a href="#segno"><svg class="ico"><use href="#i-segno"/></svg>Metti un segnalibro</a>
+    <a href="#segnala"><svg class="ico"><use href="#i-bandiera"/></svg>Segnala un problema</a>
+  </div>
+</main>
+
+</body></html>

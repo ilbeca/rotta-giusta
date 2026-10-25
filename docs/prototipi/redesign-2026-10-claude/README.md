@@ -34,6 +34,10 @@ veri della banca (1.722 quesiti, i pesi d'esame, il quesito 1.7.6-19), il resto
 | [`i-giornale-di-bordo/`](i-giornale-di-bordo/) | **I — Il giornale di bordo**: il registro di bordo, fogli verde pallido, inchiostro blu, il margine rosso; una riga del giornale da toccare |
 | [`j-tessere/`](j-tessere/) | **J — Le tessere**: la Home a tessere di misure diverse, una tessera scura dove il faro lampeggia di notte |
 | [`k-due-colori/`](k-due-colori/) | **K — La stampa a due colori**: blu e arancio fluorescente come un manifesto stampato con due lastre, il secondo colore un poco fuori registro |
+| [`l-percorso-a-boe/`](l-percorso-a-boe/) | **L — Il percorso a boe**, 25 ottobre: la Home è una rotta che scende di boa in boa; gli argomenti sono zone di mare grandi quanto pesano. Il primo dei quattro impianti diversi, tutti nei colori della Regata |
+| [`m-carta-e-pannello/`](m-carta-e-pannello/) | **M — La carta e il pannello**: la carta ferma dietro, il contenuto in un pannello che sale dal basso o sta di lato, come un'app di navigazione |
+| [`n-una-cosa-per-schermo/`](n-una-cosa-per-schermo/) | **N — Una cosa per schermo**: schermate intere da scorrere, carte da sfogliare, risposte a tutta larghezza e la correzione che sale come un foglio |
+| [`o-banco-a-due-colonne/`](o-banco-a-due-colonne/) | **O — Il banco a due colonne**: a sinistra, ferma, la cosa su cui lavori; a destra il resto |
 | [`sorgenti/`](sorgenti/) | Da dove sono composti: le quattro pagine comuni, `comune.css`, un `tema.css` e un'illustrazione per direzione, le icone, `build.py`, e i due script di cattura; in `stili/` le sorgenti, il costruttore e lo script di cattura dei quattro stili del 25 ottobre |
 
 Le sei schermate di ogni direzione: `home.html`, la Home senza risposte;
@@ -622,6 +626,224 @@ anche nel disegno più in basso).
 | [`k-due-colori/schermate/riepilogo-375-intera.png`](k-due-colori/schermate/riepilogo-375-intera.png) | Il riepilogo intero al telefono |
 | [`k-due-colori/schermate/riepilogo-1280.png`](k-due-colori/schermate/riepilogo-1280.png) | Il riepilogo al computer |
 | [`k-due-colori/schermate/riepilogo-1280-intera.png`](k-due-colori/schermate/riepilogo-1280-intera.png) | Il riepilogo intero al computer |
+
+## Gli impianti diversi — 25 ottobre 2026
+
+Dopo H, I, J e K l'autore ha detto: «ha cambiato lo stile ma sostanzialmente è
+rimasto tutto il layout uguale, si può provare qualcosa di veramente diverso?».
+Aveva ragione: quelle quattro cambiano il vestito, e Home, domanda e riepilogo
+restano disposti come nella release candidate. Questi quattro cambiano la
+**disposizione e il modo di muoversi**, e tengono contenuti e testi. Per far
+vedere solo quello, **sono tutti nei colori della Regata** (il loro `tema.css`
+comincia con una copia di `sorgenti/stili/g/tema.css`); la G non è stata toccata.
+L'autore li ha scelti tutti e quattro fra quattro proposte.
+
+- **L — Il percorso a boe** (`l-percorso-a-boe/`). La Home non è un menu ma una
+  rotta: una linea tratteggiata scende di boa in boa — la prova d'esame con la
+  barca «sei qui», la carta del faro, le 10 domande, i quesiti, il carteggio, i
+  fanali, le prove — fino al porto, i limiti detti prima. Al computer la rotta
+  scende al centro e le tappe si alternano. In Allenati gli otto argomenti sono
+  **zone di mare grandi quanto pesano**: venti caselle, una per domanda della
+  prova, e più un tema pesa più l'acqua è profonda; gli altri modi sono quattro
+  boe in fila. Al computer la domanda ha la rotta delle dieci domande in
+  verticale accanto; preparazione e riepilogo mostrano le dieci boe, quelle
+  fatte con il loro colore.
+- **M — La carta e il pannello** (`m-carta-e-pannello/`). Come un'app di
+  navigazione: la carta sta ferma dietro, i comandi galleggiano sopra come
+  pillole bianche, e il contenuto vive in un pannello che al telefono sale dal
+  basso e al computer sta di lato. Il faro e la boa si toccano sulla carta
+  stessa; al computer quello che dicono appare in una scheda sulla carta. Nella
+  domanda, al computer, la carta resta accanto al pannello.
+- **N — Una cosa per schermo** (`n-una-cosa-per-schermo/`). La Home è una pila
+  di otto schermate intere, ognuna con una cosa sola (la prova; le 10 domande su
+  un campo di mare; 1.722, 135 e 27 enormi; la carta; le prove; i limiti), con i
+  puntini a destra al computer. Allenati è una fila di carte da sfogliare di
+  lato, la prima quella consigliata; gli argomenti hanno il peso in grande prima
+  del nome. Nella domanda le risposte sono fasce larghe quanto lo schermo e la
+  correzione — l'esito, il perché e «Avanti» — sale come un foglio sotto il
+  pollice. Il riepilogo è un numero per riga, enorme.
+- **O — Il banco a due colonne** (`o-banco-a-due-colonne/`). Al computer a
+  sinistra, ferma su un campo di colore, la cosa su cui lavori (la prova,
+  l'allenamento consigliato, la domanda con la figura grande, il risultato); a
+  destra, che scorre, tutto il resto (la carta, gli argomenti, le note, le
+  risposte). Al telefono la colonna di sinistra è una fascia in cima.
+
+Per rifarli, da questa cartella:
+
+```bash
+python3 sorgenti/stili/build.py . ../../../site/caratteri/manrope-latin-wght-normal.woff2 l m n o
+node sorgenti/stili/cattura-stili.mjs "$PWD" l-percorso-a-boe m-carta-e-pannello n-una-cosa-per-schermo o-banco-a-due-colonne
+```
+
+Ogni impianto ha le sue pagine in `sorgenti/stili/<lettera>/`: L la Home,
+Allenati, la preparazione e il riepilogo; M tutte e sei (la carta entra in
+ognuna); N la Home, Allenati, la preparazione, la domanda e il riepilogo; O
+tutte e sei.
+
+**Misurato** da `cattura-stili.mjs` sulle 72 combinazioni: nessuno
+sbordamento, un solo `data-ruolo="principale"` visibile, Manrope caricato.
+Nella Home a 375×667 «Simula il quiz base» finisce a 446 (L), 533 (M), 429 (N)
+e 446 px (O), sopra la barra. «Avanti» dopo un errore a 375×667 sta fra 599 e
+655 px e il suo centro è suo. La figura della domanda lunga sta intera prima di
+rispondere, 304–534 px, con il centro della prima risposta fra 665 e 678 su 812.
+L'avviso della preparazione finisce 12 px sopra «Inizia», sopra la barra.
+Contrasti AA sui colori calcolati di ogni testo visibile fuori dai disegni, con
+il controllo a parte delle direzioni precedenti.
+
+**Trovato guardando, e corretto:** in L, al computer, la carta lasciava un vuoto
+sotto la prova e la sua boa copriva la barca; in M, al computer, la scheda del
+faro copriva la sigla e metà carta stava sotto il pannello, e «Avanti» era
+coperto dal pannello della domanda; in N i puntini coprivano il testo al
+telefono, le schermate non erano allineate alla testata, i numeri del riepilogo
+erano piccoli e la domanda grande spingeva la prima risposta al bordo; in O la
+preparazione aveva l'avviso sopra «Inizia» e la domanda con figura non si
+divideva in colonne. **Una cosa del misuratore, non della pagina:** le foto
+«intere» di N sono vuote dopo la prima schermata, perché il misuratore allunga
+la finestra e le schermate alte quanto la finestra si allungano con lei; per N ci
+sono le schermate fotografate una per una, scorrendo.
+
+**Non controllato:** nessuna persona; Safari e il gesto vero (lo scorrimento a
+scatti di N, il pannello di M che sale con il dito); in M il pannello non si
+trascina, scorre con la pagina; le animazioni solo nelle foto.
+
+### L — Il percorso a boe: la Home è una rotta, gli argomenti sono zone di mare
+
+| Schermata | Che cosa mostra |
+|---|---|
+| [`l-percorso-a-boe/schermate/home-375.png`](l-percorso-a-boe/schermate/home-375.png) | Home, primo schermo a 375×812 |
+| [`l-percorso-a-boe/schermate/home-375x667.png`](l-percorso-a-boe/schermate/home-375x667.png) | Home su un telefono piccolo: «Simula il quiz base» sopra la barra |
+| [`l-percorso-a-boe/schermate/home-375-intera.png`](l-percorso-a-boe/schermate/home-375-intera.png) | Home intera al telefono |
+| [`l-percorso-a-boe/schermate/home-1280.png`](l-percorso-a-boe/schermate/home-1280.png) | Home al computer, primo schermo |
+| [`l-percorso-a-boe/schermate/home-tocca-1280.png`](l-percorso-a-boe/schermate/home-tocca-1280.png) | Home al computer con il faro toccato: sotto, che cosa vuol dire |
+| [`l-percorso-a-boe/schermate/home-1280-intera.png`](l-percorso-a-boe/schermate/home-1280-intera.png) | Home intera al computer |
+| [`l-percorso-a-boe/schermate/quiz-375.png`](l-percorso-a-boe/schermate/quiz-375.png) | Allenati · Quiz, primo schermo al telefono |
+| [`l-percorso-a-boe/schermate/quiz-375x667.png`](l-percorso-a-boe/schermate/quiz-375x667.png) | Allenati · Quiz su un telefono piccolo |
+| [`l-percorso-a-boe/schermate/quiz-375-intera.png`](l-percorso-a-boe/schermate/quiz-375-intera.png) | Allenati · Quiz intera al telefono |
+| [`l-percorso-a-boe/schermate/quiz-1280.png`](l-percorso-a-boe/schermate/quiz-1280.png) | Allenati · Quiz al computer |
+| [`l-percorso-a-boe/schermate/quiz-1280-intera.png`](l-percorso-a-boe/schermate/quiz-1280-intera.png) | Allenati · Quiz intera al computer |
+| [`l-percorso-a-boe/schermate/preparazione-375.png`](l-percorso-a-boe/schermate/preparazione-375.png) | La preparazione al telefono |
+| [`l-percorso-a-boe/schermate/preparazione-375x667.png`](l-percorso-a-boe/schermate/preparazione-375x667.png) | La preparazione su un telefono piccolo: l'avviso «senza account» 12 px sopra «Inizia», sopra la barra |
+| [`l-percorso-a-boe/schermate/preparazione-1280.png`](l-percorso-a-boe/schermate/preparazione-1280.png) | La preparazione al computer |
+| [`l-percorso-a-boe/schermate/runner-375.png`](l-percorso-a-boe/schermate/runner-375.png) | La domanda 1.7.6-19 dopo una risposta sbagliata, a 375×812 |
+| [`l-percorso-a-boe/schermate/runner-375x667.png`](l-percorso-a-boe/schermate/runner-375x667.png) | La stessa su un telefono piccolo: «Avanti» nel primo schermo |
+| [`l-percorso-a-boe/schermate/runner-1280.png`](l-percorso-a-boe/schermate/runner-1280.png) | La domanda dopo l'errore, al computer |
+| [`l-percorso-a-boe/schermate/runner-figura-375.png`](l-percorso-a-boe/schermate/runner-figura-375.png) | La domanda più lunga con figura, prima di rispondere |
+| [`l-percorso-a-boe/schermate/runner-figura-375x667.png`](l-percorso-a-boe/schermate/runner-figura-375x667.png) | La stessa su un telefono piccolo |
+| [`l-percorso-a-boe/schermate/runner-figura-1280.png`](l-percorso-a-boe/schermate/runner-figura-1280.png) | La stessa al computer |
+| [`l-percorso-a-boe/schermate/riepilogo-375.png`](l-percorso-a-boe/schermate/riepilogo-375.png) | Il riepilogo di due domande, primo schermo |
+| [`l-percorso-a-boe/schermate/riepilogo-375x667.png`](l-percorso-a-boe/schermate/riepilogo-375x667.png) | Il riepilogo su un telefono piccolo |
+| [`l-percorso-a-boe/schermate/riepilogo-375-intera.png`](l-percorso-a-boe/schermate/riepilogo-375-intera.png) | Il riepilogo intero al telefono |
+| [`l-percorso-a-boe/schermate/riepilogo-1280.png`](l-percorso-a-boe/schermate/riepilogo-1280.png) | Il riepilogo al computer |
+| [`l-percorso-a-boe/schermate/riepilogo-1280-intera.png`](l-percorso-a-boe/schermate/riepilogo-1280-intera.png) | Il riepilogo intero al computer |
+
+### M — La carta e il pannello: la carta dietro, il contenuto in un pannello
+
+| Schermata | Che cosa mostra |
+|---|---|
+| [`m-carta-e-pannello/schermate/home-375.png`](m-carta-e-pannello/schermate/home-375.png) | Home, primo schermo a 375×812 |
+| [`m-carta-e-pannello/schermate/home-375x667.png`](m-carta-e-pannello/schermate/home-375x667.png) | Home su un telefono piccolo: «Simula il quiz base» sopra la barra |
+| [`m-carta-e-pannello/schermate/home-375-intera.png`](m-carta-e-pannello/schermate/home-375-intera.png) | Home intera al telefono |
+| [`m-carta-e-pannello/schermate/home-1280.png`](m-carta-e-pannello/schermate/home-1280.png) | Home al computer, primo schermo |
+| [`m-carta-e-pannello/schermate/home-tocca-1280.png`](m-carta-e-pannello/schermate/home-tocca-1280.png) | Home al computer con il faro toccato: sotto, che cosa vuol dire |
+| [`m-carta-e-pannello/schermate/home-1280-intera.png`](m-carta-e-pannello/schermate/home-1280-intera.png) | Home intera al computer |
+| [`m-carta-e-pannello/schermate/quiz-375.png`](m-carta-e-pannello/schermate/quiz-375.png) | Allenati · Quiz, primo schermo al telefono |
+| [`m-carta-e-pannello/schermate/quiz-375x667.png`](m-carta-e-pannello/schermate/quiz-375x667.png) | Allenati · Quiz su un telefono piccolo |
+| [`m-carta-e-pannello/schermate/quiz-375-intera.png`](m-carta-e-pannello/schermate/quiz-375-intera.png) | Allenati · Quiz intera al telefono |
+| [`m-carta-e-pannello/schermate/quiz-1280.png`](m-carta-e-pannello/schermate/quiz-1280.png) | Allenati · Quiz al computer |
+| [`m-carta-e-pannello/schermate/quiz-1280-intera.png`](m-carta-e-pannello/schermate/quiz-1280-intera.png) | Allenati · Quiz intera al computer |
+| [`m-carta-e-pannello/schermate/preparazione-375.png`](m-carta-e-pannello/schermate/preparazione-375.png) | La preparazione al telefono |
+| [`m-carta-e-pannello/schermate/preparazione-375x667.png`](m-carta-e-pannello/schermate/preparazione-375x667.png) | La preparazione su un telefono piccolo: l'avviso «senza account» 12 px sopra «Inizia», sopra la barra |
+| [`m-carta-e-pannello/schermate/preparazione-1280.png`](m-carta-e-pannello/schermate/preparazione-1280.png) | La preparazione al computer |
+| [`m-carta-e-pannello/schermate/runner-375.png`](m-carta-e-pannello/schermate/runner-375.png) | La domanda 1.7.6-19 dopo una risposta sbagliata, a 375×812 |
+| [`m-carta-e-pannello/schermate/runner-375x667.png`](m-carta-e-pannello/schermate/runner-375x667.png) | La stessa su un telefono piccolo: «Avanti» nel primo schermo |
+| [`m-carta-e-pannello/schermate/runner-1280.png`](m-carta-e-pannello/schermate/runner-1280.png) | La domanda dopo l'errore, al computer |
+| [`m-carta-e-pannello/schermate/runner-figura-375.png`](m-carta-e-pannello/schermate/runner-figura-375.png) | La domanda più lunga con figura, prima di rispondere |
+| [`m-carta-e-pannello/schermate/runner-figura-375x667.png`](m-carta-e-pannello/schermate/runner-figura-375x667.png) | La stessa su un telefono piccolo |
+| [`m-carta-e-pannello/schermate/runner-figura-1280.png`](m-carta-e-pannello/schermate/runner-figura-1280.png) | La stessa al computer |
+| [`m-carta-e-pannello/schermate/riepilogo-375.png`](m-carta-e-pannello/schermate/riepilogo-375.png) | Il riepilogo di due domande, primo schermo |
+| [`m-carta-e-pannello/schermate/riepilogo-375x667.png`](m-carta-e-pannello/schermate/riepilogo-375x667.png) | Il riepilogo su un telefono piccolo |
+| [`m-carta-e-pannello/schermate/riepilogo-375-intera.png`](m-carta-e-pannello/schermate/riepilogo-375-intera.png) | Il riepilogo intero al telefono |
+| [`m-carta-e-pannello/schermate/riepilogo-1280.png`](m-carta-e-pannello/schermate/riepilogo-1280.png) | Il riepilogo al computer |
+| [`m-carta-e-pannello/schermate/riepilogo-1280-intera.png`](m-carta-e-pannello/schermate/riepilogo-1280-intera.png) | Il riepilogo intero al computer |
+
+### N — Una cosa per schermo: schermate intere, carte da sfogliare, la correzione come un foglio
+
+| Schermata | Che cosa mostra |
+|---|---|
+| [`n-una-cosa-per-schermo/schermate/home-375.png`](n-una-cosa-per-schermo/schermate/home-375.png) | Home, primo schermo a 375×812 |
+| [`n-una-cosa-per-schermo/schermate/home-375x667.png`](n-una-cosa-per-schermo/schermate/home-375x667.png) | Home su un telefono piccolo: «Simula il quiz base» sopra la barra |
+| [`n-una-cosa-per-schermo/schermate/home-375-intera.png`](n-una-cosa-per-schermo/schermate/home-375-intera.png) | Home intera al telefono |
+| [`n-una-cosa-per-schermo/schermate/home-1280.png`](n-una-cosa-per-schermo/schermate/home-1280.png) | Home al computer, primo schermo |
+| [`n-una-cosa-per-schermo/schermate/home-tocca-1280.png`](n-una-cosa-per-schermo/schermate/home-tocca-1280.png) | Home al computer con il faro toccato: sotto, che cosa vuol dire |
+| [`n-una-cosa-per-schermo/schermate/home-1280-intera.png`](n-una-cosa-per-schermo/schermate/home-1280-intera.png) | Home intera al computer |
+| [`n-una-cosa-per-schermo/schermate/quiz-375.png`](n-una-cosa-per-schermo/schermate/quiz-375.png) | Allenati · Quiz, primo schermo al telefono |
+| [`n-una-cosa-per-schermo/schermate/quiz-375x667.png`](n-una-cosa-per-schermo/schermate/quiz-375x667.png) | Allenati · Quiz su un telefono piccolo |
+| [`n-una-cosa-per-schermo/schermate/quiz-375-intera.png`](n-una-cosa-per-schermo/schermate/quiz-375-intera.png) | Allenati · Quiz intera al telefono |
+| [`n-una-cosa-per-schermo/schermate/quiz-1280.png`](n-una-cosa-per-schermo/schermate/quiz-1280.png) | Allenati · Quiz al computer |
+| [`n-una-cosa-per-schermo/schermate/quiz-1280-intera.png`](n-una-cosa-per-schermo/schermate/quiz-1280-intera.png) | Allenati · Quiz intera al computer |
+| [`n-una-cosa-per-schermo/schermate/preparazione-375.png`](n-una-cosa-per-schermo/schermate/preparazione-375.png) | La preparazione al telefono |
+| [`n-una-cosa-per-schermo/schermate/preparazione-375x667.png`](n-una-cosa-per-schermo/schermate/preparazione-375x667.png) | La preparazione su un telefono piccolo: l'avviso «senza account» 12 px sopra «Inizia», sopra la barra |
+| [`n-una-cosa-per-schermo/schermate/preparazione-1280.png`](n-una-cosa-per-schermo/schermate/preparazione-1280.png) | La preparazione al computer |
+| [`n-una-cosa-per-schermo/schermate/runner-375.png`](n-una-cosa-per-schermo/schermate/runner-375.png) | La domanda 1.7.6-19 dopo una risposta sbagliata, a 375×812 |
+| [`n-una-cosa-per-schermo/schermate/runner-375x667.png`](n-una-cosa-per-schermo/schermate/runner-375x667.png) | La stessa su un telefono piccolo: «Avanti» nel primo schermo |
+| [`n-una-cosa-per-schermo/schermate/runner-1280.png`](n-una-cosa-per-schermo/schermate/runner-1280.png) | La domanda dopo l'errore, al computer |
+| [`n-una-cosa-per-schermo/schermate/runner-figura-375.png`](n-una-cosa-per-schermo/schermate/runner-figura-375.png) | La domanda più lunga con figura, prima di rispondere |
+| [`n-una-cosa-per-schermo/schermate/runner-figura-375x667.png`](n-una-cosa-per-schermo/schermate/runner-figura-375x667.png) | La stessa su un telefono piccolo |
+| [`n-una-cosa-per-schermo/schermate/runner-figura-1280.png`](n-una-cosa-per-schermo/schermate/runner-figura-1280.png) | La stessa al computer |
+| [`n-una-cosa-per-schermo/schermate/riepilogo-375.png`](n-una-cosa-per-schermo/schermate/riepilogo-375.png) | Il riepilogo di due domande, primo schermo |
+| [`n-una-cosa-per-schermo/schermate/riepilogo-375x667.png`](n-una-cosa-per-schermo/schermate/riepilogo-375x667.png) | Il riepilogo su un telefono piccolo |
+| [`n-una-cosa-per-schermo/schermate/riepilogo-375-intera.png`](n-una-cosa-per-schermo/schermate/riepilogo-375-intera.png) | Il riepilogo intero al telefono |
+| [`n-una-cosa-per-schermo/schermate/riepilogo-1280.png`](n-una-cosa-per-schermo/schermate/riepilogo-1280.png) | Il riepilogo al computer |
+| [`n-una-cosa-per-schermo/schermate/riepilogo-1280-intera.png`](n-una-cosa-per-schermo/schermate/riepilogo-1280-intera.png) | Il riepilogo intero al computer |
+| [`n-una-cosa-per-schermo/schermate/home-375-schermata-1.png`](n-una-cosa-per-schermo/schermate/home-375-schermata-1.png) | Home al telefono, schermata 1 di 8, fotografata scorrendo |
+| [`n-una-cosa-per-schermo/schermate/home-375-schermata-2.png`](n-una-cosa-per-schermo/schermate/home-375-schermata-2.png) | Home al telefono, schermata 2 di 8, fotografata scorrendo |
+| [`n-una-cosa-per-schermo/schermate/home-375-schermata-3.png`](n-una-cosa-per-schermo/schermate/home-375-schermata-3.png) | Home al telefono, schermata 3 di 8, fotografata scorrendo |
+| [`n-una-cosa-per-schermo/schermate/home-375-schermata-4.png`](n-una-cosa-per-schermo/schermate/home-375-schermata-4.png) | Home al telefono, schermata 4 di 8, fotografata scorrendo |
+| [`n-una-cosa-per-schermo/schermate/home-375-schermata-5.png`](n-una-cosa-per-schermo/schermate/home-375-schermata-5.png) | Home al telefono, schermata 5 di 8, fotografata scorrendo |
+| [`n-una-cosa-per-schermo/schermate/home-375-schermata-6.png`](n-una-cosa-per-schermo/schermate/home-375-schermata-6.png) | Home al telefono, schermata 6 di 8, fotografata scorrendo |
+| [`n-una-cosa-per-schermo/schermate/home-375-schermata-7.png`](n-una-cosa-per-schermo/schermate/home-375-schermata-7.png) | Home al telefono, schermata 7 di 8, fotografata scorrendo |
+| [`n-una-cosa-per-schermo/schermate/home-375-schermata-8.png`](n-una-cosa-per-schermo/schermate/home-375-schermata-8.png) | Home al telefono, schermata 8 di 8, fotografata scorrendo |
+| [`n-una-cosa-per-schermo/schermate/home-1280-schermata-1.png`](n-una-cosa-per-schermo/schermate/home-1280-schermata-1.png) | Home al computer, schermata 1 di 8 |
+| [`n-una-cosa-per-schermo/schermate/home-1280-schermata-2.png`](n-una-cosa-per-schermo/schermate/home-1280-schermata-2.png) | Home al computer, schermata 2 di 8 |
+| [`n-una-cosa-per-schermo/schermate/home-1280-schermata-3.png`](n-una-cosa-per-schermo/schermate/home-1280-schermata-3.png) | Home al computer, schermata 3 di 8 |
+| [`n-una-cosa-per-schermo/schermate/home-1280-schermata-4.png`](n-una-cosa-per-schermo/schermate/home-1280-schermata-4.png) | Home al computer, schermata 4 di 8 |
+| [`n-una-cosa-per-schermo/schermate/home-1280-schermata-5.png`](n-una-cosa-per-schermo/schermate/home-1280-schermata-5.png) | Home al computer, schermata 5 di 8 |
+| [`n-una-cosa-per-schermo/schermate/home-1280-schermata-6.png`](n-una-cosa-per-schermo/schermate/home-1280-schermata-6.png) | Home al computer, schermata 6 di 8 |
+| [`n-una-cosa-per-schermo/schermate/home-1280-schermata-7.png`](n-una-cosa-per-schermo/schermate/home-1280-schermata-7.png) | Home al computer, schermata 7 di 8 |
+| [`n-una-cosa-per-schermo/schermate/home-1280-schermata-8.png`](n-una-cosa-per-schermo/schermate/home-1280-schermata-8.png) | Home al computer, schermata 8 di 8 |
+| [`n-una-cosa-per-schermo/schermate/riepilogo-375-schermata-1.png`](n-una-cosa-per-schermo/schermate/riepilogo-375-schermata-1.png) | Il riepilogo al telefono, schermata 1 di 3 |
+| [`n-una-cosa-per-schermo/schermate/riepilogo-375-schermata-2.png`](n-una-cosa-per-schermo/schermate/riepilogo-375-schermata-2.png) | Il riepilogo al telefono, schermata 2 di 3 |
+| [`n-una-cosa-per-schermo/schermate/riepilogo-375-schermata-3.png`](n-una-cosa-per-schermo/schermate/riepilogo-375-schermata-3.png) | Il riepilogo al telefono, schermata 3 di 3 |
+
+### O — Il banco a due colonne: a sinistra la cosa su cui lavori, a destra il resto
+
+| Schermata | Che cosa mostra |
+|---|---|
+| [`o-banco-a-due-colonne/schermate/home-375.png`](o-banco-a-due-colonne/schermate/home-375.png) | Home, primo schermo a 375×812 |
+| [`o-banco-a-due-colonne/schermate/home-375x667.png`](o-banco-a-due-colonne/schermate/home-375x667.png) | Home su un telefono piccolo: «Simula il quiz base» sopra la barra |
+| [`o-banco-a-due-colonne/schermate/home-375-intera.png`](o-banco-a-due-colonne/schermate/home-375-intera.png) | Home intera al telefono |
+| [`o-banco-a-due-colonne/schermate/home-1280.png`](o-banco-a-due-colonne/schermate/home-1280.png) | Home al computer, primo schermo |
+| [`o-banco-a-due-colonne/schermate/home-tocca-1280.png`](o-banco-a-due-colonne/schermate/home-tocca-1280.png) | Home al computer con il faro toccato: sotto, che cosa vuol dire |
+| [`o-banco-a-due-colonne/schermate/home-1280-intera.png`](o-banco-a-due-colonne/schermate/home-1280-intera.png) | Home intera al computer |
+| [`o-banco-a-due-colonne/schermate/quiz-375.png`](o-banco-a-due-colonne/schermate/quiz-375.png) | Allenati · Quiz, primo schermo al telefono |
+| [`o-banco-a-due-colonne/schermate/quiz-375x667.png`](o-banco-a-due-colonne/schermate/quiz-375x667.png) | Allenati · Quiz su un telefono piccolo |
+| [`o-banco-a-due-colonne/schermate/quiz-375-intera.png`](o-banco-a-due-colonne/schermate/quiz-375-intera.png) | Allenati · Quiz intera al telefono |
+| [`o-banco-a-due-colonne/schermate/quiz-1280.png`](o-banco-a-due-colonne/schermate/quiz-1280.png) | Allenati · Quiz al computer |
+| [`o-banco-a-due-colonne/schermate/quiz-1280-intera.png`](o-banco-a-due-colonne/schermate/quiz-1280-intera.png) | Allenati · Quiz intera al computer |
+| [`o-banco-a-due-colonne/schermate/preparazione-375.png`](o-banco-a-due-colonne/schermate/preparazione-375.png) | La preparazione al telefono |
+| [`o-banco-a-due-colonne/schermate/preparazione-375x667.png`](o-banco-a-due-colonne/schermate/preparazione-375x667.png) | La preparazione su un telefono piccolo: l'avviso «senza account» 12 px sopra «Inizia», sopra la barra |
+| [`o-banco-a-due-colonne/schermate/preparazione-1280.png`](o-banco-a-due-colonne/schermate/preparazione-1280.png) | La preparazione al computer |
+| [`o-banco-a-due-colonne/schermate/runner-375.png`](o-banco-a-due-colonne/schermate/runner-375.png) | La domanda 1.7.6-19 dopo una risposta sbagliata, a 375×812 |
+| [`o-banco-a-due-colonne/schermate/runner-375x667.png`](o-banco-a-due-colonne/schermate/runner-375x667.png) | La stessa su un telefono piccolo: «Avanti» nel primo schermo |
+| [`o-banco-a-due-colonne/schermate/runner-1280.png`](o-banco-a-due-colonne/schermate/runner-1280.png) | La domanda dopo l'errore, al computer |
+| [`o-banco-a-due-colonne/schermate/runner-figura-375.png`](o-banco-a-due-colonne/schermate/runner-figura-375.png) | La domanda più lunga con figura, prima di rispondere |
+| [`o-banco-a-due-colonne/schermate/runner-figura-375x667.png`](o-banco-a-due-colonne/schermate/runner-figura-375x667.png) | La stessa su un telefono piccolo |
+| [`o-banco-a-due-colonne/schermate/runner-figura-1280.png`](o-banco-a-due-colonne/schermate/runner-figura-1280.png) | La stessa al computer |
+| [`o-banco-a-due-colonne/schermate/riepilogo-375.png`](o-banco-a-due-colonne/schermate/riepilogo-375.png) | Il riepilogo di due domande, primo schermo |
+| [`o-banco-a-due-colonne/schermate/riepilogo-375x667.png`](o-banco-a-due-colonne/schermate/riepilogo-375x667.png) | Il riepilogo su un telefono piccolo |
+| [`o-banco-a-due-colonne/schermate/riepilogo-375-intera.png`](o-banco-a-due-colonne/schermate/riepilogo-375-intera.png) | Il riepilogo intero al telefono |
+| [`o-banco-a-due-colonne/schermate/riepilogo-1280.png`](o-banco-a-due-colonne/schermate/riepilogo-1280.png) | Il riepilogo al computer |
+| [`o-banco-a-due-colonne/schermate/riepilogo-1280-intera.png`](o-banco-a-due-colonne/schermate/riepilogo-1280-intera.png) | Il riepilogo intero al computer |
 
 ## Che cosa non è stato controllato
 
