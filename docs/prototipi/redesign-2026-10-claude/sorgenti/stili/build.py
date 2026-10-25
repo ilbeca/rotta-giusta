@@ -38,7 +38,9 @@ STILI = [('d', 'd-segnalamento', 'Il segnalamento'),
          ('q', 'q-regata-sulla-carta', 'La Regata sulla carta'),
          # La Home al computer, due varianti della Regata sulla carta con il percorso di lato
          ('r', 'r-terra-a-sinistra', 'Terra a sinistra'),
-         ('s', 's-terra-a-destra', 'Terra a destra')]
+         ('s', 's-terra-a-destra', 'Terra a destra'),
+         ('t', 't-terra-in-fondo', 'Terra in fondo'),
+         ('u', 'u-terra-beige', 'Terra beige')]
 PROTETTE = {'a-carta-nautica', 'b-plancia-di-notte', 'c-quaderno-a-colori', 'a-carta-viva'}  # e g-regata: le lettere nuove la copiano, non la riscrivono
 PAGINE = ['home', 'quiz', 'preparazione', 'runner', 'runner-figura', 'riepilogo']
 CUR = ' aria-current="page"'

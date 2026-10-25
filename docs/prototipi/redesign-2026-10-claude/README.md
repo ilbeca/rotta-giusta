@@ -42,6 +42,8 @@ veri della banca (1.722 quesiti, i pesi d'esame, il quesito 1.7.6-19), il resto
 | [`q-regata-sulla-carta/`](q-regata-sulla-carta/) | **Q — La Regata sulla carta**: la carta nautica ferma dietro la pagina, vista da finestre; nessun pannello |
 | [`r-terra-a-sinistra/`](r-terra-a-sinistra/) | **R — Terra a sinistra**, 25 ottobre, per il computer: la carta specchiata, la terra bianca fa da sfondo ai testi blu scuro, il mare con faro e boa a destra; pannelli a scorrimento e il percorso dei triangoli di lato |
 | [`s-terra-a-destra/`](s-terra-a-destra/) | **S — Terra a destra**, per il computer: il mare fa da sfondo ai testi bianchi, la terra spostata molto a destra; gli stessi pannelli e lo stesso percorso |
+| [`t-terra-in-fondo/`](t-terra-in-fondo/) | **T — Terra in fondo**, per il computer: la S con la terra bianca ancora più a destra, il percorso piccolo e fine sulla terra, il faro con i settori rosso, bianco e verde, la rotta lontana dal titolo |
+| [`u-terra-beige/`](u-terra-beige/) | **U — Terra beige**: la T con la terra beige chiaro, il colore della terra sulle carte nautiche |
 | [`sorgenti/`](sorgenti/) | Da dove sono composti: le quattro pagine comuni, `comune.css`, un `tema.css` e un'illustrazione per direzione, le icone, `build.py`, e i due script di cattura; in `stili/` le sorgenti, il costruttore e lo script di cattura dei quattro stili del 25 ottobre |
 
 Le sei schermate di ogni direzione: `home.html`, la Home senza risposte;
@@ -1078,6 +1080,74 @@ il telefono, che non è disegnato; nessuna persona; Safari.
 | [`s-terra-a-destra/schermate/home-1280-pannello-10.png`](s-terra-a-destra/schermate/home-1280-pannello-10.png) | Il pannello 10 di 11, scorrendo: il suo triangolo illuminato, quelli prima accesi |
 | [`s-terra-a-destra/schermate/home-1280-pannello-11.png`](s-terra-a-destra/schermate/home-1280-pannello-11.png) | Il pannello 11 di 11, scorrendo: il suo triangolo illuminato, quelli prima accesi |
 | [`s-terra-a-destra/schermate/home-375.png`](s-terra-a-destra/schermate/home-375.png) | Al telefono (non disegnato: per ora vale la Regata) |
+
+## La terra in fondo: T e U — 25 ottobre 2026
+
+Guardata la S, l'autore ha chiesto: la terra **ancora più a destra**; il
+percorso dei triangoli **più piccolo e fine**, e poi **sulla terra**; la rotta
+tratteggiata **che non passi sul titolo**; al faro **i settori rosso e verde**,
+come nella realtà, nello stile della pagina; e una prova con **la terra beige
+chiaro**. Due mock, nati dalla S, che resta com'è.
+
+- **T — Terra in fondo** (`t-terra-in-fondo/`). La terra bianca entra solo
+  nell'ultimo decimo dello schermo, a 1280 px dai 1150 px circa. Il faro ha tre
+  settori, come sulle carte: verde verso sud-ovest, bianco al centro, rosso verso
+  nord-ovest, con i limiti tratteggiati, gli archi colorati e le lettere R, B, V;
+  la sigla diventa **Lam.(2) BRV 10s** e la scheda spiega che nel settore bianco
+  la rotta è libera, nel rosso e nel verde no. La rotta resta nella metà destra:
+  parte in basso, passa **a est della boa cardinale est** (come dice la sua
+  sigla) ed entra nel settore bianco verso il faro. Il percorso è un filo
+  sottile con triangoli piccoli, vuoti finché non ci arrivi, pieni d'arancio dopo;
+  sta fermo **sulla terra**, a destra, e il nome della tappa si apre verso
+  sinistra. Senza il percorso a sinistra, i testi si allineano al marchio.
+- **U — Terra beige** (`u-terra-beige/`). La stessa T con la terra **beige
+  chiaro** (`#F2E6CF`), il colore della terra sulle carte nautiche: stacca dal
+  bianco delle schede e scalda la pagina.
+
+**Misurato** a 1280×800: nessuno sbordamento, un solo principale, «Simula il
+quiz base» fino a 582 px, la sigla del faro letta dopo il tocco; contrasti AA su
+24 testi su 24. **Da verificare dall'autore:** la notazione «Lam.(2) BRV 10s» e
+la disposizione dei settori, che sono di fantasia come il faro. **Non
+controllato:** altre larghezze del computer (a 1024 px la terra si stringe, e il
+percorso potrebbe finire sul mare); il telefono, che non è disegnato.
+
+### T — Terra in fondo
+
+| Schermata | Che cosa mostra |
+|---|---|
+| [`t-terra-in-fondo/schermate/home-1280.png`](t-terra-in-fondo/schermate/home-1280.png) | La testa al computer |
+| [`t-terra-in-fondo/schermate/home-tocca-1280.png`](t-terra-in-fondo/schermate/home-tocca-1280.png) | La testa con il faro toccato: la sigla con i settori nella scheda in basso a destra |
+| [`t-terra-in-fondo/schermate/home-1280-pannello-1.png`](t-terra-in-fondo/schermate/home-1280-pannello-1.png) | Il primo pannello, la prova d'esame |
+| [`t-terra-in-fondo/schermate/home-1280-pannello-2.png`](t-terra-in-fondo/schermate/home-1280-pannello-2.png) | Il pannello 2 di 11, scorrendo: il suo triangolo, sulla terra, illuminato |
+| [`t-terra-in-fondo/schermate/home-1280-pannello-3.png`](t-terra-in-fondo/schermate/home-1280-pannello-3.png) | Il pannello 3 di 11, scorrendo: il suo triangolo, sulla terra, illuminato |
+| [`t-terra-in-fondo/schermate/home-1280-pannello-4.png`](t-terra-in-fondo/schermate/home-1280-pannello-4.png) | Il pannello 4 di 11, scorrendo: il suo triangolo, sulla terra, illuminato |
+| [`t-terra-in-fondo/schermate/home-1280-pannello-5.png`](t-terra-in-fondo/schermate/home-1280-pannello-5.png) | Il pannello 5 di 11, scorrendo: il suo triangolo, sulla terra, illuminato |
+| [`t-terra-in-fondo/schermate/home-1280-pannello-6.png`](t-terra-in-fondo/schermate/home-1280-pannello-6.png) | Il pannello 6 di 11, scorrendo: il suo triangolo, sulla terra, illuminato |
+| [`t-terra-in-fondo/schermate/home-1280-pannello-7.png`](t-terra-in-fondo/schermate/home-1280-pannello-7.png) | Il pannello 7 di 11, scorrendo: il suo triangolo, sulla terra, illuminato |
+| [`t-terra-in-fondo/schermate/home-1280-pannello-8.png`](t-terra-in-fondo/schermate/home-1280-pannello-8.png) | Il pannello 8 di 11, scorrendo: il suo triangolo, sulla terra, illuminato |
+| [`t-terra-in-fondo/schermate/home-1280-pannello-9.png`](t-terra-in-fondo/schermate/home-1280-pannello-9.png) | Il pannello 9 di 11, scorrendo: il suo triangolo, sulla terra, illuminato |
+| [`t-terra-in-fondo/schermate/home-1280-pannello-10.png`](t-terra-in-fondo/schermate/home-1280-pannello-10.png) | Il pannello 10 di 11, scorrendo: il suo triangolo, sulla terra, illuminato |
+| [`t-terra-in-fondo/schermate/home-1280-pannello-11.png`](t-terra-in-fondo/schermate/home-1280-pannello-11.png) | Il pannello 11 di 11, scorrendo: il suo triangolo, sulla terra, illuminato |
+| [`t-terra-in-fondo/schermate/home-375.png`](t-terra-in-fondo/schermate/home-375.png) | Al telefono (non disegnato: per ora vale la Regata) |
+
+### U — Terra beige
+
+| Schermata | Che cosa mostra |
+|---|---|
+| [`u-terra-beige/schermate/home-1280.png`](u-terra-beige/schermate/home-1280.png) | La testa al computer |
+| [`u-terra-beige/schermate/home-tocca-1280.png`](u-terra-beige/schermate/home-tocca-1280.png) | La testa con il faro toccato: la sigla con i settori nella scheda in basso a destra |
+| [`u-terra-beige/schermate/home-1280-pannello-1.png`](u-terra-beige/schermate/home-1280-pannello-1.png) | Il primo pannello, la prova d'esame |
+| [`u-terra-beige/schermate/home-1280-pannello-2.png`](u-terra-beige/schermate/home-1280-pannello-2.png) | Il pannello 2 di 11, scorrendo: il suo triangolo, sulla terra, illuminato |
+| [`u-terra-beige/schermate/home-1280-pannello-3.png`](u-terra-beige/schermate/home-1280-pannello-3.png) | Il pannello 3 di 11, scorrendo: il suo triangolo, sulla terra, illuminato |
+| [`u-terra-beige/schermate/home-1280-pannello-4.png`](u-terra-beige/schermate/home-1280-pannello-4.png) | Il pannello 4 di 11, scorrendo: il suo triangolo, sulla terra, illuminato |
+| [`u-terra-beige/schermate/home-1280-pannello-5.png`](u-terra-beige/schermate/home-1280-pannello-5.png) | Il pannello 5 di 11, scorrendo: il suo triangolo, sulla terra, illuminato |
+| [`u-terra-beige/schermate/home-1280-pannello-6.png`](u-terra-beige/schermate/home-1280-pannello-6.png) | Il pannello 6 di 11, scorrendo: il suo triangolo, sulla terra, illuminato |
+| [`u-terra-beige/schermate/home-1280-pannello-7.png`](u-terra-beige/schermate/home-1280-pannello-7.png) | Il pannello 7 di 11, scorrendo: il suo triangolo, sulla terra, illuminato |
+| [`u-terra-beige/schermate/home-1280-pannello-8.png`](u-terra-beige/schermate/home-1280-pannello-8.png) | Il pannello 8 di 11, scorrendo: il suo triangolo, sulla terra, illuminato |
+| [`u-terra-beige/schermate/home-1280-pannello-9.png`](u-terra-beige/schermate/home-1280-pannello-9.png) | Il pannello 9 di 11, scorrendo: il suo triangolo, sulla terra, illuminato |
+| [`u-terra-beige/schermate/home-1280-pannello-10.png`](u-terra-beige/schermate/home-1280-pannello-10.png) | Il pannello 10 di 11, scorrendo: il suo triangolo, sulla terra, illuminato |
+| [`u-terra-beige/schermate/home-1280-pannello-11.png`](u-terra-beige/schermate/home-1280-pannello-11.png) | Il pannello 11 di 11, scorrendo: il suo triangolo, sulla terra, illuminato |
+| [`u-terra-beige/schermate/home-375.png`](u-terra-beige/schermate/home-375.png) | Al telefono (non disegnato: per ora vale la Regata) |
 
 ## Che cosa non è stato controllato
 

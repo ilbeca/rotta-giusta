@@ -5046,3 +5046,31 @@ disegnato.
     mare; S se l'autore vuole che la Home sia tutta mare come la Regata. Prima di
     decidere, guardarle su uno schermo largo vero, e scrivere al telefono la
     stessa discesa nella Regata com'è.
+
+**La terra in fondo: T e U (25 ottobre).** Guardata la S, l'autore ha chiesto la
+terra ancora più a destra, il percorso più piccolo e fine e poi sulla terra, la
+rotta lontana dal titolo, i settori rosso e verde al faro, e una prova con la
+terra beige chiaro. Due mock nati dalla S, che resta com'è.
+
+- **T — Terra in fondo** (`t-terra-in-fondo/`). La terra bianca solo
+  nell'ultimo decimo dello schermo; il faro con i tre settori delle carte —
+  verde, bianco, rosso, con i limiti tratteggiati —, la sigla «Lam.(2) BRV 10s»
+  e una scheda che dice che nel settore bianco la rotta è libera; la rotta che
+  passa a est della boa cardinale est ed entra nel settore bianco, tutta nella
+  metà destra; il percorso sottile, a triangoli vuoti che si riempiono, fermo
+  sulla terra. *Per chi studia:* la Home mostra già due regole vere — da che
+  parte si passa una cardinale, che cosa vuol dire un settore — senza
+  spiegarle a parole. *Il rischio:* il percorso sulla terra sta dove la terra
+  c'è: a schermi più stretti la costa si sposta, e va provato.
+- **U — Terra beige** (`u-terra-beige/`). La T con la terra beige chiaro, il
+  colore della terra sulle carte: stacca dalle schede bianche e scalda la
+  pagina. *Il rischio:* un colore in più, accanto al bianco, al blu e
+  all'arancio.
+
+**Misurato** a 1280×800: nessuno sbordamento, un principale fino a 582 px,
+contrasti AA su 24 testi su 24. Da verificare dall'autore la notazione della
+sigla e i settori, che sono di fantasia come il faro.
+
+18. **T o U.** *Raccomandazione:* U, perché il beige dice «terra» meglio del
+    bianco e separa la carta dalle schede; T se si vuole restare ai tre colori
+    della Regata. Prima di decidere, guardarle a 1440 e a 1024 px.

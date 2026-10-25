@@ -1,0 +1,29 @@
+{
+ "titolo": "Una luce, una sigla",
+ "intro": "Sulla carta ogni luce ha una sigla che dice come lampeggia. Questa lampeggia davvero così.",
+ "invito": "Tocca il faro o la boa per leggerne la sigla.",
+ "bottoni": [
+  [
+   "faro",
+   "65.33%",
+   "39.47%",
+   "Il faro: leggi la sua sigla"
+  ],
+  [
+   "boa",
+   "41.67%",
+   "65.79%",
+   "La boa cardinale: leggi la sua sigla"
+  ]
+ ],
+ "voci": {
+  "faro": [
+   "Faro · Lam.(2) BRV 10s",
+   "Due lampi ravvicinati ogni 10 secondi. Il colore dice dove sei: nel settore bianco la rotta è libera, nel rosso e nel verde no."
+  ],
+  "boa": [
+   "Boa cardinale est · Sc.(3) 10s",
+   "Tre luci scintillanti ogni 10 secondi. Coni base contro base, nero giallo nero: si passa a est della boa."
+  ]
+ }
+}

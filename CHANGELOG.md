@@ -421,6 +421,23 @@ selezione o contabilità. Versione 0.34.0 invariata.
   larghezze del computer, e il telefono non è disegnato. Decisione 17 in fondo a
   I-29. Nessun file di `site/`, `tests/`, della specifica o della coda.
 
+### Progettato — I-29: la terra in fondo, bianca o beige, con i settori del faro
+
+- **Perché.** Guardata la S, l'autore ha chiesto la terra ancora più a destra, il
+  percorso più piccolo e fine e poi sulla terra, la rotta lontana dal titolo, i
+  settori rosso e verde al faro, e una prova con la terra beige. Due mock in
+  `docs/prototipi/redesign-2026-10-claude/`, nati dalla S, che resta com'è:
+  **T, terra in fondo** (bianca, nell'ultimo decimo dello schermo) e **U, terra
+  beige**. Il faro ha i settori verde, bianco e rosso con i loro limiti, e la
+  sigla «Lam.(2) BRV 10s»; la rotta passa a est della boa cardinale ed entra
+  nel settore bianco, tutta nella metà destra; il percorso è un filo con
+  triangoli piccoli, fermo sulla terra.
+- **Misurato** a 1280×800: sbordamento 0, un principale fino a 582 px, la sigla
+  letta dopo il tocco, contrasti AA su 24 testi su 24. Trovato guardando e
+  corretto: la sigla della boa coperta dalla rotta, poi spostata sotto la boa.
+  Non provate altre larghezze; il telefono non è disegnato. Decisione 18 in
+  fondo a I-29. Nessun file di `site/`, `tests/`, della specifica o della coda.
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la
