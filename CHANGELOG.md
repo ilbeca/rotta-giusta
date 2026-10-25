@@ -404,6 +404,23 @@ selezione o contabilità. Versione 0.34.0 invariata.
   domanda di Q al telefono con il fondo blu. Le frasi delle tappe di P sono
   nuove, da verificare. Decisione 16 in fondo a I-29.
 
+### Progettato — I-29: la Home al computer, terra a sinistra e terra a destra
+
+- **Perché.** Guardata la Regata sulla carta, l'autore ha chiesto due Home per il
+  computer: la terra bianca come fondo dei testi in blu scuro, oppure la terra
+  spostata molto più a destra; in tutte e due il percorso dei triangoli di lato,
+  che si illumina scorrendo. Il telefono resta la Regata com'è. Due mock in
+  `docs/prototipi/redesign-2026-10-claude/`: **R, terra a sinistra** (la carta
+  specchiata, il mare con il faro e la boa a destra) e **S, terra a destra** (il
+  mare come fondo con un velo sotto il testo bianco, la terra nell'ultimo
+  quinto). Undici pannelli che si fermano uno alla volta, con le frasi di P; il
+  triangolo del pannello in vista si accende, i passati restano arancio.
+- **Misurato** a 1280×800: sbordamento 0, un principale, «Simula il quiz base»
+  con il fondo a 582 px, la sigla del faro letta, contrasti AA su 24 testi su
+  24; corretto in S il testo chiaro su bianco al telefono. Non provate altre
+  larghezze del computer, e il telefono non è disegnato. Decisione 17 in fondo a
+  I-29. Nessun file di `site/`, `tests/`, della specifica o della coda.
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la

@@ -40,6 +40,8 @@ veri della banca (1.722 quesiti, i pesi d'esame, il quesito 1.7.6-19), il resto
 | [`o-banco-a-due-colonne/`](o-banco-a-due-colonne/) | **O — Il banco a due colonne**: a sinistra, ferma, la cosa su cui lavori; a destra il resto |
 | [`p-rotta-che-si-accende/`](p-rotta-che-si-accende/) | **P — La rotta che si accende**, 25 ottobre: la Home della Regata con il percorso a boe animato; scorrendo, la linea si riempie, la barca scende e ogni tappa spiega come funziona il sito |
 | [`q-regata-sulla-carta/`](q-regata-sulla-carta/) | **Q — La Regata sulla carta**: la carta nautica ferma dietro la pagina, vista da finestre; nessun pannello |
+| [`r-terra-a-sinistra/`](r-terra-a-sinistra/) | **R — Terra a sinistra**, 25 ottobre, per il computer: la carta specchiata, la terra bianca fa da sfondo ai testi blu scuro, il mare con faro e boa a destra; pannelli a scorrimento e il percorso dei triangoli di lato |
+| [`s-terra-a-destra/`](s-terra-a-destra/) | **S — Terra a destra**, per il computer: il mare fa da sfondo ai testi bianchi, la terra spostata molto a destra; gli stessi pannelli e lo stesso percorso |
 | [`sorgenti/`](sorgenti/) | Da dove sono composti: le quattro pagine comuni, `comune.css`, un `tema.css` e un'illustrazione per direzione, le icone, `build.py`, e i due script di cattura; in `stili/` le sorgenti, il costruttore e lo script di cattura dei quattro stili del 25 ottobre |
 
 Le sei schermate di ogni direzione: `home.html`, la Home senza risposte;
@@ -997,6 +999,85 @@ su iPhone, dove `position:fixed` durante lo scorrimento si comporta a modo suo.
 | [`q-regata-sulla-carta/schermate/riepilogo-1280-intera.png`](q-regata-sulla-carta/schermate/riepilogo-1280-intera.png) | Il riepilogo intero al computer |
 | [`q-regata-sulla-carta/schermate/home-375-finestra-1.png`](q-regata-sulla-carta/schermate/home-375-finestra-1.png) | Home al telefono con la finestra del faro al centro: la carta ferma dietro, la scheda sopra |
 | [`q-regata-sulla-carta/schermate/home-1280-finestra-1.png`](q-regata-sulla-carta/schermate/home-1280-finestra-1.png) | La stessa al computer |
+
+## La Home al computer: terra a sinistra e terra a destra — 25 ottobre 2026
+
+L'autore: «Iniziamo a esserci». Per la Home al computer due prototipi, partendo
+dalla Regata sulla carta (Q): **a)** invertire mare e terra, perché la terra,
+bianca, faccia da sfondo al titolo e ai testi in blu scuro; **b)** spostare la
+terra molto più a destra. In tutti e due, di lato, il percorso con i triangoli,
+che si illumina scorrendo fra i pannelli. Il telefono, per ora, resta quello
+della Regata: qui non è disegnato, e le pagine dopo la Home sono quelle della
+Regata.
+
+- **R — Terra a sinistra** (`r-terra-a-sinistra/`). La carta è specchiata (le
+  scritte raddrizzate una per una): la terra bianca sta a sinistra e continua
+  oltre il bordo del disegno, la costa scende verso il centro dello schermo, e
+  a destra c'è il mare con il faro, la boa e la rotta. Titolo e testi in blu
+  scuro sulla terra, senza veli. Le linee che disegnavano la terra sono tolte,
+  perché passavano sotto il titolo; la sigla del faro è sul mare, in bianco.
+- **S — Terra a destra** (`s-terra-a-destra/`). La carta nel verso della Regata,
+  spostata a destra: la terra bianca occupa solo l'ultimo quinto dello schermo, e
+  il mare fa da sfondo ai testi in bianco. Dietro la colonna del testo c'è un
+  velo di mare fermo, che sfuma prima della costa: senza, la rosa dei venti e i
+  numeri della carta finivano sotto il titolo.
+
+In tutti e due la carta sta ferma e la Home è fatta di **pannelli alti uno
+schermo**, che scorrono a scatti leggeri: la prova d'esame, poi le dieci tappe
+di «Come funziona» (le stesse di P, con i loro disegni). **Il percorso, a
+sinistra**, ha un triangolo per pannello (la barca per il primo): quello del
+pannello che occupa il centro dello schermo si illumina, quelli prima restano
+accesi e la linea si riempie d'arancio fino a lui; passandoci sopra si legge il
+nome della tappa, e toccandolo si va al suo pannello. Il faro e la boa si
+toccano sulla carta, e la sigla compare in una scheda fissa in basso a destra.
+In fondo, una pagina bianca con «Che cosa trovi qui» e i limiti.
+
+**Misurato** a 1280×800: nessuno sbordamento, un solo principale, «Simula il
+quiz base» nel primo schermo (fino a 582 px), la sigla del faro letta dopo il
+tocco; contrasti AA. Le foto dei pannelli sono fatte scorrendo, uno per uno.
+**Non controllato:** altre larghezze del computer (la terra e la costa si
+spostano con la larghezza, e a 1024 px il testo potrebbe toccare la costa in R);
+il telefono, che non è disegnato; nessuna persona; Safari.
+
+### R — Terra a sinistra
+
+| Schermata | Che cosa mostra |
+|---|---|
+| [`r-terra-a-sinistra/schermate/home-1280.png`](r-terra-a-sinistra/schermate/home-1280.png) | La testa al computer |
+| [`r-terra-a-sinistra/schermate/home-tocca-1280.png`](r-terra-a-sinistra/schermate/home-tocca-1280.png) | La testa con il faro toccato: la sigla nella scheda in basso a destra |
+| [`r-terra-a-sinistra/schermate/home-1280-intera.png`](r-terra-a-sinistra/schermate/home-1280-intera.png) | La Home intera al computer (la foto allunga la finestra: la carta e i pannelli si allungano con lei) |
+| [`r-terra-a-sinistra/schermate/home-1280-pannello-1.png`](r-terra-a-sinistra/schermate/home-1280-pannello-1.png) | Il primo pannello, la prova d'esame |
+| [`r-terra-a-sinistra/schermate/home-1280-pannello-2.png`](r-terra-a-sinistra/schermate/home-1280-pannello-2.png) | Il pannello 2 di 11, scorrendo: il suo triangolo illuminato, quelli prima accesi |
+| [`r-terra-a-sinistra/schermate/home-1280-pannello-3.png`](r-terra-a-sinistra/schermate/home-1280-pannello-3.png) | Il pannello 3 di 11, scorrendo: il suo triangolo illuminato, quelli prima accesi |
+| [`r-terra-a-sinistra/schermate/home-1280-pannello-4.png`](r-terra-a-sinistra/schermate/home-1280-pannello-4.png) | Il pannello 4 di 11, scorrendo: il suo triangolo illuminato, quelli prima accesi |
+| [`r-terra-a-sinistra/schermate/home-1280-pannello-5.png`](r-terra-a-sinistra/schermate/home-1280-pannello-5.png) | Il pannello 5 di 11, scorrendo: il suo triangolo illuminato, quelli prima accesi |
+| [`r-terra-a-sinistra/schermate/home-1280-pannello-6.png`](r-terra-a-sinistra/schermate/home-1280-pannello-6.png) | Il pannello 6 di 11, scorrendo: il suo triangolo illuminato, quelli prima accesi |
+| [`r-terra-a-sinistra/schermate/home-1280-pannello-7.png`](r-terra-a-sinistra/schermate/home-1280-pannello-7.png) | Il pannello 7 di 11, scorrendo: il suo triangolo illuminato, quelli prima accesi |
+| [`r-terra-a-sinistra/schermate/home-1280-pannello-8.png`](r-terra-a-sinistra/schermate/home-1280-pannello-8.png) | Il pannello 8 di 11, scorrendo: il suo triangolo illuminato, quelli prima accesi |
+| [`r-terra-a-sinistra/schermate/home-1280-pannello-9.png`](r-terra-a-sinistra/schermate/home-1280-pannello-9.png) | Il pannello 9 di 11, scorrendo: il suo triangolo illuminato, quelli prima accesi |
+| [`r-terra-a-sinistra/schermate/home-1280-pannello-10.png`](r-terra-a-sinistra/schermate/home-1280-pannello-10.png) | Il pannello 10 di 11, scorrendo: il suo triangolo illuminato, quelli prima accesi |
+| [`r-terra-a-sinistra/schermate/home-1280-pannello-11.png`](r-terra-a-sinistra/schermate/home-1280-pannello-11.png) | Il pannello 11 di 11, scorrendo: il suo triangolo illuminato, quelli prima accesi |
+| [`r-terra-a-sinistra/schermate/home-375.png`](r-terra-a-sinistra/schermate/home-375.png) | Al telefono (non disegnato: per ora vale la Regata) |
+
+### S — Terra a destra
+
+| Schermata | Che cosa mostra |
+|---|---|
+| [`s-terra-a-destra/schermate/home-1280.png`](s-terra-a-destra/schermate/home-1280.png) | La testa al computer |
+| [`s-terra-a-destra/schermate/home-tocca-1280.png`](s-terra-a-destra/schermate/home-tocca-1280.png) | La testa con il faro toccato: la sigla nella scheda in basso a destra |
+| [`s-terra-a-destra/schermate/home-1280-intera.png`](s-terra-a-destra/schermate/home-1280-intera.png) | La Home intera al computer (la foto allunga la finestra: la carta e i pannelli si allungano con lei) |
+| [`s-terra-a-destra/schermate/home-1280-pannello-1.png`](s-terra-a-destra/schermate/home-1280-pannello-1.png) | Il primo pannello, la prova d'esame |
+| [`s-terra-a-destra/schermate/home-1280-pannello-2.png`](s-terra-a-destra/schermate/home-1280-pannello-2.png) | Il pannello 2 di 11, scorrendo: il suo triangolo illuminato, quelli prima accesi |
+| [`s-terra-a-destra/schermate/home-1280-pannello-3.png`](s-terra-a-destra/schermate/home-1280-pannello-3.png) | Il pannello 3 di 11, scorrendo: il suo triangolo illuminato, quelli prima accesi |
+| [`s-terra-a-destra/schermate/home-1280-pannello-4.png`](s-terra-a-destra/schermate/home-1280-pannello-4.png) | Il pannello 4 di 11, scorrendo: il suo triangolo illuminato, quelli prima accesi |
+| [`s-terra-a-destra/schermate/home-1280-pannello-5.png`](s-terra-a-destra/schermate/home-1280-pannello-5.png) | Il pannello 5 di 11, scorrendo: il suo triangolo illuminato, quelli prima accesi |
+| [`s-terra-a-destra/schermate/home-1280-pannello-6.png`](s-terra-a-destra/schermate/home-1280-pannello-6.png) | Il pannello 6 di 11, scorrendo: il suo triangolo illuminato, quelli prima accesi |
+| [`s-terra-a-destra/schermate/home-1280-pannello-7.png`](s-terra-a-destra/schermate/home-1280-pannello-7.png) | Il pannello 7 di 11, scorrendo: il suo triangolo illuminato, quelli prima accesi |
+| [`s-terra-a-destra/schermate/home-1280-pannello-8.png`](s-terra-a-destra/schermate/home-1280-pannello-8.png) | Il pannello 8 di 11, scorrendo: il suo triangolo illuminato, quelli prima accesi |
+| [`s-terra-a-destra/schermate/home-1280-pannello-9.png`](s-terra-a-destra/schermate/home-1280-pannello-9.png) | Il pannello 9 di 11, scorrendo: il suo triangolo illuminato, quelli prima accesi |
+| [`s-terra-a-destra/schermate/home-1280-pannello-10.png`](s-terra-a-destra/schermate/home-1280-pannello-10.png) | Il pannello 10 di 11, scorrendo: il suo triangolo illuminato, quelli prima accesi |
+| [`s-terra-a-destra/schermate/home-1280-pannello-11.png`](s-terra-a-destra/schermate/home-1280-pannello-11.png) | Il pannello 11 di 11, scorrendo: il suo triangolo illuminato, quelli prima accesi |
+| [`s-terra-a-destra/schermate/home-375.png`](s-terra-a-destra/schermate/home-375.png) | Al telefono (non disegnato: per ora vale la Regata) |
 
 ## Che cosa non è stato controllato
 

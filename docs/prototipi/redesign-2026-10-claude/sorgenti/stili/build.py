@@ -35,7 +35,10 @@ STILI = [('d', 'd-segnalamento', 'Il segnalamento'),
          ('o', 'o-banco-a-due-colonne', 'Il banco a due colonne'),
          # Dopo la scelta dell'autore: il percorso a boe come animazione della Home, e la Regata sulla carta
          ('p', 'p-rotta-che-si-accende', 'La rotta che si accende'),
-         ('q', 'q-regata-sulla-carta', 'La Regata sulla carta')]
+         ('q', 'q-regata-sulla-carta', 'La Regata sulla carta'),
+         # La Home al computer, due varianti della Regata sulla carta con il percorso di lato
+         ('r', 'r-terra-a-sinistra', 'Terra a sinistra'),
+         ('s', 's-terra-a-destra', 'Terra a destra')]
 PROTETTE = {'a-carta-nautica', 'b-plancia-di-notte', 'c-quaderno-a-colori', 'a-carta-viva'}  # e g-regata: le lettere nuove la copiano, non la riscrivono
 PAGINE = ['home', 'quiz', 'preparazione', 'runner', 'runner-figura', 'riepilogo']
 CUR = ' aria-current="page"'

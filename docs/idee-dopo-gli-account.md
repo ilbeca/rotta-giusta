@@ -5007,3 +5007,42 @@ Q la domanda al telefono aveva il fondo blu sotto il testo scuro.
     come vestito della Regata? *Raccomandazione:* sì per la discesa di P, dopo
     aver verificato le frasi delle tappe; Q da provare su un iPhone vero prima
     di decidere, per lo sfondo fermo.
+
+**La Home al computer: terra a sinistra e terra a destra (25 ottobre).** Guardata
+la Q, l'autore ha chiesto due Home per il computer, sulla Regata sulla carta: in
+una il mare e la terra si scambiano di posto, così la terra bianca fa da fondo al
+titolo e ai testi, scritti in blu scuro; nell'altra la terra bianca va molto più a
+destra. In tutte e due, di lato, il percorso dei triangoli, che si illumina
+scorrendo fra i pannelli. Al telefono resta la Regata com'è: questi due mock non
+la toccano, e lì mostrano soltanto i pannelli uno sotto l'altro.
+
+- **R — Terra a sinistra** (`r-terra-a-sinistra/`). La carta della Regata
+  specchiata: la terra bianca a sinistra, dietro i testi in blu scuro, e il mare
+  a destra, con il faro sulla costa e la boa al largo. *Per chi studia:* si legge
+  su un fondo chiaro, e la carta resta accanto senza passare sotto le parole.
+  *Il rischio:* la metà sinistra è pagina bianca, e la carta pesa meno che in Q.
+- **S — Terra a destra** (`s-terra-a-destra/`). Il mare è il fondo, con il testo
+  bianco su un velo di mare, e la terra bianca entra solo nell'ultimo quinto, a
+  destra. *Per chi studia:* la pagina è tutta mare, com'era la Regata. *Il
+  rischio:* testo chiaro su fondo scuro per tutta la discesa, che stanca più di
+  R se i pannelli si leggono tutti.
+- **In tutte e due:** undici pannelli che si fermano uno alla volta (la testa e
+  le dieci tappe di P, con le stesse frasi), la carta ferma dietro, il percorso
+  fisso a sinistra: il triangolo del pannello in vista si ingrandisce e si
+  accende, quelli già passati restano arancio, e un tocco su un triangolo porta
+  al suo pannello. Il faro e la boa si toccano sulla carta, e la loro sigla si
+  legge in un riquadro fisso in basso a destra.
+
+**Misurato** a 1280×800: sbordamento 0 (i 15 px sono la barra di scorrimento),
+un principale, «Simula il quiz base» con il fondo a 582 px, la sigla del faro
+letta dopo il tocco, contrasti AA su 24 testi su 24. Il controllo dei contrasti
+ha trovato un difetto vero, corretto: in S, al telefono, i colori del computer
+davano testo chiaro su fondo bianco. **Non provato:** altre larghezze del
+computer (1440, 1920, uno schermo basso), e il telefono, che qui non è
+disegnato.
+
+17. **R o S per la Home al computer.** *Raccomandazione:* R, perché i testi delle
+    dieci tappe si leggono meglio sul bianco, e la carta accanto basta a dare il
+    mare; S se l'autore vuole che la Home sia tutta mare come la Regata. Prima di
+    decidere, guardarle su uno schermo largo vero, e scrivere al telefono la
+    stessa discesa nella Regata com'è.
