@@ -4739,6 +4739,25 @@ tabella dei valori fuori scala per il bordo a scala e il reticolo. Le regole non
 si buttano: si aggiunge che cosa una pagina **deve** avere, non solo che cosa
 non deve.
 
+#### La carta che vive — 25 ottobre 2026
+
+All'autore piace la A ridotta e ha chiesto di non cambiarla: una **copia**,
+`a-carta-viva/`, è stata spinta oltre con impeccable (modalità «overdrive»), in
+due momenti scelti da lui. **La carta che vive:** nella Home il faro lampeggia
+con il suo ritmo vero, Lam.(2) 10s, e una boa cardinale est con Sc.(3) 10s;
+toccando una luce compare che cosa vuol dire la sigla — l'illustrazione insegna
+quello che c'è all'esame. **La rotta come filo:** gli avvii si trasformano nella
+testata della domanda e la testata nel riepilogo (View Transitions fra
+documenti, provate in Chrome a 375 e 1280 px; su Firefox si passa senza
+animazione); la domanda si gioca, con l'anello che passa alla tappa dopo solo
+con «Avanti». La rosa dei venti in rotazione, proposta, è stata scartata: il
+nord di una carta non si muove. Chi chiede meno movimento vede tutto fermo.
+Accanto, i ritocchi della critica: nessun occhiello sopra i titoli, la nota
+senza striscia laterale, le superfici del browser disegnate. **Da verificare
+dall'autore:** le sigle all'italiana e le due frasi che le spiegano, perché
+sono contenuto didattico. Le schermate e le misure sono nel README della
+cartella. Decisione 12, sotto.
+
 #### Decisioni per l'autore
 
 1. **La direzione.** A, B o C — o A con il tema scuro di B più avanti.
@@ -4772,3 +4791,9 @@ non deve.
 11. **I link: navy o magenta?** Navy è più chiaro come «si può toccare», magenta
     più riconoscibile; la regola dice quale e basta. *Raccomandazione:* navy,
     come nei mock e nel parere di ChatGPT.
+12. **La carta che vive: tenerla?** Le luci che lampeggiano con la sigla vera e
+    la rotta che unisce le schermate costano poco (SVG, CSS e un po' di
+    JavaScript, nessuna libreria) e funzionano anche ferme. *Raccomandazione:*
+    sì per la carta della Home, che insegna; la rotta come filo dopo, quando la
+    domanda e il riepilogo veri sono rifatti, perché le transizioni toccano la
+    navigazione del documento solo (§6 della specifica).

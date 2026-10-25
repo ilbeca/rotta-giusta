@@ -14,7 +14,9 @@ icone = (SRC / 'icone.svg').read_text()
 FIGURA = base64.b64encode((pathlib.Path(sys.argv[2]).resolve().parent.parent / 'figure' / 'figura-079.png').read_bytes()).decode()
 DIREZIONI = [('a', 'a-carta-nautica', 'La carta nautica'),
              ('b', 'b-plancia-di-notte', 'La plancia di notte'),
-             ('c', 'c-quaderno-a-colori', 'Il quaderno a colori')]
+             ('c', 'c-quaderno-a-colori', 'Il quaderno a colori'),
+             # La copia della A spinta oltre (impeccable, overdrive): pagine sue in a2/pagine
+             ('a2', 'a-carta-viva', 'La carta che vive')]
 PAGINE = ['home', 'quiz', 'preparazione', 'runner', 'runner-figura', 'riepilogo']
 CUR = ' aria-current="page"'
 VOCI = [('home', 'Home', 'i-rosa', 'home.html'), ('allenati', 'Allenati', 'i-allenati', 'quiz.html'),
@@ -45,7 +47,8 @@ for lettera, cartella, nome in DIREZIONI:
     tema = (SRC / lettera / 'tema.css').read_text() if (SRC / lettera / 'tema.css').exists() else ''
     ill = (SRC / lettera / 'illustrazione.svg').read_text()
     for p in PAGINE:
-        t = componi((SRC / f'{p}.html').read_text(), tema, ill, nome)
+        proprie = SRC / lettera / 'pagine' / f'{p}.html'
+        t = componi((proprie if proprie.exists() else SRC / f'{p}.html').read_text(), tema, ill, nome)
         (d / f'{p}.html').write_text(t)
         print(cartella, p, len(t))
 t = componi((SRC / 'direzioni.html').read_text(), '', '', '')

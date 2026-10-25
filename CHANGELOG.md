@@ -248,6 +248,32 @@ selezione o contabilità. Versione 0.34.0 invariata.
 - 18 mock guardati a 375×812, 375×667 e 1280×800: un pulsante principale,
   sbordamento 0. 51 schermate dei mock e 2 della tavola, citate nel README.
 
+### Progettato — I-29: «La carta che vive», una copia della A spinta oltre
+
+- **Perché.** All'autore piace la A ridotta e ha chiesto di non toccarla: una
+  copia, `docs/prototipi/redesign-2026-10-claude/a-carta-viva/`, è stata
+  lavorata con impeccable in modalità «overdrive», sulle due direzioni che ha
+  scelto lui. La A, la B e la C restano identiche, byte per byte.
+- **La carta che vive.** Il faro della Home lampeggia con il ritmo della sua
+  sigla, Lam.(2) 10s, e una boa cardinale est con Sc.(3) 10s; toccando una
+  luce si legge che cosa vuol dire. La rotta si disegna all'apertura, e al
+  telefono quando la sezione «Una luce, una sigla» entra in vista. Scartata la
+  rosa dei venti che ruota: il nord di una carta non si muove.
+- **La rotta come filo.** View Transitions fra documenti: l'avvio diventa la
+  testata della domanda, la testata il riepilogo; provate in http con Chrome a
+  375 e 1280 px (`pagereveal` con la transizione su domanda e riepilogo). La
+  domanda si gioca con tre quesiti veri e i tasti, l'anello passa alla tappa
+  dopo solo con «Avanti», il riepilogo conta quello che hai fatto. Fermo con
+  `prefers-reduced-motion`.
+- **La critica di impeccable.** Tolti occhielli e pastiglia sopra i titoli e la
+  striscia laterale della nota; disegnate selezione, fuoco, barra di
+  scorrimento e cursore; tolte le molle con il rimbalzo che il rilevatore aveva
+  trovato nella domanda. Restano segnalazioni volute o lette sul CSS comune.
+  Trovati guardando e corretti: il cerchio della boa fuori posto, i numeri del
+  riepilogo minuscoli, il bordo di fuoco sul titolo della seconda domanda.
+- Da verificare dall'autore: le sigle e le due frasi che le spiegano. 23
+  schermate nel README. Nessun file di `site/`.
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la

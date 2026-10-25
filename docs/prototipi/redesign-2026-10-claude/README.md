@@ -25,6 +25,7 @@ veri della banca (1.722 quesiti, i pesi d'esame, il quesito 1.7.6-19), il resto
 | [`a-carta-nautica/`](a-carta-nautica/) | **A — La carta nautica**, nella versione ridotta: le sei schermate |
 | [`b-plancia-di-notte/`](b-plancia-di-notte/) | **B — La plancia di notte**: le stesse sei schermate |
 | [`c-quaderno-a-colori/`](c-quaderno-a-colori/) | **C — Il quaderno a colori**: le stesse sei schermate |
+| [`a-carta-viva/`](a-carta-viva/) | **A — La carta che vive**: una copia della A spinta oltre con impeccable (overdrive), 25 ottobre. La A resta com'è |
 | [`sorgenti/`](sorgenti/) | Da dove sono composti: le quattro pagine comuni, `comune.css`, un `tema.css` e un'illustrazione per direzione, le icone, `build.py`, e i due script di cattura |
 
 Le sei schermate di ogni direzione: `home.html`, la Home senza risposte;
@@ -154,6 +155,76 @@ comincia a 124 e il centro della prima risposta è a 678; nella preparazione, a
 | [`c-quaderno-a-colori/schermate/runner-figura-1280.png`](c-quaderno-a-colori/schermate/runner-figura-1280.png) | La stessa al computer |
 | [`c-quaderno-a-colori/schermate/riepilogo-375-intera.png`](c-quaderno-a-colori/schermate/riepilogo-375-intera.png) | Il riepilogo intero al telefono |
 | [`c-quaderno-a-colori/schermate/riepilogo-1280.png`](c-quaderno-a-colori/schermate/riepilogo-1280.png) | Il riepilogo al computer |
+
+## La carta che vive — `a-carta-viva/`
+
+Una **copia** della A, fatta il 25 ottobre con impeccable in modalità
+«overdrive»: la A di `a-carta-nautica/` non è cambiata di un byte. Due momenti, e
+solo due, scelti dall'autore:
+
+- **La carta che vive**, nella Home. Il faro lampeggia con il suo ritmo vero,
+  Lam.(2) 10s, due lampi e poi buio ogni 10 secondi; la boa cardinale est fa i
+  suoi tre lampi scintillanti, Sc.(3) 10s. Toccando una luce compare che cosa
+  vuol dire la sigla. La rotta si disegna all'apertura; al telefono la carta da
+  toccare è una sezione sua, «Una luce, una sigla», e lì la rotta si disegna
+  mentre entra in vista. La rosa dei venti proposta in rotazione **non** ruota:
+  su una carta il nord non si muove, e il disegno insegnerebbe il falso.
+- **La rotta come filo**, fra le schermate. «Simula il quiz base» e gli altri
+  avvii si trasformano nella testata della domanda, e la testata nel riquadro
+  del riepilogo (View Transitions fra documenti). La domanda si gioca: tre
+  domande vere della banca, i tasti 1-2-3 e Invio, l'anello che scivola alla
+  tappa dopo solo con «Avanti»; il riepilogo legge che cosa hai fatto e fa
+  salire i numeri. Chi chiede meno movimento vede tutto fermo.
+
+Il resto è la A ridotta con i ritocchi della critica di impeccable: niente
+occhielli sopra i titoli, la nota senza la striscia laterale, le superfici del
+browser disegnate (selezione, fuoco, barra di scorrimento, cursore).
+
+**Per vedere le transizioni** la cartella va servita in http — aperta con un
+doppio clic, il browser non le fa:
+
+```bash
+python3 -m http.server 8799 --directory docs/prototipi/redesign-2026-10-claude
+```
+
+e poi `http://localhost:8799/a-carta-viva/home.html`. Provato in Chrome: Home →
+domanda → riepilogo con la transizione, a 375 e a 1280 px; su Firefox si passa
+senza animazione.
+
+**Da verificare dall'autore**, perché è contenuto didattico: le sigle all'italiana
+(«Lam.», «Sc.», come nella figura 79 del decreto) e le due frasi che le spiegano.
+
+Il rilevatore di impeccable sulla copia: spariti gli occhielli (4) e la
+pastiglia sopra il titolo; restano il fondo crema e la cornice a scala, che sono
+la direzione scelta, i bordi «a filo» della carta disegnata, voluti, e una
+striscia laterale letta sul CSS comune ma annullata nella pagina. Le molle con
+il rimbalzo, che il rilevatore aveva segnalato nella domanda, sono state tolte.
+
+| Schermata | Che cosa mostra |
+|---|---|
+| [`a-carta-viva/schermate/home-375.png`](a-carta-viva/schermate/home-375.png) | Home al telefono: la striscia di carta con il faro che lampeggia, nessun occhiello sopra il titolo |
+| [`a-carta-viva/schermate/home-375-intera.png`](a-carta-viva/schermate/home-375-intera.png) | Home intera al telefono, con la sezione «Una luce, una sigla»: la carta da toccare |
+| [`a-carta-viva/schermate/home-1280.png`](a-carta-viva/schermate/home-1280.png) | Home al computer, a rotta già disegnata |
+| [`a-carta-viva/schermate/home-lampo-1280.png`](a-carta-viva/schermate/home-lampo-1280.png) | Home al computer a 1,7 s dall'apertura: il secondo lampo del faro, Lam.(2) 10s, e la rotta che si sta disegnando |
+| [`a-carta-viva/schermate/home-luce-1280.png`](a-carta-viva/schermate/home-luce-1280.png) | La boa toccata: sotto la carta la sigla spiegata |
+| [`a-carta-viva/schermate/home-1280-intera.png`](a-carta-viva/schermate/home-1280-intera.png) | Home intera al computer |
+| [`a-carta-viva/schermate/quiz-375.png`](a-carta-viva/schermate/quiz-375.png) | Allenati · Quiz, primo schermo al telefono |
+| [`a-carta-viva/schermate/quiz-375-intera.png`](a-carta-viva/schermate/quiz-375-intera.png) | Allenati · Quiz intera |
+| [`a-carta-viva/schermate/quiz-1280.png`](a-carta-viva/schermate/quiz-1280.png) | Allenati · Quiz al computer |
+| [`a-carta-viva/schermate/quiz-1280-intera.png`](a-carta-viva/schermate/quiz-1280-intera.png) | Allenati · Quiz intera al computer |
+| [`a-carta-viva/schermate/preparazione-375.png`](a-carta-viva/schermate/preparazione-375.png) | La preparazione al telefono |
+| [`a-carta-viva/schermate/preparazione-1280.png`](a-carta-viva/schermate/preparazione-1280.png) | La preparazione al computer |
+| [`a-carta-viva/schermate/runner-375.png`](a-carta-viva/schermate/runner-375.png) | La domanda prima di rispondere: si gioca davvero, tre domande vere della banca |
+| [`a-carta-viva/schermate/runner-dopo-375.png`](a-carta-viva/schermate/runner-dopo-375.png) | Dopo una risposta sbagliata: l'anello resta sulla prima tappa |
+| [`a-carta-viva/schermate/runner-seconda-375.png`](a-carta-viva/schermate/runner-seconda-375.png) | Dopo «Avanti»: l'anello è scivolato alla seconda tappa, la prima è verde |
+| [`a-carta-viva/schermate/runner-1280.png`](a-carta-viva/schermate/runner-1280.png) | La domanda al computer |
+| [`a-carta-viva/schermate/runner-dopo-1280.png`](a-carta-viva/schermate/runner-dopo-1280.png) | Dopo la risposta, al computer |
+| [`a-carta-viva/schermate/runner-figura-375.png`](a-carta-viva/schermate/runner-figura-375.png) | La domanda lunga con figura |
+| [`a-carta-viva/schermate/runner-figura-1280.png`](a-carta-viva/schermate/runner-figura-1280.png) | La stessa al computer |
+| [`a-carta-viva/schermate/riepilogo-375.png`](a-carta-viva/schermate/riepilogo-375.png) | Il riepilogo di tre domande giocate: i numeri salgono contando |
+| [`a-carta-viva/schermate/riepilogo-375-intera.png`](a-carta-viva/schermate/riepilogo-375-intera.png) | Il riepilogo intero |
+| [`a-carta-viva/schermate/riepilogo-1280.png`](a-carta-viva/schermate/riepilogo-1280.png) | Il riepilogo al computer |
+| [`a-carta-viva/schermate/riepilogo-1280-intera.png`](a-carta-viva/schermate/riepilogo-1280-intera.png) | Il riepilogo intero al computer |
 
 ## Che cosa non è stato controllato
 
