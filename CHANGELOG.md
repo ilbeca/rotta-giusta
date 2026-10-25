@@ -274,6 +274,12 @@ selezione o contabilità. Versione 0.34.0 invariata.
 - Da verificare dall'autore: le sigle e le due frasi che le spiegano. 23
   schermate nel README. Nessun file di `site/`.
 
+### Deciso — «La carta che vive» è la release candidate del ridisegno
+
+- L'autore, il 25 ottobre: la copia `a-carta-viva/` è la versione di
+  riferimento e non si tocca; gli altri stili si provano in cartelle nuove.
+  Scritto nel README della cartella e in I-29; i file della versione no.
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la

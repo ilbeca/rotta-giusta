@@ -4741,6 +4741,9 @@ non deve.
 
 #### La carta che vive — 25 ottobre 2026
 
+**È la release candidate** (l'autore, 25 ottobre): la versione di riferimento,
+che non si tocca; gli altri stili si provano accanto.
+
 All'autore piace la A ridotta e ha chiesto di non cambiarla: una **copia**,
 `a-carta-viva/`, è stata spinta oltre con impeccable (modalità «overdrive»), in
 due momenti scelti da lui. **La carta che vive:** nella Home il faro lampeggia

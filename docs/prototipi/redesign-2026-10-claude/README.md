@@ -25,7 +25,7 @@ veri della banca (1.722 quesiti, i pesi d'esame, il quesito 1.7.6-19), il resto
 | [`a-carta-nautica/`](a-carta-nautica/) | **A — La carta nautica**, nella versione ridotta: le sei schermate |
 | [`b-plancia-di-notte/`](b-plancia-di-notte/) | **B — La plancia di notte**: le stesse sei schermate |
 | [`c-quaderno-a-colori/`](c-quaderno-a-colori/) | **C — Il quaderno a colori**: le stesse sei schermate |
-| [`a-carta-viva/`](a-carta-viva/) | **A — La carta che vive**: una copia della A spinta oltre con impeccable (overdrive), 25 ottobre. La A resta com'è |
+| [`a-carta-viva/`](a-carta-viva/) | **A — La carta che vive, release candidate**: una copia della A spinta oltre con impeccable (overdrive), 25 ottobre. La A resta com'è |
 | [`sorgenti/`](sorgenti/) | Da dove sono composti: le quattro pagine comuni, `comune.css`, un `tema.css` e un'illustrazione per direzione, le icone, `build.py`, e i due script di cattura |
 
 Le sei schermate di ogni direzione: `home.html`, la Home senza risposte;
@@ -157,6 +157,11 @@ comincia a 124 e il centro della prima risposta è a 678; nella preparazione, a
 | [`c-quaderno-a-colori/schermate/riepilogo-1280.png`](c-quaderno-a-colori/schermate/riepilogo-1280.png) | Il riepilogo al computer |
 
 ## La carta che vive — `a-carta-viva/`
+
+> **Release candidate, dal 25 ottobre 2026.** Così l'ha chiamata l'autore: la
+> versione di riferimento del ridisegno. I file di `a-carta-viva/` e le sue
+> sorgenti (`sorgenti/a2/`) non si toccano; gli altri stili si provano in
+> cartelle nuove, accanto.
 
 Una **copia** della A, fatta il 25 ottobre con impeccable in modalità
 «overdrive»: la A di `a-carta-nautica/` non è cambiata di un byte. Due momenti, e
