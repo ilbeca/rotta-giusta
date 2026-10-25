@@ -8,7 +8,10 @@ contratto da cui la regia scrive i prompt: prima i controlli su `main` (Claude),
 poi la pagina su `ui/main` (ChatGPT), con il metodo di
 [regole-disegno-progetto.md](regole-disegno-progetto.md).
 
-**Stato:** progetto, niente è ancora nei controlli né nella pagina. **File
+**Stato al 25 ottobre 2026:** le decisioni 1–14 del §12 sono prese
+dall'autore, tutte come raccomandato; restano le 15–18, che servono prima del
+giro B. Niente è ancora nei controlli né nella pagina: il prossimo passo è
+A-controlli, con il prompt proposto nel §11.1. **File
 neutro**, come gli altri `*-progetto.md`: lo legge chi scrive i controlli su
 `main` e chi rifà la pagina su `ui/*`.
 
@@ -446,8 +449,9 @@ riferimento. **Le dimensioni:** 1200×700, 1280×800, 1280×1024, 1440×900,
 1920×1080, e 1199×800, dove la U non deve esserci. Le animazioni ferme per le
 misure (con l'emulazione di `prefers-reduced-motion`, §6.5).
 
-- **`T-15:soglia`** — sotto la soglia nessuno strato fisso, nessun fondo scuro,
-  nessuno scorrimento a scatti; sopra, la carta c'è.
+- **`T-15:soglia`** — sotto la soglia (decisione 9: 1.200 px di larghezza e
+  680 di altezza; misurata a 1199×800 e a 1440×679) nessuno strato fisso,
+  nessun fondo scuro, nessuno scorrimento a scatti; sopra, la carta c'è.
 - **`T-15:costa`** — a ogni dimensione gli 11 triangoli stanno sulla terra
   (pixel beige nella schermata con il resto nascosto), il faro e la boa stanno
   dentro lo schermo e fuori dalla colonna del testo.
@@ -717,7 +721,7 @@ da `sorgenti/stili/u/home.json`.
 | 7 | Il carteggio, sulla carta vera | 135 esercizi: tracci sulla carta nautica con squadrette e compasso, poi confronti con la risposta ministeriale. Sei tu a giudicare. | il numero dalla banca |
 | 8 | Fanali e segnali | 27 segnali da riconoscere a colpo d'occhio, come di notte in mare. Sulla carta ogni luce ha la sua sigla: toccala per leggerla. | **sbagliato**: le schede sono 53, i fanali 27; e i segnali diurni non sono «di notte» |
 | 9 | L'esame, in ordine | Carteggio, quiz base, quiz vela: con le condizioni del decreto. Le prepari quando vuoi, senza sblocchi. | |
-| 10 | Con l'account, la rotta resta | Ritrovi le tue risposte quando torni, anche da un altro telefono, e vedi i Progressi. | «la rotta resta» si legge come il Percorso, che aspetta P-76 (A-6): decisione 12 |
+| 10 | Con l'account, la rotta resta | Ritrovi le tue risposte quando torni, anche da un altro telefono, e vedi i Progressi. | deciso (decisione 12): il titolo diventa «Con l'account, le risposte restano», senza pulsante |
 
 **Il resto della Home:** «Scendi lungo la rotta: ogni pannello è un modo di
 prepararsi, e il suo triangolo, qui a lato, si accende quando ci arrivi»;
@@ -758,12 +762,49 @@ all'autore prima della merge.
 ognuno con la riga che dice per quale agente è. Questo file è il contratto che
 citano.
 
+### 11.1 Il prompt proposto per A-controlli
+
+*Proposto il 25 ottobre 2026, dopo le decisioni 1–14; la versione che vale è
+quella che la regia scrive nella coda.*
+
+```
+Questo prompt è per Claude, su main (in un worktree che parte da main).
+Se sei su un altro ramo o in un worktree di ui/*, fermati e dillo.
+
+Sessione A-controlli del volto: i controlli prima della pagina per la Home
+al computer «U — Terra beige» e i colori della Regata. Leggi AGENTS.md,
+docs/volto-progetto.md per intero (le decisioni 1–14 del §12 sono prese),
+docs/regole-disegno-progetto.md §3 e §10.1 «Giro 2», e in tests/ il
+contratto SCALA_CSS (test_interfaccia.py) e T-12/T-13 (client_account.mjs).
+
+Che cosa fai, con il metodo del §4 del progetto:
+- SCALA_CSS come nel §6.1 e nel §5.1 (corpi con i ruoli, 64, 800, interlinea
+  dei titoli grandi, i colori della Regata, i ruoli «segno» e «terra»); le
+  rotture del giro 2 rifatte sui numeri nuovi;
+- T-12 e T-13 come nel §6.2 e nel §6.3;
+- T-15 come nel §6.4, alle dimensioni dette; in tests/browser.mjs
+  movimento(ridotto) e, in un modulo a parte, il lettore di PNG (§6.5);
+- la pagina di riferimento del client con la Home U sopra la soglia, verde
+  per intero; le diciotto rotture del §6.6, ognuna rossa per il suo motivo;
+  le difese del §6.6 tolte a mano, una alla volta;
+- nella specifica §9.11 i requisiti che cambiano e R-VOLTO-01…11 (§9 del
+  progetto), con i nomi dei test letti in tests/;
+- sulla pagina vera, i rossi dichiarati in docs/eccezioni-interfaccia.md, una
+  riga per verifica, con i numeri misurati.
+
+Nessun file di site/. Le cinque suite, l'interfaccia con la 8620 guardata
+libera per 90 s, e i tempi con RG_TEMPI=1 (Q-SUITE). Una nota di consegna
+nel §11.1 di docs/volto-progetto.md; voce in fondo a [Unreleased]; un
+commit, niente push. Chiudi con il resoconto di docs/prossime-sessioni.md.
+```
+
 ---
 
 ## 12. Decisioni per l'autore
 
 Ognuna con la raccomandazione. Le decisioni 1–14 servono prima di
-A-controlli; le altre prima del giro B.
+A-controlli, e l'autore le ha prese il 25 ottobre 2026, tutte come
+raccomandato; le altre servono prima del giro B.
 
 1. **La scala dei corpi.** Adottare la scala di I-29 (12, 14, 16, 20, 24, 32,
    44, 56) al posto di quella del giro 2 (12, 14, 16, 19, 24, 30, 40)? Cambia la
@@ -771,21 +812,35 @@ A-controlli; le altre prima del giro B.
    *Raccomandazione:* sì, con 56 solo per il titolo della Home al computer e 44
    solo per «Come funziona» e per i numeri dell'esame; approvata guardando i
    mock, come C.
+   *Deciso dall'autore il 25 ottobre 2026, come raccomandato.*
+
 2. **Il tetto di cinque corpi nel primo schermo.** *Raccomandazione:* resta; i
    testi della carta non contano, e le etichette dei numeri passano da 12 a 14.
+   *Deciso dall'autore il 25 ottobre 2026, come raccomandato.*
+
 3. **L'interlinea dei titoli grandi.** *Raccomandazione:* 1,05 per i titoli da
    44 e 56 px; 1,2 resta per gli altri.
+   *Deciso dall'autore il 25 ottobre 2026, come raccomandato.*
+
 4. **Il peso 800.** *Raccomandazione:* sì, solo per titoli da 24 px in su e per
    i numeri, come nei mock (I-29, decisione 4).
+   *Deciso dall'autore il 25 ottobre 2026, come raccomandato.*
+
 5. **Lo spazio da 64 px.** *Raccomandazione:* sì; i 106 px del mock tornano
    nella scala.
+   *Deciso dall'autore il 25 ottobre 2026, come raccomandato.*
+
 6. **I bersagli nel primo schermo al computer.** Il percorso conta come
    navigazione, come la barra; faro e boa contano. *Raccomandazione:* sì; il
    conto torna a quattro.
+   *Deciso dall'autore il 25 ottobre 2026, come raccomandato.*
+
 7. **D-14 riscritta**, «l'azione principale è la cosa **interattiva** più
    evidente», e il fondo pieno misurato contro la superficie dietro.
    *Raccomandazione:* sì (I-29, decisione 3); senza, la U con la pagina scura
    non passa.
+   *Deciso dall'autore il 25 ottobre 2026, come raccomandato.*
+
 8. **I colori.** I valori della Regata nel contratto (azione `#0A4F6E`, errore
    `#B3261E`, giusto `#12663A`); l'ambra degli avvisi `#765000` resta; i ruoli
    nuovi «segno» (arancio delle boe, solo disegni e segni) e «terra»; i numeri
@@ -793,27 +848,41 @@ A-controlli; le altre prima del giro B.
    colore del link. E la terra: il beige `#F2E6CF` della U anche nella Regata,
    al posto di `#FFF0E5`? *Raccomandazione:* sì a tutto; un beige solo,
    `#F2E6CF`.
+   *Deciso dall'autore il 25 ottobre 2026, come raccomandato.*
+
 9. **Da quale larghezza vale la U.** Misurato: regge da 1.200 px se la carta è
    ancorata alla costa, non regge a 900 e a 1.024. *Raccomandazione:* la U da
    **1.200 px di larghezza e 680 di altezza**; sotto, la Home della Regata, che
    ha già la sua forma larga (`g-regata/schermate/home-1280.png`).
+   *Deciso dall'autore il 25 ottobre 2026, come raccomandato. Soglia: 1.200 px di larghezza e 680 di altezza.*
+
 10. **Le luci che lampeggiano** (WCAG 2.2.2). (a) Lampeggiano all'apertura, con
     «Ferma le luci» nella scheda; (b) accese ferme, lampeggiano solo dopo il
     tocco. *Raccomandazione:* (a), che tiene la carta viva come l'autore l'ha
     scelta.
+   *Deciso dall'autore il 25 ottobre 2026, come raccomandato. Scelta (a): le luci lampeggiano, con «Ferma le luci» nella scheda.*
+
 11. **Gli stati della Home al computer.** H1 e HA nel primo pannello, sotto la
     prova; «Come funziona» sotto in tutti gli stati. *Raccomandazione:* sì,
     come nel §5.4; ChatGPT ne mostra le schermate prima della merge.
+   *Deciso dall'autore il 25 ottobre 2026, come raccomandato.*
+
 12. **La tappa 10.** «Con l'account, la rotta resta» descrive un vantaggio
     senza un pulsante, ma «la rotta» richiama il Percorso. *Raccomandazione:*
     resta come descrizione, senza pulsante, con un titolo che non promette il
     Percorso, per esempio «Con l'account, le risposte restano».
+   *Deciso dall'autore il 25 ottobre 2026, come raccomandato. Titolo: «Con l'account, le risposte restano».*
+
 13. **Il percorso.** Il triangolo resta di 13 px; il bersaglio intorno di 44 px
     a passo 52; il contorno in `--ink-3` e il pieno in arancio scuro `--rotta`
     al posto dell'arancio delle boe, che resta come bagliore.
     *Raccomandazione:* sì; è più leggibile e il filo resta fine.
+   *Deciso dall'autore il 25 ottobre 2026, come raccomandato.*
+
 14. **Il banco legge i pixel** per il contrasto del testo sopra la carta, con
     un lettore di PNG nel banco. *Raccomandazione:* sì, solo per questo.
+   *Deciso dall'autore il 25 ottobre 2026, come raccomandato.*
+
 15. **La struttura dei mock.** Allenati con «Allenamento consigliato» in testa e
     le altre intenzioni in righe; il titolo del riepilogo «Hai risposto a N
     domande su M». *Raccomandazione:* il giro B veste le schermate com'è oggi la
@@ -849,3 +918,8 @@ A-controlli; le altre prima del giro B.
   Home U in Chrome headless a otto dimensioni, con il contrasto sui pixel. Venti
   conflitti con i loro numeri; un errore già nel mock (i Segnali sono 53, non
   27); il contratto di T-15; diciotto decisioni per l'autore.
+
+- **25 ottobre 2026 — le decisioni 1–14.** L'autore le ha prese tutte come
+  raccomandato, presentate a gruppi nella sessione del progetto. Segnate nel
+  §12; il titolo della tappa 10 nel §10; la soglia in T-15:soglia; il prompt
+  proposto per A-controlli nel §11.1.

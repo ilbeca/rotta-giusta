@@ -463,6 +463,19 @@ selezione o contabilità. Versione 0.34.0 invariata.
   cartella delle note delle sessioni. Una riga in fondo a I-29 rimanda al file.
   Nessun file di `site/`, `tests/`, della specifica, della coda o dei mock.
 
+### Deciso — il volto: le prime 14 decisioni, come raccomandato
+
+- **L'autore ha preso il 25 ottobre le decisioni 1–14** di
+  `docs/volto-progetto.md`, presentate a gruppi: la scala dei mock (fino a 56
+  px, con i ruoli), il tetto di cinque corpi con la carta esclusa, l'interlinea
+  1,05 dei titoli grandi, il peso 800, lo spazio da 64, il percorso escluso dal
+  conto dei bersagli, D-14 riscritta, i colori della Regata, la U da 1.200×680,
+  le luci con «Ferma le luci», gli stati nel primo pannello, la tappa 10 «Con
+  l'account, le risposte restano», i triangoli da 44 px in arancio scuro, il
+  contrasto letto sui pixel. Servivano prima dei controlli, perché ognuna
+  cambia un numero del contratto. Nel progetto anche il prompt proposto per
+  A-controlli. Restano le decisioni 15–18, per il giro B.
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la
