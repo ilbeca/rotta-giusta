@@ -4874,3 +4874,14 @@ Segnali per E, la vela per G) che di tutto.
     la linguetta del capitolo nella domanda e la barra delle 20 domande, e da D
     le quattro cardinali come secondo disegno da toccare. Ma solo dopo averli
     guardati: sono mock, e la decisione è dell'autore.
+
+**Aggiornato il 25 ottobre: la G con l'animazione della RC.** L'autore ha
+guardato i quattro mock: gli piacciono i colori della Regata, ma l'animazione
+della Home della RC più delle andature. La Home della G ha ora la carta che
+vive della RC — il faro che lampeggia Lam.(2) 10s, la boa cardinale est con
+Sc.(3) 10s, la rotta che si disegna, le due luci da toccare con le stesse frasi
+— nei colori della G: il mare blu, la terra bianca, la rotta arancio. Le
+andature escono; con loro esce dalla G il testo didattico da verificare, e
+restano da verificare le sigle e le frasi della RC, le stesse. Misure di nuovo
+sulle 18 combinazioni: sbordamento 0, un principale, «Simula il quiz base»
+a 594 px a 375×667, «Avanti» e la figura come prima. La RC non è stata toccata.

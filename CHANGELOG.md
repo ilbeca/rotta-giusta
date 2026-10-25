@@ -317,6 +317,24 @@ selezione o contabilità. Versione 0.34.0 invariata.
   `site/`, `tests/`, `server/`, della specifica o della coda toccato; nessuna
   suite rifatta.
 
+### Progettato — I-29: la Regata con l'animazione della release candidate
+
+- **Perché.** Guardati i quattro stili, all'autore piacciono i colori della G,
+  la Regata, e l'animazione della Home della RC più delle quattro andature. La
+  Home della G ha ora la carta che vive della RC — il faro che lampeggia
+  Lam.(2) 10s, la boa cardinale est con Sc.(3) 10s, la rotta che si disegna,
+  le due luci da toccare con le stesse frasi — ridipinta nei colori della G:
+  il mare blu, la terra bianca, la rotta e il settore del faro nell'arancio e
+  nel bianco caldo, un bordo bianco che stacca la boa dal mare scuro. Cambiano
+  solo le sorgenti della G (`sorgenti/stili/g/`) e le pagine che ne escono; la
+  RC, le direzioni A, B, C e gli stili D, E, F non sono stati toccati.
+- **Misurato di nuovo** sulle 18 combinazioni della G: sbordamento 0, un solo
+  principale, «Simula il quiz base» a 594 px a 375×667, l'avviso a 12 px da
+  «Inizia», «Avanti» scoperto, la figura a 323–534 px. Guardate la Home al
+  telefono e al computer, con il faro toccato. Le sei schermate della Home nel
+  README sono quelle nuove. Il primo settore del faro, arancio sul blu, veniva
+  fangoso: ora è una luce bianca calda. Nessun file di `site/`.
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la

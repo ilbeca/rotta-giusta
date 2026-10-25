@@ -29,7 +29,7 @@ veri della banca (1.722 quesiti, i pesi d'esame, il quesito 1.7.6-19), il resto
 | [`d-segnalamento/`](d-segnalamento/) | **D — Il segnalamento**, 25 ottobre: le boe cardinali, nero e giallo. Uno dei quattro stili provati accanto alla RC |
 | [`e-bandiere/`](e-bandiere/) | **E — Le bandiere**: il Codice internazionale dei segnali, blu bandiera e colori piatti |
 | [`f-manuale-a-schede/`](f-manuale-a-schede/) | **F — Il manuale a schede**: il libro della scuola nautica, una linguetta colorata per tema |
-| [`g-regata/`](g-regata/) | **G — La regata**: il mare aperto, le vele, le boe arancio del percorso |
+| [`g-regata/`](g-regata/) | **G — La regata**: i colori del mare aperto e delle boe arancio, con la carta che vive della RC nella Home |
 | [`sorgenti/`](sorgenti/) | Da dove sono composti: le quattro pagine comuni, `comune.css`, un `tema.css` e un'illustrazione per direzione, le icone, `build.py`, e i due script di cattura; in `stili/` le sorgenti, il costruttore e lo script di cattura dei quattro stili del 25 ottobre |
 
 Le sei schermate di ogni direzione: `home.html`, la Home senza risposte;
@@ -380,7 +380,15 @@ leggerle (le dice la legenda, toccando).
 | [`f-manuale-a-schede/schermate/riepilogo-1280.png`](f-manuale-a-schede/schermate/riepilogo-1280.png) | Il riepilogo al computer |
 | [`f-manuale-a-schede/schermate/riepilogo-1280-intera.png`](f-manuale-a-schede/schermate/riepilogo-1280-intera.png) | Il riepilogo intero al computer |
 
-### G — La regata: bianco e blu mare, l'arancio delle boe; il mare a tutta larghezza, le quattro andature da toccare, le tappe come boe
+### G — La regata: bianco e blu mare, l'arancio delle boe; il mare a tutta larghezza, la carta della RC da toccare, le tappe come boe
+
+Dal 25 ottobre, su richiesta dell'autore («i colori della regata, l'animazione
+della release candidate»), la Home della G ha il disegno della RC — faro con
+Lam.(2) 10s, boa cardinale est con Sc.(3) 10s, rotta che si disegna — ridipinto
+nei colori della G: mare `#0A4F6E`, terra bianca, rotta e settore del faro
+nell'arancio e nel bianco caldo, la boa con il suo nero e giallo e un bordo
+bianco per staccarla dal mare scuro. Le quattro andature sono uscite. Le
+schermate qui sotto sono quelle nuove; le altre pagine non cambiano.
 
 | Schermata | Che cosa mostra |
 |---|---|

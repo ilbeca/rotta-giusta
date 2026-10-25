@@ -1,49 +1,13 @@
 {
- "titolo": "Un vento, quattro andature",
- "intro": "Dove va la barca rispetto al vento: è la prima cosa della vela. Qui il vento soffia dall’alto; tocca una barca per leggerne l’andatura.",
- "invito": "Tocca una barca per leggerne l’andatura.",
+ "titolo": "Una luce, una sigla",
+ "intro": "Sulla carta ogni luce ha una sigla che dice come lampeggia. Questa lampeggia davvero così.",
+ "invito": "Tocca il faro o la boa per leggerne la sigla.",
  "bottoni": [
-  [
-   "bolina",
-   "21.67%",
-   "49.47%",
-   "La barca di bolina: leggi l’andatura"
-  ],
-  [
-   "traverso",
-   "42.50%",
-   "49.47%",
-   "La barca di traverso: leggi l’andatura"
-  ],
-  [
-   "lasco",
-   "63.33%",
-   "49.47%",
-   "La barca di lasco: leggi l’andatura"
-  ],
-  [
-   "poppa",
-   "84.17%",
-   "49.47%",
-   "La barca di poppa: leggi l’andatura"
-  ]
+  ["faro", "65.33%", "39.47%", "Il faro: leggi la sua sigla"],
+  ["boa", "41.67%", "65.79%", "La boa cardinale: leggi la sua sigla"]
  ],
  "voci": {
-  "bolina": [
-   "Bolina · circa 45° dal vento",
-   "Si risale verso il vento, con le vele cazzate al centro. Più stretti di così si entra nell’angolo morto e la barca si ferma."
-  ],
-  "traverso": [
-   "Traverso · 90° dal vento",
-   "Il vento arriva di fianco: le vele a metà."
-  ],
-  "lasco": [
-   "Lasco · circa 135° dal vento",
-   "Il vento arriva da dietro, di tre quarti: le vele lascate."
-  ],
-  "poppa": [
-   "Poppa · 180° dal vento",
-   "Il vento arriva da dietro: le vele tutte aperte, fuori."
-  ]
+  "faro": ["Faro · Lam.(2) 10s", "Due lampi ravvicinati, poi buio: il gruppo si ripete ogni 10 secondi."],
+  "boa": ["Boa cardinale est · Sc.(3) 10s", "Tre luci scintillanti ogni 10 secondi. Coni base contro base, nero giallo nero: si passa a est della boa."]
  }
 }
