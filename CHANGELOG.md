@@ -476,6 +476,29 @@ selezione o contabilità. Versione 0.34.0 invariata.
   cambia un numero del contratto. Nel progetto anche il prompt proposto per
   A-controlli. Restano le decisioni 15–18, per il giro B.
 
+### Merge — il ridisegno su `main`, e P-97 in coda
+
+- **La direzione è scelta, e i mock entrano in `main`.** Fuso il ramo del
+  progetto del volto (`claude/progetto-volto-u-db26a6`), che porta con sé la
+  scheda I-29, `docs/volto-progetto.md` con le decisioni 1–14 e i mock di
+  `docs/prototipi/redesign-2026-10-claude/`. Controllo dei territori sul diff:
+  uscita 0. Il ramo non tocca `site/`, `tests/`, `server/`, la specifica né la
+  coda.
+- **Pesa sul repo:** 898 file in più, 638 binari, circa 66 MB di schermate dei
+  mock. Il sito pubblicato non cambia, perché statichost.eu pubblica soltanto
+  `site/`. Ma un push li mette per sempre nella storia di un repo pubblico, e
+  chi lo clona li scarica: prima del push si decide se tenerli tutti.
+- **Nella coda** la riga 39 è chiusa con la direzione scelta, P-96 per ChatGPT
+  è superato, ed entrano P-97 (i controlli del giro A, Claude) e la riga di
+  P-98 (la pagina, ChatGPT). Il giro 3 riparte dopo il giro A se l'autore
+  conferma la decisione 17. Restano aperte le decisioni 15–18.
+- **Trovato:** il guardiano esamina anche `.claude/worktrees/`, cioè le copie
+  del repo delle sessioni parallele, che git ignora. Lì il suo stesso
+  `controlla.py` contiene i nomi che cerca, e il risultato è un rosso che non
+  riguarda il repo: 104 problemi, tutti in quelle copie, e quindi rossa anche
+  `test_dati.py`. Sparisce quando i worktree si chiudono. Il guardiano
+  dovrebbe saltarli.
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la

@@ -264,8 +264,10 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | niente dal motore: `PREVISIONI` c'è (P-72), e un modello entra come metodo accanto alla regola semplice; Q-STIMA solo per quando si mostra | da scrivere |
 | 27 | **Esito e previsioni, la pagina e l'informativa** (B-1, B-2), poi un rilascio | ChatGPT | `ui/main` | soltanto la base giuridica (§4, «Dopo P-64», 1–3): P-74 è chiuso | P-75, da scrivere |
 | 37 | **Le regole di disegno, giro 2**: la scala di corpi, spazi e pesi, le distanze fra i bersagli, la lunghezza delle righe (D-15…D-23, D-25, D-28; `docs/regole-disegno-progetto.md` §5, decisione C) | regia | `main` | l'approvazione dell'autore sulle 24 schermate di `docs/collaudo-p95/` (decisione C) | P-95 fuso, da rilasciare |
-| 38 | **Le regole di disegno, giro 3**: le parole e i nomi (`docs/regole-disegno-progetto.md`, giro 3) — prima il controllo su `main`, poi la pagina | Claude, poi ChatGPT | `main`, `ui/main` | sospeso dall'autore il 24 ottobre 2026: prima la direzione del ridisegno (riga 39), perché le parole e i nomi possono cambiare con lei | da scrivere |
-| 39 | **Ripensare il disegno da capo**: perché il sito è brutto, tre direzioni con tre mock ciascuna, una raccomandata — due proposte indipendenti, Claude e ChatGPT, che la regia confronta | Claude (sessione `redesign-claude`), ChatGPT | ramo della sessione, `ui/main` | niente | P-96 per ChatGPT; Claude avviato il 24 ottobre |
+| 38 | **Le regole di disegno, giro 3**: le parole e i nomi (`docs/regole-disegno-progetto.md`, giro 3) — prima il controllo su `main`, poi la pagina | Claude, poi ChatGPT | `main`, `ui/main` | sospeso dall'autore il 24 ottobre 2026 per la direzione del ridisegno, scelta il 25 (riga 39); riparte dopo il giro A del volto, dentro la Regata, se l'autore conferma la decisione 17 di `docs/volto-progetto.md` §12 | da scrivere |
+| 39 | **Ripensare il disegno da capo**: la direzione è scelta dall'autore il 25 ottobre 2026 — la Regata, con la Home al computer «U — Terra beige» (I-29; `docs/volto-progetto.md`, decisioni 1–14). I mock sono in `docs/prototipi/redesign-2026-10-claude/`, fusi in `main` | la regia | `main` | le decisioni 15–18 del §12 di `docs/volto-progetto.md`, che servono prima del giro B | fatto; P-96 superato dalla scelta, da non lanciare se non è già partito |
+| 40 | **Il volto, giro A — i controlli**: `SCALA_CSS` con i token della Regata, T-12 e T-13 al computer, T-15 nuovo, la pagina di riferimento con la Home U, R-VOLTO nel §9.11, i rossi dichiarati sulla pagina vera (`docs/volto-progetto.md` §6, §9, §11) | Claude | un worktree da `main` | niente | P-97, avviato il 25 ottobre |
+| 41 | **Il volto, giro A — la pagina**: il `:root` della Regata, i componenti condivisi, la Home al telefono e al computer, prima e dopo alle sei misure (`docs/volto-progetto.md` §11) | ChatGPT | `ui/main` | P-97 fuso, e la decisione 16 (le icone nella barra) | P-98, da scrivere |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo P-59», «Dopo P-64», «Dopo il traguardo» e le voci non barrate |
 
 **La v0.31.0 è in linea dal 18 ottobre 2026**, sulla pagina e sul server, con le raccolte nuove spente (prima, la v0.30.0 dal 3 ottobre); P-59,
@@ -7334,6 +7336,53 @@ Nessun file di site/, tests/, server/, motore o dati, né docs/specifica.md,
 docs/prossime-sessioni.md o docs/idee-dopo-gli-account.md. Guardiano verde.
 Voce in fondo a [Unreleased], un commit con il trailer, versione invariata,
 niente push. Chiudi con il resoconto di docs/prossime-sessioni.md.
+```
+
+### P-97 — Claude: il volto, giro A, i controlli
+
+**Dove:** un worktree che parte da `main`, ramo della sessione.
+**Nasce da:** la direzione scelta dall'autore il 25 ottobre 2026 — la Regata,
+con la Home al computer «U — Terra beige» — e le decisioni 1–14 del §12 di
+`docs/volto-progetto.md`; il testo viene dal §11.1 di quel progetto, con due
+aggiunte della regia: la decisione 16 aperta e la porta 8620. **Sblocca:**
+P-98, la pagina del giro A per ChatGPT.
+
+```
+Questo prompt è per Claude, in un worktree che parte da main. Se sei
+ChatGPT, o sei in ~/Software/rotta-giusta-ui, o su un ramo ui/*, fermati e
+dillo, senza scrivere niente.
+
+Sessione P-97, A-controlli del volto: i controlli prima della pagina per la
+Home al computer «U — Terra beige» e i colori della Regata. Leggi AGENTS.md,
+docs/volto-progetto.md per intero (le decisioni 1–14 del §12 sono prese),
+docs/regole-disegno-progetto.md §3 e §10.1 «Giro 2», e in tests/ il
+contratto SCALA_CSS (test_interfaccia.py) e T-12/T-13 (client_account.mjs).
+
+Che cosa fai, con il metodo del §4 del progetto:
+- SCALA_CSS come nel §6.1 e nel §5.1 (corpi con i ruoli, 64, 800, interlinea
+  dei titoli grandi, i colori della Regata, i ruoli «segno» e «terra»); le
+  rotture del giro 2 rifatte sui numeri nuovi;
+- T-12 e T-13 come nel §6.2 e nel §6.3;
+- T-15 come nel §6.4, alle dimensioni dette; in tests/browser.mjs
+  movimento(ridotto) e, in un modulo a parte, il lettore di PNG (§6.5);
+- la pagina di riferimento del client con la Home U sopra la soglia, verde
+  per intero; le diciotto rotture del §6.6, ognuna rossa per il suo motivo;
+  le difese del §6.6 tolte a mano, una alla volta;
+- nella specifica §9.11 i requisiti che cambiano e R-VOLTO-01…11 (§9 del
+  progetto), con i nomi dei test letti in tests/;
+- sulla pagina vera, i rossi dichiarati in docs/eccezioni-interfaccia.md, una
+  riga per verifica, con i numeri misurati.
+
+Restano aperte le decisioni 15–18 del §12. Nessuna ti ferma, ma la 16 (le
+icone nella barra in basso, con le parole che restano) è dell'autore: i
+controlli non vietano un'icona accanto alla parola e non la pretendono.
+
+Nessun file di site/. Le cinque suite; l'interfaccia solo con la 8620
+guardata libera per 90 s (lsof -iTCP:8620 -sTCP:LISTEN), e i tempi con
+RG_TEMPI=1 (Q-SUITE). Una nota di consegna nel §11.1 di
+docs/volto-progetto.md; voce in fondo a [Unreleased]; un commit con il
+trailer, niente push, nessuna merge in main. Chiudi con il resoconto di
+docs/prossime-sessioni.md.
 ```
 
 ### I segnaposto — i prompt che non si possono ancora scrivere
