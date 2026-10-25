@@ -38,6 +38,8 @@ veri della banca (1.722 quesiti, i pesi d'esame, il quesito 1.7.6-19), il resto
 | [`m-carta-e-pannello/`](m-carta-e-pannello/) | **M — La carta e il pannello**: la carta ferma dietro, il contenuto in un pannello che sale dal basso o sta di lato, come un'app di navigazione |
 | [`n-una-cosa-per-schermo/`](n-una-cosa-per-schermo/) | **N — Una cosa per schermo**: schermate intere da scorrere, carte da sfogliare, risposte a tutta larghezza e la correzione che sale come un foglio |
 | [`o-banco-a-due-colonne/`](o-banco-a-due-colonne/) | **O — Il banco a due colonne**: a sinistra, ferma, la cosa su cui lavori; a destra il resto |
+| [`p-rotta-che-si-accende/`](p-rotta-che-si-accende/) | **P — La rotta che si accende**, 25 ottobre: la Home della Regata con il percorso a boe animato; scorrendo, la linea si riempie, la barca scende e ogni tappa spiega come funziona il sito |
+| [`q-regata-sulla-carta/`](q-regata-sulla-carta/) | **Q — La Regata sulla carta**: la carta nautica ferma dietro la pagina, vista da finestre; nessun pannello |
 | [`sorgenti/`](sorgenti/) | Da dove sono composti: le quattro pagine comuni, `comune.css`, un `tema.css` e un'illustrazione per direzione, le icone, `build.py`, e i due script di cattura; in `stili/` le sorgenti, il costruttore e lo script di cattura dei quattro stili del 25 ottobre |
 
 Le sei schermate di ogni direzione: `home.html`, la Home senza risposte;
@@ -844,6 +846,157 @@ trascina, scorre con la pagina; le animazioni solo nelle foto.
 | [`o-banco-a-due-colonne/schermate/riepilogo-375-intera.png`](o-banco-a-due-colonne/schermate/riepilogo-375-intera.png) | Il riepilogo intero al telefono |
 | [`o-banco-a-due-colonne/schermate/riepilogo-1280.png`](o-banco-a-due-colonne/schermate/riepilogo-1280.png) | Il riepilogo al computer |
 | [`o-banco-a-due-colonne/schermate/riepilogo-1280-intera.png`](o-banco-a-due-colonne/schermate/riepilogo-1280-intera.png) | Il riepilogo intero al computer |
+
+## Dopo la scelta dell'autore: la rotta che si accende e la Regata sulla carta — 25 ottobre 2026
+
+Guardati gli impianti, l'autore: «mi piace il percorso a boe: lo terrei però come
+una animazione, per la home/hero page, e scorrendo in basso il triangolino si
+riempie o si illumina. La hero page potrebbe, nei vari pannelli che si
+susseguono scendendo, illustrare come funziona e le varie modalità di
+allenamento»; e «mi piace la carta come sfondo, ma non molto il pannello.
+possiamo mettere nella "regata" della sessione precedente - ovviamente in un
+mock separato?». Due mock nuovi, tutti e due nei colori della Regata; la G e la
+L non sono state toccate.
+
+- **P — La rotta che si accende** (`p-rotta-che-si-accende/`). La testa è quella
+  della Regata (titolo, la prova d'esame, le 10 domande). Sotto, **«Come
+  funziona»**: una rotta tratteggiata scende per dieci tappe, e scorrendo la
+  linea si riempie d'arancio fino a poco sotto la metà dello schermo, la barca
+  sta in punta e ogni triangolo superato si accende (si colora, cresce, ha un
+  alone) e resta acceso; il disegno della tappa, sbiadito prima, prende colore.
+  Le tappe: si prova senza account; la simulazione come all'esame; dieci domande
+  con la correzione; l'allenamento consigliato; un argomento alla volta (con le
+  zone di mare della L in piccolo); gli errori che tornano; il carteggio sulla
+  carta vera; fanali e segnali (la carta del faro e della boa, da toccare);
+  l'esame in ordine; e il porto, con l'account. Al telefono la rotta scende a
+  sinistra; al computer al centro, con testo e disegno che si alternano. Chi
+  chiede meno movimento vede tutto acceso e fermo. Le altre pagine sono quelle
+  della Regata.
+- **Q — La Regata sulla carta** (`q-regata-sulla-carta/`). La carta nautica sta
+  ferma dietro tutta la pagina, e si vede da **finestre**: la testa della Home
+  (con un velo di mare sotto il testo, solo a sinistra al computer) e una fascia
+  dopo «Che cosa trovi qui», dove il faro e la boa si toccano sulla carta
+  stessa. Il resto è pagina bianca che scorre sopra la carta: nessun pannello.
+  Allenati, la preparazione e il riepilogo hanno la loro testa sulla carta; la
+  domanda è bianca al telefono e al computer ha la carta ai lati.
+
+**Testi nuovi, da verificare dall'autore:** in P i titoli e le frasi delle dieci
+tappe e «Come funziona · Scendi lungo la rotta…». Sono presi da quello che il
+sito già dice (specifica, Allenati, preparazione, riepilogo), ma messi insieme
+qui per la prima volta.
+
+Per rifarli, da questa cartella:
+
+```bash
+python3 sorgenti/stili/build.py . ../../../site/caratteri/manrope-latin-wght-normal.woff2 p q
+node sorgenti/stili/cattura-stili.mjs "$PWD" p-rotta-che-si-accende q-regata-sulla-carta
+```
+
+P ha la sua Home in `sorgenti/stili/p/`; Q ha tutte e sei le pagine in
+`sorgenti/stili/q/`.
+
+**Misurato** sulle 36 combinazioni: nessuno sbordamento, un solo principale,
+«Simula il quiz base» a 446 px a 375×667 in tutti e due, «Avanti» a 599–655 px
+e scoperto, la figura intera prima di rispondere (323–534, centro della prima
+risposta a 678), l'avviso a 12 px da «Inizia». Contrasti AA con il controllo a
+parte; il testo bianco della testa sta su un velo di mare al 72%, che nel caso
+peggiore (sopra la terra bianca) fa un fondo `#4D6877`, a 5,9:1 con il bianco.
+Le foto della discesa di P e della finestra di Q sono fatte scorrendo.
+
+**Trovato guardando, e corretto:** in P le tappe al computer erano troppo
+distanti, il testo delle tappe di destra era centrato e la carta del faro stava
+stretta nel suo riquadro; in Q, al telefono, la carta era così ingrandita che la
+boa era tagliata e la scheda copriva il faro (ora la carta occupa il 70%
+dell'altezza e sta più in basso), la legenda del computer compariva anche al
+telefono, «Avanti» era più stretto per un contenitore con lo stesso nome, e — lo
+ha trovato il controllo dei contrasti — la domanda al telefono aveva il fondo
+blu sotto il testo scuro.
+
+**Non controllato:** nessuna persona; Safari e lo scorrimento vero con il dito
+(l'animazione di P è guardata nelle foto, tappa per tappa); in Q lo sfondo fermo
+su iPhone, dove `position:fixed` durante lo scorrimento si comporta a modo suo.
+
+### P — La rotta che si accende: la Home della Regata con il percorso a boe animato
+
+| Schermata | Che cosa mostra |
+|---|---|
+| [`p-rotta-che-si-accende/schermate/home-375.png`](p-rotta-che-si-accende/schermate/home-375.png) | Home, primo schermo a 375×812 |
+| [`p-rotta-che-si-accende/schermate/home-375x667.png`](p-rotta-che-si-accende/schermate/home-375x667.png) | Home su un telefono piccolo: «Simula il quiz base» sopra la barra |
+| [`p-rotta-che-si-accende/schermate/home-375-intera.png`](p-rotta-che-si-accende/schermate/home-375-intera.png) | Home intera al telefono |
+| [`p-rotta-che-si-accende/schermate/home-1280.png`](p-rotta-che-si-accende/schermate/home-1280.png) | Home al computer, primo schermo |
+| [`p-rotta-che-si-accende/schermate/home-tocca-1280.png`](p-rotta-che-si-accende/schermate/home-tocca-1280.png) | Home al computer con il faro toccato: sotto, che cosa vuol dire |
+| [`p-rotta-che-si-accende/schermate/home-1280-intera.png`](p-rotta-che-si-accende/schermate/home-1280-intera.png) | Home intera al computer |
+| [`p-rotta-che-si-accende/schermate/quiz-375.png`](p-rotta-che-si-accende/schermate/quiz-375.png) | Allenati · Quiz, primo schermo al telefono |
+| [`p-rotta-che-si-accende/schermate/quiz-375x667.png`](p-rotta-che-si-accende/schermate/quiz-375x667.png) | Allenati · Quiz su un telefono piccolo |
+| [`p-rotta-che-si-accende/schermate/quiz-375-intera.png`](p-rotta-che-si-accende/schermate/quiz-375-intera.png) | Allenati · Quiz intera al telefono |
+| [`p-rotta-che-si-accende/schermate/quiz-1280.png`](p-rotta-che-si-accende/schermate/quiz-1280.png) | Allenati · Quiz al computer |
+| [`p-rotta-che-si-accende/schermate/quiz-1280-intera.png`](p-rotta-che-si-accende/schermate/quiz-1280-intera.png) | Allenati · Quiz intera al computer |
+| [`p-rotta-che-si-accende/schermate/preparazione-375.png`](p-rotta-che-si-accende/schermate/preparazione-375.png) | La preparazione al telefono |
+| [`p-rotta-che-si-accende/schermate/preparazione-375x667.png`](p-rotta-che-si-accende/schermate/preparazione-375x667.png) | La preparazione su un telefono piccolo: l'avviso «senza account» 12 px sopra «Inizia», sopra la barra |
+| [`p-rotta-che-si-accende/schermate/preparazione-1280.png`](p-rotta-che-si-accende/schermate/preparazione-1280.png) | La preparazione al computer |
+| [`p-rotta-che-si-accende/schermate/runner-375.png`](p-rotta-che-si-accende/schermate/runner-375.png) | La domanda 1.7.6-19 dopo una risposta sbagliata, a 375×812 |
+| [`p-rotta-che-si-accende/schermate/runner-375x667.png`](p-rotta-che-si-accende/schermate/runner-375x667.png) | La stessa su un telefono piccolo: «Avanti» nel primo schermo |
+| [`p-rotta-che-si-accende/schermate/runner-1280.png`](p-rotta-che-si-accende/schermate/runner-1280.png) | La domanda dopo l'errore, al computer |
+| [`p-rotta-che-si-accende/schermate/runner-figura-375.png`](p-rotta-che-si-accende/schermate/runner-figura-375.png) | La domanda più lunga con figura, prima di rispondere |
+| [`p-rotta-che-si-accende/schermate/runner-figura-375x667.png`](p-rotta-che-si-accende/schermate/runner-figura-375x667.png) | La stessa su un telefono piccolo |
+| [`p-rotta-che-si-accende/schermate/runner-figura-1280.png`](p-rotta-che-si-accende/schermate/runner-figura-1280.png) | La stessa al computer |
+| [`p-rotta-che-si-accende/schermate/riepilogo-375.png`](p-rotta-che-si-accende/schermate/riepilogo-375.png) | Il riepilogo di due domande, primo schermo |
+| [`p-rotta-che-si-accende/schermate/riepilogo-375x667.png`](p-rotta-che-si-accende/schermate/riepilogo-375x667.png) | Il riepilogo su un telefono piccolo |
+| [`p-rotta-che-si-accende/schermate/riepilogo-375-intera.png`](p-rotta-che-si-accende/schermate/riepilogo-375-intera.png) | Il riepilogo intero al telefono |
+| [`p-rotta-che-si-accende/schermate/riepilogo-1280.png`](p-rotta-che-si-accende/schermate/riepilogo-1280.png) | Il riepilogo al computer |
+| [`p-rotta-che-si-accende/schermate/riepilogo-1280-intera.png`](p-rotta-che-si-accende/schermate/riepilogo-1280-intera.png) | Il riepilogo intero al computer |
+| [`p-rotta-che-si-accende/schermate/home-375-tappa-1.png`](p-rotta-che-si-accende/schermate/home-375-tappa-1.png) | Home al telefono scorrendo: la tappa 1 di 10 al centro dello schermo, con le tappe sopra già accese |
+| [`p-rotta-che-si-accende/schermate/home-375-tappa-2.png`](p-rotta-che-si-accende/schermate/home-375-tappa-2.png) | Home al telefono scorrendo: la tappa 2 di 10 al centro dello schermo, con le tappe sopra già accese |
+| [`p-rotta-che-si-accende/schermate/home-375-tappa-3.png`](p-rotta-che-si-accende/schermate/home-375-tappa-3.png) | Home al telefono scorrendo: la tappa 3 di 10 al centro dello schermo, con le tappe sopra già accese |
+| [`p-rotta-che-si-accende/schermate/home-375-tappa-4.png`](p-rotta-che-si-accende/schermate/home-375-tappa-4.png) | Home al telefono scorrendo: la tappa 4 di 10 al centro dello schermo, con le tappe sopra già accese |
+| [`p-rotta-che-si-accende/schermate/home-375-tappa-5.png`](p-rotta-che-si-accende/schermate/home-375-tappa-5.png) | Home al telefono scorrendo: la tappa 5 di 10 al centro dello schermo, con le tappe sopra già accese |
+| [`p-rotta-che-si-accende/schermate/home-375-tappa-6.png`](p-rotta-che-si-accende/schermate/home-375-tappa-6.png) | Home al telefono scorrendo: la tappa 6 di 10 al centro dello schermo, con le tappe sopra già accese |
+| [`p-rotta-che-si-accende/schermate/home-375-tappa-7.png`](p-rotta-che-si-accende/schermate/home-375-tappa-7.png) | Home al telefono scorrendo: la tappa 7 di 10 al centro dello schermo, con le tappe sopra già accese |
+| [`p-rotta-che-si-accende/schermate/home-375-tappa-8.png`](p-rotta-che-si-accende/schermate/home-375-tappa-8.png) | Home al telefono scorrendo: la tappa 8 di 10 al centro dello schermo, con le tappe sopra già accese |
+| [`p-rotta-che-si-accende/schermate/home-375-tappa-9.png`](p-rotta-che-si-accende/schermate/home-375-tappa-9.png) | Home al telefono scorrendo: la tappa 9 di 10 al centro dello schermo, con le tappe sopra già accese |
+| [`p-rotta-che-si-accende/schermate/home-375-tappa-10.png`](p-rotta-che-si-accende/schermate/home-375-tappa-10.png) | Home al telefono scorrendo: la tappa 10 di 10 al centro dello schermo, con le tappe sopra già accese |
+| [`p-rotta-che-si-accende/schermate/home-1280-tappa-1.png`](p-rotta-che-si-accende/schermate/home-1280-tappa-1.png) | Home al computer, la tappa 1 di 10 al centro |
+| [`p-rotta-che-si-accende/schermate/home-1280-tappa-2.png`](p-rotta-che-si-accende/schermate/home-1280-tappa-2.png) | Home al computer, la tappa 2 di 10 al centro |
+| [`p-rotta-che-si-accende/schermate/home-1280-tappa-3.png`](p-rotta-che-si-accende/schermate/home-1280-tappa-3.png) | Home al computer, la tappa 3 di 10 al centro |
+| [`p-rotta-che-si-accende/schermate/home-1280-tappa-4.png`](p-rotta-che-si-accende/schermate/home-1280-tappa-4.png) | Home al computer, la tappa 4 di 10 al centro |
+| [`p-rotta-che-si-accende/schermate/home-1280-tappa-5.png`](p-rotta-che-si-accende/schermate/home-1280-tappa-5.png) | Home al computer, la tappa 5 di 10 al centro |
+| [`p-rotta-che-si-accende/schermate/home-1280-tappa-6.png`](p-rotta-che-si-accende/schermate/home-1280-tappa-6.png) | Home al computer, la tappa 6 di 10 al centro |
+| [`p-rotta-che-si-accende/schermate/home-1280-tappa-7.png`](p-rotta-che-si-accende/schermate/home-1280-tappa-7.png) | Home al computer, la tappa 7 di 10 al centro |
+| [`p-rotta-che-si-accende/schermate/home-1280-tappa-8.png`](p-rotta-che-si-accende/schermate/home-1280-tappa-8.png) | Home al computer, la tappa 8 di 10 al centro |
+| [`p-rotta-che-si-accende/schermate/home-1280-tappa-9.png`](p-rotta-che-si-accende/schermate/home-1280-tappa-9.png) | Home al computer, la tappa 9 di 10 al centro |
+| [`p-rotta-che-si-accende/schermate/home-1280-tappa-10.png`](p-rotta-che-si-accende/schermate/home-1280-tappa-10.png) | Home al computer, la tappa 10 di 10 al centro |
+
+### Q — La Regata sulla carta: la carta ferma dietro, le finestre, nessun pannello
+
+| Schermata | Che cosa mostra |
+|---|---|
+| [`q-regata-sulla-carta/schermate/home-375.png`](q-regata-sulla-carta/schermate/home-375.png) | Home, primo schermo a 375×812 |
+| [`q-regata-sulla-carta/schermate/home-375x667.png`](q-regata-sulla-carta/schermate/home-375x667.png) | Home su un telefono piccolo: «Simula il quiz base» sopra la barra |
+| [`q-regata-sulla-carta/schermate/home-375-intera.png`](q-regata-sulla-carta/schermate/home-375-intera.png) | Home intera al telefono |
+| [`q-regata-sulla-carta/schermate/home-1280.png`](q-regata-sulla-carta/schermate/home-1280.png) | Home al computer, primo schermo |
+| [`q-regata-sulla-carta/schermate/home-tocca-1280.png`](q-regata-sulla-carta/schermate/home-tocca-1280.png) | Home al computer con il faro toccato: sotto, che cosa vuol dire |
+| [`q-regata-sulla-carta/schermate/home-1280-intera.png`](q-regata-sulla-carta/schermate/home-1280-intera.png) | Home intera al computer |
+| [`q-regata-sulla-carta/schermate/quiz-375.png`](q-regata-sulla-carta/schermate/quiz-375.png) | Allenati · Quiz, primo schermo al telefono |
+| [`q-regata-sulla-carta/schermate/quiz-375x667.png`](q-regata-sulla-carta/schermate/quiz-375x667.png) | Allenati · Quiz su un telefono piccolo |
+| [`q-regata-sulla-carta/schermate/quiz-375-intera.png`](q-regata-sulla-carta/schermate/quiz-375-intera.png) | Allenati · Quiz intera al telefono |
+| [`q-regata-sulla-carta/schermate/quiz-1280.png`](q-regata-sulla-carta/schermate/quiz-1280.png) | Allenati · Quiz al computer |
+| [`q-regata-sulla-carta/schermate/quiz-1280-intera.png`](q-regata-sulla-carta/schermate/quiz-1280-intera.png) | Allenati · Quiz intera al computer |
+| [`q-regata-sulla-carta/schermate/preparazione-375.png`](q-regata-sulla-carta/schermate/preparazione-375.png) | La preparazione al telefono |
+| [`q-regata-sulla-carta/schermate/preparazione-375x667.png`](q-regata-sulla-carta/schermate/preparazione-375x667.png) | La preparazione su un telefono piccolo: l'avviso «senza account» 12 px sopra «Inizia», sopra la barra |
+| [`q-regata-sulla-carta/schermate/preparazione-1280.png`](q-regata-sulla-carta/schermate/preparazione-1280.png) | La preparazione al computer |
+| [`q-regata-sulla-carta/schermate/runner-375.png`](q-regata-sulla-carta/schermate/runner-375.png) | La domanda 1.7.6-19 dopo una risposta sbagliata, a 375×812 |
+| [`q-regata-sulla-carta/schermate/runner-375x667.png`](q-regata-sulla-carta/schermate/runner-375x667.png) | La stessa su un telefono piccolo: «Avanti» nel primo schermo |
+| [`q-regata-sulla-carta/schermate/runner-1280.png`](q-regata-sulla-carta/schermate/runner-1280.png) | La domanda dopo l'errore, al computer |
+| [`q-regata-sulla-carta/schermate/runner-figura-375.png`](q-regata-sulla-carta/schermate/runner-figura-375.png) | La domanda più lunga con figura, prima di rispondere |
+| [`q-regata-sulla-carta/schermate/runner-figura-375x667.png`](q-regata-sulla-carta/schermate/runner-figura-375x667.png) | La stessa su un telefono piccolo |
+| [`q-regata-sulla-carta/schermate/runner-figura-1280.png`](q-regata-sulla-carta/schermate/runner-figura-1280.png) | La stessa al computer |
+| [`q-regata-sulla-carta/schermate/riepilogo-375.png`](q-regata-sulla-carta/schermate/riepilogo-375.png) | Il riepilogo di due domande, primo schermo |
+| [`q-regata-sulla-carta/schermate/riepilogo-375x667.png`](q-regata-sulla-carta/schermate/riepilogo-375x667.png) | Il riepilogo su un telefono piccolo |
+| [`q-regata-sulla-carta/schermate/riepilogo-375-intera.png`](q-regata-sulla-carta/schermate/riepilogo-375-intera.png) | Il riepilogo intero al telefono |
+| [`q-regata-sulla-carta/schermate/riepilogo-1280.png`](q-regata-sulla-carta/schermate/riepilogo-1280.png) | Il riepilogo al computer |
+| [`q-regata-sulla-carta/schermate/riepilogo-1280-intera.png`](q-regata-sulla-carta/schermate/riepilogo-1280-intera.png) | Il riepilogo intero al computer |
+| [`q-regata-sulla-carta/schermate/home-375-finestra-1.png`](q-regata-sulla-carta/schermate/home-375-finestra-1.png) | Home al telefono con la finestra del faro al centro: la carta ferma dietro, la scheda sopra |
+| [`q-regata-sulla-carta/schermate/home-1280-finestra-1.png`](q-regata-sulla-carta/schermate/home-1280-finestra-1.png) | La stessa al computer |
 
 ## Che cosa non è stato controllato
 

@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Home · mock «@@NOME@@»</title>
+<style>@@CSS@@
+/* P: la testa della Regata, poi la rotta che si accende scendendo */
+.eroe h1{font-size:var(--t-32);font-weight:800;line-height:1.06}
+.eroe .lead{color:var(--ink-2);margin-top:var(--s-8)}
+.eroe{display:grid;gap:var(--s-24)}
+.prova{padding:var(--s-16)!important;display:grid;gap:var(--s-12)}
+.titolo-prova{font-size:var(--t-16)!important;font-weight:800}
+.breve{display:flex;flex-direction:column;gap:2px}
+.breve small,.gratis{font-size:var(--t-14);color:var(--ink-3)}
+.come{margin-top:var(--s-64)}
+.come>h2{font-size:var(--t-32);font-weight:800}
+.come>p{color:var(--ink-2);margin-top:var(--s-8);max-width:34em}
+/* La rotta: una linea tratteggiata che si riempie d'arancio, e la barca che scende */
+.rotta-viva{position:relative;margin-top:var(--s-32)}
+.linea{position:absolute;top:0;bottom:0;left:13px;width:3px;border-left:3px dashed var(--acqua-2)}
+.pieno{position:absolute;left:-3px;top:0;width:3px;height:100%;background:var(--boa);transform-origin:top;transform:scaleY(var(--p,0))}
+.barca{position:absolute;left:-1.5px;top:calc(var(--p,0) * 100%);width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;background:var(--mare);display:grid;place-items:center;box-shadow:0 0 0 4px var(--carta);z-index:2}
+.barca svg{width:22px;height:22px}
+.tappe{list-style:none;margin:0;padding:0 0 0 48px;display:grid;gap:var(--s-64)}
+.tappa-p{position:relative;display:grid;gap:var(--s-16);align-items:center}
+.boa-wrap{position:absolute;left:-46px;top:2px;transition:filter .4s}
+.boa-p{display:block;width:26px;height:24px;background:var(--acqua-2);clip-path:polygon(50% 0,100% 100%,0 100%);transition:background-color .35s,transform .45s cubic-bezier(.2,1.6,.4,1)}
+.tappa-p.porto .boa-p{clip-path:none;border-radius:4px;width:24px;height:24px}
+.tappa-p.accesa .boa-p{background:var(--boa);transform:scale(1.25)}
+.tappa-p.accesa .boa-wrap{filter:drop-shadow(0 0 8px #FF6A1Acc)}
+.tappa-p.porto.accesa .boa-p{background:var(--mare)}
+.tappa-p.porto.accesa .boa-wrap{filter:drop-shadow(0 0 8px #0A4F6Ecc)}
+.testo-tappa h3{font-size:var(--t-24);font-weight:800;line-height:1.15}
+.testo-tappa p{color:var(--ink-2);margin-top:var(--s-8)}
+.testo-tappa .link-freccia{margin-top:var(--s-8)}
+.tappa-p .disegno{opacity:.45;transform:translateY(12px);transition:opacity .5s,transform .5s cubic-bezier(.2,.8,.2,1)}
+.tappa-p.accesa .disegno{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  .tappa-p .boa-p{background:var(--boa)} .tappa-p .disegno{opacity:1;transform:none}
+  .pieno{transform:none} .barca{display:none}
+}
+/* I disegni delle tappe: piccoli, nei colori della Regata, solo forme */
+.disegno{background:var(--acqua);border-radius:var(--r);padding:var(--s-16);min-height:150px;display:grid;place-items:center}
+.mini-domanda{width:100%;max-width:280px;display:grid;gap:6px}
+.mini-domanda i{display:block;height:10px;border-radius:5px;background:var(--acqua-3);opacity:.5}
+.mini-domanda i:nth-child(2){width:70%}
+.mini-domanda b{display:flex;align-items:center;gap:8px;height:30px;border-radius:8px;background:#fff;padding:0 10px;font-size:var(--t-14);font-weight:700;color:var(--ink-2)}
+.mini-domanda b.ko{background:var(--ko-chiaro);color:var(--ko)}.mini-domanda b.ok{background:var(--ok-chiaro);color:var(--ok)}
+.mini-venti{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;width:100%;max-width:280px}
+.mini-venti i{aspect-ratio:1;border-radius:4px;background:#fff}
+.mini-venti i:nth-child(-n+7){background:var(--mare)}
+.mini-orologio{display:flex;align-items:baseline;gap:8px;margin-top:10px;font-weight:800;color:var(--mare)}
+.mini-orologio b{font-size:var(--t-44);letter-spacing:-.04em}
+.mini-perche{background:#fff;border-radius:12px;padding:12px 14px;width:100%;max-width:280px;display:grid;gap:8px}
+.mini-perche span{justify-self:start;font-size:var(--t-12);font-weight:800;color:var(--mare);background:var(--acqua);border-radius:99px;padding:3px 10px}
+.mini-perche i{display:block;height:9px;border-radius:5px;background:var(--acqua-2)}
+.mini-perche i+i{width:60%}
+.mini-temi{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:26px;gap:3px;width:100%;max-width:280px;border-radius:8px;overflow:hidden}
+.mini-temi i{background:var(--acqua-2)}
+.mini-temi .a{grid-column:span 2;grid-row:span 2;background:var(--mare)}.mini-temi .b{grid-column:span 3;background:#2F7896}.mini-temi .c{grid-column:span 2}
+.mini-chip{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.mini-chip b{font-size:var(--t-14);font-weight:700;color:var(--ink);background:#fff;border-radius:99px;padding:8px 14px}
+.mini-chip b:first-child{background:var(--ink);color:#fff}
+.mini-prove{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;font-weight:800;color:var(--mare)}
+.mini-prove b{background:#fff;border-radius:10px;padding:10px 12px;font-size:var(--t-14)}
+.mini-prove i{width:14px;height:12px;background:var(--boa);clip-path:polygon(0 0,100% 50%,0 100%)}
+.disegno svg.carteggio{width:100%;max-width:300px;height:auto}
+.tocca{border-radius:var(--r);overflow:hidden;padding:0!important;display:block!important}
+.tocca .mappa{position:relative;width:100%}
+.disegno.tocca{place-items:stretch}
+.disegno.tocca .legenda-luce{width:100%;text-align:left}
+.tocca .illustrazione{display:block;width:100%;height:auto}
+.limiti{margin-top:var(--s-64)}
+.limiti h2{font-size:var(--t-24);font-weight:800;margin-bottom:var(--s-12)}
+.limiti ul{margin:var(--s-8) 0;padding-left:20px}
+.limiti p+p{margin-top:var(--s-8)}
+@media (min-width:900px){
+  .eroe{grid-template-columns:6fr 5fr;column-gap:var(--s-48);align-items:center}
+  .eroe h1{font-size:var(--t-56);line-height:1.02}
+  .eroe .lead{font-size:var(--t-20)}
+  .prova{padding:var(--s-32)!important}
+  .come{text-align:center}.come>p{margin-inline:auto;font-size:var(--t-20)}
+  .come>h2{font-size:var(--t-44)}
+  .linea{left:50%;margin-left:-1.5px}
+  .tappe{padding:0;gap:0}
+  .tappa-p{grid-template-columns:1fr 1fr;column-gap:144px;min-height:clamp(300px,46vh,420px);padding:var(--s-32) 0}
+  .boa-wrap{left:50%;top:50%;margin:-12px 0 0 -13px}
+  .tappa-p:nth-child(odd) .testo-tappa{text-align:right}
+  .tappa-p:nth-child(odd) .testo-tappa .link-freccia{float:right}
+  .tappa-p:nth-child(even) .testo-tappa{grid-column:2;grid-row:1;text-align:left}
+  .tappa-p:nth-child(even) .disegno{grid-column:1;grid-row:1}
+  .testo-tappa h3{font-size:var(--t-32)}
+  .testo-tappa p{font-size:var(--t-20)}
+  .disegno{min-height:220px}
+  .limiti{max-width:720px;margin-inline:auto}
+}
+@@TEMA@@
+</style></head>
+<body>
+@@ICONE@@
+@@TESTATA:home@@
+<main>
+  <section class="eroe">
+    <div>
+      <h1>Preparati alla patente nautica, un passo alla volta.</h1>
+      <p class="lead">Quiz e carteggio per la patente senza limiti dalla costa.</p>
+    </div>
+    <div style="display:grid;gap:var(--s-16)">
+      <section class="carta prova">
+        <h2 class="titolo-prova">La prova d'esame dei quiz</h2>
+        <div class="scandagli" aria-label="20 domande, 30 minuti, al più 4 errori">
+          <div class="scandaglio"><b>20</b><span>domande</span></div>
+          <div class="scandaglio"><b>30′</b><span>minuti</span></div>
+          <div class="scandaglio"><b>4</b><span>errori al più</span></div>
+        </div>
+        <a class="btn btn-pieno btn-largo vt-avvio" href="runner.html" data-ruolo="principale">Simula il quiz base<svg class="ico"><use href="#i-freccia"/></svg></a>
+        <p class="nota">La correzione arriva alla fine, come all'esame.</p>
+      </section>
+      <div class="breve">
+        <a class="link-freccia" href="runner.html" style="align-self:flex-start">Oppure allenati con 10 domande<svg class="ico"><use href="#i-freccia"/></svg></a>
+        <small>Con la correzione dopo ogni risposta.</small>
+      </div>
+    </div>
+  </section>
+
+  <section class="come" aria-labelledby="come">
+    <h2 id="come">Come funziona</h2>
+    <p>Scendi lungo la rotta: ogni boa è un modo di prepararsi, e si accende quando ci arrivi.</p>
+    <div class="rotta-viva">
+      <div class="linea" aria-hidden="true"><span class="pieno"></span><span class="barca"><svg><use href="#marchio"/></svg></span></div>
+      <ol class="tappe">
+        <li class="tappa-p">
+          <span class="boa-wrap" aria-hidden="true"><span class="boa-p"></span></span>
+          <div class="testo-tappa"><h3>Si prova senza account</h3><p>Apri una domanda e rispondi: non serve registrarsi. Senza account le risposte valgono finché la pagina resta aperta.</p></div>
+          <div class="disegno" aria-hidden="true"><div class="mini-domanda"><i></i><i></i><b>1</b><b>2</b><b>3</b></div></div>
+        </li>
+        <li class="tappa-p">
+          <span class="boa-wrap" aria-hidden="true"><span class="boa-p"></span></span>
+          <div class="testo-tappa"><h3>La simulazione, come all'esame</h3><p>20 domande in 30 minuti, al più 4 errori. Nessuna correzione durante la prova: l'esito arriva alla fine.</p></div>
+          <div class="disegno" aria-hidden="true"><div><div class="mini-venti"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="mini-orologio"><b>30′</b>minuti</div></div></div>
+        </li>
+        <li class="tappa-p">
+          <span class="boa-wrap" aria-hidden="true"><span class="boa-p"></span></span>
+          <div class="testo-tappa"><h3>Dieci domande, con la correzione</h3><p>Dieci quiz base, con la correzione dopo ogni risposta: la tua accanto a quella del decreto. Puoi fermarti quando vuoi.</p><a class="link-freccia" href="runner.html">Allenati con 10 domande<svg class="ico"><use href="#i-freccia"/></svg></a></div>
+          <div class="disegno" aria-hidden="true"><div class="mini-domanda"><i></i><i></i><b class="ko">✕ La tua risposta</b><b class="ok">✓ Risposta del decreto</b><b>3</b></div></div>
+        </li>
+        <li class="tappa-p">
+          <span class="boa-wrap" aria-hidden="true"><span class="boa-p"></span></span>
+          <div class="testo-tappa"><h3>L'allenamento consigliato</h3><p>25 quiz base scelti dalle tue risposte. Ogni domanda dice perché è lì.</p><a class="link-freccia" href="quiz.html">Vai ad Allenati<svg class="ico"><use href="#i-freccia"/></svg></a></div>
+          <div class="disegno" aria-hidden="true"><div class="mini-perche"><span>Ogni domanda dice perché è lì</span><i></i><i></i></div></div>
+        </li>
+        <li class="tappa-p">
+          <span class="boa-wrap" aria-hidden="true"><span class="boa-p"></span></span>
+          <div class="testo-tappa"><h3>Un argomento alla volta</h3><p>Base o vela, uno o più argomenti. Navigazione e Manovra portano 4 delle 20 domande ciascuna: vale la pena cominciare da lì.</p></div>
+          <div class="disegno" aria-hidden="true"><div class="mini-temi"><i class="a"></i><i class="a"></i><i class="b"></i><i></i><i class="b"></i><i></i><i class="c"></i><i class="c"></i></div></div>
+        </li>
+        <li class="tappa-p">
+          <span class="boa-wrap" aria-hidden="true"><span class="boa-p"></span></span>
+          <div class="testo-tappa"><h3>Gli errori tornano</h3><p>Riapri le domande che hai sbagliato. Dopo un errore puoi segnare perché: non lo sapevi, o è stata una svista.</p></div>
+          <div class="disegno" aria-hidden="true"><div class="mini-chip"><b>Non lo sapevo</b><b>Svista</b></div></div>
+        </li>
+        <li class="tappa-p">
+          <span class="boa-wrap" aria-hidden="true"><span class="boa-p"></span></span>
+          <div class="testo-tappa"><h3>Il carteggio, sulla carta vera</h3><p>135 esercizi: tracci sulla carta nautica con squadrette e compasso, poi confronti con la risposta ministeriale. Sei tu a giudicare.</p></div>
+          <div class="disegno" aria-hidden="true"><svg class="carteggio" viewBox="0 0 300 150"><rect width="300" height="150" rx="10" fill="#fff"/><path d="M0 50H300M0 100H300M75 0V150M150 0V150M225 0V150" stroke="#C3DAE3"/><path d="M40 120 140 40 250 90" fill="none" stroke="#0A4F6E" stroke-width="3"/><circle cx="140" cy="40" r="5" fill="#FF6A1A"/><path d="M60 130h120l-120-70Z" fill="#0A4F6E" fill-opacity=".14" stroke="#0A4F6E" stroke-width="2"/><path d="M230 30l-14 70M230 30l18 68" stroke="#33505B" stroke-width="3" stroke-linecap="round"/></svg></div>
+        </li>
+        <li class="tappa-p">
+          <span class="boa-wrap" aria-hidden="true"><span class="boa-p"></span></span>
+          <div class="testo-tappa"><h3>Fanali e segnali</h3><p>27 segnali da riconoscere a colpo d'occhio, come di notte in mare. Sulla carta ogni luce ha la sua sigla: toccala per leggerla.</p></div>
+          <div class="disegno tocca figura-grande"><div class="mappa">@@CARTA@@@@TOCCA_BOTTONI@@</div>
+            <p class="legenda-luce" aria-live="polite"><span class="invito">@@TOCCA_INVITO@@</span></p></div>
+        </li>
+        <li class="tappa-p">
+          <span class="boa-wrap" aria-hidden="true"><span class="boa-p"></span></span>
+          <div class="testo-tappa"><h3>L'esame, in ordine</h3><p>Carteggio, quiz base, quiz vela: con le condizioni del decreto. Le prepari quando vuoi, senza sblocchi.</p><a class="link-freccia" href="#esame">Vai a Esame<svg class="ico"><use href="#i-freccia"/></svg></a></div>
+          <div class="disegno" aria-hidden="true"><div class="mini-prove"><b>Carteggio</b><i></i><b>Quiz base</b><i></i><b>Quiz vela</b></div></div>
+        </li>
+        <li class="tappa-p porto">
+          <span class="boa-wrap" aria-hidden="true"><span class="boa-p"></span></span>
+          <div class="testo-tappa"><h3>Con l'account, la rotta resta</h3><p>Ritrovi le tue risposte quando torni, anche da un altro telefono, e vedi i Progressi.</p></div>
+          <div class="disegno" aria-hidden="true"><div class="mini-domanda"><b class="ok">✓ 1 giusta</b><b class="ko">✕ 1 sbagliata</b><b>8 non affrontate</b></div></div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="limiti">
+    <h2>I limiti, detti prima</h2>
+    <div class="nota-carta nota">
+      <p>La banca è l'Allegato A del decreto del 2022, e all'esame vale lui. Ti diciamo quesito per quesito che cosa non torna:</p>
+      <ul><li>37 quesiti oscurati, mai nella simulazione</li><li>4 quesiti con una nota dopo la risposta</li><li>1 quesito con la figura mancante</li></ul>
+      <p>Il lavoro sulla carta lo giudichi tu. Nessuna newsletter e nessun cookie di tracciamento.</p>
+      <p style="margin-top:var(--s-12)"><a class="link-freccia" href="#note">Note, fonti e riferimenti<svg class="ico"><use href="#i-freccia"/></svg></a></p>
+    </div>
+    <p class="gratis" style="margin-top:var(--s-24)">Gratis e open source. Si prova senza account; con l'account salvi i progressi.</p>
+  </section>
+  <footer class="piede"><span>Rotta Giusta · mock</span><a href="#">codice sorgente</a><a href="#">Privacy</a><a href="#">Condizioni per l'account</a><a href="#">Avvertenza</a></footer>
+</main>
+@@BARRA:home@@
+<script>
+const VOCI = @@TOCCA_VOCI@@;
+document.querySelectorAll('.tocca').forEach((carta) => {
+  const legenda = carta.querySelector('.legenda-luce');
+  carta.querySelectorAll('.luce').forEach((luce) => luce.addEventListener('click', () => {
+    const aperta = luce.getAttribute('aria-expanded') === 'true';
+    carta.querySelectorAll('.luce').forEach((l) => l.setAttribute('aria-expanded', 'false'));
+    if (aperta) { legenda.innerHTML = '<span class="invito">@@TOCCA_INVITO@@</span>'; return; }
+    luce.setAttribute('aria-expanded', 'true');
+    const [titolo, testo] = VOCI[luce.dataset.voce];
+    legenda.innerHTML = `<b data-voce>${titolo}</b><span data-voce>${testo}</span>`;
+  }));
+});
+// La rotta si accende scorrendo: la linea si riempie fino al 60% dello schermo,
+// la barca sta in punta, e ogni boa superata si accende (e resta accesa)
+const linea = document.querySelector('.linea');
+const tappe = [...document.querySelectorAll('.tappa-p')];
+let fermo = false;
+function aggiorna() {
+  fermo = false;
+  const r = linea.getBoundingClientRect(), punta = innerHeight * 0.6;
+  const p = Math.min(1, Math.max(0, (punta - r.top) / r.height));
+  linea.style.setProperty('--p', p.toFixed(4));
+  tappe.forEach((t) => { const b = t.querySelector('.boa-p').getBoundingClientRect(); if (b.top + b.height / 2 < punta) t.classList.add('accesa'); });
+}
+addEventListener('scroll', () => { if (!fermo) { fermo = true; requestAnimationFrame(aggiorna); } }, { passive: true });
+addEventListener('resize', aggiorna);
+aggiorna();
+</script>
+</body></html>

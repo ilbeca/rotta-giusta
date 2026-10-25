@@ -4971,3 +4971,39 @@ pagina rifatta; O è un miglioramento per il computer.
     dentro la RC? *Raccomandazione:* dei pezzi — da N la domanda (risposte a
     tutta larghezza, il foglio della correzione), da L le zone di mare degli
     argomenti —, e M da guardare a parte se l'autore vuole un'app più che un sito.
+
+**La scelta dell'autore sugli impianti, e due mock nuovi (25 ottobre).**
+Guardati L, M, N e O, l'autore ha preso due cose. **Il percorso a boe, ma come
+animazione della Home**: scorrendo il triangolo si riempie o si illumina, e i
+pannelli che si susseguono spiegano come funziona il sito e le modalità di
+allenamento. **La carta come sfondo, senza il pannello, nella Regata.** Due mock
+separati, nei colori della Regata; la G e la L non sono state toccate.
+
+- **P — La rotta che si accende** (`p-rotta-che-si-accende/`). Sotto la testa
+  della Regata, «Come funziona»: dieci tappe su una rotta che si riempie
+  d'arancio scorrendo, con la barca in punta; ogni triangolo superato si accende
+  e resta acceso, e il disegno della tappa prende colore. Le tappe dicono come
+  si prova senza account, la simulazione, le dieci domande, l'allenamento
+  consigliato, gli argomenti (con le zone di mare della L), gli errori, il
+  carteggio, fanali e segnali (con la carta del faro da toccare), l'esame in
+  ordine e l'account. *Per chi studia:* chi arriva capisce in una discesa che
+  cosa può fare qui, e ogni modalità ha il suo posto prima di cercarla nei
+  menu. *Il rischio:* la Home si allunga; e le frasi delle tappe sono nuove,
+  **da verificare dall'autore**.
+- **Q — La Regata sulla carta** (`q-regata-sulla-carta/`). La carta ferma dietro
+  tutta la pagina, vista da finestre: la testa (con un velo di mare sotto il
+  testo) e una fascia dove il faro e la boa si toccano sulla carta stessa. Il
+  resto è pagina bianca che scorre sopra. *Per chi studia:* il mare c'è sempre,
+  senza un pannello fra lui e il contenuto. *Il rischio:* lo sfondo fermo su
+  iPhone, non provato; al telefono si vede solo un tratto di costa.
+
+**Misurato** sulle 36 combinazioni: sbordamento 0, un principale, «Simula il
+quiz base» a 446 px a 375×667, «Avanti» scoperto, la figura intera, l'avviso a
+12 px, contrasti AA (il velo della testa di Q, nel caso peggiore, a 5,9:1 con
+il bianco). Il controllo dei contrasti ha trovato un difetto vero, corretto: in
+Q la domanda al telefono aveva il fondo blu sotto il testo scuro.
+
+16. **P e Q.** La Home di P come Home della Regata (o della RC), e lo sfondo di Q
+    come vestito della Regata? *Raccomandazione:* sì per la discesa di P, dopo
+    aver verificato le frasi delle tappe; Q da provare su un iPhone vero prima
+    di decidere, per lo sfondo fermo.

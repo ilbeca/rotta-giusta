@@ -385,6 +385,25 @@ selezione o contabilità. Versione 0.34.0 invariata.
   misuratore allunga la finestra e con lei le schermate. Decisione 15 in fondo
   a I-29. Nessun file di `site/`, `tests/`, della specifica o della coda.
 
+### Progettato — I-29: la rotta che si accende, e la Regata sulla carta
+
+- **Perché.** Guardati gli impianti, l'autore ha preso il percorso a boe, ma come
+  animazione della Home che spiega come funziona il sito, e la carta come
+  sfondo, senza il pannello, nella Regata. Due mock separati in
+  `docs/prototipi/redesign-2026-10-claude/`, nei colori della Regata; G e L non
+  toccate. **P, la rotta che si accende**: sotto la testa della Regata, dieci
+  tappe su una rotta che si riempie scorrendo, con la barca in punta e i
+  triangoli che si accendono; ogni tappa spiega una modalità. **Q, la Regata
+  sulla carta**: la carta ferma dietro la pagina, vista da due finestre, e il
+  faro e la boa da toccare sulla carta stessa.
+- **Misurato** sulle 36 combinazioni: sbordamento 0, un principale, «Simula»
+  sopra la barra a 375×667, «Avanti» scoperto, la figura intera, l'avviso a 12
+  px, contrasti AA. Corretti guardando: le tappe di P troppo distanti e centrate,
+  la carta di Q troppo ingrandita al telefono, la legenda del computer visibile
+  al telefono, «Avanti» più stretto, e — trovato dal controllo dei contrasti — la
+  domanda di Q al telefono con il fondo blu. Le frasi delle tappe di P sono
+  nuove, da verificare. Decisione 16 in fondo a I-29.
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la
