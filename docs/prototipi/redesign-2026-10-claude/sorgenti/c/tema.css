@@ -8,7 +8,7 @@
   --ink:#14213D;--ink-2:#3A4664;--ink-3:#5B6585;--filo:#14213D1F;--filo-2:#14213D0F;
   --rotta:#C2410C;--rotta-chiara:#FFEDD5;
   --azione:#1D5FD1;--su-azione:#fff;--attivo:#1D5FD1;--su-attivo:#fff;
-  --forte:#1E2A44;--su-forte:#fff;--campo:#F4F7FF;--marchio:#14213D;
+  --link:#1D5FD1;--forte:#1E2A44;--su-forte:#fff;--campo:#F4F7FF;--marchio:#14213D;
   --r:18px;
 }
 .btn{border-radius:999px}
@@ -28,7 +28,7 @@ h1,h2,h3{letter-spacing:-.025em}
 .diario.carta::after{background:#FFE7A3;width:80px;height:80px;right:-40px;top:-40px}
 .diario.carta .scandaglio span,.diario.carta p{color:var(--ink-3)}
 .diario.carta .scandaglio.ok b{color:var(--ok)}.diario.carta .scandaglio.ko b{color:var(--ko)}.diario.carta .scandaglio.no b{color:var(--ink-3)}
-.scala,.figura-grande::before{display:none!important}
+.scala,.figura-grande::before,.striscia::before{display:none!important}
 .striscia,.figura-grande{border:0!important;outline:0!important;border-radius:24px!important}
 .occhiello{letter-spacing:.06em}
 /* Le righe diventano tessere colorate */
@@ -42,8 +42,6 @@ h1,h2,h3{letter-spacing:-.025em}
 .cosa .righe>li:nth-child(3) .freccia{stroke:#C9D4E8}
 .cosa .righe>li:nth-child(4)>a{background:#FFE4E8}
 .cosa .righe .ico-tondo{background:#fff!important;color:var(--ink)!important}
-.peso i{background:#FFB020}
-.peso i.v{border-color:#14213D33}
 .nota-carta{border-left:0;border-radius:24px}
 .link-freccia{border-bottom-width:3px}
 .segmenti{background:var(--carta-2);border:0}
@@ -55,7 +53,6 @@ h1,h2,h3{letter-spacing:-.025em}
 .rotta::before,.rotta::after{display:none}
 .tappa{flex:1;width:auto;height:10px;border:0;border-radius:99px;background:#E6EBF5}
 .tappa.ko{background:var(--ko)}.tappa.ok{background:var(--ok)}
-.tappa.ora{background:#1D5FD1;box-shadow:none}
 .risposta{border-width:2px;border-radius:20px;box-shadow:0 3px 0 #14213D14}
 .tasto{border-radius:10px}
 .chip{border-width:2px}

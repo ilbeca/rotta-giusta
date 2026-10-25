@@ -4520,7 +4520,7 @@ Nei dettagli, dal più pesante.
    sinistra, staccata dalle risposte.
 
 7. **Le schermate che contano di più sono le più povere.** La domanda — dove chi
-   studia passa il 90 % del tempo — ha in cima tre pastiglie («1/10», «nuovo»,
+   studia passa la maggior parte del tempo (una stima, non una misura) — ha in cima tre pastiglie («1/10», «nuovo»,
    «0:01») e una striscia bianca «Quiz / Quiz base» che non dice niente; non c'è
    un segno di avanzamento oltre il numero. Il riepilogo si apre con «Attività
    interrotta», un titolo che suona come un errore, e mostra i risultati in due
@@ -4563,11 +4563,14 @@ carattere, ed è quello che è successo.
     e sono comparsi sui pulsanti secondari, che per non essere «pieni» sono
     diventati azzurri con il bordo. *Proposta:* le azioni secondarie diventano
     **righe** (un elenco con la freccia) o **link sottolineati**, non pulsanti.
-  - **D-16 + D-23, la scala 12–30.** Fine in basso (12, 14, 16, 19) e corta in
-    alto: 30 px al telefono, 40 solo sulla Home al computer. Una pagina editoriale
-    usa un rapporto fra titolo e testo di 2,5–3,5; qui è 1,9. *Proposta:* la
-    stessa scala con due gradini in più in alto, e i numeri come elementi di
-    disegno.
+  - **D-16, la scala 12–30.** Fine in basso (12, 14, 16, 19) e corta in
+    alto: 30 px al telefono, 40 solo sulla Home al computer; il titolo è meno del
+    doppio del testo. *Proposta:* la stessa disciplina con due gradini in più in
+    alto, e i numeri come elementi di disegno. *Corretto il 25 ottobre, dopo il
+    parere di ChatGPT:* qui c'era scritto «D-16 + D-23», ma D-23 parla degli
+    spazi, non dei corpi; e il rapporto 2,5–3,5 fra titolo e testo, citato come
+    regola delle pagine editoriali, non è una soglia da adottare: una domanda di
+    sei righe non deve diventare un manifesto.
   - **D-25, i ruoli dei colori.** L'accento è delle azioni, il verde e il rosso
     del giusto e dello sbagliato: non resta nessun colore per l'identità.
     *Proposta:* un colore in più con un ruolo suo, il **segno del sito** — mai
@@ -4603,16 +4606,20 @@ meridiani e paralleli con la cornice doppia, sui riquadri che contano; il
 **bordo a scala** bianco e nero delle carte; **la rotta**, una linea tratteggiata
 magenta con le tappe, che è anche l'avanzamento della domanda e la traccia del
 riepilogo. I numeri dell'esame diventano grandi come gli scandagli di una carta.
+*Nella versione ridotta del 25 ottobre* le firme si stringono: il reticolo solo
+nella carta disegnata, il bordo a scala una volta, il magenta fuori dai comandi
+e dall'avanzamento, nessuna traccia nel riepilogo.
 *Per chi studia:* riconosce il materiale che userà al tavolo; il carteggio,
 che oggi è una scheda fra le altre, diventa il linguaggio del sito; i numeri che
 contano si leggono da lontano. *Rischio:* una carta decorata e affollata. Si
 tiene a bada con tre firme e basta, e con il reticolo solo dove serve.
-*Nei mock:* in Home una striscia di carta alta 96 px sotto il titolo (il limite
-della decisione D), poi il riquadro della prova con **20 · 30′ · 4** e «Simula
-il quiz base»; al computer due colonne vere, con la carta disegnata e il bordo a
-scala. In Allenati il solo allenamento consigliato ha il reticolo, il peso
-d'esame di ogni argomento si vede con dei pallini magenta (uno per domanda della
-prova da 20). Nella domanda la rotta ha dieci tappe, la prima rossa.
+*Nei mock (versione ridotta del 25 ottobre, sotto):* in Home una striscia di
+carta alta 96 px sotto il titolo (il limite della decisione D), con il bordo a
+scala, poi il riquadro della prova con **20 · 30′ · 4** e «Simula il quiz
+base»; al computer due colonne vere, con la carta disegnata. Il reticolo sta solo
+nell'illustrazione. In Allenati il peso d'esame di ogni argomento è scritto
+(«4 su 20»). Nella domanda dieci tappe, la prima rossa e cerchiata finché non si
+preme «Avanti».
 
 **B — La plancia di notte.** *Riferimenti:* i plotter cartografici (Garmin,
 B&G), l'ECDIS, gli strumenti di bordo; Apple Meteo. Fondo navy scurissimo
@@ -4634,17 +4641,22 @@ riga della Home (azzurro i quiz, sabbia il carteggio, notte i segnali, rosa le
 prove); riquadri molto arrotondati, pulsanti a pillola con lo spessore sotto,
 un'illustrazione allegra. *Per chi studia:* invogliante, soprattutto per i
 ventenni che sono la maggior parte della classe; ogni sezione si riconosce dal
-colore. *Rischio:* sembra un gioco, e il sito promette di non esserlo (nessuna
-gamification, la verità prima della rassicurazione); ai cinquantenni che fanno
-il carteggio sul serio può sembrare poco serio; e il colore per sezione si
+colore. *Rischio:* il tono di un gioco, lontano da quello che il sito vuole avere — i
+colori allegri non sono di per sé gamification, che sta nelle ricompense e nelle
+promesse (corretto il 25 ottobre) —; ai cinquantenni che fanno il carteggio sul
+serio può sembrare poco serio; e il colore per sezione si
 scontra con i ruoli di D-25. *Nei mock:* l'avanzamento è una barra a dieci
 segmenti; nel riepilogo il riquadro torna chiaro, perché il verde e il rosso
 non si leggono sul blu.
 
-**Controllato su tutti e dodici i mock** (a 375×812, 375×667 e 1280×800): un
-solo `data-ruolo="principale"`, nessuno sbordamento, Manrope caricato, il
-pulsante principale nel primo schermo anche a 375×667 — «Simula il quiz base»
-finisce fra 551 e 552 px, «Avanti» resta sopra il bordo. Contrasti calcolati sui
+**Controllato su tutti e diciotto i mock** — sei schermate per direzione, dal 25
+ottobre — a 375×812, 375×667 e 1280×800: un solo `data-ruolo="principale"`,
+nessuno sbordamento, Manrope caricato, il pulsante principale nel primo schermo
+anche a 375×667 — «Simula il quiz base» finisce fra 551 e 552 px, «Avanti» resta
+sopra il bordo. Nella domanda con figura (sotto) la figura sta intera fra 323 e
+534 px a 375×812, con l'inizio della domanda a 124 e il centro della prima
+risposta a 678; nella preparazione l'avviso finisce 12 px sopra «Inizia», a
+375×667, senza niente da toccare in mezzo. Contrasti calcolati sui
 colori dei temi: A, testo secondario da 4,89 a 5,88:1, magenta 5,4–6,2:1; B,
 testo secondario 7,0–8,0:1, ambra con il testo scuro 10,7:1, rosso e verde sui
 loro fondi 5,8 e 8,4:1; C, testo secondario 4,8–5,8:1, bianco sul blu 5,8:1,
@@ -4660,13 +4672,69 @@ tutti e due i gruppi, perché è quello che studiano. Tiene il tema chiaro già
 deciso, si regge con un carattere solo e con SVG fatti in casa, e dà a tre cose
 del sito una forma che oggi non hanno: l'esame (i tre numeri grandi),
 l'avanzamento (la rotta) e il carteggio (il reticolo). B funziona meglio come
-**tema scuro della A**, più avanti, e come volto dei Segnali; C è la più
-invitante per i ventenni e la più lontana dalla promessa del sito.
+**tema scuro della A**, più avanti, e come volto dei Segnali; C ha il tono più
+allegro, e che inviti di più i ventenni resta un'ipotesi.
+
+#### Il parere di ChatGPT, e la A ridotta — 25 ottobre 2026
+
+L'autore ha chiesto il giudizio di ChatGPT sulla A. Il parere è
+`docs/prototipi/redesign-2026-10-chatgpt/parere-su-A.md`, sul ramo `ui/main`
+(`f40eadc`). **ChatGPT sceglie la A**, al posto della sua «Linea di rotta», con
+meno segni durante lo studio: «la carta deve accogliere; durante una domanda
+deve lasciarti leggere». Le sue correzioni giuste sono entrate nei mock, in
+tutte e tre le direzioni perché il confronto resti alla pari:
+
+- **Il colore del segno non tocca i comandi.** Il magenta stava su link, frecce,
+  voce attiva della barra e domanda corrente: contraddiceva «mai un'azione». Ora
+  link, frecce, barra e domanda corrente sono nel colore dei comandi (il navy in
+  A); il magenta resta nell'illustrazione e nei richiami da leggere.
+- **Il reticolo solo nell'illustrazione**, mai dietro testo da leggere; la
+  doppia cornice dei riquadri diventa un bordo semplice; il bordo a scala una
+  volta, sulla carta disegnata.
+- **La domanda corrente è quella che leggi.** L'anello resta sulla prima tappa
+  finché non si preme «Avanti». Con 25 domande o più non si moltiplicano i
+  pallini: una traccia compatta e «5 di 25» (nuova schermata `runner-figura`).
+  In una simulazione nessun rosso o verde prima della consegna: non c'è un mock,
+  è una regola per il giro di interfaccia.
+- **Il riepilogo senza zigzag:** le altezze non volevano dire niente e
+  sembravano un andamento. Restano i tre numeri con le parole; via «fermato a
+  metà», inesatto per 2 domande su 10.
+- **Il peso all'esame in parole** («4 su 20») invece di quattro pallini, che
+  sembravano un voto.
+- **Un'azione resta un pulsante** anche con l'aspetto di un link («Crea un
+  account», «Continua senza account»); il link è per andare in un'altra pagina.
+- **Gli stati difficili, almeno due:** `preparazione.html`, l'allenamento breve
+  con l'avviso «senza account» accanto a «Inizia», e `runner-figura.html`, il
+  quesito 1.5.3-103 (base-829, il più lungo con figura) prima di rispondere, con
+  la figura 79 del decreto. Misure qui sopra.
+- **L'inventario della scala, dichiarato per intero** — i primi mock avevano
+  anche 22 e 28 px e un peso 500 —: corpi 12, 14, 16, 20, 24, 32, 44, 56; pesi
+  400, 600, 700, e 800 per i titoli grandi e i numeri; interlinea 1,45 per il
+  testo da leggere, domanda e risposte comprese; i titoli fra 1,04 e 1,1, da
+  fissare. Rispetto al giro 2 cambiano 19 → 20, 30 → 32, e arrivano 44 e 56: è la
+  decisione 4.
+
+**Dove ChatGPT ha corretto la diagnosi, e ha ragione:** le regole non hanno
+causato da sole la bruttezza, l'uso ripetitivo dei componenti è una scelta
+nostra; D-14 e D-24 valgono per Home, preparazioni e riepiloghi, non per ogni
+elemento; un'immagine è una scelta pertinente qui, non un obbligo da trasformare
+in regola; alcune frasi di spiegazione («le domande non affrontate non contano
+come errori») risolvono un dubbio nel punto in cui serve, e restano.
+
+**Che cosa resta da provare,** per lui come per me: la domanda dopo lo
+scorrimento a 375×667 (la terza risposta parte sotto il piede ed è
+raggiungibile scorrendo), le revisioni, l'Esame, il salvataggio fallito, gli
+stati con l'account; e la prova con persone. Le misure dei mock non sono T-10…T-13
+superati.
+
+**Dove resta una scelta, non un disaccordo:** link in navy (più chiari come «si
+tocca») o in magenta (più riconoscibili). ChatGPT preferisce il navy, ed è
+quello dei mock; è la decisione 11.
 
 **Che cosa costerebbe.** Per qualunque direzione: un giro di interfaccia grande
 quanto P-81 su `index.html`, e un giro di regole su `main`: D-14, D-16, D-24 e
 D-25 riscritte come proposto sopra, la scala dei corpi con due gradini in più
-(32 e 56, più 44 per i numeri), il colore del segno nei ruoli di T-13, e la
+(l'inventario dei mock: 12, 14, 16, 20, 24, 32, 44, 56), il colore del segno nei ruoli di T-13, e la
 tabella dei valori fuori scala per il bordo a scala e il reticolo. Le regole non
 si buttano: si aggiunge che cosa una pagina **deve** avere, non solo che cosa
 non deve.
@@ -4681,9 +4749,9 @@ non deve.
 3. **D-14 riscritta** perché un'immagine o una superficie possano pesare più del
    pulsante, purché nessun'altra cosa **interattiva** lo faccia.
    *Raccomandazione:* sì; senza, nessuna direzione si può fare.
-4. **La scala dei corpi**: due gradini in più in alto (32 e 56) e i numeri a 44.
-   Cambia una decisione del giro 2 (C). *Raccomandazione:* sì, approvata
-   guardando i mock come la decisione C.
+4. **La scala dei corpi**: 12, 14, 16, 20, 24, 32, 44, 56, con i pesi fino a
+   800 per titoli e numeri. Cambia una decisione del giro 2 (C).
+   *Raccomandazione:* sì, approvata guardando i mock come la decisione C.
 5. **Le azioni secondarie come righe e link**, non pulsanti pallidi: tocca ogni
    schermata e il pannello Accedi. *Raccomandazione:* sì.
 6. **L'immagine sul telefono** (decisione D, passo 6 di I-27): la striscia da
@@ -4699,6 +4767,8 @@ non deve.
    controlli su `main` (come per i giri 1 e 2), poi ChatGPT su `ui/*` schermata
    per schermata, cominciando dalla domanda e dal riepilogo, dove chi studia
    passa più tempo; la Home per ultima.
-10. **Il confronto con la lettura di ChatGPT**, fatta in parallelo: leggerle
-    tutte e due prima di decidere, e scrivere qui che cosa le due direzioni
-    hanno in comune.
+10. **Il confronto con la lettura di ChatGPT**: fatto il 25 ottobre, sopra.
+    ChatGPT sceglie la A ridotta.
+11. **I link: navy o magenta?** Navy è più chiaro come «si può toccare», magenta
+    più riconoscibile; la regola dice quale e basta. *Raccomandazione:* navy,
+    come nei mock e nel parere di ChatGPT.

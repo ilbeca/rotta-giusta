@@ -17,11 +17,10 @@ h1.pagina{font-size:var(--t-32);font-weight:800}
 .cerca input{flex:1;min-width:0;height:52px;border:1.5px solid var(--ink-3);border-radius:var(--r);background:var(--campo);padding:0 var(--s-16);font:500 var(--t-16) Manrope,sans-serif;color:var(--ink)}
 .cerca button{width:52px;height:52px;border-radius:var(--r);border:1.5px solid var(--ink);background:transparent;display:grid;place-items:center;color:var(--ink)}
 .temi .testo b{font-weight:700}
-.peso{display:flex;gap:3px;align-items:center;flex:none}
-.peso i{width:8px;height:8px;border-radius:50%;background:var(--rotta)}
-.peso i.v{background:transparent;border:1.5px solid var(--filo)}
-.peso-et{font-size:var(--t-12);color:var(--ink-3);font-weight:600;text-align:right;min-width:5.5em}
-.legenda{font-size:var(--t-14);color:var(--ink-3);margin-bottom:var(--s-8);display:flex;align-items:center;gap:6px}
+/* Il peso all'esame in parole, su ogni riga: non è un voto su quattro */
+.peso{flex:none;white-space:nowrap;font-size:var(--t-14);color:var(--ink-2)}
+.peso b{font-size:var(--t-20);font-weight:800;color:var(--ink)}
+.temi .sotto{font-size:var(--t-14);color:var(--ink-2);margin:calc(var(--s-8) * -1) 0 var(--s-12)}
 @media (min-width:900px){
   h1.pagina{font-size:var(--t-44)}
   .segmenti{max-width:520px}
@@ -65,16 +64,16 @@ h1.pagina{font-size:var(--t-32);font-weight:800}
   <section class="blocco temi">
     <p class="occhiello">Gli argomenti dei quiz base</p>
     <h2>Dove pesa di più all'esame</h2>
-    <p class="legenda"><span class="peso"><i></i></span> = una domanda nella prova da 20</p>
+    <p class="sotto">Accanto a ogni argomento, quante delle 20 domande della prova ne parlano.</p>
     <ul class="righe">
-      <li><a href="#t"><span class="testo"><b>Navigazione cartografica</b><small>322 quesiti</small></span><span class="peso" aria-label="4 domande all'esame"><i></i><i></i><i></i><i></i></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
-      <li><a href="#t"><span class="testo"><b>Manovra e condotta</b><small>155 quesiti</small></span><span class="peso" aria-label="4 domande all'esame"><i></i><i></i><i></i><i></i></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
-      <li><a href="#t"><span class="testo"><b>Sicurezza della navigazione</b><small>215 quesiti</small></span><span class="peso" aria-label="3 domande all'esame"><i></i><i></i><i></i><i class="v"></i></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
-      <li><a href="#t"><span class="testo"><b>Normativa diportistica</b><small>184 quesiti</small></span><span class="peso" aria-label="3 domande all'esame"><i></i><i></i><i></i><i class="v"></i></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
-      <li><a href="#t"><span class="testo"><b>Colreg e segnalamento</b><small>247 quesiti</small></span><span class="peso" aria-label="2 domande all'esame"><i></i><i></i><i class="v"></i><i class="v"></i></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
-      <li><a href="#t"><span class="testo"><b>Meteorologia</b><small>120 quesiti</small></span><span class="peso" aria-label="2 domande all'esame"><i></i><i></i><i class="v"></i><i class="v"></i></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
-      <li><a href="#t"><span class="testo"><b>Teoria dello scafo</b><small>125 quesiti</small></span><span class="peso" aria-label="1 domanda all'esame"><i></i><i class="v"></i><i class="v"></i><i class="v"></i></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
-      <li><a href="#t"><span class="testo"><b>Motori</b><small>104 quesiti</small></span><span class="peso" aria-label="1 domanda all'esame"><i></i><i class="v"></i><i class="v"></i><i class="v"></i></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="#t"><span class="testo"><b>Navigazione cartografica</b><small>322 quesiti</small></span><span class="peso" aria-label="4 domande su 20 all'esame"><b>4</b> su 20</span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="#t"><span class="testo"><b>Manovra e condotta</b><small>155 quesiti</small></span><span class="peso" aria-label="4 domande su 20 all'esame"><b>4</b> su 20</span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="#t"><span class="testo"><b>Sicurezza della navigazione</b><small>215 quesiti</small></span><span class="peso" aria-label="3 domande su 20 all'esame"><b>3</b> su 20</span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="#t"><span class="testo"><b>Normativa diportistica</b><small>184 quesiti</small></span><span class="peso" aria-label="3 domande su 20 all'esame"><b>3</b> su 20</span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="#t"><span class="testo"><b>Colreg e segnalamento</b><small>247 quesiti</small></span><span class="peso" aria-label="2 domande su 20 all'esame"><b>2</b> su 20</span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="#t"><span class="testo"><b>Meteorologia</b><small>120 quesiti</small></span><span class="peso" aria-label="2 domande su 20 all'esame"><b>2</b> su 20</span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="#t"><span class="testo"><b>Teoria dello scafo</b><small>125 quesiti</small></span><span class="peso" aria-label="1 domanda su 20 all'esame"><b>1</b> su 20</span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="#t"><span class="testo"><b>Motori</b><small>104 quesiti</small></span><span class="peso" aria-label="1 domanda su 20 all'esame"><b>1</b> su 20</span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
     </ul>
     <p class="nota" style="margin-top:var(--s-12)">La vela ha 250 quesiti e una prova sua da 5 domande: la trovi in «Scegli un argomento».</p>
   </section>

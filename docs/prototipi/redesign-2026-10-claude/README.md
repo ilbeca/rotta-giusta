@@ -6,8 +6,13 @@ stanno nella scheda **I-29** di
 mock di **tutte e tre le direzioni**, la tavola che le mette a confronto, e le
 schermate: di oggi e dei mock.
 
+**Aggiornati il 25 ottobre** con il parere di ChatGPT sulla A
+(`docs/prototipi/redesign-2026-10-chatgpt/parere-su-A.md`, ramo `ui/main`): la
+versione «ridotta» della A, le stesse correzioni nelle altre due, e due
+schermate nuove per gli stati difficili. Che cosa è cambiato e perché, in I-29.
+
 Sono **mock**: HTML statici, non il sito. Nessun file di `site/` è stato
-toccato. Le tre direzioni hanno le stesse quattro schermate con **gli stessi
+toccato. Le tre direzioni hanno le stesse sei schermate con **gli stessi
 testi**, perché si confronti il volto e non il contenuto. I dati sono quelli
 veri della banca (1.722 quesiti, i pesi d'esame, il quesito 1.7.6-19), il resto
 è un esempio senza account.
@@ -17,19 +22,24 @@ veri della banca (1.722 quesiti, i pesi d'esame, il quesito 1.7.6-19), il resto
 | File | Che cosa mostra |
 |---|---|
 | [`direzioni.html`](direzioni.html) | Le tre direzioni affiancate, con i link ai loro mock, e la raccomandazione in fondo |
-| [`a-carta-nautica/`](a-carta-nautica/) | **A — La carta nautica**: `home.html`, `quiz.html`, `runner.html`, `riepilogo.html` |
-| [`b-plancia-di-notte/`](b-plancia-di-notte/) | **B — La plancia di notte**: le stesse quattro schermate |
-| [`c-quaderno-a-colori/`](c-quaderno-a-colori/) | **C — Il quaderno a colori**: le stesse quattro schermate |
+| [`a-carta-nautica/`](a-carta-nautica/) | **A — La carta nautica**, nella versione ridotta: le sei schermate |
+| [`b-plancia-di-notte/`](b-plancia-di-notte/) | **B — La plancia di notte**: le stesse sei schermate |
+| [`c-quaderno-a-colori/`](c-quaderno-a-colori/) | **C — Il quaderno a colori**: le stesse sei schermate |
 | [`sorgenti/`](sorgenti/) | Da dove sono composti: le quattro pagine comuni, `comune.css`, un `tema.css` e un'illustrazione per direzione, le icone, `build.py`, e i due script di cattura |
 
-Le quattro schermate di ogni direzione: `home.html`, la Home senza risposte;
-`quiz.html`, Allenati · Quiz; `runner.html`, la domanda 1.7.6-19 dopo una
-risposta sbagliata; `riepilogo.html`, un allenamento breve fermato dopo 2
-domande su 10.
+Le sei schermate di ogni direzione: `home.html`, la Home senza risposte;
+`quiz.html`, Allenati · Quiz; `preparazione.html`, l'allenamento breve con
+l'avviso «senza account» accanto a «Inizia»; `runner.html`, la domanda 1.7.6-19
+dopo una risposta sbagliata; `runner-figura.html`, la domanda più lunga con
+figura (1.5.3-103, base-829) prima di rispondere, quinta di 25;
+`riepilogo.html`, un allenamento breve concluso dopo 2 domande su 10. La figura
+è la 79 del decreto, incorporata nel file.
 
 Ogni HTML è **autoconsistente**: il carattere Manrope (licenza SIL OFL 1.1, il
 testo in `site/caratteri/OFL.txt`) è incorporato in base64, stile e icone sono
-nel file, nessuna risorsa da altri host. Si aprono con un doppio clic, e si
+nel file, nessuna risorsa da altri host. `sorgenti/misura-stati.mjs` misura la
+figura prima di rispondere (come T-11) e l'avviso accanto a «Inizia» (come
+T-12) in tutte e tre le direzioni. Si aprono con un doppio clic, e si
 adattano da 375 a 1280 px.
 
 Per rifarli dalle sorgenti, da questa cartella:
@@ -69,14 +79,17 @@ Prese con `sorgenti/cattura.mjs` dagli HTML di questa cartella, Chrome headless,
 24 ottobre 2026; tutte guardate. Su ognuna lo script ha misurato: nessuno
 sbordamento orizzontale, un solo `data-ruolo="principale"`, Manrope caricato;
 «Simula il quiz base» finisce fra 551 e 552 px a 375×812 e resta sopra la barra
-a 375×667 (603 px utili); «Avanti» resta nel primo schermo a 375×667.
+a 375×667 (603 px utili); «Avanti» resta nel primo schermo a 375×667. Nella
+domanda con figura, a 375×812, la figura sta intera fra 323 e 534 px, la domanda
+comincia a 124 e il centro della prima risposta è a 678; nella preparazione, a
+375×667, l'avviso finisce 12 px sopra «Inizia» e niente da toccare sta in mezzo.
 
 | Schermata | Che cosa mostra |
 |---|---|
 | [`schermate/direzioni-1280-intera.png`](schermate/direzioni-1280-intera.png) | Le tre direzioni affiancate, con riferimenti, che cosa cambia per chi studia, il rischio, e la raccomandazione dopo |
 | [`schermate/direzioni-375-intera.png`](schermate/direzioni-375-intera.png) | Le stesse, una sotto l'altra al telefono |
 
-### A — La carta nautica: fondo caldo, reticolo, bordo a scala, la rotta magenta
+### A — La carta nautica, ridotta: fondo caldo, la carta disegnata con il bordo a scala, il magenta solo nel disegno
 
 | Schermata | Che cosa mostra |
 |---|---|
@@ -88,9 +101,13 @@ a 375×667 (603 px utili); «Avanti» resta nel primo schermo a 375×667.
 | [`a-carta-nautica/schermate/quiz-375-intera.png`](a-carta-nautica/schermate/quiz-375-intera.png) | Allenati · Quiz intera al telefono |
 | [`a-carta-nautica/schermate/quiz-1280.png`](a-carta-nautica/schermate/quiz-1280.png) | Allenati · Quiz al computer, primo schermo |
 | [`a-carta-nautica/schermate/quiz-1280-intera.png`](a-carta-nautica/schermate/quiz-1280-intera.png) | Allenati · Quiz intera al computer |
-| [`a-carta-nautica/schermate/runner-375.png`](a-carta-nautica/schermate/runner-375.png) | La domanda dopo un errore, a 375×812 |
+| [`a-carta-nautica/schermate/preparazione-375x667.png`](a-carta-nautica/schermate/preparazione-375x667.png) | La preparazione su un telefono piccolo: l'avviso accanto a «Inizia», sopra la barra |
+| [`a-carta-nautica/schermate/preparazione-1280.png`](a-carta-nautica/schermate/preparazione-1280.png) | La preparazione al computer |
+| [`a-carta-nautica/schermate/runner-375.png`](a-carta-nautica/schermate/runner-375.png) | La domanda dopo un errore, a 375×812: la prima tappa resta la corrente finché non premi «Avanti» |
 | [`a-carta-nautica/schermate/runner-375x667.png`](a-carta-nautica/schermate/runner-375x667.png) | La stessa su un telefono piccolo: «Avanti» nel primo schermo |
 | [`a-carta-nautica/schermate/runner-1280.png`](a-carta-nautica/schermate/runner-1280.png) | La domanda al computer |
+| [`a-carta-nautica/schermate/runner-figura-375.png`](a-carta-nautica/schermate/runner-figura-375.png) | La domanda più lunga con figura, prima di rispondere: domanda, figura intera e prima risposta nel primo schermo; la traccia compatta «5 di 25» |
+| [`a-carta-nautica/schermate/runner-figura-1280.png`](a-carta-nautica/schermate/runner-figura-1280.png) | La stessa al computer |
 | [`a-carta-nautica/schermate/riepilogo-375-intera.png`](a-carta-nautica/schermate/riepilogo-375-intera.png) | Il riepilogo intero al telefono |
 | [`a-carta-nautica/schermate/riepilogo-1280.png`](a-carta-nautica/schermate/riepilogo-1280.png) | Il riepilogo al computer |
 
@@ -106,9 +123,13 @@ a 375×667 (603 px utili); «Avanti» resta nel primo schermo a 375×667.
 | [`b-plancia-di-notte/schermate/quiz-375-intera.png`](b-plancia-di-notte/schermate/quiz-375-intera.png) | Allenati · Quiz intera al telefono |
 | [`b-plancia-di-notte/schermate/quiz-1280.png`](b-plancia-di-notte/schermate/quiz-1280.png) | Allenati · Quiz al computer, primo schermo |
 | [`b-plancia-di-notte/schermate/quiz-1280-intera.png`](b-plancia-di-notte/schermate/quiz-1280-intera.png) | Allenati · Quiz intera al computer |
-| [`b-plancia-di-notte/schermate/runner-375.png`](b-plancia-di-notte/schermate/runner-375.png) | La domanda dopo un errore, a 375×812 |
+| [`b-plancia-di-notte/schermate/preparazione-375x667.png`](b-plancia-di-notte/schermate/preparazione-375x667.png) | La preparazione su un telefono piccolo: l'avviso accanto a «Inizia», sopra la barra |
+| [`b-plancia-di-notte/schermate/preparazione-1280.png`](b-plancia-di-notte/schermate/preparazione-1280.png) | La preparazione al computer |
+| [`b-plancia-di-notte/schermate/runner-375.png`](b-plancia-di-notte/schermate/runner-375.png) | La domanda dopo un errore, a 375×812: la prima tappa resta la corrente finché non premi «Avanti» |
 | [`b-plancia-di-notte/schermate/runner-375x667.png`](b-plancia-di-notte/schermate/runner-375x667.png) | La stessa su un telefono piccolo: «Avanti» nel primo schermo |
 | [`b-plancia-di-notte/schermate/runner-1280.png`](b-plancia-di-notte/schermate/runner-1280.png) | La domanda al computer |
+| [`b-plancia-di-notte/schermate/runner-figura-375.png`](b-plancia-di-notte/schermate/runner-figura-375.png) | La domanda più lunga con figura, prima di rispondere: domanda, figura intera e prima risposta nel primo schermo; la traccia compatta «5 di 25» |
+| [`b-plancia-di-notte/schermate/runner-figura-1280.png`](b-plancia-di-notte/schermate/runner-figura-1280.png) | La stessa al computer |
 | [`b-plancia-di-notte/schermate/riepilogo-375-intera.png`](b-plancia-di-notte/schermate/riepilogo-375-intera.png) | Il riepilogo intero al telefono |
 | [`b-plancia-di-notte/schermate/riepilogo-1280.png`](b-plancia-di-notte/schermate/riepilogo-1280.png) | Il riepilogo al computer |
 
@@ -124,9 +145,13 @@ a 375×667 (603 px utili); «Avanti» resta nel primo schermo a 375×667.
 | [`c-quaderno-a-colori/schermate/quiz-375-intera.png`](c-quaderno-a-colori/schermate/quiz-375-intera.png) | Allenati · Quiz intera al telefono |
 | [`c-quaderno-a-colori/schermate/quiz-1280.png`](c-quaderno-a-colori/schermate/quiz-1280.png) | Allenati · Quiz al computer, primo schermo |
 | [`c-quaderno-a-colori/schermate/quiz-1280-intera.png`](c-quaderno-a-colori/schermate/quiz-1280-intera.png) | Allenati · Quiz intera al computer |
-| [`c-quaderno-a-colori/schermate/runner-375.png`](c-quaderno-a-colori/schermate/runner-375.png) | La domanda dopo un errore, a 375×812 |
+| [`c-quaderno-a-colori/schermate/preparazione-375x667.png`](c-quaderno-a-colori/schermate/preparazione-375x667.png) | La preparazione su un telefono piccolo: l'avviso accanto a «Inizia», sopra la barra |
+| [`c-quaderno-a-colori/schermate/preparazione-1280.png`](c-quaderno-a-colori/schermate/preparazione-1280.png) | La preparazione al computer |
+| [`c-quaderno-a-colori/schermate/runner-375.png`](c-quaderno-a-colori/schermate/runner-375.png) | La domanda dopo un errore, a 375×812: la prima tappa resta la corrente finché non premi «Avanti» |
 | [`c-quaderno-a-colori/schermate/runner-375x667.png`](c-quaderno-a-colori/schermate/runner-375x667.png) | La stessa su un telefono piccolo: «Avanti» nel primo schermo |
 | [`c-quaderno-a-colori/schermate/runner-1280.png`](c-quaderno-a-colori/schermate/runner-1280.png) | La domanda al computer |
+| [`c-quaderno-a-colori/schermate/runner-figura-375.png`](c-quaderno-a-colori/schermate/runner-figura-375.png) | La domanda più lunga con figura, prima di rispondere: domanda, figura intera e prima risposta nel primo schermo; la traccia compatta «5 di 25» |
+| [`c-quaderno-a-colori/schermate/runner-figura-1280.png`](c-quaderno-a-colori/schermate/runner-figura-1280.png) | La stessa al computer |
 | [`c-quaderno-a-colori/schermate/riepilogo-375-intera.png`](c-quaderno-a-colori/schermate/riepilogo-375-intera.png) | Il riepilogo intero al telefono |
 | [`c-quaderno-a-colori/schermate/riepilogo-1280.png`](c-quaderno-a-colori/schermate/riepilogo-1280.png) | Il riepilogo al computer |
 
@@ -134,4 +159,5 @@ a 375×667 (603 px utili); «Avanti» resta nel primo schermo a 375×667.
 
 T-12 e T-13 misurano la pagina vera, non questi file; nessuna persona li ha
 visti; Safari e il gesto vero; gli stati con l'account, i Segnali, il Carteggio,
-Esame e Progressi, che non hanno un mock in nessuna direzione.
+Esame, Progressi, la revisione e il salvataggio fallito, che non hanno un mock in
+nessuna direzione; la domanda dopo lo scorrimento a 375×667.

@@ -223,6 +223,31 @@ selezione o contabilità. Versione 0.34.0 invariata.
   schermate dei mock più le 2 della tavola e le 16 di oggi, citate nel README.
   In I-29 la raccomandazione (A) sta dopo i tre mock.
 
+### Progettato — I-29: la A ridotta, dopo il parere di ChatGPT
+
+- **Perché.** All'autore piace la A e ha chiesto il giudizio di ChatGPT
+  (`parere-su-A.md` su `ui/main`, `f40eadc`): sceglie anche lui la A, con meno
+  segni durante lo studio, e trova errori veri nei mock e nella scheda. Entrano
+  tutti, in tutte e tre le direzioni perché il confronto resti alla pari.
+- **Nei mock.** Il magenta esce da link, barra e avanzamento, che prendono il
+  colore dei comandi; il reticolo resta solo nella carta disegnata, la doppia
+  cornice diventa un bordo semplice, il bordo a scala una volta. La domanda
+  corrente resta cerchiata finché non si preme «Avanti»; con 25 domande una
+  traccia compatta e «5 di 25». Il riepilogo perde lo zigzag, che sembrava un
+  andamento, e «fermato a metà»; il peso d'esame si legge «4 su 20» invece di
+  pallini che sembravano un voto; «Crea un account» e «Continua senza account»
+  sono pulsanti. Due schermate nuove per direzione: la preparazione con l'avviso
+  «senza account» 12 px sopra «Inizia» a 375×667, e la domanda più lunga con
+  figura (base-829), con la figura intera fra 323 e 534 px e il centro della
+  prima risposta a 678 a 375×812 (`sorgenti/misura-stati.mjs`).
+- **Nella scheda.** Corretti il «90 %» (una stima, non una misura), «D-16 +
+  D-23» (D-23 parla degli spazi), il rapporto fra titolo e testo preso come
+  soglia, «sembra un gioco» detto della C; l'inventario della scala dichiarato
+  per intero. Nuova sezione sul parere e una decisione in più: link navy o
+  magenta.
+- 18 mock guardati a 375×812, 375×667 e 1280×800: un pulsante principale,
+  sbordamento 0. 51 schermate dei mock e 2 della tavola, citate nel README.
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la

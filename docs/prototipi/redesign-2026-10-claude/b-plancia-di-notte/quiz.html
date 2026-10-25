@@ -12,11 +12,13 @@
   /* La rotta: il magenta delle carte (settori dei fari, rotte raccomandate). Solo segno, mai azione */
   --rotta:#B0176F;--rotta-chiara:#F7E3EE;
   --ok:#126832;--ok-chiaro:#E3F2E7;--ko:#A4261D;--ko-chiaro:#FBE9E6;
-  --t-12:12px;--t-14:14px;--t-16:16px;--t-20:20px;--t-24:24px;--t-32:32px;--t-44:44px;--t-64:64px;
+  --t-12:12px;--t-14:14px;--t-16:16px;--t-20:20px;--t-24:24px;--t-32:32px;--t-44:44px;--t-56:56px;
   --s-4:4px;--s-8:8px;--s-12:12px;--s-16:16px;--s-24:24px;--s-32:32px;--s-48:48px;--s-64:64px;
   --r:12px;--colonna:1120px;
   /* Ruoli: l'azione piena, la voce attiva, una superficie forte */
   --azione:var(--ink);--su-azione:#fff;--attivo:var(--ink);--su-attivo:#fff;--forte:var(--ink);--su-forte:#fff;--campo:#fff;--marchio:#0B1F33;
+  /* I link sono del colore dei comandi, non del segno: il magenta non si tocca */
+  --link:var(--ink);
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
@@ -32,7 +34,7 @@ p{margin:0}
 .testata-in{max-width:var(--colonna);margin:0 auto;display:flex;align-items:center;gap:var(--s-16);height:64px;padding:0 var(--s-16)}
 .marchio{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:800;letter-spacing:.06em;font-size:var(--t-14)}
 .marchio svg{width:34px;height:34px}
-.marchio span b{font-weight:800}.marchio span{font-weight:500}
+.marchio span b{font-weight:800}.marchio span{font-weight:600}
 .nav-alta{display:none;margin-left:auto;gap:var(--s-4)}
 .nav-alta a{display:flex;align-items:center;gap:8px;height:44px;padding:0 var(--s-16);border-radius:999px;text-decoration:none;font-weight:600;font-size:var(--t-14);color:var(--ink-2)}
 .nav-alta a[aria-current]{background:var(--attivo);color:var(--su-attivo)}
@@ -43,7 +45,7 @@ p{margin:0}
 .barra{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--carta);border-top:1px solid var(--filo);display:grid;grid-template-columns:repeat(4,1fr);padding-bottom:env(safe-area-inset-bottom)}
 .barra a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:64px;text-decoration:none;font-size:var(--t-12);font-weight:600;color:var(--ink-3);position:relative}
 .barra a[aria-current]{color:var(--ink)}
-.barra a[aria-current]::before{content:"";position:absolute;top:-1px;left:28%;right:28%;height:3px;border-radius:0 0 3px 3px;background:var(--rotta)}
+.barra a[aria-current]::before{content:"";position:absolute;top:-1px;left:28%;right:28%;height:3px;border-radius:0 0 3px 3px;background:var(--attivo)}
 main{max-width:var(--colonna);margin:0 auto;padding:var(--s-24) var(--s-16) 112px}
 
 /* Il bordo a scala della carta nautica: la firma */
@@ -51,10 +53,9 @@ main{max-width:var(--colonna);margin:0 auto;padding:var(--s-24) var(--s-16) 112p
 .scala.v{width:8px;height:auto}
 
 /* Il riquadro «carta»: reticolo di meridiani e paralleli, cornice doppia */
-.carta{position:relative;background:
-  linear-gradient(var(--filo-2) 1px,transparent 1px) 0 0/100% 56px,
-  linear-gradient(90deg,var(--filo-2) 1px,transparent 1px) 0 0/56px 100%,
-  var(--carta-2);border:1px solid var(--ink);outline:1px solid var(--ink);outline-offset:3px;border-radius:2px}
+/* Il riquadro che conta: carta più scura, un bordo semplice. Il reticolo sta solo
+   nell'illustrazione, mai dietro testo da leggere (parere di ChatGPT, 24 ottobre) */
+.carta{position:relative;background:var(--carta-2);border:1px solid var(--filo);border-radius:var(--r)}
 
 .occhiello{font-size:var(--t-12);font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
 .occhiello.rotta{color:var(--rotta)}
@@ -64,8 +65,10 @@ main{max-width:var(--colonna);margin:0 auto;padding:var(--s-24) var(--s-16) 112p
 .btn-pieno{background:var(--azione);color:var(--su-azione);box-shadow:0 1px 0 #0003,0 6px 16px -8px #0B1F3399}
 .btn-pieno .ico{stroke:var(--su-azione)}
 .btn-largo{width:100%}
-.link-freccia{display:inline-flex;align-items:center;gap:6px;min-height:44px;font-weight:700;text-decoration:none;color:var(--ink);border-bottom:2px solid var(--rotta);padding-bottom:2px;line-height:1.2}
-.link-freccia .ico{width:18px;height:18px;stroke:var(--rotta)}
+.link-freccia{display:inline-flex;align-items:center;gap:6px;min-height:44px;font:700 var(--t-16)/1.2 Manrope,sans-serif;text-decoration:none;color:var(--link);border:0;border-bottom:2px solid var(--link);padding:0 0 2px;background:none;cursor:pointer}
+.link-freccia .ico{width:18px;height:18px;stroke:var(--link)}
+/* Un'azione resta un pulsante anche quando ha l'aspetto leggero di un link */
+button.link-freccia{border-radius:0}
 
 /* Elenchi: righe, non pulsanti pallidi */
 .righe{list-style:none;margin:0;padding:0;border-top:1px solid var(--filo)}
@@ -111,11 +114,10 @@ h1.pagina{font-size:var(--t-32);font-weight:800}
 .cerca input{flex:1;min-width:0;height:52px;border:1.5px solid var(--ink-3);border-radius:var(--r);background:var(--campo);padding:0 var(--s-16);font:500 var(--t-16) Manrope,sans-serif;color:var(--ink)}
 .cerca button{width:52px;height:52px;border-radius:var(--r);border:1.5px solid var(--ink);background:transparent;display:grid;place-items:center;color:var(--ink)}
 .temi .testo b{font-weight:700}
-.peso{display:flex;gap:3px;align-items:center;flex:none}
-.peso i{width:8px;height:8px;border-radius:50%;background:var(--rotta)}
-.peso i.v{background:transparent;border:1.5px solid var(--filo)}
-.peso-et{font-size:var(--t-12);color:var(--ink-3);font-weight:600;text-align:right;min-width:5.5em}
-.legenda{font-size:var(--t-14);color:var(--ink-3);margin-bottom:var(--s-8);display:flex;align-items:center;gap:6px}
+/* Il peso all'esame in parole, su ogni riga: non è un voto su quattro */
+.peso{flex:none;white-space:nowrap;font-size:var(--t-14);color:var(--ink-2)}
+.peso b{font-size:var(--t-20);font-weight:800;color:var(--ink)}
+.temi .sotto{font-size:var(--t-14);color:var(--ink-2);margin:calc(var(--s-8) * -1) 0 var(--s-12)}
 @media (min-width:900px){
   h1.pagina{font-size:var(--t-44)}
   .segmenti{max-width:520px}
@@ -142,13 +144,11 @@ body{color-scheme:dark}
 .occhiello{color:var(--ink-3)}
 /* Il riquadro: uno schermo di bordo, con i cerchi del radar in un angolo */
 .carta{background:radial-gradient(circle at 100% 0,transparent 0 60px,#5CC8E81A 61px 62px,transparent 63px 110px,#5CC8E81A 111px 112px,transparent 113px 160px,#5CC8E812 161px 162px,transparent 163px),var(--carta-2);border:1px solid #1E3A52;outline:0;border-radius:18px}
-.scala,.figura-grande::before{display:none!important}
+.scala,.figura-grande::before,.striscia::before{display:none!important}
 .striscia,.figura-grande{border:1px solid #1E3A52!important;outline:0!important;border-radius:18px!important}
 .scandaglio b{color:#F5F9FB;font-weight:700;letter-spacing:0}
 .nota-carta{border-left-color:var(--terra-scura);border-radius:0 14px 14px 0}
-.link-freccia{border-bottom-color:var(--rotta)}
 .righe .ico-tondo{background:var(--acqua);color:var(--rotta)}
-.peso i{background:var(--rotta);box-shadow:0 0 6px #5CC8E8AA}
 .barra a[aria-current]::before{background:var(--azione)}
 .testata{border-bottom-color:#1E3A52}
 /* L'avanzamento come una fila di luci */
@@ -156,7 +156,7 @@ body{color-scheme:dark}
 .tappa{width:12px;height:12px;border:0;background:#1E3A52}
 .tappa.ko{background:var(--ko);box-shadow:0 0 10px var(--ko)}
 .tappa.ok{background:var(--ok);box-shadow:0 0 10px var(--ok)}
-.tappa.ora{background:var(--rotta);box-shadow:0 0 0 4px #5CC8E833,0 0 12px var(--rotta)}
+.tappa.ko.ora{box-shadow:0 0 0 3px var(--carta),0 0 0 5px var(--ink),0 0 10px var(--ko)}
 .risposta{border-color:#1E3A52}
 .chip{border-color:var(--ink-3);color:var(--ink)}
 .cerca button{border-color:var(--ink-3)}
@@ -217,16 +217,16 @@ body{color-scheme:dark}
   <section class="blocco temi">
     <p class="occhiello">Gli argomenti dei quiz base</p>
     <h2>Dove pesa di più all'esame</h2>
-    <p class="legenda"><span class="peso"><i></i></span> = una domanda nella prova da 20</p>
+    <p class="sotto">Accanto a ogni argomento, quante delle 20 domande della prova ne parlano.</p>
     <ul class="righe">
-      <li><a href="#t"><span class="testo"><b>Navigazione cartografica</b><small>322 quesiti</small></span><span class="peso" aria-label="4 domande all'esame"><i></i><i></i><i></i><i></i></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
-      <li><a href="#t"><span class="testo"><b>Manovra e condotta</b><small>155 quesiti</small></span><span class="peso" aria-label="4 domande all'esame"><i></i><i></i><i></i><i></i></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
-      <li><a href="#t"><span class="testo"><b>Sicurezza della navigazione</b><small>215 quesiti</small></span><span class="peso" aria-label="3 domande all'esame"><i></i><i></i><i></i><i class="v"></i></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
-      <li><a href="#t"><span class="testo"><b>Normativa diportistica</b><small>184 quesiti</small></span><span class="peso" aria-label="3 domande all'esame"><i></i><i></i><i></i><i class="v"></i></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
-      <li><a href="#t"><span class="testo"><b>Colreg e segnalamento</b><small>247 quesiti</small></span><span class="peso" aria-label="2 domande all'esame"><i></i><i></i><i class="v"></i><i class="v"></i></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
-      <li><a href="#t"><span class="testo"><b>Meteorologia</b><small>120 quesiti</small></span><span class="peso" aria-label="2 domande all'esame"><i></i><i></i><i class="v"></i><i class="v"></i></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
-      <li><a href="#t"><span class="testo"><b>Teoria dello scafo</b><small>125 quesiti</small></span><span class="peso" aria-label="1 domanda all'esame"><i></i><i class="v"></i><i class="v"></i><i class="v"></i></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
-      <li><a href="#t"><span class="testo"><b>Motori</b><small>104 quesiti</small></span><span class="peso" aria-label="1 domanda all'esame"><i></i><i class="v"></i><i class="v"></i><i class="v"></i></span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="#t"><span class="testo"><b>Navigazione cartografica</b><small>322 quesiti</small></span><span class="peso" aria-label="4 domande su 20 all'esame"><b>4</b> su 20</span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="#t"><span class="testo"><b>Manovra e condotta</b><small>155 quesiti</small></span><span class="peso" aria-label="4 domande su 20 all'esame"><b>4</b> su 20</span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="#t"><span class="testo"><b>Sicurezza della navigazione</b><small>215 quesiti</small></span><span class="peso" aria-label="3 domande su 20 all'esame"><b>3</b> su 20</span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="#t"><span class="testo"><b>Normativa diportistica</b><small>184 quesiti</small></span><span class="peso" aria-label="3 domande su 20 all'esame"><b>3</b> su 20</span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="#t"><span class="testo"><b>Colreg e segnalamento</b><small>247 quesiti</small></span><span class="peso" aria-label="2 domande su 20 all'esame"><b>2</b> su 20</span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="#t"><span class="testo"><b>Meteorologia</b><small>120 quesiti</small></span><span class="peso" aria-label="2 domande su 20 all'esame"><b>2</b> su 20</span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="#t"><span class="testo"><b>Teoria dello scafo</b><small>125 quesiti</small></span><span class="peso" aria-label="1 domanda su 20 all'esame"><b>1</b> su 20</span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
+      <li><a href="#t"><span class="testo"><b>Motori</b><small>104 quesiti</small></span><span class="peso" aria-label="1 domanda su 20 all'esame"><b>1</b> su 20</span><svg class="ico freccia"><use href="#i-chevron"/></svg></a></li>
     </ul>
     <p class="nota" style="margin-top:var(--s-12)">La vela ha 250 quesiti e una prova sua da 5 domande: la trovi in «Scegli un argomento».</p>
   </section>

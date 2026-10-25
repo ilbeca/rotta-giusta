@@ -9,9 +9,6 @@
 .diario .scandagli{justify-content:space-between}
 .scandaglio .ico{width:20px;height:20px;stroke-width:2.5;vertical-align:-2px;margin-right:4px}
 .scandaglio.ok b{color:var(--ok)}.scandaglio.ko b{color:var(--ko)}.scandaglio.no b{color:var(--ink-3)}
-/* La traccia: le dieci tappe come le hai percorse */
-.traccia{margin-top:var(--s-24);display:block;width:100%;height:auto}
-.traccia-nota{font-size:var(--t-12);color:var(--ink-3);margin-top:var(--s-4)}
 .azioni{margin-top:var(--s-24);display:grid;gap:var(--s-16)}
 .altre{display:flex;flex-wrap:wrap;gap:var(--s-8) var(--s-24)}
 .avviso{font-size:var(--t-14);color:var(--ink-3);margin-top:var(--s-8)}
@@ -26,7 +23,7 @@
 @@TESTATA:home@@
 <main>
 <div class="rp">
-  <p class="occhiello rotta">Allenamento breve · fermato a metà</p>
+  <p class="occhiello rotta">Allenamento breve</p>
   <h1>Hai risposto a 2 domande su 10.</h1>
   <p class="sotto">Le 8 che non hai affrontato non contano come errori.</p>
 
@@ -36,13 +33,6 @@
       <div class="scandaglio ko"><b><svg class="ico"><use href="#i-ko"/></svg>1</b><span>sbagliata</span></div>
       <div class="scandaglio no"><b>8</b><span>non affrontate</span></div>
     </div>
-    <svg class="traccia" viewBox="0 0 320 44" aria-hidden="true">
-      <path d="M8 30 40 14 72 30" fill="none" style="stroke:var(--rotta)" stroke-width="2.5" stroke-dasharray="6 5" stroke-linecap="round"/>
-      <path d="M72 30 104 14 136 30 168 14 200 30 232 14 264 30 296 14 312 22" fill="none" style="stroke:var(--filo)" stroke-width="2" stroke-dasharray="3 6" stroke-linecap="round"/>
-      <circle cx="8" cy="30" r="6" style="fill:var(--ok)"/><circle cx="40" cy="14" r="6" style="fill:var(--ko)"/>
-      <g style="fill:var(--carta);stroke:var(--filo)" stroke-width="2"><circle cx="72" cy="30" r="5"/><circle cx="104" cy="14" r="5"/><circle cx="136" cy="30" r="5"/><circle cx="168" cy="14" r="5"/><circle cx="200" cy="30" r="5"/><circle cx="232" cy="14" r="5"/><circle cx="264" cy="30" r="5"/><circle cx="296" cy="14" r="5"/></g>
-    </svg>
-    <p class="traccia-nota">La tua traccia: verde giusta, rossa sbagliata, vuota non affrontata.</p>
   </section>
 
   <div class="azioni">
@@ -58,7 +48,7 @@
     <div>
       <h2>Vuoi conservarle?</h2>
       <p>Con un account ritrovi queste risposte quando torni, anche da un altro telefono, e vedi i Progressi.</p>
-      <div class="altre"><a class="link-freccia" href="#crea">Crea un account<svg class="ico"><use href="#i-freccia"/></svg></a><a class="link-freccia" href="#continua" style="border-bottom-color:var(--filo)">Continua senza account</a></div>
+      <div class="altre"><button class="link-freccia" type="button">Crea un account<svg class="ico"><use href="#i-freccia"/></svg></button><button class="link-freccia" type="button" style="border-bottom-color:var(--filo)">Continua senza account</button></div>
     </div>
   </section>
 </div>

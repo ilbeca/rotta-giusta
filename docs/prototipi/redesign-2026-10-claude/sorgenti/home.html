@@ -6,7 +6,8 @@
 .eroe{display:grid;gap:var(--s-24)}
 .eroe h1{font-size:var(--t-32);font-weight:800;margin-top:var(--s-8)}
 .eroe .lead{font-size:var(--t-16);color:var(--ink-2);max-width:34em}
-.striscia{height:96px;overflow:hidden;border:1px solid var(--ink);border-radius:2px}
+.striscia{position:relative;height:96px;overflow:hidden;border:1px solid var(--ink);border-radius:2px}
+.striscia::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;z-index:1;border-bottom:1px solid var(--ink);background:repeating-linear-gradient(90deg,var(--ink) 0 16px,var(--carta) 16px 32px)}
 .striscia .illustrazione{display:block;width:100%;height:100%}
 .prova{padding:var(--s-24) var(--s-16) var(--s-16);display:grid;gap:var(--s-16)}
 .prova .scandagli{gap:var(--s-24)}
@@ -22,11 +23,11 @@
 .gratis{font-size:var(--t-14);color:var(--ink-3)}
 @media (min-width:900px){
   .eroe{grid-template-columns:6fr 5fr;gap:var(--s-48);align-items:center}
-  .eroe h1{font-size:56px;line-height:1.04}
+  .eroe h1{font-size:var(--t-56);line-height:1.04}
   .eroe .lead{font-size:var(--t-20)}
   .striscia{display:none}
   .figura-grande::before{content:'';display:block;height:8px;border-bottom:1px solid var(--ink);background:repeating-linear-gradient(90deg,var(--ink) 0 20px,var(--carta) 20px 40px)}
-  .figura-grande{display:block;border:1px solid var(--ink);outline:1px solid var(--ink);outline-offset:3px;border-radius:2px;overflow:hidden}
+  .figura-grande{display:block;border:1px solid var(--ink);border-radius:2px;overflow:hidden}
   .figura-grande .illustrazione{display:block;width:100%;height:auto}
   .prova{padding:var(--s-32)}
   .prova .scandaglio b{font-size:var(--t-44)}

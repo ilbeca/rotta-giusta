@@ -15,17 +15,17 @@ body{background:var(--carta)}
 /* La rotta come avanzamento: dieci tappe */
 .rotta{position:relative;display:flex;justify-content:space-between;align-items:center;margin-top:var(--s-8);height:20px}
 .rotta::before{content:"";position:absolute;left:8px;right:8px;top:50%;border-top:2px dashed var(--filo)}
-.rotta::after{content:"";position:absolute;left:8px;width:calc((100% - 16px) / 9 * 1);top:50%;border-top:2px dashed var(--rotta)}
 .tappa{position:relative;z-index:1;width:14px;height:14px;border-radius:50%;background:var(--carta);border:2px solid var(--filo)}
 .tappa.ko{border-color:var(--ko);background:var(--ko)}
 .tappa.ok{border-color:var(--ok);background:var(--ok)}
-.tappa.ora{border-color:var(--rotta);background:var(--carta);box-shadow:0 0 0 4px var(--rotta-chiara)}
+/* La domanda corrente: un anello del colore dei comandi, sulla domanda che stai leggendo */
+.tappa.ora{box-shadow:0 0 0 3px var(--carta),0 0 0 5px var(--ink)}
 .r-main{max-width:760px;margin:0 auto;padding:var(--s-24) var(--s-16) 136px}
 .meta{display:flex;flex-wrap:wrap;gap:4px var(--s-12);align-items:baseline}
-.numero{font-weight:800;font-size:var(--t-14);color:var(--rotta);letter-spacing:.02em}
-.domanda{font-size:22px;font-weight:700;line-height:1.3;letter-spacing:-.01em;margin:var(--s-12) 0 var(--s-24)}
+.numero{font-weight:700;font-size:var(--t-14);color:var(--ink-2);letter-spacing:.02em}
+.domanda{font-size:var(--t-20);font-weight:700;line-height:1.45;letter-spacing:-.01em;margin:var(--s-12) 0 var(--s-24)}
 .risposte{display:grid;gap:var(--s-12);list-style:none;padding:0;margin:0}
-.risposta{display:flex;gap:var(--s-12);align-items:flex-start;padding:var(--s-16);border-radius:var(--r);border:1.5px solid var(--filo);background:var(--campo);font-size:var(--t-16);line-height:1.4}
+.risposta{display:flex;gap:var(--s-12);align-items:flex-start;padding:var(--s-16);border-radius:var(--r);border:1.5px solid var(--filo);background:var(--campo);font-size:var(--t-16);line-height:1.45}
 .tasto{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--ink-3);display:grid;place-items:center;font-weight:800;font-size:var(--t-14);flex:none}
 .risposta .stato{display:block;font-size:var(--t-12);font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
 .risposta.tua{border-color:var(--ko);background:var(--ko-chiaro)}
@@ -47,7 +47,7 @@ body{background:var(--carta)}
 .esito{display:flex;align-items:center;gap:var(--s-8);font-weight:800;color:var(--ko);font-size:var(--t-16);margin-bottom:var(--s-8)}
 .esito .ico{width:22px;height:22px;stroke-width:2.5}
 @media (min-width:900px){
-  .domanda{font-size:28px}
+  .domanda{font-size:var(--t-24)}
   .r-main{padding-top:var(--s-48)}
 }
 @@TEMA@@
@@ -61,7 +61,7 @@ body{background:var(--carta)}
     <span class="pos">1 <span>di 10</span></span>
   </div>
   <div class="rotta" aria-label="Domanda 1 di 10: sbagliata">
-    <i class="tappa ko"></i><i class="tappa ora"></i><i class="tappa"></i><i class="tappa"></i><i class="tappa"></i><i class="tappa"></i><i class="tappa"></i><i class="tappa"></i><i class="tappa"></i><i class="tappa"></i>
+    <i class="tappa ko ora"></i><i class="tappa"></i><i class="tappa"></i><i class="tappa"></i><i class="tappa"></i><i class="tappa"></i><i class="tappa"></i><i class="tappa"></i><i class="tappa"></i><i class="tappa"></i>
   </div>
 </div></header>
 <main class="r-main">
