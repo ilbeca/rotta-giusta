@@ -235,6 +235,33 @@ al posto dell'autore e nessun codice del sito cambia.
   domande lunghe e stati con account. Versione invariata, niente push.
 
 
+### Progettato — Il mock ChatGPT della Carta nautica
+
+Il parere sulla A diventa una proposta navigabile in
+`docs/prototipi/redesign-2026-10-chatgpt/carta-nautica/`: carta illustrata nella
+Home, numeri leggibili, argomenti su righe, avviso vicino a Inizia e runner
+senza reticolo. Il mock permette di confrontare l'identità durante lo studio,
+non soltanto sulla Home: include preparazione, domanda breve, lunga e con
+figura, correzione e riepilogo. Una sola domanda dimostrativa, dichiarata;
+nessun account, salvataggio o selezione reale. La simulazione resta inattiva.
+
+- Sette HTML, **36 schermate** a 375×812, 375×667 e 1280×800, inclusi gli
+  stati di risposta, scorrimento e tastiera. **28 visite** anche a 320 e
+  640 px senza overflow; **78 controlli** del mock passati e **882 campioni**
+  di contrasto testo, minimo **5,05:1**. Marchio e Manrope conservati, carta
+  SVG originale, tre quesiti e una figura copiati invariati dalla banca.
+- La revisione indipendente ha trovato Termina che azzerava il riepilogo dopo
+  una risposta: corretto e verificato prima della scelta, dopo corretta e
+  dopo errata. Verdict finale favorevole alla consegna del mock. Gli **8
+  warning** del detector sono motivati in `verifiche.md`, non nascosti.
+- Suite sul canonico invariato: motore **215/219** (4 salti previsti), dati
+  **225**, interfaccia **3.849**, specifica **1.096**, server **89/89** con
+  Node 25.3.0 e **89/89** con Node 24.22.0 LTS, archivio ufficiale verificato
+  contro SHASUMS256. Guardiano e documentazione superati.
+- Nessuna approvazione di nuove regole o priorità di prodotto; nessuna prova
+  con persone, Safari o telefoni fisici. Sito e versione invariati, niente push.
+
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la
