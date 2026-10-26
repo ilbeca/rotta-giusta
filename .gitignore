@@ -10,6 +10,12 @@ __pycache__/
 # Un archivio di risposte scaricato dall'app per provarla: e' personale.
 *progressi*.json
 
+# I file di lavoro delle skill di disegno: le analisi e la cache di impeccable,
+# le fotografie e i report di taste. Nel repo entra solo il README di analisi,
+# con i punteggi trascritti (docs/procedure-disegno.md, §4 e §7).
+.impeccable/
+.taste-skill/
+
 # I worktree che l'app desktop di Claude Code crea per ogni sessione. Stanno
 # dentro il repo per default, e un `git add -A` dal checkout principale li
 # committerebbe interi. I worktree di Codex stanno fuori ($CODEX_HOME).

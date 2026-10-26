@@ -2521,6 +2521,49 @@ patente» (diportisti, uscite), che è un prodotto diverso.
 **Stato.** Sospesa ma non persa: l'autore la propone alle scuole nautiche, senza
 una risposta a breve.
 
+**Il richiamo per le scuole (26 ottobre 2026).** L'autore, nell'intervista per
+il `PRODUCT.md`: le scuole sono un pubblico come chi consiglia il sito, e sul
+sito ci vuole un piccolo richiamo che dica che ci sono funzionalità per le
+scuole e inviti a contattarlo. **Il limite, da dire prima del testo:** oggi
+funzionalità per le scuole non ce ne sono, perché la classe è sospesa. Un
+richiamo che le desse per fatte sarebbe la promessa senza prodotto che
+`filosofia.md` esclude; il testo le offre come qualcosa da costruire con chi
+risponde, ed è anche la prova «a costo zero» della domanda scritta sopra.
+
+*Come lo fanno gli altri*, cercato il 26 ottobre 2026:
+- le app italiane per le autoscuole legano lo studente alla sua scuola con un
+  codice d'attivazione, mostrano alla scuola i risultati dei quiz, e mettono in
+  contatto con l'insegnante: SIDA ([patente.it](https://www.patente.it/ecom.dll/noAjax?idm=941),
+  anche per il nautico, con il registro degli allievi), iPatente
+  ([App Store](https://apps.apple.com/app/id1408776716)), PatenteGo; per la
+  nautica AppGrade attiva i quiz D1 all'iscrizione dell'allievo
+  ([app-grade.it](https://app-grade.it/?p=1580)). Sono prodotti venduti alle
+  scuole, non siti gratuiti per chi studia;
+- i servizi di studio gratuiti per chi studia hanno un ingresso a parte per le
+  scuole, di solito una voce nel piè di pagina che porta a una pagina sua
+  («Duolingo for Schools», [schools.duolingo.com](https://schools.duolingo.com/));
+- una guida di sito universitario consiglia di dividere i richiami per
+  pubblico, e di non mostrare quello per un pubblico sulle pagine dell'altro
+  ([Fredonia](https://fredonia-edu.atlassian.net/wiki/x/7IAyDw)).
+
+*La proposta.* Due posti, nessuno dei quali è un invito a registrarsi (i tre
+posti dell'ADR-006 non cambiano):
+1. **una riga nel piè di pagina**, su ogni pagina: «Sei una scuola nautica?
+   Scrivici» — fuori dal primo schermo, quindi fuori dal conto dei bersagli di
+   D-13;
+2. **un paragrafo in Profilo → Info**, dove sta chi vuole sapere di più del sito:
+   «*Per le scuole nautiche.* Rotta Giusta è gratuito anche per i tuoi allievi.
+   Stiamo pensando a strumenti per seguire una classe: chi ha fatto le
+   simulazioni, su quali argomenti sbaglia tutta la classe. Se ti interessa,
+   scrivici: li costruiamo con chi li userà.» con «Scrivici» che apre una mail
+   (`mailto:`), senza modulo.
+
+*Da decidere, dall'autore:* l'indirizzo — non `privacy@`, che ha scadenze di
+legge; `segnalazioni@` (I-21) o una casella sua —; se la mail di una scuola è
+un trattamento da nominare nell'informativa (lo chiede il parere già in conto);
+e se la frase «stiamo pensando» va bene detta così. La pagina è dell'interfaccia:
+la scrive ChatGPT su `ui/*`, dopo la direzione del ridisegno.
+
 ### I-21 — Una casella per le segnalazioni [Claude]
 
 **Il problema.** «Segnala un problema» (decisione 30, C-03) ha un segnaposto

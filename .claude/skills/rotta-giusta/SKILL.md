@@ -49,6 +49,7 @@ Due cose pubblicate, in due modi:
 | i dati sono ancora quelli del decreto? | `python3 fonte/verifica.py` |
 | e' rientrato qualcosa che non deve uscire di casa? | `python3 strumenti/controlla.py` |
 | il sito in locale | `python3 strumenti/serve.py` — riproduce statichost.eu, misurato |
+| come si analizzano e si correggono mock e pagine con le skill impeccable, taste e UI UX Pro Max | `docs/procedure-disegno.md` — l'unica copia; i fatti di prodotto per impeccable sono in `PRODUCT.md`, e vale la specifica |
 
 ## Le trappole
 

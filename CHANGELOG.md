@@ -499,6 +499,46 @@ selezione o contabilità. Versione 0.34.0 invariata.
   `test_dati.py`. Sparisce quando i worktree si chiudono. Il guardiano
   dovrebbe saltarli.
 
+### Progettato — le procedure di disegno con impeccable, taste e UI UX Pro Max
+
+- **Perché.** Tre giri di regole di disegno hanno dato una pagina corretta e
+  senza vita (24 ottobre), e l'autore vuole usare tre skill di disegno per
+  analizzare e poi correggere i mock e ogni pagina che faremo. Senza una
+  procedura, ogni sessione le userebbe a modo suo, e il loro gusto
+  passerebbe per regola. `docs/procedure-disegno.md` dice il mestiere di
+  ciascuna, i passi dell'analisi e della correzione, il formato del README di
+  analisi, e come si trattano gli anti-pattern: un difetto misurabile si
+  corregge o diventa una regola con il suo controllo; una moda segnalata è
+  un'ipotesi, tolta o tenuta con il motivo in un registro dei disaccordi; i
+  dark pattern si controllano sempre.
+- **Misurato provandole sulla Home, in sola lettura**, prima di scrivere i
+  comandi. L'ispettore di taste aperto sul file misura una pagina rotta («Questa
+  destinazione non è disponibile»), mentre sull'indirizzo di `serve.py` no; il
+  rilevatore di impeccable su una copia del file trova solo un'immagine rotta,
+  sull'indirizzo a 375×812 un titolo sbilanciato e una parola sola sull'ultima
+  riga. Trovati da taste: un'emoji ⚠ come icona, due `.eyebrow`, dieci ombre
+  ferme, il titolo della Home su tre righe a 375 px. Il generatore di UI UX Pro
+  Max ha proposto la claymorphism viola con caratteri da Google Fonts: escluso,
+  e così ogni scrittura nel repo dei suoi script. Nessun file di `site/` è
+  cambiato.
+- **`PRODUCT.md`**, alla radice, scritto con l'autore nell'intervista di
+  `impeccable init`: chi lo usa, che cosa vuol dire che funziona (l'esame
+  superato, la registrazione scelta, il passaparola), che cosa ci distingue, i
+  vincoli fermi (il nome e il marchio; la voce no). In testa: se dice una cosa
+  diversa dalla specifica, vale la specifica. `PRODUCT.md` e la procedura
+  entrano nel territorio `motore`, una penna sola; `.impeccable/` e
+  `.taste-skill/` nel `.gitignore`; la skill del progetto ha la riga che
+  rimanda alla procedura.
+- **Le scuole nautiche.** L'autore vuole un piccolo richiamo per le scuole: in
+  I-20 gli esempi cercati il 26 ottobre e una proposta di testo che non
+  promette funzionalità che oggi non ci sono, con le decisioni per l'autore.
+- **Verificato:** il guardiano verde su una copia del repo senza
+  `.claude/worktrees/` (nel checkout è rosso solo per il worktree di P-97, il
+  difetto della voce qui sopra); `test_specifica.py` 1.096; `test_dati.py` 224
+  su 225, il solo rosso è il guardiano per lo stesso motivo; controllo condiviso
+  della documentazione verde. Non controllato: le procedure non sono ancora
+  state fatte girare per intero su un mock.
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la
