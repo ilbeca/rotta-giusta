@@ -27,10 +27,12 @@
    --acc indica le azioni; --ko gli errori e le risposte errate;
    --ok le risposte corrette; --warn gli avvisi. */
 :root{
-  --navy:#0B1F33;--blue:#123E63;--sky:#076F99;--sky-soft:#E6F3F7;
-  --paper:#F3F6F6;--surface:#FFFFFF;--sand:#F7F4EC;--line-soft:#D4E0E4;
-  --text-soft:#526B7B;--text-faint:#576F7E;--shadow:#102D4314;
-  --success:#126832;--success-soft:#E5F4E9;--danger:#A4261D;--danger-soft:#FBEAE8;
+  --ink:#0B2530;--ink-2:#33505B;--ink-3:#4D6772;--mare:#0A4F6E;
+  --boa:#FF6A1A;--rotta:#B23F00;--terra:#F2E6CF;--acqua:#E3EEF2;
+  --navy:var(--ink);--blue:var(--mare);--sky:var(--mare);--sky-soft:#EEF4F6;
+  --paper:#FFFFFF;--surface:#FFFFFF;--sand:var(--terra);--line-soft:#C3D1D7;
+  --text-soft:var(--ink-2);--text-faint:var(--ink-3);--shadow:#102D4314;
+  --success:#12663A;--success-soft:#E5F4E9;--danger:#B3261E;--danger-soft:#FBEAE8;
   --amber-dark:#765000;--amber-soft:#FFF3D5;--night:#07192A;
   --night-eyebrow:#ABDDEF;--night-muted:#C2D0D9;--night-link:#C6E8F4;
   --bg:var(--paper);--bg2:var(--surface);--bg3:var(--sky-soft);--line:var(--line-soft);
@@ -39,10 +41,10 @@
   --r:14px;--tap:52px;
 
   --safe-b:env(safe-area-inset-bottom,0px);--altezza-testata:88px;
-  --t-12:12px;--t-14:14px;--t-16:16px;--t-19:19px;--t-24:24px;--t-30:30px;--t-40:40px;
-  --s-4:4px;--s-8:8px;--s-12:12px;--s-16:16px;--s-24:24px;--s-32:32px;--s-48:48px;
-  --w-400:400;--w-600:600;--w-700:700;
-  --lh-testo:1.45;--lh-titoli:1.2;--testo-max:480px;
+  --t-12:12px;--t-14:14px;--t-16:16px;--t-20:20px;--t-24:24px;--t-32:32px;--t-44:44px;--t-56:56px;
+  --s-4:4px;--s-8:8px;--s-12:12px;--s-16:16px;--s-24:24px;--s-32:32px;--s-48:48px;--s-64:64px;
+  --w-400:400;--w-600:600;--w-700:700;--w-800:800;
+  --lh-testo:1.45;--lh-titoli:1.2;--lh-titoli-grandi:1.05;--testo-max:480px;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 /* `hidden` nel foglio del browser perde contro qualunque `display` d'autore:
@@ -78,7 +80,7 @@ details.card li{margin:var(--s-4) 0}
 .esame .t span{display:block;font-size:var(--t-12);color:var(--dim);margin-top:var(--s-4)}
 .esame input{width:auto;min-width:160px;color-scheme:dark}
 main{padding:var(--s-16);max-width:900px;margin:0 auto}
-h1{font-size:var(--t-19);margin:var(--s-4) 0 var(--s-4);letter-spacing:-.2px}
+h1{font-size:var(--t-20);margin:var(--s-4) 0 var(--s-4);letter-spacing:-.2px}
 /* Il titolo di Oggi porta il marchio: 1,55em, cosi' cresce con l'h1
    invece di restare fisso quando sopra i 900px il titolo passa a 26px. */
 h1.titolo{display:flex;align-items:center;gap:var(--s-8)}
@@ -139,7 +141,7 @@ select,input{background:var(--bg3);border:1px solid var(--line);color:var(--fg);
 .qhead .pill.rich{background:var(--amber-soft);border-color:var(--amber-dark);color:var(--warn)}
 .qhead .x{margin-left:auto;font-size:var(--t-24);line-height:var(--lh-testo);padding:var(--s-4) var(--s-8);color:var(--dim)}
 .qbody{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:var(--s-16) 0 var(--s-8)}
-.qtext{font-size:var(--t-19);line-height:var(--lh-testo);font-weight:var(--w-600);letter-spacing:-.2px}
+.qtext{font-size:var(--t-20);line-height:var(--lh-testo);font-weight:var(--w-600);letter-spacing:-.2px}
 .qnum{font-size:var(--t-12);font-weight:var(--w-600);letter-spacing:.07em;text-transform:uppercase;
       color:var(--dim);font-variant-numeric:tabular-nums;margin-bottom:var(--s-8)}
 .qnum:empty{display:none}
@@ -205,7 +207,7 @@ select,input{background:var(--bg3);border:1px solid var(--line);color:var(--fg);
       padding:var(--s-16)}
 .fine.on{display:block}
 .fine .esito{text-align:center;padding:var(--s-24) 0 var(--s-24)}
-.fine .esito .big{font-size:var(--t-30);line-height:var(--lh-testo)}
+.fine .esito .big{font-size:var(--t-32);line-height:var(--lh-testo)}
 .fine .esito .lab{font-size:var(--t-14);color:var(--dim);margin-top:var(--s-8)}
 .fine .esito .verdetto{display:inline-block;margin-top:var(--s-16);padding:var(--s-8) var(--s-16);border-radius:99px;
                        font-weight:var(--w-600);font-size:var(--t-14)}
@@ -337,7 +339,7 @@ select,input{background:var(--bg3);border:1px solid var(--line);color:var(--fg);
 html.rv-aperta{overflow:hidden}
 /* Le righe delle prove sostenute sono pulsanti: si riaprono con un tocco. */
 .riv{width:100%;cursor:pointer;text-align:left}
-.riv .fr{flex:0 0 auto;color:var(--faint);font-size:var(--t-19)}
+.riv .fr{flex:0 0 auto;color:var(--faint);font-size:var(--t-20)}
 .riv:hover .t b{color:var(--acc)}
 
 /* --- il gioco dei segnali ------------------------------------------------- */
@@ -363,7 +365,7 @@ nav button{position:relative;padding:var(--s-8) var(--s-4) var(--s-12);font-size
 .ndot{display:none;position:absolute;top:7px;right:12px;width:7px;height:7px;
       border-radius:99px;background:var(--warn)}
 .ndot.on{display:block}
-nav button i{display:block;font-size:var(--t-19);font-style:normal;margin-bottom:var(--s-4)}
+nav button i{display:block;font-size:var(--t-20);font-style:normal;margin-bottom:var(--s-4)}
 nav button.on{color:var(--acc)}
 .sync{position:fixed;top:calc(6px + env(safe-area-inset-top,0px));right:10px;z-index:30;
       max-width:calc(100vw - 20px);line-height:var(--lh-testo);
@@ -372,7 +374,7 @@ nav button.on{color:var(--acc)}
 .sync.show{opacity:1}
 .sync.err{background:var(--danger-soft);border-color:var(--ko);color:var(--danger)}
 .note{font-size:var(--t-12);color:var(--faint);line-height:var(--lh-testo)}
-.big{font-size:var(--t-30);font-weight:var(--w-700);letter-spacing:-1.5px;font-variant-numeric:tabular-nums}
+.big{font-size:var(--t-32);font-weight:var(--w-700);letter-spacing:-1.5px;font-variant-numeric:tabular-nums}
 
 /* --- le spiegazioni ------------------------------------------------------
    Il segno e' un puntino interrogativo accanto alla parola, non un
@@ -410,7 +412,7 @@ nav button.on{color:var(--acc)}
      Su schermo largo quel vuoto in mezzo non serve: centro il blocco e
      tengo la colonna stretta, che si legge meglio di una riga larga 1400px. */
   .qbody{display:flex;gap:var(--s-24);align-items:center;justify-content:center}
-  .qtext{flex:0 1 640px;font-size:var(--t-19)}
+  .qtext{flex:0 1 640px;font-size:var(--t-20)}
   .qfig{margin-top:0;flex:0 1 460px}
   .qfig img{max-height:52vh}
   .qans{grid-template-columns:1fr 1fr 1fr;max-width:1200px;margin:0 auto;width:100%}
@@ -456,7 +458,7 @@ nav button.on{color:var(--acc)}
   .sub{font-size:var(--t-14)}
   .card{padding:var(--s-16)}
   .grid{gap:var(--s-16)}
-  .tile .val{font-size:var(--t-30)}
+  .tile .val{font-size:var(--t-32)}
   .go{padding:var(--s-16) var(--s-16);min-height:64px}
   .go .t b{font-size:var(--t-16)}
   .go .t span{font-size:var(--t-14)}
@@ -496,7 +498,7 @@ svg.ico{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.6;st
 .app-header-inner{height:100%;max-width:1160px;margin:auto;padding:0 var(--s-32);display:flex;align-items:center;gap:var(--s-32)}
 .app-brand{display:flex;align-items:center;gap:var(--s-8);margin-right:auto;text-align:left;color:var(--navy);min-height:48px}
 .app-brand img{width:45px;height:49px}.app-brand>span{display:block}
-.brand-name{display:block;font-size:var(--t-19);letter-spacing:1.5px;white-space:nowrap}.brand-name b{font-weight:var(--w-700)}
+.brand-name{display:block;font-size:var(--t-20);letter-spacing:1.5px;white-space:nowrap}.brand-name b{font-weight:var(--w-700)}
 .brand-tag{display:block;margin-top:var(--s-4);color:var(--blue);font-size:var(--t-12);font-weight:var(--w-700);line-height:var(--lh-testo);letter-spacing:.5px;white-space:nowrap}
 .app-nav{position:static;display:flex;align-self:stretch;gap:var(--s-8);padding:0;border:0;background:transparent}
 .app-nav button{position:relative;display:flex;align-items:center;gap:var(--s-8);padding:0 var(--s-16);color:var(--text-soft);font-size:var(--t-14);letter-spacing:0;border:0;min-width:0}
@@ -510,8 +512,8 @@ svg.ico{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.6;st
 #quizrun,#cartrun,#segrun{z-index:80}#rivedi{z-index:82}.fine{z-index:84}
 main{max-width:1160px;margin:0 auto;padding:0 var(--s-32) var(--s-48)}
 .view{padding-top:var(--s-32)}.rotta-view{padding-top:0}
-h1{font-size:var(--t-30);line-height:var(--lh-titoli);letter-spacing:-1px;color:var(--navy)}
-h2{color:var(--blue)}.sub{color:var(--text-soft)}
+h1{font-size:var(--t-32);line-height:var(--lh-titoli);letter-spacing:-1px;color:var(--navy)}
+h2{color:var(--ink)}.sub{color:var(--text-soft)}
 .card{background:var(--surface);border-color:var(--line-soft);box-shadow:0 4px 16px var(--shadow)}
 .btn{background:var(--sky-soft);border-color:var(--line-soft);color:var(--blue)}
 .btn.primary{background:var(--blue);border-color:var(--blue);color:var(--surface)}
@@ -549,14 +551,14 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
 
 .eyebrow{margin:0 0 var(--s-12);color:var(--blue);font-size:var(--t-12);font-weight:var(--w-700);line-height:var(--lh-testo);letter-spacing:.5px;text-transform:uppercase}
 .rotta-hero{position:relative;min-height:238px;display:flex;align-items:center}
-.rotta-intro{position:relative;z-index:1;width:55%;padding:var(--s-32) 0}.rotta-intro h1{max-width:520px;font-size:var(--t-30)}.rotta-intro>p:last-child{max-width:480px;margin:var(--s-16) 0 0;color:var(--text-soft);font-size:var(--t-14);line-height:var(--lh-testo)}
+.rotta-intro{position:relative;z-index:1;width:55%;padding:var(--s-32) 0}.rotta-intro h1{max-width:520px;font-size:var(--t-32)}.rotta-intro>p:last-child{max-width:480px;margin:var(--s-16) 0 0;color:var(--text-soft);font-size:var(--t-14);line-height:var(--lh-testo)}
 .rotta-scene{position:absolute;right:-4px;bottom:0;width:490px;height:237px;object-fit:contain}
 .archive-warning{display:flex;align-items:center;gap:var(--s-12);padding:var(--s-16) var(--s-16);margin:0 0 var(--s-24);border:1px solid var(--amber-dark);border-radius:10px;background:var(--amber-soft);font-size:var(--t-14)}.archive-warning[hidden]{display:none}.archive-warning strong,.archive-warning span{display:block}.archive-warning .text-btn{margin-left:auto;white-space:nowrap}
 .rotta-topgrid{display:grid;grid-template-columns:1.2fr 1fr;gap:var(--s-24);align-items:stretch}
 .recommend-card{position:relative;overflow:hidden;padding:var(--s-32) var(--s-32);border-radius:20px;background:var(--night);color:var(--surface);box-shadow:0 12px 24px var(--shadow)}
 .recommend-card::after{content:"";position:absolute;right:-125px;top:-80px;width:230px;height:230px;border:1px solid color-mix(in srgb,var(--surface) 8%,transparent);border-radius:50%;box-shadow:0 0 0 34px color-mix(in srgb,var(--surface) 3%,transparent),0 0 0 68px color-mix(in srgb,var(--surface) 2%,transparent);pointer-events:none}
 .recommend-card .eyebrow{display:flex;align-items:center;gap:var(--s-8);color:var(--night-eyebrow)}.recommend-card h2{position:relative;z-index:1;margin:0;color:var(--surface);font-size:var(--t-24);line-height:var(--lh-titoli);text-transform:none;letter-spacing:-.65px}.recommend-card>p:not(.eyebrow){position:relative;z-index:1;max-width:450px;margin:var(--s-12) 0 0;color:var(--night-muted);font-size:var(--t-14)}
-.recommend-count{position:relative;z-index:1;display:flex;align-items:center;gap:var(--s-16);margin:var(--s-16) 0}.recommend-count>strong{font-size:var(--t-30);font-weight:var(--w-600);line-height:var(--lh-testo)}.recommend-count span{color:var(--night-muted);font-size:var(--t-14);line-height:var(--lh-testo)}.recommend-count span b{color:var(--surface)}
+.recommend-count{position:relative;z-index:1;display:flex;align-items:center;gap:var(--s-16);margin:var(--s-16) 0}.recommend-count>strong{font-size:var(--t-32);font-weight:var(--w-600);line-height:var(--lh-testo)}.recommend-count span{color:var(--night-muted);font-size:var(--t-14);line-height:var(--lh-testo)}.recommend-count span b{color:var(--surface)}
 .recommend-actions{position:relative;z-index:1;display:flex;align-items:center;gap:var(--s-16);flex-wrap:wrap}.rotta-primary{display:inline-flex;width:auto;align-items:center;gap:var(--s-16);padding:var(--s-12) var(--s-16);background:var(--surface)!important;border-color:var(--surface)!important;color:var(--blue)!important}.rotta-primary .ico{width:18px}.recommend-card .text-btn{color:var(--night-link)}
 .cart-route-card{position:relative;overflow:hidden;display:flex;flex-direction:column;min-height:300px;padding:var(--s-32);border:1px solid var(--line-soft);border-radius:20px;background:var(--sand)}
 .cart-route-card h2{max-width:280px;margin:0;color:var(--navy);font-size:var(--t-24);line-height:var(--lh-titoli);text-transform:none;letter-spacing:-.65px}.cart-route-card>p:not(.eyebrow){position:relative;z-index:1;max-width:245px;margin:var(--s-12) 0 0;color:var(--text-soft);font-size:var(--t-14)}.cart-route-card>img{position:absolute;right:-3px;bottom:50px;width:205px}.cart-route-card .text-btn{position:relative;z-index:1;align-self:flex-start;margin-top:auto;color:var(--blue)}.cart-route-card small{position:relative;z-index:1;color:var(--text-soft);font-size:var(--t-14);line-height:var(--lh-testo)}
@@ -572,8 +574,8 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
    ha anche una parola. Le schede non hanno una larghezza minima da tabella. */
 .progress-map{display:grid;gap:var(--s-16);min-width:0}
 .progress-theme,.progress-voice{min-width:0;padding:var(--s-16);border:1px solid var(--line-soft);border-radius:14px;background:var(--surface);overflow-wrap:anywhere}
-.progress-theme>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;justify-content:flex-start;gap:var(--s-12);font-size:var(--t-19);font-weight:var(--w-600);color:var(--navy)}
-.progress-theme>summary::before{content:'▸';font-size:var(--t-19);color:var(--blue);flex:none}.progress-theme[open]>summary::before{content:'▾'}
+.progress-theme>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;justify-content:flex-start;gap:var(--s-12);font-size:var(--t-20);font-weight:var(--w-600);color:var(--navy)}
+.progress-theme>summary::before{content:'▸';font-size:var(--t-20);color:var(--blue);flex:none}.progress-theme[open]>summary::before{content:'▾'}
 .progress-theme>summary:focus-visible,.progress-map button:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
 .progress-theme>summary .progress-weight{margin-left:auto;font-size:var(--t-14);font-weight:var(--w-600);color:var(--text-soft);text-align:right}
 .progress-voices{display:grid;gap:var(--s-12);margin-top:var(--s-16);padding-top:var(--s-16);border-top:1px solid var(--line-soft)}
@@ -601,18 +603,18 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
 .route-alert,.runner-warning{display:flex;align-items:flex-start;gap:var(--s-12);padding:var(--s-16) var(--s-16);border:1px solid var(--amber-dark);border-radius:12px;background:var(--amber-soft);color:var(--navy);font-size:var(--t-14);line-height:var(--lh-testo)}.route-alert strong,.route-alert span,.runner-warning strong,.runner-warning span{display:block}.route-alert>div,.runner-warning>div{flex:1}.route-alert .text-btn{flex:0 0 auto}.route-alert.error{border-color:var(--danger);background:var(--danger-soft)}
 .runner-warning{margin:var(--s-12) 0 0;flex:0 0 auto}.runner-warning[hidden]{display:none}
 .qhead .x{min-width:44px;min-height:44px}.qhead .x.runner-exit{width:auto;font-size:var(--t-14);font-weight:var(--w-600)}
-.rotta-hero{min-height:176px}.rotta-intro{width:62%;padding:var(--s-32) 0}.rotta-intro h1{max-width:520px;margin:0;font-size:var(--t-30)}.rotta-intro>p:last-child{max-width:620px;margin:var(--s-12) 0 0;font-size:var(--t-16);line-height:var(--lh-testo)}.rotta-scene{width:360px;height:174px;opacity:.72}
+.rotta-hero{min-height:176px}.rotta-intro{width:62%;padding:var(--s-32) 0}.rotta-intro h1{max-width:520px;margin:0;font-size:var(--t-32)}.rotta-intro>p:last-child{max-width:620px;margin:var(--s-12) 0 0;font-size:var(--t-16);line-height:var(--lh-testo)}.rotta-scene{width:360px;height:174px;opacity:.72}
 .rotta-topgrid{grid-template-columns:1fr;gap:var(--s-24)}
 .recommend-label{position:relative;z-index:1;margin:0 0 var(--s-8);color:var(--night-eyebrow);font-size:var(--t-14);line-height:var(--lh-testo)}.recommend-card>p{position:relative;z-index:1;max-width:680px;margin:var(--s-12) 0 0;color:var(--night-muted);font-size:var(--t-16);line-height:var(--lh-testo)}.recommend-count{position:relative;z-index:1;margin:var(--s-16) 0 var(--s-4);color:var(--surface);font-size:var(--t-24);font-weight:var(--w-600);line-height:var(--lh-testo)}.recommend-guarantee{min-height:24px}.recommend-actions{margin-top:var(--s-16);gap:var(--s-12)}.recommend-support{position:relative;z-index:1;display:flex;gap:var(--s-16);flex-wrap:wrap;margin-top:var(--s-8)}.recommend-support .text-btn{font-size:var(--t-14)}.recommend-help{position:relative;z-index:1;margin-top:var(--s-8);color:var(--night-muted)}.recommend-help summary{min-height:44px;display:flex;align-items:center;color:var(--night-link);font-size:var(--t-14)}.recommend-help p{margin:0 0 var(--s-4);font-size:var(--t-14);line-height:var(--lh-testo)}
 .filoni-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-16)}.route-card{padding:var(--s-24);border:1px solid var(--line-soft);border-radius:18px;background:var(--surface)}.route-card h2{margin:0;color:var(--navy);font-size:var(--t-24);text-transform:none;letter-spacing:-.4px}.route-card>p{margin:var(--s-8) 0 0;color:var(--text-soft);font-size:var(--t-16);line-height:var(--lh-testo)}.route-card .text-btn{margin-top:var(--s-12)}.route-card.cart-route-card{display:block;min-height:0;background:var(--sand)}.route-card.cart-route-card>p{max-width:none}.route-card.cart-route-card .text-btn{margin-top:var(--s-12)}.bank-status{display:grid;gap:var(--s-8);margin-top:var(--s-16)}.bank-status p{margin:0;font-size:var(--t-14);line-height:var(--lh-testo)}.bank-status strong{color:var(--navy)}.route-card-note{margin-top:var(--s-16)!important;font-size:var(--t-14)!important}
-.route-section{margin-top:var(--s-32)}.route-section>.section-heading{margin-top:0}.route-doors{display:flex;gap:var(--s-12);flex-wrap:wrap;margin-top:var(--s-12)}.route-doors .btn{width:auto;min-width:180px}.last-activity[hidden]{display:none}.last-card{display:flex;align-items:center;gap:var(--s-16);padding:var(--s-24)}.last-card>div{flex:1}.last-card h3{margin:0;font-size:var(--t-19)}.last-card p{margin:var(--s-4) 0 0;color:var(--text-soft);font-size:var(--t-14)}.last-card .text-btn{flex:0 0 auto}
+.route-section{margin-top:var(--s-32)}.route-section>.section-heading{margin-top:0}.route-doors{display:flex;gap:var(--s-12);flex-wrap:wrap;margin-top:var(--s-12)}.route-doors .btn{width:auto;min-width:180px}.last-activity[hidden]{display:none}.last-card{display:flex;align-items:center;gap:var(--s-16);padding:var(--s-24)}.last-card>div{flex:1}.last-card h3{margin:0;font-size:var(--t-20)}.last-card p{margin:var(--s-4) 0 0;color:var(--text-soft);font-size:var(--t-14)}.last-card .text-btn{flex:0 0 auto}
 .date-progress-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-16);margin-top:var(--s-32)}.date-card,.save-card{padding:var(--s-24)}.date-card h2,.save-card h2{margin:0;color:var(--navy);font-size:var(--t-24);text-transform:none;letter-spacing:-.4px}.date-card label{display:block;margin-top:var(--s-16);font-size:var(--t-14);font-weight:var(--w-600)}.date-input-row{display:flex;align-items:center;gap:var(--s-12);margin-top:var(--s-8)}.date-input-row input{max-width:220px}.date-input-row .text-btn[hidden]{display:none}.date-status,.save-card p{margin:var(--s-12) 0 0;color:var(--text-soft);font-size:var(--t-14);line-height:var(--lh-testo)}.date-details{margin-top:var(--s-16)}.date-details p{margin:var(--s-8) 0 0;color:var(--text-soft);font-size:var(--t-14);line-height:var(--lh-testo)}.save-actions{display:flex;gap:var(--s-12);flex-wrap:wrap;margin-top:var(--s-12)}.save-actions .btn{width:auto}.route-status-dot{display:inline-block;width:9px;height:9px;margin-right:var(--s-8);border-radius:50%;vertical-align:1px}.route-status-dot.verde{background:var(--success)}.route-status-dot.giallo{background:#A96900}.route-status-dot.rosso{background:var(--danger)}.route-status-dot.attesa{background:var(--text-soft)}
 .rotta-view .text-btn,.rotta-view .btn{font-size:var(--t-16)}.rotta-view .section-heading p,.extra-panel>div>p:last-child{font-size:var(--t-14);line-height:var(--lh-testo)}.direction-card small,.extra-card small{font-size:var(--t-14);line-height:var(--lh-testo)}
 .route-dialog{display:none;position:fixed;inset:0;z-index:100;background:color-mix(in srgb,var(--navy) 65%,transparent);padding:var(--s-24);place-items:center}.route-dialog.on{display:grid}.route-dialog-card{width:min(620px,100%);max-height:calc(100vh - 40px);overflow:auto;padding:var(--s-24);border-radius:18px;background:var(--surface);box-shadow:0 18px 60px #07192A55}.route-dialog-card h2{margin:0;color:var(--navy);font-size:var(--t-24);text-transform:none;letter-spacing:-.4px}.route-dialog-card p{color:var(--text-soft);font-size:var(--t-16);line-height:var(--lh-testo)}.route-dialog-card .btn{margin-top:var(--s-16)}
-.first-summary{max-width:860px;margin:0 auto}.first-summary>h1{font-size:var(--t-30)}.first-summary>p{font-size:var(--t-16);line-height:var(--lh-testo)}.first-summary .progress-stats{margin:var(--s-16) 0}.first-summary .err .r .et{flex:0 0 150px;font-size:var(--t-14);text-transform:none;letter-spacing:0}
+.first-summary{max-width:860px;margin:0 auto}.first-summary>h1{font-size:var(--t-32)}.first-summary>p{font-size:var(--t-16);line-height:var(--lh-testo)}.first-summary .progress-stats{margin:var(--s-16) 0}.first-summary .err .r .et{flex:0 0 150px;font-size:var(--t-14);text-transform:none;letter-spacing:0}
 
 @media(hover:hover) and (pointer:fine){.app-nav button:hover,.app-info:hover,.direction-card:hover,.extra-card:hover{color:var(--blue)}.direction-card:hover,.extra-card:hover{transform:translateY(-2px);box-shadow:0 5px 18px var(--shadow)}}
-@media(max-width:900px){.app-header-inner{gap:var(--s-16)}.brand-name{font-size:var(--t-16)}.app-nav{gap:0}.app-nav button{padding:0 var(--s-8)}.app-nav .ico{display:none}.rotta-scene{width:410px;opacity:.8}.rotta-intro{width:60%}.rotta-intro h1{font-size:var(--t-30)}.rotta-topgrid{grid-template-columns:1fr;gap:var(--s-16)}.recommend-card,.cart-route-card{padding:var(--s-24)}.cart-route-card>img{width:165px;right:-25px;opacity:.45}.progress-strip{grid-template-columns:1fr}.progress-data{padding:var(--s-16) 0 0;border-left:0;border-top:1px solid var(--line-soft)}}
+@media(max-width:900px){.app-header-inner{gap:var(--s-16)}.brand-name{font-size:var(--t-16)}.app-nav{gap:0}.app-nav button{padding:0 var(--s-8)}.app-nav .ico{display:none}.rotta-scene{width:410px;opacity:.8}.rotta-intro{width:60%}.rotta-intro h1{font-size:var(--t-32)}.rotta-topgrid{grid-template-columns:1fr;gap:var(--s-16)}.recommend-card,.cart-route-card{padding:var(--s-24)}.cart-route-card>img{width:165px;right:-25px;opacity:.45}.progress-strip{grid-template-columns:1fr}.progress-data{padding:var(--s-16) 0 0;border-left:0;border-top:1px solid var(--line-soft)}}
 @media(max-width:650px){
   html{scroll-padding-top:82px;scroll-padding-bottom:calc(86px + var(--safe-b))}
   .app-header{height:70px;position:sticky}.app-header-inner{gap:var(--s-4);padding:0 var(--s-8)}.app-brand{gap:var(--s-8)}.app-brand img{width:30px;height:34px}.brand-name{font-size:var(--t-14);letter-spacing:.5px}.brand-tag{font-size:var(--t-12);line-height:var(--lh-testo);letter-spacing:.5px}.app-info{max-width:155px;padding:var(--s-8) var(--s-8);font-size:var(--t-12);border-radius:18px}.app-info .ico{width:16px;height:16px}.header-statuses span:not(#nav-info-label){position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
@@ -620,13 +622,13 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
   .app-nav button{display:flex;flex-direction:column;justify-content:center;gap:var(--s-4);min-height:60px;padding:var(--s-8) 0;font-size:var(--t-12)}.app-nav .ico{display:block;width:21px;height:21px}.app-nav button.on::after{top:0;bottom:auto;left:29%;right:29%}
   .sync{top:76px}main{padding:0 16px calc(90px + var(--safe-b))}.view{padding-top:var(--s-24)}.rotta-view{padding-top:0}
   .rotta-alerts{padding-top:var(--s-12)}.route-alert{flex-wrap:wrap}.route-alert .text-btn{margin-left:var(--s-32);padding:0}
-  .rotta-hero{min-height:122px}.rotta-intro{width:100%;padding:var(--s-24) 0 var(--s-16)}.rotta-intro h1{max-width:none;font-size:var(--t-30);line-height:var(--lh-titoli)}.rotta-intro>p:last-child{max-width:none;margin-top:var(--s-8);font-size:var(--t-16);line-height:var(--lh-testo)}.rotta-scene{display:none}
-  .rotta-topgrid{gap:var(--s-16)}.recommend-card{padding:var(--s-24);border-radius:17px}.recommend-card h2{font-size:var(--t-24)}.recommend-card>p{font-size:var(--t-14)}.recommend-count{margin:var(--s-12) 0 var(--s-4);font-size:var(--t-19)}.recommend-actions{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-8);margin-top:var(--s-12)}.recommend-actions .btn,.recommend-actions .text-btn{width:100%;justify-content:center;text-align:center}.rotta-primary{padding:var(--s-12) var(--s-12);gap:var(--s-8)}.recommend-support{margin-top:var(--s-4);gap:var(--s-12)}.recommend-help{margin-top:var(--s-4)}
+  .rotta-hero{min-height:122px}.rotta-intro{width:100%;padding:var(--s-24) 0 var(--s-16)}.rotta-intro h1{max-width:none;font-size:var(--t-32);line-height:var(--lh-titoli)}.rotta-intro>p:last-child{max-width:none;margin-top:var(--s-8);font-size:var(--t-16);line-height:var(--lh-testo)}.rotta-scene{display:none}
+  .rotta-topgrid{gap:var(--s-16)}.recommend-card{padding:var(--s-24);border-radius:17px}.recommend-card h2{font-size:var(--t-24)}.recommend-card>p{font-size:var(--t-14)}.recommend-count{margin:var(--s-12) 0 var(--s-4);font-size:var(--t-20)}.recommend-actions{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-8);margin-top:var(--s-12)}.recommend-actions .btn,.recommend-actions .text-btn{width:100%;justify-content:center;text-align:center}.rotta-primary{padding:var(--s-12) var(--s-12);gap:var(--s-8)}.recommend-support{margin-top:var(--s-4);gap:var(--s-12)}.recommend-help{margin-top:var(--s-4)}
   .filoni-grid,.date-progress-grid{grid-template-columns:1fr;gap:var(--s-16)}.route-card{padding:var(--s-24)}.route-card h2{font-size:var(--t-24)}.last-card{align-items:flex-start;flex-wrap:wrap}.last-card .text-btn{width:100%;justify-content:flex-start}.route-doors{display:grid;grid-template-columns:1fr 1fr}.route-doors .btn{min-width:0}.date-input-row{align-items:flex-start;flex-wrap:wrap}.save-actions{display:grid}.save-actions .btn{width:100%}.first-summary .err .r{display:block}.first-summary .err .r .et{display:block;margin-bottom:var(--s-4)}
-  .progress-strip{gap:var(--s-16);margin-top:var(--s-16);padding:var(--s-16)}.progress-empty{gap:var(--s-12)}.round-icon{width:38px;height:38px}.progress-data{gap:var(--s-12)}.progress-stats{gap:var(--s-24)}.progress-stat{padding-right:var(--s-24)}.progress-stat strong{font-size:var(--t-30)}.progress-stat span{font-size:var(--t-14);line-height:var(--lh-testo)}
+  .progress-strip{gap:var(--s-16);margin-top:var(--s-16);padding:var(--s-16)}.progress-empty{gap:var(--s-12)}.round-icon{width:38px;height:38px}.progress-data{gap:var(--s-12)}.progress-stats{gap:var(--s-24)}.progress-stat{padding-right:var(--s-24)}.progress-stat strong{font-size:var(--t-32)}.progress-stat span{font-size:var(--t-14);line-height:var(--lh-testo)}
   .section-heading{margin:var(--s-32) 0 var(--s-16)}.section-heading h2{font-size:var(--t-24)}.section-heading p{font-size:var(--t-12)}.section-heading>.text-btn{display:none}.direction-grid{grid-template-columns:1fr;gap:var(--s-12)}.direction-card,.extra-card{min-height:0;padding:var(--s-16)}.direction-card b,.extra-card b{font-size:var(--t-14)}
   .extra-panel{grid-template-columns:1fr;gap:var(--s-16);padding:var(--s-24)}.extra-panel h2{font-size:var(--t-24)}.rotta-options{grid-template-columns:1fr;gap:var(--s-8)}.rotta-options .esame{align-items:flex-start}.rotta-options input{max-width:none}.archive-note{padding:var(--s-12) var(--s-4)}.colreg-extra{align-items:flex-start;flex-wrap:wrap}.colreg-extra .btn{width:100%}
-  h1{font-size:var(--t-30)}.view:not(.rotta-view)>h1{margin-top:0}
+  h1{font-size:var(--t-32)}.view:not(.rotta-view)>h1{margin-top:0}
 }
 /* A 320 px restano interi marchio, Info e accesso, nello stesso ordine.
    Le tecniche mantengono le tre misure e tutte le colonne della tabella. */
@@ -680,14 +682,14 @@ h2{color:var(--blue)}.sub{color:var(--text-soft)}
    colonna di lettura sola, nello stesso ordine a 375 e a 1280 px. */
 .vh{position:absolute!important;width:1px;height:1px;margin:var(--s-4);overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;padding:0}
 .ciclo{max-width:72ch;margin:0 auto;padding:var(--s-4) var(--s-4) var(--s-32);color:var(--navy)}
-.ciclo h1{margin:var(--s-16) 0 var(--s-4);font-size:var(--t-30);line-height:var(--lh-titoli);letter-spacing:-.6px;outline:none}
+.ciclo h1{margin:var(--s-16) 0 var(--s-4);font-size:var(--t-32);line-height:var(--lh-titoli);letter-spacing:-.6px;outline:none}
 .ciclo p{margin:var(--s-12) 0 0;font-size:var(--t-16);line-height:var(--lh-testo)}
 .ciclo .note{font-size:var(--t-14);color:var(--text-soft)}
 .ciclo .ciclo-nome{margin-top:var(--s-4);color:var(--text-soft)}
 .ciclo .route-alert{margin-top:var(--s-16)}
 .ciclo-valori{list-style:none;display:grid;gap:var(--s-8);margin:var(--s-16) 0 0;padding:0}
 .ciclo-valori li{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s-16);padding:var(--s-12) var(--s-16);border:1px solid var(--line-soft);border-radius:10px;background:var(--surface);font-size:var(--t-16)}
-.ciclo-valori strong{font-size:var(--t-19);font-variant-numeric:tabular-nums}
+.ciclo-valori strong{font-size:var(--t-20);font-variant-numeric:tabular-nums}
 .ciclo .ciclo-verdetto{display:inline-block;margin-top:var(--s-16);padding:var(--s-8) var(--s-16);border-radius:99px;font-weight:var(--w-700)}
 .ciclo-verdetto.ok{background:var(--success-soft);color:var(--success)}.ciclo-verdetto.ko{background:var(--danger-soft);color:var(--danger)}
 .ciclo-azioni{display:grid;gap:var(--s-12);margin-top:var(--s-24)}
@@ -736,17 +738,17 @@ details.card summary{min-height:44px}
 #fig-zoom::backdrop{background:color-mix(in srgb,var(--navy) 70%,transparent)}
 #fig-zoom img{display:block;max-width:100%;max-height:calc(100vh - 140px);margin:0 auto;background:#fff}
 #fig-zoom .btn{width:auto;margin:var(--s-16) auto 0;padding:0 var(--s-24)}
-@media(max-width:650px){.ciclo h1{font-size:var(--t-30)}.rv-r{grid-template-columns:1fr;gap:var(--s-4)}.ciclo .route-alert,.runner-warning{flex-wrap:wrap}.ciclo .route-alert>div,.runner-warning>div{flex:1 1 100%}.ciclo .route-alert .text-btn,.runner-warning .text-btn{margin-left:0}}
+@media(max-width:650px){.ciclo h1{font-size:var(--t-32)}.rv-r{grid-template-columns:1fr;gap:var(--s-4)}.ciclo .route-alert,.runner-warning{flex-wrap:wrap}.ciclo .route-alert>div,.runner-warning>div{flex:1 1 100%}.ciclo .route-alert .text-btn,.runner-warning .text-btn{margin-left:0}}
 
 /* Il nuovo grafo usa la stessa tavola chiara, gli stessi asset e Manrope locali. */
 @font-face{font-family:Manrope;font-style:normal;font-display:swap;font-weight:200 800;src:url(/caratteri/manrope-latin-wght-normal.woff2) format('woff2')}
 body{font-family:Manrope,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 a{text-underline-offset:3px}::selection{background:#bddff0;color:#0b1f33}
-.app-brand{text-decoration:none}.app-header{z-index:91}.app-nav a{min-height:44px;display:flex;align-items:center;justify-content:center;padding:var(--s-12) var(--s-16);text-decoration:none;font-size:var(--t-14);font-weight:var(--w-700);color:var(--dim);border-bottom:3px solid transparent}.app-nav a.on{border-color:#123e63;color:#123e63;background:#edf4f8}
+.app-brand{text-decoration:none}.app-header{z-index:91}.app-nav a{min-height:44px;display:flex;align-items:center;justify-content:center;padding:var(--s-12) var(--s-16);text-decoration:none;font-size:var(--t-14);font-weight:var(--w-700);color:var(--dim);border-bottom:3px solid transparent}.app-nav a.on{border-color:var(--acc);color:var(--acc);background:#edf4f8}
 [data-avatar]{display:flex;align-items:center;gap:var(--s-8);position:relative;min-width:70px}[data-avatar] .ndot.on{display:inline-block;background:#b56a00}[data-avatar] #nav-save-status{position:absolute;right:0;top:100%;width:200px;background:#fff4d6;color:#744300;font-size:var(--t-12);padding:var(--s-8)}
-.app-header-inner{max-width:1160px}.brand-name{white-space:nowrap}main{max-width:1120px}.rotta-hero h1{max-width:21ch;font-size:var(--t-30);line-height:var(--lh-titoli)}.rotta-intro p{max-width:62ch;margin-top:var(--s-16)}
+.app-header-inner{max-width:1160px}.brand-name{white-space:nowrap}main{max-width:1120px}.rotta-hero h1{max-width:21ch;font-size:var(--t-32);line-height:var(--lh-titoli)}.rotta-intro p{max-width:62ch;margin-top:var(--s-16)}
 .home-avvii{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-32);margin:var(--s-32) 0}.home-avvii p{font-size:var(--t-14);color:var(--dim)}.home-porte{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-32);margin:var(--s-24) 0}.home-porte a{color:inherit;text-decoration:none;border-top:1px solid var(--line);padding:var(--s-24) 0}.home-porte h3{font-size:var(--t-24)}.home-porte p{margin-top:var(--s-12);color:var(--dim)}
-.segmenti{display:flex;gap:var(--s-8);border-bottom:1px solid var(--line);margin:var(--s-24) 0}.segmenti a{display:flex;min-height:48px;align-items:center;justify-content:center;flex:1;text-decoration:none;font-weight:var(--w-700);border-bottom:3px solid transparent}.segmenti [aria-selected=true]{border-color:#123e63;background:#eaf3f8;color:#123e63}.temi-porte{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s-8);margin-bottom:var(--s-32)}.temi-porte button{text-align:left}.exam-porte{display:grid;gap:var(--s-12);grid-template-columns:repeat(2,1fr);margin-block:var(--s-24)}.exam-porte .go{width:100%;white-space:normal}
+.segmenti{display:flex;gap:var(--s-8);border-bottom:1px solid var(--line);margin:var(--s-24) 0}.segmenti a{display:flex;min-height:48px;align-items:center;justify-content:center;flex:1;text-decoration:none;font-weight:var(--w-700);border-bottom:3px solid transparent}.segmenti [aria-selected=true]{border-color:var(--acc);background:#eaf3f8;color:var(--acc)}.temi-porte{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s-8);margin-bottom:var(--s-32)}.temi-porte button{text-align:left}.exam-porte{display:grid;gap:var(--s-12);grid-template-columns:repeat(2,1fr);margin-block:var(--s-24)}.exam-porte .go{width:100%;white-space:normal}
 main.preparazione-sopra{display:none}[data-preparazione]{width:calc(100% - 36px);max-width:900px;margin:var(--s-32) auto;padding:var(--s-24);background:var(--surface);border:1px solid var(--line);border-radius:12px}[data-preparazione] h2{margin-top:0}.in-attivita main,.in-attivita [data-preparazione]{display:none!important}
 /* Durante il runner restano titolo, uscita e avatar; la barra torna al risultato. */
 .in-attivita:not(.attivita-conclusa) #barra{display:none!important}
@@ -756,14 +758,14 @@ main.preparazione-sopra{display:none}[data-preparazione]{width:calc(100% - 36px)
 
 @media(max-width:650px){body{--altezza-testata:70px}}
 #quizrun,#cartrun,#segrun,#rivedi{padding-top:calc(var(--altezza-testata) + 12px)}#quizrun .qhead,#cartrun .qhead,#segrun .qhead,#rivedi .qhead{flex-wrap:wrap}#r-fine,#c-fine,#sr-fine{padding-top:var(--s-48)}
-.account-panel{z-index:130}#info{z-index:135}#legale{z-index:150}#uscita{z-index:140}.account-card{max-height:calc(100dvh - 32px);overflow:auto}.account-card pre{white-space:pre-wrap;overflow-wrap:anywhere}.account-card h1{font-size:var(--t-30)}.account-card footer,.account-card header{position:static}#info>.account-card{width:min(760px,100%)}.profilo-porte{border-top:1px solid var(--line);margin-top:var(--s-24);padding-top:var(--s-16);display:flex;flex-wrap:wrap;gap:var(--s-8)}.profilo-porte a{display:inline-flex;align-items:center;min-height:44px;padding:var(--s-8)}
+.account-panel{z-index:130}#info{z-index:135}#legale{z-index:150}#uscita{z-index:140}.account-card{max-height:calc(100dvh - 32px);overflow:auto}.account-card pre{white-space:pre-wrap;overflow-wrap:anywhere}.account-card h1{font-size:var(--t-32)}.account-card footer,.account-card header{position:static}#info>.account-card{width:min(760px,100%)}.profilo-porte{border-top:1px solid var(--line);margin-top:var(--s-24);padding-top:var(--s-16);display:flex;flex-wrap:wrap;gap:var(--s-8)}.profilo-porte a{display:inline-flex;align-items:center;min-height:44px;padding:var(--s-8)}
 form[data-ricerca]{display:flex;flex-wrap:wrap;gap:var(--s-12);align-items:end}form[data-ricerca] label{display:grid;gap:var(--s-8);min-width:0}form[data-ricerca] input,form[data-ricerca] select{min-height:44px;width:100%;font:inherit;padding:var(--s-12);background:#fff;border:1px solid #8ca0ae;border-radius:6px}.ricerca-riga{display:block;text-align:left;width:100%;white-space:normal;margin-block:var(--s-8)}.strumenti-quesito{display:flex;gap:var(--s-8);flex-wrap:wrap;margin-top:var(--s-16)}.strumenti-quesito button{font-size:var(--t-14)}#r-strumenti{font-size:var(--t-14)}#quizrun .tags button{min-width:90px}
 .stato-mai_visto{background:#cbd5e1}.stato-debole{background:#a73535}.stato-incerto{background:#c68b17}.stato-sistemato{background:#287e92}.stato-ok{background:#356b47}.progress-legend i{display:inline-block;width:12px;height:12px;margin-right:var(--s-4)}.progress-help summary{min-width:44px;min-height:44px;cursor:pointer}.progress-legend{flex-wrap:wrap}.progress-legend li{white-space:normal}.progress-bar{height:12px}#d-totale .progress-action{display:none}
-button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #123e63;outline-offset:3px}input,textarea{caret-color:#123e63}section>h2{margin-top:var(--s-32)}p{max-width:75ch}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--acc);outline-offset:3px}input,textarea{caret-color:var(--acc)}section>h2{margin-top:var(--s-32)}p{max-width:75ch}
 @media(max-width:760px){.app-header-inner{gap:var(--s-8);padding:var(--s-12) var(--s-16)}.app-brand img{width:34px}.brand-name{font-size:var(--t-14)}.app-nav{position:fixed;inset:auto 0 0;background:#fff;border-top:1px solid var(--line);padding-bottom:0}.app-nav a{flex:1;padding:var(--s-12) var(--s-4);font-size:var(--t-12);min-height:58px}.home-avvii,.home-porte,.exam-porte{grid-template-columns:1fr;gap:var(--s-24)}.home-porte{gap:0}.rotta-hero{grid-template-columns:1fr}.rotta-scene{max-width:300px}.home-avvii .btn{max-width:100%;white-space:normal}main{padding-bottom:90px}.segmenti{gap:0}.segmenti a{font-size:var(--t-14);padding:var(--s-12) var(--s-4)}.temi-porte{grid-template-columns:1fr}#quizrun,#cartrun,#segrun,#rivedi{padding-top:calc(var(--altezza-testata) + 12px)}[data-preparazione]{padding:var(--s-16);margin-top:var(--s-16)}.account-card{padding:var(--s-24)}.progress-legend{gap:var(--s-8) var(--s-16)}#r-fine,#c-fine,#sr-fine{padding-top:var(--s-48)}}
 
 summary{min-height:44px;cursor:pointer;align-content:center}#progressi-pagina h2,#rotta-last-title{text-transform:none;letter-spacing:0;font-size:var(--t-24)}#c-fine h2{text-transform:none;letter-spacing:0;font-size:var(--t-24)}
-[data-preparazione],.account-card{min-width:0;overflow-wrap:anywhere}[data-preparazione] h1{font-size:var(--t-30)}
+[data-preparazione],.account-card{min-width:0;overflow-wrap:anywhere}[data-preparazione] h1{font-size:var(--t-32)}
 .scelte-preparazione{border:0;padding:0;margin:var(--s-16) 0;min-width:0}
 .scelte-preparazione legend{font-weight:var(--w-600);margin-bottom:var(--s-8)}
 .scelte-preparazione label{display:flex;align-items:center;gap:var(--s-12);min-height:44px;margin:0;cursor:pointer}
@@ -788,7 +790,7 @@ summary{min-height:44px;cursor:pointer;align-content:center}#progressi-pagina h2
 @media(max-width:759px){
   /* Anche con le risposte lunghe si vede la figura intera e l'inizio della
      prima risposta; l'ingrandimento resta disponibile sotto la figura. */
-  #quizrun .qfig img{max-height:26vh}
+  #quizrun .qfig img{max-height:20vh}
 }
 /* Il pallino resta visibile; il suo testo accessibile non copre il timer. */
 [data-avatar] #nav-save-status{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
@@ -804,12 +806,12 @@ summary{min-height:44px;cursor:pointer;align-content:center}#progressi-pagina h2
 /* Giro 2: scala unica, titoli leggibili e colonne di testo misurate con Manrope. */
 h1,h2,h3,h4,h5,h6{line-height:var(--lh-titoli)}
 h2{font-size:var(--t-24);text-transform:none;letter-spacing:0}
-h3{font-size:var(--t-19)}
+h3{font-size:var(--t-20)}
 h3,h4,h5,h6{margin:var(--s-16) 0 var(--s-8)}
 p,li{font-size:var(--t-16);line-height:var(--lh-testo);max-width:var(--testo-max)}
 .rotta-intro p,.rotta-intro>p:last-child,.home-avvii p{font-size:var(--t-16);max-width:var(--testo-max)}
-.rotta-hero h1{font-size:var(--t-30)}
-@media(min-width:901px){.rotta-hero h1{font-size:var(--t-40)}}
+.rotta-hero h1{font-size:var(--t-32)}
+@media(min-width:901px){.rotta-hero h1{font-size:var(--t-32)}}
 .app-nav{gap:var(--s-8)}
 .ans{font-size:var(--t-16);line-height:var(--lh-testo);max-width:var(--testo-max)}
 .qtext{max-width:var(--testo-max)}
@@ -823,11 +825,11 @@ fieldset{margin:var(--s-16) 0;padding:0;border:0;min-width:0}
 legend{padding:0;margin-bottom:var(--s-8)}
 ul,ol{padding-left:var(--s-24)}
 h1{margin:0 0 var(--s-8)}
-#r-title{font-size:var(--t-19);margin:0;line-height:var(--lh-titoli)}
+#r-title{font-size:var(--t-20);margin:0;line-height:var(--lh-titoli)}
 .tile .lab,.tbl th{text-transform:none}
 #temi button{text-transform:lowercase}
 #temi button::first-letter{text-transform:uppercase}
-.mini>i{background:var(--blue)}
+.mini>i{background:var(--ink)}
 .foot{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:var(--s-8)}
 .foot a{margin:0}
 .home-porte{gap:var(--s-8)}
@@ -860,6 +862,124 @@ p.cart-memoria{font-size:var(--t-16)}
 .account-invite{display:flex;flex-direction:column;gap:var(--s-8)}
 .account-invite>h2,.account-invite>p,.account-invite>.btn,.account-invite>.text-btn,.account-invite>a{margin:0}
 .account-invite>a{display:flex;align-items:center;min-height:44px}
+/* P-98 — Regata. I ruoli e la scala sono quelli consegnati da P-97.
+   Le altre sezioni conservano la struttura; la Home ha due composizioni. */
+html{scrollbar-color:var(--ink-3) var(--paper);accent-color:var(--acc)}
+::selection{background:var(--acqua);color:var(--ink)}
+input,textarea{caret-color:var(--acc)}
+.app-nav a.on{color:var(--acc);border-color:var(--acc);background:transparent}
+.app-nav .ico{display:none}
+h1,h2,h3{letter-spacing:-.03em}
+.card{box-shadow:0 14px 30px -22px #0A4F6E40}
+.btn.primary{box-shadow:0 1px 0 #0003,0 10px 22px -12px #0A4F6E80}
+.link-freccia{display:inline-flex;align-items:center;min-height:44px;padding:var(--s-8) 0;margin:0;text-align:left;border-radius:0;border:0;border-bottom:1px solid currentColor;background:transparent;color:var(--acc);font-size:var(--t-16);font-weight:var(--w-700);text-decoration:none;gap:var(--s-8)}
+.link-freccia::after{content:'→';font-size:var(--t-20)}
+.home-contenuto{max-width:var(--testo-max)}
+#v-home h1{font-size:var(--t-32);font-weight:var(--w-800);line-height:var(--lh-titoli);max-width:var(--testo-max);margin:0 0 var(--s-12)}
+#rotta-intro{margin:0 0 var(--s-24)}
+.home-striscia{color:var(--ink);height:96px;overflow:clip;margin:0 0 var(--s-16)}
+.home-striscia .lampo-faro,.home-striscia .lampo-boa{animation:none;opacity:1}
+.home-striscia svg{display:block;width:100%;height:100%;object-fit:cover}
+.home-prova{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:var(--s-16);color:var(--ink);box-shadow:0 14px 30px -22px #0A4F6E80}
+#v-home .home-prova h2{font-size:var(--t-16);font-weight:var(--w-700);margin:0 0 var(--s-12);color:var(--ink)}
+.home-scandagli{display:flex;gap:var(--s-24);margin-bottom:var(--s-16)}
+.home-scandagli b{display:block;font-size:var(--t-32);font-weight:var(--w-800);line-height:var(--lh-titoli);color:var(--ink);font-variant-numeric:tabular-nums}
+.home-scandagli span{font-size:var(--t-14);display:block;color:var(--ink-3);margin-top:var(--s-4)}
+.home-scandagli span::before{content:'';display:inline-block;width:8px;height:8px;clip-path:polygon(50% 0,100% 100%,0 100%);background:var(--boa);margin-right:var(--s-4)}
+#v-home .home-nota{font-size:var(--t-16);margin:var(--s-12) 0 0;color:var(--ink-2)}
+.home-breve{margin-top:var(--s-16)}
+#v-home #home-breve-testo{font-size:var(--t-16);margin:var(--s-8) 0 0}
+#v-home .home-gratis{font-size:var(--t-16);margin:var(--s-16) 0 0;color:var(--ink-3)}
+.home-tappa,.home-come,#home-percorso{display:none}
+.home-righe,.home-leggi,.home-limiti{margin-top:var(--s-48)}
+.home-righe h2,.home-leggi h2,.home-limiti h2{margin:0 0 var(--s-16);font-weight:var(--w-800);color:var(--ink)}
+.home-riga{margin-bottom:var(--s-8);display:flex;align-items:center;gap:var(--s-16);min-height:64px;border-top:1px solid var(--line);padding:var(--s-12) 0;text-decoration:none;color:var(--fg)}
+.home-riga>span{flex:1;min-width:0}.home-riga b{display:block;font-weight:var(--w-700)}.home-riga small{display:block;color:var(--dim);font-size:var(--t-14);margin-top:var(--s-4)}
+.home-riga>.ico:first-child{width:44px;height:44px;flex:0 0 44px;padding:var(--s-8);border-radius:50%;background:var(--acqua);color:var(--ink)}
+.home-limiti-nota{padding:var(--s-16);background:var(--bg3);border-radius:var(--r)}
+.home-limiti p{margin:0 0 var(--s-12)}
+#home-carta-posto{position:relative;min-height:280px}
+#home-carta{color:var(--ink);position:relative;overflow:clip;border-radius:var(--r);height:280px}
+.home-carta-in{position:relative;width:100%;height:100%;overflow:clip}
+#home-carta-svg{display:block;width:100%;height:100%}
+.home-velo{display:none}
+#home-luci{position:absolute;inset:0 0 auto;height:280px;pointer-events:none}
+#home-faro,#home-boa{position:absolute;width:48px;height:48px;min-height:48px;padding:0;margin:0;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 1px var(--ink);pointer-events:auto;background:transparent;transform:translate(-50%,-50%)}
+#home-faro[aria-expanded=true],#home-boa[aria-expanded=true]{border-color:var(--ink);box-shadow:0 0 0 2px #fff}
+#home-sigla{position:absolute;left:0;right:0;top:100%;pointer-events:auto;color:var(--ink)}
+#home-sigla:not(:empty){padding:var(--s-16);background:var(--bg3);border-radius:var(--r)}
+#home-sigla p{font-size:var(--t-16);margin:0 0 var(--s-8)}
+#home-sigla button{min-height:44px;padding:var(--s-8) var(--s-12);border:1px solid var(--acc);border-radius:var(--s-8);background:var(--surface);color:var(--acc);font-weight:var(--w-700)}
+#home-sigla:empty{display:none}
+.home-leggi:has(#home-sigla:not(:empty)){margin-bottom:var(--s-64)}
+.home-leggi:has(#home-sigla:not(:empty)) #home-carta-posto{min-height:520px}
+@keyframes home-lam2{0%,5%,15%,20%{opacity:1}6%,14%,21%,100%{opacity:0}}
+@keyframes home-sc3{0%,2%,6%,8%,12%,14%{opacity:1}3%,5%,9%,11%,15%,100%{opacity:0}}
+@keyframes home-traccia{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+[data-luce]{opacity:1}
+[data-rotta]{stroke-dasharray:1;stroke-dashoffset:0}
+@media(prefers-reduced-motion:no-preference){
+  .lampo-faro{animation:home-lam2 10s linear infinite}
+  .lampo-boa{animation:home-sc3 10s linear infinite}
+  [data-rotta]{animation:home-traccia 2.4s ease-out both}
+}
+.luci-ferme [data-luce],.luci-ferme [data-rotta]{animation:none;opacity:1;stroke-dashoffset:0}
+@media(prefers-reduced-motion:reduce){
+  #v-home *,#v-home *::before,#v-home *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  [data-luce]{opacity:1}[data-rotta]{stroke-dashoffset:0}
+}
+@media(max-width:760px){
+  .app-nav a{flex-direction:column;gap:var(--s-4);padding:var(--s-8) var(--s-4);border-bottom:0;border-top:3px solid transparent}
+  .app-nav .ico{display:block;width:22px;height:22px}
+  .app-nav a.on{border-top-color:var(--acc)}
+}
+@media(min-width:901px){
+  .home-scandagli b{font-size:var(--t-44);line-height:var(--lh-titoli-grandi)}
+  .home-primo{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-48)}
+  .home-primo>.home-leggi{margin-top:0}
+  .home-striscia{display:none}
+}
+/* La U è circoscritta alla Home visibile. Costa e velo seguono coordinate
+   della carta e della colonna in pixel, anche sui monitor molto alti. */
+html[data-volto=carta]{scroll-snap-type:y proximity;scroll-padding-top:var(--altezza-testata)}
+html[data-volto=carta] body{background:var(--mare)}
+html[data-volto=carta] main{position:relative;z-index:0;max-width:none;padding:0}
+html[data-volto=carta] #v-home{color:#fff}
+html[data-volto=carta] #home-carta{position:fixed;inset:0;z-index:-1;border-radius:0;height:auto;pointer-events:none}
+html[data-volto=carta] .home-velo{display:block;position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,79,110,.92) 656px,rgba(10,79,110,0) 816px)}
+html[data-volto=carta] .home-pannello{display:grid;align-content:center;min-height:calc(100vh - var(--altezza-testata));padding:var(--s-64);scroll-snap-align:start}
+html[data-volto=carta] .home-primo{scroll-snap-align:none;grid-template-columns:1fr;padding-top:var(--s-32)}
+html[data-volto=carta] .home-contenuto{width:var(--testo-max)}
+html[data-volto=carta] #v-home h1{color:#fff;font-size:var(--t-56);line-height:var(--lh-titoli-grandi);width:560px;max-width:560px;margin-bottom:var(--s-24)}
+html[data-volto=carta] #rotta-intro{font-size:var(--t-20);color:var(--acqua)}
+html[data-volto=carta] .home-striscia{display:none}
+html[data-volto=carta] .home-prova{padding:var(--s-24)}
+html[data-volto=carta] .home-breve .link-freccia{color:#fff}
+html[data-volto=carta] #home-breve-testo,html[data-volto=carta] #v-home .home-gratis{color:var(--acqua)}
+html[data-volto=carta] .home-come{margin-top:var(--s-32);margin-bottom:var(--s-32);display:block;padding:var(--s-64)}
+html[data-volto=carta] .home-come h2{font-size:var(--t-44);font-weight:var(--w-800);line-height:var(--lh-titoli-grandi);margin:0 0 var(--s-16);color:#fff}
+html[data-volto=carta] .home-come p,html[data-volto=carta] .home-tappa p{font-size:var(--t-20);color:var(--acqua);margin:var(--s-16) 0}
+html[data-volto=carta] .home-tappa h2{font-size:var(--t-32);font-weight:var(--w-800);color:#fff;margin:0}
+html[data-volto=carta] .home-tappa .link-freccia{color:#fff;justify-self:start;margin-top:var(--s-8)}
+html[data-volto=carta] .home-righe,html[data-volto=carta] .home-limiti{margin:var(--s-32) 0 0;padding:var(--s-64);background:#fff;color:var(--ink)}
+html[data-volto=carta] .home-righe{position:relative;z-index:4}
+html[data-volto=carta] .home-righe>*,html[data-volto=carta] .home-limiti>*{max-width:var(--testo-max)}
+html[data-volto=carta] .home-leggi{display:none}
+html[data-volto=carta] #home-percorso{left:auto;bottom:auto;padding:0;border:0;background:transparent;backdrop-filter:none;grid-template-columns:1fr;display:grid;gap:var(--s-8);position:fixed;right:calc((max(10vw,132px) - 44px)/2);top:calc((100vh + var(--altezza-testata))/2);transform:translateY(-50%);z-index:3}
+#home-percorso::before{content:'';position:absolute;left:22px;top:22px;bottom:22px;border-left:1px solid var(--ink-3)}
+#home-percorso a{display:flex;align-items:center;justify-content:center;width:44px;height:44px;position:relative;text-decoration:none}
+#home-percorso svg{width:13px;height:13px;overflow:visible}
+#home-percorso polygon{fill:none;stroke:var(--ink-3);stroke-width:1.5}
+#home-percorso a.passata polygon,#home-percorso a[aria-current] polygon{fill:var(--rotta);stroke:var(--rotta)}
+#home-percorso a[aria-current] svg{transform:scale(1.4)}
+#home-percorso .nome{display:none}
+#home-percorso a:hover .nome,#home-percorso a:focus-visible .nome{display:block;position:absolute;right:52px;white-space:nowrap;background:var(--ink);color:#fff;padding:var(--s-4) var(--s-12);border-radius:var(--r);font-size:var(--t-14)}
+html[data-volto=carta] #home-luci{height:auto;display:block;position:fixed;inset:0;z-index:2}
+html[data-volto=carta] #home-sigla{top:auto;left:auto;right:calc(max(10vw,132px) + 8px);bottom:var(--s-24);width:280px;background:var(--surface);box-shadow:0 18px 40px -20px #0B253080}
+html[data-volto=carta] .foot{position:relative;z-index:4;background:#fff;margin:0;padding:var(--s-24);color:var(--dim)}
+html[data-volto=carta] #home-consiglio,html[data-volto=carta] #rotta-last,html[data-volto=carta] #invito-home{background:var(--surface);color:var(--ink);padding:var(--s-16);border-radius:var(--r);margin-top:var(--s-24)}
+html[data-volto=carta] #home-consiglio h2,html[data-volto=carta] #rotta-last h2,html[data-volto=carta] #invito-home h2{color:var(--ink)}
+
 </style>
 </head>
 <body>
@@ -882,21 +1002,136 @@ p.cart-memoria{font-size:var(--t-16)}
 
 <header class="app-header">
   <div class="app-header-inner">
-<a class="app-brand" id="marchio" data-v="home" href="/" aria-label="Rotta Giusta, Home"><img src="/marchio.svg" alt=""><span class="brand-name"><b>ROTTA</b> GIUSTA</span></a><nav class="app-nav" id="barra" aria-label="Navigazione principale"><a href="/" data-v="home"><span>Home</span></a><a href="/?sezione=allenati" data-v="allenati"><span>Allenati</span></a><a href="/?sezione=esame" data-v="esame"><span>Esame</span></a><a href="/?sezione=progressi" data-v="progressi"><span>Progressi</span></a></nav><span data-avatar><button class="app-info" id="conto-porta" data-account="porta"><svg class="ico" aria-hidden="true"><use href="#i-info"/></svg><span id="conto-etichetta">Accedi</span></button><span class="ndot" id="nav-info-dot"></span><span id="nav-save-status" hidden>Salvataggio da controllare</span></span>
+<a class="app-brand" id="marchio" data-v="home" href="/" aria-label="Rotta Giusta, Home"><img src="/marchio.svg" alt=""><span class="brand-name"><b>ROTTA</b> GIUSTA</span></a><nav class="app-nav" id="barra" aria-label="Navigazione principale"><a href="/" data-v="home"><svg class="ico" aria-hidden="true"><use href="#i-compass"/></svg><span>Home</span></a><a href="/?sezione=allenati" data-v="allenati"><svg class="ico" aria-hidden="true"><use href="#i-book"/></svg><span>Allenati</span></a><a href="/?sezione=esame" data-v="esame"><svg class="ico" aria-hidden="true"><use href="#i-clock"/></svg><span>Esame</span></a><a href="/?sezione=progressi" data-v="progressi"><svg class="ico" aria-hidden="true"><use href="#i-chart"/></svg><span>Progressi</span></a></nav><span data-avatar><button class="app-info" id="conto-porta" data-account="porta"><svg class="ico" aria-hidden="true"><use href="#i-info"/></svg><span id="conto-etichetta">Accedi</span></button><span class="ndot" id="nav-info-dot"></span><span id="nav-save-status" hidden>Salvataggio da controllare</span></span>
   </div>
 </header>
 <p id="conto-stato" role="status" aria-live="polite"></p>
 
 <main><section class="view on rotta-view" id="v-home">
-<div class="rotta-alerts" id="rotta-alerts" aria-live="polite"></div><div class="account-warning" id="conto-verifica" hidden></div>
-<section class="rotta-hero"><div class="rotta-intro"><h1 id="rotta-titolo">Preparati alla patente nautica, un passo alla volta.</h1><p id="rotta-intro">Quiz e carteggio per la patente senza limiti dalla costa. Esercitati sui quesiti del decreto e confronta il lavoro sulla carta.</p><p>Gratis e open source. Prova quiz e carteggio senza account; crea un account per salvare i progressi.</p></div><img class="rotta-scene" src="/paesaggio.svg" alt=""></section>
-<section class="home-avvii"><div><button class="btn primary" data-ruolo="principale" data-modo="sim" data-prova="base">Simula il quiz base</button><p class="condizioni-base"></p><p>La correzione arriva alla fine, come all'esame.</p></div><div><button class="btn" data-rotta-start disabled>Allenati con 10 domande</button><p id="home-breve-testo">Un allenamento breve, con correzione dopo ogni risposta.</p></div></section>
+<section class="home-pannello home-primo" id="home-inizio"><div class="home-contenuto">
+<div class="rotta-alerts" id="rotta-alerts" role="alert" aria-live="polite"></div><div class="account-warning" id="conto-verifica" hidden></div>
+
+<h1 id="rotta-titolo">Preparati alla patente nautica, un passo alla volta.</h1>
+<p id="rotta-intro">Quiz e carteggio per la patente senza limiti dalla costa.</p>
+<div class="home-striscia" aria-hidden="true"><svg class="illustrazione" aria-hidden="true" viewBox="0 0 600 380" preserveAspectRatio="xMidYMid slice"  aria-label="Un tratto di costa disegnato come su una carta nautica: un faro con i settori rosso, bianco e verde, una boa cardinale est, le linee di profondità e una rotta che passa a est della boa ed entra nel settore bianco">
+<defs>
+<pattern id="striscia-reticolo" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M60 0H0V60" fill="none" stroke="#FFFFFF" stroke-opacity=".08"/></pattern>
+<radialGradient id="striscia-alone"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".35" stop-color="#FFE7A8" stop-opacity=".95"/><stop offset="1" stop-color="#FFE7A8" stop-opacity="0"/></radialGradient>
+<mask id="striscia-maschera" maskUnits="userSpaceOnUse" x="0" y="0" width="600" height="380"><path class="rotta-maschera" pathLength="1" d="M236 374 300 300 279 191 352 164" fill="none" stroke="#fff" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/></mask>
+</defs>
+<!-- U, terra beige: il mare aperto della Regata, e il basso fondale più chiaro sotto costa -->
+<rect width="600" height="380" fill="#0A4F6E"/>
+<path d="M0 0h600v380H0z" fill="url(#striscia-reticolo)"/>
+<path d="M360 0h240v380H300c-20-40 10-70 40-96 30-26 4-60-12-90-18-34 2-70 18-104C356 62 352 30 360 0Z" fill="#2F7896"/>
+<g fill="none" stroke="#FFFFFF" stroke-opacity=".4" stroke-dasharray="2 5"><path d="M330 0c-14 34-26 72-8 108 18 36 34 70 2 100-30 28-66 54-48 92 8 18 14 50 6 80"/><path d="M290 0c-14 40-34 82-12 120 20 36 30 66-6 96-34 28-70 46-56 84 6 18 8 50 0 80"/></g>
+<!-- I settori del faro: verde, bianco e rosso, con i loro limiti tratteggiati. Si disegnano prima della terra, che li taglia sulla costa -->
+<path d="M392 150L328.6 285.9A150 150 0 0 1 269.1 236.0Z" fill="#3DBE78" fill-opacity="0.1"/>
+<path d="M392 150L269.1 236.0A150 150 0 0 1 242.6 163.1Z" fill="#FFFFFF" fill-opacity="0.07"/>
+<path d="M392 150L242.6 163.1A150 150 0 0 1 262.1 75.0Z" fill="#FF5A55" fill-opacity="0.1"/>
+<path d="M392 150L328.6 285.9" stroke="#FFFFFF" stroke-opacity=".45" stroke-width="1" stroke-dasharray="3 4"/>
+<path d="M392 150L269.1 236.0" stroke="#FFFFFF" stroke-opacity=".45" stroke-width="1" stroke-dasharray="3 4"/>
+<path d="M392 150L242.6 163.1" stroke="#FFFFFF" stroke-opacity=".45" stroke-width="1" stroke-dasharray="3 4"/>
+<path d="M392 150L262.1 75.0" stroke="#FFFFFF" stroke-opacity=".45" stroke-width="1" stroke-dasharray="3 4"/>
+<path d="M366.6 202.1A58 58 0 0 1 345.1 184.1" fill="none" stroke="#3DBE78" stroke-width="6" stroke-linecap="butt"/>
+<text x="345.7" y="209.2" text-anchor="middle" font-family="Manrope,sans-serif" font-size="10" font-weight="800" fill="#3DBE78">V</text>
+<path d="M343.9 182.4A58 58 0 0 1 334.3 156.1" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="butt"/>
+<text x="320.9" y="165.3" text-anchor="middle" font-family="Manrope,sans-serif" font-size="10" font-weight="800" fill="#FFFFFF">B</text>
+<path d="M334.1 154.0A58 58 0 0 1 341.3 121.9" fill="none" stroke="#FF5A55" stroke-width="6" stroke-linecap="butt"/>
+<text x="321.7" y="138.4" text-anchor="middle" font-family="Manrope,sans-serif" font-size="10" font-weight="800" fill="#FF5A55">R</text>
+<!-- La terra -->
+<path d="M420 0h180v380H362c-14-30 2-52 26-72 30-24 20-58 6-84-16-30-4-60 12-88 16-28 8-62 14-136Z" fill="#F2E6CF" stroke="#0B2530" stroke-width="1.5"/>
+<path d="M470 40c30 20 60 10 90 40M480 140c30 10 70 0 100 24M450 260c40 4 80-10 130 10" fill="none" stroke="#6E9AAB" stroke-opacity=".7"/>
+<g font-family="Manrope,sans-serif" font-size="13" font-style="italic" fill="#FFFFFF" fill-opacity=".75"><text x="70" y="60">42</text><text x="160" y="110">37<tspan font-size="9" dy="3">5</tspan></text><text x="60" y="200">51</text><text x="210" y="250">28</text><text x="120" y="320">46</text><text x="250" y="60">23</text><text x="214" y="190">14</text><text x="210" y="340">19</text></g>
+<!-- Il faro, e il lampo vero, Lam.(2) 10s -->
+<circle class="lampo lampo-faro" cx="392" cy="150" r="30" fill="url(#striscia-alone)"/>
+<circle cx="392" cy="150" r="6" fill="#0B2530"/><circle cx="392" cy="150" r="2.5" fill="#FFFFFF"/>
+<text x="384" y="106" text-anchor="end" font-family="Manrope,sans-serif" font-size="12" font-weight="700" fill="#FFFFFF">Lam.(2) BRV 10s</text>
+<!-- La boa cardinale est: nero giallo nero, coni base contro base, Sc.(3) 10s. Si passa a est -->
+<g transform="translate(262 252)">
+<circle class="lampo lampo-boa" cx="0" cy="-30" r="22" fill="url(#striscia-alone)"/>
+<path d="M-6-36 0-44 6-36Z M-6-34 0-26 6-34Z" fill="#0B2530" stroke="#FFFFFF" stroke-width="1" stroke-linejoin="round" paint-order="stroke"/>
+<path d="M0-26v6" stroke="#FFFFFF" stroke-width="4"/><path d="M0-26v6" stroke="#0B2530" stroke-width="2"/>
+<path d="M-9 8h18l-3-28h-12Z" fill="#F2C200" stroke="#FFFFFF" stroke-width="3"/>
+<path d="M-9 8h18l-3-28h-12Z" fill="none" stroke="#0B2530" stroke-width="1.2"/>
+<path d="M-9.7 8h19.4l-.9-8h-17.6Z M-8 -12h16l-1-8h-14Z" fill="#0B2530"/>
+<text x="4" y="28" text-anchor="end" font-family="Manrope,sans-serif" font-size="12" font-weight="700" fill="#FFFFFF">Sc.(3) 10s</text>
+</g>
+<!-- La rotta, nell'arancio delle boe: passa a est della boa ed entra nel settore bianco -->
+<g mask="url(#striscia-maschera)">
+<path d="M236 374 300 300 279 191 352 164" fill="none" stroke="#FF6A1A" stroke-width="3" stroke-dasharray="10 7" stroke-linecap="round" stroke-linejoin="round"/>
+<g fill="#FFFFFF" stroke="#FF6A1A" stroke-width="3"><circle cx="236" cy="374" r="7"/><circle cx="300" cy="300" r="7"/><circle cx="279" cy="191" r="7"/></g>
+<path d="m339 158 14 6-11 10" fill="none" stroke="#FF6A1A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</svg>
+</div>
+<div class="home-prova"><h2>La prova d'esame dei quiz</h2><div id="home-scandagli" class="home-scandagli"></div><button class="btn primary" data-ruolo="principale" data-modo="sim" data-prova="base">Simula il quiz base</button><p class="home-nota">La correzione arriva alla fine, come all'esame.</p></div>
+<div class="home-breve"><button class="text-btn link-freccia" data-rotta-start disabled>Allenati con 10 domande</button><p id="home-breve-testo">Con la correzione dopo ogni risposta.</p></div>
 <section id="home-consiglio" hidden><h2>Allenamento consigliato</h2><p>Quiz base selezionati dalle risposte disponibili qui. La selezione non conosce lo studio che hai fatto altrove.</p><p id="home-consiglio-n"></p><details><summary>Come vengono scelte le domande?</summary><p>La selezione può includere domande da ripassare, domande mai incontrate qui e conferme. Il motivo di ciascuna compare durante l'attività.</p></details><button class="btn" data-v="progressi">Vedi i Progressi</button></section>
 <section class="route-section" id="rotta-last" hidden><h2 id="rotta-last-title">Le attività di questa pagina</h2><div id="rotta-last-card"></div></section>
 <section id="invito-home" class="account-invite" hidden><h2>Conserva le risposte.</h2><p id="invito-home-n"></p><p>Le risposte saranno legate alla tua email e conservate sul nostro server, in chiaro. Il titolare può leggerle per supporto e statistiche.</p><button class="btn primary" data-account="registra">Conserva le risposte</button><button class="btn" data-invito-rinuncia data-invito="rinuncia">Continua senza account</button></section>
-<section class="route-section" id="route-choice"><h2>Scegli da dove cominciare</h2><div class="home-porte"><a href="/?sezione=allenati" data-v="allenati"><h3>Allenati</h3><p>Quiz · Carteggio · Segnali</p><p>Domande con correzione, lavoro sulla carta e riconoscimento.</p></a><a href="/?sezione=esame" data-v="esame"><h3>Esame</h3><p>Carteggio, quiz base e vela: preparali in parallelo, senza sblocchi.</p></a><a href="/?sezione=progressi" data-v="progressi"><h3>Progressi</h3><p>Rivedi le attività di questa pagina. Con l'account ritrovi la mappa e la storia.</p></a></div><div class="row"><a class="text-btn" href="/?sezione=allenati&amp;segmento=carteggio" data-v="cart">Apri Carteggio</a><a class="text-btn" href="/?sezione=allenati&amp;segmento=segnali" data-v="seg">Apri Segnali</a><button class="text-btn" data-come-funziona>Come funziona</button></div></section>
-<section class="route-section"><h2>Che cosa non torna</h2><p>La banca è del 2022. I limiti si dichiarano, quesito per quesito. All'esame vale la risposta del decreto.</p><p>Nessuna newsletter e nessun cookie di tracciamento.</p><div id="home-limiti"></div><p>Il carteggio lo giudichi tu: il sito non corregge il lavoro sulla carta.</p><button class="text-btn" data-info-section="difetti" data-v="info" data-profilo="info">Note, fonti e riferimenti</button></section>
-</section><section class="view" id="v-allenati"><h1>Allenati</h1><p class="sub">Quiz, lavoro sulla carta, riconoscimento dei segnali.</p><div class="segmenti" role="tablist" aria-label="Allenati"><a role="tab" href="/?sezione=allenati&amp;segmento=quiz" data-segmento="quiz" aria-selected="true">Quiz</a><a role="tab" href="/?sezione=allenati&amp;segmento=carteggio" data-segmento="carteggio" aria-selected="false">Carteggio</a><a role="tab" href="/?sezione=allenati&amp;segmento=segnali" data-segmento="segnali" aria-selected="false">Segnali</a></div><div id="quiz-alerts" aria-live="polite"></div><div id="seg-quiz" data-pannello-segmento="quiz"><p>Scegli come esercitarti con i quiz base o vela. Puoi cambiare attività quando vuoi.</p>    <div id="quiz-menu">
+
+<p class="home-gratis">Gratis e open source.</p>
+</div></section>
+<nav id="home-percorso" aria-label="Le tappe della Home"><a href="#home-inizio" aria-label="La prova d’esame"><svg aria-hidden="true" viewBox="0 0 13 13"><polygon points="6.5,1 12,12 1,12"/></svg><span class="nome">La prova d’esame</span></a><a href="#home-tappa-1" aria-label="Si prova senza account"><svg aria-hidden="true" viewBox="0 0 13 13"><polygon points="6.5,1 12,12 1,12"/></svg><span class="nome">Si prova senza account</span></a><a href="#home-tappa-2" aria-label="La simulazione, come all’esame"><svg aria-hidden="true" viewBox="0 0 13 13"><polygon points="6.5,1 12,12 1,12"/></svg><span class="nome">La simulazione, come all’esame</span></a><a href="#home-tappa-3" aria-label="Dieci domande, con la correzione"><svg aria-hidden="true" viewBox="0 0 13 13"><polygon points="6.5,1 12,12 1,12"/></svg><span class="nome">Dieci domande, con la correzione</span></a><a href="#home-tappa-4" aria-label="L’allenamento consigliato"><svg aria-hidden="true" viewBox="0 0 13 13"><polygon points="6.5,1 12,12 1,12"/></svg><span class="nome">L’allenamento consigliato</span></a><a href="#home-tappa-5" aria-label="Un argomento alla volta"><svg aria-hidden="true" viewBox="0 0 13 13"><polygon points="6.5,1 12,12 1,12"/></svg><span class="nome">Un argomento alla volta</span></a><a href="#home-tappa-6" aria-label="Gli errori tornano"><svg aria-hidden="true" viewBox="0 0 13 13"><polygon points="6.5,1 12,12 1,12"/></svg><span class="nome">Gli errori tornano</span></a><a href="#home-tappa-7" aria-label="Il carteggio, sulla carta vera"><svg aria-hidden="true" viewBox="0 0 13 13"><polygon points="6.5,1 12,12 1,12"/></svg><span class="nome">Il carteggio, sulla carta vera</span></a><a href="#home-tappa-8" aria-label="Fanali e segnali"><svg aria-hidden="true" viewBox="0 0 13 13"><polygon points="6.5,1 12,12 1,12"/></svg><span class="nome">Fanali e segnali</span></a><a href="#home-tappa-9" aria-label="L’esame, in ordine"><svg aria-hidden="true" viewBox="0 0 13 13"><polygon points="6.5,1 12,12 1,12"/></svg><span class="nome">L’esame, in ordine</span></a><a href="#home-tappa-10" aria-label="Con l’account, le risposte restano"><svg aria-hidden="true" viewBox="0 0 13 13"><polygon points="6.5,1 12,12 1,12"/></svg><span class="nome">Con l’account, le risposte restano</span></a></nav><div id="home-luci"><button id="home-faro" aria-label="Il faro: leggi la sua sigla" aria-expanded="false"></button><button id="home-boa" aria-label="La boa cardinale est: leggi la sua sigla" aria-expanded="false"></button><div id="home-sigla" aria-live="polite"></div></div><div class="home-come"><h2>Come funziona</h2><p>Scendi lungo la rotta: ogni pannello è un modo di prepararsi, e il suo triangolo, qui a lato, si accende quando ci arrivi.</p></div><section class="home-pannello home-tappa" id="home-tappa-1"><div class="home-contenuto"><h2>Si prova senza account</h2><p id="home-testo-1">Apri una domanda e rispondi: non serve registrarsi.</p><button class="text-btn link-freccia" data-home-breve>Prova con dieci domande</button></div></section>
+<section class="home-pannello home-tappa" id="home-tappa-2"><div class="home-contenuto"><h2>La simulazione, come all’esame</h2><p id="home-testo-2"></p><button class="text-btn link-freccia" data-modo="sim" data-prova="base">Simula il quiz base</button></div></section>
+<section class="home-pannello home-tappa" id="home-tappa-3"><div class="home-contenuto"><h2>Dieci domande, con la correzione</h2><p id="home-testo-3">Dieci quiz base, con la correzione dopo ogni risposta: la tua accanto a quella del decreto. Puoi fermarti quando vuoi.</p><button class="text-btn link-freccia" data-home-breve>Allenati con dieci domande</button></div></section>
+<section class="home-pannello home-tappa" id="home-tappa-4"><div class="home-contenuto"><h2>L’allenamento consigliato</h2><p id="home-testo-4"></p><button class="text-btn link-freccia" data-modo="mirata">Apri l’allenamento consigliato</button></div></section>
+<section class="home-pannello home-tappa" id="home-tappa-5"><div class="home-contenuto"><h2>Un argomento alla volta</h2><p id="home-testo-5"></p><button class="text-btn link-freccia" data-modo="argomento">Scegli un argomento</button></div></section>
+<section class="home-pannello home-tappa" id="home-tappa-6"><div class="home-contenuto"><h2>Gli errori tornano</h2><p id="home-testo-6">Riapri le domande che hai sbagliato in «Ripassa gli errori» o nell’allenamento consigliato. Dopo un errore puoi segnare perché: non lo sapevi, o è stata una svista.</p><button class="text-btn link-freccia" data-modo="sbagliate">Ripassa gli errori</button></div></section>
+<section class="home-pannello home-tappa" id="home-tappa-7"><div class="home-contenuto"><h2>Il carteggio, sulla carta vera</h2><p id="home-testo-7"></p><button class="text-btn link-freccia" data-v="cart">Apri Carteggio</button></div></section>
+<section class="home-pannello home-tappa" id="home-tappa-8"><div class="home-contenuto"><h2>Fanali e segnali</h2><p id="home-testo-8"></p><button class="text-btn link-freccia" data-v="seg">Apri Segnali</button></div></section>
+<section class="home-pannello home-tappa" id="home-tappa-9"><div class="home-contenuto"><h2>L’esame, in ordine</h2><p id="home-testo-9">Carteggio, quiz base, quiz vela: con le condizioni del decreto. Le prepari quando vuoi, senza sblocchi.</p><button class="text-btn link-freccia" data-v="esame">Apri Esame</button></div></section>
+<section class="home-pannello home-tappa" id="home-tappa-10"><div class="home-contenuto"><h2>Con l’account, le risposte restano</h2><p id="home-testo-10">Ritrovi le tue risposte quando torni, anche da un altro telefono, e vedi i Progressi.</p></div></section>
+<section class="home-righe"><h2>Che cosa trovi qui</h2><div id="home-banca-righe"></div><a class="home-riga" href="/?sezione=esame" data-v="esame"><svg class="ico" aria-hidden="true"><use href="#i-clock"/></svg><span><b>Le prove, in ordine</b><small>Carteggio, quiz base, quiz vela</small></span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a><button class="text-btn" data-come-funziona>Come funziona</button></section><section class="home-leggi"><h2>Una luce, una sigla</h2><p>Sulla carta ogni luce ha una sigla che dice come lampeggia. Tocca il faro o la boa per leggerla.</p><div id="home-carta-posto"></div></section><div id="home-carta"><div class="home-carta-in"><svg id="home-carta-svg" role="img" aria-label="Carta illustrativa: faro a settori, boa cardinale est e rotta" viewBox="0 0 600 380"><rect width="100%" height="100%" fill="#0A4F6E"/><g id="home-carta-forme">
+<defs>
+<pattern id="dis-reticolo" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M60 0H0V60" fill="none" stroke="#FFFFFF" stroke-opacity=".08"/></pattern>
+<radialGradient id="dis-alone"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".35" stop-color="#FFE7A8" stop-opacity=".95"/><stop offset="1" stop-color="#FFE7A8" stop-opacity="0"/></radialGradient>
+<mask id="dis-maschera" maskUnits="userSpaceOnUse" x="0" y="0" width="600" height="380"><path class="rotta-maschera" data-rotta pathLength="1" d="M236 374 300 300 279 191 352 164" fill="none" stroke="#fff" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/></mask>
+</defs>
+<!-- U, terra beige: il mare aperto della Regata, e il basso fondale più chiaro sotto costa -->
+
+
+<path d="M360 0h240v380H300c-20-40 10-70 40-96 30-26 4-60-12-90-18-34 2-70 18-104C356 62 352 30 360 0Z" fill="#2F7896"/>
+<g fill="none" stroke="#FFFFFF" stroke-opacity=".4" stroke-dasharray="2 5"><path d="M330 0c-14 34-26 72-8 108 18 36 34 70 2 100-30 28-66 54-48 92 8 18 14 50 6 80"/><path d="M290 0c-14 40-34 82-12 120 20 36 30 66-6 96-34 28-70 46-56 84 6 18 8 50 0 80"/></g>
+<!-- I settori del faro: verde, bianco e rosso, con i loro limiti tratteggiati. Si disegnano prima della terra, che li taglia sulla costa -->
+<path d="M392 150L328.6 285.9A150 150 0 0 1 269.1 236.0Z" fill="#3DBE78" fill-opacity="0.1"/>
+<path d="M392 150L269.1 236.0A150 150 0 0 1 242.6 163.1Z" fill="#FFFFFF" fill-opacity="0.07"/>
+<path d="M392 150L242.6 163.1A150 150 0 0 1 262.1 75.0Z" fill="#FF5A55" fill-opacity="0.1"/>
+<path d="M392 150L328.6 285.9" stroke="#FFFFFF" stroke-opacity=".45" stroke-width="1" stroke-dasharray="3 4"/>
+<path d="M392 150L269.1 236.0" stroke="#FFFFFF" stroke-opacity=".45" stroke-width="1" stroke-dasharray="3 4"/>
+<path d="M392 150L242.6 163.1" stroke="#FFFFFF" stroke-opacity=".45" stroke-width="1" stroke-dasharray="3 4"/>
+<path d="M392 150L262.1 75.0" stroke="#FFFFFF" stroke-opacity=".45" stroke-width="1" stroke-dasharray="3 4"/>
+<path d="M366.6 202.1A58 58 0 0 1 345.1 184.1" fill="none" stroke="#3DBE78" stroke-width="6" stroke-linecap="butt"/>
+<text x="345.7" y="209.2" text-anchor="middle" font-family="Manrope,sans-serif" font-size="10" font-weight="800" fill="#3DBE78">V</text>
+<path d="M343.9 182.4A58 58 0 0 1 334.3 156.1" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="butt"/>
+<text x="320.9" y="165.3" text-anchor="middle" font-family="Manrope,sans-serif" font-size="10" font-weight="800" fill="#FFFFFF">B</text>
+<path d="M334.1 154.0A58 58 0 0 1 341.3 121.9" fill="none" stroke="#FF5A55" stroke-width="6" stroke-linecap="butt"/>
+<text x="321.7" y="138.4" text-anchor="middle" font-family="Manrope,sans-serif" font-size="10" font-weight="800" fill="#FF5A55">R</text>
+<!-- La terra -->
+<path d="M420 0h180v380H362c-14-30 2-52 26-72 30-24 20-58 6-84-16-30-4-60 12-88 16-28 8-62 14-136Z" fill="#F2E6CF" stroke="#0B2530" stroke-width="1.5"/>
+<path d="M470 40c30 20 60 10 90 40M480 140c30 10 70 0 100 24M450 260c40 4 80-10 130 10" fill="none" stroke="#6E9AAB" stroke-opacity=".7"/>
+<g font-family="Manrope,sans-serif" font-size="13" font-style="italic" fill="#FFFFFF" fill-opacity=".75"><text x="250" y="60">23</text></g>
+<!-- Il faro, e il lampo vero, Lam.(2) 10s -->
+<circle class="lampo-faro" data-luce cx="392" cy="150" r="30" fill="url(#dis-alone)"/>
+<circle cx="392" cy="150" r="6" fill="#0B2530"/><circle cx="392" cy="150" r="2.5" fill="#FFFFFF"/>
+<text x="384" y="106" text-anchor="end" font-family="Manrope,sans-serif" font-size="12" font-weight="700" fill="#FFFFFF">Lam.(2) BRV 10s</text>
+<!-- La boa cardinale est: nero giallo nero, coni base contro base, Sc.(3) 10s. Si passa a est -->
+<g transform="translate(262 252)">
+<circle class="lampo-boa" data-luce cx="0" cy="-30" r="22" fill="url(#dis-alone)"/>
+<path d="M-6-36 0-44 6-36Z M-6-34 0-26 6-34Z" fill="#0B2530" stroke="#FFFFFF" stroke-width="1" stroke-linejoin="round" paint-order="stroke"/>
+<path d="M0-26v6" stroke="#FFFFFF" stroke-width="4"/><path d="M0-26v6" stroke="#0B2530" stroke-width="2"/>
+<path d="M-9 8h18l-3-28h-12Z" fill="#F2C200" stroke="#FFFFFF" stroke-width="3"/>
+<path d="M-9 8h18l-3-28h-12Z" fill="none" stroke="#0B2530" stroke-width="1.2"/>
+<path d="M-9.7 8h19.4l-.9-8h-17.6Z M-8 -12h16l-1-8h-14Z" fill="#0B2530"/>
+<text x="4" y="28" text-anchor="end" font-family="Manrope,sans-serif" font-size="12" font-weight="700" fill="#FFFFFF">Sc.(3) 10s</text>
+</g>
+<!-- La rotta, nell'arancio delle boe: passa a est della boa ed entra nel settore bianco -->
+<g mask="url(#dis-maschera)">
+<path d="M236 374 300 300 279 191 352 164" fill="none" stroke="#FF6A1A" stroke-width="3" stroke-dasharray="10 7" stroke-linecap="round" stroke-linejoin="round"/>
+<g fill="#FFFFFF" stroke="#FF6A1A" stroke-width="3"><circle cx="236" cy="374" r="7"/><circle cx="300" cy="300" r="7"/><circle cx="279" cy="191" r="7"/></g>
+<path d="m339 158 14 6-11 10" fill="none" stroke="#FF6A1A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</g></svg><div class="home-velo"></div></div></div><section class="home-limiti route-section"><h2>I limiti, detti prima</h2><div class="home-limiti-nota"><p>La banca è del 2022. I limiti si dichiarano, quesito per quesito. All'esame vale la risposta del decreto.</p><div id="home-limiti"></div><p>Il carteggio lo giudichi tu: il sito non corregge il lavoro sulla carta.</p><p>Nessuna newsletter e nessun cookie di tracciamento.</p><button class="text-btn link-freccia" data-info-section="difetti" data-v="info" data-profilo="info">Note, fonti e riferimenti</button></div></section></section><section class="view" id="v-allenati"><h1>Allenati</h1><p class="sub">Quiz, lavoro sulla carta, riconoscimento dei segnali.</p><div class="segmenti" role="tablist" aria-label="Allenati"><a role="tab" href="/?sezione=allenati&amp;segmento=quiz" data-segmento="quiz" aria-selected="true">Quiz</a><a role="tab" href="/?sezione=allenati&amp;segmento=carteggio" data-segmento="carteggio" aria-selected="false">Carteggio</a><a role="tab" href="/?sezione=allenati&amp;segmento=segnali" data-segmento="segnali" aria-selected="false">Segnali</a></div><div id="quiz-alerts" aria-live="polite"></div><div id="seg-quiz" data-pannello-segmento="quiz"><p>Scegli come esercitarti con i quiz base o vela. Puoi cambiare attività quando vuoi.</p>    <div id="quiz-menu">
       <div id="f-modo"></div>
       <details id="quiz-altri"><summary>Altri modi di esercitarti</summary><div id="quiz-giro-porta"></div></details>
     </div>
@@ -2597,10 +2832,12 @@ function dipingi() {
   const pronto = !S.caricamento && !S.bancaErrore && !!S.meta && S.banca.length && ARCH.lettura === 'ordinario';
   const h = document.getElementById('rotta-titolo');
   h.textContent = S.conto ? 'Che cosa vuoi fare adesso?' : 'Preparati alla patente nautica, un passo alla volta.';
-  document.getElementById('rotta-intro').textContent = 'Quiz e carteggio per la patente senza limiti dalla costa. Esercitati sui quesiti del decreto e confronta il lavoro sulla carta.';
+  document.getElementById('rotta-intro').textContent = 'Quiz e carteggio per la patente senza limiti dalla costa.';
+  dipingiHomeVolto();
   document.getElementById('home-consiglio').hidden = !S.conto || !pronto;
   const start = document.querySelector('[data-rotta-start]'); start.disabled = !pronto;
   if(pronto&&!NAV_UI.breve)NAV_UI.breve=preparaBreve({seme:Date.now()},fonteQuiz());
+  if(S.conto)start.dataset.modo='mirata';else delete start.dataset.modo;
   start.textContent = S.conto ? 'Apri l’allenamento consigliato' : NAV_UI.breve ? `Allenati con ${NAV_UI.breve.quanti} ${NAV_UI.breve.quanti===1?'domanda':'domande'}` : 'Allenati con poche domande';
   if (!pronto) { document.getElementById('home-consiglio-n').textContent = ''; dipingiDiag(); return; }
   S.rotta = selezioneQuiz('mirata', {}, fonteQuiz());
@@ -2618,7 +2855,7 @@ function dipingi() {
   invito.hidden = !!S.conto || !API || (r.vuoto && !segnali) || NAV_UI.rinunciaHome === firmaInvitoHome(r);
   document.getElementById('invito-home-n').textContent = r.risposte.totale ? `Hai ${r.risposte.totale} ${r.risposte.totale===1?'risposta':'risposte'} in questa pagina. Con l'account puoi ritrovare ${r.risposte.totale===1?'quella accolta':'quelle accolte'} dal server quando torni, anche da un altro dispositivo, e ${r.risposte.totale===1?'scaricarla':'scaricarle'}.` : 'Hai punteggi dei Segnali in questa pagina.';
   const b = S.banca;
-  document.getElementById('home-limiti').innerHTML = `<p>${b.filter(q=>q.osc).length} quesiti oscurati: non escono nella simulazione d'esame; l'avviso compare prima della risposta.</p><p>${b.filter(q=>q.nb).length} quesiti con nota dopo la risposta; ${b.filter(q=>q.nb && /DM 133\/2024/.test(q.nb)).length} citano il DM 133/2024.</p><p>${b.filter(q=>q.fm).length} ${b.filter(q=>q.fm).length===1?'quesito con figura non disponibile':'quesiti con figura non disponibile'}.</p>`;
+  document.getElementById('home-limiti').innerHTML = `<p>${b.filter(q=>q.osc).length} quesiti oscurati: non escono nella simulazione d'esame; l'avviso compare prima della risposta.</p><p>${b.filter(q=>q.nb).length} quesiti con nota dopo la risposta; ${b.filter(q=>q.nb && /DM 133\/2024/.test(q.nb)).length} citano il DM 133/2024.</p><p>${b.filter(q=>q.fm).length} ${b.filter(q=>q.fm).length===1?'figura non disponibile':'figure non disponibili'}.</p>`;
   if (!document.getElementById('temi').children.length) document.getElementById('temi').innerHTML = [...new Set(b.filter(q=>q.k==='base').map(q=>q.t))].map(t=>`<button class="btn" data-tema="${esc(t)}">${esc(t)}</button>`).join('');
   for (const k of ['base','vela']) {
     const c = S.meta.prove[k];
@@ -4344,6 +4581,7 @@ function sfondoInerte() {
   statoClientSulleSuperfici();
   document.body.classList.toggle('in-attivita',runner);
   document.body.classList.toggle('attivita-conclusa',runner && NAV_UI.terminee && !document.getElementById('rivedi').classList.contains('on'));
+  aggiornaHomeVolto();
 }
 
 /* --- la schermata Info --------------------------------------------------- */
@@ -5689,6 +5927,109 @@ function ricordaOrigine() {
   if(!NAV_UI.origine)NAV_UI.origine={id:NAV_UI.pila[NAV_UI.pos],sezione:NAV_UI.sezione,segmento:NAV_UI.segmento,fuoco:document.activeElement,scroll:scrollY};
 }
 function chiudiPreparazioni() {for(const id of ['quiz-conf','c-preparazione','prep-tecniche'])el(id).hidden=true; NAV_UI.superficie=null;}
+// P-98. Il volto segue la navigazione, senza cambiare indirizzo o storico.
+// Il fondale è un'immagine SVG inline ritagliata nel proprio viewport. Le luci
+// e la rotta restano elementi SVG della pagina: animazioni e comandi sono vivi.
+// Così una costa più larga dello schermo non lascia nodi con rettangoli fuori
+// dal viewport; il solo overflow:clip non basta (T-07).
+const HOME_FONDALE = el('home-carta-forme').cloneNode(true);
+HOME_FONDALE.querySelectorAll('[data-luce],g[mask]').forEach(x=>x.remove());
+HOME_FONDALE.querySelector('mask')?.remove();
+const HOME_BOA=HOME_FONDALE.querySelector('g[transform="translate(262 252)"]');
+HOME_BOA.remove();HOME_BOA.id='home-boa-disegno';
+HOME_FONDALE.querySelectorAll('circle[cx="392"]').forEach(x=>x.remove());
+const homeFondaleImmagine=document.createElementNS('http://www.w3.org/2000/svg','image');
+homeFondaleImmagine.id='home-fondale';
+el('home-carta-forme').replaceWith(homeFondaleImmagine);
+el('home-carta-svg').insertAdjacentHTML('beforeend',`<defs><radialGradient id="home-alone"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#FFE7A8" stop-opacity=".95"/><stop offset="1" stop-color="#FFE7A8" stop-opacity="0"/></radialGradient><mask id="home-maschera"><path id="home-rivela" data-rotta pathLength="1" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round"/></mask></defs><g mask="url(#home-maschera)"><path id="home-traccia" fill="none" stroke="#FF6A1A" stroke-linecap="round" stroke-linejoin="round"/><g id="home-nodi" fill="#fff" stroke="#FF6A1A"></g></g><circle id="home-lampo-faro" class="lampo-faro" data-luce fill="url(#home-alone)"/><circle id="home-lampo-boa" class="lampo-boa" data-luce fill="url(#home-alone)"/><g id="home-faro-disegno"><circle r="6" fill="#0B2530"/><circle r="2.5" fill="#fff"/></g>`);
+el('home-carta-svg').append(HOME_BOA);
+const HOME_CARTA = matchMedia('(min-width:1200px) and (min-height:680px)');
+function aggiornaHomeVolto() {
+  const carta = HOME_CARTA.matches && NAV_UI.sezione === 'home' && !NAV_UI.superficie && !NAV_UI.runner;
+  if(carta) document.documentElement.dataset.volto='carta';else delete document.documentElement.dataset.volto;
+  const leggi=document.querySelector('.home-leggi');
+  if(!carta && innerWidth>=901)el('home-inizio').append(leggi);
+  else document.querySelector('.home-righe').after(leggi);
+  const posto=carta?el('v-home'):el('home-carta-posto');
+  if(carta)posto.prepend(el('home-carta'));else if(el('home-carta').parentElement!==posto)posto.append(el('home-carta'));
+  const luci=carta?el('v-home'):el('home-carta-posto');
+  if(el('home-luci').parentElement!==luci)luci.append(el('home-luci'));
+  misuraHomeCarta();segnaHomeTappa();
+}
+function misuraHomeCarta(){
+  const carta=document.documentElement.dataset.volto==='carta', box=el('home-carta').getBoundingClientRect();
+  if(!box.width||!box.height)return;
+  const w=box.width,h=box.height,s=carta?h/380:Math.max(w/600,h/380), costa=Math.max(innerWidth*.1,132);
+  const x=carta?w-costa-420*s:(w-600*s)/2,y=carta?0:(h-380*s)/2;
+  const svg=el('home-carta-svg');svg.setAttribute('viewBox',`0 0 ${w} ${h}`);
+  const fondale=HOME_FONDALE.cloneNode(true);
+  // Il corridoio delle tappe resta beige uniforme: nessun segno decorativo
+  // della terra passa sotto un triangolo o ne confonde il contorno.
+  if(carta)fondale.querySelector('path[stroke="#6E9AAB"]')?.remove();
+  fondale.querySelector('path[fill="#F2E6CF"]').setAttribute('d',`M420 0h${Math.max(180,(w-x)/s-420)}v380H362c-14-30 2-52 26-72 30-24 20-58 6-84-16-30-4-60 12-88 16-28 8-62 14-136Z`);
+  const immagine=el('home-fondale');immagine.setAttribute('width',w);immagine.setAttribute('height',h);
+  immagine.setAttribute('href','data:image/svg+xml;charset=utf-8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${-x/s} ${-y/s} ${w/s} ${h/s}">${fondale.innerHTML}</svg>`));
+  // I segni animati hanno coordinate in pixel del viewport, sempre interne.
+  const punto=(px,py)=>[Math.max(32,Math.min(w-32,x+px*s)),Math.max(32,Math.min(h-32,y+py*s))];
+  const punti=[[236,374],[300,300],[279,191],[352,164]].map(([px,py])=>punto(px,py));
+  const d=punti.map(([px,py],i)=>`${i?'L':'M'}${px} ${py}`).join(' ');
+  for(const id of ['home-rivela','home-traccia'])el(id).setAttribute('d',d);
+  el('home-rivela').setAttribute('stroke-width',22*s);
+  el('home-traccia').setAttribute('stroke-width',3*s);el('home-traccia').setAttribute('stroke-dasharray',`${10*s} ${7*s}`);
+  const ultimo=punti.at(-1);
+  el('home-nodi').innerHTML=`<path d="M${ultimo[0]-13*s} ${ultimo[1]-6*s}L${ultimo[0]} ${ultimo[1]}L${ultimo[0]-11*s} ${ultimo[1]+10*s}" fill="none" stroke-width="${3*s}" stroke-linecap="round" stroke-linejoin="round"/>`+punti.slice(0,3).map(([px,py])=>`<circle cx="${px}" cy="${py}" r="${7*s}" stroke-width="${3*s}"/>`).join('');
+  for(const [id,luce,px,py,r] of [['home-faro','home-lampo-faro',392,150,30],['home-boa','home-lampo-boa',262,222,22]]){
+    const [cx,cy]=punto(px,py),b=el(id);b.style.left=`${cx}px`;b.style.top=`${cy}px`;
+    el(luce).setAttribute('cx',cx);el(luce).setAttribute('cy',cy);el(luce).setAttribute('r',Math.min(r*s,cx,cy,w-cx,h-cy));
+  }
+  for(const [id,px,py] of [['home-faro-disegno',392,150],['home-boa-disegno',262,252]]){const [cx,cy]=punto(px,py);el(id).setAttribute('transform',`translate(${cx} ${cy}) scale(${s})`);}
+}
+HOME_CARTA.addEventListener('change',aggiornaHomeVolto);
+addEventListener('resize',aggiornaHomeVolto);
+function segnaHomeTappa(){
+  if(document.documentElement.dataset.volto!=='carta')return;
+  const liens=[...el('home-percorso').querySelectorAll('a')];let k=0;
+  liens.forEach((a,i)=>{if(el(a.hash.slice(1)).getBoundingClientRect().top<=innerHeight*.4)k=i;});
+  liens.forEach((a,i)=>{a.classList.toggle('passata',i<k);if(i===k)a.setAttribute('aria-current','location');else a.removeAttribute('aria-current');});
+}
+addEventListener('scroll',segnaHomeTappa,{passive:true});
+document.addEventListener('click',e=>{
+  const a=e.target.closest('#home-percorso a');if(!a)return;e.preventDefault();e.stopImmediatePropagation();
+  const p=el(a.hash.slice(1));p.scrollIntoView({block:'start'});
+  const titolo=p.querySelector('h1,h2');titolo.tabIndex=-1;titolo.focus({preventScroll:true});segnaHomeTappa();
+},true);
+const HOME_LUCI={
+  'home-faro':['Faro · Lam.(2) BRV 10s','Due lampi ravvicinati ogni 10 secondi. Il colore dice dove sei: nel settore bianco la rotta è libera, nel rosso e nel verde no.'],
+  'home-boa':['Boa cardinale est · Sc.(3) 10s','Tre luci scintillanti ogni 10 secondi. Coni base contro base, nero giallo nero: si passa a est della boa.']
+};
+el('home-luci').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;e.stopPropagation();
+  if(b.hasAttribute('data-ferma-luci')){const ferme=document.documentElement.classList.toggle('luci-ferme');b.textContent=ferme?'Riaccendi le luci':'Ferma le luci';return;}
+  const aperta=b.getAttribute('aria-expanded')==='true';
+  for(const id of Object.keys(HOME_LUCI))el(id).setAttribute('aria-expanded','false');
+  el('home-sigla').replaceChildren();if(aperta)return;
+  b.setAttribute('aria-expanded','true');const [titolo,testo]=HOME_LUCI[b.id];
+  el('home-sigla').innerHTML=`<p><b>${esc(titolo)}</b></p><p>${esc(testo)}</p><button data-ferma-luci>${document.documentElement.classList.contains('luci-ferme')?'Riaccendi le luci':'Ferma le luci'}</button>`;
+});
+// La Home legge gli stessi dati e la stessa selezione della preparazione.
+function dipingiHomeVolto(){
+  const base=S.meta?.prove?.base,b=S.banca,pronta=b.length&&!S.bancaErrore;
+  el('home-scandagli').innerHTML=base?`<div><b>${base.n}</b><span>domande</span></div><div><b>${base.minuti}′</b><span>minuti</span></div><div><b>${base.errori_max}</b><span>errori al più</span></div>`:'';
+  el('home-testo-2').textContent=base?`${base.n} domande in ${base.minuti} minuti, al più ${base.errori_max} errori. Nessuna correzione durante la prova: l'esito arriva alla fine.`:'Le condizioni si leggono dalla banca, che non risponde.';
+  const mirata=pronta?selezioneQuiz('mirata',{},fonteQuiz()).lista:null;
+  el('home-testo-4').textContent=mirata?`Fino a ${mirata.length} quiz base scelti dalle tue risposte. Ogni domanda dice perché è lì.`:'Quiz base scelti dalle tue risposte. Ogni domanda dice perché è lì.';
+  const pesi=S.meta?.pesi_esame;
+  el('home-testo-5').textContent=base&&pesi?`Base o vela, uno o più argomenti. Navigazione e Manovra portano ${pesi['NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA']} delle ${base.n} domande ciascuna.`:'Base o vela, uno o più argomenti.';
+  el('home-testo-7').textContent=`${S.cart.length?S.cart.length+' esercizi':'Gli esercizi'}: tracci sulla carta nautica con squadrette e compasso, poi confronti con la risposta ministeriale. Sei tu a giudicare.`;
+  el('home-testo-8').textContent=`${E.SEGNALI.length} segnali da riconoscere a colpo d'occhio: fanali, segnali diurni e suoni. Sulla carta ogni luce ha la sua sigla: toccala per leggerla.`;
+  const riga=(icon,titolo,testo,dest)=>`<a class="home-riga" href="${dest}" data-v="${dest.includes('carteggio')?'cart':dest.includes('segnali')?'seg':'allenati'}"><svg class="ico" aria-hidden="true"><use href="#${icon}"/></svg><span><b>${titolo}</b><small>${testo}</small></span><svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>`;
+  el('home-banca-righe').innerHTML=pronta?riga('i-book',`${b.length.toLocaleString('it-IT')} quesiti del decreto`,'Base e vela, con la risposta ministeriale','/?sezione=allenati')+(S.cart.length?riga('i-compass',`${S.cart.length} esercizi di carteggio`,'Tracci sulla carta, poi confronti','/?sezione=allenati&segmento=carteggio'):'')+riga('i-signals',`${E.SEGNALI.length} fanali e segnali`,'Fanali, segnali diurni e suoni','/?sezione=allenati&segmento=segnali'):S.bancaErrore?'<p>La banca non risponde: non si possono contare i quesiti e gli esercizi.</p>':'<p>Stiamo contando dalla banca…</p>';
+  if(!pronta)el('home-limiti').textContent=S.bancaErrore?'La banca non risponde: i suoi limiti non si possono contare.':'Stiamo caricando la banca…';
+  document.querySelectorAll('[data-home-breve]').forEach(x=>x.disabled=!pronta);
+}
+// Il breve delle tappe resta il breve, indipendentemente dall'account.
+document.addEventListener('click',e=>{const b=e.target.closest('[data-home-breve]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();const p=NAV_UI.breve||preparaBreve({seme:Date.now()},fonteQuiz());preparaExtra('breve',p.lista,`Allenati con ${p.quanti} domande`);},true);
+
 function disegnaSezione(sezione,segmento) {
   NAV_UI.sezione=sezione;NAV_UI.segmento=segmento||'quiz';chiudiPreparazioni();
   document.querySelector('main').classList.remove('preparazione-sopra');
@@ -5698,6 +6039,8 @@ function disegnaSezione(sezione,segmento) {
   document.querySelectorAll('[data-pannello-segmento]').forEach(p=>p.hidden=p.dataset.pannelloSegmento!==NAV_UI.segmento);
   document.querySelectorAll('[data-segmento]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.segmento===NAV_UI.segmento)));
   document.title=sezione==='home'?'Rotta Giusta — quiz e carteggio per la patente nautica':({allenati:'Allenati',esame:'Esame',progressi:'Progressi'}[sezione]+' · Rotta Giusta');
+  // Misura dopo aver reso visibile la vista: un disegno nascosto ha rettangolo zero.
+  aggiornaHomeVolto();
   if(sezione==='progressi')dipingiDiag(); if(sezione==='home')dipingi();if(segmento==='segnali')dipingiSeg();
 }
 function attivitaNavigazione() {return NAV_UI.runner?{stato:NAV_UI.terminee?'conclusa':'in corso',riferimento:S.run?.simUid||S.cprova?.lavoro?.id}:null;}
@@ -5720,7 +6063,7 @@ function naviga(url) {
 }
 function apriSuperficie(id) {
   ricordaOrigine();chiudiPreparazioni();NAV_UI.superficie=id;el(id).hidden=false;
-  document.querySelector('main').classList.add('preparazione-sopra');
+  document.querySelector('main').classList.add('preparazione-sopra');aggiornaHomeVolto();
   spingi({tipo:'preparazione',id,sezione:NAV_UI.sezione,segmento:NAV_UI.segmento},urlSezione(NAV_UI.sezione,NAV_UI.segmento));
   scrollTo(0,0);const h=el(id).querySelector('h1,h2');if(h){h.tabIndex=-1;h.focus();document.title=h.textContent+' · Rotta Giusta';}
 }
@@ -5735,7 +6078,7 @@ function registraRunner(id) {
   for(const fine of ['c-fine','sr-fine'])delete el(fine).dataset.invitoRifiutato;
   ricordaOrigine(); NAV_UI.runner=id;NAV_UI.terminee=false;
   spingi({tipo:'runner',id,sezione:NAV_UI.sezione,segmento:NAV_UI.segmento,run:S.run,cart:S.cprova,segnali:SEGR},urlSezione(NAV_UI.sezione,NAV_UI.segmento),voceAttuale()?.tipo==='preparazione');
-  document.body.classList.add('in-attivita');
+  document.body.classList.add('in-attivita');aggiornaHomeVolto();
   document.body.classList.remove('attivita-conclusa');
   document.title=(id==='cartrun'?'Carteggio':id==='segrun'?'Segnali':S.run?.tec?'Che tecnica serve?':'Quiz')+' · Rotta Giusta';
 }
@@ -5748,7 +6091,7 @@ function chiudiAttivitaAccount() {
 }
 function nascondiRunner() {
   for(const id of ['quizrun','cartrun','segrun','rivedi'])el(id).classList.remove('on');
-  NAV_UI.runner=null;sfondoInerte();S.run=null;
+  NAV_UI.runner=null;sfondoInerte();S.run=null;aggiornaHomeVolto();
 }
 function ripristinaVoce(v) {
   if(v.titolo)document.title=v.titolo;
@@ -5774,7 +6117,7 @@ function ripristinaVoce(v) {
   nascondiRunner();
   disegnaSezione(v.sezione,v.segmento);document.querySelector('main').classList.remove('preparazione-sopra');
   if(v.tipo==='preparazione'){NAV_UI.superficie=v.id;el(v.id).hidden=false;document.querySelector('main').classList.add('preparazione-sopra');document.title=el(v.id).querySelector('h1,h2').textContent+' · Rotta Giusta';}
-  ripristinaPosto(v);
+  aggiornaHomeVolto();ripristinaPosto(v);
 }
 function iniziaNavigazione() {
   history.scrollRestoration='manual';

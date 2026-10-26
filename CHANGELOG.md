@@ -714,6 +714,45 @@ nessun account, salvataggio o selezione reale. La simulazione resta inattiva.
   con persone, Safari o telefoni fisici. Sito e versione invariati, niente push.
 
 
+### Cambiato — P-98, la Regata e la carta nella Home
+
+La Home prende il volto scelto dall'autore: la Regata sul telefono e sotto
+la soglia, la carta U da 1.200 × 680 px. La costa si ancora da destra e il
+velo segue la colonna: il percorso resta sulla terra anche sui monitor alti.
+Undici tappe portano al titolo senza scrivere frammenti nella cronologia;
+il faro e la boa spiegano la propria sigla, con un comando per fermare le
+luci e il movimento ridotto rispettato. Attività e invito senza account,
+proposta con account e guasti restano nel primo pannello. I numeri vengono
+dalla banca e dalla stessa selezione della preparazione, anche quando la
+banca manca e non si possono contare.
+
+Un solo `:root` porta la scala e i colori P-97 a tutte le sezioni. La barra
+ha SVG decorativi sopra le quattro parole al telefono, con gli href canonici.
+Le altre sezioni conservano la struttura: il giro B le vestirà una alla volta.
+Il passaggio della domanda a 20 px ha reso necessario ridurre il massimo
+della figura sul telefono a 20 vh, per tenere in vista la prima risposta a
+375 × 812; il ritaglio SVG è ora un viewport proprio, con luci e rotta vive,
+per non lasciare geometrie fuori schermo dietro un semplice `overflow:clip`.
+
+- **4.866** verifiche dell'interfaccia passate, banco completo e rotture
+  inclusi; chiuse le **quattordici** eccezioni dichiarate da P-97. Motore
+  **215/219** (quattro salti previsti), dati **225**, specifica **1.138**,
+  server **89/89** con Node 25.3.0 e **89/89** con Node 24.22.0 LTS,
+  archivio verificato contro SHASUMS256 ufficiale. Guardiano e documentazione
+  superati. La 8620 osservata libera per 90 s prima del banco finale.
+- **124 schermate** prima/dopo alle sei dimensioni richieste, comprese le
+  tre Home, la scheda del faro, le altre sezioni, runner e riepilogo;
+  due confronti aggiuntivi del quesito con figura `base-829`. Indice,
+  metodo, impronta della pagina e limiti in `docs/collaudo-p98/README.md`.
+  Revisione visiva indipendente: corretti il bersaglio della prima tappa
+  coperto dalla testata e l'arancio sul comando della luce aperta.
+- L'autore deve ancora approvare le schermate e verificare i testi didattici
+  delle due luci, elencati nel collaudo. HA nelle catture è sintetico;
+  Safari, dispositivi fisici e lettore di schermo vero non provati.
+  Nessun file dei test, motore, dati o server modificato. Versione invariata,
+  nessun tag, merge, push o pubblicazione.
+
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la
