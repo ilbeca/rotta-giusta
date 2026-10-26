@@ -1,0 +1,450 @@
+[
+  {
+    "nome": "home",
+    "w": 375,
+    "h": 812,
+    "larghezza": 375,
+    "scroll": 375,
+    "font": true,
+    "titoli": [
+      {
+        "testo": "Preparati alla patente nautica, un passo alla volta.",
+        "corpo": "30px"
+      },
+      {
+        "testo": "Scegli da dove cominciare",
+        "corpo": "24px"
+      },
+      {
+        "testo": "Che cosa non torna",
+        "corpo": "24px"
+      }
+    ]
+  },
+  {
+    "nome": "quiz",
+    "w": 375,
+    "h": 812,
+    "larghezza": 375,
+    "scroll": 375,
+    "font": true,
+    "titoli": [
+      {
+        "testo": "Allenati",
+        "corpo": "30px"
+      },
+      {
+        "testo": "Allenamento consigliato",
+        "corpo": "24px"
+      },
+      {
+        "testo": "Scegli un argomento",
+        "corpo": "24px"
+      },
+      {
+        "testo": "Ripassa gli errori",
+        "corpo": "24px"
+      },
+      {
+        "testo": "Un giro tra gli argomenti",
+        "corpo": "24px"
+      },
+      {
+        "testo": "Gli argomenti",
+        "corpo": "24px"
+      },
+      {
+        "testo": "Segnalibri",
+        "corpo": "24px"
+      },
+      {
+        "testo": "Cerca un quesito per numero",
+        "corpo": "24px"
+      }
+    ]
+  },
+  {
+    "nome": "carteggio",
+    "w": 375,
+    "h": 812,
+    "larghezza": 375,
+    "scroll": 375,
+    "font": true,
+    "titoli": [
+      {
+        "testo": "Allenati",
+        "corpo": "30px"
+      },
+      {
+        "testo": "Carteggio",
+        "corpo": "24px"
+      },
+      {
+        "testo": "Prima di cominciare",
+        "corpo": "24px"
+      }
+    ]
+  },
+  {
+    "nome": "segnali",
+    "w": 375,
+    "h": 812,
+    "larghezza": 375,
+    "scroll": 375,
+    "font": true,
+    "titoli": [
+      {
+        "testo": "Allenati",
+        "corpo": "30px"
+      },
+      {
+        "testo": "Riconosci fanali e segnali",
+        "corpo": "24px"
+      },
+      {
+        "testo": "Come sta andando",
+        "corpo": "24px"
+      }
+    ]
+  },
+  {
+    "nome": "esame",
+    "w": 375,
+    "h": 812,
+    "larghezza": 375,
+    "scroll": 375,
+    "font": true,
+    "titoli": [
+      {
+        "testo": "Esame",
+        "corpo": "30px"
+      },
+      {
+        "testo": "Le prove",
+        "corpo": "24px"
+      },
+      {
+        "testo": "Che cosa stai preparando?",
+        "corpo": "24px"
+      },
+      {
+        "testo": "Com'è fatto l'esame",
+        "corpo": "24px"
+      },
+      {
+        "testo": "Prove di questa pagina",
+        "corpo": "24px"
+      }
+    ]
+  },
+  {
+    "nome": "progressi",
+    "w": 375,
+    "h": 812,
+    "larghezza": 375,
+    "scroll": 375,
+    "font": true,
+    "titoli": [
+      {
+        "testo": "Progressi",
+        "corpo": "30px"
+      },
+      {
+        "testo": "Le attività di questa pagina",
+        "corpo": "24px"
+      }
+    ]
+  },
+  {
+    "nome": "accedi",
+    "w": 375,
+    "h": 812,
+    "larghezza": 375,
+    "scroll": 375,
+    "font": true,
+    "titoli": [
+      {
+        "testo": "Progressi",
+        "corpo": "30px"
+      },
+      {
+        "testo": "Le attività di questa pagina",
+        "corpo": "24px"
+      },
+      {
+        "testo": "Accedi",
+        "corpo": "24px"
+      }
+    ]
+  },
+  {
+    "nome": "preparazione",
+    "w": 375,
+    "h": 812,
+    "larghezza": 375,
+    "scroll": 375,
+    "font": true,
+    "titoli": [
+      {
+        "testo": "Quesito 1.8.1-5",
+        "corpo": "30px"
+      }
+    ]
+  },
+  {
+    "nome": "runner",
+    "w": 375,
+    "h": 812,
+    "larghezza": 375,
+    "scroll": 375,
+    "font": true,
+    "titoli": [
+      {
+        "testo": "Quiz",
+        "corpo": "19px"
+      }
+    ]
+  },
+  {
+    "nome": "riepilogo",
+    "w": 375,
+    "h": 812,
+    "larghezza": 375,
+    "scroll": 375,
+    "font": true,
+    "titoli": [
+      {
+        "testo": "Attività interrotta",
+        "corpo": "30px"
+      },
+      {
+        "testo": "Vuoi conservare le attività di questa pagina?",
+        "corpo": "24px"
+      }
+    ]
+  },
+  {
+    "nome": "home",
+    "w": 1280,
+    "h": 800,
+    "larghezza": 1280,
+    "scroll": 1265,
+    "font": true,
+    "titoli": [
+      {
+        "testo": "Preparati alla patente nautica, un passo alla volta.",
+        "corpo": "40px"
+      },
+      {
+        "testo": "Scegli da dove cominciare",
+        "corpo": "24px"
+      },
+      {
+        "testo": "Che cosa non torna",
+        "corpo": "24px"
+      }
+    ]
+  },
+  {
+    "nome": "quiz",
+    "w": 1280,
+    "h": 800,
+    "larghezza": 1280,
+    "scroll": 1265,
+    "font": true,
+    "titoli": [
+      {
+        "testo": "Allenati",
+        "corpo": "30px"
+      },
+      {
+        "testo": "Allenamento consigliato",
+        "corpo": "24px"
+      },
+      {
+        "testo": "Scegli un argomento",
+        "corpo": "24px"
+      },
+      {
+        "testo": "Ripassa gli errori",
+        "corpo": "24px"
+      },
+      {
+        "testo": "Un giro tra gli argomenti",
+        "corpo": "24px"
+      },
+      {
+        "testo": "Gli argomenti",
+        "corpo": "24px"
+      },
+      {
+        "testo": "Segnalibri",
+        "corpo": "24px"
+      },
+      {
+        "testo": "Cerca un quesito per numero",
+        "corpo": "24px"
+      }
+    ]
+  },
+  {
+    "nome": "carteggio",
+    "w": 1280,
+    "h": 800,
+    "larghezza": 1280,
+    "scroll": 1265,
+    "font": true,
+    "titoli": [
+      {
+        "testo": "Allenati",
+        "corpo": "30px"
+      },
+      {
+        "testo": "Carteggio",
+        "corpo": "24px"
+      },
+      {
+        "testo": "Prima di cominciare",
+        "corpo": "24px"
+      }
+    ]
+  },
+  {
+    "nome": "segnali",
+    "w": 1280,
+    "h": 800,
+    "larghezza": 1280,
+    "scroll": 1265,
+    "font": true,
+    "titoli": [
+      {
+        "testo": "Allenati",
+        "corpo": "30px"
+      },
+      {
+        "testo": "Riconosci fanali e segnali",
+        "corpo": "24px"
+      },
+      {
+        "testo": "Come sta andando",
+        "corpo": "24px"
+      }
+    ]
+  },
+  {
+    "nome": "esame",
+    "w": 1280,
+    "h": 800,
+    "larghezza": 1280,
+    "scroll": 1265,
+    "font": true,
+    "titoli": [
+      {
+        "testo": "Esame",
+        "corpo": "30px"
+      },
+      {
+        "testo": "Le prove",
+        "corpo": "24px"
+      },
+      {
+        "testo": "Che cosa stai preparando?",
+        "corpo": "24px"
+      },
+      {
+        "testo": "Com'è fatto l'esame",
+        "corpo": "24px"
+      },
+      {
+        "testo": "Prove di questa pagina",
+        "corpo": "24px"
+      }
+    ]
+  },
+  {
+    "nome": "progressi",
+    "w": 1280,
+    "h": 800,
+    "larghezza": 1280,
+    "scroll": 1280,
+    "font": true,
+    "titoli": [
+      {
+        "testo": "Progressi",
+        "corpo": "30px"
+      },
+      {
+        "testo": "Le attività di questa pagina",
+        "corpo": "24px"
+      }
+    ]
+  },
+  {
+    "nome": "accedi",
+    "w": 1280,
+    "h": 800,
+    "larghezza": 1280,
+    "scroll": 1280,
+    "font": true,
+    "titoli": [
+      {
+        "testo": "Progressi",
+        "corpo": "30px"
+      },
+      {
+        "testo": "Le attività di questa pagina",
+        "corpo": "24px"
+      },
+      {
+        "testo": "Accedi",
+        "corpo": "24px"
+      }
+    ]
+  },
+  {
+    "nome": "preparazione",
+    "w": 1280,
+    "h": 800,
+    "larghezza": 1280,
+    "scroll": 1280,
+    "font": true,
+    "titoli": [
+      {
+        "testo": "Quesito 1.8.1-5",
+        "corpo": "30px"
+      }
+    ]
+  },
+  {
+    "nome": "runner",
+    "w": 1280,
+    "h": 800,
+    "larghezza": 1280,
+    "scroll": 1280,
+    "font": true,
+    "titoli": [
+      {
+        "testo": "Quiz",
+        "corpo": "19px"
+      }
+    ]
+  },
+  {
+    "nome": "riepilogo",
+    "w": 1280,
+    "h": 800,
+    "larghezza": 1280,
+    "scroll": 1280,
+    "font": true,
+    "titoli": [
+      {
+        "testo": "Attività interrotta",
+        "corpo": "30px"
+      },
+      {
+        "testo": "Vuoi conservare le attività di questa pagina?",
+        "corpo": "24px"
+      }
+    ]
+  }
+]

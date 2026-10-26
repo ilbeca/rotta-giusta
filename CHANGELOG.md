@@ -631,6 +631,89 @@ invariata.
   correzioni, le quattordici righe dichiarate tolte nello stesso commit, e prima
   e dopo alle sei misure con le schermate in `docs/collaudo-p98/`.
 
+### Progettato — P-96: tre direzioni visive prima di scegliere
+
+Il rispetto della scala e delle regole di disegno non basta a dare carattere
+all’app: il brainstorming in `docs/prototipi/redesign-2026-10-chatgpt/`
+confronta **Atlante**, **Linea di rotta** e **Circolo**, con diagnosi delle
+superfici attuali e lettura critica di D-01…D-35. Galleria e 21 mock HTML
+statici, sette per direzione, comprendono Home, Quiz, preparazioni, runner
+breve e lungo e riepilogo. Raccomandata Linea di rotta, decisione all’autore.
+Nessun file del sito, del motore, dei dati, dei test o del server cambia;
+versione 0.34.0 invariata.
+
+- Guardate 20 catture dell’app attuale e 51 dei mock, a 375×812 e 1280×800;
+  riferimenti e ogni immagine sono elencati nel README. 84 visite dei mock
+  anche a 320 e 640 px: zero overflow, 3.470 confronti di contrasto del testo
+  senza fallimenti, minimo 5,33:1; nessuna risorsa da altri host. Verificati
+  anche lo scorrimento delle risposte lunghe e il fuoco sui tag con tastiera.
+  Le prime tre catture del fuoco, respinte perché non lo mostravano, sono
+  sostituite. Revisione indipendente conclusiva favorevole al brainstorm.
+- Suite sul canonico invariato: motore **215/219** (4 salti previsti), dati
+  **225**, interfaccia **3.849**, specifica **1.096**, server **89/89** con
+  Node 25.3.0 e **89/89** con Node 24.22.0 LTS, archivio ufficiale verificato
+  contro SHASUMS256. Guardiano e documentazione verdi. `verifiche.md`
+  distingue questi esiti dai 15 warning del detector visivo, motivati.
+- Restano da scegliere la direzione e la sua scala, poi completare gli stati
+  e le superfici mancanti prima di implementare. Nessuna approvazione estetica
+  dedotta dai test, nessuna prova con persone o telefono fisico. Niente push.
+
+
+### Progettato — Parere sulla direzione A, «La carta nautica»
+
+Il confronto richiesto dall'autore con I-29 di Claude è in
+`docs/prototipi/redesign-2026-10-chatgpt/parere-su-A.md`: raccomandata la A
+come identità di Rotta Giusta, con meno reticolo e cornici e senza lo zigzag
+del riepilogo, perché durante lo studio la decorazione deve lasciare spazio
+alla domanda. Il parere distingue il consenso alla direzione dai dettagli
+ancora da correggere, confronta Atlante, Linea di rotta e Circolo e indica
+costi e garanzie da mantenere in T-10…T-13. Nessuna direzione viene approvata
+al posto dell'autore e nessun codice del sito cambia.
+
+- Tavola delle direzioni e quattro mock A aperti in Chrome headless a
+  375×812, 375×667 e 1280×800: dodici viste della A senza sbordamento
+  orizzontale positivo, un comando principale per vista; sedici nuove
+  schermate conservate con misure e impronte. A 375×667 la terza risposta
+  è parzialmente coperta dal piede fisso; scorrendo torna tutta visibile.
+  Segnalate la tappa corrente incoerente con «1 di 10», la frase «fermato a
+  metà» dopo 2 risposte su 10 e l'uso del magenta anche su azioni e navigazione.
+- Suite sul canonico invariato: motore **215/219** (4 salti previsti),
+  dati **225**, interfaccia **3.849**, specifica **1.096**, server **89/89**
+  con Node 25.3.0 e **89/89** con Node 24.22.0 LTS, archivio ricontrollato
+  contro SHASUMS256. Guardiano, documentazione, 19 link locali e 16 impronte
+  delle schermate verificati. Questi esiti non approvano il disegno dei mock.
+- Nessuna prova con persone, Safari o telefono fisico; i mock non sono un
+  collaudo della pagina futura. Restano da progettare preparazioni, figura,
+  domande lunghe e stati con account. Versione invariata, niente push.
+
+
+### Progettato — Il mock ChatGPT della Carta nautica
+
+Il parere sulla A diventa una proposta navigabile in
+`docs/prototipi/redesign-2026-10-chatgpt/carta-nautica/`: carta illustrata nella
+Home, numeri leggibili, argomenti su righe, avviso vicino a Inizia e runner
+senza reticolo. Il mock permette di confrontare l'identità durante lo studio,
+non soltanto sulla Home: include preparazione, domanda breve, lunga e con
+figura, correzione e riepilogo. Una sola domanda dimostrativa, dichiarata;
+nessun account, salvataggio o selezione reale. La simulazione resta inattiva.
+
+- Sette HTML, **36 schermate** a 375×812, 375×667 e 1280×800, inclusi gli
+  stati di risposta, scorrimento e tastiera. **28 visite** anche a 320 e
+  640 px senza overflow; **78 controlli** del mock passati e **882 campioni**
+  di contrasto testo, minimo **5,05:1**. Marchio e Manrope conservati, carta
+  SVG originale, tre quesiti e una figura copiati invariati dalla banca.
+- La revisione indipendente ha trovato Termina che azzerava il riepilogo dopo
+  una risposta: corretto e verificato prima della scelta, dopo corretta e
+  dopo errata. Verdict finale favorevole alla consegna del mock. Gli **8
+  warning** del detector sono motivati in `verifiche.md`, non nascosti.
+- Suite sul canonico invariato: motore **215/219** (4 salti previsti), dati
+  **225**, interfaccia **3.849**, specifica **1.096**, server **89/89** con
+  Node 25.3.0 e **89/89** con Node 24.22.0 LTS, archivio ufficiale verificato
+  contro SHASUMS256. Guardiano e documentazione superati.
+- Nessuna approvazione di nuove regole o priorità di prodotto; nessuna prova
+  con persone, Safari o telefoni fisici. Sito e versione invariati, niente push.
+
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la

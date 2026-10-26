@@ -1,0 +1,688 @@
+{
+  "records": [
+    {
+      "file": "index",
+      "w": 320,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 38,
+        "min": 6.045124505898863,
+        "fail": []
+      }
+    },
+    {
+      "file": "index",
+      "w": 375,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 38,
+        "min": 6.045124505898863,
+        "fail": []
+      }
+    },
+    {
+      "file": "index",
+      "w": 640,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 38,
+        "min": 6.045124505898863,
+        "fail": []
+      }
+    },
+    {
+      "file": "index",
+      "w": 1280,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 39,
+        "min": 6.045124505898863,
+        "fail": []
+      }
+    },
+    {
+      "file": "quiz",
+      "w": 320,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 45,
+        "min": 6.045124505898863,
+        "fail": []
+      }
+    },
+    {
+      "file": "quiz",
+      "w": 375,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 45,
+        "min": 6.045124505898863,
+        "fail": []
+      }
+    },
+    {
+      "file": "quiz",
+      "w": 640,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 45,
+        "min": 6.045124505898863,
+        "fail": []
+      }
+    },
+    {
+      "file": "quiz",
+      "w": 1280,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 45,
+        "min": 6.045124505898863,
+        "fail": []
+      }
+    },
+    {
+      "file": "preparazione",
+      "w": 320,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 28,
+        "min": 6.045124505898863,
+        "fail": []
+      }
+    },
+    {
+      "file": "preparazione",
+      "w": 375,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 28,
+        "min": 6.045124505898863,
+        "fail": []
+      }
+    },
+    {
+      "file": "preparazione",
+      "w": 640,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 28,
+        "min": 6.045124505898863,
+        "fail": []
+      }
+    },
+    {
+      "file": "preparazione",
+      "w": 1280,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 28,
+        "min": 6.045124505898863,
+        "fail": []
+      }
+    },
+    {
+      "file": "runner",
+      "w": 320,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 26,
+        "min": 5.049906757415255,
+        "fail": []
+      }
+    },
+    {
+      "file": "runner",
+      "w": 375,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 26,
+        "min": 5.049906757415255,
+        "fail": []
+      }
+    },
+    {
+      "file": "runner",
+      "w": 640,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 26,
+        "min": 5.049906757415255,
+        "fail": []
+      }
+    },
+    {
+      "file": "runner",
+      "w": 1280,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 26,
+        "min": 5.049906757415255,
+        "fail": []
+      }
+    },
+    {
+      "file": "runner-lungo",
+      "w": 320,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 26,
+        "min": 5.049906757415255,
+        "fail": []
+      }
+    },
+    {
+      "file": "runner-lungo",
+      "w": 375,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 26,
+        "min": 5.049906757415255,
+        "fail": []
+      }
+    },
+    {
+      "file": "runner-lungo",
+      "w": 640,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 26,
+        "min": 5.049906757415255,
+        "fail": []
+      }
+    },
+    {
+      "file": "runner-lungo",
+      "w": 1280,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 26,
+        "min": 5.049906757415255,
+        "fail": []
+      }
+    },
+    {
+      "file": "runner-figura",
+      "w": 320,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 25,
+        "min": 5.049906757415255,
+        "fail": []
+      }
+    },
+    {
+      "file": "runner-figura",
+      "w": 375,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 25,
+        "min": 5.049906757415255,
+        "fail": []
+      }
+    },
+    {
+      "file": "runner-figura",
+      "w": 640,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 25,
+        "min": 5.049906757415255,
+        "fail": []
+      }
+    },
+    {
+      "file": "runner-figura",
+      "w": 1280,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 26,
+        "min": 5.049906757415255,
+        "fail": []
+      }
+    },
+    {
+      "file": "riepilogo",
+      "w": 320,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 32,
+        "min": 6.045124505898863,
+        "fail": []
+      }
+    },
+    {
+      "file": "riepilogo",
+      "w": 375,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 32,
+        "min": 6.045124505898863,
+        "fail": []
+      }
+    },
+    {
+      "file": "riepilogo",
+      "w": 640,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 32,
+        "min": 6.045124505898863,
+        "fail": []
+      }
+    },
+    {
+      "file": "riepilogo",
+      "w": 1280,
+      "overflow": 0,
+      "font": true,
+      "h1": 1,
+      "assets": true,
+      "contrast": {
+        "total": 32,
+        "min": 6.045124505898863,
+        "fail": []
+      }
+    },
+    {
+      "detectorMetricsMobile": {
+        "paddingTop": "0px",
+        "borderTop": "0px"
+      }
+    }
+  ],
+  "checks": [
+    {
+      "name": "index 320 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "index 320 contrast",
+      "ok": true
+    },
+    {
+      "name": "index 375 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "index 375 contrast",
+      "ok": true
+    },
+    {
+      "name": "index 640 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "index 640 contrast",
+      "ok": true
+    },
+    {
+      "name": "index 1280 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "index 1280 contrast",
+      "ok": true
+    },
+    {
+      "name": "quiz 320 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "quiz 320 contrast",
+      "ok": true
+    },
+    {
+      "name": "quiz 375 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "quiz 375 contrast",
+      "ok": true
+    },
+    {
+      "name": "quiz 640 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "quiz 640 contrast",
+      "ok": true
+    },
+    {
+      "name": "quiz 1280 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "quiz 1280 contrast",
+      "ok": true
+    },
+    {
+      "name": "preparazione 320 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "preparazione 320 contrast",
+      "ok": true
+    },
+    {
+      "name": "preparazione 375 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "preparazione 375 contrast",
+      "ok": true
+    },
+    {
+      "name": "preparazione 640 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "preparazione 640 contrast",
+      "ok": true
+    },
+    {
+      "name": "preparazione 1280 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "preparazione 1280 contrast",
+      "ok": true
+    },
+    {
+      "name": "runner 320 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "runner 320 contrast",
+      "ok": true
+    },
+    {
+      "name": "runner 375 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "runner 375 contrast",
+      "ok": true
+    },
+    {
+      "name": "runner 640 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "runner 640 contrast",
+      "ok": true
+    },
+    {
+      "name": "runner 1280 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "runner 1280 contrast",
+      "ok": true
+    },
+    {
+      "name": "runner-lungo 320 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "runner-lungo 320 contrast",
+      "ok": true
+    },
+    {
+      "name": "runner-lungo 375 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "runner-lungo 375 contrast",
+      "ok": true
+    },
+    {
+      "name": "runner-lungo 640 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "runner-lungo 640 contrast",
+      "ok": true
+    },
+    {
+      "name": "runner-lungo 1280 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "runner-lungo 1280 contrast",
+      "ok": true
+    },
+    {
+      "name": "runner-figura 320 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "runner-figura 320 contrast",
+      "ok": true
+    },
+    {
+      "name": "runner-figura 375 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "runner-figura 375 contrast",
+      "ok": true
+    },
+    {
+      "name": "runner-figura 640 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "runner-figura 640 contrast",
+      "ok": true
+    },
+    {
+      "name": "runner-figura 1280 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "runner-figura 1280 contrast",
+      "ok": true
+    },
+    {
+      "name": "riepilogo 320 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "riepilogo 320 contrast",
+      "ok": true
+    },
+    {
+      "name": "riepilogo 375 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "riepilogo 375 contrast",
+      "ok": true
+    },
+    {
+      "name": "riepilogo 640 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "riepilogo 640 contrast",
+      "ok": true
+    },
+    {
+      "name": "riepilogo 1280 reflow/font/assets",
+      "ok": true
+    },
+    {
+      "name": "riepilogo 1280 contrast",
+      "ok": true
+    },
+    {
+      "name": "Dialogo aperto",
+      "ok": true
+    },
+    {
+      "name": "Escape chiude",
+      "ok": true
+    },
+    {
+      "name": "Home → preparazione",
+      "ok": true
+    },
+    {
+      "name": "Avviso entro48",
+      "ok": true
+    },
+    {
+      "name": "Preparazione → domanda",
+      "ok": true
+    },
+    {
+      "name": "Avanti attende risposta",
+      "ok": true
+    },
+    {
+      "name": "Tastiera risponde",
+      "ok": true
+    },
+    {
+      "name": "Tag raggiungibile da tastiera",
+      "ok": true
+    },
+    {
+      "name": "Risposta → riepilogo",
+      "ok": true
+    },
+    {
+      "name": "Conteggio errore",
+      "ok": true
+    },
+    {
+      "name": "Revisione conserva la scelta dimostrativa",
+      "ok": true
+    },
+    {
+      "name": "Corretta senza tag",
+      "ok": true
+    },
+    {
+      "name": "Segnalibro dimostrativo",
+      "ok": true
+    },
+    {
+      "name": "Zero risposte non è successo",
+      "ok": true
+    },
+    {
+      "name": "Simulazione non finge partenza",
+      "ok": true
+    },
+    {
+      "name": "Fondo lungo accessibile",
+      "ok": true
+    },
+    {
+      "name": "Termina raggiunge riepilogo null",
+      "ok": true
+    },
+    {
+      "name": "Termina conta scelta null",
+      "ok": true
+    },
+    {
+      "name": "Termina raggiunge riepilogo 0",
+      "ok": true
+    },
+    {
+      "name": "Termina conta scelta 0",
+      "ok": true
+    },
+    {
+      "name": "Termina raggiunge riepilogo 1",
+      "ok": true
+    },
+    {
+      "name": "Termina conta scelta 1",
+      "ok": true
+    }
+  ]
+}

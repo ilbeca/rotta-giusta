@@ -1,0 +1,485 @@
+[
+  {
+    "file": "index",
+    "w": 375,
+    "h": 812,
+    "overflow": 0,
+    "h1": 1,
+    "actions": [
+      {
+        "text": "Simula il quiz base",
+        "x": 16,
+        "y": 428.84375,
+        "w": 343,
+        "h": 54,
+        "bottom": 482.84375
+      }
+    ],
+    "figure": null,
+    "first": null
+  },
+  {
+    "file": "index",
+    "w": 375,
+    "h": 667,
+    "overflow": 0,
+    "h1": 1,
+    "actions": [
+      {
+        "text": "Simula il quiz base",
+        "x": 16,
+        "y": 428.84375,
+        "w": 343,
+        "h": 54,
+        "bottom": 482.84375
+      }
+    ],
+    "figure": null,
+    "first": null
+  },
+  {
+    "file": "index",
+    "w": 1280,
+    "h": 800,
+    "overflow": 0,
+    "h1": 1,
+    "actions": [
+      {
+        "text": "Simula il quiz base",
+        "x": 92,
+        "y": 468.5,
+        "w": 470,
+        "h": 54,
+        "bottom": 522.5
+      }
+    ],
+    "figure": null,
+    "first": null
+  },
+  {
+    "file": "quiz",
+    "w": 375,
+    "h": 812,
+    "overflow": 0,
+    "h1": 1,
+    "actions": [
+      {
+        "text": "Prepara l’allenamento",
+        "x": 16,
+        "y": 367.15625,
+        "w": 343,
+        "h": 54,
+        "bottom": 421.15625
+      }
+    ],
+    "figure": null,
+    "first": null
+  },
+  {
+    "file": "quiz",
+    "w": 375,
+    "h": 667,
+    "overflow": 0,
+    "h1": 1,
+    "actions": [
+      {
+        "text": "Prepara l’allenamento",
+        "x": 16,
+        "y": 367.15625,
+        "w": 343,
+        "h": 54,
+        "bottom": 421.15625
+      }
+    ],
+    "figure": null,
+    "first": null
+  },
+  {
+    "file": "quiz",
+    "w": 1280,
+    "h": 800,
+    "overflow": 0,
+    "h1": 1,
+    "actions": [
+      {
+        "text": "Prepara l’allenamento",
+        "x": 92,
+        "y": 494.234375,
+        "w": 461.8125,
+        "h": 54,
+        "bottom": 548.234375
+      }
+    ],
+    "figure": null,
+    "first": null
+  },
+  {
+    "file": "preparazione",
+    "w": 375,
+    "h": 812,
+    "overflow": 0,
+    "h1": 1,
+    "actions": [
+      {
+        "text": "Inizia",
+        "x": 16,
+        "y": 468.3125,
+        "w": 343,
+        "h": 54,
+        "bottom": 522.3125
+      }
+    ],
+    "figure": null,
+    "first": null
+  },
+  {
+    "file": "preparazione",
+    "w": 375,
+    "h": 667,
+    "overflow": 0,
+    "h1": 1,
+    "actions": [
+      {
+        "text": "Inizia",
+        "x": 16,
+        "y": 468.3125,
+        "w": 343,
+        "h": 54,
+        "bottom": 522.3125
+      }
+    ],
+    "figure": null,
+    "first": null
+  },
+  {
+    "file": "preparazione",
+    "w": 1280,
+    "h": 800,
+    "overflow": 0,
+    "h1": 1,
+    "actions": [
+      {
+        "text": "Inizia",
+        "x": 360,
+        "y": 575.375,
+        "w": 560,
+        "h": 54,
+        "bottom": 629.375
+      }
+    ],
+    "figure": null,
+    "first": null
+  },
+  {
+    "file": "runner",
+    "w": 375,
+    "h": 812,
+    "overflow": 0,
+    "h1": 1,
+    "actions": [
+      {
+        "text": "Avanti",
+        "x": 180.640625,
+        "y": 746,
+        "w": 178.359375,
+        "h": 54,
+        "bottom": 800
+      }
+    ],
+    "figure": null,
+    "first": {
+      "text": "1marra.",
+      "x": 16,
+      "y": 236.390625,
+      "w": 343,
+      "h": 64,
+      "bottom": 300.390625
+    }
+  },
+  {
+    "file": "runner",
+    "w": 375,
+    "h": 667,
+    "overflow": 0,
+    "h1": 1,
+    "actions": [
+      {
+        "text": "Avanti",
+        "x": 180.640625,
+        "y": 601,
+        "w": 178.359375,
+        "h": 54,
+        "bottom": 655
+      }
+    ],
+    "figure": null,
+    "first": {
+      "text": "1marra.",
+      "x": 16,
+      "y": 236.390625,
+      "w": 343,
+      "h": 64,
+      "bottom": 300.390625
+    }
+  },
+  {
+    "file": "runner",
+    "w": 1280,
+    "h": 800,
+    "overflow": 0,
+    "h1": 1,
+    "actions": [
+      {
+        "text": "Avanti",
+        "x": 796,
+        "y": 544.375,
+        "w": 200,
+        "h": 54,
+        "bottom": 598.375
+      }
+    ],
+    "figure": null,
+    "first": {
+      "text": "1marra.",
+      "x": 284,
+      "y": 227.375,
+      "w": 712,
+      "h": 64,
+      "bottom": 291.375
+    }
+  },
+  {
+    "file": "runner-lungo",
+    "w": 375,
+    "h": 812,
+    "overflow": 0,
+    "h1": 1,
+    "actions": [
+      {
+        "text": "Avanti",
+        "x": 180.640625,
+        "y": 746,
+        "w": 178.359375,
+        "h": 54,
+        "bottom": 800
+      }
+    ],
+    "figure": null,
+    "first": {
+      "text": "1la dichiarazione che il comandante dell'unità è tenuto a pr",
+      "x": 16,
+      "y": 271.1875,
+      "w": 343,
+      "h": 198,
+      "bottom": 469.1875
+    }
+  },
+  {
+    "file": "runner-lungo",
+    "w": 375,
+    "h": 667,
+    "overflow": 0,
+    "h1": 1,
+    "actions": [
+      {
+        "text": "Avanti",
+        "x": 180.640625,
+        "y": 601,
+        "w": 178.359375,
+        "h": 54,
+        "bottom": 655
+      }
+    ],
+    "figure": null,
+    "first": {
+      "text": "1la dichiarazione che il comandante dell'unità è tenuto a pr",
+      "x": 16,
+      "y": 271.1875,
+      "w": 343,
+      "h": 198,
+      "bottom": 469.1875
+    }
+  },
+  {
+    "file": "runner-lungo",
+    "w": 1280,
+    "h": 800,
+    "overflow": 0,
+    "h1": 1,
+    "actions": [
+      {
+        "text": "Avanti",
+        "x": 796,
+        "y": 670.375,
+        "w": 200,
+        "h": 54,
+        "bottom": 724.375
+      }
+    ],
+    "figure": null,
+    "first": {
+      "text": "1la dichiarazione che il comandante dell'unità è tenuto a pr",
+      "x": 284,
+      "y": 227.375,
+      "w": 712,
+      "h": 106,
+      "bottom": 333.375
+    }
+  },
+  {
+    "file": "runner-figura",
+    "w": 375,
+    "h": 812,
+    "overflow": 0,
+    "h1": 1,
+    "actions": [
+      {
+        "text": "Avanti",
+        "x": 180.640625,
+        "y": 746,
+        "w": 178.359375,
+        "h": 54,
+        "bottom": 800
+      }
+    ],
+    "figure": {
+      "text": "",
+      "x": 143.078125,
+      "y": 244,
+      "w": 88.828125,
+      "h": 130,
+      "bottom": 374
+    },
+    "first": {
+      "text": "1un lampo giallo ogni 3 secondi con portata nominale di 4 mi",
+      "x": 16,
+      "y": 394,
+      "w": 343,
+      "h": 78,
+      "bottom": 472
+    }
+  },
+  {
+    "file": "runner-figura",
+    "w": 375,
+    "h": 667,
+    "overflow": 0,
+    "h1": 1,
+    "actions": [
+      {
+        "text": "Avanti",
+        "x": 180.640625,
+        "y": 601,
+        "w": 178.359375,
+        "h": 54,
+        "bottom": 655
+      }
+    ],
+    "figure": {
+      "text": "",
+      "x": 143.078125,
+      "y": 244,
+      "w": 88.828125,
+      "h": 130,
+      "bottom": 374
+    },
+    "first": {
+      "text": "1un lampo giallo ogni 3 secondi con portata nominale di 4 mi",
+      "x": 16,
+      "y": 394,
+      "w": 343,
+      "h": 78,
+      "bottom": 472
+    }
+  },
+  {
+    "file": "runner-figura",
+    "w": 1280,
+    "h": 800,
+    "overflow": 0,
+    "h1": 1,
+    "actions": [
+      {
+        "text": "Avanti",
+        "x": 796,
+        "y": 734.375,
+        "w": 200,
+        "h": 54,
+        "bottom": 788.375
+      }
+    ],
+    "figure": {
+      "text": "",
+      "x": 581.90625,
+      "y": 223.375,
+      "w": 116.171875,
+      "h": 170,
+      "bottom": 393.375
+    },
+    "first": {
+      "text": "1un lampo giallo ogni 3 secondi con portata nominale di 4 mi",
+      "x": 284,
+      "y": 417.375,
+      "w": 712,
+      "h": 64,
+      "bottom": 481.375
+    }
+  },
+  {
+    "file": "riepilogo",
+    "w": 375,
+    "h": 812,
+    "overflow": 0,
+    "h1": 1,
+    "actions": [
+      {
+        "text": "Rivedi la risposta",
+        "x": 16,
+        "y": 358.3125,
+        "w": 343,
+        "h": 54,
+        "bottom": 412.3125
+      }
+    ],
+    "figure": null,
+    "first": null
+  },
+  {
+    "file": "riepilogo",
+    "w": 375,
+    "h": 667,
+    "overflow": 0,
+    "h1": 1,
+    "actions": [
+      {
+        "text": "Rivedi la risposta",
+        "x": 16,
+        "y": 358.3125,
+        "w": 343,
+        "h": 54,
+        "bottom": 412.3125
+      }
+    ],
+    "figure": null,
+    "first": null
+  },
+  {
+    "file": "riepilogo",
+    "w": 1280,
+    "h": 800,
+    "overflow": 0,
+    "h1": 1,
+    "actions": [
+      {
+        "text": "Rivedi la risposta",
+        "x": 300,
+        "y": 465.625,
+        "w": 680,
+        "h": 54,
+        "bottom": 519.625
+      }
+    ],
+    "figure": null,
+    "first": null
+  }
+]
