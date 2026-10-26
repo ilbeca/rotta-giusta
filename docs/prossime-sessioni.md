@@ -264,10 +264,10 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | niente dal motore: `PREVISIONI` c'è (P-72), e un modello entra come metodo accanto alla regola semplice; Q-STIMA solo per quando si mostra | da scrivere |
 | 27 | **Esito e previsioni, la pagina e l'informativa** (B-1, B-2), poi un rilascio | ChatGPT | `ui/main` | soltanto la base giuridica (§4, «Dopo P-64», 1–3): P-74 è chiuso | P-75, da scrivere |
 | 37 | **Le regole di disegno, giro 2**: la scala di corpi, spazi e pesi, le distanze fra i bersagli, la lunghezza delle righe (D-15…D-23, D-25, D-28; `docs/regole-disegno-progetto.md` §5, decisione C) | regia | `main` | l'approvazione dell'autore sulle 24 schermate di `docs/collaudo-p95/` (decisione C) | P-95 fuso, da rilasciare |
-| 38 | **Le regole di disegno, giro 3**: le parole e i nomi (`docs/regole-disegno-progetto.md`, giro 3) — prima il controllo su `main`, poi la pagina | Claude, poi ChatGPT | `main`, `ui/main` | sospeso dall'autore il 24 ottobre 2026 per la direzione del ridisegno, scelta il 25 (riga 39); riparte dopo il giro A del volto, dentro la Regata, se l'autore conferma la decisione 17 di `docs/volto-progetto.md` §12 | da scrivere |
-| 39 | **Ripensare il disegno da capo**: la direzione è scelta dall'autore il 25 ottobre 2026 — la Regata, con la Home al computer «U — Terra beige» (I-29; `docs/volto-progetto.md`, decisioni 1–14). I mock sono in `docs/prototipi/redesign-2026-10-claude/`, fusi in `main` | la regia | `main` | le decisioni 15–18 del §12 di `docs/volto-progetto.md`, che servono prima del giro B | fatto; P-96 superato dalla scelta, da non lanciare se non è già partito |
-| 40 | **Il volto, giro A — i controlli**: `SCALA_CSS` con i token della Regata, T-12 e T-13 al computer, T-15 nuovo, la pagina di riferimento con la Home U, R-VOLTO nel §9.11, i rossi dichiarati sulla pagina vera (`docs/volto-progetto.md` §6, §9, §11) | Claude | un worktree da `main` | niente | P-97, avviato il 25 ottobre |
-| 41 | **Il volto, giro A — la pagina**: il `:root` della Regata, i componenti condivisi, la Home al telefono e al computer, prima e dopo alle sei misure (`docs/volto-progetto.md` §11) | ChatGPT | `ui/main` | P-97 fuso, e la decisione 16 (le icone nella barra) | P-98, da scrivere |
+| 38 | **Le regole di disegno, giro 3**: le parole e i nomi (`docs/regole-disegno-progetto.md`, giro 3) — prima il controllo su `main`, poi la pagina | Claude, poi ChatGPT | `main`, `ui/main` | sospeso dall'autore il 24 ottobre 2026 per la direzione del ridisegno, scelta il 25 (riga 39); riparte dopo il giro A del volto, dentro la Regata: decisione 17 di `docs/volto-progetto.md` §12, presa dall'autore il 26 ottobre 2026 | da scrivere |
+| 39 | **Ripensare il disegno da capo**: la direzione è scelta dall'autore il 25 ottobre 2026 — la Regata, con la Home al computer «U — Terra beige» (I-29; `docs/volto-progetto.md`, decisioni 1–14). I mock sono in `docs/prototipi/redesign-2026-10-claude/`, fusi in `main` | la regia | `main` | niente: le decisioni 15–18 del §12 di `docs/volto-progetto.md` le ha prese l'autore il 26 ottobre 2026, come raccomandato | fatto; P-96 superato dalla scelta, da non lanciare se non è già partito |
+| 40 | **Il volto, giro A — i controlli**: `SCALA_CSS` con i token della Regata, T-12 e T-13 al computer, T-15 nuovo, la pagina di riferimento con la Home U, R-VOLTO nel §9.11, i rossi dichiarati sulla pagina vera (`docs/volto-progetto.md` §6, §9, §11) | Claude | un worktree da `main` | niente | P-97 fuso il 26 ottobre 2026 (`9950388`, merge `4085f30`) |
+| 41 | **Il volto, giro A — la pagina**: il `:root` della Regata, i componenti condivisi, la Home al telefono e al computer, prima e dopo alle sei misure (`docs/volto-progetto.md` §11) | ChatGPT | `ui/main` | niente: P-97 è fuso, e la decisione 16 (le icone nella barra, con le parole) è presa | P-98, scritto |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo P-59», «Dopo P-64», «Dopo il traguardo» e le voci non barrate |
 
 **La v0.31.0 è in linea dal 18 ottobre 2026**, sulla pagina e sul server, con le raccolte nuove spente (prima, la v0.30.0 dal 3 ottobre); P-59,
@@ -7383,6 +7383,131 @@ RG_TEMPI=1 (Q-SUITE). Una nota di consegna nel §11.1 di
 docs/volto-progetto.md; voce in fondo a [Unreleased]; un commit con il
 trailer, niente push, nessuna merge in main. Chiudi con il resoconto di
 docs/prossime-sessioni.md.
+```
+
+**Esito, 26 ottobre 2026.** P-97 ha consegnato `9950388`: `SCALA_CSS` della
+Regata, T-12 e T-13 al computer, T-15 nuovo con il contrasto letto sui pixel
+(`tests/png.mjs`), la pagina di riferimento del client con la Home U, R-VOLTO
+nella specifica, quattordici rossi dichiarati sulla pagina vera; la nota di
+consegna per P-98 è in fondo al §11.1 di `docs/volto-progetto.md`. **Che cosa
+ha controllato la regia:** l'interfaccia dal worktree di P-97, a macchina
+scarica e con la 8620 libera per 90 s — **4.892 verifiche, zero rossi, in 5
+min 54 s**; il primo giro di P-97, 28 rossi su 4.877 in 28 minuti, era di
+sole attese scadute con un gioco al 336 % di CPU. Il controllo dei territori
+sul ramo è rosso per sei file di `tests/` e `docs/specifica.md`, com'è atteso:
+legge il nome del ramo, e quei file sono del motore, scritti da Claude per
+`main`. Fuso in `4085f30`, con `--no-ff` perché `main` era avanzato di un
+commit. Dopo la merge: motore 215/219 (quattro skip), server 89/89, specifica
+1.138, dati 225 e guardiano verdi su una copia senza `.claude/worktrees/` —
+nel checkout il guardiano è rosso solo per il worktree di P-97, il difetto
+noto. Le decisioni 15–18 le ha prese l'autore il 26 ottobre, come
+raccomandato. **Non controllato:** le cinque difese tolte a mano, rifatte una
+per una; la regia si fida del collaudo scritto nel §11.1.
+
+### P-98 — ChatGPT: il volto, giro A, la pagina
+
+**Dove:** il worktree `~/Software/rotta-giusta-ui`, ramo **`ui/main`**,
+allineato a `main`.
+**Nasce da:** P-97, che il 26 ottobre 2026 è fuso su `main` (`4085f30`) con i
+controlli del giro A e quattordici rossi dichiarati sulla pagina vera; la
+direzione dell'autore del 25 ottobre (la Regata, con la Home al computer «U —
+Terra beige»); le decisioni 1–18 del §12 di `docs/volto-progetto.md`, la 16 —
+le icone nella barra in basso, con le parole — presa il 26 ottobre. **Sblocca:**
+il giro 3, le parole (decisione 17), e il giro B dalla domanda e dal riepilogo
+(decisione 18).
+
+```
+Questo prompt è per ChatGPT, nel worktree ~/Software/rotta-giusta-ui,
+sul ramo ui/main, aperto in modalità Local. Se sei Claude, o sei nella
+cartella principale ~/Software/rotta-giusta, o su un altro ramo, fermati e
+dillo, senza scrivere niente.
+
+Sessione P-98, il volto, giro A: la pagina. Prima di tutto allinea ui/main
+a main: git merge --ff-only main. Poi leggi AGENTS.md, docs/volto-progetto.md
+per intero — §5 i componenti, §6 il contratto dei controlli, §10 i testi,
+§11 «A-pagina» e soprattutto la nota «Consegnato da P-97» in fondo al §11.1,
+§12 le decisioni, tutte prese — e la scheda I-29 in
+docs/idee-dopo-gli-account.md. I mock da guardare sono in
+docs/prototipi/redesign-2026-10-claude/: g-regata/ per il telefono e per
+tutto il resto del sito, u-terra-beige/ per la Home al computer.
+
+Che cosa deve essere vero dopo, in site/index.html:
+- un solo :root con i token della Regata, come li elenca la nota di P-97:
+  --t-12…--t-56 senza 19, 30 e 40; --s-4…--s-64; --w-400…--w-800;
+  --lh-testo 1.45, --lh-titoli 1.2, --lh-titoli-grandi 1.05; --testo-max
+  480px; --acc #0a4f6e, --ko #b3261e, --warn #765000, --ok #12663a, --boa
+  #ff6a1a, --rotta #b23f00, --terra #f2e6cf. Tutte le schermate cambiano
+  colore: è voluto. I ruoli contano: 56 solo nell'h1 della Home sopra la
+  soglia, 44 solo in «Come funziona» e nei blocchi di sole cifre sopra i
+  900 px, 800 solo su titoli da 24 px in su o sulle cifre; l'arancio delle
+  boe mai su un testo o un comando.
+- i componenti condivisi della Regata (§5.5): la barra, la testata, il
+  pulsante, il link, le righe, la scheda. Nella barra in basso, al
+  telefono, un'icona sopra ogni parola (decisione 16): le parole restano
+  intere, le icone sono SVG in linea, decorative (aria-hidden), nessuna
+  risorsa da altri host, e la barra resta di quattro link con l'href
+  canonico (R-NAV-03). Le forme del giro B — righe al posto dei pulsanti
+  pallidi nelle altre sezioni, numeri grandi — non sono di questo giro.
+- la Home al telefono della Regata (g-regata/home.html), e la Home al
+  computer U da 1.200 × 680 px in su, con la carta, il percorso, le luci e
+  gli stati del §5.4: H1 e HA nel primo pannello, sotto la prova; «Come
+  funziona» sotto in tutti gli stati; la banca che non risponde senza
+  numeri inventati. Sotto la soglia la Home della Regata; la pagina deve
+  rispondere a un matchMedia che cambia, non solo al primo carico.
+- gli agganci della nota di P-97, e solo quelli nuovi: data-luce su ogni
+  lampo, data-rotta sul tracciato; il percorso è la <nav> di #v-home con
+  un aria-label e undici link con href="#<id del pannello>", che non
+  cambiano l'indirizzo né la cronologia, portano il fuoco al titolo del
+  pannello e aggiornano aria-current="location" scorrendo; faro e boa sono
+  due pulsanti con aria-expanded, e la sigla sta in testo vero in un
+  aria-live="polite"; «Ferma le luci» è un pulsante visibile almeno con la
+  scheda del faro aperta (decisione 10, scelta a). Con il movimento ridotto
+  niente si muove: luci accese ferme, rotta intera.
+- i numeri della Home al computer dalla banca e dal motore, mai scritti a
+  mano: 1.722 quesiti, 135 esercizi, 53 segnali (non 27: le schede sono
+  53, i fanali 27), gli oscurati, le note, la figura che manca, le
+  condizioni della prova da meta.prove.base, «fino a 25» dell'allenamento
+  consigliato dalla stessa fonte della preparazione.
+- i testi della Home sono quelli del §10, con le correzioni della colonna
+  «Da guardare»: la tappa 1 senza la frase della conservazione (l'avviso
+  sta accanto a «Inizia», giro 1); la tappa 5 senza «vale la pena
+  cominciare da lì», che è un consiglio di dovePesa(); la tappa 6 che dice
+  dove tornano gli errori («Ripassa gli errori», l'allenamento
+  consigliato); la tappa 8 con 53 e senza «di notte»; la tappa 10 «Con
+  l'account, le risposte restano», senza pulsante. Le sigle del faro e
+  della boa e le loro due frasi restano come nel mock, e vanno nell'elenco
+  dei testi che l'autore deve verificare prima della merge.
+- tutto quello che i giri 1 e 2 hanno portato resta: T-10, T-11, T-12,
+  T-13, C-02, T-06, N-01; la Home senza risposte al telefono entro 78
+  parole nel primo schermo.
+
+I controlli sono su main e non si toccano. Sulla pagina vera sono rossi in
+quattordici verifiche, dichiarate in docs/eccezioni-interfaccia.md (le
+righe «P-97 … Lo chiude P-98»): toglile nello stesso commit della pagina,
+e i gruppi devono girare verdi per intero. Il metro è
+tests/pagina-client-ridisegno.html, che ha la Home U sopra la soglia e
+passa tutto il banco. La tabella «Valori fuori scala» resta com'è, salvo
+una riga che non serve più.
+
+Prima e dopo, con le schermate guardate, a 375×667, 375×812, 1200×700,
+1280×800, 1280×1024 e 1920×1080: la Home nei tre stati (senza risposte,
+con risposte senza account, con l'account), la Home con la scheda del faro
+aperta, Allenati, Esame, il runner dopo una risposta e il riepilogo.
+Mettile in docs/collaudo-p98/ con un README che le cita una per una:
+l'autore approva guardando quelle (decisione 11), e la regia non fonde
+senza.
+
+Se un controllo ti sembra sbagliato, o un numero del contratto non si
+può tenere, fermati e scrivilo nel §11.1 del progetto, con la misura e la
+schermata, invece di aggirarlo: i numeri stanno nei controlli, su main.
+
+Nessun file di tests/, del motore (site/engine.js, site/dati/,
+site/figure/), di server/ o dei dati; la versione non si tocca. Le cinque
+suite verdi; l'interfaccia solo con la 8620 guardata libera per 90 s
+(lsof -iTCP:8620 -sTCP:LISTEN) e con la macchina scarica (uptime): un giro
+rosso di sole attese scadute a macchina carica si rifà. Voce in fondo a
+[Unreleased], un commit con il trailer, niente push. Chiudi con il
+resoconto di docs/prossime-sessioni.md.
 ```
 
 ### I segnaposto — i prompt che non si possono ancora scrivere

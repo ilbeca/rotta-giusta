@@ -886,7 +886,8 @@ computer compreso, gira verde.
 
 Ognuna con la raccomandazione. Le decisioni 1–14 servono prima di
 A-controlli, e l'autore le ha prese il 25 ottobre 2026, tutte come
-raccomandato; le altre servono prima del giro B.
+raccomandato; le 15–18 le ha prese il 26 ottobre, anche loro come
+raccomandato.
 
 1. **La scala dei corpi.** Adottare la scala di I-29 (12, 14, 16, 20, 24, 32,
    44, 56) al posto di quella del giro 2 (12, 14, 16, 19, 24, 30, 40)? Cambia la
@@ -970,12 +971,16 @@ raccomandato; le altre servono prima del giro B.
     domande su M». *Raccomandazione:* il giro B veste le schermate com'è oggi la
     loro struttura; Allenati e il riepilogo nuovi sono decisioni del giro 3, con
     i controlli che li tengono fermi (R-NAV-04, F-01) aggiornati prima.
+   *Deciso dall'autore il 26 ottobre 2026, come raccomandato: il giro B veste le schermate com'è oggi la loro struttura; Allenati e il riepilogo nuovi sono del giro 3.*
 16. **Le icone nella barra in basso** (I-29, decisione 8). *Raccomandazione:*
     sì, nel giro A, con le parole che restano.
+   *Deciso dall'autore il 26 ottobre 2026, come raccomandato: le icone nella barra in basso nel giro A, con le parole che restano.*
 17. **Il giro 3, le parole**, riparte dopo il giro A, dentro la Regata.
     *Raccomandazione:* sì; le tappe nuove sono già parole da rivedere.
+   *Deciso dall'autore il 26 ottobre 2026, come raccomandato: il giro 3 riparte dopo il giro A, dentro la Regata.*
 18. **L'ordine.** Giro A, poi giro B dalla domanda e dal riepilogo.
     *Raccomandazione:* sì.
+   *Deciso dall'autore il 26 ottobre 2026, come raccomandato: giro A, poi giro B dalla domanda e dal riepilogo.*
 
 ---
 

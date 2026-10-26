@@ -538,6 +538,7 @@ selezione o contabilità. Versione 0.34.0 invariata.
   su 225, il solo rosso è il guardiano per lo stesso motivo; controllo condiviso
   della documentazione verde. Non controllato: le procedure non sono ancora
   state fatte girare per intero su un mock.
+
 ### Test — P-97: il volto, giro A, i controlli prima della pagina
 
 La Home al computer «U — Terra beige» e i colori della Regata, scelti
@@ -599,6 +600,36 @@ invariata.
   il pacchetto non e' piu' sul disco. Non coperti: la bellezza, il gesto vero,
   un lettore di schermo, Safari e un iPad, le prestazioni dello strato fisso
   (§13 del progetto).
+
+### Merge — P-97 su `main`, le decisioni 15–18 e P-98 nella coda
+
+- **P-97 è fuso** (`9950388`, merge `4085f30`, con `--no-ff` perché `main` era
+  avanzato di un commit). Prima la regia ha fatto girare l'interfaccia dal
+  worktree di P-97 a macchina scarica, con la 8620 libera per 90 s: **4.892
+  verifiche, zero rossi, in 5 min 54 s**. Il primo giro di P-97 era finito con
+  28 rossi su 4.877 in 28 minuti, tutti attese scadute in gruppi che il commit
+  non tocca, con un gioco al 336 % di CPU: era la macchina, non il banco.
+- **Il controllo dei territori sul ramo è rosso, ed è atteso:** sei file —
+  cinque di `tests/` e `docs/specifica.md` — sono del territorio `motore`, ramo
+  `main`, e il controllo legge il nome del ramo della sessione
+  (`claude/p97-volto-controlli-…`). Li ha scritti Claude per `main`, in un
+  worktree; nessun file di `site/` né dell'interfaccia.
+- **Dopo la merge**, su `main`: motore 215/219 (quattro skip previsti), server
+  89/89, specifica 1.138; dati 225 e guardiano verdi su una copia senza
+  `.claude/worktrees/`. Nel checkout il guardiano resta rosso soltanto per il
+  worktree di P-97, il difetto già noto: 26 problemi, tutti in quella copia.
+- **Le decisioni 15–18 del §12 di `docs/volto-progetto.md`, prese dall'autore
+  il 26 ottobre, tutte come raccomandato:** il giro B veste le schermate con la
+  struttura di oggi, e Allenati e il riepilogo nuovi sono del giro 3; le icone
+  nella barra in basso arrivano già nel giro A, con le parole che restano; il
+  giro 3 riparte dopo il giro A, dentro la Regata; poi il giro B dalla domanda
+  e dal riepilogo.
+- **P-98 è scritto nella coda**, per ChatGPT su `ui/main`: il `:root` della
+  Regata, i componenti condivisi con le icone nella barra, la Home al telefono e
+  la Home al computer U con gli agganci della nota di P-97, i numeri dalla
+  banca (53 segnali, non i 27 del mock), i testi del §10 con le loro
+  correzioni, le quattordici righe dichiarate tolte nello stesso commit, e prima
+  e dopo alle sei misure con le schermate in `docs/collaudo-p98/`.
 
 ## [0.34.0] — 2026-10-24
 
