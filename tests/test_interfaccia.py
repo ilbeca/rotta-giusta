@@ -265,12 +265,29 @@ def tabella(titolo, colonne):
 # --- 1. il censimento e' completo -----------------------------------------------
 
 # P-94: il contratto viene da qui, mai dalla pagina sotto misura.
+# P-97 (volto, giro A, decisioni 1–8 del §12 di docs/volto-progetto.md): la
+# scala della Regata. Corpi 12, 14, 16, 20, 24, 32, e 44 e 56 solo per ruolo —
+# 56 nel titolo della Home al computer, 44 in «Come funziona» al computer e nei
+# numeri dell'esame (un blocco di sole cifre) sopra i 900 px; spazi con 64; pesi
+# con 800 solo per i titoli da 24 px in su e per i numeri; interlinea 1,05 per
+# i titoli da 44 e 56; i colori della Regata, e i ruoli «segno» (l'arancio delle
+# boe e l'arancio scuro della rotta) e «terra». Fino a P-97 la scala era quella
+# del giro 2: 12, 14, 16, 19, 24, 30 e 40 per l'h1 della Home sopra 900 px.
+SOGLIA_VOLTO = {'larghezza': 1200, 'altezza': 680}
 SCALA_CSS = {
-    'corpi': [12, 14, 16, 19, 24, 30], 'home': 40,
-    'spazi': [4, 8, 12, 16, 24, 32, 48], 'pesi': [400, 600, 700],
-    'testo': 1.45, 'titoli': 1.2, 'larghezza': 480,
-    'colori': {'--acc': '#076f99', '--ko': '#a4261d', '--warn': '#765000', '--ok': '#126832'},
+    'corpi': [12, 14, 16, 20, 24, 32],
+    'ruoli': [
+        {'corpo': 56, 'selettore': '#v-home h1', 'larghezza': 1200, 'altezza': 680, 'perche': 'il titolo della Home al computer'},
+        {'corpo': 44, 'selettore': '#v-home h2', 'testo': 'Come funziona', 'larghezza': 1200, 'altezza': 680, 'perche': '«Come funziona» al computer'},
+        {'corpo': 44, 'cifre': True, 'larghezza': 901, 'altezza': 0, 'perche': 'i numeri dell\'esame, un blocco di sole cifre'},
+    ],
+    'spazi': [4, 8, 12, 16, 24, 32, 48, 64], 'pesi': [400, 600, 700, 800], 'pesoForte': 800, 'forteDa': 24,
+    'testo': 1.45, 'titoli': 1.2, 'titoliGrandi': 1.05, 'grandiDa': 44, 'larghezza': 480,
+    'colori': {'--acc': '#0a4f6e', '--ko': '#b3261e', '--warn': '#765000', '--ok': '#12663a',
+               '--boa': '#ff6a1a', '--rotta': '#b23f00', '--terra': '#f2e6cf'},
+    'soglia': SOGLIA_VOLTO,
 }
+CORPI_RUOLO = sorted({r['corpo'] for r in SCALA_CSS['ruoli']})
 NOMI_SCALA = {
     'corpi': 'i corpi scritti negli stili appartengono alla scala',
     'spazi': 'gli spazi scritti negli stili appartengono alla scala',
@@ -329,7 +346,7 @@ def stili_scala(testo, script=True):
 
 def verifiche_scala_css(testo, eccezioni=(), script=True, token=True):
     errori = {k: [] for k in NOMI_SCALA}
-    font = {'--t-' + str(x) for x in SCALA_CSS['corpi'] + [SCALA_CSS['home']]}
+    font = {'--t-' + str(x) for x in SCALA_CSS['corpi'] + CORPI_RUOLO}
     spazio = {'--s-' + str(x) for x in SCALA_CSS['spazi']}
     pesi = {'--w-' + str(x) for x in SCALA_CSS['pesi']}
     eccezioni = {(p, re.sub(r'\s+', '', v)) for p, v in eccezioni}
@@ -351,7 +368,7 @@ def verifiche_scala_css(testo, eccezioni=(), script=True, token=True):
             if residuo.startswith('calc('):
                 valido = bool(re.fullmatch(r'calc\([0\s()+*/.\-]+\)', residuo))
             else:
-                validi = SCALA_CSS[parte] + ([SCALA_CSS['home']] if parte == 'corpi' else [])
+                validi = SCALA_CSS[parte] + (CORPI_RUOLO if parte == 'corpi' else [])
                 valido = True
                 for v in residuo.split():
                     if v in ('0', '0px', 'auto', 'inherit'):
@@ -365,10 +382,11 @@ def verifiche_scala_css(testo, eccezioni=(), script=True, token=True):
         roots = re.findall(r':root\s*\{([^}]+)\}', '\n'.join(c for o, c in stili_scala(testo) if o == '<style>'))
         if len(roots) != 1:
             errori['token'].append('%d blocchi :root invece di uno' % len(roots))
-        attesi = {**{'--t-' + str(x): str(x) + 'px' for x in SCALA_CSS['corpi'] + [SCALA_CSS['home']]},
+        attesi = {**{'--t-' + str(x): str(x) + 'px' for x in SCALA_CSS['corpi'] + CORPI_RUOLO},
                   **{'--s-' + str(x): str(x) + 'px' for x in SCALA_CSS['spazi']},
                   **{'--w-' + str(x): str(x) for x in SCALA_CSS['pesi']},
-                  '--lh-testo': '1.45', '--lh-titoli': '1.2', '--testo-max': str(SCALA_CSS['larghezza']) + 'px', **SCALA_CSS['colori']}
+                  '--lh-testo': '1.45', '--lh-titoli': '1.2', '--lh-titoli-grandi': '1.05',
+                  '--testo-max': str(SCALA_CSS['larghezza']) + 'px', **SCALA_CSS['colori']}
         for k, v in attesi.items():
             valori = re.findall(re.escape(k) + r'\s*:\s*([^;}]+)', ';'.join(roots))
             letto = valori[0].strip().lower() if len(valori) == 1 else None
@@ -401,12 +419,17 @@ def test_scala_css():
     rif = RIFERIMENTO_CLIENT.read_text(encoding='utf-8')
     for v in verifiche_scala_css(rif, eccezioni):
         check('scala CSS del riferimento: ' + v['nome'], v['ok'], v['extra'])
-    for vecchio, nuovo in [('--t-16:16px', '--t-16:13px'), ('--s-8:8px', '--s-8:10px'), ('--acc:#076f99', '--acc:#ff0000')]:
+    for vecchio, nuovo in [('--t-16:16px', '--t-16:13px'), ('--s-8:8px', '--s-8:10px'), ('--acc:#0a4f6e', '--acc:#076f99'),
+                           ('--t-20:20px', '--t-19:19px'), ('--boa:#ff6a1a', '--boa:#ff0000')]:
         check('il contratto non accetta la scala cambiata dalla pagina: ' + vecchio,
               not verifiche_scala_css(rif.replace(vecchio, nuovo))[3]['ok'])
-    buoni = ['font-size:var(--t-16)', 'margin:0 auto 12px', 'padding:calc(var(--s-8) + var(--s-4))', 'font-weight:600']
+    buoni = ['font-size:var(--t-16)', 'margin:0 auto 12px', 'padding:calc(var(--s-8) + var(--s-4))', 'font-weight:600',
+             'font-size:var(--t-56)', 'margin:64px 0', 'font-weight:800', 'font-size:20px']
+    # P-97: i corpi del giro 2 che la Regata non ha piu' sono rossi (volto §6.1).
     cattivi = [('font-size:13px', 'corpi'), ('margin:10px', 'spazi'), ('font-weight:650', 'pesi'),
-               ('padding:calc(var(--s-8) + 10px)', 'spazi'), ('font-size:var(--s-16)', 'corpi')]
+               ('padding:calc(var(--s-8) + 10px)', 'spazi'), ('font-size:var(--s-16)', 'corpi'),
+               ('font-size:19px', 'corpi'), ('font-size:var(--t-19)', 'corpi'), ('font-size:30px', 'corpi'),
+               ('font-size:40px', 'corpi'), ('margin:106px', 'spazi'), ('font-weight:900', 'pesi')]
     for css in buoni:
         vs = verifiche_scala_css('<style>p{' + css + ';}</style>', token=False)
         check('scala CSS accetta ' + css, all(x['ok'] for x in vs), vs)
@@ -3665,8 +3688,12 @@ ROTTURE_RACCORDO = [
 # rossa, e diventa rossa lei il giorno che il difetto e' chiuso e la riga no.
 # Alla merge di P-25 la tabella non deve avere piu' righe `T-*`: e' li' che si
 # esige il regime nuovo, senza un segno da cercare nella pagina.
+# T-15 (il volto, giro A, P-97: docs/volto-progetto.md §6.4) gira per parte:
+# T-15:stati entra in un account e parla con l'API, le altre no, e ogni rottura
+# chiede la sola parte che rompe.
+PARTI_T15 = ['T-15:' + p for p in ['soglia', 'costa', 'velo', 'percorso', 'fuoco', 'luci', 'movimento', 'numeri', 'stati', 'documento']]
 GRUPPI_RIFINITURA = ['T-01', 'T-02', 'T-03', 'T-04', 'T-05:finestra', 'T-05:arresti', 'T-06', 'T-07:prova', 'T-07:conto',
-                     'T-08', 'T-09', 'T-10', 'T-11', 'T-12', 'T-13']
+                     'T-08', 'T-09', 'T-10', 'T-11', 'T-12', 'T-13'] + PARTI_T15
 # T-12 (il giro 1 delle regole di disegno) si esegue una volta, e le sue
 # verifiche portano il nome della parte: e' per parte che si contano e si
 # dichiarano (docs/regole-disegno-progetto.md §10.1).
@@ -3678,8 +3705,9 @@ ECCEZIONI_SCALA = [
 PARTI_RIFINITURA = [g for g in GRUPPI_RIFINITURA if g not in ('T-12','T-13')] + PARTI_T12 + PARTI_T13
 VERIFICHE_RIFINITURA = {'T-01': 9, 'T-02': 9, 'T-03': 11, 'T-04': 6, 'T-05:finestra': 5, 'T-05:arresti': 2, 'T-06': 4,
                         'T-07:prova': 5, 'T-07:conto': 3, 'T-08': 2, 'T-09': 2, 'T-10': 5, 'T-11': 2,
-                        'T-12:principale': 1, 'T-12:primo-schermo': 2, 'T-12:esame': 2, 'T-12:avviso': 4, 'T-12:scelte': 1,
-                        'T-12:aggancio': 2, **{p: (2 if p in ('T-13:corpi','T-13:spazi') else 1) for p in PARTI_T13}}
+                        'T-12:principale': 1, 'T-12:primo-schermo': 4, 'T-12:esame': 2, 'T-12:avviso': 4, 'T-12:scelte': 1,
+                        'T-12:aggancio': 2, **{p: (2 if p in ('T-13:corpi','T-13:spazi') else 1) for p in PARTI_T13},
+                        **{p: (2 if p == 'T-15:movimento' else 1) for p in PARTI_T15}}
 
 # Rotture della pagina di riferimento per l'area 6: (che cosa, parti da
 # eseguire, sostituzioni, parola che il rosso deve contenere). Ognuna e' un
@@ -3853,10 +3881,17 @@ _SCALA_FINE = '/* P-94: punto delle rotture */'
 def rottura_scala(cosa, parte, css, motivo):
     return (cosa, ['T-13:' + parte], [(_SCALA_FINE, css + '\n' + _SCALA_FINE)], motivo)
 
+
+def rottura_volto(cosa, parte, css, motivo):
+    """Una rottura del volto scritta come CSS nel punto delle rotture (P-97)."""
+    return (cosa, ['T-15:' + parte], [(_SCALA_FINE, css + '\n' + _SCALA_FINE)], motivo)
+
 ROTTURE_RIFINITURA += [
     rottura_scala('un corpo a 13 px', 'corpi', '#home-anonima>p{font-size:13px}', 'corpo 13 px'),
     rottura_scala('un clamp fuori scala', 'corpi', '#home-anonima>p{font-size:clamp(13px,1vw,13px)}', 'corpo 13 px'),
-    ('sei corpi nel primo schermo', ['T-13:corpi'], [('<div id="home-anonima">', '<div id="home-anonima"><span style="font-size:12px">Uno</span><span style="font-size:14px">Due</span><span style="font-size:19px">Tre</span><span style="font-size:24px">Quattro</span>')], '6 corpi'),
+    # P-97: rifatta sui numeri della Regata, 20 al posto di 19 (volto §6.1).
+    ('sei corpi nel primo schermo', ['T-13:corpi'], [('<div id="home-anonima">', '<div id="home-anonima"><span style="font-size:12px">Uno</span><span style="font-size:14px">Due</span><span style="font-size:20px">Tre</span><span style="font-size:24px">Quattro</span>')], '6 corpi'),
+    rottura_scala('un corpo a 19 px, il giro 2 che la Regata non ha piu\'', 'corpi', '#home-anonima>p{font-size:19px}', 'corpo 19 px'),
     rottura_scala('un titolo di sezione a 13 sopra testo a 16', 'titoli', '#anteprime h2{font-size:13px}', '13 px introduce'),
     rottura_scala('testo corrente a 14 px', 'testo', '#home-anonima>p{font-size:14px}', '14 px < 16'),
     rottura_scala('interlinea troppo stretta', 'testo', '#home-anonima>p{line-height:1.1}', 'interlinea 1.100'),
@@ -3878,6 +3913,55 @@ ROTTURE_RIFINITURA += [
     # barra fissa e dentro il dialogo una coppia vicina resta rossa.
     rottura_scala('due voci della barra fissa a 2 px', 'distanze', _BARRA_FISSA + '#barra a{margin:0 2px 0 0}', '«Home» / a.da-solo «Allenati»: 2.00 px'),
     rottura_scala('i pulsanti del dialogo senza margine', 'distanze', _DIALOGO_SOPRA + '#account button{margin:0}', '«Accedi» / button «Ho dimenticato'),
+]
+
+
+# --- P-97: le diciotto rotture del volto (docs/volto-progetto.md §6.6) ----------------------
+# Ognuna e' un modo in cui la Home al computer puo' sembrare a posto e non
+# esserlo, e ognuna chiede la sola parte che rompe.
+_RIF_TESTO = RIFERIMENTO_CLIENT.read_text(encoding='utf-8') if RIFERIMENTO_CLIENT.exists() else ''
+_PERCORSO = (_RIF_TESTO[_RIF_TESTO.index('  <nav id="percorso"'):_RIF_TESTO.index('</nav>\n', _RIF_TESTO.index('  <nav id="percorso"')) + 7]
+             if '  <nav id="percorso"' in _RIF_TESTO else '<nav id="percorso" mancante>')
+_FERMA = "<button data-ferma>${ferme ? 'Riaccendi le luci' : 'Ferma le luci'}</button>"
+ROTTURE_RIFINITURA += [
+    rottura_volto('la terra ancorata in percentuale, come nel mock', 'costa', '#terra{width:auto;left:calc(50% + max(37.5vw, 59.2vh))}', 'a 1280×1024 triangoli fuori dalla terra'),
+    rottura_volto('il velo in percentuale', 'velo', '#velo{width:58%;background:linear-gradient(to right,rgba(10,79,110,.92) 69%,rgba(10,79,110,0))}', 'a 1200×700, pannello'),
+    ('una cifra di scandaglio sotto l\'h1', ['T-15:velo'], [('<div id="velo"></div>', '<div id="velo"></div><span class="cifra" style="left:96px;top:150px;font-size:56px">37</span>')], '«Preparati alla patente'),
+    rottura_volto('la scheda della sigla sopra la colonna', 'luci', '#scheda-luce{right:auto;left:64px}', 'copre la colonna del testo'),
+    ('il percorso con href che cambia l\'indirizzo', ['T-15:percorso'],
+     [("  e.preventDefault(); e.stopPropagation();\n  const p = document.getElementById(a.getAttribute('href').slice(1));",
+       "  e.preventDefault(); e.stopPropagation();\n  history.pushState(history.state, '', a.getAttribute('href'));\n  const p = document.getElementById(a.getAttribute('href').slice(1));")],
+     'l\'indirizzo cambia'),
+    ('il percorso prima dell\'azione nel fuoco', ['T-15:fuoco'],
+     [(_PERCORSO, ''), ('  <section id="tappa-1">\n', _PERCORSO + '  <section id="tappa-1">\n')], 'non l\'azione principale'),
+    rottura_volto('i triangoli in --boa sul beige', 'percorso', '#percorso polygon{stroke:var(--boa)}#percorso a.passata polygon,#percorso a[aria-current] polygon{fill:var(--boa);stroke:var(--boa)}', 'sulla terra (rgb(255, 106, 26))'),
+    rottura_volto('i bersagli di 13×14 px', 'percorso', '#percorso a{width:13px;height:14px}', 'non 44×44'),
+    rottura_volto('il contenitore della carta con overflow:auto che prende il fuoco', 'fuoco',
+                  'html[data-volto="carta"] #carta{overflow:auto}#carta::after{content:"";display:block;height:200vh}', 'che non fa niente'),
+    ('le luci che lampeggiano anche con il movimento ridotto', ['T-15:movimento'],
+     [('@media (prefers-reduced-motion: reduce){[data-luce],[data-rotta]{animation:none}[data-luce]{opacity:1}}', '@media (prefers-reduced-motion: reduce){[data-rotta]{animation:none}}')],
+     'con il movimento ridotto si muovono ancora'),
+    ('nessun comando per fermare le luci', ['T-15:movimento'], [(_FERMA, '')], 'Ferma le luci»'),
+    ('«27 fanali e segnali» scritto a mano', ['T-15:numeri'],
+     [("${E.SEGNALI.length} segnali da riconoscere a colpo d'occhio", "27 fanali e segnali da riconoscere a colpo d'occhio"),
+      ('<li>${E.SEGNALI.length} segnali da riconoscere</li>', '<li>27 fanali e segnali</li>')], '«53 segnali»'),
+    ('lo strato fisso che resta in Allenati', ['T-15:documento'],
+     [("  const su = VOLTO.matches && !!S.tappa && S.tappa.sezione === 'home';", '  const su = VOLTO.matches;')], 'in Allenati resta'),
+    ('lo scorrimento a scatti su tutto il documento', ['T-15:soglia', 'T-15:documento'],
+     [('html[data-volto="carta"]{scroll-snap-type:y proximity}', 'html{scroll-snap-type:y proximity}')], 'in Allenati resta lo scorrimento a scatti'),
+    ('la frase della conservazione parafrasata in una tappa', ['T-12:avviso'],
+     [('<p>Apri una domanda e rispondi: non serve registrarsi.</p>', '<p>Apri una domanda e rispondi: non serve registrarsi. Senza account le risposte valgono finché la pagina resta aperta.</p>')],
+     'c\'e\' l\'avviso'),
+    ('l\'invito in H0', ['N-01:invito'],
+     [('  const invito = !conto && !!API && r > 0 && offerte > (S.rinunciaHome || 0);', '  const invito = !conto && !!API;')],
+     'H0: la Home senza risposte non invita'),
+    # Una in piu' delle diciotto del §6.6, per T-15:stati: un numero scritto a mano
+    # quando la banca non risponde.
+    ('con la banca che non risponde «1.722 quesiti» scritti a mano', ['T-15:stati'],
+     [("'<li>La banca non risponde: i numeri si contano da lì, e senza non li scriviamo.</li>'", "'<li>1.722 quesiti del decreto</li>'")],
+     'con la banca che non risponde la Home scrive'),
+    rottura_scala('un 56 px fuori dall\'h1 della Home', 'corpi', 'html[data-volto="carta"] #tappa-3 h2{font-size:var(--t-56);line-height:var(--lh-titoli-grandi)}', 'corpo 56 px fuori dal suo ruolo'),
+    rottura_scala('la sottolineatura del link in --boa', 'colori', '#anteprime a{border-bottom:2px solid var(--boa)}', 'segno del sito su un comando'),
 ]
 
 
@@ -4055,6 +4139,67 @@ def test_disegno_scelte():
     """R-RIF-22 (D-13): al piu' quattro bersagli nel primo schermo della Home e
     delle preparazioni (T-12:scelte)."""
     registra_rifinitura('T-12:scelte')
+
+
+def test_volto_soglia():
+    """R-VOLTO-01: sotto la soglia della U (1.200 × 680 px) nessuno strato fisso,
+    nessun fondo scuro e nessuno scorrimento a scatti; sopra, la carta (T-15:soglia)."""
+    registra_rifinitura('T-15:soglia')
+
+
+def test_volto_costa():
+    """R-VOLTO-02: a 1200×700, 1280×800, 1280×1024, 1440×900 e 1920×1080 gli undici
+    triangoli stanno sulla terra, letta sui pixel, e il faro e la boa dentro lo
+    schermo e fuori dalla colonna del testo (T-15:costa)."""
+    registra_rifinitura('T-15:costa')
+
+
+def test_volto_velo():
+    """R-VOLTO-03: ogni testo sopra la carta ha il contrasto minimo contro il pixel
+    peggiore dietro di lui, pannello per pannello, alle cinque dimensioni (T-15:velo)."""
+    registra_rifinitura('T-15:velo')
+
+
+def test_volto_percorso():
+    """R-VOLTO-04: il percorso e' una navigazione — undici link con un nome,
+    aria-current sul pannello in vista, il tocco al pannello e al titolo senza
+    indirizzo ne' cronologia, bersagli di 44 px a 8 px, triangoli a 3:1 (T-15:percorso)."""
+    registra_rifinitura('T-15:percorso')
+
+
+def test_volto_fuoco():
+    """R-VOLTO-05: dopo la testata il primo fuoco e' l'azione principale, e nessun
+    fuoco su cio' che non si vede o non fa niente (T-15:fuoco)."""
+    registra_rifinitura('T-15:fuoco')
+
+
+def test_volto_luci():
+    """R-VOLTO-06: il faro e la boa sono pulsanti con aria-expanded; la sigla in
+    testo vero, in un aria-live, e la scheda non copre la colonna (T-15:luci)."""
+    registra_rifinitura('T-15:luci')
+
+
+def test_volto_movimento():
+    """R-VOLTO-07: con il movimento ridotto niente si muove; senza, «Ferma le luci»
+    le ferma (T-15:movimento; WCAG 2.2.2 e 2.3.3)."""
+    registra_rifinitura('T-15:movimento')
+
+
+def test_volto_numeri():
+    """R-VOLTO-08: i numeri della Home al computer vengono dalla banca e dal motore (T-15:numeri)."""
+    registra_rifinitura('T-15:numeri')
+
+
+def test_volto_stati():
+    """R-VOLTO-09: la Home al computer tiene H1, HA, gli avvisi sopra il titolo e la
+    banca non raggiungibile senza numeri inventati (T-15:stati)."""
+    registra_rifinitura('T-15:stati')
+
+
+def test_volto_documento():
+    """R-VOLTO-01 e R-VOLTO-10: la carta c'e' solo con la Home aperta, e Indietro
+    torna allo stesso pannello nello stesso documento (T-15:documento)."""
+    registra_rifinitura('T-15:documento')
 
 
 def test_rifinitura_provata_al_contrario():
@@ -4815,7 +4960,9 @@ def main():
               test_rifinitura_senza_account, test_rifinitura_invio, test_rifinitura_guasto, test_rifinitura_identita,
               test_rifinitura_finestra, test_rifinitura_fuoco, test_rifinitura_avvisi, test_rifinitura_larghezze,
               test_rifinitura_contrasto, test_rifinitura_bersagli, test_rifinitura_proseguire, test_rifinitura_figura,
-              test_scala_corpi, test_scala_titoli, test_scala_testo, test_scala_spazi, test_scala_pesi, test_scala_distanze, test_scala_righe, test_scala_colori, test_scala_home, test_disegno_principale, test_disegno_primo_schermo, test_disegno_avviso, test_disegno_scelte, test_rifinitura_provata_al_contrario,
+              test_scala_corpi, test_scala_titoli, test_scala_testo, test_scala_spazi, test_scala_pesi, test_scala_distanze, test_scala_righe, test_scala_colori, test_scala_home, test_disegno_principale, test_disegno_primo_schermo, test_disegno_avviso, test_disegno_scelte,
+              test_volto_soglia, test_volto_costa, test_volto_velo, test_volto_percorso, test_volto_fuoco, test_volto_luci,
+              test_volto_movimento, test_volto_numeri, test_volto_stati, test_volto_documento, test_rifinitura_provata_al_contrario,
               test_raccordo_riconosciuto, test_esito_senza_account, test_esito_quando, test_esito_salvato,
               test_avvio_registrato, test_avvio_non_si_vede, test_avvio_non_e_una_risposta, test_avvio_server_di_prima,
               test_avvio_con_un_errore, test_raccordo_provato_al_contrario,
