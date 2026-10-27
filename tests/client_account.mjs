@@ -4560,10 +4560,11 @@ async function t13(b, ctx, v, parte) {
     await tab.valuta('document.fonts.ready.then(() => true)');
     const misura = async (dove, home=false) => {
       for (const [w,h] of [[375,812],[1280,800]]) {
-        await tab.dimensioni(w,h);
         // La pagina risponde al cambio di dimensioni (matchMedia, la soglia della
-        // Home al computer): si misura dopo che ha risposto (P-97).
-        await pausa(100);
+        // Home al computer): si misura dopo che ha risposto. Fino a P-99 qui
+        // c'erano 100 ms fissi; ora dimensioni() aspetta lo stato, cioe' due
+        // frame disegnati con lo schermo alla misura chiesta.
+        await tab.dimensioni(w,h);
         const m = await tab.valuta(inPagina(scalaT13, { scala:ctx.scala, eccezioni:ctx.eccezioniScala || [], home, segmenti:true }));
         if (!m || !m.num.testi) { intoppi.push(`${dove} a ${w}: nessun testo misurato`); continue; }
         for (const [k,xs] of Object.entries(m.out)) for (const x of xs) errori[k].push(`${dove} a ${w}×${h}: ${x}`);
@@ -7418,7 +7419,15 @@ async function servi(corrente) {
 async function gruppo(b, ctx, gr) {
   const v = [];
   const [nome, parte] = gr.split(':');
-  try { await GRUPPI[nome](b, ctx, v, parte || null); } catch (e) { v.push({ gruppo: nome, nome: `il gruppo ${gr} si esegue`, ok: false, extra: e.message }); }
+  // I contesti che il gruppo apre, per leggere alla fine se Chrome li ha
+  // disegnati (P-99): un browser che non disegna da' rossi sparsi sul fuoco,
+  // sullo scorrimento e sulle misure, e qui si dice una volta sola perche'.
+  const contesti = [];
+  const proprio = { ...b, nuovoContesto: async (...a) => { const c = await b.nuovoContesto(...a); contesti.push(c); return c; } };
+  try { await GRUPPI[nome](proprio, ctx, v, parte || null); } catch (e) { v.push({ gruppo: nome, nome: `il gruppo ${gr} si esegue`, ok: false, extra: e.message }); }
+  const nascoste = contesti.flatMap((c) => c.nascoste || []);
+  if (nascoste.length) v.push({ gruppo: nome, nome: `Chrome ha disegnato le schede di ${gr}`, ok: false,
+    extra: `${nascoste.length} finestre con la scheda davanti non 'visible' alla chiusura, quindi senza frame: ${JSON.stringify(nascoste.slice(0, 3))}` });
   return v;
 }
 

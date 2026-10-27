@@ -38,6 +38,14 @@ export async function avviaChrome({ attesaMs = 15000, nomi = [] } = {}) {
     '--headless=new', '--remote-debugging-pipe', '--no-first-run', '--no-default-browser-check',
     '--disable-background-networking', '--disable-component-update', '--disable-sync',
     '--disable-extensions', '--disable-default-apps', '--mute-audio',
+    // Ogni scheda del banco e' una finestra sua. Da Chrome 156 (26 ottobre
+    // 2026) headless tratta come coperte le finestre aperte dopo le prime:
+    // `visibilityState` diventa 'hidden' e la scheda non disegna piu' — niente
+    // requestAnimationFrame, niente evento `change` di matchMedia, quindi la
+    // pagina non risponde a un cambio di dimensioni. Misurato su sei schede:
+    // dodici attese di due frame scadute senza questo flag, zero con
+    // (--disable-renderer-backgrounding da solo non basta). P-99.
+    '--disable-backgrounding-occluded-windows',
     // Un nome che non e' localhost ne' 127.0.0.1 per il sito: l'origine senza
     // API del §3.1 del progetto del client (C-17). Il nome risolve qui, e il
     // resto della rete non lo vede.
@@ -155,7 +163,25 @@ export async function avviaChrome({ attesaMs = 15000, nomi = [] } = {}) {
         }
         return { idb, local: await dom(true), session: await dom(false), cookie, cache };
       },
+      /**
+       * Se Chrome non disegnava la finestra del contesto, `[{ url, stato }]`: la
+       * riempie chiudi(), e gruppo() lo dice con un rosso suo, invece di
+       * lasciarlo leggere in rossi sparsi sul fuoco e sulle misure (P-99).
+       *
+       * Si guarda solo l'ultima scheda aperta. Le schede di un contesto stanno
+       * in una finestra sola, e quelle aperte prima restano dietro, in secondo
+       * piano: e' cosi' da sempre, e i gruppi con due schede lo sanno (P-39).
+       * L'ultima e' quella davanti, e se e' 'hidden' non e' dietro a un'altra:
+       * e' la finestra che Chrome non disegna, come Chrome 156 senza il flag.
+       */
+      nascoste: [],
       async chiudi() {
+        const davanti = schede.at(-1);
+        const stato = davanti && await Promise.race([
+          davanti.valuta('({ stato: document.visibilityState, url: location.href })').catch(() => null),
+          pausa(2000).then(() => null),
+        ]);
+        if (stato && stato.stato !== 'visible') this.nascoste.push(stato);
         for (const s of schede) await cmd('Target.closeTarget', { targetId: s.targetId }).catch(() => {});
         await cmd('Target.disposeBrowserContext', { browserContextId }).catch(() => {});
         ascoltatori.delete(segui);
@@ -277,8 +303,52 @@ export async function avviaChrome({ attesaMs = 15000, nomi = [] } = {}) {
        * questo ne e' soltanto l'equivalente (P-05). Senza argomenti torna com'era.
        */
       async dimensioni(larghezza, altezza = 800) {
-        if (!larghezza) return cmd('Emulation.clearDeviceMetricsOverride', {}, sessionId);
-        await cmd('Emulation.setDeviceMetricsOverride', { width: larghezza, height: altezza, deviceScaleFactor: 1, mobile: larghezza < 768 }, sessionId);
+        if (!larghezza) {
+          await cmd('Emulation.clearDeviceMetricsOverride', {}, sessionId);
+          return s.disegnata();
+        }
+        await cmd('Emulation.setDeviceMetricsOverride', { width: larghezza, height: altezza, deviceScaleFactor: 1, mobile: larghezza < 768,
+          // `screen` alla misura chiesta anche senza il telefono emulato: senza,
+          // Chrome lo lascia a 800×600, e disegnata() lo legge (P-99).
+          screenWidth: larghezza, screenHeight: altezza }, sessionId);
+        await s.disegnata(larghezza, altezza);
+      },
+      /**
+       * Aspetta che la pagina abbia risposto alle dimensioni nuove: uno stato,
+       * non un tempo (P-99). Fino a P-97 il banco aspettava 100 ms fissi, e con
+       * Chrome 156 misurava la Home del computer in uno schermo da 375.
+       *
+       * Misurato il 27 ottobre 2026: `screen.width` e `screen.height` sono gia'
+       * quelli chiesti appena il comando torna, e `matchMedia` risponde gia';
+       * l'evento `change`, che la pagina usa per cambiare disegno, arriva invece
+       * con il frame dopo, e `innerWidth` passa per un valore di mezzo (769 a
+       * 375). Quindi: `screen` alla misura chiesta, poi due frame disegnati —
+       * l'evento `change` parte nell'aggiornamento del disegno, prima delle
+       * richieste di frame. Non si pretende `innerWidth` uguale: con il telefono
+       * emulato una pagina che sborda, o senza meta viewport, ne ha uno piu'
+       * largo di diritto, ed e' quello che `disposta()` del banco misura.
+       *
+       * Se i frame non arrivano la scheda non disegna, e lo si dice: una misura
+       * presa in una scheda ferma e' una misura della pagina di prima.
+       */
+      async disegnata(larghezza, altezza, ms = 5000) {
+        const fine = Date.now() + ms;
+        const atteso = larghezza ? `screen.width === ${larghezza} && screen.height === ${altezza}` : 'true';
+        let ultimo = null;
+        for (;;) {
+          try {
+            ultimo = await s.valuta(`new Promise((ok) => {
+              const via = setTimeout(() => ok({ ok: false, stato: document.visibilityState, w: screen.width, h: screen.height }), 2000);
+              if (!(${atteso})) { clearTimeout(via); return ok({ ok: false, attesa: true, stato: document.visibilityState, w: screen.width, h: screen.height }); }
+              requestAnimationFrame(() => requestAnimationFrame(() => { clearTimeout(via); ok({ ok: true }); }));
+            })`);
+            if (ultimo.ok) return;
+          } catch { /* la pagina si sta caricando */ }
+          if (Date.now() > fine) {
+            throw new Error(`la scheda non ha disegnato le dimensioni ${larghezza || 'di partenza'}×${altezza || ''} in ${ms / 1000} s: ${JSON.stringify(ultimo)}`);
+          }
+          await pausa(ultimo && ultimo.attesa ? 10 : 40);
+        }
       },
       /**
        * Il movimento ridotto del sistema, emulato: `prefers-reduced-motion`
