@@ -5122,3 +5122,60 @@ sigla e i settori, che sono di fantasia come il faro.
 al computer e la Regata per tutto il resto. Il piano per portarle nel sito —
 token, carta, percorso, i conflitti con le regole e i controlli, i giri e
 diciotto decisioni — è in [volto-progetto.md](volto-progetto.md).
+
+## La Home a pannelli, dopo il giro A — 27 ottobre 2026
+
+### I-30 — Scatti obbligati, la costa che continua, il carteggio che si disegna [autore e Claude]
+
+**Da dove nasce.** Preparando le schermate per guardare il ridisegno in Google
+Stitch, l'autore ha detto meglio che cosa ha in mente per la Home al computer
+(la U, `volto-progetto.md`). Sono ritocchi del giro B, non del giro A: **non
+fermano le sessioni in corso** (P-98), e si portano nella pagina dopo. Il prompt
+per Stitch li contiene già: `docs/prototipi/stitch-2026-10/prompt-home-pannelli.md`.
+
+**Le idee, nelle parole dell'autore e poi per esteso.**
+
+1. **Gli scatti sono obbligati.** «Il pannello non può rimanere nel mezzo»: come
+   le pagine di prodotto di Apple, rotella, trackpad e tasti portano sempre al
+   pannello dopo o a quello prima. Il mock U ha `scroll-snap-type: y proximity`,
+   che lascia fermare la pagina a metà; diventa `mandatory`. *La condizione
+   che lo rende possibile:* ogni pannello sta tutto in uno schermo, sopra la
+   soglia della U (1.200 × 680). Con gli scatti obbligati un pannello più alto
+   dello schermo nasconde una parte che non si raggiunge più: va misurato,
+   pannello per pannello, alle cinque dimensioni di T-15.
+2. **I pannelli sono l'onboarding.** Ogni pannello è un passo di una mini guida
+   — un modo di prepararsi, una o due frasi, una miniatura animata dello
+   schermo vero, al più un «Prova →» — e così l'onboarding che non abbiamo mai
+   saputo dove mettere sta nella Home, per tutti, senza account. Resta un solo
+   pulsante pieno, «Simula il quiz base», nel primo pannello.
+3. **La terra continua, come una costa vera.** La carta è un unico tratto di
+   costa più alto dello schermo — un promontorio, una baia, un porticciolo, una
+   foce, un secondo faro, una secca — e a ogni pannello scivola verso l'alto
+   per mostrare il pezzo dopo. *Resta uno strato fisso* (R-VOLTO-01): si muove
+   il disegno dentro lo strato, con `transform`, non lo strato con la pagina.
+   Così i triangoli del percorso restano sulla terra (R-VOLTO-02) senza
+   riscrivere i controlli.
+4. **La rotta si traccia come un esercizio di carteggio.** Un tratto per
+   pannello, disegnato quando il pannello arriva, con le annotazioni classiche:
+   Pv e Vp (una freccia), Dc e Vc della corrente (tre frecce), Rv e Ve (due
+   frecce), i punti nave con l'ora, un rilevamento al faro. I tratti percorsi
+   restano: all'ultimo pannello c'è la navigazione intera lungo la costa. I
+   numeri tornano — Pv 060°, Vp 6,0 kn, Dc 150°, Vc 2,0 kn danno Rv 078°,
+   Ve 6,3 kn, calcolato il 27 ottobre —, perché chi conosce il carteggio non
+   trovi un disegno sbagliato. Rotta e costa restano di fantasia, come il faro.
+5. **Il triangolo del carteggio.** La squadretta trasparente scorre
+   sull'altra, porta la direzione dalla rosa alla barca, la matita traccia
+   lungo il bordo: una volta nel primo pannello, per intero nel pannello del
+   carteggio, dove si chiude anche il triangolo delle velocità (Vp, poi Vc,
+   poi Ve). *Da confermare dall'autore:* se intendeva la squadretta, il
+   triangolo delle velocità o tutti e due.
+
+**Che cosa tocca, quando si fa.** Il movimento ridotto (R-VOLTO-07): la
+navigazione appare già tracciata, senza squadretta e senza scorrimento della
+carta. Il contrasto sui pixel (R-VOLTO-03): le scritte del carteggio sono
+disegno e non contano nella scala, ma non devono mai passare sotto la colonna
+del testo. Le prestazioni dello strato fisso con un disegno lungo, che nessun
+controllo misura (§13 di `volto-progetto.md`). E i testi dei pannelli, con le
+correzioni già scritte nel §10 di `volto-progetto.md` (l'avviso fuori dal
+pannello 1, «fino a 25», niente consiglio nel 5, 53 segnali nell'8, «le
+risposte restano» nel 10).

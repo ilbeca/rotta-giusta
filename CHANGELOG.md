@@ -714,6 +714,24 @@ nessun account, salvataggio o selezione reale. La simulazione resta inattiva.
   con persone, Safari o telefoni fisici. Sito e versione invariati, niente push.
 
 
+### Progettato — I-30: la Home a pannelli, e i prompt per Google Stitch
+
+- **Le idee dell'autore per la Home al computer, scritte come migliorie del
+  giro B** in `docs/idee-dopo-gli-account.md`, I-30, per non fermare le
+  sessioni in corso: scatti obbligati (`mandatory` al posto del `proximity`
+  del mock U), i pannelli come mini guida al posto dell'onboarding, la costa
+  che continua di pannello in pannello dentro lo strato fisso, la rotta
+  tracciata come un esercizio di carteggio (Pv, Vp, Dc, Vc, Rv, Ve, con un
+  triangolo delle velocità che si chiude: verificato, Rv 078° e Ve 6,3 kn) e
+  la squadretta animata.
+- **Due prompt per guardare e ritoccare il ridisegno in Google Stitch**, in
+  `docs/prototipi/stitch-2026-10/`: uno per le schermate della Regata e della
+  U, uno per la Home a pannelli, che contiene già le idee di I-30 e le
+  correzioni ai testi del §10 di `volto-progetto.md`. Non ancora provati in
+  Stitch. Il server MCP di Stitch è collegato nella configurazione utente di
+  Claude Code, fuori dal repo.
+- Nessun file di `site/`, `tests/`, `server/` o della specifica toccato.
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la
