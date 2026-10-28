@@ -886,6 +886,8 @@ per non lasciare geometrie fuori schermo dietro un semplice `overflow:clip`.
   Dc 075° Vc 2,0 kn, Vp 6,0 kn → Rs 184°, Ve 5,7 kn; con Sc −5° Pv 189°.
   **Da decidere:** nessun esercizio della banca mette insieme corrente e
   scarroccio, e il vento lo porta.
+  **Deciso il 28 ottobre, dall'autore:** il vento resta, con lo scarroccio nel
+  calcolo (Pv = Rs − Sc = 189°); il mock non cambia.
 - Guardato in Chrome a 1280×800, 1920×1080 e 1280×1024, con e senza movimento
   ridotto (forzabile con `?ridotto`); scatti misurati, console vuota. Nessun file
   di `site/`, `tests/` o della specifica.
