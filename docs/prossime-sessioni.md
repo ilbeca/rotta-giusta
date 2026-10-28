@@ -267,7 +267,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 38 | **Le regole di disegno, giro 3**: le parole e i nomi (`docs/regole-disegno-progetto.md`, giro 3) — prima il controllo su `main`, poi la pagina | Claude, poi ChatGPT | `main`, `ui/main` | sospeso dall'autore il 24 ottobre 2026 per la direzione del ridisegno, scelta il 25 (riga 39); riparte dopo il giro A del volto, dentro la Regata: decisione 17 di `docs/volto-progetto.md` §12, presa dall'autore il 26 ottobre 2026 | da scrivere |
 | 39 | **Ripensare il disegno da capo**: la direzione è scelta dall'autore il 25 ottobre 2026 — la Regata, con la Home al computer «U — Terra beige» (I-29; `docs/volto-progetto.md`, decisioni 1–14). I mock sono in `docs/prototipi/redesign-2026-10-claude/`, fusi in `main` | la regia | `main` | niente: le decisioni 15–18 del §12 di `docs/volto-progetto.md` le ha prese l'autore il 26 ottobre 2026, come raccomandato | fatto; P-96 superato dalla scelta, da non lanciare se non è già partito |
 | 40 | **Il volto, giro A — i controlli**: `SCALA_CSS` con i token della Regata, T-12 e T-13 al computer, T-15 nuovo, la pagina di riferimento con la Home U, R-VOLTO nel §9.11, i rossi dichiarati sulla pagina vera (`docs/volto-progetto.md` §6, §9, §11) | Claude | un worktree da `main` | niente | P-97 fuso il 26 ottobre 2026 (`9950388`, merge `4085f30`) |
-| 41 | **Il volto, giro A — la pagina**: il `:root` della Regata, i componenti condivisi, la Home al telefono e al computer, prima e dopo alle sei misure (`docs/volto-progetto.md` §11) | ChatGPT | `ui/main` | niente: P-97 è fuso, e la decisione 16 (le icone nella barra, con le parole) è presa | P-98, scritto |
+| 41 | **Il volto, giro A — la pagina**: il `:root` della Regata, i componenti condivisi, la Home al telefono e al computer, prima e dopo alle sei misure (`docs/volto-progetto.md` §11) | ChatGPT | `ui/main` | il sì dell'autore sulle schermate di `docs/collaudo-p98/` e sui testi didattici delle due luci (§10 di `docs/volto-progetto.md`); per il rilascio anche quello su `docs/collaudo-p95/` (riga 37) | P-98 fuso il 28 ottobre 2026 (`9da12f4`, merge `a94b3c1`), da rilasciare. Prima, P-99 — il banco del client con Chrome 156, `--disable-backgrounding-occluded-windows` e `dimensioni()` che aspetta il disegno — fuso lo stesso giorno (`1c2881a`, merge `379a26e`) |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo P-59», «Dopo P-64», «Dopo il traguardo» e le voci non barrate |
 
 **La v0.31.0 è in linea dal 18 ottobre 2026**, sulla pagina e sul server, con le raccolte nuove spente (prima, la v0.30.0 dal 3 ottobre); P-59,
@@ -8481,3 +8481,9 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   e 24 su 24 senza forzatura; la forzatura entra fra le varianti
   (`VARIANTI_RIDISEGNO`). Suite su `main` 3.022. P-81 riparte con lo stesso
   prompt.
+- **28 ottobre 2026 — P-99 e P-98 fusi.** Il banco del client con Chrome 156
+  (merge `379a26e`), poi la pagina del volto, giro A (merge `a94b3c1`). Suite
+  su `main`: interfaccia 4.866, le 4.892 meno le ventisei verifiche delle
+  quattordici dichiarazioni chiuse. La riga 41 aspetta il sì dell'autore sulle
+  schermate di `docs/collaudo-p98/` e sui testi delle due luci; il rilascio
+  della v0.35.0 aspetta anche la riga 37.

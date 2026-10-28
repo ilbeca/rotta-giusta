@@ -826,6 +826,45 @@ per non lasciare geometrie fuori schermo dietro un semplice `overflow:clip`.
   Nessun file dei test, motore, dati o server modificato. Versione invariata,
   nessun tag, merge, push o pubblicazione.
 
+### Merge — P-99 e P-98 su `main`, e la specifica allineata
+
+- **Due merge, in quest'ordine.** P-99, il banco del client con Chrome 156
+  (`1c2881a`, merge `379a26e`), solo `tests/`; poi P-98, il volto giro A
+  nella pagina (`ui/main` a `9da12f4`, merge `a94b3c1`), con il controllo dei
+  territori sul diff verde (uscita 0). Fra le voci del CHANGELOG le righe vuote
+  ci sono.
+- **Guardato prima di fondere.** Le righe tolte da
+  `docs/eccezioni-interfaccia.md` sono esattamente le quattordici «Lo chiude
+  P-98» di P-97, nessuna in più. La pagina servita dal worktree `ui` a
+  375×812, 1280×800 e 1920×1080: la carta solo sopra la soglia, undici tappe,
+  nessuno sbordamento, console senza errori; e le schermate di
+  `docs/collaudo-p98/` (H0 al telefono, H1 a 1280, la scheda del faro a 1920,
+  il runner). I numeri vengono dalla banca: «53 segnali» è
+  `E.SEGNALI.length`, i quesiti `b.length`, gli esercizi `S.cart.length`.
+- **I conti tornano.** 4.892 − 4.866 = 26: ognuna delle dodici dichiarazioni
+  `T-*` portava due verifiche (sulla pagina di riferimento verde, una rottura
+  rossa), ognuna delle due della scala statica una («la dichiarazione nomina
+  una verifica eseguita»); la verifica dichiarata stessa torna una verifica
+  ordinaria, verde. Nessun controllo è sparito.
+- **Testi, per l'autore** (non corretti: sono dell'interfaccia). Le dieci tappe
+  seguono il §10 di `docs/volto-progetto.md` con le sue correzioni. Restano: le
+  sigle e le frasi del faro e della boa da verificare; la tappa 4 dice «scelti
+  dalle tue risposte» anche in H0, dove risposte non ce ne sono; la tappa 1 ha
+  «Prova con dieci domande» e la 3 «Allenati con dieci domande», mentre il nome
+  deciso è «Allenati con 10 domande»; «1722 quesiti» senza il punto, perché
+  `toLocaleString('it-IT')` non raggruppa le quattro cifre, mentre il resto del
+  sito scrive «1.722»; al telefono la striscia della carta ha le sigle
+  illeggibili e tagliate.
+- **Suite su `main` dopo le due merge:** motore 215/219 (quattro salti
+  previsti), server 89/89, specifica 1.138, interfaccia **4.866** in 6 min 22 s
+  con la 8620 guardata libera per 90 s e la macchina a carico 3,1. Dati 225 e
+  guardiano verdi su una copia senza `.claude/worktrees/`; nel checkout il
+  guardiano è rosso soltanto per la copia del worktree di P-99 (26 problemi,
+  tutti lì), il difetto già noto. Specifica: R-RIF-22, 23 e 30 e
+  R-VOLTO-01…04 e 06…10 non dicono più «difetto aperto». Niente push né
+  rilascio: la v0.35.0 aspetta il sì dell'autore sulle schermate di
+  `docs/collaudo-p95/` e `docs/collaudo-p98/`, sui 480 px e sui testi delle
+  luci.
 
 ## [0.34.0] — 2026-10-24
 
