@@ -866,6 +866,30 @@ per non lasciare geometrie fuori schermo dietro un semplice `overflow:clip`.
   `docs/collaudo-p95/` e `docs/collaudo-p98/`, sui 480 px e sui testi delle
   luci.
 
+### Progettato — il prototipo di Stitch analizzato, il faro e la rotta corretti
+
+- **La Home a pannelli fatta in Stitch, guardata con impeccable e UI UX Pro
+  Max**, sul disegno e sulle animazioni e non sui testi, come ha chiesto
+  l'autore: 44 segnalazioni (schede dentro schede, contrasti fino a 2,5:1, testi
+  a 9–10 px, indici numerati sopra i titoli, pallini che pulsano), cinque o sei
+  animazioni insieme e nessun movimento ridotto. In
+  `docs/prototipi/stitch-2026-10/analisi-2026-10-28.md`.
+- **Il faro sembrava finto perché girava**: un cono a 360° sopra la terra, per
+  una luce a settori che non spazza niente. Nel mock `carta-corretta/` ha i
+  settori come li disegna una carta e lampeggia col ritmo della sua sigla, due
+  lampi ogni 10 s, accendendo l'acqua solo dentro i settori; la cardinale est ha
+  i suoi tre scintillii e la secca a ovest.
+- **La rotta si ricava con il 2° problema delle correnti** (corrente nota, Rv
+  voluta e Vp → Pv e Ve), il caso a corrente nota più frequente nella banca:
+  corrente, compasso, rotta di superficie, squadretta sulla rosa, scarroccio
+  del vento, e poi la rotta lungo la costa. Numeri calcolati: Rv 165°,
+  Dc 075° Vc 2,0 kn, Vp 6,0 kn → Rs 184°, Ve 5,7 kn; con Sc −5° Pv 189°.
+  **Da decidere:** nessun esercizio della banca mette insieme corrente e
+  scarroccio, e il vento lo porta.
+- Guardato in Chrome a 1280×800, 1920×1080 e 1280×1024, con e senza movimento
+  ridotto (forzabile con `?ridotto`); scatti misurati, console vuota. Nessun file
+  di `site/`, `tests/` o della specifica.
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la

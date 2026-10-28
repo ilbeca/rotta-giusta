@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home a pannelli · carta corretta · Rotta Giusta</title>
+<!--
+  Mock di studio, non il sito. Corregge il prototipo di Stitch del 27 ottobre
+  2026 su tre punti: il faro (settori e ritmo, non un cono che gira), la rotta
+  ricavata con il 2° problema delle correnti, il vento come particelle che
+  portano lo scarroccio. Nessuna risorsa da altri host: Manrope dal sito.
+  Analisi e misure: ../analisi-2026-10-28.md
+-->
+<style>
+@font-face{font-family:Manrope;src:url(../../../../site/caratteri/manrope-latin-wght-normal.woff2) format('woff2');font-weight:200 800;font-display:swap}
+:root{
+  --ink:#10202b; --acc:#0a4f6e; --mare:#0b4a66; --mare-fondo:#083a52;
+  --terra:#f2e6cf; --terra-bordo:#c8b48a; --boa:#ff6a1a; --rotta:#ff8a3d;
+  --matita:rgba(255,255,255,.82); --carta-testo:#f6efe0;
+  --bianco:#fff; --barra:64px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--mare-fondo);color:var(--bianco);font-family:Manrope,system-ui,sans-serif}
+body{overflow:hidden}
+
+/* La carta: uno strato fisso, una costa sola, che scorre di 900 unità a pannello */
+.carta{position:fixed;inset:0;z-index:0}
+.carta svg{width:100%;height:100%;display:block}
+#costa{transition:transform 700ms cubic-bezier(.22,.61,.36,1)}
+#vento{position:fixed;inset:0;z-index:1;pointer-events:none}
+.velo{position:fixed;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(90deg,rgba(6,38,54,.92) 0,rgba(6,38,54,.86) 560px,rgba(6,38,54,0) 720px)}
+
+/* Barra */
+header{position:fixed;top:0;left:0;right:0;height:var(--barra);z-index:10;display:flex;align-items:center;gap:24px;
+  padding:0 32px;background:#fbf8f2;color:var(--ink);border-bottom:1px solid #e4dccb}
+header .marchio{font-weight:800;font-size:16px;letter-spacing:.02em;margin-right:16px}
+header nav{display:flex;gap:8px}
+header nav a{color:var(--ink);text-decoration:none;font-size:14px;font-weight:600;padding:12px 12px;border-radius:8px;min-height:44px;display:flex;align-items:center}
+header nav a[aria-current]{background:#e8eef1;color:var(--acc)}
+header .destra{margin-left:auto;display:flex;gap:8px;align-items:center}
+header button[hidden]{display:none}
+header button,header .accedi{font:600 14px Manrope,sans-serif;min-height:44px;padding:0 16px;border-radius:8px;border:1px solid #cfd8dc;background:#fff;color:var(--ink);cursor:pointer;text-decoration:none;display:flex;align-items:center}
+
+/* Pannelli con scatti obbligati */
+main{position:relative;z-index:3;height:100dvh;overflow-y:auto;scroll-snap-type:y mandatory;scroll-behavior:smooth}
+section{height:100dvh;scroll-snap-align:start;scroll-snap-stop:always;padding:calc(var(--barra) + 48px) 0 48px 64px;display:flex;flex-direction:column;justify-content:center}
+.colonna{max-width:480px}
+h1{font-size:56px;line-height:1.05;font-weight:800;margin:0 0 16px;letter-spacing:-.01em}
+h2{font-size:32px;line-height:1.2;font-weight:800;margin:0 0 16px}
+p{font-size:16px;line-height:1.45;margin:0 0 16px;color:var(--carta-testo);text-wrap:pretty}
+.colonna>*{opacity:0;transform:translateY(16px);transition:opacity 380ms ease-out,transform 380ms ease-out}
+section.qui .colonna>*{opacity:1;transform:none}
+section.qui .colonna>*:nth-child(2){transition-delay:60ms}
+section.qui .colonna>*:nth-child(3){transition-delay:120ms}
+.scheda{background:#fff;color:var(--ink);border-radius:16px;padding:24px;margin-top:8px}
+.scheda h2{font-size:16px;line-height:1.45;margin:0 0 16px;font-weight:700}
+.numeri{display:flex;gap:24px;margin-bottom:24px}
+.numeri b{display:block;font-size:44px;line-height:1.05;font-weight:800;color:var(--acc)}
+.numeri span{font-size:14px;color:#3d4f5a}
+.principale{display:flex;align-items:center;justify-content:center;min-height:48px;border-radius:10px;background:var(--acc);color:#fff;font:700 16px Manrope,sans-serif;text-decoration:none}
+.scheda p{color:#3d4f5a;font-size:14px;margin:12px 0 0}
+a.secondario{color:#fff;font-weight:700;text-underline-offset:4px;text-decoration-color:var(--boa)}
+
+/* Il percorso, sulla terra */
+.percorso{position:fixed;z-index:6;right:24px;top:calc(var(--barra) + 24px);bottom:24px;display:flex;flex-direction:column;justify-content:center;gap:8px}
+.percorso a{width:44px;height:44px;display:grid;place-items:center;border-radius:8px}
+.percorso a:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.percorso svg{width:20px;height:20px}
+.percorso polygon{fill:none;stroke:#8a3200;stroke-width:2}
+.percorso a.passato polygon,.percorso a[aria-current] polygon{fill:#8a3200}
+.percorso a[aria-current] svg{transform:scale(1.25)}
+
+/* Luci: ritmo vero, non coni rotanti */
+.lampo-faro{animation:lam2 10s linear infinite}
+.lampo-boa{animation:sc3 10s linear infinite}
+@keyframes lam2{0%{opacity:0}1%{opacity:1}6%{opacity:1}8%{opacity:0}17%{opacity:0}18%{opacity:1}23%{opacity:1}25%{opacity:0}100%{opacity:0}}
+@keyframes sc3{0%{opacity:0}.5%{opacity:1}3%{opacity:1}4%{opacity:0}10%{opacity:0}10.5%{opacity:1}13%{opacity:1}14%{opacity:0}20%{opacity:0}20.5%{opacity:1}23%{opacity:1}24%{opacity:0}100%{opacity:0}}
+.fermo .lampo-faro,.fermo .lampo-boa{animation:none;opacity:.55}
+
+.etichetta{font:600 14px Manrope,sans-serif;fill:var(--carta-testo)}
+.etichetta.piccola{font-size:12px}
+.etichetta.matita{fill:#fff;paint-order:stroke;stroke:rgba(8,58,82,.85);stroke-width:4px;stroke-linejoin:round}
+.costruzione{opacity:0}
+.scheda-luce{position:fixed;z-index:7;right:96px;bottom:32px;max-width:320px;background:#fff;color:var(--ink);border-radius:12px;padding:16px;font-size:14px;line-height:1.45;display:none}
+.scheda-luce.aperta{display:block}
+.scheda-luce b{font-size:16px}
+.luce{cursor:pointer}
+.luce:focus-visible{outline:none}
+.luce:focus-visible circle.bersaglio{stroke:#fff;stroke-width:3}
+.rivedi{font:600 14px Manrope,sans-serif;min-height:44px;padding:0 16px;border-radius:8px;border:1px solid rgba(255,255,255,.5);background:transparent;color:#fff;cursor:pointer;margin-top:8px;align-self:flex-start}
+@media (prefers-reduced-motion:reduce){
+  #costa{transition:none}
+  main{scroll-behavior:auto}
+  .colonna>*{opacity:1;transform:none;transition:none}
+  .lampo-faro,.lampo-boa{animation:none;opacity:.55}
+}
+/* ?ridotto forza lo stesso stato, per provarlo senza cambiare le impostazioni del sistema */
+html.ridotto #costa{transition:none}
+html.ridotto main{scroll-behavior:auto}
+html.ridotto .colonna>*{opacity:1;transform:none;transition:none}
+html.ridotto .lampo-faro,html.ridotto .lampo-boa{animation:none;opacity:.55}
+</style>
+</head>
+<body>
+
+<div class="carta" aria-hidden="true">
+<svg id="svg" viewBox="0 0 1440 900" preserveAspectRatio="xMaxYMid slice">
+  <defs>
+    <marker id="freccia1" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto">
+      <path d="M1 1 L11 6 L1 11" fill="none" stroke="currentColor" stroke-width="1.6"/></marker>
+    <marker id="freccia2" viewBox="0 0 20 12" refX="19" refY="6" markerWidth="20" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto">
+      <path d="M1 1 L11 6 L1 11 M9 1 L19 6 L9 11" fill="none" stroke="currentColor" stroke-width="1.6"/></marker>
+    <marker id="freccia3" viewBox="0 0 28 12" refX="27" refY="6" markerWidth="28" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto">
+      <path d="M1 1 L11 6 L1 11 M9 1 L19 6 L9 11 M17 1 L27 6 L17 11" fill="none" stroke="currentColor" stroke-width="1.6"/></marker>
+    <radialGradient id="luceAcqua" gradientUnits="userSpaceOnUse" cx="1138" cy="318" r="300">
+      <stop offset="0" stop-opacity=".32" stop-color="#fff"/>
+      <stop offset=".3" stop-opacity=".08" stop-color="#fff"/>
+      <stop offset="1" stop-opacity="0" stop-color="#fff"/>
+    </radialGradient>
+    <radialGradient id="alone"><stop offset="0" stop-color="#fffbe8"/><stop offset=".3" stop-color="#fff3c4" stop-opacity=".7"/><stop offset="1" stop-color="#fff3c4" stop-opacity="0"/></radialGradient>
+    <mask id="maskSettori"><path id="spicchi" fill="#fff"/></mask>
+  </defs>
+  <rect x="-2000" y="-2000" width="6000" height="14000" fill="var(--mare)"/>
+  <g id="costa">
+    <g id="fondali"></g>
+    <path id="terra" fill="var(--terra)" stroke="var(--terra-bordo)" stroke-width="2"/>
+    <g id="sopraTerra"></g>
+    <g id="rottaFissa"></g>
+    <g id="carteggio"></g>
+  </g>
+</svg>
+</div>
+<canvas id="vento" aria-hidden="true"></canvas>
+<div class="velo" aria-hidden="true"></div>
+
+<header>
+  <span class="marchio">ROTTA GIUSTA</span>
+  <nav aria-label="Sezioni"><a href="#" aria-current="page">Home</a><a href="#">Allenati</a><a href="#">Esame</a><a href="#">Progressi</a></nav>
+  <div class="destra">
+    <button id="ferma" type="button" aria-pressed="false">Ferma il movimento</button>
+    <a class="accedi" href="#">Accedi</a>
+  </div>
+</header>
+
+<nav class="percorso" aria-label="Percorso della pagina" id="percorso"></nav>
+
+<div class="scheda-luce" id="schedaLuce" role="status" aria-live="polite"></div>
+
+<main id="pannelli">
+  <section id="p0" data-titolo="Inizio"><div class="colonna">
+    <h1>Preparati alla patente nautica, un passo alla volta.</h1>
+    <p>Quiz e carteggio per la patente senza limiti dalla costa.</p>
+    <div class="scheda">
+      <h2>La prova d'esame dei quiz</h2>
+      <div class="numeri"><div><b>20</b><span>domande</span></div><div><b>30′</b><span>minuti</span></div><div><b>4</b><span>errori al più</span></div></div>
+      <a class="principale" href="#" id="azione">Simula il quiz base →</a>
+      <p>La correzione arriva alla fine, come all'esame.</p>
+    </div>
+  </div></section>
+  <section id="p1" data-titolo="Come funziona"><div class="colonna"><h2>Come funziona</h2><p>Scendi lungo la rotta: ogni pannello è un modo di prepararsi, e il suo triangolo, qui a lato, si accende quando ci arrivi.</p></div></section>
+  <section id="p2" data-titolo="La simulazione"><div class="colonna"><h2>La simulazione, come all'esame</h2><p>20 domande in 30 minuti, al più 4 errori. Nessuna correzione durante la prova: l'esito arriva alla fine.</p></div></section>
+  <section id="p3" data-titolo="Dieci domande"><div class="colonna"><h2>Dieci domande, con la correzione</h2><p>Dieci quiz base, con la correzione dopo ogni risposta: la tua accanto a quella del decreto.</p></div></section>
+  <section id="p4" data-titolo="Allenamento consigliato"><div class="colonna"><h2>L'allenamento consigliato</h2><p>Fino a 25 quiz base, scelti dalle tue risposte. Ogni domanda dice perché è lì.</p></div></section>
+  <section id="p5" data-titolo="Un argomento"><div class="colonna"><h2>Un argomento alla volta</h2><p>Base o vela, uno o più argomenti. Navigazione e Manovra portano 4 delle 20 domande ciascuna.</p></div></section>
+  <section id="p6" data-titolo="Gli errori"><div class="colonna"><h2>Gli errori tornano</h2><p>Riapri le domande che hai sbagliato, e segna perché: non lo sapevi, o è stata una svista.</p></div></section>
+  <section id="p7" data-titolo="Il carteggio"><div class="colonna"><h2>Il carteggio, sulla carta vera</h2><p>135 esercizi: tracci con squadrette e compasso, poi confronti con la risposta ministeriale. Sei tu a giudicare.</p><button class="rivedi" type="button" data-rivedi>Rivedi il triangolo delle correnti</button></div></section>
+  <section id="p8" data-titolo="Fanali e segnali"><div class="colonna"><h2>Fanali e segnali</h2><p>53 segnali da riconoscere. Sulla carta ogni luce ha la sua sigla: tocca il faro o la boa per leggerla.</p></div></section>
+  <section id="p9" data-titolo="L'esame"><div class="colonna"><h2>L'esame, in ordine</h2><p>Carteggio, quiz base, quiz vela: con le condizioni del decreto, senza sblocchi.</p></div></section>
+  <section id="p10" data-titolo="Con l'account"><div class="colonna"><h2>Con l'account, le risposte restano</h2><p>Ritrovi le tue risposte quando torni, anche da un altro telefono, e vedi i Progressi.</p></div></section>
+</main>
+
+<script>
+(() => {
+const NS = 'http://www.w3.org/2000/svg';
+const H = 900, N = 11;
+const ridotto = matchMedia('(prefers-reduced-motion: reduce)').matches || new URLSearchParams(location.search).has('ridotto');
+if (ridotto) document.documentElement.classList.add('ridotto');
+let fermo = ridotto;
+const $ = s => document.querySelector(s);
+const el = (tag, attr = {}, padre) => { const e = document.createElementNS(NS, tag); for (const k in attr) e.setAttribute(k, attr[k]); if (padre) padre.appendChild(e); return e; };
+const rad = d => d * Math.PI / 180;
+const vet = (b, l) => [l * Math.sin(rad(b)), -l * Math.cos(rad(b))];   // rilevamento -> vettore (nord in alto)
+
+/* ---------- La costa: una sola, continua, generata ---------- */
+function costaX(y) {
+  let x = 1225 + 38 * Math.sin(y / 430) + 18 * Math.sin(y / 170 + 1);
+  x -= 95 * Math.exp(-((y - 318) ** 2) / (2 * 55 ** 2));        // promontorio del faro
+  x += 70 * Math.exp(-((y - 2350) ** 2) / (2 * 220 ** 2));       // una baia
+  x -= 80 * Math.exp(-((y - 4950) ** 2) / (2 * 70 ** 2));        // secondo capo
+  x += 55 * Math.exp(-((y - 7600) ** 2) / (2 * 160 ** 2));       // foce
+  return x;
+}
+let d = 'M1500 -300 ';
+for (let y = -300; y <= H * N + 300; y += 12) d += `L${costaX(y).toFixed(1)} ${y} `;
+d += `L1500 ${H * N + 300} Z`;
+$('#terra').setAttribute('d', d);
+
+const fondali = $('#fondali');
+for (const off of [55, 130]) {           // isobate da 10 e 20 m, che seguono la costa
+  let p = '';
+  for (let y = -300; y <= H * N + 300; y += 24) p += `${p ? 'L' : 'M'}${(costaX(y) - off - 6 * Math.sin(y / 90)).toFixed(1)} ${y} `;
+  el('path', { d: p, fill: 'none', stroke: 'rgba(242,230,207,.28)', 'stroke-width': 1.2, 'stroke-dasharray': off === 55 ? '2 5' : '8 6' }, fondali);
+}
+let seme = 7; const caso = () => (seme = (seme * 9301 + 49297) % 233280) / 233280;
+for (let i = 0; i < 160; i++) {          // scandagli solo fra la rotta e la costa, mai sotto la colonna del testo
+  const y = caso() * H * N, x = 940 + caso() * (costaX(y) - 960);
+  if (x > costaX(y) - 18) continue;
+  const t = el('text', { x: x.toFixed(0), y: y.toFixed(0), class: 'etichetta piccola', opacity: .55 }, fondali);
+  t.textContent = Math.round(4 + (costaX(y) - x) / 9);
+}
+
+/* ---------- Il faro: settori, sigla e ritmo, non un cono che gira ---------- */
+const F = [1138, 318];
+const sopra = $('#sopraTerra');
+// settori visti dal mare: limiti in rilevamento dalla nave verso il faro (convenzione delle carte)
+const SETTORI = [ ['R', 30, 75, '#e5484d'], ['B', 75, 115, '#ffffff'], ['V', 115, 160, '#3fb27f'] ];
+const arco = (c, r, a1, a2) => { const p1 = vet(a1, r), p2 = vet(a2, r); return `M${c[0] + p1[0]} ${c[1] + p1[1]} A${r} ${r} 0 0 1 ${c[0] + p2[0]} ${c[1] + p2[1]}`; };
+let spicchi = '';
+for (const [lettera, da, a, col] of SETTORI) {
+  // il settore illumina l'acqua nella direzione opposta al rilevamento: dal faro verso il mare
+  const a1 = (da + 180) % 360, a2 = (a + 180) % 360;
+  const l1 = vet(a1, 300), l2 = vet(a2, 300);
+  spicchi += `M${F[0]} ${F[1]} L${F[0] + l1[0]} ${F[1] + l1[1]} A300 300 0 0 1 ${F[0] + l2[0]} ${F[1] + l2[1]} Z `;
+  el('path', { d: `M${F[0]} ${F[1]} L${F[0] + l1[0]} ${F[1] + l1[1]}`, stroke: 'rgba(255,255,255,.45)', 'stroke-dasharray': '6 6', 'stroke-width': 1 }, sopra);
+  el('path', { d: arco(F, 120, a1, a2), stroke: col, 'stroke-width': 4, fill: 'none', 'stroke-linecap': 'butt' }, sopra);
+  const m = vet((a1 + a2) / 2, 140);
+  const t = el('text', { x: F[0] + m[0], y: F[1] + m[1] + 5, 'text-anchor': 'middle', class: 'etichetta matita' }, sopra); t.textContent = lettera;
+}
+el('path', { d: `M${F[0]} ${F[1]} L${F[0] + vet(340, 300)[0]} ${F[1] + vet(340, 300)[1]}`, stroke: 'rgba(255,255,255,.45)', 'stroke-dasharray': '6 6', 'stroke-width': 1 }, sopra);
+$('#spicchi').setAttribute('d', spicchi);
+// la luce sull'acqua: si accende col ritmo Lam.(2) 10s, solo dentro i settori
+const lampoAcqua = el('g', { class: 'lampo-faro', mask: 'url(#maskSettori)' }, sopra);
+el('circle', { cx: F[0], cy: F[1], r: 300, fill: 'url(#luceAcqua)' }, lampoAcqua);
+el('circle', { cx: F[0], cy: F[1], r: 36, fill: 'url(#alone)', class: 'lampo-faro' }, sopra);
+const faro = el('g', { class: 'luce', tabindex: '-1', 'data-luce': 'faro' }, sopra);
+el('circle', { class: 'bersaglio', cx: F[0], cy: F[1], r: 26, fill: 'transparent' }, faro);
+el('path', { d: `M${F[0] - 7} ${F[1] + 16} L${F[0] - 4} ${F[1] - 8} L${F[0] + 4} ${F[1] - 8} L${F[0] + 7} ${F[1] + 16} Z`, fill: '#10202b' }, faro);
+el('circle', { cx: F[0], cy: F[1] - 10, r: 4.5, fill: '#fff6d0', stroke: '#10202b', 'stroke-width': 1.5 }, faro);
+const tf = el('text', { x: F[0] + 26, y: F[1] + 40, class: 'etichetta matita' }, sopra); tf.textContent = 'Lam.(2) BRV 10s';
+
+/* ---------- Secca e cardinale est Sc.(3) 10s: si passa a est ---------- */
+const S = [878, 760], Bo = [928, 752];
+for (let i = 0; i < 9; i++) { const a = i * 40, r = 10 + (i % 3) * 7; el('text', { x: S[0] + r * Math.cos(rad(a)), y: S[1] + r * Math.sin(rad(a)), class: 'etichetta piccola', 'text-anchor': 'middle', opacity: .8 }, sopra).textContent = '+'; }
+el('circle', { cx: S[0], cy: S[1], r: 30, fill: 'none', stroke: 'rgba(255,255,255,.55)', 'stroke-dasharray': '3 4' }, sopra);
+el('circle', { cx: Bo[0], cy: Bo[1] - 12, r: 22, fill: 'url(#alone)', class: 'lampo-boa' }, sopra);
+const boa = el('g', { class: 'luce', tabindex: '-1', 'data-luce': 'boa' }, sopra);
+el('circle', { class: 'bersaglio', cx: Bo[0], cy: Bo[1], r: 24, fill: 'transparent' }, boa);
+el('rect', { x: Bo[0] - 5, y: Bo[1] - 4, width: 10, height: 16, fill: '#ffd200', stroke: '#10202b' }, boa);
+el('rect', { x: Bo[0] - 5, y: Bo[1] - 4, width: 10, height: 5, fill: '#10202b' }, boa);
+el('rect', { x: Bo[0] - 5, y: Bo[1] + 7, width: 10, height: 5, fill: '#10202b' }, boa);
+el('path', { d: `M${Bo[0]} ${Bo[1] - 22} L${Bo[0] + 6} ${Bo[1] - 14} L${Bo[0]} ${Bo[1] - 6} L${Bo[0] - 6} ${Bo[1] - 14} Z`, fill: '#10202b' }, boa);  // coni base contro base
+const tb = el('text', { x: Bo[0] + 18, y: Bo[1] + 6, class: 'etichetta matita' }, sopra); tb.textContent = 'Sc.(3) 10s';
+
+/* ---------- La corrente, col segno delle carte, e la rosa ---------- */
+function simboloCorrente(x, y, dir, testo) {
+  const g = el('g', { opacity: .9 }, sopra), [dx, dy] = vet(dir, 1), n = [-dy, dx];
+  let p = `M${x} ${y} `;
+  for (let i = 1; i <= 24; i++) { const s = i * 4, w = 4 * Math.sin(i / 2); p += `L${x + dx * s + n[0] * w} ${y + dy * s + n[1] * w} `; }
+  el('path', { d: p, fill: 'none', stroke: '#bfe3f0', 'stroke-width': 1.8, 'marker-end': 'url(#freccia1)', style: 'color:#bfe3f0' }, g);
+  const t = el('text', { x: x + dx * 50, y: y + dy * 50 + 22, class: 'etichetta piccola matita', 'text-anchor': 'middle' }, g); t.textContent = testo;
+}
+simboloCorrente(985, 300, 75, '2,0 kn');
+for (let k = 1; k < N; k++) simboloCorrente(costaX(k * H + 640) - 210, k * H + 640, 75 + 10 * Math.sin(k), '2,0 kn');
+
+const R0 = [1050, 600], rr = 62;
+const rosa = el('g', { opacity: .9 }, sopra);
+el('circle', { cx: R0[0], cy: R0[1], r: rr, fill: 'none', stroke: 'rgba(255,255,255,.6)' }, rosa);
+el('circle', { cx: R0[0], cy: R0[1], r: rr - 12, fill: 'none', stroke: 'rgba(255,255,255,.35)' }, rosa);
+for (let a = 0; a < 360; a += 10) { const p1 = vet(a, rr), p2 = vet(a, rr - (a % 30 ? 6 : 12)); el('line', { x1: R0[0] + p1[0], y1: R0[1] + p1[1], x2: R0[0] + p2[0], y2: R0[1] + p2[1], stroke: 'rgba(255,255,255,.6)' }, rosa); }
+el('text', { x: R0[0], y: R0[1] - rr - 6, 'text-anchor': 'middle', class: 'etichetta piccola matita' }, rosa).textContent = 'N';
+
+/* ---------- Il carteggio: 2° problema delle correnti ----------
+   Noti la rotta vera voluta Rv, la velocità propria Vp e la corrente (Dc, Vc):
+   si trovano la rotta di superficie Rs, la velocità effettiva Ve, e con lo
+   scarroccio del vento la prua vera Pv. Un'ora di moto, 55 unità a miglio. */
+const RV = 165, DC = 75, VC = 2.0, VP = 6.0, SC = -5, K = 55;
+const dRs = Math.asin(-(VC / VP) * Math.sin(rad(DC - RV))) * 180 / Math.PI;
+const RS = RV + dRs, VE = VP * Math.cos(rad(dRs)) + VC * Math.cos(rad(DC - RV)), PV = RS - SC;
+const A = [820, 170];
+const C = [A[0] + vet(DC, VC * K)[0], A[1] + vet(DC, VC * K)[1]];
+const B = [A[0] + vet(RV, VE * K)[0], A[1] + vet(RV, VE * K)[1]];
+const g = $('#carteggio');
+const fmt = (n, c = 0) => n.toFixed(c).replace('.', ',');
+const gradi = n => String(Math.round(((n % 360) + 360) % 360)).padStart(3, '0') + '°';
+
+const parti = {};
+function linea(nome, p1, p2, stile) { const l = el('line', Object.assign({ x1: p1[0], y1: p1[1], x2: p1[0], y2: p1[1], fill: 'none' }, stile), g); parti[nome] = { l, p1, p2 }; return l; }
+function testoLungo(nome, p1, p2, txt, lato = -1, spost = 0.5) {
+  let ang = Math.atan2(p2[1] - p1[1], p2[0] - p1[0]) * 180 / Math.PI;
+  if (ang > 90) ang -= 180; if (ang < -90) ang += 180;
+  const mx = p1[0] + (p2[0] - p1[0]) * spost, my = p1[1] + (p2[1] - p1[1]) * spost;
+  const t = el('text', { class: 'etichetta matita costruzione', 'text-anchor': 'middle', transform: `translate(${mx} ${my}) rotate(${ang.toFixed(1)}) translate(0 ${lato * 10})` }, g);
+  t.textContent = txt; parti[nome] = { t }; return t;
+}
+// punto nave
+const fixA = el('g', { class: 'costruzione' }, g);
+el('circle', { cx: A[0], cy: A[1], r: 6, fill: 'none', stroke: '#fff', 'stroke-width': 1.6 }, fixA);
+el('circle', { cx: A[0], cy: A[1], r: 1.6, fill: '#fff' }, fixA);
+el('text', { x: A[0] - 12, y: A[1] + 5, 'text-anchor': 'end', class: 'etichetta matita' }, fixA).textContent = '10:00';
+
+// la rotta voluta, prolungata fino al bordo del pannello: è lì che vuoi andare
+const fineRv = [A[0] + vet(RV, 740)[0], A[1] + vet(RV, 740)[1]];
+linea('rv', A, fineRv, { stroke: 'var(--matita)', 'stroke-width': 1.4, 'stroke-dasharray': '10 6' });
+linea('dc', A, C, { stroke: '#bfe3f0', 'stroke-width': 1.8, style: 'color:#bfe3f0' });
+linea('rs', C, B, { stroke: '#fff', 'stroke-width': 1.8, style: 'color:#fff' });
+linea('ve', A, B, { stroke: 'var(--rotta)', 'stroke-width': 2.6, style: 'color:var(--rotta)' });
+testoLungo('tRv', A, fineRv, `Rv ${gradi(RV)}`, -1, .78);
+testoLungo('tDc', A, C, `Dc ${gradi(DC)} · Vc ${fmt(VC, 1)} kn`, 1.8, .55);
+testoLungo('tRs', C, B, `Rs ${gradi(RS)} · Vp ${fmt(VP, 1)} kn`, -1, .42);
+testoLungo('tVe', A, B, `Ve ${fmt(VE, 1)} kn`, 1, .62);
+const arcoVp = el('path', { fill: 'none', stroke: 'rgba(255,255,255,.75)', 'stroke-width': 1.2, 'stroke-dasharray': '3 4' }, g);
+const compasso = el('g', { class: 'costruzione' }, g);
+const gamba = el('line', { x1: C[0], y1: C[1], stroke: '#d9d3c7', 'stroke-width': 2.5, 'stroke-linecap': 'round' }, compasso);
+el('circle', { cx: C[0], cy: C[1], r: 3.5, fill: '#d9d3c7' }, compasso);
+const puntoB = el('g', { class: 'costruzione' }, g);
+el('circle', { cx: B[0], cy: B[1], r: 6, fill: 'none', stroke: '#fff', 'stroke-width': 1.6 }, puntoB);
+el('text', { x: B[0] - 12, y: B[1] + 4, 'text-anchor': 'end', class: 'etichetta matita' }, puntoB).textContent = '11:00';
+
+// la squadretta: porta la direzione di CB sulla rosa per leggerla
+const dirRS = vet(RS, 1);
+const squadretta = el('g', { class: 'costruzione' }, g);
+el('path', { d: 'M0 0 L0 230 L-150 230 Z', fill: 'rgba(220,240,248,.16)', stroke: 'rgba(255,255,255,.7)', 'stroke-width': 1.2 }, squadretta);
+for (let i = 10; i < 230; i += 10) el('line', { x1: 0, y1: i, x2: i % 50 ? -5 : -10, y2: i, stroke: 'rgba(255,255,255,.6)' }, squadretta);
+const angSq = -Math.atan2(dirRS[0], dirRS[1]) * 180 / Math.PI;
+const lettura = el('g', { class: 'costruzione' }, g);
+const lp = vet(RS, rr + 14), lm = vet(RS + 180, rr + 14);
+el('line', { x1: R0[0] + lm[0], y1: R0[1] + lm[1], x2: R0[0] + lp[0], y2: R0[1] + lp[1], stroke: '#fff', 'stroke-width': 1.6 }, lettura);
+el('text', { x: R0[0] + lp[0] + 8, y: R0[1] + lp[1] + 16, class: 'etichetta matita' }, lettura).textContent = gradi(RS);
+
+const nota = el('g', { class: 'costruzione' }, g);
+el('text', { x: 914, y: 506, class: 'etichetta matita' }, nota).textContent = `vento da W: Sc ${SC}°`;
+el('text', { x: 914, y: 526, class: 'etichetta matita' }, nota).textContent = `Pv = Rs − Sc = ${gradi(PV)}`;
+const prua = el('line', { x1: B[0], y1: B[1], x2: B[0], y2: B[1], stroke: '#fff', 'stroke-width': 2, 'marker-end': 'url(#freccia1)', style: 'color:#fff', class: 'costruzione' }, g);
+
+/* ---------- La rotta lungo la costa: un tratto a pannello ---------- */
+const tappe = [B, fineRv];
+for (let k = 1; k < N; k++) { const y = k * H + 450; tappe.push([costaX(y) - 250, y]); }
+tappe.push([costaX(N * H - 60) - 250, N * H - 60]);
+const rotta = $('#rottaFissa');
+const tratti = [];
+for (let i = 1; i < tappe.length; i++) {
+  const p1 = tappe[i - 1], p2 = tappe[i];
+  const l = el('line', { x1: p1[0], y1: p1[1], x2: p1[0], y2: p1[1], stroke: 'var(--rotta)', 'stroke-width': 2.6, 'stroke-dasharray': '10 7' }, rotta);
+  tratti.push({ l, p1, p2, fatto: false });
+}
+const barca = el('path', { d: 'M0 -12 C6 -4 6 6 4 12 L-4 12 C-6 6 -6 -4 0 -12 Z', fill: '#fff', stroke: '#10202b', 'stroke-width': 1.2, class: 'costruzione' }, rotta);
+function mettiBarca(p, rot) { barca.setAttribute('transform', `translate(${p[0]} ${p[1]}) rotate(${rot})`); barca.style.opacity = 1; }
+
+/* ---------- Animazioni: un passo alla volta, o tutto subito ---------- */
+const attesa = ms => new Promise(r => setTimeout(r, ms));
+const facile = t => 1 - Math.pow(1 - t, 3);
+function tween(ms, f) {
+  if (ridotto || ms === 0) { f(1); return Promise.resolve(); }
+  return new Promise(r => { const t0 = performance.now(); const passo = n => { const t = Math.min(1, (n - t0) / ms); f(facile(t)); t < 1 ? requestAnimationFrame(passo) : r(); }; requestAnimationFrame(passo); });
+}
+const traccia = (nome, ms, marker) => tween(ms, t => { const { l, p1, p2 } = parti[nome]; l.setAttribute('x2', p1[0] + (p2[0] - p1[0]) * t); l.setAttribute('y2', p1[1] + (p2[1] - p1[1]) * t); if (t === 1 && marker) l.setAttribute('marker-end', `url(#${marker})`); });
+const mostra = (e, ms = 300) => tween(ms, t => (e.style.opacity = t));
+let giro = 0;
+
+async function carteggio() {
+  const mio = ++giro, vivo = () => mio === giro;
+  // azzera
+  for (const n of ['rv', 'dc', 'rs', 've']) { const { l, p1 } = parti[n]; l.setAttribute('x2', p1[0]); l.setAttribute('y2', p1[1]); l.removeAttribute('marker-end'); }
+  for (const e of g.querySelectorAll('.costruzione')) e.style.opacity = 0;
+  arcoVp.setAttribute('d', ''); prua.setAttribute('x2', B[0]); prua.setAttribute('y2', B[1]); prua.style.opacity = 0;
+  tratti[0].l.setAttribute('x2', tratti[0].p1[0]); tratti[0].l.setAttribute('y2', tratti[0].p1[1]); barca.style.opacity = 0;
+  const pausa = ms => ridotto ? Promise.resolve() : attesa(ms);
+
+  await mostra(fixA); await pausa(250); if (!vivo()) return;
+  await traccia('rv', 900); await mostra(parti.tRv.t); await pausa(300); if (!vivo()) return;     // 1. la rotta che vuoi
+  await traccia('dc', 650, 'freccia3'); await mostra(parti.tDc.t); await pausa(350); if (!vivo()) return;  // 2. un'ora di corrente
+  // 3. il compasso aperto a Vp, puntato sulla punta della corrente, taglia la Rv
+  compasso.style.opacity = 1;
+  const a0 = RS - 22, a1 = RS + 14;
+  await tween(1300, t => { const a = a0 + (a1 - a0) * t, p = vet(a, VP * K); gamba.setAttribute('x2', C[0] + p[0]); gamba.setAttribute('y2', C[1] + p[1]);
+    const s = vet(a0, VP * K); arcoVp.setAttribute('d', `M${C[0] + s[0]} ${C[1] + s[1]} A${VP * K} ${VP * K} 0 0 1 ${C[0] + p[0]} ${C[1] + p[1]}`); });
+  await mostra(puntoB, 250); await mostra(compasso, 0); compasso.style.opacity = 0; if (!vivo()) return;
+  // 4. dalla punta della corrente al taglio: la rotta di superficie; da A al taglio: la velocità effettiva
+  await traccia('rs', 700, 'freccia1'); await mostra(parti.tRs.t);
+  await traccia('ve', 600, 'freccia2'); await mostra(parti.tVe.t); await pausa(350); if (!vivo()) return;
+  // 5. la squadretta porta Rs sulla rosa
+  const da = [C[0], C[1]], a = [R0[0] - dirRS[0] * 110, R0[1] - dirRS[1] * 110];
+  squadretta.style.opacity = 1;
+  await tween(1100, t => { const x = da[0] + (a[0] - da[0]) * t, y = da[1] + (a[1] - da[1]) * t; squadretta.setAttribute('transform', `translate(${x} ${y}) rotate(${angSq})`); });
+  await mostra(lettura); await pausa(400); await tween(300, t => (squadretta.style.opacity = 1 - t)); if (!vivo()) return;
+  // 6. il vento: lo scarroccio dà la prua da tenere
+  await mostra(nota);
+  prua.style.opacity = 1; const pp = vet(PV, 70);
+  await tween(500, t => { prua.setAttribute('x2', B[0] + pp[0] * t); prua.setAttribute('y2', B[1] + pp[1] * t); });
+  await pausa(300); if (!vivo()) return;
+  // 7. la rotta: si naviga
+  await disegnaTratto(0);
+}
+
+async function disegnaTratto(i) {
+  const tr = tratti[i]; if (!tr) return;
+  const rot = Math.atan2(tr.p2[0] - tr.p1[0], -(tr.p2[1] - tr.p1[1])) * 180 / Math.PI;
+  await tween(900, t => { const x = tr.p1[0] + (tr.p2[0] - tr.p1[0]) * t, y = tr.p1[1] + (tr.p2[1] - tr.p1[1]) * t; tr.l.setAttribute('x2', x); tr.l.setAttribute('y2', y); mettiBarca([x, y], rot); });
+  tr.fatto = true;
+}
+
+/* ---------- Pannelli, percorso, carta che scorre ---------- */
+const sezioni = [...document.querySelectorAll('main section')];
+const percorso = $('#percorso');
+sezioni.forEach((s, i) => {
+  const a = document.createElement('a'); a.href = '#' + s.id; a.setAttribute('aria-label', `${i + 1}. ${s.dataset.titolo}`);
+  a.innerHTML = '<svg viewBox="0 0 20 20" aria-hidden="true"><polygon points="10,3 17,17 3,17"/></svg>';
+  a.addEventListener('click', e => { e.preventDefault(); s.scrollIntoView({ behavior: ridotto ? 'auto' : 'smooth' }); s.querySelector('h1,h2').setAttribute('tabindex', '-1'); s.querySelector('h1,h2').focus({ preventScroll: true }); });
+  percorso.appendChild(a);
+});
+let corrente = -1;
+async function vaiA(i) {
+  if (i === corrente) return; corrente = i;
+  sezioni.forEach((s, k) => s.classList.toggle('qui', k === i));
+  [...percorso.children].forEach((a, k) => { a.classList.toggle('passato', k < i); k === i ? a.setAttribute('aria-current', 'location') : a.removeAttribute('aria-current'); });
+  $('#costa').style.transform = `translateY(${-H * i}px)`;
+  if (i === 0 && !tratti[0].fatto) return carteggio();
+  for (let k = 0; k <= i; k++) if (!tratti[k].fatto) { if (k < i || ridotto) { await tween(0, () => {}); const tr = tratti[k]; tr.l.setAttribute('x2', tr.p2[0]); tr.l.setAttribute('y2', tr.p2[1]); tr.fatto = true; } else await disegnaTratto(k); }
+  if (ridotto) { const tr = tratti[i]; mettiBarca(tr.p2, Math.atan2(tr.p2[0] - tr.p1[0], -(tr.p2[1] - tr.p1[1])) * 180 / Math.PI); }
+}
+const osserva = new IntersectionObserver(v => v.forEach(e => e.isIntersecting && vaiA(sezioni.indexOf(e.target))), { root: $('#pannelli'), threshold: .6 });
+sezioni.forEach(s => osserva.observe(s));
+document.querySelector('[data-rivedi]').addEventListener('click', () => { $('#pannelli').scrollTo({ top: 0, behavior: ridotto ? 'auto' : 'smooth' }); tratti[0].fatto = false; corrente = -1; setTimeout(() => vaiA(0), ridotto ? 0 : 700); });
+
+/* ---------- Le sigle: testo vero, fuori dal disegno ---------- */
+const scheda = $('#schedaLuce');
+const SIGLE = {
+  faro: '<b>Lam.(2) BRV 10s</b><br>Due lampi ogni 10 secondi. Bianco, rosso o verde secondo il settore da cui lo guardi: nel bianco si passa sicuri.',
+  boa: '<b>Sc.(3) 10s</b><br>Cardinale est: tre scintillii ogni 10 secondi. Il pericolo è a ovest, si passa a est.'
+};
+for (const nodo of document.querySelectorAll('.luce')) {
+  nodo.addEventListener('click', () => { const k = nodo.dataset.luce, aperta = scheda.classList.contains('aperta') && scheda.dataset.k === k; scheda.classList.toggle('aperta', !aperta); scheda.dataset.k = k; scheda.innerHTML = SIGLE[k]; });
+}
+document.querySelector('.carta').style.pointerEvents = 'none';
+for (const nodo of document.querySelectorAll('.luce')) nodo.style.pointerEvents = 'auto';
+
+/* ---------- Il vento: particelle sul mare, da W, mai sotto il testo ---------- */
+const cv = $('#vento'), cx = cv.getContext('2d');
+let W = 0, Hs = 0, dpr = 1, scala = 1, offX = 0, offY = 0;
+function misura() {
+  dpr = devicePixelRatio || 1; W = innerWidth; Hs = innerHeight; cv.width = W * dpr; cv.height = Hs * dpr; cv.style.width = W + 'px'; cv.style.height = Hs + 'px';
+  scala = Math.max(W / 1440, Hs / 900); offX = 1440 - W / scala; offY = (900 - Hs / scala) / 2;
+}
+misura(); addEventListener('resize', misura);
+const confineTesto = () => 600;                       // fine della colonna più il velo
+const costaSchermo = ys => (costaX(ys / scala + offY + H * Math.max(corrente, 0)) - offX) * scala;
+const particelle = Array.from({ length: 70 }, () => nuova(true));
+function nuova(ovunque) { return { x: confineTesto() + (ovunque ? Math.random() * (W - confineTesto()) : -Math.random() * 40), y: 64 + Math.random() * (Hs - 64), v: 28 + Math.random() * 22, l: 12 + Math.random() * 16, f: Math.random() * 6 }; }
+let t0 = performance.now();
+function vento(n) {
+  const dt = Math.min(.05, (n - t0) / 1000); t0 = n;
+  cx.setTransform(dpr, 0, 0, dpr, 0, 0); cx.clearRect(0, 0, W, Hs);
+  if (!fermo) {
+    cx.lineCap = 'round'; cx.lineWidth = 1.2;
+    for (const p of particelle) {
+      p.x += p.v * dt; p.f += dt; const y = p.y + Math.sin(p.f * 1.3) * 3;
+      const costa = costaSchermo(y);
+      if (p.x < confineTesto()) p.x = confineTesto();
+      if (p.x > costa - 8) { Object.assign(p, nuova(false)); p.x = confineTesto(); continue; }
+      const vita = Math.min(1, (p.x - confineTesto()) / 60, (costa - p.x) / 60);
+      cx.strokeStyle = `rgba(255,255,255,${(.32 * vita).toFixed(3)})`;
+      cx.beginPath(); cx.moveTo(p.x - p.l, y - 1); cx.lineTo(p.x, y); cx.stroke();
+    }
+  }
+  requestAnimationFrame(vento);
+}
+if (!ridotto) requestAnimationFrame(vento);
+
+const bottone = $('#ferma');
+function impostaFermo(v) { fermo = v; document.body.classList.toggle('fermo', v); bottone.setAttribute('aria-pressed', v); bottone.textContent = v ? 'Riprendi il movimento' : 'Ferma il movimento'; }
+bottone.addEventListener('click', () => impostaFermo(!fermo));
+if (ridotto) { impostaFermo(true); bottone.hidden = true; }
+window.__carta = { RS, VE, PV, A, B, C };
+})();
+</script>
+</body>
+</html>
