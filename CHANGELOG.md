@@ -11,6 +11,21 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+## [0.35.0] — 2026-10-28
+
+**Il sito cambia faccia.** Su tutto il sito arrivano i colori della Regata e
+una scala unica per corpi, spazi e pesi del testo: titoli a 24 px, risposte a
+16, il testo corrente largo al più 480 px. Al telefono la barra in basso ha le
+icone sopra le parole. Al computer, sopra i 1.200 × 680 px, la Home ha la carta
+nautica: la terra beige, il faro e la boa che si toccano e dicono la loro sigla,
+un percorso di 11 tappe che porta ai modi di prepararsi, e un comando per
+fermare le luci. I numeri della Home vengono dalla banca. Sono P-95 (la scala)
+e P-98 (il volto, giro A), con i controlli di P-94 e P-97 che li misurano in
+Chrome; le schermate di `docs/collaudo-p95/` e `docs/collaudo-p98/` le ha
+approvate l'autore il 28 ottobre. Il server non cambia: si porta allo stesso
+tag con `rg-aggiorna` perché `GET /v1/salute` dica la versione nuova. Le voci
+che seguono sono il lavoro di questi giorni, com'è stato scritto allora.
+
 ### Verificato — la v0.34.0, in linea
 
 - **Il tag e la pagina.** `v0.34.0` è un tag annotato su `1af43f6`, pushato con
