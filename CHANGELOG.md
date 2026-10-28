@@ -713,6 +713,62 @@ nessun account, salvataggio o selezione reale. La simulazione resta inattiva.
 - Nessuna approvazione di nuove regole o priorità di prodotto; nessuna prova
   con persone, Safari o telefoni fisici. Sito e versione invariati, niente push.
 
+### Test — P-99: il banco del client con Chrome 156
+
+- **Perché il banco era rosso anche su `main`.** Il 26 ottobre alle 23:42
+  Chrome si è aggiornato da 155 a 156.0.8078.48, e da allora la suite
+  dell'interfaccia era rossa con lo stesso codice che il giorno prima dava
+  4.892 verdi: T-13:corpi e spazi, T-15:documento, i ritorni con il fuoco di
+  N-01. **Misurato, non dedotto:** con sei contesti aperti, le schede dopo le
+  prime due passano a `visibilityState: "hidden"` e **non disegnano più** —
+  due `requestAnimationFrame` non arrivano in 2 s, l'evento `change` di
+  `matchMedia` non parte (a 1280 px la scheda resta senza `data-volto`), il
+  fuoco non torna sulla porta e lo scorrimento non si ripristina. Chrome 156
+  headless tratta come coperte le finestre aperte dopo le prime. È un cambio
+  del browser, non un difetto della pagina né del banco.
+- **La correzione è un flag**, `--disable-backgrounding-occluded-windows`, in
+  `tests/browser.mjs`: dodici attese di due frame scadute su sei schede senza,
+  zero con. `--disable-renderer-backgrounding` da solo non basta. Tolto a mano
+  il flag, tornano i rossi di N-01 (`"fuoco": false` su H1 e HA) e di
+  T-15:documento («il pannello 5 sta a 3284 px»), su tutte e due le pagine.
+- **Le schede di uno stesso contesto restano come sono.** Stanno in una
+  finestra sola, e solo l'ultima aperta è davanti: misurato, `hidden, hidden,
+  visible`. È il comportamento di sempre — P-39 lo aveva visto sul timer della
+  scheda in secondo piano —, e C-06, C-11 e C-15 sono costruiti su di lui.
+  `newWindow: true` le renderebbe tutte visibili, e non si è messo.
+- **Al posto dei 100 ms fissi di T-13, uno stato.** `dimensioni()` aspetta che
+  la pagina abbia risposto: `screen` alla misura chiesta, poi due frame
+  disegnati. Misurato: `screen` e `matchMedia` cambiano appena il comando
+  torna, l'evento `change` arriva con il frame dopo, e `innerWidth` passa per un
+  valore di mezzo (769 a 375). Non si pretende `innerWidth` uguale alla
+  larghezza: con il telefono emulato una pagina che sborda, o senza meta
+  viewport, ne ha uno più largo di diritto (981 su una pagina di prova), ed è
+  quello che `disposta()` misura. Senza il telefono emulato Chrome lascia
+  `screen` a 800×600: l'emulazione ora porta anche `screenWidth` e
+  `screenHeight`, e nessuna pagina di `site/` né di `ui/main` legge `screen`.
+- **Due difese nuove, perché un browser che non disegna si dica.** Se i due
+  frame non arrivano, `dimensioni()` lancia: «la scheda non ha disegnato le
+  dimensioni». E alla chiusura di un contesto il banco legge `visibilityState`
+  della scheda davanti; se non è `visible`, `gruppo()` aggiunge un rosso suo,
+  «Chrome ha disegnato le schede di …», con l'indirizzo. **Provate al
+  contrario:** con il flag tolto a mano e dieci gruppi insieme, ogni gruppo
+  colpito ha il rosso che nomina la causa accanto ai rossi sparsi — T-13 e T-07
+  per le dimensioni, T-15 e N-01 per la finestra; senza le difese (il primo
+  giro di questa sessione) gli stessi rossi dicevano «h1 corpo 56 px» e
+  «fuoco sulla porta», cioè un difetto della pagina che non c'era. Con il flag
+  nessuna delle due scatta. Che cosa non vedono: una scheda che smette di
+  disegnare e torna visibile prima della chiusura, se non ridimensiona.
+- **Suite.** Su `main`, interfaccia **4.892** verde in 6 min 08 s, con la
+  8620 guardata libera per 90 s e la macchina a carico 3. Sulla pagina di
+  P-98 — `RG_SITO` su una copia di `site/` presa da `ui/main` (`9da12f4`), in
+  un worktree staccato su `ui/main` con i due file del banco di qui, perché le
+  quattordici righe tolte da `docs/eccezioni-interfaccia.md` contano —:
+  **4.866** verde al secondo giro, in 7 min 57 s. Il primo giro si è fermato
+  a 4.865: la rottura T-11 «un velo sopra la figura» è
+  uscita rossa per «la pagina non si apre» invece che per il velo, cioè la
+  banca non pronta in 10 s sotto il carico della suite; da sola è rossa per il
+  suo motivo 4 volte su 4. Specifica 1.138; guardiano verde. Motore, server e
+  dati non toccati, e non rifatti. `site/` non toccato.
 
 ### Progettato — I-30: la Home a pannelli, e i prompt per Google Stitch
 
