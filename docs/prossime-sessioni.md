@@ -268,6 +268,7 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 39 | **Ripensare il disegno da capo**: la direzione è scelta dall'autore il 25 ottobre 2026 — la Regata, con la Home al computer «U — Terra beige» (I-29; `docs/volto-progetto.md`, decisioni 1–14). I mock sono in `docs/prototipi/redesign-2026-10-claude/`, fusi in `main` | la regia | `main` | niente: le decisioni 15–18 del §12 di `docs/volto-progetto.md` le ha prese l'autore il 26 ottobre 2026, come raccomandato | fatto; P-96 superato dalla scelta, da non lanciare se non è già partito |
 | 40 | **Il volto, giro A — i controlli**: `SCALA_CSS` con i token della Regata, T-12 e T-13 al computer, T-15 nuovo, la pagina di riferimento con la Home U, R-VOLTO nel §9.11, i rossi dichiarati sulla pagina vera (`docs/volto-progetto.md` §6, §9, §11) | Claude | un worktree da `main` | niente | P-97 fuso il 26 ottobre 2026 (`9950388`, merge `4085f30`) |
 | 41 | **Il volto, giro A — la pagina**: il `:root` della Regata, i componenti condivisi, la Home al telefono e al computer, prima e dopo alle sei misure (`docs/volto-progetto.md` §11) | ChatGPT | `ui/main` | il sì dell'autore sulle schermate di `docs/collaudo-p98/` e sui testi didattici delle due luci (§10 di `docs/volto-progetto.md`); per il rilascio anche quello su `docs/collaudo-p95/` (riga 37) | P-98 fuso il 28 ottobre 2026 (`9da12f4`, merge `a94b3c1`), da rilasciare. Prima, P-99 — il banco del client con Chrome 156, `--disable-backgrounding-occluded-windows` e `dimensioni()` che aspetta il disegno — fuso lo stesso giorno (`1c2881a`, merge `379a26e`) |
+| 42 | **La Home a pannelli**, un passo del giro B: il prototipo corretto `docs/prototipi/stitch-2026-10/carta-corretta/index.html` è il contratto visivo unico — 11 pannelli a scatto obbligato, la costa che scorre in uno strato fisso, il faro a settori, la cardinale est, il vento, il 2° problema delle correnti con lo scarroccio, la rotta e il percorso (`analisi-2026-10-28.md`, nella stessa cartella) | prima l'autore sul prototipo; poi Claude (P-100, P-101); poi ChatGPT (P-102) | `main`, poi `ui/main` | P-100: le piccole correzioni al prototipo che dirà l'autore, nello stesso file. P-101: P-100; può correre in parallelo al giro B. P-102: P-101, il passo del giro B su domanda e riepilogo (decisione 18, una penna sola su `index.html`, prompt da scrivere) e il rilascio della v0.35.0 | P-100, P-101, P-102 scritti il 28 ottobre 2026 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo P-59», «Dopo P-64», «Dopo il traguardo» e le voci non barrate |
 
 **La v0.31.0 è in linea dal 18 ottobre 2026**, sulla pagina e sul server, con le raccolte nuove spente (prima, la v0.30.0 dal 3 ottobre); P-59,
@@ -7510,6 +7511,178 @@ rosso di sole attese scadute a macchina carica si rifà. Voce in fondo a
 resoconto di docs/prossime-sessioni.md.
 ```
 
+### P-100 — Claude: la Home a pannelli, il progetto
+
+**Dove:** il checkout principale `~/Software/rotta-giusta`, su `main`, o un
+worktree da `main`. **Nasce da:** la sessione «Redesign con Google Stitch 2.0»
+del 28 ottobre 2026, che ha analizzato il prototipo di Stitch e ne ha fatto un
+mock corretto (commit `94ee44d` e `df60237`); l'autore ha deciso lo stesso
+giorno che il vento resta. **Aspetta:** le piccole correzioni al prototipo che
+dirà l'autore, fatte nello stesso file. **Sblocca:** P-101.
+
+```
+Questo prompt è per Claude, nel checkout principale ~/Software/rotta-giusta
+su main (o in un worktree da main). Se sei ChatGPT, o sei su ui/main,
+fermati e dillo, senza scrivere niente.
+
+Sessione P-100, la Home a pannelli: il progetto. Leggi AGENTS.md con
+docs/specifica.md (§9.11, R-RIF e R-VOLTO), docs/volto-progetto.md per
+intero, docs/procedure-disegno.md e la scheda I-30 in
+docs/idee-dopo-gli-account.md.
+
+Il contratto visivo è uno solo:
+docs/prototipi/stitch-2026-10/carta-corretta/index.html, con l'analisi
+accanto, docs/prototipi/stitch-2026-10/analisi-2026-10-28.md. Si apre
+servendo la radice del repo: python3 -m http.server 8790, poi
+http://127.0.0.1:8790/docs/prototipi/stitch-2026-10/carta-corretta/; con
+?ridotto in fondo si vede il movimento ridotto. Non prendere disegno né
+numeri da altro: non valgono come modello il progetto Stitch
+8773036230449168149, docs/prototipi/stitch-2026-10/prompt-home-pannelli.md,
+i mock U e T–S di docs/prototipi/redesign-2026-10-claude/, e i numeri di
+I-30 in docs/idee-dopo-gli-account.md (Pv 060°, Dc 150°, Rv 078°, il 1°
+caso), superati dal prototipo.
+
+Che cosa c'è nel prototipo: 11 pannelli a scatto obbligato (scroll-snap y
+mandatory, snap-stop: always); una costa continua in uno strato fisso, che
+scorre di un pannello per volta; il faro a settori Lam.(2) BRV 10s, i cui
+lampi accendono l'acqua solo nei settori; la cardinale est Sc.(3) 10s, con
+la secca a ovest; il vento come particelle su un canvas; il 2° problema
+delle correnti — Rv 165°, Dc 075°, Vc 2,0 kn, Vp 6,0 kn → Rs 184°, Ve
+5,7 kn — con compasso e squadretta sulla rosa; lo scarroccio, Sc −5°, Pv
+189° (il vento resta: deciso dall'autore il 28 ottobre); la rotta
+arancione con la barca; il percorso di 11 triangoli; «Ferma il movimento»,
+che ferma luci e vento; con il movimento ridotto tutto è già disegnato.
+Mancano le miniature dei pannelli 1–10, il secondo faro e il porto.
+
+Scrivi una sezione nuova di docs/volto-progetto.md — niente codice, niente
+site/, niente tests/:
+- gli scatti misurati nel prototipo alle cinque dimensioni di T-15
+  (1200×700, 1280×800, 1280×1024, 1440×900, 1920×1080), e sotto la soglia
+  della U: l'altezza di ogni pannello contro lo schermo, dove lo scorrimento
+  si ferma, che cosa succede con la tastiera e con Indietro (R-VOLTO-10);
+- la costa che scorre con transform dentro lo strato fisso, e perché
+  R-VOLTO-01 (uno strato fisso dentro #v-home, solo nella Home) regge;
+- i numeri del 2° caso ricalcolati da te, con il vento e lo scarroccio, e
+  da dove vengono: se il caso è un esercizio della banca, il suo id e la
+  risposta ufficiale; se no, dirlo. Un numero sbagliato su una carta che
+  insegna è il guasto di casa;
+- le miniature 1–10: che cosa mostra ognuna, con i numeri dalla banca o
+  dal motore, mai a mano;
+- il contrasto sopra la carta che si muove (R-VOLTO-03 sui pixel), il
+  movimento (WCAG 2.2.2 e 2.3.3), e quanto pesa il canvas del vento;
+- le rotture che P-101 dovrà avere, e i requisiti che cambiano o nascono;
+- le decisioni che restano all'autore, una per riga, con una
+  raccomandazione.
+Misura servendo il prototipo, non leggendolo. Voce in fondo a [Unreleased],
+un commit per nome con il trailer, niente push. Resoconto nella forma di
+docs/prossime-sessioni.md.
+```
+
+### P-101 — Claude: la Home a pannelli, i controlli
+
+**Dove:** un worktree da `main`. **Aspetta:** P-100 e le decisioni dell'autore
+che il suo progetto elenca. Può correre in parallelo al giro B: tocca solo
+`tests/`, la specifica e `docs/eccezioni-interfaccia.md`. **Sblocca:** P-102.
+
+```
+Questo prompt è per Claude, in un worktree da main. Se sei ChatGPT, o sei
+su ui/main, fermati e dillo, senza scrivere niente.
+
+Sessione P-101, la Home a pannelli: i controlli prima della pagina, con il
+metodo di P-97. Leggi AGENTS.md con docs/specifica.md, la sezione di
+docs/volto-progetto.md scritta da P-100 e le decisioni dell'autore che la
+chiudono.
+
+Il contratto visivo è uno solo:
+docs/prototipi/stitch-2026-10/carta-corretta/index.html, con l'analisi
+accanto, docs/prototipi/stitch-2026-10/analisi-2026-10-28.md. Si apre
+servendo la radice del repo: python3 -m http.server 8790, poi
+http://127.0.0.1:8790/docs/prototipi/stitch-2026-10/carta-corretta/; con
+?ridotto in fondo si vede il movimento ridotto. Non prendere disegno né
+numeri da altro: non valgono come modello il progetto Stitch
+8773036230449168149, docs/prototipi/stitch-2026-10/prompt-home-pannelli.md,
+i mock U e T–S di docs/prototipi/redesign-2026-10-claude/, e i numeri di
+I-30 in docs/idee-dopo-gli-account.md (Pv 060°, Dc 150°, Rv 078°, il 1°
+caso), superati dal prototipo.
+
+Allarga T-15 nel banco del client (tests/client_account.mjs), sulla pagina
+di riferimento tests/pagina-client-ridisegno.html, che prende i pannelli del
+prototipo e passa tutto il banco:
+- nessun pannello più alto dello schermo alle cinque dimensioni, e lo
+  scorrimento che non si ferma mai a metà fra due pannelli (con la rotella,
+  con la tastiera, con un tocco sul percorso);
+- «Ferma le luci» che ferma anche il vento (WCAG 2.2.2);
+- con il movimento ridotto la costruzione già intera: carteggio, rotta,
+  barca, nessuna particella che si muove;
+- R-VOLTO-03, il contrasto sui pixel, anche a 1280×1024, pannello per
+  pannello mentre la costa scorre;
+- i numeri del triangolo delle velocità e dello scarroccio che tornano con
+  quelli di P-100, letti nel testo visibile.
+Ogni controllo provato al contrario con le sue rotture, e le difese tolte a
+mano una per volta. Sulla pagina vera i controlli nuovi sono rossi:
+dichiarali in docs/eccezioni-interfaccia.md, una riga per verifica, «Lo
+chiude P-102». Requisiti nel §9.11 della specifica, con il loro controllo.
+Nessun file di site/. Le cinque suite verdi; l'interfaccia con la 8620
+guardata libera per 90 s. Voce in fondo a [Unreleased], un commit per nome
+con il trailer, niente push. Resoconto nella forma di
+docs/prossime-sessioni.md.
+```
+
+### P-102 — ChatGPT: la Home a pannelli, la pagina
+
+**Dove:** il worktree `~/Software/rotta-giusta-ui`, ramo **`ui/main`**.
+**Aspetta:** P-101 fuso; il passo del giro B su domanda e riepilogo, fuso
+(decisione 18: una penna sola su `index.html`); il rilascio della v0.35.0.
+**Sblocca:** la merge e il rilascio, della regia.
+
+```
+Questo prompt è per ChatGPT, nel worktree ~/Software/rotta-giusta-ui,
+sul ramo ui/main, aperto in modalità Local. Se sei Claude, o sei nella
+cartella principale ~/Software/rotta-giusta, o su un altro ramo, fermati e
+dillo, senza scrivere niente.
+
+Sessione P-102, la Home a pannelli: la pagina. Prima allinea ui/main a
+main: git merge --ff-only main. Poi leggi AGENTS.md, la sezione di
+docs/volto-progetto.md scritta da P-100 e la nota di consegna di P-101.
+
+Il contratto visivo è uno solo:
+docs/prototipi/stitch-2026-10/carta-corretta/index.html, con l'analisi
+accanto, docs/prototipi/stitch-2026-10/analisi-2026-10-28.md. Si apre
+servendo la radice del repo: python3 -m http.server 8790, poi
+http://127.0.0.1:8790/docs/prototipi/stitch-2026-10/carta-corretta/; con
+?ridotto in fondo si vede il movimento ridotto. Non prendere disegno né
+numeri da altro: non valgono come modello il progetto Stitch
+8773036230449168149, docs/prototipi/stitch-2026-10/prompt-home-pannelli.md,
+i mock U e T–S di docs/prototipi/redesign-2026-10-claude/, e i numeri di
+I-30 in docs/idee-dopo-gli-account.md (Pv 060°, Dc 150°, Rv 078°, il 1°
+caso), superati dal prototipo.
+
+Porta la Home al computer di site/index.html dalla carta U ai pannelli del
+prototipo, sopra la soglia della U: gli 11 pannelli a scatto, la costa che
+scorre nello strato fisso, il faro a settori, la cardinale est, il vento,
+il 2° caso con lo scarroccio, la rotta con la barca, il percorso, «Ferma
+le luci» che ferma anche il vento, e il movimento ridotto con tutto già
+disegnato; le miniature come le ha decise P-100. Sotto la soglia la Home
+della Regata resta com'è. I numeri dalla banca e dal motore, mai a mano.
+Gli stati H1 e HA nel primo pannello, la banca che non risponde senza
+numeri inventati: quello che i giri prima hanno portato resta.
+
+Sulla pagina vera i controlli di P-101 sono rossi e dichiarati in
+docs/eccezioni-interfaccia.md: toglile nello stesso commit della pagina, e
+i gruppi devono girare verdi per intero. Il metro è
+tests/pagina-client-ridisegno.html. Se un controllo ti sembra sbagliato,
+fermati e scrivilo nel progetto, con la misura e la schermata.
+
+Prima e dopo, con le schermate guardate, alle sei misure del giro A
+(375×667, 375×812, 1200×700, 1280×800, 1280×1024, 1920×1080), in
+docs/collaudo-p102/ con un README che le cita una per una: l'autore le
+approva prima della merge. Nessun file di tests/, del motore, di server/ o
+dei dati; la versione non si tocca. Le cinque suite verdi; l'interfaccia
+con la 8620 guardata libera per 90 s. Voce in fondo a [Unreleased], un
+commit con il trailer, niente push. Resoconto nella forma di
+docs/prossime-sessioni.md.
+```
+
 ### I segnaposto — i prompt che non si possono ancora scrivere
 
 **Dopo P-59, dal 4 ottobre 2026.** I mock sono cinque passi, tutti in
@@ -8487,3 +8660,10 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   quattordici dichiarazioni chiuse. La riga 41 aspetta il sì dell'autore sulle
   schermate di `docs/collaudo-p98/` e sui testi delle due luci; il rilascio
   della v0.35.0 aspetta anche la riga 37.
+- **28 ottobre 2026 — la Home a pannelli in coda (riga 42).** Proposta dalla
+  sessione «Redesign con Google Stitch 2.0» e passata dalla sessione che ha
+  lanciato questa regia: il prototipo corretto
+  `docs/prototipi/stitch-2026-10/carta-corretta/index.html` è il contratto
+  visivo unico. Scritti P-100 (il progetto), P-101 (i controlli) e P-102 (la
+  pagina, dopo il giro B su domanda e riepilogo e dopo la v0.35.0). Prima
+  ancora, le correzioni al prototipo che dirà l'autore.
