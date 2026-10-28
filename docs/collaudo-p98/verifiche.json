@@ -1,0 +1,49 @@
+{
+  "sessione": "P-98",
+  "base": "db9e8cd",
+  "pagina": "site/index.html",
+  "sha256": "6139ac567bb40b5a86341f9b751fdca793756cdbe57b5f25a41f78058117da3c",
+  "catture": {
+    "prima": {
+      "png": 62,
+      "eccezioni_js": 0,
+      "overflow_documento": 0
+    },
+    "dopo": {
+      "png": 62,
+      "eccezioni_js": 0,
+      "overflow_documento": 0
+    }
+  },
+  "suite": {
+    "motore": {
+      "passati": 215,
+      "totale": 219,
+      "salti_previsti": 4
+    },
+    "dati": 225,
+    "specifica": 1138,
+    "server": {
+      "Node25.3.0": "89/89",
+      "Node24.22.0": "89/89",
+      "sha256_archivio_node24": "6a9724d9b50a5f22b4816cded441b5a8d9ddae546191a5e5b7efa5a5e2ee26d5"
+    },
+    "interfaccia": 4866
+  },
+  "revisione_visiva": "ship: rilievi risolti e suite completa verde; approvazione autore ancora da fare",
+  "limiti": [
+    "HA sintetico; nessun login reale nelle catture",
+    "Safari e dispositivi fisici non provati",
+    "a375x667 base-829 richiede scorrimento per le risposte"
+  ],
+  "porta_8620": {
+    "osservazioni": 10,
+    "durata_secondi": 90,
+    "sempre_libera": true,
+    "load_average_prima_del_banco": [
+      2.55,
+      3.13,
+      3.39
+    ]
+  }
+}
