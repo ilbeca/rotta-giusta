@@ -15,6 +15,13 @@ Restano la merge, l'approvazione visiva della decisione C e il giro 3.
 **File neutro**, come gli altri `*-progetto.md`: lo legge chi scrive i
 controlli su `main` e chi corregge la pagina su `ui/*`.
 
+> **Dal 28 ottobre 2026 (ADR-007)** su questo repo lavora un agente solo: i
+> passi che qui sotto sono assegnati a ChatGPT su `ui/main` (o `ui/*`) sono di
+> Claude, in un worktree da `main`, e arrivano su `main` con la merge della
+> regia. Il resto del metodo — prima i controlli, poi la pagina, le schermate
+> all'autore prima della merge — non cambia. Le parti già fatte restano scritte
+> come sono andate.
+
 **Le regole fanno fede in I-27**, dove sono state copiate il 21 ottobre; la
 copia di lavoro in `~/bot-ux/rotta-giusta/regole/regole.md`, con lo script
 dell'audit (`audit.mjs`), sta fuori dal repo ed è materiale da citare, non da

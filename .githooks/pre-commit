@@ -1,7 +1,17 @@
 #!/bin/sh
-SCRIPT="$(git rev-parse --show-toplevel)/../Standards/tools/check_territories.py"
+# Standards sta accanto al checkout principale. Da un worktree dentro il repo
+# (.claude/worktrees/<nome>) `--show-toplevel` e' il worktree, e fino al 28
+# ottobre 2026 `../Standards` da li' non esisteva: il hook usciva con 0 e ogni
+# commit dei worktree passava senza controllo (ADR-007). Si parte quindi dalla
+# cartella git comune, che e' quella del checkout principale da qualunque
+# worktree; RG_STANDARDS indica un'altra cartella, se serve.
+COMUNE="$(cd "$(git rev-parse --git-common-dir)" && pwd)"
+STANDARDS="${RG_STANDARDS:-$(dirname "$COMUNE")/../Standards}"
+SCRIPT="$STANDARDS/tools/check_territories.py"
 [ -f "$SCRIPT" ] || {
-    echo "Standards non e' accanto a questo repo: territori non controllati" >&2
-    exit 0
+    echo "pre-commit: non trovo $SCRIPT — il controllo dei commit non e' partito," >&2
+    echo "quindi il commit non parte. Metti Standards accanto al checkout principale," >&2
+    echo "o indica la cartella con RG_STANDARDS=<cartella di Standards>." >&2
+    exit 1
 }
 exec python3 "$SCRIPT" "$@"

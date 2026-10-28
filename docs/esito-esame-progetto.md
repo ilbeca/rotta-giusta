@@ -15,6 +15,13 @@ registrata oggi serve il giorno in cui c'è un modello da giudicare. **Nessuna
 delle due raccolte aspetta il modello**: tutte e due hanno un uso il primo
 giorno, con la regola semplice del §4.5.
 
+> **Dal 28 ottobre 2026 (ADR-007)** su questo repo lavora un agente solo: i
+> passi che qui sotto sono assegnati a ChatGPT su `ui/main` (o `ui/*`) sono di
+> Claude, in un worktree da `main`, e arrivano su `main` con la merge della
+> regia. Il resto del metodo — prima i controlli, poi la pagina, le schermate
+> all'autore prima della merge — non cambia. Le parti già fatte restano scritte
+> come sono andate.
+
 ---
 
 ## 1. Fonti, precedenze e perimetro

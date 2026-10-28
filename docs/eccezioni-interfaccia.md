@@ -1,10 +1,12 @@
 # Eccezioni dichiarate dell'interfaccia
 
-**File neutro, e non per comodità.** I controlli stanno in
-`tests/test_interfaccia.py`, che è territorio `motore`; le **eccezioni** stanno
-qui, che è neutro, perché a toglierle è chi corregge il difetto — e chi corregge
-l'interfaccia lavora su `ui/*`, dove `tests/` gli è precluso. Senza questa
-separazione una correzione lascerebbe la suite rossa e nessuno potrebbe chiuderla.
+**Un file a parte, e non per comodità.** I controlli stanno in
+`tests/test_interfaccia.py`; le **eccezioni** stanno qui, perché a toglierle è
+chi corregge il difetto, nello stesso commit della pagina. La separazione è nata
+quando chi correggeva l'interfaccia lavorava su `ui/*`, dove `tests/` gli era
+precluso (fino al 28 ottobre 2026, ADR-007): senza, una correzione avrebbe
+lasciato la suite rossa e nessuno avrebbe potuto chiuderla. Resta perché tiene
+il contratto (i test) distinto dallo stato della pagina (le eccezioni).
 
 **Come si usa.** Correggi il difetto → togli la sua riga da qui, nello stesso
 commit. Se lasci la riga, il controllo te lo dice: **un'eccezione che non serve

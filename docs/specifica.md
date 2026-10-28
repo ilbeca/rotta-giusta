@@ -69,19 +69,22 @@ garanzie senza controlli è esattamente quello, in forma di prosa.
 
 ### Chi scrive
 
-**Una penna sola, su `main`.** Questo file sta nel territorio `motore` di
-`territori.yaml`, quindi il `pre-commit` rifiuta un commit che lo tocchi da
-`ui/*`.
+**Una penna sola alla volta.** La sessione a cui la coda
+(`docs/prossime-sessioni.md`) assegna questo file lo scrive, nel suo worktree;
+la regia lo porta su `main` con la merge e guarda il diff. È una regola, non un
+controllo: fino al 28 ottobre 2026 il file stava nel territorio `motore` di
+`territori.yaml`, e il `pre-commit` rifiutava un commit che lo toccasse da
+`ui/*`; l'ADR-007 ha tolto i territori, e con loro quel rifiuto.
 
 Non è galateo: una specifica non è additiva. Il `CHANGELOG.md` è condiviso
 perché **si aggiunge in fondo**, e due mani che aggiungono non collidono. Una
 specifica si **riscrive**, e due mani che riscrivono producono le tre versioni
 divergenti di cui sopra.
 
-ChatGPT progetta l'interfaccia sul ramo `ui/*` e propone da lì: bozze,
-prototipi, documenti di lavoro. **Le proposte accolte le riporta qui chi fa la
-merge.** Il lavoro di progettazione non passa da questo file; ci arriva il suo
-esito.
+Chi progetta l'interfaccia propone dal suo worktree: bozze, prototipi,
+documenti di lavoro. **Le proposte accolte le riporta qui chi fa la merge.** Il
+lavoro di progettazione non passa da questo file; ci arriva il suo esito. Fino
+al 28 ottobre 2026 a progettare l'interfaccia, sul ramo `ui/*`, era ChatGPT.
 
 ### Che cosa questo documento ha assorbito
 
@@ -3030,9 +3033,13 @@ Ogni riga dice **chi decide**. Una questione senza un decidente non si chiude ma
 
 ## 11. Come si lavora
 
-**Due agenti, e il confine lo fa rispettare git.** `territori.yaml` dice chi tocca
-che cosa e il `pre-commit` rifiuta un commit fuori territorio. Il motivo per
-esteso è in `AGENTS.md`; il precedente è l'ADR-004 di `Standards`.
+**Un agente solo, un worktree per sessione** (ADR-007, 28 ottobre 2026). Ogni
+sessione che scrive lavora nella sua cartella `.claude/worktrees/`, e il suo
+lavoro arriva su `main` con una merge della regia, che sola scrive nel checkout
+principale. Il `pre-commit` controlla che il CHANGELOG sia additivo e che
+`VERSION` non entri senza la sua voce. Fino al 28 ottobre i territori di
+`territori.yaml` separavano Claude e ChatGPT; il perché del recinto e il prezzo
+di toglierlo sono nell'ADR-007, il dettaglio in `AGENTS.md`.
 
 **Il ciclo**, da `dev-standards`:
 
@@ -3064,9 +3071,9 @@ node --test tests/test_server.mjs    # il server degli account, e il ripristino 
 python3 strumenti/serve.py           # il sito in locale, come lo serve statichost.eu
 ```
 
-**Chiusura di sessione.** Su `ui/*`: test verdi, voce di CHANGELOG in fondo a
-`[Unreleased]`, un commit col trailer, **la versione non si tocca**. Su `main`:
-test verdi, un commit; il rilascio è un commit a sé dopo la merge. Niente push
+**Chiusura di sessione.** In un worktree: test verdi, voce di CHANGELOG in fondo
+a `[Unreleased]`, un commit, **la versione non si tocca**. Il rilascio è un
+commit a sé, su `main`, dopo la merge, e lo fa la regia. Niente push
 senza chiedere; e su `rottagiusta.it` il push non basta: il sito si pubblica con
 «Build now» su statichost.eu, che non ha un webhook sul repo.
 
@@ -3179,8 +3186,8 @@ dimostra efficacia didattica. Le prove con persone sono Q-PROVE.
 | `docs/percorso-ux.md` | metodo → §11 | materiale storico |
 | `docs/prototipi/rotta-2026-09-09/` | bozze visive | resta com'è: è un artefatto datato, non una specifica |
 
-I tre `*-ux.md` **restano sul disco** e restano nel territorio `interfaccia`:
-raccontano come si è arrivati alle decisioni, e quella storia ha valore. Non
+I tre `*-ux.md` **restano sul disco** (fino al 28 ottobre 2026 nel territorio
+`interfaccia`, che l'ADR-007 ha tolto): raccontano come si è arrivati alle decisioni, e quella storia ha valore. Non
 vanno più aggiornati, perché una decisione scritta in due posti diverge — è
 successo, ed è il motivo per cui questo file esiste.
 
@@ -3792,3 +3799,10 @@ successo, ed è il motivo per cui questo file esiste.
   (il riferimento verde, la rottura rossa) e una per ognuna delle due della
   scala statica —; nessun controllo in meno. Le schermate e i testi delle due
   luci li approva l'autore.
+
+- **28 ottobre 2026 — un agente solo (ADR-007).** ChatGPT esce dal progetto e
+  il territorio `interfaccia` esce da `territori.yaml`, con `motore`, `regole`
+  e i rami. Il §0 («Chi scrive») e il §11 dicono il presente: una penna sola
+  alla volta come regola, un worktree per sessione, la regia sola nel checkout
+  principale. Le voci che raccontano ChatGPT restano come sono state scritte.
+  Nessun requisito cambia.

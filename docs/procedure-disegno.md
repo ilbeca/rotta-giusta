@@ -6,10 +6,11 @@
 `docs/prototipi/` e le pagine di `site/`, e ogni pagina web che faremo. Dice
 che cosa fa ciascuna skill, che cosa abbiamo misurato provandola su questo
 sito, come si trattano gli anti-pattern, e i passi delle due procedure.
-**Penna:** Claude, su `main`, come `specifica.md` e `filosofia.md`: è un
+**Penna:** una sola alla volta, come `specifica.md` e `filosofia.md`: è un
 documento di regole, e due mani che riscrivono le regole producono due metodi.
-ChatGPT propone dal suo ramo; le proposte accolte le riporta qui chi fa la
-merge. Il file sta nel territorio `motore` di `territori.yaml`.
+Chi propone un cambio lo fa dal suo worktree; le proposte accolte le riporta qui
+chi fa la merge. Fino al 28 ottobre 2026 il file stava nel territorio `motore`
+di `territori.yaml`, che l'ADR-007 ha tolto.
 
 **Il rapporto con le regole che ci sono già.** Le regole D-01…D-35 (scheda
 I-27 di `docs/idee-dopo-gli-account.md`), i giri di
@@ -29,8 +30,7 @@ Versioni lette il 25 ottobre 2026, nei loro repository (cloni in
 `~/.claude/plugins/marketplaces/`): impeccable 4.7.1 (`pbakaus/impeccable`,
 commit `9368675`), taste 2.1.5 (`Leonxlnx/taste-skill`, `12af471`), UI UX Pro
 Max 2.15.0 (`nextlevelbuilder/ui-ux-pro-max-skill`, `d14efff`). Sono
-installate per l'utente, in tutte le sessioni Claude; ChatGPT, in Codex, le ha
-solo se le si installa lì (impeccable e taste dichiarano il supporto a Codex).
+installate per l'utente, in tutte le sessioni Claude.
 
 | | Che cos'è | Che cosa ci serve | Che cosa non si usa |
 |---|---|---|---|
@@ -153,7 +153,7 @@ nell'ispettore) **solo dopo** che la riga c'è.
   importano i moduli accanto.
 - **Una penna per cartella.** L'analisi è in sola lettura e può girare accanto
   a chi lavora; la correzione la fa soltanto chi ha la penna su quella
-  cartella: il mock la sessione che l'ha fatto, `site/` ChatGPT su `ui/*`.
+  cartella: il mock la sessione che l'ha fatto, `site/index.html` la sessione a cui la coda lo assegna.
 - **Niente risorse da altri host, WCAG AA, niente gamification che punisce, i
   difetti dichiarati**: i vincoli di prodotto valgono anche contro una skill.
 - **Il controllo automatico di impeccable.** Dopo ogni modifica a un file
@@ -242,13 +242,13 @@ di analisi si aggiorna con il prima e il dopo.
 
 1. un difetto che deve restare corretto per sempre diventa prima, su `main`,
    un contratto e un controllo che lo vede rosso (Claude), con le sue rotture;
-2. ChatGPT corregge la pagina su `ui/*`, con gli stessi comandi di impeccable,
-   e toglie le righe dei difetti dichiarati nello stesso commit;
-3. la merge passa dal controllo dei territori e dalle fotografie, e Claude
-   allinea la specifica.
+2. una sessione corregge la pagina nel suo worktree, con gli stessi comandi di
+   impeccable, e toglie le righe dei difetti dichiarati nello stesso commit;
+3. la merge passa dal controllo sul diff del ramo e dalle fotografie, e la
+   regia allinea la specifica.
 
 Un difetto che non chiede un controllo — un testo, un'ombra di troppo — va
-nel prompt di ChatGPT con la sua riga del README di analisi.
+nel prompt della pagina con la sua riga del README di analisi.
 
 ## 7. Il README di analisi
 

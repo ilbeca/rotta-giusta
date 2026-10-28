@@ -37,7 +37,7 @@ Due cose pubblicate, in due modi:
 | domanda | comando |
 |---|---|
 | vincoli, comandi, difetti aperti | `AGENTS.md` — il primo da leggere |
-| chi tocca cosa, e chi lo fa rispettare | `territori.yaml`, letto da `.githooks/pre-commit` |
+| chi lavora dove, e che cosa controlla il `pre-commit` | `AGENTS.md`, «Chi lavora, e dove»; `territori.yaml` e l'ADR-007 |
 | che versione c'e' nel repo | `cat VERSION`, o `git describe --tags` |
 | cosa e' uscito e **perche'** | `CHANGELOG.md` |
 | perche' esiste, da dove vengono i dati, cosa e' stato corretto | `README.md` |
@@ -73,13 +73,14 @@ Due cose pubblicate, in due modi:
    server degli account si aggiorna a parte, sulla sua macchina, allo stesso
    tag (`rg-aggiorna <tag> <commit>`, con il commit letto sul Mac da
    `git rev-parse <tag>^{commit}`): nessuno dei due passi fa l'altro.
-6. **Su questo repo lavorano due agenti, e il confine lo fa rispettare git.**
-   ChatGPT sta nel worktree `~/Software/rotta-giusta-ui` sul ramo `ui/main` e
-   tiene l'interfaccia; Claude sta nel checkout principale su `main` e tiene
-   motore, dati, test e documenti. `territori.yaml` dice chi tocca cosa e il
-   `pre-commit` rifiuta un commit fuori territorio. Mai `--no-verify`, mai
+6. **Un agente solo, un worktree per sessione** (ADR-007, 28 ottobre 2026).
+   Fino a quel giorno ChatGPT teneva l'interfaccia su `ui/main` e un recinto di
+   territori separava i due agenti; da allora ogni sessione che scrive lavora
+   nella sua cartella `.claude/worktrees/`, e nel checkout principale su `main`
+   scrive solo la regia. Il `pre-commit` controlla ancora il changelog additivo
+   e «numero e voce insieme», ora anche dai worktree. Mai `--no-verify`, mai
    `git add -A`: si mette in stage per nome. Il perche' e' in `AGENTS.md`,
-   sezione «Chi tocca cosa».
+   sezione «Chi lavora, e dove».
 7. **Lo storico derivato non si salva e non viaggia.** Le righe delle risposte
    si uniscono per `uid` fra server e dispositivo; lo specchio che il motore
    legge si ricalcola sempre in locale con `ripiega()`. Una seconda contabilita'

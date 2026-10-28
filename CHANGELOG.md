@@ -892,6 +892,56 @@ per non lasciare geometrie fuori schermo dietro un semplice `overflow:clip`.
   ridotto (forzabile con `?ridotto`); scatti misurati, console vuota. Nessun file
   di `site/`, `tests/` o della specifica.
 
+### Regole — un agente solo, un worktree per sessione (ADR-007)
+
+- **ChatGPT esce dal progetto, e con lui il recinto.** Deciso dall'autore il 28
+  ottobre 2026. Il recinto `main` / `ui/*` era nato il 9 settembre per separare
+  due agenti nella stessa cartella, dopo i cinque guasti muti del 7 settembre
+  su `patente-gioco` (ADR-004 di `Standards`); con un agente solo protegge da
+  nessuno, e intanto vieta a `main` di toccare `site/`. Al suo posto, scelto
+  dall'autore fra tre alternative: **un worktree per sessione** in
+  `.claude/worktrees/`, e la regia sola nel checkout principale. Il prezzo,
+  scritto per intero nell'ADR: il recinto separava anche le sessioni di Claude
+  nello stesso checkout, e adesso le separa la cartella, non un rifiuto; e
+  regole e specifica non sono più difese da un controllo, ma dalla regia che
+  guarda il diff alla merge.
+- **Misurato prima di toglierlo, ed è la scoperta: dai worktree il controllo
+  non girava.** Su un clone usa e getta accanto a `Standards`, un commit per
+  caso. Con le regole di prima, un file di `site/` da `main` è rifiutato e un
+  file di `tests/` da un worktree accanto al repo pure; ma da una cartella in
+  `.claude/worktrees/` — dove l'app crea il worktree di ogni sessione — il hook
+  cercava `Standards` in `<worktree>/../Standards`, non lo trovava, scriveva
+  «territori non controllati» e usciva con 0: `tests/`, `AGENTS.md`, una riga
+  tolta dal CHANGELOG e `VERSION` senza voce passavano tutti, in silenzio. È
+  così che P-97 e P-99 hanno committato `tests/` da un ramo `claude/…`.
+- **`territori.yaml` resta con `changelog` e `version`, senza territori né
+  rami**, e il hook trova `Standards` dalla cartella git comune. Provato dal
+  vero con le regole nuove: da `main` un file di `site/` passa; da un worktree
+  in `.claude/worktrees/` passano `tests/` e `site/`, e sono rifiutati una riga
+  tolta dal CHANGELOG e `VERSION` senza CHANGELOG; senza `Standards` accanto il
+  commit è rifiutato e dice dove l'ha cercato (`RG_STANDARDS` per un'altra
+  cartella) — provato spostando `Standards` per la durata di un comando solo.
+  `PyYAML` e il lettore minimo di `Standards` leggono il file allo stesso modo.
+- **Le regole e la coda dicono il presente.** `AGENTS.md`: «Chi lavora, e
+  dove» al posto di «Chi tocca cosa», il controllo prima della merge sul ramo
+  di un worktree, la chiusura di sessione senza `ui/*` e senza trailer, e due
+  regole che stavano nei «punti di contatto» spostate nell'architettura («chi
+  disegna non ricalcola», `sw.js` fino al 2028). La skill, la specifica (§0,
+  §11, appendice B), `PRODUCT.md`, `docs/procedure-disegno.md` e
+  `docs/eccezioni-interfaccia.md` nelle frasi al presente; una nota in testa a
+  `volto-progetto.md`, `regole-disegno-progetto.md` ed `esito-esame-progetto.md`.
+  Nella coda le righe 22, 27, 38 e 42 e i prompt P-75 e P-102 sono di Claude,
+  P-100 e P-101 chiedono un worktree; il resto dei prompt non cambia, compreso
+  il riferimento unico al prototipo della riga 42. La storia resta com'è.
+- **I rami dell'interfaccia restano, per scelta dell'autore.** `ui/main` e
+  `ui/vetrina`, locali e su GitHub, non hanno niente che manchi a `main`; le
+  due cartelle sono pulite, senza stash né file ignorati.
+- Suite: interfaccia **4.866** in regime ridisegno, con la 8620 guardata libera
+  per 90 s; specifica **1.138**; dati **225** e guardiano verdi su una copia
+  senza `.claude/worktrees/` (nel checkout il guardiano è rosso solo per la
+  copia del worktree di P-99, il difetto noto); controllo condiviso della
+  documentazione verde. Motore e server non toccati, e non rifatti.
+
 ## [0.34.0] — 2026-10-24
 
 **L'avviso si dice una volta, e «Inizia» si vede subito.** Senza account, la

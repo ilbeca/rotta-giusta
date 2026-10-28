@@ -1,15 +1,14 @@
-# territori.yaml — chi tocca cosa, letto dal pre-commit di Standards (ADR-004).
-# Linkato da AGENTS.md, sezione «Chi tocca cosa», che spiega il perche'.
+# territori.yaml — letto dal pre-commit di Standards (ADR-004 di Standards).
 #
-# L'ordine conta: un file appartiene al PRIMO territorio che lo combacia, quindi
-# le eccezioni dentro `site/` stanno prima del suo `**`. I `condivisi` vincono su
-# tutto. `site/sw.js` e' del motore dal 3 ottobre 2026 (ADR-005): era condiviso
-# per il guscio offline scritto anche in app.html, che non c'e' piu'.
-territori:
-  motore:      [site/engine.js, site/sw.js, site/dati/**, site/figure/**, server/**, fonte/**, strumenti/**, tests/**, docs/adr/**, docs/motore.md, docs/specifica.md, docs/filosofia.md, docs/procedure-disegno.md, PRODUCT.md]
-  regole:      [AGENTS.md, CLAUDE.md, territori.yaml, docs-check.yaml, .githooks/**, .claude/**, .agents/**, .gitignore, .gitattributes, README.md, LICENSE, VERSION]
-  interfaccia: [docs/*-ux.md, site/**]
-condivisi:     [CHANGELOG.md]
-rami:
-  "main":  [motore, regole]
-  "ui/*":  [interfaccia]
+# Dal 28 ottobre 2026 (ADR-007 di questo repo) non ci sono piu' territori ne'
+# rami: su questo repo lavora un agente solo, e al posto del recinto c'e' un
+# worktree per sessione. Il file resta perche' e' lui che dice al hook che il
+# controllo vale qui, e con queste due chiavi il hook esegue le due regole che
+# restano:
+#   - il changelog additivo: sotto [Unreleased] si aggiunge, non si cancella,
+#     salvo nel commit di rilascio, che ha VERSION in stage;
+#   - numero e voce insieme: VERSION non entra senza CHANGELOG.md.
+# Fino al 28 ottobre `main` rivendicava `motore` e `regole`, e `ui/*`
+# l'`interfaccia`: il perche' e il prezzo sono nell'ADR-007.
+changelog: CHANGELOG.md
+version:   VERSION

@@ -8,6 +8,13 @@ contratto da cui la regia scrive i prompt: prima i controlli su `main` (Claude),
 poi la pagina su `ui/main` (ChatGPT), con il metodo di
 [regole-disegno-progetto.md](regole-disegno-progetto.md).
 
+> **Dal 28 ottobre 2026 (ADR-007)** su questo repo lavora un agente solo: i
+> passi che qui sotto sono assegnati a ChatGPT su `ui/main` (o `ui/*`) sono di
+> Claude, in un worktree da `main`, e arrivano su `main` con la merge della
+> regia. Il resto del metodo — prima i controlli, poi la pagina, le schermate
+> all'autore prima della merge — non cambia. Le parti già fatte restano scritte
+> come sono andate.
+
 **Stato al 25 ottobre 2026:** le decisioni 1–14 del §12 sono prese
 dall'autore, tutte come raccomandato; restano le 15–18, che servono prima del
 giro B. I controlli del giro A sono scritti (P-97, su un ramo per `main`; la

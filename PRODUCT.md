@@ -4,8 +4,8 @@
 
 > **Questo file è una sintesi per le skill di disegno, non una fonte.** Se dice
 > una cosa diversa da `docs/specifica.md` o da `docs/filosofia.md`, valgono
-> loro, e questo file si corregge. Una sola penna, Claude su `main` (territorio
-> `motore`); una modifica alla specifica che tocca il suo §1 o il §2 si porta
+> loro, e questo file si corregge. Una sola penna alla volta, come la specifica
+> (ADR-007); una modifica alla specifica che tocca il suo §1 o il §2 si porta
 > qui nello stesso commit. Come si usa: `docs/procedure-disegno.md`, §8.
 > Scritto il 26 ottobre 2026 con l'autore, con l'intervista di
 > `impeccable init`.

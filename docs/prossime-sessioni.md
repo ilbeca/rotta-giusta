@@ -1,6 +1,6 @@
 # Prossime sessioni — la coda, con i prompt
 
-**Aggiornato il 24 ottobre 2026.** Territorio neutro. **Penna: la sessione di regia** (sotto, «Come si usa»).
+**Aggiornato il 28 ottobre 2026.** **Penna: la sessione di regia** (sotto, «Come si usa»).
 
 > **Questo file invecchia.** È una coda, non una verità: quando un lavoro è
 > fatto, il suo prompt si chiude con l'esito e resta, la riga della coda si
@@ -28,18 +28,19 @@ quelle di prodotto nel §10 della specifica, quelle degli account nel §20 di
 | Documento | Che cos'è | Penna | Stato |
 |---|---|---|---|
 | **`docs/prossime-sessioni.md`** | la coda, con i prompt | **la sessione di regia**, su `main` | vivo |
-| `docs/specifica.md` | che cosa è il prodotto, i requisiti col loro controllo, le domande aperte (§10) | Claude, su `main` | vivo |
-| `docs/filosofia.md` | il perché, e il tono dei testi | Claude, su `main` | vivo |
-| `docs/adr/` | le decisioni, una per file | Claude, su `main` | ADR-002 superato; 001, 003, 004 e 005 validi, il 004 sostituito in parte dal 005 |
+| `docs/specifica.md` | che cosa è il prodotto, i requisiti col loro controllo, le domande aperte (§10) | una penna alla volta (§0 della specifica) | vivo |
+| `docs/filosofia.md` | il perché, e il tono dei testi | una penna alla volta | vivo |
+| `docs/adr/` | le decisioni, una per file | la regia, con l'autore | ADR-002 superato; 001 e 003…007 validi, il 004 sostituito in parte dal 005; il 007 toglie i territori e ChatGPT |
 | `docs/idee-dopo-gli-account.md` | il brainstorming P-59: le idee, e in fondo «Le decisioni di P-59» | neutro | chiuso il 4 ottobre 2026; le decisioni diventano vincolanti quando entrano nella specifica o in un ADR (P-63) |
 | `docs/prossima-versione.md` | il piano del ridisegno in sei aree, e i contratti col motore | neutro | vivo; l'ordine delle aree sta qui sotto |
 | `docs/account-progetto.md` | come si fanno gli account; aperte nel §20, non misurate nel §19 | neutro | vivo |
 | `docs/area-1-progetto.md` | il progetto dell'area 1 | neutro | **fatto** — resta come modello per le aree successive |
 | `docs/decisioni-aperte.md` | i cinque punti sull'esperienza discussi in tre dal 10 settembre | neutro | lo stato di ciascuno sta nel file; non verificato il 26 settembre quali siano ancora aperti |
-| `docs/eccezioni-interfaccia.md` | le eccezioni che i test dell'interfaccia leggono | neutro | vivo, lo legge `test_interfaccia.py` |
+| `docs/eccezioni-interfaccia.md` | le eccezioni che i test dell'interfaccia leggono | chi corregge la pagina | vivo, lo legge `test_interfaccia.py` |
+| `docs/volto-progetto.md`, `docs/regole-disegno-progetto.md`, `docs/esito-esame-progetto.md` | i progetti del volto, delle regole di disegno e di «com'è andata» | neutro | vivi; i passi che assegnano a ChatGPT sono di Claude (ADR-007, la nota in testa a ciascuno) |
 | `docs/migrazione-hosting.md` | il trasloco su statichost.eu | neutro | resta la fase D, dell'autore |
 | `docs/recupero-progetto.md` | il backup con una frase | neutro | **superato** dall'ADR-003; valgono §5, 8, 9, 10 |
-| `docs/specifiche-ux.md`, `riscontro-ux.md`, `percorso-ux.md` | come si è arrivati alle decisioni UX | interfaccia | storici, non si aggiornano |
+| `docs/specifiche-ux.md`, `riscontro-ux.md`, `percorso-ux.md` | come si è arrivati alle decisioni UX | — | storici, non si aggiornano |
 | `docs/motore.md` | puntatore alla specifica | — | storico |
 
 ---
@@ -52,7 +53,7 @@ chat.
 
 1. **Una sessione di regia**, Claude su `main`, è **l'unica penna di questo
    file**. Le altre sessioni lo leggono e non lo toccano. È una regola, non un
-   controllo: il file è neutro e il `pre-commit` non sa quale sessione scrive.
+   controllo: il `pre-commit` non sa quale sessione scrive.
    Per questo la regia, a ogni resoconto, guarda
    `git log --oneline -- docs/prossime-sessioni.md`: un commit che non è suo è
    un'altra penna, e si dice.
@@ -67,53 +68,53 @@ chat.
    nella regia; la regia lo confronta con il repo — i commit esistono, le suite
    danno quei numeri —, chiude il prompt con il suo esito, aggiorna la coda,
    scrive i prompt che il risultato ha sbloccato, e fa un commit.
-5. **Le merge dei rami `ui/*` le fa la regia**, con il controllo dei territori
-   sul diff del ramo prima (`AGENTS.md`), e poi allinea `ui/main` e
-   `ui/vetrina` a `main` perché ChatGPT parta sempre dalla base giusta.
-   **Solo quando nessuna sessione di ChatGPT è aperta**: prima guarda
-   `git -C ../rotta-giusta-ui status --short`, e se l'autore ha appena lanciato
-   un prompt di ChatGPT aspetta il suo resoconto. Spostare il ramo sotto una
-   sessione che lavora è uno dei cinque modi in cui due agenti si sono rotti a
-   vicenda il 7 settembre. Il 26 settembre la regia ha allineato una volta senza
-   saperlo: la cartella era pulita, ed è andata bene per caso.
+5. **Le merge dei rami dei worktree le fa la regia**, con il controllo sul diff
+   del ramo prima (`AGENTS.md`). Fino al 28 ottobre 2026 qui c'erano i rami
+   `ui/*` di ChatGPT, da allineare a `main` solo con nessuna sessione di
+   ChatGPT aperta; dall'ADR-007 ChatGPT non c'è più, e un ramo di un worktree
+   non si sposta: parte da `main` aggiornato, si fonde, e la sessione dopo
+   parte da un worktree nuovo.
 6. **Una sessione di Claude può partire da un pulsante** che la regia propone
    nella sua chat. Il pulsante non ripete il prompt: dice soltanto di copiarlo
-   dal §6, così resta uno solo. La sessione che parte così lavora **in un
-   worktree suo**, su un ramo che il recinto non rivendica: può toccare solo i
-   file neutri e i condivisi, e il suo commit arriva su `main` con la merge
-   della regia. Un prompt che tocca `motore` o `regole` — `tests/`,
-   `territori.yaml`, `site/engine.js` — non parte da un pulsante: si apre a
-   mano, nel checkout principale su `main`. Il §6 dice quale è quale. ChatGPT
-   non ha pulsanti: si apre la sua app.
+   dal §6, così resta uno solo. **Ogni sessione che scrive lavora in un
+   worktree suo** (ADR-007), qualunque file tocchi — `site/`, `tests/`, il
+   motore, la specifica —, e il suo commit arriva su `main` con la merge della
+   regia. Nel checkout principale, su `main`, scrive solo la regia. Fino al 28
+   ottobre 2026 un prompt che toccava `motore` o `regole` doveva aprirsi a mano
+   nel checkout principale, perché il recinto rifiutava quei file dai rami dei
+   worktree; in pratica il controllo da lì non girava (ADR-007).
 
 7. **Ogni prompt dice nella sua prima riga per quale agente è e in quale
    cartella**, e chiede all'agente sbagliato di fermarsi senza scrivere. Il
    titolo lo diceva già, ma il titolo non si incolla: il 26 settembre P-34, un
    prompt per Claude, è partito in ChatGPT nella cartella principale, e nessuno
    dei due aveva modo di accorgersene. La riga la legge l'agente, non l'autore.
+   Con un agente solo la riga resta per la cartella: «in un worktree da
+   `main`», o «nel checkout principale» per la regia.
 
 8. **Quando l'autore glielo delega, la regia lancia lei le sessioni di Claude**,
-   come sotto-sessioni in background nella cartella principale, su `main`, una
-   alla volta. Deciso dall'autore il 30 settembre 2026, per la fila P-49,
+   come sotto-sessioni in background, ognuna nel suo worktree da `main`, una
+   alla volta (fino al 28 ottobre 2026 nella cartella principale). Deciso dall'autore il 30 settembre 2026, per la fila P-49,
    P-32…P-35, perché non poteva stare al computer. Il prompt è quello del §6,
    parola per parola; il resoconto arriva alla regia invece che all'autore, e
    la regia fa i suoi passi — commit, suite sullo stato vero, esito, commit
    della coda — **prima** di lanciare la successiva. La fila si ferma, e aspetta
    l'autore, a una suite rossa o che non torna con il resoconto, a una
    decisione per l'autore che blocca il passo dopo, o a una sessione che si
-   ferma da sola. ChatGPT non si lancia così: ha la sua app.
+   ferma da sola.
 
 ### Che cosa fa la regia, passo per passo
 
 Scritto il 30 settembre 2026 perché la regia possa passare da una sessione
 all'altra senza perdere il metodo. A ogni resoconto incollato dall'autore:
 
-1. **Chi è al lavoro.** `git status --short` nella cartella principale e in
-   `../rotta-giusta-ui`; se una sessione di Claude lavora nella principale, la
-   regia tocca solo questo file e lo mette in stage per nome.
+1. **Chi è al lavoro.** `git status --short` nella cartella principale e
+   `git worktree list`; se una sessione lavora nella principale, contro la
+   regola, la regia tocca solo questo file, lo mette in stage per nome e lo
+   dice.
 2. **Il commit esiste** (`git log`), con il trailer giusto, e questo file l'ha
    toccato solo la regia (`git log -- docs/prossime-sessioni.md`).
-3. **Per un ramo di ChatGPT o un worktree:** `python3
+3. **Per il ramo di un worktree:** `python3
    ../Standards/tools/check_territories.py --range main...<ramo>`, poi `git diff
    main...<ramo> --stat`, poi `git merge --no-ff <ramo>`. Il CHANGELOG si fonde
    da sé (`merge=union`): dopo, si aggiunge la riga vuota che manca fra due
@@ -136,9 +137,10 @@ all'altra senza perdere il metodo. A ogni resoconto incollato dall'autore:
    passano a pronti; i nuovi si scrivono con la riga «per chi è»; la tabella,
    il §4 e il registro si aggiornano. Poi un commit, solo di questo file e dei
    documenti che la decisione tocca.
-7. **Allineare i rami di ChatGPT** — `git -C ../rotta-giusta-ui merge --ff-only
-   main`, e lo stesso per `rotta-giusta-vetrina` — solo con la loro cartella
-   pulita e nessuna sessione di ChatGPT aperta.
+7. **Niente rami da allineare.** Fino al 28 ottobre 2026 qui si allineavano
+   `ui/main` e `ui/vetrina` a `main`; dall'ADR-007 restano fermi, puliti e
+   senza niente che manchi a `main`, finché l'autore non decide di toglierli
+   (§4, «Dopo l'ADR-007»).
 8. **Una decisione dell'autore si scrive subito** dove si decide — specifica
    §10, §20 di `account-progetto.md`, un progetto d'area — e qui nel §4; se una
    sessione sta scrivendo in quel file, la si porta dentro il prompt che lo
@@ -165,7 +167,7 @@ docs/idee-dopo-gli-account.md la sezione finale, «Le decisioni di
 P-59».
 
 Poi controlla lo stato vero — git log, git status nella cartella
-principale e in ../rotta-giusta-ui, i rami non fusi, i worktree — e
+principale, git worktree list, i rami non fusi — e
 dimmi in poche righe dove siamo, che cosa è in corso, che cosa è pronto
 e che cosa aspetta una mia decisione.
 
@@ -259,17 +261,24 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 19 | **Le ricerche**: il parere del professionista sulle donazioni (14 domande, I-11); se all'esame vero si torna indietro fra le domande; Lighthouse su telefono e Safari veri (I-08) | l'autore | — | — | §4, «Dopo P-59» |
 | 20-bis | **I contratti del motore, seconda parte**: Percorso con il «sei qui», costanza, obiettivo, «hai concluso quello che ti avevamo proposto» | Claude | `main` | l'ambito della decisione 22 e le fasi (§4, «Dopo P-59», 10 e 15); Q-COSTANZA è chiusa il 17 ottobre 2026, e P-68 è fatto | P-76, da scrivere |
 | 21 | **Il ridisegno**: il progetto (P-79), i raccordi e la specifica (P-80), i due campi del profilo (P-83), il banco dei tragitti in Chrome (P-82), la copia intera sotto i controlli (P-84) e la barra a link nei banchi (P-85) sono fatti; la realizzazione (P-81) è fusa in `main` il 20 ottobre (`ebe2e47`), il regime di prima è uscito dai controlli (P-89) e i legali sono allineati (P-90). Resta il rilascio, che accende le scelte di preparazione | la regia | `main` | il sì dell'autore al push | il rilascio |
-| 22 | **Spiegazioni**: il primo lotto di 50, «Segnala un problema», la misura dell'effetto | Claude con l'autore, poi ChatGPT | `main`, `ui/main` | l'indirizzo e la licenza (§4, «Dopo P-59», 2 e 6) | da scrivere |
+| 22 | **Spiegazioni**: il primo lotto di 50, «Segnala un problema», la misura dell'effetto | Claude con l'autore, poi Claude | un worktree da `main` | l'indirizzo e la licenza (§4, «Dopo P-59», 2 e 6) | da scrivere |
 | 24 | **La misura propria**: conteggi aggregati di eventi sul server del sito, senza cookie né terzi, a cominciare dal contatore degli ingressi; le registrazioni fra le metriche; MISURA → BRAINSTORM come quinto passo del ciclo (I-19, decisioni 1–3 e 5 del 17 ottobre in `docs/idee-dopo-gli-account.md`) | Claude con l'autore, poi Claude | `main` | un ADR che riscrive «nessun analytics» (specifica §2.1) e R-ACC-09, e la riga nell'informativa; dopo il rilascio del ridisegno | da scrivere |
 | 23 | **La stima**, come ricerca parallela: il modello, gli studenti finti, la validazione | Claude | `main` | niente dal motore: `PREVISIONI` c'è (P-72), e un modello entra come metodo accanto alla regola semplice; Q-STIMA solo per quando si mostra | da scrivere |
-| 27 | **Esito e previsioni, la pagina e l'informativa** (B-1, B-2), poi un rilascio | ChatGPT | `ui/main` | soltanto la base giuridica (§4, «Dopo P-64», 1–3): P-74 è chiuso | P-75, da scrivere |
+| 27 | **Esito e previsioni, la pagina e l'informativa** (B-1, B-2), poi un rilascio | Claude | un worktree da `main` | soltanto la base giuridica (§4, «Dopo P-64», 1–3): P-74 è chiuso | P-75, da scrivere |
 | 37 | **Le regole di disegno, giro 2**: la scala di corpi, spazi e pesi, le distanze fra i bersagli, la lunghezza delle righe (D-15…D-23, D-25, D-28; `docs/regole-disegno-progetto.md` §5, decisione C) | regia | `main` | l'approvazione dell'autore sulle 24 schermate di `docs/collaudo-p95/` (decisione C) | P-95 fuso, da rilasciare |
-| 38 | **Le regole di disegno, giro 3**: le parole e i nomi (`docs/regole-disegno-progetto.md`, giro 3) — prima il controllo su `main`, poi la pagina | Claude, poi ChatGPT | `main`, `ui/main` | sospeso dall'autore il 24 ottobre 2026 per la direzione del ridisegno, scelta il 25 (riga 39); riparte dopo il giro A del volto, dentro la Regata: decisione 17 di `docs/volto-progetto.md` §12, presa dall'autore il 26 ottobre 2026 | da scrivere |
+| 38 | **Le regole di disegno, giro 3**: le parole e i nomi (`docs/regole-disegno-progetto.md`, giro 3) — prima il controllo, poi la pagina | Claude, poi Claude | un worktree da `main` per ciascuno | sospeso dall'autore il 24 ottobre 2026 per la direzione del ridisegno, scelta il 25 (riga 39); riparte dopo il giro A del volto, dentro la Regata: decisione 17 di `docs/volto-progetto.md` §12, presa dall'autore il 26 ottobre 2026 | da scrivere |
 | 39 | **Ripensare il disegno da capo**: la direzione è scelta dall'autore il 25 ottobre 2026 — la Regata, con la Home al computer «U — Terra beige» (I-29; `docs/volto-progetto.md`, decisioni 1–14). I mock sono in `docs/prototipi/redesign-2026-10-claude/`, fusi in `main` | la regia | `main` | niente: le decisioni 15–18 del §12 di `docs/volto-progetto.md` le ha prese l'autore il 26 ottobre 2026, come raccomandato | fatto; P-96 superato dalla scelta, da non lanciare se non è già partito |
 | 40 | **Il volto, giro A — i controlli**: `SCALA_CSS` con i token della Regata, T-12 e T-13 al computer, T-15 nuovo, la pagina di riferimento con la Home U, R-VOLTO nel §9.11, i rossi dichiarati sulla pagina vera (`docs/volto-progetto.md` §6, §9, §11) | Claude | un worktree da `main` | niente | P-97 fuso il 26 ottobre 2026 (`9950388`, merge `4085f30`) |
 | 41 | **Il volto, giro A — la pagina**: il `:root` della Regata, i componenti condivisi, la Home al telefono e al computer, prima e dopo alle sei misure (`docs/volto-progetto.md` §11) | ChatGPT | `ui/main` | il sì dell'autore sulle schermate di `docs/collaudo-p98/` e sui testi didattici delle due luci (§10 di `docs/volto-progetto.md`); per il rilascio anche quello su `docs/collaudo-p95/` (riga 37) | P-98 fuso il 28 ottobre 2026 (`9da12f4`, merge `a94b3c1`), da rilasciare. Prima, P-99 — il banco del client con Chrome 156, `--disable-backgrounding-occluded-windows` e `dimensioni()` che aspetta il disegno — fuso lo stesso giorno (`1c2881a`, merge `379a26e`) |
-| 42 | **La Home a pannelli**, un passo del giro B: il prototipo corretto `docs/prototipi/stitch-2026-10/carta-corretta/index.html` è il contratto visivo unico — 11 pannelli a scatto obbligato, la costa che scorre in uno strato fisso, il faro a settori, la cardinale est, il vento, il 2° problema delle correnti con lo scarroccio, la rotta e il percorso (`analisi-2026-10-28.md`, nella stessa cartella) | prima l'autore sul prototipo; poi Claude (P-100, P-101); poi ChatGPT (P-102) | `main`, poi `ui/main` | P-100: le piccole correzioni al prototipo che dirà l'autore, nello stesso file. P-101: P-100; può correre in parallelo al giro B. P-102: P-101, il passo del giro B su domanda e riepilogo (decisione 18, una penna sola su `index.html`, prompt da scrivere) e il rilascio della v0.35.0 | P-100, P-101, P-102 scritti il 28 ottobre 2026 |
+| 42 | **La Home a pannelli**, un passo del giro B: il prototipo corretto `docs/prototipi/stitch-2026-10/carta-corretta/index.html` è il contratto visivo unico — 11 pannelli a scatto obbligato, la costa che scorre in uno strato fisso, il faro a settori, la cardinale est, il vento, il 2° problema delle correnti con lo scarroccio, la rotta e il percorso (`analisi-2026-10-28.md`, nella stessa cartella) | prima l'autore sul prototipo; poi Claude (P-100, P-101, P-102) | un worktree da `main` per ciascuno | P-100: le piccole correzioni al prototipo che dirà l'autore, nello stesso file. P-101: P-100; può correre in parallelo al giro B. P-102: P-101, il passo del giro B su domanda e riepilogo (decisione 18, una penna sola su `index.html`, prompt da scrivere) e il rilascio della v0.35.0 | P-100, P-101, P-102 scritti il 28 ottobre 2026 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo P-59», «Dopo P-64», «Dopo il traguardo» e le voci non barrate |
+
+**Dal 28 ottobre 2026 (ADR-007) su questo repo lavora un agente solo.**
+ChatGPT è uscito dal progetto, e con lui il territorio dell'interfaccia: le
+righe che gli erano assegnate — 22 per la pagina, 27 (P-75), 38 (il giro 3),
+42 (P-102) e il giro B del volto — sono di Claude, ognuna in un worktree da
+`main`, con la merge della regia. Nel checkout principale scrive solo la regia.
+I prompt chiusi qui sotto restano scritti come sono andati.
 
 **La v0.31.0 è in linea dal 18 ottobre 2026**, sulla pagina e sul server, con le raccolte nuove spente (prima, la v0.30.0 dal 3 ottobre); P-59,
 il brainstorming, è chiuso il 4 ottobre, e questa tabella è il suo
@@ -293,9 +302,9 @@ dati arrivano mesi dopo. **Il §5, il §6 e i controlli R-NAV della specifica no
 si riscrivono con P-63**: descrivono la pagina che c'è, e cambiano con il
 progetto del ridisegno, dopo la prova con le persone. Rilasci piccoli e frequenti (deciso dall'autore il 3
 ottobre 2026): ogni rilascio è un «Build now», più `rg-aggiorna` quando cambia
-il server. I prompt di Claude vanno uno alla volta nella cartella principale,
-e la suite dell'interfaccia di un worktree esclude quella dell'altro, per la
-porta 8620. Il numero di una riga è il suo nome, non la sua posizione.
+il server. I prompt di Claude vanno ognuno nel suo worktree da `main` (fino
+al 28 ottobre 2026 uno alla volta nella cartella principale), e la suite
+dell'interfaccia di un worktree esclude quella dell'altro, per la porta 8620. Il numero di una riga è il suo nome, non la sua posizione.
 
 I prompt «da scrivere» li scrive la regia quando si chiude quello da cui
 dipendono, non prima: un prompt scritto in anticipo punta a uno stato che nel
@@ -446,7 +455,11 @@ account:
 - ~~Il difetto dei tag N/L/C che resta~~ — **chiuso da P-01** il 26 settembre:
   l'archivio è append-only anche per i tag, e l'import dice perché scarta.
 
-## 3 · ChatGPT, su `ui/main`
+## 3 · ChatGPT, su `ui/main` — storico
+
+*Fino al 28 ottobre 2026. Dall'ADR-007 ChatGPT non lavora più su questo repo:
+questa sezione resta com'era, perché racconta l'ordine in cui le aree sono
+state fatte.*
 
 **Una penna sola su `app.html`**: i punti qui sotto si fanno uno dopo l'altro,
 un commit ciascuno, e fra l'uno e l'altro c'è la merge su `main`.
@@ -520,6 +533,14 @@ ridisegno, con un prompt che si scrive quando il server c'è ed è testato: lì 
 consuma, non si riprogetta.
 
 ## 4 · Fuori dalle sessioni — l'autore
+
+- **Dopo l'ADR-007** (28 ottobre 2026) — i rami e le cartelle dell'interfaccia.
+  `ui/main` e `ui/vetrina`, in locale e su GitHub (`origin/ui/main`,
+  `origin/ui/vetrina`), non hanno niente che manchi a `main`; i worktree
+  `~/Software/rotta-giusta-ui` e `~/Software/rotta-giusta-vetrina` sono puliti,
+  senza stash. Restano per tua scelta: quando vuoi, si tolgono le due cartelle
+  e i rami locali, e — azione pubblica, da chiedere a parte — i due rami su
+  GitHub. Niente li tocca finché non lo dici.
 
 - **Dopo P-59** (4 ottobre 2026) — quello che «Le decisioni di P-59» lasciano
   a te, con il lavoro che ciascuna ferma:
@@ -7513,17 +7534,16 @@ resoconto di docs/prossime-sessioni.md.
 
 ### P-100 — Claude: la Home a pannelli, il progetto
 
-**Dove:** il checkout principale `~/Software/rotta-giusta`, su `main`, o un
-worktree da `main`. **Nasce da:** la sessione «Redesign con Google Stitch 2.0»
+**Dove:** un worktree da `main` (ADR-007). **Nasce da:** la sessione «Redesign con Google Stitch 2.0»
 del 28 ottobre 2026, che ha analizzato il prototipo di Stitch e ne ha fatto un
 mock corretto (commit `94ee44d` e `df60237`); l'autore ha deciso lo stesso
 giorno che il vento resta. **Aspetta:** le piccole correzioni al prototipo che
 dirà l'autore, fatte nello stesso file. **Sblocca:** P-101.
 
 ```
-Questo prompt è per Claude, nel checkout principale ~/Software/rotta-giusta
-su main (o in un worktree da main). Se sei ChatGPT, o sei su ui/main,
-fermati e dillo, senza scrivere niente.
+Questo prompt è per Claude, in un worktree da main. Se sei un altro agente,
+o sei nel checkout principale ~/Software/rotta-giusta, fermati e dillo,
+senza scrivere niente.
 
 Sessione P-100, la Home a pannelli: il progetto. Leggi AGENTS.md con
 docs/specifica.md (§9.11, R-RIF e R-VOLTO), docs/volto-progetto.md per
@@ -7585,8 +7605,9 @@ che il suo progetto elenca. Può correre in parallelo al giro B: tocca solo
 `tests/`, la specifica e `docs/eccezioni-interfaccia.md`. **Sblocca:** P-102.
 
 ```
-Questo prompt è per Claude, in un worktree da main. Se sei ChatGPT, o sei
-su ui/main, fermati e dillo, senza scrivere niente.
+Questo prompt è per Claude, in un worktree da main. Se sei un altro agente,
+o sei nel checkout principale ~/Software/rotta-giusta, fermati e dillo,
+senza scrivere niente.
 
 Sessione P-101, la Home a pannelli: i controlli prima della pagina, con il
 metodo di P-97. Leggi AGENTS.md con docs/specifica.md, la sezione di
@@ -7628,21 +7649,20 @@ con il trailer, niente push. Resoconto nella forma di
 docs/prossime-sessioni.md.
 ```
 
-### P-102 — ChatGPT: la Home a pannelli, la pagina
+### P-102 — Claude: la Home a pannelli, la pagina
 
-**Dove:** il worktree `~/Software/rotta-giusta-ui`, ramo **`ui/main`**.
+**Dove:** un worktree da `main`. Fino al 28 ottobre 2026 era di ChatGPT, su
+`ui/main`; dall'ADR-007 è di Claude, e il prompt cambia solo nella cartella.
 **Aspetta:** P-101 fuso; il passo del giro B su domanda e riepilogo, fuso
 (decisione 18: una penna sola su `index.html`); il rilascio della v0.35.0.
 **Sblocca:** la merge e il rilascio, della regia.
 
 ```
-Questo prompt è per ChatGPT, nel worktree ~/Software/rotta-giusta-ui,
-sul ramo ui/main, aperto in modalità Local. Se sei Claude, o sei nella
-cartella principale ~/Software/rotta-giusta, o su un altro ramo, fermati e
-dillo, senza scrivere niente.
+Questo prompt è per Claude, in un worktree da main aggiornato. Se sei un
+altro agente, o sei nel checkout principale ~/Software/rotta-giusta,
+fermati e dillo, senza scrivere niente.
 
-Sessione P-102, la Home a pannelli: la pagina. Prima allinea ui/main a
-main: git merge --ff-only main. Poi leggi AGENTS.md, la sezione di
+Sessione P-102, la Home a pannelli: la pagina. Leggi AGENTS.md, la sezione di
 docs/volto-progetto.md scritta da P-100 e la nota di consegna di P-101.
 
 Il contratto visivo è uno solo:
@@ -7679,7 +7699,7 @@ docs/collaudo-p102/ con un README che le cita una per una: l'autore le
 approva prima della merge. Nessun file di tests/, del motore, di server/ o
 dei dati; la versione non si tocca. Le cinque suite verdi; l'interfaccia
 con la 8620 guardata libera per 90 s. Voce in fondo a [Unreleased], un
-commit con il trailer, niente push. Resoconto nella forma di
+commit per nome, niente push. Resoconto nella forma di
 docs/prossime-sessioni.md.
 ```
 
@@ -7719,7 +7739,8 @@ il resoconto del precedente, e la regia scrive il suo prompt allora.
 
 - **P-74**: scritto il 12 ottobre 2026, chiuso il 13.
 - **P-75 — esito e previsioni, la pagina e l'informativa** (B-1 e B-2),
-  ChatGPT su `ui/main`. Aspetta P-74 fuso e la base giuridica (§4, «Dopo
+  Claude in un worktree da `main` (fino al 28 ottobre 2026 di ChatGPT su
+  `ui/main`; ADR-007). Aspetta P-74 fuso e la base giuridica (§4, «Dopo
   P-64», punto 1). Poi un rilascio: «Build now» e `rg-aggiorna`, schema 5.
 - **P-76 — i contratti del motore, seconda parte**: il Percorso come mappa con
   il «sei qui» (decisione 16), la costanza (19), l'obiettivo (13), la ripresa
@@ -8667,3 +8688,13 @@ aspettava la stessa merge: il prompt è lì. **Chiuso con P-47**, `d579bb6`.
   visivo unico. Scritti P-100 (il progetto), P-101 (i controlli) e P-102 (la
   pagina, dopo il giro B su domanda e riepilogo e dopo la v0.35.0). Prima
   ancora, le correzioni al prototipo che dirà l'autore.
+- **28 ottobre 2026 — un agente solo (ADR-007).** Decise dall'autore in chat:
+  ChatGPT esce dal progetto, il territorio dell'interfaccia esce da
+  `territori.yaml`, e al posto del recinto un worktree per sessione, con la
+  regia sola nel checkout principale. «Come si usa» e «Che cosa fa la regia»
+  dicono il presente; le righe 22, 27, 38 e 42 e i prompt P-75 e P-102 sono di
+  Claude, P-100 e P-101 chiedono un worktree. Misurato prima: dalle cartelle
+  `.claude/worktrees/` il `pre-commit` non trovava `Standards` e lasciava
+  passare tutto in silenzio; ora lo trova, e se non lo trova rifiuta. I rami
+  `ui/main` e `ui/vetrina` e le loro cartelle restano, puliti, finché l'autore
+  non decide (§4, «Dopo l'ADR-007»).

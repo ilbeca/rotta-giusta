@@ -11,7 +11,8 @@ valgono più. Quelli qui sotto sì, e sono il metodo che ha fatto passare l'esam
 @docs/specifica.md — **il documento unico di progetto**: che cos'è il sito, per
 chi, com'è fatto sotto, dove vive ogni funzionalità, e per ogni garanzia il
 controllo che la tiene ferma. È la casella SPECIFICA del ciclo, e ha una penna
-sola: Claude, su `main`. Ha assorbito `docs/motore.md` e i documenti UX.
+sola alla volta: la sessione a cui la coda la assegna, e la regia alla merge.
+Ha assorbito `docs/motore.md` e i documenti UX.
 
 @docs/filosofia.md — il perché sotto le scelte: in che cosa crediamo, non che
 cosa esiste. Stessa penna di `specifica.md`, per lo stesso motivo.
@@ -49,8 +50,8 @@ Tutto gira sull'Air con node e python di sistema, **e Chrome**:
 protocollo e senza dipendenze (`RG_CHROME` se l'eseguibile non sta in
 `/Applications`), e accanto avvia il server degli account sulla porta **8620**,
 che deve essere libera, più sette copie su porte libere qualunque per le rotture
-(P-39, P-43). La 8620 è una sola anche fra i worktree: la suite dell'interfaccia
-in `rotta-giusta-ui` e questa si escludono, e prima di lanciarla si guarda che sia
+(P-39, P-43). La 8620 è una sola anche fra i worktree: due suite dell'interfaccia
+si escludono, e prima di lanciarla si guarda che sia
 libera (`lsof -iTCP:8620 -sTCP:LISTEN`). Senza Chrome il controllo è rosso, non saltato. Il
 perché e che cosa non copre: §12 di `docs/account-client-progetto.md`. In locale non c'è
 nessun servizio da riavviare né un database da preparare: ogni suite avvia i
@@ -74,6 +75,15 @@ aggiorna, come si torna indietro e come si ripristina una copia sta nel §2.7 di
   DOM né rete, che gira identica nella pagina, nel server e sotto `node
   --test`. Nessuna seconda implementazione, in nessun posto: il server importa
   `validaRiga()` e i limiti da lì, e rifiuta le stesse righe del browser.
+- **Chi disegna non ricalcola.** `site/index.html` consuma `site/engine.js`:
+  se serve un numero che il motore non espone, si scrive prima un export nuovo
+  nel motore, con i suoi test, invece di rifare il conto in pagina. E' la regola
+  «un numero promesso e la lista che si apre vengono dalla stessa fonte» vista
+  dall'altro lato: fino al 9 settembre 2026 `daAllenare()` viveva nella pagina,
+  senza un test.
+- **`site/sw.js` resta pubblicato almeno fino al 3 ottobre 2028** (ADR-005), e
+  lo toglie un prompt della regia: un `sw.js` sparito lascerebbe chi ha
+  visitato la 0.29.0 sulla sua cache per sempre.
 - **Le risposte sono righe, una per risposta, che non si modificano mai.**
   Senza account vivono solo nella memoria della pagina aperta, e nel browser
   non resta niente, nemmeno le preferenze (ADR-004). Con l'account stanno sul
@@ -94,116 +104,77 @@ aggiorna, come si torna indietro e come si ripristina una copia sta nel §2.7 di
   convinzione**: si aggiunge una nota e si cita la fonte; all'esame vale il
   decreto.
 
-## Chi tocca cosa
+## Chi lavora, e dove
 
-Su questo repo lavorano due agenti. I confini non sono galateo: sono il modo in
-cui non ci si sovrascrive a vicenda. Il 07/09/2026, su `patente-gioco`, questa
-stessa coppia nella stessa cartella si e' rotta in **cinque modi** — fra gli
-altri un `git add -A` che ha annullato in silenzio il revert dell'altro agente,
-e `VERSION` che si spostava sotto le mani di chi lo stava leggendo. Nessuno dei
-cinque ha prodotto un errore o un conflitto. Il perche' per esteso e' in
-`~/Software/Standards/ADR/ADR-004-la-regola-diventa-un-controllo.md`, che
-conclude: una regola che un agente deve ricordare si sostituisce con un
-controllo che git esegue.
+**Su questo repo lavora un agente solo, Claude**, dal 28 ottobre 2026
+(ADR-007). Fino a quel giorno erano due: ChatGPT teneva l'interfaccia sul ramo
+`ui/main`, nel worktree `~/Software/rotta-giusta-ui`, e un `pre-commit` letto da
+`territori.yaml` rifiutava i commit fuori dal territorio di ciascuno. Il
+recinto era nato il 07/09/2026 su `patente-gioco`, dove questa stessa coppia
+nella stessa cartella si era rotta in **cinque modi** senza un errore
+(`~/Software/Standards/ADR/ADR-004-la-regola-diventa-un-controllo.md`). Con un
+agente solo il recinto proteggeva da nessuno, ed è uscito; l'ADR-007 dice che
+cosa costa, e la cosa più importante che costa è questa: **il recinto separava
+anche le sessioni di Claude nello stesso checkout**, e adesso le separa la
+cartella.
 
-**La lista che vale e' `territori.yaml`**, alla radice: e' quella che il
-`pre-commit` legge. La tabella qui sotto la spiega, non la sostituisce.
+**Un worktree per sessione.** Ogni sessione che scrive — codice, test,
+documenti — lavora nella sua cartella `.claude/worktrees/<nome>`, su un ramo
+suo, partito da `main` aggiornato; è il default dell'app. Il suo lavoro arriva
+su `main` con una **merge** della regia. **Nel checkout principale, su `main`,
+scrive solo la regia**: la coda, le merge, i rilasci. Due sessioni in due
+cartelle non condividono l'indice, quindi un `git add` non può prendere il
+lavoro dell'altra; un conflitto arriva alla merge, dove si vede.
 
-| territorio | file | chi |
-|---|---|---|
-| **motore** | `site/engine.js`, `site/sw.js`, `site/dati/`, `site/figure/`, `server/`, `fonte/`, `strumenti/`, `tests/`, `docs/adr/`, `docs/motore.md` | Claude, su `main` |
-| **regole** | `AGENTS.md`, `CLAUDE.md`, `territori.yaml`, `docs-check.yaml`, `.githooks/`, `.claude/`, `.agents/`, `.gitignore`, `.gitattributes`, `README.md`, `LICENSE`, `VERSION` | Claude, su `main` |
-| **interfaccia** | il resto di `site/`, e `docs/*-ux.md` | ChatGPT, su `ui/*` |
-| *condivisi* | `CHANGELOG.md` | tutti |
+**Una penna sola su `site/index.html` alla volta**, anche fra worktree: è il
+documento di studio intero, e l'unità di conflitto è il file, non la sessione.
+La stessa regola vale per `docs/specifica.md`, che si riscrive e non si
+aggiunge (§0 della specifica), e per `docs/prossime-sessioni.md`, che ha la
+regia come penna. Sono regole, non controlli: le fa rispettare la coda, che
+dice chi ha la penna.
 
-Cinque cose che la tabella non dice.
+### Che cosa fa ancora il `pre-commit`
 
-- **`site/engine.js` sta in `site/` ma e' del motore.** E' logica pura, senza DOM
-  ne' rete, testata sotto `node --test`: la regola «la selezione sta in un solo
-  file» vale piu' della cartella in cui il file abita. Stessa ragione per
-  `site/dati/` e `site/figure/`, che sono l'Allegato A al decreto e non asset
-  grafici: il marchio e le icone, quelli si', sono dell'interfaccia.
-- **`VERSION` sta fra le regole e `site/dati/meta.json` e' del motore: da `ui/*`
-  non si rilascia.** La versione vive in due posti e i tag sono condivisi fra i
-  worktree, quindi due rami che chiudessero entrambi con un bump si
-  scontrerebbero per forza. Il rilascio e' un commit solo, su `main`, dopo la
-  merge.
-- **`docs/` non e' tutto del motore.** I documenti UX sono lavoro
-  sull'interfaccia e li scrive ChatGPT con l'autore; gli ADR e `docs/motore.md`
-  restano di qui. Il resto di `docs/` e' **neutro**, e un file neutro lo tocca
-  chiunque: e' quello che serve ai documenti scritti a quattro mani.
-- **`main` rivendica `motore` e `regole` apposta.** Un territorio che nessun ramo
-  rivendica si tocca da ogni ramo, e l'app Codex in modalita' Worktree crea rami
-  con nomi suoi (`codex/…`) che non combaciano `ui/*`. Con entrambi rivendicati,
-  un ramo sconosciuto puo' toccare solo i condivisi e i neutri. Non e' teoria:
-  il 09/09/2026 due worktree cosi' esistevano gia' in `~/.codex/worktrees/`,
-  staccati, con dentro 480 KB di lavoro che non era in nessun commit.
+`territori.yaml` non ha più territori né rami, e il hook di `Standards` con quel
+file esegue due regole:
 
-### I punti di contatto
+- **`CHANGELOG.md` è additivo.** Sotto `[Unreleased]` si aggiunge in fondo, non
+  si riscrivono le voci di un altro: il hook rifiuta un commit che cancella
+  righe del changelog, salvo il commit di rilascio, che ha `VERSION` in stage.
+  E git lo fa rispettare alla merge: `.gitattributes` dichiara `CHANGELOG.md
+  merge=union`, quindi due voci aggiunte nello stesso punto entrano tutte e due
+  senza fermarsi. Dopo una merge si guarda che fra le due voci ci sia una riga
+  vuota: il driver non la mette.
+- **Numero e voce insieme.** `VERSION` non entra in un commit senza
+  `CHANGELOG.md`.
 
-- **`CHANGELOG.md` e' additivo.** Si aggiunge in fondo alla sezione
-  `[Unreleased]`; non si riscrivono mai le voci di un altro. Due mani che
-  aggiungono non collidono, due che riscrivono si'. Il hook lo fa rispettare:
-  rifiuta un commit che cancella righe del changelog fuori da un rilascio. E
-  git lo fa rispettare alla merge: `.gitattributes` dichiara `CHANGELOG.md
-  merge=union`, quindi due voci aggiunte nello stesso punto entrano tutte e
-  due senza fermarsi. Serve perche' chiudere a mano un conflitto passa dal
-  `pre-commit`, che su `main` rifiuta i file di `ui/*`: il 26 settembre 2026 la
-  merge di P-05 si e' fermata cosi'. Dopo una merge si guarda che fra le due
-  voci ci sia una riga vuota: il driver non la mette.
-- **`site/sw.js` e' del motore**, anche se sta in `site/`. Fino al 3 ottobre
-  2026 era condiviso, perche' il guscio offline era scritto li' e in
-  `site/app.html`; l'ADR-005 ha tolto l'offline, e `sw.js` e' ora il service
-  worker che si disinstalla, con i suoi test nel motore. Resta pubblicato
-  almeno fino al 3 ottobre 2028, e lo toglie un prompt della regia: un `sw.js`
-  sparito lascerebbe chi ha visitato la 0.29.0 sulla sua cache per sempre.
-- **Chi disegna non ricalcola.** `site/app.html` e `site/index.html` consumano
-  `site/engine.js`: se serve un numero che il motore non espone, si chiede un
-  export nuovo invece di rifare il conto in pagina. E' la regola «un numero
-  promesso e la lista che si apre vengono dalla stessa fonte» vista dall'altro
-  lato. L'esempio gia' in casa: **`daAllenare()` oggi vive in `app.html`** e va
-  spostata nel motore, con i suoi test, *prima* che la schermata venga rifatta.
-- **Una sola penna su `app.html` alla volta**, chiunque sia l'agente: e' un file
-  da 200 KB, e l'unita' di conflitto e' il file, non il fornitore. Il territorio
-  `interfaccia` e' del ramo `ui/*`; se un giorno una sessione Claude scrive
-  interfaccia, lo fa su `ui/*` nello stesso worktree, mentre ChatGPT e' fermo.
+Il hook trova `Standards` partendo dalla cartella git comune, quindi gira anche
+dai worktree in `.claude/worktrees/`, dove fino al 28 ottobre non girava affatto
+e lasciava passare tutto in silenzio (ADR-007). Se non lo trova, il commit non
+parte e il messaggio dice dove l'ha cercato; `RG_STANDARDS=<cartella>` indica
+un'altra cartella.
 
 ### Come si lavora
 
-ChatGPT sta nel worktree `~/Software/rotta-giusta-ui`, sul ramo `ui/main`,
-aperto come progetto in modalita' **Local**: mai nel checkout principale, mai
-«Hand off», mai la modalita' Worktree dell'app, che crea rami `codex/*` estranei
-al recinto. **Un solo thread scrivente per volta** su quella cartella, perche'
-l'app ne permette piu' d'uno sulla stessa. Claude e l'autore stanno nel
-checkout principale, su `main`.
-
-Ogni commit di ChatGPT porta il trailer
-`Co-authored-by: ChatGPT <noreply@openai.com>`.
-
 **Mai `--no-verify`. Mai `git add -A` ne' `git add .`:** si mette in stage solo
 cio' che si e' modificato apposta per quel commit, e prima di committare si
-guardano `git status` e `git diff --cached`. Il hook protegge quello che entra
-nel commit; lo stage per nome riduce il rischio prima che ci entri. Se il hook
-rifiuta, nomina il file e scrive il rimedio: il commit e' sbagliato, non il hook.
-`TERRITORI_OK=1`, la via d'uscita che il hook stampa quando rifiuta un commit, è
-dell'autore: un agente che la usa sta aggirando il recinto, e non lo fa.
+guardano `git status` e `git diff --cached`. Il hook protegge il changelog; lo
+stage per nome protegge il lavoro degli altri, ed è una regola da ricordare: il
+worktree è ciò che la rende poco costosa. Se il hook rifiuta, nomina il file e
+scrive il rimedio: il commit e' sbagliato, non il hook. `TERRITORI_OK=1`, la
+via d'uscita che il hook stampa quando rifiuta un commit, è dell'autore: un
+agente che la usa sta aggirando il controllo, e non lo fa.
 
-Il lavoro di ChatGPT arriva su `main` con una **merge** fatta da Claude o
-dall'autore; nessun agente fa «hand off» nel checkout principale.
-
-**La merge non passa dal `pre-commit`**, ed e' deliberato: e' il punto in cui un
-umano guarda. Chi fa la merge lancia prima il controllo sul diff del ramo:
+**La merge non passa dal `pre-commit`**, ed e' deliberato: e' il punto in cui la
+regia guarda. Prima di fondere un ramo si lancia il controllo sul suo diff, che
+senza territori guarda le righe tolte dal changelog sull'intervallo:
 
 ```sh
-python3 ../Standards/tools/check_territories.py --range main...ui/main
+python3 ../Standards/tools/check_territories.py --range main...<ramo>
 ```
 
-I percorsi vengono da `git diff --name-only main...ui/main` e le righe cancellate
-dal changelog si contano sull'intervallo; lo stage non si legge. Il ramo con cui si
-leggono i territori e' il lato destro dell'intervallo. Esce 1 se c'e' una
-violazione, e nomina i file.
-
-Poi si guarda il `CHANGELOG.md`, che e' il posto dove il conflitto arriva.
+Poi `git diff main...<ramo> --stat`, poi `git merge --no-ff <ramo>`, poi la riga
+vuota nel `CHANGELOG.md`; e dopo, `git log main..<ramo>` vuoto.
 
 ## Vincoli di lavoro
 
@@ -248,8 +219,8 @@ Poi si guarda il `CHANGELOG.md`, che e' il posto dove il conflitto arriva.
   `data/seed/`.
 - **Test verdi prima di ogni commit, e una sessione un commit.** Voce di
   CHANGELOG che spiega **il perché**, non solo il cosa, con i numeri di ciò che
-  è stato verificato. *Una sessione = una versione* vale su `main`: sul ramo
-  dell'interfaccia il numero non si tocca, vedi «Chiusura di ogni sessione».
+  è stato verificato. Il numero di versione lo alza soltanto il commit di
+  rilascio, su `main`, dopo la merge: vedi «Chiusura di ogni sessione».
 - **Niente push senza chiedere.** Il repo è pubblico, e finché il vecchio
   indirizzo `.pages.dev` è acceso un push pubblica il sito anche lì.
   **Su `rottagiusta.it` il push non pubblica niente da solo**: statichost.eu
@@ -259,15 +230,15 @@ Poi si guarda il `CHANGELOG.md`, che e' il posto dove il conflitto arriva.
 
 ## Chiusura di ogni sessione
 
-Dipende dal ramo, e non e' un dettaglio: il numero di versione vive in due posti
-e i tag sono condivisi fra i worktree, quindi due rami che rilasciassero
-entrambi si scontrerebbero per forza.
+Il numero di versione vive in due posti e i tag sono condivisi fra i worktree,
+quindi due rami che rilasciassero entrambi si scontrerebbero per forza: per
+questo **da un worktree non si rilascia**.
 
-**Su `ui/*`** — test verdi → voce di CHANGELOG in fondo a `[Unreleased]` → un
-commit con il trailer. **Il numero non si tocca**, e non si tagga.
+**In un worktree** — test verdi → voce di CHANGELOG in fondo a `[Unreleased]` →
+un commit, per nome. **Il numero non si tocca**, e non si tagga. La regia fonde.
 
-**Su `main`** — test verdi → un commit. Il **rilascio** e' un commit a se', dopo
-la merge, e lo fa chi la merge la fa: bump di `VERSION` e di `versione` in
+**Il rilascio** e' un commit a se', su `main`, dopo la merge, e lo fa la regia
+con il sì dell'autore: bump di `VERSION` e di `versione` in
 `meta.json` → voce di CHANGELOG con lo stesso numero → tag annotato `vX.Y.Z` →
 chiedere prima del push → dopo il push, «Build now» su statichost.eu, e
 `curl https://rottagiusta.it/dati/meta.json` per vedere la `versione` nuova
