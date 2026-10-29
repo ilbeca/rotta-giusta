@@ -83,6 +83,11 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   conferma che l'equiparazione del Garante vale anche qui. Se non la conferma,
   la proposta è non farlo, non mettere un banner. Testo proposto per
   l'informativa, sette decisioni per l'autore. Non è un parere legale.
+- **Deciso dall'autore lo stesso giorno: per ora resta tutto com'è.** In I-19
+  anche Google Analytics visto da vicino: i passi, il banner che rompe R-ACC-09
+  anche per chi rifiuta, e che un servizio di consenso come iubenda non serve,
+  perché Google lo chiede solo a chi mostra la sua pubblicità (letto sulle sue
+  pagine di aiuto).
 - Nessun file di `site/`, `server/`, `tests/`, della specifica o della coda
   toccato; guardiano verde.
 

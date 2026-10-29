@@ -2699,6 +2699,53 @@ testo della direttiva ePrivacy e dell'art. 122 nella versione vigente, citati
 dalla struttura nota e non riletti; le linee guida del Garante oltre il §7.2 e
 il §3.
 
+##### Lo stato, e Google Analytics guardato più da vicino — 29 ottobre 2026
+
+**Deciso dall'autore: per ora resta tutto com'è.** Non è ancora sicuro di
+volere un contatore. Nessun ADR, nessun codice; le decisioni qui sopra restano
+aperte, e la riga 24 della coda resta in attesa.
+
+Nella stessa conversazione l'autore ha chiesto che cosa vorrebbe dire Google
+Analytics in concreto, e ha osservato che la filosofia è nata quando il sito era
+suo e basta e che la gente non sceglie il sito per «nessun analytics». Quello
+che è emerso, perché non si debba ricercarlo:
+
+- **Il vantaggio di non avere analytics non è uno slogan**, è un costo che il
+  sito non paga: niente banner nel primo schermo della Home, niente consenso da
+  gestire, niente fornitore né trasferimento in più, niente terzo che prende
+  l'IP senza che l'informativa lo dica (i caratteri di Google fino al 1°
+  ottobre). La formulazione proposta per un ADR, al posto di «nessun
+  analytics»: **niente strumenti di terzi, niente salvato nel browser senza
+  account, niente banner**. Il contatore della strada 3 la rispetta, Google
+  Analytics no.
+- **I passi per Google Analytics**, se un giorno: un ADR che riscrive §2.1,
+  R-ACC-09, la promessa dell'ADR-004 e «i dati non escono dall'Unione europea»;
+  il parere; la proprietà GA4 stretta (condivisione dati e Google Signals
+  spenti, conservazione 2 mesi, nessun collegamento con Google Ads); il banner;
+  lo script caricato solo dopo il sì, con la modalità di consenso v2;
+  `test_nessuna_risorsa_di_terzi` riscritto e un controllo in Chrome che nessuna
+  richiesta parta verso Google prima del sì; l'informativa con i cookie e il
+  trasferimento. Grandezza L.
+- **Due conseguenze che non si vedono subito.** Il Garante chiede di non
+  ripresentare il banner per sei mesi dopo un rifiuto: la scelta va salvata nel
+  browser anche per chi dice no, quindi R-ACC-09 cade per tutti. E i pulsanti
+  del banner si sommano a quelli del primo schermo della Home, dove R-RIF-22 ne
+  ammette al più quattro.
+- **Un servizio di consenso (iubenda, Cookiebot) non serve.** La legge chiede
+  un consenso valido, non un fornitore. Google chiede un servizio certificato
+  solo a chi mostra la sua pubblicità con AdSense, Ad Manager o AdMob, dal 16
+  gennaio 2024 nello Spazio economico europeo e nel Regno Unito
+  ([support.google.com/adsense/answer/13554020](https://support.google.com/adsense/answer/13554020?hl=en),
+  letto il 29 ottobre 2026). Per Analytics il servizio certificato è una
+  possibilità; con un banner proprio va usata la modalità di consenso v2
+  ([support.google.com/analytics/answer/14275483](https://support.google.com/analytics/answer/14275483)).
+  I prezzi, se servissero: iubenda gratuito fino a circa 25.000 pagine viste al
+  mese e poi da circa 5 € al mese (fonti di terzi, la pagina ufficiale non si
+  è aperta); Cookiebot gratuito per un dominio e 50 pagine, con funzioni
+  limitate (pagina ufficiale). Il costo vero è un altro terzo che riceve l'IP
+  prima della scelta. **Se si va su Google Analytics, il banner si scrive in
+  casa.**
+
 ### I-20 — La classe: la scuola nautica e l'istruttore dentro il sito [autore e Claude]
 
 **Il problema.** Chi prepara l'esame resta uno-tre mesi, poi se ne va. Una
