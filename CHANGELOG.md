@@ -29,6 +29,33 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   espone `Retry-After`. `/var/lib/rg/precedente` dice `v0.34.0`.
 - **Non guardato:** la Home al computer pubblicata, in un browser vero.
 
+### Analizzato — la Home a pannelli, letta da taste
+
+- **Perché.** L'autore ha approvato il mock `carta-corretta/` come nuova Home,
+  salvo ritocchi, e ha chiesto il parere della skill taste prima di costruirla
+  (P-100…P-102). Procedura A di `docs/procedure-disegno.md`, in sola lettura:
+  [`analisi-taste-2026-10-29.md`](docs/prototipi/stitch-2026-10/analisi-taste-2026-10-29.md)
+  con sette fotografie accanto. Su richiesta dell'autore il sito pubblicato,
+  misurato all'inizio, resta fuori.
+- **Che cosa funziona, per taste:** l'idea viene dal soggetto — la Home traccia
+  un esercizio di carteggio vero, e il faro ha la sua sigla e il suo ritmo — e
+  passa la prova del concorrente; un solo pulsante pieno nel primo schermo
+  anche a 1200×700; il movimento una cosa per volta, fermo con il movimento
+  ridotto. Senza i tetti di taste 7,1; con i tetti 6,0, per il titolo.
+- **Misurato, e non visto il 28 ottobre:** il pannello 8 dice «tocca il faro o
+  la boa» e faro e boa non sono sul suo schermo (sono nel pannello 0); i
+  pannelli 1–10 hanno 117–169 px di testo su 800 e la stessa immagine; l'h1 va
+  su quattro righe a 56 px con «volta.» da sola; il Tab dopo la testata va agli
+  undici triangoli prima di «Simula il quiz base» (R-VOLTO-05); fondali ed
+  etichette della carta si sovrappongono alla rotta. Il velo in gradiente,
+  l'etichetta sopra i numeri e il contenuto «a sinistra» sono regole di taste
+  che qui non valgono: quattro righe proposte per il registro dei disaccordi, e
+  due regole con il loro controllo (D-36, l'oggetto nominato sta sullo schermo;
+  D-37, nessun titolo finisce con una parola sola).
+- `lint.mjs --app` 1 FAIL (il velo); `inspect.mjs` 5–6 FAIL come pagina, 2 come
+  schermata d'app, a 1280 e 1920. Nessuna suite rifatta: niente di `site/`,
+  `tests/` o del mock è cambiato.
+
 ## [0.35.0] — 2026-10-28
 
 **Il sito cambia faccia.** Su tutto il sito arrivano i colori della Regata e
