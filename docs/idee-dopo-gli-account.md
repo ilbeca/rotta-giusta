@@ -4055,6 +4055,25 @@ schermo quando la regola parla del primo schermo.
 - **Già coperta da R-NAV-03** (le quattro voci, in quell'ordine) e dal gruppo
   dei tragitti **R-NAV-08**. Fonte: WCAG 3.2.3 *Consistent Navigation* (AA).
 
+#### D-36 — Un titolo non finisce con una parola sola
+*Aggiunta il 29 ottobre 2026, adottata dall'autore dal parere di taste sulla
+Home a pannelli (`docs/prototipi/stitch-2026-10/analisi-taste-2026-10-29.md`,
+dove era proposta come D-37).*
+- **Regola.** Nessun titolo, a nessuna misura dello schermo, ha l'ultima riga
+  fatta di una parola sola; l'h1 della Home sta in tre righe al più, sopra la
+  soglia della U (1.200 × 680).
+- **Fonti.** taste `headline-lines` (al più due righe: qui presa a metà, perché
+  «Preparati alla patente nautica, un passo alla volta.» a 56 px non sta in
+  due); impeccable `straggler`. Il caso: il mock `carta-corretta/` ha l'h1 su
+  quattro righe in 480 px, con «volta.» da sola.
+- **Grado.** Nostro, dalle due skill.
+- **Misura.** Sì. Le righe di ogni titolo visibile si contano con Range sui
+  nodi di testo; l'ultima ha almeno due parole; l'h1 della Home al computer ha
+  al più tre righe a 1200×700, 1280×800, 1280×1024, 1440×900 e 1920×1080.
+  *Rottura:* la colonna del titolo a 480 px. Il controllo è da scrivere, in T-13
+  o nel banco della Home a pannelli.
+- **Dove.** Tutti i titoli; l'h1 della Home per la parte sulle tre righe.
+
 ---
 
 ### Dove le fonti non sono d'accordo

@@ -126,7 +126,10 @@ nell'ispettore) **solo dopo** che la riga c'è.
 | impeccable `kicker-above-heading`, taste «no eyebrows» | niente occhiello sopra un titolo; per impeccable nessun brief lo giustifica | `.eyebrow` nella Home vera | **Da decidere**: tutte e due le skill lo vietano, e nessuna nostra regola lo difende |
 | impeccable `em-dash-overuse`, taste `em-dash` | lineette lunghe a saturazione sono una cadenza da modello | la prosa italiana del progetto ne usa molte; 37 nella Home | **Da decidere**: nei testi dell'interfaccia, non nei documenti |
 | taste: niente ombre a riposo, niente sfocature | le ombre solo su ciò che galleggia davvero | dieci ombre e due sfocature nella Home vera | **Da decidere** con la direzione |
-| taste `headline-lines` | un titolo al massimo su due righe, a ogni larghezza | nessuna regola nostra; il titolo della Home va su tre righe a 375 px | **Da decidere**: candidata a diventare una regola D-xx |
+| taste `headline-lines` | un titolo al massimo su due righe, a ogni larghezza | D-36: nessun titolo finisce con una parola sola, e l'h1 della Home al computer sta in tre righe al più | **Adottata in parte**, 29 ottobre 2026, l'autore: due righe a 56 px con il titolo della Home non ci stanno |
+| taste `gradient`, sul velo della Home a pannelli | niente gradienti, salvo una scrim sopra una fotografia | il velo fa da scrim sopra la carta, che sta al posto della fotografia; il contrasto lo misura R-VOLTO-03 sui pixel | **Eccezione motivata dal soggetto**, 29 ottobre 2026, l'autore |
+| taste `eyebrow`, su un'etichetta sopra dei valori | niente occhielli sopra i titoli | «La prova d'esame dei quiz» sopra 20 · 30′ · 4 è un'etichetta di valori, che taste stesso ammette nelle schermate d'app | **Non si applica** a un'etichetta di valori, 29 ottobre 2026, l'autore; resta da decidere sopra un titolo (riga `.eyebrow` qui sopra) |
+| taste `off-centre`, `few-pictures` sulla Home al computer | il contenuto tutto da un lato; almeno quattro fotografie | la carta in SVG è il contenuto della metà destra, e taste non la conta | **Non si applica** alla Home con la carta, 29 ottobre 2026, l'autore |
 
 ## 4. Le regole fisse, per tutte e due le procedure
 
@@ -335,3 +338,8 @@ con il progetto `docs/volto-progetto.md` (merge `8e5c9c1`). Tre cose da sapere:
   favorisce chi comincia da zero; il successo è l'esame superato, la
   registrazione scelta e il passaparola; fermi il nome e il marchio, non la
   voce; le scuole come chi consiglia, con un richiamo proposto in I-20.
+- **29 ottobre 2026 — il registro, dopo il parere di taste sulla Home a
+  pannelli.** L'autore ha accolto le quattro righe proposte in
+  `docs/prototipi/stitch-2026-10/analisi-taste-2026-10-29.md`: il velo come
+  scrim, l'etichetta sopra i valori e la carta come contenuto non si trattano
+  da mode; `headline-lines` è adottata in parte come D-36.
