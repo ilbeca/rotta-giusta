@@ -5179,3 +5179,65 @@ controllo misura (§13 di `volto-progetto.md`). E i testi dei pannelli, con le
 correzioni già scritte nel §10 di `volto-progetto.md` (l'avviso fuori dal
 pannello 1, «fino a 25», niente consiglio nel 5, 53 segnali nell'8, «le
 risposte restano» nel 10).
+
+## Il feedback di chi usa il sito — 29 ottobre 2026
+
+### I-31 — Cambiare la risposta, e un «auto» che si spiega da solo [autore e Claude]
+
+**Da dove nasce.** Un utente ha scritto all'autore due cose: le risposte non si
+possono cambiare una volta toccate, e non ha capito che cosa fa «auto».
+L'autore proponeva un fumetto che, all'inizio della prova, indicasse «auto» e
+lo spiegasse; prima di farlo ha chiesto di cercare come lo risolvono gli altri.
+
+**Che cosa fa oggi la pagina, letto nel codice il 29 ottobre (v0.35.0).**
+
+- *In allenamento* la correzione arriva al tocco: l'esatta in verde, la tua in
+  rosso. Cambiare dopo aver visto la risposta non insegna niente.
+- *In simulazione* la correzione non si vede, ma la riga si scrive al tocco
+  (`rispondi()`, `archivia()`): la scelta è definitiva anche se nessuno ti ha
+  detto niente. È qui che il feedback ha ragione.
+- *«auto»* è una pillola con la sola parola, **accesa di default**; la
+  spiegazione sta nel `title`, che al tocco non si vede; il pulsante non dice
+  a un lettore di schermo se è acceso.
+- **Un difetto, trovato leggendo:** su una risposta giusta «auto» passa alla
+  domanda dopo in un secondo **anche quando sotto c'è una nota** — il flap di
+  base-405, le divergenze dal DM 133/2024. La nota lampeggia e sparisce: è lo
+  stesso difetto che la 0.14.1 aveva corretto per gli oscurati, rimasto aperto
+  per le note dopo la risposta.
+
+**Che cosa fanno gli altri.**
+
+- *Cambiare la risposta.* Due modi diffusi: «seleziona, poi Verifica» (Duolingo,
+  Khan Academy, Brilliant), che lascia ripensarci e costa un tocco a domanda; e
+  la correzione immediata (Codecademy, le app per la patente), che tiene il
+  ritmo. Nei simulatori d'esame la scelta si cambia fino alla consegna.
+- *Spiegare un comando.* Nielsen Norman Group (*Mobile instructional
+  overlays*): le spiegazioni sovrapposte si chiudono senza leggerle, e
+  funzionano meglio **quando servono**, una alla volta. Il modello diffuso per
+  un passaggio automatico è «Prossimo episodio fra 5 s · Annulla» (Netflix,
+  YouTube): si spiega nel momento in cui agisce, e lascia il controllo.
+- *Un vincolo nostro.* Senza account la pagina non conserva niente, nemmeno le
+  preferenze (R-ACC-09): un fumetto «da mostrare una volta» non saprebbe di
+  essere già stato visto, e tornerebbe a ogni visita.
+
+**La proposta, decisa dall'autore il 29 ottobre.**
+
+1. **In allenamento la correzione resta immediata**: è un esercizio a raffica,
+   anche con i tasti 1 2 3.
+2. **In simulazione la scelta si cambia finché non premi Avanti** — o «Consegna
+   la prova» sull'ultima. La riga si scrive lì, una volta sola: la regola che
+   una riga non si corregge resta vera, la riga nasce più tardi. Una scelta in
+   sospeso quando il tempo scade o la prova si consegna conta, come una
+   crocetta sulla scheda. *Non in questo giro:* tornare alle domande di prima
+   con una griglia dei numeri, che vorrebbe le righe scritte tutte alla
+   consegna, come la bozza del carteggio.
+3. **«auto» si spiega quando agisce.** La pillola diventa un interruttore con
+   una parola chiara, «Avanti da solo», che dice se è acceso. Dopo una
+   risposta giusta il pulsante Avanti si riempie in un secondo e mezzo con
+   «Passo alla prossima…», e accanto c'è «Fermati qui». **Non scatta mai**
+   quando sotto la risposta c'è una nota. Niente fumetto all'inizio della
+   prova.
+
+**Da verificare con la scuola:** se all'esame vero, sulla scheda di carta, una
+crocetta si possa correggere. Le fonti trovate descrivono la scheda, non la
+regola.

@@ -166,6 +166,18 @@ select,input{background:var(--bg3);border:1px solid var(--line);color:var(--fg);
 .ans.ko{background:var(--danger-soft);border-color:var(--ko)}
 .ans.ko .k{background:var(--ko);color:var(--surface)}
 .ans.mute{opacity:.5}
+/* La scelta in una simulazione: si dice, e si cambia fino ad «Avanti» (I-31).
+   Nessun verde e nessun rosso: la correzione arriva alla consegna. */
+.ans.scelta{border-color:var(--acc);box-shadow:inset 0 0 0 1.5px var(--acc)}
+.ans.scelta .k{background:var(--acc);color:var(--surface)}
+/* Dopo una risposta giusta, con «Avanti da solo» acceso, il pulsante si
+   riempie nel tempo che resta: la funzione si spiega mentre agisce (I-31). */
+#r-next.conto{position:relative;overflow:hidden}
+#r-next.conto::after{content:'';position:absolute;left:0;bottom:0;height:4px;width:100%;background:currentColor;
+  transform-origin:left;animation:r-conto var(--conto-ms,1500ms) linear forwards}
+@keyframes r-conto{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+#r-ferma{margin-top:var(--s-8)}
+#r-ferma[hidden]{display:none}
 .qfoot{flex:0 0 auto;margin-top:var(--s-12)}
 /* `flex-wrap` non e' cosmetico: la nota di un quesito contestato e' un figlio
    in piu' di questa riga, e senza wrap su 375 px si schiacciava a 85 px di
@@ -197,8 +209,14 @@ select,input{background:var(--bg3);border:1px solid var(--line);color:var(--fg);
 .check .w{font-size:var(--t-12);color:var(--dim);font-variant-numeric:tabular-nums}
 .check[disabled]{opacity:.38}
 .hint{font-size:var(--t-12);color:var(--faint);text-transform:none;letter-spacing:0;font-weight:var(--w-400)}
-.pill.auto{opacity:.45;font-weight:var(--w-600)}
-.pill.auto.on{opacity:1;background:var(--success-soft);border-color:var(--ok);color:var(--ok)}
+/* «Avanti da solo» e' un interruttore (role="switch"): lo stato si legge dalla
+   forma del pallino, pieno o vuoto, e non dal solo colore (R-RIF-13). Spento
+   resta leggibile come ogni pillola: niente opacita' che ne abbassi il
+   contrasto. */
+.pill.auto{display:inline-flex;align-items:center;gap:var(--s-8);font-weight:var(--w-600)}
+.pill.auto::before{content:'';flex:0 0 auto;width:10px;height:10px;border-radius:50%;border:1.5px solid currentColor;background:transparent}
+.pill.auto.on{background:var(--sky-soft);border-color:var(--acc);color:var(--acc)}
+.pill.auto.on::before{background:currentColor}
 .pill.crono{background:var(--amber-soft);border-color:var(--amber-dark);color:var(--warn);font-variant-numeric:tabular-nums}
 .pill.crono.rosso{background:var(--danger-soft);border-color:var(--ko);color:var(--ko)}
 
@@ -643,7 +661,7 @@ h2{color:var(--ink)}.sub{color:var(--text-soft)}
   #t-diag .tbl th:first-child,#t-diag .tbl td:first-child{width:32%;padding-left:0;padding-right:var(--s-4)}
   #t-diag .mini{width:100%}
 }
-@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}#r-next.conto::after{display:none}}
 
 /* Area 2: gerarchia delle intenzioni, configurazioni locali, pannello nativo. */
 #v-quiz [hidden]{display:none!important}
@@ -1309,7 +1327,7 @@ html[data-volto=carta] #home-consiglio h2,html[data-volto=carta] #rotta-last h2,
     <span id="r-pos">1 / 20</span>
     <span class="pill" id="r-stato">nuovo</span>
     <span class="pill" id="r-time">0:00</span>
-    <button class="pill auto" id="r-auto" title="Se la risposta è giusta passa da solo alla prossima">auto</button>
+    <button class="pill auto on" id="r-auto" role="switch" aria-checked="true" title="Se la risposta è giusta passa da solo alla prossima">Avanti da solo</button>
     <button class="x" id="r-close" aria-label="Chiudi">&times;</button>
   </div>
   <div class="quiz-run-context"><h1 id="r-title"></h1><span id="r-bank"></span></div>
@@ -1325,6 +1343,7 @@ html[data-volto=carta] #home-consiglio h2,html[data-volto=carta] #rotta-last h2,
     <div class="verdict" id="r-verdict"></div>
     <div class="qans" id="r-ans"></div>
     <button class="btn primary" id="r-next" style="display:none;margin-top:var(--s-12)">Avanti</button>
+    <button class="btn" id="r-ferma" hidden>Fermati qui</button>
   </div>
   <div id="r-strumenti"></div>
   <div class="fine" id="r-fine"></div>
@@ -3416,7 +3435,7 @@ function apri(coda, modo, opt = {}) {
   document.getElementById('r-fine').classList.remove('on');
   runnerAttivo(null); sfondoInerte();
   document.getElementById('r-auto').style.display = opt.sim || opt.primaBase || opt.auto === false ? 'none' : '';
-  document.getElementById('r-auto').classList.toggle('on', S.run.autoCorrente);
+  dipingiAuto(S.run.autoCorrente);
   // Un controllo con il suo nome, non una croce: in un allenamento si termina
   // e si vede il riepilogo, in una simulazione si consegna (§4.1).
   const close = document.getElementById('r-close');
@@ -3441,7 +3460,8 @@ function chiudi() {
 function mostra() {
   const R = S.run, it = R.coda[R.i];
   R.risposto = false; R.t0 = performance.now(); R.pronto = Date.now() + 200;
-  clearTimeout(autoT);
+  R.scelta = null; R.tScelta = null;
+  fermaPassaggio(false);
   document.getElementById('r-pos').textContent = `${R.i + 1} / ${R.coda.length}`;
   const pill = document.getElementById('r-stato');
   if (R.sim) {
@@ -3480,7 +3500,7 @@ function mostra() {
   // modalita' auto la schermata passa da sola dopo un secondo, e letto dopo
   // arriva quando la decisione (rispondere o saltare) e' gia' stata presa.
   document.getElementById('r-verdict').innerHTML = (R.sim
-    ? `<span>Nessuna correzione fino alla fine, come all'esame.</span>
+    ? `<span>Nessuna correzione fino alla fine, come all'esame. Puoi cambiare risposta finché non premi «Avanti».</span>
        <span class="solo-tastiera" style="color:var(--dim)">&nbsp;· tasti ${tasti} oppure ${lettere}</span>`
     : R.i === 0
       ? (R.riprovaDi ? '<span class="riprova-avviso">Questi quesiti vengono dagli errori dell\'attività appena scelta.</span>' : '')
@@ -3528,11 +3548,16 @@ function cronometro() {
 function rispondi(i) {
   // A riepilogo aperto, o con la conferma della consegna davanti, il quesito
   // sotto non si risponde: sarebbe una risposta data senza vederla.
-  const R = S.run; if (!R || R.risposto || R.concluso || !document.getElementById('r-consegna').hidden) return;
+  const R = S.run; if (!R || R.concluso || !document.getElementById('r-consegna').hidden) return;
   // Sul telefono un doppio tap involontario, o un tap partito mentre la
   // schermata cambiava, risponderebbe alla domanda successiva senza che tu
   // l'abbia letta. Duecento millisecondi di sordita' bastano a evitarlo.
   if (Date.now() < R.pronto) return;
+  // In simulazione si sceglie, e la scelta si cambia fino ad «Avanti»: la riga
+  // nasce li', una volta sola (I-31). In allenamento la correzione arriva al
+  // tocco, e dopo averla vista non c'e' niente da cambiare.
+  if (R.sim) return scegliSim(i);
+  if (R.risposto) return;
   R.risposto = true;
   const it = R.coda[R.i], ok = i === it.x, ms = Math.round(performance.now() - R.t0);
   if (ok) R.giuste++;
@@ -3541,21 +3566,7 @@ function rispondi(i) {
   // `auid` serve al riepilogo: i pulsanti N/L/C in fondo a ogni errore devono
   // taggare *questo* tentativo, anche se nel frattempo `uidCorrente` e' andato avanti.
   if (!ok) R.errori.push({ it, scelta: i, auid: R.uidCorrente });
-  const ts = E.isoLocale();
-  // Senza account archivia() ripiega subito le righe: applicare dopo quella
-  // ricostruzione conterebbe due volte la stessa risposta nello specchio.
-  E.applica(S.prog, it.id, ok, ms, ts.slice(0, 10), ts);
-  archivia({ _t: 'q', uid: R.uidCorrente, kind: it.k, item_id: it.id, ts,
-             correct: ok ? 1 : 0, ms, mode: R.sim ? 'simulazione' : R.modo, chosen: String(i),
-             sim_uid: R.simUid });
-
-  // In simulazione non si corregge: si tira dritto, e i conti si fanno alla fine.
-  if (R.sim) {
-    document.querySelectorAll('#r-ans .ans')[i].classList.add('mute');
-    document.querySelectorAll('#r-ans .ans').forEach((b, j) => b.setAttribute('aria-pressed', String(j === i)));
-    const next = document.getElementById('r-next'); next.style.display = 'block'; next.textContent = R.i + 1 < R.coda.length ? 'Avanti' : 'Consegna la prova';
-    return;
-  }
+  scriviRisposta(R, it, i, ok, ms);
 
   clearInterval(tick);
   [...document.querySelectorAll('#r-ans .ans')].forEach((b, j) => {
@@ -3577,16 +3588,98 @@ function rispondi(i) {
     + `<div id="r-nbp">${notaPrima(it)}</div>` + nota(it);
   const next = document.getElementById('r-next');
   next.style.display = 'block';
-  next.textContent = R.i + 1 < R.coda.length ? (R.primaBase || R.riprovaDi ? 'Prossima domanda' : 'Avanti') : 'Vedi il riepilogo';
+  R.etichetta = R.i + 1 < R.coda.length ? (R.primaBase || R.riprovaDi ? 'Prossima domanda' : 'Avanti') : 'Vedi il riepilogo';
+  next.textContent = R.etichetta;
 
-  // Autoscroll: se hai indovinato non c'è niente da guardare, si tira dritto.
-  // Se hai sbagliato la schermata resta, perché è lì che si impara qualcosa.
-  if (ok && R.autoCorrente) autoT = setTimeout(avanti, 1000);
+  // «Avanti da solo»: se hai indovinato non c'e' niente da guardare, si tira
+  // dritto. Se hai sbagliato la schermata resta, perche' e' li' che si impara.
+  // E resta anche quando sotto la risposta c'e' una nota: una nota che sparisce
+  // dopo un secondo e' una nota che nessuno legge — la stessa ragione per cui
+  // l'oscuramento sta prima della risposta (0.14.1), e la stessa regola del
+  // gioco dei Segnali.
+  if (passaDaSolo(it, ok, R.autoCorrente)) avviaPassaggio(R);
+}
+
+/** Se dopo questa risposta si passa da soli alla prossima (I-31). */
+function passaDaSolo(it, giusta, auto) {
+  return !!(giusta && auto && !(it && it.nb));
+}
+
+/** La riga di una risposta, costruita una volta: riga, uid e ts insieme, e
+ *  applica() riceve lo stesso ts (§7.5). */
+function scriviRisposta(R, it, i, ok, ms) {
+  const ts = E.isoLocale();
+  // Senza account archivia() ripiega subito le righe: applicare dopo quella
+  // ricostruzione conterebbe due volte la stessa risposta nello specchio.
+  E.applica(S.prog, it.id, ok, ms, ts.slice(0, 10), ts);
+  archivia({ _t: 'q', uid: R.uidCorrente, kind: it.k, item_id: it.id, ts,
+             correct: ok ? 1 : 0, ms, mode: R.sim ? 'simulazione' : R.modo, chosen: String(i),
+             sim_uid: R.simUid });
+}
+
+/** In simulazione si sceglie: la scelta si dice, e si cambia fino ad «Avanti».
+ *  Nessuna riga qui, e nessuna correzione (I-31). */
+function scegliSim(i) {
+  const R = S.run;
+  R.scelta = i; R.tScelta = performance.now(); R.risposto = true;
+  document.querySelectorAll('#r-ans .ans').forEach((b, j) => {
+    b.classList.toggle('scelta', j === i);
+    b.setAttribute('aria-pressed', String(j === i));
+  });
+  const next = document.getElementById('r-next'); next.style.display = 'block';
+  next.textContent = R.i + 1 < R.coda.length ? 'Avanti' : 'Consegna la prova';
+}
+
+/** La scelta in sospeso diventa la sua riga: con «Avanti», con la consegna e
+ *  allo scadere del tempo — come una crocetta sulla scheda. Una volta sola. */
+function registraSim() {
+  const R = S.run; if (!R || !R.sim || R.scelta == null) return;
+  const it = R.coda[R.i], i = R.scelta, ok = i === it.x;
+  const ms = Math.round((R.tScelta ?? performance.now()) - R.t0);
+  R.scelta = null;
+  if (ok) R.giuste++;
+  R.esiti.push(ok);
+  R.uidCorrente = uid();
+  if (!ok) R.errori.push({ it, scelta: i, auid: R.uidCorrente });
+  scriviRisposta(R, it, i, ok, ms);
+}
+
+/** Il passaggio automatico, detto mentre succede: il pulsante si riempie,
+ *  scrive dove si va, e accanto c'e' «Fermati qui» (I-31). */
+const PASSAGGIO_MS = 1500;
+function avviaPassaggio(R) {
+  const next = document.getElementById('r-next'), ferma = document.getElementById('r-ferma');
+  next.style.setProperty('--conto-ms', PASSAGGIO_MS + 'ms');
+  next.classList.add('conto');
+  next.textContent = R.i + 1 < R.coda.length ? 'Passo alla prossima…' : 'Passo al riepilogo…';
+  ferma.hidden = false;
+  R.inPassaggio = true;
+  autoT = setTimeout(avanti, PASSAGGIO_MS);
+}
+
+/** Ferma il passaggio automatico di questa domanda; `fuoco` lo porta su Avanti. */
+function fermaPassaggio(fuoco = true) {
+  clearTimeout(autoT);
+  const R = S.run, next = document.getElementById('r-next'), ferma = document.getElementById('r-ferma');
+  next.classList.remove('conto');
+  ferma.hidden = true;
+  if (!R || !R.inPassaggio) return;
+  R.inPassaggio = false;
+  next.textContent = R.etichetta || 'Avanti';
+  if (fuoco) next.focus();
+}
+
+/** L'interruttore dice il suo stato anche a chi non lo vede. */
+function dipingiAuto(acceso) {
+  const t = document.getElementById('r-auto');
+  t.classList.toggle('on', acceso);
+  t.setAttribute('aria-checked', String(acceso));
 }
 
 function avanti() {
   const R = S.run; if (!R) return;
-  clearTimeout(autoT);
+  fermaPassaggio(false);
+  if (R.sim) registraSim();
   if (R.i + 1 < R.coda.length) { R.i++; mostra(); }
   else fine(false);
 }
@@ -3919,8 +4012,10 @@ function fine(tempoScaduto, parziale = false) {
   const R = S.run; if (!R || R.concluso) return;
   // Una volta sola: il timer a zero, «Consegna» e l'ultima risposta possono
   // arrivare insieme, e una prova si consegna una volta (§4.1).
+  // Una scelta in sospeso conta, alla consegna come allo scadere del tempo.
+  if (R.sim) registraSim();
   R.concluso = true;
-  clearInterval(tick); clearTimeout(autoT);
+  clearInterval(tick); fermaPassaggio(false);
   chiudiConsegna(false);
   const stato = R.sim ? (tempoScaduto ? 'scaduta' : 'consegnata')
     : parziale || R.esiti.length < R.coda.length ? 'parziale' : 'completa';
@@ -3957,7 +4052,7 @@ function apriConsegna() {
   const R = S.run; if (!R || !R.sim || R.concluso) return;
   const box = document.getElementById('r-consegna');
   document.getElementById('r-consegna-txt').textContent =
-    `Hai risposto a ${plurDomande(R.esiti.length)} su ${R.coda.length}. Dopo la consegna non puoi completare questa prova.`;
+    `Hai risposto a ${plurDomande(R.esiti.length + (R.scelta != null ? 1 : 0))} su ${R.coda.length}. Dopo la consegna non puoi completare questa prova.`;
   box.hidden = false;
   runnerAttivo(box);
   document.getElementById('r-consegna-tit').focus();
@@ -5666,10 +5761,13 @@ document.addEventListener('click', (ev) => {
   if (t.id === 'r-auto') {
     S.auto = !S.auto; LS.set('auto', S.auto);
     if (S.run) S.run.autoCorrente = S.auto;
-    t.classList.toggle('on', S.auto);
-    segnala(S.auto ? 'avanzamento automatico sulle esatte' : 'avanzamento manuale');
+    dipingiAuto(S.auto);
+    // Spento mentre conta, il passaggio di questa domanda si ferma anche lui.
+    if (!S.auto) fermaPassaggio(false);
+    segnala(S.auto ? 'Avanti da solo: dopo una risposta giusta passa alla prossima' : 'Avanti da solo spento: vai avanti tu');
     return;
   }
+  if (t.id === 'r-ferma') return fermaPassaggio();
   if (t.id === 'r-close') return S.run && S.run.tec ? (S.run.concluso || !S.run.righeTecniche.length ? chiudi() : concludiTec()) : terminaAttivita();
   if (t.id === 'r-next') return S.run && S.run.tec ? correggiTec() : avanti();
   if (t.id === 't-start') return CART.preparazione?.attivita === 'tecniche' ? avviaCart() : apriTec();
@@ -5873,7 +5971,12 @@ addEventListener('keydown', (e) => {
     if (a && a.tagName === 'BUTTON' && !a.classList.contains('ans') && a.id !== 'r-next') return;
     if (S.run.risposto) { e.preventDefault(); avanti(); }
   }
-  else if (e.key === 'Escape') { e.preventDefault(); terminaAttivita(); }
+  else if (e.key === 'Escape') {
+    e.preventDefault();
+    // Mentre il pulsante si riempie, Esc ferma il passaggio e basta.
+    if (S.run.inPassaggio) return fermaPassaggio();
+    terminaAttivita();
+  }
 });
 
 document.getElementById('fig-zoom').addEventListener('close', () => {

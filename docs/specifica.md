@@ -1523,15 +1523,25 @@ nota `nbp` **prima** di rispondere, la `nb` **dopo**; nelle simulazioni solo
 dopo la consegna. L'avatar resta disponibile, con il pallino dei guasti.
 
 **Cosa si può fare.** Rispondere col tocco o coi tasti `1 2 3` / `A B C`, e la
-schermata **lo dichiara** sui dispositivi con tastiera. Modalità *auto*: sulla
-risposta esatta avanza da solo dopo un secondo, sull'errore resta — è lì che c'è
-qualcosa da imparare. Dopo un errore, taggarlo «Non lo sapevo» o «Svista»,
+schermata **lo dichiara** sui dispositivi con tastiera. **«Avanti da solo»**, un
+interruttore con il suo nome e il suo stato (`role="switch"`), acceso finché chi
+studia non lo spegne: sulla risposta esatta il pulsante scrive «Passo alla
+prossima…» e si riempie in un secondo e mezzo, e accanto c'è «Fermati qui», che
+ferma il passaggio di quella domanda (anche Esc); sull'errore resta — è lì che
+c'è qualcosa da imparare —, e resta anche quando sotto la risposta c'è una nota,
+che altrimenti sparirebbe prima di essere letta. Fino al 29 ottobre 2026 si
+chiamava *auto*, si spiegava solo nel `title` e scattava dopo un secondo anche
+sopra una nota (I-31). Dopo un errore, taggarlo «Non lo sapevo» o «Svista»,
 facoltativo; mettere o togliere un segnalibro; segnalare un problema. Ogni
 risposta costruisce **una volta** riga, `uid` e `ts`, e `applica()` riceve lo
 stesso `ts`.
 
 **Vincolo.** Nella simulazione **non c'è correzione durante la prova**: l'esito
-arriva alla fine, come all'esame. Il conto alla rovescia, da una scadenza
+arriva alla fine, come all'esame. **La scelta si dice e si cambia finché non si
+preme «Avanti»** (deciso dall'autore il 29 ottobre 2026, I-31): la riga nasce lì,
+una volta sola, e una scelta in sospeso conta alla consegna e allo scadere del
+tempo, come una crocetta sulla scheda. Tornare alle domande di prima non si può:
+vorrebbe le righe scritte tutte alla consegna. Il conto alla rovescia, da una scadenza
 assoluta, diventa rosso sotto i cinque minuti e chiude la prova a zero.
 
 **Il gestore di uscita.** «Termina l'attività», Esc e Indietro passano dallo
@@ -2551,6 +2561,8 @@ il regime nuovo.
 | R-RIF-28 | Almeno 8 px fra i rettangoli dei bersagli, esclusi i figli di tablist e i link dentro un paragrafo; caselle e radio con la loro etichetta (D-28). Si confrontano solo bersagli dello stesso strato — la pagina che scorre, o lo stesso contenitore `position:fixed` (barra, runner, pannello) —, e con un dialogo modale aperto solo quelli del dialogo: fra la barra fissa e la porta che le passa sotto la distanza dipende dallo scorrimento (P-95, 24 ottobre 2026). Non vede la vicinanza vera fra due strati, per esempio un bottone in fondo alla pagina subito sopra la barra a fine scorrimento. Fino al 24 ottobre 2026 era un difetto aperto dichiarato sulla pagina vera (le voci della barra sono a 0 px); P-95 l'ha chiuso, e la verifica gira verde senza eccezione. Provato al contrario sul riferimento con rotture dedicate — due anche dentro la barra fissa e dentro il dialogo —, con due varianti che devono restare verdi, la barra fissa sopra il contenuto e il dialogo steso sopra la pagina, e con le due difese tolte una alla volta | `test_interfaccia.py::test_scala_distanze` |
 | R-RIF-29 | A 1280×800 ogni riga di testo corrente ha al più 75 caratteri, con Range sui nodi di testo e unione per riga anche attraverso link e strong (D-19). --testo-max è 480 px: sul riferimento con Manrope il massimo misurato è 72. Fino al 24 ottobre 2026 era un difetto aperto dichiarato sulla pagina vera (massimo del giro 110); P-95 l'ha chiuso, e la verifica gira verde senza eccezione. Provato al contrario sul riferimento con rotture dedicate | `test_interfaccia.py::test_scala_righe` |
 | R-RIF-30 | L’accento --acc solo sulle azioni o loro parti, --ko sugli errori e sulle risposte errate, --warn sugli avvisi, --ok sulle risposte giuste: ruoli nostri, D-25, colori calcolati contro il contratto indipendente. Dal 25 ottobre 2026 (P-97, decisione 8 del volto) i valori sono quelli della Regata — `--acc` `#0a4f6e`, `--ko` `#b3261e`, `--ok` `#12663a`, `--warn` `#765000` che resta — e ci sono i ruoli «segno» (`--boa` `#ff6a1a`, `--rotta` `#b23f00`) e «terra» (`--terra` `#f2e6cf`): l'arancio delle boe su un testo, su un comando — colore, fondo, bordo o sottolineatura — o su un esito è rosso. I colori della carta (i settori del faro, il giallo della cardinale) sono contenuto e non si misurano. Fino al 26 ottobre 2026 era un difetto aperto dichiarato sulla pagina vera nella parte statica (`:root` non dichiarava i token della Regata); P-98 l'ha chiuso, e la verifica gira verde senza eccezione. Fino al 24 ottobre 2026 era un difetto aperto dichiarato sulla pagina vera (accento sui segni informativi non interattivi delle tecniche); P-95 l'ha chiuso, e la verifica gira verde senza eccezione. Provato al contrario sul riferimento con rotture dedicate | `test_interfaccia.py::test_scala_colori` |
+| R-RIF-31 | In simulazione la scelta si cambia fino ad «Avanti» (I-31): senza account, in una simulazione base a 375×812, una risposta e poi un'altra sullo stesso quesito lasciano premuta (`aria-pressed`) soltanto la seconda, senza correzione; «Avanti» porta alla domanda dopo; sulla seconda una scelta senza «Avanti» e la consegna, e il risultato conta due risposte, tutte e due corrette — la scelta cambiata e quella in sospeso, e nient'altro. Dove la banca ha due gemelli con l'esatta diversa si contano le sole risposte. Provato al contrario sulla pagina di prima (`main` del 29 ottobre: la prima scelta restava, e il risultato contava 1 corretta e 1 errata) e su due rotture — la prima scelta che resta, la scelta in sospeso che la consegna non conta. Non vede: la vela e «Base e vela», lo scadere del tempo, la tastiera, Safari | `test_interfaccia.py::test_rifinitura_scelta_simulazione` |
+| R-RIF-32 | «Avanti da solo» si spiega quando agisce (I-31): senza account, nell'allenamento sui segnalibri base-1 (senza note) e base-405 (con la nota dopo la risposta), l'interruttore è un `role="switch"` con `aria-checked` e la scritta «Avanti da solo»; dopo la risposta giusta a base-1 il pulsante dice «Passo alla prossima…», accanto c'è «Fermati qui», e si passa da soli; dopo la risposta giusta a base-405 dopo 2,6 s si è ancora lì, senza «Fermati qui»; in un secondo giro «Fermati qui» ferma il passaggio; spento, l'interruttore lo dice. Provato al contrario sulla pagina di prima — la pillola «auto», e il riepilogo già aperto sopra la nota di base-405 — e su quattro rotture: l'interruttore che dice solo «auto», il passaggio che non dice dove va, il passaggio anche con la nota, «Fermati qui» che non ferma. Non vede: la barra che si riempie, un lettore di schermo, il movimento ridotto, Safari | `test_interfaccia.py::test_rifinitura_avanti_da_solo` |
 | R-VOLTO-01 | Sopra la soglia della U — 1.200 px di larghezza e 680 di altezza, decisione 9 del volto — la Home ha la carta: uno strato fisso dentro `#v-home` che copre lo schermo; sotto, a 1199×800 e a 1440×679, nessuno strato fisso, nessun fondo scuro e nessuno scorrimento a scatti; e la carta c'è solo con la Home aperta: in Allenati né strato né fondo scuro né scatti, e tornando alla Home di nuovo. Provato al contrario su due rotture — la classe della carta che resta fuori dalla Home, lo scorrimento a scatti su tutto il documento. Fino al 26 ottobre 2026 era un difetto aperto dichiarato sulla pagina vera; P-98 l'ha chiuso, e la verifica gira verde senza eccezione | `test_interfaccia.py::test_volto_soglia` |
 | R-VOLTO-02 | A 1200×700, 1280×800, 1280×1024, 1440×900 e 1920×1080 gli undici triangoli del percorso stanno sulla terra — il pixel al loro centro, nella schermata con tutto nascosto tranne la carta, è il beige del contratto —, e il faro e la boa stanno dentro lo schermo e fuori dalla colonna del testo. Provato al contrario sulla terra ancorata in percentuale come nel mock, rossa solo a 1280×1024; senza quella dimensione la rottura passa verde. Fino al 26 ottobre 2026 era un difetto aperto dichiarato sulla pagina vera; P-98 l'ha chiuso, e la verifica gira verde senza eccezione | `test_interfaccia.py::test_volto_costa` |
 | R-VOLTO-03 | Ogni testo della Home al computer ha il contrasto minimo — 4,5:1, 3:1 se grande — contro il **pixel peggiore** dietro di lui, alle cinque dimensioni, pannello per pannello: i testi resi trasparenti, una schermata, `tests/png.mjs` (decisione 14: il banco legge i pixel per questa misura sola; la carta non è un antenato del testo, e la composizione degli antenati direbbe il mare uniforme). Provato al contrario sul velo in percentuale, rosso solo a 1200×700, e su una cifra di scandaglio sotto l'h1; con la composizione degli antenati al posto dei pixel la seconda passa verde. Fino al 26 ottobre 2026 era un difetto aperto dichiarato sulla pagina vera; P-98 l'ha chiuso, e la verifica gira verde senza eccezione | `test_interfaccia.py::test_volto_velo` |
@@ -3806,3 +3818,10 @@ successo, ed è il motivo per cui questo file esiste.
   alla volta come regola, un worktree per sessione, la regia sola nel checkout
   principale. Le voci che raccontano ChatGPT restano come sono state scritte.
   Nessun requisito cambia.
+
+- **29 ottobre 2026 — cambiare la scelta, e «Avanti da solo» (I-31).** Dal
+  feedback di un utente: in simulazione la scelta si cambia fino ad «Avanti», e
+  «auto» diventa «Avanti da solo», che dice dove va, si ferma con «Fermati
+  qui» e non scatta sopra una nota. Il §7.5 lo dice; entrano R-RIF-31 e
+  R-RIF-32, i gruppi T-16 e T-17 del banco del client, provati al contrario
+  sulla pagina di prima e su sei rotture.
