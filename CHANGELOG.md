@@ -56,6 +56,36 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 - Suite: dati 225, server 89/89, interfaccia 4.866 (con la 8620 guardata libera
   per 90 s); guardiano verde.
 
+### Progettato — un contatore delle visite: serve, e a che prezzo (I-19)
+
+- **Perché.** La verifica GDPR del 29 ottobre ha nominato la misura propria fra
+  i rischi futuri, e l'autore vuole sapere se un contatore, o un altro degli
+  strumenti che chiedono il consenso, serve davvero. In fondo a I-19 di
+  `docs/idee-dopo-gli-account.md`: le domande dell'autore messe accanto alla
+  decisione che cambierebbero, separando quello che si sa già dalle righe degli
+  account (`server/statistiche.mjs`) da quello che manca davvero, cioè chi non
+  si registra. «Chi torna» resta senza risposta senza riconoscere qualcuno, e
+  lo si dice.
+- **Cinque strade confrontate:** niente; i log dell'host; un contatore nostro
+  sul server degli account; uno strumento senza cookie come Plausible o
+  GoatCounter; Google Analytics. Per ciascuna che cosa misura, che cosa esce e
+  verso chi, ePrivacy e banner, informativa, vincoli da riscrivere, lavoro, e
+  il guasto muto. **Letto oggi alla fonte:** le FAQ di statichost.eu (nessun
+  dato personale nei log, cancellati entro 7 giorni, solo i byte per la
+  fatturazione: la strada 2 non c'è); il §7.2 delle linee guida del Garante del
+  10 giugno 2021 (analytics equiparati ai tecnici a condizioni); le linee guida
+  EDPB 2/2023 v2.0 del 7 ottobre 2024, §33 e §54–56, che mettono nell'art. 5(3)
+  anche la richiesta fatta partire da uno script senza cookie; le pagine sulla
+  privacy di Plausible e GoatCounter.
+- **Raccomandata la strada 3, piccola:** eventi e non visitatori, niente nel
+  browser, IP non salvato, Global Privacy Control rispettato, le difese contro
+  lo zero muto scritte prima del codice; **senza banner**, se il professionista
+  conferma che l'equiparazione del Garante vale anche qui. Se non la conferma,
+  la proposta è non farlo, non mettere un banner. Testo proposto per
+  l'informativa, sette decisioni per l'autore. Non è un parere legale.
+- Nessun file di `site/`, `server/`, `tests/`, della specifica o della coda
+  toccato; guardiano verde.
+
 ## [0.35.0] — 2026-10-28
 
 **Il sito cambia faccia.** Su tutto il sito arrivano i colori della Regata e
