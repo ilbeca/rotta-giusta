@@ -89,6 +89,38 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   registro dei disaccordi di `docs/procedure-disegno.md`; che cosa mettere nei
   pannelli 1–10 lo decide la sessione dedicata.
 
+### Deciso — la Home a pannelli: sei pannelli, e una guida all'uso
+
+- **Perché.** L'autore vuole che i pannelli della nuova Home mostrino le
+  funzioni del sito e siano anche una piccola guida all'uso. Il prototipo
+  `carta-corretta/` ha 11 pannelli di prova, uno per attività. Spiegano che
+  cosa c'è, non come si usa.
+- **Deciso dall'autore il 29 ottobre: al massimo 6 pannelli.** La proposta da
+  11 è stata respinta: «troppi pannelli, la gente si annoia». I sei pannelli
+  sono, in ordine d'uso:
+  - Inizio;
+  - Da dove si comincia, con Allenati, Esame e Progressi in una riga ciascuno;
+  - Come funziona una domanda: la correzione, «Non lo sapevo» e «Svista», il
+    segnalibro, la ricerca per numero;
+  - Il carteggio, al tavolo;
+  - Quello che non torna: 1.722 domande, 37 tolte dall'esame, 4 note, 1 senza
+    figura;
+  - Con l'account, le risposte restano.
+
+  La simulazione, le dieci domande, gli argomenti, gli errori e i Segnali sono
+  nominati dentro le istruzioni, senza un pannello a testa.
+- **I testi** sono in
+  [`argomenti-pannelli.md`](docs/prototipi/stitch-2026-10/argomenti-pannelli.md),
+  con la fonte di ogni numero contata sui file della banca e del motore. Ogni
+  pannello ha da 30 a 62 parole, e nessuna frase supera le 23. Il titolo
+  principale diventa «La patente nautica, un passo alla volta.» per D-36. Il
+  pannello dell'account non dice che cosa succede senza, per R-RIF-21.
+- **Per la regia:** il percorso scende da 11 a 6 triangoli, e questo tocca
+  R-VOLTO-02, R-VOLTO-04 e R-VOLTO-08. P-101 è stato avvisato. Le note sono nel
+  §5 del file.
+- Non toccati: il prototipo, `site/`, `tests/`, la specifica e la coda.
+  Guardiano verde.
+
 ## [0.35.0] — 2026-10-28
 
 **Il sito cambia faccia.** Su tutto il sito arrivano i colori della Regata e
