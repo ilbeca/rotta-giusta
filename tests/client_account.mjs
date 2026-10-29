@@ -3995,6 +3995,166 @@ async function t11(b, ctx, v) {
   } finally { await c.chiudi(); }
 }
 
+// --- T-16: in simulazione la scelta si cambia fino ad «Avanti» (I-31, R-RIF-31) -------
+//
+// docs/idee-dopo-gli-account.md, I-31: un utente ha scritto che le risposte non
+// si possono cambiare una volta toccate. In simulazione aveva ragione: la
+// correzione non si vede, ma fino alla v0.35.0 la riga si scriveva al tocco, e
+// la scelta era definitiva senza che niente lo dicesse. Ora la scelta si dice
+// (aria-pressed), si cambia finche' non si preme «Avanti», e la riga nasce li';
+// una scelta in sospeso conta alla consegna, come una crocetta sulla scheda.
+//
+// La misura, senza account e in un browser vero: una simulazione base; sul
+// primo quesito una risposta sbagliata e poi quella giusta, «Avanti»; sul
+// secondo la giusta, e la consegna senza «Avanti». Il riepilogo deve contare
+// due risposte, tutte e due corrette. Dove la banca ha due quesiti con lo
+// stesso testo e le stesse risposte e l'esatta diversa (otto coppie, P-53) la
+// giusta non si sa dal testo: li' si contano soltanto le risposte. Non vede:
+// la vela e «Base e vela», lo scadere del tempo, la tastiera, Safari.
+
+/** Il quesito in schermata, dalla banca: { it, ambiguo }, o null. */
+async function quesitoInSchermata(tab) {
+  const x = await tab.valuta(js(`const t = document.querySelector('#r-text');
+    return V(t) ? { testo: t.textContent.trim(), risposte: [...document.querySelectorAll('#r-ans .ans')].filter(V).map((b) => b.textContent.replace(/\\s+/g, ' ').trim()) } : null;`));
+  if (!x) return null;
+  const tutti = QUIZ_TUTTI.filter((it) => it.d === x.testo && it.r.length === x.risposte.length && it.r.every((r, k) => x.risposte[k].includes(r)));
+  if (!tutti.length) return null;
+  return { it: tutti[0], ambiguo: new Set(tutti.map((it) => it.x)).size > 1 };
+}
+
+/** Sceglie in simulazione la risposta `k` e aspetta che sia la sola premuta. */
+async function sceglieSim(tab, k) {
+  return tab.attendi(js(`const bs = [...document.querySelectorAll('#r-ans .ans')].filter(V);
+    if (!bs[${k}]) return false;
+    if (bs[${k}].getAttribute('aria-pressed') !== 'true') bs[${k}].click();
+    return bs.every((b, j) => (b.getAttribute('aria-pressed') === 'true') === (j === ${k}));`), REAZIONE);
+}
+
+const RISULTATO_SIM = js(`const f = document.querySelector('#r-fine.on');
+  if (!V(f)) return null;
+  const t = f.innerText.replace(/\\s+/g, ' ');
+  const c = t.match(/Risposte corrette:? (\\d+)/), e = t.match(/Risposte errate:? (\\d+)/);
+  return c && e ? { corrette: Number(c[1]), errate: Number(e[1]) } : null;`);
+
+async function t16(b, ctx, v) {
+  const g = 'T-16';
+  const c = await b.nuovoContesto();
+  try {
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
+    await tab.dimensioni(375, 812);
+    const aperta = await tab.attendi(PRONTO, CARICO) && await apriSim(tab, 'base');
+    v.push({ gruppo: g, nome: 'una simulazione base si apre senza account', ok: !!aperta, extra: 'Esame → Simula il quiz base → Inizia non apre un quesito' });
+    if (!aperta) return;
+    const q1 = await quesitoInSchermata(tab);
+    if (!q1) return v.push({ gruppo: g, nome: 'il primo quesito e\' della banca', ok: false, extra: 'in schermata un quesito che la banca non ha' });
+    const sbagliata = (q1.it.x + 1) % q1.it.r.length;
+    const prima = await sceglieSim(tab, sbagliata);
+    const poi = prima && await sceglieSim(tab, q1.it.x);
+    const corretta = await tab.valuta(js(`return !!document.querySelector('#r-ans .ans.ok, #r-ans .ans.ko');`));
+    const premute = await tab.valuta(js(`return [...document.querySelectorAll('#r-ans .ans')].filter(V).map((b) => b.getAttribute('aria-pressed'));`));
+    v.push({ gruppo: g, nome: 'nella simulazione la scelta si cambia prima di «Avanti»: resta premuta solo l\'ultima, e nessuna correzione', ok: !!poi && !corretta,
+      extra: !prima ? 'toccata una risposta, la scelta non si dice (aria-pressed)' : !poi ? `la scelta non si cambia: dopo un secondo tocco aria-pressed e' ${JSON.stringify(premute)}` : 'una risposta si accende come esatta o errata durante la prova' });
+    const avanti = await gesto(tab, null, '#r-next', js(`return /^2\\s*\\//.test(document.querySelector('#r-pos').textContent.trim())`));
+    v.push({ gruppo: g, nome: '«Avanti» porta alla domanda dopo', ok: avanti, extra: '«Avanti» non porta a 2 / 20' });
+    if (!avanti) return;
+    const q2 = await quesitoInSchermata(tab);
+    const scelta2 = !!q2 && await sceglieSim(tab, q2.it.x);
+    // La consegna senza «Avanti»: la scelta in sospeso deve contare.
+    const consegnata = scelta2 && await chiudiQuiz(tab, [], g, '', { sim: true });
+    const r = consegnata ? (await tab.attendiValore(RISULTATO_SIM, Boolean, REAZIONE)).valore : null;
+    const ambiguo = q1.ambiguo || q2.ambiguo;
+    const atteso = (x) => !!x && x.corrette + x.errate === 2 && (ambiguo || (x.corrette === 2 && x.errate === 0));
+    v.push({ gruppo: g, nome: 'alla consegna contano la scelta cambiata e quella in sospeso, e nient\'altro', ok: atteso(r),
+      extra: !consegnata ? 'la consegna non apre il risultato' : !r ? 'il risultato non dice risposte corrette ed errate'
+        : `il risultato della consegna dice ${r.corrette} corrette e ${r.errate} errate, attese ${ambiguo ? '2 risposte' : '2 corrette e 0 errate'}` });
+  } finally { await c.chiudi(); }
+}
+
+// --- T-17: «Avanti da solo» si spiega quando agisce (I-31, R-RIF-32) -----------------
+//
+// docs/idee-dopo-gli-account.md, I-31: lo stesso utente non aveva capito «auto».
+// Era una pillola con la sola parola, accesa di default, spiegata soltanto nel
+// `title`, che al tocco non si vede; e su una risposta giusta passava alla
+// domanda dopo in un secondo anche quando sotto c'era una nota (base-405, il
+// flap), che cosi' spariva prima di essere letta. Ora e' un interruttore che si
+// chiama «Avanti da solo» e dice il suo stato; dopo una risposta giusta il
+// pulsante scrive dove va e accanto c'e' «Fermati qui»; con una nota non scatta.
+//
+// La misura, senza account: due segnalibri, base-1 (senza note) e base-405 (con
+// la nota dopo la risposta), aperti per numero e segnati; poi l'allenamento sui
+// segnalibri, che li apre nell'ordine della banca con «Avanti da solo» acceso.
+// Non vede: la barra che si riempie (e' disegno), un lettore di schermo, il
+// movimento ridotto, Safari.
+
+const AUTO_1 = 'base-1', AUTO_NOTA = 'base-405';
+const POS = (n) => js(`return /^${n}\\s*\\//.test(document.querySelector('#r-pos')?.textContent.trim() || '')`);
+
+/** Un quesito aperto per numero e segnato, poi «Termina» senza risposte. */
+async function segnaPerNumero(tab, it) {
+  if (!await apriPerNumero(tab, it)) return false;
+  if (!await gesto(tab, null, '#r-segno', js(`return document.querySelector('#r-segno').getAttribute('aria-pressed') === 'true'`))) return false;
+  return gesto(tab, null, '#r-close', js(`return !V(document.querySelector('#r-text'))`));
+}
+
+/** L'allenamento sui segnalibri, fino al primo quesito. */
+async function allenaSegnalibri(tab, primo) {
+  await tocca(tab, null, '#barra [data-v="allenati"]');
+  if (!await tab.attendi(visibile('[data-segnalibri]'), REAZIONE)) return false;
+  await tocca(tab, null, '[data-segnalibri]');
+  const avvia = '[data-avvia-segnalibri], [data-segnalibri-allena]';
+  if (!await tab.attendi(visibile(avvia), REAZIONE)) return false;
+  await tocca(tab, null, avvia);
+  if (!await tab.attendi(visibile('[data-preparazione] #start'), REAZIONE)) return false;
+  await tocca(tab, null, '[data-preparazione] #start');
+  return (await tab.attendiValore(QUESITO, (x) => !!x && x.testo === primo.d, REAZIONE)).ok;
+}
+
+const PASSAGGIO = js(`const n = document.querySelector('#r-next'), f = document.querySelector('#r-ferma');
+  return { avanti: V(n) ? n.textContent.trim() : null, ferma: V(f) ? f.textContent.trim() : null, pos: document.querySelector('#r-pos')?.textContent.trim() };`);
+
+async function t17(b, ctx, v) {
+  const g = 'T-17';
+  const c = await b.nuovoContesto();
+  const it1 = QUIZ_TUTTI.find((x) => x.id === AUTO_1), itN = QUIZ_TUTTI.find((x) => x.id === AUTO_NOTA);
+  try {
+    if (!it1 || it1.nb || !itN || !itN.nb) return v.push({ gruppo: g, nome: 'la banca ha i due quesiti del banco', ok: false, extra: `${AUTO_1} senza nota e ${AUTO_NOTA} con la nota dopo la risposta` });
+    const tab = await c.apri(ctx.sito + ingresso(ctx));
+    await tab.dimensioni(375, 812);
+    const pronto = await tab.attendi(PRONTO, CARICO) && await segnaPerNumero(tab, it1) && await segnaPerNumero(tab, itN) && await allenaSegnalibri(tab, it1);
+    if (!pronto) return v.push({ gruppo: g, nome: 'i due quesiti si segnano e l\'allenamento sui segnalibri si apre', ok: false, extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+    const sw = await tab.valuta(js(`const a = document.querySelector('#r-auto');
+      return a && V(a) ? { testo: a.textContent.replace(/\\s+/g, ' ').trim(), ruolo: a.getAttribute('role'), stato: a.getAttribute('aria-checked') } : null;`));
+    v.push({ gruppo: g, nome: 'l\'interruttore si chiama «Avanti da solo» e dice se e\' acceso', ok: !!sw && sw.ruolo === 'switch' && sw.stato === 'true' && sw.testo.includes('Avanti da solo'),
+      extra: `si aspetta un role="switch" con aria-checked="true" e la scritta «Avanti da solo»: ${JSON.stringify(sw)}` });
+    // Una risposta giusta senza nota: il pulsante dice dove va, c'e' «Fermati qui», e si passa da soli.
+    await rispondiCome(tab, it1, true);
+    const det = await tab.attendiValore(PASSAGGIO, (x) => !!x && /^Passo/.test(x.avanti || '') && !!x.ferma, REAZIONE);
+    const passato = await tab.attendi(POS(2), 4000);
+    v.push({ gruppo: g, nome: 'dopo una risposta giusta il pulsante dice dove va, c\'e\' «Fermati qui», e si passa da soli alla prossima', ok: det.ok && passato,
+      extra: !det.ok ? `dopo la risposta giusta non dice «Passo alla prossima…» con «Fermati qui» accanto: ${JSON.stringify(det.valore)}` : 'dopo 4 s non si e\' passati alla domanda 2' });
+    if (!passato) return;
+    // Una risposta giusta con la nota dopo la risposta: si resta, e la nota si legge.
+    await rispondiCome(tab, itN, true);
+    await pausa(2600);
+    const resta = await tab.valuta(PASSAGGIO);
+    const restaOk = /^2\s*\//.test(resta.pos || '') && !resta.ferma && !/^Passo/.test(resta.avanti || '') && !await tab.valuta(RIEPILOGO);
+    v.push({ gruppo: g, nome: 'con una nota dopo la risposta non si passa da soli', ok: restaOk,
+      extra: `${AUTO_NOTA} ha la nota dopo la risposta, e dopo 2,6 s: ${JSON.stringify(resta)}${await tab.valuta(RIEPILOGO) ? ' (il riepilogo e\' aperto)' : ''}` });
+    // Un secondo giro: «Fermati qui» ferma il passaggio di questa domanda.
+    const giro = await gesto(tab, null, '#r-next', RIEPILOGO) && await gesto(tab, null, '[data-ciclo="ritorno"]', js(`return !V(document.querySelector('#r-fine'))`))
+      && await allenaSegnalibri(tab, it1);
+    if (!giro) return v.push({ gruppo: g, nome: 'un secondo giro sui segnalibri si apre', ok: false, extra: `in schermata: ${await tab.valuta(inSchermata)}` });
+    await rispondiCome(tab, it1, true);
+    const ferma = await tab.attendi(visibile('#r-ferma'), REAZIONE) && await tocca(tab, null, '#r-ferma');
+    await pausa(2600);
+    const fermo = await tab.valuta(PASSAGGIO);
+    v.push({ gruppo: g, nome: '«Fermati qui» ferma il passaggio, e si resta sulla domanda', ok: !!ferma && /^1\s*\//.test(fermo.pos || '') && !fermo.ferma && !/^Passo/.test(fermo.avanti || ''),
+      extra: !ferma ? '«Fermati qui» non si vede dopo la risposta giusta' : `dopo «Fermati qui» e 2,6 s: ${JSON.stringify(fermo)}` });
+    const spento = await gesto(tab, null, '#r-auto', js(`return document.querySelector('#r-auto').getAttribute('aria-checked') === 'false'`));
+    v.push({ gruppo: g, nome: 'spento, l\'interruttore lo dice', ok: spento, extra: 'toccato «Avanti da solo», aria-checked non diventa "false"' });
+  } finally { await c.chiudi(); }
+}
+
 // --- T-12: l'azione principale, l'avviso detto una volta, Esame sulle prove ------------------
 //
 // Il giro 1 delle regole di disegno (docs/regole-disegno-progetto.md §4 e
@@ -5885,8 +6045,11 @@ async function p01avvio(b, ctx, v, g) {
         ok: a.uid === `${a.sim_uid}:a` && a.kind === 'base' && a.prova === 'entrambe' && E.validaRiga(a) === null, extra: JSON.stringify(a).slice(0, 300) });
       w.push({ gruppo: g, nome: 'regola-semplice-1 senza prove prima: zero su zero', ok: JSON.stringify(a.stime['regola-semplice-1']) === JSON.stringify({ superate: 0, n: 0, prove: [] }),
         extra: JSON.stringify(a.stime) });
-      const risposto = await rispondiQuiz(tab, [], g, '', { sim: true });
-      const c1 = await tab.valuta(COPIA(U.chiave));
+      // In simulazione la risposta diventa una riga con «Avanti», non al tocco:
+      // fino ad allora la scelta si cambia (I-31, R-RIF-31).
+      const risposto = await rispondiQuiz(tab, [], g, '', { sim: true })
+        && await gesto(tab, null, '#r-next', js(`return /^2\\s*\\//.test(document.querySelector('#r-pos').textContent.trim())`));
+      const c1 = (await tab.attendiValore(COPIA(U.chiave), (x) => !!x && tipo(x, 'q').length > 0, REAZIONE)).valore;
       const q1 = tipo(c1, 'q');
       w.push({ gruppo: g, nome: 'la risposta ha il sim_uid della riga d\'avvio, e viene dopo', ok: !!risposto && q1.length === 1 && q1[0].sim_uid === a.sim_uid && istante(a) <= istante(q1[0]) && tipo(c1, 'a').length === 1,
         extra: `risposte ${q1.length}, sim_uid ${q1[0] && q1[0].sim_uid} contro ${a.sim_uid}, avvio ${a.ts} risposta ${q1[0] && q1[0].ts}, righe d'avvio ${tipo(c1, 'a').length}` });
@@ -7377,6 +7540,8 @@ const GRUPPI = { 'C-01': c01, 'C-02': c02, 'C-03': c03, 'C-04': c04, 'C-05': c05
   'C-10': c10, 'C-11': c11, 'C-12': c12, 'C-13': c13, 'C-14': c14, 'C-15': c15, 'C-16': c16, 'C-17': c17, 'C-19': c19,
   // L'area 6 (P-45): la rifinitura trasversale.
   'T-01': t01, 'T-02': t02, 'T-03': t03, 'T-04': t04, 'T-05': t05, 'T-06': t06, 'T-07': t07, 'T-08': t08, 'T-09': t09, 'T-10': t10, 'T-11': t11, 'T-12': t12, 'T-13': t13,
+  // Cambiare la scelta in simulazione e «Avanti da solo» (I-31).
+  'T-16': t16, 'T-17': t17,
   // Il volto, la Home al computer «U — Terra beige» (P-97, volto-progetto §6.4).
   'T-15': t15,
   // Le frasi del riepilogo dei quiz (P-53, R-UX-06).

@@ -88,6 +88,54 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   parola sola», con il controllo da scrivere); le quattro righe entrano nel
   registro dei disaccordi di `docs/procedure-disegno.md`; che cosa mettere nei
   pannelli 1–10 lo decide la sessione dedicata.
+### Corretto — I-31: cambiare la scelta in simulazione, e «Avanti da solo»
+
+- **Perché.** Un utente ha scritto all'autore che le risposte non si cambiano
+  una volta toccate, e che non aveva capito «auto». La ricerca e la proposta
+  sono I-31 in `docs/idee-dopo-gli-account.md`; l'autore le ha accettate il 29
+  ottobre. Al posto del fumetto all'inizio della prova la funzione si spiega
+  quando agisce: le spiegazioni sovrapposte si chiudono senza leggerle (Nielsen
+  Norman Group), e senza account un fumetto «da mostrare una volta» tornerebbe
+  a ogni visita, perché la pagina non conserva niente (R-ACC-09).
+- **In simulazione la scelta si cambia fino ad «Avanti».** Fino a qui la riga
+  si scriveva al tocco: la correzione non si vedeva, ma la scelta era
+  definitiva, e la risposta scelta si disegnava *sbiadita*. Ora la scelta si
+  dice con un bordo e il numero pieno, si cambia, e la riga nasce con
+  «Avanti», una volta sola: la regola che una riga non si corregge resta vera.
+  Una scelta in sospeso conta alla consegna e allo scadere del tempo, e la
+  conferma della consegna la conta fra le risposte date. In allenamento la
+  correzione resta al tocco.
+- **«auto» diventa «Avanti da solo».** Un interruttore (`role="switch"`,
+  `aria-checked`) con il nome scritto e un pallino pieno o vuoto, non il solo
+  colore. Dopo una risposta giusta il pulsante scrive «Passo alla prossima…» e
+  si riempie in un secondo e mezzo; accanto c'è «Fermati qui», e anche Esc lo
+  ferma. Con il movimento ridotto la barra non si disegna, la scritta resta.
+- **Un difetto chiuso per traverso, riprodotto in Chrome:** su una risposta
+  giusta «auto» passava alla domanda dopo in un secondo anche quando sotto
+  c'era la nota dopo la risposta — la stessa ragione per cui la 0.14.1 aveva
+  portato l'oscuramento prima della risposta. Sulla pagina di `main`, base-405
+  (il flap) aveva già aperto il riepilogo dopo 2,6 s. Ora con una nota non
+  scatta, come già nel gioco dei Segnali.
+- **I controlli, prima la pagina di prima.** Due gruppi nuovi del banco del
+  client, T-16 (R-RIF-31) e T-17 (R-RIF-32), sulla pagina vera e su quella di
+  riferimento del client, che ha imparato le due cose. Sulla pagina di `main`
+  erano rossi per il loro motivo: la prima scelta restava premuta, il
+  risultato contava 1 corretta e 1 errata, l'interruttore era la pillola
+  «auto», il riepilogo si apriva sopra la nota. Sei rotture della pagina di
+  riferimento, tutte rosse ognuna per il suo motivo. Guardato a 375×812: la
+  scelta in simulazione, il passaggio con la barra e «Fermati qui» a 8 px.
+  **Un controllo che guardava al tocco, adattato:** P-01:avvio leggeva la riga
+  della risposta nella copia subito dopo il tocco in simulazione, e il primo
+  giro della suite intera era rosso lì (6 rossi su 4.923, tutti suoi). Ora
+  preme «Avanti» prima di leggere: la riga nasce lì. Che cosa tiene fermo non
+  cambia — la risposta ha il `sim_uid` della riga d'avvio e viene dopo.
+  **Non visti:** la vela e «Base e vela», lo scadere del tempo con una scelta
+  in sospeso, un lettore di schermo, Safari, e se all'esame vero una crocetta
+  si possa correggere — una domanda per la scuola.
+- Suite: interfaccia **4.923** (erano 4.866: le 57 in più sono T-16 e T-17 sulle
+  due pagine e le sei rotture), in 6 min 26 s, con la 8620 guardata libera
+  per 90 s; specifica **1.146** (erano 1.138); motore 215/219 con i quattro
+  skip previsti; dati 225; server 89/89, non toccato; guardiano verde.
 
 ## [0.35.0] — 2026-10-28
 

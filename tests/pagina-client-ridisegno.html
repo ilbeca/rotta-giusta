@@ -443,6 +443,7 @@ input[type=file]{width:calc(100% - 8px);min-width:0}
   <h1 id="r-titolo"></h1>
   <span id="r-pos"></span> <span id="r-time" role="timer"></span>
   <button id="r-close">Termina l'attività</button>
+  <button id="r-auto" class="on" role="switch" aria-checked="true">Avanti da solo</button>
   <p data-save-warning role="alert" hidden>Non siamo riusciti a salvare le ultime risposte su questo dispositivo. Scarica le risposte adesso.</p>
   <p id="r-numero"></p>
   <p id="r-nbp" hidden></p>
@@ -456,6 +457,7 @@ input[type=file]{width:calc(100% - 8px);min-width:0}
   <button id="r-segno" data-segno aria-pressed="false" hidden>Metti un segnalibro</button>
   <button data-segnala>Segnala un problema</button>
   <button id="r-next" hidden>Avanti</button>
+  <button id="r-ferma" hidden>Fermati qui</button>
   <div id="r-consegna" role="dialog" hidden><p>Consegnare la prova?</p><button data-consegna="si">Consegna</button><button data-consegna="no">Continua la prova</button></div>
   <div id="r-fine"></div>
 </div>
@@ -985,6 +987,28 @@ function avvia() {
 }
 
 let rTick = null;
+// «Avanti da solo» (I-31): acceso finche' chi studia non lo spegne, e nella
+// memoria della pagina soltanto, come ogni preferenza senza account.
+let autoAcceso = true, rPassa = null;
+const PASSAGGIO_MS = 1500;
+function dipingiAuto() {
+  $('r-auto').classList.toggle('on', autoAcceso);
+  $('r-auto').setAttribute('aria-checked', String(autoAcceso));
+}
+function fermaPassaggio() {
+  clearTimeout(rPassa); rPassa = null;
+  $('r-ferma').hidden = true;
+  const R = S.run;
+  if (R && R.inPassaggio) { R.inPassaggio = false; $('r-next').textContent = R.etichetta; }
+}
+/** In simulazione la scelta in sospeso diventa la sua riga: con Avanti, con la consegna, allo scadere. */
+function registraSim() {
+  const R = S.run;
+  if (!R || !R.sim || R.scelta == null) return;
+  const it = R.lista[R.i], j = R.scelta;
+  R.scelta = null;
+  scriviRisposta(R, it, j);
+}
 function cronoRun() {
   const R = S.run;
   if (!R || !R.scadenza) return clearInterval(rTick);
@@ -1002,6 +1026,7 @@ function apriRun(lista, mode, sim = false, fase = {}) {
   const origineNav = fase.origineNav || (qui && qui.origineNav) || PILA[POS];
   const kind = fase.kind || 'base';
   S.run = { id: fase.id || uid(), lista, i: 0, esiti: [], mode, sim, pronta: Date.now() + 200,
+    auto: !sim && fase.auto !== false && !['breve', 'numero'].includes(mode),
     kind, prova: fase.prova || null, resto: fase.resto || [], origineNav,
     scadenza: sim ? Date.now() + ((S.meta && S.meta.prove && S.meta.prove[kind] && S.meta.prove[kind].minuti) || (kind === 'vela' ? 15 : 30)) * 60000 : null };
   S.attivita = { stato: 'in corso', riferimento: S.run.id };
@@ -1012,6 +1037,8 @@ function apriRun(lista, mode, sim = false, fase = {}) {
   $('r-fine').classList.remove('on');
   $('r-titolo').textContent = sim ? `Simulazione quiz ${kind}` : `${TITOLI_MODO[mode] || 'Quiz'} · Quiz ${kind}`;
   $('r-close').textContent = sim ? 'Consegna la prova' : 'Termina l\'attività';
+  $('r-auto').hidden = !S.run.auto;
+  dipingiAuto();
   $('r-time').textContent = '';
   clearInterval(rTick);
   if (sim) { cronoRun(); rTick = setInterval(cronoRun, 1000); }
@@ -1027,7 +1054,8 @@ function mostra() {
   $('r-text').textContent = it.d;
   // La figura del quesito, prima delle risposte e intera nel primo schermo (T-11, D-01).
   $('r-fig').innerHTML = it.f ? `<img src="/figure/${esc(it.f)}" alt="Figura del quesito ${esc(it.p || it.id)}">` : '';
-  R.erroreQui = false;
+  R.erroreQui = false; R.scelta = null;
+  fermaPassaggio();
   dipingiTag();
   dipingiSegno(it.id);
   $('r-verdict').textContent = '';
@@ -1039,6 +1067,18 @@ function mostra() {
 function rispondi(j) {
   const R = S.run, it = R.lista[R.i];
   if (Date.now() < R.pronta || R.esiti.length > R.i) return;
+  if (R.sim) {
+    // Nessuna correzione durante la prova: la scelta si dice, si cambia fino
+    // ad «Avanti», e la riga nasce li' (I-31; §9, QB: n−1 Avanti).
+    R.scelta = j;
+    [...$('r-ans').children].forEach((b, k) => b.setAttribute('aria-pressed', String(k === j)));
+    if (R.i + 1 < R.lista.length) $('r-next').hidden = false;
+    return;
+  }
+  scriviRisposta(R, it, j);
+}
+
+function scriviRisposta(R, it, j) {
   const giusta = j === it.x;
   R.esiti.push(giusta);
   const riga = { _t: 'q', uid: uid(), item_id: it.id, ts: E.isoLocale(), ms: 5000, mode: R.mode, kind: R.kind, sim_uid: R.id, correct: giusta ? 1 : 0 };
@@ -1051,23 +1091,30 @@ function rispondi(j) {
   S.fatte.push(riga);
   // Con l'account la risposta va nel suo archivio, insieme alla coda (§9.1).
   if (S.conto) { S.righeConto = S.righeConto.concat(riga); archivia(S.righe.splice(-1, 1)[0]); }
-  if (R.sim) {
-    // Nessuna correzione durante la prova: la scelta si dice, e «Avanti» (§7.1; §9, QB: n−1 Avanti).
-    $('r-ans').children[j].setAttribute('aria-pressed', 'true');
-    if (R.i + 1 < R.lista.length) $('r-next').hidden = false;
-    return;
-  }
+  if (R.sim) return;
   [...$('r-ans').children].forEach((b, k) => { if (k === it.x) b.classList.add('ok'); else if (k === j) b.classList.add('ko'); });
   $('r-verdict').textContent = giusta ? 'Risposta esatta.' : 'Risposta errata.';
   if (!giusta) { R.erroreQui = true; dipingiTag(); }
   // Anche dopo l'ultima domanda un pulsante per proseguire, come la pagina vera
   // (D-29, T-10): «Vedi il riepilogo».
-  $('r-next').textContent = R.i + 1 < R.lista.length ? 'Avanti' : 'Vedi il riepilogo';
+  R.etichetta = R.i + 1 < R.lista.length ? 'Avanti' : 'Vedi il riepilogo';
+  $('r-next').textContent = R.etichetta;
   $('r-next').hidden = false;
+  // «Avanti da solo» dopo una risposta giusta, detto mentre succede, e mai su
+  // un quesito con la nota dopo la risposta (I-31).
+  if (giusta && R.auto && autoAcceso && !it.nb) {
+    R.inPassaggio = true;
+    $('r-next').textContent = R.i + 1 < R.lista.length ? 'Passo alla prossima…' : 'Passo al riepilogo…';
+    $('r-ferma').hidden = false;
+    rPassa = setTimeout(avanti, PASSAGGIO_MS);
+  }
 }
 
 function avanti() {
   const R = S.run;
+  if (!R) return;
+  fermaPassaggio();
+  registraSim();
   if (R.esiti.length <= R.i) return;
   if (R.i + 1 >= R.lista.length) { if (!R.sim) termina(); return; }
   R.i++; R.pronta = Date.now() + 200; mostra();
@@ -1076,7 +1123,8 @@ function avanti() {
 function termina(tempo = false) {
   const R = S.run;
   if (!R) return;
-  clearInterval(rTick);
+  clearInterval(rTick); fermaPassaggio();
+  registraSim();
   if (R.tec) { const o = R.origineNav; chiudiRunner(); S.attivita = null; if (!tornaA(o)) vai('/'); return; }
   // Un allenamento senza risposte torna all'origine senza righe; una
   // simulazione consegnata anche vuota ha il suo riepilogo (§7.1).
@@ -2670,11 +2718,13 @@ document.addEventListener('click', (e) => {
   if (t.matches('#r-ans .ans')) return rispondi(Number(t.dataset.i));
   if (t.matches('#r-ans .chip')) return t.classList.toggle('on');
   if (t.id === 'r-next') return S.run && S.run.tec ? correggiTec() : avanti();
+  if (t.id === 'r-auto') { autoAcceso = !autoAcceso; dipingiAuto(); if (!autoAcceso) fermaPassaggio(); return; }
+  if (t.id === 'r-ferma') { fermaPassaggio(); return $('r-next').focus(); }
   if (t.id === 'r-close') return S.run && S.run.sim ? ($('r-consegna').hidden = false) : termina();
   if (t.dataset.consegna) { $('r-consegna').hidden = true; if (t.dataset.consegna === 'si') termina(); return; }
   if (t.dataset.ciclo === 'risposte') return rivedi();
   if (t.dataset.ciclo === 'errori') return rivedi(true);
-  if (t.dataset.ciclo === 'riprova') return apriRun(S.banca.filter((q) => S.ultima.errori.includes(q.id)), 'sbagliate', false, { origineNav: S.ultima.origineNav });
+  if (t.dataset.ciclo === 'riprova') return apriRun(S.banca.filter((q) => S.ultima.errori.includes(q.id)), 'sbagliate', false, { origineNav: S.ultima.origineNav, auto: false });
   if (t.dataset.ciclo === 'ritorno') return ritornoOrigine();
   if (t.dataset.ciclo === 'altra') { chiudiRunner(); return vai('/?sezione=allenati&segmento=quiz'); }
   if (t.id === 'rv-close') return $('rivedi').classList.remove('on');
@@ -2989,7 +3039,7 @@ function chiudiRunner() {
   $('quizrun').classList.remove('on');
   $('r-fine').classList.remove('on');
   document.body.classList.remove('in-attivita');
-  clearInterval(rTick);
+  clearInterval(rTick); fermaPassaggio();
   S.run = null;
   if (S.attivita && S.attivita.stato === 'in corso') S.attivita = null;
 }

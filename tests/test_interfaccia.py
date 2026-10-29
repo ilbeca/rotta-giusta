@@ -3693,7 +3693,7 @@ ROTTURE_RACCORDO = [
 # chiede la sola parte che rompe.
 PARTI_T15 = ['T-15:' + p for p in ['soglia', 'costa', 'velo', 'percorso', 'fuoco', 'luci', 'movimento', 'numeri', 'stati', 'documento']]
 GRUPPI_RIFINITURA = ['T-01', 'T-02', 'T-03', 'T-04', 'T-05:finestra', 'T-05:arresti', 'T-06', 'T-07:prova', 'T-07:conto',
-                     'T-08', 'T-09', 'T-10', 'T-11', 'T-12', 'T-13'] + PARTI_T15
+                     'T-08', 'T-09', 'T-10', 'T-11', 'T-12', 'T-13', 'T-16', 'T-17'] + PARTI_T15
 # T-12 (il giro 1 delle regole di disegno) si esegue una volta, e le sue
 # verifiche portano il nome della parte: e' per parte che si contano e si
 # dichiarano (docs/regole-disegno-progetto.md §10.1).
@@ -3704,7 +3704,7 @@ ECCEZIONI_SCALA = [
 ] + [{'selettore':'main', 'proprieta':'paddingBottom', 'valore':90}]
 PARTI_RIFINITURA = [g for g in GRUPPI_RIFINITURA if g not in ('T-12','T-13')] + PARTI_T12 + PARTI_T13
 VERIFICHE_RIFINITURA = {'T-01': 9, 'T-02': 9, 'T-03': 11, 'T-04': 6, 'T-05:finestra': 5, 'T-05:arresti': 2, 'T-06': 4,
-                        'T-07:prova': 5, 'T-07:conto': 3, 'T-08': 2, 'T-09': 2, 'T-10': 5, 'T-11': 2,
+                        'T-07:prova': 5, 'T-07:conto': 3, 'T-08': 2, 'T-09': 2, 'T-10': 5, 'T-11': 2, 'T-16': 4, 'T-17': 5,
                         'T-12:principale': 1, 'T-12:primo-schermo': 4, 'T-12:esame': 2, 'T-12:avviso': 4, 'T-12:scelte': 1,
                         'T-12:aggancio': 2, **{p: (2 if p in ('T-13:corpi','T-13:spazi') else 1) for p in PARTI_T13},
                         **{p: (2 if p == 'T-15:movimento' else 1) for p in PARTI_T15}}
@@ -3964,6 +3964,26 @@ ROTTURE_RIFINITURA += [
     rottura_scala('la sottolineatura del link in --boa', 'colori', '#anteprime a{border-bottom:2px solid var(--boa)}', 'segno del sito su un comando'),
 ]
 
+# T-16 e T-17 (I-31, R-RIF-31 e R-RIF-32): cambiare la scelta in simulazione, e
+# «Avanti da solo» che si spiega quando agisce. Due modi per ciascuno in cui la
+# pagina torna com'era prima del 29 ottobre 2026, piu' due in cui il passaggio
+# automatico c'e' ma non si spiega o non si ferma.
+ROTTURE_RIFINITURA += [
+    ('la prima scelta della simulazione resta', ['T-16'],
+     [("    R.scelta = j;\n", "    if (R.scelta != null) return;\n    R.scelta = j;\n")], 'la scelta non si cambia'),
+    ('la scelta in sospeso non conta alla consegna', ['T-16'],
+     [("  clearInterval(rTick); fermaPassaggio();\n  registraSim();\n  if (R.tec)", "  clearInterval(rTick); fermaPassaggio();\n  if (R.tec)")],
+     'il risultato della consegna dice'),
+    ('l\'interruttore che dice solo «auto»', ['T-17'],
+     [('role="switch" aria-checked="true">Avanti da solo</button>', 'role="switch" aria-checked="true">auto</button>')], '«Avanti da solo»'),
+    ('il passaggio che non dice dove va', ['T-17'],
+     [("    $('r-next').textContent = R.i + 1 < R.lista.length ? 'Passo alla prossima…' : 'Passo al riepilogo…';\n", "")], 'Passo alla prossima'),
+    ('si passa da soli anche con la nota', ['T-17'], [('autoAcceso && !it.nb) {', 'autoAcceso) {')], 'ha la nota dopo la risposta'),
+    ('«Fermati qui» che non ferma', ['T-17'],
+     [("  if (t.id === 'r-ferma') { fermaPassaggio(); return $('r-next').focus(); }", "  if (t.id === 'r-ferma') { $('r-ferma').hidden = true; return; }")],
+     'dopo «Fermati qui»'),
+]
+
 
 def dichiarati_rifinitura(parte=None):
     """[(parte, verifica)] dei difetti dichiarati dell'area 6, o di una parte sola."""
@@ -4066,6 +4086,20 @@ def test_rifinitura_proseguire():
     pulsante per proseguire si vede o ci si arriva scorrendo, e niente gli sta
     sopra (T-10)."""
     registra_rifinitura('T-10')
+
+
+def test_rifinitura_scelta_simulazione():
+    """R-RIF-31 (I-31): in simulazione la scelta si dice, si cambia fino ad
+    «Avanti» senza correzione, e alla consegna contano la scelta cambiata e
+    quella in sospeso (T-16)."""
+    registra_rifinitura('T-16')
+
+
+def test_rifinitura_avanti_da_solo():
+    """R-RIF-32 (I-31): «Avanti da solo» e' un interruttore con il suo nome e il
+    suo stato; dopo una risposta giusta dice dove va e offre «Fermati qui», che
+    lo ferma; con una nota dopo la risposta non scatta (T-17)."""
+    registra_rifinitura('T-17')
 
 
 def test_rifinitura_figura():
@@ -4960,6 +4994,7 @@ def main():
               test_rifinitura_senza_account, test_rifinitura_invio, test_rifinitura_guasto, test_rifinitura_identita,
               test_rifinitura_finestra, test_rifinitura_fuoco, test_rifinitura_avvisi, test_rifinitura_larghezze,
               test_rifinitura_contrasto, test_rifinitura_bersagli, test_rifinitura_proseguire, test_rifinitura_figura,
+              test_rifinitura_scelta_simulazione, test_rifinitura_avanti_da_solo,
               test_scala_corpi, test_scala_titoli, test_scala_testo, test_scala_spazi, test_scala_pesi, test_scala_distanze, test_scala_righe, test_scala_colori, test_scala_home, test_disegno_principale, test_disegno_primo_schermo, test_disegno_avviso, test_disegno_scelte,
               test_volto_soglia, test_volto_costa, test_volto_velo, test_volto_percorso, test_volto_fuoco, test_volto_luci,
               test_volto_movimento, test_volto_numeri, test_volto_stati, test_volto_documento, test_rifinitura_provata_al_contrario,
