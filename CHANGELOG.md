@@ -11,6 +11,27 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+### Verificato — la v0.35.1, in linea
+
+- **Il tag e la pagina.** `v0.35.1` è un tag annotato su `8e2d5af`, pushato con
+  `main` con il sì dell'autore del 29 ottobre: è la sola cosa nuova in `site/`
+  dalla v0.35.0, mentre altre sessioni lavorano ancora nei loro rami. «Build
+  now» su statichost.eu dalla regia, nel Chrome dell'autore e su sua richiesta,
+  con il commit di rilascio in cima: la build porta «release: v0.35.1». Da fuori
+  `meta.json` dice 0.35.1; la Home, `engine.js`, `meta.json`, `sw.js`, la porta
+  `/app`, privacy, avvertenza e manifest sono identici byte per byte a
+  `v0.35.1:site/`. Nel Chrome dell'autore, senza account, una simulazione base:
+  due tocchi su due risposte lasciano premuta la seconda, nessuna correzione,
+  console senza errori.
+- **Il server.** `rg-aggiorna v0.35.1 8e2d5af…` lanciato dalla regia, con
+  `rg-aggiorna` e `rg-torna` uguali a quelli del repo (SHA-256). La copia di
+  prima è `aggiorna-20261029T060046Z.db`, con `integrity_check` ok, 7 righe,
+  1 account, schema 6. Da fuori `GET /v1/salute` dice 0.35.1, schema 6/6, la
+  stessa epoca (`278fd81e…`) e le sole scelte di preparazione accese; il CORS
+  espone `Retry-After` al sito. `/var/lib/rg/precedente` dice `v0.35.0`.
+- **Non guardato:** «Avanti da solo» sul sito pubblicato e su un telefono vero;
+  l'ha guardato la regia prima della merge, servito in locale, a 375×812.
+
 ## [0.35.1] — 2026-10-29
 
 **Le risposte in simulazione si cambiano, e «auto» si capisce.** Un utente ha
