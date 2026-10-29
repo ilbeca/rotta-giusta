@@ -11,6 +11,19 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+## [0.35.1] — 2026-10-29
+
+**Le risposte in simulazione si cambiano, e «auto» si capisce.** Un utente ha
+scritto che una risposta toccata non si poteva più cambiare, e che non aveva
+capito «auto». In simulazione la scelta ora si vede e si cambia finché non si
+preme «Avanti», e una scelta lasciata in sospeso conta alla consegna. «auto»
+diventa l'interruttore «Avanti da solo»: dopo una risposta giusta il pulsante
+dice «Passo alla prossima…» e accanto c'è «Fermati qui»; e quando sotto la
+risposta c'è una nota non passa più da solo, così la nota si legge. In
+allenamento la correzione resta al tocco. Il server non cambia: si porta allo
+stesso tag con `rg-aggiorna` perché `GET /v1/salute` dica la versione nuova. Le
+voci che seguono sono il lavoro di questi giorni, com'è stato scritto allora.
+
 ### Verificato — la v0.35.0, in linea
 
 - **Il tag e la pagina.** `v0.35.0` è un tag annotato su `8583aaf`, pushato con
