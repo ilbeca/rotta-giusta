@@ -55,6 +55,7 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   sono stati toccati. Otto domande per l'autore, nove per il professionista.
 - Suite: dati 225, server 89/89, interfaccia 4.866 (con la 8620 guardata libera
   per 90 s); guardiano verde.
+
 ### Analizzato — la Home a pannelli, letta da taste
 
 - **Perché.** L'autore ha approvato il mock `carta-corretta/` come nuova Home,
