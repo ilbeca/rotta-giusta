@@ -259,10 +259,27 @@ non corrispondono all'immagine (il pannello 8). Nessuna critique di impeccable,
 nessun controllo dei dark pattern: il mock non chiede scelte oltre «Simula» e
 «Accedi».
 
-## 9. Le decisioni per l'autore
+## 9. Le decisioni dell'autore, 29 ottobre 2026
+
+Proposte così:
 
 1. Il pannello 8: faro e boa nel suo tratto di costa, o un testo diverso?
 2. D-36 e D-37 diventano regole con il loro controllo?
 3. Le quattro righe del registro (§7).
 4. I pannelli 1–10: la miniatura e la costa di I-30 nel giro B, o restano la
    rotta che scende, accettando che siano schermi di respiro?
+
+Decise dall'autore lo stesso giorno («non mettere faro e boa, si cambia testo.
+solo d-37. ok registro disaccordi. per i pannelli e cosa mettere, aspettiamo la
+sessione dedicata»):
+
+1. **Il pannello 8 cambia testo**: faro e boa restano nel pannello 0. Il testo
+   lo scrive chi ha la penna sui testi dei pannelli.
+2. **D-36 (l'oggetto nominato sta sullo schermo) non si adotta. D-37 sì**, e
+   prende il numero libero: è **D-36** nella scheda I-27 di
+   `docs/idee-dopo-gli-account.md`. Il suo controllo è da scrivere.
+3. **Le quattro righe del registro** sono nel §3 di `docs/procedure-disegno.md`.
+4. **Che cosa mettere nei pannelli 1–10** lo decide la sessione dedicata.
+
+Dove sopra si legge «D-37», la regola adottata è D-36; dove si legge «D-36»,
+è la proposta scartata.

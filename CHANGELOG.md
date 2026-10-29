@@ -55,6 +55,12 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 - `lint.mjs --app` 1 FAIL (il velo); `inspect.mjs` 5–6 FAIL come pagina, 2 come
   schermata d'app, a 1280 e 1920. Nessuna suite rifatta: niente di `site/`,
   `tests/` o del mock è cambiato.
+- **Deciso dall'autore lo stesso giorno:** il pannello 8 cambia testo, e faro e
+  boa restano nel pannello 0; la proposta D-36 non si adotta, la D-37 sì e
+  prende il numero D-36 nella scheda I-27 («un titolo non finisce con una
+  parola sola», con il controllo da scrivere); le quattro righe entrano nel
+  registro dei disaccordi di `docs/procedure-disegno.md`; che cosa mettere nei
+  pannelli 1–10 lo decide la sessione dedicata.
 
 ## [0.35.0] — 2026-10-28
 
