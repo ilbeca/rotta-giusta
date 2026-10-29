@@ -29,6 +29,33 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   espone `Retry-After`. `/var/lib/rg/precedente` dice `v0.34.0`.
 - **Non guardato:** la Home al computer pubblicata, in un browser vero.
 
+### Verificato — Rotta Giusta e il GDPR, la v0.35.0
+
+- **Perché.** L'informativa promette cose precise — niente nel browser senza
+  account, dati solo nell'UE, un dato cancellato via anche dalle copie entro 30
+  giorni — e un'informativa che diverge dal sistema è falsa senza che niente lo
+  dica. `docs/gdpr-verifica-2026-10.md` confronta, requisito per requisito,
+  testo, sistema e GDPR, e separa quello che si misura da quello che è un
+  giudizio giuridico, da far confermare al professionista. Non è un parere.
+- **Misurato sul sito pubblicato**, in sola lettura: `/privacy`, `/avvertenza`,
+  `/` e `/app` identici byte per byte a `site/`; `/v1/salute` dice 0.35.0 e
+  `esiti_e_previsioni: false`; senza account, dopo un'attività con una risposta,
+  nessun cookie e nessuna scrittura nel browser, nessuna richiesta fuori da
+  `rottagiusta.it`; il sito risponde da Hetzner a Helsinki, l'API da Scaleway a
+  Varsavia. Nessun account creato in produzione, la macchina non toccata.
+- **Trovato:** le copie `aggiorna-*.db` che `rg-aggiorna` fa prima di ogni
+  rilascio si tengono per numero (le ultime cinque) e non per età, quindi con
+  rilasci rari un account cancellato può restarci oltre i 30 giorni promessi —
+  oggi, dal CHANGELOG, la più vecchia sarebbe di undici giorni; il file delle
+  cancellazioni non ha scadenza e l'informativa non lo nomina; dati personali
+  possono uscire dagli strumenti dell'autore (iCloud, sessioni di un assistente
+  sulla macchina); più alcune imprecisioni del testo (le mail spedite nel
+  registro, «Hetzner (Germania)», la chiave in `localStorage`, la data delle
+  condizioni). Proposte, non correzioni: `site/`, `server/` e l'informativa non
+  sono stati toccati. Otto domande per l'autore, nove per il professionista.
+- Suite: dati 225, server 89/89, interfaccia 4.866 (con la 8620 guardata libera
+  per 90 s); guardiano verde.
+
 ## [0.35.0] — 2026-10-28
 
 **Il sito cambia faccia.** Su tutto il sito arrivano i colori della Regata e
