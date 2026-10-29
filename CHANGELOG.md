@@ -56,6 +56,42 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 - Suite: dati 225, server 89/89, interfaccia 4.866 (con la 8620 guardata libera
   per 90 s); guardiano verde.
 
+### Progettato — i testi degli 11 pannelli della Home
+
+- **Perché.** L'autore ha approvato la Home a pannelli del prototipo
+  `carta-corretta/`, e i testi sono la parte da definire prima che P-100 lo
+  ritocchi e P-102 costruisca la pagina. La Home pubblicata ha già difetti di
+  testo noti: «scelti dalle tue risposte» detto a chi non ha risposto, tre nomi
+  per l'allenamento breve, «1722» senza il punto. In
+  `docs/prototipi/stitch-2026-10/testi-pannelli.md`, pannello per pannello: il
+  ruolo, il titolo, il testo, l'azione, la fonte di ogni numero (banca,
+  `meta.json`, motore), il perché e un'alternativa; più gli stati con risposte,
+  con l'account e con le domande che non si caricano, le due luci, il glossario
+  e dieci decisioni per l'autore.
+- **Le scelte più grosse.** Il secondo pannello diventa «Tutte le domande
+  dell'esame», con 1.722 domande e i limiti contati dalla banca (37 tolte
+  dall'esame, 4 con una nota, 1 senza figura), al posto di «Come funziona», che
+  spiegava i triangoli. Il pannello della simulazione non ripete più la scheda
+  del primo. Il carteggio dice che cos'è a chi non lo sa, con le parole del
+  decreto («la prova da superare per andare avanti») e non «eliminatoria», che
+  è una parafrasi. I Segnali si dichiarano un gioco, non domande d'esame.
+- **Misurato**, in una copia del prototipo (`testi-prova/`, che il prototipo non
+  lo tocca), in Chrome con il movimento ridotto: tutti gli 11 pannelli entrano a
+  375×812 e a 1280×800, nei quattro stati; leggibilità fra 64 e 82, nessuna
+  frase oltre le 24 parole. Con i testi decisi dell'invito il primo pannello con
+  risposte senza account era alto 856 px su 684: il testo proposto lo porta a
+  660. A 375×667 il primo pannello non entra in nessuno stato, ed è detto con
+  la strada per farlo entrare. Il prototipo non ha una disposizione per il
+  telefono: le misure a 375 sono su una minima della copia, dichiarata.
+- **Trovato guardando.** Sul pannello dei Segnali il faro e la boa che il testo
+  invita a toccare non ci sono: stanno solo sul primo tratto di costa. Con
+  risposte senza account, il primo pannello avrebbe sei cose da toccare al
+  computer contro le quattro di R-RIF-22. Tutti e due fra le decisioni.
+- Nessun file di `site/`, `tests/`, della specifica, di `volto-progetto.md` o
+  della coda toccato; nessuna suite rifatta, perché nessun file che le suite
+  leggono è cambiato. Le note per la regia (che cosa leggono i controlli di
+  P-101) sono nel §6 del documento.
+
 ## [0.35.0] — 2026-10-28
 
 **Il sito cambia faccia.** Su tutto il sito arrivano i colori della Regata e
