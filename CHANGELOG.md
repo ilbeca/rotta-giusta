@@ -11,6 +11,24 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 
 ## [Unreleased]
 
+### Verificato — la v0.35.0, in linea
+
+- **Il tag e la pagina.** `v0.35.0` è un tag annotato su `8583aaf`, pushato con
+  `main` dopo il sì dell'autore sulle schermate «dopo» di `collaudo-p95` e
+  `collaudo-p98`, il 28 ottobre. «Build now» su statichost.eu l'ha premuto
+  l'autore, perché il pannello chiede l'accesso con un link per email. Da fuori
+  `meta.json` dice 0.35.0 su `rottagiusta.it` e su `.pages.dev`. Otto file sono
+  identici byte per byte a `v0.35.0:site/`: la Home, la porta `/app`,
+  `engine.js`, privacy, avvertenza, manifest, `meta.json` e `sw.js`. `/`, `/app`
+  e `/?sezione=esame` rispondono 200.
+- **Il server.** `rg-aggiorna v0.35.0 8583aaf…` lanciato dalla regia, con
+  `rg-aggiorna` e `rg-torna` uguali a quelli del repo (SHA-256). La copia di
+  prima è `aggiorna-20261028T184906Z.db`, con `integrity_check` ok, 2 righe,
+  1 account, schema 6. Da fuori `GET /v1/salute` dice 0.35.0, schema 6/6, la
+  stessa epoca (`278fd81e…`) e le sole scelte di preparazione accese; il CORS
+  espone `Retry-After`. `/var/lib/rg/precedente` dice `v0.34.0`.
+- **Non guardato:** la Home al computer pubblicata, in un browser vero.
+
 ## [0.35.0] — 2026-10-28
 
 **Il sito cambia faccia.** Su tutto il sito arrivano i colori della Regata e

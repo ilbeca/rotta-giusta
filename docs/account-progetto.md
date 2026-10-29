@@ -3210,3 +3210,10 @@ Vale `recupero-progetto.md` §10, per la parte che riguarda ancora il prodotto
   schema 6 invariato, «raccolte accese: scelte_di_preparazione»;
   `GET /v1/salute` dice 0.34.0, schema 6/6, la stessa epoca. Il server non
   cambia dalla v0.33.0. `/var/lib/rg/precedente` dice `v0.33.0`.
+- **28 ottobre 2026 — la v0.35.0 in esercizio.** `rg-aggiorna v0.35.0
+  8583aaf…` dalla regia, con il sì dell'autore e con `rg-aggiorna` e
+  `rg-torna` uguali a quelli del repo (SHA-256). Copia di prima
+  `aggiorna-20261028T184906Z.db` con `integrity_check` ok, 2 righe, 1 account,
+  schema 6 invariato. `GET /v1/salute` dice 0.35.0, schema 6/6, la stessa
+  epoca. Il server non cambia dalla v0.33.0. `/var/lib/rg/precedente` dice
+  `v0.34.0`.
