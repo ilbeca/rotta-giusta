@@ -91,6 +91,18 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   della coda toccato; nessuna suite rifatta, perché nessun file che le suite
   leggono è cambiato. Le note per la regia (che cosa leggono i controlli di
   P-101) sono nel §6 del documento.
+- **Dopo il parere di taste, lo stesso giorno.** L'autore ha deciso che il
+  pannello dei Segnali cambia testo invece di avere un faro e una boa suoi: la
+  frase «tocca il faro o la boa» esce. Ed è stata adottata D-36 — un titolo non
+  finisce con una parola sola, il titolo principale della Home al computer sta
+  in tre righe —: «Preparati alla patente nautica, un passo alla volta.» andava
+  su quattro righe con «volta.» da sola, e diventa «La patente nautica, un passo
+  alla volta.»; «L'allenamento consigliato» al telefono lasciava «consigliato»
+  da solo, e il titolo del pannello diventa «L'allenamento che consigliamo».
+  Misurato con le righe vere di ogni titolo: con `text-wrap: balance` sui titoli
+  dei pannelli nessuno finisce con una parola sola, a 375×812 e a 1280×800, nei
+  quattro stati; senza, cinque sì. Tutti i pannelli entrano ancora alle due
+  misure.
 
 ## [0.35.0] — 2026-10-28
 

@@ -32,6 +32,10 @@ apre su un pannello.
   portano (D-10, D-11), una cosa una volta per schermata (D-08), una sola azione
   piena per schermata (D-12), al più quattro cose da toccare nel primo schermo
   (D-13, R-RIF-22).
+- **D-36, adottata dall'autore il 29 ottobre 2026** (dal parere di taste,
+  `analisi-taste-2026-10-29.md` §9): un titolo non finisce con una parola sola, e
+  il titolo principale della Home al computer sta in tre righe al più. Qui vale
+  per tutti i titoli dei pannelli, alle due misure.
 - **Il glossario scelto qui**, perché la stessa cosa non abbia tre nomi:
   *domanda* (non quesito, non quiz) per la singola domanda; *quiz base* e *quiz
   vela* per le prove; *argomento* (non tema, non voce); *risposta esatta* (non
@@ -71,33 +75,47 @@ telefono vanno rifatte; il testo più corto qui sotto lascia margine.
 
 | Pannello | 375×812 H0 | 1280×800 H0 | 375×812 H1 | 375×812 HA | 375×812 errore | 375×667 H0 |
 |---|---|---|---|---|---|---|
-| 1 · La prova d'esame | 109–695 ✓ | 96–760 ✓ | 76–736 ✓ | 97–707 ✓ | 136–676 ✓ | 37–622 ✗ |
+| 1 · La prova d'esame | 128–676 ✓ | 125–731 ✓ | 95–717 ✓ | 116–688 ✓ | 155–657 ✓ | 56–603 ✗ |
 | 2 · Tutte le domande | 194–618 ✓ | 286–578 ✓ | = | = | 306–506 ✓ | 122–545 ✓ |
 | 3 · La simulazione | 264–548 ✓ | 301–563 ✓ | = | = | 318–494 ✓ | 191–476 ✓ |
 | 4 · Allenamento breve | 309–503 ✓ | 340–524 ✓ | = | = | = | 237–430 ✓ |
-| 5 · Allenamento consigliato | 283–529 ✓ | 340–524 ✓ | = | = | 306–506 ✓ | 211–456 ✓ |
+| 5 · Allenamento consigliato | 283–529 ✓ | 321–543 ✓ | = | = | 306–506 ✓ | 211–456 ✓ |
 | 6 · Un argomento | 278–534 ✓ | 320–544 ✓ | = | = | 301–511 ✓ | 206–461 ✓ |
 | 7 · Gli errori | 309–503 ✓ | 340–524 ✓ | = | = | = | 237–430 ✓ |
 | 8 · Il carteggio | 203–609 ✓ | 305–559 ✓ | = | = | 214–598 ✓ | 130–537 ✓ |
-| 9 · Fanali e segnali | 266–546 ✓ | 309–555 ✓ | = | = | = | 194–473 ✓ |
+| 9 · Fanali e segnali | 298–514 ✓ | 340–524 ✓ | = | = | = | 225–442 ✓ |
 | 10 · L'esame, in ordine | 255–557 ✓ | 309–555 ✓ | = | = | = | 182–485 ✓ |
 | 11 · Con l'account | 305–491 ✓ | 343–505 ✓ | = | 298–514 ✓ | = | 233–418 ✓ |
 
-Al computer negli altri stati: H1 111–753 ✓, HA 84–772 ✓, errore 144–720 ✓.
+Al computer negli altri stati: H1 140–724 ✓, HA 113–743 ✓, errore 174–690 ✓.
 Nessuno sbordamento orizzontale (larghezza del documento uguale alla finestra) a
 375 e a 1280.
 
 **A 375×667** (un telefono piccolo, o uno grande con la barra di Safari: le
 regole D-01 lo misurano) entrano i pannelli 2–11 in tutti gli stati; il primo
-**no**, in nessuno stato: 585 px di testo su 539. Con il titolo e il sottotitolo
-corti della decisione 2 (§5) entra H0 (67–592); H1 e HA no (23–644, 44–615).
+**no**, salvo con le domande che non si caricano (82–585): senza risposte manca
+per 8 px (56–603), con risposte e con l'account non entra (23–644, 44–615). Con
+il sottotitolo corto della decisione 2 (§5) entra anche H0.
 Il compito chiedeva 375×812 e 1280×800, che passano; 375×667 è detto perché è
 il limite vero.
 
 **La leggibilità**, sul testo che si vede in H0, con la formula di D-06: fra 64
-e 82 in tutti i pannelli (il più basso è «Un argomento alla volta», 64, per i
+e 87 in tutti i pannelli (un calcolo approssimato, sul testo estratto) (il più basso è «Un argomento alla volta», 64, per i
 nomi degli argomenti); nessuna frase oltre le 24 parole. Negli stati d'errore i
 testi sono di una o due frasi corte, dove l'indice dice poco.
+
+**D-36, misurata** con le righe vere di ogni titolo (`__titoli()` nella copia,
+che conta le parole riga per riga con un Range): nessun titolo finisce con una
+parola sola, a 375×812 e a 1280×800, nei quattro stati; il titolo principale
+sta in tre righe anche a 1920×1080. Per i titoli dei pannelli serve
+`text-wrap: balance` (nella copia c'è, sui soli h2 e h3): senza, cinque titoli
+lasciano l'ultima parola da sola — «La simulazione, come all'esame» alle due
+misure, «Con l'account, le risposte restano» a 1280, «Tutte le domande
+dell'esame» e «Il carteggio, sulla carta vera» a 375. Il bilanciamento non
+serve al titolo principale, che anzi peggiora («nautica, un / passo alla
+volta»), e non salva un titolo di due parole che va a capo: è il caso di
+«L'allenamento consigliato» al telefono, cambiato (pannello 5). Il CSS è di
+P-100 e P-102; `text-wrap: balance` c'è in Chrome e in Safari dalla 17.5.
 
 ## 2. Gli 11 pannelli
 
@@ -111,7 +129,7 @@ H0 (la Home senza risposte e senza account); gli altri stati sono nel §3.
 **Ruolo.** Dire che cos'è il sito e far partire la prova in un tocco (§7.1, H0).
 **Nel percorso:** «La prova d'esame».
 
-- **Titolo (h1):** Preparati alla patente nautica, un passo alla volta.
+- **Titolo (h1):** La patente nautica, un passo alla volta.
 - **Sottotitolo:** Quiz e carteggio per la patente senza limiti dalla costa, a
   motore e a vela. Gratis.
 - **Scheda:** *La prova d'esame dei quiz* — **20** domande · **30** minuti ·
@@ -124,8 +142,10 @@ H0 (la Home senza risposte e senza account); gli altri stati sono nel §3.
 del link: `preparaBreve().quanti` (che è 10 finché il quiz base ha almeno dieci
 domande; il nome resta «Allenati con 10 domande» come deciso).
 
-**Perché.** Il titolo è quello della Home pubblicata e non promette niente che
-non si misuri. Il sottotitolo aggiunge «a motore e a vela» e «Gratis»: nella
+**Perché.** «Preparati alla patente nautica, un passo alla volta.», il titolo
+della Home pubblicata, al computer va su quattro righe con «volta.» da sola: non
+passa D-36. Senza «Preparati» sta in tre righe, «La patente / nautica, un passo
+/ alla volta.», al computer e al telefono, e dice la stessa cosa. Il sottotitolo aggiunge «a motore e a vela» e «Gratis»: nella
 lettura da fuori del 20 ottobre (I-23) due lettori su cinque hanno creduto che
 il sito fosse per la patente entro 12 miglia, e «Gratis» è stato capito da
 tutti e cinque. **«30» e non «30′»**: con «minuti» sotto, l'apice dice la
@@ -136,9 +156,11 @@ pulsante, il link, il faro e la boa le cose da toccare sono quattro, il limite
 di D-13.
 
 **Alternative.**
-- Titolo più corto, «La patente nautica, un passo alla volta.», con il
-  sottotitolo «Quiz e carteggio per la patente senza limiti dalla costa.
-  Gratis.»: misurato, fa entrare il pannello anche a 375×667 (decisione 2).
+- «La patente nautica, passo dopo passo.»: tre righe da due parole, anche lei
+  dentro D-36.
+- Il sottotitolo corto, «Quiz e carteggio per la patente senza limiti dalla
+  costa. Gratis.»: misurato, fa entrare il pannello anche a 375×667, ma perde «a
+  motore e a vela» (decisione 2).
 - «Simula il quiz» al posto di «Simula il quiz base»: l'autore gli ha detto sì
   il 20 ottobre (I-23, decisione 2), ma non è mai entrato nella pagina, e i
   controlli leggono «Simula il quiz base». Consiglio di tenere «base»: la vela ha
@@ -236,7 +258,7 @@ vuoi» è vero: «Termina» apre il riepilogo delle risposte date.
 **Ruolo.** L'allenamento consigliato. **Nel percorso:** «Allenamento
 consigliato».
 
-- **Titolo:** L'allenamento consigliato
+- **Titolo:** L'allenamento che consigliamo
 - **Testo:** Sono **25** domande del quiz base. All'inizio sono domande mai
   viste; quando hai risposto, entrano anche alcune che hai sbagliato. Ogni
   domanda dice perché è lì.
@@ -246,7 +268,13 @@ consigliato».
 apre la preparazione (misurato: 25 con la pagina vuota). Non «fino a 25»: il
 numero è quello della lista, e quando la lista è più corta il numero scende.
 
-**Perché.** È il difetto noto della Home pubblicata: «scelti dalle tue risposte»
+**Perché del titolo.** «L'allenamento consigliato», il nome dell'attività, al
+telefono va a capo e lascia «consigliato» da solo: due parole che vanno a capo
+non si bilanciano (D-36). «L'allenamento che consigliamo» va su due righe con
+due parole in fondo, e dice la stessa cosa; il pulsante tiene il nome,
+«Apri l'allenamento consigliato».
+
+**Perché del testo.** È il difetto noto della Home pubblicata: «scelti dalle tue risposte»
 detto anche a chi non ha risposto. Il motore, senza risposte, sceglie solo
 domande mai viste, pesate su quanto rendono all'esame; con le risposte aggiunge
 i richiami degli errori (al più un quinto) e le conferme. Il testo dice le due
@@ -341,8 +369,6 @@ esercizio.
 - **Testo:** Un gioco con **53** segnali: fanali di notte, segnali di giorno,
   suoni nella nebbia e in manovra. Non sono domande dell'esame: servono a
   riconoscerli a colpo d'occhio.
-- **Testo:** Sulla carta ogni luce ha la sua sigla: tocca il faro o la boa per
-  leggerla.
 - **Azione:** link **Apri i Segnali**.
 
 **Fonti.** 53: `E.SEGNALI.length` (27 fanali, 9 diurni, 9 nebbia, 8 manovra:
@@ -353,12 +379,13 @@ gioco nostro e non domande d'esame: la specifica vuole che lo dichiari. Non si
 scrivono i conti per famiglia: il 27 è proprio il numero sbagliato della U
 («27 fanali e segnali»).
 
-**Un difetto del prototipo, guardato:** sul pannello 9 **il faro e la boa non
-ci sono**. Stanno sul primo tratto di costa, e la carta scorre di un pannello
-alla volta: la seconda frase invita a toccare una cosa che non si vede
-(fotografia `h0-p8-1280x800.jpg`). Due strade: P-100 mette una luce con la sua
-sigla sul tratto di costa del pannello 9; oppure la frase esce e il pannello
-dice solo i Segnali. Consiglio la prima (decisione 6).
+**Il faro e la boa, decisi dall'autore il 29 ottobre 2026.** Il prototipo
+diceva anche «Sulla carta ogni luce ha la sua sigla: tocca il faro o la boa per
+leggerla», ma sul pannello 9 il faro e la boa non ci sono: stanno sul primo
+tratto di costa, e la carta scorre di un pannello alla volta (guardato in una
+fotografia a 1280×800; l'ha trovato anche il parere di taste, §5). L'autore ha deciso: «non mettere faro e boa, si cambia testo». La frase
+esce, e il pannello dice solo i Segnali. Le luci restano toccabili nel primo
+pannello, dove si vedono; la loro sigla la dice la scheda che si apre.
 
 ### Pannello 10 — L'esame, in ordine
 
@@ -535,11 +562,13 @@ piccole perché la scheda le dice in testo.
 1. **Il secondo pannello: «Tutte le domande dell'esame», con i limiti, al
    posto di «Come funziona».** *Raccomandazione:* sì. I limiti sono la cosa che
    ci distingue, e «Come funziona» spiegava i triangoli.
-2. **Il titolo principale.** Tenere «Preparati alla patente nautica, un passo
-   alla volta.» (entra a 375×812 e a 1280×800), o «La patente nautica, un passo
-   alla volta.» con il sottotitolo corto, che entra anche a 375×667.
-   *Raccomandazione:* il corto, se i telefoni piccoli contano; altrimenti tenere
-   quello di oggi.
+2. **Il titolo principale e il sottotitolo.** Il titolo di oggi non passa D-36;
+   la proposta è «La patente nautica, un passo alla volta.» (o «La patente
+   nautica, passo dopo passo.»). Il sottotitolo: «…senza limiti dalla costa, a
+   motore e a vela. Gratis.», o il corto «…senza limiti dalla costa. Gratis.»,
+   che fa entrare il primo pannello anche a 375×667. *Raccomandazione:* il
+   titolo proposto e il sottotitolo lungo; il corto se i telefoni piccoli
+   contano di più di «a motore e a vela».
 3. **«Simula il quiz base» o «Simula il quiz».** *Raccomandazione:* «Simula il
    quiz base», com'è nella pagina e nei controlli.
 4. **Dove sta l'invito con risposte senza account.** (a) Nel primo pannello,
@@ -551,9 +580,8 @@ piccole perché la scheda le dice in testo.
 5. **Il testo dell'invito**, se resta nel primo pannello: quello accorciato del
    §3 al posto dei due paragrafi decisi nel ridisegno. *Raccomandazione:* sì;
    dice le stesse cose in una frase in meno.
-6. **Il faro e la boa sul pannello dei Segnali.** P-100 porta una luce sul tratto
-   di costa del pannello 9, o la frase «tocca il faro o la boa» esce.
-   *Raccomandazione:* la luce.
+6. ~~Il faro e la boa sul pannello dei Segnali.~~ *Deciso dall'autore il 29
+   ottobre 2026: si cambia testo, faro e boa restano nel primo pannello.*
 7. **Le carte nel pannello del carteggio** («sulle carte 5/D e 42/D»).
    *Raccomandazione:* tenerle.
 8. **«Ferma il movimento» o «Ferma le luci».** *Raccomandazione:* «Ferma il
@@ -587,6 +615,15 @@ Nessun controllo è stato toccato.
 - **HA: i motivi dell'allenamento consigliato** («3 da rifare, 22 mai viste») si
   contano dai `perche` della lista. Meglio un conto esportato dal motore, se si
   vuole tenere la regola «chi disegna non ricalcola» alla lettera.
+- **D-36** (adottata il 29 ottobre): i titoli dei pannelli passano solo con
+  `text-wrap: balance` sugli h2; il titolo principale passa senza. Il suo
+  controllo, in T-13, è da scrivere; `__titoli()` della copia fa la stessa misura.
+- **I titoli cambiati per D-36**: il titolo principale («La patente nautica, un
+  passo alla volta.») e quello del pannello 5 («L'allenamento che
+  consigliamo»). Se un controllo cerca «Preparati alla patente nautica», va
+  allineato.
+- **Il pannello 9** non dice più «tocca il faro o la boa» (decisione
+  dell'autore, 29 ottobre).
 - **Il punto delle migliaia**: `toLocaleString('it-IT')` scrive «1722»; serve una
   funzione che metta sempre il punto.
 - **Il nome dei triangoli** (il nome accessibile dei link del percorso): La prova

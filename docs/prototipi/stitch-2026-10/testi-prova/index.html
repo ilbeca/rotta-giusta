@@ -104,6 +104,7 @@ html.ridotto main{scroll-behavior:auto}
 html.ridotto .colonna>*{opacity:1;transform:none;transition:none}
 html.ridotto .lampo-faro,html.ridotto .lampo-boa{animation:none;opacity:.55}
 /* testi-prova: aggiunte di questa copia, per misurare i testi (non una proposta di disegno) */
+main h2,main h3{text-wrap:balance} /* D-36: nessun titolo dei pannelli finisce con una parola sola; l h1 ne fa a meno */
 .secondo{margin-top:24px}
 .secondo h3{font-size:16px;line-height:1.45;margin:0 0 8px;font-weight:700}
 .secondo p{margin:0 0 8px}
@@ -185,7 +186,7 @@ html.s-errore .principale{opacity:.45;pointer-events:none}
 <main id="pannelli">
   <section id="p0" data-titolo="La prova d'esame"><div class="colonna">
     <div class="stato-avviso" data-solo="errore">Le domande non si caricano. Controlla la connessione e ricarica la pagina.</div>
-    <h1>Preparati alla patente nautica, un passo alla volta.</h1>
+    <h1>La patente nautica, un passo alla volta.</h1>
     <p data-solo="h0 errore">Quiz e carteggio per la patente senza limiti dalla costa, a motore e a vela. Gratis.</p>
     <div class="scheda">
       <h2>La prova d'esame dei quiz</h2>
@@ -212,7 +213,7 @@ html.s-errore .principale{opacity:.45;pointer-events:none}
   <section id="p3" data-titolo="Allenamento breve"><div class="colonna"><h2>Un allenamento breve</h2>
     <p>Sono 10 domande del quiz base, prima quelle che non hai mai visto. Dopo ogni risposta vedi se è giusta e qual è quella esatta. Ti fermi quando vuoi.</p>
     <a class="secondario" href="#">Allenati con 10 domande</a></div></section>
-  <section id="p4" data-titolo="Allenamento consigliato"><div class="colonna"><h2>L'allenamento consigliato</h2>
+  <section id="p4" data-titolo="Allenamento consigliato"><div class="colonna"><h2>L'allenamento che consigliamo</h2>
     <p data-non="errore">Sono 25 domande del quiz base. All'inizio sono domande mai viste; quando hai risposto, entrano anche alcune che hai sbagliato. Ogni domanda dice perché è lì.</p>
     <p data-solo="errore">Quante sono, lo diciamo quando le domande si caricano. Ogni domanda dice perché è lì.</p>
     <a class="secondario" href="#">Apri l'allenamento consigliato</a></div></section>
@@ -229,7 +230,6 @@ html.s-errore .principale{opacity:.45;pointer-events:none}
     <a class="secondario" href="#">Apri il Carteggio</a><button class="rivedi" type="button" data-rivedi>Rivedi l'esercizio sulla carta</button></div></section>
   <section id="p8" data-titolo="Fanali e segnali"><div class="colonna"><h2>Fanali e segnali</h2>
     <p>Un gioco con 53 segnali: fanali di notte, segnali di giorno, suoni nella nebbia e in manovra. Non sono domande dell'esame: servono a riconoscerli a colpo d'occhio.</p>
-    <p>Sulla carta ogni luce ha la sua sigla: tocca il faro o la boa per leggerla.</p>
     <a class="secondario" href="#">Apri i Segnali</a></div></section>
   <section id="p9" data-titolo="L'esame, in ordine"><div class="colonna"><h2>L'esame, in ordine</h2>
     <p>In Esame trovi le prove nell'ordine in cui le sostieni: carteggio, quiz base, quiz vela, ognuna con le condizioni dell'esame. Le prepari quando vuoi, anche in un altro ordine.</p>
@@ -552,6 +552,14 @@ window.__carta = { RS, VE, PV, A, B, C };
 <script>
 /* Misura per testi-pannelli.md: dove comincia e finisce il testo di ogni pannello, e se sta fra la testata e la barra. */
 (() => { const p = new URLSearchParams(location.search).get('pannello'); if (p) addEventListener('load', () => document.getElementById(p)?.scrollIntoView()); })();
+/* D-36: le righe di ogni titolo visibile, e quante parole ha l'ultima. */
+window.__righe = el => { const r = document.createRange(); const parole = [];
+  const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); let n;
+  while ((n = w.nextNode())) { const re = /\S+/g; let m; while ((m = re.exec(n.data))) { r.setStart(n, m.index); r.setEnd(n, m.index + m[0].length); const b = r.getBoundingClientRect(); if (b.height) parole.push(Math.round(b.top)); } }
+  const righe = []; for (const t of parole) { const u = righe[righe.length - 1]; if (u && Math.abs(u.t - t) < 4) u.n++; else righe.push({ t, n: 1 }); }
+  return righe.map(x => x.n); };
+window.__titoli = () => [...document.querySelectorAll('main h1, main h2, main h3')].filter(h => getComputedStyle(h).display !== 'none' && h.getBoundingClientRect().height)
+  .map(h => { const p = window.__righe(h); return (h.closest('section').id + ' ' + h.tagName + ' «' + h.textContent.trim() + '» righe ' + p.length + ' [' + p.join(',') + ']' + (p[p.length - 1] < 2 ? ' PAROLA SOLA' : '')); }).join('\n');
 window.__misura = () => { const vis = e => { const cs = getComputedStyle(e); const r = e.getBoundingClientRect(); return cs.display !== 'none' && r.height > 0; };
   const sotto = document.querySelector('.barra-sotto'); const bar = sotto && vis(sotto) ? sotto.getBoundingClientRect().top : innerHeight;
   return innerWidth + 'x' + innerHeight + ' · ' + [...document.querySelectorAll('main section')].map(s => { const sr = s.getBoundingClientRect(); const c = s.querySelector('.colonna');
