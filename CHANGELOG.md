@@ -88,6 +88,7 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   parola sola», con il controllo da scrivere); le quattro righe entrano nel
   registro dei disaccordi di `docs/procedure-disegno.md`; che cosa mettere nei
   pannelli 1–10 lo decide la sessione dedicata.
+
 ### Corretto — I-31: cambiare la scelta in simulazione, e «Avanti da solo»
 
 - **Perché.** Un utente ha scritto all'autore che le risposte non si cambiano
