@@ -1,0 +1,1199 @@
+{
+  "min_errori": 2,
+  "per_lunghezza": {
+    "10": {
+      "1a_semplice": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.038,
+        "recall_rilevabili": 0.667,
+        "precisione": 0.667,
+        "inventati_per_studente": 0.025,
+        "nessuna_lacuna_con_lacune": 0.933,
+        "sani_con_allarme": 0.1,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 52,
+          "rilevabili": 3,
+          "trovate": 2,
+          "trovate_rilevabili": 2,
+          "segnalazioni": 3,
+          "giuste": 2
+        }
+      },
+      "1b_bayes": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.038,
+        "recall_rilevabili": 0.667,
+        "precisione": 0.667,
+        "inventati_per_studente": 0.025,
+        "nessuna_lacuna_con_lacune": 0.933,
+        "sani_con_allarme": 0.1,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 52,
+          "rilevabili": 3,
+          "trovate": 2,
+          "trovate_rilevabili": 2,
+          "segnalazioni": 3,
+          "giuste": 2
+        }
+      },
+      "claude-haiku-5-5": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.038,
+        "recall_rilevabili": 0.667,
+        "precisione": 0.667,
+        "inventati_per_studente": 0.025,
+        "nessuna_lacuna_con_lacune": 0.933,
+        "sani_con_allarme": 0.1,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 52,
+          "rilevabili": 3,
+          "trovate": 2,
+          "trovate_rilevabili": 2,
+          "segnalazioni": 3,
+          "giuste": 2
+        }
+      },
+      "claude-haiku-5-5_conf_media": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.038,
+        "recall_rilevabili": 0.667,
+        "precisione": 0.667,
+        "inventati_per_studente": 0.025,
+        "nessuna_lacuna_con_lacune": 0.933,
+        "sani_con_allarme": 0.1,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 52,
+          "rilevabili": 3,
+          "trovate": 2,
+          "trovate_rilevabili": 2,
+          "segnalazioni": 3,
+          "giuste": 2
+        }
+      },
+      "claude-haiku-5-5_conf_alta": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.019,
+        "recall_rilevabili": 0.333,
+        "precisione": 1,
+        "inventati_per_studente": 0,
+        "nessuna_lacuna_con_lacune": 0.967,
+        "sani_con_allarme": 0,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 52,
+          "rilevabili": 3,
+          "trovate": 1,
+          "trovate_rilevabili": 1,
+          "segnalazioni": 1,
+          "giuste": 1
+        }
+      },
+      "claude-sonnet-5-5": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.038,
+        "recall_rilevabili": 0.667,
+        "precisione": 0.667,
+        "inventati_per_studente": 0.025,
+        "nessuna_lacuna_con_lacune": 0.933,
+        "sani_con_allarme": 0.1,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 52,
+          "rilevabili": 3,
+          "trovate": 2,
+          "trovate_rilevabili": 2,
+          "segnalazioni": 3,
+          "giuste": 2
+        }
+      },
+      "claude-sonnet-5-5_conf_media": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.038,
+        "recall_rilevabili": 0.667,
+        "precisione": 0.667,
+        "inventati_per_studente": 0.025,
+        "nessuna_lacuna_con_lacune": 0.933,
+        "sani_con_allarme": 0.1,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 52,
+          "rilevabili": 3,
+          "trovate": 2,
+          "trovate_rilevabili": 2,
+          "segnalazioni": 3,
+          "giuste": 2
+        }
+      },
+      "claude-sonnet-5-5_conf_alta": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.019,
+        "recall_rilevabili": 0.333,
+        "precisione": 1,
+        "inventati_per_studente": 0,
+        "nessuna_lacuna_con_lacune": 0.967,
+        "sani_con_allarme": 0,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 52,
+          "rilevabili": 3,
+          "trovate": 1,
+          "trovate_rilevabili": 1,
+          "segnalazioni": 1,
+          "giuste": 1
+        }
+      }
+    },
+    "20": {
+      "1a_semplice": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.232,
+        "recall_rilevabili": 0.684,
+        "precisione": 0.619,
+        "inventati_per_studente": 0.2,
+        "nessuna_lacuna_con_lacune": 0.5,
+        "sani_con_allarme": 0.2,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 56,
+          "rilevabili": 19,
+          "trovate": 13,
+          "trovate_rilevabili": 13,
+          "segnalazioni": 21,
+          "giuste": 13
+        }
+      },
+      "1b_bayes": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.214,
+        "recall_rilevabili": 0.632,
+        "precisione": 0.75,
+        "inventati_per_studente": 0.1,
+        "nessuna_lacuna_con_lacune": 0.533,
+        "sani_con_allarme": 0.2,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 56,
+          "rilevabili": 19,
+          "trovate": 12,
+          "trovate_rilevabili": 12,
+          "segnalazioni": 16,
+          "giuste": 12
+        }
+      },
+      "claude-haiku-5-5": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.232,
+        "recall_rilevabili": 0.684,
+        "precisione": 0.65,
+        "inventati_per_studente": 0.175,
+        "nessuna_lacuna_con_lacune": 0.5,
+        "sani_con_allarme": 0.2,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 56,
+          "rilevabili": 19,
+          "trovate": 13,
+          "trovate_rilevabili": 13,
+          "segnalazioni": 20,
+          "giuste": 13
+        }
+      },
+      "claude-haiku-5-5_conf_media": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.232,
+        "recall_rilevabili": 0.684,
+        "precisione": 0.813,
+        "inventati_per_studente": 0.075,
+        "nessuna_lacuna_con_lacune": 0.533,
+        "sani_con_allarme": 0.2,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 56,
+          "rilevabili": 19,
+          "trovate": 13,
+          "trovate_rilevabili": 13,
+          "segnalazioni": 16,
+          "giuste": 13
+        }
+      },
+      "claude-haiku-5-5_conf_alta": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.036,
+        "recall_rilevabili": 0.105,
+        "precisione": 1,
+        "inventati_per_studente": 0,
+        "nessuna_lacuna_con_lacune": 0.933,
+        "sani_con_allarme": 0,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 56,
+          "rilevabili": 19,
+          "trovate": 2,
+          "trovate_rilevabili": 2,
+          "segnalazioni": 2,
+          "giuste": 2
+        }
+      },
+      "claude-sonnet-5-5": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.214,
+        "recall_rilevabili": 0.632,
+        "precisione": 0.75,
+        "inventati_per_studente": 0.1,
+        "nessuna_lacuna_con_lacune": 0.533,
+        "sani_con_allarme": 0.1,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 56,
+          "rilevabili": 19,
+          "trovate": 12,
+          "trovate_rilevabili": 12,
+          "segnalazioni": 16,
+          "giuste": 12
+        }
+      },
+      "claude-sonnet-5-5_conf_media": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.214,
+        "recall_rilevabili": 0.632,
+        "precisione": 0.857,
+        "inventati_per_studente": 0.05,
+        "nessuna_lacuna_con_lacune": 0.567,
+        "sani_con_allarme": 0,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 56,
+          "rilevabili": 19,
+          "trovate": 12,
+          "trovate_rilevabili": 12,
+          "segnalazioni": 14,
+          "giuste": 12
+        }
+      },
+      "claude-sonnet-5-5_conf_alta": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.125,
+        "recall_rilevabili": 0.368,
+        "precisione": 0.875,
+        "inventati_per_studente": 0.025,
+        "nessuna_lacuna_con_lacune": 0.733,
+        "sani_con_allarme": 0,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 56,
+          "rilevabili": 19,
+          "trovate": 7,
+          "trovate_rilevabili": 7,
+          "segnalazioni": 8,
+          "giuste": 7
+        }
+      }
+    },
+    "40": {
+      "1a_semplice": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.36,
+        "recall_rilevabili": 0.581,
+        "precisione": 0.429,
+        "inventati_per_studente": 0.6,
+        "nessuna_lacuna_con_lacune": 0.2,
+        "sani_con_allarme": 0.5,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 50,
+          "rilevabili": 31,
+          "trovate": 18,
+          "trovate_rilevabili": 18,
+          "segnalazioni": 42,
+          "giuste": 18
+        }
+      },
+      "1b_bayes": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.34,
+        "recall_rilevabili": 0.548,
+        "precisione": 0.85,
+        "inventati_per_studente": 0.075,
+        "nessuna_lacuna_con_lacune": 0.4,
+        "sani_con_allarme": 0,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 50,
+          "rilevabili": 31,
+          "trovate": 17,
+          "trovate_rilevabili": 17,
+          "segnalazioni": 20,
+          "giuste": 17
+        }
+      },
+      "claude-haiku-5-5": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.36,
+        "recall_rilevabili": 0.581,
+        "precisione": 0.529,
+        "inventati_per_studente": 0.4,
+        "nessuna_lacuna_con_lacune": 0.267,
+        "sani_con_allarme": 0.4,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 50,
+          "rilevabili": 31,
+          "trovate": 18,
+          "trovate_rilevabili": 18,
+          "segnalazioni": 34,
+          "giuste": 18
+        }
+      },
+      "claude-haiku-5-5_conf_media": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.34,
+        "recall_rilevabili": 0.548,
+        "precisione": 0.739,
+        "inventati_per_studente": 0.15,
+        "nessuna_lacuna_con_lacune": 0.367,
+        "sani_con_allarme": 0.2,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 50,
+          "rilevabili": 31,
+          "trovate": 17,
+          "trovate_rilevabili": 17,
+          "segnalazioni": 23,
+          "giuste": 17
+        }
+      },
+      "claude-haiku-5-5_conf_alta": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.22,
+        "recall_rilevabili": 0.355,
+        "precisione": 0.917,
+        "inventati_per_studente": 0.025,
+        "nessuna_lacuna_con_lacune": 0.633,
+        "sani_con_allarme": 0,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 50,
+          "rilevabili": 31,
+          "trovate": 11,
+          "trovate_rilevabili": 11,
+          "segnalazioni": 12,
+          "giuste": 11
+        }
+      },
+      "claude-sonnet-5-5": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.34,
+        "recall_rilevabili": 0.548,
+        "precisione": 0.531,
+        "inventati_per_studente": 0.375,
+        "nessuna_lacuna_con_lacune": 0.233,
+        "sani_con_allarme": 0.3,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 50,
+          "rilevabili": 31,
+          "trovate": 17,
+          "trovate_rilevabili": 17,
+          "segnalazioni": 32,
+          "giuste": 17
+        }
+      },
+      "claude-sonnet-5-5_conf_media": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.34,
+        "recall_rilevabili": 0.548,
+        "precisione": 0.531,
+        "inventati_per_studente": 0.375,
+        "nessuna_lacuna_con_lacune": 0.233,
+        "sani_con_allarme": 0.3,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 50,
+          "rilevabili": 31,
+          "trovate": 17,
+          "trovate_rilevabili": 17,
+          "segnalazioni": 32,
+          "giuste": 17
+        }
+      },
+      "claude-sonnet-5-5_conf_alta": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.28,
+        "recall_rilevabili": 0.452,
+        "precisione": 0.933,
+        "inventati_per_studente": 0.025,
+        "nessuna_lacuna_con_lacune": 0.533,
+        "sani_con_allarme": 0,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 50,
+          "rilevabili": 31,
+          "trovate": 14,
+          "trovate_rilevabili": 14,
+          "segnalazioni": 15,
+          "giuste": 14
+        }
+      }
+    },
+    "80": {
+      "1a_semplice": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.736,
+        "recall_rilevabili": 0.796,
+        "precisione": 0.494,
+        "inventati_per_studente": 1,
+        "nessuna_lacuna_con_lacune": 0,
+        "sani_con_allarme": 0.7,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 53,
+          "rilevabili": 49,
+          "trovate": 39,
+          "trovate_rilevabili": 39,
+          "segnalazioni": 79,
+          "giuste": 39
+        }
+      },
+      "1b_bayes": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.698,
+        "recall_rilevabili": 0.755,
+        "precisione": 0.822,
+        "inventati_per_studente": 0.2,
+        "nessuna_lacuna_con_lacune": 0.133,
+        "sani_con_allarme": 0.2,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 53,
+          "rilevabili": 49,
+          "trovate": 37,
+          "trovate_rilevabili": 37,
+          "segnalazioni": 45,
+          "giuste": 37
+        }
+      },
+      "claude-haiku-5-5": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.774,
+        "recall_rilevabili": 0.837,
+        "precisione": 0.5,
+        "inventati_per_studente": 1.025,
+        "nessuna_lacuna_con_lacune": 0,
+        "sani_con_allarme": 0.6,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 53,
+          "rilevabili": 49,
+          "trovate": 41,
+          "trovate_rilevabili": 41,
+          "segnalazioni": 82,
+          "giuste": 41
+        }
+      },
+      "claude-haiku-5-5_conf_media": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.774,
+        "recall_rilevabili": 0.837,
+        "precisione": 0.661,
+        "inventati_per_studente": 0.525,
+        "nessuna_lacuna_con_lacune": 0.033,
+        "sani_con_allarme": 0.5,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 53,
+          "rilevabili": 49,
+          "trovate": 41,
+          "trovate_rilevabili": 41,
+          "segnalazioni": 62,
+          "giuste": 41
+        }
+      },
+      "claude-haiku-5-5_conf_alta": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.566,
+        "recall_rilevabili": 0.612,
+        "precisione": 0.909,
+        "inventati_per_studente": 0.075,
+        "nessuna_lacuna_con_lacune": 0.2,
+        "sani_con_allarme": 0.1,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 53,
+          "rilevabili": 49,
+          "trovate": 30,
+          "trovate_rilevabili": 30,
+          "segnalazioni": 33,
+          "giuste": 30
+        }
+      },
+      "claude-sonnet-5-5": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.736,
+        "recall_rilevabili": 0.796,
+        "precisione": 0.506,
+        "inventati_per_studente": 0.95,
+        "nessuna_lacuna_con_lacune": 0,
+        "sani_con_allarme": 0.7,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 53,
+          "rilevabili": 49,
+          "trovate": 39,
+          "trovate_rilevabili": 39,
+          "segnalazioni": 77,
+          "giuste": 39
+        }
+      },
+      "claude-sonnet-5-5_conf_media": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.736,
+        "recall_rilevabili": 0.796,
+        "precisione": 0.542,
+        "inventati_per_studente": 0.825,
+        "nessuna_lacuna_con_lacune": 0.033,
+        "sani_con_allarme": 0.6,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 53,
+          "rilevabili": 49,
+          "trovate": 39,
+          "trovate_rilevabili": 39,
+          "segnalazioni": 72,
+          "giuste": 39
+        }
+      },
+      "claude-sonnet-5-5_conf_alta": {
+        "studenti_con_lacune": 30,
+        "studenti_sani": 10,
+        "recall": 0.566,
+        "recall_rilevabili": 0.612,
+        "precisione": 0.811,
+        "inventati_per_studente": 0.175,
+        "nessuna_lacuna_con_lacune": 0.133,
+        "sani_con_allarme": 0.2,
+        "concetti_per_segnalazione": 1,
+        "conti": {
+          "lacune_vere": 53,
+          "rilevabili": 49,
+          "trovate": 30,
+          "trovate_rilevabili": 30,
+          "segnalazioni": 37,
+          "giuste": 30
+        }
+      }
+    }
+  },
+  "remoto": {
+    "claude-haiku-5-5": {
+      "chiamate": 288,
+      "errori_api": 0,
+      "rifiuti": 0,
+      "uscite_illeggibili": 0,
+      "token_in": 1154023,
+      "token_out": 138289,
+      "costo_totale": 0.1845,
+      "costo_per_chiamata": 0.00064,
+      "ms_mediana": 2562,
+      "ms_p90": 6269,
+      "esito_nessuna_lacuna": 144,
+      "diagnosi_dette": 251,
+      "diagnosi_tenute_dal_raccordo": 251,
+      "scarti_del_raccordo": {
+        "quesito_inesistente": 0,
+        "non_fatto": 0,
+        "non_sbagliato": 0,
+        "concetto_assente": 0,
+        "sotto_minimo": 0,
+        "confidenza": 0,
+        "doppione": 0,
+        "forma": 0
+      },
+      "stabilita": {
+        "studenti_ripetuti": 32,
+        "jaccard_medio": 0.965,
+        "quota_identiche": 0.875,
+        "dettaglio": [
+          {
+            "seme": 32100000,
+            "n": 10,
+            "lacune": 2,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32100001,
+            "n": 10,
+            "lacune": 2,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32100002,
+            "n": 10,
+            "lacune": 1,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32100003,
+            "n": 10,
+            "lacune": 2,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32100004,
+            "n": 10,
+            "lacune": 3,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32100005,
+            "n": 10,
+            "lacune": 2,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32100300,
+            "n": 10,
+            "lacune": 0,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32100301,
+            "n": 10,
+            "lacune": 0,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32200000,
+            "n": 20,
+            "lacune": 1,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32200001,
+            "n": 20,
+            "lacune": 2,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32200003,
+            "n": 20,
+            "lacune": 1,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32200002,
+            "n": 20,
+            "lacune": 3,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32200004,
+            "n": 20,
+            "lacune": 2,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32200005,
+            "n": 20,
+            "lacune": 1,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32200300,
+            "n": 20,
+            "lacune": 0,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32200301,
+            "n": 20,
+            "lacune": 0,
+            "chiamate": 5,
+            "jaccard_medio": 0.8,
+            "identiche": false
+          },
+          {
+            "seme": 32400000,
+            "n": 40,
+            "lacune": 2,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32400001,
+            "n": 40,
+            "lacune": 1,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32400002,
+            "n": 40,
+            "lacune": 1,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32400003,
+            "n": 40,
+            "lacune": 3,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32400004,
+            "n": 40,
+            "lacune": 1,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32400005,
+            "n": 40,
+            "lacune": 1,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32400300,
+            "n": 40,
+            "lacune": 0,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32400301,
+            "n": 40,
+            "lacune": 0,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32800000,
+            "n": 80,
+            "lacune": 1,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32800001,
+            "n": 80,
+            "lacune": 3,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32800002,
+            "n": 80,
+            "lacune": 1,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32800003,
+            "n": 80,
+            "lacune": 1,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32800004,
+            "n": 80,
+            "lacune": 3,
+            "chiamate": 5,
+            "jaccard_medio": 0.943,
+            "identiche": false
+          },
+          {
+            "seme": 32800005,
+            "n": 80,
+            "lacune": 2,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32800300,
+            "n": 80,
+            "lacune": 0,
+            "chiamate": 5,
+            "jaccard_medio": 0.725,
+            "identiche": false
+          },
+          {
+            "seme": 32800301,
+            "n": 80,
+            "lacune": 0,
+            "chiamate": 5,
+            "jaccard_medio": 0.4,
+            "identiche": false
+          }
+        ]
+      }
+    },
+    "claude-sonnet-5-5": {
+      "chiamate": 288,
+      "errori_api": 0,
+      "rifiuti": 0,
+      "uscite_illeggibili": 0,
+      "token_in": 1154023,
+      "token_out": 17163,
+      "costo_totale": 2.4797,
+      "costo_per_chiamata": 0.00861,
+      "ms_mediana": 1678,
+      "ms_p90": 2108,
+      "esito_nessuna_lacuna": 147,
+      "diagnosi_dette": 235,
+      "diagnosi_tenute_dal_raccordo": 235,
+      "scarti_del_raccordo": {
+        "quesito_inesistente": 0,
+        "non_fatto": 0,
+        "non_sbagliato": 0,
+        "concetto_assente": 0,
+        "sotto_minimo": 0,
+        "confidenza": 0,
+        "doppione": 0,
+        "forma": 0
+      },
+      "stabilita": {
+        "studenti_ripetuti": 32,
+        "jaccard_medio": 0.992,
+        "quota_identiche": 0.938,
+        "dettaglio": [
+          {
+            "seme": 32100000,
+            "n": 10,
+            "lacune": 2,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32100001,
+            "n": 10,
+            "lacune": 2,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32100002,
+            "n": 10,
+            "lacune": 1,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32100003,
+            "n": 10,
+            "lacune": 2,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32100004,
+            "n": 10,
+            "lacune": 3,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32100005,
+            "n": 10,
+            "lacune": 2,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32100300,
+            "n": 10,
+            "lacune": 0,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32100301,
+            "n": 10,
+            "lacune": 0,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32200000,
+            "n": 20,
+            "lacune": 1,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32200001,
+            "n": 20,
+            "lacune": 2,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32200002,
+            "n": 20,
+            "lacune": 3,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32200003,
+            "n": 20,
+            "lacune": 1,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32200004,
+            "n": 20,
+            "lacune": 2,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32200005,
+            "n": 20,
+            "lacune": 1,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32200300,
+            "n": 20,
+            "lacune": 0,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32200301,
+            "n": 20,
+            "lacune": 0,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32400000,
+            "n": 40,
+            "lacune": 2,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32400001,
+            "n": 40,
+            "lacune": 1,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32400002,
+            "n": 40,
+            "lacune": 1,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32400003,
+            "n": 40,
+            "lacune": 3,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32400004,
+            "n": 40,
+            "lacune": 1,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32400005,
+            "n": 40,
+            "lacune": 1,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32400300,
+            "n": 40,
+            "lacune": 0,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32400301,
+            "n": 40,
+            "lacune": 0,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32800000,
+            "n": 80,
+            "lacune": 1,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32800001,
+            "n": 80,
+            "lacune": 3,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32800002,
+            "n": 80,
+            "lacune": 1,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32800003,
+            "n": 80,
+            "lacune": 1,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32800004,
+            "n": 80,
+            "lacune": 3,
+            "chiamate": 5,
+            "jaccard_medio": 0.943,
+            "identiche": false
+          },
+          {
+            "seme": 32800005,
+            "n": 80,
+            "lacune": 2,
+            "chiamate": 5,
+            "jaccard_medio": 0.8,
+            "identiche": false
+          },
+          {
+            "seme": 32800300,
+            "n": 80,
+            "lacune": 0,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          },
+          {
+            "seme": 32800301,
+            "n": 80,
+            "lacune": 0,
+            "chiamate": 5,
+            "jaccard_medio": 1,
+            "identiche": true
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,682 @@
+{
+ "voce": "I principali fanali luminosi e il sistema IALA",
+ "progressivi": "1.5.3-1 … 1.5.3-120 (base-727 … base-846)",
+ "data": "2026-11-14",
+ "stato": "Pilota. Concetti e tag scritti da Claude leggendo testi e figure; non ministeriali, non rivisti da una persona.",
+ "concetti": [
+  {
+   "id": "portate",
+   "nome": "Le tre portate di un faro",
+   "parole_chiave": [
+    "portata luminosa",
+    "portata nominale",
+    "portata geografica",
+    "visibilità meteorologica",
+    "curvatura terrestre"
+   ],
+   "copre": "Che cosa sono portata luminosa, nominale e geografica, da che cosa dipendono, quale è scritta sulla carta.",
+   "quesiti": 12
+  },
+  {
+   "id": "fase_periodo",
+   "nome": "Fase, periodo e caratteristica",
+   "parole_chiave": [
+    "caratteristica della luce",
+    "fase",
+    "periodo",
+    "eclisse",
+    "luce ritmica",
+    "Elenco dei fari"
+   ],
+   "copre": "Come si compone il ritmo di una luce: fase, periodo, e la caratteristica che identifica un faro di notte.",
+   "quesiti": 7
+  },
+  {
+   "id": "tipi_luce",
+   "nome": "Tipi di luce e loro abbreviazioni",
+   "parole_chiave": [
+    "luce fissa",
+    "luce a lampi",
+    "intermittente",
+    "isofase",
+    "scintillante",
+    "luce alternata",
+    "abbreviazioni delle luci"
+   ],
+   "copre": "Riconoscere il tipo di luce dalla sigla, italiana (Lam, Int, Sc, Alt, F) o inglese (Fl, Oc, Iso, Q), e il colore (b, r, v, G, W, Y).",
+   "quesiti": 13
+  },
+  {
+   "id": "sigla_completa",
+   "nome": "Leggere la sigla completa di un segnalamento",
+   "parole_chiave": [
+    "caratteristica sulla carta",
+    "elevazione della luce",
+    "Fl(3) 10s 37m 12M",
+    "lettura della sigla"
+   ],
+   "copre": "Mettere in ordine i pezzi della sigla scritta accanto al simbolo: ritmo e gruppi, colore, periodo, elevazione sul l.m.m., portata nominale.",
+   "quesiti": 13
+  },
+  {
+   "id": "tipi_segnalamento",
+   "nome": "Fari, fanali, boe, mede e gavitelli",
+   "parole_chiave": [
+    "faro",
+    "fanale",
+    "boa luminosa",
+    "meda",
+    "gavitello",
+    "dromo",
+    "segnalamenti marittimi"
+   ],
+   "copre": "Che cos'è ciascun tipo di segnalamento, a che cosa serve, e che cosa distingue un faro da un fanale.",
+   "quesiti": 9
+  },
+  {
+   "id": "settori",
+   "nome": "Settori di luce",
+   "parole_chiave": [
+    "luce a settori",
+    "settore di visibilità",
+    "settore rosso"
+   ],
+   "copre": "Luci di colori diversi per settori, il settore di visibilità disegnato sulla carta, il significato del settore rosso.",
+   "quesiti": 3
+  },
+  {
+   "id": "radar_nebbia",
+   "nome": "Riflettore radar, racon e segnali da nebbia",
+   "parole_chiave": [
+    "riflettore radar",
+    "racon",
+    "segnale da nebbia",
+    "boa a campana",
+    "corno da nebbia"
+   ],
+   "copre": "Dispositivi radar passivi e attivi e segnali sonori montati sui segnalamenti, e i loro simboli.",
+   "quesiti": 5
+  },
+  {
+   "id": "simboli_carta",
+   "nome": "Simboli dei segnalamenti sulla carta nautica",
+   "parole_chiave": [
+    "simboli della carta nautica",
+    "forma della boa",
+    "boa a fuso",
+    "boa ad asta",
+    "abbreviazioni dei colori",
+    "INT 1"
+   ],
+   "copre": "Leggere il disegno di una boa sulla carta: forma (sferica, conica, cilindrica, a fuso, ad asta), lettere dei colori (g, n, r, W, Y), simboli accessori.",
+   "quesiti": 15
+  },
+  {
+   "id": "iala_sistema",
+   "nome": "Il sistema AISM-IALA in generale",
+   "parole_chiave": [
+    "sistema AISM-IALA",
+    "regione A",
+    "regione B",
+    "codificazione diurna",
+    "miraglio"
+   ],
+   "copre": "Le cinque famiglie di segnali, la differenza fra regione A e B, gli elementi che danno il significato di giorno.",
+   "quesiti": 4
+  },
+  {
+   "id": "laterali",
+   "nome": "Segnali laterali, regione A",
+   "parole_chiave": [
+    "segnali laterali",
+    "regione A",
+    "senso convenzionale del segnalamento",
+    "rosso a sinistra"
+   ],
+   "copre": "Rosso e cilindrico a sinistra, verde e conico a dritta entrando in porto; il lato da cui si lascia il segnale.",
+   "quesiti": 5
+  },
+  {
+   "id": "cardinali_principio",
+   "nome": "Cardinali: il principio",
+   "parole_chiave": [
+    "segnali cardinali",
+    "quadranti",
+    "nero e giallo"
+   ],
+   "copre": "A che cosa servono le cardinali: si passa dal lato del nome, il pericolo è dalla parte opposta; i colori sono nero e giallo.",
+   "quesiti": 4
+  },
+  {
+   "id": "cardinali_miragli",
+   "nome": "Cardinali: riconoscerle dal miraglio",
+   "parole_chiave": [
+    "miraglio cardinale",
+    "due coni sovrapposti",
+    "cardinale Nord",
+    "cardinale Est",
+    "cardinale Sud",
+    "cardinale Ovest"
+   ],
+   "copre": "Le quattro combinazioni dei due coni neri (punte su, punte giù, unite per le basi, per i vertici) e il disegno della cardinale.",
+   "quesiti": 14
+  },
+  {
+   "id": "cardinali_luci",
+   "nome": "Cardinali: le luci",
+   "parole_chiave": [
+    "luce scintillante",
+    "scintillii continui",
+    "gruppi di 3, 6, 9",
+    "Q",
+    "VQ"
+   ],
+   "copre": "Il numero di scintillii che dice il quadrante: continuo N, 3 E, 6 (+ lampo lungo) S, 9 W.",
+   "quesiti": 6
+  },
+  {
+   "id": "cardinali_colori",
+   "nome": "Cardinali: i colori del corpo",
+   "parole_chiave": [
+    "bande nere e gialle",
+    "colori delle cardinali",
+    "n.g., g.n.g., n.g.n."
+   ],
+   "copre": "Dove stanno il nero e il giallo sul corpo di ciascuna cardinale, anche come lettere sotto il simbolo.",
+   "quesiti": 3
+  },
+  {
+   "id": "pericolo_isolato",
+   "nome": "Segnale di pericolo isolato",
+   "parole_chiave": [
+    "pericolo isolato",
+    "due sfere nere",
+    "Fl(2)",
+    "nero con bande rosse"
+   ],
+   "copre": "Corpo nero con bande rosse orizzontali, miraglio a due sfere nere, luce bianca a gruppi di due lampi.",
+   "quesiti": 6
+  },
+  {
+   "id": "acque_sicure",
+   "nome": "Segnale di acque sicure",
+   "parole_chiave": [
+    "acque sicure",
+    "sfera rossa",
+    "Mo(A)",
+    "isofase",
+    "lampo lungo"
+   ],
+   "copre": "Strisce verticali bianche e rosse, miraglio a sfera rossa, luce bianca isofase, intermittente, a lampo lungo o Morse A.",
+   "quesiti": 3
+  },
+  {
+   "id": "speciali",
+   "nome": "Segnali speciali",
+   "parole_chiave": [
+    "segnale speciale",
+    "miraglio a X giallo",
+    "luce gialla"
+   ],
+   "copre": "Corpo giallo, miraglio a X giallo, luce gialla; a che cosa servono (zone e situazioni particolari).",
+   "quesiti": 12
+  },
+  {
+   "id": "fluviale_segnali",
+   "nome": "Navigazione fluviale: i segnali",
+   "parole_chiave": [
+    "navigazione interna",
+    "segnali fluviali",
+    "chiamata e rimando",
+    "segnale di prosecuzione",
+    "rombo giallo"
+   ],
+   "copre": "Cartelli sulle sponde (chiamata, rimando, prosecuzione), l'arcata segnalata, le boe nei fiumi.",
+   "quesiti": 6
+  },
+  {
+   "id": "fluviale_regole",
+   "nome": "Navigazione fluviale: le regole",
+   "parole_chiave": [
+    "navigazione interna",
+    "precedenza fluviale",
+    "corrente a favore",
+    "dotazioni navigazione interna"
+   ],
+   "copre": "Chi ha la precedenza, che cosa si fa in una curva a gomito, che cosa si deve avere a bordo.",
+   "quesiti": 3
+  }
+ ],
+ "quesiti": {
+  "base-727": [
+   "portate"
+  ],
+  "base-728": [
+   "portate"
+  ],
+  "base-729": [
+   "portate"
+  ],
+  "base-730": [
+   "fase_periodo"
+  ],
+  "base-731": [
+   "tipi_segnalamento"
+  ],
+  "base-732": [
+   "tipi_segnalamento"
+  ],
+  "base-733": [
+   "tipi_luce"
+  ],
+  "base-734": [
+   "tipi_luce"
+  ],
+  "base-735": [
+   "tipi_luce"
+  ],
+  "base-736": [
+   "radar_nebbia"
+  ],
+  "base-737": [
+   "sigla_completa"
+  ],
+  "base-738": [
+   "speciali"
+  ],
+  "base-739": [
+   "radar_nebbia",
+   "simboli_carta"
+  ],
+  "base-740": [
+   "sigla_completa",
+   "cardinali_luci"
+  ],
+  "base-741": [
+   "pericolo_isolato"
+  ],
+  "base-742": [
+   "simboli_carta",
+   "pericolo_isolato"
+  ],
+  "base-743": [
+   "radar_nebbia",
+   "simboli_carta"
+  ],
+  "base-744": [
+   "simboli_carta",
+   "speciali"
+  ],
+  "base-745": [
+   "simboli_carta",
+   "speciali"
+  ],
+  "base-746": [
+   "sigla_completa",
+   "speciali"
+  ],
+  "base-747": [
+   "simboli_carta",
+   "speciali"
+  ],
+  "base-748": [
+   "simboli_carta",
+   "speciali"
+  ],
+  "base-749": [
+   "sigla_completa",
+   "speciali"
+  ],
+  "base-750": [
+   "radar_nebbia",
+   "simboli_carta"
+  ],
+  "base-751": [
+   "simboli_carta"
+  ],
+  "base-752": [
+   "sigla_completa"
+  ],
+  "base-753": [
+   "laterali"
+  ],
+  "base-754": [
+   "portate"
+  ],
+  "base-755": [
+   "tipi_segnalamento"
+  ],
+  "base-756": [
+   "portate"
+  ],
+  "base-757": [
+   "portate"
+  ],
+  "base-758": [
+   "iala_sistema",
+   "laterali"
+  ],
+  "base-759": [
+   "cardinali_miragli"
+  ],
+  "base-760": [
+   "tipi_luce"
+  ],
+  "base-761": [
+   "sigla_completa"
+  ],
+  "base-762": [
+   "cardinali_principio"
+  ],
+  "base-763": [
+   "tipi_luce"
+  ],
+  "base-764": [
+   "tipi_luce"
+  ],
+  "base-765": [
+   "portate"
+  ],
+  "base-766": [
+   "pericolo_isolato"
+  ],
+  "base-767": [
+   "sigla_completa"
+  ],
+  "base-768": [
+   "speciali"
+  ],
+  "base-769": [
+   "laterali"
+  ],
+  "base-770": [
+   "iala_sistema"
+  ],
+  "base-771": [
+   "tipi_luce"
+  ],
+  "base-772": [
+   "iala_sistema"
+  ],
+  "base-773": [
+   "fase_periodo"
+  ],
+  "base-774": [
+   "sigla_completa"
+  ],
+  "base-775": [
+   "iala_sistema"
+  ],
+  "base-776": [
+   "pericolo_isolato"
+  ],
+  "base-777": [
+   "cardinali_principio"
+  ],
+  "base-778": [
+   "cardinali_miragli"
+  ],
+  "base-779": [
+   "speciali"
+  ],
+  "base-780": [
+   "cardinali_miragli"
+  ],
+  "base-781": [
+   "cardinali_miragli"
+  ],
+  "base-782": [
+   "fase_periodo"
+  ],
+  "base-783": [
+   "tipi_segnalamento"
+  ],
+  "base-784": [
+   "tipi_segnalamento"
+  ],
+  "base-785": [
+   "acque_sicure"
+  ],
+  "base-786": [
+   "settori"
+  ],
+  "base-787": [
+   "tipi_segnalamento"
+  ],
+  "base-788": [
+   "tipi_segnalamento"
+  ],
+  "base-789": [
+   "portate"
+  ],
+  "base-790": [
+   "pericolo_isolato"
+  ],
+  "base-791": [
+   "acque_sicure"
+  ],
+  "base-792": [
+   "cardinali_miragli"
+  ],
+  "base-793": [
+   "cardinali_principio"
+  ],
+  "base-794": [
+   "tipi_luce",
+   "sigla_completa"
+  ],
+  "base-795": [
+   "cardinali_miragli"
+  ],
+  "base-796": [
+   "cardinali_miragli"
+  ],
+  "base-797": [
+   "cardinali_miragli"
+  ],
+  "base-798": [
+   "cardinali_miragli"
+  ],
+  "base-799": [
+   "cardinali_miragli"
+  ],
+  "base-800": [
+   "pericolo_isolato"
+  ],
+  "base-801": [
+   "tipi_luce"
+  ],
+  "base-802": [
+   "tipi_luce"
+  ],
+  "base-803": [
+   "fase_periodo"
+  ],
+  "base-804": [
+   "settori"
+  ],
+  "base-805": [
+   "portate"
+  ],
+  "base-806": [
+   "fase_periodo"
+  ],
+  "base-807": [
+   "fase_periodo"
+  ],
+  "base-808": [
+   "cardinali_luci"
+  ],
+  "base-809": [
+   "cardinali_luci"
+  ],
+  "base-810": [
+   "cardinali_luci"
+  ],
+  "base-811": [
+   "settori"
+  ],
+  "base-812": [
+   "portate"
+  ],
+  "base-813": [
+   "portate"
+  ],
+  "base-814": [
+   "portate"
+  ],
+  "base-815": [
+   "fase_periodo"
+  ],
+  "base-816": [
+   "tipi_segnalamento"
+  ],
+  "base-817": [
+   "tipi_segnalamento"
+  ],
+  "base-818": [
+   "tipi_luce"
+  ],
+  "base-819": [
+   "tipi_luce"
+  ],
+  "base-820": [
+   "tipi_luce"
+  ],
+  "base-821": [
+   "radar_nebbia"
+  ],
+  "base-822": [
+   "sigla_completa"
+  ],
+  "base-823": [
+   "cardinali_principio",
+   "cardinali_miragli"
+  ],
+  "base-824": [
+   "simboli_carta",
+   "cardinali_colori"
+  ],
+  "base-825": [
+   "acque_sicure"
+  ],
+  "base-826": [
+   "simboli_carta",
+   "speciali"
+  ],
+  "base-827": [
+   "simboli_carta",
+   "speciali"
+  ],
+  "base-828": [
+   "sigla_completa",
+   "speciali"
+  ],
+  "base-829": [
+   "sigla_completa",
+   "cardinali_luci"
+  ],
+  "base-830": [
+   "cardinali_miragli"
+  ],
+  "base-831": [
+   "simboli_carta",
+   "cardinali_colori"
+  ],
+  "base-832": [
+   "simboli_carta",
+   "cardinali_colori"
+  ],
+  "base-833": [
+   "sigla_completa",
+   "cardinali_luci"
+  ],
+  "base-834": [
+   "simboli_carta",
+   "cardinali_miragli"
+  ],
+  "base-835": [
+   "cardinali_miragli"
+  ],
+  "base-836": [
+   "laterali"
+  ],
+  "base-837": [
+   "laterali"
+  ],
+  "base-838": [
+   "fluviale_segnali"
+  ],
+  "base-839": [
+   "fluviale_regole"
+  ],
+  "base-840": [
+   "fluviale_segnali"
+  ],
+  "base-841": [
+   "fluviale_segnali"
+  ],
+  "base-842": [
+   "fluviale_regole"
+  ],
+  "base-843": [
+   "fluviale_segnali"
+  ],
+  "base-844": [
+   "fluviale_segnali"
+  ],
+  "base-845": [
+   "fluviale_segnali"
+  ],
+  "base-846": [
+   "fluviale_regole"
+  ]
+ },
+ "rilettura": {
+  "campione": [
+   "base-727",
+   "base-728",
+   "base-730",
+   "base-731",
+   "base-734",
+   "base-736",
+   "base-739",
+   "base-743",
+   "base-745",
+   "base-752",
+   "base-754",
+   "base-757",
+   "base-763",
+   "base-765",
+   "base-768",
+   "base-769",
+   "base-774",
+   "base-787",
+   "base-789",
+   "base-790",
+   "base-792",
+   "base-793",
+   "base-794",
+   "base-796",
+   "base-803",
+   "base-815",
+   "base-816",
+   "base-819",
+   "base-823",
+   "base-845"
+  ],
+  "come": "random.seed(32); random.sample(range(727, 847), 30)",
+  "cambi": [
+   {
+    "quesito": "base-739",
+    "cambio": "+simboli_carta",
+    "perche": "«su una carta nautica il simbolo»: si risponde riconoscendo il simbolo"
+   },
+   {
+    "quesito": "base-743",
+    "cambio": "+simboli_carta",
+    "perche": "il quesito mostra il simbolo del racon con corno, da leggere sulla carta"
+   }
+  ]
+ }
+}

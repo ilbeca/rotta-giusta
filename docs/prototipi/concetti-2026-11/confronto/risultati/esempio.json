@@ -1,0 +1,90 @@
+{
+ "nota": "Uno studente simulato del banco (n=40), il fascicolo che il codice manda e le due risposte. Dati sintetici.",
+ "seme": 32400000,
+ "lacune_vere": [
+  "cardinali_miragli",
+  "fluviale_regole"
+ ],
+ "sistema": "Sei un istruttore di patente nautica. Ricevi il fascicolo delle risposte di una persona ai quesiti della voce «I principali fanali luminosi e il sistema IALA» e dici quali concetti, fra quelli della tassonomia, la persona non sa.\n\nTassonomia (usa solo questi id):\n- portate: Le tre portate di un faro. Che cosa sono portata luminosa, nominale e geografica, da che cosa dipendono, quale è scritta sulla carta.\n- fase_periodo: Fase, periodo e caratteristica. Come si compone il ritmo di una luce: fase, periodo, e la caratteristica che identifica un faro di notte.\n- tipi_luce: Tipi di luce e loro abbreviazioni. Riconoscere il tipo di luce dalla sigla, italiana (Lam, Int, Sc, Alt, F) o inglese (Fl, Oc, Iso, Q), e il colore (b, r, v, G, W, Y).\n- sigla_completa: Leggere la sigla completa di un segnalamento. Mettere in ordine i pezzi della sigla scritta accanto al simbolo: ritmo e gruppi, colore, periodo, elevazione sul l.m.m., portata nominale.\n- tipi_segnalamento: Fari, fanali, boe, mede e gavitelli. Che cos'è ciascun tipo di segnalamento, a che cosa serve, e che cosa distingue un faro da un fanale.\n- settori: Settori di luce. Luci di colori diversi per settori, il settore di visibilità disegnato sulla carta, il significato del settore rosso.\n- radar_nebbia: Riflettore radar, racon e segnali da nebbia. Dispositivi radar passivi e attivi e segnali sonori montati sui segnalamenti, e i loro simboli.\n- simboli_carta: Simboli dei segnalamenti sulla carta nautica. Leggere il disegno di una boa sulla carta: forma (sferica, conica, cilindrica, a fuso, ad asta), lettere dei colori (g, n, r, W, Y), simboli accessori.\n- iala_sistema: Il sistema AISM-IALA in generale. Le cinque famiglie di segnali, la differenza fra regione A e B, gli elementi che danno il significato di giorno.\n- laterali: Segnali laterali, regione A. Rosso e cilindrico a sinistra, verde e conico a dritta entrando in porto; il lato da cui si lascia il segnale.\n- cardinali_principio: Cardinali: il principio. A che cosa servono le cardinali: si passa dal lato del nome, il pericolo è dalla parte opposta; i colori sono nero e giallo.\n- cardinali_miragli: Cardinali: riconoscerle dal miraglio. Le quattro combinazioni dei due coni neri (punte su, punte giù, unite per le basi, per i vertici) e il disegno della cardinale.\n- cardinali_luci: Cardinali: le luci. Il numero di scintillii che dice il quadrante: continuo N, 3 E, 6 (+ lampo lungo) S, 9 W.\n- cardinali_colori: Cardinali: i colori del corpo. Dove stanno il nero e il giallo sul corpo di ciascuna cardinale, anche come lettere sotto il simbolo.\n- pericolo_isolato: Segnale di pericolo isolato. Corpo nero con bande rosse orizzontali, miraglio a due sfere nere, luce bianca a gruppi di due lampi.\n- acque_sicure: Segnale di acque sicure. Strisce verticali bianche e rosse, miraglio a sfera rossa, luce bianca isofase, intermittente, a lampo lungo o Morse A.\n- speciali: Segnali speciali. Corpo giallo, miraglio a X giallo, luce gialla; a che cosa servono (zone e situazioni particolari).\n- fluviale_segnali: Navigazione fluviale: i segnali. Cartelli sulle sponde (chiamata, rimando, prosecuzione), l'arcata segnalata, le boe nei fiumi.\n- fluviale_regole: Navigazione fluviale: le regole. Chi ha la precedenza, che cosa si fa in una curva a gomito, che cosa si deve avere a bordo.\n\nCome leggere i dati:\n- Ogni quesito ha tre risposte: chi non sa un concetto indovina comunque circa una volta su tre, quindi una risposta giusta è una prova debole che il concetto sia saputo.\n- Chi sa un concetto sbaglia ogni tanto per svista, circa una volta su dieci.\n- Un quesito può toccare due concetti; l'errore può dipendere da uno solo dei due.\n- Tag dopo un errore: «N» = la persona dice che non lo sapeva (non è una svista); «S» = dice che è stata una svista (prova debole).\n- Confronta gli errori di un concetto con quante domande c'erano su quel concetto e con il tasso d'errore generale della persona.\n\nRegole della risposta:\n- Diagnostica un concetto solo se hai almeno 2 errori distinti su quel concetto, e citali per id: solo quesiti sbagliati presenti nel fascicolo e che portano quel concetto.\n- Se gli errori sono sparsi o sono compatibili con le sviste, rispondi esito \"nessuna_lacuna\" e diagnosi vuota. È una risposta ammessa e spesso corretta.\n- Confidenza: \"bassa\", \"media\" o \"alta\".",
+ "fascicolo": "{\"totale\": {\"fatte\":40,\"sbagliate\":10},\n \"per_concetto\": [\n  {\"concetto\":\"portate\",\"fatte\":7,\"giuste\":7,\"sbagliate\":0},\n  {\"concetto\":\"fase_periodo\",\"fatte\":1,\"giuste\":1,\"sbagliate\":0},\n  {\"concetto\":\"tipi_luce\",\"fatte\":2,\"giuste\":1,\"sbagliate\":1},\n  {\"concetto\":\"sigla_completa\",\"fatte\":3,\"giuste\":2,\"sbagliate\":1},\n  {\"concetto\":\"tipi_segnalamento\",\"fatte\":1,\"giuste\":1,\"sbagliate\":0},\n  {\"concetto\":\"settori\",\"fatte\":1,\"giuste\":1,\"sbagliate\":0},\n  {\"concetto\":\"radar_nebbia\",\"fatte\":1,\"giuste\":1,\"sbagliate\":0},\n  {\"concetto\":\"simboli_carta\",\"fatte\":5,\"giuste\":4,\"sbagliate\":1},\n  {\"concetto\":\"iala_sistema\",\"fatte\":1,\"giuste\":1,\"sbagliate\":0},\n  {\"concetto\":\"laterali\",\"fatte\":1,\"giuste\":1,\"sbagliate\":0},\n  {\"concetto\":\"cardinali_miragli\",\"fatte\":7,\"giuste\":2,\"sbagliate\":5},\n  {\"concetto\":\"cardinali_luci\",\"fatte\":4,\"giuste\":3,\"sbagliate\":1},\n  {\"concetto\":\"cardinali_colori\",\"fatte\":3,\"giuste\":3,\"sbagliate\":0},\n  {\"concetto\":\"pericolo_isolato\",\"fatte\":4,\"giuste\":3,\"sbagliate\":1},\n  {\"concetto\":\"acque_sicure\",\"fatte\":1,\"giuste\":1,\"sbagliate\":0},\n  {\"concetto\":\"speciali\",\"fatte\":3,\"giuste\":2,\"sbagliate\":1},\n  {\"concetto\":\"fluviale_regole\",\"fatte\":2,\"giuste\":1,\"sbagliate\":1}\n ],\n \"errori\": [\n  {\"id\":\"base-834\",\"domanda\":\"Cosa indica il segnale marittimo rappresentato in figura, posto in prossimità (SW) dell'isola Mortorio?\",\"scelta\":\"boa luminosa a fuso indicante un pericolo isolato.\",\"esatta\":\"boa non luminosa ad asta indicante un segnale cardinale Sud del sistema di segnalamento marittimo AISM-IALA.\",\"concetti\":[\"simboli_carta\",\"cardinali_miragli\"],\"tag\":null,\"data\":\"2026-10-01T08:00:00.000Z\"},\n  {\"id\":\"base-792\",\"domanda\":\"Il miraglio del segnale cardinale Nord è costituito da:\",\"scelta\":\"due coni sovrapposti uniti per le rispettive basi.\",\"esatta\":\"due coni sovrapposti con i rispettivi vertici rivolti verso l'alto.\",\"concetti\":[\"cardinali_miragli\"],\"tag\":\"S\",\"data\":\"2026-10-01T08:01:34.000Z\"},\n  {\"id\":\"base-839\",\"domanda\":\"Navigazione fluviale; tra due imbarcazioni in navigazione con rotte opposte chi ha la precedenza sull'altra?\",\"scelta\":\"quella che naviga controcorrente.\",\"esatta\":\"quella che naviga avendo la corrente a favore.\",\"concetti\":[\"fluviale_regole\"],\"tag\":\"S\",\"data\":\"2026-10-01T08:02:21.000Z\"},\n  {\"id\":\"base-796\",\"domanda\":\"Il miraglio del segnale cardinale Sud è costituito da:\",\"scelta\":\"due coni sovrapposti uniti per i rispettivi vertici.\",\"esatta\":\"due coni sovrapposti con i rispettivi vertici rivolti verso il basso.\",\"concetti\":[\"cardinali_miragli\"],\"tag\":null,\"data\":\"2026-10-01T08:07:50.000Z\"},\n  {\"id\":\"base-763\",\"domanda\":\"L'abbreviazione in inglese \\\"Oc (3) W 5s\\\", che si trova nell'elenco dei Fari e segnali da nebbia edito in Italiano dall'I.I.M.M., significa:\",\"scelta\":\"1 lampo bianco, periodo 5 secondi.\",\"esatta\":\"intermittente bianco, periodo 5 secondi.\",\"concetti\":[\"tipi_luce\"],\"tag\":\"S\",\"data\":\"2026-10-01T08:09:24.000Z\"},\n  {\"id\":\"base-835\",\"domanda\":\"Cosa indica il miraglio del segnale marittimo rappresentato in figura, posto in prossimità (SW) dell'Isola Mortorio?\",\"scelta\":\"che l'area navigabile è posta a Nord del segnale stesso.\",\"esatta\":\"che l'area navigabile è posta a Sud del segnale stesso.\",\"concetti\":[\"cardinali_miragli\"],\"tag\":null,\"data\":\"2026-10-01T08:10:11.000Z\"},\n  {\"id\":\"base-808\",\"domanda\":\"Il segnale cardinale che di notte emette nove scintillii, indica:\",\"scelta\":\"pericolo a nord: passare a sud.\",\"esatta\":\"pericolo a est: passare a ovest.\",\"concetti\":[\"cardinali_luci\"],\"tag\":\"S\",\"data\":\"2026-10-01T08:10:58.000Z\"},\n  {\"id\":\"base-741\",\"domanda\":\"Cosa indica il segnale marittimo rappresentato in figura?\",\"scelta\":\"un segnale di acque sicure del sistema di segnalamento marittimo AISM-IALA.\",\"esatta\":\"un segnale di pericolo isolato del sistema di segnalamento marittimo AISM-IALA.\",\"concetti\":[\"pericolo_isolato\"],\"tag\":null,\"data\":\"2026-10-01T08:11:45.000Z\"},\n  {\"id\":\"base-749\",\"domanda\":\"Cosa indica la caratteristica del segnale marittimo rappresentato in figura?\",\"scelta\":\"5 lampi gialli ogni 3 secondi con portata geografica di 20 miglia nautiche.\",\"esatta\":\"5 lampi gialli ogni 20 secondi con portata nominale di 3 miglia nautiche.\",\"concetti\":[\"sigla_completa\",\"speciali\"],\"tag\":null,\"data\":\"2026-10-01T08:12:32.000Z\"},\n  {\"id\":\"base-799\",\"domanda\":\"Il miraglio del segnale cardinale Ovest è costituito da:\",\"scelta\":\"due coni sovrapposti uniti per le rispettive basi.\",\"esatta\":\"due coni sovrapposti uniti per i rispettivi vertici.\",\"concetti\":[\"cardinali_miragli\"],\"tag\":null,\"data\":\"2026-10-01T08:17:14.000Z\"}\n ]}",
+ "risposte": [
+  {
+   "modello": "claude-haiku-5-5",
+   "uscita": {
+    "esito": "lacune",
+    "diagnosi": [
+     {
+      "concetto": "cardinali_miragli",
+      "quesiti": [
+       "base-834",
+       "base-792",
+       "base-796",
+       "base-835",
+       "base-799"
+      ],
+      "confidenza": "alta"
+     }
+    ]
+   },
+   "usage": {
+    "input_tokens": 4814,
+    "output_tokens": 494
+   },
+   "ms": 2970,
+   "raccordo": {
+    "concetti": [
+     "cardinali_miragli"
+    ],
+    "scarti": {
+     "quesito_inesistente": 0,
+     "non_fatto": 0,
+     "non_sbagliato": 0,
+     "concetto_assente": 0,
+     "sotto_minimo": 0,
+     "confidenza": 0,
+     "doppione": 0,
+     "forma": 0
+    }
+   }
+  },
+  {
+   "modello": "claude-sonnet-5-5",
+   "uscita": {
+    "esito": "lacune",
+    "diagnosi": [
+     {
+      "concetto": "cardinali_miragli",
+      "quesiti": [
+       "base-834",
+       "base-792",
+       "base-796",
+       "base-835",
+       "base-799"
+      ],
+      "confidenza": "alta"
+     }
+    ]
+   },
+   "usage": {
+    "input_tokens": 4814,
+    "output_tokens": 75
+   },
+   "ms": 1633,
+   "raccordo": {
+    "concetti": [
+     "cardinali_miragli"
+    ],
+    "scarti": {
+     "quesito_inesistente": 0,
+     "non_fatto": 0,
+     "non_sbagliato": 0,
+     "concetto_assente": 0,
+     "sotto_minimo": 0,
+     "confidenza": 0,
+     "doppione": 0,
+     "forma": 0
+    }
+   }
+  }
+ ]
+}
