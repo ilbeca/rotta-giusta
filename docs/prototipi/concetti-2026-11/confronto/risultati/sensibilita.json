@@ -1,0 +1,390 @@
+{
+  "10": {
+    "1a_min2_x2": {
+      "studenti_con_lacune": 300,
+      "studenti_sani": 300,
+      "recall": 0.056,
+      "recall_rilevabili": 0.432,
+      "precisione": 0.516,
+      "inventati_per_studente": 0.05,
+      "nessuna_lacuna_con_lacune": 0.863,
+      "sani_con_allarme": 0.04,
+      "concetti_per_segnalazione": 1,
+      "conti": {
+        "lacune_vere": 571,
+        "rilevabili": 74,
+        "trovate": 32,
+        "trovate_rilevabili": 32,
+        "segnalazioni": 62,
+        "giuste": 32
+      }
+    },
+    "1a_min2_x3": {
+      "studenti_con_lacune": 300,
+      "studenti_sani": 300,
+      "recall": 0.056,
+      "recall_rilevabili": 0.432,
+      "precisione": 0.516,
+      "inventati_per_studente": 0.05,
+      "nessuna_lacuna_con_lacune": 0.863,
+      "sani_con_allarme": 0.04,
+      "concetti_per_segnalazione": 1,
+      "conti": {
+        "lacune_vere": 571,
+        "rilevabili": 74,
+        "trovate": 32,
+        "trovate_rilevabili": 32,
+        "segnalazioni": 62,
+        "giuste": 32
+      }
+    },
+    "1a_min3_x2": {
+      "studenti_con_lacune": 300,
+      "studenti_sani": 300,
+      "recall": 0.005,
+      "recall_rilevabili": 0.041,
+      "precisione": 1,
+      "inventati_per_studente": 0,
+      "nessuna_lacuna_con_lacune": 0.99,
+      "sani_con_allarme": 0,
+      "concetti_per_segnalazione": 1,
+      "conti": {
+        "lacune_vere": 571,
+        "rilevabili": 74,
+        "trovate": 3,
+        "trovate_rilevabili": 3,
+        "segnalazioni": 3,
+        "giuste": 3
+      }
+    },
+    "1a_min3_x3": {
+      "studenti_con_lacune": 300,
+      "studenti_sani": 300,
+      "recall": 0.005,
+      "recall_rilevabili": 0.041,
+      "precisione": 1,
+      "inventati_per_studente": 0,
+      "nessuna_lacuna_con_lacune": 0.99,
+      "sani_con_allarme": 0,
+      "concetti_per_segnalazione": 1,
+      "conti": {
+        "lacune_vere": 571,
+        "rilevabili": 74,
+        "trovate": 3,
+        "trovate_rilevabili": 3,
+        "segnalazioni": 3,
+        "giuste": 3
+      }
+    },
+    "1b_bayes": {
+      "studenti_con_lacune": 300,
+      "studenti_sani": 300,
+      "recall": 0.046,
+      "recall_rilevabili": 0.351,
+      "precisione": 0.634,
+      "inventati_per_studente": 0.025,
+      "nessuna_lacuna_con_lacune": 0.883,
+      "sani_con_allarme": 0.017,
+      "concetti_per_segnalazione": 1,
+      "conti": {
+        "lacune_vere": 571,
+        "rilevabili": 74,
+        "trovate": 26,
+        "trovate_rilevabili": 26,
+        "segnalazioni": 41,
+        "giuste": 26
+      }
+    }
+  },
+  "20": {
+    "1a_min2_x2": {
+      "studenti_con_lacune": 300,
+      "studenti_sani": 300,
+      "recall": 0.185,
+      "recall_rilevabili": 0.586,
+      "precisione": 0.533,
+      "inventati_per_studente": 0.163,
+      "nessuna_lacuna_con_lacune": 0.553,
+      "sani_con_allarme": 0.12,
+      "concetti_per_segnalazione": 1,
+      "conti": {
+        "lacune_vere": 606,
+        "rilevabili": 191,
+        "trovate": 112,
+        "trovate_rilevabili": 112,
+        "segnalazioni": 210,
+        "giuste": 112
+      }
+    },
+    "1a_min2_x3": {
+      "studenti_con_lacune": 300,
+      "studenti_sani": 300,
+      "recall": 0.183,
+      "recall_rilevabili": 0.581,
+      "precisione": 0.544,
+      "inventati_per_studente": 0.155,
+      "nessuna_lacuna_con_lacune": 0.563,
+      "sani_con_allarme": 0.117,
+      "concetti_per_segnalazione": 1,
+      "conti": {
+        "lacune_vere": 606,
+        "rilevabili": 191,
+        "trovate": 111,
+        "trovate_rilevabili": 111,
+        "segnalazioni": 204,
+        "giuste": 111
+      }
+    },
+    "1a_min3_x2": {
+      "studenti_con_lacune": 300,
+      "studenti_sani": 300,
+      "recall": 0.068,
+      "recall_rilevabili": 0.215,
+      "precisione": 0.837,
+      "inventati_per_studente": 0.013,
+      "nessuna_lacuna_con_lacune": 0.853,
+      "sani_con_allarme": 0.01,
+      "concetti_per_segnalazione": 1,
+      "conti": {
+        "lacune_vere": 606,
+        "rilevabili": 191,
+        "trovate": 41,
+        "trovate_rilevabili": 41,
+        "segnalazioni": 49,
+        "giuste": 41
+      }
+    },
+    "1a_min3_x3": {
+      "studenti_con_lacune": 300,
+      "studenti_sani": 300,
+      "recall": 0.068,
+      "recall_rilevabili": 0.215,
+      "precisione": 0.837,
+      "inventati_per_studente": 0.013,
+      "nessuna_lacuna_con_lacune": 0.853,
+      "sani_con_allarme": 0.01,
+      "concetti_per_segnalazione": 1,
+      "conti": {
+        "lacune_vere": 606,
+        "rilevabili": 191,
+        "trovate": 41,
+        "trovate_rilevabili": 41,
+        "segnalazioni": 49,
+        "giuste": 41
+      }
+    },
+    "1b_bayes": {
+      "studenti_con_lacune": 300,
+      "studenti_sani": 300,
+      "recall": 0.175,
+      "recall_rilevabili": 0.555,
+      "precisione": 0.707,
+      "inventati_per_studente": 0.073,
+      "nessuna_lacuna_con_lacune": 0.62,
+      "sani_con_allarme": 0.067,
+      "concetti_per_segnalazione": 1,
+      "conti": {
+        "lacune_vere": 606,
+        "rilevabili": 191,
+        "trovate": 106,
+        "trovate_rilevabili": 106,
+        "segnalazioni": 150,
+        "giuste": 106
+      }
+    }
+  },
+  "40": {
+    "1a_min2_x2": {
+      "studenti_con_lacune": 300,
+      "studenti_sani": 300,
+      "recall": 0.444,
+      "recall_rilevabili": 0.686,
+      "precisione": 0.444,
+      "inventati_per_studente": 0.52,
+      "nessuna_lacuna_con_lacune": 0.23,
+      "sani_con_allarme": 0.397,
+      "concetti_per_segnalazione": 1,
+      "conti": {
+        "lacune_vere": 561,
+        "rilevabili": 363,
+        "trovate": 249,
+        "trovate_rilevabili": 249,
+        "segnalazioni": 561,
+        "giuste": 249
+      }
+    },
+    "1a_min2_x3": {
+      "studenti_con_lacune": 300,
+      "studenti_sani": 300,
+      "recall": 0.435,
+      "recall_rilevabili": 0.672,
+      "precisione": 0.5,
+      "inventati_per_studente": 0.407,
+      "nessuna_lacuna_con_lacune": 0.277,
+      "sani_con_allarme": 0.323,
+      "concetti_per_segnalazione": 1,
+      "conti": {
+        "lacune_vere": 561,
+        "rilevabili": 363,
+        "trovate": 244,
+        "trovate_rilevabili": 244,
+        "segnalazioni": 488,
+        "giuste": 244
+      }
+    },
+    "1a_min3_x2": {
+      "studenti_con_lacune": 300,
+      "studenti_sani": 300,
+      "recall": 0.235,
+      "recall_rilevabili": 0.364,
+      "precisione": 0.729,
+      "inventati_per_studente": 0.082,
+      "nessuna_lacuna_con_lacune": 0.57,
+      "sani_con_allarme": 0.063,
+      "concetti_per_segnalazione": 1,
+      "conti": {
+        "lacune_vere": 561,
+        "rilevabili": 363,
+        "trovate": 132,
+        "trovate_rilevabili": 132,
+        "segnalazioni": 181,
+        "giuste": 132
+      }
+    },
+    "1a_min3_x3": {
+      "studenti_con_lacune": 300,
+      "studenti_sani": 300,
+      "recall": 0.232,
+      "recall_rilevabili": 0.358,
+      "precisione": 0.739,
+      "inventati_per_studente": 0.077,
+      "nessuna_lacuna_con_lacune": 0.58,
+      "sani_con_allarme": 0.06,
+      "concetti_per_segnalazione": 1,
+      "conti": {
+        "lacune_vere": 561,
+        "rilevabili": 363,
+        "trovate": 130,
+        "trovate_rilevabili": 130,
+        "segnalazioni": 176,
+        "giuste": 130
+      }
+    },
+    "1b_bayes": {
+      "studenti_con_lacune": 300,
+      "studenti_sani": 300,
+      "recall": 0.394,
+      "recall_rilevabili": 0.609,
+      "precisione": 0.744,
+      "inventati_per_studente": 0.127,
+      "nessuna_lacuna_con_lacune": 0.357,
+      "sani_con_allarme": 0.117,
+      "concetti_per_segnalazione": 1,
+      "conti": {
+        "lacune_vere": 561,
+        "rilevabili": 363,
+        "trovate": 221,
+        "trovate_rilevabili": 221,
+        "segnalazioni": 297,
+        "giuste": 221
+      }
+    }
+  },
+  "80": {
+    "1a_min2_x2": {
+      "studenti_con_lacune": 300,
+      "studenti_sani": 300,
+      "recall": 0.789,
+      "recall_rilevabili": 0.845,
+      "precisione": 0.42,
+      "inventati_per_studente": 1.05,
+      "nessuna_lacuna_con_lacune": 0.027,
+      "sani_con_allarme": 0.77,
+      "concetti_per_segnalazione": 1,
+      "conti": {
+        "lacune_vere": 579,
+        "rilevabili": 541,
+        "trovate": 457,
+        "trovate_rilevabili": 457,
+        "segnalazioni": 1087,
+        "giuste": 457
+      }
+    },
+    "1a_min2_x3": {
+      "studenti_con_lacune": 300,
+      "studenti_sani": 300,
+      "recall": 0.767,
+      "recall_rilevabili": 0.821,
+      "precisione": 0.56,
+      "inventati_per_studente": 0.582,
+      "nessuna_lacuna_con_lacune": 0.067,
+      "sani_con_allarme": 0.513,
+      "concetti_per_segnalazione": 1,
+      "conti": {
+        "lacune_vere": 579,
+        "rilevabili": 541,
+        "trovate": 444,
+        "trovate_rilevabili": 444,
+        "segnalazioni": 793,
+        "giuste": 444
+      }
+    },
+    "1a_min3_x2": {
+      "studenti_con_lacune": 300,
+      "studenti_sani": 300,
+      "recall": 0.577,
+      "recall_rilevabili": 0.617,
+      "precisione": 0.614,
+      "inventati_per_studente": 0.35,
+      "nessuna_lacuna_con_lacune": 0.167,
+      "sani_con_allarme": 0.293,
+      "concetti_per_segnalazione": 1,
+      "conti": {
+        "lacune_vere": 579,
+        "rilevabili": 541,
+        "trovate": 334,
+        "trovate_rilevabili": 334,
+        "segnalazioni": 544,
+        "giuste": 334
+      }
+    },
+    "1a_min3_x3": {
+      "studenti_con_lacune": 300,
+      "studenti_sani": 300,
+      "recall": 0.561,
+      "recall_rilevabili": 0.601,
+      "precisione": 0.745,
+      "inventati_per_studente": 0.185,
+      "nessuna_lacuna_con_lacune": 0.2,
+      "sani_con_allarme": 0.16,
+      "concetti_per_segnalazione": 1,
+      "conti": {
+        "lacune_vere": 579,
+        "rilevabili": 541,
+        "trovate": 325,
+        "trovate_rilevabili": 325,
+        "segnalazioni": 436,
+        "giuste": 325
+      }
+    },
+    "1b_bayes": {
+      "studenti_con_lacune": 300,
+      "studenti_sani": 300,
+      "recall": 0.758,
+      "recall_rilevabili": 0.811,
+      "precisione": 0.8,
+      "inventati_per_studente": 0.183,
+      "nessuna_lacuna_con_lacune": 0.077,
+      "sani_con_allarme": 0.173,
+      "concetti_per_segnalazione": 1,
+      "conti": {
+        "lacune_vere": 579,
+        "rilevabili": 541,
+        "trovate": 439,
+        "trovate_rilevabili": 439,
+        "segnalazioni": 549,
+        "giuste": 439
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "confronto-concetti-fanali",
+  "private": true,
+  "type": "module",
+  "description": "Esperimento: diagnosi dei concetti non saputi, locale contro modello Claude. Non e' il sito.",
+  "dependencies": {
+    "@anthropic-ai/sdk": "1.8.0"
+  }
+}

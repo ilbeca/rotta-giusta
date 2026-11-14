@@ -52,6 +52,7 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   120 quesiti dei fanali gira in una sessione a parte. Nell'indice del file
   entrano anche I-29, I-30 e I-31, che mancavano.
 - Nessun file di `site/`, `tests/` o della specifica toccato.
+
 ### Provato — il pilota dei concetti sulla voce dei fanali (I-32)
 
 - **Perché.** L'autore vuole etichettare i quesiti con dei «concetti» più fini
@@ -82,6 +83,54 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   rimando allo studio, che non chiedono statistiche; non ancora per l'avviso
   sulle lacune, che vuole una soglia e risposte di più persone. Due livelli:
   concetti fini (15–20 per una voce così) e famiglie (4–5).
+
+### Provato — quali concetti non sai: calcolo locale contro un modello Claude (I-32)
+
+- **Perché.** Il pilota ha mostrato che con una persona sola gli errori non si
+  concentrano in modo misurabile. Prima di decidere come dire a chi studia
+  «non sai questo concetto», si confrontano due strade su studenti simulati, di
+  cui la risposta giusta è nota: un calcolo locale e un modello Claude che
+  legge un fascicolo. In `docs/prototipi/concetti-2026-11/confronto/` ci sono
+  il simulatore, i metodi, i risultati in JSON (sintetici) e il README. `site/`,
+  `tests/` e la specifica non sono stati toccati.
+- **Il banco.** Seme fisso. Ogni studente non sa da 1 a 3 concetti, oppure
+  nessuno per il controllo di sanità, e risponde a 10, 20, 40 o 80 dei 120
+  quesiti. Indovina una volta su tre, sbaglia per svista fra il 5 e il 15 %, e
+  mette tag N/S che a volte mentono. In locale 300 studenti con lacune e 300
+  senza per ogni lunghezza. In remoto i primi 30 con lacune e i primi 10 senza
+  (160 studenti), a Haiku 5.5 e a Sonnet 5.5; 32 di loro mandati 5 volte, per
+  la stabilità.
+- **I metodi.** 1a, il conto semplice: almeno 2 errori e un tasso doppio di
+  quello generale. 1b, un modello bayesiano «lo sa / non lo sa»: indovinare
+  1/3, svista 10 %, la colpa di un errore con due concetti al meno certo, il
+  tag N che esclude la svista. Il remoto risponde con un'uscita strutturata:
+  concetti da una lista chiusa, citazioni e confidenza. Un raccordo controlla
+  ogni citazione (il quesito esiste, è stato fatto, è sbagliato e porta il
+  concetto) e tiene una diagnosi solo con 2 errori distinti, lo stesso minimo
+  dei locali.
+- **Misurato.** A 80 quesiti il bayesiano fa 82 % di segnalazioni giuste e
+  trova 37 lacune su 49; il conto semplice ne fa 49 % e dà un allarme a 7 sani
+  su 10. Sul banco grande il bayesiano batte il conto semplice a ogni soglia
+  provata, da 40 quesiti in su. Haiku e Sonnet non hanno mai segnalato un
+  concetto che la regola nuda «almeno 2 errori» non segnalasse già: precisione
+  intorno al 50 %, come il conto semplice. Tenendo solo la confidenza «alta»
+  arrivano all'81–93 %, con meno lacune trovate del bayesiano. Il raccordo non
+  ha scartato nessuna citazione. Stabilità: 5 diagnosi identiche per 28 studenti
+  su 32 con Haiku, per 30 su 32 con Sonnet. Sotto i 20 quesiti nessun metodo
+  vede niente.
+- **Costo.** Budget 10 $: stima a secco prudente, poi 4 chiamate pilota per
+  leggere i token veri. 576 chiamate, nessun errore né rifiuto, **2,66 $**: Haiku
+  0,0006 $ e 2,6 s mediani, Sonnet 0,0086 $ e 1,7 s. L'accesso è un profilo
+  OAuth di `ant` sul credito della Console, fatto dall'autore; nessuna chiave nel
+  repo. `package.json` e l'SDK ufficiale stanno solo nella cartella del
+  prototipo.
+- **Raccomandato.** Un eventuale avviso sulle lacune lo calcoli il motore con il
+  bayesiano, mostrato solo da 40 quesiti nella voce in su. Il modello remoto
+  non serve per la diagnosi; semmai per spiegarla a parole, ed è da provare.
+  L'albero per ora no.
+- **Non provato:** persone vere, altri prompt, altri sforzi e Opus, le famiglie
+  nel remoto, altre voci, la calibrazione della posteriore. L'archivio vero non
+  è stato letto.
 
 ## [0.35.1] — 2026-10-29
 
