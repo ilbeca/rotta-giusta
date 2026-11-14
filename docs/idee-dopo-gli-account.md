@@ -5433,9 +5433,10 @@ raccomanda di aprire la scheda. Regole proposte da Claude, perché un avviso
 non diventi rumore:
 - **mai durante una simulazione**, che non corregge durante la prova; nel
   riepilogo sì, e in allenamento dopo la risposta;
-- **solo sopra una soglia dichiarata**: per esempio almeno 5 quesiti visti del
-  concetto e la maggior parte da rifare all'ultima risposta. Il numero lo fissa
-  il pilota, non si sceglie a occhio;
+- **solo sopra una soglia dichiarata**. La proposta di partenza era «almeno 5
+  quesiti visti del concetto e la maggior parte da rifare». Il confronto del 14
+  novembre (sotto) l'ha sostituita: calcolo bayesiano nel motore, almeno 2
+  errori distinti sul concetto, e solo da 40 quesiti fatti nella voce in su;
 - **una volta per concetto e per sessione**, e si chiude con un tocco;
 - **dice da che cosa nasce**: «in base alle ultime risposte su questi N
   quesiti», come la legenda dei cinque stati;
@@ -5459,11 +5460,107 @@ non diventi rumore:
 - Nel motore servono un conteggio per concetto, accanto a `quadro()`, e un
   filtro per concetto in `coda()`.
 
-**Il pilota, in corso dal 14 novembre.** Una sessione a parte etichetta i 120
-quesiti dei fanali e misura sull'archivio di preparazione dell'autore, letto
-dove sta e non copiato, se i concetti separano davvero gli errori o li
-spalmano come la voce. Il risultato andrà in `docs/prototipi/concetti-2026-11/`.
-Da lì si decide se estendere a tutta la banca, e con che granularità.
+#### Il pilota e il confronto — 14 novembre 2026
+
+**Il pilota** ([`docs/prototipi/concetti-2026-11/README.md`](prototipi/concetti-2026-11/README.md)).
+Una sessione a parte ha etichettato i 120 quesiti dei fanali, e i risultati
+sono questi:
+- **I concetti.** 19 concetti; 97 quesiti con un tag e 23 con due.
+- **Che cosa ha trovato nella voce.** Dentro ci sono anche 9 quesiti di
+  navigazione fluviale e 11 coppie di quesiti con lo stesso testo.
+- **L'archivio dell'autore**, letto sul Mac Mini senza copiarlo. All'ultima
+  risposta non ha errori in questa voce; alla prima ne ha 13 su 120, e i 13 non
+  si concentrano in nessun concetto (p = 0,93).
+- **La conclusione.** Con i dati di una persona sola non si vede se i concetti
+  separano gli errori. Restano utili per le domande dello stesso concetto e per
+  il rimando allo studio, che non hanno bisogno di statistiche.
+- **Un quesito da guardare.** `base-763` (1.5.3-37, «Oc (3) W 5s») dà per esatta
+  una risposta senza i gruppi di 3. Segnalato, non toccato.
+
+**Il ragionamento, affinato con l'autore.**
+- **Si parte dagli errori** e si guarda quali concetti tornano. Ma va
+  confrontato con quante domande c'erano su quel concetto. Tre errori sulla
+  portata luminosa su 3 domande di portata luminosa sono un segnale; tre
+  errori su 6 domande no, se in generale sbagli la metà.
+- **Più concetti non vuol dire più precisione nel trovare le lacune.** Più
+  concetti fai, meno domande cadono su ciascuno, e un errore solo non distingue
+  una lacuna da una distrazione. La granularità fine serve per consigliare
+  domande e schede, non per dire «non lo sai».
+- **I concetti formano un albero.** Si consiglia il figlio se gli errori stanno
+  lì e i fratelli sono giusti, il padre se gli errori sono sparsi fra i figli.
+- **Una risposta giusta vale poco**: con tre risposte si indovina una volta su
+  tre. Un errore vale di più, un «Non lo sapevo» di più ancora.
+- **Un fatto non vuole una soglia, una diagnosi sì.** «3 dei tuoi 5 errori di
+  oggi riguardano la portata luminosa» è vero per costruzione, anche dopo 10
+  domande. «Hai una lacuna sulla portata luminosa» è un'affermazione su chi
+  studia, e vuole i conti.
+- **Le risposte sbagliate etichettate** dicono come si sbaglia: «scegli la
+  risposta della portata geografica quando chiedono quella luminosa». Proposto,
+  non provato.
+
+**Il confronto** ([`docs/prototipi/concetti-2026-11/confronto/README.md`](prototipi/concetti-2026-11/confronto/README.md)).
+L'autore ha chiesto di provare due modi di dire quali concetti non sai, uno
+locale e uno remoto. Il banco è fatto di studenti simulati con 1–3 lacune note,
+che indovinano una volta su tre, sbagliano per svista dal 5 al 15% delle volte e
+mettono tag che a volte mentono.
+
+I tre metodi:
+- **1a, il conto semplice**: sbagliate su fatte, confrontato con il tasso
+  generale della persona;
+- **1b, un modello bayesiano**: «lo sa / non lo sa» per concetto, con la
+  probabilità di indovinare e di sbagliare per svista;
+- **2, un modello Claude** (Haiku 5.5 e Sonnet 5.5): legge un fascicolo e
+  risponde con concetti presi da una lista chiusa e i quesiti citati. Un
+  raccordo controlla ogni citazione.
+
+Per tutti vale il minimo di 2 errori distinti sul concetto.
+
+| Quesiti fatti nella voce | Bayesiano: segnalazioni giuste | Bayesiano: lacune trovate fra le rilevabili | Bayesiano: allarmi a chi non ha lacune | Conto semplice: segnalazioni giuste | Conto semplice: allarmi |
+|---|---|---|---|---|---|
+| 20 | 71% | 56% | 7% | 53% | 12% |
+| 40 | 74% | 61% | 12% | 44% | 40% |
+| 80 | 80% | 81% | 17% | 42% | 77% |
+
+*Banco grande, 300 studenti con lacune e 300 senza per lunghezza.*
+
+- **Il bayesiano locale è il migliore.** Costa zero, risponde subito e dà sempre
+  la stessa risposta.
+- **Il conto semplice inventa troppo**: a 80 quesiti manda un avviso a tre
+  studenti senza lacune su quattro.
+- **I modelli Claude non sono un metodo diverso.** Su 160 studenti non hanno
+  mai segnalato un concetto che la regola nuda «almeno 2 errori sul concetto»
+  non segnalasse già: ne hanno tolto una parte. Tenendo solo le diagnosi a
+  confidenza «alta» raggiungono la precisione del bayesiano, ma trovano meno
+  lacune. La stessa storia mandata 5 volte dà la stessa diagnosi nell'88%
+  (Haiku) e nel 94% (Sonnet) dei casi. Sonnet costa 13 volte Haiku e non fa
+  meglio. Le 576 chiamate sono costate 2,66 dollari.
+- **Sotto i 20 quesiti nessun metodo vede niente.** Un concetto ha in media 7,5
+  quesiti su 120, e servono almeno 2 errori.
+- **L'albero** aggiunge al bayesiano qualche lacuna trovata, ma ogni
+  segnalazione copre in media 2,4 concetti invece di uno. Per ora no.
+
+**Che cosa non è stato provato.**
+- Persone vere: il simulatore ha lacune nette e indipendenti, e il bayesiano
+  assume un mondo simile.
+- I tag dei concetti hanno una lettura sola.
+- Per Claude: un solo prompt, un solo livello di sforzo, niente Opus.
+- Altre voci oltre ai fanali.
+- La calibrazione della probabilità del bayesiano come numero da mostrare.
+
+**Che cosa ne segue.**
+1. **L'avviso, se ci sarà, lo calcola il motore con il bayesiano**: logica pura
+   in `engine.js`, con i test, mostrato solo da 40 quesiti fatti nella voce.
+   Prima di mostrarlo servono una seconda lettura dei tag e risposte vere di
+   più persone.
+2. **Il fatto nel riepilogo** («3 dei tuoi 5 errori riguardano…») si può fare
+   subito, perché non ha bisogno di soglie.
+3. **Claude non serve per la diagnosi.** In pagina resta utile dove lavora sul
+   testo libero, che il motore non sa leggere: un'interrogazione «spiegamelo
+   con parole tue» confrontata con la scheda, e un aiuto al giudizio del
+   carteggio, che suggerisce e lascia decidere chi studia (§4.5). Sono idee,
+   non provate.
+4. **Quando il metodo tace non vuol dire «sai tutto»**: a 40 quesiti succede
+   una volta su tre anche a chi ha lacune, e la pagina non deve farlo credere.
 
 #### Per chi, promesse, motore, grandezza
 
@@ -5506,9 +5603,10 @@ statici, e le righe delle risposte restano quelle.
 
 **Decisioni per l'autore.**
 1. Il nome: «concetti», «argomenti», «punti da studiare»?
-2. La granularità: quanti concetti in tutto, dopo il pilota?
+2. La granularità: 15–20 concetti per una voce come i fanali, come il pilota?
 3. Chi scrive e chi verifica le schede, e con che ritmo.
-4. La soglia dell'avviso, dopo il pilota.
+4. Se fare l'avviso, con il bayesiano e da 40 quesiti nella voce, e che cosa
+   dire quando tace.
 5. Se Simulazione preseleziona vela e carteggio da «che cosa stai preparando?».
 6. Un pulsante o due per «Accedi» e «Crea un account».
 7. Dove stanno i Segnali: un extra dentro Quiz, o una voce a sé.
