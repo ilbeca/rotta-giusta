@@ -32,6 +32,27 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 - **Non guardato:** «Avanti da solo» sul sito pubblicato e su un telefono vero;
   l'ha guardato la regia prima della merge, servito in locale, a 375×812.
 
+### Progettato — I-32: due porte per prepararsi, e i concetti
+
+- **Perché.** Dopo una pausa, e la prima senza ChatGPT, l'autore ha riscritto
+  in aereo le modalità del sito: quattro foto di appunti, trascritte nella
+  scheda I-32 di `docs/idee-dopo-gli-account.md`. La preparazione dei quiz ha
+  oggi otto porte, una per algoritmo del motore; la proposta ne fa due,
+  *Allenati* (decide il sito, e dice perché) e *Scegli tu* (dove, che cosa,
+  quante), con i cinque stati come selettore e lo screening assorbito
+  nell'inizio di *Allenati*. Il carteggio prende la stessa forma.
+- **I concetti.** Ogni quesito si etichetta con i concetti che chiede, più fini
+  delle voci: la voce dei fanali ha 120 quesiti e almeno sei argomenti diversi
+  dentro. Per lo studio l'autore ha deciso due strade insieme: il nome del
+  concetto con le parole chiave da cercare nel proprio manuale, e una scheda
+  nostra per concetto, breve e verificata, con un avviso «stai sbagliando
+  sempre questo concetto». Le etichette in un file a parte: la banca non si
+  tocca.
+- **Non deciso:** otto domande per l'autore in fondo alla scheda. Il pilota sui
+  120 quesiti dei fanali gira in una sessione a parte. Nell'indice del file
+  entrano anche I-29, I-30 e I-31, che mancavano.
+- Nessun file di `site/`, `tests/` o della specifica toccato.
+
 ## [0.35.1] — 2026-10-29
 
 **Le risposte in simulazione si cambiano, e «auto» si capisce.** Un utente ha

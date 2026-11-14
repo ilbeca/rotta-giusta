@@ -89,6 +89,10 @@ lavoro che dura settimane e cambia che cosa il sito *è*.
 | I-26 | La lettura da fuori di ChatGPT: metodo e confronto | ChatGPT | proposta per le verifiche, nessuna regola adottata |
 | I-27 | Le regole dai buoni standard, e l'audit delle schermate | autore e Claude | in corso dal 21 ottobre: regole D-01…D-35 e audit fatti, adottati dall'autore; i punti 1–2 a P-91; restano i passi 4–6 |
 | I-28 | Il piano dagli errori, raggruppati da un modello | autore e Claude | proposta del 24 ottobre: regole, privacy e costi; sette decisioni per l'autore |
+| I-29 | Perché il sito è brutto, e tre direzioni per ridisegnarlo | autore e Claude | scelte la U al computer e la Regata; in linea con la v0.35.0 |
+| I-30 | Scatti obbligati, la costa che continua, il carteggio che si disegna | autore e Claude | migliorie per il giro B della Home |
+| I-31 | Cambiare la risposta, e un «auto» che si spiega da solo | autore e Claude | deciso dall'autore; in linea con la v0.35.1 |
+| I-32 | Due modalità, due porte per prepararsi, e i concetti | autore e Claude | proposta del 14 novembre; il pilota dei concetti è in corso |
 
 **Le decisioni prese, in una riga ciascuna, sono in fondo al file: «Le decisioni
 di P-59»; quelle del 17 ottobre in «Il miglioramento continuo».** Le schede qui
@@ -5260,3 +5264,252 @@ lo spiegasse; prima di farlo ha chiesto di cercare come lo risolvono gli altri.
 **Da verificare con la scuola:** se all'esame vero, sulla scheda di carta, una
 crocetta si possa correggere. Le fonti trovate descrivono la scheda, non la
 regola.
+
+## Gli appunti dell'aereo — 14 novembre 2026
+
+### I-32 — Due modalità, due porte per prepararsi, e i concetti [autore e Claude]
+
+**Da dove nasce.** Dopo una pausa lunga, e la prima dopo che ChatGPT è uscito
+dal progetto (ADR-007), l'autore ha ripensato in aereo alle modalità del sito.
+Ha portato quattro foto di appunti a mano, che Claude ha letto e trascritto
+qui sotto. Il punto a cui l'autore tiene di più è l'ultimo: **i concetti**.
+
+#### Gli appunti, trascritti
+
+1. **Le aree e il menu da rifare.** Quattro modalità al posto di quelle di oggi:
+   *Simulazione d'esame*, *Studia / preparati*, *Statistiche*, e un aiuto.
+2. **Lo stile.** «Stilizzato mare»: lo stile della Home, la Regata con la
+   carta, portato su tutte le pagine.
+3. **Simulazione d'esame.** Si sceglie se includere la vela e se includere il
+   carteggio, e si comincia.
+4. **Studia / preparati.**
+   - uno *screening* con un selettore del numero di domande, e un'animazione
+     della «confidenza»: quanto il sito è sicuro di aver visto ogni argomento
+     abbastanza da dire dove sei debole. La formula proposta è
+     P = 1 − (1 − p)^k;
+   - *per argomento*;
+   - una sessione suggerita da un modello, per chi è registrato;
+   - *le più sbagliate*;
+   - il carteggio *per tecniche*.
+5. **Statistiche.** Per argomento la percentuale di giuste e sbagliate, il
+   numero di sviste («lapsus»), quante domande per stato, e un riquadro a parte
+   per le tecniche del carteggio.
+6. **Aiuto.** C'è uno standard per dove mettere l'aiuto? Una casella di
+   ricerca. *Risposta di Claude:* sì, WCAG 2.2, criterio 3.2.6 «Consistent
+   Help», livello A: l'aiuto, se c'è, sta nello stesso posto in ogni pagina.
+7. **La grande idea: i concetti.** Ogni domanda si etichetta con i concetti che
+   chiede di sapere, più fini dei temi e delle voci ministeriali, per capire
+   davvero dove sono le lacune di chi studia.
+
+#### I menu: oggi, la proposta, e una versione migliorata
+
+- **Oggi**: Home · Allenati (Quiz · Carteggio · Segnali) · Esame · Progressi,
+  più l'avatar che apre il Profilo.
+- **La proposta dell'autore**: Simulazione · Studia/preparati · Statistiche ·
+  Aiuto.
+- **La versione che Claude propone**, ragionata con l'autore: **Simulazione ·
+  Quiz · Carteggio · Statistiche**.
+  - Il marchio porta alla Home.
+  - L'avatar apre il Profilo, con «Accedi / Crea un account» e l'aiuto in un
+    posto fisso (WCAG 3.2.6).
+  - La prova di carteggio sta solo in Simulazione, accanto a base e vela.
+  - Quiz e Carteggio hanno la stessa forma, «come» e «quante».
+  - I Segnali restano un extra, dentro Quiz.
+
+**Semplificando ancora, l'autore vede due modalità sole.**
+- **La simulazione d'esame**: «quello è e quello rimane», e la parte quiz è già
+  giusta così.
+- **La preparazione all'esame**: è qui che le modalità sono troppe, e qui
+  l'autore vuole semplificare, «o meglio rendere più efficace».
+
+#### La preparazione: otto porte, due domande
+
+Oggi la preparazione dei quiz ha otto porte, e ognuna corrisponde a un
+algoritmo del motore, non a una domanda di chi studia: allenamento consigliato,
+10 domande, scegli un argomento, ripassa gli errori, un giro tra gli argomenti,
+i segnalibri, «Allena / Rifai» da Progressi, cerca per numero. Chi studia si
+chiede tre cose: «non so da dove partire», «voglio lavorare su questo»,
+«voglio sistemare quello che sbaglio». Ne vengono due porte.
+
+- **Allenati — decide il sito, e dice perché.**
+  - Si sceglie soltanto quante domande; i minuti stimati compaiono solo sopra
+    la soglia di `ritmo()`.
+  - Il sito prima esplora, poi ripara, poi conferma, e ogni domanda dice
+    perché è lì.
+  - Lo screening non è più una modalità: è il modo in cui *Allenati* comincia
+    quando sa poco, e copre tutte le voci. È anche il posto giusto per la
+    confidenza degli appunti: «con altre 20 domande vedremo ogni argomento
+    abbastanza da trovare quelli deboli». Va nella direzione della decisione
+    18 di P-59: la prima simulazione fa da test d'ingresso.
+- **Scegli tu — tre domande.**
+  - *Dove*: tutto, un tema, una voce e, quando ci saranno, un concetto.
+  - *Che cosa*: tutte, mai viste, da rifare, da confermare, segnate. Sono i
+    cinque stati di Q-STATI usati come selettore: il «ogni domanda ha uno
+    stato» degli appunti, messo dove serve.
+  - *Quante*.
+
+**Dove finiscono le otto porte.**
+
+| Oggi | Domani |
+|---|---|
+| Allenamento consigliato | *Allenati* |
+| Allenati con 10 domande | *Allenati*, con quante = 10 |
+| Un giro tra gli argomenti | *Allenati*, nei primi giorni |
+| Ripassa gli errori | *Scegli tu*, «da rifare» |
+| Scegli un argomento | *Scegli tu*, «dove» |
+| Solo mai fatte, solo con figura | filtri di *Scegli tu* |
+| I miei segnalibri | *Scegli tu*, «segnate» |
+| Allena / Rifai da Progressi | *Scegli tu*, già compilato |
+| Cerca un quesito per numero | uno strumento, non una modalità |
+
+**Il carteggio ha la stessa forma.**
+- *Allenati* è il giro delle tecniche, con la precedenza alle tecniche degli
+  esercizi andati male.
+- *Scegli tu* chiede tecnica, argomento o carta, e mai fatti o da rivedere.
+  «A tappeto» diventa «mai fatti, nell'ordine del foglio».
+- «Che tecnica serve?» resta a parte, perché è l'unica attività che si fa senza
+  carta.
+
+**Che cosa sa già il motore.** `mirata()` mescola già richiami, esplorazione e
+conferme; `coda()` filtra già per tema, voce, stato e figura. Mancano due
+pezzi:
+- il filtro sui cinque stati: oggi `coda()` conosce «da rifare», non «da
+  confermare»;
+- un'esplorazione che copra tutte le voci quando lo storico è scarso: oggi la
+  fa `screening()`, e `mirata()` no.
+
+**Che cosa si perde.**
+- Il nome «un giro tra gli argomenti» sparisce: resta come comportamento di
+  *Allenati* nei primi giorni, e come «tutto» + «mai viste» in *Scegli tu*.
+- *Allenati* decide al posto di chi studia, quindi deve meritarsi la fiducia:
+  ogni domanda dice perché è lì.
+- Senza account *Allenati* vede solo le risposte della pagina aperta, quindi
+  resta quasi sempre nella fase di esplorazione. È onesto, e va detto.
+
+#### I concetti
+
+**Il problema, con un esempio misurato.** La voce più grande della banca, «I
+principali fanali luminosi e il sistema IALA», ha 120 quesiti (1.5.3-*). Dentro
+ci sono almeno sei argomenti diversi:
+- la portata (geografica, nominale, luminosa);
+- le caratteristiche delle luci («Fl (3) W 10s», «Sc.(3)», fase e periodo);
+- i segnali cardinali;
+- i segnali laterali della regione A;
+- il riflettore radar;
+- i simboli e i colori sulla carta.
+
+Oggi un 30% di errori su quella voce non dice niente. «Sbagli la portata» dice
+esattamente che cosa riaprire. Le voci della banca vanno da 1 a 120 quesiti,
+con una mediana intorno a 30: la voce è spesso troppo grossa per essere una
+diagnosi.
+
+**Tre usi.**
+
+1. **Trovare le lacune.**
+   - I cinque stati si contano per concetto invece che per voce.
+   - Serve una soglia, come per le altre misure del §4.3: un concetto visto due
+     volte non è una lacuna, è rumore.
+   - Il tag «Non lo sapevo» pesa molto qui: tre «Non lo sapevo» sullo stesso
+     concetto sono un segnale chiaro, tre «Svista» no.
+2. **Consigliare le domande.**
+   - Il concetto entra nel «dove» di *Scegli tu* e nella scelta di *Allenati*.
+   - Dopo un errore si possono proporre due o tre quesiti dello stesso
+     concetto. Se li sbagli è una lacuna, se li prendi era una svista.
+3. **Rimandare allo studio.** Ogni scuola usa un manuale diverso: il sito non
+   può citarne il testo né mappare le pagine di tutti. Deciso dall'autore il 14
+   novembre, due strade insieme:
+   - **il nome del concetto, con le parole chiave** che si trovano nell'indice
+     di qualunque manuale («portata geografica», «caratteristica luminosa»),
+     così chi studia lo ritrova da solo nel suo libro di testo;
+   - **una scheda nostra per concetto**, breve e verificata, con le regole
+     delle spiegazioni dell'ADR-006: la scrive o la controlla una persona,
+     porta la data della verifica, e dice che è nostra e non del decreto. Il
+     conto cambia molto: sono 150–250 schede invece di 1.722 spiegazioni, e il
+     concetto è l'unità giusta per studiare.
+
+**L'avviso: «stai sbagliando sempre questo concetto».** Proposto dall'autore.
+Quando gli errori su un concetto superano la soglia, il sito lo dice e
+raccomanda di aprire la scheda. Regole proposte da Claude, perché un avviso
+non diventi rumore:
+- **mai durante una simulazione**, che non corregge durante la prova; nel
+  riepilogo sì, e in allenamento dopo la risposta;
+- **solo sopra una soglia dichiarata**: per esempio almeno 5 quesiti visti del
+  concetto e la maggior parte da rifare all'ultima risposta. Il numero lo fissa
+  il pilota, non si sceglie a occhio;
+- **una volta per concetto e per sessione**, e si chiude con un tocco;
+- **dice da che cosa nasce**: «in base alle ultime risposte su questi N
+  quesiti», come la legenda dei cinque stati;
+- **porta alla scheda solo se è verificata**; senza scheda porta alle parole
+  chiave da cercare nel manuale, e ai quesiti di quel concetto;
+- **senza account** vale per le risposte della pagina aperta, come il resto.
+
+**Come si costruisce, senza toccare la banca.**
+- Le etichette stanno in un file a parte, per esempio `site/dati/concetti.json`,
+  dichiarate come classificazione nostra e non ministeriale. Il precedente sono
+  le 12 tecniche del carteggio in `site/dati/tecniche.json`. `quiz.json` non si
+  tocca.
+- Prima l'elenco dei concetti, tema per tema, partendo dal programma d'esame
+  (Allegato al DM 323/2021) e leggendo i quesiti. Poi ogni quesito prende da
+  uno a tre concetti.
+- La prima bozza la fa un modello in una sessione, e si controlla a campione:
+  il lavoro preparatorio si fa nelle sessioni, i crediti API restano per la
+  pagina.
+- I test pretendono che ogni quesito abbia almeno un concetto, che ogni
+  concetto abbia almeno tre quesiti, e che non ci siano id inventati.
+- Nel motore servono un conteggio per concetto, accanto a `quadro()`, e un
+  filtro per concetto in `coda()`.
+
+**Il pilota, in corso dal 14 novembre.** Una sessione a parte etichetta i 120
+quesiti dei fanali e misura sull'archivio di preparazione dell'autore, letto
+dove sta e non copiato, se i concetti separano davvero gli errori o li
+spalmano come la voce. Il risultato andrà in `docs/prototipi/concetti-2026-11/`.
+Da lì si decide se estendere a tutta la banca, e con che granularità.
+
+#### Per chi, promesse, motore, grandezza
+
+**Per quale persona.**
+- *Chi ripassa sotto esame*: i concetti e l'avviso rispondono alla sua
+  domanda, «dove sono ancora scoperto».
+- *Chi è già in formazione*: *Scegli tu* gli toglie di mezzo il sito.
+- *Chi comincia da zero*: *Allenati* gli toglie la scelta fra otto porte.
+
+**Promesse che tocca.**
+- Il §5, il §6 e il §7 della specifica (sezioni, porte, schermate), e i
+  requisiti R-NAV: il menu e le porte cambiano.
+- L'ADR-006 sulle spiegazioni: le schede seguono le sue regole, ma l'unità
+  diventa il concetto e non il quesito.
+- Il §4.6, «il motore non sa che cosa hai studiato fuori dal sito», resta vero:
+  il concetto dice che cosa studiare, non che cosa hai studiato.
+- La banca non si tocca: i concetti stanno in un file loro.
+- L'avviso non è un invito a registrarsi, e non tocca i tre posti di R-ACC-03.
+
+**Che cosa motore e server sanno già.** I cinque stati, i tag N/S, i
+segnalibri, `mirata()`, `coda()`, `screening()`, `giroTecniche()`, `tappeto()`.
+Non sanno niente dei concetti. Il server non cambia: i concetti sono dati
+statici, e le righe delle risposte restano quelle.
+
+**Grandezza.**
+- Le due porte: **L**, motore e interfaccia, con un progetto prima.
+- I concetti su tutta la banca: **L**, quasi tutto di lettura e verifica.
+- Le schede: **XL** come contenuto, perché ognuna va verificata da una persona.
+
+**Rischi, il guasto muto per primo.**
+- Un'etichetta sbagliata dà un consiglio sbagliato con l'aria di essere
+  giusto. Per questo il pilota, la verifica a campione, e la dichiarazione che
+  la classificazione è nostra.
+- Un concetto con pochi quesiti dà un avviso calcolato sul rumore: soglie, come
+  per ogni altra misura.
+- Una scheda sbagliata insegna il falso: le regole dell'ADR-006, e nessuna
+  scheda senza verifica.
+- Un nuovo decreto con una banca nuova richiede di rietichettare: il test che
+  pretende un concetto per ogni quesito lo dice il giorno stesso.
+
+**Decisioni per l'autore.**
+1. Il nome: «concetti», «argomenti», «punti da studiare»?
+2. La granularità: quanti concetti in tutto, dopo il pilota?
+3. Chi scrive e chi verifica le schede, e con che ritmo.
+4. La soglia dell'avviso, dopo il pilota.
+5. Se Simulazione preseleziona vela e carteggio da «che cosa stai preparando?».
+6. Un pulsante o due per «Accedi» e «Crea un account».
+7. Dove stanno i Segnali: un extra dentro Quiz, o una voce a sé.
+8. In che ordine: prima le due porte, o prima i concetti.
