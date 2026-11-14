@@ -132,6 +132,22 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   nel remoto, altre voci, la calibrazione della posteriore. L'archivio vero non
   è stato letto.
 
+### Progettato — I-32: i risultati dei concetti, scritti nella scheda
+
+- **Perché.** Il pilota e il confronto stavano in due rapporti nei prototipi, e
+  la scheda I-32 diceva ancora «il pilota, in corso». Ora la scheda porta i
+  risultati e il ragionamento affinato con l'autore il 14 novembre:
+  - si parte dagli errori, ma si confronta con le domande fatte;
+  - più concetti non trovano meglio le lacune: servono per consigliare;
+  - i concetti formano un albero;
+  - una risposta giusta vale poco, perché su tre risposte si indovina;
+  - un fatto non vuole una soglia, una diagnosi sì.
+- **Che cosa cambia nella scheda.** La soglia dell'avviso non è più «almeno 5
+  quesiti»: è il bayesiano nel motore, da 40 quesiti nella voce. Claude resta
+  un'idea per l'interrogazione e per l'aiuto al giudizio del carteggio, non per
+  la diagnosi. Le decisioni 2 e 4 per l'autore sono riscritte su questi numeri.
+- Nessun file di `site/`, `tests/` o della specifica toccato.
+
 ## [0.35.1] — 2026-10-29
 
 **Le risposte in simulazione si cambiano, e «auto» si capisce.** Un utente ha
