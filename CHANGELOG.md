@@ -32,6 +32,37 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 - **Non guardato:** «Avanti da solo» sul sito pubblicato e su un telefono vero;
   l'ha guardato la regia prima della merge, servito in locale, a 375×812.
 
+### Provato — il pilota dei concetti sulla voce dei fanali (I-32)
+
+- **Perché.** L'autore vuole etichettare i quesiti con dei «concetti» più fini
+  delle voci, per trovare le lacune, collegare le domande e rimandare al
+  manuale; il rischio è un'etichetta sbagliata che consiglia male con l'aria di
+  essere giusta. Prima di estendere, una voce sola: la più grande, «I principali
+  fanali luminosi e il sistema IALA», 120 quesiti. In
+  `docs/prototipi/concetti-2026-11/`: `concetti-fanali.json` (19 concetti con
+  parole chiave da indice di manuale, e 143 tag su 120 quesiti) e il README con
+  metodo, numeri e raccomandazione. `site/` non è stato toccato.
+- **Etichette.** Una passata, poi una rilettura di 30 quesiti estratti a caso:
+  2 tag cambiati, tutti e due aggiunti (`simboli_carta` a `base-739` e
+  `base-743`). Rilettura dello stesso lettore: una seconda lettura indipendente
+  manca, ed è detto.
+- **Misura, sull'archivio vero della preparazione**, letto con il permesso
+  dell'autore dove sta, in sola lettura, con uno script che restituisce solo
+  conteggi: nessuna riga nel repo. Gli errori all'ultima risposta nella voce
+  sono **zero** (ogni errore era stato ripreso), quindi si usa l'errore alla
+  prima risposta: 13 su 120 (10,8 %, la banca 12,0 %). Divisi in 19 concetti
+  fanno 0–2 errori ciascuno, distribuiti come a caso (permutazione, p = 0,93):
+  **con una persona sola i concetti non si possono dire separatori**. Unico
+  segnale debole, di forza: zero errori su 26 quesiti di cardinali (3,6 %, su
+  cinque gruppi guardati).
+- **Trovato:** la voce contiene 9 quesiti di navigazione fluviale e 11 coppie di
+  testo identico; `base-763` sembra avere la risposta incompleta («Oc (3)» senza
+  i gruppi), segnalato e non toccato.
+- **Raccomandato:** estendere per «domande dello stesso concetto» e per il
+  rimando allo studio, che non chiedono statistiche; non ancora per l'avviso
+  sulle lacune, che vuole una soglia e risposte di più persone. Due livelli:
+  concetti fini (15–20 per una voce così) e famiglie (4–5).
+
 ## [0.35.1] — 2026-10-29
 
 **Le risposte in simulazione si cambiano, e «auto» si capisce.** Un utente ha
