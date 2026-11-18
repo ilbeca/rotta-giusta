@@ -97,6 +97,13 @@ Quello che rende questo sito diverso dagli altri non sono i quiz. È che
   classificazione derivata dai testi degli esercizi, alla cieca, per l'allenamento
   «che tecnica serve?». L'*argomento* di ogni esercizio (correnti, carburante,
   navigazione costiera, scarroccio) invece è nel decreto.
+- **I «concetti» dei quesiti non sono ministeriali**, come le tecniche: sono una
+  classificazione di questo sito, più fine dei temi e delle voci del decreto, che
+  dice che cosa chiede di sapere ogni quesito, raccolta in famiglie per voce.
+  Li ha scritti Claude leggendo testi e figure, una sorgente per tema in
+  `strumenti/concetti/`, composta in `site/dati/concetti.json` da
+  `strumenti/concetti/componi.py`; nessuna persona li ha ancora rivisti, e la
+  pagina oggi non li usa.
 
 Fa fede il decreto, non questo sito: vedi [Avvertenza](site/avvertenza.html).
 
@@ -258,12 +265,13 @@ site/                 quello che statichost.eu pubblica, e niente altro
   app.html            l'app, una pagina sola, con il client degli account
   engine.js           motore di selezione e statistiche (logica pura, testata)
   sw.js               il service worker che si disinstalla (ADR-005)
-  dati/               quiz.json, meta.json, tecniche.json, carteggio.json, carteggio_e12.json
+  dati/               quiz.json, meta.json, tecniche.json, concetti.json, carteggio.json, carteggio_e12.json
   figure/             le figure del decreto (103 caselle, 102 disegni: la n. 8 era un doppione)
   privacy.html, avvertenza.html
 server/               il server degli account, che gira su api.rottagiusta.it
 fonte/                il PDF dell'Allegato A al DD 131/2022 e verifica.py
-strumenti/            controlla.py (il guardiano), serve.py, password_comuni.py, prepara.py
+strumenti/            controlla.py (il guardiano), serve.py, password_comuni.py, prepara.py,
+                      concetti/ (una sorgente per tema e componi.py)
 tests/                le cinque suite: motore, server, dati, interfaccia, specifica
 docs/                 specifica.md, filosofia.md, i progetti, e adr/ con le decisioni
 CHANGELOG.md          la storia, compresa quella del progetto da cui è estratto

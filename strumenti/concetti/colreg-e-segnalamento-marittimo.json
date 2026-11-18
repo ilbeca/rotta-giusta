@@ -1,0 +1,1504 @@
+{
+ "tema": "COLREG E SEGNALAMENTO MARITTIMO",
+ "data": "2026-11-18",
+ "stato": "Prima lettura (P-106). Concetti e tag scritti da Claude leggendo testi e figure; non ministeriali, non rivisti da una persona. La voce dei fanali luminosi e del sistema IALA viene dal pilota del 14 novembre (docs/prototipi/concetti-2026-11/), con dodici id resi più specifici perché sono globali su tutta la banca; tag invariati.",
+ "famiglie": [
+  {
+   "id": "faro_luci_portate",
+   "nome": "Le luci dei fari: portate, ritmi e sigle",
+   "voce": "I principali fanali luminosi e il sistema IALA",
+   "concetti": [
+    "faro_portate",
+    "faro_fase_periodo",
+    "faro_tipi_luce",
+    "faro_sigla",
+    "faro_settori"
+   ]
+  },
+  {
+   "id": "segnalamento_oggetti_carta",
+   "nome": "I segnalamenti come oggetti e sulla carta",
+   "voce": "I principali fanali luminosi e il sistema IALA",
+   "concetti": [
+    "segnalamento_tipi",
+    "segnalamento_radar_nebbia",
+    "segnalamento_simboli_carta"
+   ]
+  },
+  {
+   "id": "iala_segnali",
+   "nome": "Il sistema IALA: laterali e altri segnali",
+   "voce": "I principali fanali luminosi e il sistema IALA",
+   "concetti": [
+    "iala_sistema",
+    "iala_laterali",
+    "iala_pericolo_isolato",
+    "iala_acque_sicure",
+    "iala_speciali"
+   ]
+  },
+  {
+   "id": "iala_cardinali",
+   "nome": "Le cardinali",
+   "voce": "I principali fanali luminosi e il sistema IALA",
+   "concetti": [
+    "cardinali_principio",
+    "cardinali_miragli",
+    "cardinali_luci",
+    "cardinali_colori"
+   ]
+  },
+  {
+   "id": "navigazione_fluviale",
+   "nome": "La navigazione fluviale",
+   "voce": "I principali fanali luminosi e il sistema IALA",
+   "concetti": [
+    "fluviale_segnali",
+    "fluviale_regole"
+   ]
+  },
+  {
+   "id": "fanali_di_via",
+   "nome": "I fanali di via",
+   "voce": "Fanali e segnali diurni",
+   "concetti": [
+    "fanali_settori_portata",
+    "fanali_colori_posizione",
+    "fanali_nave_motore"
+   ]
+  },
+  {
+   "id": "fanali_regole_diporto",
+   "nome": "Quando e chi deve accendere i fanali",
+   "voce": "Fanali e segnali diurni",
+   "concetti": [
+    "fanali_quando_accendere",
+    "fanali_obbligo_diporto"
+   ]
+  },
+  {
+   "id": "fanali_unita_speciali",
+   "nome": "I fanali delle unità con regole proprie",
+   "voce": "Fanali e segnali diurni",
+   "concetti": [
+    "fanali_vela",
+    "fanali_pesca",
+    "fanali_rimorchio",
+    "fanali_altre_speciali",
+    "fonda_incaglio"
+   ]
+  },
+  {
+   "id": "fanali_lettura",
+   "nome": "Leggere i fanali che si vedono",
+   "voce": "Fanali e segnali diurni",
+   "concetti": [
+    "aspetto_da_fanali"
+   ]
+  },
+  {
+   "id": "segnali_diurni",
+   "nome": "I segnali diurni",
+   "voce": "Fanali e segnali diurni",
+   "concetti": [
+    "diurni_pesca",
+    "diurni_fonda_motoveliero"
+   ]
+  },
+  {
+   "id": "abbordi_rischio",
+   "nome": "Il rischio di collisione e la manovra",
+   "voce": "Prevenire gli abbordi in mare",
+   "concetti": [
+    "rischio_collisione",
+    "manovra_evitare"
+   ]
+  },
+  {
+   "id": "abbordi_precedenze",
+   "nome": "Chi lascia la rotta a chi",
+   "voce": "Prevenire gli abbordi in mare",
+   "concetti": [
+    "motore_opposte_incrociate",
+    "raggiungente",
+    "vela_contro_vela",
+    "gerarchia_precedenze"
+   ]
+  },
+  {
+   "id": "abbordi_regolamento",
+   "nome": "Il regolamento: fonte e definizioni",
+   "voce": "Prevenire gli abbordi in mare",
+   "concetti": [
+    "colreg_fonte",
+    "colreg_definizioni"
+   ]
+  },
+  {
+   "id": "suoni_manovra_sorpasso",
+   "nome": "I segnali sonori di manovra e di sorpasso",
+   "voce": "Prevenire gli abbordi in mare",
+   "concetti": [
+    "suoni_manovra",
+    "suoni_sorpasso"
+   ]
+  },
+  {
+   "id": "suoni_nebbia_apparecchi",
+   "nome": "Nebbia, apparecchi sonori e soccorso",
+   "voce": "Prevenire gli abbordi in mare",
+   "concetti": [
+    "suoni_nebbia",
+    "dotazioni_sonore"
+   ]
+  }
+ ],
+ "concetti": [
+  {
+   "id": "faro_portate",
+   "nome": "Le tre portate di un faro",
+   "parole_chiave": [
+    "portata luminosa",
+    "portata nominale",
+    "portata geografica",
+    "visibilità meteorologica",
+    "curvatura terrestre"
+   ],
+   "copre": "Che cosa sono portata luminosa, nominale e geografica, da che cosa dipendono, quale è scritta sulla carta."
+  },
+  {
+   "id": "faro_fase_periodo",
+   "nome": "Fase, periodo e caratteristica",
+   "parole_chiave": [
+    "caratteristica della luce",
+    "fase",
+    "periodo",
+    "eclisse",
+    "luce ritmica",
+    "Elenco dei fari"
+   ],
+   "copre": "Come si compone il ritmo di una luce: fase, periodo, e la caratteristica che identifica un faro di notte."
+  },
+  {
+   "id": "faro_tipi_luce",
+   "nome": "Tipi di luce e loro abbreviazioni",
+   "parole_chiave": [
+    "luce fissa",
+    "luce a lampi",
+    "intermittente",
+    "isofase",
+    "scintillante",
+    "luce alternata",
+    "abbreviazioni delle luci"
+   ],
+   "copre": "Riconoscere il tipo di luce dalla sigla, italiana (Lam, Int, Sc, Alt, F) o inglese (Fl, Oc, Iso, Q), e il colore (b, r, v, G, W, Y)."
+  },
+  {
+   "id": "faro_sigla",
+   "nome": "Leggere la sigla completa di un segnalamento",
+   "parole_chiave": [
+    "caratteristica sulla carta",
+    "elevazione della luce",
+    "Fl(3) 10s 37m 12M",
+    "lettura della sigla"
+   ],
+   "copre": "Mettere in ordine i pezzi della sigla scritta accanto al simbolo: ritmo e gruppi, colore, periodo, elevazione sul l.m.m., portata nominale."
+  },
+  {
+   "id": "segnalamento_tipi",
+   "nome": "Fari, fanali, boe, mede e gavitelli",
+   "parole_chiave": [
+    "faro",
+    "fanale",
+    "boa luminosa",
+    "meda",
+    "gavitello",
+    "dromo",
+    "segnalamenti marittimi"
+   ],
+   "copre": "Che cos'è ciascun tipo di segnalamento, a che cosa serve, e che cosa distingue un faro da un fanale."
+  },
+  {
+   "id": "faro_settori",
+   "nome": "Settori di luce",
+   "parole_chiave": [
+    "luce a settori",
+    "settore di visibilità",
+    "settore rosso"
+   ],
+   "copre": "Luci di colori diversi per settori, il settore di visibilità disegnato sulla carta, il significato del settore rosso."
+  },
+  {
+   "id": "segnalamento_radar_nebbia",
+   "nome": "Riflettore radar, racon e segnali da nebbia",
+   "parole_chiave": [
+    "riflettore radar",
+    "racon",
+    "segnale da nebbia",
+    "boa a campana",
+    "corno da nebbia"
+   ],
+   "copre": "Dispositivi radar passivi e attivi e segnali sonori montati sui segnalamenti, e i loro simboli."
+  },
+  {
+   "id": "segnalamento_simboli_carta",
+   "nome": "Simboli dei segnalamenti sulla carta nautica",
+   "parole_chiave": [
+    "simboli della carta nautica",
+    "forma della boa",
+    "boa a fuso",
+    "boa ad asta",
+    "abbreviazioni dei colori",
+    "INT 1"
+   ],
+   "copre": "Leggere il disegno di una boa sulla carta: forma (sferica, conica, cilindrica, a fuso, ad asta), lettere dei colori (g, n, r, W, Y), simboli accessori."
+  },
+  {
+   "id": "iala_sistema",
+   "nome": "Il sistema AISM-IALA in generale",
+   "parole_chiave": [
+    "sistema AISM-IALA",
+    "regione A",
+    "regione B",
+    "codificazione diurna",
+    "miraglio"
+   ],
+   "copre": "Le cinque famiglie di segnali, la differenza fra regione A e B, gli elementi che danno il significato di giorno."
+  },
+  {
+   "id": "iala_laterali",
+   "nome": "Segnali laterali, regione A",
+   "parole_chiave": [
+    "segnali laterali",
+    "regione A",
+    "senso convenzionale del segnalamento",
+    "rosso a sinistra"
+   ],
+   "copre": "Rosso e cilindrico a sinistra, verde e conico a dritta entrando in porto; il lato da cui si lascia il segnale."
+  },
+  {
+   "id": "cardinali_principio",
+   "nome": "Cardinali: il principio",
+   "parole_chiave": [
+    "segnali cardinali",
+    "quadranti",
+    "nero e giallo"
+   ],
+   "copre": "A che cosa servono le cardinali: si passa dal lato del nome, il pericolo è dalla parte opposta; i colori sono nero e giallo."
+  },
+  {
+   "id": "cardinali_miragli",
+   "nome": "Cardinali: riconoscerle dal miraglio",
+   "parole_chiave": [
+    "miraglio cardinale",
+    "due coni sovrapposti",
+    "cardinale Nord",
+    "cardinale Est",
+    "cardinale Sud",
+    "cardinale Ovest"
+   ],
+   "copre": "Le quattro combinazioni dei due coni neri (punte su, punte giù, unite per le basi, per i vertici) e il disegno della cardinale."
+  },
+  {
+   "id": "cardinali_luci",
+   "nome": "Cardinali: le luci",
+   "parole_chiave": [
+    "luce scintillante",
+    "scintillii continui",
+    "gruppi di 3, 6, 9",
+    "Q",
+    "VQ"
+   ],
+   "copre": "Il numero di scintillii che dice il quadrante: continuo N, 3 E, 6 (+ lampo lungo) S, 9 W."
+  },
+  {
+   "id": "cardinali_colori",
+   "nome": "Cardinali: i colori del corpo",
+   "parole_chiave": [
+    "bande nere e gialle",
+    "colori delle cardinali",
+    "n.g., g.n.g., n.g.n."
+   ],
+   "copre": "Dove stanno il nero e il giallo sul corpo di ciascuna cardinale, anche come lettere sotto il simbolo."
+  },
+  {
+   "id": "iala_pericolo_isolato",
+   "nome": "Segnale di pericolo isolato",
+   "parole_chiave": [
+    "pericolo isolato",
+    "due sfere nere",
+    "Fl(2)",
+    "nero con bande rosse"
+   ],
+   "copre": "Corpo nero con bande rosse orizzontali, miraglio a due sfere nere, luce bianca a gruppi di due lampi."
+  },
+  {
+   "id": "iala_acque_sicure",
+   "nome": "Segnale di acque sicure",
+   "parole_chiave": [
+    "acque sicure",
+    "sfera rossa",
+    "Mo(A)",
+    "isofase",
+    "lampo lungo"
+   ],
+   "copre": "Strisce verticali bianche e rosse, miraglio a sfera rossa, luce bianca isofase, intermittente, a lampo lungo o Morse A."
+  },
+  {
+   "id": "iala_speciali",
+   "nome": "Segnali speciali",
+   "parole_chiave": [
+    "segnale speciale",
+    "miraglio a X giallo",
+    "luce gialla"
+   ],
+   "copre": "Corpo giallo, miraglio a X giallo, luce gialla; a che cosa servono (zone e situazioni particolari)."
+  },
+  {
+   "id": "fluviale_segnali",
+   "nome": "Navigazione fluviale: i segnali",
+   "parole_chiave": [
+    "navigazione interna",
+    "segnali fluviali",
+    "chiamata e rimando",
+    "segnale di prosecuzione",
+    "rombo giallo"
+   ],
+   "copre": "Cartelli sulle sponde (chiamata, rimando, prosecuzione), l'arcata segnalata, le boe nei fiumi."
+  },
+  {
+   "id": "fluviale_regole",
+   "nome": "Navigazione fluviale: le regole",
+   "parole_chiave": [
+    "navigazione interna",
+    "precedenza fluviale",
+    "corrente a favore",
+    "dotazioni navigazione interna"
+   ],
+   "copre": "Chi ha la precedenza, che cosa si fa in una curva a gomito, che cosa si deve avere a bordo."
+  },
+  {
+   "id": "fanali_settori_portata",
+   "nome": "Settori di visibilità e portata dei fanali di via",
+   "parole_chiave": [
+    "settore di visibilità",
+    "fanale di testa d'albero 225°",
+    "fanali laterali 112,5°",
+    "fanale di coronamento 135°",
+    "portata dei fanali"
+   ],
+   "copre": "Quanti gradi copre ogni fanale e verso dove (prora, poppa, dal traverso), la somma dei laterali, e quante miglia si devono vedere."
+  },
+  {
+   "id": "fanali_colori_posizione",
+   "nome": "Colori e posizione dei fanali di via",
+   "parole_chiave": [
+    "fanali di via",
+    "verde a dritta rosso a sinistra",
+    "fanale di testa d'albero bianco",
+    "fanale di coronamento bianco"
+   ],
+   "copre": "Che colore ha ogni fanale e dove sta a bordo: bianco in testa d'albero e a poppa, verde a dritta, rosso a sinistra."
+  },
+  {
+   "id": "fanali_nave_motore",
+   "nome": "I fanali della nave a motore secondo la lunghezza",
+   "parole_chiave": [
+    "nave a propulsione meccanica",
+    "secondo fanale di testa d'albero",
+    "lunghezza 50 metri",
+    "lunghezza 20 metri",
+    "fanale combinato"
+   ],
+   "copre": "Che cosa mostra un'unità a motore in navigazione: sotto e sopra i 50 metri, sotto i 20 con il fanale combinato."
+  },
+  {
+   "id": "fanali_quando_accendere",
+   "nome": "Quando si accendono i fanali",
+   "parole_chiave": [
+    "accensione dei fanali",
+    "dal tramonto al sorgere del sole",
+    "visibilità ridotta",
+    "luci che si possono confondere"
+   ],
+   "copre": "Dal tramonto al sorgere del sole e con visibilità ridotta, e nessun'altra luce che si confonda con i fanali."
+  },
+  {
+   "id": "fanali_obbligo_diporto",
+   "nome": "Fanali e unità da diporto: chi deve averli",
+   "parole_chiave": [
+    "fanali sulle unità da diporto",
+    "oltre 1 miglio dalla costa",
+    "torcia a luce bianca",
+    "vela sotto i 7 metri"
+   ],
+   "copre": "Quando il diporto deve avere i fanali, e quando bastano una torcia o una luce bianca al loro posto."
+  },
+  {
+   "id": "fanali_vela",
+   "nome": "I fanali dell'unità a vela",
+   "parole_chiave": [
+    "unità a vela in navigazione",
+    "fanali ripetitori rosso e verde",
+    "fanale tricolore",
+    "vela sotto e sopra i 20 metri"
+   ],
+   "copre": "Laterali e coronamento senza testa d'albero; il fanale combinato sotto i 20 metri; i ripetitori facoltativi sull'albero."
+  },
+  {
+   "id": "fanali_pesca",
+   "nome": "I fanali delle navi da pesca",
+   "parole_chiave": [
+    "pesca a strascico verde su bianco",
+    "pesca non a strascico rosso su bianco",
+    "attrezzi oltre 150 metri",
+    "con e senza abbrivio"
+   ],
+   "copre": "Verde su bianco lo strascico, rosso su bianco l'altra pesca, il fanale in più verso l'attrezzo, i laterali solo con abbrivio."
+  },
+  {
+   "id": "fanali_rimorchio",
+   "nome": "I fanali del rimorchio",
+   "parole_chiave": [
+    "rimorchio",
+    "nave rimorchiata",
+    "fanale di rimorchio giallo",
+    "rimorchio oltre 200 metri"
+   ],
+   "copre": "Che cosa mostrano chi rimorchia e chi è rimorchiato, e che cosa cambia oltre i 200 metri di rimorchio."
+  },
+  {
+   "id": "fanali_altre_speciali",
+   "nome": "Fanali di cuscino d'aria, nave pilota, nave condizionata dall'immersione",
+   "parole_chiave": [
+    "nave a cuscino d'aria",
+    "fanale giallo lampeggiante",
+    "nave pilota",
+    "nave condizionata dalla propria immersione"
+   ],
+   "copre": "Le navi con fanali propri che non sono pesca, vela o rimorchio: il lampeggiante giallo del cuscino d'aria, il pilota, l'immersione."
+  },
+  {
+   "id": "fonda_incaglio",
+   "nome": "Unità alla fonda e incagliata",
+   "parole_chiave": [
+    "nave alla fonda",
+    "fanale di fonda",
+    "nave incagliata",
+    "fanali di servizio"
+   ],
+   "copre": "Le luci di chi è all'ancora o incagliato, e quando si possono accendere i fanali di servizio sul ponte."
+  },
+  {
+   "id": "aspetto_da_fanali",
+   "nome": "Dai fanali, da che lato si vede l'unità e dove va",
+   "parole_chiave": [
+    "lettura dei fanali",
+    "mostra la dritta",
+    "mostra la prora",
+    "dirige a sinistra dell'osservatore",
+    "settore di coronamento"
+   ],
+   "copre": "Dalla combinazione di luci che si vede capire se l'altra unità mostra la prora, la poppa o un fianco, e verso dove dirige."
+  },
+  {
+   "id": "diurni_pesca",
+   "nome": "Segnali diurni delle navi da pesca",
+   "parole_chiave": [
+    "bicono con i vertici uniti",
+    "cono con il vertice in alto",
+    "segnali diurni",
+    "pesca a strascico"
+   ],
+   "copre": "I due coni uniti per i vertici di chi pesca, e il cono in più verso l'attrezzo che si estende oltre i 150 metri."
+  },
+  {
+   "id": "diurni_fonda_motoveliero",
+   "nome": "Pallone di fonda e cono del motoveliero",
+   "parole_chiave": [
+    "pallone nero",
+    "cono con il vertice in basso",
+    "vela e motore insieme",
+    "segnali diurni"
+   ],
+   "copre": "Il pallone nero di chi è alla fonda, e il cono con il vertice in basso di chi va a vela e a motore insieme, che conta come unità a motore."
+  },
+  {
+   "id": "rischio_collisione",
+   "nome": "Il rischio di collisione e come si accerta",
+   "parole_chiave": [
+    "rischio di collisione",
+    "rilevamento costante",
+    "rilevamento polare",
+    "distanza che diminuisce",
+    "situazione dubbia"
+   ],
+   "copre": "Rilevamenti successivi costanti con la distanza che cala vogliono dire rotta di collisione; nel dubbio il rischio c'è."
+  },
+  {
+   "id": "manovra_evitare",
+   "nome": "La manovra per evitare la collisione e la velocità di sicurezza",
+   "parole_chiave": [
+    "manovra per evitare la collisione",
+    "manovra decisa e tempestiva",
+    "velocità di sicurezza",
+    "unità che deve manovrare"
+   ],
+   "copre": "Chi deve manovrare manovra presto, con decisione e in modo evidente; con visibilità ridotta si va a velocità di sicurezza."
+  },
+  {
+   "id": "motore_opposte_incrociate",
+   "nome": "Due unità a motore: rotte opposte e incrociate",
+   "parole_chiave": [
+    "rotte opposte",
+    "rotte incrociate",
+    "precedenza a chi viene da dritta",
+    "accostare a dritta",
+    "passare di poppa"
+   ],
+   "copre": "Di prora tutte e due accostano a dritta; in rotte incrociate manovra chi vede l'altra a dritta, e le passa di poppa."
+  },
+  {
+   "id": "raggiungente",
+   "nome": "La nave raggiungente",
+   "parole_chiave": [
+    "nave raggiungente",
+    "nave raggiunta",
+    "settore del fanale di coronamento",
+    "sorpasso"
+   ],
+   "copre": "Chi raggiunge, cioè arriva nel settore del coronamento dell'altra, le lascia sempre libera la rotta."
+  },
+  {
+   "id": "vela_contro_vela",
+   "nome": "Due unità a vela",
+   "parole_chiave": [
+    "mure a dritta",
+    "mure a sinistra",
+    "sopravvento e sottovento",
+    "precedenza fra unità a vela"
+   ],
+   "copre": "Con il vento da lati diversi manovra chi ha il vento a sinistra; dallo stesso lato manovra chi è sopravvento."
+  },
+  {
+   "id": "gerarchia_precedenze",
+   "nome": "Chi lascia la rotta a chi: la gerarchia",
+   "parole_chiave": [
+    "ordine di precedenza",
+    "nave che non governa",
+    "manovrabilità limitata",
+    "nave intenta alla pesca",
+    "schema di separazione del traffico"
+   ],
+   "copre": "L'ordine delle precedenze fra motore, vela, pesca, manovrabilità limitata e nave che non governa, e chi non deve intralciare negli schemi di traffico."
+  },
+  {
+   "id": "colreg_fonte",
+   "nome": "Il Colreg come fonte delle regole",
+   "parole_chiave": [
+    "COLREG 72",
+    "Regolamento internazionale per prevenire gli abbordi in mare",
+    "fanali stabiliti dal Colreg"
+   ],
+   "copre": "Quale norma regola gli abbordi e l'elenco completo di fanali e segnali, a cui il quesito rimanda per le navi grandi e speciali."
+  },
+  {
+   "id": "colreg_definizioni",
+   "nome": "Le definizioni del Colreg",
+   "parole_chiave": [
+    "visibilità ridotta",
+    "abbrivio",
+    "nave con manovrabilità limitata",
+    "definizioni del Colreg"
+   ],
+   "copre": "Che cosa vogliono dire nel regolamento «visibilità ridotta», «abbrivio» e le categorie di navi."
+  },
+  {
+   "id": "suoni_manovra",
+   "nome": "Segnali sonori di manovra",
+   "parole_chiave": [
+    "segnali di manovra",
+    "un suono breve accosto a dritta",
+    "due suoni brevi accosto a sinistra",
+    "fischio"
+   ],
+   "copre": "Un breve accosto a dritta, due brevi a sinistra: che cosa annuncia chi fischia, e che cosa ci si aspetta che faccia."
+  },
+  {
+   "id": "suoni_sorpasso",
+   "nome": "Segnali sonori di sorpasso",
+   "parole_chiave": [
+    "sorpasso in acque ristrette",
+    "due suoni prolungati",
+    "sorpasso a dritta",
+    "sorpasso a sinistra"
+   ],
+   "copre": "Due prolungati e poi uno o due brevi per dire da che lato si vuole sorpassare."
+  },
+  {
+   "id": "suoni_nebbia",
+   "nome": "Segnali sonori in visibilità ridotta",
+   "parole_chiave": [
+    "segnali da nebbia",
+    "suono prolungato ogni 2 minuti",
+    "campana alla fonda",
+    "un prolungato e due brevi"
+   ],
+   "copre": "Che cosa suona in nebbia chi va a motore con o senza abbrivio, chi va a vela, chi è alla fonda."
+  },
+  {
+   "id": "dotazioni_sonore",
+   "nome": "Apparecchi per i segnali sonori e segnale di soccorso",
+   "parole_chiave": [
+    "fischio",
+    "campana",
+    "apparecchiature per segnali sonori",
+    "sotto i 12 metri",
+    "segnale di pericolo"
+   ],
+   "copre": "Che cosa deve avere a bordo un'unità secondo la lunghezza per farsi sentire, e il suono continuo come segnale di pericolo."
+  }
+ ],
+ "quesiti": {
+  "base-600": [
+   "fanali_nave_motore",
+   "fanali_colori_posizione"
+  ],
+  "base-601": [
+   "diurni_pesca"
+  ],
+  "base-602": [
+   "fanali_altre_speciali"
+  ],
+  "base-603": [
+   "fanali_settori_portata"
+  ],
+  "base-604": [
+   "fanali_settori_portata"
+  ],
+  "base-605": [
+   "fanali_obbligo_diporto"
+  ],
+  "base-606": [
+   "fanali_settori_portata"
+  ],
+  "base-607": [
+   "fanali_settori_portata"
+  ],
+  "base-608": [
+   "diurni_fonda_motoveliero"
+  ],
+  "base-609": [
+   "diurni_fonda_motoveliero"
+  ],
+  "base-610": [
+   "fanali_colori_posizione"
+  ],
+  "base-611": [
+   "fanali_settori_portata"
+  ],
+  "base-612": [
+   "gerarchia_precedenze"
+  ],
+  "base-613": [
+   "gerarchia_precedenze"
+  ],
+  "base-614": [
+   "fanali_obbligo_diporto"
+  ],
+  "base-615": [
+   "gerarchia_precedenze"
+  ],
+  "base-616": [
+   "fanali_rimorchio",
+   "fanali_colori_posizione"
+  ],
+  "base-617": [
+   "fanali_rimorchio",
+   "colreg_fonte"
+  ],
+  "base-618": [
+   "fonda_incaglio",
+   "colreg_fonte"
+  ],
+  "base-619": [
+   "fanali_rimorchio",
+   "colreg_fonte"
+  ],
+  "base-620": [
+   "colreg_fonte"
+  ],
+  "base-621": [
+   "rischio_collisione"
+  ],
+  "base-622": [
+   "fanali_quando_accendere"
+  ],
+  "base-623": [
+   "fanali_rimorchio"
+  ],
+  "base-624": [
+   "fanali_altre_speciali",
+   "colreg_fonte"
+  ],
+  "base-625": [
+   "fanali_obbligo_diporto",
+   "fanali_quando_accendere"
+  ],
+  "base-626": [
+   "fanali_obbligo_diporto"
+  ],
+  "base-627": [
+   "fanali_settori_portata"
+  ],
+  "base-628": [
+   "fanali_nave_motore"
+  ],
+  "base-629": [
+   "fanali_settori_portata"
+  ],
+  "base-630": [
+   "fonda_incaglio"
+  ],
+  "base-631": [
+   "diurni_pesca"
+  ],
+  "base-632": [
+   "fanali_pesca",
+   "aspetto_da_fanali"
+  ],
+  "base-633": [
+   "fanali_altre_speciali"
+  ],
+  "base-634": [
+   "fanali_quando_accendere"
+  ],
+  "base-635": [
+   "fanali_colori_posizione"
+  ],
+  "base-636": [
+   "fanali_nave_motore"
+  ],
+  "base-637": [
+   "fanali_nave_motore"
+  ],
+  "base-638": [
+   "fanali_vela"
+  ],
+  "base-639": [
+   "fanali_vela",
+   "fanali_settori_portata"
+  ],
+  "base-640": [
+   "fanali_pesca",
+   "aspetto_da_fanali"
+  ],
+  "base-641": [
+   "fanali_pesca",
+   "aspetto_da_fanali"
+  ],
+  "base-642": [
+   "fanali_nave_motore",
+   "aspetto_da_fanali"
+  ],
+  "base-643": [
+   "fanali_nave_motore",
+   "aspetto_da_fanali"
+  ],
+  "base-644": [
+   "fanali_vela",
+   "aspetto_da_fanali"
+  ],
+  "base-645": [
+   "fanali_altre_speciali",
+   "colreg_fonte"
+  ],
+  "base-646": [
+   "fanali_vela",
+   "aspetto_da_fanali"
+  ],
+  "base-647": [
+   "fanali_pesca"
+  ],
+  "base-648": [
+   "fanali_pesca",
+   "aspetto_da_fanali"
+  ],
+  "base-649": [
+   "fanali_pesca",
+   "aspetto_da_fanali"
+  ],
+  "base-650": [
+   "fanali_vela",
+   "aspetto_da_fanali"
+  ],
+  "base-651": [
+   "fanali_pesca",
+   "aspetto_da_fanali"
+  ],
+  "base-652": [
+   "diurni_pesca"
+  ],
+  "base-653": [
+   "diurni_fonda_motoveliero"
+  ],
+  "base-654": [
+   "diurni_fonda_motoveliero"
+  ],
+  "base-655": [
+   "fanali_quando_accendere"
+  ],
+  "base-656": [
+   "fonda_incaglio"
+  ],
+  "base-657": [
+   "fanali_vela",
+   "aspetto_da_fanali"
+  ],
+  "base-658": [
+   "fanali_vela",
+   "aspetto_da_fanali"
+  ],
+  "base-659": [
+   "diurni_pesca"
+  ],
+  "base-660": [
+   "fanali_vela"
+  ],
+  "base-661": [
+   "colreg_fonte"
+  ],
+  "base-662": [
+   "fanali_nave_motore",
+   "aspetto_da_fanali"
+  ],
+  "base-663": [
+   "motore_opposte_incrociate"
+  ],
+  "base-664": [
+   "colreg_fonte"
+  ],
+  "base-665": [
+   "colreg_definizioni"
+  ],
+  "base-666": [
+   "manovra_evitare"
+  ],
+  "base-667": [
+   "manovra_evitare"
+  ],
+  "base-668": [
+   "gerarchia_precedenze"
+  ],
+  "base-669": [
+   "vela_contro_vela"
+  ],
+  "base-670": [
+   "vela_contro_vela"
+  ],
+  "base-671": [
+   "gerarchia_precedenze"
+  ],
+  "base-672": [
+   "motore_opposte_incrociate"
+  ],
+  "base-673": [
+   "manovra_evitare"
+  ],
+  "base-674": [
+   "fanali_quando_accendere"
+  ],
+  "base-675": [
+   "fanali_quando_accendere"
+  ],
+  "base-676": [
+   "dotazioni_sonore"
+  ],
+  "base-677": [
+   "dotazioni_sonore"
+  ],
+  "base-678": [
+   "vela_contro_vela"
+  ],
+  "base-679": [
+   "vela_contro_vela"
+  ],
+  "base-680": [
+   "raggiungente"
+  ],
+  "base-681": [
+   "rischio_collisione"
+  ],
+  "base-682": [
+   "raggiungente"
+  ],
+  "base-683": [
+   "suoni_nebbia"
+  ],
+  "base-684": [
+   "suoni_manovra"
+  ],
+  "base-685": [
+   "suoni_sorpasso"
+  ],
+  "base-686": [
+   "suoni_manovra"
+  ],
+  "base-687": [
+   "gerarchia_precedenze"
+  ],
+  "base-688": [
+   "motore_opposte_incrociate"
+  ],
+  "base-689": [
+   "gerarchia_precedenze",
+   "colreg_definizioni"
+  ],
+  "base-690": [
+   "rischio_collisione"
+  ],
+  "base-691": [
+   "suoni_manovra"
+  ],
+  "base-692": [
+   "gerarchia_precedenze"
+  ],
+  "base-693": [
+   "rischio_collisione"
+  ],
+  "base-694": [
+   "vela_contro_vela",
+   "diurni_fonda_motoveliero",
+   "gerarchia_precedenze"
+  ],
+  "base-695": [
+   "vela_contro_vela"
+  ],
+  "base-696": [
+   "fanali_obbligo_diporto"
+  ],
+  "base-697": [
+   "fanali_settori_portata"
+  ],
+  "base-698": [
+   "suoni_nebbia"
+  ],
+  "base-699": [
+   "dotazioni_sonore"
+  ],
+  "base-700": [
+   "suoni_sorpasso"
+  ],
+  "base-701": [
+   "colreg_definizioni"
+  ],
+  "base-702": [
+   "motore_opposte_incrociate"
+  ],
+  "base-703": [
+   "suoni_nebbia"
+  ],
+  "base-704": [
+   "fanali_colori_posizione"
+  ],
+  "base-705": [
+   "fanali_nave_motore"
+  ],
+  "base-706": [
+   "fanali_nave_motore"
+  ],
+  "base-707": [
+   "fanali_vela"
+  ],
+  "base-708": [
+   "rischio_collisione"
+  ],
+  "base-709": [
+   "rischio_collisione"
+  ],
+  "base-710": [
+   "manovra_evitare"
+  ],
+  "base-711": [
+   "motore_opposte_incrociate"
+  ],
+  "base-712": [
+   "raggiungente"
+  ],
+  "base-713": [
+   "motore_opposte_incrociate"
+  ],
+  "base-714": [
+   "rischio_collisione"
+  ],
+  "base-715": [
+   "suoni_sorpasso"
+  ],
+  "base-716": [
+   "suoni_manovra"
+  ],
+  "base-717": [
+   "suoni_sorpasso"
+  ],
+  "base-718": [
+   "dotazioni_sonore"
+  ],
+  "base-719": [
+   "suoni_nebbia"
+  ],
+  "base-720": [
+   "suoni_nebbia"
+  ],
+  "base-721": [
+   "raggiungente",
+   "aspetto_da_fanali"
+  ],
+  "base-722": [
+   "rischio_collisione"
+  ],
+  "base-723": [
+   "rischio_collisione"
+  ],
+  "base-724": [
+   "manovra_evitare"
+  ],
+  "base-725": [
+   "raggiungente"
+  ],
+  "base-726": [
+   "vela_contro_vela"
+  ],
+  "base-727": [
+   "faro_portate"
+  ],
+  "base-728": [
+   "faro_portate"
+  ],
+  "base-729": [
+   "faro_portate"
+  ],
+  "base-730": [
+   "faro_fase_periodo"
+  ],
+  "base-731": [
+   "segnalamento_tipi"
+  ],
+  "base-732": [
+   "segnalamento_tipi"
+  ],
+  "base-733": [
+   "faro_tipi_luce"
+  ],
+  "base-734": [
+   "faro_tipi_luce"
+  ],
+  "base-735": [
+   "faro_tipi_luce"
+  ],
+  "base-736": [
+   "segnalamento_radar_nebbia"
+  ],
+  "base-737": [
+   "faro_sigla"
+  ],
+  "base-738": [
+   "iala_speciali"
+  ],
+  "base-739": [
+   "segnalamento_radar_nebbia",
+   "segnalamento_simboli_carta"
+  ],
+  "base-740": [
+   "faro_sigla",
+   "cardinali_luci"
+  ],
+  "base-741": [
+   "iala_pericolo_isolato"
+  ],
+  "base-742": [
+   "segnalamento_simboli_carta",
+   "iala_pericolo_isolato"
+  ],
+  "base-743": [
+   "segnalamento_radar_nebbia",
+   "segnalamento_simboli_carta"
+  ],
+  "base-744": [
+   "segnalamento_simboli_carta",
+   "iala_speciali"
+  ],
+  "base-745": [
+   "segnalamento_simboli_carta",
+   "iala_speciali"
+  ],
+  "base-746": [
+   "faro_sigla",
+   "iala_speciali"
+  ],
+  "base-747": [
+   "segnalamento_simboli_carta",
+   "iala_speciali"
+  ],
+  "base-748": [
+   "segnalamento_simboli_carta",
+   "iala_speciali"
+  ],
+  "base-749": [
+   "faro_sigla",
+   "iala_speciali"
+  ],
+  "base-750": [
+   "segnalamento_radar_nebbia",
+   "segnalamento_simboli_carta"
+  ],
+  "base-751": [
+   "segnalamento_simboli_carta"
+  ],
+  "base-752": [
+   "faro_sigla"
+  ],
+  "base-753": [
+   "iala_laterali"
+  ],
+  "base-754": [
+   "faro_portate"
+  ],
+  "base-755": [
+   "segnalamento_tipi"
+  ],
+  "base-756": [
+   "faro_portate"
+  ],
+  "base-757": [
+   "faro_portate"
+  ],
+  "base-758": [
+   "iala_sistema",
+   "iala_laterali"
+  ],
+  "base-759": [
+   "cardinali_miragli"
+  ],
+  "base-760": [
+   "faro_tipi_luce"
+  ],
+  "base-761": [
+   "faro_sigla"
+  ],
+  "base-762": [
+   "cardinali_principio"
+  ],
+  "base-763": [
+   "faro_tipi_luce"
+  ],
+  "base-764": [
+   "faro_tipi_luce"
+  ],
+  "base-765": [
+   "faro_portate"
+  ],
+  "base-766": [
+   "iala_pericolo_isolato"
+  ],
+  "base-767": [
+   "faro_sigla"
+  ],
+  "base-768": [
+   "iala_speciali"
+  ],
+  "base-769": [
+   "iala_laterali"
+  ],
+  "base-770": [
+   "iala_sistema"
+  ],
+  "base-771": [
+   "faro_tipi_luce"
+  ],
+  "base-772": [
+   "iala_sistema"
+  ],
+  "base-773": [
+   "faro_fase_periodo"
+  ],
+  "base-774": [
+   "faro_sigla"
+  ],
+  "base-775": [
+   "iala_sistema"
+  ],
+  "base-776": [
+   "iala_pericolo_isolato"
+  ],
+  "base-777": [
+   "cardinali_principio"
+  ],
+  "base-778": [
+   "cardinali_miragli"
+  ],
+  "base-779": [
+   "iala_speciali"
+  ],
+  "base-780": [
+   "cardinali_miragli"
+  ],
+  "base-781": [
+   "cardinali_miragli"
+  ],
+  "base-782": [
+   "faro_fase_periodo"
+  ],
+  "base-783": [
+   "segnalamento_tipi"
+  ],
+  "base-784": [
+   "segnalamento_tipi"
+  ],
+  "base-785": [
+   "iala_acque_sicure"
+  ],
+  "base-786": [
+   "faro_settori"
+  ],
+  "base-787": [
+   "segnalamento_tipi"
+  ],
+  "base-788": [
+   "segnalamento_tipi"
+  ],
+  "base-789": [
+   "faro_portate"
+  ],
+  "base-790": [
+   "iala_pericolo_isolato"
+  ],
+  "base-791": [
+   "iala_acque_sicure"
+  ],
+  "base-792": [
+   "cardinali_miragli"
+  ],
+  "base-793": [
+   "cardinali_principio"
+  ],
+  "base-794": [
+   "faro_tipi_luce",
+   "faro_sigla"
+  ],
+  "base-795": [
+   "cardinali_miragli"
+  ],
+  "base-796": [
+   "cardinali_miragli"
+  ],
+  "base-797": [
+   "cardinali_miragli"
+  ],
+  "base-798": [
+   "cardinali_miragli"
+  ],
+  "base-799": [
+   "cardinali_miragli"
+  ],
+  "base-800": [
+   "iala_pericolo_isolato"
+  ],
+  "base-801": [
+   "faro_tipi_luce"
+  ],
+  "base-802": [
+   "faro_tipi_luce"
+  ],
+  "base-803": [
+   "faro_fase_periodo"
+  ],
+  "base-804": [
+   "faro_settori"
+  ],
+  "base-805": [
+   "faro_portate"
+  ],
+  "base-806": [
+   "faro_fase_periodo"
+  ],
+  "base-807": [
+   "faro_fase_periodo"
+  ],
+  "base-808": [
+   "cardinali_luci"
+  ],
+  "base-809": [
+   "cardinali_luci"
+  ],
+  "base-810": [
+   "cardinali_luci"
+  ],
+  "base-811": [
+   "faro_settori"
+  ],
+  "base-812": [
+   "faro_portate"
+  ],
+  "base-813": [
+   "faro_portate"
+  ],
+  "base-814": [
+   "faro_portate"
+  ],
+  "base-815": [
+   "faro_fase_periodo"
+  ],
+  "base-816": [
+   "segnalamento_tipi"
+  ],
+  "base-817": [
+   "segnalamento_tipi"
+  ],
+  "base-818": [
+   "faro_tipi_luce"
+  ],
+  "base-819": [
+   "faro_tipi_luce"
+  ],
+  "base-820": [
+   "faro_tipi_luce"
+  ],
+  "base-821": [
+   "segnalamento_radar_nebbia"
+  ],
+  "base-822": [
+   "faro_sigla"
+  ],
+  "base-823": [
+   "cardinali_principio",
+   "cardinali_miragli"
+  ],
+  "base-824": [
+   "segnalamento_simboli_carta",
+   "cardinali_colori"
+  ],
+  "base-825": [
+   "iala_acque_sicure"
+  ],
+  "base-826": [
+   "segnalamento_simboli_carta",
+   "iala_speciali"
+  ],
+  "base-827": [
+   "segnalamento_simboli_carta",
+   "iala_speciali"
+  ],
+  "base-828": [
+   "faro_sigla",
+   "iala_speciali"
+  ],
+  "base-829": [
+   "faro_sigla",
+   "cardinali_luci"
+  ],
+  "base-830": [
+   "cardinali_miragli"
+  ],
+  "base-831": [
+   "segnalamento_simboli_carta",
+   "cardinali_colori"
+  ],
+  "base-832": [
+   "segnalamento_simboli_carta",
+   "cardinali_colori"
+  ],
+  "base-833": [
+   "faro_sigla",
+   "cardinali_luci"
+  ],
+  "base-834": [
+   "segnalamento_simboli_carta",
+   "cardinali_miragli"
+  ],
+  "base-835": [
+   "cardinali_miragli"
+  ],
+  "base-836": [
+   "iala_laterali"
+  ],
+  "base-837": [
+   "iala_laterali"
+  ],
+  "base-838": [
+   "fluviale_segnali"
+  ],
+  "base-839": [
+   "fluviale_regole"
+  ],
+  "base-840": [
+   "fluviale_segnali"
+  ],
+  "base-841": [
+   "fluviale_segnali"
+  ],
+  "base-842": [
+   "fluviale_regole"
+  ],
+  "base-843": [
+   "fluviale_segnali"
+  ],
+  "base-844": [
+   "fluviale_segnali"
+  ],
+  "base-845": [
+   "fluviale_segnali"
+  ],
+  "base-846": [
+   "fluviale_regole"
+  ]
+ },
+ "rilettura": {
+  "voce": "I principali fanali luminosi e il sistema IALA",
+  "nota": "la rilettura del pilota, con gli id di oggi",
+  "campione": [
+   "base-727",
+   "base-728",
+   "base-730",
+   "base-731",
+   "base-734",
+   "base-736",
+   "base-739",
+   "base-743",
+   "base-745",
+   "base-752",
+   "base-754",
+   "base-757",
+   "base-763",
+   "base-765",
+   "base-768",
+   "base-769",
+   "base-774",
+   "base-787",
+   "base-789",
+   "base-790",
+   "base-792",
+   "base-793",
+   "base-794",
+   "base-796",
+   "base-803",
+   "base-815",
+   "base-816",
+   "base-819",
+   "base-823",
+   "base-845"
+  ],
+  "come": "random.seed(32); random.sample(range(727, 847), 30)",
+  "cambi": [
+   {
+    "quesito": "base-739",
+    "cambio": "+segnalamento_simboli_carta",
+    "perche": "«su una carta nautica il simbolo»: si risponde riconoscendo il simbolo"
+   },
+   {
+    "quesito": "base-743",
+    "cambio": "+segnalamento_simboli_carta",
+    "perche": "il quesito mostra il simbolo del racon con corno, da leggere sulla carta"
+   }
+  ]
+ }
+}

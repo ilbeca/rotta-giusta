@@ -820,10 +820,124 @@ def test_serve():
     check('serve.py: il docstring non dichiara piu\' Cloudflare', 'Cloudflare' not in doc)
 
 
+# --- i concetti: una sorgente per tema, composta in site/dati/concetti.json --------
+# P-106, piano-2026-11 §4 B-2. Il file pubblicato non si scrive a mano: lo compone
+# strumenti/concetti/componi.py dalle sorgenti presenti, e qui si pretende che sia
+# esattamente quella composizione. Le regole le dice anche componi.py, che si
+# rifiuta di scrivere con un guaio; qui si guardano sul file pubblicato, perche'
+# un file ritoccato a mano dopo la composizione e' proprio il caso da prendere.
+TEMI_CONCETTI = 9   # gli otto temi della base e la vela
+
+
+def test_concetti():
+    sys.path.insert(0, str(RADICE / 'strumenti' / 'concetti'))
+    import componi
+    quiz = leggi(DATI / 'quiz.json')
+    meta = leggi(DATI / 'meta.json')
+    per_id = {q['id']: q for q in quiz}
+    sorgenti = componi.leggi_sorgenti(RADICE / 'strumenti' / 'concetti')
+    check('concetti: almeno una sorgente in strumenti/concetti/', len(sorgenti) >= 1, len(sorgenti))
+    check('concetti: le seconde letture non sono sorgenti',
+          not any('seconda' in nome for nome, _ in sorgenti), [n for n, _ in sorgenti])
+
+    dati, guai = componi.componi(sorgenti, quiz, meta)
+    check('concetti: le sorgenti si compongono senza guai', not guai, guai[:5])
+    if guai:
+        return
+    pubblicato = (DATI / 'concetti.json').read_text(encoding='utf-8')
+    check('concetti.json e\' esattamente la composizione delle sorgenti (componi.py)',
+          pubblicato == componi.testo_concetti(dati))
+    check('meta.json porta il conteggio dei concetti, ed e\' la composizione',
+          (DATI / 'meta.json').read_text(encoding='utf-8') == componi.testo_meta(componi.meta_con_conteggio(meta, dati)))
+
+    pub = json.loads(pubblicato)
+    s = meta['stats']
+    check('meta.stats.concetti == concetti pubblicati', s.get('concetti') == len(pub['concetti']),
+          (s.get('concetti'), len(pub['concetti'])))
+    check('meta.stats.famiglie_concetti == famiglie pubblicate', s.get('famiglie_concetti') == len(pub['famiglie']),
+          (s.get('famiglie_concetti'), len(pub['famiglie'])))
+    check('meta.stats.quesiti_con_concetti == quesiti etichettati', s.get('quesiti_con_concetti') == len(pub['quesiti']),
+          (s.get('quesiti_con_concetti'), len(pub['quesiti'])))
+
+    ids = [c['id'] for c in pub['concetti']]
+    check('concetti: id unici su tutta la banca', len(ids) == len(set(ids)))
+    conto = {c: 0 for c in ids}
+    for cs in pub['quesiti'].values():
+        for c in cs:
+            conto[c] = conto.get(c, 0) + 1
+    pochi = {c: n for c, n in conto.items() if n < componi.MIN_QUESITI}
+    check('concetti: ogni concetto ha almeno %d quesiti' % componi.MIN_QUESITI, not pochi, pochi)
+    check('concetti: ogni tag nomina un concetto che c\'e\'', set(conto) == set(ids), sorted(set(conto) - set(ids)))
+    check('concetti: il conto di ogni concetto e\' quello dei tag',
+          all(c['quesiti'] == conto[c['id']] for c in pub['concetti']))
+    ignoti = sorted(q for q in pub['quesiti'] if q not in per_id)
+    check('concetti: nessun id di quesito che non c\'e\'', not ignoti, ignoti[:5])
+    tag_male = sorted(q for q, cs in pub['quesiti'].items() if not 1 <= len(cs) <= componi.MAX_TAG)
+    check('concetti: da 1 a %d concetti per quesito' % componi.MAX_TAG, not tag_male, tag_male[:5])
+
+    nelle_famiglie = [c for f in pub['famiglie'] for c in f['concetti']]
+    fuori = sorted(set(ids) - set(nelle_famiglie))
+    doppi = sorted({c for c in nelle_famiglie if nelle_famiglie.count(c) > 1})
+    check('concetti: ogni concetto sta in una famiglia', not fuori, fuori)
+    check('concetti: nessun concetto in due famiglie', not doppi, doppi)
+    fam = {f['id']: f for f in pub['famiglie']}
+    check('concetti: la famiglia di un concetto lo contiene',
+          all(c['famiglia'] in fam and c['id'] in fam[c['famiglia']]['concetti'] for c in pub['concetti']))
+
+    testi = [f['nome'] for f in pub['famiglie']]
+    for c in pub['concetti']:
+        testi += [c['nome'], c['copre']] + list(c['parole_chiave'])
+    vietati = [t for t in testi if controlla.ETICHETTE_RE.search(t) or controlla.TERZI.search(t)]
+    check('concetti: nessun nome dalle etichette vietate di controlla.py', not vietati, vietati[:5])
+
+    presenti = set(pub['temi'])
+    scoperti = sorted(q['id'] for q in quiz if q['t'] in presenti and q['id'] not in pub['quesiti'])
+    check('concetti: ogni quesito dei temi presenti ha almeno un concetto', not scoperti, scoperti[:5])
+    # «Ogni quesito della banca ha un concetto» si accende con le nove sorgenti,
+    # non prima: con meno, i quesiti dei temi mancanti sono scoperti per forza.
+    if len(presenti) == TEMI_CONCETTI:
+        tutti = sorted(q['id'] for q in quiz if q['id'] not in pub['quesiti'])
+        check('concetti: ogni quesito della banca ha almeno un concetto', not tutti, tutti[:5])
+    else:
+        print('   concetti: %d sorgenti su %d; «ogni quesito della banca» si accende con tutte'
+              % (len(presenti), TEMI_CONCETTI))
+
+    # Provato al contrario, a ogni giro: ogni regola rompe una copia della prima
+    # sorgente, e componi.py deve rifiutarla nominando il guaio.
+    def rotta(cambia):
+        copia = [(n, json.loads(json.dumps(x))) for n, x in sorgenti]
+        cambia(copia)
+        return componi.componi(copia, quiz, meta)[1]
+    nome0, s0 = sorgenti[0]
+
+    def due_quesiti(s):
+        s['concetti'].append({'id': 'prova_due_quesiti', 'nome': 'prova', 'parole_chiave': ['prova'], 'copre': 'prova'})
+        s['famiglie'][0]['concetti'].append('prova_due_quesiti')
+        for q in [q for q, cs in s['quesiti'].items() if len(cs) < componi.MAX_TAG][:2]:
+            s['quesiti'][q] = s['quesiti'][q] + ['prova_due_quesiti']
+    c0 = s0['concetti'][0]['id']
+    q0 = next(iter(s0['quesiti']))
+    altro_tema = next(q['id'] for q in quiz if q['t'] != s0['tema'])
+    prove = {
+        'un concetto con due quesiti': (lambda cp: due_quesiti(cp[0][1]), 'ne servono almeno'),
+        'un quesito che non c\'e\'': (lambda cp: cp[0][1]['quesiti'].update({'base-99999': [c0]}), 'non c\'e\' nella banca'),
+        'un quesito di un altro tema': (lambda cp: cp[0][1]['quesiti'].update({altro_tema: [c0]}), 'e\' del tema'),
+        'un quesito senza concetti': (lambda cp: cp[0][1]['quesiti'].pop(q0), 'non ha concetti'),
+        'quattro concetti su un quesito': (lambda cp: cp[0][1]['quesiti'].update({q0: [c['id'] for c in cp[0][1]['concetti'][:4]]}), 'da 1 a'),
+        'un concetto fuori dalle famiglie': (lambda cp: [f['concetti'].remove(c0) for f in cp[0][1]['famiglie'] if c0 in f['concetti']], 'nessuna famiglia'),
+        'un\'etichetta vietata': (lambda cp: cp[0][1]['concetti'][0].update(nome=sorted(controlla.ETICHETTE_LNI)[0]), 'vietato'),
+        'lo stesso id in due sorgenti': (lambda cp: cp.append(('doppione.json', dict(cp[0][1], tema='VELA' if cp[0][1]['tema'] != 'VELA' else meta['temi'][0]['tema']))), 'gli id sono globali'),
+    }
+    for descr, (cambia, attesa) in prove.items():
+        guai_rotti = rotta(cambia)
+        check('concetti, al contrario: componi.py rifiuta %s' % descr, any(attesa in g for g in guai_rotti),
+              guai_rotti[:3] or 'nessun guaio')
+
+
 def main():
     for t in (test_controlla, test_worktree_esclusi, test_titolare, test_segreti, test_materiale_dichiarato, test_quiz, test_meta, test_figure, test_progressivi, test_invarianti,
               test_carteggio, test_sw, test_nessuna_risorsa_di_terzi, test_rinomino, test_manifest_icone, test_indirizzi,
-              test_serve):
+              test_serve, test_concetti):
         t()
     su = (' — sulla copia del sito %s, NON su site/' % SITE) if SITO else ''
     if falliti:

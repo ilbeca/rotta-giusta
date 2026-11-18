@@ -512,6 +512,79 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   `sceltaCarteggio()` nel motore, prima di B-4b, come vuole la decisione 12.
 - Nessun file di `site/`, `tests/` o della specifica toccato.
 
+### Aggiunto — P-106: i concetti del tema COLREG, e la composizione delle sorgenti
+
+- **Perché.** I concetti di I-32 vanno su tutta la banca (piano B-2, C-2: due
+  livelli, concetti e famiglie). Nove sessioni lavorano in parallelo, una per
+  tema. Perciò ognuna scrive una sorgente sua in `strumenti/concetti/`, e un
+  file pubblicato solo, `site/dati/concetti.json`, si compone da quelle
+  sorgenti. Questa sessione è quella COLREG: per accordo della coda scrive anche
+  la composizione e i test.
+- **La sorgente**, `strumenti/concetti/colreg-e-segnalamento-marittimo.json`:
+  - **44 concetti in 15 famiglie**, cinque per ciascuna delle tre voci;
+  - **297 tag su 247 quesiti**: 198 con un concetto, 48 con due, uno con tre.
+    È base-694, il motoveliero col cono fra due unità a vela: si risponde
+    leggendo il segnale diurno, poi la gerarchia, poi la regola fra le vele;
+  - **la voce dei fanali e dell'IALA viene dal pilota del 14 novembre.** I 19
+    concetti e i 143 tag sono invariati; dodici id sono resi più specifici
+    (`portate` → `faro_portate`, `simboli_carta` →
+    `segnalamento_simboli_carta`…), perché gli id sono globali sulla banca e
+    «simboli della carta» lo userebbe anche la navigazione;
+  - le altre due voci sono nuove:
+    - «Fanali e segnali diurni», 67 quesiti e 13 concetti: i fanali di via, i
+      fanali delle unità con regole proprie, la lettura dei fanali, i segnali
+      diurni;
+    - «Prevenire gli abbordi in mare», 60 quesiti e 12 concetti: il rischio di
+      collisione, chi lascia la rotta a chi, il regolamento, i segnali sonori;
+  - testi e figure letti, nessun archivio di risposte. **Prima lettura, non
+    rivista da una persona**: la seconda lettura è un'altra sessione.
+- **`strumenti/concetti/componi.py`** legge ogni sorgente presente nella
+  cartella. Le seconde letture in `seconda-lettura/` restano fuori. Scrive
+  `concetti.json` e tre conteggi in `meta.json` (`stats.concetti`,
+  `famiglie_concetti`, `quesiti_con_concetti`), con lo stesso formato del file.
+  Se c'è un guaio non scrive niente e lo nomina. I guai sono:
+  - un tema sconosciuto, o due sorgenti per lo stesso tema;
+  - un id di concetto o di famiglia ripetuto fra sorgenti;
+  - un concetto fuori dalle famiglie o in due famiglie, una famiglia su una
+    voce che il tema non ha;
+  - un quesito che non c'è, di un altro tema, senza concetti, o con più di tre
+    concetti;
+  - un concetto con meno di tre quesiti;
+  - un'etichetta o un nome vietati da `strumenti/controlla.py`.
+  - **La forma della sorgente** è scritta nella docstring, ed è stata mandata
+    alle altre otto sessioni prima che scrivessero, perché la regia le fonda
+    senza ritocchi.
+- **I test**, in `tests/test_dati.py`. Il file pubblicato e `meta.json` sono
+  **esattamente** la composizione delle sorgenti, byte per byte. Sul file
+  pubblicato si guarda anche che:
+  - ogni concetto abbia almeno tre quesiti, e un conto uguale a quello dei tag;
+  - non ci sia un id di quesito che non esiste;
+  - ogni concetto stia in una famiglia sola;
+  - nessun testo usi un'etichetta vietata;
+  - ogni quesito dei temi presenti abbia un concetto.
+
+  «Ogni quesito della banca» si accende da solo con le nove sorgenti. Fino
+  ad allora la suite stampa quante ne mancano. **Provati al contrario a ogni
+  giro**: otto rotture di una copia della sorgente, tutte rifiutate da
+  `componi.py` con il loro motivo. A mano, ognuna delle quattro regole tolta
+  da `componi.py` fa rosso il suo controllo. Rossi anche un nome ritoccato in
+  `concetti.json` e un conteggio sbagliato in `meta.json`.
+- Il README dichiara i concetti fra le classificazioni nostre e non
+  ministeriali, come le 12 tecniche.
+- **Trovato leggendo, e non toccato:** base-699 (1.5.2-36, già oscurato)
+  vuole la campana da 12 metri. Il testo attuale della regola 33 la chiede
+  da 20 metri, come dice base-698. È uno dei motivi plausibili dell'oscuramento.
+  base-711 («fra tre unità… ha la precedenza quella che viene da dritta») è
+  ambiguo con tre unità, ma non sbagliato. base-665 e base-666 portano lo
+  stesso progressivo 1.5.2-3, come nel decreto (P-77). Nessun'altra risposta
+  sembra sbagliata.
+- **Non toccati:** `site/index.html`, la specifica, la banca.
+- **Suite:** dati **266** (erano 233), specifica 1.146, motore 229/233 con i
+  quattro skip previsti. Guardiano verde. L'interfaccia non è stata rifatta,
+  perché con nove worktree aperti la 8620 è contesa. Dei file che legge cambia
+  solo `meta.json`, con tre chiavi nuove in `stats`, e nessun banco né la
+  pagina guarda `stats` (cercato).
+
 ## [0.35.1] — 2026-10-29
 
 **Le risposte in simulazione si cambiano, e «auto» si capisce.** Un utente ha

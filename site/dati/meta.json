@@ -8,7 +8,10 @@
   "quiz_figura_mancante": 1,
   "temi": 8,
   "voci": 44,
-  "tecniche": 12
+  "tecniche": 12,
+  "concetti": 44,
+  "famiglie_concetti": 15,
+  "quesiti_con_concetti": 247
  },
  "temi": [
   {
