@@ -512,6 +512,43 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   `sceltaCarteggio()` nel motore, prima di B-4b, come vuole la decisione 12.
 - Nessun file di `site/`, `tests/` o della specifica toccato.
 
+### Aggiunto — P-106: i concetti della Sicurezza della navigazione
+
+- **Perché.** B-2 del piano di novembre etichetta tutta la banca con concetti
+  più fini delle voci, una sorgente per tema scritta in parallelo. Questa è la
+  sorgente del tema Sicurezza della navigazione:
+  `strumenti/concetti/sicurezza-della-navigazione.json`, nella forma della nota
+  di p106-colreg (le famiglie con la loro voce), che `componi.py` legge. La
+  compone la regia dopo COLREG; `site/`, i test e la specifica non sono
+  toccati.
+- **I numeri.** 215 quesiti su 215, **36 concetti, 15 famiglie, 235 tag**: 195
+  quesiti con un concetto, 20 con due, nessuno con tre. Ogni concetto ha da 3 a
+  16 quesiti. Le famiglie sono da 1 a 3 per voce, non 4–5: la regola veniva dai
+  120 quesiti dei fanali, qui la voce più grande ne ha 48, e una famiglia di un
+  concetto solo non raggruppa niente. Due voci hanno un quesito solo (il CIRM,
+  e «Comunicazioni radiotelefoniche»): niente famiglia propria, i loro quesiti
+  prendono un concetto delle voci vicine.
+- **Che cosa i concetti fanno vedere.** L'incendio sta in due voci: la teoria e
+  gli estintori in «Prevenzione degli incendi», la manovra e il vano motore in
+  «Provvedimenti in caso di sinistro», con due coppie di testi quasi uguali fra
+  le due (`base-258`/`366`, `259`/`367`, sul numero di estintori). I segnali di
+  soccorso stanno nelle dotazioni e negli apparati radio (quando si usa il
+  razzo, quando il fuoco a mano). La voce «tempo cattivo» contiene sette
+  quesiti di trim e flaps e la chiamata DSC.
+- **Rilettura** di 22 quesiti estratti a caso (`random.seed(106)`, il 10%, nel
+  JSON): un tag cambiato, `classi_incendio` aggiunto a `base-356` (il quadro
+  elettrico in fiamme chiede di sapere che è un fuoco di classe E), e lo stesso
+  per coerenza a `base-235` e `base-248`, fuori campione. Rilettura dello
+  stesso lettore: la seconda lettura indipendente è una sessione a parte.
+- **Visto e non toccato, per l'autore:** i distrattori di `base-414` (il
+  segnale di soccorso con le braccia) sono le risposte di `base-418`
+  (l'installazione del VHF); `base-235` dà per esatto «estintore a polvere ad
+  anidride carbonica», che mescola due estintori. La banca non si tocca.
+- Controllato con uno script fuori dal repo sulle regole di `componi.py`:
+  tema, voci esatte, un concetto in una famiglia, id unici e senza collisioni
+  con le sorgenti degli altri temi scritte finora, nessuna etichetta vietata.
+  Suite: dati 236, specifica 1.146, guardiano verde.
+
 ## [0.35.1] — 2026-10-29
 
 **Le risposte in simulazione si cambiano, e «auto» si capisce.** Un utente ha
