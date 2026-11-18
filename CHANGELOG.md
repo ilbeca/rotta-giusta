@@ -314,6 +314,68 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   - in testa a `testi-pannelli.md`, che è superato da `argomenti-pannelli.md`.
 - Nessun file di `site/`, `tests/` o della specifica toccato.
 
+### Aggiunto — P-105: il motore per le due porte
+
+- **Perché.** Il 18 novembre l'autore ha deciso che la preparazione passa da
+  otto porte a due, «Allenati» e «Scegli tu» (I-32, B-1 di
+  `docs/piano-2026-11.md`). Al motore mancavano tre pezzi, misurati nel §1 del
+  piano: `coda()` conosceva «da rifare» ma non «da confermare»; `mirata()` non
+  garantisce di toccare tutte le voci quando lo storico è scarso, e lo fa
+  `screening()`; il giro delle tecniche non sa quali sono andate male. Arrivano
+  tutti accanto a quello che c'è: nessuna funzione cambia comportamento. La
+  pagina non li chiama ancora, e stanno fra gli orfani dichiarati: li consuma
+  B-5.
+- **I cinque stati come selettore.** `coda()` prende `statiQuesito`, uno o più
+  dei cinque di `statoQuesito()`, accanto a `stati`, che resta quello della
+  selezione. Prende il posto di `stati` e dei chiusi esclusi per default, perché
+  un debole è già visto per definizione. Ordina come le liste di errori, così
+  `statiQuesito: ['debole']` dà la stessa lista di `soloDaRifare`, nello stesso
+  ordine: un test lo pretende sulla banca vera, tema per tema e voce per voce
+  per la vela. Un nome che non è uno dei cinque lancia: la barra dice «da
+  rifare» e il contratto `debole`, e una lista vuota non lo direbbe. I chiamanti
+  di `coda()` — sette nella pagina, `daAllenare()` nel motore — non passano
+  l'opzione, e non cambia niente per loro.
+- **`allenati()`, la porta «Allenati».** Finché una voce ha meno di
+  `ALLENATI_MIN_PER_VOCE` = 2 quesiti visti (o tutti quelli che ha, se sono
+  meno), prende un quesito per voce sotto soglia con `screening(…, 1)`, prima le
+  voci meno viste: sulla banca base in due sessioni da 25 le 44 voci sono tutte
+  toccate, e la soglia si raggiunge in quattro. Poi è `mirata()`, stessa lista e
+  stessi perché. La compone, non la riscrive: un test pretende che la parte
+  d'esplorazione sia `screening()` col suo seme, e un altro che oltre la soglia
+  sia `mirata()` quesito per quesito. Dalla stessa chiamata dà la fase di ogni
+  quesito (dal suo stato: mai visto esplora, debole ripara, il resto conferma),
+  la fase della lista, i conti delle fasi, le voci sotto soglia e `mancano`, le
+  risposte che servono ancora: il «con altre N domande» di I-32. Due e non uno
+  perché una risposta per voce è un esito, non una misura; è una scelta pratica
+  con un nome, come `CONFERMA_ORE`.
+- **`giroTecnicheDaRivedere()`.** Copre ancora tutte le tecniche, ma comincia da
+  quelle degli esercizi con l'ultimo giudizio negativo, preferendo un esercizio
+  mai fatto che le porta. Compone `giroTecniche()` due volte; ogni voce dice
+  quali tecniche porta e quali erano da rivedere. Senza esercizi andati male è
+  il giro di sempre. `giroTecniche()` resta identico: un test ne fissa il
+  risultato sulla banca vera, con e senza storico, preso prima di toccare il
+  motore.
+- **Prima i test, rossi uno per uno:** tredici nuovi, rossi per la funzione che
+  mancava o, per `coda()`, per la ragione misurata (413 quesiti aperti al posto
+  dei 244 deboli, nessun errore su un nome sbagliato); il fisso di `giroTecniche()` verde
+  da subito, com'è giusto. Poi **ventisei rotture del motore**, una alla volta,
+  tutte rosse nel test che le riguarda. Al primo giro quattro passavano verdi:
+  due erano codice superfluo — il tetto `n + presi` chiesto alla Mirata e
+  l'esclusione degli esercizi già presi nel secondo giro, che non cambiano niente
+  per costruzione — e sono stati tolti; per le altre due mancava un caso nei
+  test, il selettore insieme a `soloDaRifare` e una banca tutta vista dove la
+  fase non è «esplora», e ora c'è.
+- **Trovato scrivendo:** oltre la soglia la fase della lista resta spesso
+  «esplora», perché la Mirata esplora ancora i mai visti. È giusto, ma chi
+  disegna la porta deve leggere la soglia da `voci.sottoSoglia`, non dalla fase.
+- Suite: motore **229/233** con i quattro skip previsti (erano 215/219), anche
+  con la **24.22.3 LTS**, scaricata da nodejs.org e verificata con
+  `SHASUMS256.txt`; server 89/89 con Node 26.13 e con la 24.22.3; dati 225;
+  specifica 1.146; interfaccia **4.929** (erano 4.923: i tre controlli di
+  ciascuno dei due orfani nuovi), in 5 min 42 s, con la 8620 guardata libera per
+  90 s prima. Guardiano verde. `site/index.html`, la specifica
+  e la coda non sono stati toccati.
+
 ## [0.35.1] — 2026-10-29
 
 **Le risposte in simulazione si cambiano, e «auto» si capisce.** Un utente ha

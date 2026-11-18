@@ -4579,3 +4579,361 @@ test('riepilogoPagina: un uid ripetuto conta una volta, una riga rotta si conta 
   assert.equal(a.ambigua, true); assert.deepEqual(a.motivi, ['quesito ripetuto']);
   assert.equal(amb.risposte.quiz, 3);
 });
+
+
+/* --- P-105: il motore per le due porte (B-1 di docs/piano-2026-11.md) ------- */
+//
+// La preparazione passa da otto porte a due, «Allenati» e «Scegli tu» (I-32 in
+// docs/idee-dopo-gli-account.md). Al motore mancavano tre pezzi, e arrivano
+// tutti accanto a quello che c'e', senza cambiarlo: i cinque stati come
+// selettore di `coda()`, la selezione di «Allenati», e il giro delle tecniche
+// con la precedenza a quelle andate male. Le funzioni nuove sono chiamate dal
+// namespace `E`, cosi' finche' non esistono ogni test e' rosso da solo, e non
+// l'intera suite per un import che manca.
+
+/** Uno storico con tutti e cinque gli stati, con gli istanti: senza `ts`
+ *  nessuna conferma si inventa, e «ok» e «sistemato» non esisterebbero. */
+function storicoCinque(items, seme = 11) {
+  let s = seme >>> 0;
+  const rnd = () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296);
+  const progress = {};
+  const giorni = ['2026-08-01', '2026-08-03', '2026-08-05', '2026-08-07'];
+  for (const it of items) {
+    const r = rnd();
+    if (r < 0.3) continue;                                       // mai visto
+    const g = giorni[Math.floor(rnd() * giorni.length)];
+    const ts = (giorno, ora) => `${giorno}T${ora}:00+02:00`;
+    if (r < 0.45) {                                              // debole
+      applica(progress, it.id, false, 9000, g, ts(g, '09:00'));
+    } else if (r < 0.65) {                                       // incerto
+      applica(progress, it.id, true, 9000, g, ts(g, '09:00'));
+    } else if (r < 0.82) {                                       // ok: due giuste a 2 giorni
+      applica(progress, it.id, true, 9000, '2026-08-01', ts('2026-08-01', '09:00'));
+      applica(progress, it.id, true, 9000, '2026-08-03', ts('2026-08-03', '09:00'));
+    } else {                                                     // sistemato
+      applica(progress, it.id, false, 9000, '2026-08-01', ts('2026-08-01', '09:00'));
+      applica(progress, it.id, true, 9000, '2026-08-02', ts('2026-08-02', '09:00'));
+      applica(progress, it.id, true, 9000, '2026-08-04', ts('2026-08-04', '09:00'));
+    }
+  }
+  return progress;
+}
+
+test('coda: statiQuesito «debole» da la stessa lista di soloDaRifare, sulla banca vera, tema per tema', () => {
+  // Il contratto che tiene insieme il selettore nuovo e «Rifai N errori»: i
+  // deboli sono esattamente gli errori la cui ultima risposta e' sbagliata
+  // (R-STATI-03). Stessi quesiti, nello **stesso ordine**: due porte che
+  // aprono «da rifare» non possono dare due liste diverse.
+  const items = bancaPubblicata();
+  for (const kind of ['base', 'vela']) {
+    const progress = storicoMisto(items.filter((x) => x.k === kind));
+    const gruppi = kind === 'base'
+      ? [...new Set(items.filter((x) => x.k === kind).map((x) => x.t))].map((t) => ({ temi: [t] }))
+      : [...new Set(items.filter((x) => x.k === kind).map((x) => x.v))].map((v) => ({ voci: [v] }));
+    let deboli = 0;
+    for (const g of [{}, ...gruppi]) {
+      const base = { kind, n: 0, ...g };
+      const attese = coda(items, progress, OGGI, { ...base, soloDaRifare: true }).map((x) => x.id);
+      const avute = coda(items, progress, OGGI, { ...base, statiQuesito: ['debole'] }).map((x) => x.id);
+      assert.deepEqual(avute, attese, `${kind} ${JSON.stringify(g)}: deboli e da rifare coincidono, in ordine`);
+      if (!Object.keys(g).length) deboli = avute.length;
+    }
+    assert.ok(deboli > 10, `${kind}: lo storico di prova ha davvero dei deboli (${deboli})`);
+  }
+});
+
+test('coda: statiQuesito filtra con i cinque stati, e da solo o insieme agli altri filtri', () => {
+  const items = bancaPubblicata().filter((x) => x.k === 'base');
+  const progress = storicoCinque(items);
+  const conti = E.contaStati(items, progress, { kind: 'base' });
+  for (const s of E.STATI_QUESITO) {
+    assert.ok(conti[s] > 20, `lo storico di prova ha lo stato ${s} (${conti[s]})`);
+    const lista = coda(items, progress, OGGI, { kind: 'base', n: 0, statiQuesito: [s] });
+    assert.equal(lista.length, conti[s], `${s}: il numero di contaStati e la lista coincidono`);
+    assert.ok(lista.every((it) => E.statoQuesito(progress[it.id]) === s), `${s}: ognuno e nello stato chiesto`);
+  }
+  // Due stati: l'unione, senza doppioni. «Da confermare» + «recuperati».
+  const due = coda(items, progress, OGGI, { kind: 'base', n: 0, statiQuesito: ['incerto', 'sistemato'] });
+  assert.equal(due.length, conti.incerto + conti.sistemato);
+  assert.equal(new Set(due.map((x) => x.id)).size, due.length);
+  // I mai visti nell'ordine della banca, come la coda di sempre.
+  const mai = coda(items, progress, OGGI, { kind: 'base', n: 0, statiQuesito: ['mai_visto'] }).map((x) => x.id);
+  assert.deepEqual(mai, items.filter((x) => !progress[x.id]).map((x) => x.id));
+  // Il «da confermare» piu' trascurato per primo: `t` crescente, come le liste
+  // di errori — quello appena toccato scende in fondo da solo.
+  const inc = coda(items, progress, OGGI, { kind: 'base', n: 0, statiQuesito: ['incerto'] });
+  for (let i = 1; i < inc.length; i++)
+    assert.ok(progress[inc[i - 1].id].t <= progress[inc[i].id].t, 'gli incerti dal piu trascurato');
+  // Insieme agli altri filtri: tema, voce, figura, tetto.
+  const tema = 'COLREG E SEGNALAMENTO MARITTIMO';
+  const filtrata = coda(items, progress, OGGI, { kind: 'base', n: 0, temi: [tema], soloFigura: true, statiQuesito: ['incerto', 'ok'] });
+  const attesi = items.filter((x) => x.t === tema && x.f && ['incerto', 'ok'].includes(E.statoQuesito(progress[x.id])));
+  assert.deepEqual(filtrata.map((x) => x.id).sort(), attesi.map((x) => x.id).sort());
+  assert.equal(coda(items, progress, OGGI, { kind: 'base', statiQuesito: ['ok'] }).length, 20, 'il tetto predefinito resta 20');
+  // Con un filtro di errori accanto restringe ancora: un «da confermare» non e'
+  // da rifare, e fra deboli e incerti restano i deboli.
+  assert.deepEqual(coda(items, progress, OGGI, { kind: 'base', n: 0, statiQuesito: ['incerto'], soloDaRifare: true }), []);
+  assert.equal(coda(items, progress, OGGI, { kind: 'base', n: 0, statiQuesito: ['debole', 'incerto'], soloDaRifare: true }).length, conti.debole);
+  assert.equal(coda(items, progress, OGGI, { kind: 'base', n: 0, statiQuesito: ['incerto', 'sistemato'], soloSbagliate: true }).length, conti.sistemato);
+  // Senza il selettore, o vuoto, `coda()` e' quella di prima: `stati` resta
+  // quella della selezione, e i chiusi restano fuori per default.
+  for (const o of [{}, { stati: ['nuovo'] }, { includiChiusi: true }, { soloSbagliate: true }, { temi: [tema] }]) {
+    const prima = coda(items, progress, OGGI, { kind: 'base', n: 0, ...o }).map((x) => x.id);
+    assert.deepEqual(coda(items, progress, OGGI, { kind: 'base', n: 0, ...o, statiQuesito: [] }).map((x) => x.id), prima,
+      `${JSON.stringify(o)}: un selettore vuoto non filtra`);
+    assert.deepEqual(coda(items, progress, OGGI, { kind: 'base', n: 0, ...o, statiQuesito: undefined }).map((x) => x.id), prima);
+  }
+});
+
+test('coda: uno stato che non esiste e un errore, non un ripiego', () => {
+  // Le parole della barra non sono gli identificatori del contratto: chi passa
+  // «da rifare» al posto di «debole» deve saperlo subito, non ricevere una
+  // lista vuota con scritto «Niente da fare».
+  const items = banca(5);
+  for (const sbagliato of [['da_rifare'], ['chiuso'], ['debole', 'acquisiti']])
+    assert.throws(() => coda(items, {}, OGGI, { statiQuesito: sbagliato }), /stato/,
+      `${sbagliato}: lancia, e il messaggio dice che e lo stato`);
+});
+
+/** Risponde a una lista con il motore: come farebbe chi studia, tutto giusto
+ *  tranne `sbagliate`, alla data `giorno`. */
+function rispondi(progress, lista, giorno, sbagliate = new Set()) {
+  for (const x of lista) applica(progress, x.it.id, !sbagliate.has(x.it.id), 9000, giorno);
+}
+
+/** Quanti quesiti distinti visti per voce. */
+function vistiPerVoce(items, progress, kind) {
+  const m = new Map();
+  for (const it of items) if (it.k === kind) {
+    if (!m.has(it.v)) m.set(it.v, { visti: 0, n: 0 });
+    const v = m.get(it.v); v.n++;
+    if (progress[it.id] && progress[it.id].n) v.visti++;
+  }
+  return m;
+}
+
+test('allenati: con lo storico vuoto esplora, e tocca le voci come lo screening', () => {
+  const items = bancaPubblicata();
+  const voci = [...new Set(items.filter((x) => x.k === 'base').map((x) => x.v))];
+  const a = E.allenati(items, {}, OGGI, { n: 25, pesi: PESI });
+  assert.equal(a.fase, 'esplora');
+  assert.equal(a.lista.length, 25);
+  assert.equal(new Set(a.lista.map((x) => x.it.v)).size, 25, 'venticinque domande, venticinque voci diverse');
+  assert.ok(a.lista.every((x) => x.fase === 'esplora' && x.it.k === 'base'));
+  assert.ok(a.lista.every((x) => typeof x.perche === 'string' && x.perche.includes(x.it.v)), 'ogni quesito dice perche e li, con la sua voce');
+  // Con abbastanza domande le tocca tutte, una per voce, come screening(…, 1).
+  const tutte = E.allenati(items, {}, OGGI, { n: voci.length, pesi: PESI });
+  assert.deepEqual([...new Set(tutte.lista.map((x) => x.it.v))].sort(), [...voci].sort());
+  assert.equal(tutte.lista.length, voci.length);
+  // Il numero di «con altre N domande»: quante risposte mancano perche' ogni
+  // voce arrivi alla soglia, dalla stessa chiamata. Una voce da un quesito solo
+  // ci arriva con quello.
+  const S = E.ALLENATI_MIN_PER_VOCE;
+  const atteso = [...vistiPerVoce(items, {}, 'base').values()].reduce((s, v) => s + Math.min(S, v.n), 0);
+  assert.equal(a.mancano, atteso);
+  assert.deepEqual(a.voci, { totale: voci.length, sottoSoglia: voci.length });
+});
+
+test('allenati: compone screening, non lo riscrive — la stessa pescata, voce per voce', () => {
+  // Con lo storico vuoto e tutte le voci sotto soglia, la parte d'esplorazione
+  // e' screening(…, 1) sulla banca: stessi quesiti, stesso seme.
+  const items = bancaPubblicata();
+  const seme = 4242;
+  const nVoci = new Set(items.filter((x) => x.k === 'vela').map((x) => x.v)).size;
+  const a = E.allenati(items, {}, OGGI, { n: nVoci, kind: 'vela', seme });
+  const s = screening(items, {}, OGGI, 1, 'vela', seme);
+  assert.deepEqual(a.lista.map((x) => x.it.id), s.map((x) => x.id));
+});
+
+test('allenati: lo storico scarso si chiude solo quando ogni voce ha la sua soglia', () => {
+  const items = bancaPubblicata();
+  const progress = {};
+  let giorno = '2026-08-01', sessioni = 0, viste = new Set();
+  // Le voci con meno risposte vengono prima: in due sessioni da 25 le 44 voci
+  // sono tutte toccate.
+  const prima = E.allenati(items, progress, giorno, { n: 25, pesi: PESI });
+  rispondi(progress, prima.lista, giorno);
+  prima.lista.forEach((x) => viste.add(x.it.v));
+  const seconda = E.allenati(items, progress, giorno, { n: 25, pesi: PESI });
+  assert.equal(seconda.fase, 'esplora');
+  seconda.lista.forEach((x) => viste.add(x.it.v));
+  assert.equal(viste.size, 44, 'in due sessioni ogni voce e toccata');
+  const restanti = 44 - 25;
+  assert.ok(seconda.lista.slice(0, restanti).every((x) => !prima.lista.some((y) => y.it.v === x.it.v)),
+    'prima le voci mai toccate, poi le altre');
+  rispondi(progress, seconda.lista, giorno);
+  sessioni = 2;
+  // La soglia si legge da `voci.sottoSoglia`, non dalla fase: oltre la soglia
+  // la Mirata esplora ancora i mai visti, e la fase della lista resta «esplora».
+  while (E.allenati(items, progress, giorno, { n: 25, pesi: PESI }).voci.sottoSoglia > 0) {
+    const a = E.allenati(items, progress, giorno, { n: 25, pesi: PESI });
+    assert.equal(a.mancano, [...vistiPerVoce(items, progress, 'base').values()]
+      .reduce((s, v) => s + Math.max(0, Math.min(E.ALLENATI_MIN_PER_VOCE, v.n) - v.visti), 0));
+    rispondi(progress, a.lista, giorno);
+    giorno = addGiorni(giorno, 1);
+    assert.ok(++sessioni < 20, 'l esplorazione finisce');
+  }
+  for (const [voce, v] of vistiPerVoce(items, progress, 'base'))
+    assert.ok(v.visti >= Math.min(E.ALLENATI_MIN_PER_VOCE, v.n), `${voce}: alla soglia (${v.visti})`);
+  const dopo = E.allenati(items, progress, giorno, { n: 25, pesi: PESI });
+  assert.equal(dopo.mancano, 0);
+  assert.equal(dopo.voci.sottoSoglia, 0);
+  // Una sessione prima della soglia era ancora esplorazione: la soglia e' quella
+  // e non una sessione prima.
+  assert.ok(sessioni >= Math.ceil(dopo.voci.totale * E.ALLENATI_MIN_PER_VOCE / 25) - 1);
+});
+
+test('allenati: oltre la soglia e mirata, la stessa lista e gli stessi perche', () => {
+  const items = bancaPubblicata();
+  const progress = {};
+  // Ogni voce alla soglia, con qualche errore aperto.
+  const perVoce = new Map();
+  for (const it of items) if (it.k === 'base') {
+    const k = perVoce.get(it.v) || 0;
+    if (k < E.ALLENATI_MIN_PER_VOCE) {
+      applica(progress, it.id, k !== 0 || it.id.endsWith('3') === false, 9000, '2026-08-01');
+      perVoce.set(it.v, k + 1);
+    }
+  }
+  for (const opt of [{ n: 25, pesi: PESI }, { n: 10, pesi: PESI, esame: '2026-09-03' }, { n: 40, pesi: null, seme: 99 }]) {
+    const a = E.allenati(items, progress, OGGI, opt);
+    const m = mirata(items, progress, OGGI, opt);
+    assert.notEqual(a.fase, undefined);
+    assert.deepEqual(a.lista.map((x) => [x.it.id, x.perche]), m.map((x) => [x.it.id, x.perche]),
+      `${JSON.stringify(opt)}: allenati e mirata, quesito per quesito`);
+    assert.equal(a.mancano, 0);
+  }
+});
+
+test('allenati: la fase di ogni quesito viene dal suo stato, e la fase della lista la dice', () => {
+  const items = bancaPubblicata();
+  const progress = storicoCinque(items.filter((x) => x.k === 'base'));
+  const a = E.allenati(items, progress, '2026-08-10', { n: 25, pesi: PESI, esame: '2026-08-14' });
+  assert.equal(a.voci.sottoSoglia, 0, 'lo storico di prova supera la soglia');
+  const attesa = (it) => ({ mai_visto: 'esplora', debole: 'ripara' })[E.statoQuesito(progress[it.id])] || 'conferma';
+  for (const x of a.lista) assert.equal(x.fase, attesa(x.it), `${x.it.id}: ${x.perche}`);
+  const fasi = { esplora: 0, ripara: 0, conferma: 0 };
+  for (const x of a.lista) fasi[x.fase]++;
+  assert.deepEqual(a.fasi, fasi, 'i conti delle fasi sono quelli della lista');
+  assert.ok(fasi.ripara > 0, 'i richiami ci sono');
+  // La fase della lista e' la piu' numerosa; a pari merito vince quella che
+  // viene prima nel ciclo esplora → ripara → conferma.
+  const ordine = ['esplora', 'ripara', 'conferma'];
+  const max = Math.max(...Object.values(fasi));
+  assert.equal(a.fase, ordine.find((f) => fasi[f] === max));
+  // Con la banca tutta vista non c'e' niente da esplorare: la lista ripara e
+  // conferma, e la fase lo dice invece di restare «esplora».
+  const tutta = {};
+  for (const it of items) if (it.k === 'base') applica(tutta, it.id, !it.id.endsWith('7'), 9000, '2026-08-01');
+  const b = E.allenati(items, tutta, '2026-08-10', { n: 25, pesi: PESI, esame: '2026-08-14' });
+  assert.equal(b.fasi.esplora, 0);
+  assert.ok(b.fasi.ripara > 0 && b.fasi.conferma > 0, `ripara ${b.fasi.ripara}, conferma ${b.fasi.conferma}`);
+  assert.equal(b.fase, b.fasi.ripara >= b.fasi.conferma ? 'ripara' : 'conferma');
+});
+
+test('allenati: con poche voci sotto soglia esplora quelle, e il resto viene da mirata', () => {
+  const items = bancaPubblicata();
+  const progress = {};
+  const voci = [...new Set(items.filter((x) => x.k === 'base').map((x) => x.v))];
+  const lasciate = new Set(voci.slice(0, 3).filter((v) => items.filter((x) => x.v === v).length >= 2));
+  for (const v of voci) {
+    if (lasciate.has(v)) continue;
+    for (const it of items.filter((x) => x.k === 'base' && x.v === v).slice(0, E.ALLENATI_MIN_PER_VOCE))
+      applica(progress, it.id, true, 9000, '2026-08-01');
+  }
+  const a = E.allenati(items, progress, OGGI, { n: 25, pesi: PESI });
+  assert.equal(a.fase, 'esplora');
+  assert.equal(a.voci.sottoSoglia, lasciate.size);
+  assert.equal(a.lista.length, 25);
+  const testa = a.lista.slice(0, lasciate.size);
+  assert.deepEqual(new Set(testa.map((x) => x.it.v)), lasciate, 'prima le voci sotto soglia');
+  assert.equal(new Set(a.lista.map((x) => x.it.id)).size, 25, 'nessun quesito due volte');
+  // Il resto e' mirata, nell'ordine di mirata, saltati i gia' presi.
+  const m = mirata(items, progress, OGGI, { n: 25, pesi: PESI })
+    .filter((x) => !testa.some((y) => y.it.id === x.it.id)).slice(0, 25 - lasciate.size);
+  assert.deepEqual(a.lista.slice(lasciate.size).map((x) => [x.it.id, x.perche]), m.map((x) => [x.it.id, x.perche]));
+});
+
+test('allenati: deterministico, e la soglia ha un nome', () => {
+  assert.equal(typeof E.ALLENATI_MIN_PER_VOCE, 'number');
+  assert.ok(E.ALLENATI_MIN_PER_VOCE >= 1);
+  const items = bancaPubblicata();
+  const progress = storicoMisto(items.filter((x) => x.k === 'base'));
+  const a = E.allenati(items, progress, OGGI, { n: 25, pesi: PESI });
+  const b = E.allenati(items, progress, OGGI, { n: 25, pesi: PESI });
+  assert.deepEqual(a, b, 'stesso storico e stesso giorno, stessa lista');
+  assert.deepEqual(E.allenati([], {}, OGGI).lista, [], 'una banca vuota non inventa niente');
+});
+
+// --- il giro delle tecniche con la precedenza a quelle andate male ---------------
+
+test('giroTecniche: resta identico, sulla banca vera, con e senza storico', () => {
+  // Fissato il 18 novembre 2026, prima di P-105: la funzione accanto non deve
+  // cambiare quella di sempre, che la pagina chiama oggi.
+  const C = bancaCarteggioVera();
+  assert.deepEqual(giroTecniche(C, {}).map((x) => [x.e.id, x.tecniche]), [
+    ['5.3.3-2', ['PN da coordinate GPS', 'Punto al traverso', 'Conversione bussola-vero', 'Aggiornamento della declinazione']],
+    ['5.4.1-10', ['Rilevamento polare singolo', 'PN per due rilevamenti simultanei', 'PN per rilevamento e distanza']],
+    ['5.1.3-1', ['PN per rilevamenti successivi sulla stessa mira']],
+    ['5.2.3-1', ['PN per rilevamenti successivi su mire diverse']],
+    ['5.3.3-4', ['PN per rilevamenti polari successivi']],
+    ['5.1.1-3', ['PN per allineamento e distanza']],
+    ['5.2.1-1', ['Punto noto da toponimo cartografico']],
+  ]);
+  assert.deepEqual(giroTecniche(C, storicoMisto(C)).map((x) => [x.e.id, x.tecniche]), [
+    ['5.2.2-1', ['PN da coordinate GPS', 'PN per rilevamenti polari successivi', 'Punto al traverso', 'Conversione bussola-vero']],
+    ['5.4.1-10', ['Rilevamento polare singolo', 'PN per due rilevamenti simultanei', 'PN per rilevamento e distanza']],
+    ['5.3.3-7', ['PN per rilevamenti successivi su mire diverse', 'Aggiornamento della declinazione']],
+    ['5.1.3-1', ['PN per rilevamenti successivi sulla stessa mira']],
+    ['5.2.1-1', ['Punto noto da toponimo cartografico']],
+    ['5.4.1-13', ['PN per allineamento e distanza']],
+  ]);
+});
+
+test('giroTecnicheDaRivedere: senza esercizi andati male e il giro di sempre', () => {
+  const C = bancaCarteggioVera();
+  const senzaErrori = {};
+  for (const e of C.slice(0, 40)) applica(senzaErrori, e.id, true, 60000, '2026-08-27');
+  for (const [banca, prog] of [[bancaCarteggio(), {}], [C, {}], [C, senzaErrori]]) {
+    const g = E.giroTecnicheDaRivedere(banca, prog);
+    assert.deepEqual(g.map((x) => [x.e.id, x.tecniche]), giroTecniche(banca, prog).map((x) => [x.e.id, x.tecniche]));
+    assert.ok(g.every((x) => Array.isArray(x.daRivedere) && x.daRivedere.length === 0));
+  }
+});
+
+test('giroTecnicheDaRivedere: le tecniche andate male vengono prima, e lo dicono', () => {
+  const banca = [...bancaCarteggio(), { id: 'c-8', tecniche: ['Scarroccio'] }];
+  const prog = {};
+  applica(prog, 'c-3', false, 60000, '2026-08-27');            // Scarroccio, persa
+  const g = E.giroTecnicheDaRivedere(banca, prog);
+  assert.deepEqual(g[0].daRivedere, ['Scarroccio'], 'apre la tecnica andata male');
+  assert.equal(g[0].e.id, 'c-8', 'con un esercizio mai fatto che la porta, non con quello gia visto');
+  assert.deepEqual(new Set(g.flatMap((x) => x.tecniche)), new Set(banca.flatMap((e) => e.tecniche)), 'copre ancora tutto');
+  assert.equal(new Set(g.map((x) => x.e.id)).size, g.length, 'nessun esercizio due volte');
+  const viste = g.flatMap((x) => x.tecniche);
+  assert.equal(new Set(viste).size, viste.length, 'ogni tecnica la porta un esercizio solo');
+  assert.ok(g.slice(1).every((x) => x.daRivedere.length === 0));
+  // Conta l'ultimo giudizio: ripreso, non e' piu' andato male.
+  applica(prog, 'c-3', true, 60000, '2026-08-28');
+  assert.deepEqual(E.giroTecnicheDaRivedere(banca, prog).map((x) => x.e.id), giroTecniche(banca, prog).map((x) => x.e.id));
+});
+
+test('giroTecnicheDaRivedere: sulla banca vera, prima tutte le tecniche da rivedere, poi le altre', () => {
+  const C = bancaCarteggioVera();
+  const prog = storicoMisto(C);
+  const male = new Set(C.filter((e) => classifica(prog[e.id]) === 'da_ripassare').flatMap((e) => e.tecniche));
+  assert.ok(male.size >= 2, `lo storico di prova ha tecniche andate male (${male.size})`);
+  const g = E.giroTecnicheDaRivedere(C, prog);
+  const portate = g.flatMap((x) => x.tecniche);
+  // Prima tutti gli esercizi che portano una tecnica da rivedere, poi gli altri:
+  // un esercizio scelto per una tecnica andata male porta con se' anche le sue
+  // altre, e quelle non si rifanno dopo.
+  const conMale = g.map((x) => x.daRivedere.length > 0);
+  const ultimo = conMale.lastIndexOf(true);
+  assert.ok(conMale.slice(0, ultimo + 1).every(Boolean), 'gli esercizi da rivedere stanno tutti in testa');
+  assert.deepEqual(new Set(g.flatMap((x) => x.daRivedere)), male);
+  for (const x of g) assert.deepEqual(x.daRivedere, x.tecniche.filter((t) => male.has(t)), `${x.e.id}: dice quali porta da rivedere`);
+  assert.deepEqual(new Set(portate), new Set(C.flatMap((e) => e.tecniche)), 'copre tutte le tecniche');
+  assert.equal(new Set(portate).size, portate.length);
+  assert.deepEqual(E.giroTecnicheDaRivedere(C, prog), E.giroTecnicheDaRivedere(C, prog), 'deterministico');
+});

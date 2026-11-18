@@ -207,8 +207,21 @@ const cmp = (x, y) => (x < y ? -1 : x > y ? 1 : 0);
 export function coda(items, progress, oggi, opt = {}) {
   const { kind, tema, voce, temi, voci, stati, n = 20, includiChiusi = false,
           mescola = false, soloSbagliate = false, soloDaRifare = false, soloFigura = false } = opt;
-  // Le due liste di errori hanno lo stesso ordine; cambia chi ci entra.
-  const errori = soloSbagliate || soloDaRifare;
+  // I cinque stati come selettore (P-105, la porta «Scegli tu» di I-32): «da
+  // confermare», «recuperati», «acquisiti» che `stati` — i due della selezione,
+  // nuovo e chiuso — non sa dire. Vuoto o assente non filtra, come `stati`. Un
+  // nome che non e' uno dei cinque lancia: la barra dice «da rifare» e il
+  // contratto `debole`, e chi confonde le due cose deve saperlo subito invece
+  // di ricevere una lista vuota.
+  const sq = opt.statiQuesito && opt.statiQuesito.length ? opt.statiQuesito : null;
+  if (sq) for (const x of sq)
+    if (!STATI_QUESITO.includes(x)) throw new Error(`coda: stato «${x}» sconosciuto, gli stati sono ${STATI_QUESITO.join(', ')}`);
+  // Le due liste di errori hanno lo stesso ordine; cambia chi ci entra. Lo
+  // stesso ordine vale per i cinque stati: cosi' `statiQuesito: ['debole']` e
+  // `soloDaRifare` danno la stessa lista, e un «da confermare» parte dal piu'
+  // trascurato. Sui mai visti l'ordine e' quello della banca, perche' non hanno
+  // date da confrontare.
+  const errori = soloSbagliate || soloDaRifare || !!sq;
   const sel = [];
   for (const it of items) {
     if (kind && it.k !== kind) continue;
@@ -229,7 +242,14 @@ export function coda(items, progress, oggi, opt = {}) {
     // barra. «Rifai N errori» apre gli N per contratto: con `soloSbagliate` e
     // un tetto a N li avrebbe aperti solo perche' le riprese stanno in fondo,
     // e il primo tetto diverso da N le avrebbe rimescolate dentro.
-    if (soloDaRifare) {
+    if (sq) {
+      // Prende il posto di `stati` e `includiChiusi`: un «debole» e' gia' visto
+      // per definizione, e i chiusi esclusi per default lo toglierebbero. Gli
+      // altri due filtri di errori, se ci sono, restringono ancora.
+      if (!sq.includes(statoQuesito(p))) continue;
+      if (soloDaRifare && classifica(p) !== 'da_ripassare') continue;
+      if (soloSbagliate && !sbagliato(p)) continue;
+    } else if (soloDaRifare) {
       if (classifica(p) !== 'da_ripassare') continue;
     } else if (soloSbagliate) {
       if (!sbagliato(p)) continue;
@@ -663,6 +683,53 @@ export function giroTecniche(esercizi, progress) {
     out.push({ e: scelto, tecniche: sue });
     for (const t of sue) scoperte.delete(t);
   }
+  return out;
+}
+
+/**
+ * Il giro delle tecniche della porta «Allenati» del carteggio (P-105, I-32):
+ * copre ancora **tutte** le tecniche, ma comincia da quelle **andate male**.
+ *
+ * Una tecnica e' andata male quando un esercizio che la richiede ha l'ultimo
+ * giudizio negativo — `classifica() === 'da_ripassare'`, il «da rivedere» della
+ * revisione —; un esercizio perso e poi preso non conta piu'. Per esercitarla
+ * il giro preferisce, a parita' di copertura, un esercizio **mai fatto** che la
+ * porta: rifare quello di cui hai gia' letto la risposta ministeriale serve
+ * meno.
+ *
+ * Compone `giroTecniche()` due volte, non lo riscrive: prima sulle sole
+ * tecniche andate male, poi sulle tecniche che il
+ * primo giro non ha gia' coperto. Ogni voce e' `{ e, tecniche, daRivedere }`:
+ * `tecniche` sono quelle che l'esercizio porta lui al giro, come in
+ * `giroTecniche()`, comprese le altre che porta con se'; `daRivedere` sono
+ * quelle fra loro che erano andate male, cioe' il suo perche'. Senza esercizi
+ * andati male e' il giro di sempre, voce per voce.
+ *
+ * `giroTecniche()` resta com'e': la pagina lo chiama oggi, e un test pretende
+ * che non cambi.
+ */
+export function giroTecnicheDaRivedere(esercizi, progress) {
+  const male = new Set();
+  for (const e of esercizi)
+    if (classifica(progress[e.id]) === 'da_ripassare') for (const t of e.tecniche || []) male.add(t);
+  const perId = new Map(esercizi.map((e) => [e.id, e]));
+  // Gli esercizi con le sole tecniche che il giro deve ancora coprire. Uno gia'
+  // preso nel primo giro ha tutte le sue tecniche coperte, quindi nel secondo
+  // non ne porta nessuna e `giroTecniche()` lo salta da se'.
+  const ristretti = (tiene) => esercizi.map((e) => ({ ...e, tecniche: (e.tecniche || []).filter(tiene) }));
+
+  const coperte = new Set();
+  const out = [];
+  const aggiungi = (giro) => {
+    for (const { e } of giro) {
+      const orig = perId.get(e.id);
+      const porta = (orig.tecniche || []).filter((t) => !coperte.has(t));
+      for (const t of porta) coperte.add(t);
+      out.push({ e: orig, tecniche: porta, daRivedere: porta.filter((t) => male.has(t)) });
+    }
+  };
+  if (male.size) aggiungi(giroTecniche(ristretti((t) => male.has(t)), progress));
+  aggiungi(giroTecniche(ristretti((t) => !coperte.has(t)), progress));
   return out;
 }
 
@@ -1256,6 +1323,118 @@ export function mirata(items, progress, oggi, opt = {}) {
     metti(it, `richiamo · sbagliato il ${giornoBreve(progress[it.id].lw)}`);
   }
   return out;
+}
+
+// --- la porta «Allenati» (P-105, I-32 e B-1 di docs/piano-2026-11.md) -----------
+//
+// Decide il sito, e dice perche'. Due comportamenti che c'erano gia', in fila:
+// quando lo storico e' scarso **tocca tutte le voci**, come `screening()`; poi
+// e' `mirata()`. Non e' una terza selezione con regole sue — sarebbe il rischio
+// che il piano nomina, una seconda Mirata che diverge dalla prima —: compone le
+// due che ci sono, e aggiunge soltanto la soglia fra le due e la fase.
+
+/**
+ * Quanti quesiti distinti di una voce bisogna aver visto perche' «Allenati»
+ * smetta di esplorarla per obbligo. Una voce con meno quesiti in banca ci
+ * arriva con quelli che ha: tre voci del decreto ne hanno uno solo.
+ *
+ * Due e non uno, e la ragione e' quella del pilota dei concetti (I-32): una
+ * risposta sola e' un esito, non una misura — un errore non distingue una
+ * lacuna da una svista, e con un quesito per voce la prima sessione chiuderebbe
+ * l'esplorazione su 44 esiti singoli. Con due, sulla banca base sono 85
+ * risposte, tre o quattro sessioni da 25: «i primi giorni» di I-32. Non
+ * diciamo che due bastino a dire dove sei debole — lo dice `mirata()` dopo,
+ * con la debolezza liscia di `diagnosi()` —: diciamo che sotto due non si
+ * prova nemmeno. E' una scelta pratica, come `CONFERMA_ORE`, e si rivede con i
+ * dati: per questo ha un nome.
+ */
+export const ALLENATI_MIN_PER_VOCE = 2;
+
+/** La fase di un quesito, dal suo stato: mai visto si esplora, debole si
+ *  ripara, il resto del visto si conferma. Dai dati, non dal testo del perche'. */
+function faseQuesito(p) {
+  const s = statoQuesito(p);
+  return s === 'mai_visto' ? 'esplora' : s === 'debole' ? 'ripara' : 'conferma';
+}
+
+const FASI = ['esplora', 'ripara', 'conferma'];
+
+/**
+ * La selezione della porta «Allenati». Restituisce, dalla stessa chiamata:
+ *
+ *   lista    `[{ it, perche, fase }]`, al piu' `n`
+ *   fase     'esplora' finche' una voce e' sotto la soglia; poi la fase piu'
+ *            numerosa nella lista, e a pari merito quella che viene prima nel
+ *            ciclo esplora → ripara → conferma
+ *   fasi     `{ esplora, ripara, conferma }`, i conti della lista
+ *   voci     `{ totale, sottoSoglia }`
+ *   mancano  quante risposte servono ancora perche' ogni voce arrivi alla
+ *            soglia: il numero di «con altre N domande vedremo ogni argomento»
+ *
+ * **Sotto la soglia** prende un quesito per voce sotto soglia, con
+ * `screening(…, 1)` ristretto a quelle voci; prima le voci con meno quesiti
+ * visti, cosi' in due sessioni da 25 le 44 voci sono tutte toccate. Se le voci
+ * sotto soglia sono meno di `n`, il resto viene da `mirata()` con le stesse
+ * opzioni, nel suo ordine, saltati i quesiti gia' presi: `mirata()` ne da' `n`,
+ * e togliendone al piu' quelli presi ne restano abbastanza.
+ * **Oltre la soglia** e' `mirata()` e basta: stessa lista, stessi perche'.
+ *
+ * Le opzioni sono quelle di `mirata()` — `n`, `kind`, `pesi`, `esame`, `seme`,
+ * `quotaRichiami` — e passano a lei com'erano. Deterministica come lei: il
+ * seme predefinito e' `semeGiorno(oggi)`.
+ *
+ * Senza account vede le sole risposte della pagina aperta, quindi resta quasi
+ * sempre nella fase di esplorazione: e' onesto, e la schermata lo dice (I-32).
+ */
+export function allenati(items, progress, oggi, opt = {}) {
+  const { n = 25, kind = 'base', seme = semeGiorno(oggi) } = opt;
+  const pool = items.filter((it) => it.k === kind);
+  // Le voci per `it.v`, come le raggruppa `screening()`, nell'ordine della banca.
+  const voci = new Map();
+  for (const it of pool) {
+    if (!voci.has(it.v)) voci.set(it.v, { n: 0, visti: 0 });
+    const v = voci.get(it.v);
+    v.n++;
+    if (stato(progress[it.id]) !== 'nuovo') v.visti++;
+  }
+  let mancano = 0;
+  const sotto = [];
+  for (const [nome, v] of voci) {
+    const manca = Math.max(0, Math.min(ALLENATI_MIN_PER_VOCE, v.n) - v.visti);
+    mancano += manca;
+    if (manca > 0) sotto.push(nome);
+  }
+
+  const lista = [];
+  const presi = new Set();
+  const metti = (it, perche) => {
+    presi.add(it.id);
+    lista.push({ it, perche, fase: faseQuesito(progress[it.id]) });
+  };
+  const livelli = [...new Set(sotto.map((v) => voci.get(v).visti))].sort((a, b) => a - b);
+  for (const k of livelli) {
+    if (lista.length >= n) break;
+    const queste = new Set(sotto.filter((v) => voci.get(v).visti === k));
+    for (const it of screening(pool.filter((x) => queste.has(x.v)), progress, oggi, 1, kind, seme + k)) {
+      if (lista.length >= n) break;
+      metti(it, k === 0
+        ? `esplorazione · «${it.v}» · mai aperta`
+        : `esplorazione · «${it.v}» · ${k} ${k === 1 ? 'quesito visto' : 'quesiti visti'}, ne servono ${ALLENATI_MIN_PER_VOCE}`);
+    }
+  }
+  if (lista.length < n) {
+    for (const x of mirata(items, progress, oggi, { ...opt, kind, seme, n })) {
+      if (lista.length >= n) break;
+      if (presi.has(x.it.id)) continue;
+      metti(x.it, x.perche);
+    }
+  }
+
+  const fasi = { esplora: 0, ripara: 0, conferma: 0 };
+  for (const x of lista) fasi[x.fase]++;
+  const max = Math.max(...FASI.map((f) => fasi[f]));
+  const fase = sotto.length ? 'esplora' : FASI.find((f) => fasi[f] === max);
+  return { lista, fase, fasi, voci: { totale: voci.size, sottoSoglia: sotto.length }, mancano };
 }
 
 // --- lo specchio locale dello storico -------------------------------------------
