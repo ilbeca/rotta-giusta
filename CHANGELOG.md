@@ -512,6 +512,50 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   `sceltaCarteggio()` nel motore, prima di B-4b, come vuole la decisione 12.
 - Nessun file di `site/`, `tests/` o della specifica toccato.
 
+### Aggiunto — P-106: i concetti di Navigazione cartografica ed elettronica
+
+- **Perché.** Il passo B-2 del piano di novembre etichetta tutta la banca con
+  i concetti di I-32, una sorgente per tema; questa è la sorgente del tema più
+  grande, `strumenti/concetti/navigazione-cartografica-ed-elettronica.json`,
+  nella forma del pilota dei fanali e della nota di p106-colreg sul formato.
+  Non c'è `componi.py` in questo ramo: lo porta la sessione COLREG, e la regia
+  rigenera il file composto alla merge. Provato: il `componi.py` di COLREG,
+  copiato fuori dal repo, compone le due sorgenti senza un guaio.
+- **Che cosa.** **322 quesiti su 322**, nelle 9 voci del tema; **52
+  concetti** in **24 famiglie**, **380 tag** (266 quesiti con un concetto, 54
+  con due, 2 con tre). Ogni concetto ha almeno 3 quesiti (da 3 a 21), parole
+  chiave da indice di manuale e una riga su che cosa copre. Classificazione
+  nostra, non ministeriale.
+- **Le famiglie non sono 4–5 per ogni voce.** Lo sono per le voci grandi
+  (Bussole, Carte, Stimata: 4; Costiera: 3); le voci piccole non le reggono con
+  almeno 3 quesiti per concetto: Pubblicazioni, 8 quesiti, ha una famiglia con
+  due concetti; Orientamento (11), Elettronica (13), Coordinate (45) e Prora e
+  rotta (30) ne hanno due.
+- **14 concetti valgono anche fuori dalla loro voce**, su 33 tag, perché il
+  sapere è lo stesso: fra gli altri il miglio come primo di latitudine
+  (Coordinate e Stimata), le rotte per 090° e 180° (Coordinate e Prora e
+  rotta), gli angoli in senso orario, gli strumenti da carteggio, le scale ai
+  bordi della carta, le quarte della rosa nei rilevamenti a 22,5°. Ogni
+  concetto sta in una famiglia e ogni famiglia in una voce, come vuole la nota
+  del formato; sono i quesiti a prendere un concetto di un'altra voce.
+- **Rilettura** di 32 quesiti estratti a caso (`random.seed(106)`, nel JSON):
+  un tag aggiunto, `scale_ai_bordi_carta` a `base-1214`, e lo stesso a
+  `base-1148`, fuori campione, che ha lo stesso testo e le stesse risposte. È
+  la rilettura dello stesso lettore; la seconda lettura indipendente del 10% è
+  un'altra sessione.
+- **Letti** i testi e le risposte dei 322 quesiti, e tre delle undici figure
+  (092, 097, 101), che confermano le risposte; nessun archivio di risposte.
+- **Trovato, e non toccato:** `base-1148` e `base-1214` sono lo stesso quesito
+  in due voci; `base-1039` dà per esatto «il punto di proiezione è situato al
+  centro della Terra» per Mercatore, che è una cilindrica modificata e non una
+  proiezione geometrica da un punto: da far guardare a chi ha il manuale;
+  `base-1003` conta 180 paralleli, 90 a nord e 90 a sud, lasciando fuori
+  l'equatore; `base-1074` dà il GPS obbligatorio oltre le 12 miglia, da
+  confrontare con il DM 133/2024 come le dotazioni annotate nella 0.14.0.
+- Nessun file di `site/`, `tests/` o della specifica toccato. Suite: dati 236,
+  specifica 1.146; guardiano verde. Motore, server e interfaccia non rifatti:
+  nessun file che leggono è cambiato.
+
 ## [0.35.1] — 2026-10-29
 
 **Le risposte in simulazione si cambiano, e «auto» si capisce.** Un utente ha
