@@ -314,6 +314,39 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   - in testa a `testi-pannelli.md`, che è superato da `argomenti-pannelli.md`.
 - Nessun file di `site/`, `tests/` o della specifica toccato.
 
+### Corretto — P-108: il guardiano non entra nei worktree delle sessioni
+
+- **Perché.** Dal checkout principale `strumenti/controlla.py` scendeva con
+  `os.walk` anche in `.claude/worktrees/<nome>/`, dove l'app tiene un worktree
+  per sessione: copie intere del repo, compreso il guardiano stesso, che nomina
+  le frasi e le impronte che cerca. Misurato oggi con sette worktree aperti:
+  **182 problemi, tutti dentro `.claude/worktrees/`**, e con loro rossa anche
+  `test_dati.py`. Un rosso che non riguarda il repo si impara a ignorare, ed è
+  così che arriva il guasto muto vero. Ogni worktree si controlla da sé, con il
+  suo guardiano.
+- **Che cosa.** `PERCORSI_ESCLUSI = {'.claude/worktrees'}` accanto a
+  `CARTELLE_ESCLUSE`, ma per percorso dalla radice e non per nome, con il perché
+  in un commento: `.claude/` ha anche le skill committate, e una cartella che si
+  chiama `worktrees` altrove non è un worktree. Vale in tutti e due i giri del
+  guardiano — i file di testo e i file vietati —, da una funzione sola,
+  `da_esplorare()`. Per provarlo su un altro checkout senza scriverci,
+  `controlla.py --radice <cartella>`; i giri stanno in `esamina(radice)`.
+- **Prima il test che fallisce.** `test_worktree_esclusi`, in una cartella
+  temporanea che imita il repo: un nome di terzi e un file vietato in
+  `.claude/worktrees/prova/`, rossi con il codice di prima (2 verifiche); e gli
+  stessi in `.claude/skills/prova/`, in `altro/worktrees/prova/` e in `docs/`,
+  che devono restare presi. **Trovato scrivendolo:** la prima stesura metteva il
+  nome di terzi in chiaro dentro `test_dati.py`, e il guardiano l'ha preso; ora
+  è spezzato. **Provato al contrario su quattro rotture**, una alla volta: la
+  regola che salta tutta `.claude/` è rossa su `.claude/skills/`; quella che
+  salta ogni cartella `worktrees` su `altro/worktrees/`; nessuna esclusione sul
+  primo test; l'esclusione nel solo giro dei testi sul file vietato.
+- **Provato nel checkout principale**, con il guardiano di questo worktree e
+  `--radice`, in sola lettura: 490 file esaminati, gli stessi del worktree,
+  uscita 0; `git status` del checkout principale vuoto prima e dopo.
+- Suite: dati **233** (erano 225), specifica 1.146; guardiano verde. Motore,
+  server e interfaccia non toccati e non rifatti.
+
 ## [0.35.1] — 2026-10-29
 
 **Le risposte in simulazione si cambiano, e «auto» si capisce.** Un utente ha

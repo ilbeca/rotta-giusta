@@ -6,6 +6,7 @@ prompt e' una promessa; questo e' un controllo. Lo esegue anche
 tests/test_dati.py, che pretende l'uscita 0.
 
     python3 strumenti/controlla.py     # da qualsiasi cwd; esce con 1 se qualcosa non va
+    python3 strumenti/controlla.py --radice <checkout>   # su un altro checkout, solo in lettura
 
 Esamina tutti i file di testo del repo — non solo i JSON dei dati, perche' un
 README o un CHANGELOG ripubblicano esattamente come un dataset — e controlla:
@@ -36,6 +37,9 @@ README o un CHANGELOG ripubblicano esattamente come un dataset — e controlla:
      senza dichiarazione, o cambiato senza aggiornarla, fa fallire il
      controllo: la provenienza si scrive, non si ricorda.
 
+Non entra in .claude/worktrees/, dove stanno i worktree delle sessioni: copie
+del repo che si controllano da se' (P-108, vedi PERCORSI_ESCLUSI).
+
 I punti 1, 2 e 4 esentano questo file e prepara.py: sono i due strumenti che
 devono poter nominare cio' che cercano, altrimenti la regola non e' leggibile.
 Nessun altro file e' esente, README e CHANGELOG compresi.
@@ -50,6 +54,15 @@ RADICE = Path(__file__).resolve().parent.parent
 # cio' che non e' UTF-8 (i PNG, il PDF, un .DS_Store) si salta da solo.
 ESTENSIONI = {'.json', '.md', '.html', '.js', '.py', '.yaml', '.txt', '.mjs'}
 CARTELLE_ESCLUSE = {'_materiali', '.git', 'node_modules', '__pycache__'}
+# E per percorso dalla radice, non per nome: .claude/worktrees/ e' dove l'app
+# crea un worktree per ogni sessione (ADR-007), cioe' copie intere del repo con
+# dentro anche questo file, che nomina cio' che cerca. Dal checkout principale
+# il guardiano ci scendeva e dava un rosso che non riguarda il repo — e un
+# rosso che si impara a ignorare e' un guasto muto in arrivo (P-108). Ogni
+# worktree si controlla da se', con il suo guardiano. Solo questa cartella:
+# .claude/ ha anche le skill committate, che si pubblicano come il resto, e una
+# cartella che si chiama «worktrees» altrove non e' un worktree.
+PERCORSI_ESCLUSI = {'.claude/worktrees'}
 
 # I due strumenti che possono nominare cio' che cercano (percorsi dalla radice).
 ESENTI = {'strumenti/controlla.py', 'strumenti/prepara.py'}
@@ -125,15 +138,24 @@ UUID = re.compile(r'(?<![0-9a-fA-F-])[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4
 NOME_SEGRETO = re.compile(r'secret|segret|x-auth-token', re.I)
 
 
+def da_esplorare(radice, cartella, sotto):
+    """Le sottocartelle di `cartella` in cui il guardiano scende, in ordine."""
+    base = Path(cartella).relative_to(radice).as_posix()
+    base = '' if base == '.' else base + '/'
+    return sorted(s for s in sotto
+                  if s not in CARTELLE_ESCLUSE and base + s not in PERCORSI_ESCLUSI)
+
+
 def impronta(s):
     return hashlib.sha256(s.lower().encode('utf-8')).hexdigest()
 
 
-def file_di_testo():
+def file_di_testo(radice=None):
     """Tutti i file di testo del repo, in ordine, come percorsi dalla radice."""
+    radice = Path(radice) if radice else RADICE
     trovati = []
-    for cartella, sotto, nomi in os.walk(RADICE):
-        sotto[:] = sorted(s for s in sotto if s not in CARTELLE_ESCLUSE)
+    for cartella, sotto, nomi in os.walk(radice):
+        sotto[:] = da_esplorare(radice, cartella, sotto)
         for nome in sorted(nomi):
             p = Path(cartella) / nome
             if p.suffix and p.suffix not in ESTENSIONI:
@@ -144,7 +166,7 @@ def file_di_testo():
                 continue
             if '\0' in testo:
                 continue
-            trovati.append((p.relative_to(RADICE).as_posix(), testo))
+            trovati.append((p.relative_to(radice).as_posix(), testo))
     return trovati
 
 
@@ -194,24 +216,41 @@ def dichiarazioni(file_server, readme):
     return guai
 
 
-def main():
+def esamina(radice=None):
+    """Tutti i giri del guardiano su `radice`: (file esaminati, guai)."""
+    radice = Path(radice) if radice else RADICE
     guai = []
-    esaminati = file_di_testo()
+    esaminati = file_di_testo(radice)
     for rel, testo in esaminati:
         guai.extend(controlla_testo(rel, testo))
 
-    for cartella, sotto, nomi in os.walk(RADICE):
-        sotto[:] = [s for s in sotto if s not in CARTELLE_ESCLUSE]
+    for cartella, sotto, nomi in os.walk(radice):
+        sotto[:] = da_esplorare(radice, cartella, sotto)
         for v in VIETATI:
             if v in nomi:
                 guai.append('file di provenienza non dichiarata: %s'
-                            % (Path(cartella) / v).relative_to(RADICE).as_posix())
+                            % (Path(cartella) / v).relative_to(radice).as_posix())
 
-    server = RADICE / 'server'
+    server = radice / 'server'
     if server.is_dir():
-        materiale = {p.relative_to(RADICE).as_posix(): p.read_bytes()
+        materiale = {p.relative_to(radice).as_posix(): p.read_bytes()
                      for p in sorted(server.iterdir()) if p.is_file() and p.suffix != '.mjs' and not p.name.startswith('.')}
-        guai.extend(dichiarazioni(materiale, (RADICE / 'README.md').read_text(encoding='utf-8')))
+        guai.extend(dichiarazioni(materiale, (radice / 'README.md').read_text(encoding='utf-8')))
+    return esaminati, guai
+
+
+def main(argv=None):
+    # --radice <cartella>: il guardiano su un altro checkout, solo in lettura.
+    # Serve a provarlo sul checkout principale da un worktree (P-108).
+    argv = sys.argv[1:] if argv is None else argv
+    radice = None
+    if argv:
+        if len(argv) != 2 or argv[0] != '--radice':
+            sys.exit('uso: controlla.py [--radice <cartella>]')
+        radice = Path(argv[1]).resolve()
+        if not radice.is_dir():
+            sys.exit('la radice %s non e\' una cartella' % radice)
+    esaminati, guai = esamina(radice)
 
     print('esaminati %d file di testo:' % len(esaminati))
     for rel, _ in esaminati:

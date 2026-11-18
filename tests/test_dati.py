@@ -65,6 +65,45 @@ def test_controlla():
           ' | '.join(righe[-12:]) + (esito.stderr.strip() and ' | ' + esito.stderr.strip()))
 
 
+def test_worktree_esclusi():
+    """P-108: il guardiano non entra nei worktree delle sessioni, e solo in quelli.
+
+    Dal checkout principale os.walk scendeva in .claude/worktrees/<nome>/, copie
+    intere del repo con dentro anche controlla.py, che contiene le frasi che
+    cerca: un rosso che non riguarda il repo, e un rosso che si impara a
+    ignorare e' un guasto muto in arrivo. L'altra meta' conta di piu': lo stesso
+    file fuori da .claude/worktrees/ — anche dentro .claude/, che ha le skill
+    committate, o in un'altra cartella che si chiama worktrees — resta preso.
+    Saltare la cartella sbagliata e' il modo di spegnere il controllo.
+    """
+    import tempfile
+    nota = 'Questo materiale viene dalla Lega ' + 'Navale.\n'  # spezzato: questo file non e' esente
+    vietato = controlla.VIETATI[0]
+    with tempfile.TemporaryDirectory() as tmp:
+        radice = Path(tmp)
+        (radice / 'README.md').write_text('repo di prova\n', encoding='utf-8')
+        dentro = radice / '.claude' / 'worktrees' / 'prova'
+        fuori = [radice / '.claude' / 'skills' / 'prova', radice / 'altro' / 'worktrees' / 'prova',
+                 radice / 'docs']
+        for d in [dentro] + fuori:
+            d.mkdir(parents=True)
+            (d / 'nota.md').write_text(nota, encoding='utf-8')
+            (d / vietato).write_bytes(b'xlsx finto')
+        esaminati, guai = controlla.esamina(radice)
+        rel_dentro = dentro.relative_to(radice).as_posix()
+        check('il guardiano non legge i file di .claude/worktrees/',
+              not any(r.startswith(rel_dentro) for r, _ in esaminati),
+              [r for r, _ in esaminati if r.startswith(rel_dentro)])
+        check('il guardiano non riporta guai da .claude/worktrees/',
+              not any(rel_dentro in g for g in guai), [g for g in guai if rel_dentro in g])
+        for d in fuori:
+            rel = d.relative_to(radice).as_posix()
+            check('il guardiano trova il nome di terzi in %s/' % rel,
+                  any('nome di terzi' in g and rel + '/nota.md' in g for g in guai), guai)
+            check('il guardiano trova il file vietato in %s/' % rel,
+                  any('provenienza non dichiarata' in g and rel + '/' + vietato in g for g in guai), guai)
+
+
 def test_titolare():
     """Il nome del titolare sta nell'informativa, e in nessun altro file.
 
@@ -768,7 +807,7 @@ def test_serve():
 
 
 def main():
-    for t in (test_controlla, test_titolare, test_segreti, test_materiale_dichiarato, test_quiz, test_meta, test_figure, test_progressivi, test_invarianti,
+    for t in (test_controlla, test_worktree_esclusi, test_titolare, test_segreti, test_materiale_dichiarato, test_quiz, test_meta, test_figure, test_progressivi, test_invarianti,
               test_carteggio, test_sw, test_nessuna_risorsa_di_terzi, test_rinomino, test_manifest_icone, test_indirizzi,
               test_serve):
         t()
