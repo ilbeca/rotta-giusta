@@ -263,6 +263,26 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   quattro stati; senza, cinque sì. Tutti i pannelli entrano ancora alle due
   misure.
 
+### Progettato — il piano di novembre: la Home a pannelli e le due porte
+
+- **Perché.** Due linee di lavoro toccano gli stessi file — `site/index.html`,
+  la specifica, i banchi del client —: la Home a pannelli (riga 42, ora a 6
+  pannelli) e la preparazione a due porte con i concetti (I-32). Senza un
+  ordine scritto, due sessioni avrebbero preso la penna della pagina insieme, e
+  P-102 aspettava un passo del giro B che non ha un prompt.
+  `docs/piano-2026-11.md` dà lo stato misurato, 20 decisioni per l'autore con la
+  proposta, i passi con chi, che cosa toccano e quando sono finiti, e tre
+  rilasci (v0.36.0 la Home, v0.37.0 le porte, v0.38.0 i concetti in pagina).
+- **Misurato prima di scrivere:** P-101 è fatto e non fuso, a 11 pannelli, con
+  due conflitti di sole aggiunte contro `main`; P-100 non c'è; P-102 dice ancora
+  «gli 11 pannelli»; `testi-pannelli.md` non dice di essere superato; il ramo
+  delle porte di Esame si applica senza conflitti; i punti della pagina e dei
+  banchi che le due porte faranno diventare rossi sono elencati nel §1.
+- **Fuori dal piano, e detto:** l'avviso bayesiano, le schede per concetto, il
+  menu nuovo, Claude in pagina.
+- Nessun file di `site/`, `tests/`, della specifica o della coda toccato: la
+  coda si riscrive quando l'autore approva l'ordine.
+
 ## [0.35.1] — 2026-10-29
 
 **Le risposte in simulazione si cambiano, e «auto» si capisce.** Un utente ha
