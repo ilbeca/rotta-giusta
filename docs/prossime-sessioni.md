@@ -270,8 +270,30 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 39 | **Ripensare il disegno da capo**: la direzione è scelta dall'autore il 25 ottobre 2026 — la Regata, con la Home al computer «U — Terra beige» (I-29; `docs/volto-progetto.md`, decisioni 1–14). I mock sono in `docs/prototipi/redesign-2026-10-claude/`, fusi in `main` | la regia | `main` | niente: le decisioni 15–18 del §12 di `docs/volto-progetto.md` le ha prese l'autore il 26 ottobre 2026, come raccomandato | fatto; P-96 superato dalla scelta, da non lanciare se non è già partito |
 | 40 | **Il volto, giro A — i controlli**: `SCALA_CSS` con i token della Regata, T-12 e T-13 al computer, T-15 nuovo, la pagina di riferimento con la Home U, R-VOLTO nel §9.11, i rossi dichiarati sulla pagina vera (`docs/volto-progetto.md` §6, §9, §11) | Claude | un worktree da `main` | niente | P-97 fuso il 26 ottobre 2026 (`9950388`, merge `4085f30`) |
 | 41 | **Il volto, giro A — la pagina**: il `:root` della Regata, i componenti condivisi, la Home al telefono e al computer, prima e dopo alle sei misure (`docs/volto-progetto.md` §11) | ChatGPT | `ui/main` | il sì dell'autore sulle schermate di `docs/collaudo-p98/` e sui testi didattici delle due luci (§10 di `docs/volto-progetto.md`); per il rilascio anche quello su `docs/collaudo-p95/` (riga 37) | P-98 fuso il 28 ottobre 2026 (`9da12f4`, merge `a94b3c1`), da rilasciare. Prima, P-99 — il banco del client con Chrome 156, `--disable-backgrounding-occluded-windows` e `dimensioni()` che aspetta il disegno — fuso lo stesso giorno (`1c2881a`, merge `379a26e`) |
-| 42 | **La Home a pannelli**, un passo del giro B: il prototipo corretto `docs/prototipi/stitch-2026-10/carta-corretta/index.html` è il contratto visivo unico — 11 pannelli a scatto obbligato, la costa che scorre in uno strato fisso, il faro a settori, la cardinale est, il vento, il 2° problema delle correnti con lo scarroccio, la rotta e il percorso (`analisi-2026-10-28.md`, nella stessa cartella) | prima l'autore sul prototipo; poi Claude (P-100, P-101, P-102) | un worktree da `main` per ciascuno | P-100: le piccole correzioni al prototipo che dirà l'autore, nello stesso file. P-101: P-100; può correre in parallelo al giro B. P-102: P-101, il passo del giro B su domanda e riepilogo (decisione 18, una penna sola su `index.html`, prompt da scrivere) e il rilascio della v0.35.0 | P-100, P-101, P-102 scritti il 28 ottobre 2026 |
+| 42 | **La Home a pannelli, a 6 pannelli** (I-30; deciso dall'autore il 29 ottobre 2026, testi in `docs/prototipi/stitch-2026-10/argomenti-pannelli.md` §3): A-1, i controlli — il ramo `claude/p101-home-pannelli-656f00` di P-101 riportato da 11 a 6 pannelli, con il controllo di D-36 —; poi A-2, la pagina, e il rilascio v0.36.0 (`docs/piano-2026-11.md` §4, «A») | Claude, poi Claude | un worktree da `main` per ciascuno | A-1: la riga 52 fusa, perché tocca gli stessi banchi e la specifica; le decisioni H-1 e H-3 sono prese. A-2: A-1 e la riga 43 fusi; l'attesa del giro B è tolta (H-11) | A-1 è P-104; A-2 da scrivere alla chiusura di P-104. P-100 è assorbito da P-101, e P-101/P-102 restano scritti com'erano, a 11 pannelli |
+| 43 | **Le porte di Esame e del Carteggio a 375 px**: titolo sopra e descrizione sotto, il sommario chiuso di Esame che dice che cosa manca (ramo `worktree-uiux-quick-check`, `fec1c85`; piano Q-1) | la regia | `main` | niente: guardarlo nel browser a 375 e 1280 px e far girare l'interfaccia; va prima di A-2, perché tocca `site/index.html` | la merge |
+| 44 | **`base-763` sul decreto**: «Oc (3) W 5s» con una risposta che sembra senza i gruppi (piano Q-3) | Claude | un worktree da `main` | niente | P-103 |
+| 45 | **Il guardiano salta `.claude/worktrees/`**: oggi è rosso nel checkout per le copie delle sessioni, e con le otto sessioni dei concetti lo sarebbe di più (piano §5) | Claude | un worktree da `main` | niente; prima della riga 47 | P-108 |
+| 46 | **Il motore per le due porte** (I-32): i cinque stati come selettore in `coda()`, `allenati()`, il giro delle tecniche con la precedenza a quelle andate male — tutto additivo (piano B-1) | Claude | un worktree da `main` | niente: non tocca la specifica, e i requisiti che propone li scrive B-4 | P-105 |
+| 47 | **I concetti su tutta la banca**: una sorgente per tema in `strumenti/concetti/`, composta in `site/dati/concetti.json`, con una seconda lettura indipendente del 10% (piano B-2) | Claude, una sessione per tema, in parallelo | un worktree da `main` per tema | la riga 45 fusa; la granularità è decisa (C-2: concetti e famiglie) | P-106, uno per tema |
+| 48 | **Il progetto del menu e delle due porte**, `docs/porte-progetto.md`: il menu nuovo Simulazione · Quiz · Carteggio · Statistiche (C-0, deciso dall'autore il 18 novembre 2026), le porte, il pulsante unico per l'account (C-6) (piano B-3) | Claude | un worktree da `main` | niente | P-107 |
+| 49 | **Il menu e le due porte, i controlli e la pagina** (piano B-4, probabilmente in due sessioni, e B-5), poi il rilascio v0.37.0 | Claude, poi Claude | un worktree da `main` per ciascuno | B-4: le righe 46 e 48 fuse, e A-2 fusa (i banchi sono gli stessi). B-5: B-4 | da scrivere |
+| 50 | **Il giro B del volto, domanda e riepilogo** (decisione 18 di `docs/volto-progetto.md`): controlli, poi pagina | Claude, poi Claude | un worktree da `main` per ciascuno | B-5 fusa: il fatto dei concetti va nel riepilogo nuovo | da scrivere |
+| 51 | **I concetti in pagina: il fatto nel riepilogo e il «dove» in *Scegli tu*** (piano B-6), poi il rilascio v0.38.0 | Claude, poi Claude | un worktree da `main` per ciascuno | la riga 47 completa, le righe 49 e 50 fuse, il nome in schermata è deciso (C-1: «punti da studiare») | da scrivere |
+| 52 | **La simulazione preseleziona le prove** da «che cosa stai preparando?» (C-5, «subito», deciso dall'autore il 18 novembre 2026; piano Q-4) | Claude | un worktree da `main` | la riga 43 fusa: tocca `site/index.html` | P-109 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo P-59», «Dopo P-64», «Dopo il traguardo» e le voci non barrate |
+
+**Dal 18 novembre 2026 l'ordine è quello di `docs/piano-2026-11.md`**,
+approvato dall'autore lo stesso giorno con le sue decisioni: tutte come
+proposto, tranne il menu, che cambia in questo giro (C-0), la preselezione
+della simulazione, subito (C-5, riga 52), e un pulsante solo per l'account
+(C-6); il §2 del piano le dice. Le righe 42–52 sono i suoi passi. Sulla pagina
+vanno in fila — 43, 52, A-2, B-5, giro B, B-6 —, e così sui banchi e sulla
+specifica — 52, A-1, B-4, B-6; in parallelo vanno 44, 45, 46, 47 e 48, che non
+toccano `site/index.html` né `docs/specifica.md`. **Per Claude** sono pronti
+adesso P-103, P-105, P-107 e P-108; la regia fonde la riga 43, poi P-109, poi
+P-104; P-106 dopo P-108. P-105 non scrive la specifica: i requisiti che
+propone li porta B-4, che ha la penna.
 
 **Dal 28 ottobre 2026 (ADR-007) su questo repo lavora un agente solo.**
 ChatGPT è uscito dal progetto, e con lui il territorio dell'interfaccia: le
@@ -7534,6 +7556,8 @@ resoconto di docs/prossime-sessioni.md.
 
 ### P-100 — Claude: la Home a pannelli, il progetto
 
+**Superato il 18 novembre 2026:** non è stato fatto; P-101 ha scritto lui il §14 di `docs/volto-progetto.md`. Resta scritto com'era.
+
 **Dove:** un worktree da `main` (ADR-007). **Nasce da:** la sessione «Redesign con Google Stitch 2.0»
 del 28 ottobre 2026, che ha analizzato il prototipo di Stitch e ne ha fatto un
 mock corretto (commit `94ee44d` e `df60237`); l'autore ha deciso lo stesso
@@ -7600,6 +7624,8 @@ docs/prossime-sessioni.md.
 
 ### P-101 — Claude: la Home a pannelli, i controlli
 
+**Fatto e non fuso, a 11 pannelli** (ramo `claude/p101-home-pannelli-656f00`, `318d01b`); lo riprende P-104, a 6 pannelli. Resta scritto com'era.
+
 **Dove:** un worktree da `main`. **Aspetta:** P-100 e le decisioni dell'autore
 che il suo progetto elenca. Può correre in parallelo al giro B: tocca solo
 `tests/`, la specifica e `docs/eccezioni-interfaccia.md`. **Sblocca:** P-102.
@@ -7651,6 +7677,8 @@ docs/prossime-sessioni.md.
 
 ### P-102 — Claude: la Home a pannelli, la pagina
 
+**Superato il 18 novembre 2026:** a 11 pannelli. La pagina a 6 pannelli è A-2 di `docs/piano-2026-11.md`, da scrivere alla chiusura di P-104. Resta scritto com'era.
+
 **Dove:** un worktree da `main`. Fino al 28 ottobre 2026 era di ChatGPT, su
 `ui/main`; dall'ADR-007 è di Claude, e il prompt cambia solo nella cartella.
 **Aspetta:** P-101 fuso; il passo del giro B su domanda e riepilogo, fuso
@@ -7701,6 +7729,351 @@ dei dati; la versione non si tocca. Le cinque suite verdi; l'interfaccia
 con la 8620 guardata libera per 90 s. Voce in fondo a [Unreleased], un
 commit per nome, niente push. Resoconto nella forma di
 docs/prossime-sessioni.md.
+```
+
+### P-103 — Claude: `base-763` sul decreto
+
+**Dove:** un worktree da `main`. **Nasce da:** il pilota dei concetti del 14
+novembre 2026, che ha segnalato il quesito senza toccarlo
+(`docs/prototipi/concetti-2026-11/README.md`). **Aspetta:** niente. **Sblocca:**
+niente; è il passo Q-3 di `docs/piano-2026-11.md`. Riga 44.
+
+```
+Questo prompt è per Claude, in un worktree da main. Se sei un altro agente,
+o sei nel checkout principale ~/Software/rotta-giusta, fermati e dillo,
+senza scrivere niente.
+
+Sessione P-103, base-763 sul decreto. Leggi AGENTS.md, il README («Che cosa
+è stato corretto»), la voce di P-77 nel CHANGELOG (come si rilegge un
+progressivo sul PDF) e la nota su base-763 in
+docs/prototipi/concetti-2026-11/README.md.
+
+Il quesito è 1.5.3-37: «L'abbreviazione in inglese "Oc (3) W 5s" […]
+significa:», con esatta «intermittente bianco, periodo 5 secondi.», dove i
+gruppi (3) sembrano mancare. Guarda la riga sull'immagine della sua pagina
+del PDF in fonte/, rasterizzata, non sul testo estratto: è il testo estratto
+che sbaglia, quando sbaglia.
+
+- Se la banca diverge dal decreto, è un errore di estrazione: correggi solo
+  il campo che diverge in site/dati/quiz.json, fissa la correzione con il
+  valore letto e la pagina in tests/test_dati.py (prima rosso sulla banca di
+  oggi), e scrivilo nel README fra le correzioni.
+- Se il decreto scrive così, la risposta non si tocca: aggiungi una nota nb
+  che lo dichiara, con la pagina del decreto, come per il quesito dei flap
+  (0.13.2), e un test che la pretende e che pretende la risposta invariata.
+In tutti e due i casi un confronto strutturale con main deve dare una
+differenza sola. Le cinque suite verdi; l'interfaccia solo se tocchi qualcosa
+che legge, con la 8620 guardata libera per 90 s. Voce in fondo a
+[Unreleased], un commit per nome, niente push. Resoconto nella forma di
+docs/prossime-sessioni.md.
+```
+
+### P-104 — Claude: la Home a 6 pannelli, i controlli
+
+**Dove:** il worktree di P-101, `.claude/worktrees/p101-home-pannelli-656f00`,
+sul suo ramo `claude/p101-home-pannelli-656f00` (`318d01b`), aggiornato con
+`main`. **Nasce da:** P-101, fatto a 11 pannelli e non fuso; il 29 ottobre
+l'autore ha deciso 6 pannelli. È il passo A-1 di `docs/piano-2026-11.md`.
+**Aspetta:** P-109 fuso, perché tocca gli stessi banchi e la specifica. Le
+decisioni H-1…H-11 sono prese, come proposto: «Ferma il movimento» nella
+testata, una frase in parole sotto il carteggio della carta. **Sblocca:** A-2,
+la pagina. Riga 42.
+
+```
+Questo prompt è per Claude, nel worktree
+~/Software/rotta-giusta/.claude/worktrees/p101-home-pannelli-656f00, sul
+ramo claude/p101-home-pannelli-656f00. Se sei un altro agente, o sei nel
+checkout principale, fermati e dillo, senza scrivere niente.
+
+Sessione P-104, la Home a 6 pannelli: i controlli prima della pagina, con il
+metodo di P-97. Leggi AGENTS.md, docs/piano-2026-11.md (§1, §2.1 con le
+decisioni H-1…H-11 come le ha prese l'autore, §4 «A-1»), il §14 di
+docs/volto-progetto.md che P-101 ha scritto su questo ramo, e
+docs/prototipi/stitch-2026-10/argomenti-pannelli.md per intero: i sei
+pannelli, i testi del §3, i numeri del §5. testi-pannelli.md, a 11
+pannelli, è superato e non vale come fonte.
+Il menu cambierà in questo giro (C-0), ma dopo, con B-5: qui i pannelli
+nominano le sezioni di oggi, come argomenti-pannelli.md, e non si anticipa
+niente del menu nuovo.
+
+1. Aggiorna il ramo: git merge main. I due conflitti sono di righe aggiunte
+   nello stesso punto — il registro di docs/specifica.md e le rotture di
+   T-16/T-17 in tests/test_interfaccia.py —: tieni tutti e due i lati.
+   Fai girare l'interfaccia prima di toccare altro, e scrivi il conto.
+2. Porta tutto da 11 a 6 pannelli: la pagina di riferimento
+   tests/pagina-client-ridisegno.html con i 6 pannelli e i testi del §3;
+   TAPPE_U a 6 in tests/client_account.mjs; R-VOLTO-02 e 04 («undici») e
+   R-VOLTO-08 riscritti sui numeri che il testo a 6 pannelli dice davvero;
+   le parti di T-15 di P-101 (scatti, movimento, carteggio, velo) sui 6
+   pannelli; la decisione 12 e il §10 di volto-progetto.md allineati; il
+   §14 riscritto per 6 pannelli, miniature comprese (H-5), con H-1 e H-3
+   come le ha decise l'autore.
+3. Il controllo di D-36, nuovo: nessun titolo della Home finisce con una
+   parola sola sulla sua ultima riga, e l'h1 sta in tre righe, a 375×812 e
+   1280×800, misurato sulle righe vere (Range), non sul testo.
+4. R-VOLTO-05 verificato di nuovo con il percorso a 6 tappe: il primo Tab
+   dopo la testata va all'azione principale.
+5. Le rotture: quelle di P-101 portate a 6, più «7 pannelli» e «un titolo
+   che finisce con una parola sola». Ognuna rossa per il suo motivo; le
+   difese nuove tolte a mano una per volta. Cerca nei banchi ogni posto che
+   conta gli 11 pannelli: la rottura «7 pannelli» esiste per prendere quello
+   dimenticato.
+Sulla pagina vera le verifiche nuove sono rosse: dichiarale in
+docs/eccezioni-interfaccia.md, una riga per verifica, «Lo chiude A-2», e
+togli o riscrivi quelle di P-101 che parlavano di P-102. Requisiti nel
+§9.11 della specifica, con il loro controllo. Nessun file di site/. Le
+cinque suite verdi; l'interfaccia con la 8620 guardata libera per 90 s, e il
+tempo di T-15 con RG_TEMPI=1. Voce in fondo a [Unreleased], un commit per
+nome, niente push. Resoconto nella forma di docs/prossime-sessioni.md, con
+la nota di consegna per A-2 nel §14.
+```
+
+### P-105 — Claude: il motore per le due porte
+
+**Dove:** un worktree da `main`. **Nasce da:** I-32 in
+`docs/idee-dopo-gli-account.md` e il passo B-1 di `docs/piano-2026-11.md`.
+**Aspetta:** niente: non tocca la specifica, che in questo momento ha la penna
+di A-1. **Sblocca:** B-4, insieme a B-3. Riga 46.
+
+```
+Questo prompt è per Claude, in un worktree da main. Se sei un altro agente,
+o sei nel checkout principale ~/Software/rotta-giusta, fermati e dillo,
+senza scrivere niente.
+
+Sessione P-105, il motore per le due porte. Leggi AGENTS.md, la scheda I-32
+in docs/idee-dopo-gli-account.md, docs/piano-2026-11.md (§1 «Che cosa il
+motore sa già», §4 «B-1»), il §4 di docs/specifica.md (i contratti, e la
+regola: prima di toccare una funzione condivisa si elencano i chiamanti) e
+site/engine.js nelle parti che toccherai.
+
+Tutto additivo: nessuna funzione che c'è cambia comportamento. Tre pezzi:
+- I cinque stati come selettore: in coda() un'opzione nuova, per esempio
+  statiQuesito: ['incerto', …], che filtra con statoQuesito(), accanto a
+  stati, che resta quella della selezione. Un test pretende che
+  statiQuesito: ['debole'] dia la stessa lista di soloDaRifare, sulla banca
+  vera, tema per tema.
+- allenati(): la selezione della porta «Allenati». Quando lo storico è
+  scarso tocca tutte le voci, come screening(); poi è mirata(). Restituisce
+  dalla stessa chiamata la lista, il perché di ogni quesito e la fase
+  ('esplora', 'ripara', 'conferma'). La soglia fra scarso e no è una
+  costante con un nome e la sua ragione, come quelle del §4.3. allenati()
+  compone screening() e mirata(), non le riscrive.
+- Il giro delle tecniche con la precedenza a quelle andate male: un
+  parametro di giroTecniche(), o una funzione accanto; il giroTecniche() di
+  oggi resta identico, e un test lo pretende.
+Prima i test, rossi uno per uno; poi il codice; poi ogni funzione nuova
+provata al contrario su rotture del motore, una per volta, tutte rosse nel
+test che le riguarda. Le funzioni nuove fra gli orfani dichiarati di
+docs/eccezioni-interfaccia.md, «li consuma B-5». Non toccare
+docs/specifica.md né site/index.html: i requisiti che proponi (nome,
+testo, controllo) scrivili nel resoconto, li porta B-4. Le cinque suite
+verdi, il motore anche con la LTS pari di Node; l'interfaccia con la 8620
+guardata libera per 90 s. Voce in fondo a [Unreleased], un commit per nome,
+niente push. Resoconto nella forma di docs/prossime-sessioni.md.
+```
+
+### P-106 — Claude: i concetti di un tema
+
+**Dove:** un worktree da `main` per tema, in parallelo. **Nasce da:** il pilota
+sui fanali (`docs/prototipi/concetti-2026-11/`) e il passo B-2 di
+`docs/piano-2026-11.md`. **Aspetta:** la riga 45 fusa, perché con nove worktree
+aperti il guardiano nel checkout sarebbe rosso per tutti. La granularità è
+decisa (C-2: due livelli, concetti e famiglie).
+**Sblocca:** B-6. Riga 47. Si lancia nove volte, una per sorgente, cambiando
+la riga «Il tuo tema»: gli otto temi della base in `site/dati/meta.json`
+(`temi[].tema`) e la vela (`voci_vela`). La prima sessione che arriva alla
+merge porta anche `strumenti/concetti/componi.py` e i test; le altre vi
+aggiungono solo la loro sorgente. **La seconda lettura** è una sessione a parte
+per tema, dopo la prima, con lo stesso prompt e la riga «Seconda lettura: sì».
+
+```
+Questo prompt è per Claude, in un worktree da main. Se sei un altro agente,
+o sei nel checkout principale ~/Software/rotta-giusta, fermati e dillo,
+senza scrivere niente.
+
+Il tuo tema: <TEMA, com'è scritto in meta.json, oppure VELA>.
+Seconda lettura: <no | sì>.
+
+Sessione P-106, i concetti di un tema. Leggi AGENTS.md, la scheda I-32 in
+docs/idee-dopo-gli-account.md, docs/piano-2026-11.md (§2.2, C-2 come l'ha
+decisa l'autore; §4 «B-2»), e il pilota in docs/prototipi/concetti-2026-11/:
+README.md e concetti-fanali.json, che è la forma da seguire.
+
+Se «Seconda lettura» è no:
+- scrivi strumenti/concetti/<tema in minuscolo, con i trattini>.json nella
+  forma del pilota, più le famiglie: prima l'elenco dei concetti del tema
+  dai quesiti e dal programma d'esame, poi i tag, da uno a tre per quesito;
+  parole chiave da indice di manuale; ogni concetto in una famiglia, 4–5
+  famiglie per voce. Se il tema contiene la voce dei fanali, parti dal
+  pilota, non da zero. Leggi testi e figure; non leggere nessun archivio di
+  risposte;
+- se strumenti/concetti/componi.py non c'è ancora su main, scrivilo: unisce
+  le sorgenti in site/dati/concetti.json e mette il conteggio in
+  site/dati/meta.json; e in tests/test_dati.py: il file pubblicato è
+  esattamente la composizione delle sorgenti; ogni concetto ha almeno tre
+  quesiti; nessun id di quesito che non c'è; ogni concetto in una famiglia;
+  nessun nome dalle etichette vietate di strumenti/controlla.py; ogni
+  quesito delle sorgenti presenti ha almeno un concetto. «Ogni quesito della
+  banca ha un concetto» si accende quando le nove sorgenti ci sono, non
+  prima;
+- se c'è già, aggiungi la tua sorgente e rigenera.
+Se «Seconda lettura» è sì:
+- prendi a caso il 10% dei quesiti del tema con un seme scritto; senza
+  aprire la sorgente della prima lettura, scrivi i tuoi tag in
+  strumenti/concetti/seconda-lettura/<tema>.json sugli stessi concetti;
+  poi confronta e scrivi la concordanza (quesiti uguali, parziali,
+  diversi), e rivedi con la prima lettura i quesiti dove divergete,
+  correggendo la sorgente dove la prima sbagliava. Il perché di ogni
+  correzione nella voce del CHANGELOG.
+La pagina non legge il file: non toccare site/index.html, né la specifica.
+Il README dice che la classificazione è nostra e non ministeriale, come le
+12 tecniche. La banca non si tocca: un quesito che ti sembra sbagliato si
+segnala nel resoconto. Le suite dei dati e della specifica verdi, il
+guardiano verde. Voce in fondo a [Unreleased], un commit per nome, niente
+push. Resoconto nella forma di docs/prossime-sessioni.md, con il numero di
+concetti, famiglie e tag.
+```
+
+### P-107 — Claude: il progetto del menu e delle due porte
+
+**Dove:** un worktree da `main`. **Nasce da:** I-32 e il passo B-3 di
+`docs/piano-2026-11.md`, con le decisioni dell'autore del 18 novembre 2026: il
+menu cambia in questo giro (C-0), un pulsante solo per l'account (C-6).
+**Aspetta:** niente. Può correre insieme ad A-1 e A-2: scrive solo un documento
+nuovo. **Sblocca:** B-4, insieme a P-105. Riga 48.
+
+```
+Questo prompt è per Claude, in un worktree da main. Se sei un altro agente,
+o sei nel checkout principale ~/Software/rotta-giusta, fermati e dillo,
+senza scrivere niente.
+
+Sessione P-107, il progetto del menu e delle due porte. Leggi AGENTS.md, la
+scheda I-32 in docs/idee-dopo-gli-account.md (con «I menu: oggi, la
+proposta, e una versione migliorata»), docs/piano-2026-11.md (§1, §2 con le
+decisioni prese dall'autore il 18 novembre, §4 «B-3», §5), i §5, §6 e §7 di
+docs/specifica.md, docs/ridisegno-progetto.md (come è stato progettato il
+menu di oggi: indirizzi, alias, ritorni, tragitti) e
+docs/prototipi/stitch-2026-10/argomenti-pannelli.md (i pannelli della Home).
+
+Scrivi docs/porte-progetto.md — nient'altro, nessun codice:
+- il menu nuovo, deciso: Simulazione · Quiz · Carteggio · Statistiche; il
+  marchio porta alla Home, l'avatar apre il Profilo; la prova di carteggio
+  sta in Simulazione accanto a base e vela; i Segnali sono un extra dentro
+  Quiz. Dove va ogni cosa di Allenati, Esame e Progressi, nessuna esclusa
+  (una tabella, come «Dove sono finite le sette viste di prima» nel §5.2
+  della specifica); i nomi in schermata e negli indirizzi; gli indirizzi di
+  oggi — /?sezione=allenati|esame|progressi, i segmenti, gli alias data-v,
+  /app — che continuano a portare al posto giusto; la Home, i cui pannelli
+  nominano le sezioni di oggi, con i testi riscritti per il menu nuovo; la
+  preselezione delle prove (C-5, fatta prima da P-109) che passa in
+  Simulazione;
+- il pulsante unico per accedere e creare l'account (C-6): dove sta, che
+  cosa dice, che cosa apre, come i due moduli di oggi diventano un percorso,
+  e i posti dell'invito (R-ACC-03) che non cambiano;
+- le due porte dei quiz, «Allenati» e «Scegli tu», e quelle del Carteggio,
+  con i testi per esteso, gli stati (vuoto, banca non raggiungibile, senza
+  account, con l'account), le azioni e i ritorni. Senza account «Allenati»
+  vede solo le risposte della pagina aperta e resta quasi sempre in
+  esplorazione: la schermata lo dice;
+- dove finiscono le otto porte di oggi, con la tabella di I-32, e che cosa
+  ne è della Home «Allenati con 10 domande», dei segnalibri, di «Allena» e
+  «Rifai» da Statistiche (Scegli tu già compilato) e della ricerca per
+  numero (uno strumento accanto alle porte);
+- il contratto per B-4 e B-5: navigazioneSito() e VISTE_RIDISEGNO per le
+  quattro sezioni nuove, con la regola del regime in tests/regime_pagina.py;
+  i raccordi della pagina con le loro firme, che sostituiscono
+  selezioneQuiz() e MODI, sulle funzioni del motore di P-105 (allenati(),
+  statiQuesito, il giro con precedenza) — se P-105 non è ancora fuso, sulle
+  firme del suo prompt, e lo dici; quali requisiti cambiano (R-NAV-01, 03,
+  04, 05, 06, 07, 09, 10, 11, R-SEL-17, R-ACC-03) e quali nascono; quali
+  dei 108 tragitti di N-01 cambiano e come; come R-NAV-01 si estende al menu
+  nuovo e alle due porte prima che le otto e le sezioni di oggi escano; e
+  se B-4 va diviso in due sessioni, dove passa il taglio;
+- le decisioni rimaste per l'autore, una per riga, con una raccomandazione.
+Verifica servendo la pagina di oggi (python3 strumenti/serve.py) e
+guardandola, non leggendo il codice, per ogni affermazione su che cosa c'è.
+Voce in fondo a [Unreleased], un commit per nome, niente push. Resoconto
+nella forma di docs/prossime-sessioni.md.
+```
+
+### P-108 — Claude: il guardiano salta `.claude/worktrees/`
+
+**Dove:** un worktree da `main`. **Nasce da:** il §5 di `docs/piano-2026-11.md`:
+`strumenti/controlla.py` esamina anche le copie del repo che le sessioni tengono
+in `.claude/worktrees/`, e nel checkout principale è rosso per file che non
+sono del repo. **Aspetta:** niente. **Sblocca:** la riga 47, che apre nove
+worktree insieme. Riga 45.
+
+```
+Questo prompt è per Claude, in un worktree da main. Se sei un altro agente,
+o sei nel checkout principale ~/Software/rotta-giusta, fermati e dillo,
+senza scrivere niente.
+
+Sessione P-108, il guardiano salta .claude/worktrees/. Leggi AGENTS.md e
+strumenti/controlla.py per intero, e i test che lo esercitano in
+tests/test_dati.py.
+
+Il guardiano cammina con os.walk dalla radice, e dalla radice del checkout
+principale entra anche in .claude/worktrees/<nome>/, dove ci sono copie
+intere del repo — compreso controlla.py, che contiene le impronte che cerca.
+Il risultato è un rosso che non riguarda il repo, e un rosso che si impara a
+ignorare è un guasto muto in arrivo.
+- Prima il test che fallisce: in una cartella temporanea che imita il repo,
+  una .claude/worktrees/prova/ con dentro un file che il guardiano
+  rifiuterebbe; oggi il guardiano lo trova, dopo no. E un secondo test che
+  pretende che lo stesso file fuori da .claude/worktrees/ sia ancora preso:
+  saltare la cartella sbagliata è il modo di spegnere il controllo.
+- Poi la correzione: saltare .claude/worktrees/ in tutti i giri del
+  guardiano, non altre cartelle. Se il guardiano oggi salta già .git o
+  altro, la regola nuova sta accanto, con il perché in un commento.
+- Prova: il guardiano nel checkout principale, con i worktree aperti, verde;
+  e una rottura — la regola che salta tutta .claude/ — rossa sul secondo
+  test.
+Le suite dei dati e della specifica verdi. Voce in fondo a [Unreleased], un
+commit per nome, niente push. Resoconto nella forma di
+docs/prossime-sessioni.md.
+```
+
+### P-109 — Claude: la simulazione preseleziona le prove
+
+**Dove:** un worktree da `main` aggiornato. **Nasce da:** la decisione C-5
+dell'autore del 18 novembre 2026, «subito»: la simulazione sceglie già le prove
+da «che cosa stai preparando?». Passo Q-4 di `docs/piano-2026-11.md`.
+**Aspetta:** la riga 43 fusa, perché tocca `site/index.html`. **Sblocca:**
+P-104. Riga 52.
+
+```
+Questo prompt è per Claude, in un worktree da main aggiornato. Se sei un
+altro agente, o sei nel checkout principale ~/Software/rotta-giusta,
+fermati e dillo, senza scrivere niente.
+
+Sessione P-109, la simulazione preseleziona le prove. Leggi AGENTS.md,
+docs/piano-2026-11.md (§2.2, C-5; §4 «Q-4»), il §7.9 di docs/specifica.md
+(Esame) e R-ACC-55, e in site/index.html scelteConfermate(), il modulo di
+«che cosa stai preparando?» e la preparazione della simulazione.
+
+Oggi Esame sa quali prove servono all'obiettivo scelto e lo dice, ma la
+preparazione della simulazione parte sempre dalla stessa scelta. Con le
+scelte dette, la scelta fra quiz base, quiz vela e «base e vela» deve
+partire su quella che serve; senza scelte, com'è oggi; chi studia la cambia
+sempre, e nessuna prova è disabilitata. La regola dalla stessa fonte che
+oggi in Esame dice quali prove servono — scelteConfermate() e il testo di
+Esame —, non una seconda tabella; senza account le scelte valgono per la
+pagina aperta, come oggi. Se la regola che Esame applica non basta a dire
+che cosa preselezionare (per esempio con l'estensione dalla entro 12),
+fermati e scrivilo nel resoconto invece di inventarla.
+
+Prima il controllo, rosso sulla pagina di oggi: una parte nuova del banco
+del client (tests/client_account.mjs) che, per ognuna delle combinazioni
+delle due scelte e senza scelte, apre la preparazione della simulazione da
+Esame e dalla Home e legge che cosa è selezionato; la pagina di riferimento
+tests/pagina-client-ridisegno.html che lo fa; due rotture — la
+preselezione che ignora le scelte, la preselezione che disabilita le altre
+prove —, rosse per il loro motivo. Poi la pagina. Requisito nuovo nel §9
+della specifica con il suo controllo, e il §7.9 che lo dice. Prima e dopo
+guardati a 375 e 1280 px. Le cinque suite verdi; l'interfaccia con la 8620
+guardata libera per 90 s. Voce in fondo a [Unreleased], un commit per nome,
+niente push. Resoconto nella forma di docs/prossime-sessioni.md.
 ```
 
 ### I segnaposto — i prompt che non si possono ancora scrivere

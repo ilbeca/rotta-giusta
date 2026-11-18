@@ -283,6 +283,37 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 - Nessun file di `site/`, `tests/`, della specifica o della coda toccato: la
   coda si riscrive quando l'autore approva l'ordine.
 
+### Deciso — la coda di novembre, con le decisioni dell'autore
+
+- **Perché.** Il piano di novembre metteva in fila la Home a pannelli e le due
+  porte, ma senza le decisioni dell'autore i prompt non si potevano scrivere.
+  Il 18 novembre l'autore ha approvato l'ordine e preso le 20 decisioni del §2,
+  tutte come proposto tranne tre:
+  - **il menu cambia in questo giro** (C-0): Simulazione · Quiz · Carteggio ·
+    Statistiche, come propone I-32;
+  - **la simulazione preseleziona le prove** da «che cosa stai preparando?»
+    **subito** (C-5), in un passo piccolo prima della Home;
+  - **un pulsante solo** per accedere e creare l'account, in questo piano (C-6).
+  Di conseguenza i Segnali, con il menu nuovo, diventano un extra dentro Quiz.
+  Il §2 del piano le scrive, e i passi B-3, B-4 e B-5 ora comprendono il menu,
+  che tocca la navigazione intera e non solo le porte.
+- **La coda** in `docs/prossime-sessioni.md`:
+  - la riga 42 è riscritta per i 6 pannelli;
+  - le righe nuove vanno dalla 43 alla 52;
+  - sette prompt nuovi, scritti dove i predecessori sono chiusi o le decisioni
+    prese: P-103 per `base-763`, P-104 per i controlli della Home a 6 pannelli
+    sul ramo di P-101, P-105 per il motore delle due porte, P-106 per i
+    concetti di un tema (nove sessioni), P-107 per il progetto del menu e
+    delle porte, P-108 per il guardiano, P-109 per la preselezione;
+  - A-2, B-4, B-5, il giro B e B-6 restano «da scrivere», come vuole la regola
+    della coda;
+  - P-100, P-101 e P-102 portano una riga che dice che cosa ne è stato.
+- **Le carte ferme**, il passo Q-2 del piano:
+  - in testa a `docs/volto-progetto.md`, le decisioni 15–18 prese il 26 ottobre
+    e il rimando al piano;
+  - in testa a `testi-pannelli.md`, che è superato da `argomenti-pannelli.md`.
+- Nessun file di `site/`, `tests/` o della specifica toccato.
+
 ## [0.35.1] — 2026-10-29
 
 **Le risposte in simulazione si cambiano, e «auto» si capisce.** Un utente ha

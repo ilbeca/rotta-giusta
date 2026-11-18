@@ -15,6 +15,13 @@ poi la pagina su `ui/main` (ChatGPT), con il metodo di
 > all'autore prima della merge — non cambia. Le parti già fatte restano scritte
 > come sono andate.
 
+> **Stato al 18 novembre 2026:** le decisioni 15–18 del §12 sono prese
+> dall'autore il 26 ottobre 2026, tutte come raccomandato; il giro A è nel sito
+> dalla v0.35.0. La Home a pannelli è scesa da 11 a 6 pannelli (29 ottobre), e
+> l'ordine dei passi che restano è in [piano-2026-11.md](piano-2026-11.md): il
+> §14, scritto da P-101 a 11 pannelli sul suo ramo, lo riscrive P-104. Il
+> paragrafo qui sotto è lo stato di allora.
+
 **Stato al 25 ottobre 2026:** le decisioni 1–14 del §12 sono prese
 dall'autore, tutte come raccomandato; restano le 15–18, che servono prima del
 giro B. I controlli del giro A sono scritti (P-97, su un ramo per `main`; la

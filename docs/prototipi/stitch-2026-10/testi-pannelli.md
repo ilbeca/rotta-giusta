@@ -1,5 +1,10 @@
 # I testi degli 11 pannelli della Home — proposta
 
+> **Superato il 29 ottobre 2026** da [`argomenti-pannelli.md`](argomenti-pannelli.md):
+> l'autore ha deciso 6 pannelli, e i testi validi sono quelli. Questo file resta
+> per il metodo e le misure; il suo §6 («tutti i numeri di R-VOLTO-08 ci sono»)
+> vale per 11 pannelli e non più.
+
 **Data:** 29 ottobre 2026. **Che cos'è:** una proposta da far decidere
 all'autore, pannello per pannello, con il perché di ogni scelta, la fonte di
 ogni numero e la lunghezza misurata. Il riferimento è uno solo, il prototipo
