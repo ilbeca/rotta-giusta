@@ -277,10 +277,11 @@ un'informazione che vive solo in chat, e la regia la rimanda indietro.
 | 46 | **Il motore per le due porte** (I-32): i cinque stati come selettore in `coda()`, `allenati()`, il giro delle tecniche con la precedenza a quelle andate male — tutto additivo (piano B-1) | Claude | un worktree da `main` | niente: non tocca la specifica, e i requisiti che propone li scrive B-4 | P-105 fuso il 18 novembre 2026 (`d692ab1`): `statiQuesito` in `coda()`, `allenati()`, `giroTecnicheDaRivedere()`; i requisiti proposti sono nel suo resoconto |
 | 47 | **I concetti su tutta la banca**: una sorgente per tema in `strumenti/concetti/`, composta in `site/dati/concetti.json`, con una seconda lettura indipendente del 10% (piano B-2) | Claude, una sessione per tema, in parallelo | un worktree da `main` per tema | niente: la riga 45 è fusa, la granularità decisa (C-2: concetti e famiglie) | P-106, uno per tema, pronto |
 | 48 | **Il progetto del menu e delle due porte**, `docs/porte-progetto.md`: il menu nuovo Simulazione · Quiz · Carteggio · Statistiche (C-0, deciso dall'autore il 18 novembre 2026), le porte, il pulsante unico per l'account (C-6) (piano B-3) | Claude | un worktree da `main` | niente | P-107 fuso il 18 novembre 2026 (`5c759f8`); restano le 15 decisioni del §10 di `docs/porte-progetto.md`, dell'autore, prima di B-4 |
-| 49 | **Il menu e le due porte, i controlli e la pagina** (piano B-4, probabilmente in due sessioni, e B-5), poi il rilascio v0.37.0 | Claude, poi Claude | un worktree da `main` per ciascuno | B-4: le decisioni del §10 di `docs/porte-progetto.md` e A-2 fusa (i banchi sono gli stessi); le righe 46 e 48 sono fuse. B-5: B-4 | da scrivere |
+| 49 | **Il menu e le due porte, i controlli e la pagina**, in quattro sessioni come dice il §7 di `docs/porte-progetto.md`: B-4a i controlli del menu e dell'account, B-4b quelli delle porte, B-5a la pagina del menu e dell'account, B-5b la pagina delle porte; poi il rilascio v0.37.0 | Claude, quattro sessioni in fila | un worktree da `main` per ciascuna | B-4a: A-2 fusa (i banchi sono gli stessi). B-4b: B-4a e la riga 53. B-5a: B-4b. B-5b: B-5a. Le 15 decisioni di `docs/porte-progetto.md` sono prese, come proposto (18 novembre 2026); le righe 46 e 48 sono fuse. B-5: B-4 | da scrivere |
 | 50 | **Il giro B del volto, domanda e riepilogo** (decisione 18 di `docs/volto-progetto.md`): controlli, poi pagina | Claude, poi Claude | un worktree da `main` per ciascuno | B-5 fusa: il fatto dei concetti va nel riepilogo nuovo | da scrivere |
 | 51 | **I concetti in pagina: il fatto nel riepilogo e il «dove» in *Scegli tu*** (piano B-6), poi il rilascio v0.38.0 | Claude, poi Claude | un worktree da `main` per ciascuno | la riga 47 completa, le righe 49 e 50 fuse, il nome in schermata è deciso (C-1: «punti da studiare») | da scrivere |
 | 52 | **La simulazione preseleziona le prove** da «che cosa stai preparando?» (C-5, «subito», deciso dall'autore il 18 novembre 2026; piano Q-4) | Claude | un worktree da `main` | la riga 43 fusa: tocca `site/index.html` | P-109 |
+| 53 | **`sceltaCarteggio()` nel motore**: la porta «Scegli tu» del Carteggio, additiva come P-105 (decisione 12 di `docs/porte-progetto.md`) | Claude | un worktree da `main` | niente: P-105 è fuso | P-110 |
 | — | Decisioni e passi dell'autore | l'autore | — | — | §4, «Dopo P-59», «Dopo P-64», «Dopo il traguardo» e le voci non barrate |
 
 **Dal 18 novembre 2026 l'ordine è quello di `docs/piano-2026-11.md`**,
@@ -291,8 +292,9 @@ della simulazione, subito (C-5, riga 52), e un pulsante solo per l'account
 vanno in fila — 43, 52, A-2, B-5, giro B, B-6 —, e così sui banchi e sulla
 specifica — 52, A-1, B-4, B-6; in parallelo vanno 44, 45, 46, 47 e 48, che non
 toccano `site/index.html` né `docs/specifica.md`. P-103, P-105, P-107 e P-108
-sono fusi il 18 novembre 2026. **Per Claude** è pronto P-106, nove sessioni
-in parallelo; la regia fonde la riga 43, poi P-109, poi P-104. P-105 non scrive la specifica: i requisiti che
+sono fusi il 18 novembre 2026, e le 15 decisioni di `docs/porte-progetto.md`
+sono prese come proposto. **Per Claude** sono pronti P-106, nove sessioni in
+parallelo, e P-110; la regia fonde la riga 43, poi P-109, poi P-104. P-105 non scrive la specifica: i requisiti che
 propone li porta B-4, che ha la penna.
 
 **Dal 28 ottobre 2026 (ADR-007) su questo repo lavora un agente solo.**
@@ -8074,6 +8076,45 @@ della specifica con il suo controllo, e il §7.9 che lo dice. Prima e dopo
 guardati a 375 e 1280 px. Le cinque suite verdi; l'interfaccia con la 8620
 guardata libera per 90 s. Voce in fondo a [Unreleased], un commit per nome,
 niente push. Resoconto nella forma di docs/prossime-sessioni.md.
+```
+
+### P-110 — Claude: `sceltaCarteggio()` nel motore
+
+**Dove:** un worktree da `main`. **Nasce da:** la decisione 12 di
+`docs/porte-progetto.md`, presa dall'autore il 18 novembre 2026: la porta
+«Scegli tu» del Carteggio ha bisogno di una selezione che il motore non ha
+ancora, scritta prima di B-4b. **Aspetta:** niente: P-105 è fuso. **Sblocca:**
+B-4b. Riga 53.
+
+```
+Questo prompt è per Claude, in un worktree da main. Se sei un altro agente,
+o sei nel checkout principale ~/Software/rotta-giusta, fermati e dillo,
+senza scrivere niente.
+
+Sessione P-110, sceltaCarteggio() nel motore. Leggi AGENTS.md, il §7.2 di
+docs/porte-progetto.md («Che cosa resta da scrivere nel motore prima di
+B-5») e le parti del §5 che descrivono «Scegli tu» sulla carta, il §4 di
+docs/specifica.md, la voce di P-105 nel CHANGELOG e in site/engine.js
+tappeto(), giroTecniche(), giroTecnicheDaRivedere() e classifica().
+
+Scrivi sceltaCarteggio(esercizi, progress, opt), con opt = { tecnica,
+argomento, carta, cosa: 'tutti' | 'mai' | 'rivedere', n }, come dice il
+contratto: con cosa: 'mai' e nessun filtro restituisce tappeto(n), e un test
+lo pretende; «da rivedere» è classifica() === 'da_ripassare' sullo specchio
+della carta, come in giroTecnicheDaRivedere(); i filtri si compongono; la
+lista e il suo numero dalla stessa chiamata, e una selezione vuota lo dice
+invece di restituire una lista vuota muta. Tutto additivo: nessuna funzione
+che c'è cambia comportamento, e prima di toccarne una elenchi i chiamanti.
+
+Prima i test, rossi uno per uno; poi il codice; poi la funzione provata al
+contrario su rotture del motore, una per volta, tutte rosse nel test che le
+riguarda. La funzione fra gli orfani dichiarati di
+docs/eccezioni-interfaccia.md, «la consuma B-5b». Non toccare
+docs/specifica.md né site/index.html: il requisito che proponi scrivilo nel
+resoconto, lo porta B-4b. Le cinque suite verdi, il motore anche con la LTS
+pari di Node; l'interfaccia con la 8620 guardata libera per 90 s. Voce in
+fondo a [Unreleased], un commit per nome, niente push. Resoconto nella forma
+di docs/prossime-sessioni.md.
 ```
 
 ### I segnaposto — i prompt che non si possono ancora scrivere

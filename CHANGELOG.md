@@ -500,6 +500,18 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   con «Torna al riepilogo» anche dalla Home. Il modulo unico lo risolve.
 - Nessun file di `site/`, `tests/`, della specifica o della coda toccato.
 
+### Deciso — le 15 decisioni del progetto delle porte
+
+- **Le ha prese l'autore il 18 novembre 2026, tutte come proposto** nel §10 di
+  `docs/porte-progetto.md`. Fra le altre:
+  - la porta `/app` porta a `/?sezione=quiz` con «Apri i quiz»;
+  - un modulo solo, «Accedi o crea un account»;
+  - nel Carteggio la prova a tempo diventa un link alla Simulazione.
+- **Che cosa cambia nella coda.** La riga 49 si divide in quattro sessioni in
+  fila: B-4a, B-4b, B-5a, B-5b. La riga 53 è nuova, con il prompt P-110:
+  `sceltaCarteggio()` nel motore, prima di B-4b, come vuole la decisione 12.
+- Nessun file di `site/`, `tests/` o della specifica toccato.
+
 ## [0.35.1] — 2026-10-29
 
 **Le risposte in simulazione si cambiano, e «auto» si capisce.** Un utente ha

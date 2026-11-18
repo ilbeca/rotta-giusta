@@ -985,6 +985,11 @@ dichiarati in `docs/eccezioni-interfaccia.md`, «Lo chiude B-5b».
 Una per riga, con la proposta. Nessuna ferma B-4a; le 12 e 3 fermano B-4b, la 1
 ferma B-4a solo sulla porta `/app`.
 
+**Decise dall'autore il 18 novembre 2026: tutte e quindici come proposto.**
+`/app` porta a `/?sezione=quiz` con «Apri i quiz»; `sceltaCarteggio()` la
+scrive una sessione piccola prima di B-4b (P-110 nella coda); B-4 e B-5 vanno
+in due sessioni ciascuno, con un rilascio solo dopo B-5b.
+
 | # | Domanda | Proposta |
 |---|---|---|
 | 1 | La porta `/app`: dove va e come si chiama | a `/?sezione=quiz`, «Apri i quiz», titolo «Apri i quiz · Rotta Giusta» |
