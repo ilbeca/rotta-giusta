@@ -1,0 +1,1164 @@
+{
+ "tema": "MANOVRA E CONDOTTA",
+ "progressivi": "1.4.1-1 … 1.4.4-49 (base-445 … base-599)",
+ "data": "2026-11-18",
+ "stato": "Prima lettura. Concetti e tag scritti da Claude leggendo testi e figure; non ministeriali, non rivisti da una persona.",
+ "famiglie": [
+  {
+   "id": "porto_velocita",
+   "nome": "La velocità in porto",
+   "voce": "Precauzioni all'ingresso e all'uscita dei porti",
+   "concetti": [
+    "porto_limiti_velocita"
+   ]
+  },
+  {
+   "id": "porto_entrare_uscire",
+   "nome": "Entrare e uscire dal porto",
+   "voce": "Precauzioni all'ingresso e all'uscita dei porti",
+   "concetti": [
+    "porto_imboccatura_fanali",
+    "porto_precedenze_condotta"
+   ]
+  },
+  {
+   "id": "porto_regole_locali",
+   "nome": "Le regole del porto",
+   "voce": "Precauzioni all'ingresso e all'uscita dei porti",
+   "concetti": [
+    "porto_autorita_accosti"
+   ]
+  },
+  {
+   "id": "porto_rada_onda",
+   "nome": "La rada e l'onda",
+   "voce": "Precauzioni all'ingresso e all'uscita dei porti",
+   "concetti": [
+    "rada_moto_ondoso"
+   ]
+  },
+  {
+   "id": "costa_bagnanti",
+   "nome": "La fascia dei bagnanti",
+   "voce": "Navigazione in prossimità della costa",
+   "concetti": [
+    "costa_fascia_balneazione",
+    "costa_corridoi_lancio"
+   ]
+  },
+  {
+   "id": "costa_subacquei",
+   "nome": "I subacquei e le distanze",
+   "voce": "Navigazione in prossimità della costa",
+   "concetti": [
+    "costa_subacquei_segnali",
+    "costa_distanze_rispetto"
+   ]
+  },
+  {
+   "id": "costa_unita_minori",
+   "nome": "Le unità minori",
+   "voce": "Navigazione in prossimità della costa",
+   "concetti": [
+    "costa_unita_minori_limiti"
+   ]
+  },
+  {
+   "id": "costa_pesca",
+   "nome": "La pesca dalla barca",
+   "voce": "Navigazione in prossimità della costa",
+   "concetti": [
+    "costa_pesca_sportiva",
+    "costa_pesca_subacquea"
+   ]
+  },
+  {
+   "id": "ancora_e_catena",
+   "nome": "L'ancora e la catena",
+   "voce": "Ancoraggio",
+   "concetti": [
+    "ancora_parti",
+    "ancora_catena_salpancora",
+    "ancora_peso_tenuta"
+   ]
+  },
+  {
+   "id": "ancora_tipi_fondali",
+   "nome": "Tipi di ancora e fondali",
+   "voce": "Ancoraggio",
+   "concetti": [
+    "ancora_tipi",
+    "ancora_fondale_adatto"
+   ]
+  },
+  {
+   "id": "ancoraggio_calumo_famiglia",
+   "nome": "Il calumo",
+   "voce": "Ancoraggio",
+   "concetti": [
+    "ancoraggio_calumo",
+    "ancoraggio_calumo_calcolo"
+   ]
+  },
+  {
+   "id": "ancoraggio_manovra",
+   "nome": "La manovra di ancoraggio",
+   "voce": "Ancoraggio",
+   "concetti": [
+    "ancoraggio_dare_fondo_salpare",
+    "ancoraggio_presa",
+    "ancoraggio_grippia"
+   ]
+  },
+  {
+   "id": "ancoraggio_dove_come",
+   "nome": "Dove e come ancorarsi",
+   "voce": "Ancoraggio",
+   "concetti": [
+    "ancoraggio_scelta_posto",
+    "ancoraggio_ruota",
+    "ancoraggio_due_ancore",
+    "ancoraggio_vento_corrente"
+   ]
+  },
+  {
+   "id": "ormeggio_cime",
+   "nome": "Le cime d'ormeggio",
+   "voce": "Ormeggio e disormeggio",
+   "concetti": [
+    "ormeggio_spring_traversini",
+    "ormeggio_ordine_cime_poppa",
+    "ormeggio_cime_incrociate_doppino_trappa",
+    "ormeggio_cavi_nodi"
+   ]
+  },
+  {
+   "id": "ormeggio_elica",
+   "nome": "Manovrare con elica e motore",
+   "voce": "Ormeggio e disormeggio",
+   "concetti": [
+    "ormeggio_accosto_poppa_elica",
+    "ormeggio_elica_fianco_elica_prua",
+    "ormeggio_trim_fuoribordo"
+   ]
+  },
+  {
+   "id": "ormeggio_boe",
+   "nome": "Boe, gavitelli e ancora galleggiante",
+   "voce": "Ormeggio e disormeggio",
+   "concetti": [
+    "ormeggio_boe_gavitelli",
+    "ormeggio_ancora_galleggiante"
+   ]
+  },
+  {
+   "id": "ormeggio_strumenti_parole",
+   "nome": "Strumenti e parole della manovra",
+   "voce": "Ormeggio e disormeggio",
+   "concetti": [
+    "ormeggio_solcometro_scandaglio",
+    "ormeggio_termini_manovra"
+   ]
+  }
+ ],
+ "concetti": [
+  {
+   "id": "porto_limiti_velocita",
+   "nome": "Limiti di velocità in porto e sotto costa",
+   "parole_chiave": [
+    "velocità in porto",
+    "limite di velocità",
+    "3 nodi",
+    "10 nodi",
+    "riduzione di velocità",
+    "sanzioni amministrative"
+   ],
+   "copre": "Quanto si va piano entrando in porto (in genere 3 nodi, rallentando a 500 m dall'imboccatura) e nella fascia costiera (10 nodi entro i 1.000 m), chi stabilisce il limite e quanto costa superarlo.",
+   "quesiti": 6
+  },
+  {
+   "id": "porto_imboccatura_fanali",
+   "nome": "L'imboccatura del porto, di giorno e di notte",
+   "parole_chiave": [
+    "imboccatura del porto",
+    "fanali di testata",
+    "fanale verde",
+    "fanale rosso",
+    "torrette dei moli",
+    "ingresso notturno"
+   ],
+   "copre": "Come si riconosce l'ingresso di un porto italiano: rosso a sinistra e verde a dritta entrando, di giorno con le torrette e di notte con i fanali, e che cosa vuol dire vederli rovesciati.",
+   "quesiti": 4
+  },
+  {
+   "id": "porto_precedenze_condotta",
+   "nome": "Precedenze e condotta all'ingresso e all'uscita",
+   "parole_chiave": [
+    "precedenza in porto",
+    "unità in uscita",
+    "navi di grandi dimensioni",
+    "tenere la dritta",
+    "navigazione nei canali",
+    "suono prolungato",
+    "entrata a vela",
+    "rotta di collisione"
+   ],
+   "copre": "Chi passa per primo all'imboccatura (chi esce, le navi grandi, chi entra o esce rispetto a chi transita nei 500 m), tenere la dritta nei canali, il suono prolungato in uscita e, in rotta di collisione, mantenere rotta e velocità.",
+   "quesiti": 9
+  },
+  {
+   "id": "porto_autorita_accosti",
+   "nome": "Autorità marittima, ordinanze e posti in transito",
+   "parole_chiave": [
+    "Autorità marittima",
+    "ordinanza del Capo del circondario",
+    "porto commerciale",
+    "ormeggi in transito",
+    "72 ore",
+    "ormeggi per persone con disabilità"
+   ],
+   "copre": "Che cosa decide l'ordinanza locale, chi si avvisa entrando in un porto commerciale, e le regole degli accosti riservati: transito per 72 ore, posti per persone con disabilità.",
+   "quesiti": 6
+  },
+  {
+   "id": "rada_moto_ondoso",
+   "nome": "Navigare fra le unità ferme: onda propria e responsabilità",
+   "parole_chiave": [
+    "moto ondoso",
+    "onda generata",
+    "navigazione in rada",
+    "responsabilità per danni",
+    "urto tra navi"
+   ],
+   "copre": "In rada e fra unità ormeggiate si procede piano perché l'onda che si solleva disturba e danneggia gli altri, e chi la provoca risponde del danno anche senza contatto.",
+   "quesiti": 3
+  },
+  {
+   "id": "costa_fascia_balneazione",
+   "nome": "La fascia riservata ai bagnanti",
+   "parole_chiave": [
+    "stagione balneare",
+    "zona di balneazione",
+    "200 metri dalla spiaggia",
+    "gavitelli rossi",
+    "ordinanza balneare",
+    "avvicinarsi alla riva"
+   ],
+   "copre": "La fascia entro i 200 m dalla battigia, segnata da gavitelli rossi ogni 50 m, dove non si circola né si ancora; le ordinanze dei Capi di circondario che la regolano, e come si raggiunge la riva solo in emergenza, a remi e perpendicolari alla costa.",
+   "quesiti": 6
+  },
+  {
+   "id": "costa_corridoi_lancio",
+   "nome": "I corridoi di lancio",
+   "parole_chiave": [
+    "corridoio di lancio",
+    "gavitelli gialli",
+    "gavitelli arancioni",
+    "bandiere bianche",
+    "atterraggio sulla spiaggia"
+   ],
+   "copre": "A che cosa servono i corridoi per partire e arrivare dalla spiaggia a motore, e come sono segnalati: gavitelli gialli o arancioni perpendicolari alla costa fino a 250 m, bandiere bianche sui gavitelli esterni.",
+   "quesiti": 3
+  },
+  {
+   "id": "costa_subacquei_segnali",
+   "nome": "Come si segnala un subacqueo",
+   "parole_chiave": [
+    "subacqueo in immersione",
+    "bandiera rossa con diagonale bianca",
+    "bandiera Alfa",
+    "pallone rosso",
+    "luce gialla lampeggiante",
+    "boa di segnalazione"
+   ],
+   "copre": "Il segnale del subacqueo: di giorno la bandiera rossa con diagonale bianca (sull'unità d'appoggio anche la bandiera A), di notte la luce gialla a lampi visibile a 300 m; il raggio di 50 m entro cui il subacqueo resta dalla sua boa.",
+   "quesiti": 6
+  },
+  {
+   "id": "costa_distanze_rispetto",
+   "nome": "Distanze di rispetto in navigazione costiera",
+   "parole_chiave": [
+    "distanza dai subacquei",
+    "100 metri",
+    "campo di regata",
+    "manifestazione sportiva",
+    "moderare la velocità"
+   ],
+   "copre": "Da che cosa ci si tiene lontani passando sotto costa: almeno 100 m dal segnale di un subacqueo moderando la velocità, e fuori dai limiti di un campo di regata.",
+   "quesiti": 4
+  },
+  {
+   "id": "costa_unita_minori_limiti",
+   "nome": "Fin dove vanno le unità più piccole",
+   "parole_chiave": [
+    "moto d'acqua",
+    "tavola a vela",
+    "tender",
+    "battello di servizio",
+    "pattini e pedalò",
+    "entro 1 miglio dalla costa"
+   ],
+   "copre": "I limiti di distanza delle unità minori: moto d'acqua, tavola a vela, piccoli natanti a vela, pattini e pedalò entro 1 miglio dalla costa; il tender entro 1 miglio dalla costa o dall'unità madre.",
+   "quesiti": 5
+  },
+  {
+   "id": "costa_pesca_sportiva",
+   "nome": "La pesca sportiva dalla barca da diporto",
+   "parole_chiave": [
+    "pesca sportiva",
+    "limiti di cattura",
+    "pesca professionale",
+    "rete a circuizione",
+    "distanza dalle unità da pesca"
+   ],
+   "copre": "Che cosa si può pescare con un'unità da diporto: pesca sportiva sì, entro i limiti di cattura e a più di 500 m dalle unità in pesca professionale; reti a circuizione e pesca professionale no.",
+   "quesiti": 4
+  },
+  {
+   "id": "costa_pesca_subacquea",
+   "nome": "La pesca subacquea sportiva",
+   "parole_chiave": [
+    "pesca subacquea",
+    "fucile subacqueo",
+    "autorespiratore",
+    "500 metri dalle spiagge",
+    "impianti fissi di pesca",
+    "pesca notturna"
+   ],
+   "copre": "Le regole della pesca subacquea sportiva: oltre 500 m dalle spiagge frequentate e 100 m dagli impianti fissi, mai di notte con il fucile né con l'autorespiratore, a non più di 50 m dalla propria boa.",
+   "quesiti": 5
+  },
+  {
+   "id": "ancora_parti",
+   "nome": "Le parti dell'ancora",
+   "parole_chiave": [
+    "nomenclatura dell'ancora",
+    "marra",
+    "diamante",
+    "fuso",
+    "ceppo"
+   ],
+   "copre": "Come si chiamano le parti dell'ancora: le marre che fanno presa, il diamante al centro in basso, il fuso.",
+   "quesiti": 4
+  },
+  {
+   "id": "ancora_catena_salpancora",
+   "nome": "Catena, verricello e barbotin",
+   "parole_chiave": [
+    "catena dell'ancora",
+    "maglie ellittiche",
+    "verricello salpancora",
+    "barbotin",
+    "filare la catena"
+   ],
+   "copre": "La catena a maglie ellittiche e il salpancora: il barbotin, la ruota sagomata che non fa slittare le maglie, e quando lo si allenta per filare in fretta.",
+   "quesiti": 3
+  },
+  {
+   "id": "ancora_peso_tenuta",
+   "nome": "Peso e tenuta di un'ancora",
+   "parole_chiave": [
+    "peso dell'ancora",
+    "tenuta dell'ancora",
+    "forza di trazione",
+    "ancora orizzontale sul fondo"
+   ],
+   "copre": "Da che cosa dipende quanto tiene un'ancora (soprattutto dal peso, in parte dalla forma), quanto deve pesare per una barca di 10 m, e perché deve lavorare orizzontale sul fondo.",
+   "quesiti": 3
+  },
+  {
+   "id": "ancora_tipi",
+   "nome": "I tipi di ancora",
+   "parole_chiave": [
+    "ancora a ombrello",
+    "grappino",
+    "ancorotto",
+    "ancora Bruce",
+    "ancora Rocna",
+    "ancora Danforth",
+    "ancora CQR"
+   ],
+   "copre": "Riconoscere le ancore dalla forma: ombrello e grappino per le piccole unità, la Bruce monoblocco a una marra, la Rocna con il roll-bar.",
+   "quesiti": 5
+  },
+  {
+   "id": "ancora_fondale_adatto",
+   "nome": "Quale ancora per quale fondale",
+   "parole_chiave": [
+    "tipo di fondale",
+    "fondo sabbioso",
+    "fondo fangoso",
+    "fondo roccioso",
+    "Danforth",
+    "CQR e Delta",
+    "ancore a tenuta dinamica"
+   ],
+   "copre": "L'ancora giusta per il fondale: la Danforth su sabbia e fango, CQR, Delta e le ancore a tenuta dinamica (Mantus, Ultra) su tutti i fondali.",
+   "quesiti": 3
+  },
+  {
+   "id": "ancoraggio_calumo",
+   "nome": "Il calumo",
+   "parole_chiave": [
+    "calumo",
+    "lunghezza di catena",
+    "da 3 a 5 volte il fondale",
+    "condizioni meteomarine"
+   ],
+   "copre": "Che cos'è il calumo (la cima o catena filata, quella fuori bordo) e quanto deve essere: almeno 3 volte il fondale, fino a 5 con il tempo che peggiora.",
+   "quesiti": 5
+  },
+  {
+   "id": "ancoraggio_calumo_calcolo",
+   "nome": "Il calumo, fatto il conto",
+   "parole_chiave": [
+    "calcolo del calumo",
+    "tre volte il fondale",
+    "fondale in metri"
+   ],
+   "copre": "Il conto del calumo con mare calmo: il fondale per tre (5 m → 15 m, 9 m → 27 m, 16 m → 48 m).",
+   "quesiti": 3
+  },
+  {
+   "id": "ancoraggio_dare_fondo_salpare",
+   "nome": "Dare fondo e salpare",
+   "parole_chiave": [
+    "dare fondo",
+    "manovra di ancoraggio",
+    "prua al vento",
+    "abbrivio",
+    "marcia indietro",
+    "salpare l'ancora"
+   ],
+   "copre": "La sequenza della manovra: prua al vento o alla corrente, abbrivio esaurito, si dà fondo e si indietreggia filando perché l'ancora faccia testa; per salpare, un colpo di marcia avanti che toglie tensione alla catena.",
+   "quesiti": 4
+  },
+  {
+   "id": "ancoraggio_presa",
+   "nome": "La presa dell'ancora: fa testa, ara, speda",
+   "parole_chiave": [
+    "fare testa",
+    "arare",
+    "spedare",
+    "incattivita",
+    "controllo della tenuta",
+    "rilevamenti alla fonda"
+   ],
+   "copre": "Le parole della presa (fa testa quando tiene; ara e speda quando non tiene) e come si controlla che tenga: rilevamenti successivi di punti cospicui o punti nave.",
+   "quesiti": 5
+  },
+  {
+   "id": "ancoraggio_grippia",
+   "nome": "Grippia e grippiale",
+   "parole_chiave": [
+    "grippia",
+    "grippiale",
+    "gavitello",
+    "fondale roccioso",
+    "ancora incattivita"
+   ],
+   "copre": "La cima sottile legata al diamante con il gavitello in superficie, che serve a disincagliare e recuperare l'ancora su rocce e relitti.",
+   "quesiti": 3
+  },
+  {
+   "id": "ancoraggio_scelta_posto",
+   "nome": "Dove dare fondo",
+   "parole_chiave": [
+    "scelta del punto di ancoraggio",
+    "rada affollata",
+    "divieti di ancoraggio",
+    "situazione meteomarina",
+    "ancoraggio a murata"
+   ],
+   "copre": "Che cosa si guarda prima di ancorare (divieti, meteo) e dove si dà fondo fra le altre unità: con spazio per girare e senza finire sopra le loro ancore; perché ancorarsi a murata in una baia esposta è sconsigliato.",
+   "quesiti": 5
+  },
+  {
+   "id": "ancoraggio_ruota",
+   "nome": "L'ancoraggio alla ruota",
+   "parole_chiave": [
+    "ancoraggio alla ruota",
+    "campo di giro",
+    "rotazione di 360 gradi",
+    "una sola ancora di prora"
+   ],
+   "copre": "Una sola ancora di prora e la barca libera di girare a 360 gradi: serve spazio intorno, e non si dà fondo a una seconda ancora da poppa.",
+   "quesiti": 5
+  },
+  {
+   "id": "ancoraggio_due_ancore",
+   "nome": "Due ancore: afforcate e appennellate",
+   "parole_chiave": [
+    "ancore afforcate",
+    "ancore appennellate",
+    "pennello",
+    "ancoraggio nei fiumi",
+    "calumi a 45 gradi"
+   ],
+   "copre": "Quando e come si usano due ancore: afforcate con i calumi a circa 45 gradi per stringere il campo di giro, a 180 gradi nella corrente di un fiume, appennellate una dietro l'altra per tenere meglio.",
+   "quesiti": 4
+  },
+  {
+   "id": "ancoraggio_vento_corrente",
+   "nome": "Vento e corrente nella manovra di ancoraggio",
+   "parole_chiave": [
+    "vento forte",
+    "corrente",
+    "unità alla fonda",
+    "sopravvento",
+    "rotazione alla fonda",
+    "ormeggio di poppa con ancora"
+   ],
+   "copre": "Leggere vento e corrente da come stanno le barche alla fonda, e prevedere come gireranno; con vento forte filare in fretta e dare fondo sopravvento al posto barca prima di portare la poppa in banchina.",
+   "quesiti": 6
+  },
+  {
+   "id": "ormeggio_spring_traversini",
+   "nome": "Spring e traversini",
+   "parole_chiave": [
+    "spring",
+    "traversino",
+    "ormeggio all'inglese",
+    "cavi d'ormeggio",
+    "movimento longitudinale"
+   ],
+   "copre": "I cavi dell'ormeggio di fianco: gli spring corrono verso il centro barca e fermano i movimenti avanti e indietro, i traversini tengono l'unità accostata alla banchina.",
+   "quesiti": 6
+  },
+  {
+   "id": "ormeggio_ordine_cime_poppa",
+   "nome": "Quale cima di poppa prima, quale dopo",
+   "parole_chiave": [
+    "ormeggio di poppa",
+    "cima sopravvento",
+    "bitta",
+    "disormeggio",
+    "ordine delle cime"
+   ],
+   "copre": "Ormeggiando di poppa con vento al traverso si dà volta prima alla cima sopravvento; disormeggiando si libera prima quella sottovento.",
+   "quesiti": 4
+  },
+  {
+   "id": "ormeggio_cime_incrociate_doppino_trappa",
+   "nome": "Cime incrociate, doppino e trappa",
+   "parole_chiave": [
+    "cime incrociate",
+    "risacca",
+    "doppino",
+    "trappa",
+    "catenaria",
+    "corpo morto in marina"
+   ],
+   "copre": "Gli accorgimenti dell'ormeggio di poppa: le cime incrociate contro la risacca, il doppino che si scioglie da bordo, la trappa che dalla catenaria fa da ormeggio verso il largo.",
+   "quesiti": 3
+  },
+  {
+   "id": "ormeggio_cavi_nodi",
+   "nome": "Cavi e nodi d'ormeggio",
+   "parole_chiave": [
+    "poliestere",
+    "polipropilene",
+    "gassa d'amante",
+    "nodo parlato",
+    "parabordi"
+   ],
+   "copre": "Di che materiale sono le cime (poliestere per gli ormeggi, polipropilene solo per le sagole galleggianti) e i nodi da sapere: la gassa d'amante per gli ormeggi, il parlato per i parabordi.",
+   "quesiti": 4
+  },
+  {
+   "id": "ormeggio_accosto_poppa_elica",
+   "nome": "Accostare di poppa con un'elica sola",
+   "parole_chiave": [
+    "accosto di poppa",
+    "elica destrorsa",
+    "elica sinistrorsa",
+    "effetto evolutivo dell'elica",
+    "giardinetto",
+    "posizione di partenza"
+   ],
+   "copre": "Da quale lato e da quale posizione conviene partire retrocedendo verso la banchina, sapendo da che parte la marcia indietro porta la poppa secondo il verso dell'elica.",
+   "quesiti": 5
+  },
+  {
+   "id": "ormeggio_elica_fianco_elica_prua",
+   "nome": "Accosto di fianco, rotazione sul posto ed elica di prua",
+   "parole_chiave": [
+    "accosto all'inglese",
+    "mascone",
+    "rotazione sul posto",
+    "effetti evolutivi di elica e timone",
+    "elica di prua",
+    "bow thruster"
+   ],
+   "copre": "Usare il passo dell'elica per avvicinare la poppa accostando di fianco, ruotare quasi sul posto con elica e timone, e spingere la prua verso la banchina con l'elica di prua.",
+   "quesiti": 3
+  },
+  {
+   "id": "ormeggio_trim_fuoribordo",
+   "nome": "Il trim del fuoribordo",
+   "parole_chiave": [
+    "trim",
+    "assetto",
+    "piede del motore",
+    "planata",
+    "assetto negativo"
+   ],
+   "copre": "Che cosa fa il trim di un fuoribordo: piede in alto, prua che sale; tutto in basso, assetto negativo per entrare in planata.",
+   "quesiti": 3
+  },
+  {
+   "id": "ormeggio_boe_gavitelli",
+   "nome": "Boe, gavitelli e corpi morti",
+   "parole_chiave": [
+    "corpo morto",
+    "boa d'ormeggio",
+    "gavitello",
+    "presa del gavitello",
+    "ormeggio a due boe"
+   ],
+   "copre": "Com'è fatto un corpo morto, come ci si avvicina a una boa (piano e con la prua al vento o alla corrente, sottovento al gavitello), a che cosa ci si lega, quando si ormeggia a due boe.",
+   "quesiti": 5
+  },
+  {
+   "id": "ormeggio_ancora_galleggiante",
+   "nome": "L'ancora galleggiante",
+   "parole_chiave": [
+    "ancora galleggiante",
+    "intraversamento",
+    "scarroccio",
+    "fondali profondi",
+    "costa sottovento"
+   ],
+   "copre": "A che cosa serve l'ancora galleggiante: rallentare lo scarroccio e tenere la barca a non intraversarsi dove il fondo è troppo profondo per ancorare, per esempio con la costa sottovento.",
+   "quesiti": 3
+  },
+  {
+   "id": "ormeggio_solcometro_scandaglio",
+   "nome": "Solcometro ed ecoscandaglio",
+   "parole_chiave": [
+    "solcometro",
+    "log",
+    "velocità propulsiva",
+    "cammino percorso",
+    "ecoscandaglio"
+   ],
+   "copre": "Il solcometro misura velocità e cammino rispetto all'acqua, quindi non è attendibile come velocità sul fondo quando c'è corrente; l'ecoscandaglio misura il fondale.",
+   "quesiti": 5
+  },
+  {
+   "id": "ormeggio_termini_manovra",
+   "nome": "Le parole dell'attracco e del rimorchio",
+   "parole_chiave": [
+    "attracco",
+    "unità attraccata",
+    "banchina",
+    "lunghezza del rimorchio"
+   ],
+   "copre": "Che cosa vuol dire attraccare e essere attraccati, e come si misura la lunghezza di un rimorchio, dalla poppa del rimorchiatore alla poppa dell'ultima unità.",
+   "quesiti": 3
+  }
+ ],
+ "quesiti": {
+  "base-445": [
+   "porto_limiti_velocita"
+  ],
+  "base-446": [
+   "porto_limiti_velocita"
+  ],
+  "base-447": [
+   "porto_precedenze_condotta",
+   "porto_autorita_accosti"
+  ],
+  "base-448": [
+   "porto_precedenze_condotta",
+   "porto_autorita_accosti"
+  ],
+  "base-449": [
+   "porto_autorita_accosti"
+  ],
+  "base-450": [
+   "porto_precedenze_condotta"
+  ],
+  "base-451": [
+   "porto_imboccatura_fanali"
+  ],
+  "base-452": [
+   "porto_imboccatura_fanali"
+  ],
+  "base-453": [
+   "porto_precedenze_condotta"
+  ],
+  "base-454": [
+   "porto_limiti_velocita"
+  ],
+  "base-455": [
+   "porto_limiti_velocita"
+  ],
+  "base-456": [
+   "porto_precedenze_condotta"
+  ],
+  "base-457": [
+   "porto_imboccatura_fanali"
+  ],
+  "base-458": [
+   "porto_imboccatura_fanali"
+  ],
+  "base-459": [
+   "porto_precedenze_condotta"
+  ],
+  "base-460": [
+   "rada_moto_ondoso"
+  ],
+  "base-461": [
+   "porto_precedenze_condotta"
+  ],
+  "base-462": [
+   "porto_autorita_accosti"
+  ],
+  "base-463": [
+   "porto_precedenze_condotta"
+  ],
+  "base-464": [
+   "porto_autorita_accosti"
+  ],
+  "base-465": [
+   "porto_autorita_accosti"
+  ],
+  "base-466": [
+   "porto_limiti_velocita",
+   "costa_fascia_balneazione"
+  ],
+  "base-467": [
+   "costa_distanze_rispetto"
+  ],
+  "base-468": [
+   "costa_fascia_balneazione"
+  ],
+  "base-469": [
+   "costa_fascia_balneazione"
+  ],
+  "base-470": [
+   "costa_fascia_balneazione"
+  ],
+  "base-471": [
+   "costa_corridoi_lancio"
+  ],
+  "base-472": [
+   "costa_corridoi_lancio"
+  ],
+  "base-473": [
+   "costa_subacquei_segnali"
+  ],
+  "base-474": [
+   "costa_subacquei_segnali"
+  ],
+  "base-475": [
+   "porto_limiti_velocita"
+  ],
+  "base-476": [
+   "costa_fascia_balneazione"
+  ],
+  "base-477": [
+   "costa_distanze_rispetto"
+  ],
+  "base-478": [
+   "costa_distanze_rispetto"
+  ],
+  "base-479": [
+   "costa_subacquei_segnali"
+  ],
+  "base-480": [
+   "costa_subacquei_segnali",
+   "costa_distanze_rispetto"
+  ],
+  "base-481": [
+   "costa_subacquei_segnali"
+  ],
+  "base-482": [
+   "costa_corridoi_lancio"
+  ],
+  "base-483": [
+   "costa_pesca_sportiva"
+  ],
+  "base-484": [
+   "costa_pesca_subacquea",
+   "costa_subacquei_segnali"
+  ],
+  "base-485": [
+   "costa_unita_minori_limiti"
+  ],
+  "base-486": [
+   "costa_unita_minori_limiti"
+  ],
+  "base-487": [
+   "costa_unita_minori_limiti"
+  ],
+  "base-488": [
+   "costa_unita_minori_limiti"
+  ],
+  "base-489": [
+   "costa_unita_minori_limiti"
+  ],
+  "base-490": [
+   "costa_fascia_balneazione"
+  ],
+  "base-491": [
+   "costa_pesca_subacquea"
+  ],
+  "base-492": [
+   "costa_pesca_subacquea"
+  ],
+  "base-493": [
+   "costa_pesca_sportiva"
+  ],
+  "base-494": [
+   "costa_pesca_sportiva"
+  ],
+  "base-495": [
+   "costa_pesca_subacquea"
+  ],
+  "base-496": [
+   "costa_pesca_subacquea"
+  ],
+  "base-497": [
+   "costa_pesca_sportiva"
+  ],
+  "base-498": [
+   "ancora_peso_tenuta"
+  ],
+  "base-499": [
+   "ancoraggio_scelta_posto"
+  ],
+  "base-500": [
+   "ancoraggio_calumo"
+  ],
+  "base-501": [
+   "ancoraggio_ruota"
+  ],
+  "base-502": [
+   "ancoraggio_due_ancore"
+  ],
+  "base-503": [
+   "ancora_tipi"
+  ],
+  "base-504": [
+   "ancora_tipi"
+  ],
+  "base-505": [
+   "ancora_tipi"
+  ],
+  "base-506": [
+   "ancora_catena_salpancora"
+  ],
+  "base-507": [
+   "ancora_catena_salpancora"
+  ],
+  "base-508": [
+   "ancoraggio_due_ancore"
+  ],
+  "base-509": [
+   "ancoraggio_dare_fondo_salpare"
+  ],
+  "base-510": [
+   "ancoraggio_grippia"
+  ],
+  "base-511": [
+   "ancoraggio_grippia"
+  ],
+  "base-512": [
+   "ancoraggio_presa"
+  ],
+  "base-513": [
+   "ancora_parti"
+  ],
+  "base-514": [
+   "ancoraggio_presa"
+  ],
+  "base-515": [
+   "ancora_peso_tenuta"
+  ],
+  "base-516": [
+   "ancora_parti"
+  ],
+  "base-517": [
+   "ancoraggio_calumo"
+  ],
+  "base-518": [
+   "ancora_peso_tenuta"
+  ],
+  "base-519": [
+   "ancoraggio_due_ancore"
+  ],
+  "base-520": [
+   "ancoraggio_ruota"
+  ],
+  "base-521": [
+   "ancoraggio_presa"
+  ],
+  "base-522": [
+   "ancora_parti"
+  ],
+  "base-523": [
+   "ancoraggio_grippia"
+  ],
+  "base-524": [
+   "ancoraggio_calumo_calcolo"
+  ],
+  "base-525": [
+   "ancora_tipi"
+  ],
+  "base-526": [
+   "ancoraggio_calumo_calcolo"
+  ],
+  "base-527": [
+   "ancoraggio_calumo_calcolo"
+  ],
+  "base-528": [
+   "ancoraggio_presa"
+  ],
+  "base-529": [
+   "ancoraggio_calumo"
+  ],
+  "base-530": [
+   "ancora_parti"
+  ],
+  "base-531": [
+   "ancoraggio_calumo"
+  ],
+  "base-532": [
+   "ancoraggio_ruota"
+  ],
+  "base-533": [
+   "ancoraggio_ruota"
+  ],
+  "base-534": [
+   "ancoraggio_presa"
+  ],
+  "base-535": [
+   "ancoraggio_due_ancore"
+  ],
+  "base-536": [
+   "ancora_fondale_adatto"
+  ],
+  "base-537": [
+   "ancora_fondale_adatto"
+  ],
+  "base-538": [
+   "ancoraggio_scelta_posto"
+  ],
+  "base-539": [
+   "ancoraggio_dare_fondo_salpare"
+  ],
+  "base-540": [
+   "ancoraggio_dare_fondo_salpare"
+  ],
+  "base-541": [
+   "ancoraggio_scelta_posto",
+   "ancoraggio_vento_corrente"
+  ],
+  "base-542": [
+   "ancoraggio_scelta_posto",
+   "ancoraggio_ruota"
+  ],
+  "base-543": [
+   "ancoraggio_vento_corrente",
+   "ancora_catena_salpancora"
+  ],
+  "base-544": [
+   "ancoraggio_vento_corrente"
+  ],
+  "base-545": [
+   "ancoraggio_scelta_posto"
+  ],
+  "base-546": [
+   "ancora_fondale_adatto"
+  ],
+  "base-547": [
+   "ancoraggio_calumo"
+  ],
+  "base-548": [
+   "ancoraggio_dare_fondo_salpare"
+  ],
+  "base-549": [
+   "ancora_tipi"
+  ],
+  "base-550": [
+   "ancoraggio_vento_corrente"
+  ],
+  "base-551": [
+   "ancoraggio_vento_corrente"
+  ],
+  "base-552": [
+   "ormeggio_boe_gavitelli"
+  ],
+  "base-553": [
+   "ormeggio_boe_gavitelli"
+  ],
+  "base-554": [
+   "ormeggio_termini_manovra"
+  ],
+  "base-555": [
+   "ormeggio_spring_traversini"
+  ],
+  "base-556": [
+   "ormeggio_spring_traversini"
+  ],
+  "base-557": [
+   "ormeggio_cime_incrociate_doppino_trappa"
+  ],
+  "base-558": [
+   "ormeggio_cime_incrociate_doppino_trappa"
+  ],
+  "base-559": [
+   "ormeggio_boe_gavitelli"
+  ],
+  "base-560": [
+   "ormeggio_spring_traversini"
+  ],
+  "base-561": [
+   "ormeggio_spring_traversini"
+  ],
+  "base-562": [
+   "ormeggio_spring_traversini"
+  ],
+  "base-563": [
+   "ormeggio_spring_traversini"
+  ],
+  "base-564": [
+   "ormeggio_ordine_cime_poppa"
+  ],
+  "base-565": [
+   "ormeggio_ordine_cime_poppa"
+  ],
+  "base-566": [
+   "ormeggio_ordine_cime_poppa"
+  ],
+  "base-567": [
+   "ormeggio_ordine_cime_poppa"
+  ],
+  "base-568": [
+   "ormeggio_cavi_nodi"
+  ],
+  "base-569": [
+   "ormeggio_cavi_nodi"
+  ],
+  "base-570": [
+   "ormeggio_cavi_nodi"
+  ],
+  "base-571": [
+   "ormeggio_cavi_nodi"
+  ],
+  "base-572": [
+   "ormeggio_cime_incrociate_doppino_trappa"
+  ],
+  "base-573": [
+   "ormeggio_elica_fianco_elica_prua"
+  ],
+  "base-574": [
+   "ormeggio_solcometro_scandaglio"
+  ],
+  "base-575": [
+   "ormeggio_accosto_poppa_elica"
+  ],
+  "base-576": [
+   "ormeggio_accosto_poppa_elica"
+  ],
+  "base-577": [
+   "ormeggio_accosto_poppa_elica"
+  ],
+  "base-578": [
+   "ormeggio_accosto_poppa_elica"
+  ],
+  "base-579": [
+   "ormeggio_accosto_poppa_elica"
+  ],
+  "base-580": [
+   "ormeggio_termini_manovra"
+  ],
+  "base-581": [
+   "ormeggio_elica_fianco_elica_prua"
+  ],
+  "base-582": [
+   "ormeggio_elica_fianco_elica_prua"
+  ],
+  "base-583": [
+   "ormeggio_boe_gavitelli"
+  ],
+  "base-584": [
+   "ormeggio_termini_manovra"
+  ],
+  "base-585": [
+   "rada_moto_ondoso"
+  ],
+  "base-586": [
+   "ancoraggio_vento_corrente"
+  ],
+  "base-587": [
+   "rada_moto_ondoso"
+  ],
+  "base-588": [
+   "ormeggio_trim_fuoribordo"
+  ],
+  "base-589": [
+   "ormeggio_trim_fuoribordo"
+  ],
+  "base-590": [
+   "porto_precedenze_condotta"
+  ],
+  "base-591": [
+   "ormeggio_boe_gavitelli"
+  ],
+  "base-592": [
+   "ormeggio_ancora_galleggiante"
+  ],
+  "base-593": [
+   "ormeggio_ancora_galleggiante"
+  ],
+  "base-594": [
+   "ormeggio_ancora_galleggiante"
+  ],
+  "base-595": [
+   "ormeggio_trim_fuoribordo"
+  ],
+  "base-596": [
+   "ormeggio_solcometro_scandaglio"
+  ],
+  "base-597": [
+   "ormeggio_solcometro_scandaglio"
+  ],
+  "base-598": [
+   "ormeggio_solcometro_scandaglio"
+  ],
+  "base-599": [
+   "ormeggio_solcometro_scandaglio"
+  ]
+ },
+ "rilettura": {
+  "campione": [
+   "base-449",
+   "base-459",
+   "base-461",
+   "base-493",
+   "base-502",
+   "base-511",
+   "base-517",
+   "base-538",
+   "base-556",
+   "base-560",
+   "base-564",
+   "base-566",
+   "base-567",
+   "base-571",
+   "base-579",
+   "base-587"
+  ],
+  "come": "random.seed(106); sorted(random.sample(range(445, 600), 16))",
+  "cambi": [],
+  "nota": "Rilettura dello stesso lettore che ha scritto i tag, non la seconda lettura indipendente di B-2. Nessun tag cambiato; per base-564…567 riguardate le figure 027–030 per controllare la regola sopravvento/sottovento scritta nel concetto."
+ },
+ "note": [
+  "Quesiti fuori posto nella loro voce, etichettati per quello che chiedono: nella voce «Ormeggio e disormeggio» il solcometro e l'ecoscandaglio (base-574, 596–599), il trim del fuoribordo (base-588, 589, 595), l'ancora galleggiante (base-592–594), la rotta di collisione (base-590), il rimorchio (base-584) e un quesito d'ancoraggio (base-551); nella voce della costa la pesca sportiva e subacquea (base-483, 491–497).",
+  "Un concetto sta in una famiglia della voce dove cade la maggior parte dei suoi quesiti; alcuni quesiti di un'altra voce lo portano lo stesso (base-466 e 475 per i limiti di velocità, base-551 e 586 per vento e corrente, base-585, 587 e 590).",
+  "Da segnalare, la banca non è toccata: base-599 (oscurato) dà per esatto che il solcometro misura la velocità «propria o propulsiva, cioè quella prodotta dalle eliche» e non quella rispetto all'acqua, mentre base-598 dice che il log non è attendibile con la corrente, cioè che misura rispetto all'acqua. Non riletto sul PDF del decreto."
+ ]
+}
