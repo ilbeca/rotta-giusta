@@ -7885,7 +7885,12 @@ decisa (C-2: due livelli, concetti e famiglie).
 la riga «Il tuo tema»: gli otto temi della base in `site/dati/meta.json`
 (`temi[].tema`) e la vela (`voci_vela`). La prima sessione che arriva alla
 merge porta anche `strumenti/concetti/componi.py` e i test; le altre vi
-aggiungono solo la loro sorgente. **La seconda lettura** è una sessione a parte
+aggiungono solo la loro sorgente. **Quando le nove partono insieme** (18
+novembre 2026), `componi.py`, `site/dati/concetti.json`, `meta.json` e i test
+li scrive soltanto la sessione del tema COLREG, che parte dal pilota; le altre
+otto scrivono solo la loro sorgente, e la regia, fondendole dopo COLREG,
+rigenera il file composto con `componi.py` nel commit di merge. **La seconda
+lettura** è una sessione a parte
 per tema, dopo la prima, con lo stesso prompt e la riga «Seconda lettura: sì».
 
 ```
