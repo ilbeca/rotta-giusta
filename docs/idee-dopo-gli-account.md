@@ -79,7 +79,7 @@ lavoro che dura settimane e cambia che cosa il sito *è*.
 | C-01 | Il candidato che ha già la patente entro 12 miglia | Claude | sì dell'autore |
 | C-02 | Spiegare l'esame a chi comincia da zero | Claude | sì dell'autore |
 | C-03 | «Questo quesito non torna»: un modo di segnalarlo | Claude | sì dell'autore; indirizzo da scegliere |
-| I-19 | Il miglioramento continuo: la misura come quinto passo del ciclo | autore e Claude | sì dell'autore, prossima release (17 ottobre) |
+| I-19 | Il miglioramento continuo: la misura come quinto passo del ciclo | autore e Claude | sì dell'autore, prossima release (17 ottobre); il 29 ottobre le strade per un contatore confrontate, raccomandata quella sul nostro server, sette decisioni |
 | I-20 | La classe: la scuola nautica e l'istruttore dentro il sito | autore e Claude | sospesa: l'autore la propone alle scuole |
 | I-21 | Una casella per le segnalazioni | Claude | sì dell'autore; casella da creare |
 | I-22 | La lettura da fuori: chi non sa niente del progetto, come controllo ricorrente | autore e Claude | prima prova fatta il 20 ottobre; il metodo è da decidere |
@@ -2493,6 +2493,262 @@ contatore, ed è giusto: la decisione è un ADR che le riscrive, non un passaggi
 in silenzio. L'informativa.
 
 **Grandezza.** L: un ADR, il server, la pagina, la specifica, l'informativa.
+
+#### Un contatore delle visite: serve, e a che prezzo — 29 ottobre 2026 [Claude, su domanda dell'autore]
+
+**La domanda.** Dopo la verifica GDPR del 29 ottobre (`docs/gdpr-verifica-2026-10.md`,
+§2.6 e §5), l'autore vuole sapere se a Rotta Giusta serve un contatore delle
+visite, o un'altra delle cose che chiedono il consenso — analytics, pixel, video
+o mappe incorporati, caratteri da altri host —, e che cosa vorrebbe dire per
+l'informativa e per un banner. È un'analisi: niente è stato costruito, e `site/`,
+`server/`, `tests/` e la specifica non sono stati toccati.
+
+**Non è un parere legale.** Come nella verifica, ogni riga dice se è **misurato
+o letto** (nel codice, sulle pagine ufficiali, con la data) o se è **un giudizio
+giuridico**, da far confermare al professionista che l'autore ha già in conto.
+
+##### A che cosa servirebbe: le decisioni, non i numeri
+
+Un numero vale la sua misura solo se cambia una decisione. Le domande
+dell'autore, una per una:
+
+| Domanda | Che decisione cambia | Si sa già? | Che cosa manca davvero |
+|---|---|---|---|
+| La Home convince a provare? | se rifare il primo schermo della Home (il giro B del volto, I-29 e I-30) | **no** | quante volte si apre la Home, e quante di quelle aperture diventano un'attività iniziata |
+| Chi prova senza account si registra? | se l'invito dei tre posti dell'ADR-006 funziona, e quale | **metà**: le registrazioni e la loro data stanno nel database (`iscritti` di `server/statistiche.mjs`, `creato_il`); il denominatore no | quante attività si concludono senza account, per tipo |
+| Chi prova senza account torna? | quasi nessuna: senza account non c'è niente da ritrovare, per scelta | **no, e non si può sapere senza riconoscere qualcuno** | un identificatore nel browser o un'impronta dell'IP: è proprio quello che l'ADR-004 e l'art. 122 rendono costoso. **Resta senza risposta**, e va detto |
+| Quali attività si usano? | dove mettere il lavoro (Carteggio, Segnali, la stima di I-12) | **per i registrati sì**: le righe per tipo e `mode`, da `statistica()` | le stesse, per chi non ha l'account |
+| Da dove arrivano le persone? | dove fare passaparola (la classe, le scuole di I-20, i forum) | **no** | il sito di provenienza. Ma il passaparola di oggi passa da WhatsApp e dalle app, che di norma non mandano un `Referer`: il numero più grande sarebbe «diretto», che **non vuol dire** che le persone scrivono l'indirizzo. È un numero che rassicura senza misurare, e c'è un modo più semplice di saperlo (la decisione 5, sotto) |
+
+Il pubblico è una classe di patente e il passaparola: **i numeri saranno
+piccoli**, decine al giorno nel migliore dei casi. Sotto qualche decina la
+variazione da un giorno all'altro è rumore, e dentro ci sono le prove
+dell'autore stesso. Un contatore qui serve a vedere un ordine di grandezza e un
+rapporto (aperture → attività → registrazioni) su settimane, non un andamento
+giornaliero.
+
+##### Che cosa dicono le norme, con la fonte e la data
+
+- **Art. 122 del Codice privacy** (d.lgs. 196/2003, come modificato dal d.lgs.
+  101/2018), che recepisce l'art. 5(3) della direttiva ePrivacy: archiviare
+  informazioni nel dispositivo, o accedere a informazioni che vi sono già, è
+  ammesso solo con il consenso dopo l'informativa, **salvo** quello che è
+  strettamente necessario al servizio chiesto. È il motivo per cui oggi non c'è
+  un banner: il solo cookie è quello di sessione dell'account.
+- **Linee guida del Garante sui cookie e gli altri strumenti di tracciamento**,
+  provvedimento n. 231 del **10 giugno 2021** (doc. web 9677876, G.U. n. 163 del
+  9 luglio 2021; letto oggi sul sito del Garante, §7.2): i cookie **analitici**
+  si possono equiparare ai tecnici, quindi **senza consenso**, se servono solo a
+  **statistiche aggregate**, su **un solo sito**, senza **combinare** i dati con
+  altri trattamenti né passarli a terzi, e con misure che impediscano di
+  **individuare** la persona — per l'IPv4 almeno la quarta cifra mascherata.
+  Restano da dire nell'informativa. Le linee guida comprendono anche gli
+  identificatori passivi (il *fingerprinting*), con la stessa logica dei cookie.
+- **Linee guida EDPB 2/2023 sull'ambito tecnico dell'art. 5(3)**, versione 2.0
+  adottata il **7 ottobre 2024** (letta oggi nel PDF dell'EDPB). Due punti
+  cambiano il quadro per una misura «senza cookie»:
+  - §33: rientra nell'art. 5(3) anche il **codice JavaScript che fa mandare al
+    browser una richiesta** con le informazioni che servono a chi le riceve. Un
+    contatore che parte da uno script della pagina è quindi **dentro** la norma,
+    anche se non scrive niente nel browser;
+  - §54–55: anche raccogliere il **solo indirizzo IP** per seguire la
+    navigazione può rientrarvi, perché l'IP viene dal dispositivo (sempre per
+    l'IPv6).
+  - §56: le linee guida **non** dicono quando serve il consenso; lo lasciano
+    alle esenzioni, che in Italia il Garante ha letto come sopra.
+- **Il GDPR**, accanto all'ePrivacy: anche una richiesta che non lascia niente
+  nel browser porta un indirizzo IP al server, quindi è un trattamento, con una
+  base giuridica (qui il legittimo interesse, art. 6.1.f, come per le
+  statistiche di oggi) e una riga nell'informativa (art. 13).
+- **Google Analytics**: il Garante l'ha dichiarato illecito nel provvedimento
+  del **9 giugno 2022** (doc. web 9782890), per il trasferimento dei dati negli
+  Stati Uniti; dal **10 luglio 2023** la decisione di adeguatezza della
+  Commissione sul Data Privacy Framework copre i trasferimenti verso le aziende
+  iscritte. Per i cookie di Google Analytics, che non stanno nelle condizioni
+  qui sopra, il consenso serve comunque. *(Date del provvedimento e della
+  decisione da ricontrollare alla fonte prima di citarle in un documento per
+  altri: non le ho rilette oggi.)*
+
+**Il giudizio che resta al professionista.** Se un contatore di prima parte,
+fatto partire da uno script ma **senza niente salvato nel browser**, senza
+identificatori e con conteggi solo aggregati, sta nell'equiparazione del Garante
+— che è scritta per i cookie analitici — anche dopo le linee guida EDPB del
+2024. Io la leggo così, perché le condizioni del §7.2 sono tutte rispettate e
+anzi superate (non c'è nemmeno un cookie da mascherare); ma è proprio il tipo di
+giudizio che non posso dare.
+
+##### Le strade
+
+| | 1. Niente | 2. I log dell'host | 3. Un contatore nostro sul server degli account | 4. Uno strumento senza cookie (Plausible, GoatCounter) | 5. Google Analytics o simili |
+|---|---|---|---|---|---|
+| **Che cosa misura** | niente di chi non si registra; per i registrati tutto quello che le righe dicono, con `statistica()` | **niente che si possa usare**: le FAQ di statichost.eu (lette oggi) dicono che i log non contengono dati personali, servono solo a sommare i byte per la fatturazione e si cancellano entro 7 giorni. Non dicono che il cliente veda numeri di traffico: non c'è un pannello delle visite, per quanto si legge | eventi contati per giorno: Home aperta, attività iniziata e conclusa per tipo, invito mostrato e toccato, il dominio di provenienza della prima pagina. **Non** i visitatori unici, **non** chi torna | visite e pagine, visitatori unici **del giorno** (Plausible: impronta di IP + browser + sito con un sale cambiato ogni 24 ore; GoatCounter: la stessa combinazione in memoria per 8 ore), provenienza, Paese, browser | tutto, anche chi torna e i percorsi, con un cookie per persona |
+| **Che cosa no** | la Home, il denominatore delle registrazioni, la provenienza | — | chi torna; le persone distinte | chi torna dopo un giorno | — |
+| **Che cosa esce, e verso chi** | niente | niente di nuovo: l'IP arriva già a statichost.eu per servire le pagine (è nell'informativa) | **l'IP di chi non ha l'account arriva per la prima volta a Scaleway**, in Polonia, che oggi lo riceve solo da chi entra. Si usa per il limite di frequenza in memoria e non si salva; nel database solo i numeri | l'IP e il browser a un **terzo** (Plausible, server nell'UE; GoatCounter, Hetzner in Finlandia e Germania, gestito da una persona in Irlanda), oppure a noi se lo ospitiamo: GoatCounter è un programma solo con SQLite, Plausible Community Edition vuole ClickHouse e Postgres, troppo per la STARDUST1-S | IP, browser, comportamento a Google, con trasferimento negli Stati Uniti |
+| **ePrivacy e banner** | no | no | è un'**istruzione al browser** (EDPB §33), quindi dentro l'art. 122; **senza banner** se il professionista conferma che vale l'equiparazione del Garante. Se non la conferma, la risposta giusta non è il banner: è non farlo | come la 3 per l'equiparazione; in più un terzo che riceve dati e calcola un'impronta (il *fingerprinting* che le linee guida nominano): il giudizio è più incerto. Plausible e GoatCounter dicono di non chiedere consenso, ma lo dicono loro | **banner obbligatorio**, con «rifiuta» uguale ad «accetta» e senza cookie wall |
+| **Informativa** | invariata | invariata | un paragrafo nuovo (il testo è sotto), e la frase «non usiamo … analytics» cambia | un paragrafo, il fornitore come responsabile con il suo accordo (art. 28), e lo stesso cambio | una sezione cookie, il fornitore, il trasferimento, il consenso e come ritirarlo |
+| **Vincoli da riscrivere con un ADR** | nessuno | nessuno | «Nessun analytics» nel §2.1 della specifica; R-ACC-09 («nessuna richiesta all'API» senza account); la frase del §2.3 e dell'ADR-004 «di chi non si registra non resta niente, da nessuna parte» (diventa: niente **di lui**, solo un numero); in `docs/filosofia.md` «finché provi senza account, non conserviamo niente» va precisata (niente di te, un numero sì), mentre la riga sui cookie di tracciamento resta vera | gli stessi, più `test_nessuna_risorsa_di_terzi`, che diventa rosso con uno script da un altro host — a ragione | tutto il §2.1, la filosofia («niente da vendere e nessuno a cui vendere l'attenzione»), l'ADR-004, e «i dati non escono dall'Unione europea» |
+| **Lavoro** | zero | zero | **M**: un ADR; una rotta (`POST /v1/conta`) e una tabella `conteggio(giorno, evento, n)`, additiva; una fonte nuova in `statistiche.mjs`; le chiamate nella pagina; i controlli; l'informativa | S per lo script, più il fornitore e il suo accordo, o L per ospitare GoatCounter accanto al server | S per lo script, **L** per banner, consenso, informativa e il resto |
+| **Guasto muto** | nessuno: si sa di non sapere | credere di avere dei numeri che non ci sono | **sì, e in tre modi**: la rotta che smette di rispondere e dà zero, letto come «nessuno è venuto»; i bot e le prove dell'autore contati come persone; «diretto» letto come «scrivono l'indirizzo». Difese sotto | i bloccatori di pubblicità fermano gli script degli strumenti noti: il numero è **più basso** del vero, di una quota che non si conosce; e due numeri diversi (il loro e le registrazioni) da tenere insieme | numeri pieni di buchi per chi rifiuta, e un sito che contraddice la propria filosofia |
+
+**Le altre cose che chiedono il consenso** — pixel, video o mappe incorporati,
+caratteri da un altro host: **nessuna serve**, oggi o nelle idee di questo file.
+Il carattere della Home sta già in `site/caratteri/` dal 1° ottobre proprio per
+non mandare l'IP a Google; un video dell'esame si linka (`<a>`), non si
+incorpora; una mappa delle scuole (I-20) sarebbe un elenco. Restano fuori, e
+`test_nessuna_risorsa_di_terzi` lo tiene fermo.
+
+##### La raccomandazione: la strada 3, piccola, e solo dopo due sì
+
+**Per la strada 3**, con dentro soltanto quello che risponde alle domande della
+tabella in alto, e niente che riconosca qualcuno:
+
+- **Eventi, non visitatori.** Si contano le aperture della Home, le attività
+  iniziate e concluse per tipo (quiz, simulazione, carta, tecniche, Segnali),
+  l'invito a registrarsi mostrato e toccato. **Nessun visitatore unico**: per
+  contarli serve un'impronta, e con l'impronta si torna alle strade 4 e 5. «Chi
+  torna» resta senza risposta, ed è il prezzo detto.
+- **Il dominio di provenienza**, solo il dominio e solo sulla prima pagina, con
+  «nessuno» detto come «non lo sappiamo», mai come «diretto».
+- **Niente salvato nel browser**, niente cookie, niente `localStorage`: la parte
+  di R-ACC-09 sullo storage resta intatta. Cambia solo «nessuna richiesta
+  all'API».
+- **L'IP non si salva**: serve al limite di frequenza, in memoria, come per gli
+  accessi oggi, e non entra nel registro di sicurezza.
+- **Global Privacy Control rispettato**: se il browser lo manda, la pagina non
+  conta. È un segnale che chi lo attiva ha già dato.
+- **Un posto solo**, come le statistiche: una fonte `conteggi` in
+  `server/statistiche.mjs`, e il controllo statico che la dichiara. Chi si
+  oppone alle statistiche oggi esce dai conteggi del suo account; qui non c'è un
+  account da togliere, e si dice.
+- **Le difese contro il guasto muto**, scritte prima del codice:
+  1. **un rapporto, non un numero**: le attività concluse senza account e le
+     registrazioni del giorno si guardano insieme, e una registrazione con zero
+     attività contate nella settimana è un allarme (`allarmi.mjs` già sa
+     mandarne uno al titolare);
+  2. **`GET /v1/salute` dice l'ultimo conteggio ricevuto**, così una rotta
+     ferma si vede da fuori;
+  3. **i bot non rispondono ai quiz**: le attività concluse pesano più delle
+     aperture della Home, che vanno lette come un tetto, non come persone;
+  4. le prove dell'autore si tolgono a mano, con la data, nel registro delle
+     osservazioni di I-19, non con un cookie «non contarmi».
+
+**Perché non le altre.** La 1 lascia cieco proprio il punto che I-19 voleva
+vedere, la persona senza account. La 2 non esiste: statichost.eu non tiene
+numeri da dare. La 4 porta un terzo e un'impronta per dare in più soltanto i
+visitatori del giorno, su un pubblico così piccolo che non cambiano una
+decisione; e i bloccatori la abbassano di una quota che non si conosce. La 5
+vuole il banner e contraddice la filosofia: è esclusa.
+
+**I due sì prima del codice.** Il professionista, sull'equiparazione (sopra);
+poi l'autore, con l'ADR. È coerente con le decisioni 1–3 del 17 ottobre — la
+misura propria, il contatore degli ingressi come primo pezzo, le registrazioni
+fra le metriche —, e la riga 24 della coda la aspetta già. **Non prima di P-75**
+se P-75 viene prima: due trattamenti nuovi nella stessa informativa si
+spiegano meglio insieme che in due versioni di fila.
+
+##### Il testo proposto per l'informativa (strada 3)
+
+Nella sezione «Con un account: quali dati e perché» va tolta la frase «Non
+inviamo newsletter e non usiamo cookie di tracciamento o analytics sul sito»,
+sostituita da «Non inviamo newsletter e non usiamo cookie di tracciamento né
+strumenti di analisi di altri». E una sezione nuova, prima di «Cookie e
+dispositivo»:
+
+> **Quante volte si usa il sito.** Contiamo quante volte si apre la Home e
+> quante attività cominciano e finiscono, per tipo e per giorno, e da quale
+> sito si arriva la prima volta (solo il nome del sito). Lo facciamo per capire
+> se il sito è utile e che cosa migliorare, anche per chi non ha l'account. Non
+> usiamo cookie e non salviamo niente nel tuo browser. Il conteggio passa dal
+> server degli account, in Polonia: come ogni richiesta, porta l'indirizzo IP
+> del tuo dispositivo, che usiamo solo per respingere gli invii automatici
+> troppo frequenti e non conserviamo. Salviamo soltanto i numeri del giorno,
+> che non dicono chi sei e non si possono collegare al tuo account. La base
+> giuridica è il nostro legittimo interesse a capire come viene usato il
+> servizio (articolo 6, paragrafo 1, lettera f del GDPR). Se il tuo browser
+> manda il segnale Global Privacy Control, non contiamo niente. Per opporti in
+> altro modo scrivi a privacy@rottagiusta.it.
+
+*Da far rileggere al professionista*: la base, e se «opporsi» ha senso per un
+dato che non si può ricondurre a nessuno (art. 11 del GDPR).
+
+##### Le decisioni per l'autore
+
+1. **Se misurare chi non ha l'account.** Sì vuol dire la strada 3 e un ADR che
+   riscrive «nessun analytics», R-ACC-09 e una frase dell'ADR-004; no vuol dire
+   restare con le statistiche dei registrati e dirlo in I-19. *Proposta: sì,
+   com'è deciso il 17 ottobre.*
+2. **Che cosa contare**, dalla lista sopra: la Home, le attività per tipo,
+   l'invito, la provenienza. Ogni evento in più è una riga in più
+   nell'informativa. *Proposta: tutti e quattro, niente di più.*
+3. **Rinunciare a «chi torna»**, cioè a qualunque visitatore unico. *Proposta:
+   sì, e scriverlo nell'ADR come prezzo.*
+4. **La domanda per il professionista**, da mettere nel parere già in conto:
+   l'equiparazione del Garante vale per un contatore senza cookie fatto partire
+   da uno script, dopo le linee guida EDPB del 7 ottobre 2024? Se la risposta è
+   no, la strada 3 si ferma qui, senza banner.
+5. **«Da dove arrivano» chiesto invece che misurato**: una domanda facoltativa
+   nell'onboarding dopo la registrazione («Come hai conosciuto Rotta Giusta?»:
+   un compagno di corso, la scuola, una ricerca, altro). Risponde meglio della
+   provenienza contata, perché il passaparola non lascia un `Referer`; ma è un
+   campo del profilo in più, con la sua riga nell'informativa e una raccolta
+   da accendere come le altre (`RACCOLTE`).
+6. **Quando**: dopo P-75, o insieme, per scrivere l'informativa una volta.
+7. **Le strade 4 e 5: no.** *Proposta: scriverlo nell'ADR, perché fra sei mesi
+   qualcuno non le riproponga come «la cosa normale».*
+
+**Che cosa questa analisi non ha guardato.** Il pannello di statichost.eu (per
+scelta; se il dubbio resta, si chiede a hello@statichost.eu); i prezzi di
+Plausible e le condizioni d'uso gratuito di GoatCounter, non riletti oggi; il
+testo della direttiva ePrivacy e dell'art. 122 nella versione vigente, citati
+dalla struttura nota e non riletti; le linee guida del Garante oltre il §7.2 e
+il §3.
+
+##### Lo stato, e Google Analytics guardato più da vicino — 29 ottobre 2026
+
+**Deciso dall'autore: per ora resta tutto com'è.** Non è ancora sicuro di
+volere un contatore. Nessun ADR, nessun codice; le decisioni qui sopra restano
+aperte, e la riga 24 della coda resta in attesa.
+
+Nella stessa conversazione l'autore ha chiesto che cosa vorrebbe dire Google
+Analytics in concreto, e ha osservato che la filosofia è nata quando il sito era
+suo e basta e che la gente non sceglie il sito per «nessun analytics». Quello
+che è emerso, perché non si debba ricercarlo:
+
+- **Il vantaggio di non avere analytics non è uno slogan**, è un costo che il
+  sito non paga: niente banner nel primo schermo della Home, niente consenso da
+  gestire, niente fornitore né trasferimento in più, niente terzo che prende
+  l'IP senza che l'informativa lo dica (i caratteri di Google fino al 1°
+  ottobre). La formulazione proposta per un ADR, al posto di «nessun
+  analytics»: **niente strumenti di terzi, niente salvato nel browser senza
+  account, niente banner**. Il contatore della strada 3 la rispetta, Google
+  Analytics no.
+- **I passi per Google Analytics**, se un giorno: un ADR che riscrive §2.1,
+  R-ACC-09, la promessa dell'ADR-004 e «i dati non escono dall'Unione europea»;
+  il parere; la proprietà GA4 stretta (condivisione dati e Google Signals
+  spenti, conservazione 2 mesi, nessun collegamento con Google Ads); il banner;
+  lo script caricato solo dopo il sì, con la modalità di consenso v2;
+  `test_nessuna_risorsa_di_terzi` riscritto e un controllo in Chrome che nessuna
+  richiesta parta verso Google prima del sì; l'informativa con i cookie e il
+  trasferimento. Grandezza L.
+- **Due conseguenze che non si vedono subito.** Il Garante chiede di non
+  ripresentare il banner per sei mesi dopo un rifiuto: la scelta va salvata nel
+  browser anche per chi dice no, quindi R-ACC-09 cade per tutti. E i pulsanti
+  del banner si sommano a quelli del primo schermo della Home, dove R-RIF-22 ne
+  ammette al più quattro.
+- **Un servizio di consenso (iubenda, Cookiebot) non serve.** La legge chiede
+  un consenso valido, non un fornitore. Google chiede un servizio certificato
+  solo a chi mostra la sua pubblicità con AdSense, Ad Manager o AdMob, dal 16
+  gennaio 2024 nello Spazio economico europeo e nel Regno Unito
+  ([support.google.com/adsense/answer/13554020](https://support.google.com/adsense/answer/13554020?hl=en),
+  letto il 29 ottobre 2026). Per Analytics il servizio certificato è una
+  possibilità; con un banner proprio va usata la modalità di consenso v2
+  ([support.google.com/analytics/answer/14275483](https://support.google.com/analytics/answer/14275483)).
+  I prezzi, se servissero: iubenda gratuito fino a circa 25.000 pagine viste al
+  mese e poi da circa 5 € al mese (fonti di terzi, la pagina ufficiale non si
+  è aperta); Cookiebot gratuito per un dominio e 50 pagine, con funzioni
+  limitate (pagina ufficiale). Il costo vero è un altro terzo che riceve l'IP
+  prima della scelta. **Se si va su Google Analytics, il banner si scrive in
+  casa.**
 
 ### I-20 — La classe: la scuola nautica e l'istruttore dentro il sito [autore e Claude]
 
