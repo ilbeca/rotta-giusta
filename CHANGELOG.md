@@ -512,6 +512,46 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   `sceltaCarteggio()` nel motore, prima di B-4b, come vuole la decisione 12.
 - Nessun file di `site/`, `tests/` o della specifica toccato.
 
+### Aggiunto — P-106: i concetti della banca vela
+
+- **Perché.** La banca vela ha tre voci per 250 quesiti, e una voce come
+  «Teoria della vela» (99 quesiti) mette insieme il vento apparente,
+  l'equilibrio fra centro velico e centro di deriva e le andature, che si
+  studiano in capitoli diversi. È il passo B-2 del piano, con la granularità
+  C-2: concetti fini raccolti in famiglie.
+- **Che cosa.** `strumenti/concetti/vela.json`, nella forma del pilota dei
+  fanali più le famiglie. Ci sono **39 concetti**, ognuno con nome, parole
+  chiave da indice di manuale e una riga su che cosa copre. Le **14
+  famiglie** sono così divise: teoria 5, attrezzatura 4, manovre 5. Sono
+  **284 tag** su tutti i 250 quesiti: 216 quesiti ne hanno uno, 34 due, il
+  limite di tre non è servito. Ogni concetto ha almeno tre quesiti (da 3 a
+  15). Gli id portano il prefisso `vela_`, così non si scontrano con i
+  concetti della banca base: anche il tema Manovra ha nodi, orzare e
+  poggiare.
+- **Letti testi e figure:** tutti i 250 quesiti con la risposta esatta, e le
+  due figure, i paranchi di `vela-130` e `vela-131`. Nessun archivio di
+  risposte letto.
+- **Rilettura dello stesso lettore** su 25 quesiti estratti a caso
+  (`random.seed(106)`, nel file): zero cambi. È un limite inferiore
+  dell'errore, non una misura: la misura è la seconda lettura indipendente,
+  che non è fatta.
+- **Controllato** con uno script fuori dal repo: ogni quesito ha da uno a tre
+  concetti, nessun id di quesito che non c'è, ogni concetto ha almeno tre
+  quesiti e sta in una famiglia sola, le famiglie sono 4–5 per voce, nessuna
+  etichetta vietata dal guardiano. `componi.py`, `site/dati/concetti.json`,
+  `meta.json`, i test e il README li scrive la sessione COLREG, come dice
+  l'accordo della coda.
+- **Segnalati, non toccati:**
+  - `vela-6` (2.1.1-6) e `vela-49` (2.1.1-49) hanno quasi lo stesso testo
+    («Per andatura si intende la direzione verso cui procede … rispetto alla
+    direzione di provenienza del vento») e risposte opposte, Vero e Falso;
+  - `vela-137` dice Vero a «il polipropilene è utilizzato **solo** per
+    sagole galleggianti», e quel «solo» è dubbio.
+
+  All'esame vale il decreto; se meritano una nota lo decide l'autore.
+- Suite: dati 236, specifica 1.146, guardiano verde. Nessun file di `site/`
+  toccato.
+
 ## [0.35.1] — 2026-10-29
 
 **Le risposte in simulazione si cambiano, e «auto» si capisce.** Un utente ha
