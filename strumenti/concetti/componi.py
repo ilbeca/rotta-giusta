@@ -63,16 +63,17 @@ def componi(sorgenti, quiz, meta):
     for q in quiz:
         voci_di.setdefault(q['t'], set()).add(q['v'])
 
+    # Il tema e gli id si guardano separati, su ogni sorgente: un tema sbagliato
+    # non deve nascondere un id ripetuto, ne' il contrario.
     visti_temi, id_concetti, id_famiglie = {}, {}, {}
     for nome, s in sorgenti:
         t = s.get('tema')
         if t not in temi:
             guai.append('%s: tema %r sconosciuto (deve essere uno di meta.json, o VELA)' % (nome, t))
-            continue
-        if t in visti_temi:
+        elif t in visti_temi:
             guai.append('%s: il tema %s ha gia\' la sorgente %s' % (nome, t, visti_temi[t]))
-            continue
-        visti_temi[t] = nome
+        else:
+            visti_temi[t] = nome
         for c in s.get('concetti', []):
             if c.get('id') in id_concetti:
                 guai.append('%s: l\'id di concetto %r c\'e\' gia\' in %s (gli id sono globali)'

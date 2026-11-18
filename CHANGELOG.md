@@ -585,6 +585,29 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   solo `meta.json`, con tre chiavi nuove in `stats`, e nessun banco né la
   pagina guarda `stats` (cercato).
 
+### Corretto — P-106: la prova dell'id ripetuto valeva solo senza vela.json
+
+- **Trovato dalla regia**, componendo in una copia il ramo COLREG con le otto
+  sorgenti degli altri rami: 9 sorgenti, 318 concetti, 118 famiglie, 1.722
+  quesiti. `test_dati.py` dava un rosso. La prova al contrario dell'id ripetuto
+  faceva il doppione sul tema VELA, e con `vela.json` presente `componi.py` lo
+  rifiutava per il tema ripetuto, non per l'id: un rifiuto per il motivo
+  sbagliato.
+- **In `componi.py`**, il tema e gli id si guardano separati su ogni sorgente.
+  Prima un tema sbagliato o ripetuto saltava il controllo degli id, quindi un
+  guaio ne nascondeva un altro.
+- **Nel test**, due rotture separate che valgono con qualunque insieme di
+  sorgenti:
+  - l'id ripetuto, con un tema che la banca non ha;
+  - il tema ripetuto, con id tutti nuovi.
+  Con il `componi.py` di prima la prima rottura è rossa per il motivo giusto,
+  «tema sconosciuto» invece di «id globali».
+- **Provato due volte.** Con la sola sorgente COLREG: dati **267**. Con le nove
+  sorgenti in una copia del worktree: dati **268**. Il controllo in più è «ogni
+  quesito della banca ha almeno un concetto», che si accende da solo. Togliendo
+  `vela-1` dal file pubblicato diventa rosso insieme a «dei temi presenti».
+  Specifica 1.146 e guardiano verdi.
+
 ## [0.35.1] — 2026-10-29
 
 **Le risposte in simulazione si cambiano, e «auto» si capisce.** Un utente ha

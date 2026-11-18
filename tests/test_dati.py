@@ -910,6 +910,12 @@ def test_concetti():
         return componi.componi(copia, quiz, meta)[1]
     nome0, s0 = sorgenti[0]
 
+    def id_nuovi(s):
+        nuovo = lambda x: 'prova_doppione_' + x
+        return dict(s, concetti=[dict(c, id=nuovo(c['id'])) for c in s['concetti']],
+                    famiglie=[dict(f, id=nuovo(f['id']), concetti=[nuovo(c) for c in f['concetti']]) for f in s['famiglie']],
+                    quesiti={q: [nuovo(c) for c in cs] for q, cs in s['quesiti'].items()})
+
     def due_quesiti(s):
         s['concetti'].append({'id': 'prova_due_quesiti', 'nome': 'prova', 'parole_chiave': ['prova'], 'copre': 'prova'})
         s['famiglie'][0]['concetti'].append('prova_due_quesiti')
@@ -926,7 +932,11 @@ def test_concetti():
         'quattro concetti su un quesito': (lambda cp: cp[0][1]['quesiti'].update({q0: [c['id'] for c in cp[0][1]['concetti'][:4]]}), 'da 1 a'),
         'un concetto fuori dalle famiglie': (lambda cp: [f['concetti'].remove(c0) for f in cp[0][1]['famiglie'] if c0 in f['concetti']], 'nessuna famiglia'),
         'un\'etichetta vietata': (lambda cp: cp[0][1]['concetti'][0].update(nome=sorted(controlla.ETICHETTE_LNI)[0]), 'vietato'),
-        'lo stesso id in due sorgenti': (lambda cp: cp.append(('doppione.json', dict(cp[0][1], tema='VELA' if cp[0][1]['tema'] != 'VELA' else meta['temi'][0]['tema']))), 'gli id sono globali'),
+        # Le due rotture valgono con qualunque insieme di sorgenti: la prima ha un
+        # tema che la banca non ha (quindi nessun tema reale ripetuto) e gli id
+        # della prima sorgente; la seconda ripete il tema con id tutti nuovi.
+        'lo stesso id in due sorgenti': (lambda cp: cp.append(('doppione.json', dict(cp[0][1], tema='TEMA DI PROVA'))), 'gli id sono globali'),
+        'lo stesso tema in due sorgenti': (lambda cp: cp.append(('doppione.json', id_nuovi(cp[0][1]))), 'ha gia\' la sorgente'),
     }
     for descr, (cambia, attesa) in prove.items():
         guai_rotti = rotta(cambia)
