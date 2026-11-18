@@ -512,6 +512,60 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   `sceltaCarteggio()` nel motore, prima di B-4b, come vuole la decisione 12.
 - Nessun file di `site/`, `tests/` o della specifica toccato.
 
+### Aggiunto — P-110: «Scegli tu» sulla carta, nel motore
+
+- **Perché.** Con la decisione 12 di `docs/porte-progetto.md` il Carteggio ha
+  una porta «Scegli tu»: tecnica, argomento o carta, e fra quelli tutti, i mai
+  fatti o i da rivedere (§5.3). Il motore aveva soltanto `tappeto()`, cioè «mai
+  fatti, tutto il foglio». Senza una funzione nel motore, B-5 avrebbe filtrato
+  gli esercizi nella pagina, che è proprio quello che R-SEL-17 vieta.
+- **`sceltaCarteggio(esercizi, progress, opt)`**, con
+  `opt = { tecnica, argomento, carta, cosa: 'tutti' | 'mai' | 'rivedere', n = 4 }`.
+  - **I filtri si compongono.** Uno vuoto o nullo non filtra. La pagina ne
+    offre uno alla volta, ma è una sua scelta: il motore non la impone.
+  - **«Mai fatti»** è nell'ordine del foglio. Senza filtri è `tappeto(n)`, che
+    la funzione compone invece di riscriverla, e un test lo pretende per n = 1,
+    2, 4, 8 su quattro storici.
+  - **«Da rivedere»** è `classifica() === 'da_ripassare'`, come in
+    `giroTecnicheDaRivedere()`. Viene prima il più trascurato.
+  - **«Tutti»** mette prima i mai fatti, poi i fatti dal più trascurato.
+    Nell'ordine del foglio e basta, «Tutti · 4» aprirebbe sempre gli stessi
+    quattro: è il difetto della 0.16.0 sui quiz, e un test lo tiene lontano.
+  - **Lista e numeri dalla stessa chiamata:** `quanti`, `disponibili` e i tre
+    `conteggi` del filtro, senza tetto. Sono i numeri accanto a «Tutti», «Mai
+    fatti» e «Da rivedere».
+  - **Una selezione vuota lo dice**, con `vuota` e un `motivo`: «banca vuota»,
+    «nessun esercizio», «foglio finito» o «niente da rivedere». La carta 42/D,
+    per esempio, non ha carburante.
+  - **`modo`** dice il `mode` della riga del §7.4: «tappeto» per «Mai fatti»
+    senza filtri, «scelta» per il resto.
+  - **Un valore che la banca non ha lancia:** una «cosa» sbagliata, una tecnica,
+    un argomento o una carta che nessun esercizio porta, un `n` che non è un
+    intero positivo. Scritto male darebbe una selezione vuota con l'aria di
+    essere vera.
+- **Additiva.** Nessuna funzione che c'era cambia. `tappeto()`, `giroTecniche()`
+  e `classifica()` sono soltanto chiamate. Prima di scrivere ho elencato i
+  chiamanti di `tappeto()`: `preparaCarteggio()` in `site/index.html`, il banco
+  del Carteggio con le sue due pagine di riferimento, e i test del motore. Per
+  nessuno cambia niente, perché `tappeto()` non è stata toccata. La funzione sta fra gli orfani
+  dichiarati di `docs/eccezioni-interfaccia.md`: la consuma B-5b.
+- **Prima i test.** Otto test nuovi, rossi uno per uno finché la funzione non
+  c'era. Poi **ventiquattro rotture del motore**, una alla volta, tutte rosse
+  nel test che le riguarda. Al primo giro due passavano verdi, ed erano buchi
+  dei test:
+  - «da rivedere» nell'ordine del foglio: nel caso di prova il più trascurato
+    veniva già primo nel foglio;
+  - un conteggio con il tetto: i conteggi si guardavano solo con `n: 200`.
+
+  Ora i due casi ci sono, e le due rotture sono rosse.
+- Suite: motore **237/241** con i quattro skip previsti (erano 229/233), anche
+  con la **24.22.3 LTS**, con l'archivio confrontato con il `SHASUMS256.txt`
+  riscaricato da nodejs.org. Server 89/89 con tutte e due; dati 236; specifica
+  1.146; interfaccia **4.932** (erano 4.929: i tre controlli del nuovo
+  orfano), in 5 min 42 s, con la 8620 guardata libera per 90 s prima.
+  Guardiano verde. `site/index.html`, la specifica e la coda non sono
+  stati toccati.
+
 ## [0.35.1] — 2026-10-29
 
 **Le risposte in simulazione si cambiano, e «auto» si capisce.** Un utente ha
