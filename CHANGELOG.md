@@ -447,6 +447,55 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   ciascuno dei due orfani nuovi), in 5 min 42 s, con la 8620 guardata libera per
   90 s prima. Guardiano verde. `site/index.html`, la specifica
   e la coda non sono stati toccati.
+### Progettato — P-107: il menu nuovo, le due porte e il pulsante unico
+
+- **Perché un progetto prima dei controlli.** Il 18 novembre l'autore ha deciso
+  che il menu cambia in questo giro, Simulazione · Quiz · Carteggio ·
+  Statistiche (C-0), e che per accedere e creare l'account basta un pulsante
+  (C-6). Insieme alle due porte di I-32 tocca la navigazione intera, con i 108
+  tragitti di N-01. È il cambio più grande dal ridisegno di ottobre, e senza un
+  contratto B-4 non avrebbe un rosso da scrivere. `docs/porte-progetto.md`,
+  file neutro, è il passo B-3 del piano.
+- **Dentro:**
+  - il menu, con le cinque viste;
+  - dove va ogni cosa di Allenati, Esame e Progressi, nessuna esclusa;
+  - gli indirizzi di oggi come alias, che portano al posto giusto e scrivono
+    quello canonico;
+  - i testi dei pannelli della Home che nominano le sezioni;
+  - la preselezione di P-109, che passa con Esame;
+  - *Allenati* e *Scegli tu* nei Quiz e nel Carteggio, con testi, stati,
+    azioni e ritorni;
+  - le otto porte di oggi, una per una, con il raccordo e la funzione del
+    motore;
+  - il contratto per B-4 e B-5;
+  - quindici decisioni per l'autore, con la proposta.
+- **Il contratto.** `VISTE_RIDISEGNO` con cinque viste, e due liste valide fino
+  alla merge di B-5, come P-80. `navigazioneSito()` con la tabella degli alias.
+  I raccordi che sostituiscono `MODI` e `selezioneQuiz()`, scritti sulle firme
+  di P-105 lette nel suo worktree, perché P-105 non è fuso.
+  Poi i requisiti:
+  - cambiano R-NAV-01, 03…12, R-SEL-17, R-ACC-03, 41, 75, 76, R-UX-01, 03, 04,
+    R-MAPPA-15, 18 e T-12;
+  - nascono R-PORTE-01…05 e R-ACC-87, 88.
+
+  I 108 tragitti cambiano in dodici righe: i conti scendono solo per il giro
+  delle tecniche, per il tappeto e, al modulo, per la registrazione dalla Home.
+  Prima che le porte di oggi escano, un controllo in Chrome (R-PORTE-05)
+  pretende che ognuna arrivi al suo posto nuovo. B-4 e B-5 si dividono in due:
+  prima il menu e l'account, poi le porte.
+- **Il pulsante unico.** Un modulo solo, con «Continua», che prova prima
+  l'accesso o la registrazione secondo da dove si entra. Il server non cambia,
+  e nessun account nasce senza un tocco che dice di crearlo.
+- **Che cosa manca al motore.** Una funzione: `sceltaCarteggio()`, per *Scegli
+  tu* sulla carta. P-105 non la scrive.
+- **Guardato, non letto**, sul sito di `main` servito in locale sulla porta
+  8631, a 375×812:
+  - barra, segmenti, porte e preparazioni, e il pannello «Accedi»;
+  - le parole della barra nuova: «Simulazione» misura 72 px in una voce da
+    87,75.
+- **Trovato:** il modulo «Crea un account» non torna all'accesso, e si chiude
+  con «Torna al riepilogo» anche dalla Home. Il modulo unico lo risolve.
+- Nessun file di `site/`, `tests/`, della specifica o della coda toccato.
 
 ## [0.35.1] — 2026-10-29
 
