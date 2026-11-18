@@ -346,6 +346,7 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   uscita 0; `git status` del checkout principale vuoto prima e dopo.
 - Suite: dati **233** (erano 225), specifica 1.146; guardiano verde. Motore,
   server e interfaccia non toccati e non rifatti.
+
 ### Annotato — P-103: base-763, la risposta senza i gruppi è del decreto
 
 - **Perché.** Il pilota dei concetti aveva segnalato `base-763` (1.5.3-37):
@@ -386,6 +387,7 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 - Suite: dati **228** (erano 225), motore 215/219 con i quattro skip previsti,
   server 89/89, specifica 1.146, guardiano verde; interfaccia **4.923**, con la
   8620 guardata libera per 90 s.
+
 ### Aggiunto — P-105: il motore per le due porte
 
 - **Perché.** Il 18 novembre l'autore ha deciso che la preparazione passa da
@@ -447,6 +449,7 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   ciascuno dei due orfani nuovi), in 5 min 42 s, con la 8620 guardata libera per
   90 s prima. Guardiano verde. `site/index.html`, la specifica
   e la coda non sono stati toccati.
+
 ### Progettato — P-107: il menu nuovo, le due porte e il pulsante unico
 
 - **Perché un progetto prima dei controlli.** Il 18 novembre l'autore ha deciso
