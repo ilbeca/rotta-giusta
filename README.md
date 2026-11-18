@@ -38,6 +38,12 @@ Quello che rende questo sito diverso dagli altri non sono i quiz. È che
 - **Il quesito dei flap (base-405)** ha una risposta ministeriale che sembra
   invertita rispetto alla fisica. Porta una nota che lo spiega, e tiene la
   risposta del decreto: dichiarare sì, ribaltare no.
+- **Il quesito «Oc (3) W 5s» (base-763, 1.5.3-37)** dà per esatta
+  «intermittente bianco, periodo 5 secondi», senza i gruppi di 3 eclissi che la
+  sigla dichiara. Non è l'estrazione: il decreto la scrive così (pagina 128,
+  riletta sull'immagine il 18 novembre 2026). Porta una nota dopo la risposta,
+  con i due quesiti della banca che dicono che cosa sono i gruppi, e la
+  risposta resta quella del decreto, che delle tre è comunque l'unica giusta.
 - **Dieci figure erano abbinate al quesito sbagliato** dall'estrazione automatica
   del PDF. Sono state riabbinate a mano dopo averle guardate tutte, una
   per una; un test fissa i dieci abbinamenti (base-177, 178, 647, 650, 662, 679,

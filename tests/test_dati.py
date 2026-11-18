@@ -48,7 +48,9 @@ def check(nome, cond, extra=''):
     if cond:
         ok += 1
     else:
-        falliti.append('%s%s' % (nome, (': %s' % extra) if extra != '' else ''))
+        # (extra,) e non extra: con una tupla come dettaglio, '%s' % extra lanciava
+        # TypeError e la suite cadeva invece di dire rosso (trovato da P-103).
+        falliti.append('%s%s' % (nome, (': %s' % (extra,)) if extra != '' else ''))
 
 
 def leggi(p):
@@ -330,8 +332,8 @@ DM_133_2024 = [
     'base-308', 'base-274', 'base-293', 'base-297',
 ]
 
-# f) La risposta esatta dei quesiti annotati (gli 11 del DM 133/2024, base-405 e
-#    i 37 oscurati), fissata da una tabella e non riletta dai dati. Verificata
+# f) La risposta esatta dei quesiti annotati (gli 11 del DM 133/2024, base-405,
+#    base-763 e i 37 oscurati), fissata da una tabella e non riletta dai dati. Verificata
 #    contro il seed originario dal test del progetto sorgente il 4 settembre
 #    2026. E' una guardia di regressione: l'annotazione dice che il decreto e'
 #    superato, ma la risposta del decreto resta quella. Se questa tabella non
@@ -360,6 +362,7 @@ RISPOSTE_ANNOTATI = {
     'base-314': 1,
     'base-405': 0,
     'base-408': 1,
+    'base-763': 0,   # P-103: l'esatta senza i gruppi e' quella del decreto, pagina 128
     'base-446': 2,
     'base-455': 1,
     'base-466': 0,
@@ -471,18 +474,27 @@ def test_invarianti():
           [q['id'] for q in quiz if q.get('nbp') and not q.get('osc')])
 
     # e) note dopo la risposta: i DM 133/2024 non oscurati, piu' il dubbio sui flap
-    attesi_nb = sorted((set(DM_133_2024) - OSCURATI) | {'base-405'})
+    #    e la risposta senza i gruppi di base-763 (P-103)
+    attesi_nb = sorted((set(DM_133_2024) - OSCURATI) | {'base-405', 'base-763'})
     con_nb = sorted(q['id'] for q in quiz if q.get('nb'))
-    check('nb: esattamente 4 quesiti', len(con_nb) == 4, con_nb)
-    check('nb: DM 133/2024 non oscurati + base-405', con_nb == attesi_nb, (con_nb, attesi_nb))
+    check('nb: esattamente 5 quesiti', len(con_nb) == 5, con_nb)
+    check('nb: DM 133/2024 non oscurati + base-405 + base-763', con_nb == attesi_nb, (con_nb, attesi_nb))
     for qid in set(DM_133_2024) - OSCURATI:
         nb = per_id[qid].get('nb') or ''
         check('nb %s: contiene «non è stata cambiata» e «DM 133/2024»' % qid,
               'non è stata cambiata' in nb and 'DM 133/2024' in nb, nb[:160])
     check('nb base-405: contiene «lato sinistro»', 'lato sinistro' in (per_id['base-405'].get('nb') or ''))
+    # base-763 (1.5.3-37), «Oc (3) W 5s»: l'esatta non dice i gruppi, e il decreto
+    # la scrive cosi' (pagina 128, riga 763, letta a 300 dpi il 18 novembre 2026,
+    # P-103). Quindi una nota, e la risposta resta quella del decreto.
+    nb763 = per_id['base-763'].get('nb') or ''
+    check('nb base-763: dice i gruppi di 3, la pagina del decreto e che non è cambiata',
+          'gruppi di 3' in nb763 and 'pagina 128' in nb763 and 'non è stata cambiata' in nb763, nb763[:200])
+    check('nb base-763: nessuna nota prima di rispondere', not per_id['base-763'].get('nbp'),
+          per_id['base-763'].get('nbp'))
 
     # f) nessuna risposta modificata rispetto al decreto
-    attesi = sorted(set(DM_133_2024) | {'base-405'} | OSCURATI)
+    attesi = sorted(set(DM_133_2024) | {'base-405', 'base-763'} | OSCURATI)
     check('tabella risposte annotati: copre esattamente gli annotati',
           sorted(RISPOSTE_ANNOTATI) == attesi, sorted(set(RISPOSTE_ANNOTATI) ^ set(attesi)))
     diversi = {qid: (per_id[qid]['x'], x) for qid, x in RISPOSTE_ANNOTATI.items() if per_id[qid]['x'] != x}
@@ -493,6 +505,8 @@ def test_invarianti():
           'diverse dotazioni luminose' in esatta('base-304'), esatta('base-304'))
     check('base-405: esatta inizia con «di inclinare lo scafo verso il lato dritto»',
           esatta('base-405').startswith('di inclinare lo scafo verso il lato dritto'), esatta('base-405'))
+    check('base-763: esatta == «intermittente bianco, periodo 5 secondi.», come a pagina 128',
+          esatta('base-763') == 'intermittente bianco, periodo 5 secondi.', esatta('base-763'))
 
 
 # --- carteggio ----------------------------------------------------------------------

@@ -346,6 +346,46 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   uscita 0; `git status` del checkout principale vuoto prima e dopo.
 - Suite: dati **233** (erano 225), specifica 1.146; guardiano verde. Motore,
   server e interfaccia non toccati e non rifatti.
+### Annotato — P-103: base-763, la risposta senza i gruppi è del decreto
+
+- **Perché.** Il pilota dei concetti aveva segnalato `base-763` (1.5.3-37):
+  chiede «Oc (3) W 5s» e dà per esatta «intermittente bianco, periodo 5
+  secondi.», senza i gruppi di 3. Prima di decidere fra correzione e nota
+  bisognava sapere chi sbaglia, la banca o il decreto, e il testo estratto non
+  lo dice: è lui che sbaglia, quando sbaglia (P-77).
+- **Letto sull'immagine.** La pagina 128 dell'Allegato A in `fonte/`,
+  rasterizzata a 300 dpi, riga 763: domanda, tre risposte (V, F, F) e
+  progressivo 1.5.3-37 coincidono con la banca parola per parola. **Il decreto
+  la scrive così**: non è un errore d'estrazione, quindi la risposta non si
+  tocca.
+- **Una nota dopo la risposta**, come per i flap (0.13.2): «Oc (3)», in
+  italiano «Int.(3)», è intermittente **a gruppi di 3 eclissi**, e lo dicono
+  due quesiti di questa stessa banca, 1.5.3-9 («Int.(2)»: «a gruppi di eclissi
+  di 2») e 1.5.3-34 («Fl (3) W 10s»: «gruppi di 3 lampi»). La nota cita la
+  pagina del decreto e dice che delle tre resta l'unica giusta. Nessuna nota
+  prima di rispondere: suggerirebbe la risposta. Con la nota, «Avanti da solo»
+  su quel quesito non scatta (I-31), ed è voluto.
+- **Il test prima, rosso sulla banca di oggi** per le 3 verifiche della nota:
+  `test_invarianti` pretende ora cinque note dopo la risposta, quella di
+  base-763 con «gruppi di 3», «pagina 128» e «non è stata cambiata», nessuna
+  `nbp`, e la risposta esatta invariata parola per parola; `base-763` entra in
+  `RISPOSTE_ANNOTATI`. Confronto strutturale della banca con `main`: **una
+  differenza sola**, il campo `nb` di base-763. Il README la dichiara fra i
+  difetti.
+- **Trovato strada facendo, e corretto:** `check()` di `tests/test_dati.py`
+  andava in `TypeError` quando il dettaglio era una tupla (`'%s' % extra`), e
+  la suite cadeva invece di dire rosso. È successo proprio qui, alla prima
+  esecuzione; ora formatta `(extra,)`.
+- **Non toccato, e per la regia:** `dipingiDifetti()` in `site/index.html`
+  scrive «N quesiti con una nota dopo la risposta: quelli in cui il DM
+  133/2024 ha cambiato le dotazioni […], e uno (i flap, base-405)»; il numero
+  è contato dalla banca e diventa 5, la frase elenca 4. La penna della pagina
+  è di Q-1/Q-4, e la riga va aggiunta lì. Così `site/avvertenza.html`, che
+  elenca base-405 fra i difetti, e i «4 con una nota» di
+  `docs/prototipi/stitch-2026-10/argomenti-pannelli.md`.
+- Suite: dati **228** (erano 225), motore 215/219 con i quattro skip previsti,
+  server 89/89, specifica 1.146, guardiano verde; interfaccia **4.923**, con la
+  8620 guardata libera per 90 s.
 
 ## [0.35.1] — 2026-10-29
 
