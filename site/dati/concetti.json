@@ -1,18 +1,264 @@
 {
  "nota": "Concetti e famiglie sono una classificazione di Rotta Giusta, non ministeriale: li ha scritti Claude leggendo testi e figure dei quesiti. Le parole chiave sono quelle da cercare nell'indice di un manuale. Il file si compone da strumenti/concetti/ con componi.py: non si scrive a mano.",
  "sorgenti": [
+  "navigazione-cartografica-ed-elettronica.json",
   "colreg-e-segnalamento-marittimo.json",
   "manovra-e-condotta.json",
   "meteorologia.json",
   "motori.json"
  ],
  "temi": [
+  "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
   "COLREG E SEGNALAMENTO MARITTIMO",
   "MANOVRA E CONDOTTA",
   "METEOROLOGIA",
   "MOTORI"
  ],
  "famiglie": [
+  {
+   "id": "reticolo_terrestre",
+   "nome": "Il reticolo terrestre",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "voce": "Coordinate geografiche",
+   "concetti": [
+    "reticolo_equatore_greenwich",
+    "meridiani_e_paralleli"
+   ]
+  },
+  {
+   "id": "latitudine_e_longitudine",
+   "nome": "Latitudine e longitudine",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "voce": "Coordinate geografiche",
+   "concetti": [
+    "latitudine_definizione",
+    "longitudine_definizione",
+    "coordinate_geografiche",
+    "rotte_meridiano_parallelo"
+   ]
+  },
+  {
+   "id": "proiezione_mercatore",
+   "nome": "La proiezione di Mercatore",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "voce": "Carte nautiche e proiezione di Mercatore",
+   "concetti": [
+    "mercatore_proprieta",
+    "lossodromia_ortodromia"
+   ]
+  },
+  {
+   "id": "scala_e_tipi_di_carte",
+   "nome": "Scala e tipi di carte",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "voce": "Carte nautiche e proiezione di Mercatore",
+   "concetti": [
+    "scala_carta_rapporto",
+    "tipi_carte_per_scala"
+   ]
+  },
+  {
+   "id": "leggere_la_carta",
+   "nome": "Leggere la carta nautica",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "voce": "Carte nautiche e proiezione di Mercatore",
+   "concetti": [
+    "fondali_e_natura_fondo",
+    "simboli_carta_pericoli",
+    "simboli_carta_zone",
+    "abbreviazioni_carta_nautica"
+   ]
+  },
+  {
+   "id": "misurare_sulla_carta",
+   "nome": "Misurare sulla carta",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "voce": "Carte nautiche e proiezione di Mercatore",
+   "concetti": [
+    "scale_ai_bordi_carta"
+   ]
+  },
+  {
+   "id": "gps_e_funzioni",
+   "nome": "Il GPS e le sue funzioni",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "voce": "Navigazione elettronica",
+   "concetti": [
+    "gps_principio",
+    "gps_waypoint",
+    "gps_mob"
+   ]
+  },
+  {
+   "id": "dotazioni_per_navigare",
+   "nome": "Le dotazioni per navigare",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "voce": "Navigazione elettronica",
+   "concetti": [
+    "gps_e_carteggio_obbligo"
+   ]
+  },
+  {
+   "id": "rosa_e_quadranti",
+   "nome": "La rosa e i quadranti",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "voce": "Orientamento e rosa dei venti",
+   "concetti": [
+    "quadranti_e_direzioni",
+    "punti_cardinali"
+   ]
+  },
+  {
+   "id": "misura_degli_angoli",
+   "nome": "Come si misura un angolo",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "voce": "Orientamento e rosa dei venti",
+   "concetti": [
+    "angoli_in_senso_orario"
+   ]
+  },
+  {
+   "id": "nord_di_riferimento",
+   "nome": "I nord di riferimento",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "voce": "Bussole magnetiche",
+   "concetti": [
+    "tre_nord"
+   ]
+  },
+  {
+   "id": "declinazione_e_deviazione",
+   "nome": "Declinazione e deviazione",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "voce": "Bussole magnetiche",
+   "concetti": [
+    "declinazione_magnetica",
+    "deviazione_magnetica"
+   ]
+  },
+  {
+   "id": "compensazione_e_tabella",
+   "nome": "Compensazione e tabella delle deviazioni",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "voce": "Bussole magnetiche",
+   "concetti": [
+    "compensazione_bussola"
+   ]
+  },
+  {
+   "id": "bussola_com_e_fatta",
+   "nome": "Com'è fatta la bussola",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "voce": "Bussole magnetiche",
+   "concetti": [
+    "bussola_parti",
+    "linea_di_fede"
+   ]
+  },
+  {
+   "id": "navigazione_stimata",
+   "nome": "La navigazione stimata",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "voce": "Elementi di navigazione stimata: tempo, spazio e velocità",
+   "concetti": [
+    "punto_stimato",
+    "errori_della_stima",
+    "stimata_criteri_sicurezza"
+   ]
+  },
+  {
+   "id": "unita_di_misura_in_mare",
+   "nome": "Le unità di misura in mare",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "voce": "Elementi di navigazione stimata: tempo, spazio e velocità",
+   "concetti": [
+    "miglio_e_primo_di_latitudine",
+    "nodo_velocita"
+   ]
+  },
+  {
+   "id": "spazio_velocita_tempo",
+   "nome": "Spazio, velocità e tempo",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "voce": "Elementi di navigazione stimata: tempo, spazio e velocità",
+   "concetti": [
+    "svt_formule",
+    "svt_spazio",
+    "svt_tempo",
+    "svt_velocita"
+   ]
+  },
+  {
+   "id": "strumenti_di_carteggio",
+   "nome": "Gli strumenti del carteggio",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "voce": "Elementi di navigazione stimata: tempo, spazio e velocità",
+   "concetti": [
+    "strumenti_carteggio"
+   ]
+  },
+  {
+   "id": "costiera_principi",
+   "nome": "La navigazione costiera",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "voce": "Elementi di navigazione costiera",
+   "concetti": [
+    "navigazione_costiera_punti_cospicui"
+   ]
+  },
+  {
+   "id": "luoghi_e_punto_nave",
+   "nome": "Luoghi di posizione e punto nave",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "voce": "Elementi di navigazione costiera",
+   "concetti": [
+    "luoghi_di_posizione",
+    "allineamento_luogo_posizione",
+    "punto_nave_costiero"
+   ]
+  },
+  {
+   "id": "rilevamenti",
+   "nome": "I rilevamenti",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "voce": "Elementi di navigazione costiera",
+   "concetti": [
+    "rilevamento_vero_e_reciproco",
+    "rilevamento_polare_traverso"
+   ]
+  },
+  {
+   "id": "prora_rotta_moto",
+   "nome": "Prora, rotta e moto della nave",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "voce": "Prora e rotta, scarroccio e deriva per effetto del vento e della corrente",
+   "concetti": [
+    "prora_e_rotta",
+    "moto_proprio_effettivo",
+    "prora_rotta_coincidenza"
+   ]
+  },
+  {
+   "id": "vento_e_corrente",
+   "nome": "Vento e corrente",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "voce": "Prora e rotta, scarroccio e deriva per effetto del vento e della corrente",
+   "concetti": [
+    "scarroccio_effetto_vento",
+    "deriva_effetto_corrente",
+    "vento_corrente_convenzioni"
+   ]
+  },
+  {
+   "id": "pubblicazioni_e_aggiornamenti",
+   "nome": "Pubblicazioni nautiche e aggiornamenti",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "voce": "Pubblicazioni",
+   "concetti": [
+    "pubblicazioni_nautiche_iimm",
+    "aggiornamento_carte_pubblicazioni"
+   ]
+  },
   {
    "id": "faro_luci_portate",
    "nome": "Le luci dei fari: portate, ritmi e sigle",
@@ -513,6 +759,766 @@
   }
  ],
  "concetti": [
+  {
+   "id": "reticolo_equatore_greenwich",
+   "nome": "L'equatore e il meridiano di Greenwich",
+   "parole_chiave": [
+    "equatore",
+    "meridiano di Greenwich",
+    "meridiano fondamentale",
+    "emisfero boreale",
+    "emisfero australe",
+    "cerchi fondamentali"
+   ],
+   "copre": "I due riferimenti del sistema di coordinate: che cosa sono, che cosa dividono, da quale si contano latitudine e longitudine.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "reticolo_terrestre",
+   "quesiti": 10
+  },
+  {
+   "id": "meridiani_e_paralleli",
+   "nome": "Meridiani e paralleli",
+   "parole_chiave": [
+    "meridiano",
+    "parallelo",
+    "circolo massimo",
+    "circolo minore",
+    "antimeridiano",
+    "asse terrestre"
+   ],
+   "copre": "Che cosa sono meridiani e paralleli, quali sono circoli massimi e quali minori, quanti se ne contano per convenzione.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "reticolo_terrestre",
+   "quesiti": 13
+  },
+  {
+   "id": "latitudine_definizione",
+   "nome": "La latitudine",
+   "parole_chiave": [
+    "latitudine",
+    "φ (fi)",
+    "arco di meridiano",
+    "Nord e Sud",
+    "emisfero"
+   ],
+   "copre": "Che cos'è la latitudine, come si misura (da 0° a 90° Nord o Sud), il simbolo φ, i valori impossibili.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "latitudine_e_longitudine",
+   "quesiti": 12
+  },
+  {
+   "id": "longitudine_definizione",
+   "nome": "La longitudine",
+   "parole_chiave": [
+    "longitudine",
+    "λ (lambda)",
+    "arco d'equatore",
+    "Est e Ovest"
+   ],
+   "copre": "Che cos'è la longitudine, come si misura (da 0° a 180° Est o Ovest), il simbolo λ.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "latitudine_e_longitudine",
+   "quesiti": 9
+  },
+  {
+   "id": "coordinate_geografiche",
+   "nome": "Le coordinate geografiche di un punto",
+   "parole_chiave": [
+    "coordinate geografiche",
+    "latitudine e longitudine",
+    "posizione di un punto"
+   ],
+   "copre": "Le coordinate sono una coppia, latitudine e longitudine, e una sola non individua un punto.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "latitudine_e_longitudine",
+   "quesiti": 4
+  },
+  {
+   "id": "rotte_meridiano_parallelo",
+   "nome": "Navigare lungo un meridiano o un parallelo",
+   "parole_chiave": [
+    "rotta Nord-Sud",
+    "rotta Est-Ovest",
+    "variazione di latitudine",
+    "variazione di longitudine"
+   ],
+   "copre": "Che cosa cambia e che cosa resta uguale navigando per 000°, 090°, 180°, 270°, e lungo un meridiano o un parallelo.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "latitudine_e_longitudine",
+   "quesiti": 6
+  },
+  {
+   "id": "mercatore_proprieta",
+   "nome": "Le proprietà della carta di Mercatore",
+   "parole_chiave": [
+    "proiezione di Mercatore",
+    "isogonia",
+    "latitudini crescenti",
+    "carta isogona",
+    "proiezione cilindrica"
+   ],
+   "copre": "Come sono disegnati meridiani e paralleli, perché la carta conserva gli angoli, perché la scala delle latitudini cresce e i poli non si rappresentano.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "proiezione_mercatore",
+   "quesiti": 15
+  },
+  {
+   "id": "lossodromia_ortodromia",
+   "nome": "Lossodromia e ortodromia",
+   "parole_chiave": [
+    "lossodromia",
+    "ortodromia",
+    "rotta ad angolo costante",
+    "circolo massimo",
+    "carta gnomonica"
+   ],
+   "copre": "La rotta che taglia i meridiani con angolo costante e quella più breve; quale si traccia diritta su Mercatore e a che cosa serve la gnomonica.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "proiezione_mercatore",
+   "quesiti": 6
+  },
+  {
+   "id": "scala_carta_rapporto",
+   "nome": "La scala di una carta",
+   "parole_chiave": [
+    "scala",
+    "grande scala",
+    "piccola scala",
+    "denominatore",
+    "rapporto di scala"
+   ],
+   "copre": "Che cosa vuol dire scala grande e scala piccola, quale fra due è la maggiore, e perché le carte si classificano per scala.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "scala_e_tipi_di_carte",
+   "quesiti": 4
+  },
+  {
+   "id": "tipi_carte_per_scala",
+   "nome": "I tipi di carte nautiche",
+   "parole_chiave": [
+    "carta generale",
+    "carta di atterraggio",
+    "carta costiera",
+    "carta dei litorali",
+    "piano nautico",
+    "pianetti"
+   ],
+   "copre": "Carte generali, di atterraggio, costiere, dei litorali e piani nautici: le loro scale e a che cosa servono.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "scala_e_tipi_di_carte",
+   "quesiti": 12
+  },
+  {
+   "id": "fondali_e_natura_fondo",
+   "nome": "Profondità e natura del fondo sulla carta",
+   "parole_chiave": [
+    "batimetrica",
+    "isobata",
+    "scandaglio",
+    "natura del fondo",
+    "fondale"
+   ],
+   "copre": "Le linee di uguale profondità, i numeri dei fondali e le lettere che dicono di che cosa è fatto il fondo.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "leggere_la_carta",
+   "quesiti": 7
+  },
+  {
+   "id": "simboli_carta_pericoli",
+   "nome": "Simboli dei pericoli sulla carta",
+   "parole_chiave": [
+    "scoglio affiorante",
+    "scogli sommersi",
+    "relitto",
+    "posizione approssimativa",
+    "segni convenzionali"
+   ],
+   "copre": "Riconoscere sulla carta scogli, relitti e pericoli, e la loro posizione approssimativa.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "leggere_la_carta",
+   "quesiti": 4
+  },
+  {
+   "id": "simboli_carta_zone",
+   "nome": "Simboli di zone, ancoraggi e condotte sulla carta",
+   "parole_chiave": [
+    "zona regolamentata",
+    "ancoraggio",
+    "ancoraggio vietato",
+    "cavo sottomarino",
+    "condotta sottomarina",
+    "schema di separazione del traffico"
+   ],
+   "copre": "Riconoscere sulla carta i limiti delle zone regolamentate, gli ancoraggi permessi e vietati, cavi e condotte, gli schemi di separazione del traffico.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "leggere_la_carta",
+   "quesiti": 7
+  },
+  {
+   "id": "abbreviazioni_carta_nautica",
+   "nome": "Lettere e abbreviazioni sulla carta",
+   "parole_chiave": [
+    "abbreviazioni",
+    "F luce fissa",
+    "r roccia",
+    "f fango",
+    "P.A."
+   ],
+   "copre": "Le lettere che accompagnano i simboli sulla carta: luce fissa, natura del fondo, posizione approssimativa.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "leggere_la_carta",
+   "quesiti": 4
+  },
+  {
+   "id": "scale_ai_bordi_carta",
+   "nome": "Le scale ai bordi della carta: distanze e coordinate",
+   "parole_chiave": [
+    "scala delle latitudini",
+    "scala delle longitudini",
+    "misura delle distanze",
+    "compasso",
+    "lettura delle coordinate"
+   ],
+   "copre": "Dove si leggono latitudine e longitudine sulla carta e perché le distanze si misurano sulla scala delle latitudini, alla stessa latitudine.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "misurare_sulla_carta",
+   "quesiti": 7
+  },
+  {
+   "id": "gps_principio",
+   "nome": "Come funziona il GPS e che cosa dice",
+   "parole_chiave": [
+    "GPS",
+    "satelliti",
+    "ricevitore",
+    "punto nave satellitare",
+    "precisione del GPS"
+   ],
+   "copre": "Il GPS è un ricevitore che si posiziona sui satelliti; il suo margine d'errore e le informazioni che dà.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "gps_e_funzioni",
+   "quesiti": 5
+  },
+  {
+   "id": "gps_waypoint",
+   "nome": "Navigare per waypoint",
+   "parole_chiave": [
+    "waypoint",
+    "rotta per il waypoint",
+    "GPS cartografico",
+    "ostacoli",
+    "rotte spezzate"
+   ],
+   "copre": "Dove mettere un waypoint, perché il GPS non vede gli ostacoli, che cosa mostra il GPS cartografico.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "gps_e_funzioni",
+   "quesiti": 5
+  },
+  {
+   "id": "gps_mob",
+   "nome": "La funzione MOB del GPS",
+   "parole_chiave": [
+    "MOB",
+    "uomo a mare",
+    "Man Over Board",
+    "tasto MOB"
+   ],
+   "copre": "Che cosa fa il tasto MOB: segna il punto di caduta e dà la rotta per tornarci.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "gps_e_funzioni",
+   "quesiti": 3
+  },
+  {
+   "id": "gps_e_carteggio_obbligo",
+   "nome": "GPS e strumenti da carteggio oltre le 12 miglia",
+   "parole_chiave": [
+    "dotazioni di navigazione",
+    "oltre 12 miglia",
+    "GPS obbligatorio",
+    "strumenti da carteggio"
+   ],
+   "copre": "Quando GPS e strumenti da carteggio sono obbligatori a bordo, e se il GPS può essere fisso o portatile.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "dotazioni_per_navigare",
+   "quesiti": 3
+  },
+  {
+   "id": "quadranti_e_direzioni",
+   "nome": "I quadranti dell'orizzonte",
+   "parole_chiave": [
+    "quadrante",
+    "primo quadrante",
+    "secondo quadrante",
+    "direzione sulla carta",
+    "Nord in alto"
+   ],
+   "copre": "In quale quadrante cade una direzione in gradi, e verso dove punta sulla carta.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "rosa_e_quadranti",
+   "quesiti": 7
+  },
+  {
+   "id": "punti_cardinali",
+   "nome": "Punti cardinali, intercardinali e quarte",
+   "parole_chiave": [
+    "punti cardinali",
+    "intercardinali",
+    "rosa dei venti",
+    "quarte",
+    "Nord-Nord Est"
+   ],
+   "copre": "Le direzioni N, S, E, W, quelle intermedie e i loro valori in gradi, anche a 22,5°.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "rosa_e_quadranti",
+   "quesiti": 7
+  },
+  {
+   "id": "angoli_in_senso_orario",
+   "nome": "Gli angoli si contano da 0° a 360° in senso orario",
+   "parole_chiave": [
+    "senso orario",
+    "angolo di rotta",
+    "angolo di prora",
+    "notazione circolare"
+   ],
+   "copre": "Rotte, prore, rilevamenti e rosa della bussola si contano da 0° a 360° in senso orario.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "misura_degli_angoli",
+   "quesiti": 5
+  },
+  {
+   "id": "tre_nord",
+   "nome": "Nord vero, nord magnetico, nord bussola",
+   "parole_chiave": [
+    "Nord vero",
+    "Nord magnetico",
+    "Nord bussola",
+    "Nv Nm Nb",
+    "variazione magnetica"
+   ],
+   "copre": "I tre nord, verso quale si orienta la bussola a bordo e a terra, e quando nord bussola e nord magnetico coincidono.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "nord_di_riferimento",
+   "quesiti": 9
+  },
+  {
+   "id": "declinazione_magnetica",
+   "nome": "La declinazione magnetica",
+   "parole_chiave": [
+    "declinazione magnetica",
+    "magnetismo terrestre",
+    "variazione annua",
+    "rosa della carta",
+    "segno Est Ovest"
+   ],
+   "copre": "Fra Nv e Nm: da che cosa dipende, come cambia con il luogo e il tempo, dove si legge, il segno.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "declinazione_e_deviazione",
+   "quesiti": 10
+  },
+  {
+   "id": "deviazione_magnetica",
+   "nome": "La deviazione magnetica",
+   "parole_chiave": [
+    "deviazione magnetica",
+    "magnetismo di bordo",
+    "ferri duri",
+    "ferri dolci",
+    "tabella delle deviazioni"
+   ],
+   "copre": "Fra Nm e Nb: da che cosa dipende, come cambia con la prora, il segno, dove si legge.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "declinazione_e_deviazione",
+   "quesiti": 11
+  },
+  {
+   "id": "compensazione_bussola",
+   "nome": "Compensazione e giri di bussola",
+   "parole_chiave": [
+    "compensazione",
+    "giri di bussola",
+    "perito compensatore",
+    "deviazioni residue",
+    "allineamento",
+    "stella polare"
+   ],
+   "copre": "Chi compensa la bussola, a che cosa servono i giri di bussola, come si controlla la deviazione.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "compensazione_e_tabella",
+   "quesiti": 6
+  },
+  {
+   "id": "bussola_parti",
+   "nome": "Le parti della bussola magnetica",
+   "parole_chiave": [
+    "rosa graduata",
+    "mortaio",
+    "equipaggio magnetico",
+    "sospensione cardanica",
+    "liquido della bussola"
+   ],
+   "copre": "Rosa, magneti, liquido e sospensione cardanica: com'è fatta la bussola e a che cosa serve ogni parte.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "bussola_com_e_fatta",
+   "quesiti": 5
+  },
+  {
+   "id": "linea_di_fede",
+   "nome": "La linea di fede",
+   "parole_chiave": [
+    "linea di fede",
+    "asse longitudinale",
+    "lettura della prora",
+    "installazione della bussola"
+   ],
+   "copre": "Il riferimento sotto cui si legge la prora: com'è orientato e come si installa.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "bussola_com_e_fatta",
+   "quesiti": 6
+  },
+  {
+   "id": "punto_stimato",
+   "nome": "Il punto stimato",
+   "parole_chiave": [
+    "navigazione stimata",
+    "punto stimato",
+    "prora e velocità",
+    "posizione approssimata",
+    "metodo grafico"
+   ],
+   "copre": "Che cos'è il punto stimato, quali elementi servono (prora, velocità, tempo, partenza), perché è approssimato.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "navigazione_stimata",
+   "quesiti": 12
+  },
+  {
+   "id": "errori_della_stima",
+   "nome": "Perché il punto stimato sbaglia",
+   "parole_chiave": [
+    "errori della stima",
+    "zona di incertezza",
+    "scarroccio e deriva",
+    "atterraggio"
+   ],
+   "copre": "Le cause d'errore della stima, la zona d'incertezza che cresce con il tempo, come vento e corrente si compensano.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "navigazione_stimata",
+   "quesiti": 5
+  },
+  {
+   "id": "stimata_criteri_sicurezza",
+   "nome": "I criteri di sicurezza nel pianificare",
+   "parole_chiave": [
+    "pianificazione",
+    "criterio di sicurezza",
+    "pescaggio",
+    "pericoli idrografici",
+    "pericoli meteorologici"
+   ],
+   "copre": "Tenersi lontani dai pericoli idrografici (fondale e pescaggio) e meteorologici quando si pianifica una rotta.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "navigazione_stimata",
+   "quesiti": 3
+  },
+  {
+   "id": "miglio_e_primo_di_latitudine",
+   "nome": "Il miglio nautico, il grado e il primo",
+   "parole_chiave": [
+    "miglio nautico",
+    "1852 metri",
+    "primo di latitudine",
+    "grado sessagesimale",
+    "60 miglia per grado"
+   ],
+   "copre": "Il miglio è un primo di latitudine e vale 1.852 metri; un grado ha 60 primi, cioè 60 miglia.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "unita_di_misura_in_mare",
+   "quesiti": 12
+  },
+  {
+   "id": "nodo_velocita",
+   "nome": "Il nodo",
+   "parole_chiave": [
+    "nodo",
+    "miglia orarie",
+    "velocità in mare"
+   ],
+   "copre": "Il nodo è l'unità di velocità in mare: un miglio all'ora.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "unita_di_misura_in_mare",
+   "quesiti": 5
+  },
+  {
+   "id": "svt_formule",
+   "nome": "Le formule di spazio, velocità e tempo",
+   "parole_chiave": [
+    "S = V × T",
+    "V = S / T",
+    "T = S / V",
+    "ore e decimi"
+   ],
+   "copre": "Quale formula usare per lo spazio, la velocità o il tempo, e in quali unità.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "spazio_velocita_tempo",
+   "quesiti": 5
+  },
+  {
+   "id": "svt_spazio",
+   "nome": "Calcolare lo spazio percorso",
+   "parole_chiave": [
+    "spazio percorso",
+    "miglia percorse",
+    "minuti in frazioni di ora"
+   ],
+   "copre": "Quante miglia si percorrono a una velocità data in un tempo dato, con i minuti convertiti in ore.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "spazio_velocita_tempo",
+   "quesiti": 21
+  },
+  {
+   "id": "svt_tempo",
+   "nome": "Calcolare il tempo di navigazione",
+   "parole_chiave": [
+    "tempo di navigazione",
+    "decimi di ora",
+    "conversione in minuti"
+   ],
+   "copre": "Quanto dura una navigazione, e come si legge un risultato in ore e decimi in ore e minuti.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "spazio_velocita_tempo",
+   "quesiti": 5
+  },
+  {
+   "id": "svt_velocita",
+   "nome": "Calcolare la velocità",
+   "parole_chiave": [
+    "velocità media",
+    "nodi",
+    "spazio diviso tempo"
+   ],
+   "copre": "Che velocità serve, o si è tenuta, per un percorso in un tempo dato.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "spazio_velocita_tempo",
+   "quesiti": 4
+  },
+  {
+   "id": "strumenti_carteggio",
+   "nome": "Squadrette, parallele e compasso",
+   "parole_chiave": [
+    "squadrette nautiche",
+    "parallele",
+    "compasso a punte secche",
+    "carteggio"
+   ],
+   "copre": "Che cosa si fa con squadrette, parallele e compasso sulla carta: angoli, rotte, rilevamenti, distanze.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "strumenti_di_carteggio",
+   "quesiti": 7
+  },
+  {
+   "id": "navigazione_costiera_punti_cospicui",
+   "nome": "La navigazione costiera e i punti cospicui",
+   "parole_chiave": [
+    "navigazione costiera",
+    "punto cospicuo",
+    "riconoscimento della costa",
+    "carte a scala adeguata"
+   ],
+   "copre": "Navigare in vista della costa riconoscendo punti cospicui; che cosa serve e perché è impegnativa.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "costiera_principi",
+   "quesiti": 7
+  },
+  {
+   "id": "luoghi_di_posizione",
+   "nome": "I luoghi di posizione",
+   "parole_chiave": [
+    "luogo di posizione",
+    "retta di rilevamento",
+    "cerchio capace",
+    "cerchio di uguale distanza",
+    "batimetrica"
+   ],
+   "copre": "Che cos'è un luogo di posizione e quali sono: rilevamento, cerchio capace, distanza, batimetrica.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "luoghi_e_punto_nave",
+   "quesiti": 7
+  },
+  {
+   "id": "allineamento_luogo_posizione",
+   "nome": "L'allineamento",
+   "parole_chiave": [
+    "allineamento",
+    "enfilata",
+    "due punti cospicui",
+    "rilevamenti uguali o opposti"
+   ],
+   "copre": "Due oggetti visti uno dietro l'altro danno un allineamento: un luogo di posizione, che da solo non basta.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "luoghi_e_punto_nave",
+   "quesiti": 3
+  },
+  {
+   "id": "punto_nave_costiero",
+   "nome": "Il punto nave costiero",
+   "parole_chiave": [
+    "punto nave",
+    "incrocio di luoghi di posizione",
+    "rilevamento e distanza",
+    "punto nave osservato"
+   ],
+   "copre": "Il punto nave nasce da almeno due luoghi di posizione, anche rilevamento e distanza dello stesso oggetto.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "luoghi_e_punto_nave",
+   "quesiti": 8
+  },
+  {
+   "id": "rilevamento_vero_e_reciproco",
+   "nome": "Il rilevamento e la posizione rispetto al faro",
+   "parole_chiave": [
+    "rilevamento vero",
+    "rilevamento reciproco",
+    "Rlv",
+    "posizione rispetto a un faro"
+   ],
+   "copre": "Che cos'è il rilevamento di un oggetto, e da dove lo si vede: chi è a Sud-Ovest di un faro lo rileva per 045°.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "rilevamenti",
+   "quesiti": 19
+  },
+  {
+   "id": "rilevamento_polare_traverso",
+   "nome": "Il rilevamento polare e il traverso",
+   "parole_chiave": [
+    "rilevamento polare",
+    "rilevamento polare semicircolare",
+    "traverso",
+    "grafometro"
+   ],
+   "copre": "L'angolo fra la prora e l'oggetto: come si conta, il segno a dritta e a sinistra, il traverso a 90°.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "rilevamenti",
+   "quesiti": 8
+  },
+  {
+   "id": "prora_e_rotta",
+   "nome": "Prora e rotta: che cosa sono",
+   "parole_chiave": [
+    "prora vera",
+    "rotta vera",
+    "Pv",
+    "Rv",
+    "angolo di rotta",
+    "rotte opposte"
+   ],
+   "copre": "La prora è dove punta la chiglia, la rotta è il percorso sul fondo; come si misurano e dove si leggono.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "prora_rotta_moto",
+   "quesiti": 7
+  },
+  {
+   "id": "moto_proprio_effettivo",
+   "nome": "Moto proprio e moto effettivo",
+   "parole_chiave": [
+    "velocità propria",
+    "velocità effettiva",
+    "Vp",
+    "Ve",
+    "moto propulsivo",
+    "moto effettivo"
+   ],
+   "copre": "Il moto dato dalle eliche (Pv, Vp) e quello reale rispetto al fondo (Rv, Ve).",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "prora_rotta_moto",
+   "quesiti": 5
+  },
+  {
+   "id": "prora_rotta_coincidenza",
+   "nome": "Quando prora e rotta coincidono",
+   "parole_chiave": [
+    "coincidenza prora rotta",
+    "vento in prora",
+    "vento in poppa",
+    "accostare al traverso"
+   ],
+   "copre": "Con vento o corrente di prora o di poppa prora e rotta coincidono; negli altri casi no, e il traverso si prende sulla prora.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "prora_rotta_moto",
+   "quesiti": 3
+  },
+  {
+   "id": "scarroccio_effetto_vento",
+   "nome": "Lo scarroccio",
+   "parole_chiave": [
+    "scarroccio",
+    "angolo di scarroccio",
+    "velocità di scarroccio",
+    "opera morta",
+    "superficie velica"
+   ],
+   "copre": "L'effetto del vento sulla rotta: da che cosa dipende, a quali unità, il segno a dritta e a sinistra.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "vento_e_corrente",
+   "quesiti": 9
+  },
+  {
+   "id": "deriva_effetto_corrente",
+   "nome": "La deriva",
+   "parole_chiave": [
+    "deriva",
+    "angolo di deriva",
+    "corrente",
+    "velocità della corrente"
+   ],
+   "copre": "L'effetto della corrente sulla rotta: uguale per ogni scafo.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "vento_e_corrente",
+   "quesiti": 6
+  },
+  {
+   "id": "vento_corrente_convenzioni",
+   "nome": "Vento e corrente: da dove vengono, dove vanno",
+   "parole_chiave": [
+    "direzione del vento",
+    "direzione della corrente",
+    "vento apparente",
+    "venti di traversia"
+   ],
+   "copre": "Il vento si nomina da dove viene, la corrente verso dove va; il vento apparente; i venti di traversia di un porto.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "vento_e_corrente",
+   "quesiti": 4
+  },
+  {
+   "id": "pubblicazioni_nautiche_iimm",
+   "nome": "Le pubblicazioni nautiche",
+   "parole_chiave": [
+    "Istituto Idrografico della Marina",
+    "Portolano",
+    "Elenco dei fari e segnali da nebbia",
+    "catalogo I.I. 3001",
+    "documenti nautici"
+   ],
+   "copre": "Che cosa contengono il Portolano, l’Elenco dei fari, il catalogo, e quali aree coprono le carte dell’Istituto Idrografico.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "pubblicazioni_e_aggiornamenti",
+   "quesiti": 7
+  },
+  {
+   "id": "aggiornamento_carte_pubblicazioni",
+   "nome": "Aggiornare carte e pubblicazioni",
+   "parole_chiave": [
+    "Avvisi ai Naviganti",
+    "aggiornamento",
+    "nuova edizione",
+    "ristampa",
+    "carte didattiche"
+   ],
+   "copre": "Gli Avvisi ai Naviganti, dove si annotano le correzioni, che differenza c’è fra nuova edizione e ristampa.",
+   "tema": "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
+   "famiglia": "pubblicazioni_e_aggiornamenti",
+   "quesiti": 6
+  },
   {
    "id": "faro_portate",
    "nome": "Le tre portate di un faro",
@@ -4462,6 +5468,1030 @@
   ],
   "base-966": [
    "vento_origine_gradiente"
+  ],
+  "base-967": [
+   "longitudine_definizione"
+  ],
+  "base-968": [
+   "latitudine_definizione"
+  ],
+  "base-969": [
+   "latitudine_definizione"
+  ],
+  "base-970": [
+   "latitudine_definizione"
+  ],
+  "base-971": [
+   "longitudine_definizione"
+  ],
+  "base-972": [
+   "meridiani_e_paralleli"
+  ],
+  "base-973": [
+   "coordinate_geografiche"
+  ],
+  "base-974": [
+   "reticolo_equatore_greenwich"
+  ],
+  "base-975": [
+   "miglio_e_primo_di_latitudine"
+  ],
+  "base-976": [
+   "reticolo_equatore_greenwich",
+   "longitudine_definizione"
+  ],
+  "base-977": [
+   "miglio_e_primo_di_latitudine"
+  ],
+  "base-978": [
+   "longitudine_definizione"
+  ],
+  "base-979": [
+   "meridiani_e_paralleli"
+  ],
+  "base-980": [
+   "meridiani_e_paralleli"
+  ],
+  "base-981": [
+   "reticolo_equatore_greenwich",
+   "meridiani_e_paralleli"
+  ],
+  "base-982": [
+   "meridiani_e_paralleli"
+  ],
+  "base-983": [
+   "longitudine_definizione"
+  ],
+  "base-984": [
+   "meridiani_e_paralleli"
+  ],
+  "base-985": [
+   "reticolo_equatore_greenwich",
+   "latitudine_definizione"
+  ],
+  "base-986": [
+   "miglio_e_primo_di_latitudine"
+  ],
+  "base-987": [
+   "coordinate_geografiche"
+  ],
+  "base-988": [
+   "longitudine_definizione"
+  ],
+  "base-989": [
+   "rotte_meridiano_parallelo"
+  ],
+  "base-990": [
+   "reticolo_equatore_greenwich"
+  ],
+  "base-991": [
+   "latitudine_definizione"
+  ],
+  "base-992": [
+   "meridiani_e_paralleli"
+  ],
+  "base-993": [
+   "scale_ai_bordi_carta"
+  ],
+  "base-994": [
+   "reticolo_equatore_greenwich",
+   "latitudine_definizione"
+  ],
+  "base-995": [
+   "reticolo_equatore_greenwich"
+  ],
+  "base-996": [
+   "coordinate_geografiche"
+  ],
+  "base-997": [
+   "coordinate_geografiche",
+   "latitudine_definizione"
+  ],
+  "base-998": [
+   "rotte_meridiano_parallelo",
+   "meridiani_e_paralleli"
+  ],
+  "base-999": [
+   "rotte_meridiano_parallelo",
+   "meridiani_e_paralleli"
+  ],
+  "base-1000": [
+   "rotte_meridiano_parallelo"
+  ],
+  "base-1001": [
+   "latitudine_definizione"
+  ],
+  "base-1002": [
+   "longitudine_definizione"
+  ],
+  "base-1003": [
+   "meridiani_e_paralleli"
+  ],
+  "base-1004": [
+   "meridiani_e_paralleli"
+  ],
+  "base-1005": [
+   "reticolo_equatore_greenwich"
+  ],
+  "base-1006": [
+   "meridiani_e_paralleli",
+   "latitudine_definizione"
+  ],
+  "base-1007": [
+   "meridiani_e_paralleli",
+   "longitudine_definizione"
+  ],
+  "base-1008": [
+   "latitudine_definizione",
+   "scale_ai_bordi_carta"
+  ],
+  "base-1009": [
+   "latitudine_definizione"
+  ],
+  "base-1010": [
+   "reticolo_equatore_greenwich",
+   "longitudine_definizione"
+  ],
+  "base-1011": [
+   "reticolo_equatore_greenwich",
+   "latitudine_definizione"
+  ],
+  "base-1012": [
+   "pubblicazioni_nautiche_iimm"
+  ],
+  "base-1013": [
+   "mercatore_proprieta"
+  ],
+  "base-1014": [
+   "aggiornamento_carte_pubblicazioni"
+  ],
+  "base-1015": [
+   "mercatore_proprieta"
+  ],
+  "base-1016": [
+   "tipi_carte_per_scala"
+  ],
+  "base-1017": [
+   "tipi_carte_per_scala"
+  ],
+  "base-1018": [
+   "tipi_carte_per_scala"
+  ],
+  "base-1019": [
+   "fondali_e_natura_fondo"
+  ],
+  "base-1020": [
+   "mercatore_proprieta"
+  ],
+  "base-1021": [
+   "scala_carta_rapporto",
+   "tipi_carte_per_scala"
+  ],
+  "base-1022": [
+   "mercatore_proprieta"
+  ],
+  "base-1023": [
+   "tipi_carte_per_scala"
+  ],
+  "base-1024": [
+   "scala_carta_rapporto",
+   "tipi_carte_per_scala"
+  ],
+  "base-1025": [
+   "lossodromia_ortodromia"
+  ],
+  "base-1026": [
+   "fondali_e_natura_fondo"
+  ],
+  "base-1027": [
+   "mercatore_proprieta"
+  ],
+  "base-1028": [
+   "scala_carta_rapporto"
+  ],
+  "base-1029": [
+   "tipi_carte_per_scala"
+  ],
+  "base-1030": [
+   "mercatore_proprieta"
+  ],
+  "base-1031": [
+   "mercatore_proprieta"
+  ],
+  "base-1032": [
+   "tipi_carte_per_scala"
+  ],
+  "base-1033": [
+   "tipi_carte_per_scala"
+  ],
+  "base-1034": [
+   "tipi_carte_per_scala"
+  ],
+  "base-1035": [
+   "fondali_e_natura_fondo"
+  ],
+  "base-1036": [
+   "scala_carta_rapporto"
+  ],
+  "base-1037": [
+   "aggiornamento_carte_pubblicazioni"
+  ],
+  "base-1038": [
+   "mercatore_proprieta"
+  ],
+  "base-1039": [
+   "mercatore_proprieta"
+  ],
+  "base-1040": [
+   "fondali_e_natura_fondo"
+  ],
+  "base-1041": [
+   "strumenti_carteggio"
+  ],
+  "base-1042": [
+   "mercatore_proprieta",
+   "lossodromia_ortodromia"
+  ],
+  "base-1043": [
+   "abbreviazioni_carta_nautica"
+  ],
+  "base-1044": [
+   "mercatore_proprieta"
+  ],
+  "base-1045": [
+   "mercatore_proprieta"
+  ],
+  "base-1046": [
+   "tipi_carte_per_scala"
+  ],
+  "base-1047": [
+   "aggiornamento_carte_pubblicazioni"
+  ],
+  "base-1048": [
+   "scale_ai_bordi_carta"
+  ],
+  "base-1049": [
+   "abbreviazioni_carta_nautica",
+   "fondali_e_natura_fondo"
+  ],
+  "base-1050": [
+   "abbreviazioni_carta_nautica",
+   "fondali_e_natura_fondo"
+  ],
+  "base-1051": [
+   "simboli_carta_zone"
+  ],
+  "base-1052": [
+   "simboli_carta_pericoli"
+  ],
+  "base-1053": [
+   "simboli_carta_pericoli"
+  ],
+  "base-1054": [
+   "simboli_carta_zone"
+  ],
+  "base-1055": [
+   "abbreviazioni_carta_nautica",
+   "simboli_carta_pericoli"
+  ],
+  "base-1056": [
+   "simboli_carta_zone"
+  ],
+  "base-1057": [
+   "lossodromia_ortodromia",
+   "mercatore_proprieta"
+  ],
+  "base-1058": [
+   "lossodromia_ortodromia",
+   "mercatore_proprieta"
+  ],
+  "base-1059": [
+   "fondali_e_natura_fondo"
+  ],
+  "base-1060": [
+   "tipi_carte_per_scala"
+  ],
+  "base-1061": [
+   "simboli_carta_zone"
+  ],
+  "base-1062": [
+   "simboli_carta_zone"
+  ],
+  "base-1063": [
+   "simboli_carta_pericoli"
+  ],
+  "base-1064": [
+   "simboli_carta_zone"
+  ],
+  "base-1065": [
+   "simboli_carta_zone"
+  ],
+  "base-1066": [
+   "lossodromia_ortodromia"
+  ],
+  "base-1067": [
+   "lossodromia_ortodromia"
+  ],
+  "base-1068": [
+   "gps_mob"
+  ],
+  "base-1069": [
+   "gps_principio"
+  ],
+  "base-1070": [
+   "gps_principio",
+   "gps_waypoint"
+  ],
+  "base-1071": [
+   "gps_e_carteggio_obbligo"
+  ],
+  "base-1072": [
+   "gps_principio"
+  ],
+  "base-1073": [
+   "gps_principio"
+  ],
+  "base-1074": [
+   "gps_e_carteggio_obbligo"
+  ],
+  "base-1075": [
+   "gps_waypoint"
+  ],
+  "base-1076": [
+   "gps_mob"
+  ],
+  "base-1077": [
+   "gps_mob"
+  ],
+  "base-1078": [
+   "gps_waypoint"
+  ],
+  "base-1079": [
+   "gps_waypoint"
+  ],
+  "base-1080": [
+   "gps_waypoint",
+   "gps_principio"
+  ],
+  "base-1081": [
+   "quadranti_e_direzioni"
+  ],
+  "base-1082": [
+   "quadranti_e_direzioni"
+  ],
+  "base-1083": [
+   "quadranti_e_direzioni"
+  ],
+  "base-1084": [
+   "quadranti_e_direzioni"
+  ],
+  "base-1085": [
+   "quadranti_e_direzioni"
+  ],
+  "base-1086": [
+   "quadranti_e_direzioni"
+  ],
+  "base-1087": [
+   "quadranti_e_direzioni"
+  ],
+  "base-1088": [
+   "angoli_in_senso_orario"
+  ],
+  "base-1089": [
+   "punti_cardinali"
+  ],
+  "base-1090": [
+   "punti_cardinali"
+  ],
+  "base-1091": [
+   "punti_cardinali"
+  ],
+  "base-1092": [
+   "tre_nord"
+  ],
+  "base-1093": [
+   "linea_di_fede"
+  ],
+  "base-1094": [
+   "bussola_parti"
+  ],
+  "base-1095": [
+   "tre_nord"
+  ],
+  "base-1096": [
+   "compensazione_bussola"
+  ],
+  "base-1097": [
+   "declinazione_magnetica",
+   "tre_nord"
+  ],
+  "base-1098": [
+   "declinazione_magnetica"
+  ],
+  "base-1099": [
+   "deviazione_magnetica",
+   "tre_nord"
+  ],
+  "base-1100": [
+   "compensazione_bussola",
+   "deviazione_magnetica"
+  ],
+  "base-1101": [
+   "declinazione_magnetica"
+  ],
+  "base-1102": [
+   "declinazione_magnetica"
+  ],
+  "base-1103": [
+   "declinazione_magnetica"
+  ],
+  "base-1104": [
+   "compensazione_bussola"
+  ],
+  "base-1105": [
+   "declinazione_magnetica"
+  ],
+  "base-1106": [
+   "deviazione_magnetica"
+  ],
+  "base-1107": [
+   "deviazione_magnetica",
+   "compensazione_bussola"
+  ],
+  "base-1108": [
+   "bussola_parti"
+  ],
+  "base-1109": [
+   "bussola_parti"
+  ],
+  "base-1110": [
+   "tre_nord"
+  ],
+  "base-1111": [
+   "linea_di_fede"
+  ],
+  "base-1112": [
+   "declinazione_magnetica"
+  ],
+  "base-1113": [
+   "bussola_parti",
+   "angoli_in_senso_orario"
+  ],
+  "base-1114": [
+   "declinazione_magnetica"
+  ],
+  "base-1115": [
+   "tre_nord",
+   "deviazione_magnetica"
+  ],
+  "base-1116": [
+   "linea_di_fede"
+  ],
+  "base-1117": [
+   "compensazione_bussola",
+   "deviazione_magnetica"
+  ],
+  "base-1118": [
+   "deviazione_magnetica"
+  ],
+  "base-1119": [
+   "declinazione_magnetica"
+  ],
+  "base-1120": [
+   "deviazione_magnetica"
+  ],
+  "base-1121": [
+   "linea_di_fede"
+  ],
+  "base-1122": [
+   "deviazione_magnetica"
+  ],
+  "base-1123": [
+   "deviazione_magnetica",
+   "compensazione_bussola"
+  ],
+  "base-1124": [
+   "linea_di_fede"
+  ],
+  "base-1125": [
+   "linea_di_fede"
+  ],
+  "base-1126": [
+   "tre_nord"
+  ],
+  "base-1127": [
+   "tre_nord",
+   "declinazione_magnetica",
+   "deviazione_magnetica"
+  ],
+  "base-1128": [
+   "tre_nord"
+  ],
+  "base-1129": [
+   "bussola_parti"
+  ],
+  "base-1130": [
+   "punto_stimato"
+  ],
+  "base-1131": [
+   "strumenti_carteggio",
+   "punto_stimato"
+  ],
+  "base-1132": [
+   "errori_della_stima"
+  ],
+  "base-1133": [
+   "stimata_criteri_sicurezza"
+  ],
+  "base-1134": [
+   "stimata_criteri_sicurezza"
+  ],
+  "base-1135": [
+   "stimata_criteri_sicurezza"
+  ],
+  "base-1136": [
+   "errori_della_stima"
+  ],
+  "base-1137": [
+   "punto_stimato"
+  ],
+  "base-1138": [
+   "punto_stimato"
+  ],
+  "base-1139": [
+   "punto_stimato",
+   "mercatore_proprieta"
+  ],
+  "base-1140": [
+   "errori_della_stima"
+  ],
+  "base-1141": [
+   "errori_della_stima",
+   "punto_stimato"
+  ],
+  "base-1142": [
+   "nodo_velocita"
+  ],
+  "base-1143": [
+   "nodo_velocita"
+  ],
+  "base-1144": [
+   "svt_formule"
+  ],
+  "base-1145": [
+   "svt_formule"
+  ],
+  "base-1146": [
+   "svt_formule"
+  ],
+  "base-1147": [
+   "strumenti_carteggio"
+  ],
+  "base-1148": [
+   "strumenti_carteggio",
+   "scale_ai_bordi_carta"
+  ],
+  "base-1149": [
+   "miglio_e_primo_di_latitudine"
+  ],
+  "base-1150": [
+   "miglio_e_primo_di_latitudine"
+  ],
+  "base-1151": [
+   "errori_della_stima"
+  ],
+  "base-1152": [
+   "punto_stimato"
+  ],
+  "base-1153": [
+   "svt_velocita",
+   "nodo_velocita"
+  ],
+  "base-1154": [
+   "nodo_velocita"
+  ],
+  "base-1155": [
+   "miglio_e_primo_di_latitudine"
+  ],
+  "base-1156": [
+   "svt_spazio"
+  ],
+  "base-1157": [
+   "punto_stimato"
+  ],
+  "base-1158": [
+   "punto_stimato"
+  ],
+  "base-1159": [
+   "punto_stimato"
+  ],
+  "base-1160": [
+   "svt_spazio"
+  ],
+  "base-1161": [
+   "miglio_e_primo_di_latitudine"
+  ],
+  "base-1162": [
+   "scale_ai_bordi_carta"
+  ],
+  "base-1163": [
+   "svt_spazio"
+  ],
+  "base-1164": [
+   "svt_formule",
+   "punto_stimato"
+  ],
+  "base-1165": [
+   "punto_nave_costiero"
+  ],
+  "base-1166": [
+   "miglio_e_primo_di_latitudine"
+  ],
+  "base-1167": [
+   "miglio_e_primo_di_latitudine"
+  ],
+  "base-1168": [
+   "svt_spazio"
+  ],
+  "base-1169": [
+   "luoghi_di_posizione"
+  ],
+  "base-1170": [
+   "svt_spazio"
+  ],
+  "base-1171": [
+   "miglio_e_primo_di_latitudine"
+  ],
+  "base-1172": [
+   "svt_spazio"
+  ],
+  "base-1173": [
+   "svt_spazio"
+  ],
+  "base-1174": [
+   "svt_spazio"
+  ],
+  "base-1175": [
+   "svt_spazio"
+  ],
+  "base-1176": [
+   "svt_spazio"
+  ],
+  "base-1177": [
+   "svt_spazio"
+  ],
+  "base-1178": [
+   "svt_spazio"
+  ],
+  "base-1179": [
+   "miglio_e_primo_di_latitudine"
+  ],
+  "base-1180": [
+   "nodo_velocita"
+  ],
+  "base-1181": [
+   "scale_ai_bordi_carta"
+  ],
+  "base-1182": [
+   "miglio_e_primo_di_latitudine"
+  ],
+  "base-1183": [
+   "svt_tempo"
+  ],
+  "base-1184": [
+   "punto_stimato",
+   "svt_formule"
+  ],
+  "base-1185": [
+   "svt_tempo"
+  ],
+  "base-1186": [
+   "svt_tempo"
+  ],
+  "base-1187": [
+   "svt_tempo"
+  ],
+  "base-1188": [
+   "svt_spazio"
+  ],
+  "base-1189": [
+   "svt_spazio"
+  ],
+  "base-1190": [
+   "svt_spazio"
+  ],
+  "base-1191": [
+   "svt_velocita"
+  ],
+  "base-1192": [
+   "svt_velocita"
+  ],
+  "base-1193": [
+   "svt_velocita"
+  ],
+  "base-1194": [
+   "svt_spazio"
+  ],
+  "base-1195": [
+   "svt_tempo"
+  ],
+  "base-1196": [
+   "svt_spazio"
+  ],
+  "base-1197": [
+   "svt_spazio"
+  ],
+  "base-1198": [
+   "svt_spazio"
+  ],
+  "base-1199": [
+   "svt_spazio"
+  ],
+  "base-1200": [
+   "svt_spazio"
+  ],
+  "base-1201": [
+   "gps_e_carteggio_obbligo",
+   "strumenti_carteggio"
+  ],
+  "base-1202": [
+   "punto_nave_costiero",
+   "luoghi_di_posizione"
+  ],
+  "base-1203": [
+   "luoghi_di_posizione"
+  ],
+  "base-1204": [
+   "navigazione_costiera_punti_cospicui"
+  ],
+  "base-1205": [
+   "navigazione_costiera_punti_cospicui",
+   "pubblicazioni_nautiche_iimm"
+  ],
+  "base-1206": [
+   "navigazione_costiera_punti_cospicui"
+  ],
+  "base-1207": [
+   "punto_nave_costiero"
+  ],
+  "base-1208": [
+   "navigazione_costiera_punti_cospicui"
+  ],
+  "base-1209": [
+   "rilevamento_polare_traverso"
+  ],
+  "base-1210": [
+   "rilevamento_polare_traverso",
+   "angoli_in_senso_orario"
+  ],
+  "base-1211": [
+   "rilevamento_polare_traverso"
+  ],
+  "base-1212": [
+   "allineamento_luogo_posizione"
+  ],
+  "base-1213": [
+   "strumenti_carteggio"
+  ],
+  "base-1214": [
+   "strumenti_carteggio",
+   "scale_ai_bordi_carta"
+  ],
+  "base-1215": [
+   "luoghi_di_posizione"
+  ],
+  "base-1216": [
+   "rilevamento_vero_e_reciproco"
+  ],
+  "base-1217": [
+   "rilevamento_vero_e_reciproco"
+  ],
+  "base-1218": [
+   "rilevamento_polare_traverso"
+  ],
+  "base-1219": [
+   "rilevamento_polare_traverso",
+   "prora_rotta_coincidenza"
+  ],
+  "base-1220": [
+   "punto_nave_costiero"
+  ],
+  "base-1221": [
+   "rilevamento_vero_e_reciproco"
+  ],
+  "base-1222": [
+   "rilevamento_vero_e_reciproco"
+  ],
+  "base-1223": [
+   "rilevamento_vero_e_reciproco"
+  ],
+  "base-1224": [
+   "navigazione_costiera_punti_cospicui"
+  ],
+  "base-1225": [
+   "rilevamento_vero_e_reciproco"
+  ],
+  "base-1226": [
+   "rilevamento_vero_e_reciproco"
+  ],
+  "base-1227": [
+   "rilevamento_vero_e_reciproco"
+  ],
+  "base-1228": [
+   "rilevamento_vero_e_reciproco"
+  ],
+  "base-1229": [
+   "rilevamento_vero_e_reciproco"
+  ],
+  "base-1230": [
+   "rilevamento_polare_traverso"
+  ],
+  "base-1231": [
+   "rilevamento_vero_e_reciproco"
+  ],
+  "base-1232": [
+   "rilevamento_vero_e_reciproco"
+  ],
+  "base-1233": [
+   "allineamento_luogo_posizione"
+  ],
+  "base-1234": [
+   "rilevamento_polare_traverso"
+  ],
+  "base-1235": [
+   "rilevamento_vero_e_reciproco"
+  ],
+  "base-1236": [
+   "rilevamento_polare_traverso"
+  ],
+  "base-1237": [
+   "rilevamento_vero_e_reciproco"
+  ],
+  "base-1238": [
+   "rilevamento_vero_e_reciproco",
+   "punti_cardinali"
+  ],
+  "base-1239": [
+   "luoghi_di_posizione"
+  ],
+  "base-1240": [
+   "luoghi_di_posizione"
+  ],
+  "base-1241": [
+   "rilevamento_vero_e_reciproco",
+   "punti_cardinali"
+  ],
+  "base-1242": [
+   "navigazione_costiera_punti_cospicui"
+  ],
+  "base-1243": [
+   "rilevamento_vero_e_reciproco",
+   "punti_cardinali"
+  ],
+  "base-1244": [
+   "rilevamento_vero_e_reciproco",
+   "punti_cardinali"
+  ],
+  "base-1245": [
+   "rilevamento_vero_e_reciproco"
+  ],
+  "base-1246": [
+   "navigazione_costiera_punti_cospicui"
+  ],
+  "base-1247": [
+   "punto_nave_costiero",
+   "luoghi_di_posizione"
+  ],
+  "base-1248": [
+   "punto_nave_costiero"
+  ],
+  "base-1249": [
+   "allineamento_luogo_posizione",
+   "punto_nave_costiero"
+  ],
+  "base-1250": [
+   "punto_nave_costiero"
+  ],
+  "base-1251": [
+   "prora_e_rotta"
+  ],
+  "base-1252": [
+   "prora_e_rotta"
+  ],
+  "base-1253": [
+   "prora_e_rotta",
+   "angoli_in_senso_orario"
+  ],
+  "base-1254": [
+   "prora_e_rotta"
+  ],
+  "base-1255": [
+   "prora_e_rotta"
+  ],
+  "base-1256": [
+   "rotte_meridiano_parallelo"
+  ],
+  "base-1257": [
+   "rotte_meridiano_parallelo"
+  ],
+  "base-1258": [
+   "prora_e_rotta",
+   "angoli_in_senso_orario"
+  ],
+  "base-1259": [
+   "prora_e_rotta"
+  ],
+  "base-1260": [
+   "moto_proprio_effettivo"
+  ],
+  "base-1261": [
+   "moto_proprio_effettivo"
+  ],
+  "base-1262": [
+   "scarroccio_effetto_vento"
+  ],
+  "base-1263": [
+   "moto_proprio_effettivo"
+  ],
+  "base-1264": [
+   "deriva_effetto_corrente"
+  ],
+  "base-1265": [
+   "moto_proprio_effettivo"
+  ],
+  "base-1266": [
+   "deriva_effetto_corrente"
+  ],
+  "base-1267": [
+   "moto_proprio_effettivo"
+  ],
+  "base-1268": [
+   "scarroccio_effetto_vento"
+  ],
+  "base-1269": [
+   "scarroccio_effetto_vento"
+  ],
+  "base-1270": [
+   "vento_corrente_convenzioni"
+  ],
+  "base-1271": [
+   "scarroccio_effetto_vento"
+  ],
+  "base-1272": [
+   "vento_corrente_convenzioni"
+  ],
+  "base-1273": [
+   "scarroccio_effetto_vento"
+  ],
+  "base-1274": [
+   "deriva_effetto_corrente",
+   "scarroccio_effetto_vento"
+  ],
+  "base-1275": [
+   "deriva_effetto_corrente"
+  ],
+  "base-1276": [
+   "scarroccio_effetto_vento"
+  ],
+  "base-1277": [
+   "deriva_effetto_corrente"
+  ],
+  "base-1278": [
+   "prora_rotta_coincidenza",
+   "scarroccio_effetto_vento"
+  ],
+  "base-1279": [
+   "vento_corrente_convenzioni",
+   "scarroccio_effetto_vento",
+   "deriva_effetto_corrente"
+  ],
+  "base-1280": [
+   "prora_rotta_coincidenza"
+  ],
+  "base-1281": [
+   "pubblicazioni_nautiche_iimm"
+  ],
+  "base-1282": [
+   "aggiornamento_carte_pubblicazioni"
+  ],
+  "base-1283": [
+   "aggiornamento_carte_pubblicazioni"
+  ],
+  "base-1284": [
+   "aggiornamento_carte_pubblicazioni"
+  ],
+  "base-1285": [
+   "pubblicazioni_nautiche_iimm",
+   "vento_corrente_convenzioni"
+  ],
+  "base-1286": [
+   "pubblicazioni_nautiche_iimm"
+  ],
+  "base-1287": [
+   "pubblicazioni_nautiche_iimm"
+  ],
+  "base-1288": [
+   "pubblicazioni_nautiche_iimm"
   ]
  }
 }
