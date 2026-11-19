@@ -662,6 +662,36 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   `vela-1` dal file pubblicato diventa rosso insieme a «dei temi presenti».
   Specifica 1.146 e guardiano verdi.
 
+### Aggiunto — P-106: i concetti di Manovra e condotta
+
+- **Perché.** I concetti (I-32, C-2) servono a dire a chi studia che cosa
+  rivedere e a collegare le domande che chiedono la stessa cosa, e le voci
+  del decreto sono troppo larghe per farlo: «Ormeggio e disormeggio» tiene
+  insieme gli spring, il verso dell'elica, il trim del fuoribordo e il
+  solcometro. È la sorgente di uno dei nove temi, nella forma che
+  `componi.py` legge (nota della sessione COLREG): la regia la fonde dopo
+  COLREG e rigenera `site/dati/concetti.json`.
+- **Che cosa.** `strumenti/concetti/manovra-e-condotta.json`: **37 concetti
+  in 17 famiglie** (4 per voce, 5 per l'Ancoraggio), **163 tag su 155
+  quesiti**, 147 con un concetto e 8 con due. Parole chiave da indice di
+  manuale, una riga su che cosa copre ogni concetto. Classificazione nostra,
+  non ministeriale.
+- **Letti** i testi di tutti i 155 quesiti con le risposte, e le figure in cui
+  il testo non basta (022, 024, 027, 029, 030, 031, 033). Nessun archivio di
+  risposte letto.
+- **Trovato:** una ventina di quesiti stanno in una voce che non è la loro (il
+  solcometro, il trim, l'ancora galleggiante e la rotta di collisione dentro
+  «Ormeggio e disormeggio»; la pesca dentro la navigazione costiera): sono
+  etichettati per quello che chiedono, e il file lo dice nelle note.
+- **Controllato** con uno script fuori dal repo: tutti i quesiti del tema e solo
+  quelli, da 1 a 3 concetti ciascuno, ogni concetto con almeno 3 quesiti e in
+  una famiglia sola, ogni famiglia in una voce vera, nessun id doppio né
+  coincidente con quelli delle altre sorgenti già scritte, nessuna etichetta
+  vietata. Una rilettura dello stesso lettore su 16 quesiti estratti a caso
+  (seme nel file): nessun tag cambiato. La seconda lettura indipendente resta
+  da fare.
+- Nessun file di `site/`, `tests/` o della specifica toccato.
+
 ## [0.35.1] — 2026-10-29
 
 **Le risposte in simulazione si cambiano, e «auto» si capisce.** Un utente ha
