@@ -751,6 +751,86 @@ export function tappeto(esercizi, progress, n = 4) {
   return out;
 }
 
+/**
+ * «Scegli tu» sulla carta (P-110, decisione 12 di docs/porte-progetto.md, §5.3
+ * e §7.2): gli esercizi di una tecnica, di un argomento o di una carta, e fra
+ * quelli tutti, i mai fatti o i da rivedere.
+ *
+ *   opt = { tecnica, argomento, carta, cosa: 'tutti' | 'mai' | 'rivedere', n = 4 }
+ *
+ * **I filtri si compongono**, e uno vuoto, nullo o assente non filtra. Il §5.3
+ * ne offre uno alla volta per la prima versione: e' una scelta della pagina, e
+ * il motore non la impone.
+ *
+ * L'ordine, per «cosa»:
+ *   mai       nell'ordine del foglio. Senza filtri e' **`tappeto(n)`**, e la
+ *             compone invece di riscriverla: la ripresa da dove eri resta
+ *             gratis, senza segnaposto (R-SEL-07).
+ *   rivedere  l'ultimo giudizio negativo, `classifica() === 'da_ripassare'` come
+ *             in `giroTecnicheDaRivedere()`, dal piu' trascurato (`t` crescente),
+ *             a parita' nell'ordine del foglio.
+ *   tutti     prima i mai fatti nell'ordine del foglio, poi i fatti dal piu'
+ *             trascurato. Nell'ordine del foglio e basta, «Tutti · 4» aprirebbe
+ *             sempre gli stessi quattro: e' il difetto della 0.16.0 sui quiz. Cosi'
+ *             la lista appena fatta scende in fondo da se'.
+ *
+ * La lista e il suo numero vengono dalla stessa chiamata: `quanti` e' la lista
+ * che si apre, `disponibili` quanti la «cosa» ne ha senza tetto, `conteggi` i tre
+ * numeri del filtro accanto a «Tutti», «Mai fatti» e «Da rivedere». Una
+ * selezione vuota ha `vuota: true` e un `motivo` — 'banca vuota', 'nessun
+ * esercizio' (il filtro non ne ha: la 42/D non ha carburante), 'foglio finito',
+ * 'niente da rivedere' —, mai una lista vuota muta. `modo` dice il `mode` della
+ * riga (§7.4): 'tappeto' per «Mai fatti» senza filtri, 'scelta' per il resto.
+ *
+ * Un valore che la banca non ha — una «cosa» che non e' una delle tre, una
+ * tecnica, un argomento o una carta che nessun esercizio porta, un `n` che non
+ * e' un intero positivo — **lancia**: scritto male darebbe una selezione vuota
+ * con l'aria di essere vera. Le parole della pagina («da rivedere») non sono gli
+ * identificatori.
+ */
+export const SCELTA_CARTEGGIO_COSE = Object.freeze(['tutti', 'mai', 'rivedere']);
+
+export function sceltaCarteggio(esercizi, progress, opt = {}) {
+  const { tecnica = null, argomento = null, carta = null, cosa = 'tutti', n = 4 } = opt;
+  if (!SCELTA_CARTEGGIO_COSE.includes(cosa)) throw new Error(`sceltaCarteggio: cosa sconosciuta «${cosa}»`);
+  if (!Number.isInteger(n) || n < 1) throw new Error(`sceltaCarteggio: n deve essere un intero positivo, non «${String(n)}»`);
+  const c = (v) => v != null && v !== '';
+  const controlla = (v, nome, genere, porta) => {
+    if (c(v) && !esercizi.some(porta)) throw new Error(`sceltaCarteggio: ${nome} ${genere} «${v}»`);
+  };
+  controlla(tecnica, 'tecnica', 'sconosciuta', (e) => (e.tecniche || []).includes(tecnica));
+  controlla(argomento, 'argomento', 'sconosciuto', (e) => e.argomento === argomento);
+  controlla(carta, 'carta', 'sconosciuta', (e) => e.carta === carta);
+
+  const senzaFiltri = !(c(tecnica) || c(argomento) || c(carta));
+  const dentro = senzaFiltri ? esercizi : esercizi.filter((e) => (!c(tecnica) || (e.tecniche || []).includes(tecnica))
+    && (!c(argomento) || e.argomento === argomento)
+    && (!c(carta) || e.carta === carta));
+  const mai = (e) => stato(progress[e.id]) === 'nuovo';
+  const rivedere = (e) => classifica(progress[e.id]) === 'da_ripassare';
+  const conteggi = { tutti: dentro.length, mai: dentro.filter(mai).length, rivedere: dentro.filter(rivedere).length };
+
+  // Dal piu' trascurato; `sort` e' stabile, quindi a parita' resta il foglio.
+  const trascurati = (a) => [...a].sort((x, y) => cmp(progress[x.id].t ?? '', progress[y.id].t ?? ''));
+  let lista;
+  if (cosa === 'mai') lista = tappeto(dentro, progress, n);
+  else if (cosa === 'rivedere') lista = trascurati(dentro.filter(rivedere)).slice(0, n);
+  else lista = [...dentro.filter(mai), ...trascurati(dentro.filter((e) => !mai(e)))].slice(0, n);
+
+  let motivo = null;
+  if (!lista.length) {
+    if (!esercizi.length) motivo = 'banca vuota';
+    else if (!dentro.length) motivo = 'nessun esercizio';
+    else motivo = cosa === 'mai' ? 'foglio finito' : 'niente da rivedere';
+  }
+  return {
+    lista, quanti: lista.length, disponibili: conteggi[cosa], conteggi, cosa,
+    filtro: { tecnica: c(tecnica) ? tecnica : null, argomento: c(argomento) ? argomento : null, carta: c(carta) ? carta : null },
+    modo: cosa === 'mai' && senzaFiltri ? 'tappeto' : 'scelta',
+    vuota: !lista.length, motivo,
+  };
+}
+
 // --- diagnosi -----------------------------------------------------------------
 
 function vuoto(nome, n) {

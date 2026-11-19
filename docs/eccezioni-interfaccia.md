@@ -57,6 +57,7 @@ dichiarazione che mente.
 | `rigaAvvio` | La riga d'avvio di una simulazione, con le previsioni registrate (P-72, A-1 del §10.1 di `docs/esito-esame-progetto.md`). La scrive la pagina a Inizia, con l'account e solo se il server dichiara `'a'` fra i `tipi_riga`: B-2, su `ui/main`. `previsioniProva()` non è qui perché la chiama `rigaAvvio()` |
 | `allenati` | La selezione della porta «Allenati» (P-105, B-1 di `docs/piano-2026-11.md`): `screening()` finché una voce è sotto `ALLENATI_MIN_PER_VOCE`, poi `mirata()`, con il perché e la fase di ogni quesito. Li consuma B-5 |
 | `giroTecnicheDaRivedere` | Il giro delle tecniche della porta «Allenati» del carteggio, con la precedenza alle tecniche degli esercizi andati male (P-105). `giroTecniche()` resta protetta e com'è. Li consuma B-5 |
+| `sceltaCarteggio` | «Scegli tu» sulla carta (P-110, decisione 12 di `docs/porte-progetto.md`): tecnica, argomento e carta che si compongono, e tutti, mai fatti o da rivedere, con la lista e i tre conteggi dalla stessa chiamata. Con «mai fatti» e nessun filtro è `tappeto()`, che resta protetta e com'è. La consuma B-5b |
 | `rigaDiRisposta` | Il predicato con cui la pagina conta le «risposte» senza le righe d'avvio e i tag (§4.3 e §7 di `docs/esito-esame-progetto.md`; i chiamanti sono elencati nel §10.1, A-1): B-2, su `ui/main` |
 
 <!-- P-81: classifica esce dalle protette: l’unico chiamante diretto era il motivo

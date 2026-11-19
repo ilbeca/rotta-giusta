@@ -4937,3 +4937,174 @@ test('giroTecnicheDaRivedere: sulla banca vera, prima tutte le tecniche da rived
   assert.equal(new Set(portate).size, portate.length);
   assert.deepEqual(E.giroTecnicheDaRivedere(C, prog), E.giroTecnicheDaRivedere(C, prog), 'deterministico');
 });
+
+// --- P-110: «Scegli tu» sulla carta ------------------------------------------------
+//
+// Decisione 12 di docs/porte-progetto.md (§5.3, §7.2): «Scegli tu» sulla carta
+// filtra per tecnica, argomento o carta e sceglie fra tutti, mai fatti e da
+// rivedere. Senza una funzione del motore la pagina filtrerebbe gli esercizi
+// da se', che e' quello che R-SEL-17 vieta.
+
+const sceltaIds = (r) => r.lista.map((e) => e.id);
+const fattiAlGiorno = (prog, ids, giorno, giusto = true) => { for (const id of ids) applica(prog, id, giusto, 60000, giorno); };
+
+test('sceltaCarteggio: con «mai fatti» e nessun filtro e il tappeto', () => {
+  const C = bancaCarteggioVera();
+  const parziale = {};
+  fattiAlGiorno(parziale, C.slice(0, 9).map((e) => e.id), '2026-08-27');
+  fattiAlGiorno(parziale, ['5.2.1-1', '5.4.1-10'], '2026-08-28', false);
+  for (const [banca, prog] of [[bancaCarteggio(), {}], [C, {}], [C, parziale], [C, storicoMisto(C)]]) {
+    for (const n of [1, 2, 4, 8]) {
+      const r = E.sceltaCarteggio(banca, prog, { cosa: 'mai', n });
+      assert.deepEqual(sceltaIds(r), tappeto(banca, prog, n).map((e) => e.id), `n=${n}: la stessa lista del tappeto`);
+      assert.equal(r.modo, 'tappeto', 'e lo dice, perche la riga porta mode «tappeto» (§7.4)');
+    }
+  }
+  // Con un filtro non e' piu' il tappeto del foglio intero, e la riga lo dice.
+  assert.equal(E.sceltaCarteggio(C, {}, { cosa: 'mai', carta: '42/D' }).modo, 'scelta');
+  assert.equal(E.sceltaCarteggio(C, {}, { cosa: 'tutti' }).modo, 'scelta');
+});
+
+test('sceltaCarteggio: i filtri si compongono', () => {
+  const C = bancaCarteggioVera();
+  const prog = storicoMisto(C);
+  const filtri = [
+    {}, { carta: '42/D' }, { argomento: 'correnti' }, { tecnica: 'Punto al traverso' },
+    { carta: '5/D', argomento: 'scarroccio' }, { carta: '42/D', tecnica: 'PN da coordinate GPS' },
+    { argomento: 'navigazione costiera', tecnica: 'Conversione bussola-vero', carta: '5/D' },
+  ];
+  for (const f of filtri) {
+    const dentro = C.filter((e) => (!f.carta || e.carta === f.carta)
+      && (!f.argomento || e.argomento === f.argomento)
+      && (!f.tecnica || (e.tecniche || []).includes(f.tecnica)));
+    assert.ok(dentro.length > 0, `${JSON.stringify(f)}: il caso di prova non e vuoto`);
+    const r = E.sceltaCarteggio(C, prog, { ...f, cosa: 'tutti', n: 200 });
+    assert.deepEqual(new Set(sceltaIds(r)), new Set(dentro.map((e) => e.id)), `${JSON.stringify(f)}: tutti e soli quelli del filtro`);
+    assert.deepEqual(r.conteggi, {
+      tutti: dentro.length,
+      mai: dentro.filter((e) => stato(prog[e.id]) === 'nuovo').length,
+      rivedere: dentro.filter((e) => classifica(prog[e.id]) === 'da_ripassare').length,
+    }, `${JSON.stringify(f)}: i conteggi del filtro, senza tetto`);
+    // Mai fatti dentro un filtro: ancora nell'ordine del foglio, come il tappeto.
+    const mai = E.sceltaCarteggio(C, prog, { ...f, cosa: 'mai', n: 200 });
+    assert.deepEqual(sceltaIds(mai), dentro.filter((e) => stato(prog[e.id]) === 'nuovo').map((e) => e.id));
+  }
+  // Un filtro vuoto o nullo e' «tutto il foglio».
+  assert.deepEqual(sceltaIds(E.sceltaCarteggio(C, prog, { cosa: 'mai', tecnica: '', argomento: null, carta: undefined, n: 8 })),
+    tappeto(C, prog, 8).map((e) => e.id));
+});
+
+test('sceltaCarteggio: «da rivedere» e l ultimo giudizio negativo, e prima il piu trascurato', () => {
+  const banca = bancaCarteggio();
+  const prog = {};
+  // c-5 perso prima di c-2: il piu' trascurato viene prima anche contro l'ordine del foglio.
+  applica(prog, 'c-5', false, 60000, '2026-08-26');
+  applica(prog, 'c-2', false, 60000, '2026-08-28');
+  applica(prog, 'c-6', false, 60000, '2026-08-27');
+  applica(prog, 'c-6', true, 60000, '2026-08-29');   // ripreso: non e' piu' da rivedere
+  applica(prog, 'c-7', true, 60000, '2026-08-25');   // preso: mai stato da rivedere
+  const r = E.sceltaCarteggio(banca, prog, { cosa: 'rivedere', n: 8 });
+  assert.deepEqual(sceltaIds(r), ['c-5', 'c-2'], 'i soli esercizi con l ultimo giudizio negativo, dal piu trascurato');
+  assert.ok(r.lista.every((e) => classifica(prog[e.id]) === 'da_ripassare'));
+  assert.equal(r.conteggi.rivedere, 2);
+  // Un perso dopo un preso torna da rivedere.
+  applica(prog, 'c-7', false, 60000, '2026-08-30');
+  assert.deepEqual(sceltaIds(E.sceltaCarteggio(banca, prog, { cosa: 'rivedere', n: 8 })), ['c-5', 'c-2', 'c-7']);
+  // E si compone con un filtro.
+  assert.deepEqual(sceltaIds(E.sceltaCarteggio(banca, prog, { cosa: 'rivedere', tecnica: 'Interc', n: 8 })), ['c-5']);
+});
+
+test('sceltaCarteggio: «tutti» mette prima i mai fatti, poi il piu trascurato, e non ripete l ultima lista', () => {
+  const banca = bancaCarteggio();
+  const prog = {};
+  fattiAlGiorno(prog, ['c-1', 'c-2', 'c-3'], '2026-08-25');
+  fattiAlGiorno(prog, ['c-4'], '2026-08-24', false);
+  assert.deepEqual(sceltaIds(E.sceltaCarteggio(banca, prog, { cosa: 'tutti', n: 7 })),
+    ['c-5', 'c-6', 'c-7', 'c-4', 'c-1', 'c-2', 'c-3'], 'mai fatti nel foglio, poi i fatti dal piu trascurato, a parita nel foglio');
+  // Fatto tutto, la lista di oggi va in fondo alla prossima.
+  fattiAlGiorno(prog, ['c-5', 'c-6', 'c-7', 'c-4'], '2026-08-26');
+  const prima = sceltaIds(E.sceltaCarteggio(banca, prog, { cosa: 'tutti', n: 4 }));
+  assert.deepEqual(prima, ['c-1', 'c-2', 'c-3', 'c-4']);
+  fattiAlGiorno(prog, prima, '2026-08-27');
+  const dopo = sceltaIds(E.sceltaCarteggio(banca, prog, { cosa: 'tutti', n: 4 }));
+  assert.deepEqual(dopo, ['c-5', 'c-6', 'c-7', 'c-1'], 'la lista appena fatta scende in fondo');
+});
+
+test('sceltaCarteggio: la lista e il suo numero dalla stessa chiamata', () => {
+  const C = bancaCarteggioVera();
+  const prog = storicoMisto(C);
+  const COSE = { tutti: () => true, mai: (e) => stato(prog[e.id]) === 'nuovo', rivedere: (e) => classifica(prog[e.id]) === 'da_ripassare' };
+  for (const f of [{}, { carta: '42/D' }, { argomento: 'carburante' }, { tecnica: 'Rilevamento polare singolo' }]) {
+    const nelFiltro = C.filter((e) => (!f.carta || e.carta === f.carta) && (!f.argomento || e.argomento === f.argomento)
+      && (!f.tecnica || e.tecniche.includes(f.tecnica)));
+    const conteggiAttesi = Object.fromEntries(Object.entries(COSE).map(([k, p]) => [k, nelFiltro.filter(p).length]));
+    for (const cosa of Object.keys(COSE)) {
+      for (const n of [1, 2, 4, 8]) {
+        const r = E.sceltaCarteggio(C, prog, { ...f, cosa, n });
+        assert.equal(r.quanti, r.lista.length, 'quanti e la lista che si apre');
+        assert.equal(r.disponibili, r.conteggi[cosa], 'disponibili e il conteggio della sua «cosa»');
+        assert.equal(r.lista.length, Math.min(n, r.disponibili), 'il tetto e n, e basta');
+        assert.ok(r.lista.every(COSE[cosa]), `${cosa}: nella lista solo quelli della «cosa»`);
+        assert.equal(new Set(sceltaIds(r)).size, r.lista.length, 'nessun esercizio due volte');
+        assert.equal(r.cosa, cosa);
+        assert.deepEqual(r.conteggi, conteggiAttesi, 'i conteggi del filtro non dipendono dal tetto');
+      }
+    }
+  }
+  // n predefinito: quattro, come il tappeto.
+  assert.equal(E.sceltaCarteggio(C, {}, {}).quanti, 4);
+  assert.equal(E.sceltaCarteggio(C, {}, {}).cosa, 'tutti');
+});
+
+test('sceltaCarteggio: una selezione vuota lo dice, invece di una lista vuota muta', () => {
+  const C = bancaCarteggioVera();
+  const tutto = {};
+  fattiAlGiorno(tutto, C.filter((e) => e.carta === '42/D').map((e) => e.id), '2026-08-27');
+  const piena = E.sceltaCarteggio(C, tutto, { cosa: 'mai', carta: '5/D' });
+  assert.equal(piena.vuota, false);
+  assert.equal(piena.motivo, null);
+  const casi = [
+    [C, tutto, { cosa: 'mai', carta: '42/D' }, 'foglio finito'],
+    [C, {}, { cosa: 'rivedere' }, 'niente da rivedere'],
+    [C, {}, { cosa: 'tutti', carta: '42/D', argomento: 'carburante' }, 'nessun esercizio'],   // la 42/D non ha carburante
+    [C, {}, { cosa: 'mai', carta: '42/D', argomento: 'carburante' }, 'nessun esercizio'],
+    [[], {}, { cosa: 'tutti' }, 'banca vuota'],
+  ];
+  for (const [banca, prog, opt, motivo] of casi) {
+    const r = E.sceltaCarteggio(banca, prog, opt);
+    assert.deepEqual(r.lista, []);
+    assert.equal(r.vuota, true, `${JSON.stringify(opt)}: vuota lo dice`);
+    assert.equal(r.motivo, motivo, `${JSON.stringify(opt)}: con il suo motivo`);
+  }
+  // Foglio finito ma con esercizi da rivedere: i conteggi dicono dove andare.
+  applica(tutto, C.find((e) => e.carta === '42/D').id, false, 60000, '2026-08-28');
+  const r = E.sceltaCarteggio(C, tutto, { cosa: 'mai', carta: '42/D' });
+  assert.equal(r.motivo, 'foglio finito');
+  assert.equal(r.conteggi.rivedere, 1);
+  assert.equal(r.conteggi.tutti, C.filter((e) => e.carta === '42/D').length);
+});
+
+test('sceltaCarteggio: un valore che non esiste e un errore, non una selezione vuota', () => {
+  const C = bancaCarteggioVera();
+  assert.throws(() => E.sceltaCarteggio(C, {}, { cosa: 'da rivedere' }), /cosa sconosciuta/, 'le parole della pagina non sono gli identificatori');
+  assert.throws(() => E.sceltaCarteggio(C, {}, { cosa: 'rifare' }), /cosa sconosciuta/);
+  assert.throws(() => E.sceltaCarteggio(C, {}, { tecnica: 'Punto al travers' }), /tecnica sconosciuta/);
+  assert.throws(() => E.sceltaCarteggio(C, {}, { argomento: 'Correnti' }), /argomento sconosciuto/);
+  assert.throws(() => E.sceltaCarteggio(C, {}, { carta: '5D' }), /carta sconosciuta/);
+  for (const n of [0, -1, 2.5, '4', NaN]) assert.throws(() => E.sceltaCarteggio(C, {}, { n }), /n deve essere/, `n=${String(n)}`);
+});
+
+test('sceltaCarteggio: deterministica, e non tocca banca ne storico', () => {
+  const C = bancaCarteggioVera();
+  const prog = storicoMisto(C);
+  const primaC = JSON.stringify(C), primaP = JSON.stringify(prog);
+  for (const cosa of ['tutti', 'mai', 'rivedere']) {
+    const a = E.sceltaCarteggio(C, prog, { cosa, argomento: 'correnti', n: 8 });
+    const b = E.sceltaCarteggio(C, prog, { cosa, argomento: 'correnti', n: 8 });
+    assert.deepEqual(a, b);
+  }
+  assert.equal(JSON.stringify(C), primaC);
+  assert.equal(JSON.stringify(prog), primaP);
+  // E il tappeto resta com'e'.
+  assert.deepEqual(tappeto(bancaCarteggio(), {}, 3).map((e) => e.id), ['c-1', 'c-2', 'c-3']);
+});
