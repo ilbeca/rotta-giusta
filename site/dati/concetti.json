@@ -3,6 +3,7 @@
  "sorgenti": [
   "navigazione-cartografica-ed-elettronica.json",
   "colreg-e-segnalamento-marittimo.json",
+  "normativa-diportistica-e-ambientale.json",
   "manovra-e-condotta.json",
   "meteorologia.json",
   "motori.json"
@@ -10,6 +11,7 @@
  "temi": [
   "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
   "COLREG E SEGNALAMENTO MARITTIMO",
+  "NORMATIVA DIPORTISTICA E AMBIENTALE",
   "MANOVRA E CONDOTTA",
   "METEOROLOGIA",
   "MOTORI"
@@ -421,6 +423,132 @@
    "concetti": [
     "suoni_nebbia",
     "dotazioni_sonore"
+   ]
+  },
+  {
+   "id": "norm_unita_definizioni",
+   "nome": "Le unità da diporto: leggi, definizioni e classi",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "voce": "Leggi e regolamenti",
+   "concetti": [
+    "fonti_normative",
+    "diporto_definizioni",
+    "acque_interne_linee_base",
+    "classi_unita_diporto"
+   ]
+  },
+  {
+   "id": "norm_ce_limiti",
+   "nome": "Marcatura CE, categorie di progettazione e limiti di navigazione",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "voce": "Leggi e regolamenti",
+   "concetti": [
+    "marcatura_ce_manuale_proprietario",
+    "categorie_progettazione_vento_onda",
+    "limiti_distanza_costa"
+   ]
+  },
+  {
+   "id": "norm_iscrizione_assicurazione",
+   "nome": "Iscrizione, bandiera e assicurazione",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "voce": "Leggi e regolamenti",
+   "concetti": [
+    "iscrizione_atcn",
+    "bandiera_nazionale_esposizione",
+    "assicurazione_rc"
+   ]
+  },
+  {
+   "id": "norm_patente",
+   "nome": "La patente nautica: quando serve, quanto vale, quando si perde",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "voce": "Leggi e regolamenti",
+   "concetti": [
+    "soglie_patente",
+    "moto_acqua_patente",
+    "eta_abilitazione_conduzione",
+    "validita_patente",
+    "sospensione_revoca_patente",
+    "sanzioni_diporto"
+   ]
+  },
+  {
+   "id": "norm_soccorso_denunce",
+   "nome": "In navigazione: obbligo di soccorso e denunce",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "voce": "Leggi e regolamenti",
+   "concetti": [
+    "obbligo_soccorso_urto",
+    "denuncia_evento_straordinario"
+   ]
+  },
+  {
+   "id": "norm_documenti_bordo",
+   "nome": "I documenti di bordo",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "voce": "Documenti",
+   "concetti": [
+    "documenti_bordo_forma",
+    "licenza_navigazione",
+    "certificato_sicurezza_navigabilita",
+    "dichiarazione_potenza_motore"
+   ]
+  },
+  {
+   "id": "norm_commerciale_contratti",
+   "nome": "Uso commerciale, locazione, noleggio e leasing",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "voce": "Attività commerciale",
+   "concetti": [
+    "uso_commerciale_diporto",
+    "locazione_noleggio",
+    "leasing_nautico"
+   ]
+  },
+  {
+   "id": "norm_comandante",
+   "nome": "Il comandante e chi conduce",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "voce": "Comandante, conduttore, utilizzatore",
+   "concetti": [
+    "comandante_compiti"
+   ]
+  },
+  {
+   "id": "norm_sci_nautico",
+   "nome": "Lo sci nautico",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "voce": "Sci nautico",
+   "concetti": [
+    "sci_nautico_conduttore",
+    "sci_nautico_dotazioni",
+    "sci_nautico_zone_orari",
+    "sci_nautico_partenza_rientro",
+    "sci_nautico_distanze"
+   ]
+  },
+  {
+   "id": "norm_pesca",
+   "nome": "La pesca sportiva e subacquea",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "voce": "Pesca",
+   "concetti": [
+    "pesca_sub_regole",
+    "pesca_sub_segnale",
+    "pesca_sportiva_regole",
+    "tonno_rosso_pesca_sportiva"
+   ]
+  },
+  {
+   "id": "norm_ambiente",
+   "nome": "Aree marine protette e tutela dell'ambiente",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "voce": "Norme ambientali",
+   "concetti": [
+    "amp_zone_tutela",
+    "amp_sorveglianza_ormeggi",
+    "inquinamento_rifiuti_mare"
    ]
   },
   {
@@ -2153,6 +2281,570 @@
    "copre": "Che cosa deve avere a bordo un'unità secondo la lunghezza per farsi sentire, e il suono continuo come segnale di pericolo.",
    "tema": "COLREG E SEGNALAMENTO MARITTIMO",
    "famiglia": "suoni_nebbia_apparecchi",
+   "quesiti": 4
+  },
+  {
+   "id": "fonti_normative",
+   "nome": "Le fonti: codici, regolamento e ordinanze",
+   "parole_chiave": [
+    "Codice della nautica da diporto",
+    "Codice della navigazione",
+    "regolamento di attuazione",
+    "ordinanza dell'Autorità marittima",
+    "gerarchia delle fonti"
+   ],
+   "copre": "Quale legge si applica alla nautica da diporto, che cosa completa il Codice della nautica, che cosa vale quando manca una norma, che cosa sono le ordinanze locali.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_unita_definizioni",
+   "quesiti": 6
+  },
+  {
+   "id": "diporto_definizioni",
+   "nome": "Navigazione e unità da diporto: le definizioni",
+   "parole_chiave": [
+    "navigazione da diporto",
+    "unità da diporto",
+    "uso privato (lusorio)",
+    "uso commerciale",
+    "definizioni del Codice della nautica"
+   ],
+   "copre": "Che cosa è la navigazione da diporto e che cosa un'unità da diporto, con la distinzione fra uso privato e uso commerciale.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_unita_definizioni",
+   "quesiti": 5
+  },
+  {
+   "id": "acque_interne_linee_base",
+   "nome": "Acque interne, linee di base e mare territoriale",
+   "parole_chiave": [
+    "linee di base",
+    "acque interne marittime",
+    "navigazione interna",
+    "mare territoriale"
+   ],
+   "copre": "Dove finiscono le acque interne e da dove si misura il mare territoriale; che cosa si intende per navigazione interna.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_unita_definizioni",
+   "quesiti": 3
+  },
+  {
+   "id": "classi_unita_diporto",
+   "nome": "Natanti, imbarcazioni e navi da diporto",
+   "parole_chiave": [
+    "classificazione delle unità da diporto",
+    "natante",
+    "imbarcazione da diporto",
+    "nave da diporto",
+    "lunghezza fuori tutto",
+    "regime giuridico"
+   ],
+   "copre": "Come si classificano le unità per lunghezza fuori tutto (fino a 10 m, fino a 24 m, oltre), e il regime di un natante che si iscrive.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_unita_definizioni",
+   "quesiti": 6
+  },
+  {
+   "id": "marcatura_ce_manuale_proprietario",
+   "nome": "La marcatura CE e il manuale del proprietario",
+   "parole_chiave": [
+    "marcatura CE",
+    "omologazione CE",
+    "manuale del proprietario",
+    "certificato di omologazione",
+    "direttiva unità da diporto"
+   ],
+   "copre": "Quali unità portano la marcatura CE, che cosa dice il manuale del proprietario (persone trasportabili, dati tecnici), dove può andare un natante CE.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_ce_limiti",
+   "quesiti": 5
+  },
+  {
+   "id": "categorie_progettazione_vento_onda",
+   "nome": "Le categorie di progettazione A, B, C, D",
+   "parole_chiave": [
+    "categoria di progettazione",
+    "altezza significativa dell'onda",
+    "forza del vento",
+    "limiti di navigazione CE"
+   ],
+   "copre": "I limiti di navigazione delle unità CE, definiti da vento e onda: i valori delle categorie B, C e D.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_ce_limiti",
+   "quesiti": 6
+  },
+  {
+   "id": "limiti_distanza_costa",
+   "nome": "Distanze dalla costa consentite",
+   "parole_chiave": [
+    "limiti di navigazione",
+    "distanza dalla costa",
+    "unità a remi",
+    "battello di servizio (tender)",
+    "patente entro 12 miglia"
+   ],
+   "copre": "Fin dove può andare un'unità secondo il tipo e l'abilitazione: unità a remi, tender, natante CE, patente entro 12 miglia.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_ce_limiti",
+   "quesiti": 4
+  },
+  {
+   "id": "iscrizione_atcn",
+   "nome": "Iscrizione nell'ATCN e sigla",
+   "parole_chiave": [
+    "iscrizione",
+    "immatricolazione",
+    "ATCN (Archivio Telematico Centrale della Nautica)",
+    "STED (Sportello Telematico del Diportista)",
+    "numero di iscrizione",
+    "nome dell'unità"
+   ],
+   "copre": "Dove e come si iscrive un'unità, chi può iscriversi e dove, com'è fatta la sigla, se il nome è obbligatorio.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_iscrizione_assicurazione",
+   "quesiti": 7
+  },
+  {
+   "id": "bandiera_nazionale_esposizione",
+   "nome": "La bandiera nazionale",
+   "parole_chiave": [
+    "bandiera nazionale",
+    "esposizione della bandiera",
+    "unità iscritte"
+   ],
+   "copre": "Chi deve esporre la bandiera nazionale (navi e imbarcazioni sì, natanti no) e dove si espone.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_iscrizione_assicurazione",
+   "quesiti": 4
+  },
+  {
+   "id": "documenti_bordo_forma",
+   "nome": "I documenti di bordo: quali e in che forma",
+   "parole_chiave": [
+    "documenti di bordo",
+    "originale",
+    "copia conforme",
+    "licenza RTF",
+    "contratto a bordo"
+   ],
+   "copre": "Quali documenti stanno a bordo e quando bastano le copie conformi; il contratto di locazione o noleggio a bordo; la licenza della radio.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_documenti_bordo",
+   "quesiti": 5
+  },
+  {
+   "id": "licenza_navigazione",
+   "nome": "La licenza di navigazione",
+   "parole_chiave": [
+    "licenza di navigazione",
+    "validità della licenza",
+    "dati dell'unità e del proprietario",
+    "annotazione di locazione e noleggio"
+   ],
+   "copre": "Che cosa riporta la licenza di navigazione, chi la deve avere, quanto vale, e che cosa vi risulta (uso in locazione o noleggio).",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_documenti_bordo",
+   "quesiti": 5
+  },
+  {
+   "id": "certificato_sicurezza_navigabilita",
+   "nome": "Certificato di sicurezza e navigazione temporanea",
+   "parole_chiave": [
+    "certificato di sicurezza",
+    "navigabilità",
+    "autorizzazione alla navigazione temporanea"
+   ],
+   "copre": "Che cosa attesta il certificato di sicurezza e a chi è rilasciato; che cosa consente l'autorizzazione alla navigazione temporanea.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_documenti_bordo",
+   "quesiti": 3
+  },
+  {
+   "id": "dichiarazione_potenza_motore",
+   "nome": "La dichiarazione di potenza del motore",
+   "parole_chiave": [
+    "dichiarazione di potenza",
+    "certificato d'uso motore",
+    "fuoribordo",
+    "natanti"
+   ],
+   "copre": "Il documento del motore di natanti e imbarcazioni con fuoribordo: che cos'è e chi lo deve avere a bordo.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_documenti_bordo",
+   "quesiti": 3
+  },
+  {
+   "id": "assicurazione_rc",
+   "nome": "L'assicurazione di responsabilità civile",
+   "parole_chiave": [
+    "assicurazione RC",
+    "responsabilità civile",
+    "d.lgs. 209/2005",
+    "motori marini",
+    "unità a remi e a vela"
+   ],
+   "copre": "Su che cosa ricade l'obbligo di assicurazione (ogni motore, anche straniero in acque italiane) e chi ne è escluso.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_iscrizione_assicurazione",
+   "quesiti": 4
+  },
+  {
+   "id": "soglie_patente",
+   "nome": "Quando serve la patente: potenza e cilindrata",
+   "parole_chiave": [
+    "obbligo della patente nautica",
+    "potenza massima di esercizio",
+    "40,8 CV (30 kW)",
+    "cilindrata",
+    "motore a due e a quattro tempi",
+    "motore ausiliario"
+   ],
+   "copre": "Le soglie che fanno scattare l'obbligo di patente entro 6 miglia: potenza, cilindrata e tipo di motore; quando un secondo motore è ausiliario.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_patente",
+   "quesiti": 10
+  },
+  {
+   "id": "moto_acqua_patente",
+   "nome": "Le moto d'acqua",
+   "parole_chiave": [
+    "moto d'acqua",
+    "acquascooter",
+    "patente obbligatoria",
+    "velocità minima dalla costa"
+   ],
+   "copre": "Per la moto d'acqua la patente serve sempre; giubbotto, limiti di velocità e distanza dalla costa oltre la quale si può superare la velocità minima.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_patente",
+   "quesiti": 5
+  },
+  {
+   "id": "eta_abilitazione_conduzione",
+   "nome": "Età e abilitazione: chi può condurre che cosa",
+   "parole_chiave": [
+    "età minima",
+    "16 anni",
+    "18 anni",
+    "patente entro 12 miglia",
+    "vela senza motore",
+    "chi regge il timone"
+   ],
+   "copre": "Che cosa si può condurre a 16 e a 18 anni senza patente, che cosa permette la patente entro 12 miglia, chi può stare al timone.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_patente",
+   "quesiti": 6
+  },
+  {
+   "id": "validita_patente",
+   "nome": "La validità della patente",
+   "parole_chiave": [
+    "validità della patente",
+    "rinnovo",
+    "10 anni",
+    "5 anni dopo i 60"
+   ],
+   "copre": "Quanto vale la patente: 10 anni fino ai 60, poi 5.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_patente",
+   "quesiti": 3
+  },
+  {
+   "id": "sospensione_revoca_patente",
+   "nome": "Sospensione e revoca della patente",
+   "parole_chiave": [
+    "sospensione della patente",
+    "revoca della patente",
+    "ebbrezza",
+    "imperizia e imprudenza",
+    "requisiti morali e fisici"
+   ],
+   "copre": "Quando la patente si sospende e quando si revoca; chi non può conseguirla; che cosa non comporta la sospensione.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_patente",
+   "quesiti": 5
+  },
+  {
+   "id": "sanzioni_diporto",
+   "nome": "Illeciti e sanzioni",
+   "parole_chiave": [
+    "sanzione amministrativa",
+    "illecito amministrativo",
+    "reclusione",
+    "comando senza abilitazione",
+    "esercizio abusivo"
+   ],
+   "copre": "Le sanzioni da conoscere: comando senza abilitazione o con patente scaduta, esercizio abusivo di attività commerciali, omesse notizie dopo un urto, omesso soccorso, area marina protetta.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_patente",
+   "quesiti": 10
+  },
+  {
+   "id": "comandante_compiti",
+   "nome": "Il comandante: direzione e responsabilità",
+   "parole_chiave": [
+    "comandante",
+    "direzione della manovra",
+    "responsabilità del comando",
+    "equipaggio minimo",
+    "dotazioni di sicurezza efficienti"
+   ],
+   "copre": "Che cosa spetta al comandante: la direzione della navigazione, l'equipaggio, l'efficienza delle dotazioni, il timone affidato ad altri.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_comandante",
+   "quesiti": 6
+  },
+  {
+   "id": "obbligo_soccorso_urto",
+   "nome": "Obbligo di soccorso e urto fra unità",
+   "parole_chiave": [
+    "obbligo di assistenza",
+    "salvataggio",
+    "urto",
+    "soccorso",
+    "Codice della navigazione"
+   ],
+   "copre": "Quando si deve prestare assistenza e tentare il salvataggio, che cosa si deve fare dopo un urto, e che cosa si rischia omettendolo.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_soccorso_denunce",
+   "quesiti": 6
+  },
+  {
+   "id": "denuncia_evento_straordinario",
+   "nome": "Denuncia di evento straordinario e ritrovamenti",
+   "parole_chiave": [
+    "denuncia di evento straordinario",
+    "avvenimenti straordinari",
+    "Autorità consolare",
+    "tre giorni",
+    "relitto",
+    "ritrovamento"
+   ],
+   "copre": "Che cos'è un evento straordinario, chi lo denuncia, a chi (in Italia e all'estero) ed entro quando; la denuncia di un relitto o di un ritrovamento.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_soccorso_denunce",
+   "quesiti": 11
+  },
+  {
+   "id": "uso_commerciale_diporto",
+   "nome": "Le attività commerciali con unità da diporto",
+   "parole_chiave": [
+    "uso commerciale",
+    "noleggio occasionale",
+    "assistenza e traino",
+    "esercizio abusivo",
+    "titolo professionale del diporto"
+   ],
+   "copre": "Quali attività sono commerciali, il noleggio occasionale, l'assistenza e il traino, chi può condurre un'unità a noleggio.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_commerciale_contratti",
+   "quesiti": 8
+  },
+  {
+   "id": "locazione_noleggio",
+   "nome": "Locazione e noleggio: la differenza",
+   "parole_chiave": [
+    "locazione",
+    "noleggio",
+    "conduttore",
+    "noleggiante e noleggiatore",
+    "contratto in forma scritta"
+   ],
+   "copre": "Chi naviga e chi risponde nella locazione e nel noleggio, come si fanno i contratti e dove si annotano.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_commerciale_contratti",
+   "quesiti": 11
+  },
+  {
+   "id": "leasing_nautico",
+   "nome": "Il leasing nautico",
+   "parole_chiave": [
+    "leasing nautico",
+    "utilizzatore",
+    "canone",
+    "perimento del bene",
+    "responsabilità solidale"
+   ],
+   "copre": "Che cos'è il leasing nautico e che cosa ricade sull'utilizzatore: rischi, comando, sanzioni.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_commerciale_contratti",
+   "quesiti": 4
+  },
+  {
+   "id": "sci_nautico_conduttore",
+   "nome": "Sci nautico: chi conduce e chi è a bordo",
+   "parole_chiave": [
+    "sci nautico",
+    "patente nautica",
+    "persona esperta nel nuoto",
+    "unità trainante"
+   ],
+   "copre": "Il conduttore che traina uno sciatore deve avere la patente e una seconda persona esperta nel nuoto a bordo; con quale unità si può fare.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_sci_nautico",
+   "quesiti": 7
+  },
+  {
+   "id": "sci_nautico_dotazioni",
+   "nome": "Sci nautico: dotazioni e motore",
+   "parole_chiave": [
+    "dotazioni per lo sci nautico",
+    "cassetta di pronto soccorso",
+    "salvagente",
+    "gancio di traino",
+    "specchio retrovisore convesso",
+    "invertitore di marcia"
+   ],
+   "copre": "Che cosa deve avere l'unità trainante: cassetta di pronto soccorso, un salvagente per sciatore, gancio, specchio convesso, motore con invertitore e folle.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_sci_nautico",
+   "quesiti": 8
+  },
+  {
+   "id": "sci_nautico_zone_orari",
+   "nome": "Sci nautico: dove e quando",
+   "parole_chiave": [
+    "fascia di 200 metri",
+    "batimetrica di 1,60 m",
+    "coste a picco",
+    "ore diurne",
+    "mare calmo"
+   ],
+   "copre": "Dove si può sciare (oltre 200 m dalla batimetrica di 1,60 m, 100 m dalle coste a picco) e con quali condizioni.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_sci_nautico",
+   "quesiti": 4
+  },
+  {
+   "id": "sci_nautico_partenza_rientro",
+   "nome": "Sci nautico: partenza e rientro",
+   "parole_chiave": [
+    "corridoi di lancio",
+    "partenza e recupero dello sciatore",
+    "3 nodi",
+    "rotta normale alla costa"
+   ],
+   "copre": "Come si parte e si rientra dalla spiaggia: corridoi di lancio, acque libere, rotta perpendicolare alla costa e 3 nodi.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_sci_nautico",
+   "quesiti": 3
+  },
+  {
+   "id": "sci_nautico_distanze",
+   "nome": "Sci nautico: distanze e numero di sciatori",
+   "parole_chiave": [
+    "cavo di traino",
+    "distanza dallo sciatore",
+    "distanza laterale",
+    "scia",
+    "numero di sciatori"
+   ],
+   "copre": "Le distanze di sicurezza (12 m fra sciatore e unità, laterale maggiore del cavo), il divieto di seguire la scia, quanti sciatori al massimo.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_sci_nautico",
+   "quesiti": 4
+  },
+  {
+   "id": "pesca_sub_regole",
+   "nome": "Pesca subacquea: le regole",
+   "parole_chiave": [
+    "pesca subacquea",
+    "fucile subacqueo",
+    "apnea",
+    "apparecchi di respirazione",
+    "età minima 16 anni",
+    "fonti luminose"
+   ],
+   "copre": "Chi può praticarla, solo in apnea, di giorno, senza fonti luminose diverse dalla torcia, con il fucile carico solo in immersione.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_pesca",
+   "quesiti": 6
+  },
+  {
+   "id": "pesca_sub_segnale",
+   "nome": "Il subacqueo: segnale e distanze",
+   "parole_chiave": [
+    "bandiera rossa con striscia bianca",
+    "pallone segnasub",
+    "mezzo di appoggio",
+    "distanze dalle navi e dalle reti"
+   ],
+   "copre": "Come si segnala il subacqueo e a che distanza deve stare da navi ancorate e reti da posta.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_pesca",
+   "quesiti": 4
+  },
+  {
+   "id": "pesca_sportiva_regole",
+   "nome": "La pesca sportiva",
+   "parole_chiave": [
+    "pesca sportiva",
+    "divieto di vendita",
+    "attrezzi consentiti",
+    "limite di cattura 5 kg",
+    "gare di pesca"
+   ],
+   "copre": "Che cos'è la pesca sportiva, con quali attrezzi, quanto si può catturare, chi autorizza le gare.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_pesca",
+   "quesiti": 5
+  },
+  {
+   "id": "tonno_rosso_pesca_sportiva",
+   "nome": "Il tonno rosso",
+   "parole_chiave": [
+    "tonno rosso",
+    "quota di pesca",
+    "un esemplare",
+    "divieto di commercializzazione"
+   ],
+   "copre": "Le regole speciali per il tonno rosso: un esemplare, nessuna vendita, la chiusura al raggiungimento della quota.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_pesca",
+   "quesiti": 3
+  },
+  {
+   "id": "amp_zone_tutela",
+   "nome": "Aree marine protette: le zone A, B, C",
+   "parole_chiave": [
+    "area marina protetta",
+    "zona A di riserva integrale",
+    "zona B di riserva generale",
+    "zona C di riserva parziale",
+    "decreto istitutivo"
+   ],
+   "copre": "Come sono divise le aree marine protette e che cosa vi è consentito (navigazione, ancoraggio) zona per zona.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_ambiente",
+   "quesiti": 6
+  },
+  {
+   "id": "amp_sorveglianza_ormeggi",
+   "nome": "Aree marine protette: sorveglianza e ormeggi",
+   "parole_chiave": [
+    "ente gestore",
+    "sorveglianza",
+    "campi boa",
+    "campi di ormeggio",
+    "sanzioni nelle aree protette"
+   ],
+   "copre": "Chi sorveglia le aree protette, i campi boa e d'ormeggio (quota per la vela, niente ancoraggio), la sanzione per chi vi naviga.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_ambiente",
+   "quesiti": 5
+  },
+  {
+   "id": "inquinamento_rifiuti_mare",
+   "nome": "Inquinamento e rifiuti in mare",
+   "parole_chiave": [
+    "inquinamento da idrocarburi",
+    "sversamento",
+    "olio usato",
+    "rifiuti in mare",
+    "plastica",
+    "pirotecnici scaduti"
+   ],
+   "copre": "Che cosa fare in caso di sversamento, il divieto di disperdere olio e rifiuti, dove vanno i segnali di soccorso scaduti.",
+   "tema": "NORMATIVA DIPORTISTICA E AMBIENTALE",
+   "famiglia": "norm_ambiente",
    "quesiti": 4
   },
   {
@@ -6492,6 +7184,584 @@
   ],
   "base-1288": [
    "pubblicazioni_nautiche_iimm"
+  ],
+  "base-1289": [
+   "denuncia_evento_straordinario"
+  ],
+  "base-1290": [
+   "denuncia_evento_straordinario"
+  ],
+  "base-1291": [
+   "comandante_compiti"
+  ],
+  "base-1292": [
+   "sanzioni_diporto",
+   "obbligo_soccorso_urto"
+  ],
+  "base-1293": [
+   "denuncia_evento_straordinario"
+  ],
+  "base-1294": [
+   "sanzioni_diporto"
+  ],
+  "base-1295": [
+   "obbligo_soccorso_urto"
+  ],
+  "base-1296": [
+   "obbligo_soccorso_urto"
+  ],
+  "base-1297": [
+   "obbligo_soccorso_urto"
+  ],
+  "base-1298": [
+   "sanzioni_diporto",
+   "obbligo_soccorso_urto"
+  ],
+  "base-1299": [
+   "sanzioni_diporto"
+  ],
+  "base-1300": [
+   "categorie_progettazione_vento_onda"
+  ],
+  "base-1301": [
+   "iscrizione_atcn"
+  ],
+  "base-1302": [
+   "acque_interne_linee_base"
+  ],
+  "base-1303": [
+   "bandiera_nazionale_esposizione"
+  ],
+  "base-1304": [
+   "denuncia_evento_straordinario"
+  ],
+  "base-1305": [
+   "iscrizione_atcn"
+  ],
+  "base-1306": [
+   "fonti_normative"
+  ],
+  "base-1307": [
+   "fonti_normative"
+  ],
+  "base-1308": [
+   "acque_interne_linee_base"
+  ],
+  "base-1309": [
+   "classi_unita_diporto",
+   "iscrizione_atcn"
+  ],
+  "base-1310": [
+   "documenti_bordo_forma"
+  ],
+  "base-1311": [
+   "bandiera_nazionale_esposizione"
+  ],
+  "base-1312": [
+   "iscrizione_atcn"
+  ],
+  "base-1313": [
+   "diporto_definizioni"
+  ],
+  "base-1314": [
+   "iscrizione_atcn"
+  ],
+  "base-1315": [
+   "diporto_definizioni",
+   "uso_commerciale_diporto"
+  ],
+  "base-1316": [
+   "diporto_definizioni",
+   "uso_commerciale_diporto"
+  ],
+  "base-1317": [
+   "fonti_normative",
+   "diporto_definizioni"
+  ],
+  "base-1318": [
+   "fonti_normative"
+  ],
+  "base-1319": [
+   "assicurazione_rc"
+  ],
+  "base-1320": [
+   "assicurazione_rc"
+  ],
+  "base-1321": [
+   "assicurazione_rc"
+  ],
+  "base-1322": [
+   "fonti_normative"
+  ],
+  "base-1323": [
+   "fonti_normative"
+  ],
+  "base-1324": [
+   "uso_commerciale_diporto"
+  ],
+  "base-1325": [
+   "sanzioni_diporto",
+   "uso_commerciale_diporto"
+  ],
+  "base-1326": [
+   "leasing_nautico"
+  ],
+  "base-1327": [
+   "leasing_nautico"
+  ],
+  "base-1328": [
+   "leasing_nautico"
+  ],
+  "base-1329": [
+   "sanzioni_diporto",
+   "uso_commerciale_diporto"
+  ],
+  "base-1330": [
+   "comandante_compiti",
+   "leasing_nautico"
+  ],
+  "base-1331": [
+   "sanzioni_diporto",
+   "obbligo_soccorso_urto"
+  ],
+  "base-1332": [
+   "locazione_noleggio"
+  ],
+  "base-1333": [
+   "licenza_navigazione",
+   "locazione_noleggio"
+  ],
+  "base-1334": [
+   "documenti_bordo_forma",
+   "locazione_noleggio"
+  ],
+  "base-1335": [
+   "documenti_bordo_forma"
+  ],
+  "base-1336": [
+   "certificato_sicurezza_navigabilita"
+  ],
+  "base-1337": [
+   "dichiarazione_potenza_motore"
+  ],
+  "base-1338": [
+   "certificato_sicurezza_navigabilita"
+  ],
+  "base-1339": [
+   "documenti_bordo_forma",
+   "locazione_noleggio"
+  ],
+  "base-1340": [
+   "licenza_navigazione",
+   "locazione_noleggio"
+  ],
+  "base-1341": [
+   "limiti_distanza_costa"
+  ],
+  "base-1342": [
+   "eta_abilitazione_conduzione"
+  ],
+  "base-1343": [
+   "sospensione_revoca_patente"
+  ],
+  "base-1344": [
+   "classi_unita_diporto"
+  ],
+  "base-1345": [
+   "classi_unita_diporto"
+  ],
+  "base-1346": [
+   "denuncia_evento_straordinario"
+  ],
+  "base-1347": [
+   "acque_interne_linee_base"
+  ],
+  "base-1348": [
+   "bandiera_nazionale_esposizione"
+  ],
+  "base-1349": [
+   "categorie_progettazione_vento_onda"
+  ],
+  "base-1350": [
+   "sospensione_revoca_patente"
+  ],
+  "base-1351": [
+   "bandiera_nazionale_esposizione"
+  ],
+  "base-1352": [
+   "marcatura_ce_manuale_proprietario",
+   "categorie_progettazione_vento_onda"
+  ],
+  "base-1353": [
+   "denuncia_evento_straordinario"
+  ],
+  "base-1354": [
+   "licenza_navigazione"
+  ],
+  "base-1355": [
+   "soglie_patente"
+  ],
+  "base-1356": [
+   "soglie_patente",
+   "eta_abilitazione_conduzione"
+  ],
+  "base-1357": [
+   "marcatura_ce_manuale_proprietario"
+  ],
+  "base-1358": [
+   "soglie_patente"
+  ],
+  "base-1359": [
+   "sospensione_revoca_patente"
+  ],
+  "base-1360": [
+   "soglie_patente"
+  ],
+  "base-1361": [
+   "marcatura_ce_manuale_proprietario"
+  ],
+  "base-1362": [
+   "denuncia_evento_straordinario"
+  ],
+  "base-1363": [
+   "sanzioni_diporto"
+  ],
+  "base-1364": [
+   "documenti_bordo_forma"
+  ],
+  "base-1365": [
+   "iscrizione_atcn"
+  ],
+  "base-1366": [
+   "eta_abilitazione_conduzione"
+  ],
+  "base-1367": [
+   "limiti_distanza_costa",
+   "eta_abilitazione_conduzione"
+  ],
+  "base-1368": [
+   "uso_commerciale_diporto",
+   "locazione_noleggio"
+  ],
+  "base-1369": [
+   "locazione_noleggio"
+  ],
+  "base-1370": [
+   "locazione_noleggio"
+  ],
+  "base-1371": [
+   "locazione_noleggio"
+  ],
+  "base-1372": [
+   "uso_commerciale_diporto",
+   "locazione_noleggio"
+  ],
+  "base-1373": [
+   "uso_commerciale_diporto",
+   "locazione_noleggio"
+  ],
+  "base-1374": [
+   "classi_unita_diporto",
+   "iscrizione_atcn"
+  ],
+  "base-1375": [
+   "validita_patente"
+  ],
+  "base-1376": [
+   "diporto_definizioni"
+  ],
+  "base-1377": [
+   "validita_patente"
+  ],
+  "base-1378": [
+   "sanzioni_diporto"
+  ],
+  "base-1379": [
+   "moto_acqua_patente"
+  ],
+  "base-1380": [
+   "denuncia_evento_straordinario"
+  ],
+  "base-1381": [
+   "limiti_distanza_costa"
+  ],
+  "base-1382": [
+   "soglie_patente"
+  ],
+  "base-1383": [
+   "assicurazione_rc"
+  ],
+  "base-1384": [
+   "denuncia_evento_straordinario"
+  ],
+  "base-1385": [
+   "sospensione_revoca_patente"
+  ],
+  "base-1386": [
+   "dichiarazione_potenza_motore"
+  ],
+  "base-1387": [
+   "licenza_navigazione"
+  ],
+  "base-1388": [
+   "certificato_sicurezza_navigabilita"
+  ],
+  "base-1389": [
+   "soglie_patente"
+  ],
+  "base-1390": [
+   "moto_acqua_patente"
+  ],
+  "base-1391": [
+   "classi_unita_diporto",
+   "licenza_navigazione"
+  ],
+  "base-1392": [
+   "sospensione_revoca_patente"
+  ],
+  "base-1393": [
+   "marcatura_ce_manuale_proprietario"
+  ],
+  "base-1394": [
+   "soglie_patente"
+  ],
+  "base-1395": [
+   "moto_acqua_patente"
+  ],
+  "base-1396": [
+   "denuncia_evento_straordinario"
+  ],
+  "base-1397": [
+   "denuncia_evento_straordinario"
+  ],
+  "base-1398": [
+   "soglie_patente"
+  ],
+  "base-1399": [
+   "soglie_patente"
+  ],
+  "base-1400": [
+   "validita_patente"
+  ],
+  "base-1401": [
+   "classi_unita_diporto"
+  ],
+  "base-1402": [
+   "eta_abilitazione_conduzione",
+   "comandante_compiti"
+  ],
+  "base-1403": [
+   "dichiarazione_potenza_motore"
+  ],
+  "base-1404": [
+   "categorie_progettazione_vento_onda"
+  ],
+  "base-1405": [
+   "categorie_progettazione_vento_onda"
+  ],
+  "base-1406": [
+   "soglie_patente",
+   "eta_abilitazione_conduzione"
+  ],
+  "base-1407": [
+   "categorie_progettazione_vento_onda"
+  ],
+  "base-1408": [
+   "comandante_compiti"
+  ],
+  "base-1409": [
+   "comandante_compiti"
+  ],
+  "base-1410": [
+   "moto_acqua_patente"
+  ],
+  "base-1411": [
+   "moto_acqua_patente"
+  ],
+  "base-1412": [
+   "marcatura_ce_manuale_proprietario",
+   "limiti_distanza_costa"
+  ],
+  "base-1413": [
+   "comandante_compiti"
+  ],
+  "base-1414": [
+   "sci_nautico_dotazioni"
+  ],
+  "base-1415": [
+   "sci_nautico_dotazioni"
+  ],
+  "base-1416": [
+   "sci_nautico_conduttore"
+  ],
+  "base-1417": [
+   "sci_nautico_conduttore"
+  ],
+  "base-1418": [
+   "sci_nautico_distanze"
+  ],
+  "base-1419": [
+   "sci_nautico_partenza_rientro"
+  ],
+  "base-1420": [
+   "sci_nautico_zone_orari"
+  ],
+  "base-1421": [
+   "sci_nautico_conduttore"
+  ],
+  "base-1422": [
+   "sci_nautico_conduttore"
+  ],
+  "base-1423": [
+   "sci_nautico_zone_orari"
+  ],
+  "base-1424": [
+   "sci_nautico_zone_orari"
+  ],
+  "base-1425": [
+   "sci_nautico_distanze"
+  ],
+  "base-1426": [
+   "sci_nautico_conduttore"
+  ],
+  "base-1427": [
+   "sci_nautico_conduttore"
+  ],
+  "base-1428": [
+   "sci_nautico_partenza_rientro"
+  ],
+  "base-1429": [
+   "sci_nautico_dotazioni"
+  ],
+  "base-1430": [
+   "sci_nautico_zone_orari"
+  ],
+  "base-1431": [
+   "sci_nautico_dotazioni"
+  ],
+  "base-1432": [
+   "sci_nautico_partenza_rientro"
+  ],
+  "base-1433": [
+   "sci_nautico_dotazioni"
+  ],
+  "base-1434": [
+   "sci_nautico_dotazioni"
+  ],
+  "base-1435": [
+   "sci_nautico_dotazioni"
+  ],
+  "base-1436": [
+   "sci_nautico_dotazioni"
+  ],
+  "base-1437": [
+   "sci_nautico_distanze"
+  ],
+  "base-1438": [
+   "sci_nautico_distanze"
+  ],
+  "base-1439": [
+   "sci_nautico_conduttore"
+  ],
+  "base-1440": [
+   "pesca_sub_regole"
+  ],
+  "base-1441": [
+   "pesca_sub_regole"
+  ],
+  "base-1442": [
+   "pesca_sub_regole"
+  ],
+  "base-1443": [
+   "pesca_sub_regole"
+  ],
+  "base-1444": [
+   "pesca_sub_segnale"
+  ],
+  "base-1445": [
+   "pesca_sub_segnale"
+  ],
+  "base-1446": [
+   "pesca_sub_regole"
+  ],
+  "base-1447": [
+   "pesca_sub_segnale"
+  ],
+  "base-1448": [
+   "pesca_sub_segnale"
+  ],
+  "base-1449": [
+   "pesca_sportiva_regole"
+  ],
+  "base-1450": [
+   "pesca_sportiva_regole"
+  ],
+  "base-1451": [
+   "pesca_sportiva_regole"
+  ],
+  "base-1452": [
+   "pesca_sportiva_regole"
+  ],
+  "base-1453": [
+   "pesca_sportiva_regole"
+  ],
+  "base-1454": [
+   "pesca_sub_regole"
+  ],
+  "base-1455": [
+   "tonno_rosso_pesca_sportiva"
+  ],
+  "base-1456": [
+   "tonno_rosso_pesca_sportiva"
+  ],
+  "base-1457": [
+   "inquinamento_rifiuti_mare"
+  ],
+  "base-1458": [
+   "sanzioni_diporto",
+   "amp_sorveglianza_ormeggi"
+  ],
+  "base-1459": [
+   "amp_sorveglianza_ormeggi"
+  ],
+  "base-1460": [
+   "amp_sorveglianza_ormeggi"
+  ],
+  "base-1461": [
+   "amp_sorveglianza_ormeggi"
+  ],
+  "base-1462": [
+   "amp_zone_tutela"
+  ],
+  "base-1463": [
+   "amp_zone_tutela"
+  ],
+  "base-1464": [
+   "inquinamento_rifiuti_mare"
+  ],
+  "base-1465": [
+   "inquinamento_rifiuti_mare"
+  ],
+  "base-1466": [
+   "amp_zone_tutela"
+  ],
+  "base-1467": [
+   "amp_zone_tutela"
+  ],
+  "base-1468": [
+   "amp_zone_tutela"
+  ],
+  "base-1469": [
+   "tonno_rosso_pesca_sportiva"
+  ],
+  "base-1470": [
+   "amp_zone_tutela"
+  ],
+  "base-1471": [
+   "inquinamento_rifiuti_mare"
+  ],
+  "base-1472": [
+   "amp_sorveglianza_ormeggi"
   ]
  }
 }

@@ -809,6 +809,40 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   specifica 1.146; guardiano verde. Motore, server e interfaccia non rifatti:
   nessun file che leggono è cambiato.
 
+### Aggiunto — P-106: i concetti della Normativa diportistica e ambientale
+
+- **Perché.** Il passo B-2 del piano etichetta tutta la banca con concetti più
+  fini delle voci (C-2: concetti e famiglie), una sorgente per tema. La
+  Normativa ne ha bisogno più di altri temi: la voce «Leggi e regolamenti»
+  tiene 98 quesiti su sette argomenti diversi (patente, documenti, iscrizione,
+  soccorso, contratti…), e le voci del decreto si mescolano — la licenza di
+  navigazione sta fra «Documenti» e fra «Leggi e regolamenti», le sanzioni fra
+  tre voci.
+- **Che cosa.** `strumenti/concetti/normativa-diportistica-e-ambientale.json`:
+  i 184 quesiti (base-1289 … base-1472), **38 concetti** in **11 famiglie**,
+  **210 tag** (158 quesiti con un concetto, 26 con due). Ogni famiglia sta in
+  una voce, nella forma che la sessione COLREG ha fissato per `componi.py`:
+  cinque in «Leggi e regolamenti», una ciascuna nelle altre voci, che vanno da
+  7 a 26 quesiti. Parole chiave da indice di manuale; ogni concetto ha almeno
+  tre quesiti. Id specifici (famiglie con `norm_`), perché sono globali sulla
+  banca: controllati contro le sette sorgenti già scritte nei worktree, nessuna
+  collisione. Classificazione nostra, non ministeriale.
+- **Come.** Letti tutti i testi con le tre risposte e l'esatta; il tema non ha
+  figure. Nessun archivio di risposte letto. Una rilettura dello stesso lettore
+  su 18 quesiti estratti a caso (`random.seed(106)`, nel file): nessun tag
+  cambiato. La seconda lettura indipendente è una sessione a parte.
+- **Una voce senza famiglia:** base-1362 ha la voce «(voce non indicata nel
+  decreto)»; è taggato (denuncia di evento straordinario), ma quella voce non
+  ha famiglie.
+- **Trovato nella banca, e non toccato:** base-1325 dà la sanzione per
+  l'esercizio abusivo «da 2.775 a 11.017 euro», base-1329 e base-1378 «da
+  2.755»: probabilmente un refuso, non verificato sul PDF. Sta nel campo
+  `segnalazioni` della sorgente, con base-1460, la cui risposta esatta ripete
+  la domanda.
+- Forma e regole controllate con uno script fuori dal repo. Suite dei dati
+  236, della specifica 1.146, guardiano verde. `site/`, i test e la specifica
+  non toccati.
+
 ## [0.35.1] — 2026-10-29
 
 **Le risposte in simulazione si cambiano, e «auto» si capisce.** Un utente ha
