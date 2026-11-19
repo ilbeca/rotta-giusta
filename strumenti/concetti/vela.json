@@ -1,0 +1,1547 @@
+{
+ "tema": "VELA",
+ "banca": "vela",
+ "voci": [
+  "TEORIA DELLA VELA",
+  "ATTREZZATURA DELLE UNITA' A VELA",
+  "MANOVRE DELLE UNITA' A VELA"
+ ],
+ "progressivi": "2.1.1-1 … 2.3.1-65 (vela-1 … vela-250)",
+ "data": "2026-11-18",
+ "stato": "Prima lettura (P-106). Concetti, famiglie e tag scritti da Claude leggendo testi e figure; non ministeriali, non rivisti da una persona. La seconda lettura indipendente non è ancora fatta.",
+ "famiglie": [
+  {
+   "id": "vela_f_scafo",
+   "nome": "Scafo, stabilità e sbandamento",
+   "voce": "TEORIA DELLA VELA",
+   "concetti": [
+    "vela_scafo_zavorra",
+    "vela_sbandamento",
+    "vela_straorza_planata"
+   ]
+  },
+  {
+   "id": "vela_f_vento",
+   "nome": "Il vento reale e il vento apparente",
+   "voce": "TEORIA DELLA VELA",
+   "concetti": [
+    "vela_apparente_formazione",
+    "vela_apparente_andature"
+   ]
+  },
+  {
+   "id": "vela_f_andature",
+   "nome": "Le andature e i lati rispetto al vento",
+   "voce": "TEORIA DELLA VELA",
+   "concetti": [
+    "vela_andature",
+    "vela_settore_bordeggio",
+    "vela_lati_vento"
+   ]
+  },
+  {
+   "id": "vela_f_profilo",
+   "nome": "La vela come profilo: forze e forma",
+   "voce": "TEORIA DELLA VELA",
+   "concetti": [
+    "vela_incidenza_portanza",
+    "vela_forze",
+    "vela_profilo",
+    "vela_regolazione_profilo",
+    "vela_messa_a_segno"
+   ]
+  },
+  {
+   "id": "vela_f_equilibrio",
+   "nome": "L'equilibrio: centro velico e centro di deriva",
+   "voce": "TEORIA DELLA VELA",
+   "concetti": [
+    "vela_centri",
+    "vela_orziera_poggiera",
+    "vela_inclinazione_albero"
+   ]
+  },
+  {
+   "id": "vela_f_albero",
+   "nome": "Albero e manovre fisse",
+   "voce": "ATTREZZATURA DELLE UNITA' A VELA",
+   "concetti": [
+    "vela_armo_frazionato",
+    "vela_manovre_fisse",
+    "vela_fisse_correnti"
+   ]
+  },
+  {
+   "id": "vela_f_vele",
+   "nome": "Le vele e gli armi",
+   "voce": "ATTREZZATURA DELLE UNITA' A VELA",
+   "concetti": [
+    "vela_randa_parti",
+    "vela_vele_prua",
+    "vela_vele_portanti",
+    "vela_tessuti",
+    "vela_armi"
+   ]
+  },
+  {
+   "id": "vela_f_coperta",
+   "nome": "Coperta, ferramenta e comandi delle vele",
+   "voce": "ATTREZZATURA DELLE UNITA' A VELA",
+   "concetti": [
+    "vela_paranchi_winch",
+    "vela_ferramenta",
+    "vela_comandi_randa",
+    "vela_avvolgitori"
+   ]
+  },
+  {
+   "id": "vela_f_cime",
+   "nome": "Cime e nodi",
+   "voce": "ATTREZZATURA DELLE UNITA' A VELA",
+   "concetti": [
+    "vela_nodi",
+    "vela_cime"
+   ]
+  },
+  {
+   "id": "vela_f_rotta",
+   "nome": "Orzare, poggiare e sventare",
+   "voce": "MANOVRE DELLE UNITA' A VELA",
+   "concetti": [
+    "vela_orzare_poggiare",
+    "vela_sventare"
+   ]
+  },
+  {
+   "id": "vela_f_mure",
+   "nome": "Cambiare mure: virata, abbattuta, strambata",
+   "voce": "MANOVRE DELLE UNITA' A VELA",
+   "concetti": [
+    "vela_virata_abbattuta",
+    "vela_strambata"
+   ]
+  },
+  {
+   "id": "vela_f_armare",
+   "nome": "Armare e issare le vele",
+   "voce": "MANOVRE DELLE UNITA' A VELA",
+   "concetti": [
+    "vela_armare_randa",
+    "vela_armare_prua"
+   ]
+  },
+  {
+   "id": "vela_f_ridurre",
+   "nome": "Ridurre la vela e la velocità",
+   "voce": "MANOVRE DELLE UNITA' A VELA",
+   "concetti": [
+    "vela_ridurre_vela",
+    "vela_rallentare"
+   ]
+  },
+  {
+   "id": "vela_f_precedenze",
+   "nome": "Precedenze fra unità a vela",
+   "voce": "MANOVRE DELLE UNITA' A VELA",
+   "concetti": [
+    "vela_precedenze"
+   ]
+  }
+ ],
+ "concetti": [
+  {
+   "id": "vela_scafo_zavorra",
+   "nome": "Scafo, bulbo zavorrato e stabilità",
+   "famiglia": "vela_f_scafo",
+   "parole_chiave": [
+    "scafo",
+    "bulbo",
+    "zavorra",
+    "chiglia",
+    "stabilità",
+    "multiscafo",
+    "catamarano"
+   ],
+   "copre": "Che cos'è lo scafo di un'unità a vela, a che cosa serve il bulbo zavorrato, perché un multiscafo è più stabile.",
+   "quesiti": 7
+  },
+  {
+   "id": "vela_sbandamento",
+   "nome": "Lo sbandamento e come contrastarlo",
+   "famiglia": "vela_f_scafo",
+   "parole_chiave": [
+    "sbandamento",
+    "peso dell'equipaggio",
+    "falchetta",
+    "momento sbandante",
+    "trasto"
+   ],
+   "copre": "L'azione sbandante del vento sulle vele, che cosa costa uno sbandamento eccessivo, e come si riduce: pesi a sopravento, vele smagrite, trasto sottovento, scotta lascata, vela ridotta.",
+   "quesiti": 6
+  },
+  {
+   "id": "vela_straorza_planata",
+   "nome": "Straorza, strapoggia, scuffia, raffica e planata",
+   "famiglia": "vela_f_scafo",
+   "parole_chiave": [
+    "straorza",
+    "strapoggia",
+    "scuffia",
+    "raffica",
+    "planata",
+    "scuffiare"
+   ],
+   "copre": "I fenomeni improvvisi o di regime della navigazione a vela: la prua che va al vento o se ne allontana per una raffica o un'onda, il ribaltamento, la planata.",
+   "quesiti": 6
+  },
+  {
+   "id": "vela_apparente_formazione",
+   "nome": "Il vento apparente: come si forma",
+   "famiglia": "vela_f_vento",
+   "parole_chiave": [
+    "vento apparente",
+    "vento reale",
+    "vento di velocità",
+    "composizione dei venti",
+    "triangolo dei venti",
+    "raffica"
+   ],
+   "copre": "Il vento apparente come composizione del vento reale e del vento di velocità: perché è più a proravia del reale, e come cambia con una raffica o un calo del vento.",
+   "quesiti": 8
+  },
+  {
+   "id": "vela_apparente_andature",
+   "nome": "Il vento apparente nelle diverse andature",
+   "famiglia": "vela_f_vento",
+   "parole_chiave": [
+    "vento apparente di bolina",
+    "vento apparente in poppa",
+    "intensità del vento percepito",
+    "andature portanti"
+   ],
+   "copre": "Perché di bolina il vento percepito a bordo è più forte del reale e in poppa più debole, e come cambia la velocità avvertita.",
+   "quesiti": 8
+  },
+  {
+   "id": "vela_andature",
+   "nome": "Le andature",
+   "famiglia": "vela_f_andature",
+   "parole_chiave": [
+    "andatura",
+    "bolina",
+    "traverso",
+    "lasco",
+    "gran lasco",
+    "poppa",
+    "fil di ruota",
+    "rosa delle andature"
+   ],
+   "copre": "Che cos'è un'andatura e gli angoli rispetto al vento reale di bolina (circa 45°), traverso (90°), lasco (circa 135°) e poppa (180°).",
+   "quesiti": 13
+  },
+  {
+   "id": "vela_settore_bordeggio",
+   "nome": "Il settore di bordeggio (angolo morto)",
+   "famiglia": "vela_f_andature",
+   "parole_chiave": [
+    "settore di bordeggio",
+    "angolo morto",
+    "bordeggiare",
+    "stringere il vento",
+    "risalire il vento"
+   ],
+   "copre": "Il settore controvento in cui la vela non porta e la prua non si può tenere, e che cosa succede stringendo oltre quell'angolo.",
+   "quesiti": 4
+  },
+  {
+   "id": "vela_lati_vento",
+   "nome": "Sopravento, sottovento e mure",
+   "famiglia": "vela_f_andature",
+   "parole_chiave": [
+    "sopravento",
+    "sottovento",
+    "mure a dritta",
+    "mure a sinistra"
+   ],
+   "copre": "Il lato dell'unità su cui batte il vento e quello opposto, il lato sottovento della vela, e che cosa indicano le mure.",
+   "quesiti": 4
+  },
+  {
+   "id": "vela_incidenza_portanza",
+   "nome": "Angolo di incidenza e portanza",
+   "famiglia": "vela_f_profilo",
+   "parole_chiave": [
+    "angolo di incidenza",
+    "portanza",
+    "profilo alare",
+    "depressione",
+    "lato sottovento della vela",
+    "pressione del vento"
+   ],
+   "copre": "La vela come profilo orientato al flusso: l'angolo con il vento apparente, la depressione sul lato sottovento, la portanza e la pressione che ne dipendono.",
+   "quesiti": 9
+  },
+  {
+   "id": "vela_forze",
+   "nome": "Forza di propulsione e forza di scarroccio",
+   "famiglia": "vela_f_profilo",
+   "parole_chiave": [
+    "forza velica",
+    "forza di propulsione",
+    "forza di scarroccio",
+    "scarroccio",
+    "scomposizione delle forze"
+   ],
+   "copre": "La risultante del vento sulle vele scomposta nella componente parallela all'asse dell'unità, che la fa avanzare, e in quella perpendicolare, che la fa scarrocciare.",
+   "quesiti": 6
+  },
+  {
+   "id": "vela_profilo",
+   "nome": "La forma della vela: corda, grasso, svergolamento, stecche",
+   "famiglia": "vela_f_profilo",
+   "parole_chiave": [
+    "corda",
+    "grasso",
+    "concavità",
+    "svergolamento",
+    "stecche",
+    "profilo"
+   ],
+   "copre": "I nomi della forma di una vela: la corda, il grasso e la sua posizione, lo svergolamento con l'altezza, e a che cosa servono le stecche della randa.",
+   "quesiti": 7
+  },
+  {
+   "id": "vela_regolazione_profilo",
+   "nome": "Regolare la forma della vela: smagrire e ingrassare",
+   "famiglia": "vela_f_profilo",
+   "parole_chiave": [
+    "smagrire",
+    "ingrassare",
+    "cunningham",
+    "tesabase",
+    "drizza",
+    "carrello del genoa",
+    "paterazzo"
+   ],
+   "copre": "Come si rende la vela più piatta o più grassa con drizza, base, cunningham, paterazzo e punto di scotta, a seconda del vento e dell'andatura.",
+   "quesiti": 9
+  },
+  {
+   "id": "vela_messa_a_segno",
+   "nome": "La messa a segno delle vele",
+   "famiglia": "vela_f_profilo",
+   "parole_chiave": [
+    "messa a segno",
+    "vele a segno",
+    "orientare le vele"
+   ],
+   "copre": "Che cosa vuol dire mettere a segno le vele, e che cosa non lo è (issarle a riva, riporle).",
+   "quesiti": 3
+  },
+  {
+   "id": "vela_centri",
+   "nome": "Centro velico e centro di deriva",
+   "famiglia": "vela_f_equilibrio",
+   "parole_chiave": [
+    "centro velico",
+    "centro di deriva",
+    "centro di resistenza laterale",
+    "opera viva",
+    "piano velico"
+   ],
+   "copre": "Che cosa sono il centro velico e il centro di deriva, da che cosa dipende la loro posizione, e a che cosa servono.",
+   "quesiti": 15
+  },
+  {
+   "id": "vela_orziera_poggiera",
+   "nome": "Unità orziera, poggiera o equilibrata",
+   "famiglia": "vela_f_equilibrio",
+   "parole_chiave": [
+    "orziera",
+    "poggiera",
+    "equilibrio della barca",
+    "timone neutro",
+    "tendenza orziera"
+   ],
+   "copre": "La tendenza dell'unità a orzare o a poggiare con il timone al centro, a seconda di dove sta il centro velico rispetto al centro di deriva, e come la si corregge con pesi, vele e randa ridotta.",
+   "quesiti": 11
+  },
+  {
+   "id": "vela_inclinazione_albero",
+   "nome": "L'inclinazione dell'albero",
+   "famiglia": "vela_f_equilibrio",
+   "parole_chiave": [
+    "inclinazione dell'albero",
+    "rake",
+    "albero appoppato",
+    "albero appruato"
+   ],
+   "copre": "Come l'albero inclinato verso poppa o verso prua sposta il centro velico e rende l'unità orziera o poggiera.",
+   "quesiti": 4
+  },
+  {
+   "id": "vela_armo_frazionato",
+   "nome": "Armo frazionato e sartie volanti",
+   "famiglia": "vela_f_albero",
+   "parole_chiave": [
+    "armo frazionato",
+    "armo in testa",
+    "sartie volanti",
+    "crocette acquartierate",
+    "incappellaggio"
+   ],
+   "copre": "Che cos'è un armo frazionato, con lo strallo non in testa d'albero, e a che cosa servono le sartie volanti.",
+   "quesiti": 4
+  },
+  {
+   "id": "vela_manovre_fisse",
+   "nome": "Il sartiame: sartie, stralli, crocette, paterazzo",
+   "famiglia": "vela_f_albero",
+   "parole_chiave": [
+    "sartiame",
+    "sartie",
+    "stralli",
+    "crocette",
+    "paterazzo",
+    "lande",
+    "arridatoi",
+    "regolazione dell'albero"
+   ],
+   "copre": "I cavi che sostengono l'albero, le crocette che li distanziano, le lande che li fissano in coperta, e come si regola l'albero.",
+   "quesiti": 9
+  },
+  {
+   "id": "vela_fisse_correnti",
+   "nome": "Manovre fisse e manovre correnti",
+   "famiglia": "vela_f_albero",
+   "parole_chiave": [
+    "manovre fisse",
+    "manovre correnti",
+    "manovre dormienti",
+    "drizze",
+    "scotte"
+   ],
+   "copre": "La distinzione fra le manovre che sostengono l'albero (stralli, sartie) e quelle che manovrano le vele (drizze, scotte, vang, tesabase).",
+   "quesiti": 6
+  },
+  {
+   "id": "vela_randa_parti",
+   "nome": "La randa e le sue parti",
+   "famiglia": "vela_f_vele",
+   "parole_chiave": [
+    "randa",
+    "inferitura",
+    "ralinga",
+    "balumina",
+    "base",
+    "angolo di penna",
+    "angolo di mura",
+    "angolo di scotta"
+   ],
+   "copre": "La randa come vela principale a poppavia dell'albero: i tre lati e i tre angoli, e che cosa si aggancia a ciascuno.",
+   "quesiti": 8
+  },
+  {
+   "id": "vela_vele_prua",
+   "nome": "Le vele di prua: fiocco e genoa",
+   "famiglia": "vela_f_vele",
+   "parole_chiave": [
+    "vele di prua",
+    "fiocco",
+    "genoa",
+    "genova",
+    "garrocci",
+    "fiocco autovirante",
+    "sovrapposizione"
+   ],
+   "copre": "Che cosa distingue il genoa, che si sovrappone alla randa, dal fiocco, che non lo fa; i garrocci; il fiocco autovirante e la sua scotta.",
+   "quesiti": 9
+  },
+  {
+   "id": "vela_vele_portanti",
+   "nome": "Spinnaker, gennaker e code 0",
+   "famiglia": "vela_f_vele",
+   "parole_chiave": [
+    "spinnaker",
+    "gennaker",
+    "code 0",
+    "vele asimmetriche",
+    "tangone",
+    "braccio",
+    "calza",
+    "strallare",
+    "quadrare"
+   ],
+   "copre": "Le vele per le andature larghe e per il vento leggero, il tangone e le sue manovre (braccio, mantiglio, strallare e quadrare), la calza.",
+   "quesiti": 11
+  },
+  {
+   "id": "vela_tessuti",
+   "nome": "I tessuti delle vele",
+   "famiglia": "vela_f_vele",
+   "parole_chiave": [
+    "tessuto delle vele",
+    "dacron",
+    "resistenza alla trazione",
+    "raggi ultravioletti",
+    "fibre"
+   ],
+   "copre": "I materiali delle vele da crociera, la resistenza delle fibre e il decadimento al sole.",
+   "quesiti": 3
+  },
+  {
+   "id": "vela_armi",
+   "nome": "Gli armi e il piano velico",
+   "famiglia": "vela_f_vele",
+   "parole_chiave": [
+    "armo",
+    "piano velico",
+    "sloop",
+    "cutter",
+    "ketch",
+    "yawl",
+    "albero di mezzana"
+   ],
+   "copre": "Come si classificano le unità a vela per numero di alberi e vele di prua (sloop, cutter, ketch) e il corredo di vele standard.",
+   "quesiti": 6
+  },
+  {
+   "id": "vela_paranchi_winch",
+   "nome": "Paranchi e winch",
+   "famiglia": "vela_f_coperta",
+   "parole_chiave": [
+    "paranco",
+    "bozzello",
+    "rapporto di demoltiplicazione",
+    "winch",
+    "verricello",
+    "self-tailing",
+    "maniglia del winch"
+   ],
+   "copre": "Come un paranco demoltiplica lo sforzo e come si legge il suo rapporto, come si usa un winch e che cos'è il self-tailing.",
+   "quesiti": 7
+  },
+  {
+   "id": "vela_ferramenta",
+   "nome": "La ferramenta di coperta",
+   "famiglia": "vela_f_coperta",
+   "parole_chiave": [
+    "ferramenta",
+    "galloccia",
+    "strozzascotte",
+    "stopper",
+    "grillo",
+    "golfare",
+    "trozza",
+    "carrello",
+    "landa"
+   ],
+   "copre": "I pezzi di ferramenta e a che cosa servono: gallocce, strozzatori e stopper, grilli, golfari, trozza, carrello della randa.",
+   "quesiti": 10
+  },
+  {
+   "id": "vela_comandi_randa",
+   "nome": "I comandi della randa: vang, cunningham, tesabase, lazy jack",
+   "famiglia": "vela_f_coperta",
+   "parole_chiave": [
+    "vang",
+    "cunningham",
+    "tesabase",
+    "lazy jack",
+    "boma",
+    "carrello della randa",
+    "ritenuta del boma"
+   ],
+   "copre": "Le manovre che regolano la randa e il boma, e il sistema di sagole che raccoglie la randa all'ammainata.",
+   "quesiti": 8
+  },
+  {
+   "id": "vela_avvolgitori",
+   "nome": "Avvolgifiocco, avvolgiranda e strallo cavo",
+   "famiglia": "vela_f_coperta",
+   "parole_chiave": [
+    "avvolgifiocco",
+    "avvolgiranda",
+    "strallo cavo",
+    "canaletta",
+    "feeder",
+    "rollafiocco"
+   ],
+   "copre": "I sistemi per ridurre o riporre le vele senza ammainarle e lo strallo con la canaletta in cui si infila la vela di prua.",
+   "quesiti": 8
+  },
+  {
+   "id": "vela_nodi",
+   "nome": "I nodi",
+   "famiglia": "vela_f_cime",
+   "parole_chiave": [
+    "nodi marinari",
+    "gassa d'amante",
+    "nodo piano",
+    "nodo savoia",
+    "nodo parlato",
+    "nodo margherita"
+   ],
+   "copre": "A che cosa serve ciascun nodo, quale non si scioglie da solo e quale accorcia una cima.",
+   "quesiti": 7
+  },
+  {
+   "id": "vela_cime",
+   "nome": "Le cime: materiali e impiombature",
+   "famiglia": "vela_f_cime",
+   "parole_chiave": [
+    "cime",
+    "polipropilene",
+    "impiombatura",
+    "trefoli",
+    "tornichetto"
+   ],
+   "copre": "I materiali delle cime, come si uniscono i cavi con l'impiombatura, e che cosa non è un tornichetto.",
+   "quesiti": 3
+  },
+  {
+   "id": "vela_orzare_poggiare",
+   "nome": "Orzare e poggiare",
+   "famiglia": "vela_f_rotta",
+   "parole_chiave": [
+    "orzare",
+    "poggiare",
+    "barra del timone",
+    "stringere il vento",
+    "lascare le scotte"
+   ],
+   "copre": "Avvicinare o allontanare la prua dal vento, da che parte si porta la barra, e come le vele aiutano la poggiata.",
+   "quesiti": 10
+  },
+  {
+   "id": "vela_sventare",
+   "nome": "Sventare e la prua al vento",
+   "famiglia": "vela_f_rotta",
+   "parole_chiave": [
+    "sventare",
+    "prua al vento",
+    "vele che fileggiano",
+    "vele non portanti"
+   ],
+   "copre": "Togliere portanza alle vele portando la prua al vento o mollando le scotte, e che cosa fanno le vele con la prua al vento.",
+   "quesiti": 5
+  },
+  {
+   "id": "vela_virata_abbattuta",
+   "nome": "Virata e abbattuta",
+   "famiglia": "vela_f_mure",
+   "parole_chiave": [
+    "virata",
+    "abbattuta",
+    "cambiare mure",
+    "virare in prua",
+    "virare in poppa"
+   ],
+   "copre": "Le due manovre per cambiare mure, con la prua o con la poppa attraverso il vento, quando e come si fanno.",
+   "quesiti": 8
+  },
+  {
+   "id": "vela_strambata",
+   "nome": "La strambata",
+   "famiglia": "vela_f_mure",
+   "parole_chiave": [
+    "strambata",
+    "abbattuta involontaria",
+    "ritenuta del boma",
+    "giardinetto",
+    "gran lasco"
+   ],
+   "copre": "L'abbattuta involontaria e incontrollata: quando si rischia e come la si previene.",
+   "quesiti": 5
+  },
+  {
+   "id": "vela_armare_randa",
+   "nome": "Armare e issare la randa",
+   "famiglia": "vela_f_armare",
+   "parole_chiave": [
+    "armare la randa",
+    "drizza randa",
+    "punto di mura",
+    "grillo di penna",
+    "borosa"
+   ],
+   "copre": "In che ordine si arma la randa, dove si aggancia ciascun angolo, e che cosa si usa per la drizza.",
+   "quesiti": 5
+  },
+  {
+   "id": "vela_armare_prua",
+   "nome": "Armare e issare le vele di prua",
+   "famiglia": "vela_f_armare",
+   "parole_chiave": [
+    "armare il fiocco",
+    "garrocci",
+    "punto di mura",
+    "scotte del fiocco",
+    "issare il genoa"
+   ],
+   "copre": "Come si armano fiocco e genoa, in che ordine si incocciano i garrocci, come si fissano le scotte e perché si issa con la prua al vento.",
+   "quesiti": 6
+  },
+  {
+   "id": "vela_ridurre_vela",
+   "nome": "Ridurre la vela: terzaroli, tormentina, avvolgitore",
+   "famiglia": "vela_f_ridurre",
+   "parole_chiave": [
+    "terzaroli",
+    "presa di terzaroli",
+    "matafioni",
+    "tormentina",
+    "ridurre la velatura"
+   ],
+   "copre": "Quando e come si riduce la superficie velica: terzaroli e matafioni, tormentina, genoa avvolto, e l'effetto sulla tendenza orziera.",
+   "quesiti": 9
+  },
+  {
+   "id": "vela_rallentare",
+   "nome": "Rallentare e fermarsi: panna e cappa",
+   "famiglia": "vela_f_ridurre",
+   "parole_chiave": [
+    "mettersi in panna",
+    "mettersi alla cappa",
+    "fileggiare",
+    "ridurre la velocità"
+   ],
+   "copre": "Come un'unità a vela riduce la velocità o si ferma: la panna, la cappa, stringere il vento oltre il bordeggio.",
+   "quesiti": 6
+  },
+  {
+   "id": "vela_precedenze",
+   "nome": "Precedenze fra unità a vela",
+   "famiglia": "vela_f_precedenze",
+   "parole_chiave": [
+    "precedenza",
+    "mure a dritta",
+    "mure a sinistra",
+    "sopravento",
+    "sottovento",
+    "regola 12 COLREG",
+    "entrare in porto a vela"
+   ],
+   "copre": "Chi lascia libera la rotta fra due unità a vela (mure diverse, stesse mure, dubbio sulle mure dell'altra) e se si entra in porto a vela.",
+   "quesiti": 11
+  }
+ ],
+ "quesiti": {
+  "vela-1": [
+   "vela_scafo_zavorra"
+  ],
+  "vela-2": [
+   "vela_scafo_zavorra"
+  ],
+  "vela-3": [
+   "vela_scafo_zavorra"
+  ],
+  "vela-4": [
+   "vela_scafo_zavorra"
+  ],
+  "vela-5": [
+   "vela_incidenza_portanza"
+  ],
+  "vela-6": [
+   "vela_andature"
+  ],
+  "vela-7": [
+   "vela_andature"
+  ],
+  "vela-8": [
+   "vela_apparente_formazione"
+  ],
+  "vela-9": [
+   "vela_apparente_formazione"
+  ],
+  "vela-10": [
+   "vela_apparente_formazione"
+  ],
+  "vela-11": [
+   "vela_apparente_formazione"
+  ],
+  "vela-12": [
+   "vela_apparente_formazione"
+  ],
+  "vela-13": [
+   "vela_apparente_formazione"
+  ],
+  "vela-14": [
+   "vela_apparente_andature"
+  ],
+  "vela-15": [
+   "vela_apparente_andature"
+  ],
+  "vela-16": [
+   "vela_andature"
+  ],
+  "vela-17": [
+   "vela_andature"
+  ],
+  "vela-18": [
+   "vela_andature"
+  ],
+  "vela-19": [
+   "vela_andature"
+  ],
+  "vela-20": [
+   "vela_apparente_andature"
+  ],
+  "vela-21": [
+   "vela_apparente_andature"
+  ],
+  "vela-22": [
+   "vela_apparente_andature"
+  ],
+  "vela-23": [
+   "vela_apparente_andature"
+  ],
+  "vela-24": [
+   "vela_settore_bordeggio"
+  ],
+  "vela-25": [
+   "vela_settore_bordeggio"
+  ],
+  "vela-26": [
+   "vela_apparente_formazione"
+  ],
+  "vela-27": [
+   "vela_apparente_formazione"
+  ],
+  "vela-28": [
+   "vela_incidenza_portanza"
+  ],
+  "vela-29": [
+   "vela_centri"
+  ],
+  "vela-30": [
+   "vela_centri"
+  ],
+  "vela-31": [
+   "vela_centri",
+   "vela_orziera_poggiera"
+  ],
+  "vela-32": [
+   "vela_orziera_poggiera",
+   "vela_centri"
+  ],
+  "vela-33": [
+   "vela_orziera_poggiera",
+   "vela_centri"
+  ],
+  "vela-34": [
+   "vela_centri"
+  ],
+  "vela-35": [
+   "vela_straorza_planata"
+  ],
+  "vela-36": [
+   "vela_messa_a_segno",
+   "vela_incidenza_portanza"
+  ],
+  "vela-37": [
+   "vela_incidenza_portanza"
+  ],
+  "vela-38": [
+   "vela_incidenza_portanza"
+  ],
+  "vela-39": [
+   "vela_forze"
+  ],
+  "vela-40": [
+   "vela_forze"
+  ],
+  "vela-41": [
+   "vela_inclinazione_albero"
+  ],
+  "vela-42": [
+   "vela_inclinazione_albero"
+  ],
+  "vela-43": [
+   "vela_profilo"
+  ],
+  "vela-44": [
+   "vela_profilo"
+  ],
+  "vela-45": [
+   "vela_scafo_zavorra"
+  ],
+  "vela-46": [
+   "vela_scafo_zavorra"
+  ],
+  "vela-47": [
+   "vela_scafo_zavorra"
+  ],
+  "vela-48": [
+   "vela_incidenza_portanza"
+  ],
+  "vela-49": [
+   "vela_andature"
+  ],
+  "vela-50": [
+   "vela_andature"
+  ],
+  "vela-51": [
+   "vela_andature"
+  ],
+  "vela-52": [
+   "vela_andature"
+  ],
+  "vela-53": [
+   "vela_andature"
+  ],
+  "vela-54": [
+   "vela_andature"
+  ],
+  "vela-55": [
+   "vela_apparente_andature"
+  ],
+  "vela-56": [
+   "vela_apparente_andature"
+  ],
+  "vela-57": [
+   "vela_settore_bordeggio"
+  ],
+  "vela-58": [
+   "vela_incidenza_portanza",
+   "vela_lati_vento"
+  ],
+  "vela-59": [
+   "vela_centri"
+  ],
+  "vela-60": [
+   "vela_centri",
+   "vela_forze"
+  ],
+  "vela-61": [
+   "vela_centri"
+  ],
+  "vela-62": [
+   "vela_centri"
+  ],
+  "vela-63": [
+   "vela_centri"
+  ],
+  "vela-64": [
+   "vela_orziera_poggiera",
+   "vela_centri"
+  ],
+  "vela-65": [
+   "vela_orziera_poggiera",
+   "vela_centri"
+  ],
+  "vela-66": [
+   "vela_centri"
+  ],
+  "vela-67": [
+   "vela_centri"
+  ],
+  "vela-68": [
+   "vela_lati_vento"
+  ],
+  "vela-69": [
+   "vela_lati_vento"
+  ],
+  "vela-70": [
+   "vela_lati_vento"
+  ],
+  "vela-71": [
+   "vela_profilo"
+  ],
+  "vela-72": [
+   "vela_armi"
+  ],
+  "vela-73": [
+   "vela_incidenza_portanza"
+  ],
+  "vela-74": [
+   "vela_profilo"
+  ],
+  "vela-75": [
+   "vela_straorza_planata"
+  ],
+  "vela-76": [
+   "vela_straorza_planata",
+   "vela_strambata"
+  ],
+  "vela-77": [
+   "vela_straorza_planata"
+  ],
+  "vela-78": [
+   "vela_forze"
+  ],
+  "vela-79": [
+   "vela_straorza_planata"
+  ],
+  "vela-80": [
+   "vela_regolazione_profilo",
+   "vela_profilo"
+  ],
+  "vela-81": [
+   "vela_orzare_poggiare"
+  ],
+  "vela-82": [
+   "vela_orzare_poggiare"
+  ],
+  "vela-83": [
+   "vela_forze"
+  ],
+  "vela-84": [
+   "vela_forze"
+  ],
+  "vela-85": [
+   "vela_profilo"
+  ],
+  "vela-86": [
+   "vela_profilo"
+  ],
+  "vela-87": [
+   "vela_sbandamento"
+  ],
+  "vela-88": [
+   "vela_orziera_poggiera"
+  ],
+  "vela-89": [
+   "vela_orziera_poggiera"
+  ],
+  "vela-90": [
+   "vela_orziera_poggiera"
+  ],
+  "vela-91": [
+   "vela_sbandamento"
+  ],
+  "vela-92": [
+   "vela_orziera_poggiera"
+  ],
+  "vela-93": [
+   "vela_inclinazione_albero"
+  ],
+  "vela-94": [
+   "vela_inclinazione_albero"
+  ],
+  "vela-95": [
+   "vela_regolazione_profilo"
+  ],
+  "vela-96": [
+   "vela_incidenza_portanza"
+  ],
+  "vela-97": [
+   "vela_orziera_poggiera"
+  ],
+  "vela-98": [
+   "vela_regolazione_profilo"
+  ],
+  "vela-99": [
+   "vela_regolazione_profilo"
+  ],
+  "vela-100": [
+   "vela_armo_frazionato"
+  ],
+  "vela-101": [
+   "vela_armo_frazionato"
+  ],
+  "vela-102": [
+   "vela_armo_frazionato"
+  ],
+  "vela-103": [
+   "vela_armo_frazionato"
+  ],
+  "vela-104": [
+   "vela_manovre_fisse"
+  ],
+  "vela-105": [
+   "vela_manovre_fisse"
+  ],
+  "vela-106": [
+   "vela_manovre_fisse"
+  ],
+  "vela-107": [
+   "vela_avvolgitori"
+  ],
+  "vela-108": [
+   "vela_randa_parti"
+  ],
+  "vela-109": [
+   "vela_randa_parti"
+  ],
+  "vela-110": [
+   "vela_randa_parti"
+  ],
+  "vela-111": [
+   "vela_randa_parti"
+  ],
+  "vela-112": [
+   "vela_randa_parti"
+  ],
+  "vela-113": [
+   "vela_randa_parti"
+  ],
+  "vela-114": [
+   "vela_vele_prua"
+  ],
+  "vela-115": [
+   "vela_randa_parti"
+  ],
+  "vela-116": [
+   "vela_vele_prua"
+  ],
+  "vela-117": [
+   "vela_vele_prua"
+  ],
+  "vela-118": [
+   "vela_vele_prua"
+  ],
+  "vela-119": [
+   "vela_vele_prua"
+  ],
+  "vela-120": [
+   "vela_vele_portanti"
+  ],
+  "vela-121": [
+   "vela_vele_portanti"
+  ],
+  "vela-122": [
+   "vela_vele_portanti"
+  ],
+  "vela-123": [
+   "vela_vele_portanti"
+  ],
+  "vela-124": [
+   "vela_armi"
+  ],
+  "vela-125": [
+   "vela_armi"
+  ],
+  "vela-126": [
+   "vela_armi"
+  ],
+  "vela-127": [
+   "vela_fisse_correnti"
+  ],
+  "vela-128": [
+   "vela_fisse_correnti"
+  ],
+  "vela-129": [
+   "vela_paranchi_winch"
+  ],
+  "vela-130": [
+   "vela_paranchi_winch"
+  ],
+  "vela-131": [
+   "vela_paranchi_winch"
+  ],
+  "vela-132": [
+   "vela_comandi_randa"
+  ],
+  "vela-133": [
+   "vela_vele_portanti"
+  ],
+  "vela-134": [
+   "vela_paranchi_winch"
+  ],
+  "vela-135": [
+   "vela_paranchi_winch"
+  ],
+  "vela-136": [
+   "vela_ferramenta"
+  ],
+  "vela-137": [
+   "vela_cime"
+  ],
+  "vela-138": [
+   "vela_ferramenta"
+  ],
+  "vela-139": [
+   "vela_ferramenta",
+   "vela_comandi_randa"
+  ],
+  "vela-140": [
+   "vela_ferramenta"
+  ],
+  "vela-141": [
+   "vela_manovre_fisse",
+   "vela_ferramenta"
+  ],
+  "vela-142": [
+   "vela_ferramenta"
+  ],
+  "vela-143": [
+   "vela_vele_portanti"
+  ],
+  "vela-144": [
+   "vela_ferramenta"
+  ],
+  "vela-145": [
+   "vela_tessuti"
+  ],
+  "vela-146": [
+   "vela_tessuti"
+  ],
+  "vela-147": [
+   "vela_tessuti"
+  ],
+  "vela-148": [
+   "vela_armi"
+  ],
+  "vela-149": [
+   "vela_armi",
+   "vela_vele_prua"
+  ],
+  "vela-150": [
+   "vela_vele_prua",
+   "vela_armare_prua"
+  ],
+  "vela-151": [
+   "vela_manovre_fisse",
+   "vela_comandi_randa"
+  ],
+  "vela-152": [
+   "vela_manovre_fisse",
+   "vela_regolazione_profilo"
+  ],
+  "vela-153": [
+   "vela_nodi"
+  ],
+  "vela-154": [
+   "vela_nodi"
+  ],
+  "vela-155": [
+   "vela_nodi"
+  ],
+  "vela-156": [
+   "vela_nodi"
+  ],
+  "vela-157": [
+   "vela_nodi"
+  ],
+  "vela-158": [
+   "vela_nodi"
+  ],
+  "vela-159": [
+   "vela_comandi_randa"
+  ],
+  "vela-160": [
+   "vela_comandi_randa"
+  ],
+  "vela-161": [
+   "vela_avvolgitori"
+  ],
+  "vela-162": [
+   "vela_comandi_randa"
+  ],
+  "vela-163": [
+   "vela_vele_portanti"
+  ],
+  "vela-164": [
+   "vela_vele_portanti"
+  ],
+  "vela-165": [
+   "vela_ridurre_vela"
+  ],
+  "vela-166": [
+   "vela_cime"
+  ],
+  "vela-167": [
+   "vela_avvolgitori"
+  ],
+  "vela-168": [
+   "vela_manovre_fisse"
+  ],
+  "vela-169": [
+   "vela_cime"
+  ],
+  "vela-170": [
+   "vela_comandi_randa"
+  ],
+  "vela-171": [
+   "vela_fisse_correnti",
+   "vela_manovre_fisse"
+  ],
+  "vela-172": [
+   "vela_avvolgitori"
+  ],
+  "vela-173": [
+   "vela_manovre_fisse",
+   "vela_fisse_correnti"
+  ],
+  "vela-174": [
+   "vela_fisse_correnti"
+  ],
+  "vela-175": [
+   "vela_paranchi_winch"
+  ],
+  "vela-176": [
+   "vela_fisse_correnti"
+  ],
+  "vela-177": [
+   "vela_paranchi_winch"
+  ],
+  "vela-178": [
+   "vela_ferramenta",
+   "vela_armare_randa"
+  ],
+  "vela-179": [
+   "vela_vele_portanti"
+  ],
+  "vela-180": [
+   "vela_vele_prua"
+  ],
+  "vela-181": [
+   "vela_vele_prua"
+  ],
+  "vela-182": [
+   "vela_avvolgitori",
+   "vela_ridurre_vela"
+  ],
+  "vela-183": [
+   "vela_avvolgitori",
+   "vela_ridurre_vela"
+  ],
+  "vela-184": [
+   "vela_ferramenta"
+  ],
+  "vela-185": [
+   "vela_ferramenta"
+  ],
+  "vela-186": [
+   "vela_sventare"
+  ],
+  "vela-187": [
+   "vela_sventare"
+  ],
+  "vela-188": [
+   "vela_orzare_poggiare"
+  ],
+  "vela-189": [
+   "vela_orzare_poggiare"
+  ],
+  "vela-190": [
+   "vela_precedenze"
+  ],
+  "vela-191": [
+   "vela_precedenze"
+  ],
+  "vela-192": [
+   "vela_precedenze"
+  ],
+  "vela-193": [
+   "vela_regolazione_profilo"
+  ],
+  "vela-194": [
+   "vela_virata_abbattuta"
+  ],
+  "vela-195": [
+   "vela_virata_abbattuta"
+  ],
+  "vela-196": [
+   "vela_virata_abbattuta"
+  ],
+  "vela-197": [
+   "vela_virata_abbattuta"
+  ],
+  "vela-198": [
+   "vela_armare_randa"
+  ],
+  "vela-199": [
+   "vela_armare_randa",
+   "vela_randa_parti"
+  ],
+  "vela-200": [
+   "vela_armare_randa"
+  ],
+  "vela-201": [
+   "vela_regolazione_profilo"
+  ],
+  "vela-202": [
+   "vela_armare_prua"
+  ],
+  "vela-203": [
+   "vela_armare_prua"
+  ],
+  "vela-204": [
+   "vela_armare_prua"
+  ],
+  "vela-205": [
+   "vela_armare_randa"
+  ],
+  "vela-206": [
+   "vela_armare_prua",
+   "vela_nodi"
+  ],
+  "vela-207": [
+   "vela_armare_prua",
+   "vela_sventare"
+  ],
+  "vela-208": [
+   "vela_avvolgitori"
+  ],
+  "vela-209": [
+   "vela_avvolgitori"
+  ],
+  "vela-210": [
+   "vela_ridurre_vela",
+   "vela_rallentare"
+  ],
+  "vela-211": [
+   "vela_rallentare"
+  ],
+  "vela-212": [
+   "vela_rallentare"
+  ],
+  "vela-213": [
+   "vela_rallentare"
+  ],
+  "vela-214": [
+   "vela_rallentare"
+  ],
+  "vela-215": [
+   "vela_ridurre_vela"
+  ],
+  "vela-216": [
+   "vela_ridurre_vela"
+  ],
+  "vela-217": [
+   "vela_messa_a_segno"
+  ],
+  "vela-218": [
+   "vela_straorza_planata"
+  ],
+  "vela-219": [
+   "vela_sventare"
+  ],
+  "vela-220": [
+   "vela_vele_portanti"
+  ],
+  "vela-221": [
+   "vela_vele_portanti"
+  ],
+  "vela-222": [
+   "vela_orzare_poggiare"
+  ],
+  "vela-223": [
+   "vela_orzare_poggiare"
+  ],
+  "vela-224": [
+   "vela_sventare"
+  ],
+  "vela-225": [
+   "vela_virata_abbattuta"
+  ],
+  "vela-226": [
+   "vela_virata_abbattuta"
+  ],
+  "vela-227": [
+   "vela_orzare_poggiare"
+  ],
+  "vela-228": [
+   "vela_precedenze"
+  ],
+  "vela-229": [
+   "vela_precedenze"
+  ],
+  "vela-230": [
+   "vela_precedenze"
+  ],
+  "vela-231": [
+   "vela_precedenze"
+  ],
+  "vela-232": [
+   "vela_precedenze"
+  ],
+  "vela-233": [
+   "vela_precedenze"
+  ],
+  "vela-234": [
+   "vela_precedenze"
+  ],
+  "vela-235": [
+   "vela_rallentare",
+   "vela_settore_bordeggio"
+  ],
+  "vela-236": [
+   "vela_orzare_poggiare",
+   "vela_andature"
+  ],
+  "vela-237": [
+   "vela_sbandamento",
+   "vela_regolazione_profilo"
+  ],
+  "vela-238": [
+   "vela_regolazione_profilo"
+  ],
+  "vela-239": [
+   "vela_messa_a_segno"
+  ],
+  "vela-240": [
+   "vela_sbandamento"
+  ],
+  "vela-241": [
+   "vela_orzare_poggiare"
+  ],
+  "vela-242": [
+   "vela_strambata",
+   "vela_comandi_randa"
+  ],
+  "vela-243": [
+   "vela_ridurre_vela",
+   "vela_orziera_poggiera"
+  ],
+  "vela-244": [
+   "vela_ridurre_vela",
+   "vela_sbandamento"
+  ],
+  "vela-245": [
+   "vela_ridurre_vela",
+   "vela_sbandamento"
+  ],
+  "vela-246": [
+   "vela_strambata"
+  ],
+  "vela-247": [
+   "vela_strambata",
+   "vela_virata_abbattuta"
+  ],
+  "vela-248": [
+   "vela_strambata",
+   "vela_virata_abbattuta"
+  ],
+  "vela-249": [
+   "vela_precedenze"
+  ],
+  "vela-250": [
+   "vela_orzare_poggiare"
+  ]
+ },
+ "rilettura": {
+  "campione": [
+   "vela-5",
+   "vela-15",
+   "vela-17",
+   "vela-49",
+   "vela-58",
+   "vela-67",
+   "vela-73",
+   "vela-94",
+   "vela-112",
+   "vela-116",
+   "vela-122",
+   "vela-123",
+   "vela-127",
+   "vela-135",
+   "vela-143",
+   "vela-168",
+   "vela-177",
+   "vela-182",
+   "vela-190",
+   "vela-206",
+   "vela-207",
+   "vela-208",
+   "vela-211",
+   "vela-231",
+   "vela-242"
+  ],
+  "come": "random.seed(106); random.sample(range(1, 251), 25)",
+  "cambi": [],
+  "nota": "Rilettura dello stesso lettore che ha scritto i tag: zero cambi su 25 quesiti è un limite inferiore dell'errore, non una misura. La misura è la seconda lettura indipendente."
+ }
+}
