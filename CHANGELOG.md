@@ -692,6 +692,40 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   da fare.
 - Nessun file di `site/`, `tests/` o della specifica toccato.
 
+### Aggiunto — P-106: i concetti della Meteorologia
+
+- **Perché.** È il passo B-2 del piano di novembre: ogni quesito etichettato
+  con i concetti che chiede, più fini delle voci, per le domande collegate,
+  il rimando allo studio e più avanti l'avviso sulle lacune (I-32). Questa è
+  la sorgente di uno dei nove temi, `strumenti/concetti/meteorologia.json`,
+  nella forma che la sessione COLREG ha lasciato per `componi.py`. La pagina
+  non la legge, e il file composto lo rigenera la regia alla merge.
+- **I numeri.** **23 concetti**, **8 famiglie**, **147 tag** sui 120 quesiti
+  del tema: 93 con un concetto, 27 con due, nessuno con tre. Ogni concetto ha
+  da 3 a 15 quesiti; le parole chiave sono quelle dell'indice di un manuale
+  (scala Beaufort, gradiente barico, fronte occluso, mare lungo, Meteomar).
+  Lette tutte e 120 le domande con le risposte, e le quattro figure dei fronti;
+  nessun archivio di risposte aperto. La classificazione è nostra, non
+  ministeriale.
+- **Le famiglie non sono 4–5 per voce, ed è detto nel file.** Fronti, nubi e
+  mare stanno in due voci del decreto, e Venti ha 21 quesiti: per voce sarebbero
+  uscite famiglie di un concetto solo. Sono per argomento, ciascuna con la voce
+  dove cade la maggior parte dei suoi quesiti: 2 su «Elementi di meteorologia e
+  strumenti», 5 su «Bollettini meteorologici e previsioni locali», 1 su «Venti».
+- **Controllato** con uno script fuori dal repo, sulle regole della forma: id
+  unici e senza collisioni con le sette sorgenti già scritte dalle altre
+  sessioni, ogni concetto in una famiglia e ogni famiglia in una voce vera,
+  ogni quesito del tema con 1–3 concetti, nessun id fuori tema o inesistente,
+  nessuna etichetta vietata dal guardiano. Una rilettura dello stesso lettore
+  su 12 quesiti estratti con un seme scritto: nessun tag cambiato. La seconda
+  lettura indipendente è un'altra sessione.
+- **Da segnalare, non toccato:** `base-870` ha la domanda sgrammaticata («Cosa
+  sono gli "avvisi" meteorologici sono messaggi che contengono»), `base-950`
+  comincia con «I vento», `base-874` dice «assumono di una colorazione»;
+  `base-913` e `base-920` sono la stessa domanda con le stesse risposte.
+- Suite: dati 236, specifica 1.146; guardiano verde. `site/`, i test e la
+  specifica non sono stati toccati.
+
 ## [0.35.1] — 2026-10-29
 
 **Le risposte in simulazione si cambiano, e «auto» si capisce.** Un utente ha

@@ -2,11 +2,13 @@
  "nota": "Concetti e famiglie sono una classificazione di Rotta Giusta, non ministeriale: li ha scritti Claude leggendo testi e figure dei quesiti. Le parole chiave sono quelle da cercare nell'indice di un manuale. Il file si compone da strumenti/concetti/ con componi.py: non si scrive a mano.",
  "sorgenti": [
   "colreg-e-segnalamento-marittimo.json",
-  "manovra-e-condotta.json"
+  "manovra-e-condotta.json",
+  "meteorologia.json"
  ],
  "temi": [
   "COLREG E SEGNALAMENTO MARITTIMO",
-  "MANOVRA E CONDOTTA"
+  "MANOVRA E CONDOTTA",
+  "METEOROLOGIA"
  ],
  "famiglie": [
   {
@@ -344,6 +346,93 @@
    "concetti": [
     "ormeggio_solcometro_scandaglio",
     "ormeggio_termini_manovra"
+   ]
+  },
+  {
+   "id": "meteo_aria_pressione",
+   "nome": "L'aria: pressione, temperatura e umidità",
+   "tema": "METEOROLOGIA",
+   "voce": "Elementi di meteorologia e strumenti",
+   "concetti": [
+    "pressione_strumenti",
+    "aria_umidita_nebbia"
+   ]
+  },
+  {
+   "id": "meteo_vento",
+   "nome": "Il vento e le brezze",
+   "tema": "METEOROLOGIA",
+   "voce": "Elementi di meteorologia e strumenti",
+   "concetti": [
+    "vento_origine_gradiente",
+    "scale_beaufort_douglas",
+    "vento_teso_raffiche_foehn",
+    "brezze_mare_terra"
+   ]
+  },
+  {
+   "id": "meteo_mare",
+   "nome": "Il mare: onde, maree e correnti",
+   "tema": "METEOROLOGIA",
+   "voce": "Bollettini meteorologici e previsioni locali",
+   "concetti": [
+    "onde_altezza_lunghezza",
+    "moto_ondoso_tipi",
+    "maree_correnti_marine"
+   ]
+  },
+  {
+   "id": "meteo_nubi",
+   "nome": "Nubi e precipitazioni",
+   "tema": "METEOROLOGIA",
+   "voce": "Bollettini meteorologici e previsioni locali",
+   "concetti": [
+    "nubi_alte_cirri",
+    "aria_instabile_cumulonembi"
+   ]
+  },
+  {
+   "id": "meteo_fronti",
+   "nome": "Masse d'aria e fronti",
+   "tema": "METEOROLOGIA",
+   "voce": "Bollettini meteorologici e previsioni locali",
+   "concetti": [
+    "fronte_masse_aria",
+    "fronte_caldo",
+    "fronte_freddo",
+    "fronte_occluso_stazionario",
+    "carte_meteo_simboli_fronti"
+   ]
+  },
+  {
+   "id": "meteo_previsione_locale",
+   "nome": "Prevedere il tempo da bordo",
+   "tema": "METEOROLOGIA",
+   "voce": "Bollettini meteorologici e previsioni locali",
+   "concetti": [
+    "pressione_tendenza",
+    "segni_premonitori"
+   ]
+  },
+  {
+   "id": "meteo_bollettini_avvisi",
+   "nome": "Bollettini e avvisi via radio",
+   "tema": "METEOROLOGIA",
+   "voce": "Bollettini meteorologici e previsioni locali",
+   "concetti": [
+    "meteomar_bollettino",
+    "avvisi_burrasca"
+   ]
+  },
+  {
+   "id": "meteo_rosa_venti",
+   "nome": "La rosa dei venti",
+   "tema": "METEOROLOGIA",
+   "voce": "Venti",
+   "concetti": [
+    "rosa_venti_quadranti",
+    "venti_nomi_direzioni",
+    "venti_direzione_gradi"
    ]
   }
  ],
@@ -1551,6 +1640,365 @@
    "copre": "Che cosa vuol dire attraccare e essere attraccati, e come si misura la lunghezza di un rimorchio, dalla poppa del rimorchiatore alla poppa dell'ultima unità.",
    "tema": "MANOVRA E CONDOTTA",
    "famiglia": "ormeggio_strumenti_parole",
+   "quesiti": 3
+  },
+  {
+   "id": "pressione_strumenti",
+   "nome": "Pressione atmosferica e strumenti di misura",
+   "parole_chiave": [
+    "pressione atmosferica",
+    "hectopascal (hPa)",
+    "pressione normale 1013,2 hPa",
+    "barometro",
+    "barografo",
+    "anemometro",
+    "igrometro"
+   ],
+   "copre": "L'unità e il valore normale della pressione, e che cosa misurano barometro, anemometro e igrometro.",
+   "tema": "METEOROLOGIA",
+   "famiglia": "meteo_aria_pressione",
+   "quesiti": 7
+  },
+  {
+   "id": "aria_umidita_nebbia",
+   "nome": "Temperatura, umidità, condensazione e nebbia",
+   "parole_chiave": [
+    "escursione termica diurna",
+    "umidità relativa",
+    "vapore acqueo",
+    "condensazione",
+    "rugiada e brina",
+    "nebbia",
+    "foschia",
+    "visibilità"
+   ],
+   "copre": "L'aria calda e fredda, il vapore acqueo e la sua condensazione, la nebbia e la differenza con la foschia.",
+   "tema": "METEOROLOGIA",
+   "famiglia": "meteo_aria_pressione",
+   "quesiti": 7
+  },
+  {
+   "id": "vento_origine_gradiente",
+   "nome": "Il vento: origine, gradiente barico e isobare",
+   "parole_chiave": [
+    "vento (definizione)",
+    "gradiente barico orizzontale",
+    "isobare",
+    "ciclone e anticiclone",
+    "forza di Coriolis",
+    "circolazione generale",
+    "alisei"
+   ],
+   "copre": "Che cos'è il vento, perché nasce dalle differenze di pressione e temperatura, il verso di rotazione intorno a basse e alte pressioni, isobare vicine e vento forte.",
+   "tema": "METEOROLOGIA",
+   "famiglia": "meteo_vento",
+   "quesiti": 7
+  },
+  {
+   "id": "scale_beaufort_douglas",
+   "nome": "Le scale del vento e del mare",
+   "parole_chiave": [
+    "scala Beaufort",
+    "scala Douglas",
+    "forza del vento",
+    "stato del mare",
+    "burrasca"
+   ],
+   "copre": "Con quale scala si misurano forza del vento e stato del mare, i loro valori minimi e massimi, e i termini descrittivi come «burrasca».",
+   "tema": "METEOROLOGIA",
+   "famiglia": "meteo_vento",
+   "quesiti": 3
+  },
+  {
+   "id": "vento_teso_raffiche_foehn",
+   "nome": "Come si descrive il vento: teso, a raffiche, foehn",
+   "parole_chiave": [
+    "vento teso",
+    "raffica",
+    "vento a raffiche",
+    "foehn",
+    "venti catabatici e anabatici",
+    "burrasca"
+   ],
+   "copre": "I termini dei bollettini per il comportamento del vento (teso, a raffiche) e il vento che scende sottovento a una catena montuosa.",
+   "tema": "METEOROLOGIA",
+   "famiglia": "meteo_vento",
+   "quesiti": 4
+  },
+  {
+   "id": "brezze_mare_terra",
+   "nome": "Brezza di mare e brezza di terra",
+   "parole_chiave": [
+    "brezza",
+    "brezza di mare",
+    "brezza di terra",
+    "brezza diurna e notturna",
+    "riscaldamento differenziale terra-mare"
+   ],
+   "copre": "Perché nascono le brezze (la terra si scalda e si raffredda più in fretta del mare), da dove spirano di giorno e di notte, quale è più intensa.",
+   "tema": "METEOROLOGIA",
+   "famiglia": "meteo_vento",
+   "quesiti": 10
+  },
+  {
+   "id": "nubi_alte_cirri",
+   "nome": "Cirri e nubi alte",
+   "parole_chiave": [
+    "cirri",
+    "cirrostrati",
+    "nubi alte",
+    "classificazione delle nubi"
+   ],
+   "copre": "Come sono fatti i cirri, che cosa dicono del tempo quando la pressione è stabile o quando si addensano in cirrostrati.",
+   "tema": "METEOROLOGIA",
+   "famiglia": "meteo_nubi",
+   "quesiti": 4
+  },
+  {
+   "id": "aria_instabile_cumulonembi",
+   "nome": "Aria instabile: cumuli, cumulonembi e temporali",
+   "parole_chiave": [
+    "cumuli",
+    "cumulonembi",
+    "nubi a sviluppo verticale",
+    "temporale",
+    "aria instabile",
+    "rovesci e grandine"
+   ],
+   "copre": "Le nubi a sviluppo verticale, i fenomeni che portano, la violenza di un temporale, e che cosa fa l'aria instabile a precipitazioni e visibilità.",
+   "tema": "METEOROLOGIA",
+   "famiglia": "meteo_nubi",
+   "quesiti": 8
+  },
+  {
+   "id": "fronte_masse_aria",
+   "nome": "Masse d'aria e fronte: la definizione",
+   "parole_chiave": [
+    "masse d'aria",
+    "fronte meteorologico",
+    "superficie di discontinuità",
+    "aria calda e aria fredda",
+    "densità dell'aria"
+   ],
+   "copre": "Che cos'è un fronte come superficie di contatto fra due masse d'aria diverse, e quale delle due sale sull'altra.",
+   "tema": "METEOROLOGIA",
+   "famiglia": "meteo_fronti",
+   "quesiti": 5
+  },
+  {
+   "id": "fronte_caldo",
+   "nome": "Il fronte caldo",
+   "parole_chiave": [
+    "fronte caldo",
+    "aria calda che scorre sopra",
+    "piogge leggere e continue",
+    "pressione in calo"
+   ],
+   "copre": "Come si forma un fronte caldo, che cosa lo precede (la pressione che cala) e che tempo porta.",
+   "tema": "METEOROLOGIA",
+   "famiglia": "meteo_fronti",
+   "quesiti": 4
+  },
+  {
+   "id": "fronte_freddo",
+   "nome": "Il fronte freddo",
+   "parole_chiave": [
+    "fronte freddo",
+    "aria fredda che si incunea",
+    "salita brusca della pressione",
+    "raffiche",
+    "cumulonembi"
+   ],
+   "copre": "Come si forma un fronte freddo, la pressione che sale bruscamente al suo passaggio, il vento a raffiche e i temporali.",
+   "tema": "METEOROLOGIA",
+   "famiglia": "meteo_fronti",
+   "quesiti": 6
+  },
+  {
+   "id": "fronte_occluso_stazionario",
+   "nome": "Fronte occluso e fronte stazionario",
+   "parole_chiave": [
+    "fronte occluso",
+    "occlusione",
+    "fronte stazionario",
+    "tempo stazionario"
+   ],
+   "copre": "Il fronte che nasce quando il freddo raggiunge il caldo, e il fronte che non si muove, con il maltempo che persiste.",
+   "tema": "METEOROLOGIA",
+   "famiglia": "meteo_fronti",
+   "quesiti": 5
+  },
+  {
+   "id": "carte_meteo_simboli_fronti",
+   "nome": "Carte meteorologiche e simboli dei fronti",
+   "parole_chiave": [
+    "carte meteorologiche",
+    "carte al suolo e in quota",
+    "simboli dei fronti",
+    "triangoli e semicerchi"
+   ],
+   "copre": "Come si dividono le carte meteorologiche e come si riconosce sulla carta il simbolo di ciascun fronte.",
+   "tema": "METEOROLOGIA",
+   "famiglia": "meteo_fronti",
+   "quesiti": 5
+  },
+  {
+   "id": "pressione_tendenza",
+   "nome": "La tendenza della pressione per prevedere il tempo",
+   "parole_chiave": [
+    "tendenza barometrica",
+    "barometro in calo",
+    "barometro in salita",
+    "variazione della pressione"
+   ],
+   "copre": "Perché per prevedere il tempo a bordo conta come la pressione cambia nel tempo, e che cosa vuol dire quando sale o scende bruscamente.",
+   "tema": "METEOROLOGIA",
+   "famiglia": "meteo_previsione_locale",
+   "quesiti": 7
+  },
+  {
+   "id": "segni_premonitori",
+   "nome": "I segni premonitori del tempo locale",
+   "parole_chiave": [
+    "previsioni locali",
+    "segni premonitori",
+    "colore del cielo al tramonto",
+    "cielo a pecorelle",
+    "orizzonte chiaro",
+    "peggioramento e miglioramento del tempo"
+   ],
+   "copre": "Che cosa annunciano bel tempo, peggioramento, pioggia o nebbia osservando cielo, nubi, vento e barometro.",
+   "tema": "METEOROLOGIA",
+   "famiglia": "meteo_previsione_locale",
+   "quesiti": 8
+  },
+  {
+   "id": "meteomar_bollettino",
+   "nome": "Il bollettino Meteomar",
+   "parole_chiave": [
+    "Meteomar",
+    "bollettino del mare",
+    "canale VHF 68",
+    "stazioni radio costiere",
+    "validità del bollettino",
+    "tendenza",
+    "Radioservizi per la navigazione",
+    "Centro Nazionale di Meteorologia e Climatologia Aeronautica"
+   ],
+   "copre": "Chi produce e chi trasmette il Meteomar, su quale canale e dove si trovano gli orari, per quanto vale, e che cosa contengono le sue sezioni.",
+   "tema": "METEOROLOGIA",
+   "famiglia": "meteo_bollettini_avvisi",
+   "quesiti": 8
+  },
+  {
+   "id": "avvisi_burrasca",
+   "nome": "Avvisi di burrasca e di tempesta",
+   "parole_chiave": [
+    "avvisi di burrasca",
+    "gale warning",
+    "avvisi di tempesta",
+    "SECURITÉ",
+    "avvisi meteorologici"
+   ],
+   "copre": "Che cosa sono gli avvisi meteorologici, come si annunciano via radio, con quale precedenza, e che cosa segnalano.",
+   "tema": "METEOROLOGIA",
+   "famiglia": "meteo_bollettini_avvisi",
+   "quesiti": 5
+  },
+  {
+   "id": "onde_altezza_lunghezza",
+   "nome": "L'onda: altezza, lunghezza, frangente",
+   "parole_chiave": [
+    "onda",
+    "cresta e cavo",
+    "altezza dell'onda",
+    "lunghezza d'onda",
+    "ripidità",
+    "frangente",
+    "onda ripida con vento contro corrente"
+   ],
+   "copre": "Come si misurano altezza e lunghezza di un'onda, quando un'onda frange, e perché vento contro corrente la rende ripida.",
+   "tema": "METEOROLOGIA",
+   "famiglia": "meteo_mare",
+   "quesiti": 5
+  },
+  {
+   "id": "moto_ondoso_tipi",
+   "nome": "Moto ondoso: mare vivo, mare lungo, mare vecchio",
+   "parole_chiave": [
+    "moto ondoso",
+    "mare vivo",
+    "mare lungo",
+    "mare vecchio (morto)",
+    "fetch",
+    "onda di vento e onda lunga"
+   ],
+   "copre": "Il vento che genera le onde, il fetch, e la differenza fra mare generato sul posto, arrivato da lontano o rimasto dopo il vento.",
+   "tema": "METEOROLOGIA",
+   "famiglia": "meteo_mare",
+   "quesiti": 5
+  },
+  {
+   "id": "maree_correnti_marine",
+   "nome": "Maree, correnti di marea e correnti marine",
+   "parole_chiave": [
+    "marea",
+    "altezza di marea",
+    "zero idrografico",
+    "corrente di marea",
+    "corrente marina",
+    "movimenti del mare"
+   ],
+   "copre": "Che cosa genera le maree e come se ne misura l'altezza, e la differenza fra corrente di marea (acque basse, stretti) e corrente marina (mare aperto).",
+   "tema": "METEOROLOGIA",
+   "famiglia": "meteo_mare",
+   "quesiti": 8
+  },
+  {
+   "id": "rosa_venti_quadranti",
+   "nome": "La rosa dei venti e i quadranti",
+   "parole_chiave": [
+    "rosa dei venti",
+    "quadranti",
+    "venti del I, II, III e IV quadrante",
+    "venti cardinali e intercardinali",
+    "nome dalla provenienza"
+   ],
+   "copre": "Che cosa rappresenta la rosa dei venti, quali venti stanno in ciascun quadrante, e perché un vento prende il nome da dove viene.",
+   "tema": "METEOROLOGIA",
+   "famiglia": "meteo_rosa_venti",
+   "quesiti": 8
+  },
+  {
+   "id": "venti_nomi_direzioni",
+   "nome": "Nome e direzione di provenienza dei venti",
+   "parole_chiave": [
+    "Tramontana",
+    "Grecale",
+    "Levante",
+    "Scirocco",
+    "Ostro (Mezzogiorno)",
+    "Libeccio",
+    "Ponente",
+    "Maestrale",
+    "direzione di provenienza"
+   ],
+   "copre": "Da quale punto cardinale o intercardinale spira ciascuno degli otto venti del Mediterraneo.",
+   "tema": "METEOROLOGIA",
+   "famiglia": "meteo_rosa_venti",
+   "quesiti": 15
+  },
+  {
+   "id": "venti_direzione_gradi",
+   "nome": "La direzione dei venti in gradi",
+   "parole_chiave": [
+    "direzione del vento in gradi",
+    "rosa graduata",
+    "000°–360°"
+   ],
+   "copre": "Tradurre il nome di un vento nella sua direzione in gradi e viceversa (Scirocco 135°, Ostro 180°, Ponente 270°).",
+   "tema": "METEOROLOGIA",
+   "famiglia": "meteo_rosa_venti",
    "quesiti": 3
   }
  ],
@@ -2818,6 +3266,393 @@
   ],
   "base-846": [
    "fluviale_regole"
+  ],
+  "base-847": [
+   "scale_beaufort_douglas"
+  ],
+  "base-848": [
+   "brezze_mare_terra"
+  ],
+  "base-849": [
+   "aria_umidita_nebbia"
+  ],
+  "base-850": [
+   "aria_umidita_nebbia"
+  ],
+  "base-851": [
+   "pressione_strumenti"
+  ],
+  "base-852": [
+   "vento_origine_gradiente"
+  ],
+  "base-853": [
+   "aria_umidita_nebbia"
+  ],
+  "base-854": [
+   "vento_origine_gradiente"
+  ],
+  "base-855": [
+   "maree_correnti_marine"
+  ],
+  "base-856": [
+   "maree_correnti_marine"
+  ],
+  "base-857": [
+   "fronte_occluso_stazionario"
+  ],
+  "base-858": [
+   "pressione_tendenza"
+  ],
+  "base-859": [
+   "nubi_alte_cirri"
+  ],
+  "base-860": [
+   "aria_instabile_cumulonembi"
+  ],
+  "base-861": [
+   "fronte_masse_aria"
+  ],
+  "base-862": [
+   "fronte_masse_aria",
+   "fronte_caldo"
+  ],
+  "base-863": [
+   "fronte_masse_aria",
+   "fronte_freddo"
+  ],
+  "base-864": [
+   "fronte_occluso_stazionario"
+  ],
+  "base-865": [
+   "vento_origine_gradiente"
+  ],
+  "base-866": [
+   "vento_origine_gradiente"
+  ],
+  "base-867": [
+   "vento_origine_gradiente"
+  ],
+  "base-868": [
+   "maree_correnti_marine"
+  ],
+  "base-869": [
+   "meteomar_bollettino"
+  ],
+  "base-870": [
+   "avvisi_burrasca"
+  ],
+  "base-871": [
+   "segni_premonitori",
+   "pressione_tendenza"
+  ],
+  "base-872": [
+   "segni_premonitori",
+   "nubi_alte_cirri"
+  ],
+  "base-873": [
+   "segni_premonitori"
+  ],
+  "base-874": [
+   "segni_premonitori",
+   "nubi_alte_cirri"
+  ],
+  "base-875": [
+   "segni_premonitori",
+   "aria_instabile_cumulonembi"
+  ],
+  "base-876": [
+   "aria_umidita_nebbia",
+   "segni_premonitori"
+  ],
+  "base-877": [
+   "carte_meteo_simboli_fronti"
+  ],
+  "base-878": [
+   "carte_meteo_simboli_fronti",
+   "fronte_freddo"
+  ],
+  "base-879": [
+   "carte_meteo_simboli_fronti",
+   "fronte_caldo"
+  ],
+  "base-880": [
+   "carte_meteo_simboli_fronti",
+   "fronte_occluso_stazionario"
+  ],
+  "base-881": [
+   "carte_meteo_simboli_fronti",
+   "fronte_occluso_stazionario"
+  ],
+  "base-882": [
+   "rosa_venti_quadranti"
+  ],
+  "base-883": [
+   "rosa_venti_quadranti"
+  ],
+  "base-884": [
+   "rosa_venti_quadranti"
+  ],
+  "base-885": [
+   "rosa_venti_quadranti"
+  ],
+  "base-886": [
+   "rosa_venti_quadranti"
+  ],
+  "base-887": [
+   "avvisi_burrasca"
+  ],
+  "base-888": [
+   "avvisi_burrasca"
+  ],
+  "base-889": [
+   "venti_nomi_direzioni"
+  ],
+  "base-890": [
+   "pressione_strumenti"
+  ],
+  "base-891": [
+   "venti_nomi_direzioni"
+  ],
+  "base-892": [
+   "meteomar_bollettino",
+   "avvisi_burrasca"
+  ],
+  "base-893": [
+   "venti_nomi_direzioni"
+  ],
+  "base-894": [
+   "venti_direzione_gradi",
+   "venti_nomi_direzioni"
+  ],
+  "base-895": [
+   "venti_nomi_direzioni"
+  ],
+  "base-896": [
+   "meteomar_bollettino"
+  ],
+  "base-897": [
+   "brezze_mare_terra"
+  ],
+  "base-898": [
+   "meteomar_bollettino"
+  ],
+  "base-899": [
+   "vento_origine_gradiente"
+  ],
+  "base-900": [
+   "meteomar_bollettino"
+  ],
+  "base-901": [
+   "brezze_mare_terra"
+  ],
+  "base-902": [
+   "brezze_mare_terra"
+  ],
+  "base-903": [
+   "meteomar_bollettino"
+  ],
+  "base-904": [
+   "venti_nomi_direzioni"
+  ],
+  "base-905": [
+   "avvisi_burrasca"
+  ],
+  "base-906": [
+   "brezze_mare_terra"
+  ],
+  "base-907": [
+   "brezze_mare_terra"
+  ],
+  "base-908": [
+   "onde_altezza_lunghezza",
+   "maree_correnti_marine"
+  ],
+  "base-909": [
+   "brezze_mare_terra"
+  ],
+  "base-910": [
+   "brezze_mare_terra"
+  ],
+  "base-911": [
+   "meteomar_bollettino"
+  ],
+  "base-912": [
+   "venti_nomi_direzioni"
+  ],
+  "base-913": [
+   "venti_nomi_direzioni"
+  ],
+  "base-914": [
+   "brezze_mare_terra"
+  ],
+  "base-915": [
+   "venti_direzione_gradi",
+   "venti_nomi_direzioni"
+  ],
+  "base-916": [
+   "pressione_strumenti"
+  ],
+  "base-917": [
+   "venti_nomi_direzioni"
+  ],
+  "base-918": [
+   "pressione_strumenti"
+  ],
+  "base-919": [
+   "venti_nomi_direzioni"
+  ],
+  "base-920": [
+   "venti_nomi_direzioni"
+  ],
+  "base-921": [
+   "venti_direzione_gradi",
+   "venti_nomi_direzioni"
+  ],
+  "base-922": [
+   "meteomar_bollettino"
+  ],
+  "base-923": [
+   "pressione_strumenti",
+   "aria_umidita_nebbia"
+  ],
+  "base-924": [
+   "brezze_mare_terra"
+  ],
+  "base-925": [
+   "aria_umidita_nebbia",
+   "fronte_masse_aria"
+  ],
+  "base-926": [
+   "pressione_strumenti"
+  ],
+  "base-927": [
+   "segni_premonitori"
+  ],
+  "base-928": [
+   "scale_beaufort_douglas"
+  ],
+  "base-929": [
+   "rosa_venti_quadranti",
+   "venti_nomi_direzioni"
+  ],
+  "base-930": [
+   "venti_nomi_direzioni"
+  ],
+  "base-931": [
+   "rosa_venti_quadranti"
+  ],
+  "base-932": [
+   "fronte_freddo",
+   "pressione_tendenza"
+  ],
+  "base-933": [
+   "scale_beaufort_douglas",
+   "vento_teso_raffiche_foehn"
+  ],
+  "base-934": [
+   "nubi_alte_cirri",
+   "segni_premonitori"
+  ],
+  "base-935": [
+   "aria_instabile_cumulonembi"
+  ],
+  "base-936": [
+   "fronte_masse_aria"
+  ],
+  "base-937": [
+   "aria_instabile_cumulonembi"
+  ],
+  "base-938": [
+   "moto_ondoso_tipi"
+  ],
+  "base-939": [
+   "pressione_tendenza",
+   "rosa_venti_quadranti"
+  ],
+  "base-940": [
+   "aria_instabile_cumulonembi"
+  ],
+  "base-941": [
+   "fronte_freddo",
+   "pressione_tendenza"
+  ],
+  "base-942": [
+   "aria_instabile_cumulonembi"
+  ],
+  "base-943": [
+   "maree_correnti_marine"
+  ],
+  "base-944": [
+   "maree_correnti_marine"
+  ],
+  "base-945": [
+   "aria_instabile_cumulonembi"
+  ],
+  "base-946": [
+   "maree_correnti_marine"
+  ],
+  "base-947": [
+   "maree_correnti_marine"
+  ],
+  "base-948": [
+   "fronte_occluso_stazionario"
+  ],
+  "base-949": [
+   "vento_teso_raffiche_foehn"
+  ],
+  "base-950": [
+   "vento_teso_raffiche_foehn"
+  ],
+  "base-951": [
+   "vento_teso_raffiche_foehn"
+  ],
+  "base-952": [
+   "moto_ondoso_tipi"
+  ],
+  "base-953": [
+   "onde_altezza_lunghezza"
+  ],
+  "base-954": [
+   "onde_altezza_lunghezza"
+  ],
+  "base-955": [
+   "onde_altezza_lunghezza"
+  ],
+  "base-956": [
+   "onde_altezza_lunghezza"
+  ],
+  "base-957": [
+   "moto_ondoso_tipi"
+  ],
+  "base-958": [
+   "moto_ondoso_tipi"
+  ],
+  "base-959": [
+   "moto_ondoso_tipi"
+  ],
+  "base-960": [
+   "pressione_strumenti"
+  ],
+  "base-961": [
+   "fronte_caldo",
+   "pressione_tendenza"
+  ],
+  "base-962": [
+   "pressione_tendenza",
+   "fronte_freddo"
+  ],
+  "base-963": [
+   "fronte_caldo"
+  ],
+  "base-964": [
+   "fronte_freddo",
+   "aria_instabile_cumulonembi"
+  ],
+  "base-965": [
+   "aria_umidita_nebbia"
+  ],
+  "base-966": [
+   "vento_origine_gradiente"
   ]
  }
 }
