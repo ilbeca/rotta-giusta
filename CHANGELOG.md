@@ -843,6 +843,41 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
   236, della specifica 1.146, guardiano verde. `site/`, i test e la specifica
   non toccati.
 
+### Aggiunto — P-106: i concetti di Teoria dello scafo, prima lettura
+
+- **Perché.** B-2 del piano di novembre etichetta tutta la banca con concetti
+  più fini delle voci, una sorgente per tema perché nove sessioni in parallelo
+  non scrivano lo stesso file. Questa è la sorgente del tema più piccolo, 125
+  quesiti in due voci: `strumenti/concetti/teoria-dello-scafo.json`.
+- **Che cosa c'è.** 23 concetti in 8 famiglie, 4 per voce come vuole C-2:
+  per la nomenclatura «lo scafo visto da fuori», «misure, carene e
+  appendici», «dentro lo scafo», «la coperta e la sua attrezzatura»; per
+  elica, timone e stabilità «l'elica», «effetto evolutivo dell'elica», «il
+  timone», «movimenti, assetto e stabilità». 132 tag su 125 quesiti: 118 con
+  un concetto, 7 con due, quando il quesito non si risolve senza il secondo
+  sapere — un ormeggio con l'effetto evolutivo che chiede anche dove sta il
+  mascone. Ogni concetto ha da 3 a 11 quesiti e parole chiave da indice di
+  manuale. Lette tutte le domande con le risposte, e guardate le figure
+  dello scafo (opera viva e morta, mascone, giardinetto, traverso).
+- **La forma** è quella del pilota più le famiglie (`famiglie`, e `famiglia`
+  in ogni concetto), con gli id prefissati `scafo_`: elica e timone tornano in
+  Manovra e Motori, e due sorgenti non devono dare lo stesso id.
+  `componi.py` lo scrive la sessione COLREG; la regia rigenera il file
+  composto alla merge.
+- **Controllato** con uno script fuori dal repo: ogni quesito del tema ha da
+  uno a tre tag, nessun id che non c'è, ogni concetto con almeno tre quesiti
+  e in una famiglia, 4 famiglie per voce, nessuna etichetta o nome vietati
+  dal guardiano. Provato al contrario su tre copie rotte, rosse per il loro
+  motivo. Nessun archivio di risposte letto.
+- **Segnalato, banca non toccata:** `base-70` dà per dislocante la carena «a V
+  profondo», mentre `base-68` tratta la V profonda come carena da onda
+  formata, cioè planante; `base-99` definisce la cavitazione come
+  l'oltrepassare il limite dei giri; due risposte sembrano troncate,
+  «la superficie verticale interna» (`base-8`) e «plana e si alza sul filo
+  dell'acq» (`base-71`), da rileggere sul PDF del decreto.
+- Suite: dati 236, specifica 1.146, guardiano verde. Nessun file di `site/`,
+  `tests/` o della specifica toccato.
+
 ## [0.35.1] — 2026-10-29
 
 **Le risposte in simulazione si cambiano, e «auto» si capisce.** Un utente ha

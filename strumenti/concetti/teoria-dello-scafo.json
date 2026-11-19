@@ -1,0 +1,799 @@
+{
+  "tema": "TEORIA DELLO SCAFO",
+  "voci": [
+    "Effetti evolutivi dell'elica e del timone. Elementi di stabilità dell'unità.",
+    "Nomenclatura delle parti principali dello scafo"
+  ],
+  "progressivi": "1.1.1-1 … 1.1.1-75 e 1.1.2-1 … 1.1.2-50 (base-1 … base-125)",
+  "data": "2026-11-18",
+  "stato": "Prima lettura (P-106). Concetti, famiglie e tag scritti da Claude leggendo testi e figure; non ministeriali, non rivisti da una persona. La seconda lettura del 10% è una sessione a parte.",
+  "famiglie": [
+    {
+      "id": "scafo_f_esterno",
+      "nome": "Lo scafo visto da fuori",
+      "voce": "Nomenclatura delle parti principali dello scafo",
+      "concetti": [
+        "scafo_prua_poppa",
+        "scafo_fianco",
+        "scafo_opera_viva_morta"
+      ]
+    },
+    {
+      "id": "scafo_f_carene",
+      "nome": "Misure, carene e appendici",
+      "voce": "Nomenclatura delle parti principali dello scafo",
+      "concetti": [
+        "scafo_dimensioni",
+        "scafo_tipi_carena",
+        "scafo_flaps_trim"
+      ]
+    },
+    {
+      "id": "scafo_f_interno",
+      "nome": "Dentro lo scafo",
+      "voce": "Nomenclatura delle parti principali dello scafo",
+      "concetti": [
+        "scafo_sentina_pagliolato",
+        "scafo_paratie_locali",
+        "scafo_aperture_prese"
+      ]
+    },
+    {
+      "id": "scafo_f_coperta",
+      "nome": "La coperta e la sua attrezzatura",
+      "voce": "Nomenclatura delle parti principali dello scafo",
+      "concetti": [
+        "scafo_coperta_sovrastrutture",
+        "scafo_battagliola",
+        "scafo_attrezzatura_cime"
+      ]
+    },
+    {
+      "id": "scafo_f_elica",
+      "nome": "L'elica",
+      "voce": "Effetti evolutivi dell'elica e del timone. Elementi di stabilità dell'unità.",
+      "concetti": [
+        "scafo_elica_verso",
+        "scafo_elica_passo"
+      ]
+    },
+    {
+      "id": "scafo_f_evolutivo",
+      "nome": "Effetto evolutivo dell'elica",
+      "voce": "Effetti evolutivi dell'elica e del timone. Elementi di stabilità dell'unità.",
+      "concetti": [
+        "scafo_evolutivo_principio",
+        "scafo_evolutivo_avanti",
+        "scafo_evolutivo_indietro",
+        "scafo_bielica"
+      ]
+    },
+    {
+      "id": "scafo_f_timone",
+      "nome": "Il timone",
+      "voce": "Effetti evolutivi dell'elica e del timone. Elementi di stabilità dell'unità.",
+      "concetti": [
+        "scafo_timone_tipi",
+        "scafo_timone_governo"
+      ]
+    },
+    {
+      "id": "scafo_f_movimenti",
+      "nome": "Movimenti, assetto e stabilità",
+      "voce": "Effetti evolutivi dell'elica e del timone. Elementi di stabilità dell'unità.",
+      "concetti": [
+        "scafo_movimenti_assi",
+        "scafo_accostata",
+        "scafo_stabilita_assetto"
+      ]
+    }
+  ],
+  "concetti": [
+    {
+      "id": "scafo_prua_poppa",
+      "nome": "Prua, poppa e specchio di poppa",
+      "famiglia": "scafo_f_esterno",
+      "parole_chiave": [
+        "prua",
+        "prora",
+        "poppa",
+        "specchio di poppa",
+        "dritto di poppa"
+      ],
+      "copre": "Le due estremità dello scafo, lo specchio di poppa e il dritto di poppa a cui si incardina il timone.",
+      "quesiti": 5
+    },
+    {
+      "id": "scafo_fianco",
+      "nome": "Murata, mascone, traverso e giardinetto",
+      "famiglia": "scafo_f_esterno",
+      "parole_chiave": [
+        "murata",
+        "mascone",
+        "traverso",
+        "giardinetto",
+        "dritta e sinistra"
+      ],
+      "copre": "Le zone del fianco dello scafo, da prua a poppa, a dritta e a sinistra, anche riconosciute in figura.",
+      "quesiti": 11
+    },
+    {
+      "id": "scafo_opera_viva_morta",
+      "nome": "Opera viva, opera morta e linea di galleggiamento",
+      "famiglia": "scafo_f_esterno",
+      "parole_chiave": [
+        "opera viva",
+        "opera morta",
+        "carena",
+        "linea di galleggiamento",
+        "scafo"
+      ],
+      "copre": "La parte immersa e quella emersa dello scafo, la carena e la linea che le separa.",
+      "quesiti": 8
+    },
+    {
+      "id": "scafo_dimensioni",
+      "nome": "Le misure dello scafo",
+      "famiglia": "scafo_f_carene",
+      "parole_chiave": [
+        "lunghezza fuori tutto",
+        "baglio massimo",
+        "pescaggio",
+        "immersione",
+        "bordo libero",
+        "sezione maestra",
+        "ordinata maestra"
+      ],
+      "copre": "Lunghezza, larghezza, pescaggio, bordo libero e sezione maestra: che cosa misurano e fra quali punti.",
+      "quesiti": 6
+    },
+    {
+      "id": "scafo_tipi_carena",
+      "nome": "Tipi di carena e di scafo",
+      "famiglia": "scafo_f_carene",
+      "parole_chiave": [
+        "carena dislocante",
+        "carena planante",
+        "carena a V profonda",
+        "carena piatta",
+        "catamarano",
+        "battello pneumatico",
+        "tubolari",
+        "RIB"
+      ],
+      "copre": "Carene dislocanti e plananti, a V, il catamarano, il battello pneumatico e il RIB, e come si comportano sull'onda.",
+      "quesiti": 7
+    },
+    {
+      "id": "scafo_flaps_trim",
+      "nome": "Flaps e trim",
+      "famiglia": "scafo_f_carene",
+      "parole_chiave": [
+        "flaps",
+        "correttori di assetto",
+        "trim",
+        "fuoribordo",
+        "specchio di poppa"
+      ],
+      "copre": "Che cosa sono flaps e trim, dove sono montati e come si comandano.",
+      "quesiti": 4
+    },
+    {
+      "id": "scafo_sentina_pagliolato",
+      "nome": "Sentina e pagliolato",
+      "famiglia": "scafo_f_interno",
+      "parole_chiave": [
+        "sentina",
+        "pagliolo",
+        "pagliolato",
+        "acque di sentina"
+      ],
+      "copre": "Il fondo interno dello scafo dove si raccolgono le acque, e il piano calpestabile che lo copre.",
+      "quesiti": 5
+    },
+    {
+      "id": "scafo_paratie_locali",
+      "nome": "Paratie, gavoni e locali interni",
+      "famiglia": "scafo_f_interno",
+      "parole_chiave": [
+        "paratia",
+        "gavone",
+        "locale macchine",
+        "compartimentazione"
+      ],
+      "copre": "Come lo scafo è diviso all'interno: paratie trasversali, gavoni di prua e di poppa, locale macchine.",
+      "quesiti": 4
+    },
+    {
+      "id": "scafo_aperture_prese",
+      "nome": "Aperture nello scafo, prese a mare e zinchi",
+      "famiglia": "scafo_f_interno",
+      "parole_chiave": [
+        "ombrinale",
+        "losca del timone",
+        "passascafo",
+        "presa a mare",
+        "zinchi",
+        "corrosione galvanica"
+      ],
+      "copre": "I passaggi attraverso scafo e coperta (ombrinali, losca, passascafo), le valvole che li chiudono e la protezione dalla corrosione.",
+      "quesiti": 5
+    },
+    {
+      "id": "scafo_coperta_sovrastrutture",
+      "nome": "Coperta, tuga e sovrastrutture",
+      "famiglia": "scafo_f_coperta",
+      "parole_chiave": [
+        "ponte di coperta",
+        "sovrastruttura",
+        "tuga",
+        "pozzetto",
+        "boccaporto",
+        "flying bridge"
+      ],
+      "copre": "Il ponte di coperta e ciò che vi si apre o vi si eleva: tuga, pozzetto, boccaporti, flying bridge.",
+      "quesiti": 7
+    },
+    {
+      "id": "scafo_battagliola",
+      "nome": "Battagliola, candelieri e pulpiti",
+      "famiglia": "scafo_f_coperta",
+      "parole_chiave": [
+        "battagliola",
+        "candelieri",
+        "draglie",
+        "pulpito",
+        "pulpito di poppa"
+      ],
+      "copre": "Le protezioni dalle cadute lungo il camminamento fra prua e poppa.",
+      "quesiti": 4
+    },
+    {
+      "id": "scafo_attrezzatura_cime",
+      "nome": "Attrezzatura per cime, ormeggio e ancora",
+      "famiglia": "scafo_f_coperta",
+      "parole_chiave": [
+        "galloccia",
+        "bitta",
+        "sagola",
+        "musone",
+        "passacatena"
+      ],
+      "copre": "Dove si danno volta e si rinviano le cime, e la ferramenta di prua per l'ancora.",
+      "quesiti": 4
+    },
+    {
+      "id": "scafo_elica_verso",
+      "nome": "Elica destrorsa e sinistrorsa",
+      "famiglia": "scafo_f_elica",
+      "parole_chiave": [
+        "elica destrorsa",
+        "elica sinistrorsa",
+        "verso di rotazione",
+        "senso orario"
+      ],
+      "copre": "Come si riconosce il verso di un'elica guardando la poppa dall'esterno, in marcia avanti e indietro.",
+      "quesiti": 5
+    },
+    {
+      "id": "scafo_elica_passo",
+      "nome": "Passo, regresso e tipi di elica",
+      "famiglia": "scafo_f_elica",
+      "parole_chiave": [
+        "passo dell'elica",
+        "regresso",
+        "diametro dell'elica",
+        "elica a pale abbattibili",
+        "elica a pale orientabili",
+        "cavitazione"
+      ],
+      "copre": "Passo teorico e regresso, passo e diametro rispetto a spinta e velocità, i tipi di elica e la cavitazione.",
+      "quesiti": 5
+    },
+    {
+      "id": "scafo_evolutivo_principio",
+      "nome": "Effetto evolutivo: da che cosa nasce e quando pesa",
+      "famiglia": "scafo_f_evolutivo",
+      "parole_chiave": [
+        "effetto evolutivo dell'elica",
+        "spinta laterale",
+        "flusso dell'elica",
+        "abbrivio"
+      ],
+      "copre": "Da dove viene l'effetto evolutivo, quando è più forte e come si compensa con il timone.",
+      "quesiti": 3
+    },
+    {
+      "id": "scafo_evolutivo_avanti",
+      "nome": "Effetto evolutivo in marcia avanti",
+      "famiglia": "scafo_f_evolutivo",
+      "parole_chiave": [
+        "effetto evolutivo in marcia avanti",
+        "monoelica",
+        "timone al centro"
+      ],
+      "copre": "Dove va la poppa, e quindi la prua, con un'elica destrorsa o sinistrorsa in marcia avanti.",
+      "quesiti": 3
+    },
+    {
+      "id": "scafo_evolutivo_indietro",
+      "nome": "Effetto evolutivo in marcia indietro",
+      "famiglia": "scafo_f_evolutivo",
+      "parole_chiave": [
+        "effetto evolutivo in marcia indietro",
+        "retromarcia",
+        "evoluzione della poppa",
+        "ormeggio di poppa"
+      ],
+      "copre": "Dove va la poppa in retromarcia secondo il verso dell'elica, e come se ne tiene conto in manovra e all'ormeggio.",
+      "quesiti": 9
+    },
+    {
+      "id": "scafo_bielica",
+      "nome": "Unità bielica: eliche controrotanti",
+      "famiglia": "scafo_f_evolutivo",
+      "parole_chiave": [
+        "bielica",
+        "eliche controrotanti",
+        "due linee d'asse",
+        "timoni accoppiati"
+      ],
+      "copre": "Perché a dritta c'è l'elica destrorsa e a sinistra la sinistrorsa, e come si manovra con un motore solo.",
+      "quesiti": 6
+    },
+    {
+      "id": "scafo_timone_tipi",
+      "nome": "Il timone: pala, timone ordinario e compensato",
+      "famiglia": "scafo_f_timone",
+      "parole_chiave": [
+        "pala del timone",
+        "asse del timone",
+        "timone compensato",
+        "timone ordinario",
+        "timoni accoppiati"
+      ],
+      "copre": "Le parti del timone e la differenza fra timone ordinario e compensato, con il vantaggio del compensato.",
+      "quesiti": 9
+    },
+    {
+      "id": "scafo_timone_governo",
+      "nome": "Governare con barra, ruota e piede",
+      "famiglia": "scafo_f_timone",
+      "parole_chiave": [
+        "barra del timone",
+        "ruota del timone",
+        "angolo di barra",
+        "piede poppiero",
+        "avaria al timone"
+      ],
+      "copre": "Dove va la prua con barra o ruota in marcia avanti e indietro, l'angolo utile, gli effetti secondari della pala, il fuoribordo e il remo in avaria.",
+      "quesiti": 9
+    },
+    {
+      "id": "scafo_movimenti_assi",
+      "nome": "Gli assi dell'unità: rollio e beccheggio",
+      "famiglia": "scafo_f_movimenti",
+      "parole_chiave": [
+        "asse longitudinale",
+        "asse trasversale",
+        "asse verticale",
+        "rollio",
+        "beccheggio"
+      ],
+      "copre": "I tre assi dell'unità e i movimenti che vi si compiono intorno.",
+      "quesiti": 6
+    },
+    {
+      "id": "scafo_accostata",
+      "nome": "Accostata e curva di evoluzione",
+      "famiglia": "scafo_f_movimenti",
+      "parole_chiave": [
+        "accostata",
+        "curva di evoluzione",
+        "punto di rotazione",
+        "punto pivot"
+      ],
+      "copre": "Che cos'è l'accostata, la traiettoria che descrive e dove sta il punto intorno a cui l'unità ruota.",
+      "quesiti": 3
+    },
+    {
+      "id": "scafo_stabilita_assetto",
+      "nome": "Stabilità, assetto e dislocamento",
+      "famiglia": "scafo_f_movimenti",
+      "parole_chiave": [
+        "stabilità di forma",
+        "coppia di stabilità",
+        "assetto",
+        "dislocamento",
+        "stazza",
+        "portata"
+      ],
+      "copre": "Da che cosa dipende la stabilità di forma, che cos'è l'assetto e che cosa si intende per peso della nave.",
+      "quesiti": 4
+    }
+  ],
+  "quesiti": {
+    "base-1": [
+      "scafo_dimensioni"
+    ],
+    "base-2": [
+      "scafo_movimenti_assi"
+    ],
+    "base-3": [
+      "scafo_sentina_pagliolato"
+    ],
+    "base-4": [
+      "scafo_fianco"
+    ],
+    "base-5": [
+      "scafo_coperta_sovrastrutture"
+    ],
+    "base-6": [
+      "scafo_prua_poppa"
+    ],
+    "base-7": [
+      "scafo_prua_poppa"
+    ],
+    "base-8": [
+      "scafo_prua_poppa"
+    ],
+    "base-9": [
+      "scafo_paratie_locali"
+    ],
+    "base-10": [
+      "scafo_opera_viva_morta"
+    ],
+    "base-11": [
+      "scafo_opera_viva_morta"
+    ],
+    "base-12": [
+      "scafo_stabilita_assetto"
+    ],
+    "base-13": [
+      "scafo_paratie_locali"
+    ],
+    "base-14": [
+      "scafo_prua_poppa"
+    ],
+    "base-15": [
+      "scafo_opera_viva_morta"
+    ],
+    "base-16": [
+      "scafo_opera_viva_morta"
+    ],
+    "base-17": [
+      "scafo_attrezzatura_cime"
+    ],
+    "base-18": [
+      "scafo_attrezzatura_cime"
+    ],
+    "base-19": [
+      "scafo_paratie_locali"
+    ],
+    "base-20": [
+      "scafo_fianco"
+    ],
+    "base-21": [
+      "scafo_fianco"
+    ],
+    "base-22": [
+      "scafo_dimensioni"
+    ],
+    "base-23": [
+      "scafo_dimensioni"
+    ],
+    "base-24": [
+      "scafo_fianco"
+    ],
+    "base-25": [
+      "scafo_fianco"
+    ],
+    "base-26": [
+      "scafo_aperture_prese"
+    ],
+    "base-27": [
+      "scafo_sentina_pagliolato"
+    ],
+    "base-28": [
+      "scafo_opera_viva_morta"
+    ],
+    "base-29": [
+      "scafo_sentina_pagliolato"
+    ],
+    "base-30": [
+      "scafo_battagliola"
+    ],
+    "base-31": [
+      "scafo_battagliola"
+    ],
+    "base-32": [
+      "scafo_opera_viva_morta"
+    ],
+    "base-33": [
+      "scafo_aperture_prese"
+    ],
+    "base-34": [
+      "scafo_movimenti_assi"
+    ],
+    "base-35": [
+      "scafo_prua_poppa"
+    ],
+    "base-36": [
+      "scafo_paratie_locali"
+    ],
+    "base-37": [
+      "scafo_opera_viva_morta"
+    ],
+    "base-38": [
+      "scafo_coperta_sovrastrutture"
+    ],
+    "base-39": [
+      "scafo_coperta_sovrastrutture"
+    ],
+    "base-40": [
+      "scafo_attrezzatura_cime"
+    ],
+    "base-41": [
+      "scafo_fianco"
+    ],
+    "base-42": [
+      "scafo_coperta_sovrastrutture"
+    ],
+    "base-43": [
+      "scafo_aperture_prese"
+    ],
+    "base-44": [
+      "scafo_coperta_sovrastrutture"
+    ],
+    "base-45": [
+      "scafo_dimensioni"
+    ],
+    "base-46": [
+      "scafo_sentina_pagliolato"
+    ],
+    "base-47": [
+      "scafo_dimensioni"
+    ],
+    "base-48": [
+      "scafo_dimensioni"
+    ],
+    "base-49": [
+      "scafo_coperta_sovrastrutture"
+    ],
+    "base-50": [
+      "scafo_battagliola"
+    ],
+    "base-51": [
+      "scafo_sentina_pagliolato"
+    ],
+    "base-52": [
+      "scafo_tipi_carena"
+    ],
+    "base-53": [
+      "scafo_opera_viva_morta"
+    ],
+    "base-54": [
+      "scafo_tipi_carena"
+    ],
+    "base-55": [
+      "scafo_timone_tipi"
+    ],
+    "base-56": [
+      "scafo_timone_tipi"
+    ],
+    "base-57": [
+      "scafo_timone_tipi"
+    ],
+    "base-58": [
+      "scafo_fianco"
+    ],
+    "base-59": [
+      "scafo_fianco"
+    ],
+    "base-60": [
+      "scafo_fianco"
+    ],
+    "base-61": [
+      "scafo_tipi_carena"
+    ],
+    "base-62": [
+      "scafo_tipi_carena"
+    ],
+    "base-63": [
+      "scafo_attrezzatura_cime"
+    ],
+    "base-64": [
+      "scafo_aperture_prese"
+    ],
+    "base-65": [
+      "scafo_coperta_sovrastrutture"
+    ],
+    "base-66": [
+      "scafo_battagliola"
+    ],
+    "base-67": [
+      "scafo_aperture_prese"
+    ],
+    "base-68": [
+      "scafo_tipi_carena"
+    ],
+    "base-69": [
+      "scafo_movimenti_assi"
+    ],
+    "base-70": [
+      "scafo_tipi_carena"
+    ],
+    "base-71": [
+      "scafo_tipi_carena"
+    ],
+    "base-72": [
+      "scafo_flaps_trim"
+    ],
+    "base-73": [
+      "scafo_flaps_trim",
+      "scafo_stabilita_assetto"
+    ],
+    "base-74": [
+      "scafo_flaps_trim"
+    ],
+    "base-75": [
+      "scafo_flaps_trim"
+    ],
+    "base-76": [
+      "scafo_elica_passo"
+    ],
+    "base-77": [
+      "scafo_evolutivo_indietro"
+    ],
+    "base-78": [
+      "scafo_bielica"
+    ],
+    "base-79": [
+      "scafo_evolutivo_indietro"
+    ],
+    "base-80": [
+      "scafo_bielica"
+    ],
+    "base-81": [
+      "scafo_accostata"
+    ],
+    "base-82": [
+      "scafo_elica_verso"
+    ],
+    "base-83": [
+      "scafo_evolutivo_principio"
+    ],
+    "base-84": [
+      "scafo_timone_tipi"
+    ],
+    "base-85": [
+      "scafo_timone_tipi"
+    ],
+    "base-86": [
+      "scafo_elica_passo"
+    ],
+    "base-87": [
+      "scafo_evolutivo_indietro"
+    ],
+    "base-88": [
+      "scafo_timone_governo"
+    ],
+    "base-89": [
+      "scafo_timone_governo"
+    ],
+    "base-90": [
+      "scafo_elica_verso"
+    ],
+    "base-91": [
+      "scafo_elica_passo"
+    ],
+    "base-92": [
+      "scafo_elica_passo"
+    ],
+    "base-93": [
+      "scafo_timone_governo"
+    ],
+    "base-94": [
+      "scafo_accostata"
+    ],
+    "base-95": [
+      "scafo_timone_governo"
+    ],
+    "base-96": [
+      "scafo_evolutivo_indietro",
+      "scafo_fianco"
+    ],
+    "base-97": [
+      "scafo_evolutivo_indietro",
+      "scafo_fianco"
+    ],
+    "base-98": [
+      "scafo_evolutivo_principio"
+    ],
+    "base-99": [
+      "scafo_elica_passo"
+    ],
+    "base-100": [
+      "scafo_evolutivo_indietro"
+    ],
+    "base-101": [
+      "scafo_bielica"
+    ],
+    "base-102": [
+      "scafo_timone_tipi"
+    ],
+    "base-103": [
+      "scafo_evolutivo_indietro",
+      "scafo_timone_governo"
+    ],
+    "base-104": [
+      "scafo_bielica"
+    ],
+    "base-105": [
+      "scafo_evolutivo_indietro",
+      "scafo_elica_verso"
+    ],
+    "base-106": [
+      "scafo_timone_governo"
+    ],
+    "base-107": [
+      "scafo_timone_governo"
+    ],
+    "base-108": [
+      "scafo_elica_verso"
+    ],
+    "base-109": [
+      "scafo_timone_governo"
+    ],
+    "base-110": [
+      "scafo_elica_verso"
+    ],
+    "base-111": [
+      "scafo_timone_tipi"
+    ],
+    "base-112": [
+      "scafo_timone_tipi"
+    ],
+    "base-113": [
+      "scafo_timone_governo"
+    ],
+    "base-114": [
+      "scafo_evolutivo_avanti"
+    ],
+    "base-115": [
+      "scafo_evolutivo_indietro"
+    ],
+    "base-116": [
+      "scafo_evolutivo_principio"
+    ],
+    "base-117": [
+      "scafo_timone_tipi",
+      "scafo_bielica"
+    ],
+    "base-118": [
+      "scafo_bielica"
+    ],
+    "base-119": [
+      "scafo_evolutivo_avanti"
+    ],
+    "base-120": [
+      "scafo_evolutivo_avanti"
+    ],
+    "base-121": [
+      "scafo_stabilita_assetto"
+    ],
+    "base-122": [
+      "scafo_movimenti_assi"
+    ],
+    "base-123": [
+      "scafo_movimenti_assi"
+    ],
+    "base-124": [
+      "scafo_movimenti_assi",
+      "scafo_accostata"
+    ],
+    "base-125": [
+      "scafo_stabilita_assetto"
+    ]
+  }
+}
