@@ -3,12 +3,14 @@
  "sorgenti": [
   "colreg-e-segnalamento-marittimo.json",
   "manovra-e-condotta.json",
-  "meteorologia.json"
+  "meteorologia.json",
+  "motori.json"
  ],
  "temi": [
   "COLREG E SEGNALAMENTO MARITTIMO",
   "MANOVRA E CONDOTTA",
-  "METEOROLOGIA"
+  "METEOROLOGIA",
+  "MOTORI"
  ],
  "famiglie": [
   {
@@ -433,6 +435,80 @@
     "rosa_venti_quadranti",
     "venti_nomi_direzioni",
     "venti_direzione_gradi"
+   ]
+  },
+  {
+   "id": "motore_funzionamento",
+   "nome": "Come funziona il motore",
+   "tema": "MOTORI",
+   "voce": "Elementi di funzionamento dei sistemi di propulsione a motore",
+   "concetti": [
+    "ciclo_quattro_tempi",
+    "alimentazione_diesel",
+    "impianto_elettrico_motore",
+    "lubrificazione_motore",
+    "raffreddamento_motore",
+    "vano_motore_sicurezza"
+   ]
+  },
+  {
+   "id": "motore_trasmissione",
+   "nome": "Trasmissione e propulsione",
+   "tema": "MOTORI",
+   "voce": "Elementi di funzionamento dei sistemi di propulsione a motore",
+   "concetti": [
+    "invertitore_motore",
+    "linea_asse_motore",
+    "elica_motore_parti",
+    "entrofuoribordo_sdrive",
+    "trasmissioni_ips_pod",
+    "propulsione_idrogetto"
+   ]
+  },
+  {
+   "id": "motore_non_parte",
+   "nome": "Non parte, si spegne, perde colpi",
+   "tema": "MOTORI",
+   "voce": "Irregolarità e piccole avarie che possono prevedere un intervento non specialistico",
+   "concetti": [
+    "mancato_avviamento_motore",
+    "aria_circuito_gasolio",
+    "carburante_acqua_alghe",
+    "motore_irregolare"
+   ]
+  },
+  {
+   "id": "motore_fumo_calore_vibrazioni",
+   "nome": "Fumo, surriscaldamento e vibrazioni",
+   "tema": "MOTORI",
+   "voce": "Irregolarità e piccole avarie che possono prevedere un intervento non specialistico",
+   "concetti": [
+    "fumo_scarico_motore",
+    "surriscaldamento_motore",
+    "elica_bloccata_cavitazione"
+   ]
+  },
+  {
+   "id": "motore_consumi_autonomia",
+   "nome": "Consumi, riserva e autonomia",
+   "tema": "MOTORI",
+   "voce": "Calcolo dell'autonomia",
+   "concetti": [
+    "consumo_motore_specifico",
+    "riserva_carburante_30",
+    "autonomia_carburante_bordo",
+    "fattori_autonomia_carburante"
+   ]
+  },
+  {
+   "id": "motore_calcolo_carburante",
+   "nome": "Il calcolo del carburante da imbarcare",
+   "tema": "MOTORI",
+   "voce": "Calcolo dell'autonomia in relazione alla potenza del motore ed alla quantità residua di carburante",
+   "concetti": [
+    "carburante_da_ore",
+    "carburante_da_distanza",
+    "riserva_carburante_litri"
    ]
   }
  ],
@@ -2000,9 +2076,742 @@
    "tema": "METEOROLOGIA",
    "famiglia": "meteo_rosa_venti",
    "quesiti": 3
+  },
+  {
+   "id": "ciclo_quattro_tempi",
+   "nome": "Il ciclo a quattro tempi",
+   "parole_chiave": [
+    "ciclo a quattro tempi",
+    "aspirazione",
+    "compressione",
+    "scoppio",
+    "scarico",
+    "albero motore",
+    "corsa del pistone"
+   ],
+   "copre": "Le quattro fasi e che cosa fanno pistone e albero motore in un ciclo: quattro corse, due giri.",
+   "tema": "MOTORI",
+   "famiglia": "motore_funzionamento",
+   "quesiti": 4
+  },
+  {
+   "id": "alimentazione_diesel",
+   "nome": "L'impianto di alimentazione del diesel",
+   "parole_chiave": [
+    "pompa di alimentazione",
+    "pompa di iniezione",
+    "iniettore",
+    "nebulizzazione",
+    "spegnimento del diesel",
+    "motore diesel"
+   ],
+   "copre": "Pompa di alimentazione, pompa di iniezione e iniettori: come arriva il gasolio nei cilindri, e perché il diesel si spegne togliendogli il carburante.",
+   "tema": "MOTORI",
+   "famiglia": "motore_funzionamento",
+   "quesiti": 6
+  },
+  {
+   "id": "impianto_elettrico_motore",
+   "nome": "Impianto elettrico e avviamento",
+   "parole_chiave": [
+    "batteria",
+    "motorino di avviamento",
+    "candela",
+    "candeletta a incandescenza",
+    "accensione",
+    "iniezione indiretta"
+   ],
+   "copre": "La batteria e il motorino di avviamento, l'accensione che esiste solo nel motore a scoppio, la candeletta del diesel a iniezione indiretta.",
+   "tema": "MOTORI",
+   "famiglia": "motore_funzionamento",
+   "quesiti": 5
+  },
+  {
+   "id": "lubrificazione_motore",
+   "nome": "Olio e lubrificazione",
+   "parole_chiave": [
+    "olio lubrificante",
+    "viscosità",
+    "livello dell'olio",
+    "rabbocco",
+    "filtro dell'olio"
+   ],
+   "copre": "Che cosa conta in un lubrificante, il controllo e il rabbocco dopo una navigazione, che cosa succede quando l'olio finisce dove non deve.",
+   "tema": "MOTORI",
+   "famiglia": "motore_funzionamento",
+   "quesiti": 4
+  },
+  {
+   "id": "raffreddamento_motore",
+   "nome": "Il circuito di raffreddamento",
+   "parole_chiave": [
+    "raffreddamento ad acqua di mare",
+    "presa a mare",
+    "girante",
+    "scambiatore di calore",
+    "circuito chiuso",
+    "spia del fuoribordo"
+   ],
+   "copre": "Come si raffredda un motore marino: presa a mare, girante, scambiatore e circuito chiuso, la «spia» del fuoribordo.",
+   "tema": "MOTORI",
+   "famiglia": "motore_funzionamento",
+   "quesiti": 5
+  },
+  {
+   "id": "vano_motore_sicurezza",
+   "nome": "Benzina, gasolio e sicurezza del vano motore",
+   "parole_chiave": [
+    "vapori di benzina",
+    "aerazione del vano motore",
+    "ventilazione forzata",
+    "punto di infiammabilità",
+    "paratia del vano motore"
+   ],
+   "copre": "Perché la benzina è il pericolo principale, l'aerazione del vano prima di avviare, il gasolio meno infiammabile, la paratia che chiude il vano.",
+   "tema": "MOTORI",
+   "famiglia": "motore_funzionamento",
+   "quesiti": 5
+  },
+  {
+   "id": "invertitore_motore",
+   "nome": "Invertitore e riduttore",
+   "parole_chiave": [
+    "invertitore",
+    "riduttore",
+    "marcia avanti",
+    "folle",
+    "marcia indietro",
+    "senso di rotazione dell'elica"
+   ],
+   "copre": "L'organo che inverte la rotazione dell'elica senza invertire quella del motore, e lo riduce di giri.",
+   "tema": "MOTORI",
+   "famiglia": "motore_trasmissione",
+   "quesiti": 4
+  },
+  {
+   "id": "linea_asse_motore",
+   "nome": "La linea d'asse",
+   "parole_chiave": [
+    "linea d'asse",
+    "asse portaelica",
+    "astuccio",
+    "giunto",
+    "trasmissione entrobordo"
+   ],
+   "copre": "Gli organi che portano il moto dal motore entrobordo all'elica: asse portaelica, astuccio, giunto.",
+   "tema": "MOTORI",
+   "famiglia": "motore_trasmissione",
+   "quesiti": 4
+  },
+  {
+   "id": "elica_motore_parti",
+   "nome": "L'elica",
+   "parole_chiave": [
+    "elica",
+    "mozzo",
+    "pale",
+    "materiali dell'elica",
+    "sistema propulsivo"
+   ],
+   "copre": "Che cos'è il sistema propulsivo, di che parti è fatta l'elica e di che materiali.",
+   "tema": "MOTORI",
+   "famiglia": "motore_trasmissione",
+   "quesiti": 5
+  },
+  {
+   "id": "entrofuoribordo_sdrive",
+   "nome": "Entrofuoribordo e piede S drive",
+   "parole_chiave": [
+    "entrofuoribordo",
+    "gruppo poppiero",
+    "piede poppiero",
+    "S drive",
+    "guarnizione del piede"
+   ],
+   "copre": "Il motore entrobordo con la trasmissione in un piede a poppa, il piede S drive delle barche a vela e la manutenzione della sua guarnizione.",
+   "tema": "MOTORI",
+   "famiglia": "motore_trasmissione",
+   "quesiti": 4
+  },
+  {
+   "id": "trasmissioni_ips_pod",
+   "nome": "Trasmissioni IPS e pod",
+   "parole_chiave": [
+    "IPS",
+    "Inboard Performance System",
+    "pod",
+    "eliche traenti",
+    "piede orientabile"
+   ],
+   "copre": "Le trasmissioni con il piede completamente immerso che ruota per governare, con le eliche rivolte a prua.",
+   "tema": "MOTORI",
+   "famiglia": "motore_trasmissione",
+   "quesiti": 3
+  },
+  {
+   "id": "propulsione_idrogetto",
+   "nome": "La propulsione a idrogetto",
+   "parole_chiave": [
+    "propulsione_idrogetto",
+    "getto d'acqua",
+    "pompa a idrogetto",
+    "condotto di aspirazione",
+    "manovrabilità a bassi giri"
+   ],
+   "copre": "Come spinge un idrogetto, di che parti è fatto e perché manovra male al minimo e col vento.",
+   "tema": "MOTORI",
+   "famiglia": "motore_trasmissione",
+   "quesiti": 3
+  },
+  {
+   "id": "mancato_avviamento_motore",
+   "nome": "Il motore non parte",
+   "parole_chiave": [
+    "mancato avviamento",
+    "motore ingolfato",
+    "carburatore",
+    "batteria scarica",
+    "leva in folle",
+    "difficoltà di avviamento"
+   ],
+   "copre": "Il motore che gira e non parte, o non gira affatto: carburatore ingolfato, batteria, leva non in folle, aria o acqua nel gasolio.",
+   "tema": "MOTORI",
+   "famiglia": "motore_non_parte",
+   "quesiti": 7
+  },
+  {
+   "id": "aria_circuito_gasolio",
+   "nome": "Aria nel circuito del gasolio e spurgo",
+   "parole_chiave": [
+    "aria nel circuito del carburante",
+    "spurgo",
+    "spurgare il diesel",
+    "pompa di iniezione"
+   ],
+   "copre": "L'aria nel circuito di alimentazione del diesel: non parte, si spegne subito, accende male; come si spurga.",
+   "tema": "MOTORI",
+   "famiglia": "motore_non_parte",
+   "quesiti": 5
+  },
+  {
+   "id": "carburante_acqua_alghe",
+   "nome": "Carburante sporco, acqua e alghe",
+   "parole_chiave": [
+    "carburante sporco",
+    "acqua nel carburante",
+    "alghe nel gasolio",
+    "filtro separatore",
+    "filtro del carburante",
+    "pulizia del serbatoio"
+   ],
+   "copre": "Da dove vengono acqua e alghe nel serbatoio, che cosa fanno al motore e come si prevengono con filtri e pulizia.",
+   "tema": "MOTORI",
+   "famiglia": "motore_non_parte",
+   "quesiti": 6
+  },
+  {
+   "id": "motore_irregolare",
+   "nome": "Perde colpi, picchia, gira male",
+   "parole_chiave": [
+    "motore che perde colpi",
+    "battito in testa",
+    "iniettori fuori taratura",
+    "funzionamento irregolare",
+    "tubi degli iniettori"
+   ],
+   "copre": "Il diesel che perde colpi, picchia in testa, accende o gira in modo irregolare: carburante, filtri, iniettori.",
+   "tema": "MOTORI",
+   "famiglia": "motore_non_parte",
+   "quesiti": 4
+  },
+  {
+   "id": "fumo_scarico_motore",
+   "nome": "Il colore del fumo allo scarico",
+   "parole_chiave": [
+    "fumo nero",
+    "fumo azzurro",
+    "fumo bianco",
+    "fumo allo scarico",
+    "combustione",
+    "filtro dell'aria"
+   ],
+   "copre": "Che cosa dice il colore del fumo: nero per una cattiva combustione, azzurro o bianco per l'olio che brucia.",
+   "tema": "MOTORI",
+   "famiglia": "motore_fumo_calore_vibrazioni",
+   "quesiti": 5
+  },
+  {
+   "id": "surriscaldamento_motore",
+   "nome": "Il surriscaldamento",
+   "parole_chiave": [
+    "surriscaldamento_motore",
+    "presa d'acqua ostruita",
+    "grippaggio",
+    "testata",
+    "guarnizione della testata"
+   ],
+   "copre": "Perché un motore scalda — quasi sempre l'acqua di raffreddamento che non arriva — e che danni fa se si insiste.",
+   "tema": "MOTORI",
+   "famiglia": "motore_fumo_calore_vibrazioni",
+   "quesiti": 4
+  },
+  {
+   "id": "elica_bloccata_cavitazione",
+   "nome": "Elica bloccata, cavitazione e vibrazioni",
+   "parole_chiave": [
+    "elica bloccata",
+    "cavitazione",
+    "vibrazioni",
+    "supporti del motore",
+    "lunghezza del gambo",
+    "alghe sull'elica"
+   ],
+   "copre": "Il motore che si ferma in marcia perché l'elica è bloccata, la cavitazione di un piede di lunghezza sbagliata, le vibrazioni da alghe o supporti.",
+   "tema": "MOTORI",
+   "famiglia": "motore_fumo_calore_vibrazioni",
+   "quesiti": 5
+  },
+  {
+   "id": "consumo_motore_specifico",
+   "nome": "Potenza, consumo orario e consumo specifico",
+   "parole_chiave": [
+    "consumo orario",
+    "consumo specifico",
+    "grammi per cavallo ora",
+    "peso specifico del carburante",
+    "cavalli vapore",
+    "kilowatt"
+   ],
+   "copre": "Che cos'è il dato di consumo, come lo si ricava da potenza e peso specifico, quanti CV fa un kW.",
+   "tema": "MOTORI",
+   "famiglia": "motore_consumi_autonomia",
+   "quesiti": 4
+  },
+  {
+   "id": "riserva_carburante_30",
+   "nome": "La riserva del 30%",
+   "parole_chiave": [
+    "riserva di carburante",
+    "30% di sicurezza",
+    "margine di sicurezza",
+    "elementi perturbatori"
+   ],
+   "copre": "Perché si aggiunge almeno il 30% al carburante calcolato, e come lo si aggiunge.",
+   "tema": "MOTORI",
+   "famiglia": "motore_consumi_autonomia",
+   "quesiti": 4
+  },
+  {
+   "id": "carburante_da_ore",
+   "nome": "Carburante dalle ore di navigazione",
+   "parole_chiave": [
+    "consumo × tempo",
+    "ore di navigazione",
+    "quantità di carburante",
+    "calcolo del carburante"
+   ],
+   "copre": "Il carburante da imbarcare quando si conoscono le ore: consumo orario per ore, più il 30%.",
+   "tema": "MOTORI",
+   "famiglia": "motore_calcolo_carburante",
+   "quesiti": 8
+  },
+  {
+   "id": "carburante_da_distanza",
+   "nome": "Carburante da distanza e velocità",
+   "parole_chiave": [
+    "tempo = spazio / velocità",
+    "miglia",
+    "nodi",
+    "velocità di crociera",
+    "calcolo del carburante"
+   ],
+   "copre": "Quando si conoscono le miglia e i nodi: prima le ore (spazio diviso velocità), poi il consumo e la riserva.",
+   "tema": "MOTORI",
+   "famiglia": "motore_calcolo_carburante",
+   "quesiti": 12
+  },
+  {
+   "id": "riserva_carburante_litri",
+   "nome": "Calcolare la sola riserva",
+   "parole_chiave": [
+    "quota di riserva",
+    "30% del consumo",
+    "riserva in litri"
+   ],
+   "copre": "Quanti litri sono la riserva, cioè il 30% del consumo del percorso, dati miglia, nodi e consumo orario.",
+   "tema": "MOTORI",
+   "famiglia": "motore_calcolo_carburante",
+   "quesiti": 7
+  },
+  {
+   "id": "autonomia_carburante_bordo",
+   "nome": "L'autonomia dal carburante a bordo",
+   "parole_chiave": [
+    "autonomia oraria",
+    "autonomia in miglia",
+    "carburante disponibile",
+    "consumo orario"
+   ],
+   "copre": "Quanto si naviga con il carburante che si ha: autonomia in ore e in miglia, e con il 30% tolto.",
+   "tema": "MOTORI",
+   "famiglia": "motore_consumi_autonomia",
+   "quesiti": 3
+  },
+  {
+   "id": "fattori_autonomia_carburante",
+   "nome": "Che cosa cambia l'autonomia",
+   "parole_chiave": [
+    "condizioni meteo-marine",
+    "mare mosso",
+    "dislocamento",
+    "velocità di crociera",
+    "vento e corrente"
+   ],
+   "copre": "Mare, vento, corrente, carico e velocità: perché l'autonomia calcolata non è quella che si avrà.",
+   "tema": "MOTORI",
+   "famiglia": "motore_consumi_autonomia",
+   "quesiti": 4
   }
  ],
  "quesiti": {
+  "base-126": [
+   "alimentazione_diesel"
+  ],
+  "base-127": [
+   "vano_motore_sicurezza"
+  ],
+  "base-128": [
+   "vano_motore_sicurezza"
+  ],
+  "base-129": [
+   "raffreddamento_motore"
+  ],
+  "base-130": [
+   "vano_motore_sicurezza"
+  ],
+  "base-131": [
+   "ciclo_quattro_tempi"
+  ],
+  "base-132": [
+   "invertitore_motore"
+  ],
+  "base-133": [
+   "surriscaldamento_motore",
+   "raffreddamento_motore"
+  ],
+  "base-134": [
+   "entrofuoribordo_sdrive"
+  ],
+  "base-135": [
+   "aria_circuito_gasolio",
+   "alimentazione_diesel"
+  ],
+  "base-136": [
+   "carburante_acqua_alghe",
+   "motore_irregolare"
+  ],
+  "base-137": [
+   "elica_motore_parti"
+  ],
+  "base-138": [
+   "raffreddamento_motore"
+  ],
+  "base-139": [
+   "invertitore_motore"
+  ],
+  "base-140": [
+   "impianto_elettrico_motore"
+  ],
+  "base-141": [
+   "ciclo_quattro_tempi"
+  ],
+  "base-142": [
+   "ciclo_quattro_tempi"
+  ],
+  "base-143": [
+   "impianto_elettrico_motore"
+  ],
+  "base-144": [
+   "mancato_avviamento_motore"
+  ],
+  "base-145": [
+   "motore_irregolare",
+   "alimentazione_diesel"
+  ],
+  "base-146": [
+   "mancato_avviamento_motore",
+   "aria_circuito_gasolio"
+  ],
+  "base-147": [
+   "elica_bloccata_cavitazione",
+   "linea_asse_motore",
+   "invertitore_motore"
+  ],
+  "base-148": [
+   "elica_bloccata_cavitazione",
+   "elica_motore_parti"
+  ],
+  "base-149": [
+   "mancato_avviamento_motore",
+   "impianto_elettrico_motore"
+  ],
+  "base-150": [
+   "linea_asse_motore"
+  ],
+  "base-151": [
+   "aria_circuito_gasolio"
+  ],
+  "base-152": [
+   "fumo_scarico_motore",
+   "lubrificazione_motore"
+  ],
+  "base-153": [
+   "fumo_scarico_motore"
+  ],
+  "base-154": [
+   "alimentazione_diesel"
+  ],
+  "base-155": [
+   "riserva_carburante_30"
+  ],
+  "base-156": [
+   "carburante_da_distanza"
+  ],
+  "base-157": [
+   "consumo_motore_specifico"
+  ],
+  "base-158": [
+   "consumo_motore_specifico",
+   "autonomia_carburante_bordo"
+  ],
+  "base-159": [
+   "autonomia_carburante_bordo",
+   "fattori_autonomia_carburante"
+  ],
+  "base-160": [
+   "carburante_da_distanza"
+  ],
+  "base-161": [
+   "carburante_da_distanza"
+  ],
+  "base-162": [
+   "consumo_motore_specifico"
+  ],
+  "base-163": [
+   "carburante_da_ore"
+  ],
+  "base-164": [
+   "riserva_carburante_30",
+   "fattori_autonomia_carburante"
+  ],
+  "base-165": [
+   "autonomia_carburante_bordo",
+   "riserva_carburante_30"
+  ],
+  "base-166": [
+   "carburante_da_distanza"
+  ],
+  "base-167": [
+   "carburante_da_distanza"
+  ],
+  "base-168": [
+   "carburante_da_ore",
+   "riserva_carburante_30"
+  ],
+  "base-169": [
+   "consumo_motore_specifico"
+  ],
+  "base-170": [
+   "elica_motore_parti"
+  ],
+  "base-171": [
+   "vano_motore_sicurezza"
+  ],
+  "base-172": [
+   "ciclo_quattro_tempi"
+  ],
+  "base-173": [
+   "elica_motore_parti"
+  ],
+  "base-174": [
+   "lubrificazione_motore"
+  ],
+  "base-175": [
+   "lubrificazione_motore"
+  ],
+  "base-176": [
+   "raffreddamento_motore"
+  ],
+  "base-177": [
+   "raffreddamento_motore"
+  ],
+  "base-178": [
+   "elica_motore_parti"
+  ],
+  "base-179": [
+   "entrofuoribordo_sdrive"
+  ],
+  "base-180": [
+   "vano_motore_sicurezza"
+  ],
+  "base-181": [
+   "linea_asse_motore"
+  ],
+  "base-182": [
+   "linea_asse_motore"
+  ],
+  "base-183": [
+   "invertitore_motore"
+  ],
+  "base-184": [
+   "propulsione_idrogetto"
+  ],
+  "base-185": [
+   "propulsione_idrogetto"
+  ],
+  "base-186": [
+   "propulsione_idrogetto"
+  ],
+  "base-187": [
+   "alimentazione_diesel"
+  ],
+  "base-188": [
+   "alimentazione_diesel"
+  ],
+  "base-189": [
+   "impianto_elettrico_motore"
+  ],
+  "base-190": [
+   "impianto_elettrico_motore"
+  ],
+  "base-191": [
+   "surriscaldamento_motore"
+  ],
+  "base-192": [
+   "mancato_avviamento_motore"
+  ],
+  "base-193": [
+   "elica_bloccata_cavitazione"
+  ],
+  "base-194": [
+   "mancato_avviamento_motore"
+  ],
+  "base-195": [
+   "fumo_scarico_motore"
+  ],
+  "base-196": [
+   "mancato_avviamento_motore",
+   "aria_circuito_gasolio"
+  ],
+  "base-197": [
+   "mancato_avviamento_motore",
+   "carburante_acqua_alghe"
+  ],
+  "base-198": [
+   "fumo_scarico_motore"
+  ],
+  "base-199": [
+   "fumo_scarico_motore",
+   "lubrificazione_motore"
+  ],
+  "base-200": [
+   "motore_irregolare",
+   "aria_circuito_gasolio"
+  ],
+  "base-201": [
+   "motore_irregolare"
+  ],
+  "base-202": [
+   "elica_bloccata_cavitazione"
+  ],
+  "base-203": [
+   "carburante_acqua_alghe"
+  ],
+  "base-204": [
+   "carburante_acqua_alghe"
+  ],
+  "base-205": [
+   "surriscaldamento_motore"
+  ],
+  "base-206": [
+   "surriscaldamento_motore"
+  ],
+  "base-207": [
+   "elica_bloccata_cavitazione"
+  ],
+  "base-208": [
+   "fattori_autonomia_carburante"
+  ],
+  "base-209": [
+   "fattori_autonomia_carburante"
+  ],
+  "base-210": [
+   "carburante_da_ore"
+  ],
+  "base-211": [
+   "carburante_da_ore"
+  ],
+  "base-212": [
+   "carburante_da_ore"
+  ],
+  "base-213": [
+   "carburante_da_ore"
+  ],
+  "base-214": [
+   "carburante_da_ore"
+  ],
+  "base-215": [
+   "carburante_da_ore"
+  ],
+  "base-216": [
+   "riserva_carburante_litri",
+   "carburante_da_distanza"
+  ],
+  "base-217": [
+   "riserva_carburante_litri",
+   "carburante_da_distanza"
+  ],
+  "base-218": [
+   "riserva_carburante_litri",
+   "carburante_da_distanza"
+  ],
+  "base-219": [
+   "riserva_carburante_litri",
+   "carburante_da_distanza"
+  ],
+  "base-220": [
+   "riserva_carburante_litri",
+   "carburante_da_distanza"
+  ],
+  "base-221": [
+   "riserva_carburante_litri",
+   "carburante_da_distanza"
+  ],
+  "base-222": [
+   "riserva_carburante_litri",
+   "carburante_da_distanza"
+  ],
+  "base-223": [
+   "trasmissioni_ips_pod"
+  ],
+  "base-224": [
+   "trasmissioni_ips_pod"
+  ],
+  "base-225": [
+   "trasmissioni_ips_pod"
+  ],
+  "base-226": [
+   "entrofuoribordo_sdrive"
+  ],
+  "base-227": [
+   "entrofuoribordo_sdrive"
+  ],
+  "base-228": [
+   "carburante_acqua_alghe"
+  ],
+  "base-229": [
+   "carburante_acqua_alghe"
+  ],
   "base-445": [
    "porto_limiti_velocita"
   ],

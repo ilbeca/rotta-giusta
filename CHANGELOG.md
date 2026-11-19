@@ -726,6 +726,45 @@ dell'autore. Dalla 0.19.0 in poi è la storia di questo sito.
 - Suite: dati 236, specifica 1.146; guardiano verde. `site/`, i test e la
   specifica non sono stati toccati.
 
+### Aggiunto — P-106: i concetti del tema Motori
+
+- **Perché.** Il passo B-2 del piano di novembre etichetta tutta la banca con
+  concetti più fini delle voci, una sorgente per tema; questa è la sorgente di
+  Motori, `strumenti/concetti/motori.json`, nella forma che `componi.py` legge
+  (la nota della sessione COLREG): il pilota dei fanali più le famiglie, ognuna
+  con la sua voce, e id globali, quindi specifici del tema. La classificazione è nostra, non ministeriale. La compone
+  in `site/dati/concetti.json` lo script della sessione COLREG, alla merge.
+- **Che cosa c'è.** 104 quesiti su 104, **26 concetti, 6 famiglie, 130 tag**
+  (79 quesiti con un concetto, 24 con due, 1 con tre). Le famiglie: come
+  funziona il motore; trasmissione e propulsione; non parte, si spegne, perde
+  colpi; fumo, surriscaldamento e vibrazioni; consumi, riserva e autonomia; il
+  calcolo del carburante da imbarcare. Ogni
+  concetto ha almeno 3 quesiti (da 3 a 12), parole chiave da indice di
+  manuale e le voci da cui vengono i suoi quesiti. Letti tutti i testi e le
+  figure dove il testo non bastava; nessun archivio di risposte.
+- **Sei famiglie per il tema, non 4–5 per voce**, e lo dice il file: le
+  cinque voci sono due coppie sullo stesso argomento — le due «Calcolo
+  dell'autonomia», le due «Irregolarità, piccole avarie» — più gli
+  «Elementi di funzionamento», e voci da 10–19 quesiti non reggono 4–5
+  famiglie con concetti da almeno tre quesiti. Ogni famiglia sta nella voce
+  dove cadono più quesiti dei suoi concetti, ma i concetti attraversano le
+  voci; «Irregolarità, piccole avarie e modo di rimediarvi» non ha una
+  famiglia sua.
+- **Trovato leggendo**, e non toccato: `base-208` e `base-209` (i fattori che
+  cambiano l'autonomia) stanno nella voce delle irregolarità; i sette
+  progressivi 1.2.2-2 … 1.2.2-8 ripetuti in «Calcolo dell'autonomia», già
+  noti; in `base-199` la risposta esatta lega il fumo blu o bianco del diesel
+  all'intasamento del filtro dell'olio, mentre il fumo blu viene dall'olio che
+  brucia e il bianco da acqua o gasolio incombusto (`base-152` dice l'olio). I
+  20 calcoli di carburante e riserva, rifatti a mano: tutti giusti.
+- **Controllato** con uno script nello scratchpad, non nel repo: forma, id
+  esistenti e del tema, 1–3 tag, almeno 3 quesiti per concetto, ogni concetto
+  in una famiglia sola, conteggi e voci coerenti, nessuna etichetta né nome di
+  terzi del guardiano; provato al contrario su un file rotto in sei punti,
+  tutti presi. Rilettura dello stesso lettore su 15 quesiti a caso
+  (`random.seed(106)`): nessun cambio. La seconda lettura indipendente è da
+  fare. Suite dati 236, specifica 1.146, guardiano verde.
+
 ## [0.35.1] — 2026-10-29
 
 **Le risposte in simulazione si cambiano, e «auto» si capisce.** Un utente ha
