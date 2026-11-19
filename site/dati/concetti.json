@@ -3,6 +3,7 @@
  "sorgenti": [
   "navigazione-cartografica-ed-elettronica.json",
   "colreg-e-segnalamento-marittimo.json",
+  "sicurezza-della-navigazione.json",
   "normativa-diportistica-e-ambientale.json",
   "manovra-e-condotta.json",
   "teoria-dello-scafo.json",
@@ -12,6 +13,7 @@
  "temi": [
   "NAVIGAZIONE CARTOGRAFICA ED ELETTRONICA",
   "COLREG E SEGNALAMENTO MARITTIMO",
+  "SICUREZZA DELLA NAVIGAZIONE",
   "NORMATIVA DIPORTISTICA E AMBIENTALE",
   "MANOVRA E CONDOTTA",
   "TEORIA DELLO SCAFO",
@@ -425,6 +427,162 @@
    "concetti": [
     "suoni_nebbia",
     "dotazioni_sonore"
+   ]
+  },
+  {
+   "id": "fuoco_teoria",
+   "nome": "Il fuoco e le sue classi",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "voce": "Prevenzione degli incendi e uso degli estintori",
+   "concetti": [
+    "combustione",
+    "estinzione_principi",
+    "classi_incendio"
+   ]
+  },
+  {
+   "id": "estintori_bordo",
+   "nome": "Gli estintori",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "voce": "Prevenzione degli incendi e uso degli estintori",
+   "concetti": [
+    "estintori_tipi",
+    "estintori_norme"
+   ]
+  },
+  {
+   "id": "alcol_sostanze",
+   "nome": "Alcol, farmaci e stupefacenti",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "voce": "Rischi derivanti dalla conduzione dell'unità sotto l'influenza di alcol o in stato di alterazione psico-fisica per l'uso di sostanze stupefacenti o psicotrope",
+   "concetti": [
+    "alcol_sanzioni",
+    "alcol_effetti"
+   ]
+  },
+  {
+   "id": "dotazioni_segnali",
+   "nome": "I segnali di soccorso",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "voce": "Dotazioni di sicurezza e mezzi di salvataggio",
+   "concetti": [
+    "segnali_quantita",
+    "segnali_uso"
+   ]
+  },
+  {
+   "id": "dotazioni_salvataggio",
+   "nome": "I mezzi di salvataggio",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "voce": "Dotazioni di sicurezza e mezzi di salvataggio",
+   "concetti": [
+    "salvagenti_individuali",
+    "mezzi_collettivi"
+   ]
+  },
+  {
+   "id": "dotazioni_strumenti",
+   "nome": "Apparati e pronto soccorso",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "voce": "Dotazioni di sicurezza e mezzi di salvataggio",
+   "concetti": [
+    "dotazioni_apparati",
+    "pronto_soccorso"
+   ]
+  },
+  {
+   "id": "visite_certificato",
+   "nome": "Visite e certificato di sicurezza",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "voce": "Tipi di visite, loro periodicità e certificazioni",
+   "concetti": [
+    "visite_tipi",
+    "scadenze_certificato",
+    "certificato_rilascio"
+   ]
+  },
+  {
+   "id": "incendio_a_bordo",
+   "nome": "Incendio a bordo",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "voce": "Provvedimenti da adottare in caso di sinistro marittimo (incendio, collisione, falla, incaglio, uomo a mare)",
+   "concetti": [
+    "incendio_manovra",
+    "incendio_vano_motore",
+    "incendio_intervento"
+   ]
+  },
+  {
+   "id": "falla_incaglio",
+   "nome": "Falla, incaglio e collisione",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "voce": "Provvedimenti da adottare in caso di sinistro marittimo (incendio, collisione, falla, incaglio, uomo a mare)",
+   "concetti": [
+    "falla",
+    "incaglio_collisione"
+   ]
+  },
+  {
+   "id": "uomo_in_mare",
+   "nome": "Uomo in mare",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "voce": "Provvedimenti da adottare in caso di sinistro marittimo (incendio, collisione, falla, incaglio, uomo a mare)",
+   "concetti": [
+    "uomo_mare_manovra",
+    "uomo_mare_recupero"
+   ]
+  },
+  {
+   "id": "abbandono_soccorso",
+   "nome": "L'abbandono e il soccorso",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "voce": "Sinistro e abbandono dell'unità",
+   "concetti": [
+    "abbandono_comandante",
+    "zattera_grab_bag",
+    "soccorso_organizzazione",
+    "obblighi_assistenza"
+   ]
+  },
+  {
+   "id": "mare_formato",
+   "nome": "Condurre con il mare formato",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "voce": "Precauzioni da adottare in caso di navigazione con tempo cattivo",
+   "concetti": [
+    "onde_condotta",
+    "cappa_ancora_galleggiante",
+    "trim_flaps"
+   ]
+  },
+  {
+   "id": "tempo_cattivo_precauzioni",
+   "nome": "Precauzioni e visibilità",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "voce": "Precauzioni da adottare in caso di navigazione con tempo cattivo",
+   "concetti": [
+    "precauzioni_bordo",
+    "visibilita_costa"
+   ]
+  },
+  {
+   "id": "radio_apparato",
+   "nome": "Il VHF: abilitazioni e portata",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "voce": "Corretto uso degli apparati radio di bordo e chiamate di soccorso",
+   "concetti": [
+    "radio_titoli",
+    "vhf_portata_tecnica"
+   ]
+  },
+  {
+   "id": "radio_chiamate",
+   "nome": "Le chiamate radio",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "voce": "Corretto uso degli apparati radio di bordo e chiamate di soccorso",
+   "concetti": [
+    "canali_vhf",
+    "chiamate_soccorso_radio"
    ]
   },
   {
@@ -2371,6 +2529,532 @@
    "tema": "COLREG E SEGNALAMENTO MARITTIMO",
    "famiglia": "suoni_nebbia_apparecchi",
    "quesiti": 4
+  },
+  {
+   "id": "combustione",
+   "nome": "Combustione e triangolo del fuoco",
+   "parole_chiave": [
+    "triangolo del fuoco",
+    "combustibile",
+    "comburente",
+    "temperatura di infiammabilità",
+    "autocombustione"
+   ],
+   "copre": "Che cos'è la combustione, i tre elementi che la alimentano, la temperatura di infiammabilità di un liquido e la combustione spontanea degli stracci unti.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "fuoco_teoria",
+   "quesiti": 5
+  },
+  {
+   "id": "estinzione_principi",
+   "nome": "Come si spegne un incendio",
+   "parole_chiave": [
+    "estinzione",
+    "soffocamento",
+    "raffreddamento",
+    "sottrazione del combustibile",
+    "ventilazione e incendio"
+   ],
+   "copre": "I modi di estinzione — togliere ossigeno, calore o combustibile — e perché l'aria che entra in un locale alimenta il fuoco.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "fuoco_teoria",
+   "quesiti": 6
+  },
+  {
+   "id": "classi_incendio",
+   "nome": "Le classi di incendio",
+   "parole_chiave": [
+    "classi di incendio",
+    "classe A",
+    "classe B",
+    "classe C",
+    "classe D",
+    "classe E",
+    "fuochi da metalli"
+   ],
+   "copre": "Le classi A, B, C, D ed E: da che cosa è generato ciascun fuoco, quale estinguente gli è adatto, e perché l'acqua è pericolosa su metalli e impianti in tensione.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "fuoco_teoria",
+   "quesiti": 16
+  },
+  {
+   "id": "estintori_tipi",
+   "nome": "Estintori a polvere, schiuma e CO2",
+   "parole_chiave": [
+    "estintore a polvere",
+    "estintore a schiuma",
+    "estintore a CO2",
+    "anidride carbonica",
+    "uso dell'estintore"
+   ],
+   "copre": "Quale estintore su quale fuoco, dove si usa la CO2, dove si dirige il getto, e quali estintori non vanno sugli impianti sotto tensione.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "estintori_bordo",
+   "quesiti": 12
+  },
+  {
+   "id": "estintori_norme",
+   "nome": "Estintori a bordo: numero, omologazione, revisione",
+   "parole_chiave": [
+    "omologazione CE estintori",
+    "manometro",
+    "revisione degli estintori",
+    "capacità estinguente",
+    "manuale del proprietario"
+   ],
+   "copre": "Quanti estintori e dove, per le unità marcate CE e per quelle di prima del 1998; l'omologazione, la sigla della capacità estinguente, il manometro e la sostituzione.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "estintori_bordo",
+   "quesiti": 10
+  },
+  {
+   "id": "alcol_sanzioni",
+   "nome": "Alcol e stupefacenti: sanzioni",
+   "parole_chiave": [
+    "stato di ebbrezza",
+    "tasso alcolemico",
+    "sospensione della patente nautica",
+    "revoca della patente nautica",
+    "sostanze stupefacenti"
+   ],
+   "copre": "Le sanzioni per chi conduce in stato di ebbrezza o dopo sostanze stupefacenti: importi, sospensione, revoca, aggravanti per noleggio, sinistro e danno ambientale.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "alcol_sostanze",
+   "quesiti": 9
+  },
+  {
+   "id": "alcol_effetti",
+   "nome": "Alcol e farmaci: gli effetti su chi conduce",
+   "parole_chiave": [
+    "effetti dell'alcol",
+    "farmaci sedativi",
+    "attenzione alla guida",
+    "tempi di smaltimento dell'alcol"
+   ],
+   "copre": "Quanto durano gli effetti dell'alcol, che cosa fa all'attenzione, e il pericolo di sedativi e alcol insieme.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "alcol_sostanze",
+   "quesiti": 3
+  },
+  {
+   "id": "segnali_quantita",
+   "nome": "Segnali di soccorso: quanti, per fascia di distanza",
+   "parole_chiave": [
+    "dotazioni di sicurezza",
+    "fuochi a mano",
+    "razzi a paracadute",
+    "boetta fumogena",
+    "boetta luminosa",
+    "distanza dalla costa"
+   ],
+   "copre": "Le fasce di distanza dalla costa e quanti fuochi, razzi, boette fumogene e luminose si tengono a bordo in ciascuna.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "dotazioni_segnali",
+   "quesiti": 10
+  },
+  {
+   "id": "segnali_uso",
+   "nome": "Segnali visivi di soccorso: come e quando",
+   "parole_chiave": [
+    "segnali di soccorso",
+    "razzi a paracadute",
+    "fuochi a mano a luce rossa",
+    "boetta fumogena arancione",
+    "segnale con le braccia"
+   ],
+   "copre": "Portata, durata, colore, quota e scadenza dei segnali pirotecnici; quando si usa il razzo e quando il fuoco a mano; il segnale di soccorso fatto con le braccia.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "dotazioni_segnali",
+   "quesiti": 11
+  },
+  {
+   "id": "salvagenti_individuali",
+   "nome": "Cinture e salvagenti individuali",
+   "parole_chiave": [
+    "cintura di salvataggio",
+    "giubbotto di salvataggio",
+    "salvagente anulare",
+    "mezzi individuali di salvataggio",
+    "tavole a vela e acquascooter"
+   ],
+   "copre": "Quante cinture tenere a bordo e in base a che cosa, da che distanza sono obbligatorie, i fiumi, e chi le indossa sempre (tavole a vela, acquascooter).",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "dotazioni_salvataggio",
+   "quesiti": 7
+  },
+  {
+   "id": "mezzi_collettivi",
+   "nome": "Zattera di salvataggio: quando è obbligatoria",
+   "parole_chiave": [
+    "zattera di salvataggio",
+    "zattera costiera",
+    "mezzi collettivi di salvataggio",
+    "revisione della zattera"
+   ],
+   "copre": "Quando serve la zattera costiera e quando quella non costiera, entro quali miglia nessun mezzo collettivo, e ogni quanto si revisiona.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "dotazioni_salvataggio",
+   "quesiti": 7
+  },
+  {
+   "id": "dotazioni_apparati",
+   "nome": "Apparati e strumenti obbligatori a bordo",
+   "parole_chiave": [
+    "VHF obbligatorio",
+    "EPIRB",
+    "riflettore radar",
+    "bussola e tabella delle deviazioni",
+    "binocolo",
+    "fanali regolamentari"
+   ],
+   "copre": "Da che distanza dalla costa diventano obbligatori VHF, EPIRB, riflettore radar, binocolo, bussola e fanali; che cos'è l'EPIRB e a che serve il riflettore radar.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "dotazioni_strumenti",
+   "quesiti": 11
+  },
+  {
+   "id": "pronto_soccorso",
+   "nome": "Cassetta di pronto soccorso",
+   "parole_chiave": [
+    "cassetta di pronto soccorso",
+    "materiale sanitario",
+    "dotazioni mediche",
+    "tabella D"
+   ],
+   "copre": "Chi stabilisce i medicinali di bordo, da che distanza la cassetta è obbligatoria, e le tabelle per le unità da noleggio e senza limiti.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "dotazioni_strumenti",
+   "quesiti": 5
+  },
+  {
+   "id": "visite_tipi",
+   "nome": "Visite di sicurezza: iniziale, periodica, occasionale",
+   "parole_chiave": [
+    "visita iniziale",
+    "visita periodica",
+    "visita occasionale",
+    "organismo tecnico",
+    "persone trasportabili"
+   ],
+   "copre": "Quali unità sono soggette alle visite, che cosa fa la visita iniziale, e quando serve una visita occasionale.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "visite_certificato",
+   "quesiti": 7
+  },
+  {
+   "id": "scadenze_certificato",
+   "nome": "Certificato di sicurezza: validità e rinnovo",
+   "parole_chiave": [
+    "certificato di sicurezza",
+    "validità del certificato",
+    "categorie di progettazione",
+    "rinnovo del certificato"
+   ],
+   "copre": "Quanto vale il certificato di sicurezza al primo rilascio secondo la categoria di progettazione, e ogni quanti anni si rinnova.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "visite_certificato",
+   "quesiti": 7
+  },
+  {
+   "id": "certificato_rilascio",
+   "nome": "Certificato di sicurezza: chi lo rilascia e lo convalida",
+   "parole_chiave": [
+    "certificato di sicurezza",
+    "STED",
+    "convalida",
+    "certificazione di omologazione",
+    "organismo tecnico notificato"
+   ],
+   "copre": "Chi rilascia e chi convalida il certificato di sicurezza, dove si annota l'esito della visita, quando va convalidato, e dove sono scritte le persone trasportabili di un natante.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "visite_certificato",
+   "quesiti": 7
+  },
+  {
+   "id": "falla",
+   "nome": "Falla: come si tampona",
+   "parole_chiave": [
+    "falla",
+    "via d'acqua",
+    "pompa di sentina",
+    "riserva di spinta",
+    "tamponare"
+   ],
+   "copre": "Che cosa fa una falla alla galleggiabilità, come si tampona, perché si arresta l'unità con la falla a prua.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "falla_incaglio",
+   "quesiti": 6
+  },
+  {
+   "id": "incaglio_collisione",
+   "nome": "Incaglio e collisione",
+   "parole_chiave": [
+    "incaglio",
+    "disincaglio",
+    "incaglio volontario",
+    "collisione",
+    "alta marea"
+   ],
+   "copre": "Da che cosa nasce un incaglio, l'incaglio volontario, come si disincaglia, e la manovra per attenuare un urto inevitabile.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "falla_incaglio",
+   "quesiti": 5
+  },
+  {
+   "id": "incendio_manovra",
+   "nome": "Incendio a bordo: la manovra rispetto al vento",
+   "parole_chiave": [
+    "incendio a bordo",
+    "fiamme sottovento",
+    "prora al vento",
+    "incendio in porto"
+   ],
+   "copre": "Come si orienta l'unità perché le fiamme vadano sottovento, secondo dove è l'incendio; perché non si accelera verso il porto e perché si esce dal porto.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "incendio_a_bordo",
+   "quesiti": 6
+  },
+  {
+   "id": "incendio_vano_motore",
+   "nome": "Incendio nel vano motore",
+   "parole_chiave": [
+    "vano motore",
+    "valvola del carburante",
+    "ventilazione forzata",
+    "motore a benzina"
+   ],
+   "copre": "Chiudere carburante e prese d'aria nel vano motore, il ricambio d'aria prima dell'avvio di un motore a benzina, gli stracci unti nei gavoni.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "incendio_a_bordo",
+   "quesiti": 4
+  },
+  {
+   "id": "incendio_intervento",
+   "nome": "Incendio a bordo: l'intervento e gli ordini",
+   "parole_chiave": [
+    "getto alla base della fiamma",
+    "ordini del comandante",
+    "incendio grave"
+   ],
+   "copre": "Dove si dirige il getto, il primo ordine del comandante, e quando si prepara l'abbandono.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "incendio_a_bordo",
+   "quesiti": 4
+  },
+  {
+   "id": "uomo_mare_manovra",
+   "nome": "Uomo in mare: la manovra",
+   "parole_chiave": [
+    "uomo in mare",
+    "accostare dal lato del naufrago",
+    "eliche e naufrago",
+    "avvicinamento al naufrago"
+   ],
+   "copre": "Da che lato si accosta e perché (le eliche lontane dal naufrago), quale evoluzione si fa, e come si fa l'avvicinamento finale.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "uomo_in_mare",
+   "quesiti": 5
+  },
+  {
+   "id": "uomo_mare_recupero",
+   "nome": "Uomo in mare: salvagente e controllo visivo",
+   "parole_chiave": [
+    "salvagente anulare",
+    "controllo visivo del naufrago",
+    "recupero del naufrago"
+   ],
+   "copre": "Lanciare il salvagente vicino al naufrago e non perderlo mai di vista durante la manovra.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "uomo_in_mare",
+   "quesiti": 5
+  },
+  {
+   "id": "abbandono_comandante",
+   "nome": "Abbandono dell'unità: il comandante",
+   "parole_chiave": [
+    "abbandono nave",
+    "giubbotto di salvataggio",
+    "comandante",
+    "Codice della navigazione"
+   ],
+   "copre": "Quando il comandante può ordinare l'abbandono, e che cosa verifica prima: giubbotti indossati, zattera equipaggiata.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "abbandono_soccorso",
+   "quesiti": 4
+  },
+  {
+   "id": "zattera_grab_bag",
+   "nome": "Zattera e grab bag",
+   "parole_chiave": [
+    "zattera di salvataggio",
+    "sagola della zattera",
+    "grab bag",
+    "posizionamento della zattera"
+   ],
+   "copre": "Dove si tiene la zattera, come si lancia con la sagola fissata alla barca, che cos'è il grab bag e dove sta.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "abbandono_soccorso",
+   "quesiti": 5
+  },
+  {
+   "id": "soccorso_organizzazione",
+   "nome": "Il soccorso in mare: chi lo coordina",
+   "parole_chiave": [
+    "soccorso marittimo",
+    "Capitanerie di porto",
+    "Guardia costiera",
+    "1530",
+    "CIRM"
+   ],
+   "copre": "Che cos'è il soccorso marittimo, chi lo coordina, il numero 1530, e il Centro Internazionale Radio Medico per un infortunio a bordo.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "abbandono_soccorso",
+   "quesiti": 4
+  },
+  {
+   "id": "obblighi_assistenza",
+   "nome": "Obblighi di assistenza e soccorso",
+   "parole_chiave": [
+    "obbligo di assistenza",
+    "persone in pericolo",
+    "urto tra unità",
+    "rilancio della chiamata di soccorso"
+   ],
+   "copre": "Quando un comandante deve prestare assistenza, quando l'Autorità marittima può chiamare le unità da diporto al soccorso, che cosa si comunica dopo un urto, che cosa fa chi riceve un MAYDAY.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "abbandono_soccorso",
+   "quesiti": 4
+  },
+  {
+   "id": "onde_condotta",
+   "nome": "Condotta con mare formato",
+   "parole_chiave": [
+    "mare formato",
+    "onde al traverso",
+    "onda di poppa",
+    "tempesta",
+    "velocità e onde"
+   ],
+   "copre": "Come si prendono le onde di prora e di poppa, perché si evita il traverso, quando si riduce la velocità, e che cosa si fa se la tempesta viene da terra.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "mare_formato",
+   "quesiti": 4
+  },
+  {
+   "id": "cappa_ancora_galleggiante",
+   "nome": "La cappa e l'ancora galleggiante",
+   "parole_chiave": [
+    "cappa",
+    "ancora galleggiante",
+    "intraversamento",
+    "costa sottovento"
+   ],
+   "copre": "Che cosa vuol dire mettersi alla cappa, e a che serve l'ancora galleggiante.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "mare_formato",
+   "quesiti": 4
+  },
+  {
+   "id": "trim_flaps",
+   "nome": "Trim e flaps con il mare formato",
+   "parole_chiave": [
+    "trim",
+    "flaps",
+    "assetto",
+    "fuoribordo",
+    "piede del motore"
+   ],
+   "copre": "Come si regolano trim e flaps con onda di prora e di poppa, che cosa indica lo zero, e come i flaps cambiano l'assetto trasversale.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "mare_formato",
+   "quesiti": 7
+  },
+  {
+   "id": "precauzioni_bordo",
+   "nome": "Prepararsi al cattivo tempo",
+   "parole_chiave": [
+    "rizzare gli oggetti",
+    "oblò e osterigi",
+    "prese a mare",
+    "stacco di sicurezza",
+    "cintura di sicurezza (life line)"
+   ],
+   "copre": "Che cosa si chiude e si fissa quando il tempo peggiora, le persone istruite sui mezzi di salvataggio, la cintura di sicurezza in solitario e lo stacco del fuoribordo.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "tempo_cattivo_precauzioni",
+   "quesiti": 4
+  },
+  {
+   "id": "visibilita_costa",
+   "nome": "Nebbia, scarsa visibilità e segni della costa",
+   "parole_chiave": [
+    "nebbia",
+    "visibilità ridotta",
+    "frangenti",
+    "risacca"
+   ],
+   "copre": "Che cosa si fa quando la visibilità cala, e che cosa indica la costa vicina con la nebbia: il colore dell'acqua, i frangenti, la risacca.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "tempo_cattivo_precauzioni",
+   "quesiti": 3
+  },
+  {
+   "id": "radio_titoli",
+   "nome": "VHF: abilitazioni, licenze, responsabilità",
+   "parole_chiave": [
+    "certificato limitato di radiotelefonista",
+    "nominativo internazionale",
+    "indicativo di chiamata",
+    "omologazione del VHF"
+   ],
+   "copre": "Il titolo per usare il VHF, nominativo e indicativo di chiamata secondo il tipo di unità, l'installazione e le ispezioni, la responsabilità del comandante.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "radio_apparato",
+   "quesiti": 6
+  },
+  {
+   "id": "vhf_portata_tecnica",
+   "nome": "VHF: portata e uso tecnico",
+   "parole_chiave": [
+    "portata del VHF",
+    "propagazione in linea d'ottica",
+    "potenza di emissione",
+    "squelch"
+   ],
+   "copre": "Perché il VHF va in linea d'ottica, quanto porta fra unità e verso le stazioni costiere, la potenza ridotta da vicino e lo squelch.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "radio_apparato",
+   "quesiti": 5
+  },
+  {
+   "id": "canali_vhf",
+   "nome": "Canale 16, canali di lavoro e silenzio radio",
+   "parole_chiave": [
+    "canale 16",
+    "156,8 MHz",
+    "silenzio radio",
+    "canali di lavoro",
+    "SILENCE MAYDAY"
+   ],
+   "copre": "A che serve il canale 16, la sua frequenza, i minuti di silenzio, i canali da barca a barca, e come si impone il silenzio.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "radio_chiamate",
+   "quesiti": 7
+  },
+  {
+   "id": "chiamate_soccorso_radio",
+   "nome": "MAYDAY, PAN PAN, SÉCURITÉ e DSC",
+   "parole_chiave": [
+    "MAYDAY",
+    "PAN PAN",
+    "SÉCURITÉ",
+    "messaggio di soccorso",
+    "DSC"
+   ],
+   "copre": "Le tre chiamate e quando si usano, quante volte si ripete la parola, che cosa contiene il messaggio di soccorso, e la chiamata digitale DSC.",
+   "tema": "SICUREZZA DELLA NAVIGAZIONE",
+   "famiglia": "radio_chiamate",
+   "quesiti": 10
   },
   {
    "id": "fonti_normative",
@@ -5325,6 +6009,671 @@
   ],
   "base-229": [
    "carburante_acqua_alghe"
+  ],
+  "base-230": [
+   "classi_incendio",
+   "estintori_tipi"
+  ],
+  "base-231": [
+   "classi_incendio",
+   "estintori_tipi"
+  ],
+  "base-232": [
+   "estinzione_principi",
+   "estintori_tipi"
+  ],
+  "base-233": [
+   "estintori_norme"
+  ],
+  "base-234": [
+   "combustione",
+   "incendio_vano_motore"
+  ],
+  "base-235": [
+   "classi_incendio",
+   "estintori_tipi"
+  ],
+  "base-236": [
+   "estintori_tipi",
+   "incendio_intervento"
+  ],
+  "base-237": [
+   "classi_incendio"
+  ],
+  "base-238": [
+   "classi_incendio"
+  ],
+  "base-239": [
+   "estinzione_principi"
+  ],
+  "base-240": [
+   "classi_incendio",
+   "estintori_norme"
+  ],
+  "base-241": [
+   "classi_incendio",
+   "estintori_tipi"
+  ],
+  "base-242": [
+   "classi_incendio",
+   "estintori_tipi"
+  ],
+  "base-243": [
+   "classi_incendio"
+  ],
+  "base-244": [
+   "classi_incendio",
+   "estintori_tipi"
+  ],
+  "base-245": [
+   "classi_incendio"
+  ],
+  "base-246": [
+   "classi_incendio"
+  ],
+  "base-247": [
+   "classi_incendio",
+   "estintori_tipi"
+  ],
+  "base-248": [
+   "classi_incendio",
+   "estintori_tipi"
+  ],
+  "base-249": [
+   "classi_incendio"
+  ],
+  "base-250": [
+   "estintori_norme"
+  ],
+  "base-251": [
+   "estintori_norme"
+  ],
+  "base-252": [
+   "estintori_norme"
+  ],
+  "base-253": [
+   "combustione"
+  ],
+  "base-254": [
+   "estinzione_principi"
+  ],
+  "base-255": [
+   "estinzione_principi"
+  ],
+  "base-256": [
+   "combustione"
+  ],
+  "base-257": [
+   "combustione"
+  ],
+  "base-258": [
+   "estintori_norme"
+  ],
+  "base-259": [
+   "estintori_norme"
+  ],
+  "base-260": [
+   "combustione"
+  ],
+  "base-261": [
+   "alcol_sanzioni"
+  ],
+  "base-262": [
+   "alcol_sanzioni"
+  ],
+  "base-263": [
+   "alcol_sanzioni"
+  ],
+  "base-264": [
+   "alcol_sanzioni"
+  ],
+  "base-265": [
+   "alcol_sanzioni"
+  ],
+  "base-266": [
+   "alcol_sanzioni"
+  ],
+  "base-267": [
+   "alcol_sanzioni"
+  ],
+  "base-268": [
+   "alcol_sanzioni"
+  ],
+  "base-269": [
+   "alcol_effetti"
+  ],
+  "base-270": [
+   "alcol_sanzioni"
+  ],
+  "base-271": [
+   "alcol_effetti"
+  ],
+  "base-272": [
+   "alcol_effetti"
+  ],
+  "base-273": [
+   "dotazioni_apparati"
+  ],
+  "base-274": [
+   "estintori_norme"
+  ],
+  "base-275": [
+   "segnali_uso"
+  ],
+  "base-276": [
+   "segnali_quantita"
+  ],
+  "base-277": [
+   "dotazioni_apparati"
+  ],
+  "base-278": [
+   "salvagenti_individuali"
+  ],
+  "base-279": [
+   "segnali_quantita"
+  ],
+  "base-280": [
+   "dotazioni_apparati"
+  ],
+  "base-281": [
+   "mezzi_collettivi"
+  ],
+  "base-282": [
+   "pronto_soccorso"
+  ],
+  "base-283": [
+   "segnali_quantita"
+  ],
+  "base-284": [
+   "salvagenti_individuali"
+  ],
+  "base-285": [
+   "mezzi_collettivi"
+  ],
+  "base-286": [
+   "segnali_quantita"
+  ],
+  "base-287": [
+   "salvagenti_individuali"
+  ],
+  "base-288": [
+   "segnali_uso"
+  ],
+  "base-289": [
+   "segnali_uso"
+  ],
+  "base-290": [
+   "segnali_quantita"
+  ],
+  "base-291": [
+   "salvagenti_individuali"
+  ],
+  "base-292": [
+   "segnali_uso"
+  ],
+  "base-293": [
+   "segnali_uso"
+  ],
+  "base-294": [
+   "dotazioni_apparati"
+  ],
+  "base-295": [
+   "segnali_quantita"
+  ],
+  "base-296": [
+   "dotazioni_apparati"
+  ],
+  "base-297": [
+   "mezzi_collettivi"
+  ],
+  "base-298": [
+   "dotazioni_apparati"
+  ],
+  "base-299": [
+   "salvagenti_individuali"
+  ],
+  "base-300": [
+   "segnali_uso"
+  ],
+  "base-301": [
+   "segnali_uso"
+  ],
+  "base-302": [
+   "dotazioni_apparati"
+  ],
+  "base-303": [
+   "segnali_quantita"
+  ],
+  "base-304": [
+   "segnali_quantita"
+  ],
+  "base-305": [
+   "mezzi_collettivi"
+  ],
+  "base-306": [
+   "dotazioni_apparati"
+  ],
+  "base-307": [
+   "mezzi_collettivi"
+  ],
+  "base-308": [
+   "mezzi_collettivi"
+  ],
+  "base-309": [
+   "certificato_rilascio"
+  ],
+  "base-310": [
+   "salvagenti_individuali"
+  ],
+  "base-311": [
+   "mezzi_collettivi"
+  ],
+  "base-312": [
+   "dotazioni_apparati"
+  ],
+  "base-313": [
+   "segnali_quantita"
+  ],
+  "base-314": [
+   "segnali_quantita"
+  ],
+  "base-315": [
+   "dotazioni_apparati"
+  ],
+  "base-316": [
+   "salvagenti_individuali"
+  ],
+  "base-317": [
+   "pronto_soccorso"
+  ],
+  "base-318": [
+   "pronto_soccorso"
+  ],
+  "base-319": [
+   "pronto_soccorso"
+  ],
+  "base-320": [
+   "pronto_soccorso"
+  ],
+  "base-321": [
+   "certificato_rilascio"
+  ],
+  "base-322": [
+   "visite_tipi"
+  ],
+  "base-323": [
+   "visite_tipi"
+  ],
+  "base-324": [
+   "visite_tipi"
+  ],
+  "base-325": [
+   "certificato_rilascio"
+  ],
+  "base-326": [
+   "visite_tipi"
+  ],
+  "base-327": [
+   "visite_tipi"
+  ],
+  "base-328": [
+   "scadenze_certificato"
+  ],
+  "base-329": [
+   "certificato_rilascio"
+  ],
+  "base-330": [
+   "visite_tipi"
+  ],
+  "base-331": [
+   "certificato_rilascio"
+  ],
+  "base-332": [
+   "certificato_rilascio"
+  ],
+  "base-333": [
+   "scadenze_certificato"
+  ],
+  "base-334": [
+   "scadenze_certificato"
+  ],
+  "base-335": [
+   "scadenze_certificato"
+  ],
+  "base-336": [
+   "visite_tipi",
+   "scadenze_certificato"
+  ],
+  "base-337": [
+   "scadenze_certificato"
+  ],
+  "base-338": [
+   "certificato_rilascio"
+  ],
+  "base-339": [
+   "scadenze_certificato"
+  ],
+  "base-340": [
+   "falla",
+   "chiamate_soccorso_radio"
+  ],
+  "base-341": [
+   "falla"
+  ],
+  "base-342": [
+   "incaglio_collisione"
+  ],
+  "base-343": [
+   "incaglio_collisione"
+  ],
+  "base-344": [
+   "incaglio_collisione"
+  ],
+  "base-345": [
+   "falla"
+  ],
+  "base-346": [
+   "falla"
+  ],
+  "base-347": [
+   "falla"
+  ],
+  "base-348": [
+   "incaglio_collisione"
+  ],
+  "base-349": [
+   "falla"
+  ],
+  "base-350": [
+   "incaglio_collisione"
+  ],
+  "base-351": [
+   "incendio_manovra"
+  ],
+  "base-352": [
+   "incendio_vano_motore"
+  ],
+  "base-353": [
+   "incendio_manovra"
+  ],
+  "base-354": [
+   "incendio_intervento"
+  ],
+  "base-355": [
+   "incendio_intervento",
+   "abbandono_comandante"
+  ],
+  "base-356": [
+   "classi_incendio",
+   "estintori_tipi"
+  ],
+  "base-357": [
+   "incendio_intervento"
+  ],
+  "base-358": [
+   "incendio_manovra"
+  ],
+  "base-359": [
+   "incendio_manovra"
+  ],
+  "base-360": [
+   "incendio_vano_motore"
+  ],
+  "base-361": [
+   "estinzione_principi"
+  ],
+  "base-362": [
+   "incendio_manovra"
+  ],
+  "base-363": [
+   "estinzione_principi",
+   "estintori_tipi"
+  ],
+  "base-364": [
+   "incendio_vano_motore"
+  ],
+  "base-365": [
+   "incendio_manovra"
+  ],
+  "base-366": [
+   "estintori_norme"
+  ],
+  "base-367": [
+   "estintori_norme"
+  ],
+  "base-368": [
+   "uomo_mare_manovra"
+  ],
+  "base-369": [
+   "uomo_mare_recupero"
+  ],
+  "base-370": [
+   "uomo_mare_manovra"
+  ],
+  "base-371": [
+   "uomo_mare_manovra"
+  ],
+  "base-372": [
+   "uomo_mare_recupero"
+  ],
+  "base-373": [
+   "uomo_mare_manovra"
+  ],
+  "base-374": [
+   "uomo_mare_recupero"
+  ],
+  "base-375": [
+   "uomo_mare_recupero"
+  ],
+  "base-376": [
+   "uomo_mare_manovra",
+   "uomo_mare_recupero"
+  ],
+  "base-377": [
+   "abbandono_comandante"
+  ],
+  "base-378": [
+   "zattera_grab_bag"
+  ],
+  "base-379": [
+   "zattera_grab_bag"
+  ],
+  "base-380": [
+   "zattera_grab_bag"
+  ],
+  "base-381": [
+   "zattera_grab_bag"
+  ],
+  "base-382": [
+   "zattera_grab_bag"
+  ],
+  "base-383": [
+   "soccorso_organizzazione"
+  ],
+  "base-384": [
+   "soccorso_organizzazione"
+  ],
+  "base-385": [
+   "soccorso_organizzazione"
+  ],
+  "base-386": [
+   "obblighi_assistenza"
+  ],
+  "base-387": [
+   "obblighi_assistenza"
+  ],
+  "base-388": [
+   "abbandono_comandante"
+  ],
+  "base-389": [
+   "obblighi_assistenza"
+  ],
+  "base-390": [
+   "abbandono_comandante"
+  ],
+  "base-391": [
+   "trim_flaps"
+  ],
+  "base-392": [
+   "precauzioni_bordo"
+  ],
+  "base-393": [
+   "onde_condotta"
+  ],
+  "base-394": [
+   "cappa_ancora_galleggiante"
+  ],
+  "base-395": [
+   "onde_condotta"
+  ],
+  "base-396": [
+   "visibilita_costa"
+  ],
+  "base-397": [
+   "chiamate_soccorso_radio"
+  ],
+  "base-398": [
+   "onde_condotta"
+  ],
+  "base-399": [
+   "onde_condotta"
+  ],
+  "base-400": [
+   "trim_flaps"
+  ],
+  "base-401": [
+   "trim_flaps"
+  ],
+  "base-402": [
+   "trim_flaps"
+  ],
+  "base-403": [
+   "trim_flaps"
+  ],
+  "base-404": [
+   "trim_flaps"
+  ],
+  "base-405": [
+   "trim_flaps"
+  ],
+  "base-406": [
+   "precauzioni_bordo"
+  ],
+  "base-407": [
+   "visibilita_costa"
+  ],
+  "base-408": [
+   "cappa_ancora_galleggiante"
+  ],
+  "base-409": [
+   "cappa_ancora_galleggiante"
+  ],
+  "base-410": [
+   "visibilita_costa"
+  ],
+  "base-411": [
+   "cappa_ancora_galleggiante"
+  ],
+  "base-412": [
+   "precauzioni_bordo"
+  ],
+  "base-413": [
+   "precauzioni_bordo"
+  ],
+  "base-414": [
+   "segnali_uso"
+  ],
+  "base-415": [
+   "soccorso_organizzazione"
+  ],
+  "base-416": [
+   "radio_titoli"
+  ],
+  "base-417": [
+   "radio_titoli"
+  ],
+  "base-418": [
+   "radio_titoli"
+  ],
+  "base-419": [
+   "radio_titoli"
+  ],
+  "base-420": [
+   "radio_titoli"
+  ],
+  "base-421": [
+   "segnali_uso"
+  ],
+  "base-422": [
+   "segnali_uso"
+  ],
+  "base-423": [
+   "canali_vhf"
+  ],
+  "base-424": [
+   "segnali_uso"
+  ],
+  "base-425": [
+   "canali_vhf"
+  ],
+  "base-426": [
+   "obblighi_assistenza",
+   "chiamate_soccorso_radio"
+  ],
+  "base-427": [
+   "chiamate_soccorso_radio"
+  ],
+  "base-428": [
+   "chiamate_soccorso_radio"
+  ],
+  "base-429": [
+   "chiamate_soccorso_radio"
+  ],
+  "base-430": [
+   "chiamate_soccorso_radio"
+  ],
+  "base-431": [
+   "chiamate_soccorso_radio"
+  ],
+  "base-432": [
+   "canali_vhf"
+  ],
+  "base-433": [
+   "canali_vhf"
+  ],
+  "base-434": [
+   "chiamate_soccorso_radio"
+  ],
+  "base-435": [
+   "canali_vhf",
+   "chiamate_soccorso_radio"
+  ],
+  "base-436": [
+   "canali_vhf"
+  ],
+  "base-437": [
+   "vhf_portata_tecnica"
+  ],
+  "base-438": [
+   "radio_titoli"
+  ],
+  "base-439": [
+   "vhf_portata_tecnica"
+  ],
+  "base-440": [
+   "vhf_portata_tecnica"
+  ],
+  "base-441": [
+   "vhf_portata_tecnica"
+  ],
+  "base-442": [
+   "vhf_portata_tecnica"
+  ],
+  "base-443": [
+   "dotazioni_apparati"
+  ],
+  "base-444": [
+   "canali_vhf"
   ],
   "base-445": [
    "porto_limiti_velocita"
